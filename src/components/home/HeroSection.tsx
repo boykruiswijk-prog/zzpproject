@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Shield, Users, CheckCircle } from "lucide-react";
+import { ArrowRight, Shield, CheckCircle, Clock, Calendar, Phone } from "lucide-react";
 
 export function HeroSection() {
   return (
@@ -15,84 +15,118 @@ export function HeroSection() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-16 md:py-24 lg:py-32">
           {/* Content */}
           <div className="text-primary-foreground animate-slide-up">
-            <div className="inline-flex items-center gap-2 bg-primary-foreground/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+            <div className="inline-flex items-center gap-2 bg-accent/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
               <Shield className="h-4 w-4 text-accent" />
-              <span className="text-sm font-medium">Onafhankelijk advies voor zzp'ers</span>
+              <span className="text-sm font-semibold text-accent">Goedkoopste van Nederland</span>
             </div>
 
             <h1 className="mb-6 leading-tight">
-              Zakelijke zekerheid,{" "}
-              <span className="text-accent">zonder gedoe</span>
+              Beroeps- & Bedrijfsaansprakelijkheid{" "}
+              <span className="text-accent">vanaf €50/maand</span>
             </h1>
 
-            <p className="text-lg md:text-xl text-primary-foreground/80 mb-8 max-w-lg">
-              Als zzp'er wil je je focussen op je werk, niet op papierwerk. 
-              Wij regelen je verzekeringen en geven helder advies — direct, persoonlijk en zonder tussenpersonen.
+            <p className="text-lg md:text-xl text-primary-foreground/80 mb-6 max-w-lg">
+              De verzekering die elke zzp'er nodig heeft. Bescherm jezelf tegen claims 
+              en werk zorgeloos voor je opdrachtgevers.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 mb-12">
+            {/* Key USPs */}
+            <div className="flex flex-wrap gap-4 mb-8">
+              <div className="flex items-center gap-2 bg-primary-foreground/10 px-3 py-2 rounded-lg">
+                <Clock className="h-4 w-4 text-accent" />
+                <span className="text-sm font-medium">Binnen 24 uur geregeld</span>
+              </div>
+              <div className="flex items-center gap-2 bg-primary-foreground/10 px-3 py-2 rounded-lg">
+                <Calendar className="h-4 w-4 text-accent" />
+                <span className="text-sm font-medium">Dagelijks opzegbaar</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <Button variant="hero" size="xl" asChild>
-                <Link to="/contact">
-                  Gratis adviesgesprek
+                <a href="https://shop.zpzaken.nl/bav-jaarlijks" target="_blank" rel="noopener noreferrer">
+                  Direct afsluiten
                   <ArrowRight className="h-5 w-5" />
-                </Link>
+                </a>
               </Button>
               <Button variant="heroOutline" size="xl" asChild>
-                <Link to="/verzekeringen">Bekijk verzekeringen</Link>
+                <Link to="/contact">Gratis adviesgesprek</Link>
               </Button>
             </div>
 
-            {/* Trust indicators */}
-            <div className="flex flex-wrap gap-x-8 gap-y-4 text-sm text-primary-foreground/70">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-accent" />
-                <span>100% onafhankelijk</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-accent" />
-                <span>Geen tussenpersonen</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-accent" />
-                <span>Direct persoonlijk contact</span>
-              </div>
+            {/* Contact */}
+            <div className="flex items-center gap-4 text-sm text-primary-foreground/70">
+              <a href="tel:0232010502" className="flex items-center gap-2 hover:text-accent transition-colors">
+                <Phone className="h-4 w-4" />
+                <span>023-2010502</span>
+              </a>
+              <span>•</span>
+              <span>Persoonlijk advies</span>
             </div>
           </div>
 
-          {/* Visual */}
+          {/* Visual - Pricing preview */}
           <div className="hidden lg:block relative animate-fade-in">
             <div className="relative">
               {/* Main card */}
               <div className="bg-card rounded-2xl p-8 shadow-2xl">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="h-12 w-12 rounded-full bg-accent/10 flex items-center justify-center">
-                    <Users className="h-6 w-6 text-accent" />
+                <div className="text-center mb-6">
+                  <p className="text-sm text-muted-foreground mb-2">BAV + AVB Combi-pakket</p>
+                  <div className="flex items-baseline justify-center gap-1">
+                    <span className="text-5xl font-bold text-foreground">€600</span>
+                    <span className="text-muted-foreground">/jaar</span>
                   </div>
-                  <div>
-                    <p className="font-semibold text-card-foreground">2.500+ zzp'ers</p>
-                    <p className="text-sm text-muted-foreground">vertrouwen op zpzaken</p>
-                  </div>
+                  <p className="text-sm text-accent font-medium mt-2">€60 korting t.o.v. maandelijks</p>
                 </div>
                 
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-secondary rounded-lg">
-                    <span className="text-sm font-medium text-secondary-foreground">Beroepsaansprakelijkheid</span>
-                    <span className="text-sm text-accent font-semibold">Actief ✓</span>
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center justify-between p-3 bg-secondary rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Shield className="h-4 w-4 text-accent" />
+                      <span className="text-sm font-medium text-secondary-foreground">Beroepsaansprakelijkheid</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">€5 mln</span>
                   </div>
-                  <div className="flex items-center justify-between p-4 bg-secondary rounded-lg">
-                    <span className="text-sm font-medium text-secondary-foreground">Arbeidsongeschiktheid</span>
-                    <span className="text-sm text-accent font-semibold">Actief ✓</span>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-secondary rounded-lg">
-                    <span className="text-sm font-medium text-secondary-foreground">Rechtsbijstand</span>
-                    <span className="text-sm text-accent font-semibold">Actief ✓</span>
+                  <div className="flex items-center justify-between p-3 bg-secondary rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Shield className="h-4 w-4 text-accent" />
+                      <span className="text-sm font-medium text-secondary-foreground">Bedrijfsaansprakelijkheid</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">€2,5 mln</span>
                   </div>
                 </div>
+
+                <ul className="space-y-2 mb-6">
+                  <li className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="h-4 w-4 text-accent" />
+                    <span>Dagelijks opzegbaar</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="h-4 w-4 text-accent" />
+                    <span>Inclusief juridische bijstand</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="h-4 w-4 text-accent" />
+                    <span>Directe dekking na afsluiten</span>
+                  </li>
+                </ul>
+
+                <Button variant="accent" className="w-full" asChild>
+                  <a href="https://shop.zpzaken.nl/bav-jaarlijks" target="_blank" rel="noopener noreferrer">
+                    Direct afsluiten
+                    <ArrowRight className="h-4 w-4" />
+                  </a>
+                </Button>
               </div>
 
               {/* Floating badge */}
               <div className="absolute -top-4 -right-4 bg-accent text-accent-foreground px-4 py-2 rounded-full shadow-lg font-semibold text-sm">
                 ⭐ 4.9/5 rating
+              </div>
+
+              {/* Trust badge */}
+              <div className="absolute -bottom-4 -left-4 bg-green-500 text-white px-4 py-2 rounded-full shadow-lg font-medium text-sm">
+                2.500+ zzp'ers
               </div>
             </div>
           </div>
