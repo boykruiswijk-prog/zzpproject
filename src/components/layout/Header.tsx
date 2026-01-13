@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Phone } from "lucide-react";
+import logoZp from "@/assets/logo-zp.jpg";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -20,12 +21,8 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container-wide flex h-16 items-center justify-between lg:h-20">
         <Link to="/" className="flex items-center gap-2">
-          <div className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-              <span className="text-lg font-bold text-primary-foreground">ZP</span>
-            </div>
-            <span className="text-xl font-bold text-primary">zpzaken</span>
-          </div>
+          <img src={logoZp} alt="ZP Zaken logo" className="h-10 w-10 rounded-lg" />
+          <span className="text-xl font-bold text-primary">zpzaken</span>
         </Link>
 
         {/* Desktop Navigation */}

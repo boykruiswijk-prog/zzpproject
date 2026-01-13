@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin } from "lucide-react";
+import logoZp from "@/assets/logo-zp.jpg";
 
 const footerLinks = {
   diensten: [
@@ -30,9 +31,7 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-foreground">
-                <span className="text-lg font-bold text-primary">ZP</span>
-              </div>
+              <img src={logoZp} alt="ZP Zaken logo" className="h-12 w-12 rounded-lg" />
               <span className="text-2xl font-bold">zpzaken</span>
             </Link>
             <p className="text-primary-foreground/80 mb-6 max-w-sm">
