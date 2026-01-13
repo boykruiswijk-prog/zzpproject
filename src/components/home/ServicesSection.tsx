@@ -1,20 +1,8 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Shield, Heart, Scale, Briefcase, ArrowRight } from "lucide-react";
+import { Heart, Scale, ArrowRight } from "lucide-react";
 
 const services = [
-  {
-    icon: Shield,
-    title: "Beroepsaansprakelijkheid",
-    description: "Bescherm jezelf tegen claims van opdrachtgevers bij beroepsfouten. Vaak verplicht gesteld door klanten.",
-    href: "/verzekeringen#beroepsaansprakelijkheid",
-  },
-  {
-    icon: Briefcase,
-    title: "Bedrijfsaansprakelijkheid",
-    description: "Dekking voor schade aan personen of eigendommen tijdens je werkzaamheden. Essentieel voor elke ondernemer.",
-    href: "/verzekeringen#bedrijfsaansprakelijkheid",
-  },
   {
     icon: Heart,
     title: "Arbeidsongeschiktheid",
@@ -33,17 +21,16 @@ export function ServicesSection() {
   return (
     <section className="section-padding bg-background">
       <div className="container-wide">
-        <div className="text-center max-w-2xl mx-auto mb-16">
+        <div className="text-center max-w-2xl mx-auto mb-12">
           <h2 className="mb-4">
-            Verzekeringen voor <span className="text-accent">zzp'ers</span>
+            Overige <span className="text-accent">verzekeringen</span>
           </h2>
           <p className="text-lg text-muted-foreground">
-            De belangrijkste verzekeringen om jezelf en je onderneming te beschermen. 
-            Wij helpen je de juiste keuze te maken.
+            Naast de BAV+AVB combiverzekering bieden we ook andere belangrijke verzekeringen voor zzp'ers.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-3xl mx-auto">
           {services.map((service, index) => (
             <Link
               key={service.title}
@@ -73,7 +60,7 @@ export function ServicesSection() {
         </div>
 
         <div className="text-center mt-12">
-          <Button variant="default" size="lg" asChild>
+          <Button variant="outline" size="lg" asChild>
             <Link to="/verzekeringen">
               Bekijk alle verzekeringen
               <ArrowRight className="h-5 w-5" />
