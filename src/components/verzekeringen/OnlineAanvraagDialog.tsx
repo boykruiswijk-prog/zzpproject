@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { CheckCircle, ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface OnlineAanvraagDialogProps {
   open: boolean;
@@ -85,16 +86,43 @@ export function OnlineAanvraagDialog({
   const handleSubmit = async () => {
     setIsSubmitting(true);
     
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    
-    setIsSubmitting(false);
-    setIsCompleted(true);
-    
-    toast({
-      title: "Aanvraag ontvangen!",
-      description: "We nemen binnen 1 werkdag contact met je op.",
-    });
+    try {
+      const { error } = await supabase.from("leads").insert({
+        type: "verzekering_aanvraag",
+        voornaam: formData.voornaam,
+        achternaam: formData.achternaam,
+        email: formData.email,
+        telefoon: formData.telefoon || null,
+        geboortedatum: formData.geboortedatum || null,
+        bedrijfsnaam: formData.bedrijfsnaam || null,
+        kvk_nummer: formData.kvkNummer || null,
+        beroep: formData.beroep || null,
+        omzet: formData.jaarOmzet || null,
+        verzekering_type: insuranceTitle,
+        verzekerd_bedrag: formData.dekkingsBedrag || null,
+        eigen_risico: formData.eigenRisico || null,
+        ingangsdatum: formData.ingangsdatum || null,
+        opmerkingen: formData.opmerkingen || null,
+        bron: "website",
+      });
+
+      if (error) throw error;
+
+      setIsCompleted(true);
+      toast({
+        title: "Aanvraag ontvangen!",
+        description: "We nemen binnen 1 werkdag contact met je op.",
+      });
+    } catch (error) {
+      console.error("Error submitting lead:", error);
+      toast({
+        title: "Er ging iets mis",
+        description: "Probeer het later opnieuw of neem telefonisch contact op.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleClose = () => {
