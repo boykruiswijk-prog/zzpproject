@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import { Shield, Briefcase, Heart, Scale, ArrowRight, CheckCircle } from "lucide-react";
+import { Shield, Briefcase, Heart, Scale, ArrowRight, CheckCircle, Globe } from "lucide-react";
+import { OnlineAanvraagDialog } from "@/components/verzekeringen/OnlineAanvraagDialog";
 
 const insurances = [
   {
@@ -18,6 +20,7 @@ const insurances = [
     ],
     forWho: "ICT'ers, consultants, marketeers, designers, adviseurs",
     price: "Vanaf €15 per maand",
+    canApplyOnline: true,
   },
   {
     id: "bedrijfsaansprakelijkheid",
@@ -33,6 +36,7 @@ const insurances = [
     ],
     forWho: "Bouwers, installateurs, fotografen, trainers, coaches",
     price: "Vanaf €10 per maand",
+    canApplyOnline: true,
   },
   {
     id: "arbeidsongeschiktheid",
@@ -48,6 +52,7 @@ const insurances = [
     ],
     forWho: "Alle zzp'ers die afhankelijk zijn van hun inkomen",
     price: "Vanaf €150 per maand",
+    canApplyOnline: false, // AOV vereist meer maatwerk
   },
   {
     id: "rechtsbijstand",
@@ -63,10 +68,16 @@ const insurances = [
     ],
     forWho: "Zzp'ers met opdrachtgevers, contracten of personeel",
     price: "Vanaf €20 per maand",
+    canApplyOnline: true,
   },
 ];
 
 export default function Verzekeringen() {
+  const [selectedInsurance, setSelectedInsurance] = useState<{
+    id: string;
+    title: string;
+  } | null>(null);
+
   return (
     <Layout>
       {/* Hero */}
@@ -126,12 +137,28 @@ export default function Verzekeringen() {
                       ))}
                     </ul>
 
-                    <Button variant="accent" asChild>
-                      <Link to="/contact">
-                        Vraag advies aan
-                        <ArrowRight className="h-4 w-4" />
-                      </Link>
-                    </Button>
+                    <div className="flex flex-wrap gap-3">
+                      {insurance.canApplyOnline && (
+                        <Button
+                          variant="accent"
+                          onClick={() =>
+                            setSelectedInsurance({
+                              id: insurance.id,
+                              title: insurance.title,
+                            })
+                          }
+                        >
+                          <Globe className="h-4 w-4" />
+                          Direct online afsluiten
+                        </Button>
+                      )}
+                      <Button variant={insurance.canApplyOnline ? "outline" : "accent"} asChild>
+                        <Link to="/contact">
+                          Vraag advies aan
+                          <ArrowRight className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                    </div>
                   </div>
 
                   {/* Info card */}
@@ -182,6 +209,14 @@ export default function Verzekeringen() {
           </div>
         </div>
       </section>
+
+      {/* Online Aanvraag Dialog */}
+      <OnlineAanvraagDialog
+        open={selectedInsurance !== null}
+        onOpenChange={(open) => !open && setSelectedInsurance(null)}
+        insuranceType={selectedInsurance?.id ?? ""}
+        insuranceTitle={selectedInsurance?.title ?? ""}
+      />
     </Layout>
   );
 }
