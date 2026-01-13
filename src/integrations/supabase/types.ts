@@ -14,16 +14,187 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      lead_notes: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          lead_id: string
+          type: Database["public"]["Enums"]["note_type"]
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          lead_id: string
+          type?: Database["public"]["Enums"]["note_type"]
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          lead_id?: string
+          type?: Database["public"]["Enums"]["note_type"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_notes_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads: {
+        Row: {
+          achternaam: string
+          assigned_to: string | null
+          bedrijfsnaam: string | null
+          beroep: string | null
+          bron: Database["public"]["Enums"]["lead_bron"]
+          converted_at: string | null
+          created_at: string
+          eigen_risico: string | null
+          email: string
+          geboortedatum: string | null
+          id: string
+          ingangsdatum: string | null
+          kvk_nummer: string | null
+          omzet: string | null
+          opmerkingen: string | null
+          status: Database["public"]["Enums"]["lead_status"]
+          telefoon: string | null
+          type: Database["public"]["Enums"]["lead_type"]
+          updated_at: string
+          verzekerd_bedrag: string | null
+          verzekering_type: string | null
+          voornaam: string
+        }
+        Insert: {
+          achternaam: string
+          assigned_to?: string | null
+          bedrijfsnaam?: string | null
+          beroep?: string | null
+          bron?: Database["public"]["Enums"]["lead_bron"]
+          converted_at?: string | null
+          created_at?: string
+          eigen_risico?: string | null
+          email: string
+          geboortedatum?: string | null
+          id?: string
+          ingangsdatum?: string | null
+          kvk_nummer?: string | null
+          omzet?: string | null
+          opmerkingen?: string | null
+          status?: Database["public"]["Enums"]["lead_status"]
+          telefoon?: string | null
+          type?: Database["public"]["Enums"]["lead_type"]
+          updated_at?: string
+          verzekerd_bedrag?: string | null
+          verzekering_type?: string | null
+          voornaam: string
+        }
+        Update: {
+          achternaam?: string
+          assigned_to?: string | null
+          bedrijfsnaam?: string | null
+          beroep?: string | null
+          bron?: Database["public"]["Enums"]["lead_bron"]
+          converted_at?: string | null
+          created_at?: string
+          eigen_risico?: string | null
+          email?: string
+          geboortedatum?: string | null
+          id?: string
+          ingangsdatum?: string | null
+          kvk_nummer?: string | null
+          omzet?: string | null
+          opmerkingen?: string | null
+          status?: Database["public"]["Enums"]["lead_status"]
+          telefoon?: string | null
+          type?: Database["public"]["Enums"]["lead_type"]
+          updated_at?: string
+          verzekerd_bedrag?: string | null
+          verzekering_type?: string | null
+          voornaam?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_team_member: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "medewerker"
+      lead_bron: "website" | "telefoon" | "email"
+      lead_status:
+        | "nieuw"
+        | "in_behandeling"
+        | "afspraak_gepland"
+        | "offerte_verstuurd"
+        | "klant"
+        | "afgewezen"
+      lead_type: "contact" | "verzekering_aanvraag"
+      note_type: "notitie" | "follow_up" | "telefoongesprek"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +321,19 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "medewerker"],
+      lead_bron: ["website", "telefoon", "email"],
+      lead_status: [
+        "nieuw",
+        "in_behandeling",
+        "afspraak_gepland",
+        "offerte_verstuurd",
+        "klant",
+        "afgewezen",
+      ],
+      lead_type: ["contact", "verzekering_aanvraag"],
+      note_type: ["notitie", "follow_up", "telefoongesprek"],
+    },
   },
 } as const
