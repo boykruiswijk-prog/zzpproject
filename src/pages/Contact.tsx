@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Phone, Mail, MapPin, Clock, Calendar, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Contact() {
   const { toast } = useToast();
@@ -16,15 +17,77 @@ export default function Contact() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const formElement = e.currentTarget;
+    const formDataRaw = new FormData(formElement);
+    
+    const naam = (formDataRaw.get("name") as string) || "";
+    const naamParts = naam.trim().split(" ");
+    const voornaam = naamParts[0] || "";
+    const achternaam = naamParts.slice(1).join(" ") || "";
+    const email = (formDataRaw.get("email") as string) || "";
+    const telefoon = (formDataRaw.get("phone") as string) || "";
+    const beroep = (formDataRaw.get("profession") as string) || "";
+    const onderwerp = (formDataRaw.get("subject") as string) || "";
+    const bericht = (formDataRaw.get("message") as string) || "";
 
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    toast({
-      title: "Bericht verzonden!",
-      description: "We nemen binnen 24 uur contact met je op.",
-    });
+    try {
+      // Prepare data for AFAS
+      const afasData = {
+        naam,
+        voornaam,
+        achternaam,
+        email,
+        telefoon,
+        beroep,
+        onderwerp,
+        bericht,
+        bron: "website",
+        type: "contact",
+        timestamp: new Date().toISOString(),
+      };
+
+      // Send to AFAS (no-cors mode for cross-origin)
+      await fetch("https://shop.zpzaken.nl/bav-jaarlijks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        mode: "no-cors",
+        body: JSON.stringify(afasData),
+      });
+
+      // Also save to database for admin dashboard
+      const { error } = await supabase.from("leads").insert({
+        type: "contact",
+        voornaam: voornaam || naam,
+        achternaam: achternaam || "-",
+        email,
+        telefoon: telefoon || null,
+        beroep: beroep || null,
+        opmerkingen: `Onderwerp: ${onderwerp}\n\n${bericht}`,
+        bron: "website",
+      });
+
+      if (error) {
+        console.error("Database error:", error);
+        // Don't throw - AFAS submission succeeded
+      }
+
+      setIsSubmitted(true);
+      toast({
+        title: "Bericht verzonden!",
+        description: "We nemen binnen 24 uur contact met je op.",
+      });
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      toast({
+        title: "Er ging iets mis",
+        description: "Probeer het later opnieuw of neem telefonisch contact op.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
