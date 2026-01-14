@@ -1,4 +1,11 @@
 import { Star, Quote } from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const testimonials = [
   {
@@ -17,6 +24,18 @@ const testimonials = [
     name: "Sandra de Vries",
     role: "ZZP'er in de zorg",
     content: "Het adviesgesprek was echt verhelderend. Ik had geen idee dat ik onderverzekerd was. Nu voel ik me veel zekerder.",
+    rating: 5,
+  },
+  {
+    name: "Peter Bakker",
+    role: "Bouwkundige",
+    content: "Snelle service en eerlijk advies. Ze pushen niet, maar denken echt met je mee. Aanrader voor elke zzp'er!",
+    rating: 5,
+  },
+  {
+    name: "Anna Vermeer",
+    role: "Marketing consultant",
+    content: "Binnen een dag had ik een passende verzekering. Het hele proces was helder en zonder gedoe.",
     rating: 5,
   },
 ];
@@ -52,31 +71,42 @@ export function SocialProofSection() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
-          {testimonials.map((testimonial, index) => (
-            <div
-              key={testimonial.name}
-              className="bg-card rounded-2xl p-8 shadow-card border border-border/50 relative"
-            >
-              <Quote className="absolute top-6 right-6 h-8 w-8 text-accent/20" />
-              
-              <div className="flex gap-1 mb-4">
-                {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star key={i} className="h-5 w-5 fill-accent text-accent" />
-                ))}
-              </div>
-              
-              <p className="text-foreground mb-6 leading-relaxed">
-                "{testimonial.content}"
-              </p>
-              
-              <div>
-                <p className="font-semibold text-foreground">{testimonial.name}</p>
-                <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="w-full"
+        >
+          <CarouselContent className="-ml-4">
+            {testimonials.map((testimonial) => (
+              <CarouselItem key={testimonial.name} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                <div className="bg-card rounded-2xl p-8 shadow-card border border-border/50 relative h-full">
+                  <Quote className="absolute top-6 right-6 h-8 w-8 text-primary/20" />
+                  
+                  <div className="flex gap-1 mb-4">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="h-5 w-5 fill-primary text-primary" />
+                    ))}
+                  </div>
+                  
+                  <p className="text-foreground mb-6 leading-relaxed">
+                    "{testimonial.content}"
+                  </p>
+                  
+                  <div>
+                    <p className="font-semibold text-foreground">{testimonial.name}</p>
+                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                  </div>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <div className="flex justify-center gap-4 mt-8">
+            <CarouselPrevious className="static translate-y-0" />
+            <CarouselNext className="static translate-y-0" />
+          </div>
+        </Carousel>
 
         {/* Trust badges */}
         <div className="mt-16 pt-12 border-t border-border">
@@ -95,7 +125,7 @@ export function SocialProofSection() {
             </div>
             <div className="flex items-center gap-3 text-muted-foreground">
               <div className="h-12 w-12 rounded-lg bg-secondary flex items-center justify-center">
-                <Star className="h-6 w-6 fill-accent text-accent" />
+                <Star className="h-6 w-6 fill-primary text-primary" />
               </div>
               <span className="text-sm">Google Reviews 4.9</span>
             </div>
