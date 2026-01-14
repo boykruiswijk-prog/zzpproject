@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin } from "lucide-react";
-import logoZp from "@/assets/logo-zp.jpg";
+import logoZp from "@/assets/logo-zp.png";
 
 const footerLinks = {
   diensten: [
