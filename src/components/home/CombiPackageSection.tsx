@@ -1,59 +1,33 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Shield, Briefcase, ArrowRight, Zap, Clock, Calendar, ChevronDown } from "lucide-react";
+import { CheckCircle, Shield, Calculator, Scale, UserCheck, ArrowRight, Zap, ChevronDown } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-const packages = [
+
+const benefits = [
   {
-    id: "maandelijks",
-    title: "Maandelijks",
-    price: "55",
-    period: "maand",
-    popular: false,
-    features: [
-      "Dagelijks opzegbaar",
-      "Flexibel pauzeren mogelijk",
-    ],
-    bav: { perEvent: "5.000.000", perYear: "15.000.000" },
-    avb: { perEvent: "2.500.000", perYear: "5.000.000" },
-    cta: "Direct afsluiten",
-    href: "https://shop.zpzaken.nl/bav-maandelijks",
+    icon: Shield,
+    title: "Verzekeringen",
+    description: "BAV, AOV en meer voor de scherpste prijs",
   },
   {
-    id: "jaarlijks",
-    title: "Jaarlijks",
-    price: "600",
-    period: "jaar",
-    popular: true,
-    discount: "€60 korting",
-    features: [
-      "Voordeliger dan maandelijks",
-      "1x per jaar betalen",
-    ],
-    bav: { perEvent: "5.000.000", perYear: "15.000.000" },
-    avb: { perEvent: "2.500.000", perYear: "5.000.000" },
-    cta: "Direct afsluiten",
-    href: "https://shop.zpzaken.nl/bav-jaarlijks",
+    icon: Calculator,
+    title: "Administratie",
+    description: "Boekhouding en BTW uitbesteed",
   },
   {
-    id: "optimaal",
-    title: "Optimaal + Cyber",
-    price: "750",
-    period: "jaar",
-    popular: false,
-    features: [
-      "Inclusief cyberverzekering",
-      "Maximale bescherming",
-    ],
-    bav: { perEvent: "5.000.000", perYear: "15.000.000" },
-    avb: { perEvent: "2.500.000", perYear: "5.000.000" },
-    cyber: true,
-    cta: "Direct afsluiten",
-    href: "https://shop.zpzaken.nl/bav-optimaal",
+    icon: Scale,
+    title: "Juridisch",
+    description: "Contracten en algemene voorwaarden",
+  },
+  {
+    icon: UserCheck,
+    title: "Screening",
+    description: "Bewijs je betrouwbaarheid",
   },
 ];
 
@@ -109,136 +83,80 @@ function ProfessionsDropdown() {
 
 export function CombiPackageSection() {
   return (
-    <section className="section-padding bg-gradient-to-b from-secondary to-background" id="pakket">
+    <section className="section-padding bg-gradient-to-b from-secondary to-background" id="diensten">
       <div className="container-wide">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
           <div className="inline-flex items-center gap-2 bg-accent/10 px-4 py-2 rounded-full mb-6">
             <Zap className="h-4 w-4 text-accent" />
-            <span className="text-sm font-semibold text-accent">Meest gekozen door zzp'ers</span>
+            <span className="text-sm font-semibold text-accent">Alles onder één dak</span>
           </div>
           <h2 className="mb-4">
-            <span className="text-accent">BAV + AVB</span> Combi-pakket
+            Zorgeloos <span className="text-accent">ondernemen</span>
           </h2>
           <p className="text-lg text-muted-foreground">
-            Beroeps- én bedrijfsaansprakelijkheid in één pakket. Alles wat je nodig hebt als zzp'er
-            in IT, consultancy, marketing of coaching — voor de scherpste prijs van Nederland.
+            Als zelfstandig professional wil je focussen op je werk, niet op randzaken. 
+            Wij regelen alles voor je — van verzekeringen tot administratie — via betrouwbare partners.
           </p>
+        </div>
+
+        {/* Benefits grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {benefits.map((benefit) => (
+            <div 
+              key={benefit.title}
+              className="bg-card rounded-xl p-6 shadow-card border border-border/50 text-center"
+            >
+              <div className="h-14 w-14 rounded-xl bg-accent/10 flex items-center justify-center mx-auto mb-4">
+                <benefit.icon className="h-7 w-7 text-accent" />
+              </div>
+              <h3 className="font-semibold mb-2">{benefit.title}</h3>
+              <p className="text-sm text-muted-foreground">{benefit.description}</p>
+            </div>
+          ))}
         </div>
 
         {/* USPs */}
         <div className="flex flex-wrap justify-center gap-6 mb-12">
           <div className="flex items-center gap-2 text-sm">
-            <Clock className="h-5 w-5 text-accent" />
-            <span className="font-medium">Binnen 24 uur geregeld</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <Calendar className="h-5 w-5 text-accent" />
-            <span className="font-medium">Dagelijks opzegbaar</span>
+            <CheckCircle className="h-5 w-5 text-accent" />
+            <span className="font-medium">Alles via betrouwbare partners</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <CheckCircle className="h-5 w-5 text-accent" />
-            <span className="font-medium">Goedkoopste van Nederland</span>
+            <span className="font-medium">Persoonlijk advies</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <CheckCircle className="h-5 w-5 text-accent" />
+            <span className="font-medium">Speciaal voor ZZP'ers</span>
           </div>
         </div>
 
-        {/* Pricing cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-16">
-          {packages.map((pkg) => (
-            <div
-              key={pkg.id}
-              className={`relative bg-card rounded-2xl p-6 shadow-card border ${
-                pkg.popular 
-                  ? "border-accent ring-2 ring-accent/20" 
-                  : "border-border/50"
-              }`}
-            >
-              {pkg.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground px-4 py-1 rounded-full text-sm font-semibold">
-                  Meest gekozen
-                </div>
-              )}
-              {pkg.discount && (
-                <div className="absolute -top-3 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                  {pkg.discount}
-                </div>
-              )}
-
-              <div className="text-center mb-6 pt-2">
-                <h3 className="text-xl font-semibold mb-2">{pkg.title}</h3>
-                <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-4xl font-bold">€{pkg.price}</span>
-                  <span className="text-muted-foreground">/{pkg.period}</span>
-                </div>
-              </div>
-
-              <ul className="space-y-2 mb-6">
-                {pkg.features.map((feature) => (
-                  <li key={feature} className="flex items-center gap-2 text-sm">
-                    <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="space-y-3 mb-6">
-                <div className="p-3 bg-secondary rounded-lg">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Shield className="h-4 w-4 text-accent" />
-                    <span className="text-sm font-medium">Beroepsaansprakelijkheid</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    €{pkg.bav.perEvent} per gebeurtenis / €{pkg.bav.perYear} per jaar
-                  </p>
-                </div>
-                <div className="p-3 bg-secondary rounded-lg">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Briefcase className="h-4 w-4 text-accent" />
-                    <span className="text-sm font-medium">Bedrijfsaansprakelijkheid</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    €{pkg.avb.perEvent} per gebeurtenis / €{pkg.avb.perYear} per jaar
-                  </p>
-                </div>
-                {pkg.cyber && (
-                  <div className="p-3 bg-accent/10 rounded-lg border border-accent/20">
-                    <div className="flex items-center gap-2">
-                      <Zap className="h-4 w-4 text-accent" />
-                      <span className="text-sm font-medium text-accent">+ Cyberverzekering</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <Button 
-                variant={pkg.popular ? "accent" : "outline"} 
-                className="w-full" 
-                asChild
-              >
-                <a href={pkg.href} target="_blank" rel="noopener noreferrer">
-                  {pkg.cta}
-                  <ArrowRight className="h-4 w-4" />
-                </a>
-              </Button>
-            </div>
-          ))}
+        {/* Main CTA */}
+        <div className="bg-card rounded-2xl p-8 md:p-12 shadow-card border border-border/50 text-center mb-12">
+          <h3 className="text-2xl font-bold mb-4">Ontdek wat ZP Zaken voor jou kan betekenen</h3>
+          <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Plan een gratis adviesgesprek en we kijken samen naar jouw situatie. 
+            Welke verzekeringen heb je nodig? Kun je administratie uitbesteden? 
+            Wij geven je eerlijk advies — zonder verplichtingen.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button variant="accent" size="lg" asChild>
+              <Link to="/diensten">
+                Bekijk onze diensten
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+            </Button>
+            <Button variant="outline" size="lg" asChild>
+              <Link to="/contact">
+                Gratis adviesgesprek
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {/* Professions Dropdown */}
         <ProfessionsDropdown />
-
-        {/* CTA */}
-        <div className="text-center mt-12">
-          <p className="text-muted-foreground mb-4">
-            Liever eerst advies? We helpen je graag persoonlijk.
-          </p>
-          <Button variant="outline" size="lg" asChild>
-            <Link to="/contact">
-              Gratis adviesgesprek
-              <ArrowRight className="h-5 w-5" />
-            </Link>
-          </Button>
-        </div>
       </div>
     </section>
   );
