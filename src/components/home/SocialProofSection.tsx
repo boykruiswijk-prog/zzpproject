@@ -41,7 +41,7 @@ const testimonials = [
   {
     name: "Joost Hendriks",
     role: "Filmmaker",
-    content: "Mijn apparatuur is mijn broodwinning. ZP Zaken regelde een dekking die precies past bij mijn werk. Topservice!",
+    content: "Als creatieve ondernemer had ik geen idee welke aansprakelijkheidsverzekering ik nodig had. ZP Zaken legde het helder uit en regelde alles snel.",
     rating: 5,
   },
   {
