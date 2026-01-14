@@ -14,11 +14,11 @@ export function CTASection() {
       <div className="container-wide relative">
         <div className="max-w-3xl mx-auto text-center text-primary-foreground">
           <h2 className="mb-6">
-            Klaar om je onderneming te beschermen?
+            Klaar om samen te werken?
           </h2>
           <p className="text-lg md:text-xl text-primary-foreground/80 mb-10 max-w-2xl mx-auto">
-            Plan een gratis adviesgesprek en ontdek welke verzekeringen bij jouw situatie passen. 
-            Binnen 15 minuten weet je waar je aan toe bent.
+            Plan een gratis kennismakingsgesprek. Geen verkooppraatjes, wel eerlijk advies 
+            over hoe wij jou kunnen helpen — van mens tot mens.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
@@ -29,15 +29,15 @@ export function CTASection() {
               </Link>
             </Button>
             <Button variant="heroOutline" size="xl" asChild>
-              <a href="tel:0201234567">
+              <a href="tel:0232010502">
                 <Phone className="h-5 w-5" />
-                Bel direct: 020 - 123 4567
+                Bel: 023 - 201 0502
               </a>
             </Button>
           </div>
 
           <p className="text-primary-foreground/60 text-sm">
-            Gratis en vrijblijvend • Binnen 24 uur reactie • Geen verkooppraatjes
+            Gratis en vrijblijvend • Altijd een mens aan de lijn • Eerlijk advies
           </p>
         </div>
       </div>

@@ -41,11 +41,11 @@ export default function OverOns() {
         <div className="container-wide">
           <div className="max-w-3xl">
             <h1 className="mb-6">
-              Over zpzaken
+              Over ZP Zaken
             </h1>
             <p className="text-lg md:text-xl text-primary-foreground/80 mb-8">
-              Wij geloven dat zzp'ers recht hebben op eerlijk, persoonlijk advies. 
-              Zonder tussenpersonen, zonder verkooppraatjes — gewoon goed geregeld.
+              Wij zijn een tech dienstverlener met de menselijke maat. Technologie die écht werkt, 
+              met mensen die je begrijpen — dat is waar wij voor staan.
             </p>
           </div>
         </div>
@@ -58,28 +58,27 @@ export default function OverOns() {
             <div>
               <h2 className="mb-6">Onze missie</h2>
               <p className="text-lg text-muted-foreground mb-6">
-                Als zzp'er heb je genoeg aan je hoofd. Je focust op je vak, je klanten en het 
-                runnen van je onderneming. Verzekeringen en zakelijke zekerheid moeten geen 
-                hoofdpijndossier zijn.
+                Technologie kan overweldigend zijn. Te technisch, te onpersoonlijk, 
+                te ver van de praktijk. Wij geloven dat het anders kan — en moet.
               </p>
               <p className="text-lg text-muted-foreground mb-6">
-                Daarom startten we zpzaken: om zelfstandig ondernemers te helpen met helder, 
-                onafhankelijk advies. We nemen de tijd om je situatie te begrijpen en adviseren 
-                alleen wat je écht nodig hebt.
+                Daarom startten we ZP Zaken: om slimme technologie toegankelijk te maken voor 
+                iedereen. Met uitleg in normaal Nederlands, een persoonlijk aanspreekpunt 
+                en oplossingen die écht werken in de praktijk.
               </p>
               <p className="text-lg text-muted-foreground">
-                Geen onnodige producten, geen ingewikkelde taal — gewoon eerlijk advies van 
-                mensen die snappen wat ondernemen inhoudt.
+                Geen jargon, geen afstand — gewoon mensen die naar je luisteren en 
+                technologie bouwen die past bij jouw situatie.
               </p>
             </div>
             
             <div className="bg-secondary rounded-2xl p-8 lg:p-12">
               <blockquote className="text-xl lg:text-2xl font-medium mb-6">
-                "Zzp'ers verdienen dezelfde zekerheid als werknemers, maar dan wel op een 
-                manier die past bij het ondernemersleven."
+                "Technologie draait niet om systemen, maar om mensen. 
+                Wij maken tech die werkt voor jou — niet andersom."
               </blockquote>
               <p className="text-muted-foreground">
-                — Oprichters zpzaken
+                — Oprichters ZP Zaken
               </p>
             </div>
           </div>
