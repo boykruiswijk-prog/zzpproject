@@ -2,41 +2,28 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import { Shield, Briefcase, Heart, Scale, ArrowRight, CheckCircle, Globe } from "lucide-react";
+import { Shield, Heart, Scale, ArrowRight, CheckCircle, Globe, Sparkles } from "lucide-react";
 import { OnlineAanvraagDialog } from "@/components/verzekeringen/OnlineAanvraagDialog";
 
 const insurances = [
   {
-    id: "beroepsaansprakelijkheid",
+    id: "combinatiepolis",
     icon: Shield,
-    title: "Beroepsaansprakelijkheid",
-    subtitle: "Bescherming tegen beroepsfouten",
-    description: "Als zzp'er kun je aansprakelijk worden gesteld voor fouten in je werk. Een beroepsaansprakelijkheidsverzekering beschermt je tegen financiële gevolgen van claims door opdrachtgevers.",
+    title: "Beroeps- én Bedrijfsaansprakelijkheid",
+    subtitle: "Unieke combinatiepolis van ZP Zaken",
+    description: "Als enige in Nederland bieden wij een unieke combinatiepolis die beroeps- én bedrijfsaansprakelijkheid combineert in één verzekering. Eén polis, één premie, dubbele bescherming — nergens anders te krijgen.",
     features: [
-      "Dekking voor financiële schade door beroepsfouten",
-      "Juridische bijstand bij claims",
-      "Vaak verplicht gesteld door opdrachtgevers",
+      "Beroepsaansprakelijkheid: dekking voor financiële schade door beroepsfouten",
+      "Bedrijfsaansprakelijkheid: dekking voor letsel- en zaakschade aan derden",
+      "Juridische bijstand bij claims inbegrepen",
+      "Eén polis, één premie — maximaal gemak",
       "Maatwerk dekkingen per beroepsgroep",
+      "Exclusief via ZP Zaken",
     ],
-    forWho: "ICT'ers, consultants, marketeers, designers, adviseurs",
-    price: "Vanaf €15 per maand",
+    forWho: "ICT'ers, consultants, coaches, trainers, adviseurs, creatieven",
+    price: "Vanaf €20 per maand",
     canApplyOnline: true,
-  },
-  {
-    id: "bedrijfsaansprakelijkheid",
-    icon: Briefcase,
-    title: "Bedrijfsaansprakelijkheid",
-    subtitle: "Schade aan personen of spullen",
-    description: "Werk je bij klanten op locatie of lever je producten? Dan ben je aansprakelijk voor schade die je veroorzaakt aan personen of eigendommen. Deze verzekering dekt die risico's.",
-    features: [
-      "Dekking voor letselschade aan derden",
-      "Schade aan eigendommen van opdrachtgevers",
-      "Ook dekking voor schade door medewerkers",
-      "Werkmateriaal en bedrijfsuitrusting",
-    ],
-    forWho: "Bouwers, installateurs, fotografen, trainers, coaches",
-    price: "Vanaf €10 per maand",
-    canApplyOnline: true,
+    isUnique: true,
   },
   {
     id: "arbeidsongeschiktheid",
@@ -87,10 +74,14 @@ export default function Verzekeringen() {
             <h1 className="mb-6">
               Verzekeringen voor <span className="text-accent">zzp'ers</span>
             </h1>
-            <p className="text-lg md:text-xl text-primary-foreground/80 mb-8">
+            <p className="text-lg md:text-xl text-primary-foreground/80 mb-4">
               Als zelfstandig ondernemer ben je zelf verantwoordelijk voor je zakelijke zekerheid. 
               Ontdek welke verzekeringen passen bij jouw situatie en beroep.
             </p>
+            <div className="inline-flex items-center gap-2 bg-accent/20 backdrop-blur-sm px-4 py-2 rounded-full mb-8">
+              <Sparkles className="h-4 w-4 text-accent" />
+              <span className="text-sm font-semibold text-accent">✨ Exclusief: Unieke BAV + AVB combinatiepolis</span>
+            </div>
             <Button variant="hero" size="lg" asChild>
               <Link to="/contact">
                 Krijg persoonlijk advies

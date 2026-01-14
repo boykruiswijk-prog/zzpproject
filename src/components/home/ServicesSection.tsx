@@ -20,9 +20,9 @@ const services = [
   {
     icon: Shield,
     title: "Verzekeringen",
-    description: "Beroepsaansprakelijkheid, AOV en meer. De juiste dekking zonder poespas, met een adviseur die je kent.",
+    description: "Inclusief onze unieke BAV+AVB combinatiepolis — beroeps- én bedrijfsaansprakelijkheid in één. Nergens anders te krijgen.",
     href: "/diensten#verzekeringen",
-    features: ["Beroepsaansprakelijkheid", "Arbeidsongeschiktheid", "Rechtsbijstand"],
+    features: ["⭐ Unieke BAV+AVB combipolis", "Arbeidsongeschiktheid", "Rechtsbijstand"],
   },
   {
     icon: Headphones,

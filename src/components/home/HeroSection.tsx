@@ -102,13 +102,13 @@ export function HeroSection() {
                       <p className="text-xs text-muted-foreground">Betrouwbare verificatie</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 p-3 bg-secondary rounded-lg">
-                    <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center">
+                  <div className="flex items-center gap-3 p-3 bg-accent/20 rounded-lg border border-accent/30">
+                    <div className="h-10 w-10 rounded-lg bg-accent/20 flex items-center justify-center">
                       <Shield className="h-5 w-5 text-accent" />
                     </div>
                     <div>
                       <span className="text-sm font-medium text-secondary-foreground">Verzekeringen</span>
-                      <p className="text-xs text-muted-foreground">BAV, AOV, rechtsbijstand</p>
+                      <p className="text-xs text-accent font-medium">⭐ Unieke BAV+AVB combipolis</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 p-3 bg-secondary rounded-lg">
