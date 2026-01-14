@@ -2,6 +2,7 @@ import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Handshake, ExternalLink, Shield, Heart, PiggyBank, Umbrella, Users, Calculator, Scale, UserCheck } from "lucide-react";
 import { Link } from "react-router-dom";
+import otenticaLogo from "@/assets/partner-otentica.png";
 
 const partners = [
   // Verzekeringen
@@ -77,7 +78,7 @@ const partners = [
     category: "Screening",
     description: "Eenvoudige, snelle en transparante screening voor kandidaten en ondernemers.",
     longDescription: "Otentica zorgt voor een eenvoudige, snelle en transparante screening. Ontdek direct wie écht geschikt is. Kandidaten doorlopen enkele stappen waarin alle gegevens opgehaald worden bij de officiële instanties. Garantie van nauwkeurigheid van de gegevens, volledig in jouw eigen huisstijl.",
-    logo: "https://www.otentica.nl/assets/files/logo-10c2c9a2cd.svg",
+    logo: otenticaLogo,
     icon: UserCheck,
     link: "/diensten#screening",
     linkText: "Bekijk screening",
