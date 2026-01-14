@@ -71,6 +71,18 @@ const partners = [
     linkText: "Meer informatie",
     features: ["Crowdsurance", "Onderling geregeld", "Transparant"],
   },
+  // Screening
+  {
+    name: "Otentica",
+    category: "Screening",
+    description: "Eenvoudige, snelle en transparante screening voor kandidaten en ondernemers.",
+    longDescription: "Otentica zorgt voor een eenvoudige, snelle en transparante screening. Ontdek direct wie écht geschikt is. Kandidaten doorlopen enkele stappen waarin alle gegevens opgehaald worden bij de officiële instanties. Garantie van nauwkeurigheid van de gegevens, volledig in jouw eigen huisstijl.",
+    logo: "https://www.otentica.nl/assets/files/logo-10c2c9a2cd.svg",
+    icon: UserCheck,
+    link: "/diensten#screening",
+    linkText: "Bekijk screening",
+    features: ["Snelle verificatie", "Officiële instanties", "In eigen huisstijl"],
+  },
 ];
 
 // Categories for future expansion
