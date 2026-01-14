@@ -38,6 +38,48 @@ const testimonials = [
     content: "Binnen een dag had ik een passende verzekering. Het hele proces was helder en zonder gedoe.",
     rating: 5,
   },
+  {
+    name: "Joost Hendriks",
+    role: "Fotograaf",
+    content: "Mijn camera-apparatuur is mijn broodwinning. ZP Zaken regelde een dekking die precies past bij mijn werk. Topservice!",
+    rating: 5,
+  },
+  {
+    name: "Michelle Groot",
+    role: "Interimmanager",
+    content: "Na jaren bij een grote verzekeraar eindelijk persoonlijk contact. Ze kennen mijn situatie en denken proactief mee.",
+    rating: 5,
+  },
+  {
+    name: "Robert Visser",
+    role: "Loodgieter",
+    content: "Ik was sceptisch over online advies, maar ze namen echt de tijd. Nu heb ik een pakket dat betaalbaar is én goed dekt.",
+    rating: 5,
+  },
+  {
+    name: "Eva Mulder",
+    role: "Tekstschrijver",
+    content: "Heel fijn dat ze ook aan arbeidsongeschiktheid denken. Daar had ik zelf niet bij stilgestaan. Dankjewel!",
+    rating: 5,
+  },
+  {
+    name: "Thomas de Wit",
+    role: "Elektricien",
+    content: "De combinatiepolis van beroeps- en bedrijfsaansprakelijkheid scheelt me honderden euro's per jaar. Slim geregeld.",
+    rating: 5,
+  },
+  {
+    name: "Fatima El Amrani",
+    role: "Verloskundige",
+    content: "In de zorg is goede verzekering essentieel. ZP Zaken begreep direct wat ik nodig had. Zeer tevreden met het advies.",
+    rating: 5,
+  },
+  {
+    name: "Kees van Dijk",
+    role: "Timmerman",
+    content: "Eerlijk advies, geen verborgen kosten. Precies wat je als ondernemer wilt. Ik raad ze iedereen aan.",
+    rating: 5,
+  },
 ];
 
 const stats = [
