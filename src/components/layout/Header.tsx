@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Phone } from "lucide-react";
-import logoZp from "@/assets/logo-zp.jpg";
+import logoZp from "@/assets/logo-zp.png";
 
 const navItems = [
   { href: "/", label: "Home" },
