@@ -18,9 +18,14 @@ export function HeroSection() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-16 md:py-24 lg:py-32">
           {/* Content */}
           <div className="text-primary-foreground animate-slide-up">
-            <div className="inline-flex items-center gap-2 bg-accent/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-              <Sparkles className="h-4 w-4 text-accent" />
-              <span className="text-sm font-semibold text-accent">Tech met de menselijke maat</span>
+            <div className="flex flex-wrap items-center gap-3 mb-6">
+              <div className="inline-flex items-center gap-2 bg-accent/20 backdrop-blur-sm px-4 py-2 rounded-full">
+                <Sparkles className="h-4 w-4 text-accent" />
+                <span className="text-sm font-semibold text-accent">Marktleider</span>
+              </div>
+              <div className="inline-flex items-center gap-2 bg-primary-foreground/10 backdrop-blur-sm px-4 py-2 rounded-full">
+                <span className="text-sm font-medium text-primary-foreground">10+ jaar operationele ervaring</span>
+              </div>
             </div>
 
             <h1 className="mb-6 leading-tight">
