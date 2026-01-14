@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Shield, Calculator, Scale, UserCheck, ArrowRight, Zap, ChevronDown } from "lucide-react";
+import { CheckCircle, Shield, UserCheck, ArrowRight, Zap, ChevronDown, Code, Headphones, Heart } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -10,32 +10,32 @@ import {
 
 const benefits = [
   {
-    icon: Shield,
-    title: "Verzekeringen",
-    description: "BAV, AOV en meer voor de scherpste prijs",
-  },
-  {
-    icon: Calculator,
-    title: "Administratie",
-    description: "Boekhouding en BTW uitbesteed",
-  },
-  {
-    icon: Scale,
-    title: "Juridisch",
-    description: "Contracten en algemene voorwaarden",
+    icon: Code,
+    title: "Software op maat",
+    description: "Webapps en automatisering die écht werken",
   },
   {
     icon: UserCheck,
     title: "Screening",
-    description: "Bewijs je betrouwbaarheid",
+    description: "Betrouwbare verificatie voor opdrachtgevers",
+  },
+  {
+    icon: Shield,
+    title: "Verzekeringen",
+    description: "BAV, AOV en meer zonder poespas",
+  },
+  {
+    icon: Headphones,
+    title: "Support",
+    description: "Altijd een mens aan de lijn",
   },
 ];
 
 const professions = [
-  { category: "IT & ICT", items: ["Developers", "Scrum masters", "ICT-architecten", "Productowners", "Programmeurs", "Systeembeheerders"] },
-  { category: "Consultancy", items: ["Management consultants", "Bedrijfsadviseurs", "Organisatiedeskundigen", "Business architecten", "Data analisten"] },
-  { category: "Marketing & Design", items: ["Marketeers", "Designers", "Copywriters", "Grafisch ontwerpers", "Tekstschrijvers", "Vormgevers"] },
-  { category: "Coaches", items: ["Business coaches", "Loopbaancoaches", "Executive coaches", "Leiderschapscoaches", "Trainers"] },
+  { category: "IT & Tech", items: ["Developers", "Scrum masters", "ICT-architecten", "Productowners", "DevOps engineers", "Data engineers"] },
+  { category: "Consultancy", items: ["Management consultants", "Bedrijfsadviseurs", "Organisatiedeskundigen", "Business architects", "Data analisten"] },
+  { category: "Creatief", items: ["Designers", "UX specialists", "Copywriters", "Grafisch ontwerpers", "Videomakers", "Animators"] },
+  { category: "Zorg & Coaching", items: ["Verpleegkundigen", "Fysiotherapeuten", "Business coaches", "Loopbaancoaches", "Trainers"] },
 ];
 
 function ProfessionsDropdown() {
@@ -88,15 +88,15 @@ export function CombiPackageSection() {
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
           <div className="inline-flex items-center gap-2 bg-accent/10 px-4 py-2 rounded-full mb-6">
-            <Zap className="h-4 w-4 text-accent" />
-            <span className="text-sm font-semibold text-accent">Alles onder één dak</span>
+            <Heart className="h-4 w-4 text-accent" />
+            <span className="text-sm font-semibold text-accent">Technologie met een menselijk gezicht</span>
           </div>
           <h2 className="mb-4">
-            Zorgeloos <span className="text-accent">ondernemen</span>
+            De <span className="text-accent">menselijke maat</span>
           </h2>
           <p className="text-lg text-muted-foreground">
-            Als zelfstandig professional wil je focussen op je werk, niet op randzaken. 
-            Wij regelen alles voor je — van verzekeringen tot administratie — via betrouwbare partners.
+            Wij geloven dat technologie pas echt werkt als er mensen achter staan die je begrijpen. 
+            Geen afstand, geen jargon — gewoon oplossingen die passen bij jouw situatie.
           </p>
         </div>
 
@@ -120,36 +120,35 @@ export function CombiPackageSection() {
         <div className="flex flex-wrap justify-center gap-6 mb-12">
           <div className="flex items-center gap-2 text-sm">
             <CheckCircle className="h-5 w-5 text-accent" />
-            <span className="font-medium">Alles via betrouwbare partners</span>
+            <span className="font-medium">Persoonlijk aanspreekpunt</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <CheckCircle className="h-5 w-5 text-accent" />
-            <span className="font-medium">Persoonlijk advies</span>
+            <span className="font-medium">Geen jargon, wel resultaat</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <CheckCircle className="h-5 w-5 text-accent" />
-            <span className="font-medium">Speciaal voor ZZP'ers</span>
+            <span className="font-medium">Technologie die werkt voor jou</span>
           </div>
         </div>
 
         {/* Main CTA */}
         <div className="bg-card rounded-2xl p-8 md:p-12 shadow-card border border-border/50 text-center mb-12">
-          <h3 className="text-2xl font-bold mb-4">Ontdek wat ZP Zaken voor jou kan betekenen</h3>
+          <h3 className="text-2xl font-bold mb-4">Klaar voor technologie die écht werkt?</h3>
           <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Plan een gratis adviesgesprek en we kijken samen naar jouw situatie. 
-            Welke verzekeringen heb je nodig? Kun je administratie uitbesteden? 
-            Wij geven je eerlijk advies — zonder verplichtingen.
+            Plan een gratis kennismakingsgesprek. We luisteren naar je uitdagingen, 
+            denken mee over oplossingen en geven eerlijk advies — zonder verplichtingen.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button variant="accent" size="lg" asChild>
               <Link to="/diensten">
-                Bekijk onze diensten
+                Bekijk onze oplossingen
                 <ArrowRight className="h-5 w-5" />
               </Link>
             </Button>
             <Button variant="outline" size="lg" asChild>
               <Link to="/contact">
-                Gratis adviesgesprek
+                Gratis kennismaking
               </Link>
             </Button>
           </div>
