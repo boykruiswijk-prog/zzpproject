@@ -1,7 +1,12 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Shield, Briefcase, ArrowRight, Zap, Clock, Calendar } from "lucide-react";
-
+import { CheckCircle, Shield, Briefcase, ArrowRight, Zap, Clock, Calendar, ChevronDown } from "lucide-react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 const packages = [
   {
     id: "maandelijks",
@@ -58,6 +63,49 @@ const professions = [
   { category: "Marketing & Design", items: ["Marketeers", "Designers", "Copywriters", "Grafisch ontwerpers", "Tekstschrijvers", "Vormgevers"] },
   { category: "Coaches", items: ["Business coaches", "Loopbaancoaches", "Executive coaches", "Leiderschapscoaches", "Trainers"] },
 ];
+
+function ProfessionsDropdown() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="bg-card rounded-2xl shadow-card border border-border/50 overflow-hidden">
+      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+        <CollapsibleTrigger className="w-full p-6 flex items-center justify-between hover:bg-secondary/50 transition-colors">
+          <h3 className="text-xl font-semibold">
+            Speciaal afgestemd voor deze beroepen
+          </h3>
+          <ChevronDown 
+            className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${
+              isOpen ? "rotate-180" : ""
+            }`} 
+          />
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div className="px-6 pb-6">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {professions.map((group) => (
+                <div key={group.category}>
+                  <h4 className="font-medium text-accent mb-3">{group.category}</h4>
+                  <ul className="space-y-1.5">
+                    {group.items.map((item) => (
+                      <li key={item} className="text-sm text-muted-foreground flex items-center gap-2">
+                        <CheckCircle className="h-3 w-3 text-accent/60" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+            <p className="text-center text-sm text-muted-foreground mt-6">
+              Staat jouw beroep er niet tussen? <Link to="/contact" className="text-accent hover:underline">Neem contact op</Link> — we helpen je graag verder.
+            </p>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+    </div>
+  );
+}
 
 export function CombiPackageSection() {
   return (
@@ -176,30 +224,8 @@ export function CombiPackageSection() {
           ))}
         </div>
 
-        {/* Professions */}
-        <div className="bg-card rounded-2xl p-8 shadow-card border border-border/50">
-          <h3 className="text-xl font-semibold text-center mb-6">
-            Speciaal afgestemd voor deze beroepen
-          </h3>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {professions.map((group) => (
-              <div key={group.category}>
-                <h4 className="font-medium text-accent mb-3">{group.category}</h4>
-                <ul className="space-y-1.5">
-                  {group.items.map((item) => (
-                    <li key={item} className="text-sm text-muted-foreground flex items-center gap-2">
-                      <CheckCircle className="h-3 w-3 text-accent/60" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-          <p className="text-center text-sm text-muted-foreground mt-6">
-            Staat jouw beroep er niet tussen? <Link to="/contact" className="text-accent hover:underline">Neem contact op</Link> — we helpen je graag verder.
-          </p>
-        </div>
+        {/* Professions Dropdown */}
+        <ProfessionsDropdown />
 
         {/* CTA */}
         <div className="text-center mt-12">
