@@ -12,6 +12,7 @@ const footerLinks = {
   informatie: [
     { href: "/voor-wie", label: "Voor wie" },
     { href: "/zo-werken-wij", label: "Zo werken wij" },
+    { href: "/partners", label: "Partners" },
     { href: "/kennis", label: "Kennis & advies" },
     { href: "/over-ons", label: "Over ons" },
   ],
