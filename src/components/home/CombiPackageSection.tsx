@@ -13,21 +13,25 @@ const benefits = [
     icon: Shield,
     title: "Verzekeringen",
     description: "Unieke BAV+AVB combipolis en meer",
+    link: "/verzekeringen",
   },
   {
     icon: UserCheck,
     title: "Screening",
     description: "Betrouwbare verificatie voor opdrachtgevers",
+    link: "/diensten",
   },
   {
     icon: Headphones,
     title: "Persoonlijk advies",
     description: "Altijd een mens aan de lijn",
+    link: "/contact",
   },
   {
     icon: Heart,
     title: "Menselijke maat",
     description: "Geen callcenters, wel betrokkenheid",
+    link: "/over-ons",
   },
 ];
 
@@ -103,16 +107,17 @@ export function CombiPackageSection() {
         {/* Benefits grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {benefits.map((benefit) => (
-            <div 
+            <Link 
               key={benefit.title}
-              className="bg-card rounded-xl p-6 shadow-card border border-border/50 text-center"
+              to={benefit.link}
+              className="bg-card rounded-xl p-6 shadow-card border border-border/50 text-center hover:shadow-lg hover:border-accent/30 transition-all duration-200 group"
             >
-              <div className="h-14 w-14 rounded-xl bg-accent/10 flex items-center justify-center mx-auto mb-4">
+              <div className="h-14 w-14 rounded-xl bg-accent/10 flex items-center justify-center mx-auto mb-4 group-hover:bg-accent/20 transition-colors">
                 <benefit.icon className="h-7 w-7 text-accent" />
               </div>
-              <h3 className="font-semibold mb-2">{benefit.title}</h3>
+              <h3 className="font-semibold mb-2 group-hover:text-accent transition-colors">{benefit.title}</h3>
               <p className="text-sm text-muted-foreground">{benefit.description}</p>
-            </div>
+            </Link>
           ))}
         </div>
 
