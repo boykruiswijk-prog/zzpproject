@@ -4,10 +4,11 @@ import logoZp from "@/assets/logo-zp.png";
 
 const footerLinks = {
   diensten: [
-    { href: "/verzekeringen", label: "Verzekeringen" },
-    { href: "/verzekeringen#beroepsaansprakelijkheid", label: "Beroepsaansprakelijkheid" },
-    { href: "/verzekeringen#arbeidsongeschiktheid", label: "Arbeidsongeschiktheid" },
-    { href: "/verzekeringen#rechtsbijstand", label: "Rechtsbijstand" },
+    { href: "/diensten", label: "Alle diensten" },
+    { href: "/diensten#verzekeringen", label: "Verzekeringen" },
+    { href: "/diensten#administratie", label: "Administratie" },
+    { href: "/diensten#juridisch", label: "Juridisch advies" },
+    { href: "/diensten#screening", label: "Screening" },
   ],
   informatie: [
     { href: "/voor-wie", label: "Voor wie" },

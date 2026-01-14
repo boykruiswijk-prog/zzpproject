@@ -1,19 +1,35 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Heart, Scale, ArrowRight } from "lucide-react";
+import { Shield, Calculator, Scale, UserCheck, ArrowRight } from "lucide-react";
 
 const services = [
   {
-    icon: Heart,
-    title: "Arbeidsongeschiktheid",
-    description: "Financiële zekerheid als je door ziekte of ongeval niet kunt werken. Jouw inkomen, jouw verantwoordelijkheid.",
-    href: "/verzekeringen#arbeidsongeschiktheid",
+    icon: Shield,
+    title: "Verzekeringen",
+    description: "BAV, AOV, rechtsbijstand en meer. Alle verzekeringen die je als ZZP'er nodig hebt, voor de scherpste prijs.",
+    href: "/diensten#verzekeringen",
+    features: ["Beroepsaansprakelijkheid", "Arbeidsongeschiktheid", "Rechtsbijstand"],
+  },
+  {
+    icon: Calculator,
+    title: "Administratie",
+    description: "Boekhouding, facturatie en BTW-aangiftes. Focus op je werk, wij regelen de administratie via onze partners.",
+    href: "/diensten#administratie",
+    features: ["Boekhouding", "BTW-aangiftes", "Jaarafsluiting"],
   },
   {
     icon: Scale,
-    title: "Rechtsbijstand",
-    description: "Juridische hulp bij conflicten met opdrachtgevers, leveranciers of de Belastingdienst.",
-    href: "/verzekeringen#rechtsbijstand",
+    title: "Juridisch",
+    description: "Contracten, algemene voorwaarden en juridisch advies. Bescherm jezelf tegen geschillen en onduidelijkheden.",
+    href: "/diensten#juridisch",
+    features: ["Contracten opstellen", "Algemene voorwaarden", "Juridisch advies"],
+  },
+  {
+    icon: UserCheck,
+    title: "Screening",
+    description: "Verificatie en screening voor opdrachtgevers. Bewijs jouw betrouwbaarheid en professionaliteit.",
+    href: "/diensten#screening",
+    features: ["Identiteitsverificatie", "KvK-check", "Referenties"],
   },
 ];
 
@@ -23,46 +39,55 @@ export function ServicesSection() {
       <div className="container-wide">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <h2 className="mb-4">
-            Overige <span className="text-accent">verzekeringen</span>
+            Onze <span className="text-accent">diensten</span>
           </h2>
           <p className="text-lg text-muted-foreground">
-            Naast de BAV+AVB combiverzekering bieden we ook andere belangrijke verzekeringen voor zzp'ers.
+            Alles wat je nodig hebt als zelfstandig professional — verzameld bij één partij, 
+            geleverd via betrouwbare partners.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-3xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {services.map((service, index) => (
             <Link
               key={service.title}
               to={service.href}
-              className="group relative bg-card rounded-2xl p-8 shadow-card hover:shadow-card-hover transition-all duration-300 border border-border/50 hover:border-accent/30"
+              className="group relative bg-card rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-all duration-300 border border-border/50 hover:border-accent/30 flex flex-col"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="flex items-start gap-5">
-                <div className="flex-shrink-0 h-14 w-14 rounded-xl bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors">
-                  <service.icon className="h-7 w-7 text-accent" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold mb-2 group-hover:text-accent transition-colors">
-                    {service.title}
-                  </h3>
-                  <p className="text-muted-foreground mb-4">
-                    {service.description}
-                  </p>
-                  <span className="inline-flex items-center gap-2 text-sm font-medium text-primary group-hover:text-accent transition-colors">
-                    Meer informatie
-                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                </div>
+              <div className="flex-shrink-0 h-14 w-14 rounded-xl bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors mb-4">
+                <service.icon className="h-7 w-7 text-accent" />
               </div>
+              
+              <h3 className="text-xl font-semibold mb-2 group-hover:text-accent transition-colors">
+                {service.title}
+              </h3>
+              
+              <p className="text-muted-foreground text-sm mb-4 flex-grow">
+                {service.description}
+              </p>
+
+              <ul className="space-y-1.5 mb-4">
+                {service.features.map((feature) => (
+                  <li key={feature} className="text-xs text-muted-foreground flex items-center gap-2">
+                    <div className="h-1 w-1 rounded-full bg-accent" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              
+              <span className="inline-flex items-center gap-2 text-sm font-medium text-primary group-hover:text-accent transition-colors mt-auto">
+                Meer informatie
+                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </span>
             </Link>
           ))}
         </div>
 
         <div className="text-center mt-12">
           <Button variant="outline" size="lg" asChild>
-            <Link to="/verzekeringen">
-              Bekijk alle verzekeringen
+            <Link to="/diensten">
+              Bekijk alle diensten
               <ArrowRight className="h-5 w-5" />
             </Link>
           </Button>

@@ -1,61 +1,68 @@
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import { Handshake, ExternalLink, Shield, Heart, PiggyBank, Umbrella, Users } from "lucide-react";
+import { Handshake, ExternalLink, Shield, Heart, PiggyBank, Umbrella, Users, Calculator, Scale, UserCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const partners = [
+  // Verzekeringen
   {
     name: "Hiscox",
+    category: "Verzekeringen",
     description: "Hiscox is de gespecialiseerde risicodrager achter de beroeps- en bedrijfsaansprakelijkheidsverzekeringen en de cyberdekking.",
     longDescription: "Als toonaangevende specialist in zakelijke verzekeringen biedt Hiscox uitgebreide dekking voor professionals. Hun expertise in beroepsaansprakelijkheid, bedrijfsaansprakelijkheid en cyberrisico's maakt hen de ideale partner voor ZZP'ers die hun onderneming willen beschermen tegen onvoorziene risico's.",
     logo: "https://img.poweredcache.net/zpzaken.nl/wp-content/uploads/2021/05/hiscox.png?rs=fit&w=150&h=100&ssl=1&format=webp",
     icon: Shield,
-    link: "/verzekeringen",
+    link: "/diensten#verzekeringen",
     linkText: "Bekijk verzekeringen",
     features: ["Beroepsaansprakelijkheid", "Bedrijfsaansprakelijkheid", "Cyberverzekering"],
   },
   {
     name: "Zorg en Zekerheid",
+    category: "Verzekeringen",
     description: "Elk jaar bieden we met Zorg en Zekerheid een nieuwe zorgdekking aan. Via deze partner is ook Mirro toegankelijk voor een goede psychische gezondheid.",
     longDescription: "Zorg en Zekerheid is een regionale zorgverzekeraar die bekend staat om persoonlijke service en uitstekende dekking. Via hen bieden wij ook toegang tot Mirro, een platform voor mentale gezondheid. Wij vinden dat iedereen met mentale klachten recht heeft op de juiste zorg op het juiste moment.",
     logo: "https://img.poweredcache.net/zpzaken.nl/wp-content/uploads/2021/05/Zorgverzekeraars-1.png?rs=fit&w=800&h=450&ssl=1&format=webp",
     icon: Heart,
-    link: "/verzekeringen",
+    link: "/diensten#verzekeringen",
     linkText: "Bekijk zorgverzekering",
     features: ["Basisverzekering", "Aanvullende dekking", "Mirro mentale zorg"],
   },
   {
     name: "BrightPensioen",
+    category: "Verzekeringen",
     description: "Bij BrightPensioen kun je als zelfstandig professional lid worden van deze coöperatie en heel simpel je pensioen opbouwen.",
     longDescription: "BrightPensioen is een unieke coöperatie (social enterprise) waar je als zelfstandige eenvoudig pensioen kunt opbouwen. Door lage kosten, geen winstoogmerk en het feit dat alle deelnemers mede-eigenaar zijn, deel je slim en eerlijk mee in de winst. Een moderne en transparante manier om voor je toekomst te zorgen.",
     logo: "https://img.poweredcache.net/zpzaken.nl/wp-content/uploads/2021/05/BrightPensioen_logo_RGB1.png?rs=fit&w=768&h=174&ssl=1&format=webp",
     icon: PiggyBank,
-    link: "/verzekeringen",
+    link: "/diensten#verzekeringen",
     linkText: "Meer over pensioen",
     features: ["Lage kosten", "Geen winstoogmerk", "Mede-eigenaarschap"],
   },
   {
     name: "Movir",
+    category: "Verzekeringen",
     description: "Voor een uitstekende arbeidsongeschiktheidsverzekering ga je natuurlijk naar Movir. Dit kan online of met behulp van een adviseur.",
     longDescription: "Movir is al meer dan 100 jaar de specialist in inkomensbescherming voor professionals. Ze begrijpen als geen ander de risico's van zelfstandig ondernemerschap en bieden maatwerkoplossingen die passen bij jouw situatie. Of je nu online wilt afsluiten of persoonlijk advies wenst, Movir staat voor je klaar.",
     logo: "https://img.poweredcache.net/zpzaken.nl/wp-content/uploads/2023/01/LogoMovir-e1675076456534.png?rs=fit&w=768&h=542&ssl=1&format=webp",
     icon: Umbrella,
-    link: "/verzekeringen",
+    link: "/diensten#verzekeringen",
     linkText: "Bekijk AOV opties",
     features: ["100+ jaar ervaring", "Maatwerk dekking", "Online of met adviseur"],
   },
   {
     name: "Centraal Beheer",
+    category: "Verzekeringen",
     description: "Ook Centraal Beheer kent een prima AOV, die je met korting kunt afsluiten als je lid bent bij ZP Zaken.",
     longDescription: "Centraal Beheer is één van de bekendste verzekeraars van Nederland. Als lid van ZP Zaken profiteer je van speciale kortingen op hun arbeidsongeschiktheidsverzekering. Een betrouwbare partner met uitgebreide expertise in het verzekeren van zelfstandig ondernemers.",
     logo: "https://img.poweredcache.net/zpzaken.nl/wp-content/uploads/2021/05/cb.jpeg?rs=fit&w=768&h=566&ssl=1&format=webp",
     icon: Shield,
-    link: "/verzekeringen",
+    link: "/diensten#verzekeringen",
     linkText: "Bekijk met korting",
     features: ["Ledenkorting", "Betrouwbaar", "Uitgebreide dekking"],
   },
   {
     name: "SharePeople",
+    category: "Verzekeringen",
     description: "Geen verzekering maar een crowdsurance oplossing. Alles onderling geregeld.",
     longDescription: "SharePeople biedt een vernieuwend concept: crowdsurance. In plaats van een traditionele verzekering regel je het onderling met andere professionals. Een moderne, transparante en vaak voordelige manier om risico's te delen. Perfect voor ondernemers die geloven in de kracht van samenwerking.",
     logo: "https://img.poweredcache.net/zpzaken.nl/wp-content/uploads/2021/05/4-2.png?rs=fit&w=150&h=100&ssl=1&format=webp",
@@ -64,6 +71,14 @@ const partners = [
     linkText: "Meer informatie",
     features: ["Crowdsurance", "Onderling geregeld", "Transparant"],
   },
+];
+
+// Categories for future expansion
+const serviceCategories = [
+  { id: "verzekeringen", label: "Verzekeringen", icon: Shield },
+  { id: "administratie", label: "Administratie", icon: Calculator },
+  { id: "juridisch", label: "Juridisch", icon: Scale },
+  { id: "screening", label: "Screening", icon: UserCheck },
 ];
 
 export default function Partners() {
@@ -81,8 +96,26 @@ export default function Partners() {
           </h1>
           <p className="text-lg md:text-xl text-primary-foreground/80 max-w-3xl mx-auto">
             Bij ZP Zaken zorgen we ervoor dat jij zorgeloos kunt ondernemen. Dit doen we in samenwerking 
-            met onze partners, zodat we je altijd kunnen koppelen aan een specialist.
+            met onze partners voor verzekeringen, administratie, juridisch advies en screening.
           </p>
+        </div>
+      </section>
+
+      {/* Service categories */}
+      <section className="bg-secondary py-6 border-b border-border/50">
+        <div className="container-wide">
+          <div className="flex flex-wrap justify-center gap-4">
+            {serviceCategories.map((cat) => (
+              <Link
+                key={cat.id}
+                to={`/diensten#${cat.id}`}
+                className="flex items-center gap-2 px-4 py-2 bg-card rounded-lg hover:bg-accent/10 transition-colors"
+              >
+                <cat.icon className="h-4 w-4 text-accent" />
+                <span className="text-sm font-medium">{cat.label}</span>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 

@@ -6,7 +6,7 @@ import logoZp from "@/assets/logo-zp.png";
 
 const navItems = [
   { href: "/", label: "Home" },
-  { href: "/verzekeringen", label: "Verzekeringen" },
+  { href: "/diensten", label: "Diensten" },
   { href: "/voor-wie", label: "Voor wie" },
   { href: "/zo-werken-wij", label: "Zo werken wij" },
   { href: "/partners", label: "Partners" },
