@@ -33,9 +33,7 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center mb-6">
-              <div className="bg-white rounded-lg p-2">
-                <img src={logoZp} alt="ZP Zaken logo" className="h-10" />
-              </div>
+              <img src={logoZp} alt="ZP Zaken logo" className="h-10 brightness-0 invert" />
             </Link>
             <p className="text-primary-foreground/80 mb-6 max-w-sm">
               Onafhankelijk advies voor zzp'ers en ondernemers. Wij helpen je met verzekeringen en zakelijke zekerheid, zonder tussenpersonen.
