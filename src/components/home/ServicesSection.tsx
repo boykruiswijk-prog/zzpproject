@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Shield, UserCheck, ArrowRight, Code, Headphones } from "lucide-react";
+import { Shield, UserCheck, ArrowRight, Headphones } from "lucide-react";
 
 const services = [
   {
-    icon: Code,
-    title: "Software & Automatisering",
-    description: "Webapplicaties, integraties en AI-oplossingen op maat. Wij bouwen technologie die je werk makkelijker maakt — met uitleg in normaal Nederlands.",
-    href: "/diensten#software",
-    features: ["Webapps op maat", "Automatisering", "AI-integraties"],
+    icon: Shield,
+    title: "Verzekeringen",
+    description: "Inclusief onze unieke BAV+AVB combinatiepolis — beroeps- én bedrijfsaansprakelijkheid in één. Nergens anders te krijgen.",
+    href: "/diensten#verzekeringen",
+    features: ["⭐ Unieke BAV+AVB combipolis", "Arbeidsongeschiktheid", "Rechtsbijstand"],
   },
   {
     icon: UserCheck,
@@ -18,18 +18,11 @@ const services = [
     features: ["Identiteitsverificatie", "KvK-check", "Referenties"],
   },
   {
-    icon: Shield,
-    title: "Verzekeringen",
-    description: "Inclusief onze unieke BAV+AVB combinatiepolis — beroeps- én bedrijfsaansprakelijkheid in één. Nergens anders te krijgen.",
-    href: "/diensten#verzekeringen",
-    features: ["⭐ Unieke BAV+AVB combipolis", "Arbeidsongeschiktheid", "Rechtsbijstand"],
-  },
-  {
     icon: Headphones,
-    title: "Support & Onderhoud",
-    description: "Geen ticketsystemen of wachtrijen. Directe ondersteuning van mensen die je kennen en jouw situatie begrijpen.",
-    href: "/diensten#support",
-    features: ["Persoonlijk contact", "Snelle respons", "Doorlopend onderhoud"],
+    title: "Persoonlijk Advies",
+    description: "Geen callcenters of wachtrijen. Directe ondersteuning van mensen die je kennen en jouw situatie begrijpen.",
+    href: "/contact",
+    features: ["Persoonlijk contact", "Snelle respons", "Eerlijk advies"],
   },
 ];
 
@@ -39,15 +32,15 @@ export function ServicesSection() {
       <div className="container-wide">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <h2 className="mb-4">
-            Onze <span className="text-accent">oplossingen</span>
+            Onze <span className="text-accent">diensten</span>
           </h2>
           <p className="text-lg text-muted-foreground">
-            Technologie en diensten met een menselijke aanpak. Geen jargon, wel resultaat — 
-            en altijd iemand die je kunt bellen.
+            Alles wat je nodig hebt als zelfstandig professional — verzameld bij één partij, 
+            geleverd via betrouwbare partners.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-3 gap-6">
           {services.map((service, index) => (
             <Link
               key={service.title}
@@ -87,7 +80,7 @@ export function ServicesSection() {
         <div className="text-center mt-12">
           <Button variant="outline" size="lg" asChild>
             <Link to="/diensten">
-              Bekijk alle oplossingen
+              Bekijk alle diensten
               <ArrowRight className="h-5 w-5" />
             </Link>
           </Button>

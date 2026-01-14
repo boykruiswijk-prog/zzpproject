@@ -14,11 +14,11 @@ export function CTASection() {
       <div className="container-wide relative">
         <div className="max-w-3xl mx-auto text-center text-primary-foreground">
           <h2 className="mb-6">
-            Klaar om samen te werken?
+            Klaar om zorgeloos te ondernemen?
           </h2>
           <p className="text-lg md:text-xl text-primary-foreground/80 mb-10 max-w-2xl mx-auto">
-            Plan een gratis kennismakingsgesprek. Geen verkooppraatjes, wel eerlijk advies 
-            over hoe wij jou kunnen helpen — van mens tot mens.
+            Plan een gratis adviesgesprek en ontdek welke diensten bij jouw situatie passen. 
+            Binnen 15 minuten weet je waar je aan toe bent.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
@@ -37,7 +37,7 @@ export function CTASection() {
           </div>
 
           <p className="text-primary-foreground/60 text-sm">
-            Gratis en vrijblijvend • Altijd een mens aan de lijn • Eerlijk advies
+            Gratis en vrijblijvend • Binnen 24 uur reactie • Geen verkooppraatjes
           </p>
         </div>
       </div>
