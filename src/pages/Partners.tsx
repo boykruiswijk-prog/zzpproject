@@ -149,7 +149,64 @@ export default function Partners() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Become a Partner CTA */}
+      <section className="section-padding bg-gradient-to-br from-accent/10 via-accent/5 to-transparent">
+        <div className="container-wide">
+          <div className="bg-card rounded-2xl shadow-card border border-accent/20 p-8 md:p-12">
+            <div className="grid lg:grid-cols-2 gap-8 items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-accent/10 text-accent rounded-full text-sm font-medium mb-4">
+                  <Users className="h-4 w-4" />
+                  Word partner
+                </div>
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  Wil jij partner worden van ZP Zaken?
+                </h2>
+                <p className="text-lg text-muted-foreground mb-6">
+                  Ben je een verzekeraar, pensioenadviseur of financiële dienstverlener die zich richt op zelfstandig professionals? 
+                  Wij zijn altijd op zoek naar betrouwbare partners die onze leden kunnen helpen met hun zakelijke zekerheid.
+                </p>
+                <ul className="space-y-3 mb-8">
+                  <li className="flex items-center gap-3 text-muted-foreground">
+                    <div className="h-6 w-6 rounded-full bg-accent/20 flex items-center justify-center">
+                      <Handshake className="h-3 w-3 text-accent" />
+                    </div>
+                    Toegang tot een actief netwerk van ZZP'ers en ondernemers
+                  </li>
+                  <li className="flex items-center gap-3 text-muted-foreground">
+                    <div className="h-6 w-6 rounded-full bg-accent/20 flex items-center justify-center">
+                      <Handshake className="h-3 w-3 text-accent" />
+                    </div>
+                    Samenwerking op basis van vertrouwen en transparantie
+                  </li>
+                  <li className="flex items-center gap-3 text-muted-foreground">
+                    <div className="h-6 w-6 rounded-full bg-accent/20 flex items-center justify-center">
+                      <Handshake className="h-3 w-3 text-accent" />
+                    </div>
+                    Gezamenlijke marketing en zichtbaarheid
+                  </li>
+                </ul>
+                <Button variant="accent" size="lg" asChild>
+                  <Link to="/contact" className="inline-flex items-center gap-2">
+                    Word partner
+                    <ExternalLink className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+              <div className="hidden lg:flex items-center justify-center">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-accent/20 rounded-full blur-3xl"></div>
+                  <div className="relative bg-card rounded-2xl p-12 border border-border/50 shadow-lg">
+                    <Handshake className="h-32 w-32 text-accent" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Questions CTA Section */}
       <section className="section-padding bg-secondary/50">
         <div className="container-wide text-center">
           <h2 className="text-3xl font-bold mb-4">
