@@ -40,8 +40,8 @@ const testimonials = [
   },
   {
     name: "Joost Hendriks",
-    role: "Fotograaf",
-    content: "Mijn camera-apparatuur is mijn broodwinning. ZP Zaken regelde een dekking die precies past bij mijn werk. Topservice!",
+    role: "Filmmaker",
+    content: "Mijn apparatuur is mijn broodwinning. ZP Zaken regelde een dekking die precies past bij mijn werk. Topservice!",
     rating: 5,
   },
   {
