@@ -29,13 +29,13 @@ export function HeroSection() {
             </div>
 
             <h1 className="mb-6 leading-tight">
-              Technologie die{" "}
-              <span className="text-accent">écht werkt</span>
+              Zorgeloos ondernemen{" "}
+              <span className="text-accent">begint hier</span>
             </h1>
 
             <p className="text-lg md:text-xl text-primary-foreground/80 mb-6 max-w-lg">
-              Slimme tech-oplossingen met persoonlijke begeleiding. Wij combineren innovatie 
-              met een menselijke aanpak — want technologie draait om mensen.
+              Verzekeringen, screening en zakelijke ondersteuning — alles wat je nodig hebt 
+              als zelfstandig professional. Met persoonlijke begeleiding en de menselijke maat.
             </p>
 
             {/* Key USPs */}
@@ -53,12 +53,12 @@ export function HeroSection() {
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <Button variant="hero" size="xl" asChild>
                 <Link to="/diensten">
-                  Ontdek onze oplossingen
+                  Bekijk onze diensten
                   <ArrowRight className="h-5 w-5" />
                 </Link>
               </Button>
               <Button variant="heroOutline" size="xl" asChild>
-                <Link to="/contact">Gratis kennismaking</Link>
+                <Link to="/contact">Gratis adviesgesprek</Link>
               </Button>
             </div>
 
@@ -69,7 +69,7 @@ export function HeroSection() {
                 <span>023-2010502</span>
               </a>
               <span>•</span>
-              <span>Altijd een mens aan de lijn</span>
+              <span>Persoonlijk advies</span>
             </div>
           </div>
 
@@ -79,18 +79,18 @@ export function HeroSection() {
               {/* Main card */}
               <div className="bg-card rounded-2xl p-8 shadow-2xl">
                 <div className="text-center mb-6">
-                  <p className="text-sm text-muted-foreground mb-2">Tech dienstverlening met een menselijk gezicht</p>
-                  <h3 className="text-2xl font-bold text-foreground">Innovatie + persoonlijke aanpak</h3>
+                  <p className="text-sm text-muted-foreground mb-2">Complete zakelijke dienstverlening</p>
+                  <h3 className="text-2xl font-bold text-foreground">Alles onder één dak</h3>
                 </div>
                 
                 <div className="space-y-3 mb-6">
-                  <div className="flex items-center gap-3 p-3 bg-secondary rounded-lg">
-                    <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                      <svg className="h-5 w-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                  <div className="flex items-center gap-3 p-3 bg-accent/20 rounded-lg border border-accent/30">
+                    <div className="h-10 w-10 rounded-lg bg-accent/20 flex items-center justify-center">
+                      <Shield className="h-5 w-5 text-accent" />
                     </div>
                     <div>
-                      <span className="text-sm font-medium text-secondary-foreground">Software op maat</span>
-                      <p className="text-xs text-muted-foreground">Webapps, automatisering, AI</p>
+                      <span className="text-sm font-medium text-secondary-foreground">Verzekeringen</span>
+                      <p className="text-xs text-accent font-medium">⭐ Unieke BAV+AVB combipolis</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 p-3 bg-secondary rounded-lg">
@@ -113,11 +113,11 @@ export function HeroSection() {
                   </div>
                   <div className="flex items-center gap-3 p-3 bg-secondary rounded-lg">
                     <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                      <svg className="h-5 w-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                      <Phone className="h-5 w-5 text-accent" />
                     </div>
                     <div>
-                      <span className="text-sm font-medium text-secondary-foreground">Support & onderhoud</span>
-                      <p className="text-xs text-muted-foreground">Altijd bereikbaar</p>
+                      <span className="text-sm font-medium text-secondary-foreground">Persoonlijk advies</span>
+                      <p className="text-xs text-muted-foreground">Altijd een mens bereikbaar</p>
                     </div>
                   </div>
                 </div>
@@ -125,7 +125,7 @@ export function HeroSection() {
                 <ul className="space-y-2 mb-6">
                   <li className="flex items-center gap-2 text-sm">
                     <CheckCircle className="h-4 w-4 text-accent" />
-                    <span>Geen jargon, wel resultaat</span>
+                    <span>Alles via betrouwbare partners</span>
                   </li>
                   <li className="flex items-center gap-2 text-sm">
                     <CheckCircle className="h-4 w-4 text-accent" />
@@ -133,7 +133,7 @@ export function HeroSection() {
                   </li>
                   <li className="flex items-center gap-2 text-sm">
                     <CheckCircle className="h-4 w-4 text-accent" />
-                    <span>Technologie die werkt voor jou</span>
+                    <span>Speciaal voor ZZP'ers</span>
                   </li>
                 </ul>
 
