@@ -28,9 +28,9 @@ export function HeroSection() {
               </div>
             </div>
 
-            <h1 className="mb-6 leading-tight">
+            <h1 className="mb-6 leading-tight text-white">
               Zorgeloos ondernemen{" "}
-              <span className="text-accent">begint hier</span>
+              <span className="text-yellow-400">begint hier</span>
             </h1>
 
             <p className="text-lg md:text-xl text-primary-foreground/80 mb-6 max-w-lg">
