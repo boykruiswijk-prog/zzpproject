@@ -32,7 +32,11 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <Link to="/" className="flex items-center mb-6">
+            <Link
+              to="/"
+              className="inline-flex items-center mb-6 rounded-xl bg-primary-foreground/10 p-3 ring-1 ring-primary-foreground/15"
+              aria-label="Ga naar de homepage"
+            >
               <img src={logoZp} alt="ZP Zaken logo" className="h-10 brightness-0 invert" />
             </Link>
             <p className="text-primary-foreground/80 mb-6 max-w-sm">
