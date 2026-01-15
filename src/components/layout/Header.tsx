@@ -11,6 +11,7 @@ const navItems = [
   { href: "/zo-werken-wij", label: "Zo werken wij" },
   { href: "/partners", label: "Partners" },
   { href: "/kennis", label: "Kennis & advies" },
+  { href: "/kennisbank", label: "Kennisbank" },
   { href: "/over-ons", label: "Over ons" },
 ];
 
