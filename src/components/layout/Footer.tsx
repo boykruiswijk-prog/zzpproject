@@ -34,10 +34,10 @@ export function Footer() {
           <div className="lg:col-span-2">
             <Link
               to="/"
-              className="inline-flex items-center mb-6 rounded-xl bg-primary-foreground/10 p-3 ring-1 ring-primary-foreground/15"
+              className="inline-flex items-center mb-6 rounded-xl bg-primary-foreground p-3 shadow-card ring-1 ring-foreground/10"
               aria-label="Ga naar de homepage"
             >
-              <img src={logoZp} alt="ZP Zaken logo" className="h-10 brightness-0 invert" />
+              <img src={logoZp} alt="ZP Zaken logo" className="h-10 w-auto object-contain" />
             </Link>
             <p className="text-primary-foreground/80 mb-6 max-w-sm">
               Onafhankelijk advies voor zzp'ers en ondernemers. Wij helpen je met verzekeringen en zakelijke zekerheid, zonder tussenpersonen.
