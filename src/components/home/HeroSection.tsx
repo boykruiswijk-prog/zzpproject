@@ -12,7 +12,7 @@ export function HeroSection() {
         style={{ backgroundImage: `url(${teamHero})` }}
       />
       {/* Dark overlay for text readability */}
-      <div className="absolute inset-0 bg-primary/80" />
+      <div className="absolute inset-0 bg-foreground/70" />
 
       <div className="container-wide relative">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-16 md:py-24 lg:py-32">
