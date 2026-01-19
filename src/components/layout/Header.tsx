@@ -1,8 +1,14 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, X, Phone, ChevronDown } from "lucide-react";
 import logoZp from "@/assets/logo-zp.webp";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -10,8 +16,14 @@ const navItems = [
   { href: "/voor-wie", label: "Voor wie" },
   { href: "/zo-werken-wij", label: "Zo werken wij" },
   { href: "/partners", label: "Partners" },
-  { href: "/kennis", label: "Kennis & advies" },
-  { href: "/kennisbank", label: "Kennisbank" },
+  { 
+    href: "/kennisbank", 
+    label: "Kennisbank",
+    children: [
+      { href: "/kennisbank", label: "Alle artikelen" },
+      { href: "/kennis", label: "Kennis & advies" },
+    ]
+  },
   { href: "/over-ons", label: "Over ons" },
 ];
 
@@ -20,8 +32,8 @@ export function Header() {
   const location = useLocation();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container-wide flex h-16 items-center justify-between lg:h-20">
+    <header className="sticky top-0 z-50 w-full bg-background border-b border-border">
+      <div className="container-wide flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center">
           <img src={logoZp} alt="ZP Zaken logo" className="h-10" />
         </Link>
@@ -29,27 +41,47 @@ export function Header() {
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-1">
           {navItems.map((item) => (
-            <Link
-              key={item.href}
-              to={item.href}
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                location.pathname === item.href
-                  ? "text-primary bg-secondary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-              }`}
-            >
-              {item.label}
-            </Link>
+            item.children ? (
+              <DropdownMenu key={item.href}>
+                <DropdownMenuTrigger className={`flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                  location.pathname.startsWith('/kennis')
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}>
+                  {item.label}
+                  <ChevronDown className="h-4 w-4" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  {item.children.map((child) => (
+                    <DropdownMenuItem key={child.href} asChild>
+                      <Link to={child.href}>{child.label}</Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link
+                key={item.href}
+                to={item.href}
+                className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                  location.pathname === item.href
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {item.label}
+              </Link>
+            )
           ))}
         </nav>
 
-        <div className="hidden lg:flex items-center gap-3">
-          <a href="tel:0201234567" className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+        <div className="hidden lg:flex items-center gap-4">
+          <a href="tel:0232010502" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
             <Phone className="h-4 w-4" />
-            020 - 123 4567
+            023 - 201 0502
           </a>
           <Button variant="accent" asChild>
-            <Link to="/contact">Gratis adviesgesprek</Link>
+            <Link to="/contact">Gratis advies</Link>
           </Button>
         </div>
 
@@ -66,27 +98,49 @@ export function Header() {
       {/* Mobile Navigation */}
       {isOpen && (
         <div className="lg:hidden border-t border-border bg-background animate-fade-in">
-          <nav className="container-wide py-4 flex flex-col gap-2">
+          <nav className="container-wide py-4 flex flex-col gap-1">
             {navItems.map((item) => (
-              <Link
-                key={item.href}
-                to={item.href}
-                onClick={() => setIsOpen(false)}
-                className={`px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-                  location.pathname === item.href
-                    ? "text-primary bg-secondary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                }`}
-              >
-                {item.label}
-              </Link>
+              item.children ? (
+                <div key={item.href}>
+                  <span className="px-4 py-2 text-sm font-medium text-muted-foreground block">
+                    {item.label}
+                  </span>
+                  {item.children.map((child) => (
+                    <Link
+                      key={child.href}
+                      to={child.href}
+                      onClick={() => setIsOpen(false)}
+                      className={`pl-8 pr-4 py-2 text-sm rounded-md block transition-colors ${
+                        location.pathname === child.href
+                          ? "text-primary bg-secondary"
+                          : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                      }`}
+                    >
+                      {child.label}
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  onClick={() => setIsOpen(false)}
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                    location.pathname === item.href
+                      ? "text-primary bg-secondary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              )
             ))}
             <div className="pt-4 border-t border-border mt-2 flex flex-col gap-3">
-              <a href="tel:0201234567" className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground">
+              <a href="tel:0232010502" className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground">
                 <Phone className="h-4 w-4" />
-                020 - 123 4567
+                023 - 201 0502
               </a>
-              <Button variant="accent" className="w-full" asChild>
+              <Button variant="accent" className="mx-4" asChild>
                 <Link to="/contact" onClick={() => setIsOpen(false)}>Gratis adviesgesprek</Link>
               </Button>
             </div>

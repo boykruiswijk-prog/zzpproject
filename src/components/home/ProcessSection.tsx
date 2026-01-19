@@ -25,19 +25,19 @@ const steps = [
 
 export function ProcessSection() {
   return (
-    <section className="section-padding bg-secondary">
+    <section className="section-padding bg-background">
       <div className="container-wide">
-        <div className="text-center max-w-2xl mx-auto mb-16">
+        <div className="text-center max-w-2xl mx-auto mb-12">
           <h2 className="mb-4">
             Zo werken wij
           </h2>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-muted-foreground">
             Persoonlijk advies in drie simpele stappen. Geen verkooppraatjes, 
             wel eerlijk advies dat past bij jouw situatie.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 lg:gap-12 mb-12">
+        <div className="grid md:grid-cols-3 gap-8 lg:gap-12 mb-10">
           {steps.map((step, index) => (
             <div
               key={step.number}
@@ -45,18 +45,18 @@ export function ProcessSection() {
             >
               {/* Connector line */}
               {index < steps.length - 1 && (
-                <div className="hidden md:block absolute top-12 left-[60%] w-[80%] h-0.5 bg-border" />
+                <div className="hidden md:block absolute top-10 left-[60%] w-[80%] h-0.5 bg-border" />
               )}
               
-              <div className="relative inline-flex items-center justify-center h-24 w-24 rounded-full bg-card shadow-card mb-6">
-                <step.icon className="h-10 w-10 text-accent" />
-                <span className="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-primary text-primary-foreground text-sm font-bold flex items-center justify-center">
+              <div className="relative inline-flex items-center justify-center h-20 w-20 rounded-full bg-secondary mb-5">
+                <step.icon className="h-8 w-8 text-primary" />
+                <span className="absolute -top-1 -right-1 h-7 w-7 rounded-full bg-accent text-accent-foreground text-xs font-bold flex items-center justify-center">
                   {step.number}
                 </span>
               </div>
               
-              <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
-              <p className="text-muted-foreground max-w-xs mx-auto">{step.description}</p>
+              <h3 className="font-semibold mb-2">{step.title}</h3>
+              <p className="text-sm text-muted-foreground max-w-xs mx-auto">{step.description}</p>
             </div>
           ))}
         </div>

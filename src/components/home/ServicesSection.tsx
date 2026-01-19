@@ -28,31 +28,30 @@ const services = [
 
 export function ServicesSection() {
   return (
-    <section className="section-padding bg-background">
+    <section className="section-padding bg-secondary">
       <div className="container-wide">
-        <div className="text-center max-w-2xl mx-auto mb-12">
+        <div className="text-center max-w-2xl mx-auto mb-10">
           <h2 className="mb-4">
-            Onze <span className="text-accent">diensten</span>
+            Onze <span className="text-primary">diensten</span>
           </h2>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-muted-foreground">
             Alles wat je nodig hebt als zelfstandig professional — verzameld bij één partij, 
             geleverd via betrouwbare partners.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {services.map((service, index) => (
+        <div className="grid md:grid-cols-3 gap-5">
+          {services.map((service) => (
             <Link
               key={service.title}
               to={service.href}
-              className="group relative bg-card rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-all duration-300 border border-border/50 hover:border-accent/30 flex flex-col"
-              style={{ animationDelay: `${index * 100}ms` }}
+              className="group bg-card rounded-xl p-6 shadow-card border border-border hover:shadow-lg hover:border-primary/20 transition-all duration-200 flex flex-col"
             >
-              <div className="flex-shrink-0 h-14 w-14 rounded-xl bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors mb-4">
-                <service.icon className="h-7 w-7 text-accent" />
+              <div className="flex-shrink-0 h-12 w-12 rounded-lg bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors mb-4">
+                <service.icon className="h-6 w-6 text-accent" />
               </div>
               
-              <h3 className="text-xl font-semibold mb-2 group-hover:text-accent transition-colors">
+              <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">
                 {service.title}
               </h3>
               
@@ -77,7 +76,7 @@ export function ServicesSection() {
           ))}
         </div>
 
-        <div className="text-center mt-12">
+        <div className="text-center mt-10">
           <Button variant="outline" size="lg" asChild>
             <Link to="/diensten">
               Bekijk alle diensten

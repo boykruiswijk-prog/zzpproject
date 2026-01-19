@@ -1,34 +1,37 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Phone, Calendar } from "lucide-react";
+import { Phone, Calendar } from "lucide-react";
 
 export function CTASection() {
   return (
-    <section className="section-padding bg-gradient-to-br from-primary via-primary to-primary/90 relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-accent rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary-foreground rounded-full blur-3xl -translate-x-1/2 translate-y-1/2" />
-      </div>
-
-      <div className="container-wide relative">
-        <div className="max-w-3xl mx-auto text-center text-primary-foreground">
-          <h2 className="mb-6">
+    <section className="section-padding bg-primary">
+      <div className="container-wide">
+        <div className="max-w-2xl mx-auto text-center text-primary-foreground">
+          <h2 className="mb-4 text-primary-foreground">
             Klaar om zorgeloos te ondernemen?
           </h2>
-          <p className="text-lg md:text-xl text-primary-foreground/80 mb-10 max-w-2xl mx-auto">
+          <p className="text-primary-foreground/80 mb-8 max-w-xl mx-auto">
             Plan een gratis adviesgesprek en ontdek welke diensten bij jouw situatie passen. 
             Binnen 15 minuten weet je waar je aan toe bent.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
-            <Button variant="hero" size="xl" asChild>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
+            <Button 
+              size="lg" 
+              className="bg-accent hover:bg-accent/90 text-accent-foreground"
+              asChild
+            >
               <Link to="/contact">
                 <Calendar className="h-5 w-5" />
                 Plan een gesprek
               </Link>
             </Button>
-            <Button variant="heroOutline" size="xl" asChild>
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
+              asChild
+            >
               <a href="tel:0232010502">
                 <Phone className="h-5 w-5" />
                 Bel: 023 - 201 0502

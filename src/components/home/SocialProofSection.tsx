@@ -91,24 +91,24 @@ const stats = [
 
 export function SocialProofSection() {
   return (
-    <section className="section-padding bg-background">
+    <section className="section-padding bg-secondary">
       <div className="container-wide">
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-20">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">
-              <p className="text-4xl md:text-5xl font-bold text-primary mb-2">{stat.value}</p>
-              <p className="text-muted-foreground">{stat.label}</p>
+              <p className="text-3xl md:text-4xl font-bold text-primary mb-1">{stat.value}</p>
+              <p className="text-sm text-muted-foreground">{stat.label}</p>
             </div>
           ))}
         </div>
 
         {/* Testimonials */}
-        <div className="text-center max-w-2xl mx-auto mb-12">
+        <div className="text-center max-w-2xl mx-auto mb-10">
           <h2 className="mb-4">
             Wat zzp'ers over ons zeggen
           </h2>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-muted-foreground">
             Lees de ervaringen van ondernemers die ons voorgingen.
           </p>
         </div>
@@ -123,51 +123,51 @@ export function SocialProofSection() {
           <CarouselContent className="-ml-4">
             {testimonials.map((testimonial) => (
               <CarouselItem key={testimonial.name} className="pl-4 md:basis-1/2 lg:basis-1/3">
-                <div className="bg-card rounded-2xl p-8 shadow-card border border-border/50 relative h-full">
-                  <Quote className="absolute top-6 right-6 h-8 w-8 text-primary/20" />
+                <div className="bg-card rounded-xl p-6 shadow-card border border-border relative h-full">
+                  <Quote className="absolute top-5 right-5 h-6 w-6 text-primary/10" />
                   
-                  <div className="flex gap-1 mb-4">
+                  <div className="flex gap-0.5 mb-3">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 fill-primary text-primary" />
+                      <Star key={i} className="h-4 w-4 fill-accent text-accent" />
                     ))}
                   </div>
                   
-                  <p className="text-foreground mb-6 leading-relaxed">
+                  <p className="text-foreground text-sm mb-5 leading-relaxed">
                     "{testimonial.content}"
                   </p>
                   
                   <div>
-                    <p className="font-semibold text-foreground">{testimonial.name}</p>
-                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                    <p className="font-medium text-foreground text-sm">{testimonial.name}</p>
+                    <p className="text-xs text-muted-foreground">{testimonial.role}</p>
                   </div>
                 </div>
               </CarouselItem>
             ))}
           </CarouselContent>
-          <div className="flex justify-center gap-4 mt-8">
+          <div className="flex justify-center gap-4 mt-6">
             <CarouselPrevious className="static translate-y-0" />
             <CarouselNext className="static translate-y-0" />
           </div>
         </Carousel>
 
         {/* Trust badges */}
-        <div className="mt-16 pt-12 border-t border-border">
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
-            <div className="flex items-center gap-3 text-muted-foreground">
-              <div className="h-12 w-12 rounded-lg bg-secondary flex items-center justify-center font-bold text-primary">
+        <div className="mt-12 pt-10 border-t border-border">
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="h-10 w-10 rounded-lg bg-card border border-border flex items-center justify-center font-bold text-xs text-primary">
                 AFM
               </div>
               <span className="text-sm">AFM geregistreerd</span>
             </div>
-            <div className="flex items-center gap-3 text-muted-foreground">
-              <div className="h-12 w-12 rounded-lg bg-secondary flex items-center justify-center font-bold text-primary">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="h-10 w-10 rounded-lg bg-card border border-border flex items-center justify-center font-bold text-xs text-primary">
                 Kifid
               </div>
               <span className="text-sm">Kifid aangesloten</span>
             </div>
-            <div className="flex items-center gap-3 text-muted-foreground">
-              <div className="h-12 w-12 rounded-lg bg-secondary flex items-center justify-center">
-                <Star className="h-6 w-6 fill-primary text-primary" />
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="h-10 w-10 rounded-lg bg-card border border-border flex items-center justify-center">
+                <Star className="h-5 w-5 fill-accent text-accent" />
               </div>
               <span className="text-sm">Google Reviews 4.9</span>
             </div>
