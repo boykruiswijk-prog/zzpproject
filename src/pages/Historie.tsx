@@ -61,6 +61,15 @@ const timelineEvents = [
     highlight: "Nieuwe locatie",
     stats: "Schiphol-Rijk",
   },
+  {
+    year: "2026",
+    title: "Klaar voor de toekomst",
+    subtitle: "Nieuwe website & innovatieve diensten",
+    description: "Een gloednieuwe website markeert het begin van de volgende fase. Met online screening voor zzp'ers én onze eigen factoring-oplossing. Waarom zou je jouw facturen laten factoren door bemiddelaars terwijl dat juist jóuw asset is? Geen risico's meer, maar zekerheid: uitbetaling binnen 24 uur, geautomatiseerde facturering, debiteurenbeheer uitbesteed en faillissementsrisico afgedekt.",
+    icon: Sparkles,
+    highlight: "Innovatie",
+    stats: "Screening & Factoring",
+  },
 ];
 
 const values = [
