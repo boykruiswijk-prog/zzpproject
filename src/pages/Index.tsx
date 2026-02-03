@@ -1,6 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
 import { HeroSection } from "@/components/home/HeroSection";
-import { BAVSection } from "@/components/home/BAVSection";
+import { BAVApplicationModule } from "@/components/home/BAVApplicationModule";
 import { CombiPackageSection } from "@/components/home/CombiPackageSection";
 import { ServicesSection } from "@/components/home/ServicesSection";
 import { ProcessSection } from "@/components/home/ProcessSection";
@@ -11,7 +11,7 @@ const Index = () => {
   return (
     <Layout>
       <HeroSection />
-      <BAVSection />
+      <BAVApplicationModule />
       <CombiPackageSection />
       <ServicesSection />
       <ProcessSection />
