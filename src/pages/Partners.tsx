@@ -5,7 +5,7 @@ import { Handshake, ExternalLink, Shield, Heart, PiggyBank, Umbrella, Users, Cal
 import { Link } from "react-router-dom";
 import otenticaLogo from "@/assets/partner-otentica.png";
 import homyCapitalLogo from "@/assets/partner-homy-capital.png";
-import circle8Logo from "@/assets/partner-circle8.png";
+import circle8Logo from "@/assets/partner-circle8.svg";
 import onefellowLogo from "@/assets/partner-onefellow.png";
 
 const partners = [
