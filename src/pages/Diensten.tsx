@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
-import { Shield, Calculator, Scale, UserCheck, ArrowRight, Sparkles } from "lucide-react";
+import { Shield, Calculator, Scale, UserCheck, ArrowRight, Sparkles, Banknote } from "lucide-react";
 import { ServiceCard } from "@/components/diensten/ServiceCard";
 
 // Import background images
@@ -10,6 +10,7 @@ import serviceVerzekeringen from "@/assets/service-verzekeringen.jpg";
 import serviceAdministratie from "@/assets/service-administratie.jpg";
 import serviceJuridisch from "@/assets/service-juridisch.jpg";
 import serviceScreening from "@/assets/service-screening.jpg";
+import serviceFinanciering from "@/assets/service-financiering.jpg";
 
 const services = [
   {
@@ -90,6 +91,26 @@ const services = [
     href: "/contact",
     partners: ["Screeningspartners via ZP Zaken"],
     backgroundImage: serviceScreening,
+  },
+  {
+    id: "financiering",
+    icon: Banknote,
+    title: "Factoring & Financiering",
+    subtitle: "Snelle uitbetaling, geen cashflow-zorgen",
+    description: "Wacht niet meer weken op betaling van je facturen. Via onze partner Homy Capital ontvang je binnen 24 uur je geld, 7 dagen per week. Volledig geautomatiseerd, met debiteurenbeheer en faillissementsrisico afgedekt.",
+    features: [
+      "⚡ Uitbetaling binnen 24 uur",
+      "Geautomatiseerde facturering",
+      "Debiteurenbeheer uitbesteed",
+      "Faillissementsrisico afgedekt",
+      "SEPA-brede ondersteuning",
+      "Realtime financieel dashboard",
+    ],
+    forWho: "ZZP'ers en bemiddelaars die snel over hun geld willen beschikken",
+    cta: "Start met factoring",
+    href: "/contact",
+    partners: ["Homy Capital"],
+    backgroundImage: serviceFinanciering,
   },
 ];
 
