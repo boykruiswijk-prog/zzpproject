@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import boyKruiswijk from "@/assets/team-member-1.jpg";
+import teamMeeting from "@/assets/team-meeting.jpg";
+import teamBoyCalling from "@/assets/team-boy-calling.jpg";
 
 const values = [
   {
@@ -75,9 +77,19 @@ export default function Historie() {
       />
 
       {/* Mission Statement - More dynamic */}
-      <section className="py-16 bg-gradient-to-r from-primary via-primary to-primary/90 text-primary-foreground relative overflow-hidden">
+      <section className="py-16 md:py-24 text-primary-foreground relative overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src={teamBoyCalling}
+            alt=""
+            className="w-full h-full object-cover"
+            aria-hidden="true"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
+        </div>
         
-        <div className="container-wide relative">
+        <div className="container-wide relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <Quote className="h-12 w-12 mx-auto mb-6 opacity-50" />
             <p className="text-2xl md:text-4xl font-bold leading-relaxed mb-6">
@@ -153,13 +165,24 @@ export default function Historie() {
 
 
       {/* CTA Section */}
-      <section className="section-padding bg-background">
-        <div className="container-wide">
+      <section className="section-padding relative overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src={teamMeeting}
+            alt=""
+            className="w-full h-full object-cover"
+            aria-hidden="true"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-foreground/90 via-foreground/85 to-foreground/80" />
+        </div>
+        
+        <div className="container-wide relative z-10">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-primary-foreground">
               Schrijf mee aan ons verhaal
             </h2>
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-primary-foreground/80 mb-8">
               Word onderdeel van de ZP Zaken familie. Ontdek wat wij voor jou en je onderneming kunnen betekenen.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -169,7 +192,7 @@ export default function Historie() {
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Link>
               </Button>
-              <Button variant="outline" size="lg" asChild>
+              <Button variant="outline" size="lg" className="border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10" asChild>
                 <Link to="/over-ons">
                   Ontmoet het team
                 </Link>
