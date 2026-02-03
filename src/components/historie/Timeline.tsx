@@ -20,7 +20,6 @@ const timelineEvents = [
     subtitle: "Ontstaan vanuit HeadFirst",
     description: "ZP Zaken werd geboren vanuit Kennisbemiddelaar HeadFirst. Oprichter Boy Kruiswijk zag een gat in de markt: zzp'ers verdienden persoonlijke begeleiding en unieke verzekeringsoplossingen.",
     icon: Rocket,
-    emoji: "🚀",
     highlight: "Het fundament gelegd",
     stats: "Eerste klanten geholpen",
     color: "from-orange-500 to-red-500",
@@ -31,7 +30,6 @@ const timelineEvents = [
     subtitle: "Volledig zelfstandig",
     description: "Na drie jaar groeien was het tijd voor de volgende stap. ZP Zaken werd volledig onafhankelijk en kon haar eigen koers varen.",
     icon: TrendingUp,
-    emoji: "💪",
     highlight: "100% onafhankelijk",
     stats: "Eigen identiteit",
     color: "from-blue-500 to-indigo-500",
@@ -42,7 +40,6 @@ const timelineEvents = [
     subtitle: "Schaalbaar met behoud van persoonlijk contact",
     description: "Vergaande automatisering, maar met behoud van klantcontact — want wij geloven in mensen en zaken doen met mensen, niet in zakendoen met systemen.",
     icon: Zap,
-    emoji: "⚡",
     highlight: "Automatisering",
     stats: "Schaalbaar & persoonlijk",
     color: "from-yellow-500 to-orange-500",
@@ -53,7 +50,6 @@ const timelineEvents = [
     subtitle: "Kantoor in Hoofddorp",
     description: "De groei vroeg om meer ruimte. In het hart van Hoofddorp opende ZP Zaken haar eigen kantoor. Een plek waar ondernemers welkom zijn.",
     icon: Building2,
-    emoji: "🏠",
     highlight: "Eigen locatie",
     stats: "Hoofddorp",
     color: "from-green-500 to-emerald-500",
@@ -64,7 +60,6 @@ const timelineEvents = [
     subtitle: "Duizenden ondernemers geholpen",
     description: "ZP Zaken is uitgegroeid tot dé specialist voor zzp'ers in Nederland. Het bewijs dat persoonlijke aandacht en expertise het verschil maken.",
     icon: Award,
-    emoji: "🏆",
     highlight: "Marktleider",
     stats: "Duizenden klanten",
     color: "from-purple-500 to-pink-500",
@@ -73,9 +68,8 @@ const timelineEvents = [
     year: "Eind 2024",
     title: "Nieuw hoofdkantoor",
     subtitle: "Schiphol-Rijk, Tupolevlaan 41",
-    description: "Een gloednieuw kantoor op Schiphol-Rijk. Tupolevlaan 41 is nu ons thuis — een moderne werkplek waar ondernemers altijd welkom zijn. En ja, de koffie is hier écht lekker ☕",
+    description: "Een gloednieuw kantoor op Schiphol-Rijk. Tupolevlaan 41 is nu ons thuis — een moderne werkplek waar ondernemers altijd welkom zijn. En ja, de koffie is hier écht lekker.",
     icon: Coffee,
-    emoji: "☕",
     highlight: "Nieuwe locatie",
     stats: "Schiphol-Rijk",
     color: "from-amber-500 to-yellow-500",
@@ -86,7 +80,6 @@ const timelineEvents = [
     subtitle: "Nieuwe website & innovatieve diensten",
     description: "Online screening voor zzp'ers én onze eigen factoring-oplossing. Geen risico's meer, maar zekerheid: uitbetaling binnen 24 uur en faillissementsrisico afgedekt.",
     icon: Sparkles,
-    emoji: "✨",
     highlight: "Innovatie",
     stats: "Screening & Factoring",
     color: "from-pink-500 to-rose-500",
@@ -116,10 +109,6 @@ function TimelineItem({ event, index, isVisible }: TimelineItemProps) {
           {/* Gradient overlay on hover */}
           <div className={`absolute inset-0 bg-gradient-to-br ${event.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
           
-          {/* Floating emoji decoration */}
-          <div className={`absolute ${isEven ? '-right-2' : '-left-2'} -top-2 text-4xl opacity-20 group-hover:opacity-40 group-hover:scale-125 transition-all duration-300`}>
-            {event.emoji}
-          </div>
 
           {/* Year Badge with animation */}
           <div className={`inline-flex items-center gap-2 bg-gradient-to-r ${event.color} text-white px-5 py-2.5 rounded-full text-lg font-bold mb-4 shadow-lg group-hover:scale-105 transition-transform duration-300 ${
