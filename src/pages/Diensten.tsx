@@ -2,7 +2,14 @@ import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
-import { Shield, Calculator, Scale, UserCheck, ArrowRight, CheckCircle, Sparkles } from "lucide-react";
+import { Shield, Calculator, Scale, UserCheck, ArrowRight, Sparkles } from "lucide-react";
+import { ServiceCard } from "@/components/diensten/ServiceCard";
+
+// Import background images
+import serviceVerzekeringen from "@/assets/service-verzekeringen.jpg";
+import serviceAdministratie from "@/assets/service-administratie.jpg";
+import serviceJuridisch from "@/assets/service-juridisch.jpg";
+import serviceScreening from "@/assets/service-screening.jpg";
 
 const services = [
   {
@@ -22,6 +29,7 @@ const services = [
     cta: "Bekijk verzekeringen",
     href: "/verzekeringen",
     partners: ["Hiscox", "Movir", "Centraal Beheer", "Zorg en Zekerheid"],
+    backgroundImage: serviceVerzekeringen,
   },
   {
     id: "administratie",
@@ -35,12 +43,13 @@ const services = [
       "Facturatie en debiteurenbeheer",
       "Jaarafsluiting en jaarrekening",
       "Belastingadvies",
-      "Koppeling met je bankrekeninrg",
+      "Koppeling met je bankrekening",
     ],
     forWho: "ZZP'ers die hun administratie willen uitbesteden of ondersteuning zoeken",
     cta: "Meer over administratie",
     href: "/contact",
     partners: ["Boekhoudpartners via ZP Zaken"],
+    backgroundImage: serviceAdministratie,
   },
   {
     id: "juridisch",
@@ -60,6 +69,7 @@ const services = [
     cta: "Juridisch advies aanvragen",
     href: "/contact",
     partners: ["Juridische partners via ZP Zaken"],
+    backgroundImage: serviceJuridisch,
   },
   {
     id: "screening",
@@ -79,6 +89,7 @@ const services = [
     cta: "Start je screening",
     href: "/contact",
     partners: ["Screeningspartners via ZP Zaken"],
+    backgroundImage: serviceScreening,
   },
 ];
 
@@ -102,14 +113,14 @@ export default function Diensten() {
       </PageHero>
 
       {/* Quick navigation */}
-      <section className="bg-secondary py-6 border-b border-border/50">
+      <section className="bg-secondary py-6 border-b border-border/50 sticky top-16 z-30">
         <div className="container-wide">
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-3 md:gap-4">
             {services.map((service) => (
               <a
                 key={service.id}
                 href={`#${service.id}`}
-                className="flex items-center gap-2 px-4 py-2 bg-card rounded-lg hover:bg-accent/10 transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 bg-card rounded-lg hover:bg-accent/10 hover:border-accent/20 transition-all border border-border/50 shadow-sm"
               >
                 <service.icon className="h-4 w-4 text-accent" />
                 <span className="text-sm font-medium">{service.title}</span>
@@ -119,92 +130,14 @@ export default function Diensten() {
         </div>
       </section>
 
-      {/* Services */}
-      <section className="section-padding bg-background">
-        <div className="container-wide">
-          <div className="space-y-16 lg:space-y-24">
-            {services.map((service, index) => (
-              <div
-                key={service.id}
-                id={service.id}
-                className="scroll-mt-24"
-              >
-                <div className={`grid lg:grid-cols-2 gap-8 lg:gap-12 items-center ${index % 2 === 1 ? 'lg:grid-flow-col-dense' : ''}`}>
-                  {/* Content */}
-                  <div className={index % 2 === 1 ? 'lg:col-start-2' : ''}>
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="h-14 w-14 rounded-xl bg-accent/10 flex items-center justify-center">
-                        <service.icon className="h-7 w-7 text-accent" />
-                      </div>
-                      <div>
-                        <h2 className="text-2xl md:text-3xl">{service.title}</h2>
-                        <p className="text-muted-foreground">{service.subtitle}</p>
-                      </div>
-                    </div>
-                    
-                    <p className="text-lg text-muted-foreground mb-6">
-                      {service.description}
-                    </p>
-
-                    <ul className="grid sm:grid-cols-2 gap-3 mb-6">
-                      {service.features.map((feature) => (
-                        <li key={feature} className="flex items-start gap-3">
-                          <CheckCircle className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-                          <span className="text-sm">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-
-                    <div className="flex flex-wrap gap-3">
-                      <Button variant="accent" asChild>
-                        <Link to={service.href}>
-                          {service.cta}
-                          <ArrowRight className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                      <Button variant="outline" asChild>
-                        <Link to="/contact">
-                          Vraag advies aan
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Info card */}
-                  <div className={`bg-card rounded-2xl p-8 shadow-card border border-border/50 ${index % 2 === 1 ? 'lg:col-start-1 lg:row-start-1' : ''}`}>
-                    <h3 className="font-semibold mb-4">Overzicht</h3>
-                    <div className="space-y-4">
-                      <div className="p-4 bg-secondary rounded-lg">
-                        <p className="text-sm text-muted-foreground mb-1">Geschikt voor</p>
-                        <p className="font-medium text-sm">{service.forWho}</p>
-                      </div>
-                      <div className="p-4 bg-secondary rounded-lg">
-                        <p className="text-sm text-muted-foreground mb-2">Via onze partners</p>
-                        <div className="flex flex-wrap gap-2">
-                          {service.partners.map((partner) => (
-                            <span key={partner} className="text-xs bg-accent/10 text-accent px-2 py-1 rounded-full">
-                              {partner}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="p-4 bg-accent/10 rounded-lg border border-accent/20">
-                        <p className="text-sm font-medium text-accent">
-                          💡 Alles via betrouwbare partners, met persoonlijk advies van ZP Zaken.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {index < services.length - 1 && (
-                  <div className="border-t border-border mt-16 lg:mt-24" />
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Services with background images */}
+      {services.map((service, index) => (
+        <ServiceCard
+          key={service.id}
+          {...service}
+          index={index}
+        />
+      ))}
 
       {/* CTA */}
       <section className="section-padding bg-secondary">
