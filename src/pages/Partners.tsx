@@ -1,7 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
-import { Handshake, ExternalLink, Shield, Heart, PiggyBank, Umbrella, Users, Calculator, Scale, UserCheck, CheckCircle, Banknote } from "lucide-react";
+import { Handshake, ExternalLink, Shield, Heart, PiggyBank, Umbrella, Users, Calculator, Scale, UserCheck, CheckCircle, Banknote, Briefcase } from "lucide-react";
 import { Link } from "react-router-dom";
 import otenticaLogo from "@/assets/partner-otentica.png";
 
@@ -78,6 +78,15 @@ const partners = [
     link: "/diensten#financiering",
     features: ["Uitbetaling binnen 24 uur", "Geautomatiseerde facturering", "Debiteurenbeheer"],
   },
+  {
+    name: "Circle8",
+    category: "Opdrachten",
+    description: "Toonaangevende intermediair op de Nederlandse arbeidsmarkt. Toegang tot opdrachten bij grote opdrachtgevers.",
+    logo: "https://www.circle8.nl/hubfs/raw_assets/public/Circle8_2023/images/logo-circle8.svg",
+    icon: Briefcase,
+    link: "/contact",
+    features: ["Opdrachten-marktplaats", "Contractmanagement", "Wet DBA compliant"],
+  },
 ];
 
 const serviceCategories = [
@@ -86,6 +95,7 @@ const serviceCategories = [
   { id: "juridisch", label: "Juridisch", icon: Scale },
   { id: "screening", label: "Screening", icon: UserCheck },
   { id: "financiering", label: "Financiering", icon: Banknote },
+  { id: "opdrachten", label: "Opdrachten", icon: Briefcase },
 ];
 
 // Structured data for partners
