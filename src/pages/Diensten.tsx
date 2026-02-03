@@ -11,6 +11,8 @@ import serviceAdministratie from "@/assets/service-administratie.jpg";
 import serviceJuridisch from "@/assets/service-juridisch.jpg";
 import serviceScreening from "@/assets/service-screening.jpg";
 import serviceFinanciering from "@/assets/service-financiering.jpg";
+import officeLogo from "@/assets/office-logo.jpg";
+import teamMeeting from "@/assets/team-meeting.jpg";
 
 const services = [
   {
@@ -124,6 +126,7 @@ export default function Diensten() {
           icon: <Sparkles className="h-4 w-4" />,
           text: "Alles voor zelfstandig professionals"
         }}
+        backgroundImage={officeLogo}
       >
         <Button variant="accent" size="lg" asChild>
           <Link to="/contact">
@@ -161,11 +164,22 @@ export default function Diensten() {
       ))}
 
       {/* CTA */}
-      <section className="section-padding bg-secondary">
-        <div className="container-wide">
+      <section className="section-padding relative overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src={teamMeeting}
+            alt=""
+            className="w-full h-full object-cover"
+            aria-hidden="true"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-foreground/95 via-foreground/90 to-foreground/85" />
+        </div>
+        
+        <div className="container-wide relative z-10">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="mb-4">Niet zeker welke dienst je nodig hebt?</h2>
-            <p className="text-lg text-muted-foreground mb-8">
+            <h2 className="mb-4 text-primary-foreground">Niet zeker welke dienst je nodig hebt?</h2>
+            <p className="text-lg text-primary-foreground/80 mb-8">
               Plan een gratis adviesgesprek. We bekijken samen welke diensten passen bij jouw 
               situatie en beroep — zonder verplichtingen.
             </p>
