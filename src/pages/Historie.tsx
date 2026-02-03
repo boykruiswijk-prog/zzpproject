@@ -18,25 +18,21 @@ const values = [
     icon: Heart,
     title: "Persoonlijk",
     description: "Geen callcenters, maar échte mensen die je naam kennen.",
-    emoji: "❤️",
   },
   {
     icon: Shield,
     title: "Betrouwbaar",
     description: "10+ jaar ervaring en bewezen track record.",
-    emoji: "🛡️",
   },
   {
     icon: Users,
     title: "Door ondernemers",
     description: "We begrijpen je omdat we zelf ondernemen.",
-    emoji: "🤝",
   },
   {
     icon: Sparkles,
     title: "Uniek",
     description: "Innovatieve oplossingen die je nergens anders vindt.",
-    emoji: "✨",
   },
 ];
 
@@ -79,13 +75,6 @@ export default function Historie() {
 
       {/* Mission Statement - More dynamic */}
       <section className="py-16 bg-gradient-to-r from-primary via-primary to-primary/90 text-primary-foreground relative overflow-hidden">
-        {/* Decorative elements */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-4 left-10 text-6xl">❤️</div>
-          <div className="absolute bottom-4 right-10 text-6xl">🚀</div>
-          <div className="absolute top-1/2 left-1/4 text-4xl">✨</div>
-          <div className="absolute top-1/3 right-1/4 text-4xl">💪</div>
-        </div>
         
         <div className="container-wide relative">
           <div className="max-w-4xl mx-auto text-center">
@@ -95,7 +84,7 @@ export default function Historie() {
             </p>
             <div className="flex items-center justify-center gap-3">
               <div className="w-12 h-12 bg-primary-foreground/20 rounded-full flex items-center justify-center">
-                <span className="text-2xl">👨‍💼</span>
+                <Users className="h-6 w-6" />
               </div>
               <div className="text-left">
                 <p className="font-semibold">Boy Kruiswijk</p>
@@ -113,7 +102,6 @@ export default function Historie() {
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-accent/20 to-primary/20 text-accent px-5 py-2.5 rounded-full text-sm font-semibold mb-6 border border-accent/20">
               <History className="h-4 w-4" />
               <span>Onze tijdlijn</span>
-              <span className="text-lg">🎉</span>
             </div>
             <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
               Van idee tot marktleider
@@ -130,16 +118,10 @@ export default function Historie() {
 
       {/* Values Section - Enhanced */}
       <section className="section-padding bg-secondary relative overflow-hidden">
-        {/* Decorative background */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-10 left-10 text-8xl">❤️</div>
-          <div className="absolute bottom-10 right-10 text-8xl">✨</div>
-        </div>
-        
         <div className="container-wide relative">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Wat ons drijft 💪
+              Wat ons drijft
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Onze kernwaarden bepalen alles wat we doen — voor ondernemers, door ondernemers.
@@ -153,11 +135,6 @@ export default function Historie() {
                 className="group bg-card rounded-3xl shadow-lg border border-border/50 p-6 text-center hover:shadow-2xl hover:border-accent/40 hover:-translate-y-2 transition-all duration-300 relative overflow-hidden"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                {/* Emoji decoration */}
-                <div className="absolute -right-2 -top-2 text-4xl opacity-10 group-hover:opacity-30 group-hover:scale-125 transition-all duration-300">
-                  {value.emoji}
-                </div>
-                
                 <div className="w-16 h-16 bg-gradient-to-br from-accent/20 to-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                   <value.icon className="h-8 w-8 text-accent" />
                 </div>
