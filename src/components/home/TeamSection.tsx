@@ -10,7 +10,7 @@ const teamMembers = [
     name: "Boy Kruiswijk",
     role: "Oprichter",
     image: teamMember1,
-    description: "Al meer dan 10 jaar gespecialiseerd in verzekeringen voor zzp'ers.",
+    description: "Ruim 13 jaar geleden bedenker van de unieke polis voor zzp'ers in Nederland. Zijn visie: iedere ondernemer goed en zorgeloos verzekerd.",
   },
   {
     name: "Roxy Taskin",
