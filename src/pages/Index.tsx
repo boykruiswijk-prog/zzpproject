@@ -3,7 +3,6 @@ import { HeroSection } from "@/components/home/HeroSection";
 import { BAVApplicationModule } from "@/components/home/BAVApplicationModule";
 import { CombiPackageSection } from "@/components/home/CombiPackageSection";
 import { ServicesSection } from "@/components/home/ServicesSection";
-import { ProcessSection } from "@/components/home/ProcessSection";
 import { TeamSection } from "@/components/home/TeamSection";
 import { SocialProofSection } from "@/components/home/SocialProofSection";
 import { CTASection } from "@/components/home/CTASection";
@@ -15,7 +14,6 @@ const Index = () => {
       <BAVApplicationModule />
       <CombiPackageSection />
       <ServicesSection />
-      <ProcessSection />
       <TeamSection />
       <SocialProofSection />
       <CTASection />
