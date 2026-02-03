@@ -24,7 +24,14 @@ const navItems = [
       { href: "/kennis", label: "Kennis & advies" },
     ]
   },
-  { href: "/over-ons", label: "Over ons" },
+  { 
+    href: "/over-ons", 
+    label: "Over ons",
+    children: [
+      { href: "/over-ons", label: "Het team" },
+      { href: "/historie", label: "Onze historie" },
+    ]
+  },
 ];
 
 export function Header() {
