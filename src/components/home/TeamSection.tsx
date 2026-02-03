@@ -7,22 +7,22 @@ import teamMember3 from "@/assets/team-member-3.jpg";
 
 const teamMembers = [
   {
-    name: "Rick van der Berg",
-    role: "Oprichter & Adviseur",
+    name: "Boy Kruiswijk",
+    role: "Oprichter",
     image: teamMember1,
     description: "Al meer dan 10 jaar gespecialiseerd in verzekeringen voor zzp'ers.",
   },
   {
-    name: "Michelle de Vries",
-    role: "Senior Adviseur",
+    name: "Roxy Taskin",
+    role: "Backoffice",
     image: teamMember2,
-    description: "Expert in BAV en aansprakelijkheidsverzekeringen.",
+    description: "Zorgt dat alles soepel verloopt achter de schermen.",
   },
   {
-    name: "Sophie Jansen",
-    role: "Klantenservice",
+    name: "Ellen Baars",
+    role: "Senior Adviseur",
     image: teamMember3,
-    description: "Altijd bereikbaar voor al je vragen en ondersteuning.",
+    description: "Expert in BAV en aansprakelijkheidsverzekeringen.",
   },
 ];
 
