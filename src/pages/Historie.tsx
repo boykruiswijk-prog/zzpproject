@@ -12,6 +12,7 @@ import {
   Quote
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import boyKruiswijk from "@/assets/team-member-1.jpg";
 
 const values = [
   {
@@ -82,9 +83,13 @@ export default function Historie() {
             <p className="text-2xl md:text-4xl font-bold leading-relaxed mb-6">
               Voor ondernemers, door ondernemers. Dat is onze belofte sinds dag één.
             </p>
-            <div className="flex items-center justify-center gap-3">
-              <div className="w-12 h-12 bg-primary-foreground/20 rounded-full flex items-center justify-center">
-                <Users className="h-6 w-6" />
+            <div className="flex items-center justify-center gap-4">
+              <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-primary-foreground/30 shadow-lg">
+                <img 
+                  src={boyKruiswijk} 
+                  alt="Boy Kruiswijk" 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="text-left">
                 <p className="font-semibold">Boy Kruiswijk</p>
