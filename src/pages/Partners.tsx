@@ -99,6 +99,15 @@ const partners = [
     link: "/contact",
     features: ["Marketplace voor opdrachten", "Geautomatiseerde facturatie", "Community netwerk"],
   },
+  {
+    name: "AFM",
+    category: "Toezicht",
+    description: "De Autoriteit Financiële Markten houdt toezicht op financiële dienstverleners. ZP Zaken staat geregistreerd bij de AFM.",
+    logo: "https://www.afm.nl/~/media/afm/images/logo-afm.svg",
+    icon: Scale,
+    link: "https://www.afm.nl",
+    features: ["Toezichthouder", "Consumentenbescherming", "Geregistreerd"],
+  },
 ];
 
 const serviceCategories = [
