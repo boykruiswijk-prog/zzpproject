@@ -1,7 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
-import { Handshake, ExternalLink, Shield, Heart, PiggyBank, Umbrella, Users, Calculator, Scale, UserCheck, CheckCircle } from "lucide-react";
+import { Handshake, ExternalLink, Shield, Heart, PiggyBank, Umbrella, Users, Calculator, Scale, UserCheck, CheckCircle, Banknote } from "lucide-react";
 import { Link } from "react-router-dom";
 import otenticaLogo from "@/assets/partner-otentica.png";
 
@@ -69,6 +69,15 @@ const partners = [
     link: "/diensten#screening",
     features: ["Snelle verificatie", "Officiële instanties", "In eigen huisstijl"],
   },
+  {
+    name: "Homy Capital",
+    category: "Financiering",
+    description: "Factoring en financiering voor de flexbranche. Facturen binnen 24 uur uitbetaald, 7 dagen per week.",
+    logo: "https://cdn.prod.website-files.com/66bf41c79759cc2db4035331/66bf41c79759cc2db403536d_homy-capital-logo-white-1.svg",
+    icon: Banknote,
+    link: "/diensten#financiering",
+    features: ["Uitbetaling binnen 24 uur", "Geautomatiseerde facturering", "Debiteurenbeheer"],
+  },
 ];
 
 const serviceCategories = [
@@ -76,6 +85,7 @@ const serviceCategories = [
   { id: "administratie", label: "Administratie", icon: Calculator },
   { id: "juridisch", label: "Juridisch", icon: Scale },
   { id: "screening", label: "Screening", icon: UserCheck },
+  { id: "financiering", label: "Financiering", icon: Banknote },
 ];
 
 // Structured data for partners
