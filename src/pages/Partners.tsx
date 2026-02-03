@@ -73,7 +73,7 @@ const partners = [
     name: "Homy Capital",
     category: "Financiering",
     description: "Factoring en financiering voor de flexbranche. Facturen binnen 24 uur uitbetaald, 7 dagen per week.",
-    logo: "https://cdn.prod.website-files.com/66bf41c79759cc2db4035331/66bf41c79759cc2db403536d_homy-capital-logo-white-1.svg",
+    logo: "https://cdn.prod.website-files.com/66bf41c79759cc2db4035331/66c2b8f5a82f1f74bf06e9b4_homy-capital-logo-1.svg",
     icon: Banknote,
     link: "/diensten#financiering",
     features: ["Uitbetaling binnen 24 uur", "Geautomatiseerde facturering", "Debiteurenbeheer"],
