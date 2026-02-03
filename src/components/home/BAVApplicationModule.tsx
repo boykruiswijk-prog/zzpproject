@@ -191,9 +191,11 @@ export function BAVApplicationModule() {
                             </div>
                             <div className="text-right">
                               <p className="text-2xl font-bold text-primary">
-                                €{pkg.priceMonthly.toFixed(2).replace('.', ',')}
+                                €{(paymentType === "monthly" ? pkg.priceMonthly : pkg.priceYearly).toFixed(2).replace('.', ',')}
                               </p>
-                              <p className="text-muted-foreground text-sm">per maand</p>
+                              <p className="text-muted-foreground text-sm">
+                                {paymentType === "monthly" ? "per maand" : "per jaar"}
+                              </p>
                             </div>
                           </div>
                           {selectedPackage === pkg.id && (
