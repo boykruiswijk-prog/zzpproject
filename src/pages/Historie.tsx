@@ -265,29 +265,6 @@ export default function Historie() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-primary text-primary-foreground">
-        <div className="container-wide">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-            <div>
-              <p className="text-4xl md:text-5xl font-bold mb-2">10+</p>
-              <p className="text-primary-foreground/80">Jaar ervaring</p>
-            </div>
-            <div>
-              <p className="text-4xl md:text-5xl font-bold mb-2">1000+</p>
-              <p className="text-primary-foreground/80">Zzp'ers geholpen</p>
-            </div>
-            <div>
-              <p className="text-4xl md:text-5xl font-bold mb-2">10+</p>
-              <p className="text-primary-foreground/80">Partners</p>
-            </div>
-            <div>
-              <p className="text-4xl md:text-5xl font-bold mb-2">★★★★★</p>
-              <p className="text-primary-foreground/80">Klantbeoordeling</p>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* CTA Section */}
       <section className="section-padding bg-background">
