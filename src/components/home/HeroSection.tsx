@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, Phone, Shield, Users } from "lucide-react";
-import heroCorporate from "@/assets/hero-corporate.png";
+import teamMeeting from "@/assets/team-meeting.jpg";
 
 export function HeroSection() {
   return (
@@ -9,11 +9,11 @@ export function HeroSection() {
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img
-          src={heroCorporate}
+          src={teamMeeting}
           alt="ZP Zaken - Professionele ondersteuning voor zzp'ers"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-foreground/90 via-foreground/80 to-foreground/60" />
+        <div className="absolute inset-0 bg-gradient-to-r from-foreground/95 via-foreground/85 to-foreground/70" />
       </div>
 
       <div className="container-wide relative z-10 py-16 lg:py-24">
