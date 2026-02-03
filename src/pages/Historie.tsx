@@ -35,6 +35,15 @@ const timelineEvents = [
     stats: "Eigen identiteit",
   },
   {
+    year: "2019",
+    title: "Het jaar van de automatisering",
+    subtitle: "Schaalbaar met behoud van persoonlijk contact",
+    description: "ZP Zaken wordt schaalbaar en kan de enorme vraag aan door vergaande automatisering. Maar met behoud van klantcontact — want wij geloven in mensen en zaken doen met mensen, niet in zakendoen met systemen. Deze mix zorgt voor de optimale balans.",
+    icon: TrendingUp,
+    highlight: "Automatisering",
+    stats: "Schaalbaar & persoonlijk",
+  },
+  {
     year: "2022",
     title: "Een eigen thuis",
     subtitle: "Kantoor in Hoofddorp",
