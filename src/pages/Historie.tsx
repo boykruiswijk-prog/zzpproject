@@ -274,7 +274,7 @@ export default function Historie() {
               Schrijf mee aan ons verhaal
             </h2>
             <p className="text-lg text-muted-foreground mb-8">
-              Word onderdeel van de ZP Zaken familie. Ontdek wat wij voor jouw onderneming kunnen betekenen.
+              Word onderdeel van de ZP Zaken familie. Ontdek wat wij voor jou en je onderneming kunnen betekenen.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="accent" size="lg" asChild>
