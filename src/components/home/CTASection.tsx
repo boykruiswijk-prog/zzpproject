@@ -1,35 +1,47 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Phone, Calendar } from "lucide-react";
+import { Phone, Calendar, ArrowRight } from "lucide-react";
+import heroCorporate from "@/assets/hero-corporate.png";
 
 export function CTASection() {
   return (
-    <section className="section-padding bg-primary">
-      <div className="container-wide">
+    <section className="relative section-padding overflow-hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src={heroCorporate}
+          alt=""
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
+      </div>
+
+      <div className="container-wide relative z-10">
         <div className="max-w-2xl mx-auto text-center text-primary-foreground">
           <h2 className="mb-4 text-primary-foreground">
             Klaar om zorgeloos te ondernemen?
           </h2>
-          <p className="text-primary-foreground/80 mb-8 max-w-xl mx-auto">
+          <p className="text-primary-foreground/85 text-lg mb-8 max-w-xl mx-auto">
             Plan een gratis adviesgesprek en ontdek welke diensten bij jouw situatie passen. 
             Binnen 15 minuten weet je waar je aan toe bent.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
             <Button 
-              size="lg" 
-              className="bg-accent hover:bg-accent/90 text-accent-foreground"
+              size="xl" 
+              className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg"
               asChild
             >
               <Link to="/contact">
                 <Calendar className="h-5 w-5" />
                 Plan een gesprek
+                <ArrowRight className="h-5 w-5" />
               </Link>
             </Button>
             <Button 
               variant="outline" 
-              size="lg" 
-              className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
+              size="xl" 
+              className="border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 backdrop-blur-sm"
               asChild
             >
               <a href="tel:0232010502">
@@ -39,9 +51,11 @@ export function CTASection() {
             </Button>
           </div>
 
-          <p className="text-primary-foreground/60 text-sm">
-            Gratis en vrijblijvend • Binnen 24 uur reactie • Geen verkooppraatjes
-          </p>
+          <div className="flex flex-wrap items-center justify-center gap-6 text-primary-foreground/70 text-sm">
+            <span>✓ Gratis en vrijblijvend</span>
+            <span>✓ Binnen 24 uur reactie</span>
+            <span>✓ Geen verkooppraatjes</span>
+          </div>
         </div>
       </div>
     </section>
