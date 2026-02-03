@@ -28,8 +28,14 @@ const teamMembers = [
 
 export function TeamSection() {
   return (
-    <section className="section-padding bg-secondary">
-      <div className="container-wide">
+    <section className="section-padding bg-secondary relative overflow-hidden">
+      {/* Decorative background pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-primary rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+      </div>
+      
+      <div className="container-wide relative z-10">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-14">
           <span className="inline-block text-primary font-semibold text-sm uppercase tracking-wider mb-3">

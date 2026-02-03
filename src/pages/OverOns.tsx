@@ -6,6 +6,8 @@ import { ArrowRight, Target, Eye, Users, Award, Heart, Shield, CheckCircle } fro
 import teamMember1 from "@/assets/team-member-1.jpg";
 import teamMember2 from "@/assets/team-member-2.jpg";
 import teamMember3 from "@/assets/team-member-3.jpg";
+import teamBoyCalling from "@/assets/team-boy-calling.jpg";
+import officeCoffee from "@/assets/office-coffee.jpg";
 
 const values = [
   {
@@ -103,6 +105,7 @@ export default function OverOns() {
           icon: <Heart className="h-4 w-4" />,
           text: "Met passie voor ondernemers"
         }}
+        backgroundImage={teamBoyCalling}
       />
 
       {/* Mission */}
@@ -219,8 +222,19 @@ export default function OverOns() {
       </section>
 
       {/* Facts as Shield Badges */}
-      <section className="section-padding bg-primary text-primary-foreground">
-        <div className="container-wide">
+      <section className="section-padding text-primary-foreground relative overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src={officeCoffee}
+            alt=""
+            className="w-full h-full object-cover"
+            aria-hidden="true"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
+        </div>
+        
+        <div className="container-wide relative z-10">
           <div className="flex flex-wrap justify-center gap-6">
             {facts.map((fact) => (
               <div 

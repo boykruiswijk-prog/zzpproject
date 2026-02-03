@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import teamHero from "@/assets/team-hero.jpg";
+import teamMeeting from "@/assets/team-meeting.jpg";
 
 interface PageHeroProps {
   title: ReactNode;
@@ -10,6 +10,7 @@ interface PageHeroProps {
   };
   children?: ReactNode;
   showBackgroundImage?: boolean;
+  backgroundImage?: string;
 }
 
 export function PageHero({ 
@@ -17,15 +18,18 @@ export function PageHero({
   subtitle, 
   badge, 
   children,
-  showBackgroundImage = true 
+  showBackgroundImage = true,
+  backgroundImage
 }: PageHeroProps) {
+  const bgImage = backgroundImage || teamMeeting;
+  
   return (
     <section className="relative min-h-[40vh] flex items-center overflow-hidden">
       {/* Background Image */}
       {showBackgroundImage && (
         <div className="absolute inset-0 z-0">
           <img
-            src={teamHero}
+            src={bgImage}
             alt=""
             className="w-full h-full object-cover"
             aria-hidden="true"

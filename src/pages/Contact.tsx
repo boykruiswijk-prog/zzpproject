@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Phone, Mail, MapPin, Clock, Calendar, CheckCircle, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import teamRoxy from "@/assets/team-roxy.jpg";
 
 export default function Contact() {
   const { toast } = useToast();
@@ -100,6 +101,7 @@ export default function Contact() {
           icon: <MessageCircle className="h-4 w-4" />,
           text: "Altijd een mens aan de lijn"
         }}
+        backgroundImage={teamRoxy}
       />
 
       <section className="section-padding bg-background">

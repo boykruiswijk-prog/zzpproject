@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Phone, Calendar, ArrowRight } from "lucide-react";
-import heroCorporate from "@/assets/hero-corporate.png";
+import teamBoyCalling from "@/assets/team-boy-calling.jpg";
 
 export function CTASection() {
   return (
@@ -9,7 +9,7 @@ export function CTASection() {
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img
-          src={heroCorporate}
+          src={teamBoyCalling}
           alt=""
           className="w-full h-full object-cover"
         />
