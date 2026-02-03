@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
-import { Shield, Heart, Scale, ArrowRight, CheckCircle, Globe, Sparkles } from "lucide-react";
+import { Shield, Heart, Scale, ArrowRight, CheckCircle, Globe, Sparkles, Euro } from "lucide-react";
 import { OnlineAanvraagDialog } from "@/components/verzekeringen/OnlineAanvraagDialog";
 
 const insurances = [
@@ -66,8 +66,31 @@ export default function Verzekeringen() {
     title: string;
   } | null>(null);
 
+  // Structured data for insurance products
+  const insuranceSchemas = insurances.map((ins) => ({
+    "@context": "https://schema.org",
+    "@type": "InsuranceProduct",
+    "name": ins.title,
+    "description": ins.description,
+    "provider": {
+      "@type": "Organization",
+      "name": "ZP Zaken"
+    },
+    "category": "Business Insurance",
+    "audience": {
+      "@type": "Audience",
+      "audienceType": ins.forWho
+    }
+  }));
+
   return (
     <Layout>
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(insuranceSchemas) }}
+      />
+
       <PageHero
         title={<>Verzekeringen voor <span className="text-accent">zzp'ers</span></>}
         subtitle="Als zelfstandig ondernemer ben je zelf verantwoordelijk voor je zakelijke zekerheid. Ontdek welke verzekeringen passen bij jouw situatie en beroep."
@@ -87,38 +110,66 @@ export default function Verzekeringen() {
       {/* Insurance cards */}
       <section className="section-padding bg-background">
         <div className="container-wide">
-          <div className="space-y-12 lg:space-y-16">
+          <div className="space-y-16">
             {insurances.map((insurance, index) => (
               <div
                 key={insurance.id}
                 id={insurance.id}
                 className="scroll-mt-24"
+                itemScope
+                itemType="https://schema.org/InsuranceProduct"
               >
-                <div className={`grid lg:grid-cols-2 gap-8 lg:gap-12 items-center ${index % 2 === 1 ? 'lg:grid-flow-col-dense' : ''}`}>
-                  {/* Content */}
-                  <div className={index % 2 === 1 ? 'lg:col-start-2' : ''}>
-                    <div className="flex items-center gap-4 mb-4">
+                <div className={`grid lg:grid-cols-5 gap-8 lg:gap-12 items-start ${index % 2 === 1 ? 'lg:grid-flow-col-dense' : ''}`}>
+                  {/* Content - Takes 3 columns */}
+                  <div className={`lg:col-span-3 ${index % 2 === 1 ? 'lg:col-start-3' : ''}`}>
+                    <div className="flex items-center gap-4 mb-6">
                       <div className="h-14 w-14 rounded-xl bg-accent/10 flex items-center justify-center">
                         <insurance.icon className="h-7 w-7 text-accent" />
                       </div>
                       <div>
-                        <h2 className="text-2xl md:text-3xl">{insurance.title}</h2>
+                        <h2 className="text-2xl md:text-3xl" itemProp="name">{insurance.title}</h2>
                         <p className="text-muted-foreground">{insurance.subtitle}</p>
                       </div>
                     </div>
                     
-                    <p className="text-lg text-muted-foreground mb-6">
+                    <p className="text-lg text-muted-foreground mb-6" itemProp="description">
                       {insurance.description}
                     </p>
 
-                    <ul className="space-y-3 mb-6">
+                    {/* Features as Shield Tags */}
+                    <div className="flex flex-wrap gap-2 mb-6">
                       {insurance.features.map((feature) => (
-                        <li key={feature} className="flex items-start gap-3">
-                          <CheckCircle className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-                          <span>{feature}</span>
-                        </li>
+                        <span
+                          key={feature}
+                          className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 text-foreground px-3 py-1.5 rounded-lg text-sm"
+                          itemProp="hasOfferCatalog"
+                        >
+                          <CheckCircle className="h-3.5 w-3.5 text-accent" />
+                          {feature}
+                        </span>
                       ))}
-                    </ul>
+                    </div>
+
+                    {/* Target audience and price shields */}
+                    <div className="flex flex-wrap gap-3 mb-6">
+                      <div 
+                        className="inline-flex items-center gap-2 bg-card border border-border/50 shadow-sm px-4 py-2.5 rounded-xl"
+                        itemProp="audience"
+                      >
+                        <Shield className="h-4 w-4 text-accent" />
+                        <div>
+                          <span className="text-xs text-muted-foreground">Geschikt voor</span>
+                          <p className="text-sm font-medium" itemProp="audienceType">{insurance.forWho}</p>
+                        </div>
+                      </div>
+                      <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 px-4 py-2.5 rounded-xl">
+                        <Euro className="h-4 w-4 text-accent" />
+                        <div>
+                          <span className="text-xs text-muted-foreground">Indicatie</span>
+                          <p className="text-sm font-medium text-accent">{insurance.price}</p>
+                        </div>
+                      </div>
+                    </div>
 
                     <div className="flex flex-wrap gap-3">
                       {insurance.canApplyOnline && (
@@ -144,29 +195,23 @@ export default function Verzekeringen() {
                     </div>
                   </div>
 
-                  {/* Info card */}
-                  <div className={`bg-card rounded-2xl p-8 shadow-card border border-border/50 ${index % 2 === 1 ? 'lg:col-start-1 lg:row-start-1' : ''}`}>
-                    <h3 className="font-semibold mb-4">Overzicht</h3>
-                    <div className="space-y-4">
-                      <div className="p-4 bg-secondary rounded-lg">
-                        <p className="text-sm text-muted-foreground mb-1">Geschikt voor</p>
-                        <p className="font-medium">{insurance.forWho}</p>
+                  {/* Tip Card - Takes 2 columns */}
+                  <div className={`lg:col-span-2 ${index % 2 === 1 ? 'lg:col-start-1 lg:row-start-1' : ''}`}>
+                    <div className="bg-accent/10 border border-accent/20 rounded-xl p-6">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Shield className="h-5 w-5 text-accent" />
+                        <p className="font-semibold text-accent">Wist je dat?</p>
                       </div>
-                      <div className="p-4 bg-secondary rounded-lg">
-                        <p className="text-sm text-muted-foreground mb-1">Indicatie premie</p>
-                        <p className="font-medium text-accent">{insurance.price}</p>
-                      </div>
-                      <div className="p-4 bg-accent/10 rounded-lg border border-accent/20">
-                        <p className="text-sm font-medium text-accent">
-                          💡 Wist je dat? De premie is vaak fiscaal aftrekbaar als zakelijke kosten.
-                        </p>
-                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        De premie voor zakelijke verzekeringen is vaak fiscaal aftrekbaar als zakelijke kosten. 
+                        Dat maakt je verzekering netto een stuk voordeliger!
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 {index < insurances.length - 1 && (
-                  <div className="border-t border-border mt-12 lg:mt-16" />
+                  <div className="border-t border-border mt-16" />
                 )}
               </div>
             ))}

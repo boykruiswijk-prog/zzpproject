@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Target, Eye, Users, Award, CheckCircle, Heart } from "lucide-react";
+import { ArrowRight, Target, Eye, Users, Award, Heart, Shield, CheckCircle } from "lucide-react";
 import teamMember1 from "@/assets/team-member-1.jpg";
 import teamMember2 from "@/assets/team-member-2.jpg";
 import teamMember3 from "@/assets/team-member-3.jpg";
@@ -58,9 +58,44 @@ const team = [
   },
 ];
 
+const registrations = [
+  { title: "AFM geregistreerd", description: "Wij staan geregistreerd bij de Autoriteit Financiële Markten als onafhankelijk adviseur." },
+  { title: "Kifid aangesloten", description: "Bij klachten kun je terecht bij het Klachteninstituut Financiële Dienstverlening." },
+  { title: "Beroepsaansprakelijkheid verzekerd", description: "Uiteraard zijn wij zelf ook verzekerd tegen beroepsfouten." },
+];
+
+// Structured data for Google
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "ZP Zaken",
+  "url": "https://zpzaken.nl",
+  "logo": "https://zpzaken.nl/logo.png",
+  "foundingDate": "2012",
+  "description": "Onafhankelijk advies voor zzp'ers op het gebied van verzekeringen, administratie, juridisch advies en screening.",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "NL"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.9",
+    "bestRating": "5",
+    "worstRating": "1",
+    "ratingCount": "2500"
+  },
+  "sameAs": []
+};
+
 export default function OverOns() {
   return (
     <Layout>
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
+
       <PageHero
         title="Over ZP Zaken"
         subtitle="Wij geloven dat zzp'ers recht hebben op eerlijk, persoonlijk advies. Zonder tussenpersonen, zonder verkooppraatjes — gewoon goed geregeld."
@@ -86,10 +121,19 @@ export default function OverOns() {
                 onafhankelijk advies. We nemen de tijd om je situatie te begrijpen en adviseren 
                 alleen wat je écht nodig hebt.
               </p>
-              <p className="text-lg text-muted-foreground">
-                Geen onnodige producten, geen ingewikkelde taal — gewoon eerlijk advies van 
-                mensen die snappen wat ondernemen inhoudt.
-              </p>
+              
+              {/* Mission Shield Tags */}
+              <div className="flex flex-wrap gap-2">
+                {["Eerlijk advies", "Geen onnodige producten", "Begrijpelijke taal"].map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 text-foreground px-3 py-1.5 rounded-lg text-sm"
+                  >
+                    <CheckCircle className="h-3.5 w-3.5 text-accent" />
+                    {tag}
+                  </span>
+                ))}
+              </div>
             </div>
             
             <div className="bg-primary/5 border border-primary/10 rounded-2xl p-8 lg:p-12">
@@ -117,18 +161,27 @@ export default function OverOns() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {team.map((member) => (
-              <div key={member.name} className="bg-card rounded-2xl overflow-hidden shadow-card border border-border/50">
+              <div 
+                key={member.name} 
+                className="bg-card rounded-2xl overflow-hidden shadow-card border border-border/50"
+                itemScope
+                itemType="https://schema.org/Person"
+              >
                 <div className="aspect-[4/3] overflow-hidden">
                   <img
                     src={member.image}
                     alt={member.name}
                     className="w-full h-full object-cover"
+                    itemProp="image"
                   />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-semibold">{member.name}</h3>
-                  <p className="text-accent font-medium mb-3">{member.role}</p>
-                  <p className="text-muted-foreground text-sm">{member.description}</p>
+                  <h3 className="text-xl font-semibold" itemProp="name">{member.name}</h3>
+                  <span className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 text-accent px-3 py-1 rounded-full text-sm font-medium my-3">
+                    <Shield className="h-3.5 w-3.5" />
+                    <span itemProp="jobTitle">{member.role}</span>
+                  </span>
+                  <p className="text-muted-foreground text-sm" itemProp="description">{member.description}</p>
                 </div>
               </div>
             ))}
@@ -136,7 +189,7 @@ export default function OverOns() {
         </div>
       </section>
 
-      {/* Values */}
+      {/* Values as Shield Tags */}
       <section className="section-padding bg-background">
         <div className="container-wide">
           <div className="text-center max-w-2xl mx-auto mb-16">
@@ -146,70 +199,66 @@ export default function OverOns() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="flex flex-wrap justify-center gap-4 mb-12">
             {values.map((value) => (
-              <div key={value.title} className="bg-card rounded-2xl p-8 shadow-card border border-border/50">
-                <div className="h-14 w-14 rounded-xl bg-accent/10 flex items-center justify-center mb-6">
-                  <value.icon className="h-7 w-7 text-accent" />
+              <div
+                key={value.title}
+                className="inline-flex items-center gap-3 bg-card border border-border/50 shadow-sm px-5 py-3 rounded-xl"
+              >
+                <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center">
+                  <value.icon className="h-5 w-5 text-accent" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{value.title}</h3>
-                <p className="text-muted-foreground text-sm">{value.description}</p>
+                <div>
+                  <p className="font-semibold text-sm">{value.title}</p>
+                  <p className="text-xs text-muted-foreground max-w-[200px]">{value.description}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Facts */}
+      {/* Facts as Shield Badges */}
       <section className="section-padding bg-primary text-primary-foreground">
         <div className="container-wide">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="flex flex-wrap justify-center gap-6">
             {facts.map((fact) => (
-              <div key={fact.label} className="text-center">
-                <p className="text-4xl md:text-5xl font-bold mb-2">{fact.value}</p>
-                <p className="text-primary-foreground/70">{fact.label}</p>
+              <div 
+                key={fact.label} 
+                className="inline-flex items-center gap-3 bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 px-6 py-4 rounded-xl"
+              >
+                <Shield className="h-5 w-5 text-accent" />
+                <div className="text-center">
+                  <p className="text-2xl md:text-3xl font-bold">{fact.value}</p>
+                  <p className="text-primary-foreground/70 text-sm">{fact.label}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Trust */}
+      {/* Trust - Registrations as Shields */}
       <section className="section-padding bg-background">
         <div className="container-wide">
           <div className="max-w-3xl mx-auto">
             <h2 className="mb-8 text-center">Officieel geregistreerd</h2>
-            <div className="bg-card rounded-2xl p-8 shadow-card border border-border/50">
-              <ul className="space-y-4">
-                <li className="flex items-start gap-4">
-                  <CheckCircle className="h-6 w-6 text-accent flex-shrink-0 mt-0.5" />
+            <div className="flex flex-wrap justify-center gap-4">
+              {registrations.map((reg) => (
+                <div
+                  key={reg.title}
+                  className="inline-flex items-center gap-3 bg-accent/10 border border-accent/20 px-5 py-3 rounded-xl max-w-sm"
+                  itemProp="hasCredential"
+                  itemScope
+                  itemType="https://schema.org/EducationalOccupationalCredential"
+                >
+                  <CheckCircle className="h-6 w-6 text-accent flex-shrink-0" />
                   <div>
-                    <p className="font-semibold">AFM geregistreerd</p>
-                    <p className="text-muted-foreground text-sm">
-                      Wij staan geregistreerd bij de Autoriteit Financiële Markten als 
-                      onafhankelijk adviseur.
-                    </p>
+                    <p className="font-semibold text-sm" itemProp="name">{reg.title}</p>
+                    <p className="text-xs text-muted-foreground" itemProp="description">{reg.description}</p>
                   </div>
-                </li>
-                <li className="flex items-start gap-4">
-                  <CheckCircle className="h-6 w-6 text-accent flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold">Kifid aangesloten</p>
-                    <p className="text-muted-foreground text-sm">
-                      Bij klachten kun je terecht bij het Klachteninstituut Financiële Dienstverlening.
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-4">
-                  <CheckCircle className="h-6 w-6 text-accent flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold">Beroepsaansprakelijkheid verzekerd</p>
-                    <p className="text-muted-foreground text-sm">
-                      Uiteraard zijn wij zelf ook verzekerd tegen beroepsfouten.
-                    </p>
-                  </div>
-                </li>
-              </ul>
+                </div>
+              ))}
             </div>
           </div>
         </div>
