@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Handshake, ExternalLink, Shield, Heart, PiggyBank, Umbrella, Users, Calculator, Scale, UserCheck, CheckCircle, Banknote, Briefcase, Crown } from "lucide-react";
 import { Link } from "react-router-dom";
 import otenticaLogo from "@/assets/partner-otentica.png";
+import homyCapitalLogo from "@/assets/partner-homy-capital.png";
+import circle8Logo from "@/assets/partner-circle8.png";
+import onefellowLogo from "@/assets/partner-onefellow.png";
 
 const partners = [
   {
@@ -73,7 +76,7 @@ const partners = [
     name: "Homy Capital",
     category: "Financiering",
     description: "Factoring en financiering voor de flexbranche. Facturen binnen 24 uur uitbetaald, 7 dagen per week.",
-    logo: "https://cdn.prod.website-files.com/66bf41c79759cc2db4035331/66c2b8f5a82f1f74bf06e9b4_homy-capital-logo-1.svg",
+    logo: homyCapitalLogo,
     icon: Banknote,
     link: "/diensten#financiering",
     features: ["Uitbetaling binnen 24 uur", "Geautomatiseerde facturering", "Debiteurenbeheer"],
@@ -82,7 +85,7 @@ const partners = [
     name: "Circle8",
     category: "Opdrachten",
     description: "Toonaangevende intermediair op de Nederlandse arbeidsmarkt. Toegang tot opdrachten bij grote opdrachtgevers.",
-    logo: "https://www.circle8.nl/hubfs/raw_assets/public/Circle8_2023/images/logo-circle8.svg",
+    logo: circle8Logo,
     icon: Briefcase,
     link: "/contact",
     features: ["Opdrachten-marktplaats", "Contractmanagement", "Wet DBA compliant"],
@@ -91,7 +94,7 @@ const partners = [
     name: "Onefellow",
     category: "Opdrachten",
     description: "Het platform voor freelancers en bemiddelaars. Vind de beste opdrachten en automatiseer je volledige inhuurproces.",
-    logo: "https://onefellow.co/wp-content/uploads/2023/09/onefellow-logo.svg",
+    logo: onefellowLogo,
     icon: Crown,
     link: "/contact",
     features: ["Marketplace voor opdrachten", "Geautomatiseerde facturatie", "Community netwerk"],
