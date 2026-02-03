@@ -4,6 +4,15 @@ import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, BookOpen, Calendar, Clock, Shield } from "lucide-react";
 
+// Article images
+import articleWetgeving from "@/assets/article-wetgeving.jpg";
+import articleRegelgeving from "@/assets/article-regelgeving.jpg";
+import articleVbar from "@/assets/article-vbar.jpg";
+import articleKor from "@/assets/article-kor.jpg";
+import articleDba from "@/assets/article-dba.jpg";
+import articleAov from "@/assets/article-aov.jpg";
+import teamMeeting from "@/assets/team-meeting.jpg";
+
 const articles = [
   {
     slug: "zelfstandigenwet-voor-zzp-ers",
@@ -12,6 +21,7 @@ const articles = [
     category: "Wetgeving",
     date: "15 juli 2025",
     readTime: "5 min",
+    image: articleWetgeving,
   },
   {
     slug: "nieuwe-regels-zzp-2025",
@@ -20,6 +30,7 @@ const articles = [
     category: "Regelgeving",
     date: "10 januari 2025",
     readTime: "4 min",
+    image: articleRegelgeving,
   },
   {
     slug: "vbar-wet-verduidelijking-arbeidsrelaties",
@@ -28,6 +39,7 @@ const articles = [
     category: "Wetgeving",
     date: "5 december 2024",
     readTime: "6 min",
+    image: articleVbar,
   },
   {
     slug: "wijziging-kleineondernemersregeling-kor-2025",
@@ -36,6 +48,7 @@ const articles = [
     category: "Fiscaal",
     date: "20 november 2024",
     readTime: "3 min",
+    image: articleKor,
   },
   {
     slug: "wet-dba-alles-wat-je-moet-weten",
@@ -44,6 +57,7 @@ const articles = [
     category: "Wetgeving",
     date: "1 november 2024",
     readTime: "7 min",
+    image: articleDba,
   },
   {
     slug: "aov-arbeidsongeschiktheidsverzekering",
@@ -52,6 +66,7 @@ const articles = [
     category: "Verzekeringen",
     date: "15 oktober 2024",
     readTime: "5 min",
+    image: articleAov,
   },
 ];
 
@@ -88,6 +103,7 @@ export default function Kennisbank() {
           icon: <BookOpen className="h-4 w-4" />,
           text: "Kennisbank"
         }}
+        backgroundImage={teamMeeting}
       />
 
       {/* Category Filter as Shield Tags */}
@@ -122,13 +138,22 @@ export default function Kennisbank() {
                 itemScope
                 itemType="https://schema.org/Article"
               >
-                <div className="p-6 flex flex-col flex-1">
-                  {/* Category Shield */}
-                  <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 text-accent px-3 py-1.5 rounded-lg text-sm font-medium mb-4 w-fit">
+                {/* Article Image */}
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src={article.image}
+                    alt={article.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-card/80 via-transparent to-transparent" />
+                  {/* Category Shield on image */}
+                  <div className="absolute bottom-3 left-3 inline-flex items-center gap-2 bg-accent/90 backdrop-blur-sm text-primary-foreground px-3 py-1.5 rounded-lg text-sm font-medium">
                     <Shield className="h-3.5 w-3.5" />
                     <span itemProp="articleSection">{article.category}</span>
                   </div>
-                  
+                </div>
+
+                <div className="p-6 flex flex-col flex-1">
                   <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors line-clamp-2" itemProp="headline">
                     {article.title}
                   </h3>
