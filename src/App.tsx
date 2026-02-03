@@ -13,6 +13,7 @@ import Kennis from "./pages/Kennis";
 import Kennisbank from "./pages/Kennisbank";
 import OverOns from "./pages/OverOns";
 import Partners from "./pages/Partners";
+import Historie from "./pages/Historie";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/admin/Login";
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/kennisbank" element={<Kennisbank />} />
             <Route path="/over-ons" element={<OverOns />} />
             <Route path="/partners" element={<Partners />} />
+            <Route path="/historie" element={<Historie />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboard />} />
