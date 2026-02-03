@@ -12,6 +12,10 @@ import {
   Heart,
   Star
 } from "lucide-react";
+import officelogo from "@/assets/office-logo.jpg";
+import teamRoxy from "@/assets/team-roxy.jpg";
+import officeCookies from "@/assets/office-cookies.jpg";
+import officeCoffee from "@/assets/office-coffee.jpg";
 
 const timelineEvents = [
   {
@@ -23,6 +27,7 @@ const timelineEvents = [
     highlight: "Het fundament gelegd",
     stats: "Eerste klanten geholpen",
     color: "from-orange-500 to-red-500",
+    image: officelogo,
   },
   {
     year: "2017",
@@ -33,6 +38,7 @@ const timelineEvents = [
     highlight: "100% onafhankelijk",
     stats: "Eigen identiteit",
     color: "from-blue-500 to-indigo-500",
+    image: null,
   },
   {
     year: "2019",
@@ -43,6 +49,7 @@ const timelineEvents = [
     highlight: "Automatisering",
     stats: "Schaalbaar & persoonlijk",
     color: "from-yellow-500 to-orange-500",
+    image: teamRoxy,
   },
   {
     year: "2022",
@@ -53,6 +60,7 @@ const timelineEvents = [
     highlight: "Eigen locatie",
     stats: "Hoofddorp",
     color: "from-green-500 to-emerald-500",
+    image: null,
   },
   {
     year: "2024",
@@ -63,6 +71,7 @@ const timelineEvents = [
     highlight: "Marktleider",
     stats: "Duizenden klanten",
     color: "from-purple-500 to-pink-500",
+    image: officeCookies,
   },
   {
     year: "Eind 2024",
@@ -73,6 +82,7 @@ const timelineEvents = [
     highlight: "Nieuwe locatie",
     stats: "Schiphol-Rijk",
     color: "from-amber-500 to-yellow-500",
+    image: officeCoffee,
   },
   {
     year: "2026",
@@ -83,6 +93,7 @@ const timelineEvents = [
     highlight: "Innovatie",
     stats: "Screening & Factoring",
     color: "from-pink-500 to-rose-500",
+    image: null,
   },
 ];
 
@@ -105,41 +116,56 @@ function TimelineItem({ event, index, isVisible }: TimelineItemProps) {
     >
       {/* Content Card */}
       <div className={`lg:w-[calc(50%-3rem)] ${isEven ? "lg:text-right" : "lg:text-left"}`}>
-        <div className="group relative bg-card rounded-3xl shadow-lg border border-border/50 p-6 md:p-8 hover:shadow-2xl hover:border-accent/40 hover:-translate-y-1 transition-all duration-300 overflow-hidden">
-          {/* Gradient overlay on hover */}
-          <div className={`absolute inset-0 bg-gradient-to-br ${event.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
+        <div className="group relative bg-card rounded-3xl shadow-lg border border-border/50 hover:shadow-2xl hover:border-accent/40 hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+          {/* Background Image if available */}
+          {event.image && (
+            <div className="relative h-48 overflow-hidden">
+              <img
+                src={event.image}
+                alt=""
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                aria-hidden="true"
+              />
+              <div className={`absolute inset-0 bg-gradient-to-t ${event.color} opacity-20`} />
+            </div>
+          )}
           
+          <div className="p-6 md:p-8 relative">
+            {/* Gradient overlay on hover */}
+            <div className={`absolute inset-0 bg-gradient-to-br ${event.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
+            
 
-          {/* Year Badge with animation */}
-          <div className={`inline-flex items-center gap-2 bg-gradient-to-r ${event.color} text-white px-5 py-2.5 rounded-full text-lg font-bold mb-4 shadow-lg group-hover:scale-105 transition-transform duration-300 ${
-            isEven ? "lg:ml-auto" : ""
-          }`}>
-            <PartyPopper className="h-4 w-4 animate-pulse" />
-            {event.year}
-          </div>
+            {/* Year Badge with animation */}
+            <div className={`relative inline-flex items-center gap-2 bg-gradient-to-r ${event.color} text-white px-5 py-2.5 rounded-full text-lg font-bold mb-4 shadow-lg group-hover:scale-105 transition-transform duration-300 ${
+              isEven ? "lg:ml-auto" : ""
+            }`}>
+              <PartyPopper className="h-4 w-4 animate-pulse" />
+              {event.year}
+            </div>
 
-          <h3 className="text-xl md:text-2xl font-bold mb-2 group-hover:text-primary transition-colors">
-            {event.title}
-          </h3>
-          <p className="text-accent font-semibold mb-4 flex items-center gap-2 justify-start lg:justify-inherit">
-            {!isEven && <Heart className="h-4 w-4 text-accent animate-pulse" />}
-            {event.subtitle}
-            {isEven && <Heart className="h-4 w-4 text-accent animate-pulse lg:order-first" />}
-          </p>
-          <p className="text-muted-foreground leading-relaxed mb-5">
-            {event.description}
-          </p>
+            <h3 className="relative text-xl md:text-2xl font-bold mb-2 group-hover:text-primary transition-colors">
+              {event.title}
+            </h3>
+            <p className="relative text-accent font-semibold mb-4 flex items-center gap-2 justify-start lg:justify-inherit">
+              {!isEven && <Heart className="h-4 w-4 text-accent animate-pulse" />}
+              {event.subtitle}
+              {isEven && <Heart className="h-4 w-4 text-accent animate-pulse lg:order-first" />}
+            </p>
+            <p className="relative text-muted-foreground leading-relaxed mb-5">
+              {event.description}
+            </p>
 
-          {/* Stats badges with hover effects */}
-          <div className={`flex flex-wrap gap-2 ${isEven ? "lg:justify-end" : "lg:justify-start"}`}>
-            <span className="inline-flex items-center gap-1.5 bg-secondary text-foreground px-3 py-2 rounded-xl text-sm font-medium hover:bg-primary hover:text-primary-foreground transition-colors cursor-default">
-              <Shield className="h-3.5 w-3.5" />
-              {event.highlight}
-            </span>
-            <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-accent/20 to-accent/10 text-accent px-3 py-2 rounded-xl text-sm font-medium border border-accent/20">
-              <Star className="h-3.5 w-3.5" />
-              {event.stats}
-            </span>
+            {/* Stats badges with hover effects */}
+            <div className={`relative flex flex-wrap gap-2 ${isEven ? "lg:justify-end" : "lg:justify-start"}`}>
+              <span className="inline-flex items-center gap-1.5 bg-secondary text-foreground px-3 py-2 rounded-xl text-sm font-medium hover:bg-primary hover:text-primary-foreground transition-colors cursor-default">
+                <Shield className="h-3.5 w-3.5" />
+                {event.highlight}
+              </span>
+              <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-accent/20 to-accent/10 text-accent px-3 py-2 rounded-xl text-sm font-medium border border-accent/20">
+                <Star className="h-3.5 w-3.5" />
+                {event.stats}
+              </span>
+            </div>
           </div>
         </div>
       </div>
