@@ -47,10 +47,19 @@ const timelineEvents = [
     year: "2024",
     title: "Marktleider in zzp-verzekeringen",
     subtitle: "Duizenden ondernemers geholpen",
-    description: "Vandaag de dag is ZP Zaken uitgegroeid tot dé specialist voor zzp'ers in Nederland. Duizenden ondernemers zijn geholpen met verzekeringen, administratie, juridische ondersteuning en meer. Het bewijs dat persoonlijke aandacht en expertise het verschil maken.",
+    description: "ZP Zaken is uitgegroeid tot dé specialist voor zzp'ers in Nederland. Duizenden ondernemers zijn geholpen met verzekeringen, administratie, juridische ondersteuning en meer. Het bewijs dat persoonlijke aandacht en expertise het verschil maken.",
     icon: Award,
     highlight: "Marktleider",
     stats: "Duizenden klanten",
+  },
+  {
+    year: "Eind 2024",
+    title: "Nieuw hoofdkantoor",
+    subtitle: "Schiphol-Rijk, Tupolevlaan 41",
+    description: "De volgende stap in onze groei: een gloednieuw kantoor op Schiphol-Rijk. Tupolevlaan 41 is nu ons thuis — een moderne werkplek waar ondernemers altijd welkom zijn. En ja, de koffie is hier écht lekker.",
+    icon: Building2,
+    highlight: "Nieuwe locatie",
+    stats: "Schiphol-Rijk",
   },
 ];
 
@@ -90,7 +99,8 @@ const historieSchema = {
   },
   "address": {
     "@type": "PostalAddress",
-    "addressLocality": "Hoofddorp",
+    "streetAddress": "Tupolevlaan 41",
+    "addressLocality": "Schiphol-Rijk",
     "addressCountry": "NL"
   }
 };
