@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
+import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Phone, Mail, MapPin, Clock, Calendar, CheckCircle } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Calendar, CheckCircle, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -92,20 +93,14 @@ export default function Contact() {
 
   return (
     <Layout>
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground py-16 md:py-24">
-        <div className="container-wide">
-          <div className="max-w-3xl">
-            <h1 className="mb-6">
-              Contact & advies aanvragen
-            </h1>
-            <p className="text-lg md:text-xl text-primary-foreground/80">
-              Heb je vragen of wil je een gratis adviesgesprek? Vul het formulier in 
-              of neem direct contact met ons op. We reageren binnen 24 uur.
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        title="Contact & advies aanvragen"
+        subtitle="Heb je vragen of wil je een gratis adviesgesprek? Vul het formulier in of neem direct contact met ons op. We reageren binnen 24 uur."
+        badge={{
+          icon: <MessageCircle className="h-4 w-4" />,
+          text: "Altijd een mens aan de lijn"
+        }}
+      />
 
       <section className="section-padding bg-background">
         <div className="container-wide">
@@ -230,14 +225,14 @@ export default function Contact() {
                 <h3 className="text-lg font-semibold mb-6">Direct contact</h3>
                 <div className="space-y-4">
                   <a
-                    href="tel:0201234567"
+                    href="tel:0232010502"
                     className="flex items-center gap-4 text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center">
                       <Phone className="h-5 w-5 text-accent" />
                     </div>
                     <div>
-                      <p className="font-medium text-foreground">020 - 123 4567</p>
+                      <p className="font-medium text-foreground">023 - 201 0502</p>
                       <p className="text-sm">Bel ons direct</p>
                     </div>
                   </a>
@@ -258,7 +253,7 @@ export default function Contact() {
                       <MapPin className="h-5 w-5 text-accent" />
                     </div>
                     <div>
-                      <p className="font-medium text-foreground">Amsterdam</p>
+                      <p className="font-medium text-foreground">Haarlem</p>
                       <p className="text-sm">Nederland</p>
                     </div>
                   </div>
@@ -284,9 +279,9 @@ export default function Contact() {
                 </div>
               </div>
 
-              <div className="bg-accent/10 rounded-2xl p-8 border border-accent/20">
+              <div className="bg-primary/10 rounded-2xl p-8 border border-primary/20">
                 <div className="flex items-center gap-3 mb-4">
-                  <Calendar className="h-6 w-6 text-accent" />
+                  <Calendar className="h-6 w-6 text-primary" />
                   <h3 className="text-lg font-semibold">Plan een gesprek</h3>
                 </div>
                 <p className="text-muted-foreground text-sm mb-4">
