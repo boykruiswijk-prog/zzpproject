@@ -100,7 +100,7 @@ export function Footer() {
         <div className="mt-12 pt-6 border-t border-background/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-background/50 text-xs">
-              © 2025 | ZP Zaken B.V. | Zorgeloos ZZP'en
+              © 2026 | ZP Zaken B.V. | Zorgeloos ZZP'en
             </p>
             <div className="flex items-center gap-6">
               <span className="text-background/50 text-xs">AFM vergunningsnummer 12050636</span>
