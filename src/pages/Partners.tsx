@@ -1,7 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
-import { Handshake, ExternalLink, Shield, Heart, PiggyBank, Umbrella, Users, Calculator, Scale, UserCheck, CheckCircle, Banknote, Briefcase } from "lucide-react";
+import { Handshake, ExternalLink, Shield, Heart, PiggyBank, Umbrella, Users, Calculator, Scale, UserCheck, CheckCircle, Banknote, Briefcase, Crown } from "lucide-react";
 import { Link } from "react-router-dom";
 import otenticaLogo from "@/assets/partner-otentica.png";
 
@@ -86,6 +86,15 @@ const partners = [
     icon: Briefcase,
     link: "/contact",
     features: ["Opdrachten-marktplaats", "Contractmanagement", "Wet DBA compliant"],
+  },
+  {
+    name: "Onefellow",
+    category: "Opdrachten",
+    description: "Het platform voor freelancers en bemiddelaars. Vind de beste opdrachten en automatiseer je volledige inhuurproces.",
+    logo: "https://onefellow.co/wp-content/uploads/2023/09/onefellow-logo.svg",
+    icon: Crown,
+    link: "/contact",
+    features: ["Marketplace voor opdrachten", "Geautomatiseerde facturatie", "Community netwerk"],
   },
 ];
 
