@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MessageCircle, FileSearch, CheckCircle, Clock, Heart, Shield, Users } from "lucide-react";
 
@@ -65,20 +66,14 @@ const values = [
 export default function ZoWerkenWij() {
   return (
     <Layout>
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground py-16 md:py-24">
-        <div className="container-wide">
-          <div className="max-w-3xl">
-            <h1 className="mb-6">
-              Zo werken wij
-            </h1>
-            <p className="text-lg md:text-xl text-primary-foreground/80 mb-8">
-              Persoonlijk advies zonder gedoe. We helpen je in drie simpele stappen 
-              aan de juiste verzekeringen — eerlijk, transparant en op jouw tempo.
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        title="Zo werken wij"
+        subtitle="Persoonlijk advies zonder gedoe. We helpen je in drie simpele stappen aan de juiste verzekeringen — eerlijk, transparant en op jouw tempo."
+        badge={{
+          icon: <MessageCircle className="h-4 w-4" />,
+          text: "Onze werkwijze"
+        }}
+      />
 
       {/* Steps */}
       <section className="section-padding bg-background">
@@ -138,7 +133,7 @@ export default function ZoWerkenWij() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {values.map((value) => (
-              <div key={value.title} className="bg-card rounded-2xl p-8 text-center shadow-card">
+              <div key={value.title} className="bg-card rounded-2xl p-8 text-center shadow-card border border-border/50">
                 <div className="h-14 w-14 rounded-xl bg-accent/10 flex items-center justify-center mx-auto mb-6">
                   <value.icon className="h-7 w-7 text-accent" />
                 </div>
@@ -151,11 +146,11 @@ export default function ZoWerkenWij() {
       </section>
 
       {/* CTA */}
-      <section className="section-padding bg-background">
+      <section className="section-padding bg-primary text-primary-foreground">
         <div className="container-wide">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="mb-4">Klaar om te starten?</h2>
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-primary-foreground/80 mb-8">
               Plan een gratis adviesgesprek en ontdek binnen 15 minuten welke 
               verzekeringen bij jouw situatie passen.
             </p>

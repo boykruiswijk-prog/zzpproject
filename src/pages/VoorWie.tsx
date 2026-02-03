@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Monitor, Palette, Wrench, Stethoscope, Briefcase, Rocket } from "lucide-react";
+import { ArrowRight, Monitor, Palette, Wrench, Stethoscope, Briefcase, Rocket, Users } from "lucide-react";
 
 const audiences = [
   {
@@ -69,20 +70,14 @@ const audiences = [
 export default function VoorWie() {
   return (
     <Layout>
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground py-16 md:py-24">
-        <div className="container-wide">
-          <div className="max-w-3xl">
-            <h1 className="mb-6">
-              Voor wie is <span className="text-accent">zpzaken</span>?
-            </h1>
-            <p className="text-lg md:text-xl text-primary-foreground/80 mb-8">
-              Of je nu net start of al jaren zelfstandig bent — wij helpen zzp'ers 
-              en freelancers in elke fase en elk vakgebied.
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        title={<>Voor wie is <span className="text-accent">zpzaken</span>?</>}
+        subtitle="Of je nu net start of al jaren zelfstandig bent — wij helpen zzp'ers en freelancers in elke fase en elk vakgebied."
+        badge={{
+          icon: <Users className="h-4 w-4" />,
+          text: "Voor alle zzp'ers"
+        }}
+      />
 
       {/* Audiences grid */}
       <section className="section-padding bg-background">
@@ -123,11 +118,11 @@ export default function VoorWie() {
       </section>
 
       {/* CTA */}
-      <section className="section-padding bg-secondary">
+      <section className="section-padding bg-primary text-primary-foreground">
         <div className="container-wide">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="mb-4">Jouw beroep niet genoemd?</h2>
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-primary-foreground/80 mb-8">
               Geen zorgen! We helpen zzp'ers in alle sectoren. Neem contact op 
               en we kijken samen naar jouw specifieke situatie.
             </p>

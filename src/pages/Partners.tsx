@@ -1,4 +1,5 @@
 import { Layout } from "@/components/layout/Layout";
+import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { Handshake, ExternalLink, Shield, Heart, PiggyBank, Umbrella, Users, Calculator, Scale, UserCheck } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -86,7 +87,6 @@ const partners = [
   },
 ];
 
-// Categories for future expansion
 const serviceCategories = [
   { id: "verzekeringen", label: "Verzekeringen", icon: Shield },
   { id: "administratie", label: "Administratie", icon: Calculator },
@@ -97,22 +97,14 @@ const serviceCategories = [
 export default function Partners() {
   return (
     <Layout>
-      {/* Hero Section */}
-      <section className="bg-gradient-to-b from-primary to-primary/90 text-primary-foreground py-16 md:py-24">
-        <div className="container-wide text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 rounded-full text-sm font-medium mb-6">
-            <Handshake className="h-4 w-4" />
-            Onze Partners
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            Trots dat we met onze partners samenwerken!
-          </h1>
-          <p className="text-lg md:text-xl text-primary-foreground/80 max-w-3xl mx-auto">
-            Bij ZP Zaken zorgen we ervoor dat jij zorgeloos kunt ondernemen. Dit doen we in samenwerking 
-            met onze partners voor verzekeringen, administratie, juridisch advies en screening.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        title="Trots dat we met onze partners samenwerken!"
+        subtitle="Bij ZP Zaken zorgen we ervoor dat jij zorgeloos kunt ondernemen. Dit doen we in samenwerking met onze partners voor verzekeringen, administratie, juridisch advies en screening."
+        badge={{
+          icon: <Handshake className="h-4 w-4" />,
+          text: "Onze Partners"
+        }}
+      />
 
       {/* Service categories */}
       <section className="bg-secondary py-6 border-b border-border/50">
@@ -133,7 +125,7 @@ export default function Partners() {
       </section>
 
       {/* Partners Grid */}
-      <section className="section-padding">
+      <section className="section-padding bg-background">
         <div className="container-wide">
           <div className="grid gap-8">
             {partners.map((partner, index) => (
@@ -196,12 +188,12 @@ export default function Partners() {
       </section>
 
       {/* Become a Partner CTA */}
-      <section className="section-padding bg-gradient-to-br from-accent/10 via-accent/5 to-transparent">
+      <section className="section-padding bg-secondary">
         <div className="container-wide">
-          <div className="bg-card rounded-2xl shadow-card border border-accent/20 p-8 md:p-12">
+          <div className="bg-card rounded-2xl shadow-card border border-primary/20 p-8 md:p-12">
             <div className="grid lg:grid-cols-2 gap-8 items-center">
               <div>
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-accent/10 text-accent rounded-full text-sm font-medium mb-4">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">
                   <Users className="h-4 w-4" />
                   Word partner
                 </div>
@@ -241,9 +233,9 @@ export default function Partners() {
               </div>
               <div className="hidden lg:flex items-center justify-center">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-accent/20 rounded-full blur-3xl"></div>
+                  <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl"></div>
                   <div className="relative bg-card rounded-2xl p-12 border border-border/50 shadow-lg">
-                    <Handshake className="h-32 w-32 text-accent" />
+                    <Handshake className="h-32 w-32 text-primary" />
                   </div>
                 </div>
               </div>
@@ -253,7 +245,7 @@ export default function Partners() {
       </section>
 
       {/* Questions CTA Section */}
-      <section className="section-padding bg-secondary/50">
+      <section className="section-padding bg-background">
         <div className="container-wide text-center">
           <h2 className="text-3xl font-bold mb-4">
             Vragen over onze partners?

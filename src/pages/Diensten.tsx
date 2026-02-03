@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { Shield, Calculator, Scale, UserCheck, ArrowRight, CheckCircle, Sparkles } from "lucide-react";
 
@@ -84,30 +85,21 @@ const services = [
 export default function Diensten() {
   return (
     <Layout>
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground py-16 md:py-24">
-        <div className="container-wide">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 bg-accent/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-              <Sparkles className="h-4 w-4 text-accent" />
-              <span className="text-sm font-semibold text-accent">Alles voor zelfstandig professionals</span>
-            </div>
-            <h1 className="mb-6">
-              Onze <span className="text-accent">diensten</span>
-            </h1>
-            <p className="text-lg md:text-xl text-primary-foreground/80 mb-8">
-              Verzekeringen, administratie, juridisch advies én screening — alles wat je nodig hebt 
-              als zelfstandig professional. Wij koppelen je aan de beste partners voor elke dienst.
-            </p>
-            <Button variant="hero" size="lg" asChild>
-              <Link to="/contact">
-                Krijg persoonlijk advies
-                <ArrowRight className="h-5 w-5" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        title={<>Onze <span className="text-accent">diensten</span></>}
+        subtitle="Verzekeringen, administratie, juridisch advies én screening — alles wat je nodig hebt als zelfstandig professional. Wij koppelen je aan de beste partners voor elke dienst."
+        badge={{
+          icon: <Sparkles className="h-4 w-4" />,
+          text: "Alles voor zelfstandig professionals"
+        }}
+      >
+        <Button variant="accent" size="lg" asChild>
+          <Link to="/contact">
+            Krijg persoonlijk advies
+            <ArrowRight className="h-5 w-5" />
+          </Link>
+        </Button>
+      </PageHero>
 
       {/* Quick navigation */}
       <section className="bg-secondary py-6 border-b border-border/50">

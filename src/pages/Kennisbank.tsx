@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, BookOpen, Calendar, Clock } from "lucide-react";
 
@@ -75,24 +76,14 @@ const categories = ["Alle", "Wetgeving", "Regelgeving", "Verzekeringen", "Fiscaa
 export default function Kennisbank() {
   return (
     <Layout>
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground py-16 md:py-24">
-        <div className="container-wide">
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-3 mb-4">
-              <BookOpen className="h-8 w-8 text-accent" />
-              <span className="text-accent font-medium">Kennisbank</span>
-            </div>
-            <h1 className="mb-6">
-              De nieuwste kennis artikelen van ZP Zaken
-            </h1>
-            <p className="text-lg md:text-xl text-primary-foreground/80">
-              Blijf op de hoogte van de laatste ontwikkelingen rondom wetgeving, verzekeringen 
-              en alles wat je als zzp'er moet weten. Praktische informatie, helder uitgelegd.
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        title="De nieuwste kennis artikelen van ZP Zaken"
+        subtitle="Blijf op de hoogte van de laatste ontwikkelingen rondom wetgeving, verzekeringen en alles wat je als zzp'er moet weten. Praktische informatie, helder uitgelegd."
+        badge={{
+          icon: <BookOpen className="h-4 w-4" />,
+          text: "Kennisbank"
+        }}
+      />
 
       {/* Category Filter */}
       <section className="bg-background border-b border-border">
@@ -129,7 +120,7 @@ export default function Kennisbank() {
                       {article.category}
                     </span>
                   </div>
-                  <h3 className="text-xl font-semibold mb-3 group-hover:text-accent transition-colors line-clamp-2">
+                  <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors line-clamp-2">
                     {article.title}
                   </h3>
                   <p className="text-muted-foreground mb-4 flex-1 line-clamp-3">
@@ -161,11 +152,11 @@ export default function Kennisbank() {
       </section>
 
       {/* Newsletter CTA */}
-      <section className="section-padding bg-secondary">
+      <section className="section-padding bg-primary text-primary-foreground">
         <div className="container-wide">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="mb-4">Blijf op de hoogte</h2>
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-primary-foreground/80 mb-8">
               Ontvang de nieuwste artikelen en updates direct in je mailbox. 
               Geen spam, alleen relevante informatie voor zzp'ers.
             </p>
@@ -173,7 +164,7 @@ export default function Kennisbank() {
               <input
                 type="email"
                 placeholder="Je e-mailadres"
-                className="flex-1 px-4 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-accent"
+                className="flex-1 px-4 py-3 rounded-lg border-0 bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary-foreground/30"
               />
               <Button variant="accent" size="lg">
                 Aanmelden

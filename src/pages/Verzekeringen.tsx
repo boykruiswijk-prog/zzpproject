@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { Shield, Heart, Scale, ArrowRight, CheckCircle, Globe, Sparkles } from "lucide-react";
 import { OnlineAanvraagDialog } from "@/components/verzekeringen/OnlineAanvraagDialog";
@@ -39,7 +40,7 @@ const insurances = [
     ],
     forWho: "Alle zzp'ers die afhankelijk zijn van hun inkomen",
     price: "Vanaf €150 per maand",
-    canApplyOnline: false, // AOV vereist meer maatwerk
+    canApplyOnline: false,
   },
   {
     id: "rechtsbijstand",
@@ -67,30 +68,21 @@ export default function Verzekeringen() {
 
   return (
     <Layout>
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground py-16 md:py-24">
-        <div className="container-wide">
-          <div className="max-w-3xl">
-            <h1 className="mb-6">
-              Verzekeringen voor <span className="text-accent">zzp'ers</span>
-            </h1>
-            <p className="text-lg md:text-xl text-primary-foreground/80 mb-4">
-              Als zelfstandig ondernemer ben je zelf verantwoordelijk voor je zakelijke zekerheid. 
-              Ontdek welke verzekeringen passen bij jouw situatie en beroep.
-            </p>
-            <div className="inline-flex items-center gap-2 bg-accent/20 backdrop-blur-sm px-4 py-2 rounded-full mb-8">
-              <Sparkles className="h-4 w-4 text-accent" />
-              <span className="text-sm font-semibold text-accent">✨ Exclusief: Unieke BAV + AVB combinatiepolis</span>
-            </div>
-            <Button variant="hero" size="lg" asChild>
-              <Link to="/contact">
-                Krijg persoonlijk advies
-                <ArrowRight className="h-5 w-5" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        title={<>Verzekeringen voor <span className="text-accent">zzp'ers</span></>}
+        subtitle="Als zelfstandig ondernemer ben je zelf verantwoordelijk voor je zakelijke zekerheid. Ontdek welke verzekeringen passen bij jouw situatie en beroep."
+        badge={{
+          icon: <Sparkles className="h-4 w-4" />,
+          text: "✨ Exclusief: Unieke BAV + AVB combinatiepolis"
+        }}
+      >
+        <Button variant="accent" size="lg" asChild>
+          <Link to="/contact">
+            Krijg persoonlijk advies
+            <ArrowRight className="h-5 w-5" />
+          </Link>
+        </Button>
+      </PageHero>
 
       {/* Insurance cards */}
       <section className="section-padding bg-background">
