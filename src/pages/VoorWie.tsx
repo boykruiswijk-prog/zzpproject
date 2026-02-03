@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Monitor, Palette, Wrench, Stethoscope, Briefcase, Rocket, Users } from "lucide-react";
+import { ArrowRight, Monitor, Palette, Wrench, Stethoscope, Briefcase, Rocket, Users, Shield, CheckCircle } from "lucide-react";
 
 const audiences = [
   {
@@ -67,11 +67,34 @@ const audiences = [
   },
 ];
 
+// Structured data for audiences
+const audienceSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Voor wie is ZP Zaken?",
+  "description": "ZP Zaken helpt zzp'ers en freelancers in elke fase en elk vakgebied met verzekeringen en zakelijk advies.",
+  "provider": {
+    "@type": "Organization",
+    "name": "ZP Zaken"
+  },
+  "audience": audiences.map(a => ({
+    "@type": "Audience",
+    "audienceType": a.title,
+    "description": a.description
+  }))
+};
+
 export default function VoorWie() {
   return (
     <Layout>
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(audienceSchema) }}
+      />
+
       <PageHero
-        title={<>Voor wie is <span className="text-accent">zpzaken</span>?</>}
+        title={<>Voor wie is <span className="text-accent">ZP Zaken</span>?</>}
         subtitle="Of je nu net start of al jaren zelfstandig bent — wij helpen zzp'ers en freelancers in elke fase en elk vakgebied."
         badge={{
           icon: <Users className="h-4 w-4" />,
@@ -79,31 +102,37 @@ export default function VoorWie() {
         }}
       />
 
-      {/* Audiences grid */}
+      {/* Audiences as Shield Cards */}
       <section className="section-padding bg-background">
         <div className="container-wide">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {audiences.map((audience) => (
               <div
                 key={audience.title}
-                className="bg-card rounded-2xl p-8 shadow-card border border-border/50 hover:shadow-card-hover hover:border-accent/30 transition-all duration-300"
+                className="bg-card rounded-2xl p-8 shadow-card border border-border/50 hover:shadow-lg hover:border-accent/30 transition-all duration-300"
+                itemScope
+                itemType="https://schema.org/Audience"
               >
-                <div className="h-14 w-14 rounded-xl bg-accent/10 flex items-center justify-center mb-6">
-                  <audience.icon className="h-7 w-7 text-accent" />
+                {/* Header Shield */}
+                <div className="inline-flex items-center gap-3 bg-accent/10 border border-accent/20 px-4 py-2 rounded-xl mb-6">
+                  <audience.icon className="h-5 w-5 text-accent" />
+                  <h3 className="text-lg font-semibold" itemProp="audienceType">{audience.title}</h3>
                 </div>
                 
-                <h3 className="text-xl font-semibold mb-3">{audience.title}</h3>
-                <p className="text-muted-foreground mb-6">{audience.description}</p>
+                <p className="text-muted-foreground mb-6" itemProp="description">{audience.description}</p>
                 
-                <h4 className="text-sm font-semibold text-primary mb-3">Jouw behoeften:</h4>
-                <ul className="space-y-2 mb-6">
+                {/* Needs as Tags */}
+                <div className="flex flex-wrap gap-2 mb-6">
                   {audience.needs.map((need) => (
-                    <li key={need} className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <span className="text-accent">•</span>
+                    <span
+                      key={need}
+                      className="inline-flex items-center gap-1.5 bg-secondary text-foreground px-3 py-1.5 rounded-lg text-sm"
+                    >
+                      <CheckCircle className="h-3.5 w-3.5 text-accent" />
                       {need}
-                    </li>
+                    </span>
                   ))}
-                </ul>
+                </div>
 
                 <Button variant="outline" size="sm" className="w-full" asChild>
                   <Link to="/contact">
@@ -122,6 +151,17 @@ export default function VoorWie() {
         <div className="container-wide">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="mb-4">Jouw beroep niet genoemd?</h2>
+            <div className="flex flex-wrap justify-center gap-3 mb-8">
+              {["Alle sectoren", "Persoonlijk advies", "Maatwerk oplossingen"].map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center gap-2 bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 text-primary-foreground px-4 py-2 rounded-full text-sm"
+                >
+                  <Shield className="h-4 w-4 text-accent" />
+                  {tag}
+                </span>
+              ))}
+            </div>
             <p className="text-lg text-primary-foreground/80 mb-8">
               Geen zorgen! We helpen zzp'ers in alle sectoren. Neem contact op 
               en we kijken samen naar jouw specifieke situatie.
