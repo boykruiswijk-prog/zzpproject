@@ -171,7 +171,9 @@ export default function Partners() {
                 itemType="https://schema.org/Organization"
               >
                 {/* Logo */}
-                <div className="bg-secondary/50 p-6 flex items-center justify-center h-32">
+                <div className={`p-6 flex items-center justify-center h-32 ${
+                  partner.name === "Onefellow" ? "bg-foreground" : "bg-secondary/50"
+                }`}>
                   <img 
                     src={partner.logo} 
                     alt={`${partner.name} logo`} 
