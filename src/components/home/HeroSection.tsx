@@ -50,6 +50,10 @@ export function HeroSection() {
                 <CheckCircle className="h-5 w-5 text-accent flex-shrink-0" />
                 <span className="text-primary-foreground">Transparant advies, geen verborgen kosten</span>
               </li>
+              <li className="flex items-center gap-3">
+                <CheckCircle className="h-5 w-5 text-accent flex-shrink-0" />
+                <span className="text-primary-foreground">Factoring: binnen 24 uur je geld op de rekening</span>
+              </li>
             </ul>
 
             <div className="flex flex-col sm:flex-row gap-3 mb-6">
