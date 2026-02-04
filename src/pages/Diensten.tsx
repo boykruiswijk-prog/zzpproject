@@ -137,7 +137,7 @@ export default function Diensten() {
       </PageHero>
 
       {/* Quick navigation */}
-      <section className="bg-secondary py-6 border-b border-border/50 sticky top-16 z-30">
+      <section className="bg-secondary py-6 border-b border-border/50">
         <div className="container-wide">
           <div className="flex flex-wrap justify-center gap-3 md:gap-4">
             {services.map((service) => (
