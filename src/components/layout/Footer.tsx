@@ -37,7 +37,7 @@ export function Footer() {
               <img src={logoZp} alt="ZP Zaken logo" className="h-8 w-auto object-contain" />
             </Link>
             <p className="text-background/70 mb-5 max-w-sm text-sm">
-              Onafhankelijk advies voor zzp'ers en ondernemers. Wij helpen je met verzekeringen en zakelijke zekerheid, zonder tussenpersonen.
+              Onafhankelijk advies voor zzp'ers en ondernemers. Wij helpen je met verzekeringen en zakelijke zekerheid.
             </p>
             <div className="space-y-2">
               <a href="tel:0232010502" className="flex items-center gap-2 text-sm text-background/70 hover:text-background transition-colors">

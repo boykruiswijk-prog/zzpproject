@@ -31,7 +31,7 @@ const steps = [
 const values = [
   { icon: Heart, title: "Persoonlijk", description: "Je spreekt altijd met een echte adviseur, geen callcenter." },
   { icon: Shield, title: "Onafhankelijk", description: "We zijn niet gebonden aan één verzekeraar." },
-  { icon: Users, title: "Geen tussenpersonen", description: "Je hebt rechtstreeks contact met ons." },
+  { icon: Users, title: "Direct contact", description: "Je hebt rechtstreeks contact met ons." },
   { icon: Clock, title: "Snel & efficiënt", description: "Binnen 24 uur reactie." },
 ];
 

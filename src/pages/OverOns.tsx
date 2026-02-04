@@ -100,7 +100,7 @@ export default function OverOns() {
 
       <PageHero
         title="Over ZP Zaken"
-        subtitle="Wij geloven dat zzp'ers recht hebben op eerlijk, persoonlijk advies. Zonder tussenpersonen, zonder verkooppraatjes — gewoon goed geregeld."
+        subtitle="Wij geloven dat zzp'ers recht hebben op eerlijk, persoonlijk advies. Geen verkooppraatjes — gewoon goed geregeld."
         badge={{
           icon: <Heart className="h-4 w-4" />,
           text: "Met passie voor ondernemers"

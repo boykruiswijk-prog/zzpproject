@@ -108,7 +108,7 @@ const services = [
       "SEPA-brede ondersteuning",
       "Realtime financieel dashboard",
     ],
-    forWho: "ZZP'ers en bemiddelaars die snel over hun geld willen beschikken",
+    forWho: "ZZP'ers die snel over hun geld willen beschikken",
     cta: "Start met factoring",
     href: "/contact",
     partners: ["Homy Capital"],
