@@ -87,7 +87,11 @@ export function Header() {
             <Phone className="h-4 w-4" />
             023 - 201 0502
           </a>
-          <Button variant="accent" asChild>
+          <Button
+            variant="outline"
+            className="bg-foreground/70 text-background border-background/20 hover:bg-foreground/80 hover:text-background backdrop-blur-sm shadow-sm"
+            asChild
+          >
             <Link to="/contact">Gratis advies</Link>
           </Button>
         </div>
