@@ -59,13 +59,6 @@ export function HeroSection() {
                   <ArrowRight className="h-5 w-5" />
                 </Link>
               </Button>
-              <Button 
-                size="xl" 
-                asChild
-                className="bg-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/30 backdrop-blur-sm border border-primary-foreground/50"
-              >
-                <Link to="/contact">Gratis adviesgesprek</Link>
-              </Button>
             </div>
 
             {/* Contact */}
