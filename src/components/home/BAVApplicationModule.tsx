@@ -106,7 +106,7 @@ export function BAVApplicationModule() {
             Direct online afsluiten
           </div>
           <h2 className="mb-4">
-            BAV + AVB <span className="text-primary">Combinatiepolis</span>
+            BAV + AVB <span className="text-accent">Combinatiepolis</span>
           </h2>
           <p className="text-muted-foreground">
             De enige gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering in Nederland.
@@ -190,7 +190,7 @@ export function BAVApplicationModule() {
                               </p>
                             </div>
                             <div className="text-right">
-                              <p className="text-2xl font-bold text-primary">
+                              <p className="text-2xl font-bold text-foreground">
                                 €{(paymentType === "monthly" ? pkg.priceMonthly : pkg.priceYearly).toFixed(2).replace('.', ',')}
                               </p>
                               <p className="text-muted-foreground text-sm">
@@ -469,7 +469,7 @@ export function BAVApplicationModule() {
               </div>
 
               {/* Price Sidebar */}
-              <div className="bg-primary p-6 md:p-8 text-primary-foreground">
+              <div className="bg-foreground p-6 md:p-8 text-background">
                 <div className="sticky top-8">
                   <h4 className="text-lg font-semibold mb-4">Jouw verzekering</h4>
                   
@@ -480,17 +480,17 @@ export function BAVApplicationModule() {
                       </div>
                       <div>
                         <p className="font-semibold">{selectedPkg?.name}</p>
-                        <p className="text-sm text-primary-foreground/70">BAV + AVB</p>
+                        <p className="text-sm text-background/70">BAV + AVB</p>
                       </div>
                     </div>
                     
                     <div className="space-y-2 text-sm mb-4">
                       <div className="flex justify-between">
-                        <span className="text-primary-foreground/70">Per gebeurtenis</span>
+                        <span className="text-background/70">Per gebeurtenis</span>
                         <span>{selectedPkg?.coverage.replace('€ ', '€')}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-primary-foreground/70">Per jaar</span>
+                        <span className="text-background/70">Per jaar</span>
                         <span>{selectedPkg?.yearCoverage.replace('€ ', '€')}</span>
                       </div>
                     </div>
@@ -498,7 +498,7 @@ export function BAVApplicationModule() {
                     <div className="border-t border-white/20 pt-4">
                       <div className="flex justify-between items-end">
                         <div>
-                          <p className="text-sm text-primary-foreground/70">
+                          <p className="text-sm text-background/70">
                             {paymentType === "monthly" ? "Per maand" : "Per jaar"}
                           </p>
                           <p className="text-3xl font-bold">
@@ -519,13 +519,13 @@ export function BAVApplicationModule() {
                     {usps.map((usp) => (
                       <li key={usp} className="flex items-center gap-2 text-sm">
                         <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" />
-                        <span className="text-primary-foreground/90">{usp}</span>
+                        <span className="text-background/90">{usp}</span>
                       </li>
                     ))}
                   </ul>
 
                   <div className="mt-6 pt-6 border-t border-white/20">
-                    <p className="text-xs text-primary-foreground/60">
+                    <p className="text-xs text-background/60">
                       Vragen? Bel ons op{" "}
                       <a href="tel:0232010502" className="text-accent hover:underline">
                         023 - 201 0502
