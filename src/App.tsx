@@ -16,6 +16,7 @@ import Partners from "./pages/Partners";
 import Historie from "./pages/Historie";
 import Contact from "./pages/Contact";
 import Cookies from "./pages/Cookies";
+import FAQ from "./pages/FAQ";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/admin/Login";
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -45,6 +46,7 @@ const App = () => (
             <Route path="/historie" element={<Historie />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/cookies" element={<Cookies />} />
+            <Route path="/faq" element={<FAQ />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/leads" element={<AdminLeads />} />
