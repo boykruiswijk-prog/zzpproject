@@ -13,6 +13,8 @@ import {
 const navItems = [
   { href: "/", label: "Home" },
   { href: "/diensten", label: "Diensten" },
+  { href: "/verzekeringen", label: "Verzekeringen" },
+  { href: "/eerder-betalen", label: "Eerder betalen", highlight: true },
   { href: "/voor-wie", label: "Voor wie" },
   { href: "/zo-werken-wij", label: "Zo werken wij" },
   { href: "/partners", label: "Partners" },
@@ -71,9 +73,11 @@ export function Header() {
                 key={item.href}
                 to={item.href}
                 className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                  location.pathname === item.href
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground"
+                  (item as any).highlight
+                    ? "text-accent hover:text-accent/80"
+                    : location.pathname === item.href
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {item.label}
