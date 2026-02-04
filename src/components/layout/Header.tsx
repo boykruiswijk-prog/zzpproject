@@ -24,6 +24,7 @@ const navItems = [
       { href: "/kennis", label: "Kennis & advies" },
     ]
   },
+  { href: "/faq", label: "FAQ" },
   { 
     href: "/over-ons", 
     label: "Over ons",
