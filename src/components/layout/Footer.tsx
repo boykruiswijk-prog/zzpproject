@@ -13,6 +13,7 @@ const footerLinks = {
     { href: "/zo-werken-wij", label: "Zo werken wij" },
     { href: "/partners", label: "Partners" },
     { href: "/kennisbank", label: "Kennisbank" },
+    { href: "/faq", label: "Veelgestelde vragen" },
     { href: "/over-ons", label: "Over ons" },
   ],
   juridisch: [
