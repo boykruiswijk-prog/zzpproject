@@ -36,6 +36,7 @@ export function HeroSection() {
               als zelfstandig professional. Met persoonlijke begeleiding en de menselijke maat.
             </p>
 
+            {/* Key USPs */}
             <ul className="space-y-3 mb-8">
               <li className="flex items-center gap-3">
                 <CheckCircle className="h-5 w-5 text-accent flex-shrink-0" />
@@ -48,10 +49,6 @@ export function HeroSection() {
               <li className="flex items-center gap-3">
                 <CheckCircle className="h-5 w-5 text-accent flex-shrink-0" />
                 <span className="text-primary-foreground">Transparant advies, geen verborgen kosten</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-accent flex-shrink-0" />
-                <span className="text-primary-foreground">Al vanaf €15,- per maand verzekerd</span>
               </li>
             </ul>
 
