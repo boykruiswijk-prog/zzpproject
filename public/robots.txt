@@ -1,14 +1,17 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
+
+# Sitemap locatie
+Sitemap: https://zpzaken.nl/sitemap.xml
+
+# Blokkeer admin pagina's
+Disallow: /admin/
+
+# Speciale crawlers
+User-agent: Googlebot
+Allow: /kennisbank/
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /kennisbank/
+Crawl-delay: 2
