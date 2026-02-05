@@ -1,1 +1,4 @@
 project_id = "eugkavokktjwpqaqlwsj"
+ 
+ [functions.scrape-articles]
+ verify_jwt = false
