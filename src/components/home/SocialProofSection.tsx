@@ -22,7 +22,7 @@ const testimonials = [
   },
   {
     name: "Sandra de Vries",
-    role: "ZZP'er in de zorg",
+    role: "ZZP'er",
     content: "Het adviesgesprek was echt verhelderend. Ik had geen idee dat ik onderverzekerd was. Nu voel ik me veel zekerder.",
     rating: 5,
   },
@@ -52,7 +52,7 @@ const testimonials = [
   },
   {
     name: "Robert Visser",
-    role: "Loodgieter",
+    role: "Projectleider",
     content: "Ik was sceptisch over online advies, maar ze namen echt de tijd. Nu heb ik een pakket dat betaalbaar is én goed dekt.",
     rating: 5,
   },
@@ -64,19 +64,19 @@ const testimonials = [
   },
   {
     name: "Thomas de Wit",
-    role: "Elektricien",
+    role: "Testmanager",
     content: "De combinatiepolis van beroeps- en bedrijfsaansprakelijkheid scheelt me honderden euro's per jaar. Slim geregeld.",
     rating: 5,
   },
   {
     name: "Fatima El Amrani",
-    role: "Verloskundige",
+    role: "Changemanager",
     content: "In de zorg is goede verzekering essentieel. ZP Zaken begreep direct wat ik nodig had. Zeer tevreden met het advies.",
     rating: 5,
   },
   {
     name: "Kees van Dijk",
-    role: "Timmerman",
+    role: "ZZP'er",
     content: "Eerlijk advies, geen verborgen kosten. Precies wat je als ondernemer wilt. Ik raad ze iedereen aan.",
     rating: 5,
   },
