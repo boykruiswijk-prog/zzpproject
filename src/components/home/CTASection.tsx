@@ -26,7 +26,7 @@ export function CTASection() {
             Binnen 15 minuten weet je waar je aan toe bent.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
             <Button 
               size="xl" 
               className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg"
@@ -38,6 +38,14 @@ export function CTASection() {
                 <ArrowRight className="h-5 w-5" />
               </Link>
             </Button>
+            <span className="text-primary-foreground/60 hidden sm:block">of</span>
+            <a 
+              href="tel:0232010502" 
+              className="inline-flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground transition-colors font-medium"
+            >
+              <Phone className="h-4 w-4" />
+              023 - 201 0502
+            </a>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-primary-foreground/70 text-sm">
