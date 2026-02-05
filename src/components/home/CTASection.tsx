@@ -51,6 +51,7 @@ export function CTASection() {
           <div className="flex flex-wrap items-center justify-center gap-6 text-primary-foreground/70 text-sm">
             <span>✓ Gratis en vrijblijvend</span>
             <span>✓ Binnen 24 uur reactie</span>
+            <span>✓ 13+ jaar marktleider</span>
           </div>
         </div>
       </div>
