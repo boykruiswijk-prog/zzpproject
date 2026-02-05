@@ -11,6 +11,7 @@ import VoorWie from "./pages/VoorWie";
 import ZoWerkenWij from "./pages/ZoWerkenWij";
 import Kennis from "./pages/Kennis";
 import Kennisbank from "./pages/Kennisbank";
+ import ArtikelDetail from "./pages/ArtikelDetail";
 import OverOns from "./pages/OverOns";
 import Partners from "./pages/Partners";
 import Historie from "./pages/Historie";
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/zo-werken-wij" element={<ZoWerkenWij />} />
             <Route path="/kennis" element={<Kennis />} />
             <Route path="/kennisbank" element={<Kennisbank />} />
+             <Route path="/kennisbank/:slug" element={<ArtikelDetail />} />
             <Route path="/over-ons" element={<OverOns />} />
             <Route path="/partners" element={<Partners />} />
             <Route path="/historie" element={<Historie />} />

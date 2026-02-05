@@ -1,100 +1,51 @@
-import { Link } from "react-router-dom";
+ import { useState } from "react";
+ import { Link } from "react-router-dom";
+ import { Helmet } from "react-helmet-async";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, Calendar, Clock, Shield } from "lucide-react";
+ import { Skeleton } from "@/components/ui/skeleton";
+ import { ArrowRight, BookOpen, Shield } from "lucide-react";
+ import { useArticles, useArticleCategories } from "@/hooks/useArticles";
+ import { ArticleCard } from "@/components/kennisbank/ArticleCard";
+ import { CategoryFilter } from "@/components/kennisbank/CategoryFilter";
 
-// Article images
-import articleWetgeving from "@/assets/article-wetgeving.jpg";
-import articleRegelgeving from "@/assets/article-regelgeving.jpg";
-import articleVbar from "@/assets/article-vbar.jpg";
-import articleKor from "@/assets/article-kor.jpg";
-import articleDba from "@/assets/article-dba.jpg";
-import articleAov from "@/assets/article-aov.jpg";
 import teamMeeting from "@/assets/team-meeting.jpg";
 
-const articles = [
-  {
-    slug: "zelfstandigenwet-voor-zzp-ers",
-    title: "De Zelfstandigenwet: duidelijkheid voor zzp'ers?",
-    excerpt: "Er is veel onrust onder zzp'ers vanwege de wetgeving rondom schijnzelfstandigheid. In 2025 geldt de wet DBA, maar deze zou vervangen worden door de wet VBAR.",
-    category: "Wetgeving",
-    date: "15 juli 2025",
-    readTime: "5 min",
-    image: articleWetgeving,
-  },
-  {
-    slug: "nieuwe-regels-zzp-2025",
-    title: "Nieuwe regels zzp 2025",
-    excerpt: "In 2025 zijn er diverse veranderingen rondom regelgeving, waar je als zzp'er mee te maken (kunt) krijgen. Van de wet DBA tot de KOR-wijzigingen.",
-    category: "Regelgeving",
-    date: "10 januari 2025",
-    readTime: "4 min",
-    image: articleRegelgeving,
-  },
-  {
-    slug: "vbar-wet-verduidelijking-arbeidsrelaties",
-    title: "VBAR: Wet verduidelijking beoordeling arbeidsrelaties",
-    excerpt: "De wet VBAR is de opvolger van de veelbesproken wet DBA. Wat betekent dit voor jou als zzp'er?",
-    category: "Wetgeving",
-    date: "5 december 2024",
-    readTime: "6 min",
-    image: articleVbar,
-  },
-  {
-    slug: "wijziging-kleineondernemersregeling-kor-2025",
-    title: "Wijziging Kleineondernemersregeling (KOR) in 2025",
-    excerpt: "De kleineondernemersregeling zal vanaf 1 januari 2025 veranderen. Wat betekent dit voor jou?",
-    category: "Fiscaal",
-    date: "20 november 2024",
-    readTime: "3 min",
-    image: articleKor,
-  },
-  {
-    slug: "wet-dba-alles-wat-je-moet-weten",
-    title: "Alles wat je moet weten over de wet DBA",
-    excerpt: "De wet DBA is niet nieuw, maar vanaf 1 januari 2025 zal er strenger gehandhaafd worden.",
-    category: "Wetgeving",
-    date: "1 november 2024",
-    readTime: "7 min",
-    image: articleDba,
-  },
-  {
-    slug: "aov-arbeidsongeschiktheidsverzekering",
-    title: "AOV voor zzp'ers: alles wat je moet weten",
-    excerpt: "Als zzp'er bouw je geen WIA op. Een arbeidsongeschiktheidsverzekering kan uitkomst bieden.",
-    category: "Verzekeringen",
-    date: "15 oktober 2024",
-    readTime: "5 min",
-    image: articleAov,
-  },
-];
-
-const categories = ["Alle", "Wetgeving", "Regelgeving", "Verzekeringen", "Fiscaal"];
-
-// Structured data for articles
-const articlesSchema = {
-  "@context": "https://schema.org",
-  "@type": "CollectionPage",
-  "name": "Kennisbank ZP Zaken",
-  "description": "Blijf op de hoogte van de laatste ontwikkelingen rondom wetgeving, verzekeringen en alles wat je als zzp'er moet weten.",
-  "hasPart": articles.map(a => ({
-    "@type": "Article",
-    "headline": a.title,
-    "description": a.excerpt,
-    "datePublished": a.date,
-    "articleSection": a.category
-  }))
-};
-
 export default function Kennisbank() {
+   const [activeCategory, setActiveCategory] = useState("Alle");
+   const { data: articles, isLoading: articlesLoading } = useArticles(activeCategory);
+   const { data: categories = ["Alle"] } = useArticleCategories();
+ 
+   // Structured data for articles
+   const articlesSchema = {
+     "@context": "https://schema.org",
+     "@type": "CollectionPage",
+     name: "Kennisbank ZP Zaken",
+     description:
+       "Blijf op de hoogte van de laatste ontwikkelingen rondom wetgeving, verzekeringen en alles wat je als zzp'er moet weten.",
+     hasPart: (articles || []).map((a) => ({
+       "@type": "Article",
+       headline: a.title,
+       description: a.excerpt,
+       datePublished: a.published_at,
+       articleSection: a.category,
+     })),
+   };
+ 
   return (
     <Layout>
-      {/* JSON-LD Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articlesSchema) }}
-      />
+       <Helmet>
+         <title>Kennisbank | ZP Zaken - Artikelen voor ZZP'ers</title>
+         <meta
+           name="description"
+           content="Blijf op de hoogte van de laatste ontwikkelingen rondom wetgeving, verzekeringen en alles wat je als zzp'er moet weten."
+         />
+         <link rel="canonical" href="https://zpzaken.nl/kennisbank" />
+         <script type="application/ld+json">
+           {JSON.stringify(articlesSchema)}
+         </script>
+       </Helmet>
 
       <PageHero
         title="De nieuwste kennis artikelen van ZP Zaken"
@@ -106,82 +57,44 @@ export default function Kennisbank() {
         backgroundImage={teamMeeting}
       />
 
-      {/* Category Filter as Shield Tags */}
-      <section className="bg-background border-b border-border">
-        <div className="container-wide py-4">
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <button
-                key={category}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  category === "Alle"
-                    ? "bg-accent/10 border border-accent/20 text-accent"
-                    : "bg-secondary text-muted-foreground hover:bg-accent/10 hover:text-foreground border border-transparent hover:border-accent/20"
-                }`}
-              >
-                <Shield className="h-3.5 w-3.5" />
-                {category}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
+       <CategoryFilter
+         categories={categories}
+         activeCategory={activeCategory}
+         onCategoryChange={setActiveCategory}
+       />
 
       {/* Articles Grid */}
       <section className="section-padding bg-background">
         <div className="container-wide">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {articles.map((article) => (
-              <article
-                key={article.slug}
-                className="bg-card rounded-2xl overflow-hidden shadow-card border border-border/50 hover:shadow-lg hover:border-accent/30 transition-all duration-300 group cursor-pointer flex flex-col"
-                itemScope
-                itemType="https://schema.org/Article"
-              >
-                {/* Article Image */}
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={article.image}
-                    alt={article.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-card/80 via-transparent to-transparent" />
-                  {/* Category Shield on image */}
-                  <div className="absolute bottom-3 left-3 inline-flex items-center gap-2 bg-accent/90 backdrop-blur-sm text-primary-foreground px-3 py-1.5 rounded-lg text-sm font-medium">
-                    <Shield className="h-3.5 w-3.5" />
-                    <span itemProp="articleSection">{article.category}</span>
-                  </div>
-                </div>
-
-                <div className="p-6 flex flex-col flex-1">
-                  <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors line-clamp-2" itemProp="headline">
-                    {article.title}
-                  </h3>
-                  <p className="text-muted-foreground mb-4 flex-1 line-clamp-3" itemProp="description">
-                    {article.excerpt}
-                  </p>
-                  
-                  {/* Meta as Tags */}
-                  <div className="flex items-center gap-3 pt-4 border-t border-border/50 mt-auto">
-                    <span className="inline-flex items-center gap-1.5 bg-secondary px-2.5 py-1 rounded-md text-xs text-muted-foreground">
-                      <Calendar className="h-3 w-3" />
-                      <time itemProp="datePublished">{article.date}</time>
-                    </span>
-                    <span className="inline-flex items-center gap-1.5 bg-secondary px-2.5 py-1 rounded-md text-xs text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      {article.readTime}
-                    </span>
-                  </div>
-                </div>
-                <div className="px-6 pb-6">
-                  <span className="inline-flex items-center gap-2 text-sm font-medium text-primary group-hover:text-accent transition-colors">
-                    Lees artikel
-                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                </div>
-              </article>
-            ))}
-          </div>
+           {articlesLoading ? (
+             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+               {[...Array(6)].map((_, i) => (
+                 <div key={i} className="bg-card rounded-2xl overflow-hidden border border-border/50">
+                   <Skeleton className="h-48 w-full" />
+                   <div className="p-6 space-y-3">
+                     <Skeleton className="h-6 w-3/4" />
+                     <Skeleton className="h-4 w-full" />
+                     <Skeleton className="h-4 w-2/3" />
+                   </div>
+                 </div>
+               ))}
+             </div>
+           ) : articles && articles.length > 0 ? (
+             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+               {articles.map((article, index) => (
+                 <ArticleCard key={article.id} article={article} index={index} />
+               ))}
+             </div>
+           ) : (
+             <div className="text-center py-12">
+               <p className="text-muted-foreground mb-4">
+                 Geen artikelen gevonden in deze categorie.
+               </p>
+               <Button variant="outline" onClick={() => setActiveCategory("Alle")}>
+                 Toon alle artikelen
+               </Button>
+             </div>
+           )}
         </div>
       </section>
 
