@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Phone, Calendar, ArrowRight } from "lucide-react";
+import { AnimatedSection, StaggerContainer, StaggerItem } from "@/components/ui/animated-section";
 import teamBoyCalling from "@/assets/team-boy-calling.jpg";
 
 export function CTASection() {
@@ -17,19 +18,23 @@ export function CTASection() {
       </div>
 
       <div className="container-wide relative z-10">
-        <div className="max-w-2xl mx-auto text-center text-primary-foreground">
-          <h2 className="mb-4 text-primary-foreground">
+        <AnimatedSection className="max-w-2xl mx-auto text-center text-primary-foreground">
+          <AnimatedSection delay={0.1}>
+            <h2 className="mb-4 text-primary-foreground">
             Klaar om zorgeloos te ondernemen?
           </h2>
-          <p className="text-primary-foreground/85 text-lg mb-8 max-w-xl mx-auto">
+          </AnimatedSection>
+          <AnimatedSection delay={0.2}>
+            <p className="text-primary-foreground/85 text-lg mb-8 max-w-xl mx-auto">
             Plan een gratis adviesgesprek en ontdek welke diensten bij jouw situatie passen. 
             Binnen 15 minuten weet je waar je aan toe bent.
           </p>
+          </AnimatedSection>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+          <AnimatedSection delay={0.3} className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
             <Button 
               size="xl" 
-              className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg"
+              className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg hover:scale-105 transition-transform duration-200"
               asChild
             >
               <Link to="/contact">
@@ -41,19 +46,21 @@ export function CTASection() {
             <span className="text-primary-foreground/60 hidden sm:block">of</span>
             <a 
               href="tel:0232010502" 
-              className="inline-flex items-center gap-2 text-primary-foreground hover:text-primary-foreground transition-colors font-medium border border-primary-foreground/40 rounded-lg px-4 py-2 hover:bg-primary-foreground/10"
+              className="inline-flex items-center gap-2 text-primary-foreground hover:text-primary-foreground transition-all font-medium border border-primary-foreground/40 rounded-lg px-4 py-2 hover:bg-primary-foreground/10 hover:scale-105 duration-200"
             >
               <Phone className="h-4 w-4" />
               023 - 201 0502
             </a>
-          </div>
+          </AnimatedSection>
 
-          <div className="flex flex-wrap items-center justify-center gap-6 text-primary-foreground/70 text-sm">
-            <span>✓ Gratis en vrijblijvend</span>
-            <span>✓ Binnen 24 uur reactie</span>
-            <span>✓ 13+ jaar marktleider</span>
-          </div>
-        </div>
+          <StaggerContainer className="flex flex-wrap items-center justify-center gap-6 text-primary-foreground/70 text-sm" staggerDelay={0.1}>
+            {["Gratis en vrijblijvend", "Binnen 24 uur reactie", "13+ jaar marktleider"].map((text) => (
+              <StaggerItem key={text}>
+                <span>✓ {text}</span>
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        </AnimatedSection>
       </div>
     </section>
   );

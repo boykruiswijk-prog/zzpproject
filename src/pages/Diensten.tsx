@@ -3,7 +3,9 @@ import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { Shield, Calculator, Scale, UserCheck, ArrowRight, Sparkles, Banknote } from "lucide-react";
+import { motion } from "framer-motion";
 import { ServiceCard } from "@/components/diensten/ServiceCard";
+import { AnimatedSection, StaggerContainer, StaggerItem } from "@/components/ui/animated-section";
 
 // Import background images
 import serviceVerzekeringen from "@/assets/service-verzekeringen.jpg";
@@ -137,22 +139,28 @@ export default function Diensten() {
       </PageHero>
 
       {/* Quick navigation */}
-      <section className="bg-secondary py-6 border-b border-border/50">
+      <motion.section 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        className="bg-secondary py-6 border-b border-border/50"
+      >
         <div className="container-wide">
-          <div className="flex flex-wrap justify-center gap-3 md:gap-4">
-            {services.map((service) => (
+          <StaggerContainer className="flex flex-wrap justify-center gap-3 md:gap-4" staggerDelay={0.08}>
+            {services.map((service, index) => (
+              <StaggerItem key={service.id}>
               <a
-                key={service.id}
                 href={`#${service.id}`}
-                className="flex items-center gap-2 px-4 py-2.5 bg-card rounded-lg hover:bg-accent/10 hover:border-accent/20 transition-all border border-border/50 shadow-sm"
+                className="flex items-center gap-2 px-4 py-2.5 bg-card rounded-lg hover:bg-accent/10 hover:border-accent/20 transition-all border border-border/50 shadow-sm hover:scale-105 hover:shadow-md duration-200"
               >
                 <service.icon className="h-4 w-4 text-accent" />
                 <span className="text-sm font-medium">{service.title}</span>
               </a>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
-      </section>
+      </motion.section>
 
       {/* Services with background images */}
       {services.map((service, index) => (
@@ -164,7 +172,13 @@ export default function Diensten() {
       ))}
 
       {/* CTA */}
-      <section className="section-padding relative overflow-hidden">
+      <motion.section 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="section-padding relative overflow-hidden"
+      >
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <img
@@ -177,21 +191,27 @@ export default function Diensten() {
         </div>
         
         <div className="container-wide relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="mb-4 text-primary-foreground">Niet zeker welke dienst je nodig hebt?</h2>
+          <AnimatedSection className="max-w-3xl mx-auto text-center">
+            <AnimatedSection delay={0.1}>
+              <h2 className="mb-4 text-primary-foreground">Niet zeker welke dienst je nodig hebt?</h2>
+            </AnimatedSection>
+            <AnimatedSection delay={0.2}>
             <p className="text-lg text-primary-foreground/80 mb-8">
               Plan een gratis adviesgesprek. We bekijken samen welke diensten passen bij jouw 
               situatie en beroep — zonder verplichtingen.
             </p>
-            <Button variant="accent" size="lg" asChild>
+            </AnimatedSection>
+            <AnimatedSection delay={0.3}>
+            <Button variant="accent" size="lg" asChild className="hover:scale-105 transition-transform duration-200">
               <Link to="/contact">
                 Gratis adviesgesprek
                 <ArrowRight className="h-5 w-5" />
               </Link>
             </Button>
-          </div>
+            </AnimatedSection>
+          </AnimatedSection>
         </div>
-      </section>
+      </motion.section>
     </Layout>
   );
 }

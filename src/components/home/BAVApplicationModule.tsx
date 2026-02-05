@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Shield, 
   CheckCircle, 
@@ -16,6 +17,7 @@ import {
   Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AnimatedSection } from "@/components/ui/animated-section";
 
 // Package options
 const packages = [
@@ -100,11 +102,17 @@ export function BAVApplicationModule() {
   return (
     <section className="section-padding bg-secondary" id="aanvraag">
       <div className="container-wide">
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-full text-sm font-medium mb-4">
+        <AnimatedSection className="text-center max-w-2xl mx-auto mb-10">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-full text-sm font-medium mb-4"
+          >
             <Sparkles className="h-4 w-4" />
             Direct online afsluiten
-          </div>
+          </motion.div>
           <h2 className="mb-4">
             BAV + AVB <span className="text-accent">Combinatiepolis</span>
           </h2>
@@ -112,20 +120,26 @@ export function BAVApplicationModule() {
             De enige gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering in Nederland.
             Sluit direct online af in 4 eenvoudige stappen.
           </p>
-        </div>
+        </AnimatedSection>
 
-        <div className="max-w-4xl mx-auto">
+        <AnimatedSection delay={0.2} className="max-w-4xl mx-auto">
           {/* Progress Steps */}
           <div className="flex justify-between mb-8 relative">
             <div className="absolute top-5 left-0 right-0 h-0.5 bg-border -z-10" />
-            {steps.map((step, index) => (
-              <div 
+            {steps.map((step) => (
+              <motion.div 
                 key={step.id} 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: step.id * 0.1 }}
                 className="flex flex-col items-center relative z-10"
               >
-                <div 
+                <motion.div 
+                  animate={currentStep >= step.id ? { scale: [1, 1.1, 1] } : {}}
+                  transition={{ duration: 0.3 }}
                   className={cn(
-                    "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all",
+                    "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300",
                     currentStep >= step.id 
                       ? "bg-accent border-accent text-accent-foreground" 
                       : "bg-card border-border text-muted-foreground"
@@ -136,25 +150,33 @@ export function BAVApplicationModule() {
                   ) : (
                     <step.icon className="h-5 w-5" />
                   )}
-                </div>
+                </motion.div>
                 <span className={cn(
                   "text-xs mt-2 font-medium",
                   currentStep >= step.id ? "text-foreground" : "text-muted-foreground"
                 )}>
                   {step.name}
                 </span>
-              </div>
+              </motion.div>
             ))}
           </div>
 
           {/* Main Content Card */}
-          <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden">
+          <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden hover:shadow-xl transition-shadow duration-300">
             <div className="grid lg:grid-cols-3">
               {/* Form Section */}
               <div className="lg:col-span-2 p-6 md:p-8">
+                <AnimatePresence mode="wait">
                 {/* Step 1: Package Selection */}
                 {currentStep === 1 && (
-                  <div className="space-y-6">
+                  <motion.div 
+                    key="step1"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="space-y-6"
+                  >
                     <div>
                       <h3 className="text-xl font-semibold mb-2">Kies je dekking</h3>
                       <p className="text-muted-foreground text-sm">
@@ -258,12 +280,19 @@ export function BAVApplicationModule() {
                         />
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 )}
 
                 {/* Step 2: Company Info */}
                 {currentStep === 2 && (
-                  <div className="space-y-6">
+                  <motion.div 
+                    key="step2"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="space-y-6"
+                  >
                     <div>
                       <h3 className="text-xl font-semibold mb-2">Bedrijfsgegevens</h3>
                       <p className="text-muted-foreground text-sm">
@@ -304,12 +333,19 @@ export function BAVApplicationModule() {
                         />
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 )}
 
                 {/* Step 3: Contact Info */}
                 {currentStep === 3 && (
-                  <div className="space-y-6">
+                  <motion.div 
+                    key="step3"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="space-y-6"
+                  >
                     <div>
                       <h3 className="text-xl font-semibold mb-2">Contactgegevens</h3>
                       <p className="text-muted-foreground text-sm">
@@ -363,12 +399,19 @@ export function BAVApplicationModule() {
                         />
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 )}
 
                 {/* Step 4: Confirmation */}
                 {currentStep === 4 && (
-                  <div className="space-y-6">
+                  <motion.div 
+                    key="step4"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="space-y-6"
+                  >
                     <div>
                       <h3 className="text-xl font-semibold mb-2">Bevestig je aanvraag</h3>
                       <p className="text-muted-foreground text-sm">
@@ -435,8 +478,9 @@ export function BAVApplicationModule() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 )}
+                </AnimatePresence>
 
                 {/* Navigation Buttons */}
                 <div className="flex justify-between mt-8 pt-6 border-t border-border">
@@ -536,7 +580,7 @@ export function BAVApplicationModule() {
               </div>
             </div>
           </div>
-        </div>
+        </AnimatedSection>
       </div>
     </section>
   );

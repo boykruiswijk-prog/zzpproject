@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { motion } from "framer-motion";
 import teamMeeting from "@/assets/team-meeting.jpg";
 
 interface PageHeroProps {
@@ -44,26 +45,52 @@ export function PageHero({
       )}
 
       <div className="container-wide relative z-10 py-16 md:py-24">
-        <div className="max-w-3xl">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.21, 0.47, 0.32, 0.98] }}
+          className="max-w-3xl"
+        >
           {badge && (
-            <div className="inline-flex items-center gap-2 bg-primary/20 backdrop-blur-sm border border-primary/30 text-primary-foreground px-4 py-2 rounded-full mb-6">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="inline-flex items-center gap-2 bg-primary/20 backdrop-blur-sm border border-primary/30 text-primary-foreground px-4 py-2 rounded-full mb-6"
+            >
               {badge.icon}
               <span className="text-sm font-medium">{badge.text}</span>
-            </div>
+            </motion.div>
           )}
 
-          <h1 className="mb-6 text-primary-foreground leading-tight">
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mb-6 text-primary-foreground leading-tight"
+          >
             {title}
-          </h1>
+          </motion.h1>
 
           {subtitle && (
-            <p className="text-lg md:text-xl text-primary-foreground/80 mb-8">
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="text-lg md:text-xl text-primary-foreground/80 mb-8"
+            >
               {subtitle}
-            </p>
+            </motion.p>
           )}
 
-          {children}
-        </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+          >
+            {children}
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );

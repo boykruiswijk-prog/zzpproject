@@ -1,7 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Phone, ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import logoZp from "@/assets/logo-zp.webp";
 import {
   DropdownMenu,
@@ -37,10 +38,28 @@ const navItems = [
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-50 w-full bg-background border-b border-border">
+    <motion.header 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+        scrolled 
+          ? "bg-background/95 backdrop-blur-md shadow-sm border-b border-border" 
+          : "bg-background border-b border-border"
+      }`}
+    >
       <div className="container-wide flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center">
           <img src={logoZp} alt="ZP Zaken logo" className="h-10" />
@@ -108,9 +127,16 @@ export function Header() {
       </div>
 
       {/* Mobile Navigation */}
-      {isOpen && (
-        <div className="lg:hidden border-t border-border bg-background animate-fade-in">
-          <nav className="container-wide py-4 flex flex-col gap-1">
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="lg:hidden border-t border-border bg-background overflow-hidden"
+          >
+            <nav className="container-wide py-4 flex flex-col gap-1">
             {navItems.map((item) => (
               item.children ? (
                 <div key={item.href}>
@@ -157,8 +183,9 @@ export function Header() {
               </Button>
             </div>
           </nav>
-        </div>
-      )}
-    </header>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.header>
   );
 }

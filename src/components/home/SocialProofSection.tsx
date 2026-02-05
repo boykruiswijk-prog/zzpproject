@@ -1,4 +1,6 @@
 import { Star, Quote } from "lucide-react";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -6,6 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { AnimatedSection, StaggerContainer, StaggerItem } from "@/components/ui/animated-section";
 
 const testimonials = [
   {
@@ -90,40 +93,57 @@ const stats = [
 ];
 
 export function SocialProofSection() {
+  const statsRef = useRef(null);
+  const statsInView = useInView(statsRef, { once: true, margin: "-50px" });
+
   return (
     <section className="section-padding bg-secondary">
       <div className="container-wide">
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-          {stats.map((stat) => (
-            <div key={stat.label} className="text-center">
-              <p className="text-3xl md:text-4xl font-bold text-primary mb-1">{stat.value}</p>
+        <div ref={statsRef} className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+          {stats.map((stat, index) => (
+            <motion.div 
+              key={stat.label} 
+              initial={{ opacity: 0, y: 30 }}
+              animate={statsInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="text-center"
+            >
+              <motion.p 
+                className="text-3xl md:text-4xl font-bold text-primary mb-1"
+                initial={{ scale: 0.5 }}
+                animate={statsInView ? { scale: 1 } : {}}
+                transition={{ duration: 0.5, delay: index * 0.1 + 0.2, type: "spring", stiffness: 200 }}
+              >
+                {stat.value}
+              </motion.p>
               <p className="text-sm text-muted-foreground">{stat.label}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
 
         {/* Testimonials */}
-        <div className="text-center max-w-2xl mx-auto mb-10">
+        <AnimatedSection className="text-center max-w-2xl mx-auto mb-10">
           <h2 className="mb-4">
             Wat zzp'ers over ons zeggen
           </h2>
           <p className="text-muted-foreground">
             Lees de ervaringen van ondernemers die ons voorgingen.
           </p>
-        </div>
+        </AnimatedSection>
 
-        <Carousel
-          opts={{
-            align: "start",
-            loop: true,
-          }}
-          className="w-full"
-        >
-          <CarouselContent className="-ml-4">
-            {testimonials.map((testimonial) => (
-              <CarouselItem key={testimonial.name} className="pl-4 md:basis-1/2 lg:basis-1/3">
-                <div className="bg-card rounded-xl p-6 shadow-card border border-border relative h-full">
+        <AnimatedSection delay={0.2}>
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-4">
+              {testimonials.map((testimonial) => (
+                <CarouselItem key={testimonial.name} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                <div className="bg-card rounded-xl p-6 shadow-card border border-border relative h-full hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                   <Quote className="absolute top-5 right-5 h-6 w-6 text-primary/10" />
                   
                   <div className="flex gap-0.5 mb-3">
@@ -148,31 +168,32 @@ export function SocialProofSection() {
             <CarouselPrevious className="static translate-y-0" />
             <CarouselNext className="static translate-y-0" />
           </div>
-        </Carousel>
+          </Carousel>
+        </AnimatedSection>
 
         {/* Trust badges */}
-        <div className="mt-12 pt-10 border-t border-border">
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
-            <div className="flex items-center gap-2 text-muted-foreground">
+        <AnimatedSection delay={0.4} className="mt-12 pt-10 border-t border-border">
+          <StaggerContainer className="flex flex-wrap justify-center items-center gap-8 md:gap-12" staggerDelay={0.1}>
+            <StaggerItem className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
               <div className="h-10 w-10 rounded-lg bg-card border border-border flex items-center justify-center font-bold text-xs text-primary">
                 AFM
               </div>
               <span className="text-sm">AFM geregistreerd</span>
-            </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
+            </StaggerItem>
+            <StaggerItem className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
               <div className="h-10 w-10 rounded-lg bg-card border border-border flex items-center justify-center font-bold text-xs text-primary">
                 Kifid
               </div>
               <span className="text-sm">Kifid aangesloten</span>
-            </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
+            </StaggerItem>
+            <StaggerItem className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
               <div className="h-10 w-10 rounded-lg bg-card border border-border flex items-center justify-center">
                 <Star className="h-5 w-5 fill-accent text-accent" />
               </div>
               <span className="text-sm">Google Reviews 4.9</span>
-            </div>
-          </div>
-        </div>
+            </StaggerItem>
+          </StaggerContainer>
+        </AnimatedSection>
       </div>
     </section>
   );
