@@ -38,17 +38,6 @@ export function CTASection() {
                 <ArrowRight className="h-5 w-5" />
               </Link>
             </Button>
-            <Button 
-              variant="outline" 
-              size="xl" 
-              className="border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 backdrop-blur-sm"
-              asChild
-            >
-              <a href="tel:0232010502">
-                <Phone className="h-5 w-5" />
-                Bel: 023 - 201 0502
-              </a>
-            </Button>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-primary-foreground/70 text-sm">
