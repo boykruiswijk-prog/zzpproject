@@ -1,101 +1,52 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Shield, 
-  CheckCircle, 
-  Building2, 
-  User, 
-  FileCheck,
-  ArrowRight,
-  ArrowLeft,
-  Calendar,
-  Check,
-  Sparkles
+  Shield, CheckCircle, Building2, User, FileCheck,
+  ArrowRight, ArrowLeft, Calendar, Check, Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatedSection } from "@/components/ui/animated-section";
 
-// Package options
 const packages = [
-  {
-    id: "basis",
-    name: "Combi Basis",
-    coverage: "€ 500.000 per gebeurtenis",
-    yearCoverage: "€ 1.000.000 per jaar",
-    priceMonthly: 27.70,
-    priceYearly: 292.40,
-    popular: false,
-  },
-  {
-    id: "uitgebreid",
-    name: "Combi Uitgebreid",
-    coverage: "€ 2.500.000 per gebeurtenis",
-    yearCoverage: "€ 5.000.000 per jaar",
-    priceMonthly: 43.54,
-    priceYearly: 482.48,
-    popular: true,
-  },
-];
-
-const steps = [
-  { id: 1, name: "Verzekering", icon: Shield },
-  { id: 2, name: "Bedrijf", icon: Building2 },
-  { id: 3, name: "Contact", icon: User },
-  { id: 4, name: "Afsluiten", icon: FileCheck },
-];
-
-const usps = [
-  "Dagelijks opzegbaar",
-  "Geen eigen risico",
-  "Direct gedekt",
-  "BAV + AVB gecombineerd",
+  { id: "basis", name: "Combi Basis", coverage: "€ 500.000 per gebeurtenis", yearCoverage: "€ 1.000.000 per jaar", priceMonthly: 27.70, priceYearly: 292.40, popular: false },
+  { id: "uitgebreid", name: "Combi Uitgebreid", coverage: "€ 2.500.000 per gebeurtenis", yearCoverage: "€ 5.000.000 per jaar", priceMonthly: 43.54, priceYearly: 482.48, popular: true },
 ];
 
 export function BAVApplicationModule() {
+  const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedPackage, setSelectedPackage] = useState<string>("uitgebreid");
   const [paymentType, setPaymentType] = useState<"monthly" | "yearly">("monthly");
   const [startDate, setStartDate] = useState<string>("");
-  
-  // Form data
   const [formData, setFormData] = useState({
-    bedrijfsnaam: "",
-    kvkNummer: "",
-    beroep: "",
-    voornaam: "",
-    achternaam: "",
-    email: "",
-    telefoon: "",
+    bedrijfsnaam: "", kvkNummer: "", beroep: "",
+    voornaam: "", achternaam: "", email: "", telefoon: "",
   });
 
+  const steps = [
+    { id: 1, name: t("home.bavStep1"), icon: Shield },
+    { id: 2, name: t("home.bavStep2"), icon: Building2 },
+    { id: 3, name: t("home.bavStep3"), icon: User },
+    { id: 4, name: t("home.bavStep4"), icon: FileCheck },
+  ];
+
+  const usps = t("home.bavUsps", { returnObjects: true }) as string[];
+
   const selectedPkg = packages.find(p => p.id === selectedPackage);
-  const currentPrice = paymentType === "monthly" 
-    ? selectedPkg?.priceMonthly 
-    : selectedPkg?.priceYearly;
+  const currentPrice = paymentType === "monthly" ? selectedPkg?.priceMonthly : selectedPkg?.priceYearly;
   const savings = paymentType === "yearly" ? 40 : 0;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const nextStep = () => {
-    if (currentStep < 4) setCurrentStep(currentStep + 1);
-  };
-
-  const prevStep = () => {
-    if (currentStep > 1) setCurrentStep(currentStep - 1);
-  };
-
+  const nextStep = () => { if (currentStep < 4) setCurrentStep(currentStep + 1); };
+  const prevStep = () => { if (currentStep > 1) setCurrentStep(currentStep - 1); };
   const handleSubmit = () => {
-    // Navigate to verzekeringen page with pre-filled data
-    // In production, this would submit to the backend
     window.location.href = `/verzekeringen?package=${selectedPackage}&payment=${paymentType}`;
   };
 
@@ -103,23 +54,12 @@ export function BAVApplicationModule() {
     <section className="section-padding bg-secondary" id="aanvraag">
       <div className="container-wide">
         <AnimatedSection className="text-center max-w-2xl mx-auto mb-10">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-full text-sm font-medium mb-4"
-          >
-            <Sparkles className="h-4 w-4" />
-            Direct online afsluiten
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-full text-sm font-medium mb-4">
+            <Sparkles className="h-4 w-4" />{t("home.bavOnline")}
           </motion.div>
-          <h2 className="mb-4">
-            BAV + AVB <span className="text-accent">Combinatiepolis</span>
-          </h2>
-          <p className="text-muted-foreground">
-            De enige gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering in Nederland.
-            Sluit direct online af in 4 eenvoudige stappen.
-          </p>
+          <h2 className="mb-4">{t("home.bavTitle")} <span className="text-accent">{t("home.bavSubtitle")}</span></h2>
+          <p className="text-muted-foreground">{t("home.bavDescription")}</p>
         </AnimatedSection>
 
         <AnimatedSection delay={0.2} className="max-w-4xl mx-auto">
@@ -127,36 +67,14 @@ export function BAVApplicationModule() {
           <div className="flex justify-between mb-8 relative">
             <div className="absolute top-5 left-0 right-0 h-0.5 bg-border -z-10" />
             {steps.map((step) => (
-              <motion.div 
-                key={step.id} 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: step.id * 0.1 }}
-                className="flex flex-col items-center relative z-10"
-              >
-                <motion.div 
-                  animate={currentStep >= step.id ? { scale: [1, 1.1, 1] } : {}}
-                  transition={{ duration: 0.3 }}
-                  className={cn(
-                    "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300",
-                    currentStep >= step.id 
-                      ? "bg-accent border-accent text-accent-foreground" 
-                      : "bg-card border-border text-muted-foreground"
-                  )}
-                >
-                  {currentStep > step.id ? (
-                    <Check className="h-5 w-5" />
-                  ) : (
-                    <step.icon className="h-5 w-5" />
-                  )}
+              <motion.div key={step.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: step.id * 0.1 }}
+                className="flex flex-col items-center relative z-10">
+                <motion.div animate={currentStep >= step.id ? { scale: [1, 1.1, 1] } : {}} transition={{ duration: 0.3 }}
+                  className={cn("w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300",
+                    currentStep >= step.id ? "bg-accent border-accent text-accent-foreground" : "bg-card border-border text-muted-foreground")}>
+                  {currentStep > step.id ? <Check className="h-5 w-5" /> : <step.icon className="h-5 w-5" />}
                 </motion.div>
-                <span className={cn(
-                  "text-xs mt-2 font-medium",
-                  currentStep >= step.id ? "text-foreground" : "text-muted-foreground"
-                )}>
-                  {step.name}
-                </span>
+                <span className={cn("text-xs mt-2 font-medium", currentStep >= step.id ? "text-foreground" : "text-muted-foreground")}>{step.name}</span>
               </motion.div>
             ))}
           </div>
@@ -167,314 +85,117 @@ export function BAVApplicationModule() {
               {/* Form Section */}
               <div className="lg:col-span-2 p-6 md:p-8">
                 <AnimatePresence mode="wait">
-                {/* Step 1: Package Selection */}
                 {currentStep === 1 && (
-                  <motion.div 
-                    key="step1"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.3 }}
-                    className="space-y-6"
-                  >
+                  <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="space-y-6">
                     <div>
-                      <h3 className="text-xl font-semibold mb-2">Kies je dekking</h3>
-                      <p className="text-muted-foreground text-sm">
-                        Selecteer het pakket dat past bij jouw situatie
-                      </p>
+                      <h3 className="text-xl font-semibold mb-2">{t("home.bavChooseCoverage")}</h3>
+                      <p className="text-muted-foreground text-sm">{t("home.bavChooseDesc")}</p>
                     </div>
-
                     <div className="grid gap-4">
                       {packages.map((pkg) => (
-                        <button
-                          key={pkg.id}
-                          onClick={() => setSelectedPackage(pkg.id)}
-                          className={cn(
-                            "relative p-5 rounded-xl border-2 text-left transition-all",
-                            selectedPackage === pkg.id
-                              ? "border-accent bg-accent/5"
-                              : "border-border hover:border-accent/50"
-                          )}
-                        >
-                          {pkg.popular && (
-                            <span className="absolute -top-3 left-4 bg-accent text-accent-foreground text-xs font-medium px-3 py-1 rounded-full">
-                              Meest gekozen
-                            </span>
-                          )}
+                        <button key={pkg.id} onClick={() => setSelectedPackage(pkg.id)}
+                          className={cn("relative p-5 rounded-xl border-2 text-left transition-all", selectedPackage === pkg.id ? "border-accent bg-accent/5" : "border-border hover:border-accent/50")}>
+                          {pkg.popular && <span className="absolute -top-3 left-4 bg-accent text-accent-foreground text-xs font-medium px-3 py-1 rounded-full">{t("home.bavMostChosen")}</span>}
                           <div className="flex justify-between items-start">
                             <div>
                               <h4 className="font-semibold text-lg">{pkg.name}</h4>
-                              <p className="text-muted-foreground text-sm mt-1">
-                                {pkg.coverage}
-                              </p>
-                              <p className="text-muted-foreground text-sm">
-                                {pkg.yearCoverage}
-                              </p>
+                              <p className="text-muted-foreground text-sm mt-1">{pkg.coverage}</p>
+                              <p className="text-muted-foreground text-sm">{pkg.yearCoverage}</p>
                             </div>
                             <div className="text-right">
-                              <p className="text-2xl font-bold text-foreground">
-                                €{(paymentType === "monthly" ? pkg.priceMonthly : pkg.priceYearly).toFixed(2).replace('.', ',')}
-                              </p>
-                              <p className="text-muted-foreground text-sm">
-                                {paymentType === "monthly" ? "per maand" : "per jaar"}
-                              </p>
+                              <p className="text-2xl font-bold text-foreground">€{(paymentType === "monthly" ? pkg.priceMonthly : pkg.priceYearly).toFixed(2).replace('.', ',')}</p>
+                              <p className="text-muted-foreground text-sm">{paymentType === "monthly" ? t("home.bavPerMonth") : t("home.bavPerYear")}</p>
                             </div>
                           </div>
-                          {selectedPackage === pkg.id && (
-                            <div className="absolute top-5 right-5">
-                              <CheckCircle className="h-6 w-6 text-accent" />
-                            </div>
-                          )}
+                          {selectedPackage === pkg.id && <div className="absolute top-5 right-5"><CheckCircle className="h-6 w-6 text-accent" /></div>}
                         </button>
                       ))}
                     </div>
-
-                    {/* Payment Type */}
                     <div>
-                      <Label className="text-sm font-medium mb-3 block">Betaalwijze</Label>
+                      <Label className="text-sm font-medium mb-3 block">{t("home.bavPayment")}</Label>
                       <div className="grid grid-cols-2 gap-3">
-                        <button
-                          onClick={() => setPaymentType("monthly")}
-                          className={cn(
-                            "p-4 rounded-lg border-2 text-center transition-all",
-                            paymentType === "monthly"
-                              ? "border-accent bg-accent/5"
-                              : "border-border hover:border-accent/50"
-                          )}
-                        >
-                          <p className="font-medium">Maandelijks</p>
-                          <p className="text-muted-foreground text-sm">Flexibel betalen</p>
+                        <button onClick={() => setPaymentType("monthly")} className={cn("p-4 rounded-lg border-2 text-center transition-all", paymentType === "monthly" ? "border-accent bg-accent/5" : "border-border hover:border-accent/50")}>
+                          <p className="font-medium">{t("home.bavMonthly")}</p>
+                          <p className="text-muted-foreground text-sm">{t("home.bavMonthlyDesc")}</p>
                         </button>
-                        <button
-                          onClick={() => setPaymentType("yearly")}
-                          className={cn(
-                            "p-4 rounded-lg border-2 text-center transition-all relative",
-                            paymentType === "yearly"
-                              ? "border-accent bg-accent/5"
-                              : "border-border hover:border-accent/50"
-                          )}
-                        >
-                          <span className="absolute -top-2 right-2 bg-accent text-accent-foreground text-xs font-medium px-2 py-0.5 rounded-full">
-                            Bespaar €40
-                          </span>
-                          <p className="font-medium">Jaarlijks</p>
-                          <p className="text-muted-foreground text-sm">10% korting</p>
+                        <button onClick={() => setPaymentType("yearly")} className={cn("p-4 rounded-lg border-2 text-center transition-all relative", paymentType === "yearly" ? "border-accent bg-accent/5" : "border-border hover:border-accent/50")}>
+                          <span className="absolute -top-2 right-2 bg-accent text-accent-foreground text-xs font-medium px-2 py-0.5 rounded-full">{t("home.bavSave")}</span>
+                          <p className="font-medium">{t("home.bavYearly")}</p>
+                          <p className="text-muted-foreground text-sm">{t("home.bavYearlyDesc")}</p>
                         </button>
                       </div>
                     </div>
-
-                    {/* Start Date */}
                     <div>
-                      <Label htmlFor="startDate" className="text-sm font-medium mb-2 block">
-                        Gewenste ingangsdatum
-                      </Label>
+                      <Label htmlFor="startDate" className="text-sm font-medium mb-2 block">{t("home.bavStartDate")}</Label>
                       <div className="relative">
                         <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                        <Input
-                          id="startDate"
-                          type="date"
-                          value={startDate}
-                          onChange={(e) => setStartDate(e.target.value)}
-                          className="pl-10"
-                          min={new Date().toISOString().split('T')[0]}
-                        />
+                        <Input id="startDate" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="pl-10" min={new Date().toISOString().split('T')[0]} />
                       </div>
                     </div>
                   </motion.div>
                 )}
 
-                {/* Step 2: Company Info */}
                 {currentStep === 2 && (
-                  <motion.div 
-                    key="step2"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.3 }}
-                    className="space-y-6"
-                  >
+                  <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="space-y-6">
                     <div>
-                      <h3 className="text-xl font-semibold mb-2">Bedrijfsgegevens</h3>
-                      <p className="text-muted-foreground text-sm">
-                        Vul de gegevens van je onderneming in
-                      </p>
+                      <h3 className="text-xl font-semibold mb-2">{t("home.bavCompanyTitle")}</h3>
+                      <p className="text-muted-foreground text-sm">{t("home.bavCompanyDesc")}</p>
                     </div>
-
                     <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="bedrijfsnaam">Bedrijfsnaam</Label>
-                        <Input
-                          id="bedrijfsnaam"
-                          name="bedrijfsnaam"
-                          value={formData.bedrijfsnaam}
-                          onChange={handleInputChange}
-                          placeholder="Jouw Bedrijf B.V."
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="kvkNummer">KvK-nummer</Label>
-                        <Input
-                          id="kvkNummer"
-                          name="kvkNummer"
-                          value={formData.kvkNummer}
-                          onChange={handleInputChange}
-                          placeholder="12345678"
-                          maxLength={8}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="beroep">Beroep / Werkzaamheden</Label>
-                        <Input
-                          id="beroep"
-                          name="beroep"
-                          value={formData.beroep}
-                          onChange={handleInputChange}
-                          placeholder="Bijv. Software Developer, Consultant"
-                        />
-                      </div>
+                      <div><Label htmlFor="bedrijfsnaam">{t("home.bavCompanyName")}</Label><Input id="bedrijfsnaam" name="bedrijfsnaam" value={formData.bedrijfsnaam} onChange={handleInputChange} /></div>
+                      <div><Label htmlFor="kvkNummer">{t("home.bavKvk")}</Label><Input id="kvkNummer" name="kvkNummer" value={formData.kvkNummer} onChange={handleInputChange} maxLength={8} /></div>
+                      <div><Label htmlFor="beroep">{t("home.bavProfession")}</Label><Input id="beroep" name="beroep" value={formData.beroep} onChange={handleInputChange} /></div>
                     </div>
                   </motion.div>
                 )}
 
-                {/* Step 3: Contact Info */}
                 {currentStep === 3 && (
-                  <motion.div 
-                    key="step3"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.3 }}
-                    className="space-y-6"
-                  >
+                  <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="space-y-6">
                     <div>
-                      <h3 className="text-xl font-semibold mb-2">Contactgegevens</h3>
-                      <p className="text-muted-foreground text-sm">
-                        Hoe kunnen we je bereiken?
-                      </p>
+                      <h3 className="text-xl font-semibold mb-2">{t("home.bavContactTitle")}</h3>
+                      <p className="text-muted-foreground text-sm">{t("home.bavContactDesc")}</p>
                     </div>
-
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="voornaam">Voornaam</Label>
-                          <Input
-                            id="voornaam"
-                            name="voornaam"
-                            value={formData.voornaam}
-                            onChange={handleInputChange}
-                            placeholder="Jan"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="achternaam">Achternaam</Label>
-                          <Input
-                            id="achternaam"
-                            name="achternaam"
-                            value={formData.achternaam}
-                            onChange={handleInputChange}
-                            placeholder="Jansen"
-                          />
-                        </div>
+                        <div><Label htmlFor="voornaam">{t("home.bavFirstName")}</Label><Input id="voornaam" name="voornaam" value={formData.voornaam} onChange={handleInputChange} /></div>
+                        <div><Label htmlFor="achternaam">{t("home.bavLastName")}</Label><Input id="achternaam" name="achternaam" value={formData.achternaam} onChange={handleInputChange} /></div>
                       </div>
-                      <div>
-                        <Label htmlFor="email">E-mailadres</Label>
-                        <Input
-                          id="email"
-                          name="email"
-                          type="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          placeholder="jan@jouwbedrijf.nl"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="telefoon">Telefoonnummer</Label>
-                        <Input
-                          id="telefoon"
-                          name="telefoon"
-                          type="tel"
-                          value={formData.telefoon}
-                          onChange={handleInputChange}
-                          placeholder="06 12345678"
-                        />
-                      </div>
+                      <div><Label htmlFor="email">{t("home.bavEmail")}</Label><Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} /></div>
+                      <div><Label htmlFor="telefoon">{t("home.bavPhone")}</Label><Input id="telefoon" name="telefoon" type="tel" value={formData.telefoon} onChange={handleInputChange} /></div>
                     </div>
                   </motion.div>
                 )}
 
-                {/* Step 4: Confirmation */}
                 {currentStep === 4 && (
-                  <motion.div 
-                    key="step4"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.3 }}
-                    className="space-y-6"
-                  >
+                  <motion.div key="step4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="space-y-6">
                     <div>
-                      <h3 className="text-xl font-semibold mb-2">Bevestig je aanvraag</h3>
-                      <p className="text-muted-foreground text-sm">
-                        Controleer je gegevens en sluit direct af
-                      </p>
+                      <h3 className="text-xl font-semibold mb-2">{t("home.bavConfirmTitle")}</h3>
+                      <p className="text-muted-foreground text-sm">{t("home.bavConfirmDesc")}</p>
                     </div>
-
                     <div className="space-y-4">
                       <div className="bg-secondary rounded-lg p-4">
-                        <h4 className="font-medium mb-3">Verzekering</h4>
+                        <h4 className="font-medium mb-3">{t("home.bavStep1")}</h4>
                         <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Pakket</span>
-                            <span className="font-medium">{selectedPkg?.name}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Dekking</span>
-                            <span>{selectedPkg?.coverage}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Betaling</span>
-                            <span>{paymentType === "monthly" ? "Maandelijks" : "Jaarlijks"}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Ingangsdatum</span>
-                            <span>{startDate || "Per direct"}</span>
-                          </div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">Pakket</span><span className="font-medium">{selectedPkg?.name}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">Dekking</span><span>{selectedPkg?.coverage}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">Betaling</span><span>{paymentType === "monthly" ? t("home.bavMonthly") : t("home.bavYearly")}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">Ingangsdatum</span><span>{startDate || "Per direct"}</span></div>
                         </div>
                       </div>
-
                       <div className="bg-secondary rounded-lg p-4">
-                        <h4 className="font-medium mb-3">Bedrijf</h4>
+                        <h4 className="font-medium mb-3">{t("home.bavStep2")}</h4>
                         <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Bedrijfsnaam</span>
-                            <span>{formData.bedrijfsnaam || "-"}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">KvK</span>
-                            <span>{formData.kvkNummer || "-"}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Beroep</span>
-                            <span>{formData.beroep || "-"}</span>
-                          </div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("home.bavCompanyName")}</span><span>{formData.bedrijfsnaam || "-"}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("home.bavKvk")}</span><span>{formData.kvkNummer || "-"}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("home.bavProfession")}</span><span>{formData.beroep || "-"}</span></div>
                         </div>
                       </div>
-
                       <div className="bg-secondary rounded-lg p-4">
-                        <h4 className="font-medium mb-3">Contact</h4>
+                        <h4 className="font-medium mb-3">{t("home.bavStep3")}</h4>
                         <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Naam</span>
-                            <span>{formData.voornaam} {formData.achternaam}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Email</span>
-                            <span>{formData.email || "-"}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Telefoon</span>
-                            <span>{formData.telefoon || "-"}</span>
-                          </div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("home.bavFirstName")}</span><span>{formData.voornaam} {formData.achternaam}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("home.bavEmail")}</span><span>{formData.email || "-"}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("home.bavPhone")}</span><span>{formData.telefoon || "-"}</span></div>
                         </div>
                       </div>
                     </div>
@@ -485,28 +206,13 @@ export function BAVApplicationModule() {
                 {/* Navigation Buttons */}
                 <div className="flex justify-between mt-8 pt-6 border-t border-border">
                   {currentStep > 1 ? (
-                    <Button variant="outline" onClick={prevStep}>
-                      <ArrowLeft className="h-4 w-4" />
-                      Vorige
-                    </Button>
-                  ) : (
-                    <div />
-                  )}
-                  
+                    <Button variant="outline" onClick={prevStep}><ArrowLeft className="h-4 w-4" />{t("home.bavPrev")}</Button>
+                  ) : <div />}
                   {currentStep < 4 ? (
-                    <Button onClick={nextStep} className="bg-accent hover:bg-accent/90 text-accent-foreground">
-                      Volgende
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
+                    <Button onClick={nextStep} className="bg-accent hover:bg-accent/90 text-accent-foreground">{t("home.bavNext")}<ArrowRight className="h-4 w-4" /></Button>
                   ) : (
-                    <Button 
-                      onClick={handleSubmit}
-                      size="lg"
-                      className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold"
-                    >
-                      <Shield className="h-5 w-5" />
-                      Direct afsluiten
-                      <ArrowRight className="h-5 w-5" />
+                    <Button onClick={handleSubmit} size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold">
+                      <Shield className="h-5 w-5" />{t("home.bavSubmit")}<ArrowRight className="h-5 w-5" />
                     </Button>
                   )}
                 </div>
@@ -515,65 +221,35 @@ export function BAVApplicationModule() {
               {/* Price Sidebar */}
               <div className="bg-foreground p-6 md:p-8 text-background">
                 <div className="sticky top-8">
-                  <h4 className="text-lg font-semibold mb-4">Jouw verzekering</h4>
-                  
+                  <h4 className="text-lg font-semibold mb-4">{t("home.bavStep1")}</h4>
                   <div className="bg-white/10 rounded-xl p-5 mb-6">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="h-10 w-10 rounded-lg bg-accent flex items-center justify-center">
-                        <Shield className="h-5 w-5 text-accent-foreground" />
-                      </div>
-                      <div>
-                        <p className="font-semibold">{selectedPkg?.name}</p>
-                        <p className="text-sm text-background/70">BAV + AVB</p>
-                      </div>
+                      <div className="h-10 w-10 rounded-lg bg-accent flex items-center justify-center"><Shield className="h-5 w-5 text-accent-foreground" /></div>
+                      <div><p className="font-semibold">{selectedPkg?.name}</p><p className="text-sm text-background/70">BAV + AVB</p></div>
                     </div>
-                    
                     <div className="space-y-2 text-sm mb-4">
-                      <div className="flex justify-between">
-                        <span className="text-background/70">Per gebeurtenis</span>
-                        <span>{selectedPkg?.coverage.replace('€ ', '€')}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-background/70">Per jaar</span>
-                        <span>{selectedPkg?.yearCoverage.replace('€ ', '€')}</span>
-                      </div>
+                      <div className="flex justify-between"><span className="text-background/70">Per gebeurtenis</span><span>{selectedPkg?.coverage.replace('€ ', '€')}</span></div>
+                      <div className="flex justify-between"><span className="text-background/70">Per jaar</span><span>{selectedPkg?.yearCoverage.replace('€ ', '€')}</span></div>
                     </div>
-
                     <div className="border-t border-white/20 pt-4">
                       <div className="flex justify-between items-end">
                         <div>
-                          <p className="text-sm text-background/70">
-                            {paymentType === "monthly" ? "Per maand" : "Per jaar"}
-                          </p>
-                          <p className="text-3xl font-bold">
-                            €{currentPrice?.toFixed(2).replace('.', ',')}
-                          </p>
+                          <p className="text-sm text-background/70">{paymentType === "monthly" ? t("home.bavPerMonth") : t("home.bavPerYear")}</p>
+                          <p className="text-3xl font-bold">€{currentPrice?.toFixed(2).replace('.', ',')}</p>
                         </div>
-                        {savings > 0 && (
-                          <span className="bg-accent text-accent-foreground text-xs font-medium px-2 py-1 rounded">
-                            -€{savings}
-                          </span>
-                        )}
+                        {savings > 0 && <span className="bg-accent text-accent-foreground text-xs font-medium px-2 py-1 rounded">-€{savings}</span>}
                       </div>
                     </div>
                   </div>
-
-                  {/* USPs */}
                   <ul className="space-y-3">
                     {usps.map((usp) => (
-                      <li key={usp} className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" />
-                        <span className="text-background/90">{usp}</span>
-                      </li>
+                      <li key={usp} className="flex items-center gap-2 text-sm"><CheckCircle className="h-4 w-4 text-accent flex-shrink-0" /><span className="text-background/90">{usp}</span></li>
                     ))}
                   </ul>
-
                   <div className="mt-6 pt-6 border-t border-white/20">
                     <p className="text-xs text-background/60">
-                      Vragen? Bel ons op{" "}
-                      <a href="tel:0232010502" className="text-accent hover:underline">
-                        023 - 201 0502
-                      </a>
+                      {t("common.contactUs")}?{" "}
+                      <a href="tel:0232010502" className="text-accent hover:underline">023 - 201 0502</a>
                     </p>
                   </div>
                 </div>
