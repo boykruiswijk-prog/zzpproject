@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { LocalizedLink } from "@/components/LocalizedLink";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
@@ -44,7 +44,7 @@ export default function Diensten() {
         backgroundImage={officeLogo}
       >
         <Button variant="accent" size="lg" asChild>
-          <Link to="/contact">{t("diensten.ctaAdvies")}<ArrowRight className="h-5 w-5" /></Link>
+          <LocalizedLink to="/contact">{t("diensten.ctaAdvies")}<ArrowRight className="h-5 w-5" /></LocalizedLink>
         </Button>
       </PageHero>
 
@@ -81,7 +81,7 @@ export default function Diensten() {
             <AnimatedSection delay={0.2}><p className="text-lg text-primary-foreground/80 mb-8">{t("diensten.ctaSubtitle")}</p></AnimatedSection>
             <AnimatedSection delay={0.3}>
               <Button variant="accent" size="lg" asChild className="hover:scale-105 transition-transform duration-200">
-                <Link to="/contact">{t("diensten.ctaButton")}<ArrowRight className="h-5 w-5" /></Link>
+                <LocalizedLink to="/contact">{t("diensten.ctaButton")}<ArrowRight className="h-5 w-5" /></LocalizedLink>
               </Button>
             </AnimatedSection>
           </AnimatedSection>

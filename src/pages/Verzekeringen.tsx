@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
+import { LocalizedLink } from "@/components/LocalizedLink";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -32,7 +32,7 @@ export default function Verzekeringen() {
         badge={{ icon: <Sparkles className="h-4 w-4" />, text: t("verzekeringenPage.badge") }}
       >
         <Button variant="accent" size="lg" asChild>
-          <Link to="/contact">{t("verzekeringenPage.ctaAdvies")}<ArrowRight className="h-5 w-5" /></Link>
+          <LocalizedLink to="/contact">{t("verzekeringenPage.ctaAdvies")}<ArrowRight className="h-5 w-5" /></LocalizedLink>
         </Button>
       </PageHero>
 
@@ -83,7 +83,7 @@ export default function Verzekeringen() {
                         </Button>
                       )}
                       <Button variant={insurance.canApplyOnline ? "outline" : "accent"} asChild>
-                        <Link to="/contact">{t("verzekeringenPage.askAdvice")}<ArrowRight className="h-4 w-4" /></Link>
+                        <LocalizedLink to="/contact">{t("verzekeringenPage.askAdvice")}<ArrowRight className="h-4 w-4" /></LocalizedLink>
                       </Button>
                     </div>
                   </div>
@@ -110,7 +110,7 @@ export default function Verzekeringen() {
             <h2 className="mb-4">{t("verzekeringenPage.ctaTitle")}</h2>
             <p className="text-lg text-muted-foreground mb-8">{t("verzekeringenPage.ctaSubtitle")}</p>
             <Button variant="accent" size="lg" asChild>
-              <Link to="/contact">{t("verzekeringenPage.ctaButton")}<ArrowRight className="h-5 w-5" /></Link>
+              <LocalizedLink to="/contact">{t("verzekeringenPage.ctaButton")}<ArrowRight className="h-5 w-5" /></LocalizedLink>
             </Button>
           </div>
         </div>

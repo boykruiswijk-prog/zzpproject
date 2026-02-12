@@ -40,8 +40,10 @@ i18n
       escapeValue: false,
     },
     detection: {
-      order: ['path'],
+      order: ['path', 'localStorage'],
       lookupFromPathIndex: 0,
+      lookupLocalStorage: 'i18nextLng',
+      caches: ['localStorage'],
     },
   });
 

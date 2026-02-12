@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Mail, Phone } from "lucide-react";
+import { ArrowRight, Phone } from "lucide-react";
+import { LocalizedLink } from "@/components/LocalizedLink";
 import teamMember1 from "@/assets/team-member-1.jpg";
 import teamMember2 from "@/assets/team-member-2.jpg";
 import teamMember3 from "@/assets/team-member-3.jpg";
@@ -90,10 +90,10 @@ export function TeamSection() {
             </a>
             <span className="hidden sm:inline text-muted-foreground">of</span>
             <Button variant="accent" size="lg" asChild>
-              <Link to="/contact">
+              <LocalizedLink to="/contact">
                 Neem contact op
                 <ArrowRight className="h-5 w-5" />
-              </Link>
+              </LocalizedLink>
             </Button>
           </div>
         </div>

@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Phone, Calendar, ArrowRight } from "lucide-react";
 import { AnimatedSection, StaggerContainer, StaggerItem } from "@/components/ui/animated-section";
+import { LocalizedLink } from "@/components/LocalizedLink";
 import teamBoyCalling from "@/assets/team-boy-calling.jpg";
 
 export function CTASection() {
@@ -32,11 +32,11 @@ export function CTASection() {
               className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg hover:scale-105 transition-transform duration-200"
               asChild
             >
-              <Link to="/contact">
+              <LocalizedLink to="/contact">
                 <Calendar className="h-5 w-5" />
                 {t("home.planGesprek")}
                 <ArrowRight className="h-5 w-5" />
-              </Link>
+              </LocalizedLink>
             </Button>
             <span className="text-primary-foreground/60 hidden sm:block">{t("home.of")}</span>
             <a 

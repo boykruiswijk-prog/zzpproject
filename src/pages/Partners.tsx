@@ -4,7 +4,7 @@ import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { Handshake, ExternalLink, Shield, Heart, PiggyBank, Umbrella, Users, Calculator, Scale, UserCheck, CheckCircle, Banknote, Briefcase, Crown } from "lucide-react";
-import { Link } from "react-router-dom";
+import { LocalizedLink } from "@/components/LocalizedLink";
 import otenticaLogo from "@/assets/partner-otentica.png";
 import homyCapitalLogo from "@/assets/partner-homy-capital.png";
 import circle8Logo from "@/assets/partner-circle8.svg";
@@ -55,11 +55,11 @@ export default function Partners() {
         <div className="container-wide">
           <div className="flex flex-wrap justify-center gap-3">
             {serviceCategories.map((cat) => (
-              <Link key={cat.id} to={`/diensten#${cat.id}`}
+              <LocalizedLink key={cat.id} to={`/diensten#${cat.id}`}
                 className="inline-flex items-center gap-2 bg-card border border-border/50 shadow-sm px-4 py-2.5 rounded-xl hover:bg-accent/10 hover:border-accent/20 transition-all">
                 <cat.icon className="h-4 w-4 text-accent" />
                 <span className="text-sm font-medium">{cat.label}</span>
-              </Link>
+                </LocalizedLink>
             ))}
           </div>
         </div>
@@ -87,7 +87,7 @@ export default function Partners() {
                     ))}
                   </div>
                   <Button variant="outline" size="sm" className="w-full" asChild>
-                    <Link to={partner.link}>{t("partners.moreInfo")}<ExternalLink className="h-4 w-4" /></Link>
+                    <LocalizedLink to={partner.link}>{t("partners.moreInfo")}<ExternalLink className="h-4 w-4" /></LocalizedLink>
                   </Button>
                 </div>
               </div>
@@ -112,7 +112,7 @@ export default function Partners() {
             </div>
             <p className="text-lg text-muted-foreground mb-8">{t("partners.becomePartnerSubtitle")}</p>
             <Button variant="accent" size="lg" asChild>
-              <Link to="/contact">{t("partners.becomePartnerButton")}<ExternalLink className="h-4 w-4" /></Link>
+              <LocalizedLink to="/contact">{t("partners.becomePartnerButton")}<ExternalLink className="h-4 w-4" /></LocalizedLink>
             </Button>
           </div>
         </div>
@@ -123,7 +123,7 @@ export default function Partners() {
           <h2 className="mb-4">{t("partners.questionsTitle")}</h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">{t("partners.questionsSubtitle")}</p>
           <Button variant="accent" size="lg" asChild>
-            <Link to="/contact">{t("partners.questionsButton")}</Link>
+            <LocalizedLink to="/contact">{t("partners.questionsButton")}</LocalizedLink>
           </Button>
         </div>
       </section>

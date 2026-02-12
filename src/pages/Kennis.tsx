@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { LocalizedLink } from "@/components/LocalizedLink";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, BookOpen, HelpCircle, FileText, ChevronDown } from "lucide-react";
@@ -153,10 +153,10 @@ export default function Kennis() {
               verzekeringen en ondernemerschap.
             </p>
             <Button variant="accent" size="lg" asChild>
-              <Link to="/contact">
+              <LocalizedLink to="/contact">
                 Stel je vraag
                 <ArrowRight className="h-5 w-5" />
-              </Link>
+              </LocalizedLink>
             </Button>
           </div>
         </div>

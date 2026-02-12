@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { LocalizedLink } from "@/components/LocalizedLink";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
@@ -102,7 +102,7 @@ export default function ZoWerkenWij() {
             </div>
             <p className="text-lg text-primary-foreground/80 mb-8">{t("zoWerkenWij.ctaSubtitle")}</p>
             <Button variant="accent" size="lg" asChild>
-              <Link to="/contact">{t("zoWerkenWij.ctaButton")}<ArrowRight className="h-5 w-5" /></Link>
+              <LocalizedLink to="/contact">{t("zoWerkenWij.ctaButton")}<ArrowRight className="h-5 w-5" /></LocalizedLink>
             </Button>
           </div>
         </div>

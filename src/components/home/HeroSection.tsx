@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, Phone, Shield, Users } from "lucide-react";
 import { motion } from "framer-motion";
+import { LocalizedLink } from "@/components/LocalizedLink";
 import teamMeeting from "@/assets/team-meeting.jpg";
 
 export function HeroSection() {
@@ -85,17 +85,17 @@ export function HeroSection() {
               className="flex flex-col sm:flex-row gap-3 mb-6"
             >
               <Button variant="accent" size="xl" asChild className="shadow-lg hover:scale-105 transition-transform duration-200">
-                <Link to="/diensten">
+                <LocalizedLink to="/diensten">
                   {t("home.ctaDiensten")}
                   <ArrowRight className="h-5 w-5" />
-                </Link>
+                </LocalizedLink>
               </Button>
               <Button 
                 size="xl" 
                 asChild
                 className="bg-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/30 backdrop-blur-sm border border-primary-foreground/50 hover:scale-105 transition-transform duration-200"
               >
-                <Link to="/contact">{t("home.ctaAdvies")}</Link>
+                <LocalizedLink to="/contact">{t("home.ctaAdvies")}</LocalizedLink>
               </Button>
             </motion.div>
 

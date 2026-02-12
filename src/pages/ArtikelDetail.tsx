@@ -1,4 +1,5 @@
- import { useParams, Link } from "react-router-dom";
+ import { useParams } from "react-router-dom";
+ import { LocalizedLink } from "@/components/LocalizedLink";
  import { Helmet } from "react-helmet-async";
  import { Layout } from "@/components/layout/Layout";
  import { useArticle } from "@/hooks/useArticles";
@@ -37,12 +38,12 @@
            <p className="text-muted-foreground mb-6">
              Het artikel dat je zoekt bestaat niet of is verwijderd.
            </p>
-           <Button asChild>
-             <Link to="/kennisbank">
-               <ArrowLeft className="h-4 w-4 mr-2" />
-               Terug naar kennisbank
-             </Link>
-           </Button>
+            <Button asChild>
+              <LocalizedLink to="/kennisbank">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Terug naar kennisbank
+              </LocalizedLink>
+            </Button>
          </div>
        </Layout>
      );
@@ -110,13 +111,13 @@
  
        <article className="container-wide section-padding max-w-4xl mx-auto">
          {/* Back button */}
-         <Link
-           to="/kennisbank"
+          <LocalizedLink
+            to="/kennisbank"
            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
          >
            <ArrowLeft className="h-4 w-4" />
            Terug naar kennisbank
-         </Link>
+          </LocalizedLink>
  
          {/* Category badge */}
          <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 text-accent px-3 py-1.5 rounded-lg text-sm font-medium mb-4">
@@ -177,7 +178,7 @@
              Onze adviseurs helpen je graag met persoonlijk advies.
            </p>
            <Button variant="accent" asChild>
-             <Link to="/contact">Neem contact op</Link>
+             <LocalizedLink to="/contact">Neem contact op</LocalizedLink>
            </Button>
          </div>
        </article>

@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { Menu, X, Phone, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import logoZp from "@/assets/logo-zp.webp";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { LocalizedLink } from "@/components/LocalizedLink";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -64,9 +65,9 @@ export function Header() {
       }`}
     >
       <div className="container-wide flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center">
+        <LocalizedLink to="/" className="flex items-center">
           <img src={logoZp} alt="ZP Zaken logo" className="h-10" />
-        </Link>
+        </LocalizedLink>
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-1">
@@ -84,13 +85,13 @@ export function Header() {
                 <DropdownMenuContent align="start">
                   {item.children.map((child) => (
                     <DropdownMenuItem key={child.href} asChild>
-                      <Link to={child.href}>{child.label}</Link>
+                      <LocalizedLink to={child.href}>{child.label}</LocalizedLink>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link
+              <LocalizedLink
                 key={item.href}
                 to={item.href}
                 className={`px-3 py-2 text-sm font-medium rounded-md transition-colors flex items-center gap-1.5 ${
@@ -103,7 +104,7 @@ export function Header() {
                 {'isNew' in item && item.isNew && (
                   <span className="text-[10px] font-bold uppercase bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full leading-none">Nieuw</span>
                 )}
-              </Link>
+              </LocalizedLink>
             )
           ))}
         </nav>
@@ -119,7 +120,7 @@ export function Header() {
             className="bg-foreground/70 text-background border-background/20 hover:bg-foreground/80 hover:text-background backdrop-blur-sm shadow-sm"
             asChild
           >
-            <Link to="/contact">{t("nav.gratisAdvies")}</Link>
+            <LocalizedLink to="/contact">{t("nav.gratisAdvies")}</LocalizedLink>
           </Button>
         </div>
 
@@ -151,7 +152,7 @@ export function Header() {
                     {item.label}
                   </span>
                   {item.children.map((child) => (
-                    <Link
+                    <LocalizedLink
                       key={child.href}
                       to={child.href}
                       onClick={() => setIsOpen(false)}
@@ -162,11 +163,11 @@ export function Header() {
                       }`}
                     >
                       {child.label}
-                    </Link>
+                    </LocalizedLink>
                   ))}
                 </div>
               ) : (
-                <Link
+                <LocalizedLink
                   key={item.href}
                   to={item.href}
                   onClick={() => setIsOpen(false)}
@@ -180,7 +181,7 @@ export function Header() {
                   {'isNew' in item && item.isNew && (
                     <span className="text-[10px] font-bold uppercase bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full leading-none">Nieuw</span>
                   )}
-                </Link>
+                </LocalizedLink>
               )
             ))}
             <div className="pt-4 border-t border-border mt-2 flex flex-col gap-3">
@@ -190,7 +191,7 @@ export function Header() {
                 {t("nav.phone")}
               </a>
               <Button variant="accent" className="mx-4" asChild>
-                <Link to="/contact" onClick={() => setIsOpen(false)}>{t("nav.gratisAdviesgesprek")}</Link>
+                <LocalizedLink to="/contact" onClick={() => setIsOpen(false)}>{t("nav.gratisAdviesgesprek")}</LocalizedLink>
               </Button>
             </div>
           </nav>
