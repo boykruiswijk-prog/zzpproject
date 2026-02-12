@@ -18,6 +18,7 @@ function useNavItems() {
   return [
     { href: "/", label: t("nav.home") },
     { href: "/verzekeringen", label: t("nav.verzekeringen") },
+    { href: "/collectieve-inkoop", label: t("nav.collectieveInkoop") },
     { href: "/diensten", label: t("nav.diensten") },
     { href: "/kennisbank", label: t("nav.kennisbank") },
     { href: "/faq", label: t("nav.faq") },

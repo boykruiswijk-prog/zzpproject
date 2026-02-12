@@ -71,6 +71,63 @@ export type Database = {
         }
         Relationships: []
       }
+      collective_newsletter: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      collective_signups: {
+        Row: {
+          created_at: string
+          email: string
+          huidige_leverancier: string | null
+          id: string
+          interesse_gebieden: string[] | null
+          naam: string
+          pilot_slug: string
+          postcode: string | null
+          telefoon: string | null
+          type: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          huidige_leverancier?: string | null
+          id?: string
+          interesse_gebieden?: string[] | null
+          naam: string
+          pilot_slug: string
+          postcode?: string | null
+          telefoon?: string | null
+          type?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          huidige_leverancier?: string | null
+          id?: string
+          interesse_gebieden?: string[] | null
+          naam?: string
+          pilot_slug?: string
+          postcode?: string | null
+          telefoon?: string | null
+          type?: string | null
+        }
+        Relationships: []
+      }
       lead_notes: {
         Row: {
           content: string
@@ -231,6 +288,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_pilot_signup_count: { Args: { pilot: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
