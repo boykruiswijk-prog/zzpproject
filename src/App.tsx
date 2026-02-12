@@ -11,7 +11,7 @@ import VoorWie from "./pages/VoorWie";
 import ZoWerkenWij from "./pages/ZoWerkenWij";
 import Kennis from "./pages/Kennis";
 import Kennisbank from "./pages/Kennisbank";
- import ArtikelDetail from "./pages/ArtikelDetail";
+import ArtikelDetail from "./pages/ArtikelDetail";
 import OverOns from "./pages/OverOns";
 import Partners from "./pages/Partners";
 import Historie from "./pages/Historie";
@@ -27,6 +27,25 @@ import AdminTeam from "./pages/admin/Team";
 
 const queryClient = new QueryClient();
 
+const publicRoutes = (
+  <>
+    <Route index element={<Index />} />
+    <Route path="diensten" element={<Diensten />} />
+    <Route path="verzekeringen" element={<Verzekeringen />} />
+    <Route path="voor-wie" element={<VoorWie />} />
+    <Route path="zo-werken-wij" element={<ZoWerkenWij />} />
+    <Route path="kennis" element={<Kennis />} />
+    <Route path="kennisbank" element={<Kennisbank />} />
+    <Route path="kennisbank/:slug" element={<ArtikelDetail />} />
+    <Route path="over-ons" element={<OverOns />} />
+    <Route path="partners" element={<Partners />} />
+    <Route path="historie" element={<Historie />} />
+    <Route path="contact" element={<Contact />} />
+    <Route path="cookies" element={<Cookies />} />
+    <Route path="faq" element={<FAQ />} />
+  </>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -35,25 +54,19 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/diensten" element={<Diensten />} />
-            <Route path="/verzekeringen" element={<Verzekeringen />} />
-            <Route path="/voor-wie" element={<VoorWie />} />
-            <Route path="/zo-werken-wij" element={<ZoWerkenWij />} />
-            <Route path="/kennis" element={<Kennis />} />
-            <Route path="/kennisbank" element={<Kennisbank />} />
-             <Route path="/kennisbank/:slug" element={<ArtikelDetail />} />
-            <Route path="/over-ons" element={<OverOns />} />
-            <Route path="/partners" element={<Partners />} />
-            <Route path="/historie" element={<Historie />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/cookies" element={<Cookies />} />
-            <Route path="/faq" element={<FAQ />} />
+            {/* Default (NL) routes */}
+            <Route path="/">{publicRoutes}</Route>
+            
+            {/* Language-prefixed routes */}
+            <Route path="/:lang">{publicRoutes}</Route>
+
+            {/* Admin routes (no i18n) */}
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/leads" element={<AdminLeads />} />
             <Route path="/admin/leads/:id" element={<AdminLeadDetail />} />
             <Route path="/admin/team" element={<AdminTeam />} />
+            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
