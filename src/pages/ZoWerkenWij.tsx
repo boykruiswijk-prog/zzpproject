@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
@@ -52,6 +53,14 @@ const howToSchema = {
 export default function ZoWerkenWij() {
   return (
     <Layout>
+      <Helmet>
+        <title>Zo werken wij | In 3 stappen verzekerd | ZP Zaken</title>
+        <meta name="description" content="Hoe werkt ZP Zaken? In 3 simpele stappen: gratis kennismakingsgesprek, persoonlijk adviesrapport en samen regelen. Binnen 24 uur verzekerd." />
+        <link rel="canonical" href="https://zpzaken.nl/zo-werken-wij" />
+        <meta property="og:title" content="Zo werken wij | ZP Zaken" />
+        <meta property="og:description" content="In 3 stappen verzekerd. Persoonlijk advies zonder gedoe." />
+        <meta property="og:url" content="https://zpzaken.nl/zo-werken-wij" />
+      </Helmet>
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"

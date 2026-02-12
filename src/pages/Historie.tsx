@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
@@ -61,6 +62,14 @@ const historieSchema = {
 export default function Historie() {
   return (
     <Layout>
+      <Helmet>
+        <title>Historie | 10+ jaar ZP Zaken</title>
+        <meta name="description" content="Van startup tot marktleider: de geschiedenis van ZP Zaken. Opgericht in 2014 door Boy Kruiswijk. Ontdek onze reis en mijlpalen." />
+        <link rel="canonical" href="https://zpzaken.nl/historie" />
+        <meta property="og:title" content="Historie | 10+ jaar ZP Zaken" />
+        <meta property="og:description" content="De geschiedenis van ZP Zaken: van startup tot marktleider." />
+        <meta property="og:url" content="https://zpzaken.nl/historie" />
+      </Helmet>
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"

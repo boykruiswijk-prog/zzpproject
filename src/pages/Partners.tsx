@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
@@ -135,6 +136,14 @@ const partnersSchema = {
 export default function Partners() {
   return (
     <Layout>
+      <Helmet>
+        <title>Partners | Samenwerkingen van ZP Zaken</title>
+        <meta name="description" content="ZP Zaken werkt samen met Hiscox, Movir, Centraal Beheer, Homy Capital en meer. Ontdek onze betrouwbare partners voor verzekeringen en zakelijke diensten." />
+        <link rel="canonical" href="https://zpzaken.nl/partners" />
+        <meta property="og:title" content="Partners | ZP Zaken" />
+        <meta property="og:description" content="Onze betrouwbare partners voor verzekeringen en zakelijke diensten." />
+        <meta property="og:url" content="https://zpzaken.nl/partners" />
+      </Helmet>
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
@@ -87,6 +88,14 @@ const audienceSchema = {
 export default function VoorWie() {
   return (
     <Layout>
+      <Helmet>
+        <title>Voor wie is ZP Zaken? | Verzekeringen per beroepsgroep | ZP Zaken</title>
+        <meta name="description" content="ZP Zaken helpt zzp'ers in ICT, bouw, zorg, creatieve sector en meer. Ontdek welke verzekeringen passen bij jouw beroep en situatie." />
+        <link rel="canonical" href="https://zpzaken.nl/voor-wie" />
+        <meta property="og:title" content="Voor wie is ZP Zaken?" />
+        <meta property="og:description" content="Verzekeringen en advies per beroepsgroep voor zzp'ers." />
+        <meta property="og:url" content="https://zpzaken.nl/voor-wie" />
+      </Helmet>
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"

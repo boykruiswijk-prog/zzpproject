@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
@@ -72,7 +73,7 @@ const organizationSchema = {
   "@type": "Organization",
   "name": "ZP Zaken",
   "url": "https://zpzaken.nl",
-  "logo": "https://zpzaken.nl/logo.png",
+  "logo": "https://zpzaken.nl/favicon.png",
   "foundingDate": "2012",
   "description": "Onafhankelijk advies voor zzp'ers op het gebied van verzekeringen, administratie, juridisch advies en screening.",
   "address": {
@@ -92,6 +93,14 @@ const organizationSchema = {
 export default function OverOns() {
   return (
     <Layout>
+      <Helmet>
+        <title>Over ZP Zaken | 10+ jaar onafhankelijk advies voor zzp'ers</title>
+        <meta name="description" content="Leer het team achter ZP Zaken kennen. Al 10+ jaar onafhankelijk advies voor zzp'ers. AFM geregistreerd, Kifid aangesloten." />
+        <link rel="canonical" href="https://zpzaken.nl/over-ons" />
+        <meta property="og:title" content="Over ZP Zaken | Ons team en missie" />
+        <meta property="og:description" content="Al 10+ jaar onafhankelijk advies voor zzp'ers. AFM geregistreerd." />
+        <meta property="og:url" content="https://zpzaken.nl/over-ons" />
+      </Helmet>
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
