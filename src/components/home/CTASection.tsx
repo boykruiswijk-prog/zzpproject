@@ -1,34 +1,29 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Phone, Calendar, ArrowRight } from "lucide-react";
 import { AnimatedSection, StaggerContainer, StaggerItem } from "@/components/ui/animated-section";
 import teamBoyCalling from "@/assets/team-boy-calling.jpg";
 
 export function CTASection() {
+  const { t } = useTranslation();
+
   return (
     <section className="relative section-padding overflow-hidden">
-      {/* Background Image */}
       <div className="absolute inset-0 z-0">
-        <img
-          src={teamBoyCalling}
-          alt=""
-          className="w-full h-full object-cover"
-        />
+        <img src={teamBoyCalling} alt="" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
       </div>
 
       <div className="container-wide relative z-10">
         <AnimatedSection className="max-w-2xl mx-auto text-center text-primary-foreground">
           <AnimatedSection delay={0.1}>
-            <h2 className="mb-4 text-primary-foreground">
-            Klaar om zorgeloos te ondernemen?
-          </h2>
+            <h2 className="mb-4 text-primary-foreground">{t("home.ctaTitle")}</h2>
           </AnimatedSection>
           <AnimatedSection delay={0.2}>
             <p className="text-primary-foreground/85 text-lg mb-8 max-w-xl mx-auto">
-            Plan een gratis adviesgesprek en ontdek welke diensten bij jouw situatie passen. 
-            Binnen 15 minuten weet je waar je aan toe bent.
-          </p>
+              {t("home.ctaSubtitle")}
+            </p>
           </AnimatedSection>
 
           <AnimatedSection delay={0.3} className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
@@ -39,11 +34,11 @@ export function CTASection() {
             >
               <Link to="/contact">
                 <Calendar className="h-5 w-5" />
-                Plan een gesprek
+                {t("home.planGesprek")}
                 <ArrowRight className="h-5 w-5" />
               </Link>
             </Button>
-            <span className="text-primary-foreground/60 hidden sm:block">of</span>
+            <span className="text-primary-foreground/60 hidden sm:block">{t("home.of")}</span>
             <a 
               href="tel:0232010502" 
               className="inline-flex items-center gap-2 text-primary-foreground hover:text-primary-foreground transition-all font-medium border border-primary-foreground/40 rounded-lg px-4 py-2 hover:bg-primary-foreground/10 hover:scale-105 duration-200"
@@ -54,7 +49,7 @@ export function CTASection() {
           </AnimatedSection>
 
           <StaggerContainer className="flex flex-wrap items-center justify-center gap-6 text-primary-foreground/70 text-sm" staggerDelay={0.1}>
-            {["Gratis en vrijblijvend", "Binnen 24 uur reactie", "13+ jaar marktleider"].map((text) => (
+            {[t("home.gratisVrijblijvend"), t("home.binnen24uur"), t("home.marktleider")].map((text) => (
               <StaggerItem key={text}>
                 <span>✓ {text}</span>
               </StaggerItem>

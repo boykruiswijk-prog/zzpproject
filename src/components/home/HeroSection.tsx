@@ -1,31 +1,34 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, Phone, Shield, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import teamMeeting from "@/assets/team-meeting.jpg";
 
 export function HeroSection() {
+  const { t } = useTranslation();
+
+  const usps = [
+    t("home.usp1"),
+    t("home.usp2"),
+    t("home.usp3"),
+    t("home.usp4"),
+  ];
+
   return (
     <section className="relative min-h-[85vh] flex items-center overflow-hidden">
-      {/* Background Image */}
       <div className="absolute inset-0 z-0">
-        <img
-          src={teamMeeting}
-          alt="ZP Zaken - Professionele ondersteuning voor zzp'ers"
-          className="w-full h-full object-cover"
-        />
+        <img src={teamMeeting} alt="ZP Zaken" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-foreground/95 via-foreground/85 to-foreground/70" />
       </div>
 
       <div className="container-wide relative z-10 py-16 lg:py-24">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Content */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.21, 0.47, 0.32, 0.98] }}
           >
-            {/* Trust badge */}
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -33,7 +36,7 @@ export function HeroSection() {
               className="inline-flex items-center gap-2 bg-primary/20 backdrop-blur-sm border border-primary/30 text-primary-foreground px-4 py-2 rounded-full mb-6"
             >
               <Shield className="h-4 w-4" />
-              <span className="text-sm font-medium">Al 10+ jaar dé partner voor zzp'ers</span>
+              <span className="text-sm font-medium">{t("home.trustBadge")}</span>
             </motion.div>
 
             <motion.h1 
@@ -42,8 +45,8 @@ export function HeroSection() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="mb-6 leading-tight text-primary-foreground"
             >
-              Zorgeloos ondernemen{" "}
-              <span className="text-primary">begint hier</span>
+              {t("home.heroTitle")}{" "}
+              <span className="text-primary">{t("home.heroTitleAccent")}</span>
             </motion.h1>
 
             <motion.p 
@@ -52,23 +55,16 @@ export function HeroSection() {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="text-lg text-primary-foreground/80 mb-8 max-w-lg"
             >
-              Verzekeringen, screening en zakelijke ondersteuning — alles wat je nodig hebt 
-              als zelfstandig professional. Met persoonlijke begeleiding en de menselijke maat.
+              {t("home.heroSubtitle")}
             </motion.p>
 
-            {/* Key USPs */}
             <motion.ul 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.5 }}
               className="space-y-3 mb-8"
             >
-              {[
-                "Persoonlijk contact, altijd een mens aan de lijn",
-                "Unieke BAV+AVB combinatiepolis",
-                "Transparant advies, geen verborgen kosten",
-                "Factoring: binnen 24 uur je geld op de rekening"
-              ].map((usp, index) => (
+              {usps.map((usp, index) => (
                 <motion.li 
                   key={index}
                   initial={{ opacity: 0, x: -20 }}
@@ -90,7 +86,7 @@ export function HeroSection() {
             >
               <Button variant="accent" size="xl" asChild className="shadow-lg hover:scale-105 transition-transform duration-200">
                 <Link to="/diensten">
-                  Bekijk onze diensten
+                  {t("home.ctaDiensten")}
                   <ArrowRight className="h-5 w-5" />
                 </Link>
               </Button>
@@ -99,11 +95,10 @@ export function HeroSection() {
                 asChild
                 className="bg-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/30 backdrop-blur-sm border border-primary-foreground/50 hover:scale-105 transition-transform duration-200"
               >
-                <Link to="/contact">Gratis adviesgesprek</Link>
+                <Link to="/contact">{t("home.ctaAdvies")}</Link>
               </Button>
             </motion.div>
 
-            {/* Contact */}
             <motion.a 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -116,7 +111,6 @@ export function HeroSection() {
             </motion.a>
           </motion.div>
 
-          {/* Stats Card - More Corporate */}
           <div className="hidden lg:flex justify-end">
             <motion.div 
               initial={{ opacity: 0, scale: 0.9, x: 50 }}
@@ -131,30 +125,29 @@ export function HeroSection() {
                   </div>
                   <div>
                     <h3 className="text-3xl font-bold text-foreground">2.500+</h3>
-                    <p className="text-muted-foreground">tevreden zzp'ers</p>
+                    <p className="text-muted-foreground">{t("home.satisfied")}</p>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between py-3 border-b border-border">
-                    <span className="text-muted-foreground">Klanttevredenheid</span>
+                    <span className="text-muted-foreground">{t("home.satisfaction")}</span>
                     <div className="flex items-center gap-1">
                       <span className="font-semibold text-foreground">4.9/5</span>
                       <span className="text-amber-500">⭐</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between py-3 border-b border-border">
-                    <span className="text-muted-foreground">Reactietijd</span>
+                    <span className="text-muted-foreground">{t("home.responseTime")}</span>
                     <span className="font-semibold text-foreground">&lt; 24 uur</span>
                   </div>
                   <div className="flex items-center justify-between py-3">
-                    <span className="text-muted-foreground">Ervaring</span>
+                    <span className="text-muted-foreground">{t("home.experience")}</span>
                     <span className="font-semibold text-foreground">10+ jaar</span>
                   </div>
                 </div>
               </div>
 
-              {/* Floating accent */}
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -162,7 +155,7 @@ export function HeroSection() {
                 className="absolute -bottom-4 -left-4 bg-accent text-accent-foreground px-5 py-3 rounded-xl shadow-lg font-semibold flex items-center gap-2"
               >
                 <CheckCircle className="h-5 w-5" />
-                Direct advies
+                {t("home.directAdvice")}
               </motion.div>
             </motion.div>
           </div>

@@ -1,29 +1,32 @@
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import logoZp from "@/assets/logo-zp.webp";
 
-const footerLinks = {
-  diensten: [
-    { href: "/diensten", label: "Alle diensten" },
-    { href: "/verzekeringen", label: "Verzekeringen" },
-    { href: "/diensten#screening", label: "Screening" },
-  ],
-  informatie: [
-    { href: "/voor-wie", label: "Voor wie" },
-    { href: "/zo-werken-wij", label: "Zo werken wij" },
-    { href: "/partners", label: "Partners" },
-    { href: "/kennisbank", label: "Kennisbank" },
-    { href: "/faq", label: "Veelgestelde vragen" },
-    { href: "/over-ons", label: "Over ons" },
-  ],
-  juridisch: [
-    { href: "/privacy", label: "Privacybeleid" },
-    { href: "/voorwaarden", label: "Algemene voorwaarden" },
-    { href: "/klachten", label: "Klachtenprocedure" },
-  ],
-};
-
 export function Footer() {
+  const { t } = useTranslation();
+
+  const footerLinks = {
+    diensten: [
+      { href: "/diensten", label: t("footer.alleDiensten") },
+      { href: "/verzekeringen", label: t("footer.verzekeringen") },
+      { href: "/diensten#screening", label: t("footer.screening") },
+    ],
+    informatie: [
+      { href: "/voor-wie", label: t("footer.voorWie") },
+      { href: "/zo-werken-wij", label: t("footer.zoWerkenWij") },
+      { href: "/partners", label: t("footer.partners") },
+      { href: "/kennisbank", label: t("footer.kennisbank") },
+      { href: "/faq", label: t("footer.veelgesteldeVragen") },
+      { href: "/over-ons", label: t("footer.overOns") },
+    ],
+    juridisch: [
+      { href: "/privacy", label: t("footer.privacybeleid") },
+      { href: "/voorwaarden", label: t("footer.algemeneVoorwaarden") },
+      { href: "/klachten", label: t("footer.klachtenprocedure") },
+    ],
+  };
+
   return (
     <footer className="bg-foreground text-background">
       <div className="container-wide section-padding">
@@ -38,7 +41,7 @@ export function Footer() {
               <img src={logoZp} alt="ZP Zaken logo" className="h-8 w-auto object-contain" />
             </Link>
             <p className="text-background/70 mb-5 max-w-sm text-sm">
-              Onafhankelijk advies voor zzp'ers en ondernemers. Wij helpen je met verzekeringen en zakelijke zekerheid.
+              {t("footer.description")}
             </p>
             <div className="space-y-2">
               <a href="tel:0232010502" className="flex items-center gap-2 text-sm text-background/70 hover:text-background transition-colors">
@@ -58,7 +61,7 @@ export function Footer() {
 
           {/* Links */}
           <div>
-            <h4 className="font-semibold mb-4 text-sm">Diensten</h4>
+            <h4 className="font-semibold mb-4 text-sm">{t("footer.diensten")}</h4>
             <ul className="space-y-2">
               {footerLinks.diensten.map((link) => (
                 <li key={link.href}>
@@ -71,7 +74,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4 text-sm">Informatie</h4>
+            <h4 className="font-semibold mb-4 text-sm">{t("footer.informatie")}</h4>
             <ul className="space-y-2">
               {footerLinks.informatie.map((link) => (
                 <li key={link.href}>
@@ -84,7 +87,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4 text-sm">Juridisch</h4>
+            <h4 className="font-semibold mb-4 text-sm">{t("footer.juridisch")}</h4>
             <ul className="space-y-2">
               {footerLinks.juridisch.map((link) => (
                 <li key={link.href}>
@@ -101,11 +104,11 @@ export function Footer() {
         <div className="mt-12 pt-6 border-t border-background/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-background/50 text-xs">
-              © 2026 | ZP Zaken B.V. | Zorgeloos ZZP'en
+              {t("footer.copyright")}
             </p>
             <div className="flex items-center gap-6">
-              <span className="text-background/50 text-xs">AFM vergunningsnummer 12050636</span>
-              <span className="text-background/50 text-xs">Kifid aangesloten</span>
+              <span className="text-background/50 text-xs">{t("footer.afm")}</span>
+              <span className="text-background/50 text-xs">{t("footer.kifid")}</span>
             </div>
           </div>
         </div>
