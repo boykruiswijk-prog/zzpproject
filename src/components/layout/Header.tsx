@@ -17,18 +17,9 @@ function useNavItems() {
   const { t } = useTranslation();
   return [
     { href: "/", label: t("nav.home") },
+    { href: "/verzekeringen", label: t("nav.verzekeringen") },
     { href: "/diensten", label: t("nav.diensten") },
-    { href: "/voor-wie", label: t("nav.voorWie") },
-    { href: "/zo-werken-wij", label: t("nav.zoWerkenWij") },
-    { href: "/partners", label: t("nav.partners") },
-    { 
-      href: "/kennisbank", 
-      label: t("nav.kennisbank"),
-      children: [
-        { href: "/kennisbank", label: t("nav.alleArtikelen") },
-        { href: "/kennis", label: t("nav.kennisAdvies") },
-      ]
-    },
+    { href: "/kennisbank", label: t("nav.kennisbank") },
     { href: "/faq", label: t("nav.faq") },
     { 
       href: "/over-ons", 
@@ -36,6 +27,10 @@ function useNavItems() {
       children: [
         { href: "/over-ons", label: t("nav.hetTeam") },
         { href: "/historie", label: t("nav.onzeHistorie") },
+        { href: "/voor-wie", label: t("nav.voorWie") },
+        { href: "/zo-werken-wij", label: t("nav.zoWerkenWij") },
+        { href: "/partners", label: t("nav.partners") },
+        { href: "/kennis", label: t("nav.kennisAdvies") },
       ]
     },
   ];
@@ -77,8 +72,8 @@ export function Header() {
           {navItems.map((item) => (
             item.children ? (
               <DropdownMenu key={item.href}>
-                <DropdownMenuTrigger className={`flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                  location.pathname.startsWith('/kennis')
+              <DropdownMenuTrigger className={`flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                  location.pathname.startsWith('/over-ons') || location.pathname.startsWith('/historie') || location.pathname.startsWith('/voor-wie') || location.pathname.startsWith('/zo-werken-wij') || location.pathname.startsWith('/partners') || location.pathname.startsWith('/kennis')
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
                 }`}>
@@ -182,12 +177,13 @@ export function Header() {
               )
             ))}
             <div className="pt-4 border-t border-border mt-2 flex flex-col gap-3">
+              <LanguageSwitcher />
               <a href="tel:0232010502" className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground">
                 <Phone className="h-4 w-4" />
-                023 - 201 0502
+                {t("nav.phone")}
               </a>
               <Button variant="accent" className="mx-4" asChild>
-                <Link to="/contact" onClick={() => setIsOpen(false)}>Gratis adviesgesprek</Link>
+                <Link to="/contact" onClick={() => setIsOpen(false)}>{t("nav.gratisAdviesgesprek")}</Link>
               </Button>
             </div>
           </nav>
