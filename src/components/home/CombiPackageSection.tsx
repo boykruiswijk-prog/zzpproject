@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Shield, UserCheck, Headphones, Heart, ArrowRight } from "lucide-react";
 import { AnimatedSection, StaggerContainer, StaggerItem } from "@/components/ui/animated-section";
+import { LocalizedLink } from "@/components/LocalizedLink";
 
 export function CombiPackageSection() {
   const { t } = useTranslation();
@@ -49,10 +49,10 @@ export function CombiPackageSection() {
 
         <AnimatedSection delay={0.4} className="text-center">
           <Button variant="outline" size="lg" asChild className="hover:scale-105 transition-transform duration-200">
-            <Link to="/diensten">
+            <LocalizedLink to="/diensten">
               {t("home.bekijkAlleDiensten")}
               <ArrowRight className="h-4 w-4" />
-            </Link>
+            </LocalizedLink>
           </Button>
         </AnimatedSection>
       </div>

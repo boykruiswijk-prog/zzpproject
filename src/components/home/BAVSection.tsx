@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Shield, CheckCircle, ArrowRight, Sparkles } from "lucide-react";
+import { LocalizedLink } from "@/components/LocalizedLink";
 
 const benefits = [
   "Beroeps- én bedrijfsaansprakelijkheid in één polis",
@@ -51,11 +51,11 @@ export function BAVSection() {
                 className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold"
                 asChild
               >
-                <Link to="/verzekeringen">
+                <LocalizedLink to="/verzekeringen">
                   <Shield className="h-5 w-5" />
                   Direct afsluiten
                   <ArrowRight className="h-5 w-5" />
-                </Link>
+                </LocalizedLink>
               </Button>
               <Button 
                 variant="outline" 
@@ -63,9 +63,9 @@ export function BAVSection() {
                 className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
                 asChild
               >
-                <Link to="/diensten#verzekeringen">
+                <LocalizedLink to="/diensten#verzekeringen">
                   Meer informatie
-                </Link>
+                </LocalizedLink>
               </Button>
             </div>
           </div>

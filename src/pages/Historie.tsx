@@ -5,7 +5,7 @@ import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { Timeline } from "@/components/historie/Timeline";
 import { History, Heart, Shield, Users, Sparkles, ArrowRight, Quote } from "lucide-react";
-import { Link } from "react-router-dom";
+import { LocalizedLink } from "@/components/LocalizedLink";
 import boyKruiswijk from "@/assets/team-member-1.jpg";
 import teamMeeting from "@/assets/team-meeting.jpg";
 import teamBoyCalling from "@/assets/team-boy-calling.jpg";
@@ -104,10 +104,10 @@ export default function Historie() {
             <p className="text-lg text-primary-foreground/80 mb-8">{t("historie.ctaSubtitle")}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="accent" size="lg" asChild>
-                <Link to="/contact">{t("historie.ctaButton")}<ArrowRight className="h-4 w-4 ml-2" /></Link>
+                <LocalizedLink to="/contact">{t("historie.ctaButton")}<ArrowRight className="h-4 w-4 ml-2" /></LocalizedLink>
               </Button>
               <Button variant="outline" size="lg" className="border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10" asChild>
-                <Link to="/over-ons">{t("historie.ctaTeam")}</Link>
+                <LocalizedLink to="/over-ons">{t("historie.ctaTeam")}</LocalizedLink>
               </Button>
             </div>
           </div>

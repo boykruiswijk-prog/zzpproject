@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Shield, UserCheck, ArrowRight, Headphones } from "lucide-react";
+import { LocalizedLink } from "@/components/LocalizedLink";
 
 const services = [
   {
@@ -42,7 +42,7 @@ export function ServicesSection() {
 
         <div className="grid md:grid-cols-3 gap-5">
           {services.map((service) => (
-            <Link
+            <LocalizedLink
               key={service.title}
               to={service.href}
               className="group bg-card rounded-xl p-6 shadow-card border border-border hover:shadow-lg hover:border-primary/20 transition-all duration-200 flex flex-col"
@@ -50,15 +50,12 @@ export function ServicesSection() {
               <div className="flex-shrink-0 h-12 w-12 rounded-lg bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors mb-4">
                 <service.icon className="h-6 w-6 text-accent" />
               </div>
-              
               <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">
                 {service.title}
               </h3>
-              
               <p className="text-muted-foreground text-sm mb-4 flex-grow">
                 {service.description}
               </p>
-
               <ul className="space-y-1.5 mb-4">
                 {service.features.map((feature) => (
                   <li key={feature} className="text-xs text-muted-foreground flex items-center gap-2">
@@ -67,21 +64,20 @@ export function ServicesSection() {
                   </li>
                 ))}
               </ul>
-              
               <span className="inline-flex items-center gap-2 text-sm font-medium text-primary group-hover:text-accent transition-colors mt-auto">
                 Meer informatie
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </span>
-            </Link>
+            </LocalizedLink>
           ))}
         </div>
 
         <div className="text-center mt-10">
           <Button variant="outline" size="lg" asChild>
-            <Link to="/diensten">
+            <LocalizedLink to="/diensten">
               Bekijk alle diensten
               <ArrowRight className="h-5 w-5" />
-            </Link>
+            </LocalizedLink>
           </Button>
         </div>
       </div>

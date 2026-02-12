@@ -24,7 +24,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { LocalizedLink } from "@/components/LocalizedLink";
 import { Check, Users, Zap, Monitor, Shield, ArrowRight, Mail } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/animated-section";
 
@@ -236,7 +236,7 @@ function NewsletterSection() {
           <label className="flex items-center justify-center gap-2 text-sm text-background/60 cursor-pointer">
             <Checkbox checked={privacy} onCheckedChange={(v) => setPrivacy(!!v)} className="border-background/30" />
             {t("collectieveInkoop.privacyAgree")}{" "}
-            <Link to="/privacy" className="underline hover:text-background">{t("collectieveInkoop.privacyPolicy")}</Link>
+            <LocalizedLink to="/privacy" className="underline hover:text-background">{t("collectieveInkoop.privacyPolicy")}</LocalizedLink>
           </label>
         </AnimatedSection>
       </div>
@@ -354,8 +354,8 @@ export default function CollectieveInkoop() {
             </div>
             <p className="text-muted-foreground mb-4">{t("collectieveInkoop.transparencyDesc")}</p>
             <div className="flex flex-wrap gap-3">
-              <Link to="/privacy" className="text-sm text-accent hover:underline">{t("collectieveInkoop.privacyLink")}</Link>
-              <Link to="/voorwaarden" className="text-sm text-accent hover:underline">{t("collectieveInkoop.termsLink")}</Link>
+              <LocalizedLink to="/privacy" className="text-sm text-accent hover:underline">{t("collectieveInkoop.privacyLink")}</LocalizedLink>
+              <LocalizedLink to="/voorwaarden" className="text-sm text-accent hover:underline">{t("collectieveInkoop.termsLink")}</LocalizedLink>
             </div>
           </AnimatedSection>
         </div>

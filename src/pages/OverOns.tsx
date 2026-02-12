@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { LocalizedLink } from "@/components/LocalizedLink";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
@@ -171,7 +171,7 @@ export default function OverOns() {
             <h2 className="mb-4">{t("overOns.ctaTitle")}</h2>
             <p className="text-lg text-muted-foreground mb-8">{t("overOns.ctaSubtitle")}</p>
             <Button variant="accent" size="lg" asChild>
-              <Link to="/contact">{t("overOns.ctaButton")}<ArrowRight className="h-5 w-5" /></Link>
+              <LocalizedLink to="/contact">{t("overOns.ctaButton")}<ArrowRight className="h-5 w-5" /></LocalizedLink>
             </Button>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { LocalizedLink } from "@/components/LocalizedLink";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
@@ -50,7 +50,7 @@ export default function VoorWie() {
                   ))}
                 </div>
                 <Button variant="outline" size="sm" className="w-full" asChild>
-                  <Link to="/contact">{t("voorWie.askAdvice")}<ArrowRight className="h-4 w-4" /></Link>
+                  <LocalizedLink to="/contact">{t("voorWie.askAdvice")}<ArrowRight className="h-4 w-4" /></LocalizedLink>
                 </Button>
               </div>
             ))}
@@ -71,7 +71,7 @@ export default function VoorWie() {
             </div>
             <p className="text-lg text-primary-foreground/80 mb-8">{t("voorWie.ctaSubtitle")}</p>
             <Button variant="accent" size="lg" asChild>
-              <Link to="/contact">{t("voorWie.ctaButton")}<ArrowRight className="h-5 w-5" /></Link>
+              <LocalizedLink to="/contact">{t("voorWie.ctaButton")}<ArrowRight className="h-5 w-5" /></LocalizedLink>
             </Button>
           </div>
         </div>

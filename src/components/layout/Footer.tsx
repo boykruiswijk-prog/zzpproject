@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import logoZp from "@/assets/logo-zp.webp";
+import { LocalizedLink } from "@/components/LocalizedLink";
 
 export function Footer() {
   const { t } = useTranslation();
@@ -33,13 +33,13 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <Link
+            <LocalizedLink
               to="/"
               className="inline-flex items-center mb-5 rounded-lg bg-background p-2"
               aria-label="Ga naar de homepage"
             >
               <img src={logoZp} alt="ZP Zaken logo" className="h-8 w-auto object-contain" />
-            </Link>
+            </LocalizedLink>
             <p className="text-background/70 mb-5 max-w-sm text-sm">
               {t("footer.description")}
             </p>
@@ -65,9 +65,9 @@ export function Footer() {
             <ul className="space-y-2">
               {footerLinks.diensten.map((link) => (
                 <li key={link.href}>
-                  <Link to={link.href} className="text-background/60 hover:text-background transition-colors text-sm">
+                  <LocalizedLink to={link.href} className="text-background/60 hover:text-background transition-colors text-sm">
                     {link.label}
-                  </Link>
+                  </LocalizedLink>
                 </li>
               ))}
             </ul>
@@ -78,9 +78,9 @@ export function Footer() {
             <ul className="space-y-2">
               {footerLinks.informatie.map((link) => (
                 <li key={link.href}>
-                  <Link to={link.href} className="text-background/60 hover:text-background transition-colors text-sm">
+                  <LocalizedLink to={link.href} className="text-background/60 hover:text-background transition-colors text-sm">
                     {link.label}
-                  </Link>
+                  </LocalizedLink>
                 </li>
               ))}
             </ul>
@@ -91,9 +91,9 @@ export function Footer() {
             <ul className="space-y-2">
               {footerLinks.juridisch.map((link) => (
                 <li key={link.href}>
-                  <Link to={link.href} className="text-background/60 hover:text-background transition-colors text-sm">
+                  <LocalizedLink to={link.href} className="text-background/60 hover:text-background transition-colors text-sm">
                     {link.label}
-                  </Link>
+                  </LocalizedLink>
                 </li>
               ))}
             </ul>

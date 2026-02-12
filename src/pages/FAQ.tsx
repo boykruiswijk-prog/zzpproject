@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { HelpCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import { LocalizedLink } from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -111,7 +111,7 @@ export default function FAQ() {
           <p className="text-muted-foreground mb-8">{t("faq.ctaSubtitle")}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button variant="accent" size="lg" asChild>
-              <Link to="/contact">{t("faq.ctaButton")}</Link>
+              <LocalizedLink to="/contact">{t("faq.ctaButton")}</LocalizedLink>
             </Button>
             <Button variant="outline" size="lg" asChild>
               <a href="tel:0232010502">{t("faq.ctaPhone")}</a>
