@@ -18,7 +18,7 @@ function useNavItems() {
   return [
     { href: "/", label: t("nav.home") },
     { href: "/verzekeringen", label: t("nav.verzekeringen") },
-    { href: "/collectieve-inkoop", label: t("nav.collectieveInkoop") },
+    { href: "/collectieve-inkoop", label: t("nav.collectieveInkoop"), isNew: true },
     { href: "/diensten", label: t("nav.diensten") },
     { href: "/kennisbank", label: t("nav.kennisbank") },
     { href: "/faq", label: t("nav.faq") },
@@ -93,13 +93,16 @@ export function Header() {
               <Link
                 key={item.href}
                 to={item.href}
-                className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                className={`px-3 py-2 text-sm font-medium rounded-md transition-colors flex items-center gap-1.5 ${
                   location.pathname === item.href
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {item.label}
+                {'isNew' in item && item.isNew && (
+                  <span className="text-[10px] font-bold uppercase bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full leading-none">Nieuw</span>
+                )}
               </Link>
             )
           ))}
@@ -167,13 +170,16 @@ export function Header() {
                   key={item.href}
                   to={item.href}
                   onClick={() => setIsOpen(false)}
-                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors flex items-center gap-1.5 ${
                     location.pathname === item.href
                       ? "text-primary bg-secondary"
                       : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                   }`}
                 >
                   {item.label}
+                  {'isNew' in item && item.isNew && (
+                    <span className="text-[10px] font-bold uppercase bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full leading-none">Nieuw</span>
+                  )}
                 </Link>
               )
             ))}
