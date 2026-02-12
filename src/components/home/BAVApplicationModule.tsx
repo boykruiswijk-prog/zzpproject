@@ -3,10 +3,11 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Shield, CheckCircle, Building2, User, FileCheck,
-  ArrowRight, ArrowLeft, Calendar, Check, Sparkles
+  Shield, CheckCircle, Building2, User, FileCheck, CreditCard,
+  ArrowRight, ArrowLeft, Calendar, Check, Sparkles, ExternalLink
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatedSection } from "@/components/ui/animated-section";
@@ -16,22 +17,30 @@ const packages = [
   { id: "uitgebreid", name: "Combi Uitgebreid", coverage: "€ 2.500.000 per gebeurtenis", yearCoverage: "€ 5.000.000 per jaar", priceMonthly: 43.54, priceYearly: 482.48, popular: true },
 ];
 
+const TOTAL_STEPS = 5;
+
 export function BAVApplicationModule() {
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedPackage, setSelectedPackage] = useState<string>("uitgebreid");
   const [paymentType, setPaymentType] = useState<"monthly" | "yearly">("monthly");
   const [startDate, setStartDate] = useState<string>("");
+  const [viaBemiddelaar, setViaBemiddelaar] = useState<boolean | null>(null);
+  const [incassoAkkoord, setIncassoAkkoord] = useState(false);
+  const [slotverklaringAkkoord, setSlotverklaringAkkoord] = useState(false);
   const [formData, setFormData] = useState({
-    bedrijfsnaam: "", kvkNummer: "", beroep: "",
+    bedrijfsnaam: "", kvkNummer: "", beroep: "", functie: "", aantalMedewerkers: "",
     voornaam: "", achternaam: "", email: "", telefoon: "",
+    opdrachtgever: "", bemiddelaarNaam: "",
+    iban: "",
   });
 
   const steps = [
     { id: 1, name: t("home.bavStep1"), icon: Shield },
     { id: 2, name: t("home.bavStep2"), icon: Building2 },
     { id: 3, name: t("home.bavStep3"), icon: User },
-    { id: 4, name: t("home.bavStep4"), icon: FileCheck },
+    { id: 4, name: t("home.bavStep4"), icon: CreditCard },
+    { id: 5, name: t("home.bavStep5"), icon: FileCheck },
   ];
 
   const usps = t("home.bavUsps", { returnObjects: true }) as string[];
@@ -44,7 +53,7 @@ export function BAVApplicationModule() {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const nextStep = () => { if (currentStep < 4) setCurrentStep(currentStep + 1); };
+  const nextStep = () => { if (currentStep < TOTAL_STEPS) setCurrentStep(currentStep + 1); };
   const prevStep = () => { if (currentStep > 1) setCurrentStep(currentStep - 1); };
   const handleSubmit = () => {
     window.location.href = `/verzekeringen?package=${selectedPackage}&payment=${paymentType}`;
@@ -74,7 +83,7 @@ export function BAVApplicationModule() {
                     currentStep >= step.id ? "bg-accent border-accent text-accent-foreground" : "bg-card border-border text-muted-foreground")}>
                   {currentStep > step.id ? <Check className="h-5 w-5" /> : <step.icon className="h-5 w-5" />}
                 </motion.div>
-                <span className={cn("text-xs mt-2 font-medium", currentStep >= step.id ? "text-foreground" : "text-muted-foreground")}>{step.name}</span>
+                <span className={cn("text-xs mt-2 font-medium hidden sm:block", currentStep >= step.id ? "text-foreground" : "text-muted-foreground")}>{step.name}</span>
               </motion.div>
             ))}
           </div>
@@ -145,6 +154,8 @@ export function BAVApplicationModule() {
                       <div><Label htmlFor="bedrijfsnaam">{t("home.bavCompanyName")}</Label><Input id="bedrijfsnaam" name="bedrijfsnaam" value={formData.bedrijfsnaam} onChange={handleInputChange} /></div>
                       <div><Label htmlFor="kvkNummer">{t("home.bavKvk")}</Label><Input id="kvkNummer" name="kvkNummer" value={formData.kvkNummer} onChange={handleInputChange} maxLength={8} /></div>
                       <div><Label htmlFor="beroep">{t("home.bavProfession")}</Label><Input id="beroep" name="beroep" value={formData.beroep} onChange={handleInputChange} /></div>
+                      <div><Label htmlFor="functie">{t("home.bavFunction")}</Label><Input id="functie" name="functie" value={formData.functie} onChange={handleInputChange} placeholder="Bijv. Software Developer, Consultant" /></div>
+                      <div><Label htmlFor="aantalMedewerkers">{t("home.bavEmployees")}</Label><Input id="aantalMedewerkers" name="aantalMedewerkers" type="number" min="0" value={formData.aantalMedewerkers} onChange={handleInputChange} /></div>
                     </div>
                   </motion.div>
                 )}
@@ -162,12 +173,62 @@ export function BAVApplicationModule() {
                       </div>
                       <div><Label htmlFor="email">{t("home.bavEmail")}</Label><Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} /></div>
                       <div><Label htmlFor="telefoon">{t("home.bavPhone")}</Label><Input id="telefoon" name="telefoon" type="tel" value={formData.telefoon} onChange={handleInputChange} /></div>
+
+                      <div className="border-t border-border pt-4">
+                        <div><Label htmlFor="opdrachtgever">{t("home.bavClient")}</Label><Input id="opdrachtgever" name="opdrachtgever" value={formData.opdrachtgever} onChange={handleInputChange} /></div>
+                      </div>
+
+                      <div className="border-t border-border pt-4">
+                        <Label className="text-sm font-medium mb-3 block">{t("home.bavMediator")}</Label>
+                        <div className="grid grid-cols-2 gap-3">
+                          <button onClick={() => setViaBemiddelaar(true)}
+                            className={cn("p-3 rounded-lg border-2 text-center transition-all", viaBemiddelaar === true ? "border-accent bg-accent/5" : "border-border hover:border-accent/50")}>
+                            <p className="font-medium">{t("home.bavMediatorYes")}</p>
+                          </button>
+                          <button onClick={() => { setViaBemiddelaar(false); setFormData(prev => ({ ...prev, bemiddelaarNaam: "" })); }}
+                            className={cn("p-3 rounded-lg border-2 text-center transition-all", viaBemiddelaar === false ? "border-accent bg-accent/5" : "border-border hover:border-accent/50")}>
+                            <p className="font-medium">{t("home.bavMediatorNo")}</p>
+                          </button>
+                        </div>
+                        {viaBemiddelaar && (
+                          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="mt-3">
+                            <Label htmlFor="bemiddelaarNaam">{t("home.bavMediatorName")}</Label>
+                            <Input id="bemiddelaarNaam" name="bemiddelaarNaam" value={formData.bemiddelaarNaam} onChange={handleInputChange} />
+                          </motion.div>
+                        )}
+                      </div>
                     </div>
                   </motion.div>
                 )}
 
                 {currentStep === 4 && (
                   <motion.div key="step4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="space-y-6">
+                    <div>
+                      <h3 className="text-xl font-semibold mb-2">{t("home.bavIncassoTitle")}</h3>
+                      <p className="text-muted-foreground text-sm">{t("home.bavIncassoDesc")}</p>
+                    </div>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="iban">{t("home.bavIban")}</Label>
+                        <Input id="iban" name="iban" value={formData.iban} onChange={handleInputChange} placeholder="NL00 BANK 0000 0000 00" className="uppercase tracking-wider" />
+                      </div>
+                      <div className="flex items-start gap-3 p-4 rounded-lg border border-border bg-secondary">
+                        <Checkbox
+                          id="incassoAkkoord"
+                          checked={incassoAkkoord}
+                          onCheckedChange={(checked) => setIncassoAkkoord(checked === true)}
+                          className="mt-0.5"
+                        />
+                        <Label htmlFor="incassoAkkoord" className="text-sm leading-relaxed cursor-pointer">
+                          {t("home.bavIncassoAgree")}
+                        </Label>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {currentStep === 5 && (
+                  <motion.div key="step5" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="space-y-6">
                     <div>
                       <h3 className="text-xl font-semibold mb-2">{t("home.bavConfirmTitle")}</h3>
                       <p className="text-muted-foreground text-sm">{t("home.bavConfirmDesc")}</p>
@@ -188,6 +249,8 @@ export function BAVApplicationModule() {
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("home.bavCompanyName")}</span><span>{formData.bedrijfsnaam || "-"}</span></div>
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("home.bavKvk")}</span><span>{formData.kvkNummer || "-"}</span></div>
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("home.bavProfession")}</span><span>{formData.beroep || "-"}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("home.bavFunction")}</span><span>{formData.functie || "-"}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("home.bavEmployees")}</span><span>{formData.aantalMedewerkers || "-"}</span></div>
                         </div>
                       </div>
                       <div className="bg-secondary rounded-lg p-4">
@@ -196,7 +259,40 @@ export function BAVApplicationModule() {
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("home.bavFirstName")}</span><span>{formData.voornaam} {formData.achternaam}</span></div>
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("home.bavEmail")}</span><span>{formData.email || "-"}</span></div>
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("home.bavPhone")}</span><span>{formData.telefoon || "-"}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("home.bavClient")}</span><span>{formData.opdrachtgever || "-"}</span></div>
+                          {viaBemiddelaar && <div className="flex justify-between"><span className="text-muted-foreground">{t("home.bavMediatorName")}</span><span>{formData.bemiddelaarNaam || "-"}</span></div>}
                         </div>
+                      </div>
+                      <div className="bg-secondary rounded-lg p-4">
+                        <h4 className="font-medium mb-3">{t("home.bavStep4")}</h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("home.bavIban")}</span><span className="uppercase tracking-wider">{formData.iban || "-"}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("home.bavIncassoAgree")}</span><span>{incassoAkkoord ? "✓" : "✗"}</span></div>
+                        </div>
+                      </div>
+
+                      {/* Slotverklaring */}
+                      <div className="border border-accent/30 rounded-lg p-4 bg-accent/5 space-y-3">
+                        <div className="flex items-start gap-3">
+                          <Checkbox
+                            id="slotverklaring"
+                            checked={slotverklaringAkkoord}
+                            onCheckedChange={(checked) => setSlotverklaringAkkoord(checked === true)}
+                            className="mt-0.5"
+                          />
+                          <Label htmlFor="slotverklaring" className="text-sm leading-relaxed cursor-pointer">
+                            {t("home.bavSlotverklaringAgree")}
+                          </Label>
+                        </div>
+                        <a
+                          href="/documents/ZP_Slotverklaring.pdf"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-sm text-accent hover:underline"
+                        >
+                          <ExternalLink className="h-3.5 w-3.5" />
+                          {t("home.bavSlotverklaringLink")}
+                        </a>
                       </div>
                     </div>
                   </motion.div>
@@ -208,10 +304,15 @@ export function BAVApplicationModule() {
                   {currentStep > 1 ? (
                     <Button variant="outline" onClick={prevStep}><ArrowLeft className="h-4 w-4" />{t("home.bavPrev")}</Button>
                   ) : <div />}
-                  {currentStep < 4 ? (
+                  {currentStep < TOTAL_STEPS ? (
                     <Button onClick={nextStep} className="bg-accent hover:bg-accent/90 text-accent-foreground">{t("home.bavNext")}<ArrowRight className="h-4 w-4" /></Button>
                   ) : (
-                    <Button onClick={handleSubmit} size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold">
+                    <Button
+                      onClick={handleSubmit}
+                      size="lg"
+                      className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold"
+                      disabled={!slotverklaringAkkoord || !incassoAkkoord}
+                    >
                       <Shield className="h-5 w-5" />{t("home.bavSubmit")}<ArrowRight className="h-5 w-5" />
                     </Button>
                   )}
