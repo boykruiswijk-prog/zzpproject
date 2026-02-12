@@ -1,9 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Phone, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import logoZp from "@/assets/logo-zp.webp";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,35 +13,40 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const navItems = [
-  { href: "/", label: "Home" },
-  { href: "/diensten", label: "Diensten" },
-  { href: "/voor-wie", label: "Voor wie" },
-  { href: "/zo-werken-wij", label: "Zo werken wij" },
-  { href: "/partners", label: "Partners" },
-  { 
-    href: "/kennisbank", 
-    label: "Kennisbank",
-    children: [
-      { href: "/kennisbank", label: "Alle artikelen" },
-      { href: "/kennis", label: "Kennis & advies" },
-    ]
-  },
-  { href: "/faq", label: "FAQ" },
-  { 
-    href: "/over-ons", 
-    label: "Over ons",
-    children: [
-      { href: "/over-ons", label: "Het team" },
-      { href: "/historie", label: "Onze historie" },
-    ]
-  },
-];
+function useNavItems() {
+  const { t } = useTranslation();
+  return [
+    { href: "/", label: t("nav.home") },
+    { href: "/diensten", label: t("nav.diensten") },
+    { href: "/voor-wie", label: t("nav.voorWie") },
+    { href: "/zo-werken-wij", label: t("nav.zoWerkenWij") },
+    { href: "/partners", label: t("nav.partners") },
+    { 
+      href: "/kennisbank", 
+      label: t("nav.kennisbank"),
+      children: [
+        { href: "/kennisbank", label: t("nav.alleArtikelen") },
+        { href: "/kennis", label: t("nav.kennisAdvies") },
+      ]
+    },
+    { href: "/faq", label: t("nav.faq") },
+    { 
+      href: "/over-ons", 
+      label: t("nav.overOns"),
+      children: [
+        { href: "/over-ons", label: t("nav.hetTeam") },
+        { href: "/historie", label: t("nav.onzeHistorie") },
+      ]
+    },
+  ];
+}
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const { t } = useTranslation();
+  const navItems = useNavItems();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -103,16 +110,17 @@ export function Header() {
         </nav>
 
         <div className="hidden lg:flex items-center gap-4">
+          <LanguageSwitcher />
           <a href="tel:0232010502" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
             <Phone className="h-4 w-4" />
-            023 - 201 0502
+            {t("nav.phone")}
           </a>
           <Button
             variant="outline"
             className="bg-foreground/70 text-background border-background/20 hover:bg-foreground/80 hover:text-background backdrop-blur-sm shadow-sm"
             asChild
           >
-            <Link to="/contact">Gratis advies</Link>
+            <Link to="/contact">{t("nav.gratisAdvies")}</Link>
           </Button>
         </div>
 
