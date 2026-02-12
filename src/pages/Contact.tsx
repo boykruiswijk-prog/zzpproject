@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import teamRoxy from "@/assets/team-roxy.jpg";
 
 export default function Contact() {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -22,7 +24,6 @@ export default function Contact() {
 
     const formElement = e.currentTarget;
     const formDataRaw = new FormData(formElement);
-    
     const naam = (formDataRaw.get("name") as string) || "";
     const naamParts = naam.trim().split(" ");
     const voornaam = naamParts[0] || "";
@@ -34,60 +35,19 @@ export default function Contact() {
     const bericht = (formDataRaw.get("message") as string) || "";
 
     try {
-      // Prepare data for AFAS
-      const afasData = {
-        naam,
-        voornaam,
-        achternaam,
-        email,
-        telefoon,
-        beroep,
-        onderwerp,
-        bericht,
-        bron: "website",
-        type: "contact",
-        timestamp: new Date().toISOString(),
-      };
+      const afasData = { naam, voornaam, achternaam, email, telefoon, beroep, onderwerp, bericht, bron: "website", type: "contact", timestamp: new Date().toISOString() };
+      await fetch("https://shop.zpzaken.nl/bav-jaarlijks", { method: "POST", headers: { "Content-Type": "application/json" }, mode: "no-cors", body: JSON.stringify(afasData) });
 
-      // Send to AFAS (no-cors mode for cross-origin)
-      await fetch("https://shop.zpzaken.nl/bav-jaarlijks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        mode: "no-cors",
-        body: JSON.stringify(afasData),
-      });
-
-      // Also save to database for admin dashboard
       const { error } = await supabase.from("leads").insert({
-        type: "contact",
-        voornaam: voornaam || naam,
-        achternaam: achternaam || "-",
-        email,
-        telefoon: telefoon || null,
-        beroep: beroep || null,
-        opmerkingen: `Onderwerp: ${onderwerp}\n\n${bericht}`,
-        bron: "website",
+        type: "contact", voornaam: voornaam || naam, achternaam: achternaam || "-", email, telefoon: telefoon || null, beroep: beroep || null, opmerkingen: `Onderwerp: ${onderwerp}\n\n${bericht}`, bron: "website",
       });
-
-      if (error) {
-        console.error("Database error:", error);
-        // Don't throw - AFAS submission succeeded
-      }
+      if (error) console.error("Database error:", error);
 
       setIsSubmitted(true);
-      toast({
-        title: "Bericht verzonden!",
-        description: "We nemen binnen 24 uur contact met je op.",
-      });
+      toast({ title: t("contact.toastSuccess"), description: t("contact.toastSuccessDesc") });
     } catch (error) {
       console.error("Error submitting contact form:", error);
-      toast({
-        title: "Er ging iets mis",
-        description: "Probeer het later opnieuw of neem telefonisch contact op.",
-        variant: "destructive",
-      });
+      toast({ title: t("contact.toastError"), description: t("contact.toastErrorDesc"), variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
@@ -96,196 +56,102 @@ export default function Contact() {
   return (
     <Layout>
       <Helmet>
-        <title>Contact | Gratis adviesgesprek voor zzp'ers | ZP Zaken</title>
-        <meta name="description" content="Neem contact op met ZP Zaken voor gratis advies over verzekeringen voor zzp'ers. Bel 023-201 0502 of vul het contactformulier in. Reactie binnen 24 uur." />
+        <title>{t("contact.title")} | ZP Zaken</title>
+        <meta name="description" content={t("contact.subtitle")} />
         <link rel="canonical" href="https://zpzaken.nl/contact" />
-        <meta property="og:title" content="Contact | ZP Zaken" />
-        <meta property="og:description" content="Gratis adviesgesprek voor zzp'ers. Bel 023-201 0502 of mail info@zpzaken.nl." />
-        <meta property="og:url" content="https://zpzaken.nl/contact" />
       </Helmet>
       <PageHero
-        title="Contact & advies aanvragen"
-        subtitle="Heb je vragen of wil je een gratis adviesgesprek? Vul het formulier in of neem direct contact met ons op. We reageren binnen 24 uur."
-        badge={{
-          icon: <MessageCircle className="h-4 w-4" />,
-          text: "Altijd een mens aan de lijn"
-        }}
+        title={t("contact.title")}
+        subtitle={t("contact.subtitle")}
+        badge={{ icon: <MessageCircle className="h-4 w-4" />, text: t("contact.badge") }}
         backgroundImage={teamRoxy}
       />
 
       <section className="section-padding bg-background">
         <div className="container-wide">
           <div className="grid lg:grid-cols-3 gap-12 lg:gap-16">
-            {/* Form */}
             <div className="lg:col-span-2">
               <div className="bg-card rounded-2xl p-8 lg:p-10 shadow-card border border-border/50">
-                <h2 className="text-2xl font-semibold mb-2">Stuur een bericht</h2>
-                <p className="text-muted-foreground mb-8">
-                  Vul onderstaand formulier in en we nemen zo snel mogelijk contact met je op.
-                </p>
+                <h2 className="text-2xl font-semibold mb-2">{t("contact.formTitle")}</h2>
+                <p className="text-muted-foreground mb-8">{t("contact.formSubtitle")}</p>
 
                 {isSubmitted ? (
                   <div className="text-center py-12">
                     <div className="h-16 w-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6">
                       <CheckCircle className="h-8 w-8 text-accent" />
                     </div>
-                    <h3 className="text-xl font-semibold mb-2">Bedankt voor je bericht!</h3>
-                    <p className="text-muted-foreground mb-6">
-                      We hebben je aanvraag ontvangen en nemen binnen 24 uur contact met je op.
-                    </p>
-                    <Button variant="outline" onClick={() => setIsSubmitted(false)}>
-                      Nieuw bericht sturen
-                    </Button>
+                    <h3 className="text-xl font-semibold mb-2">{t("contact.successTitle")}</h3>
+                    <p className="text-muted-foreground mb-6">{t("contact.successDesc")}</p>
+                    <Button variant="outline" onClick={() => setIsSubmitted(false)}>{t("contact.newMessage")}</Button>
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid sm:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label htmlFor="name">Naam *</Label>
-                        <Input
-                          id="name"
-                          name="name"
-                          placeholder="Je volledige naam"
-                          required
-                        />
+                        <Label htmlFor="name">{t("contact.name")} *</Label>
+                        <Input id="name" name="name" placeholder={t("contact.namePlaceholder")} required />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="email">E-mailadres *</Label>
-                        <Input
-                          id="email"
-                          name="email"
-                          type="email"
-                          placeholder="jouw@email.nl"
-                          required
-                        />
+                        <Label htmlFor="email">{t("contact.email")} *</Label>
+                        <Input id="email" name="email" type="email" placeholder={t("contact.emailPlaceholder")} required />
                       </div>
                     </div>
-
                     <div className="grid sm:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label htmlFor="phone">Telefoonnummer</Label>
-                        <Input
-                          id="phone"
-                          name="phone"
-                          type="tel"
-                          placeholder="06 - 12345678"
-                        />
+                        <Label htmlFor="phone">{t("contact.phone")}</Label>
+                        <Input id="phone" name="phone" type="tel" placeholder={t("contact.phonePlaceholder")} />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="profession">Beroep / sector</Label>
-                        <Input
-                          id="profession"
-                          name="profession"
-                          placeholder="Bijv. ICT consultant, designer"
-                        />
+                        <Label htmlFor="profession">{t("contact.profession")}</Label>
+                        <Input id="profession" name="profession" placeholder={t("contact.professionPlaceholder")} />
                       </div>
                     </div>
-
                     <div className="space-y-2">
-                      <Label htmlFor="subject">Onderwerp *</Label>
-                      <Input
-                        id="subject"
-                        name="subject"
-                        placeholder="Waar kunnen we je mee helpen?"
-                        required
-                      />
+                      <Label htmlFor="subject">{t("contact.subject")} *</Label>
+                      <Input id="subject" name="subject" placeholder={t("contact.subjectPlaceholder")} required />
                     </div>
-
                     <div className="space-y-2">
-                      <Label htmlFor="message">Je bericht *</Label>
-                      <Textarea
-                        id="message"
-                        name="message"
-                        placeholder="Vertel ons meer over je situatie en vraag..."
-                        rows={5}
-                        required
-                      />
+                      <Label htmlFor="message">{t("contact.message")} *</Label>
+                      <Textarea id="message" name="message" placeholder={t("contact.messagePlaceholder")} rows={5} required />
                     </div>
-
                     <div className="flex items-start gap-3">
-                      <input
-                        type="checkbox"
-                        id="privacy"
-                        name="privacy"
-                        required
-                        className="mt-1"
-                      />
-                      <Label htmlFor="privacy" className="text-sm text-muted-foreground font-normal">
-                        Ik ga akkoord met de privacyverklaring en geef toestemming om contact 
-                        met mij op te nemen over mijn vraag.
-                      </Label>
+                      <input type="checkbox" id="privacy" name="privacy" required className="mt-1" />
+                      <Label htmlFor="privacy" className="text-sm text-muted-foreground font-normal">{t("contact.privacy")}</Label>
                     </div>
-
-                    <Button
-                      type="submit"
-                      variant="accent"
-                      size="lg"
-                      className="w-full sm:w-auto"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? "Verzenden..." : "Verstuur bericht"}
+                    <Button type="submit" variant="accent" size="lg" className="w-full sm:w-auto" disabled={isSubmitting}>
+                      {isSubmitting ? t("contact.submitting") : t("contact.submit")}
                     </Button>
                   </form>
                 )}
               </div>
             </div>
 
-            {/* Contact info */}
             <div className="space-y-6">
               <div className="bg-card rounded-2xl p-8 shadow-card border border-border/50">
-                <h3 className="text-lg font-semibold mb-6">Direct contact</h3>
+                <h3 className="text-lg font-semibold mb-6">{t("contact.directContact")}</h3>
                 <div className="space-y-4">
-                  <a
-                    href="tel:0232010502"
-                    className="flex items-center gap-4 text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                      <Phone className="h-5 w-5 text-accent" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground">023 - 201 0502</p>
-                      <p className="text-sm">Bel ons direct</p>
-                    </div>
+                  <a href="tel:0232010502" className="flex items-center gap-4 text-muted-foreground hover:text-foreground transition-colors">
+                    <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center"><Phone className="h-5 w-5 text-accent" /></div>
+                    <div><p className="font-medium text-foreground">023 - 201 0502</p><p className="text-sm">{t("contact.callUs")}</p></div>
                   </a>
-                  <a
-                    href="mailto:info@zpzaken.nl"
-                    className="flex items-center gap-4 text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                      <Mail className="h-5 w-5 text-accent" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground">info@zpzaken.nl</p>
-                      <p className="text-sm">Mail ons</p>
-                    </div>
+                  <a href="mailto:info@zpzaken.nl" className="flex items-center gap-4 text-muted-foreground hover:text-foreground transition-colors">
+                    <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center"><Mail className="h-5 w-5 text-accent" /></div>
+                    <div><p className="font-medium text-foreground">info@zpzaken.nl</p><p className="text-sm">{t("contact.mailUs")}</p></div>
                   </a>
                   <div className="flex items-center gap-4 text-muted-foreground">
-                    <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                      <MapPin className="h-5 w-5 text-accent" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground">Haarlem</p>
-                      <p className="text-sm">Nederland</p>
-                    </div>
+                    <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center"><MapPin className="h-5 w-5 text-accent" /></div>
+                    <div><p className="font-medium text-foreground">Haarlem</p><p className="text-sm">Nederland</p></div>
                   </div>
                 </div>
               </div>
 
               <div className="bg-card rounded-2xl p-8 shadow-card border border-border/50">
-                <h3 className="text-lg font-semibold mb-6">Openingstijden</h3>
+                <h3 className="text-lg font-semibold mb-6">{t("contact.openingHours")}</h3>
                 <div className="flex items-start gap-4">
-                  <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
-                    <Clock className="h-5 w-5 text-accent" />
-                  </div>
+                  <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0"><Clock className="h-5 w-5 text-accent" /></div>
                   <div className="text-sm">
-                    <p className="mb-2">
-                      <span className="font-medium">Ma - Vr:</span>{" "}
-                      <span className="text-muted-foreground">09:00 - 17:30</span>
-                    </p>
-                    <p>
-                      <span className="font-medium">Za - Zo:</span>{" "}
-                      <span className="text-muted-foreground">Gesloten</span>
-                    </p>
+                    <p className="mb-2"><span className="font-medium">{t("contact.monFri")}</span> <span className="text-muted-foreground">{t("contact.monFriHours")}</span></p>
+                    <p><span className="font-medium">{t("contact.satSun")}</span> <span className="text-muted-foreground">{t("contact.closed")}</span></p>
                   </div>
                 </div>
               </div>
@@ -293,14 +159,10 @@ export default function Contact() {
               <div className="bg-primary/10 rounded-2xl p-8 border border-primary/20">
                 <div className="flex items-center gap-3 mb-4">
                   <Calendar className="h-6 w-6 text-primary" />
-                  <h3 className="text-lg font-semibold">Plan een gesprek</h3>
+                  <h3 className="text-lg font-semibold">{t("contact.planCall")}</h3>
                 </div>
-                <p className="text-muted-foreground text-sm mb-4">
-                  Liever direct een afspraak inplannen? Kies een moment dat jou uitkomt.
-                </p>
-                <Button variant="accent" size="sm" className="w-full">
-                  Open agenda
-                </Button>
+                <p className="text-muted-foreground text-sm mb-4">{t("contact.planCallDesc")}</p>
+                <Button variant="accent" size="sm" className="w-full">{t("contact.openAgenda")}</Button>
               </div>
             </div>
           </div>

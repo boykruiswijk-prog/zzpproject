@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
@@ -10,27 +11,12 @@ import teamMember3 from "@/assets/team-member-3.jpg";
 import teamBoyCalling from "@/assets/team-boy-calling.jpg";
 import officeCoffee from "@/assets/office-coffee.jpg";
 
+// Team and content data stays in Dutch as it's specific content
 const values = [
-  {
-    icon: Target,
-    title: "Onafhankelijk",
-    description: "We zijn niet gebonden aan één verzekeraar. Ons advies is gebaseerd op wat het beste bij jou past, niet op commissies.",
-  },
-  {
-    icon: Eye,
-    title: "Transparant",
-    description: "Geen kleine lettertjes of verborgen kosten. We leggen alles helder uit zodat je weet waar je aan toe bent.",
-  },
-  {
-    icon: Users,
-    title: "Persoonlijk",
-    description: "Je spreekt met echte adviseurs die je situatie kennen. Geen callcenters of doorverwijzingen.",
-  },
-  {
-    icon: Award,
-    title: "Deskundig",
-    description: "Meer dan 10 jaar ervaring in verzekeringen voor zelfstandigen. We kennen de markt en jouw uitdagingen.",
-  },
+  { icon: Target, title: "Onafhankelijk", description: "We zijn niet gebonden aan één verzekeraar. Ons advies is gebaseerd op wat het beste bij jou past, niet op commissies." },
+  { icon: Eye, title: "Transparant", description: "Geen kleine lettertjes of verborgen kosten. We leggen alles helder uit zodat je weet waar je aan toe bent." },
+  { icon: Users, title: "Persoonlijk", description: "Je spreekt met echte adviseurs die je situatie kennen. Geen callcenters of doorverwijzingen." },
+  { icon: Award, title: "Deskundig", description: "Meer dan 10 jaar ervaring in verzekeringen voor zelfstandigen. We kennen de markt en jouw uitdagingen." },
 ];
 
 const facts = [
@@ -41,24 +27,9 @@ const facts = [
 ];
 
 const team = [
-  {
-    name: "Boy Kruiswijk",
-    role: "Oprichter",
-    image: teamMember1,
-    description: "Ruim 13 jaar geleden bedenker van de unieke polis voor zzp'ers in Nederland. Zijn visie: iedere ondernemer goed en zorgeloos verzekerd.",
-  },
-  {
-    name: "Roxy Taskin",
-    role: "Backoffice",
-    image: teamMember2,
-    description: "Zorgt ervoor dat alles op de achtergrond soepel verloopt. Van administratie tot klantondersteuning.",
-  },
-  {
-    name: "Ellen Baars",
-    role: "Senior Adviseur",
-    image: teamMember3,
-    description: "Met jarenlange ervaring in verzekeringen helpt zij ondernemers met passend advies voor hun situatie.",
-  },
+  { name: "Boy Kruiswijk", role: "Oprichter", image: teamMember1, description: "Ruim 13 jaar geleden bedenker van de unieke polis voor zzp'ers in Nederland. Zijn visie: iedere ondernemer goed en zorgeloos verzekerd." },
+  { name: "Roxy Taskin", role: "Backoffice", image: teamMember2, description: "Zorgt ervoor dat alles op de achtergrond soepel verloopt. Van administratie tot klantondersteuning." },
+  { name: "Ellen Baars", role: "Senior Adviseur", image: teamMember3, description: "Met jarenlange ervaring in verzekeringen helpt zij ondernemers met passend advies voor hun situatie." },
 ];
 
 const registrations = [
@@ -67,133 +38,65 @@ const registrations = [
   { title: "Beroepsaansprakelijkheid verzekerd", description: "Uiteraard zijn wij zelf ook verzekerd tegen beroepsfouten." },
 ];
 
-// Structured data for Google
-const organizationSchema = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "ZP Zaken",
-  "url": "https://zpzaken.nl",
-  "logo": "https://zpzaken.nl/favicon.png",
-  "foundingDate": "2012",
-  "description": "Onafhankelijk advies voor zzp'ers op het gebied van verzekeringen, administratie, juridisch advies en screening.",
-  "address": {
-    "@type": "PostalAddress",
-    "addressCountry": "NL"
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.9",
-    "bestRating": "5",
-    "worstRating": "1",
-    "ratingCount": "2500"
-  },
-  "sameAs": []
-};
-
 export default function OverOns() {
+  const { t } = useTranslation();
+
   return (
     <Layout>
       <Helmet>
-        <title>Over ZP Zaken | 10+ jaar onafhankelijk advies voor zzp'ers</title>
-        <meta name="description" content="Leer het team achter ZP Zaken kennen. Al 10+ jaar onafhankelijk advies voor zzp'ers. AFM geregistreerd, Kifid aangesloten." />
+        <title>{t("overOns.title")} | ZP Zaken</title>
+        <meta name="description" content={t("overOns.subtitle")} />
         <link rel="canonical" href="https://zpzaken.nl/over-ons" />
-        <meta property="og:title" content="Over ZP Zaken | Ons team en missie" />
-        <meta property="og:description" content="Al 10+ jaar onafhankelijk advies voor zzp'ers. AFM geregistreerd." />
-        <meta property="og:url" content="https://zpzaken.nl/over-ons" />
       </Helmet>
-      {/* JSON-LD Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
-      />
 
       <PageHero
-        title="Over ZP Zaken"
-        subtitle="Wij geloven dat zzp'ers recht hebben op eerlijk, persoonlijk advies. Geen verkooppraatjes — gewoon goed geregeld."
-        badge={{
-          icon: <Heart className="h-4 w-4" />,
-          text: "Met passie voor ondernemers"
-        }}
+        title={t("overOns.title")}
+        subtitle={t("overOns.subtitle")}
+        badge={{ icon: <Heart className="h-4 w-4" />, text: t("overOns.badge") }}
         backgroundImage={teamBoyCalling}
       />
 
-      {/* Mission */}
       <section className="section-padding bg-background">
         <div className="container-wide">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div>
-              <h2 className="mb-6">Onze missie</h2>
-              <p className="text-lg text-muted-foreground mb-6">
-                Als zzp'er heb je genoeg aan je hoofd. Je focust op je vak, je klanten en het 
-                runnen van je onderneming. Verzekeringen en zakelijke zekerheid moeten geen 
-                hoofdpijndossier zijn.
-              </p>
-              <p className="text-lg text-muted-foreground mb-6">
-                Daarom startten we ZP Zaken: om zelfstandig ondernemers te helpen met helder, 
-                onafhankelijk advies. We nemen de tijd om je situatie te begrijpen en adviseren 
-                alleen wat je écht nodig hebt.
-              </p>
-              
-              {/* Mission Shield Tags */}
+              <h2 className="mb-6">{t("overOns.missieTitle")}</h2>
+              <p className="text-lg text-muted-foreground mb-6">{t("overOns.missieP1")}</p>
+              <p className="text-lg text-muted-foreground mb-6">{t("overOns.missieP2")}</p>
               <div className="flex flex-wrap gap-2">
-                {["Eerlijk advies", "Geen onnodige producten", "Begrijpelijke taal"].map((tag) => (
-                  <span
-                    key={tag}
-                    className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 text-foreground px-3 py-1.5 rounded-lg text-sm"
-                  >
-                    <CheckCircle className="h-3.5 w-3.5 text-accent" />
-                    {tag}
+                {(t("overOns.missieTags", { returnObjects: true }) as string[]).map((tag: string) => (
+                  <span key={tag} className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 text-foreground px-3 py-1.5 rounded-lg text-sm">
+                    <CheckCircle className="h-3.5 w-3.5 text-accent" />{tag}
                   </span>
                 ))}
               </div>
             </div>
-            
             <div className="bg-primary/5 border border-primary/10 rounded-2xl p-8 lg:p-12">
-              <blockquote className="text-xl lg:text-2xl font-medium mb-6 text-foreground">
-                "Zzp'ers verdienen dezelfde zekerheid als werknemers, maar dan wel op een 
-                manier die past bij het ondernemersleven."
-              </blockquote>
-              <p className="text-muted-foreground font-medium">
-                — Boy Kruiswijk, Oprichter ZP Zaken
-              </p>
+              <blockquote className="text-xl lg:text-2xl font-medium mb-6 text-foreground">{t("overOns.quote")}</blockquote>
+              <p className="text-muted-foreground font-medium">{t("overOns.quoteAuthor")}</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Team */}
       <section className="section-padding bg-secondary">
         <div className="container-wide">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="mb-4">Ons team</h2>
-            <p className="text-lg text-muted-foreground">
-              Een klein, toegewijd team dat klaarstaat om je te helpen met al je vragen.
-            </p>
+            <h2 className="mb-4">{t("overOns.teamTitle")}</h2>
+            <p className="text-lg text-muted-foreground">{t("overOns.teamSubtitle")}</p>
           </div>
-
           <div className="grid md:grid-cols-3 gap-8">
             {team.map((member) => (
-              <div 
-                key={member.name} 
-                className="bg-card rounded-2xl overflow-hidden shadow-card border border-border/50"
-                itemScope
-                itemType="https://schema.org/Person"
-              >
+              <div key={member.name} className="bg-card rounded-2xl overflow-hidden shadow-card border border-border/50">
                 <div className="aspect-[4/3] overflow-hidden">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-full h-full object-cover"
-                    itemProp="image"
-                  />
+                  <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-semibold" itemProp="name">{member.name}</h3>
+                  <h3 className="text-xl font-semibold">{member.name}</h3>
                   <span className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 text-accent px-3 py-1 rounded-full text-sm font-medium my-3">
-                    <Shield className="h-3.5 w-3.5" />
-                    <span itemProp="jobTitle">{member.role}</span>
+                    <Shield className="h-3.5 w-3.5" />{member.role}
                   </span>
-                  <p className="text-muted-foreground text-sm" itemProp="description">{member.description}</p>
+                  <p className="text-muted-foreground text-sm">{member.description}</p>
                 </div>
               </div>
             ))}
@@ -201,22 +104,15 @@ export default function OverOns() {
         </div>
       </section>
 
-      {/* Values as Shield Tags */}
       <section className="section-padding bg-background">
         <div className="container-wide">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="mb-4">Waar we voor staan</h2>
-            <p className="text-lg text-muted-foreground">
-              Onze kernwaarden bepalen hoe we werken en hoe we met je omgaan.
-            </p>
+            <h2 className="mb-4">{t("overOns.valuesTitle")}</h2>
+            <p className="text-lg text-muted-foreground">{t("overOns.valuesSubtitle")}</p>
           </div>
-
           <div className="flex flex-wrap justify-center gap-4 mb-12">
             {values.map((value) => (
-              <div
-                key={value.title}
-                className="inline-flex items-center gap-3 bg-card border border-border/50 shadow-sm px-5 py-3 rounded-xl"
-              >
+              <div key={value.title} className="inline-flex items-center gap-3 bg-card border border-border/50 shadow-sm px-5 py-3 rounded-xl">
                 <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center">
                   <value.icon className="h-5 w-5 text-accent" />
                 </div>
@@ -230,26 +126,15 @@ export default function OverOns() {
         </div>
       </section>
 
-      {/* Facts as Shield Badges */}
       <section className="section-padding text-primary-foreground relative overflow-hidden">
-        {/* Background Image */}
         <div className="absolute inset-0 z-0">
-          <img
-            src={officeCoffee}
-            alt=""
-            className="w-full h-full object-cover"
-            aria-hidden="true"
-          />
+          <img src={officeCoffee} alt="" className="w-full h-full object-cover" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
         </div>
-        
         <div className="container-wide relative z-10">
           <div className="flex flex-wrap justify-center gap-6">
             {facts.map((fact) => (
-              <div 
-                key={fact.label} 
-                className="inline-flex items-center gap-3 bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 px-6 py-4 rounded-xl"
-              >
+              <div key={fact.label} className="inline-flex items-center gap-3 bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 px-6 py-4 rounded-xl">
                 <Shield className="h-5 w-5 text-accent" />
                 <div className="text-center">
                   <p className="text-2xl md:text-3xl font-bold">{fact.value}</p>
@@ -261,24 +146,17 @@ export default function OverOns() {
         </div>
       </section>
 
-      {/* Trust - Registrations as Shields */}
       <section className="section-padding bg-background">
         <div className="container-wide">
           <div className="max-w-3xl mx-auto">
-            <h2 className="mb-8 text-center">Officieel geregistreerd</h2>
+            <h2 className="mb-8 text-center">{t("overOns.registrationsTitle")}</h2>
             <div className="flex flex-wrap justify-center gap-4">
               {registrations.map((reg) => (
-                <div
-                  key={reg.title}
-                  className="inline-flex items-center gap-3 bg-accent/10 border border-accent/20 px-5 py-3 rounded-xl max-w-sm"
-                  itemProp="hasCredential"
-                  itemScope
-                  itemType="https://schema.org/EducationalOccupationalCredential"
-                >
+                <div key={reg.title} className="inline-flex items-center gap-3 bg-accent/10 border border-accent/20 px-5 py-3 rounded-xl max-w-sm">
                   <CheckCircle className="h-6 w-6 text-accent flex-shrink-0" />
                   <div>
-                    <p className="font-semibold text-sm" itemProp="name">{reg.title}</p>
-                    <p className="text-xs text-muted-foreground" itemProp="description">{reg.description}</p>
+                    <p className="font-semibold text-sm">{reg.title}</p>
+                    <p className="text-xs text-muted-foreground">{reg.description}</p>
                   </div>
                 </div>
               ))}
@@ -287,20 +165,13 @@ export default function OverOns() {
         </div>
       </section>
 
-      {/* CTA */}
       <section className="section-padding bg-secondary">
         <div className="container-wide">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="mb-4">Wil je ons leren kennen?</h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Plan een vrijblijvend kennismakingsgesprek. We vertellen je graag 
-              meer over hoe we je kunnen helpen.
-            </p>
+            <h2 className="mb-4">{t("overOns.ctaTitle")}</h2>
+            <p className="text-lg text-muted-foreground mb-8">{t("overOns.ctaSubtitle")}</p>
             <Button variant="accent" size="lg" asChild>
-              <Link to="/contact">
-                Maak kennis
-                <ArrowRight className="h-5 w-5" />
-              </Link>
+              <Link to="/contact">{t("overOns.ctaButton")}<ArrowRight className="h-5 w-5" /></Link>
             </Button>
           </div>
         </div>
