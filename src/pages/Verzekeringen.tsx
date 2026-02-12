@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -85,6 +86,14 @@ export default function Verzekeringen() {
 
   return (
     <Layout>
+      <Helmet>
+        <title>Verzekeringen voor zzp'ers | BAV, AVB, AOV | ZP Zaken</title>
+        <meta name="description" content="Vergelijk verzekeringen voor zzp'ers: BAV, AVB combinatiepolis (exclusief), AOV en rechtsbijstand. Binnen 24 uur verzekerd. Onafhankelijk advies van ZP Zaken." />
+        <link rel="canonical" href="https://zpzaken.nl/verzekeringen" />
+        <meta property="og:title" content="Verzekeringen voor zzp'ers | ZP Zaken" />
+        <meta property="og:description" content="Unieke BAV + AVB combinatiepolis, AOV en rechtsbijstand voor zzp'ers. Binnen 24 uur verzekerd." />
+        <meta property="og:url" content="https://zpzaken.nl/verzekeringen" />
+      </Helmet>
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"

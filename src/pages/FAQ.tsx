@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { HelpCircle, ChevronDown } from "lucide-react";
@@ -116,6 +117,14 @@ const faqSchema = {
 export default function FAQ() {
   return (
     <Layout>
+      <Helmet>
+        <title>Veelgestelde vragen (FAQ) | ZP Zaken</title>
+        <meta name="description" content="Antwoorden op veelgestelde vragen over verzekeringen voor zzp'ers, BAV, AVB, AOV en meer. Alles wat je moet weten als zelfstandig ondernemer." />
+        <link rel="canonical" href="https://zpzaken.nl/faq" />
+        <meta property="og:title" content="FAQ | ZP Zaken" />
+        <meta property="og:description" content="Antwoorden op veelgestelde vragen over verzekeringen voor zzp'ers." />
+        <meta property="og:url" content="https://zpzaken.nl/faq" />
+      </Helmet>
       {/* JSON-LD Structured Data for SEO */}
       <script
         type="application/ld+json"

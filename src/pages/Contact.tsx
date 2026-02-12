@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
@@ -94,6 +95,14 @@ export default function Contact() {
 
   return (
     <Layout>
+      <Helmet>
+        <title>Contact | Gratis adviesgesprek voor zzp'ers | ZP Zaken</title>
+        <meta name="description" content="Neem contact op met ZP Zaken voor gratis advies over verzekeringen voor zzp'ers. Bel 023-201 0502 of vul het contactformulier in. Reactie binnen 24 uur." />
+        <link rel="canonical" href="https://zpzaken.nl/contact" />
+        <meta property="og:title" content="Contact | ZP Zaken" />
+        <meta property="og:description" content="Gratis adviesgesprek voor zzp'ers. Bel 023-201 0502 of mail info@zpzaken.nl." />
+        <meta property="og:url" content="https://zpzaken.nl/contact" />
+      </Helmet>
       <PageHero
         title="Contact & advies aanvragen"
         subtitle="Heb je vragen of wil je een gratis adviesgesprek? Vul het formulier in of neem direct contact met ons op. We reageren binnen 24 uur."

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
@@ -121,6 +122,14 @@ const services = [
 export default function Diensten() {
   return (
     <Layout>
+      <Helmet>
+        <title>Diensten voor zzp'ers | Verzekeringen, Administratie & Screening | ZP Zaken</title>
+        <meta name="description" content="Alle diensten voor zzp'ers: verzekeringen (BAV, AVB, AOV), administratie, juridisch advies, screening en factoring. Onafhankelijk advies van ZP Zaken." />
+        <link rel="canonical" href="https://zpzaken.nl/diensten" />
+        <meta property="og:title" content="Diensten voor zzp'ers | ZP Zaken" />
+        <meta property="og:description" content="Verzekeringen, administratie, juridisch advies, screening en factoring voor zzp'ers." />
+        <meta property="og:url" content="https://zpzaken.nl/diensten" />
+      </Helmet>
       <PageHero
         title={<>Onze <span className="text-accent">diensten</span></>}
         subtitle="Verzekeringen, administratie, juridisch advies én screening — alles wat je nodig hebt als zelfstandig professional. Wij koppelen je aan de beste partners voor elke dienst."
