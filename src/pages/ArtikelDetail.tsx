@@ -164,7 +164,7 @@
          )}
  
          {/* Content */}
-         <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-primary hover:prose-a:text-accent prose-strong:text-foreground">
+         <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:text-foreground prose-headings:mt-8 prose-headings:mb-4 prose-h2:text-2xl prose-h2:border-b prose-h2:border-border/50 prose-h2:pb-3 prose-h3:text-xl prose-p:text-muted-foreground prose-p:leading-relaxed prose-p:mb-4 prose-a:text-primary hover:prose-a:text-accent prose-strong:text-foreground prose-ul:my-4 prose-ul:space-y-2 prose-li:text-muted-foreground prose-ol:my-4 prose-ol:space-y-2 prose-table:my-6 prose-table:rounded-xl prose-table:overflow-hidden prose-th:bg-secondary prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:font-semibold prose-th:text-foreground prose-td:px-4 prose-td:py-3 prose-td:border-t prose-td:border-border/50 prose-hr:my-8 prose-hr:border-border/30">
            <ReactMarkdown remarkPlugins={[remarkGfm]}>
              {article.content || ""}
            </ReactMarkdown>
