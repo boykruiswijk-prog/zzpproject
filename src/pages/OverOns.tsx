@@ -4,10 +4,12 @@ import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Target, Eye, Users, Award, Heart, Shield, CheckCircle } from "lucide-react";
+import { ArrowRight, Target, Eye, Users, Award, Heart, Shield, CheckCircle, UserPlus } from "lucide-react";
 import teamMember1 from "@/assets/team-member-1.jpg";
 import teamMember2 from "@/assets/team-member-2.jpg";
 import teamMember3 from "@/assets/team-member-3.jpg";
+import teamMember4 from "@/assets/team-member-4.jpg";
+import teamMemberMystery from "@/assets/team-member-mystery.jpg";
 import teamBoyCalling from "@/assets/team-boy-calling.jpg";
 import officeCoffee from "@/assets/office-coffee.jpg";
 
@@ -30,6 +32,8 @@ const team = [
   { name: "Boy Kruiswijk", role: "Oprichter", image: teamMember1, description: "Ruim 13 jaar geleden bedenker van de unieke polis voor zzp'ers in Nederland. Zijn visie: iedere ondernemer goed en zorgeloos verzekerd." },
   { name: "Roxy Taskin", role: "Backoffice", image: teamMember2, description: "Zorgt ervoor dat alles op de achtergrond soepel verloopt. Van administratie tot klantondersteuning." },
   { name: "Ellen Baars", role: "Senior Adviseur", image: teamMember3, description: "Met jarenlange ervaring in verzekeringen helpt zij ondernemers met passend advies voor hun situatie." },
+  { name: "Gert-Jan Schellingerhout", role: "Adviseur", image: teamMember4, description: "Versterkt ons team met gedegen kennis en persoonlijk advies voor zelfstandig ondernemers." },
+  { name: "Binnenkort bekend", role: "Nieuw teamlid", image: teamMemberMystery, description: "We verwelkomen binnenkort een nieuw gezicht in ons team. Wordt vervolgd!" },
 ];
 
 const registrations = [
@@ -100,6 +104,28 @@ export default function OverOns() {
                 </div>
               </div>
             ))}
+
+            {/* Vacancy Card */}
+            <div className="bg-card rounded-2xl overflow-hidden shadow-card border-2 border-dashed border-primary/30">
+              <div className="aspect-[4/3] flex flex-col items-center justify-center bg-primary/5">
+                <UserPlus className="h-16 w-16 text-primary/40 mb-4" />
+                <h3 className="text-xl font-semibold">Jij?</h3>
+                <span className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 text-accent px-3 py-1 rounded-full text-sm font-medium mt-3">
+                  <Shield className="h-3.5 w-3.5" />Vacature
+                </span>
+              </div>
+              <div className="p-6">
+                <p className="text-muted-foreground text-sm mb-4">
+                  Wij zijn op zoek naar versterking! Ben jij de adviseur die ons team compleet maakt?
+                </p>
+                <Button variant="outline" size="sm" asChild>
+                  <LocalizedLink to="/contact">
+                    Solliciteer nu
+                    <ArrowRight className="h-4 w-4" />
+                  </LocalizedLink>
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
