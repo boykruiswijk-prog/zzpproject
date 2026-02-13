@@ -26,6 +26,7 @@ export function BAVApplicationModule() {
   const [paymentType, setPaymentType] = useState<"monthly" | "yearly">("monthly");
   const [startDate, setStartDate] = useState<string>("");
   const [viaBemiddelaar, setViaBemiddelaar] = useState<boolean | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<"incasso" | "ideal">("incasso");
   const [incassoAkkoord, setIncassoAkkoord] = useState(false);
   const [slotverklaringAkkoord, setSlotverklaringAkkoord] = useState(false);
   const [formData, setFormData] = useState({
