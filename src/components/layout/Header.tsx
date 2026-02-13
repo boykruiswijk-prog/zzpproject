@@ -17,32 +17,38 @@ import {
 function useNavItems() {
   const { t } = useTranslation();
   return [
-    { href: "/", label: t("nav.home") },
     { href: "/verzekeringen", label: t("nav.verzekeringen") },
+    { href: "/diensten", label: t("nav.diensten") },
     { 
       href: "/collectieve-inkoop", 
-      label: t("nav.collectieveInkoop"), 
+      label: t("nav.collectief"), 
       isNew: true,
       children: [
         { href: "/collectieve-inkoop", label: t("nav.collectieveInkoopOverzicht") },
         { href: "/collectief-ledenorganisaties", label: t("nav.collectiefLedenorganisaties") },
       ]
     },
-    { href: "/diensten", label: t("nav.diensten") },
-    { href: "/kennisbank", label: t("nav.kennisbank") },
-    { href: "/faq", label: t("nav.faq") },
+    { 
+      href: "/kennisbank", 
+      label: t("nav.kennisbank"),
+      children: [
+        { href: "/kennisbank", label: t("nav.artikelen") },
+        { href: "/faq", label: t("nav.faq") },
+        { href: "/kennis", label: t("nav.kennisAdvies") },
+      ]
+    },
     { 
       href: "/over-ons", 
       label: t("nav.overOns"),
       children: [
         { href: "/over-ons", label: t("nav.hetTeam") },
-        { href: "/historie", label: t("nav.onzeHistorie") },
         { href: "/voor-wie", label: t("nav.voorWie") },
         { href: "/zo-werken-wij", label: t("nav.zoWerkenWij") },
         { href: "/partners", label: t("nav.partners") },
-        { href: "/kennis", label: t("nav.kennisAdvies") },
+        { href: "/historie", label: t("nav.onzeHistorie") },
       ]
     },
+    { href: "/contact", label: t("nav.contact") },
   ];
 }
 

@@ -8,7 +8,7 @@
     "kennisbank": "Kennisbank",
     "alleArtikelen": "Alle artikelen",
     "kennisAdvies": "Kennis & advies",
-    "faq": "FAQ",
+    "faq": "Veelgestelde vragen",
     "overOns": "Over ons",
     "hetTeam": "Het team",
     "onzeHistorie": "Onze historie",
@@ -16,9 +16,12 @@
     "gratisAdviesgesprek": "Gratis adviesgesprek",
     "phone": "023 - 201 0502",
     "verzekeringen": "Verzekeringen",
+    "collectief": "Collectief",
     "collectieveInkoop": "Collectieve Inkoop",
     "collectieveInkoopOverzicht": "Inkoop voor zzp'ers",
-    "collectiefLedenorganisaties": "Voor ledenorganisaties"
+    "collectiefLedenorganisaties": "Voor ledenorganisaties",
+    "contact": "Contact",
+    "artikelen": "Artikelen"
   },
   "footer": {
     "description": "Onafhankelijk advies voor zzp'ers en ondernemers. Wij helpen je met verzekeringen en zakelijke zekerheid.",
