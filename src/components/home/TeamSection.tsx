@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Phone } from "lucide-react";
+import { ArrowRight, Phone, UserPlus } from "lucide-react";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import teamMember1 from "@/assets/team-member-1.jpg";
 import teamMember2 from "@/assets/team-member-2.jpg";
 import teamMember3 from "@/assets/team-member-3.jpg";
+import teamMember4 from "@/assets/team-member-4.jpg";
+import teamMemberMystery from "@/assets/team-member-mystery.jpg";
 
 const teamMembers = [
   {
@@ -23,6 +25,18 @@ const teamMembers = [
     role: "Senior Adviseur",
     image: teamMember3,
     description: "Expert in BAV en aansprakelijkheidsverzekeringen.",
+  },
+  {
+    name: "Gert-Jan Schellingerhout",
+    role: "Adviseur",
+    image: teamMember4,
+    description: "Versterkt ons team met gedegen kennis en persoonlijk advies.",
+  },
+  {
+    name: "Binnenkort bekend",
+    role: "Nieuw teamlid",
+    image: teamMemberMystery,
+    description: "We verwelkomen binnenkort een nieuw gezicht in ons team. Wordt vervolgd!",
   },
 ];
 
@@ -76,6 +90,26 @@ export function TeamSection() {
               </div>
             </div>
           ))}
+
+          {/* Vacancy Card */}
+          <div className="group bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 border-2 border-dashed border-primary/30">
+            <div className="aspect-[4/5] flex flex-col items-center justify-center bg-primary/5">
+              <UserPlus className="h-16 w-16 text-primary/40 mb-4" />
+              <h3 className="text-xl font-semibold mb-1">Jij?</h3>
+              <p className="text-primary font-medium text-sm">Vacature</p>
+            </div>
+            <div className="p-6">
+              <p className="text-muted-foreground text-sm mb-4">
+                Wij zijn op zoek naar versterking! Ben jij de adviseur die ons team compleet maakt?
+              </p>
+              <Button variant="outline" size="sm" asChild>
+                <LocalizedLink to="/contact">
+                  Solliciteer nu
+                  <ArrowRight className="h-4 w-4" />
+                </LocalizedLink>
+              </Button>
+            </div>
+          </div>
         </div>
 
         {/* CTA */}
