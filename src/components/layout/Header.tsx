@@ -17,8 +17,18 @@ import {
 function useNavItems() {
   const { t } = useTranslation();
   return [
-    { href: "/verzekeringen", label: t("nav.verzekeringen") },
-    { href: "/diensten", label: t("nav.diensten") },
+    { 
+      href: "/diensten", 
+      label: t("nav.diensten"),
+      children: [
+        { href: "/diensten", label: t("nav.alleDiensten") },
+        { href: "/verzekeringen", label: "Verzekeringen" },
+        { href: "/diensten#administratie", label: "Administratie & Boekhouding" },
+        { href: "/diensten#juridisch", label: "Juridisch Advies" },
+        { href: "/diensten#screening", label: "Screening" },
+        { href: "/diensten#financiering", label: "Factoring & Financiering" },
+      ]
+    },
     { 
       href: "/collectieve-inkoop", 
       label: t("nav.collectief"), 
