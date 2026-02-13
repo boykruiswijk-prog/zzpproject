@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, Phone, Shield, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { LocalizedLink } from "@/components/LocalizedLink";
-import teamMeeting from "@/assets/team-meeting.jpg";
+import teamWalking from "@/assets/team-walking.jpg";
 
 export function HeroSection() {
   const { t } = useTranslation();
@@ -17,7 +17,7 @@ export function HeroSection() {
   return (
     <section className="relative min-h-[85vh] flex items-center overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <img src={teamMeeting} alt="ZP Zaken" className="w-full h-full object-cover" />
+        <img src={teamWalking} alt="ZP Zaken" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-foreground/95 via-foreground/85 to-foreground/70" />
       </div>
 

@@ -11,6 +11,7 @@ import { Phone, Mail, MapPin, Clock, Calendar, CheckCircle, MessageCircle } from
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import teamRoxy from "@/assets/team-roxy.jpg";
+import officeMeetingRoom from "@/assets/office-meeting-room.jpg";
 
 export default function Contact() {
   const { t } = useTranslation();
@@ -147,6 +148,10 @@ export default function Contact() {
                     <div><p className="font-medium text-foreground">Haarlem</p><p className="text-sm">Nederland</p></div>
                   </div>
                 </div>
+              </div>
+
+              <div className="rounded-2xl overflow-hidden shadow-card border border-border/50">
+                <img src={officeMeetingRoom} alt="Vergaderruimte ZP Zaken" className="w-full h-48 object-cover" />
               </div>
 
               <div className="bg-card rounded-2xl p-8 shadow-card border border-border/50">
