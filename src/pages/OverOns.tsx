@@ -61,7 +61,49 @@ export default function OverOns() {
         backgroundImage={teamWalking}
       />
 
+      {/* Founder/CEO module */}
       <section className="section-padding bg-background">
+        <div className="container-wide">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 text-foreground px-4 py-2 rounded-full text-sm font-medium mb-6">
+                <Award className="h-4 w-4 text-accent" />
+                Oprichter & visionair
+              </div>
+              <h2 className="mb-4">Boy Kruiswijk</h2>
+              <p className="text-lg text-muted-foreground mb-4">
+                "Meer dan 13 jaar geleden zag ik dat zzp'ers niet dezelfde zekerheid kregen als werknemers. Dat moest anders. Ik ontwikkelde de eerste gecombineerde BAV+AVB polis in Nederland — speciaal voor zelfstandig professionals."
+              </p>
+              <p className="text-lg text-muted-foreground mb-6">
+                Zijn visie: iedere ondernemer goed en zorgeloos verzekerd, met persoonlijk contact en eerlijk advies. Geen callcenters, geen verkooppraatjes — gewoon een partner die met je meedenkt.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {["13+ jaar ervaring", "Bedenker unieke BAV+AVB polis", "NEN-gecertificeerd", "AFM geregistreerd"].map((tag) => (
+                  <span key={tag} className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 text-foreground px-3 py-1.5 rounded-lg text-sm">
+                    <CheckCircle className="h-3.5 w-3.5 text-accent" />{tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="relative">
+              <div className="bg-card rounded-2xl overflow-hidden shadow-card border border-border/50">
+                <div className="aspect-[4/3] overflow-hidden">
+                  <img src={teamMember1} alt="Boy Kruiswijk - Oprichter ZP Zaken" className="w-full h-full object-cover" />
+                </div>
+                <div className="p-6">
+                  <blockquote className="text-lg font-medium mb-2 text-foreground italic">
+                    "Zzp'ers verdienen dezelfde zekerheid als werknemers, maar dan op een manier die past bij het ondernemersleven."
+                  </blockquote>
+                  <p className="text-sm text-muted-foreground">— Boy Kruiswijk, Oprichter ZP Zaken</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Missie sectie */}
+      <section className="section-padding bg-secondary">
         <div className="container-wide">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div>

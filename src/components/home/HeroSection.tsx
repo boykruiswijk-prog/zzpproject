@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, Phone, Shield, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { LocalizedLink } from "@/components/LocalizedLink";
+import { TrustBar } from "@/components/shared/TrustBar";
+import { MiniSocialProof } from "@/components/shared/MiniSocialProof";
 import teamWalking from "@/assets/team-walking.jpg";
 
 export function HeroSection() {
@@ -98,16 +100,21 @@ export function HeroSection() {
               </Button>
             </motion.div>
 
-            <motion.a 
+            <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 1 }}
-              href="tel:0232010502" 
-              className="inline-flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+              className="flex flex-col sm:flex-row items-start sm:items-center gap-4"
             >
-              <Phone className="h-4 w-4" />
-              <span>023 - 201 0502</span>
-            </motion.a>
+              <a 
+                href="tel:0232010502" 
+                className="inline-flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+              >
+                <Phone className="h-4 w-4" />
+                <span>023 - 201 0502</span>
+              </a>
+              <MiniSocialProof variant="dark" />
+            </motion.div>
           </motion.div>
 
           <div className="hidden lg:flex justify-end">
@@ -159,6 +166,10 @@ export function HeroSection() {
             </motion.div>
           </div>
         </div>
+      </div>
+
+      <div className="relative z-10 pb-6">
+        <TrustBar variant="dark" className="pt-4" />
       </div>
     </section>
   );

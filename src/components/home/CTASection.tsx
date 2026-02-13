@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Phone, Calendar, ArrowRight } from "lucide-react";
 import { AnimatedSection, StaggerContainer, StaggerItem } from "@/components/ui/animated-section";
 import { LocalizedLink } from "@/components/LocalizedLink";
+import { StepsProcess } from "@/components/shared/StepsProcess";
+import { MiniSocialProof } from "@/components/shared/MiniSocialProof";
 import teamBoyCalling from "@/assets/team-boy-calling.jpg";
 
 export function CTASection() {
@@ -48,13 +50,21 @@ export function CTASection() {
             </a>
           </AnimatedSection>
 
-          <StaggerContainer className="flex flex-wrap items-center justify-center gap-6 text-primary-foreground/70 text-sm" staggerDelay={0.1}>
+          <AnimatedSection delay={0.35} className="mb-8">
+            <MiniSocialProof variant="dark" className="justify-center" />
+          </AnimatedSection>
+
+          <StaggerContainer className="flex flex-wrap items-center justify-center gap-6 text-primary-foreground/70 text-sm mb-8" staggerDelay={0.1}>
             {[t("home.gratisVrijblijvend"), t("home.binnen24uur"), t("home.marktleider")].map((text) => (
               <StaggerItem key={text}>
                 <span>✓ {text}</span>
               </StaggerItem>
             ))}
           </StaggerContainer>
+
+          <AnimatedSection delay={0.5}>
+            <StepsProcess variant="dark" />
+          </AnimatedSection>
         </AnimatedSection>
       </div>
     </section>
