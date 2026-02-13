@@ -13,8 +13,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import teamHero from "@/assets/team-hero.jpg";
-import officeCoffee from "@/assets/office-coffee.jpg";
+import teamWalking from "@/assets/team-walking.jpg";
+import teamCheers from "@/assets/team-cheers.jpg";
 
 const trustPoints = [
   { icon: Users, title: "Directe benadering", description: "Geen onnodige tussenpartijen — je spreekt direct met een adviseur die jouw situatie begrijpt." },
@@ -91,7 +91,7 @@ export default function SocialMedia() {
         title={<>Social Media & Zeker Ondernemen als <span className="text-accent">ZZP'er</span></>}
         subtitle="Blijf op de hoogte van ondernemersnieuws, verzekeringen en risico's voor zelfstandigen. Volg ons en onderneem met vertrouwen."
         badge={{ icon: <Share2 className="h-4 w-4" />, text: "Volg ZP Zaken" }}
-        backgroundImage={teamHero}
+        backgroundImage={teamWalking}
       >
         <div className="flex flex-wrap gap-4">
           <Button variant="accent" size="lg" asChild>
@@ -302,7 +302,7 @@ export default function SocialMedia() {
       {/* 7. CTA */}
       <section className="section-padding text-primary-foreground relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={officeCoffee} alt="" className="w-full h-full object-cover" aria-hidden="true" />
+          <img src={teamCheers} alt="" className="w-full h-full object-cover" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
         </div>
         <div className="container-wide relative z-10">

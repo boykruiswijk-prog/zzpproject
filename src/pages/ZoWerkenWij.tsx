@@ -5,6 +5,8 @@ import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MessageCircle, FileSearch, CheckCircle, Clock, Heart, Shield, Users } from "lucide-react";
+import officeMeetingRoom from "@/assets/office-meeting-room.jpg";
+import teamBoyCalling from "@/assets/team-boy-calling.jpg";
 
 export default function ZoWerkenWij() {
   const { t } = useTranslation();
@@ -34,6 +36,7 @@ export default function ZoWerkenWij() {
         title={t("zoWerkenWij.title")}
         subtitle={t("zoWerkenWij.subtitle")}
         badge={{ icon: <MessageCircle className="h-4 w-4" />, text: t("zoWerkenWij.badge") }}
+        backgroundImage={officeMeetingRoom}
       />
 
       <section className="section-padding bg-background">
@@ -89,8 +92,12 @@ export default function ZoWerkenWij() {
         </div>
       </section>
 
-      <section className="section-padding bg-primary text-primary-foreground">
-        <div className="container-wide">
+      <section className="section-padding text-primary-foreground relative overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img src={teamBoyCalling} alt="" className="w-full h-full object-cover" aria-hidden="true" />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
+        </div>
+        <div className="container-wide relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="mb-6">{t("zoWerkenWij.ctaTitle")}</h2>
             <div className="flex flex-wrap justify-center gap-3 mb-8">

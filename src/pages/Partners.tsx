@@ -2,6 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
+import officeCookies from "@/assets/office-cookies.jpg";
 import { Button } from "@/components/ui/button";
 import { Handshake, ExternalLink, Shield, Heart, PiggyBank, Umbrella, Users, Calculator, Scale, UserCheck, CheckCircle, Banknote, Briefcase, Crown } from "lucide-react";
 import { LocalizedLink } from "@/components/LocalizedLink";
@@ -49,6 +50,7 @@ export default function Partners() {
         title={t("partners.title")}
         subtitle={t("partners.subtitle")}
         badge={{ icon: <Handshake className="h-4 w-4" />, text: t("partners.badge") }}
+        backgroundImage={officeCookies}
       />
 
       <section className="bg-secondary py-6 border-b border-border/50">

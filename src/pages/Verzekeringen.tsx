@@ -7,6 +7,8 @@ import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { Shield, Heart, Scale, ArrowRight, CheckCircle, Globe, Sparkles, Euro } from "lucide-react";
 import { OnlineAanvraagDialog } from "@/components/verzekeringen/OnlineAanvraagDialog";
+import teamBoyCalling from "@/assets/team-boy-calling.jpg";
+import teamCheers from "@/assets/team-cheers.jpg";
 
 const insurances = [
   { id: "combinatiepolis", icon: Shield, title: "Beroeps- én Bedrijfsaansprakelijkheid", subtitle: "Unieke combinatiepolis van ZP Zaken", description: "Als enige in Nederland bieden wij een unieke combinatiepolis die beroeps- én bedrijfsaansprakelijkheid combineert in één verzekering. Eén polis, één premie, dubbele bescherming — nergens anders te krijgen.", features: ["Beroepsaansprakelijkheid: dekking voor financiële schade door beroepsfouten", "Bedrijfsaansprakelijkheid: dekking voor letsel- en zaakschade aan derden", "Juridische bijstand bij claims inbegrepen", "Eén polis, één premie — maximaal gemak", "Maatwerk dekkingen per beroepsgroep", "Exclusief via ZP Zaken"], forWho: "ICT'ers, consultants, coaches, trainers, adviseurs, creatieven", price: "Vanaf €20 per maand", canApplyOnline: true, isUnique: true },
@@ -30,6 +32,7 @@ export default function Verzekeringen() {
         title={<>{t("verzekeringenPage.title")} <span className="text-accent">{t("verzekeringenPage.titleAccent")}</span></>}
         subtitle={t("verzekeringenPage.subtitle")}
         badge={{ icon: <Sparkles className="h-4 w-4" />, text: t("verzekeringenPage.badge") }}
+        backgroundImage={teamBoyCalling}
       >
         <Button variant="accent" size="lg" asChild>
           <LocalizedLink to="/contact">{t("verzekeringenPage.ctaAdvies")}<ArrowRight className="h-5 w-5" /></LocalizedLink>
@@ -104,11 +107,15 @@ export default function Verzekeringen() {
         </div>
       </section>
 
-      <section className="section-padding bg-secondary">
-        <div className="container-wide">
+      <section className="section-padding text-primary-foreground relative overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img src={teamCheers} alt="" className="w-full h-full object-cover" aria-hidden="true" />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
+        </div>
+        <div className="container-wide relative z-10">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="mb-4">{t("verzekeringenPage.ctaTitle")}</h2>
-            <p className="text-lg text-muted-foreground mb-8">{t("verzekeringenPage.ctaSubtitle")}</p>
+            <h2 className="mb-4 text-primary-foreground">{t("verzekeringenPage.ctaTitle")}</h2>
+            <p className="text-lg text-primary-foreground/80 mb-8">{t("verzekeringenPage.ctaSubtitle")}</p>
             <Button variant="accent" size="lg" asChild>
               <LocalizedLink to="/contact">{t("verzekeringenPage.ctaButton")}<ArrowRight className="h-5 w-5" /></LocalizedLink>
             </Button>
