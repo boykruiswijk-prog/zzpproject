@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CheckCircle, XCircle, ArrowRight, Briefcase } from "lucide-react";
+import { CheckCircle, ArrowRight, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { motion, AnimatePresence } from "framer-motion";
@@ -21,16 +21,13 @@ const branches = [
 export function QualificationCheck() {
   const [step, setStep] = useState(0);
   const [branch, setBranch] = useState("");
-  const [isPhysical, setIsPhysical] = useState<boolean | null>(null);
+  const [_isPhysical, setIsPhysical] = useState<boolean | null>(null);
 
-  const isQualified = branch !== "" && branch !== "Anders" && isPhysical === false;
-  const isNotQualified = (branch === "Anders" || isPhysical === true) && step === 2;
+  const isComplete = step === 2 && branch !== "";
 
   // Track qualification result when step 2 is reached
-  if (step === 2 && branch) {
-    // Using a ref-like pattern via state to fire only once per check
-    if (isQualified) trackQualificationResult(true, branch);
-    if (isNotQualified) trackQualificationResult(false, branch);
+  if (isComplete) {
+    trackQualificationResult(true, branch);
   }
 
   const reset = () => {
@@ -94,12 +91,20 @@ export function QualificationCheck() {
           </motion.div>
         )}
 
-        {step === 2 && isQualified && (
+        {step === 2 && isComplete && (
           <motion.div key="qualified" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
             <div className="bg-accent/10 border border-accent/20 rounded-xl p-5 text-center">
               <CheckCircle className="h-8 w-8 text-accent mx-auto mb-2" />
-              <p className="font-semibold text-foreground mb-1">Je lijkt verzekerbaar via onze combinatiepolis!</p>
-              <p className="text-sm text-muted-foreground mb-4">{branch} valt binnen ons aanbod voor kantoorberoepen.</p>
+              <p className="font-semibold text-foreground mb-1">
+                {branch === "Anders"
+                  ? "We kunnen je helpen met een passende verzekering!"
+                  : "Je lijkt verzekerbaar via onze combinatiepolis!"}
+              </p>
+              <p className="text-sm text-muted-foreground mb-4">
+                {branch === "Anders"
+                  ? "Ook voor jouw beroepsgroep hebben wij oplossingen."
+                  : `${branch} valt binnen ons aanbod voor kantoorberoepen.`}
+              </p>
               <div className="flex flex-col sm:flex-row gap-2 justify-center">
                 <Button variant="accent" size="sm" asChild>
                   <a href="#combinatiepolis">Bekijk de pakketten <ArrowRight className="h-4 w-4" /></a>
@@ -108,24 +113,6 @@ export function QualificationCheck() {
                   <LocalizedLink to="/contact">Gratis adviesgesprek</LocalizedLink>
                 </Button>
               </div>
-            </div>
-            <button onClick={reset} className="text-xs text-muted-foreground mt-3 hover:text-foreground transition-colors block mx-auto">
-              Opnieuw checken
-            </button>
-          </motion.div>
-        )}
-
-        {step === 2 && isNotQualified && (
-          <motion.div key="not-qualified" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-            <div className="bg-primary/5 border border-primary/10 rounded-xl p-5 text-center">
-              <XCircle className="h-8 w-8 text-primary mx-auto mb-2" />
-              <p className="font-semibold text-foreground mb-1">Dit pakket is bedoeld voor kantoorfuncties</p>
-              <p className="text-sm text-muted-foreground mb-4">
-                Maar geen zorgen — wij kunnen je helpen met een offerte op maat die wél bij jouw situatie past.
-              </p>
-              <Button variant="accent" size="sm" asChild>
-                <LocalizedLink to="/contact">Vraag een offerte op maat aan <ArrowRight className="h-4 w-4" /></LocalizedLink>
-              </Button>
             </div>
             <button onClick={reset} className="text-xs text-muted-foreground mt-3 hover:text-foreground transition-colors block mx-auto">
               Opnieuw checken
