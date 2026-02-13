@@ -19,7 +19,15 @@ function useNavItems() {
   return [
     { href: "/", label: t("nav.home") },
     { href: "/verzekeringen", label: t("nav.verzekeringen") },
-    { href: "/collectieve-inkoop", label: t("nav.collectieveInkoop"), isNew: true },
+    { 
+      href: "/collectieve-inkoop", 
+      label: t("nav.collectieveInkoop"), 
+      isNew: true,
+      children: [
+        { href: "/collectieve-inkoop", label: t("nav.collectieveInkoopOverzicht") },
+        { href: "/collectief-ledenorganisaties", label: t("nav.collectiefLedenorganisaties") },
+      ]
+    },
     { href: "/diensten", label: t("nav.diensten") },
     { href: "/kennisbank", label: t("nav.kennisbank") },
     { href: "/faq", label: t("nav.faq") },
@@ -75,11 +83,14 @@ export function Header() {
             item.children ? (
               <DropdownMenu key={item.href}>
               <DropdownMenuTrigger className={`flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                  location.pathname.startsWith('/over-ons') || location.pathname.startsWith('/historie') || location.pathname.startsWith('/voor-wie') || location.pathname.startsWith('/zo-werken-wij') || location.pathname.startsWith('/partners') || location.pathname.startsWith('/kennis')
+                  (item.children || []).some(c => location.pathname === c.href) || location.pathname === item.href
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
                 }`}>
                   {item.label}
+                  {'isNew' in item && item.isNew && (
+                    <span className="text-[10px] font-bold uppercase bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full leading-none">Nieuw</span>
+                  )}
                   <ChevronDown className="h-4 w-4" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
