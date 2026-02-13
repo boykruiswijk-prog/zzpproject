@@ -10,7 +10,7 @@ import { ArrowRight, BookOpen, Shield } from "lucide-react";
 import { useArticles, useArticleCategories } from "@/hooks/useArticles";
 import { ArticleCard } from "@/components/kennisbank/ArticleCard";
 import { CategoryFilter } from "@/components/kennisbank/CategoryFilter";
-import teamMeeting from "@/assets/team-meeting.jpg";
+import officeFlowers from "@/assets/office-flowers.jpg";
 
 export default function Kennisbank() {
   const { t } = useTranslation();
@@ -30,7 +30,7 @@ export default function Kennisbank() {
         title={t("kennisbank.title")}
         subtitle={t("kennisbank.subtitle")}
         badge={{ icon: <BookOpen className="h-4 w-4" />, text: t("kennisbank.badge") }}
-        backgroundImage={teamMeeting}
+        backgroundImage={officeFlowers}
       />
 
       <CategoryFilter categories={categories} activeCategory={activeCategory} onCategoryChange={setActiveCategory} />

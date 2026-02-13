@@ -4,6 +4,7 @@ import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { HelpCircle } from "lucide-react";
 import { LocalizedLink } from "@/components/LocalizedLink";
+import officeFlowers from "@/assets/office-flowers.jpg";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -80,6 +81,7 @@ export default function FAQ() {
         title={t("faq.title")}
         subtitle={t("faq.subtitle")}
         badge={{ icon: <HelpCircle className="h-4 w-4" />, text: t("faq.badge") }}
+        backgroundImage={officeFlowers}
       />
 
       <section className="section-padding bg-background">

@@ -5,6 +5,8 @@ import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Monitor, Palette, Wrench, Stethoscope, Briefcase, Rocket, Users, Shield, CheckCircle } from "lucide-react";
+import teamWalking from "@/assets/team-walking.jpg";
+import teamCheers from "@/assets/team-cheers.jpg";
 
 const audiences = [
   { icon: Rocket, title: "Starters", description: "Net begonnen als zzp'er? Wij helpen je op weg met de basisverzekeringen die je nodig hebt om veilig te ondernemen.", needs: ["Beroeps- of bedrijfsaansprakelijkheid", "Basisadvies over arbeidsongeschiktheid", "Uitleg over verplichte verzekeringen"] },
@@ -30,6 +32,7 @@ export default function VoorWie() {
         title={<>{t("voorWie.title")} <span className="text-accent">{t("voorWie.titleAccent")}</span>?</>}
         subtitle={t("voorWie.subtitle")}
         badge={{ icon: <Users className="h-4 w-4" />, text: t("voorWie.badge") }}
+        backgroundImage={teamWalking}
       />
 
       <section className="section-padding bg-background">
@@ -58,8 +61,12 @@ export default function VoorWie() {
         </div>
       </section>
 
-      <section className="section-padding bg-primary text-primary-foreground">
-        <div className="container-wide">
+      <section className="section-padding text-primary-foreground relative overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img src={teamCheers} alt="" className="w-full h-full object-cover" aria-hidden="true" />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
+        </div>
+        <div className="container-wide relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="mb-4">{t("voorWie.ctaTitle")}</h2>
             <div className="flex flex-wrap justify-center gap-3 mb-8">

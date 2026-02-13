@@ -8,7 +8,8 @@ import { History, Heart, Shield, Users, Sparkles, ArrowRight, Quote } from "luci
 import { LocalizedLink } from "@/components/LocalizedLink";
 import boyKruiswijk from "@/assets/team-member-1.jpg";
 import teamMeeting from "@/assets/team-meeting.jpg";
-import teamBoyCalling from "@/assets/team-boy-calling.jpg";
+import teamCheers from "@/assets/team-cheers.jpg";
+import officeFlowers from "@/assets/office-flowers.jpg";
 
 export default function Historie() {
   const { t } = useTranslation();
@@ -32,11 +33,12 @@ export default function Historie() {
         title={t("historie.title")}
         subtitle={t("historie.subtitle")}
         badge={{ icon: <History className="h-4 w-4" />, text: t("historie.badge") }}
+        backgroundImage={officeFlowers}
       />
 
       <section className="py-16 md:py-24 text-primary-foreground relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={teamBoyCalling} alt="" className="w-full h-full object-cover" aria-hidden="true" />
+          <img src={teamCheers} alt="" className="w-full h-full object-cover" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
         </div>
         <div className="container-wide relative z-10">
