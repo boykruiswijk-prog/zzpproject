@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Shield, CheckCircle, Building2, User, FileCheck, CreditCard,
-  ArrowRight, ArrowLeft, Calendar, Check, Sparkles, ExternalLink
+  ArrowRight, ArrowLeft, Calendar, Check, Sparkles, ExternalLink, AlertCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatedSection } from "@/components/ui/animated-section";
@@ -19,6 +19,26 @@ const packages = [
 
 const TOTAL_STEPS = 5;
 
+type ValidationErrors = Record<string, string>;
+
+const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+const isValidPhone = (phone: string) => /^[0-9]{10}$/.test(phone.replace(/[\s\-]/g, ""));
+const isValidKvk = (kvk: string) => /^[0-9]{8}$/.test(kvk.trim());
+const isValidIban = (iban: string) => {
+  const cleaned = iban.replace(/\s/g, "").toUpperCase();
+  return /^[A-Z]{2}[0-9]{2}[A-Z0-9]{4,30}$/.test(cleaned) && cleaned.length >= 15 && cleaned.length <= 34;
+};
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return (
+    <p className="text-sm text-destructive flex items-center gap-1 mt-1">
+      <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
+      {message}
+    </p>
+  );
+}
+
 export function BAVApplicationModule() {
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(1);
@@ -29,6 +49,7 @@ export function BAVApplicationModule() {
   const [paymentMethod, setPaymentMethod] = useState<"incasso" | "ideal">("incasso");
   const [incassoAkkoord, setIncassoAkkoord] = useState(false);
   const [slotverklaringAkkoord, setSlotverklaringAkkoord] = useState(false);
+  const [errors, setErrors] = useState<ValidationErrors>({});
   const [formData, setFormData] = useState({
     bedrijfsnaam: "", kvkNummer: "", beroep: "", functie: "", aantalMedewerkers: "",
     voornaam: "", achternaam: "", email: "", telefoon: "",
@@ -51,13 +72,69 @@ export function BAVApplicationModule() {
   const savings = paymentType === "yearly" ? 40 : 0;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear error on input change
+    if (errors[name]) {
+      setErrors(prev => { const next = { ...prev }; delete next[name]; return next; });
+    }
   };
 
-  const nextStep = () => { if (currentStep < TOTAL_STEPS) setCurrentStep(currentStep + 1); };
-  const prevStep = () => { if (currentStep > 1) setCurrentStep(currentStep - 1); };
+  const validateStep = (step: number): boolean => {
+    const newErrors: ValidationErrors = {};
+
+    if (step === 1) {
+      if (!startDate) newErrors.startDate = "Selecteer een ingangsdatum";
+    }
+
+    if (step === 2) {
+      if (!formData.bedrijfsnaam.trim()) newErrors.bedrijfsnaam = "Bedrijfsnaam is verplicht";
+      if (!formData.kvkNummer.trim()) newErrors.kvkNummer = "KvK-nummer is verplicht";
+      else if (!isValidKvk(formData.kvkNummer)) newErrors.kvkNummer = "KvK-nummer moet 8 cijfers zijn";
+      if (!formData.beroep.trim()) newErrors.beroep = "Beroep is verplicht";
+      if (!formData.functie.trim()) newErrors.functie = "Functie is verplicht";
+      if (!formData.aantalMedewerkers.trim()) newErrors.aantalMedewerkers = "Aantal medewerkers is verplicht";
+      else if (parseInt(formData.aantalMedewerkers) < 0) newErrors.aantalMedewerkers = "Ongeldig aantal";
+    }
+
+    if (step === 3) {
+      if (!formData.voornaam.trim()) newErrors.voornaam = "Voornaam is verplicht";
+      if (!formData.achternaam.trim()) newErrors.achternaam = "Achternaam is verplicht";
+      if (!formData.email.trim()) newErrors.email = "E-mailadres is verplicht";
+      else if (!isValidEmail(formData.email)) newErrors.email = "Ongeldig e-mailadres";
+      if (!formData.telefoon.trim()) newErrors.telefoon = "Telefoonnummer is verplicht";
+      else if (!isValidPhone(formData.telefoon)) newErrors.telefoon = "Telefoonnummer moet 10 cijfers zijn";
+      if (!formData.opdrachtgever.trim()) newErrors.opdrachtgever = "Opdrachtgever is verplicht";
+      if (viaBemiddelaar === null) newErrors.bemiddelaar = "Geef aan of je via een bemiddelaar werkt";
+      if (viaBemiddelaar && !formData.bemiddelaarNaam.trim()) newErrors.bemiddelaarNaam = "Naam bemiddelaar is verplicht";
+    }
+
+    if (step === 4) {
+      if (paymentMethod === "incasso") {
+        if (!formData.iban.trim()) newErrors.iban = "IBAN is verplicht";
+        else if (!isValidIban(formData.iban)) newErrors.iban = "Ongeldig IBAN-nummer";
+        if (!incassoAkkoord) newErrors.incassoAkkoord = "Je moet akkoord gaan met automatische incasso";
+      }
+    }
+
+    if (step === 5) {
+      if (!slotverklaringAkkoord) newErrors.slotverklaring = "Je moet akkoord gaan met de slotverklaring";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const nextStep = () => {
+    if (validateStep(currentStep) && currentStep < TOTAL_STEPS) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+  const prevStep = () => { if (currentStep > 1) { setErrors({}); setCurrentStep(currentStep - 1); } };
   const handleSubmit = () => {
-    window.location.href = `/verzekeringen?package=${selectedPackage}&payment=${paymentType}`;
+    if (validateStep(currentStep)) {
+      window.location.href = `/verzekeringen?package=${selectedPackage}&payment=${paymentType}`;
+    }
   };
 
   return (
@@ -139,8 +216,9 @@ export function BAVApplicationModule() {
                       <Label htmlFor="startDate" className="text-sm font-medium mb-2 block">{t("home.bavStartDate")}</Label>
                       <div className="relative">
                         <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                        <Input id="startDate" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="pl-10" min={new Date().toISOString().split('T')[0]} />
+                        <Input id="startDate" type="date" value={startDate} onChange={(e) => { setStartDate(e.target.value); if (errors.startDate) setErrors(prev => { const n = { ...prev }; delete n.startDate; return n; }); }} className={cn("pl-10", errors.startDate && "border-destructive")} min={new Date().toISOString().split('T')[0]} />
                       </div>
+                      <FieldError message={errors.startDate} />
                     </div>
                   </motion.div>
                 )}
@@ -152,11 +230,31 @@ export function BAVApplicationModule() {
                       <p className="text-muted-foreground text-sm">{t("home.bavCompanyDesc")}</p>
                     </div>
                     <div className="space-y-4">
-                      <div><Label htmlFor="bedrijfsnaam">{t("home.bavCompanyName")}</Label><Input id="bedrijfsnaam" name="bedrijfsnaam" value={formData.bedrijfsnaam} onChange={handleInputChange} /></div>
-                      <div><Label htmlFor="kvkNummer">{t("home.bavKvk")}</Label><Input id="kvkNummer" name="kvkNummer" value={formData.kvkNummer} onChange={handleInputChange} maxLength={8} /></div>
-                      <div><Label htmlFor="beroep">{t("home.bavProfession")}</Label><Input id="beroep" name="beroep" value={formData.beroep} onChange={handleInputChange} /></div>
-                      <div><Label htmlFor="functie">{t("home.bavFunction")}</Label><Input id="functie" name="functie" value={formData.functie} onChange={handleInputChange} placeholder="Bijv. Software Developer, Consultant" /></div>
-                      <div><Label htmlFor="aantalMedewerkers">{t("home.bavEmployees")}</Label><Input id="aantalMedewerkers" name="aantalMedewerkers" type="number" min="0" value={formData.aantalMedewerkers} onChange={handleInputChange} /></div>
+                      <div>
+                        <Label htmlFor="bedrijfsnaam">{t("home.bavCompanyName")} *</Label>
+                        <Input id="bedrijfsnaam" name="bedrijfsnaam" value={formData.bedrijfsnaam} onChange={handleInputChange} className={cn(errors.bedrijfsnaam && "border-destructive")} />
+                        <FieldError message={errors.bedrijfsnaam} />
+                      </div>
+                      <div>
+                        <Label htmlFor="kvkNummer">{t("home.bavKvk")} *</Label>
+                        <Input id="kvkNummer" name="kvkNummer" value={formData.kvkNummer} onChange={handleInputChange} maxLength={8} placeholder="12345678" className={cn(errors.kvkNummer && "border-destructive")} />
+                        <FieldError message={errors.kvkNummer} />
+                      </div>
+                      <div>
+                        <Label htmlFor="beroep">{t("home.bavProfession")} *</Label>
+                        <Input id="beroep" name="beroep" value={formData.beroep} onChange={handleInputChange} className={cn(errors.beroep && "border-destructive")} />
+                        <FieldError message={errors.beroep} />
+                      </div>
+                      <div>
+                        <Label htmlFor="functie">{t("home.bavFunction")} *</Label>
+                        <Input id="functie" name="functie" value={formData.functie} onChange={handleInputChange} placeholder="Bijv. Software Developer, Consultant" className={cn(errors.functie && "border-destructive")} />
+                        <FieldError message={errors.functie} />
+                      </div>
+                      <div>
+                        <Label htmlFor="aantalMedewerkers">{t("home.bavEmployees")} *</Label>
+                        <Input id="aantalMedewerkers" name="aantalMedewerkers" type="number" min="0" value={formData.aantalMedewerkers} onChange={handleInputChange} className={cn(errors.aantalMedewerkers && "border-destructive")} />
+                        <FieldError message={errors.aantalMedewerkers} />
+                      </div>
                     </div>
                   </motion.div>
                 )}
@@ -169,32 +267,54 @@ export function BAVApplicationModule() {
                     </div>
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
-                        <div><Label htmlFor="voornaam">{t("home.bavFirstName")}</Label><Input id="voornaam" name="voornaam" value={formData.voornaam} onChange={handleInputChange} /></div>
-                        <div><Label htmlFor="achternaam">{t("home.bavLastName")}</Label><Input id="achternaam" name="achternaam" value={formData.achternaam} onChange={handleInputChange} /></div>
+                        <div>
+                          <Label htmlFor="voornaam">{t("home.bavFirstName")} *</Label>
+                          <Input id="voornaam" name="voornaam" value={formData.voornaam} onChange={handleInputChange} className={cn(errors.voornaam && "border-destructive")} />
+                          <FieldError message={errors.voornaam} />
+                        </div>
+                        <div>
+                          <Label htmlFor="achternaam">{t("home.bavLastName")} *</Label>
+                          <Input id="achternaam" name="achternaam" value={formData.achternaam} onChange={handleInputChange} className={cn(errors.achternaam && "border-destructive")} />
+                          <FieldError message={errors.achternaam} />
+                        </div>
                       </div>
-                      <div><Label htmlFor="email">{t("home.bavEmail")}</Label><Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} /></div>
-                      <div><Label htmlFor="telefoon">{t("home.bavPhone")}</Label><Input id="telefoon" name="telefoon" type="tel" value={formData.telefoon} onChange={handleInputChange} /></div>
+                      <div>
+                        <Label htmlFor="email">{t("home.bavEmail")} *</Label>
+                        <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} placeholder="jan@bedrijf.nl" className={cn(errors.email && "border-destructive")} />
+                        <FieldError message={errors.email} />
+                      </div>
+                      <div>
+                        <Label htmlFor="telefoon">{t("home.bavPhone")} *</Label>
+                        <Input id="telefoon" name="telefoon" type="tel" value={formData.telefoon} onChange={handleInputChange} placeholder="0612345678" className={cn(errors.telefoon && "border-destructive")} />
+                        <FieldError message={errors.telefoon} />
+                      </div>
 
                       <div className="border-t border-border pt-4">
-                        <div><Label htmlFor="opdrachtgever">{t("home.bavClient")}</Label><Input id="opdrachtgever" name="opdrachtgever" value={formData.opdrachtgever} onChange={handleInputChange} /></div>
+                        <div>
+                          <Label htmlFor="opdrachtgever">{t("home.bavClient")} *</Label>
+                          <Input id="opdrachtgever" name="opdrachtgever" value={formData.opdrachtgever} onChange={handleInputChange} className={cn(errors.opdrachtgever && "border-destructive")} />
+                          <FieldError message={errors.opdrachtgever} />
+                        </div>
                       </div>
 
                       <div className="border-t border-border pt-4">
-                        <Label className="text-sm font-medium mb-3 block">{t("home.bavMediator")}</Label>
+                        <Label className="text-sm font-medium mb-3 block">{t("home.bavMediator")} *</Label>
                         <div className="grid grid-cols-2 gap-3">
-                          <button onClick={() => setViaBemiddelaar(true)}
-                            className={cn("p-3 rounded-lg border-2 text-center transition-all", viaBemiddelaar === true ? "border-accent bg-accent/5" : "border-border hover:border-accent/50")}>
+                          <button onClick={() => { setViaBemiddelaar(true); if (errors.bemiddelaar) setErrors(prev => { const n = { ...prev }; delete n.bemiddelaar; return n; }); }}
+                            className={cn("p-3 rounded-lg border-2 text-center transition-all", viaBemiddelaar === true ? "border-accent bg-accent/5" : "border-border hover:border-accent/50", errors.bemiddelaar && "border-destructive")}>
                             <p className="font-medium">{t("home.bavMediatorYes")}</p>
                           </button>
-                          <button onClick={() => { setViaBemiddelaar(false); setFormData(prev => ({ ...prev, bemiddelaarNaam: "" })); }}
-                            className={cn("p-3 rounded-lg border-2 text-center transition-all", viaBemiddelaar === false ? "border-accent bg-accent/5" : "border-border hover:border-accent/50")}>
+                          <button onClick={() => { setViaBemiddelaar(false); setFormData(prev => ({ ...prev, bemiddelaarNaam: "" })); if (errors.bemiddelaar) setErrors(prev => { const n = { ...prev }; delete n.bemiddelaar; return n; }); }}
+                            className={cn("p-3 rounded-lg border-2 text-center transition-all", viaBemiddelaar === false ? "border-accent bg-accent/5" : "border-border hover:border-accent/50", errors.bemiddelaar && "border-destructive")}>
                             <p className="font-medium">{t("home.bavMediatorNo")}</p>
                           </button>
                         </div>
+                        <FieldError message={errors.bemiddelaar} />
                         {viaBemiddelaar && (
                           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="mt-3">
-                            <Label htmlFor="bemiddelaarNaam">{t("home.bavMediatorName")}</Label>
-                            <Input id="bemiddelaarNaam" name="bemiddelaarNaam" value={formData.bemiddelaarNaam} onChange={handleInputChange} />
+                            <Label htmlFor="bemiddelaarNaam">{t("home.bavMediatorName")} *</Label>
+                            <Input id="bemiddelaarNaam" name="bemiddelaarNaam" value={formData.bemiddelaarNaam} onChange={handleInputChange} className={cn(errors.bemiddelaarNaam && "border-destructive")} />
+                            <FieldError message={errors.bemiddelaarNaam} />
                           </motion.div>
                         )}
                       </div>
@@ -210,20 +330,22 @@ export function BAVApplicationModule() {
                     </div>
                     <div className="space-y-4">
                       <div>
-                        <Label htmlFor="iban">{t("home.bavIban")}</Label>
-                        <Input id="iban" name="iban" value={formData.iban} onChange={handleInputChange} placeholder="NL00 BANK 0000 0000 00" className="uppercase tracking-wider" />
+                        <Label htmlFor="iban">{t("home.bavIban")} *</Label>
+                        <Input id="iban" name="iban" value={formData.iban} onChange={handleInputChange} placeholder="NL00 BANK 0000 0000 00" className={cn("uppercase tracking-wider", errors.iban && "border-destructive")} />
+                        <FieldError message={errors.iban} />
                       </div>
-                      <div className="flex items-start gap-3 p-4 rounded-lg border border-border bg-secondary">
+                      <div className={cn("flex items-start gap-3 p-4 rounded-lg border bg-secondary", errors.incassoAkkoord ? "border-destructive" : "border-border")}>
                         <Checkbox
                           id="incassoAkkoord"
                           checked={incassoAkkoord}
-                          onCheckedChange={(checked) => setIncassoAkkoord(checked === true)}
+                          onCheckedChange={(checked) => { setIncassoAkkoord(checked === true); if (errors.incassoAkkoord) setErrors(prev => { const n = { ...prev }; delete n.incassoAkkoord; return n; }); }}
                           className="mt-0.5"
                         />
                         <Label htmlFor="incassoAkkoord" className="text-sm leading-relaxed cursor-pointer">
                           {t("home.bavIncassoAgree")}
                         </Label>
                       </div>
+                      <FieldError message={errors.incassoAkkoord} />
                     </div>
                   </motion.div>
                 )}
@@ -273,18 +395,19 @@ export function BAVApplicationModule() {
                       </div>
 
                       {/* Slotverklaring */}
-                      <div className="border border-accent/30 rounded-lg p-4 bg-accent/5 space-y-3">
+                      <div className={cn("border rounded-lg p-4 bg-accent/5 space-y-3", errors.slotverklaring ? "border-destructive" : "border-accent/30")}>
                         <div className="flex items-start gap-3">
                           <Checkbox
                             id="slotverklaring"
                             checked={slotverklaringAkkoord}
-                            onCheckedChange={(checked) => setSlotverklaringAkkoord(checked === true)}
+                            onCheckedChange={(checked) => { setSlotverklaringAkkoord(checked === true); if (errors.slotverklaring) setErrors(prev => { const n = { ...prev }; delete n.slotverklaring; return n; }); }}
                             className="mt-0.5"
                           />
                           <Label htmlFor="slotverklaring" className="text-sm leading-relaxed cursor-pointer">
                             {t("home.bavSlotverklaringAgree")}
                           </Label>
                         </div>
+                        <FieldError message={errors.slotverklaring} />
                         <a
                           href="/documents/ZP_Slotverklaring.pdf"
                           target="_blank"
@@ -312,7 +435,6 @@ export function BAVApplicationModule() {
                       onClick={handleSubmit}
                       size="lg"
                       className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold"
-                      disabled={!slotverklaringAkkoord || !incassoAkkoord}
                     >
                       <Shield className="h-5 w-5" />{t("home.bavSubmit")}<ArrowRight className="h-5 w-5" />
                     </Button>
