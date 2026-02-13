@@ -5,7 +5,7 @@ import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { 
   ArrowRight, Share2, CheckCircle, Shield, Users, Star, Phone, 
-  ExternalLink, MessageSquare, BookOpen, Scale, FileCheck
+  ExternalLink, BookOpen
 } from "lucide-react";
 import {
   Accordion,
@@ -277,47 +277,6 @@ export default function SocialMedia() {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 5. SEO Content Block */}
-      <section className="section-padding bg-secondary">
-        <div className="container-wide">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="mb-8">Verzekeringen voor <span className="text-primary">ZZP'ers</span> en Ondernemers</h2>
-            
-            <div className="space-y-8">
-              <div>
-                <h3 className="flex items-center gap-2 mb-3">
-                  <FileCheck className="h-5 w-5 text-accent" />
-                  Beroepsaansprakelijkheidsverzekering (BAV)
-                </h3>
-                <p className="text-muted-foreground">
-                  Een beroepsaansprakelijkheidsverzekering beschermt je tegen claims die voortkomen uit fouten in je professionele werkzaamheden. Als zzp'er in de IT, consultancy, finance of andere kennisintensieve sectoren is een BAV vaak een vereiste van opdrachtgevers. De verzekering dekt onder andere vermogensschade door onjuist advies, fouten in opdrachten en schending van intellectueel eigendom. Bij ZP Zaken bieden wij een <LocalizedLink to="/verzekeringen" className="text-primary hover:underline font-medium">unieke BAV+AVB combinatiepolis</LocalizedLink> die je volledig beschermt.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="flex items-center gap-2 mb-3">
-                  <Scale className="h-5 w-5 text-accent" />
-                  Bedrijfsaansprakelijkheidsverzekering (AVB)
-                </h3>
-                <p className="text-muted-foreground">
-                  Een bedrijfsaansprakelijkheidsverzekering dekt schade die je als ondernemer toebrengt aan derden: denk aan letselschade of zaakschade tijdens je werkzaamheden. Voor veel zzp'ers is dit een basisverzekering die je beschermt tegen onverwachte financiële tegenvallers. Samen met een BAV vormt dit de basis van je zakelijke zekerheid. Bekijk onze <LocalizedLink to="/diensten" className="text-primary hover:underline font-medium">diensten</LocalizedLink> voor een compleet overzicht.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="flex items-center gap-2 mb-3">
-                  <MessageSquare className="h-5 w-5 text-accent" />
-                  Rechtsbijstand voor ZZP'ers
-                </h3>
-                <p className="text-muted-foreground">
-                  Juridische conflicten komen vaker voor dan je denkt: een opdrachtgever die niet betaalt, een geschil over een contract of een onterechte aansprakelijkstelling. Een rechtsbijstandverzekering geeft je toegang tot juridische hulp zonder dat je zelf hoge advocaatkosten hoeft te betalen. Wil je weten welke verzekeringen bij jouw situatie passen? <LocalizedLink to="/contact" className="text-primary hover:underline font-medium">Plan een gratis adviesgesprek</LocalizedLink>.
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </section>
