@@ -12,7 +12,6 @@ export function HeroSection() {
     t("home.usp1"),
     t("home.usp2"),
     t("home.usp3"),
-    t("home.usp4"),
   ];
 
   return (
