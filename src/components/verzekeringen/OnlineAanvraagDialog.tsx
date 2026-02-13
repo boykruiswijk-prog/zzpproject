@@ -17,9 +17,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CheckCircle, ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
+import { CheckCircle, ArrowRight, ArrowLeft, Loader2, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { trackFormStart, trackFormComplete } from "@/lib/tracking";
 
 interface OnlineAanvraagDialogProps {
   open: boolean;
@@ -67,11 +68,53 @@ export function OnlineAanvraagDialog({
     opmerkingen: "",
   });
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   const updateFormData = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    // Clear error on change
+    if (errors[field]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
+
+  const validateStep = (step: number): boolean => {
+    const newErrors: Record<string, string> = {};
+    
+    if (step === 1) {
+      if (!formData.voornaam.trim()) newErrors.voornaam = "Voornaam is verplicht";
+      if (!formData.achternaam.trim()) newErrors.achternaam = "Achternaam is verplicht";
+      if (!formData.email.trim()) newErrors.email = "E-mailadres is verplicht";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = "Ongeldig e-mailadres";
+      if (!formData.telefoon.trim()) newErrors.telefoon = "Telefoonnummer is verplicht";
+      else if (!/^\d{10}$/.test(formData.telefoon.replace(/\s|-/g, ""))) newErrors.telefoon = "Voer een geldig 10-cijferig nummer in";
+      if (!formData.geboortedatum) newErrors.geboortedatum = "Geboortedatum is verplicht";
+    }
+    
+    if (step === 2) {
+      if (!formData.bedrijfsnaam.trim()) newErrors.bedrijfsnaam = "Bedrijfsnaam is verplicht";
+      if (!formData.kvkNummer.trim()) newErrors.kvkNummer = "KvK-nummer is verplicht";
+      else if (!/^\d{8}$/.test(formData.kvkNummer.replace(/\s/g, ""))) newErrors.kvkNummer = "KvK-nummer moet 8 cijfers zijn";
+      if (!formData.beroep.trim()) newErrors.beroep = "Beroep is verplicht";
+      if (!formData.jaarOmzet) newErrors.jaarOmzet = "Selecteer je jaaromzet";
+    }
+    
+    if (step === 3) {
+      if (!formData.dekkingsBedrag) newErrors.dekkingsBedrag = "Selecteer een verzekerd bedrag";
+      if (!formData.ingangsdatum) newErrors.ingangsdatum = "Kies een ingangsdatum";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleNext = () => {
+    if (!validateStep(currentStep)) return;
+    if (currentStep === 1) trackFormStart(insuranceTitle);
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     }
@@ -142,6 +185,7 @@ export function OnlineAanvraagDialog({
         // Don't throw - AFAS submission succeeded
       }
 
+      trackFormComplete(insuranceTitle);
       setIsCompleted(true);
       toast({
         title: "Aanvraag ontvangen!",
@@ -270,7 +314,7 @@ export function OnlineAanvraagDialog({
         {/* Step 1: Persoonlijke gegevens */}
         {currentStep === 1 && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="voornaam">Voornaam *</Label>
                 <Input
@@ -278,7 +322,9 @@ export function OnlineAanvraagDialog({
                   value={formData.voornaam}
                   onChange={(e) => updateFormData("voornaam", e.target.value)}
                   placeholder="Jan"
+                  className={errors.voornaam ? "border-destructive" : ""}
                 />
+                {errors.voornaam && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.voornaam}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="achternaam">Achternaam *</Label>
@@ -287,7 +333,9 @@ export function OnlineAanvraagDialog({
                   value={formData.achternaam}
                   onChange={(e) => updateFormData("achternaam", e.target.value)}
                   placeholder="Jansen"
+                  className={errors.achternaam ? "border-destructive" : ""}
                 />
+                {errors.achternaam && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.achternaam}</p>}
               </div>
             </div>
             <div className="space-y-2">
@@ -298,9 +346,11 @@ export function OnlineAanvraagDialog({
                 value={formData.email}
                 onChange={(e) => updateFormData("email", e.target.value)}
                 placeholder="jan@bedrijf.nl"
+                className={errors.email ? "border-destructive" : ""}
               />
+              {errors.email && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.email}</p>}
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="telefoon">Telefoonnummer *</Label>
                 <Input
@@ -309,7 +359,9 @@ export function OnlineAanvraagDialog({
                   value={formData.telefoon}
                   onChange={(e) => updateFormData("telefoon", e.target.value)}
                   placeholder="06 12345678"
+                  className={errors.telefoon ? "border-destructive" : ""}
                 />
+                {errors.telefoon && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.telefoon}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="geboortedatum">Geboortedatum *</Label>
@@ -318,7 +370,9 @@ export function OnlineAanvraagDialog({
                   type="date"
                   value={formData.geboortedatum}
                   onChange={(e) => updateFormData("geboortedatum", e.target.value)}
+                  className={errors.geboortedatum ? "border-destructive" : ""}
                 />
+                {errors.geboortedatum && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.geboortedatum}</p>}
               </div>
             </div>
           </div>
@@ -334,7 +388,9 @@ export function OnlineAanvraagDialog({
                 value={formData.bedrijfsnaam}
                 onChange={(e) => updateFormData("bedrijfsnaam", e.target.value)}
                 placeholder="Jansen Consultancy"
+                className={errors.bedrijfsnaam ? "border-destructive" : ""}
               />
+              {errors.bedrijfsnaam && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.bedrijfsnaam}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="kvkNummer">KvK-nummer *</Label>
@@ -343,7 +399,9 @@ export function OnlineAanvraagDialog({
                 value={formData.kvkNummer}
                 onChange={(e) => updateFormData("kvkNummer", e.target.value)}
                 placeholder="12345678"
+                className={errors.kvkNummer ? "border-destructive" : ""}
               />
+              {errors.kvkNummer && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.kvkNummer}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="beroep">Beroep / Werkzaamheden *</Label>
@@ -352,7 +410,9 @@ export function OnlineAanvraagDialog({
                 value={formData.beroep}
                 onChange={(e) => updateFormData("beroep", e.target.value)}
                 placeholder="ICT Consultant"
+                className={errors.beroep ? "border-destructive" : ""}
               />
+              {errors.beroep && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.beroep}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="jaarOmzet">Geschatte jaaromzet *</Label>
@@ -360,7 +420,7 @@ export function OnlineAanvraagDialog({
                 value={formData.jaarOmzet}
                 onValueChange={(value) => updateFormData("jaarOmzet", value)}
               >
-                <SelectTrigger>
+                <SelectTrigger className={errors.jaarOmzet ? "border-destructive" : ""}>
                   <SelectValue placeholder="Selecteer jaaromzet" />
                 </SelectTrigger>
                 <SelectContent>
@@ -371,6 +431,7 @@ export function OnlineAanvraagDialog({
                   <SelectItem value="250000+">€250.000+</SelectItem>
                 </SelectContent>
               </Select>
+              {errors.jaarOmzet && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.jaarOmzet}</p>}
             </div>
           </div>
         )}
@@ -384,7 +445,7 @@ export function OnlineAanvraagDialog({
                 value={formData.dekkingsBedrag}
                 onValueChange={(value) => updateFormData("dekkingsBedrag", value)}
               >
-                <SelectTrigger>
+                <SelectTrigger className={errors.dekkingsBedrag ? "border-destructive" : ""}>
                   <SelectValue placeholder="Selecteer dekking" />
                 </SelectTrigger>
                 <SelectContent>
@@ -394,6 +455,7 @@ export function OnlineAanvraagDialog({
                   <SelectItem value="2500000">€2.500.000</SelectItem>
                 </SelectContent>
               </Select>
+              {errors.dekkingsBedrag && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.dekkingsBedrag}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="eigenRisico">Eigen risico</Label>
@@ -422,7 +484,9 @@ export function OnlineAanvraagDialog({
                 type="date"
                 value={formData.ingangsdatum}
                 onChange={(e) => updateFormData("ingangsdatum", e.target.value)}
+                className={errors.ingangsdatum ? "border-destructive" : ""}
               />
+              {errors.ingangsdatum && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.ingangsdatum}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="opmerkingen">Opmerkingen (optioneel)</Label>

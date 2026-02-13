@@ -3,6 +3,7 @@ import { CheckCircle, XCircle, ArrowRight, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { motion, AnimatePresence } from "framer-motion";
+import { trackQualificationResult } from "@/lib/tracking";
 
 const branches = [
   "ICT / IT",
@@ -24,6 +25,13 @@ export function QualificationCheck() {
 
   const isQualified = branch !== "" && branch !== "Anders" && isPhysical === false;
   const isNotQualified = (branch === "Anders" || isPhysical === true) && step === 2;
+
+  // Track qualification result when step 2 is reached
+  if (step === 2 && branch) {
+    // Using a ref-like pattern via state to fire only once per check
+    if (isQualified) trackQualificationResult(true, branch);
+    if (isNotQualified) trackQualificationResult(false, branch);
+  }
 
   const reset = () => {
     setStep(0);

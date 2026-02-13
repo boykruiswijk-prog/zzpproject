@@ -5,6 +5,7 @@ import { AnimatedSection, StaggerContainer, StaggerItem } from "@/components/ui/
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { StepsProcess } from "@/components/shared/StepsProcess";
 import { MiniSocialProof } from "@/components/shared/MiniSocialProof";
+import { trackCTA, trackPhone } from "@/lib/tracking";
 import teamBoyCalling from "@/assets/team-boy-calling.jpg";
 
 export function CTASection() {
@@ -33,6 +34,7 @@ export function CTASection() {
               size="xl" 
               className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg hover:scale-105 transition-transform duration-200"
               asChild
+              onClick={() => trackCTA("cta_plan_gesprek")}
             >
               <LocalizedLink to="/contact">
                 <Calendar className="h-5 w-5" />
@@ -44,6 +46,7 @@ export function CTASection() {
             <a 
               href="tel:0232010502" 
               className="inline-flex items-center gap-2 text-primary-foreground hover:text-primary-foreground transition-all font-medium border border-primary-foreground/40 rounded-lg px-4 py-2 hover:bg-primary-foreground/10 hover:scale-105 duration-200"
+              onClick={() => trackPhone()}
             >
               <Phone className="h-4 w-4" />
               023 - 201 0502

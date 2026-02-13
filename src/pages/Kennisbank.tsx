@@ -85,9 +85,33 @@ export default function Kennisbank() {
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="mb-4">{t("kennisbank.personalAdvice")}</h2>
             <p className="text-lg text-muted-foreground mb-8">{t("kennisbank.personalAdviceDesc")}</p>
-            <Button variant="accent" size="lg" asChild>
-              <LocalizedLink to="/contact">{t("kennisbank.personalAdviceButton")}<ArrowRight className="h-5 w-5" /></LocalizedLink>
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button variant="accent" size="lg" asChild>
+                <LocalizedLink to="/contact">{t("kennisbank.personalAdviceButton")}<ArrowRight className="h-5 w-5" /></LocalizedLink>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <LocalizedLink to="/verzekeringen">Bekijk verzekeringen<ArrowRight className="h-5 w-5" /></LocalizedLink>
+              </Button>
+            </div>
+          </div>
+
+          {/* Internal linking: content clusters */}
+          <div className="mt-16 grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <LocalizedLink to="/verzekeringen#combinatiepolis" className="bg-card border border-border/50 rounded-xl p-6 hover:border-accent/30 hover:shadow-md transition-all group">
+              <Shield className="h-6 w-6 text-accent mb-3" />
+              <h3 className="font-semibold text-sm mb-1 group-hover:text-accent transition-colors">BAV + AVB Combinatiepolis</h3>
+              <p className="text-xs text-muted-foreground">Onze unieke bundel voor kantoorberoepen — vanaf €20/maand</p>
+            </LocalizedLink>
+            <LocalizedLink to="/faq" className="bg-card border border-border/50 rounded-xl p-6 hover:border-accent/30 hover:shadow-md transition-all group">
+              <Shield className="h-6 w-6 text-accent mb-3" />
+              <h3 className="font-semibold text-sm mb-1 group-hover:text-accent transition-colors">Veelgestelde vragen</h3>
+              <p className="text-xs text-muted-foreground">Antwoorden op de meest gestelde vragen over verzekeringen</p>
+            </LocalizedLink>
+            <LocalizedLink to="/diensten" className="bg-card border border-border/50 rounded-xl p-6 hover:border-accent/30 hover:shadow-md transition-all group">
+              <Shield className="h-6 w-6 text-accent mb-3" />
+              <h3 className="font-semibold text-sm mb-1 group-hover:text-accent transition-colors">Alle diensten</h3>
+              <p className="text-xs text-muted-foreground">Van verzekeringen tot administratie en factoring</p>
+            </LocalizedLink>
           </div>
         </div>
       </section>
