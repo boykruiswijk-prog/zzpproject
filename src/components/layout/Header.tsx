@@ -56,6 +56,7 @@ function useNavItems() {
         { href: "/zo-werken-wij", label: t("nav.zoWerkenWij") },
         { href: "/partners", label: t("nav.partners") },
         { href: "/historie", label: t("nav.onzeHistorie") },
+        { href: "/social-media", label: t("nav.socialMedia") },
       ]
     },
     { href: "/contact", label: t("nav.contact") },
