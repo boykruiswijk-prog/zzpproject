@@ -20,6 +20,7 @@ import Cookies from "./pages/Cookies";
 import FAQ from "./pages/FAQ";
 import NotFound from "./pages/NotFound";
 import CollectieveInkoop from "./pages/CollectieveInkoop";
+import CollectiefLedenorganisaties from "./pages/CollectiefLedenorganisaties";
 import AdminLogin from "./pages/admin/Login";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminLeads from "./pages/admin/Leads";
@@ -45,6 +46,7 @@ const publicRoutes = (
     <Route path="cookies" element={<Cookies />} />
     <Route path="faq" element={<FAQ />} />
     <Route path="collectieve-inkoop" element={<CollectieveInkoop />} />
+    <Route path="collectief-ledenorganisaties" element={<CollectiefLedenorganisaties />} />
   </>
 );
 
