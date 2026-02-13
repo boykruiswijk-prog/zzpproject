@@ -245,22 +245,7 @@ export default function CollectiefLedenorganisaties() {
             </p>
           </AnimatedSection>
 
-          {/* Key metrics */}
-          <AnimatedSection delay={0.1} className="mb-12">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-              {[
-                { value: "Tot 25%", label: "Premiekorting" },
-                { value: "< 24 uur", label: "Facturen betaald" },
-                { value: "0 euro", label: "Kosten voor organisatie" },
-                { value: "13+ jaar", label: "Ervaring" },
-              ].map((m, i) => (
-                <div key={i} className="bg-card rounded-2xl border border-border p-6 text-center shadow-[var(--card-shadow)]">
-                  <p className="text-2xl md:text-3xl font-bold mb-1" style={{ color: "hsl(213 60% 45%)" }}>{m.value}</p>
-                  <p className="text-sm text-muted-foreground">{m.label}</p>
-                </div>
-              ))}
-            </div>
-          </AnimatedSection>
+
 
           <div className="grid sm:grid-cols-2 gap-6">
             {usps.map((u, i) => (
