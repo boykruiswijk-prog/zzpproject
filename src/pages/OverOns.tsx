@@ -10,8 +10,9 @@ import teamMember2 from "@/assets/team-member-2.jpg";
 import teamMember3 from "@/assets/team-member-3.jpg";
 import teamMember4 from "@/assets/team-member-4.jpg";
 import teamMemberMystery from "@/assets/team-member-mystery.jpg";
-import teamBoyCalling from "@/assets/team-boy-calling.jpg";
-import officeCoffee from "@/assets/office-coffee.jpg";
+import teamWalking from "@/assets/team-walking.jpg";
+import teamCheers from "@/assets/team-cheers.jpg";
+import officeFlowers from "@/assets/office-flowers.jpg";
 
 // Team and content data stays in Dutch as it's specific content
 const values = [
@@ -57,7 +58,7 @@ export default function OverOns() {
         title={t("overOns.title")}
         subtitle={t("overOns.subtitle")}
         badge={{ icon: <Heart className="h-4 w-4" />, text: t("overOns.badge") }}
-        backgroundImage={teamBoyCalling}
+        backgroundImage={teamWalking}
       />
 
       <section className="section-padding bg-background">
@@ -75,7 +76,8 @@ export default function OverOns() {
                 ))}
               </div>
             </div>
-            <div className="bg-primary/5 border border-primary/10 rounded-2xl p-8 lg:p-12">
+            <div className="bg-primary/5 border border-primary/10 rounded-2xl p-8 lg:p-12 relative overflow-hidden">
+              <img src={officeFlowers} alt="" className="absolute inset-0 w-full h-full object-cover opacity-10" aria-hidden="true" />
               <blockquote className="text-xl lg:text-2xl font-medium mb-6 text-foreground">{t("overOns.quote")}</blockquote>
               <p className="text-muted-foreground font-medium">{t("overOns.quoteAuthor")}</p>
             </div>
@@ -154,7 +156,7 @@ export default function OverOns() {
 
       <section className="section-padding text-primary-foreground relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={officeCoffee} alt="" className="w-full h-full object-cover" aria-hidden="true" />
+          <img src={teamCheers} alt="" className="w-full h-full object-cover" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
         </div>
         <div className="container-wide relative z-10">

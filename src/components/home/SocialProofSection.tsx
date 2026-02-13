@@ -1,5 +1,6 @@
 import { Star, Quote } from "lucide-react";
 import { motion, useInView } from "framer-motion";
+import officeCookies from "@/assets/office-cookies.jpg";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -96,7 +97,11 @@ export function SocialProofSection() {
           </Carousel>
         </AnimatedSection>
 
-        <AnimatedSection delay={0.4} className="mt-12 pt-10 border-t border-border">
+        <div className="mt-12 rounded-2xl overflow-hidden">
+          <img src={officeCookies} alt="ZP Zaken team" className="w-full h-48 md:h-64 object-cover rounded-2xl" />
+        </div>
+
+        <AnimatedSection delay={0.4} className="mt-8 pt-10 border-t border-border">
           <StaggerContainer className="flex flex-wrap justify-center items-center gap-8 md:gap-12" staggerDelay={0.1}>
             <StaggerItem className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
               <div className="h-10 w-10 rounded-lg bg-card border border-border flex items-center justify-center font-bold text-xs text-primary">AFM</div>
