@@ -134,6 +134,14 @@
     <priority>0.5</priority>
   </url>
   
+  <!-- Social Media -->
+  <url>
+    <loc>https://zpzaken.nl/social-media</loc>
+    <lastmod>2026-02-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
   <!-- Contact & FAQ -->
   <url>
     <loc>https://zpzaken.nl/contact</loc>
