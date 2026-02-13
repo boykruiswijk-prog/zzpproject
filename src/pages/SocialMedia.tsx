@@ -70,7 +70,7 @@ export default function SocialMedia() {
           "name": "ZP Zaken",
           "url": "https://zpzaken.nl",
           "sameAs": [
-            "https://www.linkedin.com/company/zpzaken",
+            "https://www.linkedin.com/company/zp-zaken/",
             "https://www.instagram.com/zp_zaken/"
           ],
           "description": "Onafhankelijk advies over verzekeringen voor zzp'ers en zelfstandig ondernemers."
@@ -95,7 +95,7 @@ export default function SocialMedia() {
       >
         <div className="flex flex-wrap gap-4">
           <Button variant="accent" size="lg" asChild>
-            <a href="https://www.linkedin.com/company/zpzaken" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.linkedin.com/company/zp-zaken/" target="_blank" rel="noopener noreferrer">
               Volg ons op LinkedIn <ExternalLink className="h-4 w-4" />
             </a>
           </Button>
@@ -153,7 +153,7 @@ export default function SocialMedia() {
                 ))}
               </ul>
               <Button variant="accent" size="lg" asChild>
-                <a href="https://www.linkedin.com/company/zpzaken" target="_blank" rel="noopener noreferrer">
+                <a href="https://www.linkedin.com/company/zp-zaken/" target="_blank" rel="noopener noreferrer">
                   Volg ZP Zaken op LinkedIn <ExternalLink className="h-4 w-4" />
                 </a>
               </Button>
