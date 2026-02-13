@@ -194,9 +194,6 @@ export default function CollectiefLedenorganisaties() {
                 <Button size="lg" onClick={scrollToForm} className="text-white font-semibold" style={{ background: "hsl(213 60% 45%)" }}>
                   Plan een kennismaking <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
-                <Button size="lg" variant="outline" onClick={scrollToForm} className="border-2 text-white hover:text-white" style={{ borderColor: "hsl(0 0% 100% / 0.3)" }}>
-                  Vraag een collectief voorstel aan
-                </Button>
               </div>
             </AnimatedSection>
           </div>
