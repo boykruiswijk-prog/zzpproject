@@ -25,12 +25,38 @@ export default function Verzekeringen() {
   const { t } = useTranslation();
   const [selectedInsurance, setSelectedInsurance] = useState<{ id: string; title: string } | null>(null);
 
+  const insuranceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "Beroeps- en Bedrijfsaansprakelijkheidsverzekering voor ZZP'ers",
+    "provider": {
+      "@type": "Organization",
+      "name": "ZP Zaken",
+      "url": "https://zpzaken.nl"
+    },
+    "description": "Unieke combinatiepolis BAV + AVB voor zzp'ers in kantoorberoepen. Vanaf €20 per maand, dagelijks opzegbaar, binnen 24 uur verzekerd.",
+    "areaServed": "NL",
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "EUR",
+      "price": "20",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "20",
+        "priceCurrency": "EUR",
+        "unitText": "maand",
+        "description": "Vanaf-prijs per maand"
+      }
+    }
+  };
+
   return (
     <Layout>
       <Helmet>
         <title>{t("verzekeringenPage.title")} {t("verzekeringenPage.titleAccent")} | ZP Zaken</title>
         <meta name="description" content={t("verzekeringenPage.subtitle")} />
         <link rel="canonical" href="https://zpzaken.nl/verzekeringen" />
+        <script type="application/ld+json">{JSON.stringify(insuranceSchema)}</script>
       </Helmet>
 
       <PageHero

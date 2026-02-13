@@ -111,13 +111,26 @@ export default function FAQ() {
         <div className="container-wide text-center max-w-2xl mx-auto">
           <h2 className="text-2xl font-semibold mb-4">{t("faq.ctaTitle")}</h2>
           <p className="text-muted-foreground mb-8">{t("faq.ctaSubtitle")}</p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
             <Button variant="accent" size="lg" asChild>
               <LocalizedLink to="/contact">{t("faq.ctaButton")}</LocalizedLink>
             </Button>
             <Button variant="outline" size="lg" asChild>
               <a href="tel:0232010502">{t("faq.ctaPhone")}</a>
             </Button>
+          </div>
+
+          {/* Internal linking */}
+          <div className="flex flex-wrap justify-center gap-3 pt-6 border-t border-border">
+            <LocalizedLink to="/verzekeringen" className="text-sm text-muted-foreground hover:text-accent transition-colors">
+              → Bekijk verzekeringen
+            </LocalizedLink>
+            <LocalizedLink to="/kennisbank" className="text-sm text-muted-foreground hover:text-accent transition-colors">
+              → Kennisbank artikelen
+            </LocalizedLink>
+            <LocalizedLink to="/diensten" className="text-sm text-muted-foreground hover:text-accent transition-colors">
+              → Alle diensten
+            </LocalizedLink>
           </div>
         </div>
       </section>

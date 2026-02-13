@@ -29,12 +29,39 @@ const services = [
 export default function Diensten() {
   const { t } = useTranslation();
 
+  const dienstenSchema = {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "ZP Zaken - Diensten voor ZZP'ers",
+    "url": "https://zpzaken.nl/diensten",
+    "description": "Verzekeringen, administratie, juridisch advies, screening en factoring voor zelfstandig professionals.",
+    "provider": {
+      "@type": "Organization",
+      "name": "ZP Zaken",
+      "url": "https://zpzaken.nl"
+    },
+    "areaServed": "NL",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Diensten voor ZZP'ers",
+      "itemListElement": services.map((s) => ({
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": s.title,
+          "description": s.description
+        }
+      }))
+    }
+  };
+
   return (
     <Layout>
       <Helmet>
         <title>{t("diensten.title")} {t("diensten.titleAccent")} | ZP Zaken</title>
         <meta name="description" content={t("diensten.subtitle")} />
         <link rel="canonical" href="https://zpzaken.nl/diensten" />
+        <script type="application/ld+json">{JSON.stringify(dienstenSchema)}</script>
       </Helmet>
       <PageHero
         title={<>{t("diensten.title")} <span className="text-accent">{t("diensten.titleAccent")}</span></>}

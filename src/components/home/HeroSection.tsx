@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { TrustBar } from "@/components/shared/TrustBar";
 import { MiniSocialProof } from "@/components/shared/MiniSocialProof";
+import { trackCTA, trackPhone } from "@/lib/tracking";
 import teamWalking from "@/assets/team-walking.jpg";
 
 export function HeroSection() {
@@ -85,7 +86,7 @@ export function HeroSection() {
               transition={{ duration: 0.6, delay: 0.9 }}
               className="flex flex-col sm:flex-row gap-3 mb-6"
             >
-              <Button variant="accent" size="xl" asChild className="shadow-lg hover:scale-105 transition-transform duration-200">
+              <Button variant="accent" size="xl" asChild className="shadow-lg hover:scale-105 transition-transform duration-200" onClick={() => trackCTA("hero_diensten")}>
                 <LocalizedLink to="/diensten">
                   {t("home.ctaDiensten")}
                   <ArrowRight className="h-5 w-5" />
@@ -109,6 +110,7 @@ export function HeroSection() {
               <a 
                 href="tel:0232010502" 
                 className="inline-flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                onClick={() => trackPhone()}
               >
                 <Phone className="h-4 w-4" />
                 <span>023 - 201 0502</span>
