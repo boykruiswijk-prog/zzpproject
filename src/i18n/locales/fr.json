@@ -426,7 +426,9 @@
     "pilotSoftware": "Offres Logiciels Collectifs",
     "pilotSoftwareDesc": "Les logiciels de comptabilité, CRM, outils IA et hébergement sont souvent vendus à prix standard. Avec suffisamment d'intérêt, nous négocions des remises de volume pour les freelances.",
     "pilotAiTools": "Pack Collectif IA & Outils",
-    "pilotAiToolsDesc": "Beaucoup de freelances paient séparément pour ChatGPT, Canva, Notion et les outils de gestion de projet. Nous regroupons tout en un forfait avec licences en volume, réductions exclusives et formation incluse. La boîte à outils numérique pour freelances."
+    "pilotAiToolsDesc": "Beaucoup de freelances paient séparément pour ChatGPT, Canva, Notion et les outils de gestion de projet. Nous regroupons tout en un forfait avec licences en volume, réductions exclusives et formation incluse. La boîte à outils numérique pour freelances.",
+    "pilotTelefonie": "Téléphonie Collective",
+    "pilotTelefonieDesc": "La téléphonie professionnelle ne doit pas être chère. Nous regroupons les freelances pour négocier des tarifs avantageux pour les abonnements mobiles, avec appels illimités, données généreuses et avantages professionnels."
   },
   "shared": {
     "satisfiedFreelancers": "2 500+ freelances satisfaits",
