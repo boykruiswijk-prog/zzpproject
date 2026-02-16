@@ -25,7 +25,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { LocalizedLink } from "@/components/LocalizedLink";
-import { Check, Users, Zap, Monitor, Shield, ArrowRight, Mail } from "lucide-react";
+import { Check, Users, Zap, Monitor, Shield, ArrowRight, Mail, Cpu } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/animated-section";
 
 function usePilotCount(slug: string) {
@@ -250,6 +250,7 @@ export default function CollectieveInkoop() {
   const pilots = [
     { slug: "stroom-2026", titleKey: "collectieveInkoop.pilotStroom", descKey: "collectieveInkoop.pilotStroomDesc", icon: <Zap className="h-6 w-6" />, goal: 100, forWhom: ["Privé huishouden", "Zakelijk energiecontract"], formType: "energy" as const },
     { slug: "software-deals", titleKey: "collectieveInkoop.pilotSoftware", descKey: "collectieveInkoop.pilotSoftwareDesc", icon: <Monitor className="h-6 w-6" />, goal: 75, forWhom: [], interests: ["Boekhoudsoftware", "CRM", "AI-tools", "Hosting / e-mail"], formType: "software" as const },
+    { slug: "ai-tools-bundel", titleKey: "collectieveInkoop.pilotAiTools", descKey: "collectieveInkoop.pilotAiToolsDesc", icon: <Cpu className="h-6 w-6" />, goal: 50, forWhom: [], interests: ["ChatGPT", "Canva", "Notion", "Projectmanagement"], formType: "software" as const },
   ];
 
   const steps = [

@@ -424,7 +424,9 @@
     "pilotStroom": "Énergie Collective 2026",
     "pilotStroomDesc": "Les contrats d'énergie sont conclus individuellement. Nous allons regrouper 100 freelances et laisser les fournisseurs d'énergie enchérir sur le groupe entier.",
     "pilotSoftware": "Offres Logiciels Collectifs",
-    "pilotSoftwareDesc": "Les logiciels de comptabilité, CRM, outils IA et hébergement sont souvent vendus à prix standard. Avec suffisamment d'intérêt, nous négocions des remises de volume pour les freelances."
+    "pilotSoftwareDesc": "Les logiciels de comptabilité, CRM, outils IA et hébergement sont souvent vendus à prix standard. Avec suffisamment d'intérêt, nous négocions des remises de volume pour les freelances.",
+    "pilotAiTools": "Pack Collectif IA & Outils",
+    "pilotAiToolsDesc": "Beaucoup de freelances paient séparément pour ChatGPT, Canva, Notion et les outils de gestion de projet. Nous regroupons tout en un forfait avec licences en volume, réductions exclusives et formation incluse. La boîte à outils numérique pour freelances."
   },
   "shared": {
     "satisfiedFreelancers": "2 500+ freelances satisfaits",
