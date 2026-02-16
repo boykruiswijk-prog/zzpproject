@@ -25,7 +25,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { LocalizedLink } from "@/components/LocalizedLink";
-import { Check, Users, Zap, Monitor, Shield, ArrowRight, Mail, Cpu, Phone } from "lucide-react";
+import { Check, Users, Zap, Monitor, Shield, ArrowRight, Mail, Cpu, Phone, Lightbulb } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/animated-section";
 import pilotStroomImg from "@/assets/pilot-stroom.jpg";
 import pilotSoftwareImg from "@/assets/pilot-software.jpg";
@@ -255,6 +255,77 @@ function NewsletterSection() {
     </section>
   );
 }
+function SuggestionBox() {
+  const { t } = useTranslation();
+  const { toast } = useToast();
+  const [form, setForm] = useState({ suggestie: "", naam: "", email: "" });
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.suggestie.trim()) return;
+    setLoading(true);
+    try {
+      const { error } = await supabase.from("collective_suggestions" as any).insert({
+        suggestie: form.suggestie.trim(),
+        naam: form.naam.trim() || null,
+        email: form.email.trim() || null,
+      });
+      if (error) throw error;
+      toast({ title: t("collectieveInkoop.suggestionSuccess"), description: t("collectieveInkoop.suggestionSuccessDesc") });
+      setForm({ suggestie: "", naam: "", email: "" });
+    } catch {
+      toast({ title: t("collectieveInkoop.signUpError"), description: t("collectieveInkoop.signUpErrorDesc"), variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <section className="section-padding">
+      <div className="container-wide max-w-2xl">
+        <AnimatedSection className="bg-card border border-border rounded-2xl p-8 shadow-[var(--card-shadow)]">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
+              <Lightbulb className="h-5 w-5" />
+            </div>
+            <h2 className="text-2xl font-bold text-foreground">{t("collectieveInkoop.suggestionTitle")}</h2>
+          </div>
+          <p className="text-muted-foreground mb-6">{t("collectieveInkoop.suggestionDesc")}</p>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="suggestie">{t("collectieveInkoop.suggestionPlaceholder")}</Label>
+              <textarea
+                id="suggestie"
+                value={form.suggestie}
+                onChange={(e) => setForm({ ...form, suggestie: e.target.value })}
+                required
+                maxLength={500}
+                rows={3}
+                className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
+                placeholder={t("collectieveInkoop.suggestionPlaceholder")}
+              />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="sug-naam">{t("collectieveInkoop.suggestionName")}</Label>
+                <Input id="sug-naam" value={form.naam} onChange={(e) => setForm({ ...form, naam: e.target.value })} maxLength={100} />
+              </div>
+              <div>
+                <Label htmlFor="sug-email">{t("collectieveInkoop.suggestionEmail")}</Label>
+                <Input id="sug-email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} maxLength={255} />
+              </div>
+            </div>
+            <Button type="submit" variant="accent" disabled={loading || !form.suggestie.trim()}>
+              <Lightbulb className="h-4 w-4 mr-2" />
+              {loading ? t("collectieveInkoop.suggestionSending") : t("collectieveInkoop.suggestionSubmit")}
+            </Button>
+          </form>
+        </AnimatedSection>
+      </div>
+    </section>
+  );
+}
 
 export default function CollectieveInkoop() {
   const { t } = useTranslation();
@@ -344,6 +415,8 @@ export default function CollectieveInkoop() {
           </div>
         </div>
       </section>
+
+      <SuggestionBox />
 
       <section className="section-padding bg-secondary">
         <div className="container-wide max-w-3xl text-center">

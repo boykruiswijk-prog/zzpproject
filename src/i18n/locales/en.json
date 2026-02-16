@@ -428,7 +428,16 @@
     "pilotAiTools": "Group AI & Tools Bundle",
     "pilotAiToolsDesc": "Many freelancers pay separately for ChatGPT, Canva, Notion and project management tools. We bundle this into one package price with bulk licenses, exclusive discounts and training included. The digital toolbox for freelancers.",
     "pilotTelefonie": "Group Telephony",
-    "pilotTelefonieDesc": "Business telephony doesn't have to be expensive. We bundle freelancers to negotiate sharp rates for mobile subscriptions, with unlimited calling, generous data and business benefits."
+    "pilotTelefonieDesc": "Business telephony doesn't have to be expensive. We bundle freelancers to negotiate sharp rates for mobile subscriptions, with unlimited calling, generous data and business benefits.",
+    "suggestionTitle": "Missing something? Make a suggestion!",
+    "suggestionDesc": "Have an idea for a group purchasing deal we don't offer yet? Let us know and if there's enough interest, we'll make it happen.",
+    "suggestionPlaceholder": "E.g. office furniture, insurance packages, lease cars...",
+    "suggestionName": "Your name (optional)",
+    "suggestionEmail": "Your email (optional, for updates)",
+    "suggestionSubmit": "Submit suggestion",
+    "suggestionSuccess": "Thanks for your suggestion!",
+    "suggestionSuccessDesc": "We'll review your idea and reach out if we take action on it.",
+    "suggestionSending": "Sending..."
   },
   "shared": {
     "satisfiedFreelancers": "2,500+ satisfied freelancers",

@@ -128,6 +128,33 @@ export type Database = {
         }
         Relationships: []
       }
+      collective_suggestions: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          naam: string | null
+          status: string
+          suggestie: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          naam?: string | null
+          status?: string
+          suggestie: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          naam?: string | null
+          status?: string
+          suggestie?: string
+        }
+        Relationships: []
+      }
       lead_notes: {
         Row: {
           content: string
