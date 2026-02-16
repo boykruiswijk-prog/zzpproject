@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { useTranslation } from "react-i18next";
@@ -6,7 +5,7 @@ import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { Shield, Heart, Scale, ArrowRight, CheckCircle, Globe, Sparkles, Euro, Star } from "lucide-react";
-import { OnlineAanvraagDialog } from "@/components/verzekeringen/OnlineAanvraagDialog";
+
 import { TrustBar } from "@/components/shared/TrustBar";
 import { QualificationCheck } from "@/components/shared/QualificationCheck";
 import { StepsProcess } from "@/components/shared/StepsProcess";
@@ -23,7 +22,7 @@ const insurances = [
 
 export default function Verzekeringen() {
   const { t } = useTranslation();
-  const [selectedInsurance, setSelectedInsurance] = useState<{ id: string; title: string } | null>(null);
+  
 
   const insuranceSchema = {
     "@context": "https://schema.org",
@@ -136,8 +135,10 @@ export default function Verzekeringen() {
                       </div>
                       <div className="flex flex-wrap items-center gap-3">
                         {insurance.canApplyOnline && (
-                          <Button variant="accent" onClick={() => setSelectedInsurance({ id: insurance.id, title: insurance.title })}>
-                            <Globe className="h-4 w-4" />{t("verzekeringenPage.onlineApply")}
+                          <Button variant="accent" asChild>
+                            <LocalizedLink to="/#combinatiepolis">
+                              <Globe className="h-4 w-4" />{t("verzekeringenPage.onlineApply")}
+                            </LocalizedLink>
                           </Button>
                         )}
                         <Button variant={insurance.canApplyOnline ? "outline" : "accent"} asChild>
@@ -197,12 +198,6 @@ export default function Verzekeringen() {
         </div>
       </section>
 
-      <OnlineAanvraagDialog
-        open={selectedInsurance !== null}
-        onOpenChange={(open) => !open && setSelectedInsurance(null)}
-        insuranceType={selectedInsurance?.id ?? ""}
-        insuranceTitle={selectedInsurance?.title ?? ""}
-      />
     </Layout>
   );
 }
