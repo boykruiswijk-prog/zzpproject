@@ -428,7 +428,16 @@
     "pilotAiTools": "Kollektives KI & Tools Paket",
     "pilotAiToolsDesc": "Viele Freiberufler zahlen separat für ChatGPT, Canva, Notion und Projektmanagement-Tools. Wir bündeln dies in einem Paketpreis mit Massenlizenzen, exklusiven Rabatten und inklusiver Schulung. Der digitale Werkzeugkasten für Freiberufler.",
     "pilotTelefonie": "Kollektive Telefonie",
-    "pilotTelefonieDesc": "Geschäftstelefonie muss nicht teuer sein. Wir bündeln Freiberufler, um günstige Tarife für Mobilfunkverträge auszuhandeln, mit unbegrenztem Telefonieren, großzügigem Datenvolumen und geschäftlichen Vorteilen."
+    "pilotTelefonieDesc": "Geschäftstelefonie muss nicht teuer sein. Wir bündeln Freiberufler, um günstige Tarife für Mobilfunkverträge auszuhandeln, mit unbegrenztem Telefonieren, großzügigem Datenvolumen und geschäftlichen Vorteilen.",
+    "suggestionTitle": "Fehlt etwas? Machen Sie einen Vorschlag!",
+    "suggestionDesc": "Haben Sie eine Idee für eine Gruppeneinkaufsaktion, die wir noch nicht anbieten? Lassen Sie es uns wissen und bei genügend Interesse setzen wir es um.",
+    "suggestionPlaceholder": "Z.B. Büroeinrichtung, Versicherungspakete, Leasingautos...",
+    "suggestionName": "Ihr Name (optional)",
+    "suggestionEmail": "Ihre E-Mail (optional, für Updates)",
+    "suggestionSubmit": "Vorschlag senden",
+    "suggestionSuccess": "Danke für Ihren Vorschlag!",
+    "suggestionSuccessDesc": "Wir prüfen Ihre Idee und melden uns, wenn wir sie umsetzen.",
+    "suggestionSending": "Wird gesendet..."
   },
   "shared": {
     "satisfiedFreelancers": "2.500+ zufriedene Freiberufler",

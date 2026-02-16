@@ -428,7 +428,16 @@
     "pilotAiTools": "Pack Collectif IA & Outils",
     "pilotAiToolsDesc": "Beaucoup de freelances paient séparément pour ChatGPT, Canva, Notion et les outils de gestion de projet. Nous regroupons tout en un forfait avec licences en volume, réductions exclusives et formation incluse. La boîte à outils numérique pour freelances.",
     "pilotTelefonie": "Téléphonie Collective",
-    "pilotTelefonieDesc": "La téléphonie professionnelle ne doit pas être chère. Nous regroupons les freelances pour négocier des tarifs avantageux pour les abonnements mobiles, avec appels illimités, données généreuses et avantages professionnels."
+    "pilotTelefonieDesc": "La téléphonie professionnelle ne doit pas être chère. Nous regroupons les freelances pour négocier des tarifs avantageux pour les abonnements mobiles, avec appels illimités, données généreuses et avantages professionnels.",
+    "suggestionTitle": "Il manque quelque chose ? Faites une suggestion !",
+    "suggestionDesc": "Vous avez une idée d'achat groupé que nous ne proposons pas encore ? Faites-le nous savoir et si l'intérêt est suffisant, nous le réaliserons.",
+    "suggestionPlaceholder": "Par ex. mobilier de bureau, forfaits d'assurance, voitures en leasing...",
+    "suggestionName": "Votre nom (optionnel)",
+    "suggestionEmail": "Votre e-mail (optionnel, pour les mises à jour)",
+    "suggestionSubmit": "Envoyer la suggestion",
+    "suggestionSuccess": "Merci pour votre suggestion !",
+    "suggestionSuccessDesc": "Nous examinerons votre idée et vous contacterons si nous la mettons en œuvre.",
+    "suggestionSending": "Envoi en cours..."
   },
   "shared": {
     "satisfiedFreelancers": "2 500+ freelances satisfaits",

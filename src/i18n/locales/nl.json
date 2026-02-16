@@ -433,7 +433,16 @@
     "pilotAiTools": "Collectieve AI & Tools Bundel",
     "pilotAiToolsDesc": "Veel zzp'ers betalen apart voor ChatGPT, Canva, Notion en projectmanagementtools. Wij bundelen dit in één pakketprijs met bulklicenties, exclusieve korting én training inbegrepen. De digitale gereedschapskist voor zzp'ers.",
     "pilotTelefonie": "Collectieve Telefonie",
-    "pilotTelefonieDesc": "Zakelijke telefonie hoeft niet duur te zijn. Wij bundelen zzp'ers om scherpe tarieven te bedingen voor mobiele abonnementen, met onbeperkt bellen, ruime data en zakelijke voordelen."
+    "pilotTelefonieDesc": "Zakelijke telefonie hoeft niet duur te zijn. Wij bundelen zzp'ers om scherpe tarieven te bedingen voor mobiele abonnementen, met onbeperkt bellen, ruime data en zakelijke voordelen.",
+    "suggestionTitle": "Mis je iets? Doe een suggestie!",
+    "suggestionDesc": "Heb je een idee voor een collectieve inkoopactie die we nog niet aanbieden? Laat het ons weten en bij voldoende interesse pakken we het op.",
+    "suggestionPlaceholder": "Bijv. collectieve kantoorinrichting, verzekeringspakketten, lease-auto's...",
+    "suggestionName": "Je naam (optioneel)",
+    "suggestionEmail": "Je e-mail (optioneel, voor updates)",
+    "suggestionSubmit": "Verstuur suggestie",
+    "suggestionSuccess": "Bedankt voor je suggestie!",
+    "suggestionSuccessDesc": "We bekijken je idee en nemen contact op als we ermee aan de slag gaan.",
+    "suggestionSending": "Versturen..."
   },
   "shared": {
     "satisfiedFreelancers": "2.500+ tevreden zzp'ers",
