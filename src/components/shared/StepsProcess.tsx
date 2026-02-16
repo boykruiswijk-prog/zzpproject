@@ -1,18 +1,20 @@
 import { MessageCircle, FileSearch, CheckCircle } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/animated-section";
+import { useTranslation } from "react-i18next";
 
 interface StepsProcessProps {
   variant?: "light" | "dark";
 }
 
-const steps = [
-  { number: "1", icon: MessageCircle, title: "Gratis kennismaking", desc: "15 min. vrijblijvend gesprek" },
-  { number: "2", icon: FileSearch, title: "Persoonlijk advies", desc: "Helder overzicht op maat" },
-  { number: "3", icon: CheckCircle, title: "Binnen 24 uur geregeld", desc: "Certificaat in je mailbox" },
-];
-
 export function StepsProcess({ variant = "light" }: StepsProcessProps) {
+  const { t } = useTranslation();
   const isDark = variant === "dark";
+
+  const steps = [
+    { number: "1", icon: MessageCircle, title: t("stepsProcess.step1"), desc: t("stepsProcess.step1Desc") },
+    { number: "2", icon: FileSearch, title: t("stepsProcess.step2"), desc: t("stepsProcess.step2Desc") },
+    { number: "3", icon: CheckCircle, title: t("stepsProcess.step3"), desc: t("stepsProcess.step3Desc") },
+  ];
 
   return (
     <AnimatedSection delay={0.2}>

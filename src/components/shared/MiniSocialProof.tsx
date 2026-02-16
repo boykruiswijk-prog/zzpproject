@@ -1,4 +1,5 @@
 import { Star } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface MiniSocialProofProps {
   variant?: "light" | "dark";
@@ -6,6 +7,7 @@ interface MiniSocialProofProps {
 }
 
 export function MiniSocialProof({ variant = "light", className = "" }: MiniSocialProofProps) {
+  const { t } = useTranslation();
   const isDark = variant === "dark";
 
   return (
@@ -31,7 +33,7 @@ export function MiniSocialProof({ variant = "light", className = "" }: MiniSocia
           ))}
           <span className="font-semibold ml-1">4.9/5</span>
         </div>
-        <span>2.500+ tevreden zzp'ers</span>
+        <span>{t("shared.satisfiedFreelancers")}</span>
       </div>
     </div>
   );

@@ -14,14 +14,14 @@ import { MiniSocialProof } from "@/components/shared/MiniSocialProof";
 import teamBoyCalling from "@/assets/team-boy-calling.jpg";
 import teamCheers from "@/assets/team-cheers.jpg";
 
-const insurances = [
-  { id: "combinatiepolis", icon: Shield, title: "Beroeps- én Bedrijfsaansprakelijkheid", subtitle: "Unieke combinatiepolis van ZP Zaken", description: "Als enige in Nederland bieden wij een unieke combinatiepolis die beroeps- én bedrijfsaansprakelijkheid combineert in één verzekering. Eén polis, één premie, dubbele bescherming — nergens anders te krijgen.", features: ["Beroepsaansprakelijkheid: dekking voor financiële schade door beroepsfouten", "Bedrijfsaansprakelijkheid: dekking voor letsel- en zaakschade aan derden", "Juridische bijstand bij claims inbegrepen", "Eén polis, één premie — maximaal gemak", "Maatwerk dekkingen per beroepsgroep", "Exclusief via ZP Zaken"], forWho: "ICT'ers, consultants, coaches, trainers, adviseurs, creatieven", price: "Vanaf €20 per maand", canApplyOnline: true, isUnique: true, isMostChosen: true },
-  { id: "arbeidsongeschiktheid", icon: Heart, title: "Arbeidsongeschiktheid", subtitle: "Inkomen bij ziekte of ongeval", description: "Als zzp'er bouw je geen WIA op. Word je ziek of krijg je een ongeval, dan valt je inkomen weg. Een AOV zorgt voor financiële zekerheid als je niet kunt werken.", features: ["Maandelijkse uitkering bij arbeidsongeschiktheid", "Keuze in wachttijd en uitkeringsduur", "Dekking voor zowel ziekte als ongevallen", "Premie fiscaal aftrekbaar"], forWho: "Alle zzp'ers die afhankelijk zijn van hun inkomen", price: "Vanaf €150 per maand", canApplyOnline: false },
-  { id: "rechtsbijstand", icon: Scale, title: "Rechtsbijstand", subtitle: "Juridische hulp bij conflicten", description: "Conflicten met opdrachtgevers, leveranciers of de Belastingdienst kunnen duur uitpakken. Met een rechtsbijstandverzekering krijg je juridische hulp zonder torenhoge advocaatkosten.", features: ["Juridisch advies en bemiddeling", "Proceskosten en advocaatkosten vergoed", "Hulp bij conflicten met opdrachtgevers", "Fiscale rechtsbijstand"], forWho: "Zzp'ers met opdrachtgevers, contracten of personeel", price: "Vanaf €20 per maand", canApplyOnline: true },
-];
-
 export default function Verzekeringen() {
   const { t } = useTranslation();
+
+  const insurances = [
+    { id: "combinatiepolis", icon: Shield, title: t("insuranceData.combiTitle"), subtitle: t("insuranceData.combiSubtitle"), description: t("insuranceData.combiDesc"), features: t("insuranceData.combiFeatures", { returnObjects: true }) as string[], forWho: t("insuranceData.combiForWho"), price: t("insuranceData.combiPrice"), canApplyOnline: true, isUnique: true, isMostChosen: true },
+    { id: "arbeidsongeschiktheid", icon: Heart, title: t("insuranceData.aovTitle"), subtitle: t("insuranceData.aovSubtitle"), description: t("insuranceData.aovDesc"), features: t("insuranceData.aovFeatures", { returnObjects: true }) as string[], forWho: t("insuranceData.aovForWho"), price: t("insuranceData.aovPrice"), canApplyOnline: false },
+    { id: "rechtsbijstand", icon: Scale, title: t("insuranceData.rechtsbijstandTitle"), subtitle: t("insuranceData.rechtsbijstandSubtitle"), description: t("insuranceData.rechtsbijstandDesc"), features: t("insuranceData.rechtsbijstandFeatures", { returnObjects: true }) as string[], forWho: t("insuranceData.rechtsbijstandForWho"), price: t("insuranceData.rechtsbijstandPrice"), canApplyOnline: true },
+  ];
   
 
   const insuranceSchema = {
@@ -94,7 +94,7 @@ export default function Verzekeringen() {
                 {insurance.isMostChosen && (
                   <div className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-4 py-1.5 rounded-t-xl text-sm font-semibold">
                     <Star className="h-4 w-4" />
-                    Meest gekozen door zzp'ers
+                    {t("insuranceData.mostChosen")}
                   </div>
                 )}
                 <div className={`${insurance.isMostChosen ? "border-2 border-accent rounded-b-2xl rounded-tr-2xl p-6 md:p-8 bg-card" : ""}`}>

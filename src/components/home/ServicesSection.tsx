@@ -1,42 +1,44 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Shield, UserCheck, ArrowRight, Headphones } from "lucide-react";
 import { LocalizedLink } from "@/components/LocalizedLink";
 
-const services = [
-  {
-    icon: Shield,
-    title: "Verzekeringen",
-    description: "Inclusief onze unieke BAV+AVB combinatiepolis — beroeps- én bedrijfsaansprakelijkheid in één. Nergens anders te krijgen.",
-    href: "/diensten#verzekeringen",
-    features: ["⭐ Unieke BAV+AVB combipolis", "Arbeidsongeschiktheid", "Rechtsbijstand"],
-  },
-  {
-    icon: UserCheck,
-    title: "Screening",
-    description: "Betrouwbare verificatie voor opdrachtgevers en kandidaten. Transparant, snel en altijd met persoonlijke ondersteuning.",
-    href: "/diensten#screening",
-    features: ["Identiteitsverificatie", "KvK-check", "Referenties"],
-  },
-  {
-    icon: Headphones,
-    title: "Persoonlijk Advies",
-    description: "Geen callcenters of wachtrijen. Directe ondersteuning van mensen die je kennen en jouw situatie begrijpen.",
-    href: "/contact",
-    features: ["Persoonlijk contact", "Snelle respons", "Eerlijk advies"],
-  },
-];
-
 export function ServicesSection() {
+  const { t } = useTranslation();
+
+  const services = [
+    {
+      icon: Shield,
+      title: t("servicesHome.verzekeringen"),
+      description: t("servicesHome.verzekeringenDesc"),
+      href: "/diensten#verzekeringen",
+      features: t("servicesHome.verzekeringenFeatures", { returnObjects: true }) as string[],
+    },
+    {
+      icon: UserCheck,
+      title: t("servicesHome.screening"),
+      description: t("servicesHome.screeningDesc"),
+      href: "/diensten#screening",
+      features: t("servicesHome.screeningFeatures", { returnObjects: true }) as string[],
+    },
+    {
+      icon: Headphones,
+      title: t("servicesHome.advies"),
+      description: t("servicesHome.adviesDesc"),
+      href: "/contact",
+      features: t("servicesHome.adviesFeatures", { returnObjects: true }) as string[],
+    },
+  ];
+
   return (
     <section className="section-padding bg-secondary">
       <div className="container-wide">
         <div className="text-center max-w-2xl mx-auto mb-10">
           <h2 className="mb-4">
-            Onze <span className="text-primary">diensten</span>
+            {t("servicesHome.title")} <span className="text-primary">{t("servicesHome.titleAccent")}</span>
           </h2>
           <p className="text-muted-foreground">
-            Alles wat je nodig hebt als zelfstandig professional — verzameld bij één partij, 
-            geleverd via betrouwbare partners.
+            {t("servicesHome.subtitle")}
           </p>
         </div>
 
@@ -65,7 +67,7 @@ export function ServicesSection() {
                 ))}
               </ul>
               <span className="inline-flex items-center gap-2 text-sm font-medium text-primary group-hover:text-accent transition-colors mt-auto">
-                Meer informatie
+                {t("shared.moreInfo")}
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </span>
             </LocalizedLink>
@@ -75,7 +77,7 @@ export function ServicesSection() {
         <div className="text-center mt-10">
           <Button variant="outline" size="lg" asChild>
             <LocalizedLink to="/diensten">
-              Bekijk alle diensten
+              {t("servicesHome.viewAll")}
               <ArrowRight className="h-5 w-5" />
             </LocalizedLink>
           </Button>

@@ -87,41 +87,41 @@ export function BAVApplicationModule() {
     const newErrors: ValidationErrors = {};
 
     if (step === 1) {
-      if (!startDate) newErrors.startDate = "Selecteer een ingangsdatum";
+      if (!startDate) newErrors.startDate = t("bavApp.valStartDate");
     }
 
     if (step === 2) {
-      if (!formData.bedrijfsnaam.trim()) newErrors.bedrijfsnaam = "Bedrijfsnaam is verplicht";
-      if (!formData.kvkNummer.trim()) newErrors.kvkNummer = "KvK-nummer is verplicht";
-      else if (!isValidKvk(formData.kvkNummer)) newErrors.kvkNummer = "KvK-nummer moet 8 cijfers zijn";
-      if (!formData.beroep.trim()) newErrors.beroep = "Beroep is verplicht";
-      if (!formData.functie.trim()) newErrors.functie = "Functie is verplicht";
-      if (!formData.aantalMedewerkers.trim()) newErrors.aantalMedewerkers = "Aantal medewerkers is verplicht";
-      else if (parseInt(formData.aantalMedewerkers) < 0) newErrors.aantalMedewerkers = "Ongeldig aantal";
+      if (!formData.bedrijfsnaam.trim()) newErrors.bedrijfsnaam = t("bavApp.valCompanyName");
+      if (!formData.kvkNummer.trim()) newErrors.kvkNummer = t("bavApp.valKvk");
+      else if (!isValidKvk(formData.kvkNummer)) newErrors.kvkNummer = t("bavApp.valKvkFormat");
+      if (!formData.beroep.trim()) newErrors.beroep = t("bavApp.valProfession");
+      if (!formData.functie.trim()) newErrors.functie = t("bavApp.valFunction");
+      if (!formData.aantalMedewerkers.trim()) newErrors.aantalMedewerkers = t("bavApp.valEmployees");
+      else if (parseInt(formData.aantalMedewerkers) < 0) newErrors.aantalMedewerkers = t("bavApp.valEmployeesInvalid");
     }
 
     if (step === 3) {
-      if (!formData.voornaam.trim()) newErrors.voornaam = "Voornaam is verplicht";
-      if (!formData.achternaam.trim()) newErrors.achternaam = "Achternaam is verplicht";
-      if (!formData.email.trim()) newErrors.email = "E-mailadres is verplicht";
-      else if (!isValidEmail(formData.email)) newErrors.email = "Ongeldig e-mailadres";
-      if (!formData.telefoon.trim()) newErrors.telefoon = "Telefoonnummer is verplicht";
-      else if (!isValidPhone(formData.telefoon)) newErrors.telefoon = "Telefoonnummer moet 10 cijfers zijn";
-      if (!formData.opdrachtgever.trim()) newErrors.opdrachtgever = "Opdrachtgever is verplicht";
-      if (viaBemiddelaar === null) newErrors.bemiddelaar = "Geef aan of je via een bemiddelaar werkt";
-      if (viaBemiddelaar && !formData.bemiddelaarNaam.trim()) newErrors.bemiddelaarNaam = "Naam bemiddelaar is verplicht";
+      if (!formData.voornaam.trim()) newErrors.voornaam = t("bavApp.valFirstName");
+      if (!formData.achternaam.trim()) newErrors.achternaam = t("bavApp.valLastName");
+      if (!formData.email.trim()) newErrors.email = t("bavApp.valEmail");
+      else if (!isValidEmail(formData.email)) newErrors.email = t("bavApp.valEmailInvalid");
+      if (!formData.telefoon.trim()) newErrors.telefoon = t("bavApp.valPhone");
+      else if (!isValidPhone(formData.telefoon)) newErrors.telefoon = t("bavApp.valPhoneFormat");
+      if (!formData.opdrachtgever.trim()) newErrors.opdrachtgever = t("bavApp.valClient");
+      if (viaBemiddelaar === null) newErrors.bemiddelaar = t("bavApp.valMediator");
+      if (viaBemiddelaar && !formData.bemiddelaarNaam.trim()) newErrors.bemiddelaarNaam = t("bavApp.valMediatorName");
     }
 
     if (step === 4) {
       if (paymentMethod === "incasso") {
-        if (!formData.iban.trim()) newErrors.iban = "IBAN is verplicht";
-        else if (!isValidIban(formData.iban)) newErrors.iban = "Ongeldig IBAN-nummer";
-        if (!incassoAkkoord) newErrors.incassoAkkoord = "Je moet akkoord gaan met automatische incasso";
+        if (!formData.iban.trim()) newErrors.iban = t("bavApp.valIban");
+        else if (!isValidIban(formData.iban)) newErrors.iban = t("bavApp.valIbanInvalid");
+        if (!incassoAkkoord) newErrors.incassoAkkoord = t("bavApp.valIncasso");
       }
     }
 
     if (step === 5) {
-      if (!slotverklaringAkkoord) newErrors.slotverklaring = "Je moet akkoord gaan met de slotverklaring";
+      if (!slotverklaringAkkoord) newErrors.slotverklaring = t("bavApp.valSlotverklaring");
     }
 
     setErrors(newErrors);
@@ -154,23 +154,23 @@ export function BAVApplicationModule() {
             >
               <CheckCircle className="h-8 w-8 text-accent" />
             </motion.div>
-            <h2 className="text-xl sm:text-2xl font-bold mb-2">Bedankt voor je aanvraag!</h2>
+            <h2 className="text-xl sm:text-2xl font-bold mb-2">{t("bavApp.thankYou")}</h2>
             <p className="text-muted-foreground text-sm sm:text-base mb-1">
-              Je aanvraag voor de <span className="font-semibold text-foreground">{selectedPkg?.name}</span> is succesvol ontvangen.
+              {t("bavApp.thankYouDesc")} <span className="font-semibold text-foreground">{selectedPkg?.name}</span> {t("bavApp.thankYouReceived")}
             </p>
             <p className="text-muted-foreground text-xs sm:text-sm mb-6">
-              We nemen zo snel mogelijk contact met je op. Je ontvangt binnen 24 uur een bevestiging per e-mail.
+              {t("bavApp.thankYouFollowUp")}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
               <Button variant="accent" size="default" asChild className="w-full sm:w-auto">
                 <Link to="/">
                   <ArrowLeft className="h-4 w-4" />
-                  Terug naar home
+                  {t("bavApp.backToHome")}
                 </Link>
               </Button>
               <Button variant="outline" size="default" asChild className="w-full sm:w-auto">
                 <Link to="/contact">
-                  Neem contact op
+                  {t("bavApp.contactUs")}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
@@ -189,7 +189,7 @@ export function BAVApplicationModule() {
             <Link to="/diensten">
               <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }}
                 className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium hover:bg-primary/20 transition-colors cursor-pointer">
-                <Shield className="h-4 w-4" />Verzekeringen, Administratie & meer
+                <Shield className="h-4 w-4" />{t("bavApp.insuranceAndMore")}
               </motion.div>
             </Link>
           </div>
@@ -295,7 +295,7 @@ export function BAVApplicationModule() {
                       </div>
                       <div>
                         <Label htmlFor="functie">{t("home.bavFunction")} *</Label>
-                        <Input id="functie" name="functie" value={formData.functie} onChange={handleInputChange} placeholder="Bijv. Software Developer, Consultant" className={cn(errors.functie && "border-destructive")} />
+                        <Input id="functie" name="functie" value={formData.functie} onChange={handleInputChange} placeholder={t("bavApp.functionPlaceholder")} className={cn(errors.functie && "border-destructive")} />
                         <FieldError message={errors.functie} />
                       </div>
                       <div>
@@ -408,10 +408,10 @@ export function BAVApplicationModule() {
                       <div className="bg-secondary rounded-lg p-4">
                         <h4 className="font-medium mb-3">{t("home.bavStep1")}</h4>
                         <div className="space-y-2 text-sm">
-                          <div className="flex justify-between"><span className="text-muted-foreground">Pakket</span><span className="font-medium">{selectedPkg?.name}</span></div>
-                          <div className="flex justify-between"><span className="text-muted-foreground">Dekking</span><span>{selectedPkg?.coverage}</span></div>
-                          <div className="flex justify-between"><span className="text-muted-foreground">Betaling</span><span>{paymentType === "monthly" ? t("home.bavMonthly") : t("home.bavYearly")}</span></div>
-                          <div className="flex justify-between"><span className="text-muted-foreground">Ingangsdatum</span><span>{startDate || "Per direct"}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.package")}</span><span className="font-medium">{selectedPkg?.name}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.coverage")}</span><span>{selectedPkg?.coverage}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.payment")}</span><span>{paymentType === "monthly" ? t("home.bavMonthly") : t("home.bavYearly")}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.startDate")}</span><span>{startDate || t("bavApp.immediately")}</span></div>
                         </div>
                       </div>
                       <div className="bg-secondary rounded-lg p-4">
@@ -500,8 +500,8 @@ export function BAVApplicationModule() {
                       <div><p className="font-semibold">{selectedPkg?.name}</p><p className="text-sm text-background/70">BAV + AVB</p></div>
                     </div>
                     <div className="space-y-2 text-sm mb-4">
-                      <div className="flex justify-between"><span className="text-background/70">Per gebeurtenis</span><span>{selectedPkg?.coverage.replace('€ ', '€')}</span></div>
-                      <div className="flex justify-between"><span className="text-background/70">Per jaar</span><span>{selectedPkg?.yearCoverage.replace('€ ', '€')}</span></div>
+                      <div className="flex justify-between"><span className="text-background/70">{t("bavApp.perEvent")}</span><span>{selectedPkg?.coverage.replace('€ ', '€')}</span></div>
+                      <div className="flex justify-between"><span className="text-background/70">{t("bavApp.perYear")}</span><span>{selectedPkg?.yearCoverage.replace('€ ', '€')}</span></div>
                     </div>
                     <div className="border-t border-white/20 pt-4">
                       <div className="flex justify-between items-end">
