@@ -17,7 +17,7 @@ export function HeroSection() {
   ];
 
   return (
-    <section className="relative min-h-[85vh] flex items-center overflow-hidden">
+    <section className="relative min-h-[85vh] flex items-center overflow-hidden pb-14">
       <div className="absolute inset-0 z-0">
         <img src={teamWalking} alt="ZP Zaken" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-foreground/95 via-foreground/85 to-foreground/70" />
@@ -175,8 +175,10 @@ export function HeroSection() {
         </div>
       </div>
 
-      <div className="relative z-10 pb-6">
-        <TrustBar variant="dark" className="pt-4" />
+      <div className="absolute bottom-0 left-0 right-0 z-10">
+        <div className="container-wide pb-6">
+          <TrustBar variant="dark" />
+        </div>
       </div>
     </section>
   );
