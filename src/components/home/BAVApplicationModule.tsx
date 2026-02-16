@@ -132,11 +132,17 @@ export function BAVApplicationModule() {
     }
   };
   const prevStep = () => { if (currentStep > 1) { setErrors({}); setCurrentStep(currentStep - 1); } };
+   const [certificateUrl, setCertificateUrl] = useState<string | null>(null);
+   const [certificateNumber, setCertificateNumber] = useState<string | null>(null);
+
    const handleSubmit = async () => {
      if (validateStep(currentStep)) {
        try {
-         const { error } = await supabase.from("leads").insert({
+         // Save as klant (contract), not as lead
+         const { data: leadData, error } = await supabase.from("leads").insert({
            type: "verzekering_aanvraag",
+           status: "klant",
+           converted_at: new Date().toISOString(),
            voornaam: formData.voornaam,
            achternaam: formData.achternaam,
            email: formData.email,
@@ -147,15 +153,50 @@ export function BAVApplicationModule() {
            omzet: formData.aantalMedewerkers || null,
            verzekering_type: selectedPkg?.name || null,
            verzekerd_bedrag: selectedPkg?.coverage || null,
+           ingangsdatum: startDate || null,
            opmerkingen: `IBAN: ${formData.iban}\nOpdrachtgever: ${formData.opdrachtgever}${formData.bemiddelaarNaam ? `\nBemiddelaar: ${formData.bemiddelaarNaam}` : ''}`,
            bron: "website",
-         });
+         }).select("id").single();
 
          if (error) throw error;
+
+         // Auto-generate certificate
+         try {
+           const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+           const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+           const certResponse = await fetch(
+             `${supabaseUrl}/functions/v1/generate-certificate`,
+             {
+               method: "POST",
+               headers: {
+                 "Content-Type": "application/json",
+                 apikey: anonKey,
+               },
+               body: JSON.stringify({
+                 policy_data: {
+                   certificate_holder: formData.bedrijfsnaam || `${formData.voornaam} ${formData.achternaam}`,
+                   insured_name: `${formData.voornaam} ${formData.achternaam}`,
+                   start_date: startDate || new Date().toISOString().split("T")[0],
+                   profession: formData.beroep || "Onbekend",
+                   package_type: selectedPkg?.name || "Combi Uitgebreid",
+                 },
+                 lead_id: leadData?.id,
+               }),
+             }
+           );
+           const certResult = await certResponse.json();
+           if (certResponse.ok && certResult.policy) {
+             setCertificateUrl(certResult.policy.pdf_url);
+             setCertificateNumber(certResult.policy.certificate_number);
+           }
+         } catch (certError) {
+           console.error("Certificate generation error:", certError);
+           // Contract is saved, certificate can be generated later from admin
+         }
+
          setIsSubmitted(true);
        } catch (error) {
          console.error("Error submitting application:", error);
-         // Show error toast here if needed
        }
      }
    };
@@ -177,20 +218,25 @@ export function BAVApplicationModule() {
             <p className="text-muted-foreground text-sm sm:text-base mb-1">
               {t("bavApp.thankYouDesc")} <span className="font-semibold text-foreground">{selectedPkg?.name}</span> {t("bavApp.thankYouReceived")}
             </p>
+            {certificateNumber && (
+              <p className="text-sm font-medium text-accent mb-1">
+                Certificaatnummer: {certificateNumber}
+              </p>
+            )}
             <p className="text-muted-foreground text-xs sm:text-sm mb-6">
               {t("bavApp.thankYouFollowUp")}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-              <Button variant="accent" size="default" asChild className="w-full sm:w-auto">
+              {certificateUrl && (
+                <Button variant="accent" size="default" onClick={() => window.open(certificateUrl, "_blank")} className="w-full sm:w-auto">
+                  <ExternalLink className="h-4 w-4" />
+                  Download certificaat
+                </Button>
+              )}
+              <Button variant="outline" size="default" asChild className="w-full sm:w-auto">
                 <Link to="/">
                   <ArrowLeft className="h-4 w-4" />
                   {t("bavApp.backToHome")}
-                </Link>
-              </Button>
-              <Button variant="outline" size="default" asChild className="w-full sm:w-auto">
-                <Link to="/contact">
-                  {t("bavApp.contactUs")}
-                  <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
             </div>
