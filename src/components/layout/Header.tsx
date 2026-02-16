@@ -34,8 +34,8 @@ function useNavItems() {
       label: t("nav.collectief"), 
       isNew: true,
       children: [
-        { href: "/collectieve-inkoop", label: t("nav.collectieveInkoopOverzicht") },
         { href: "/collectief-ledenorganisaties", label: t("nav.collectiefLedenorganisaties") },
+        { href: "/collectieve-inkoop", label: t("nav.collectieveInkoopOverzicht") },
       ]
     },
     { 
