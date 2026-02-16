@@ -194,7 +194,7 @@ export function BAVApplicationModule() {
                               <p className="text-muted-foreground text-sm">{paymentType === "monthly" ? t("home.bavPerMonth") : t("home.bavPerYear")}</p>
                             </div>
                           </div>
-                          {selectedPackage === pkg.id && <div className="absolute top-5 right-5"><CheckCircle className="h-6 w-6 text-accent" /></div>}
+                          {selectedPackage === pkg.id && <div className="absolute bottom-3 right-3"><CheckCircle className="h-5 w-5 text-accent" /></div>}
                         </button>
                       ))}
                     </div>
