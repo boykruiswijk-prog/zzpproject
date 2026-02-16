@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Phone, Mail, MapPin, Clock, Calendar, CheckCircle, MessageCircle } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, CheckCircle, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import teamRoxy from "@/assets/team-roxy.jpg";
@@ -36,10 +36,7 @@ export default function Contact() {
     const bericht = (formDataRaw.get("message") as string) || "";
 
     try {
-      const afasData = { naam, voornaam, achternaam, email, telefoon, beroep, onderwerp, bericht, bron: "website", type: "contact", timestamp: new Date().toISOString() };
-      await fetch("https://shop.zpzaken.nl/bav-jaarlijks", { method: "POST", headers: { "Content-Type": "application/json" }, mode: "no-cors", body: JSON.stringify(afasData) });
-
-      const { error } = await supabase.from("leads").insert({
+       const { error } = await supabase.from("leads").insert({
         type: "contact", voornaam: voornaam || naam, achternaam: achternaam || "-", email, telefoon: telefoon || null, beroep: beroep || null, opmerkingen: `Onderwerp: ${onderwerp}\n\n${bericht}`, bron: "website",
       });
       if (error) console.error("Database error:", error);

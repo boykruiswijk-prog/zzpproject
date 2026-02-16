@@ -25,7 +25,6 @@ import { trackFormStart, trackFormComplete } from "@/lib/tracking";
 interface OnlineAanvraagDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  insuranceType: string;
   insuranceTitle: string;
 }
 
@@ -39,7 +38,6 @@ const steps = [
 export function OnlineAanvraagDialog({
   open,
   onOpenChange,
-  insuranceType,
   insuranceTitle,
 }: OnlineAanvraagDialogProps) {
   const [currentStep, setCurrentStep] = useState(1);
@@ -130,37 +128,7 @@ export function OnlineAanvraagDialog({
     setIsSubmitting(true);
     
     try {
-      // Prepare data for AFAS
-      const afasData = {
-        voornaam: formData.voornaam,
-        achternaam: formData.achternaam,
-        email: formData.email,
-        telefoon: formData.telefoon,
-        geboortedatum: formData.geboortedatum,
-        bedrijfsnaam: formData.bedrijfsnaam,
-        kvkNummer: formData.kvkNummer,
-        beroep: formData.beroep,
-        jaarOmzet: formData.jaarOmzet,
-        verzekeringType: insuranceTitle,
-        dekkingsBedrag: formData.dekkingsBedrag,
-        eigenRisico: formData.eigenRisico,
-        ingangsdatum: formData.ingangsdatum,
-        opmerkingen: formData.opmerkingen,
-        bron: "website",
-        timestamp: new Date().toISOString(),
-      };
-
-      // Send to AFAS (no-cors mode for cross-origin)
-      await fetch("https://shop.zpzaken.nl/bav-jaarlijks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        mode: "no-cors",
-        body: JSON.stringify(afasData),
-      });
-
-      // Also save to database for admin dashboard
+       // Save to database for admin dashboard
       const { error } = await supabase.from("leads").insert({
         type: "verzekering_aanvraag",
         voornaam: formData.voornaam,
@@ -180,10 +148,10 @@ export function OnlineAanvraagDialog({
         bron: "website",
       });
 
-      if (error) {
-        console.error("Database error:", error);
-        // Don't throw - AFAS submission succeeded
-      }
+       if (error) {
+         console.error("Database error:", error);
+         throw error;
+       }
 
       trackFormComplete(insuranceTitle);
       setIsCompleted(true);

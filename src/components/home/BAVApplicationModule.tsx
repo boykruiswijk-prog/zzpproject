@@ -8,11 +8,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Shield, CheckCircle, Building2, User, FileCheck, CreditCard,
-  ArrowRight, ArrowLeft, Calendar, Check, Sparkles, ExternalLink, AlertCircle
+  ArrowRight, ArrowLeft, Check, Sparkles, ExternalLink, AlertCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatedSection } from "@/components/ui/animated-section";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
 
 const packages = [
   { id: "basis", name: "Combi Basis", coverage: "€ 500.000 per gebeurtenis", yearCoverage: "€ 1.000.000 per jaar", priceMonthly: 27.70, priceYearly: 292.40, popular: false },
@@ -24,7 +25,7 @@ const TOTAL_STEPS = 5;
 type ValidationErrors = Record<string, string>;
 
 const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-const isValidPhone = (phone: string) => /^[0-9]{10}$/.test(phone.replace(/[\s\-]/g, ""));
+const isValidPhone = (phone: string) => /^[0-9]{10}$/.test(phone.replace(/[\s-]/g, ""));
 const isValidKvk = (kvk: string) => /^[0-9]{8}$/.test(kvk.trim());
 const isValidIban = (iban: string) => {
   const cleaned = iban.replace(/\s/g, "").toUpperCase();
@@ -42,17 +43,16 @@ function FieldError({ message }: { message?: string }) {
 }
 
 export function BAVApplicationModule() {
-  const { t } = useTranslation();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [selectedPackage, setSelectedPackage] = useState<string>("uitgebreid");
-  const [paymentType, setPaymentType] = useState<"monthly" | "yearly">("monthly");
-  const [startDate, setStartDate] = useState<string>("");
-  const [viaBemiddelaar, setViaBemiddelaar] = useState<boolean | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<"incasso" | "ideal">("incasso");
-  const [incassoAkkoord, setIncassoAkkoord] = useState(false);
-  const [slotverklaringAkkoord, setSlotverklaringAkkoord] = useState(false);
-  const [errors, setErrors] = useState<ValidationErrors>({});
-  const [isSubmitted, setIsSubmitted] = useState(false);
+   const { t } = useTranslation();
+   const [currentStep, setCurrentStep] = useState(1);
+   const [selectedPackage, setSelectedPackage] = useState<string>("uitgebreid");
+   const [paymentType, setPaymentType] = useState<"monthly" | "yearly">("monthly");
+   const [startDate, setStartDate] = useState<string>("");
+   const [viaBemiddelaar, setViaBemiddelaar] = useState<boolean | null>(null);
+   const [incassoAkkoord, setIncassoAkkoord] = useState(false);
+   const [slotverklaringAkkoord, setSlotverklaringAkkoord] = useState(false);
+   const [errors, setErrors] = useState<ValidationErrors>({});
+   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     bedrijfsnaam: "", kvkNummer: "", beroep: "", functie: "", aantalMedewerkers: "",
     voornaam: "", achternaam: "", email: "", telefoon: "",
@@ -112,13 +112,11 @@ export function BAVApplicationModule() {
       if (viaBemiddelaar && !formData.bemiddelaarNaam.trim()) newErrors.bemiddelaarNaam = t("bavApp.valMediatorName");
     }
 
-    if (step === 4) {
-      if (paymentMethod === "incasso") {
-        if (!formData.iban.trim()) newErrors.iban = t("bavApp.valIban");
-        else if (!isValidIban(formData.iban)) newErrors.iban = t("bavApp.valIbanInvalid");
-        if (!incassoAkkoord) newErrors.incassoAkkoord = t("bavApp.valIncasso");
-      }
-    }
+     if (step === 4) {
+       if (!formData.iban.trim()) newErrors.iban = t("bavApp.valIban");
+       else if (!isValidIban(formData.iban)) newErrors.iban = t("bavApp.valIbanInvalid");
+       if (!incassoAkkoord) newErrors.incassoAkkoord = t("bavApp.valIncasso");
+     }
 
     if (step === 5) {
       if (!slotverklaringAkkoord) newErrors.slotverklaring = t("bavApp.valSlotverklaring");
@@ -134,12 +132,33 @@ export function BAVApplicationModule() {
     }
   };
   const prevStep = () => { if (currentStep > 1) { setErrors({}); setCurrentStep(currentStep - 1); } };
-  const handleSubmit = () => {
-    if (validateStep(currentStep)) {
-      // Submit to AFAS + Supabase happens here (existing logic)
-      setIsSubmitted(true);
-    }
-  };
+   const handleSubmit = async () => {
+     if (validateStep(currentStep)) {
+       try {
+         const { error } = await supabase.from("leads").insert({
+           type: "verzekering_aanvraag",
+           voornaam: formData.voornaam,
+           achternaam: formData.achternaam,
+           email: formData.email,
+           telefoon: formData.telefoon || null,
+           bedrijfsnaam: formData.bedrijfsnaam || null,
+           kvk_nummer: formData.kvkNummer || null,
+           beroep: formData.beroep || null,
+           omzet: formData.aantalMedewerkers || null,
+           verzekering_type: selectedPkg?.name || null,
+           verzekerd_bedrag: selectedPkg?.coverage || null,
+           opmerkingen: `IBAN: ${formData.iban}\nOpdrachtgever: ${formData.opdrachtgever}${formData.bemiddelaarNaam ? `\nBemiddelaar: ${formData.bemiddelaarNaam}` : ''}`,
+           bron: "website",
+         });
+
+         if (error) throw error;
+         setIsSubmitted(true);
+       } catch (error) {
+         console.error("Error submitting application:", error);
+         // Show error toast here if needed
+       }
+     }
+   };
 
   return (
     <>
@@ -261,13 +280,12 @@ export function BAVApplicationModule() {
                       </div>
                     </div>
                     <div>
-                      <Label htmlFor="startDate" className="text-sm font-medium mb-2 block">{t("home.bavStartDate")}</Label>
-                      <div className="relative">
-                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                        <Input id="startDate" type="date" value={startDate} onChange={(e) => { setStartDate(e.target.value); if (errors.startDate) setErrors(prev => { const n = { ...prev }; delete n.startDate; return n; }); }} className={cn("pl-10", errors.startDate && "border-destructive")} min={new Date().toISOString().split('T')[0]} />
-                      </div>
-                      <FieldError message={errors.startDate} />
-                    </div>
+                       <Label htmlFor="startDate" className="text-sm font-medium mb-2 block">{t("home.bavStartDate")}</Label>
+                       <div className="relative">
+                         <Input id="startDate" type="date" value={startDate} onChange={(e) => { setStartDate(e.target.value); if (errors.startDate) setErrors(prev => { const n = { ...prev }; delete n.startDate; return n; }); }} className={cn(errors.startDate && "border-destructive")} min={new Date().toISOString().split('T')[0]} />
+                       </div>
+                       <FieldError message={errors.startDate} />
+                     </div>
                   </motion.div>
                 )}
 
