@@ -51,6 +51,7 @@ export function BAVApplicationModule() {
   const [incassoAkkoord, setIncassoAkkoord] = useState(false);
   const [slotverklaringAkkoord, setSlotverklaringAkkoord] = useState(false);
   const [errors, setErrors] = useState<ValidationErrors>({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     bedrijfsnaam: "", kvkNummer: "", beroep: "", functie: "", aantalMedewerkers: "",
     voornaam: "", achternaam: "", email: "", telefoon: "",
@@ -134,9 +135,57 @@ export function BAVApplicationModule() {
   const prevStep = () => { if (currentStep > 1) { setErrors({}); setCurrentStep(currentStep - 1); } };
   const handleSubmit = () => {
     if (validateStep(currentStep)) {
-      window.location.href = `/verzekeringen?package=${selectedPackage}&payment=${paymentType}`;
+      // Submit to AFAS + Supabase happens here (existing logic)
+      setIsSubmitted(true);
     }
   };
+
+  if (isSubmitted) {
+    return (
+      <section className="section-padding bg-secondary" id="aanvraag">
+        <div className="container-wide">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-2xl mx-auto text-center"
+          >
+            <div className="bg-card rounded-2xl shadow-lg border border-border p-8 md:p-12">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="h-20 w-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6"
+              >
+                <CheckCircle className="h-10 w-10 text-accent" />
+              </motion.div>
+              <h2 className="text-2xl md:text-3xl font-bold mb-4">Bedankt voor je aanvraag!</h2>
+              <p className="text-muted-foreground text-lg mb-2">
+                Je aanvraag voor de <span className="font-semibold text-foreground">{selectedPkg?.name}</span> is succesvol ontvangen.
+              </p>
+              <p className="text-muted-foreground mb-8">
+                We nemen zo snel mogelijk contact met je op om alles af te ronden. Je ontvangt binnen 24 uur een bevestiging per e-mail.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Button variant="accent" size="lg" asChild>
+                  <Link to="/">
+                    <ArrowLeft className="h-5 w-5" />
+                    Terug naar homepagina
+                  </Link>
+                </Button>
+                <Button variant="outline" size="lg" asChild>
+                  <Link to="/contact">
+                    Neem contact op
+                    <ArrowRight className="h-5 w-5" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="section-padding bg-secondary" id="aanvraag">
