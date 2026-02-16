@@ -144,35 +144,37 @@ export function BAVApplicationModule() {
   return (
     <>
       <Dialog open={isSubmitted} onOpenChange={(open) => { if (!open) setIsSubmitted(false); }}>
-        <DialogContent className="max-w-md text-center p-8">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 200 }}
-            className="h-20 w-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6"
-          >
-            <CheckCircle className="h-10 w-10 text-accent" />
-          </motion.div>
-          <h2 className="text-2xl font-bold mb-3">Bedankt voor je aanvraag!</h2>
-          <p className="text-muted-foreground mb-1">
-            Je aanvraag voor de <span className="font-semibold text-foreground">{selectedPkg?.name}</span> is succesvol ontvangen.
-          </p>
-          <p className="text-muted-foreground mb-6 text-sm">
-            We nemen zo snel mogelijk contact met je op. Je ontvangt binnen 24 uur een bevestiging per e-mail.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button variant="accent" size="lg" asChild>
-              <Link to="/">
-                <ArrowLeft className="h-5 w-5" />
-                Terug naar homepagina
-              </Link>
-            </Button>
-            <Button variant="outline" size="lg" asChild>
-              <Link to="/contact">
-                Neem contact op
-                <ArrowRight className="h-5 w-5" />
-              </Link>
-            </Button>
+        <DialogContent className="max-w-md p-0 overflow-hidden">
+          <div className="flex flex-col items-center text-center px-6 py-8 sm:px-8 sm:py-10">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 200 }}
+              className="h-16 w-16 rounded-full bg-accent/10 flex items-center justify-center mb-5"
+            >
+              <CheckCircle className="h-8 w-8 text-accent" />
+            </motion.div>
+            <h2 className="text-xl sm:text-2xl font-bold mb-2">Bedankt voor je aanvraag!</h2>
+            <p className="text-muted-foreground text-sm sm:text-base mb-1">
+              Je aanvraag voor de <span className="font-semibold text-foreground">{selectedPkg?.name}</span> is succesvol ontvangen.
+            </p>
+            <p className="text-muted-foreground text-xs sm:text-sm mb-6">
+              We nemen zo snel mogelijk contact met je op. Je ontvangt binnen 24 uur een bevestiging per e-mail.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+              <Button variant="accent" size="default" asChild className="w-full sm:w-auto">
+                <Link to="/">
+                  <ArrowLeft className="h-4 w-4" />
+                  Terug naar home
+                </Link>
+              </Button>
+              <Button variant="outline" size="default" asChild className="w-full sm:w-auto">
+                <Link to="/contact">
+                  Neem contact op
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
