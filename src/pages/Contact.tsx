@@ -165,14 +165,6 @@ export default function Contact() {
                 </div>
               </div>
 
-              <div className="bg-primary/10 rounded-2xl p-8 border border-primary/20">
-                <div className="flex items-center gap-3 mb-4">
-                  <Calendar className="h-6 w-6 text-primary" />
-                  <h3 className="text-lg font-semibold">{t("contact.planCall")}</h3>
-                </div>
-                <p className="text-muted-foreground text-sm mb-4">{t("contact.planCallDesc")}</p>
-                <Button variant="accent" size="sm" className="w-full">{t("contact.openAgenda")}</Button>
-              </div>
             </div>
           </div>
         </div>
