@@ -46,35 +46,37 @@ function PilotCard({ pilot, t }: { pilot: { slug: string; titleKey: string; desc
 
   return (
     <>
-      <AnimatedSection className="bg-card rounded-2xl border border-border p-8 shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-shadow">
+      <AnimatedSection className="bg-card rounded-2xl border border-border p-8 shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-shadow h-full flex flex-col">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
+          <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent flex-shrink-0">
             {pilot.icon}
           </div>
           <h3 className="text-xl font-bold text-foreground">{t(pilot.titleKey)}</h3>
         </div>
-        <p className="text-muted-foreground mb-6">{t(pilot.descKey)}</p>
+        <p className="text-muted-foreground mb-6 flex-grow">{t(pilot.descKey)}</p>
 
-        <div className="mb-2 flex justify-between text-sm">
-          <span className="text-muted-foreground">{t("collectieveInkoop.participants")}</span>
-          <span className="font-semibold text-foreground">{count} / {pilot.goal}</span>
-        </div>
-        <Progress value={progress} className="h-3 mb-6" />
-
-        {pilot.forWhom.length > 0 && (
-          <div className="mb-6">
-            <p className="text-sm font-medium text-foreground mb-2">{t("collectieveInkoop.forWhom")}</p>
-            <div className="flex flex-wrap gap-2">
-              {pilot.forWhom.map((f) => (
-                <span key={f} className="text-xs bg-secondary text-secondary-foreground px-3 py-1 rounded-full">{f}</span>
-              ))}
-            </div>
+        <div className="mt-auto">
+          <div className="mb-2 flex justify-between text-sm">
+            <span className="text-muted-foreground">{t("collectieveInkoop.participants")}</span>
+            <span className="font-semibold text-foreground">{count} / {pilot.goal}</span>
           </div>
-        )}
+          <Progress value={progress} className="h-3 mb-6" />
 
-        <Button onClick={() => setOpen(true)} className="w-full" variant="accent">
-          {t("collectieveInkoop.signUpFree")}
-        </Button>
+          {pilot.forWhom.length > 0 && (
+            <div className="mb-6">
+              <p className="text-sm font-medium text-foreground mb-2">{t("collectieveInkoop.forWhom")}</p>
+              <div className="flex flex-wrap gap-2">
+                {pilot.forWhom.map((f) => (
+                  <span key={f} className="text-xs bg-secondary text-secondary-foreground px-3 py-1 rounded-full">{f}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <Button onClick={() => setOpen(true)} className="w-full" variant="accent">
+            {t("collectieveInkoop.signUpFree")}
+          </Button>
+        </div>
       </AnimatedSection>
 
       <PilotSignupDialog pilot={pilot} open={open} onOpenChange={setOpen} t={t} />
