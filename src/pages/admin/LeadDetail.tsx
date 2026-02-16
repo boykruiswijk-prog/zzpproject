@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { LeadNotes } from "@/components/admin/LeadNotes";
@@ -22,7 +23,12 @@ import {
   Trash2,
   Loader2,
   UserCheck,
+  FileText,
+  Download,
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 import type { Database } from "@/integrations/supabase/types";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
@@ -49,9 +55,71 @@ export default function AdminLeadDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
+  const { toast } = useToast();
   const { data: lead, isLoading } = useLead(id);
   const updateLead = useUpdateLead();
   const deleteLead = useDeleteLead();
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  // Fetch existing policies for this lead
+  const { data: policies, refetch: refetchPolicies } = useQuery({
+    queryKey: ["policies", id],
+    queryFn: async () => {
+      if (!id) return [];
+      const { data, error } = await supabase
+        .from("policies")
+        .select("*")
+        .eq("lead_id", id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!id,
+  });
+
+  const handleGenerateCertificate = async () => {
+    if (!id) return;
+    setIsGenerating(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-certificate`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.access_token}`,
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({ lead_id: id }),
+        }
+      );
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Fout bij genereren");
+      
+      toast({ title: "Certificaat aangemaakt!", description: `Nummer: ${result.policy.certificate_number}` });
+      refetchPolicies();
+
+      // Auto-download
+      if (result.policy.pdf_url) {
+        window.open(result.policy.pdf_url, "_blank");
+      }
+    } catch (error: any) {
+      console.error("Certificate generation error:", error);
+      toast({ title: "Fout", description: error.message, variant: "destructive" });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleDownloadCertificate = async (pdfPath: string) => {
+    const { data } = await supabase.storage
+      .from("certificates")
+      .createSignedUrl(pdfPath, 3600);
+    if (data?.signedUrl) {
+      window.open(data.signedUrl, "_blank");
+    }
+  };
 
   const handleStatusChange = (newStatus: LeadStatus) => {
     if (!id) return;
@@ -314,6 +382,55 @@ export default function AdminLeadDetail() {
                   <span className="text-muted-foreground">Bron:</span>
                   <p className="font-medium capitalize">{lead.bron}</p>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Certificate */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Certificaat
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {policies && policies.length > 0 ? (
+                  <>
+                    {policies.map((p) => (
+                      <div key={p.id} className="flex items-center justify-between p-2 bg-secondary rounded-lg">
+                        <div>
+                          <p className="font-medium text-sm">{p.certificate_number}</p>
+                          <p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString("nl-NL")}</p>
+                        </div>
+                        {p.pdf_url && (
+                          <Button size="sm" variant="outline" onClick={() => handleDownloadCertificate(p.pdf_url!)}>
+                            <Download className="h-3 w-3 mr-1" />
+                            PDF
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={handleGenerateCertificate}
+                      disabled={isGenerating}
+                    >
+                      {isGenerating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <FileText className="h-4 w-4 mr-2" />}
+                      Nieuw certificaat
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    variant="accent"
+                    className="w-full"
+                    onClick={handleGenerateCertificate}
+                    disabled={isGenerating}
+                  >
+                    {isGenerating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <FileText className="h-4 w-4 mr-2" />}
+                    Certificaat genereren
+                  </Button>
+                )}
               </CardContent>
             </Card>
           </div>

@@ -265,6 +265,83 @@ export type Database = {
         }
         Relationships: []
       }
+      policies: {
+        Row: {
+          avb_per_event: string
+          avb_per_year: string
+          bav_per_event: string
+          bav_per_year: string
+          certificate_holder: string
+          certificate_number: string
+          contract_duration: string
+          coverage_area: string
+          created_at: string
+          id: string
+          insured_name: string
+          issued_by: string
+          issued_date: string
+          lead_id: string | null
+          own_risk: string
+          package_type: string
+          pdf_url: string | null
+          profession: string
+          start_date: string
+          updated_at: string
+        }
+        Insert: {
+          avb_per_event?: string
+          avb_per_year?: string
+          bav_per_event?: string
+          bav_per_year?: string
+          certificate_holder: string
+          certificate_number: string
+          contract_duration?: string
+          coverage_area?: string
+          created_at?: string
+          id?: string
+          insured_name: string
+          issued_by?: string
+          issued_date?: string
+          lead_id?: string | null
+          own_risk?: string
+          package_type?: string
+          pdf_url?: string | null
+          profession: string
+          start_date: string
+          updated_at?: string
+        }
+        Update: {
+          avb_per_event?: string
+          avb_per_year?: string
+          bav_per_event?: string
+          bav_per_year?: string
+          certificate_holder?: string
+          certificate_number?: string
+          contract_duration?: string
+          coverage_area?: string
+          created_at?: string
+          id?: string
+          insured_name?: string
+          issued_by?: string
+          issued_date?: string
+          lead_id?: string | null
+          own_risk?: string
+          package_type?: string
+          pdf_url?: string | null
+          profession?: string
+          start_date?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policies_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null

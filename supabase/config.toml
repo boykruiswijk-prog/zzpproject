@@ -2,3 +2,9 @@ project_id = "eugkavokktjwpqaqlwsj"
  
  [functions.scrape-articles]
  verify_jwt = false
+
+ [functions.export-excel]
+ verify_jwt = false
+
+ [functions.generate-certificate]
+ verify_jwt = false
