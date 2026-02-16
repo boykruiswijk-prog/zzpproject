@@ -11,15 +11,21 @@ import homyCapitalLogo from "@/assets/partner-homy-capital.png";
 import circle8Logo from "@/assets/partner-circle8.svg";
 import onefellowLogo from "@/assets/partner-onefellow.png";
 import afmLogo from "@/assets/afm-logo.png";
+import hiscoxLogo from "@/assets/partner-hiscox.webp";
+import zorgZekerheidLogo from "@/assets/partner-zorg-zekerheid.webp";
+import brightPensioenLogo from "@/assets/partner-brightpensioen.webp";
+import movirLogo from "@/assets/partner-movir.webp";
+import centraalBeheerLogo from "@/assets/partner-centraal-beheer.webp";
+import sharePeopleLogo from "@/assets/partner-sharepeople.webp";
 
 // Partner data stays as-is (domain content)
 const partners = [
-  { name: "Hiscox", category: "Verzekeringen", description: "Specialist in beroeps- en bedrijfsaansprakelijkheid en cyberdekkingen.", logo: "https://img.poweredcache.net/zpzaken.nl/wp-content/uploads/2021/05/hiscox.png?rs=fit&w=150&h=100&ssl=1&format=webp", icon: Shield, link: "/diensten#verzekeringen", features: ["Beroepsaansprakelijkheid", "Bedrijfsaansprakelijkheid", "Cyberverzekering"] },
-  { name: "Zorg en Zekerheid", category: "Verzekeringen", description: "Regionale zorgverzekeraar met persoonlijke service en Mirro mentale zorg.", logo: "https://img.poweredcache.net/zpzaken.nl/wp-content/uploads/2021/05/Zorgverzekeraars-1.png?rs=fit&w=800&h=450&ssl=1&format=webp", icon: Heart, link: "/diensten#verzekeringen", features: ["Basisverzekering", "Aanvullende dekking", "Mirro mentale zorg"] },
-  { name: "BrightPensioen", category: "Verzekeringen", description: "Coöperatief pensioen met lage kosten en mede-eigenaarschap.", logo: "https://img.poweredcache.net/zpzaken.nl/wp-content/uploads/2021/05/BrightPensioen_logo_RGB1.png?rs=fit&w=768&h=174&ssl=1&format=webp", icon: PiggyBank, link: "/diensten#verzekeringen", features: ["Lage kosten", "Geen winstoogmerk", "Mede-eigenaarschap"] },
-  { name: "Movir", category: "Verzekeringen", description: "100+ jaar specialist in inkomensbescherming voor professionals.", logo: "https://img.poweredcache.net/zpzaken.nl/wp-content/uploads/2023/01/LogoMovir-e1675076456534.png?rs=fit&w=768&h=542&ssl=1&format=webp", icon: Umbrella, link: "/diensten#verzekeringen", features: ["100+ jaar ervaring", "Maatwerk dekking", "Online of met adviseur"] },
-  { name: "Centraal Beheer", category: "Verzekeringen", description: "Betrouwbare AOV met ledenkorting via ZP Zaken.", logo: "https://img.poweredcache.net/zpzaken.nl/wp-content/uploads/2021/05/cb.jpeg?rs=fit&w=768&h=566&ssl=1&format=webp", icon: Shield, link: "/diensten#verzekeringen", features: ["Ledenkorting", "Betrouwbaar", "Uitgebreide dekking"] },
-  { name: "SharePeople", category: "Verzekeringen", description: "Vernieuwend crowdsurance concept: onderling geregeld.", logo: "https://img.poweredcache.net/zpzaken.nl/wp-content/uploads/2021/05/4-2.png?rs=fit&w=150&h=100&ssl=1&format=webp", icon: Users, link: "/contact", features: ["Crowdsurance", "Onderling geregeld", "Transparant"] },
+  { name: "Hiscox", category: "Verzekeringen", description: "Specialist in beroeps- en bedrijfsaansprakelijkheid en cyberdekkingen.", logo: hiscoxLogo, icon: Shield, link: "/diensten#verzekeringen", features: ["Beroepsaansprakelijkheid", "Bedrijfsaansprakelijkheid", "Cyberverzekering"] },
+  { name: "Zorg en Zekerheid", category: "Verzekeringen", description: "Regionale zorgverzekeraar met persoonlijke service en Mirro mentale zorg.", logo: zorgZekerheidLogo, icon: Heart, link: "/diensten#verzekeringen", features: ["Basisverzekering", "Aanvullende dekking", "Mirro mentale zorg"] },
+  { name: "BrightPensioen", category: "Verzekeringen", description: "Coöperatief pensioen met lage kosten en mede-eigenaarschap.", logo: brightPensioenLogo, icon: PiggyBank, link: "/diensten#verzekeringen", features: ["Lage kosten", "Geen winstoogmerk", "Mede-eigenaarschap"] },
+  { name: "Movir", category: "Verzekeringen", description: "100+ jaar specialist in inkomensbescherming voor professionals.", logo: movirLogo, icon: Umbrella, link: "/diensten#verzekeringen", features: ["100+ jaar ervaring", "Maatwerk dekking", "Online of met adviseur"] },
+  { name: "Centraal Beheer", category: "Verzekeringen", description: "Betrouwbare AOV met ledenkorting via ZP Zaken.", logo: centraalBeheerLogo, icon: Shield, link: "/diensten#verzekeringen", features: ["Ledenkorting", "Betrouwbaar", "Uitgebreide dekking"] },
+  { name: "SharePeople", category: "Verzekeringen", description: "Vernieuwend crowdsurance concept: onderling geregeld.", logo: sharePeopleLogo, icon: Users, link: "/contact", features: ["Crowdsurance", "Onderling geregeld", "Transparant"] },
   { name: "Otentica", category: "Screening", description: "Eenvoudige, snelle en transparante screening voor ondernemers.", logo: otenticaLogo, icon: UserCheck, link: "/diensten#screening", features: ["Snelle verificatie", "Officiële instanties", "In eigen huisstijl"] },
   { name: "Homy Capital", category: "Financiering", description: "Factoring en financiering voor de flexbranche. Facturen binnen 24 uur uitbetaald, 7 dagen per week.", logo: homyCapitalLogo, icon: Banknote, link: "/diensten#financiering", features: ["Uitbetaling binnen 24 uur", "Geautomatiseerde facturering", "Debiteurenbeheer"] },
   { name: "Circle8", category: "Opdrachten", description: "Toonaangevende intermediair op de Nederlandse arbeidsmarkt. Toegang tot opdrachten bij grote opdrachtgevers.", logo: circle8Logo, icon: Briefcase, link: "/contact", features: ["Opdrachten-marktplaats", "Contractmanagement", "Wet DBA compliant"] },

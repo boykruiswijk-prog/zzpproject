@@ -1,35 +1,41 @@
 import { Handshake } from "lucide-react";
+import hiscoxLogo from "@/assets/partner-hiscox.webp";
+import zorgZekerheidLogo from "@/assets/partner-zorg-zekerheid.webp";
+import brightPensioenLogo from "@/assets/partner-brightpensioen.webp";
+import movirLogo from "@/assets/partner-movir.webp";
+import centraalBeheerLogo from "@/assets/partner-centraal-beheer.webp";
+import sharePeopleLogo from "@/assets/partner-sharepeople.webp";
 
 const partners = [
   {
     name: "Hiscox",
     description: "Gespecialiseerde risicodrager achter de beroeps- en bedrijfsaansprakelijkheidsverzekeringen en de cyberdekking.",
-    logo: "https://img.poweredcache.net/zpzaken.nl/wp-content/uploads/2021/05/hiscox.png?rs=fit&w=150&h=100&ssl=1&format=webp",
+    logo: hiscoxLogo,
   },
   {
     name: "Zorg en Zekerheid",
     description: "Elk jaar bieden we met Zorg en Zekerheid een nieuwe zorgdekking aan. Via deze partner is ook Mirro toegankelijk.",
-    logo: "https://img.poweredcache.net/zpzaken.nl/wp-content/uploads/2021/05/Zorgverzekeraars-1.png?rs=fit&w=800&h=450&ssl=1&format=webp",
+    logo: zorgZekerheidLogo,
   },
   {
     name: "BrightPensioen",
     description: "Coöperatie waar je heel simpel je pensioen kunt opbouwen met lage kosten en zonder winstoogmerk.",
-    logo: "https://img.poweredcache.net/zpzaken.nl/wp-content/uploads/2021/05/BrightPensioen_logo_RGB1.png?rs=fit&w=768&h=174&ssl=1&format=webp",
+    logo: brightPensioenLogo,
   },
   {
     name: "Movir",
     description: "Voor een uitstekende arbeidsongeschiktheidsverzekering ga je naar Movir. Online of met hulp van een adviseur.",
-    logo: "https://img.poweredcache.net/zpzaken.nl/wp-content/uploads/2023/01/LogoMovir-e1675076456534.png?rs=fit&w=768&h=542&ssl=1&format=webp",
+    logo: movirLogo,
   },
   {
     name: "Centraal Beheer",
     description: "Prima AOV die je met korting kunt afsluiten als je lid bent bij ZP Zaken.",
-    logo: "https://img.poweredcache.net/zpzaken.nl/wp-content/uploads/2021/05/cb.jpeg?rs=fit&w=768&h=566&ssl=1&format=webp",
+    logo: centraalBeheerLogo,
   },
   {
     name: "SharePeople",
     description: "Geen verzekering maar een crowdsurance oplossing. Alles onderling geregeld.",
-    logo: "https://img.poweredcache.net/zpzaken.nl/wp-content/uploads/2021/05/4-2.png?rs=fit&w=150&h=100&ssl=1&format=webp",
+    logo: sharePeopleLogo,
   },
 ];
 
