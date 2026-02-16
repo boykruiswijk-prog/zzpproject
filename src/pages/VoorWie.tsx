@@ -8,17 +8,18 @@ import { ArrowRight, Monitor, Palette, Wrench, Stethoscope, Briefcase, Rocket, U
 import teamWalking from "@/assets/team-walking.jpg";
 import teamCheers from "@/assets/team-cheers.jpg";
 
-const audiences = [
-  { icon: Rocket, title: "Starters", description: "Net begonnen als zzp'er? Wij helpen je op weg met de basisverzekeringen die je nodig hebt om veilig te ondernemen.", needs: ["Beroeps- of bedrijfsaansprakelijkheid", "Basisadvies over arbeidsongeschiktheid", "Uitleg over verplichte verzekeringen"] },
-  { icon: Briefcase, title: "Ervaren zzp'ers", description: "Al jaren zelfstandig? Check of je verzekeringen nog actueel zijn en optimaliseer je dekking en premie.", needs: ["Review van huidige verzekeringen", "Optimalisatie van dekking en premie", "Uitbreiding naar aanvullende verzekeringen"] },
-  { icon: Monitor, title: "ICT & Tech", description: "Developers, IT-consultants en tech-specialisten. Opdrachtgevers eisen vaak een beroepsaansprakelijkheidsverzekering.", needs: ["Beroepsaansprakelijkheid (vaak verplicht)", "Cyber- en dataverzekeringen", "Hoge verzekerde bedragen mogelijk"] },
-  { icon: Palette, title: "Creatieve sector", description: "Designers, marketeers, fotografen en andere creatieven. Bescherm je werk en je klantrelaties.", needs: ["Beroepsaansprakelijkheid", "Apparatuur- en materiaaldekking", "Intellectueel eigendom bescherming"] },
-  { icon: Wrench, title: "Bouw & Techniek", description: "Aannemers, installateurs en vakmensen. Werk op locatie brengt specifieke risico's met zich mee.", needs: ["Bedrijfsaansprakelijkheid (essentieel)", "Constructie-all-risk dekking", "Gereedschaps- en materiaaldekking"] },
-  { icon: Stethoscope, title: "Zorg & Welzijn", description: "Zzp'ers in de zorg, coaches en therapeuten. Werk met mensen vraagt om specifieke dekking.", needs: ["Beroepsaansprakelijkheid (vaak verplicht)", "Tuchtrechtdekking", "Verzuim- en arbeidsongeschiktheid"] },
-];
+const audienceIcons = [Rocket, Briefcase, Monitor, Palette, Wrench, Stethoscope];
+const audienceKeys = ["starters", "experienced", "ict", "creative", "construction", "healthcare"] as const;
 
 export default function VoorWie() {
   const { t } = useTranslation();
+
+  const audiences = audienceKeys.map((key, i) => ({
+    icon: audienceIcons[i],
+    title: t(`audiences.${key}`),
+    description: t(`audiences.${key}Desc`),
+    needs: t(`audiences.${key}Needs`, { returnObjects: true }) as string[],
+  }));
 
   return (
     <Layout>

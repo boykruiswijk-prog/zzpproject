@@ -1,13 +1,16 @@
 import { Monitor, Target, Package, Eye } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/animated-section";
-
-const reasons = [
-  { icon: Monitor, title: "Volledig online proces", desc: "Minder overhead, lagere kosten voor jou" },
-  { icon: Target, title: "Gericht op kantoorberoepen", desc: "Duidelijk risicoprofiel = scherpere premie" },
-  { icon: Package, title: "Eén bundelpakket", desc: "Helder, minder uitzonderingen, minder administratie" },
-];
+import { useTranslation } from "react-i18next";
 
 export function WhyAffordable() {
+  const { t } = useTranslation();
+
+  const reasons = [
+    { icon: Monitor, title: t("whyAffordable.reason1"), desc: t("whyAffordable.reason1Desc") },
+    { icon: Target, title: t("whyAffordable.reason2"), desc: t("whyAffordable.reason2Desc") },
+    { icon: Package, title: t("whyAffordable.reason3"), desc: t("whyAffordable.reason3Desc") },
+  ];
+
   return (
     <AnimatedSection className="bg-card border border-border rounded-2xl p-6 md:p-8">
       <div className="flex items-center gap-3 mb-5">
@@ -15,8 +18,8 @@ export function WhyAffordable() {
           <Eye className="h-5 w-5 text-accent" />
         </div>
         <div>
-          <h3 className="font-semibold text-base">Waarom deze premie scherp is</h3>
-          <p className="text-xs text-muted-foreground">Transparantie over hoe wij werken</p>
+          <h3 className="font-semibold text-base">{t("whyAffordable.title")}</h3>
+          <p className="text-xs text-muted-foreground">{t("whyAffordable.subtitle")}</p>
         </div>
       </div>
 
@@ -35,7 +38,7 @@ export function WhyAffordable() {
       </div>
 
       <p className="text-xs text-muted-foreground border-t border-border pt-4">
-        <strong>Zo verdienen wij ons geld:</strong> ZP Zaken ontvangt een provisie van de verzekeraar bij het afsluiten van een polis. Je betaalt nooit extra door onze tussenkomst — onze premies zijn gelijk aan of lager dan rechtstreeks.
+        <strong>{t("whyAffordable.disclaimer")}</strong> {t("whyAffordable.disclaimerText")}
       </p>
     </AnimatedSection>
   );

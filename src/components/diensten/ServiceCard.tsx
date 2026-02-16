@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, ArrowRight, LucideIcon, Shield } from "lucide-react";
 import { motion } from "framer-motion";
@@ -21,6 +22,7 @@ interface ServiceCardProps {
 export function ServiceCard({
   id, icon: Icon, title, subtitle, description, features, forWho, cta, href, partners, backgroundImage, index,
 }: ServiceCardProps) {
+  const { t } = useTranslation();
   const isReversed = index % 2 === 1;
 
   const structuredData = {
@@ -76,7 +78,7 @@ export function ServiceCard({
             ))}
           </motion.div>
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.6 }} className="inline-flex items-center gap-2 bg-card/90 backdrop-blur-sm text-foreground px-4 py-2.5 rounded-xl mb-8 shadow-lg" itemProp="audience" itemScope itemType="https://schema.org/Audience">
-            <span className="text-xs text-muted-foreground">Geschikt voor:</span>
+            <span className="text-xs text-muted-foreground">{t("shared.suitableFor")}</span>
             <span className="text-sm font-medium" itemProp="audienceType">{forWho}</span>
           </motion.div>
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.7 }} className="flex flex-wrap gap-4">
@@ -84,7 +86,7 @@ export function ServiceCard({
               <LocalizedLink to={href}>{cta}<ArrowRight className="h-5 w-5" /></LocalizedLink>
             </Button>
             <Button variant="heroOutline" size="lg" asChild className="hover:scale-105 transition-transform duration-200">
-              <LocalizedLink to="/contact">Vraag advies aan</LocalizedLink>
+              <LocalizedLink to="/contact">{t("shared.askAdvice")}</LocalizedLink>
             </Button>
           </motion.div>
         </motion.div>

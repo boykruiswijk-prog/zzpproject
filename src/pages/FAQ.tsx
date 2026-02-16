@@ -123,13 +123,13 @@ export default function FAQ() {
           {/* Internal linking */}
           <div className="flex flex-wrap justify-center gap-3 pt-6 border-t border-border">
             <LocalizedLink to="/verzekeringen" className="text-sm text-muted-foreground hover:text-accent transition-colors">
-              → Bekijk verzekeringen
+              {t("faqLinks.viewInsurance")}
             </LocalizedLink>
             <LocalizedLink to="/kennisbank" className="text-sm text-muted-foreground hover:text-accent transition-colors">
-              → Kennisbank artikelen
+              {t("faqLinks.knowledgeBase")}
             </LocalizedLink>
             <LocalizedLink to="/diensten" className="text-sm text-muted-foreground hover:text-accent transition-colors">
-              → Alle diensten
+              {t("faqLinks.allServices")}
             </LocalizedLink>
           </div>
         </div>

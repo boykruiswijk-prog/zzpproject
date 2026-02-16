@@ -1,5 +1,6 @@
-import { Shield, Star, MapPin, FileText } from "lucide-react";
+import { Shield, Star, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 interface TrustBarProps {
   variant?: "light" | "dark";
@@ -7,13 +8,14 @@ interface TrustBarProps {
 }
 
 export function TrustBar({ variant = "light", className = "" }: TrustBarProps) {
+  const { t } = useTranslation();
   const isDark = variant === "dark";
 
   const items = [
-    { icon: Shield, label: "AFM vergunning 12050636" },
-    { icon: Star, label: "4.9/5 Google Reviews" },
-    { icon: Shield, label: "Kifid aangesloten" },
-    { icon: MapPin, label: "Tupolevlaan 41, Schiphol-Rijk" },
+    { icon: Shield, label: t("trustBar.afm") },
+    { icon: Star, label: t("trustBar.reviews") },
+    { icon: Shield, label: t("trustBar.kifid") },
+    { icon: MapPin, label: t("trustBar.location") },
   ];
 
   return (
