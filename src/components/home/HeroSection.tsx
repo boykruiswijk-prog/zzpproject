@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle, Phone, Shield, Users } from "lucide-react";
+import { ArrowRight, CheckCircle, Phone, Shield, Star, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { TrustBar } from "@/components/shared/TrustBar";
@@ -114,7 +114,13 @@ export function HeroSection() {
                 <Phone className="h-4 w-4" />
                 <span>023 - 201 0502</span>
               </a>
-              
+              <div className="inline-flex items-center gap-1 text-primary-foreground/70">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-3.5 w-3.5 fill-accent text-accent" />
+                ))}
+                <span className="text-sm font-semibold text-primary-foreground ml-1">4.9/5</span>
+                <span className="text-sm text-primary-foreground/60 ml-1">· 2.500+ tevreden zzp'ers</span>
+              </div>
             </motion.div>
           </motion.div>
 
