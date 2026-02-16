@@ -27,6 +27,10 @@ import { useQuery } from "@tanstack/react-query";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { Check, Users, Zap, Monitor, Shield, ArrowRight, Mail, Cpu, Phone } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/animated-section";
+import pilotStroomImg from "@/assets/pilot-stroom.jpg";
+import pilotSoftwareImg from "@/assets/pilot-software.jpg";
+import pilotAiToolsImg from "@/assets/pilot-ai-tools.jpg";
+import pilotTelefonieImg from "@/assets/pilot-telefonie.jpg";
 
 function usePilotCount(slug: string) {
   return useQuery({
@@ -39,20 +43,25 @@ function usePilotCount(slug: string) {
   });
 }
 
-function PilotCard({ pilot, t }: { pilot: { slug: string; titleKey: string; descKey: string; icon: React.ReactNode; goal: number; forWhom: string[]; interests?: string[]; formType: "energy" | "software" }; t: any }) {
+function PilotCard({ pilot, t }: { pilot: { slug: string; titleKey: string; descKey: string; icon: React.ReactNode; goal: number; forWhom: string[]; interests?: string[]; formType: "energy" | "software"; image: string }; t: any }) {
   const [open, setOpen] = useState(false);
   const { data: count = 0 } = usePilotCount(pilot.slug);
   const progress = Math.min((count / pilot.goal) * 100, 100);
 
   return (
     <>
-      <AnimatedSection className="bg-card rounded-2xl border border-border p-8 shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-shadow h-full flex flex-col">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent flex-shrink-0">
-            {pilot.icon}
+      <AnimatedSection className="rounded-2xl border border-border shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-shadow h-full flex flex-col overflow-hidden">
+        <div className="relative h-36 w-full overflow-hidden">
+          <img src={pilot.image} alt="" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/60" />
+          <div className="absolute bottom-4 left-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white flex-shrink-0">
+              {pilot.icon}
+            </div>
+            <h3 className="text-lg font-bold text-white drop-shadow-md">{t(pilot.titleKey)}</h3>
           </div>
-          <h3 className="text-xl font-bold text-foreground">{t(pilot.titleKey)}</h3>
         </div>
+        <div className="p-6 flex flex-col flex-grow bg-card">
         <p className="text-muted-foreground mb-6 flex-grow">{t(pilot.descKey)}</p>
 
         <div className="mt-auto">
@@ -76,6 +85,7 @@ function PilotCard({ pilot, t }: { pilot: { slug: string; titleKey: string; desc
           <Button onClick={() => setOpen(true)} className="w-full" variant="accent">
             {t("collectieveInkoop.signUpFree")}
           </Button>
+        </div>
         </div>
       </AnimatedSection>
 
@@ -250,10 +260,10 @@ export default function CollectieveInkoop() {
   const { t } = useTranslation();
 
   const pilots = [
-    { slug: "stroom-2026", titleKey: "collectieveInkoop.pilotStroom", descKey: "collectieveInkoop.pilotStroomDesc", icon: <Zap className="h-6 w-6" />, goal: 100, forWhom: ["Privé huishouden", "Zakelijk energiecontract"], formType: "energy" as const },
-    { slug: "software-deals", titleKey: "collectieveInkoop.pilotSoftware", descKey: "collectieveInkoop.pilotSoftwareDesc", icon: <Monitor className="h-6 w-6" />, goal: 75, forWhom: [], interests: ["Boekhoudsoftware", "CRM", "AI-tools", "Hosting / e-mail"], formType: "software" as const },
-    { slug: "ai-tools-bundel", titleKey: "collectieveInkoop.pilotAiTools", descKey: "collectieveInkoop.pilotAiToolsDesc", icon: <Cpu className="h-6 w-6" />, goal: 50, forWhom: [], interests: ["ChatGPT", "Canva", "Notion", "Projectmanagement"], formType: "software" as const },
-    { slug: "telefonie", titleKey: "collectieveInkoop.pilotTelefonie", descKey: "collectieveInkoop.pilotTelefonieDesc", icon: <Phone className="h-6 w-6" />, goal: 75, forWhom: ["Zakelijk abonnement", "Privé abonnement"], formType: "energy" as const },
+    { slug: "stroom-2026", titleKey: "collectieveInkoop.pilotStroom", descKey: "collectieveInkoop.pilotStroomDesc", icon: <Zap className="h-6 w-6" />, goal: 100, forWhom: ["Privé huishouden", "Zakelijk energiecontract"], formType: "energy" as const, image: pilotStroomImg },
+    { slug: "software-deals", titleKey: "collectieveInkoop.pilotSoftware", descKey: "collectieveInkoop.pilotSoftwareDesc", icon: <Monitor className="h-6 w-6" />, goal: 75, forWhom: [], interests: ["Boekhoudsoftware", "CRM", "AI-tools", "Hosting / e-mail"], formType: "software" as const, image: pilotSoftwareImg },
+    { slug: "ai-tools-bundel", titleKey: "collectieveInkoop.pilotAiTools", descKey: "collectieveInkoop.pilotAiToolsDesc", icon: <Cpu className="h-6 w-6" />, goal: 50, forWhom: [], interests: ["ChatGPT", "Canva", "Notion", "Projectmanagement"], formType: "software" as const, image: pilotAiToolsImg },
+    { slug: "telefonie", titleKey: "collectieveInkoop.pilotTelefonie", descKey: "collectieveInkoop.pilotTelefonieDesc", icon: <Phone className="h-6 w-6" />, goal: 75, forWhom: ["Zakelijk abonnement", "Privé abonnement"], formType: "energy" as const, image: pilotTelefonieImg },
   ];
 
   const steps = [
