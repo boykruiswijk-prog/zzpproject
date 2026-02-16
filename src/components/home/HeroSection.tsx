@@ -4,7 +4,6 @@ import { ArrowRight, CheckCircle, Phone, Shield, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { TrustBar } from "@/components/shared/TrustBar";
-import { MiniSocialProof } from "@/components/shared/MiniSocialProof";
 import { trackCTA, trackPhone } from "@/lib/tracking";
 import teamWalking from "@/assets/team-walking.jpg";
 
@@ -115,7 +114,7 @@ export function HeroSection() {
                 <Phone className="h-4 w-4" />
                 <span>023 - 201 0502</span>
               </a>
-              <MiniSocialProof variant="dark" />
+              
             </motion.div>
           </motion.div>
 
