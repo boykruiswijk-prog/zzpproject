@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -143,13 +144,15 @@ export function BAVApplicationModule() {
         <AnimatedSection className="text-center max-w-2xl mx-auto mb-10">
           <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
             <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-full text-sm font-medium">
+              className="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-full text-sm font-medium cursor-default">
               <Sparkles className="h-4 w-4" />{t("home.bavOnline")}
             </motion.div>
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }}
-              className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium">
-              <Shield className="h-4 w-4" />Verzekeringen, Administratie & meer
-            </motion.div>
+            <Link to="/diensten">
+              <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }}
+                className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium hover:bg-primary/20 transition-colors cursor-pointer">
+                <Shield className="h-4 w-4" />Verzekeringen, Administratie & meer
+              </motion.div>
+            </Link>
           </div>
           <h2 className="mb-4">{t("home.bavTitle")} <span className="text-accent">{t("home.bavSubtitle")}</span></h2>
           <p className="text-muted-foreground">{t("home.bavDescription")}</p>
