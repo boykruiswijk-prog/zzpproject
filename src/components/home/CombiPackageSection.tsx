@@ -8,10 +8,10 @@ export function CombiPackageSection() {
   const { t } = useTranslation();
 
   const benefits = [
-    { icon: Shield, title: t("home.verzekeringen"), description: t("home.verzekeringenDesc") },
-    { icon: UserCheck, title: t("home.screeningTitle"), description: t("home.screeningDesc") },
-    { icon: Headphones, title: t("home.persoonlijkAdvies"), description: t("home.persoonlijkAdviesDesc") },
-    { icon: Heart, title: t("home.menselijkeMaat"), description: t("home.menselijkeMaatDesc") },
+    { icon: Shield, title: t("home.verzekeringen"), description: t("home.verzekeringenDesc"), href: "/diensten#verzekeringen" },
+    { icon: UserCheck, title: t("home.screeningTitle"), description: t("home.screeningDesc"), href: "/diensten#screening" },
+    { icon: Headphones, title: t("home.persoonlijkAdvies"), description: t("home.persoonlijkAdviesDesc"), href: "/contact" },
+    { icon: Heart, title: t("home.menselijkeMaat"), description: t("home.menselijkeMaatDesc"), href: "/over-ons" },
   ];
 
   return (
@@ -27,13 +27,13 @@ export function CombiPackageSection() {
         <StaggerContainer className="flex flex-wrap justify-center gap-8 md:gap-12 mb-10" staggerDelay={0.15}>
           {benefits.map((benefit) => (
             <StaggerItem key={benefit.title}>
-              <div className="flex flex-col items-center text-center max-w-[140px] group">
+              <LocalizedLink to={benefit.href} className="flex flex-col items-center text-center max-w-[140px] group cursor-pointer">
                 <div className="h-12 w-12 rounded-full bg-accent/10 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-accent/20 transition-all duration-300">
                   <benefit.icon className="h-5 w-5 text-accent" />
                 </div>
-                <h3 className="font-medium text-sm mb-1">{benefit.title}</h3>
+                <h3 className="font-medium text-sm mb-1 group-hover:text-primary transition-colors">{benefit.title}</h3>
                 <p className="text-xs text-muted-foreground">{benefit.description}</p>
-              </div>
+              </LocalizedLink>
             </StaggerItem>
           ))}
         </StaggerContainer>
