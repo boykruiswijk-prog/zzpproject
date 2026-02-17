@@ -163,7 +163,13 @@ export default function AdminLeadDetail() {
       refetchInvoices();
 
       if (result.invoice.pdf_url) {
-        window.open(result.invoice.pdf_url, "_blank");
+        const a = document.createElement("a");
+        a.href = result.invoice.pdf_url;
+        a.download = `${result.invoice.invoice_number}.pdf`;
+        a.target = "_blank";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
       }
     } catch (error: any) {
       console.error("Invoice generation error:", error);
@@ -178,7 +184,13 @@ export default function AdminLeadDetail() {
       .from("certificates")
       .createSignedUrl(pdfPath, 3600);
     if (data?.signedUrl) {
-      window.open(data.signedUrl, "_blank");
+      const a = document.createElement("a");
+      a.href = data.signedUrl;
+      a.download = pdfPath.split("/").pop() || "factuur.pdf";
+      a.target = "_blank";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
   };
 
