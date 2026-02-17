@@ -424,16 +424,16 @@ serve(async (req) => {
     drawRow(
       "Dekkingsgebied:",
       policy.coverage_area ||
-        "De verzekering biedt dekking ongeacht waar in de EU het handelen\nen/of nalaten zich heeft voorgedaan.",
+        "De verzekering biedt dekking ongeacht waar\nin de EU het handelen en/of nalaten zich\nheeft voorgedaan.",
       y
     );
 
     // Contractduur
-    y -= 16 + lineHeight;
+    y -= 16 + lineHeight * 2;
     drawRow(
       "Contractduur:",
       policy.contract_duration ||
-        "12 maanden doorlopend, met stilzwijgende verlenging voor telkens 12 maanden,\nper direct opzegbaar.",
+        "12 maanden doorlopend, met stilzwijgende\nverlenging voor telkens 12 maanden,\nper direct opzegbaar.",
       y
     );
 
