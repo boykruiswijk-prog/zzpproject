@@ -15,6 +15,7 @@ export function useLeads(filters?: {
 }) {
   return useQuery({
     queryKey: ["leads", filters],
+    placeholderData: (previousData) => previousData,
     queryFn: async () => {
       let query = supabase
         .from("leads")
