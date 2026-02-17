@@ -155,6 +155,108 @@ export type Database = {
         }
         Relationships: []
       }
+      invoices: {
+        Row: {
+          amount_excl_btw: number
+          amount_incl_btw: number
+          bank_account: string
+          bank_name: string
+          btw_amount: number
+          btw_percentage: number
+          client_address: string | null
+          client_city: string | null
+          client_name: string
+          client_postcode: string | null
+          company_name: string | null
+          created_at: string
+          description: string
+          due_date: string
+          id: string
+          invoice_date: string
+          invoice_number: string
+          kvk_nummer: string | null
+          lead_id: string | null
+          package_type: string
+          payment_method: string
+          payment_terms: string
+          pdf_url: string | null
+          policy_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount_excl_btw?: number
+          amount_incl_btw?: number
+          bank_account?: string
+          bank_name?: string
+          btw_amount?: number
+          btw_percentage?: number
+          client_address?: string | null
+          client_city?: string | null
+          client_name: string
+          client_postcode?: string | null
+          company_name?: string | null
+          created_at?: string
+          description?: string
+          due_date?: string
+          id?: string
+          invoice_date?: string
+          invoice_number?: string
+          kvk_nummer?: string | null
+          lead_id?: string | null
+          package_type?: string
+          payment_method?: string
+          payment_terms?: string
+          pdf_url?: string | null
+          policy_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount_excl_btw?: number
+          amount_incl_btw?: number
+          bank_account?: string
+          bank_name?: string
+          btw_amount?: number
+          btw_percentage?: number
+          client_address?: string | null
+          client_city?: string | null
+          client_name?: string
+          client_postcode?: string | null
+          company_name?: string | null
+          created_at?: string
+          description?: string
+          due_date?: string
+          id?: string
+          invoice_date?: string
+          invoice_number?: string
+          kvk_nummer?: string | null
+          lead_id?: string | null
+          package_type?: string
+          payment_method?: string
+          payment_terms?: string
+          pdf_url?: string | null
+          policy_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_notes: {
         Row: {
           content: string
