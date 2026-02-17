@@ -278,10 +278,15 @@ serve(async (req) => {
       sectionY -= lineHeight;
     }
 
-    // Period line in italic
+    // Period line in italic - adjust based on payment frequency
     const startDate = formatDateLong(invoice.invoice_date);
     const endDate = new Date(invoice.invoice_date);
-    endDate.setFullYear(endDate.getFullYear() + 1);
+    const isMonthlyPayment = data.betaalfrequentie === "Maandelijks";
+    if (isMonthlyPayment) {
+      endDate.setMonth(endDate.getMonth() + 1);
+    } else {
+      endDate.setFullYear(endDate.getFullYear() + 1);
+    }
     const endDateStr = `${endDate.getDate()}-${endDate.getMonth() + 1}-${endDate.getFullYear()}`;
     page.drawText(`Periode: ${startDate} t/m ${endDateStr}`, { x: colDesc, y: sectionY, size: 9, font: helveticaOblique, color: black });
 
