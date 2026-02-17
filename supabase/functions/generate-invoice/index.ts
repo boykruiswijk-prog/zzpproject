@@ -174,14 +174,30 @@ serve(async (req) => {
       return d.toLocaleDateString("nl-NL", { day: "2-digit", month: "2-digit", year: "numeric" });
     };
 
+    // === EMBED LOGO ===
+    let logoImage;
+    try {
+      const logoUrl = `${supabaseUrl}/storage/v1/object/public/certificates/assets/logo-zp.jpg`;
+      const logoResponse = await fetch(logoUrl);
+      const logoBytes = new Uint8Array(await logoResponse.arrayBuffer());
+      logoImage = await pdfDoc.embedJpg(logoBytes);
+    } catch (e) {
+      console.error("Logo embed error:", e);
+    }
+
     let y = pageHeight - 60;
 
     // === HEADER ===
-    page.drawText("ZP Zaken B.V.", { x: leftMargin, y, size: 18, font: helveticaBold, color: brandRed });
+    const logoSize = 45;
+    if (logoImage) {
+      page.drawImage(logoImage, { x: leftMargin, y: y - logoSize + 18, width: logoSize, height: logoSize });
+    }
+    const textStartX = logoImage ? leftMargin + logoSize + 10 : leftMargin;
+    page.drawText("ZP Zaken B.V.", { x: textStartX, y, size: 18, font: helveticaBold, color: brandRed });
     y -= 16;
-    page.drawText("Tupolevlaan 41, 1119 NW Schiphol-Rijk", { x: leftMargin, y, size: 8, font: helvetica, color: gray });
+    page.drawText("Tupolevlaan 41, 1119 NW Schiphol-Rijk", { x: textStartX, y, size: 8, font: helvetica, color: gray });
     y -= 11;
-    page.drawText("AFM vergunningsnummer: 12050363", { x: leftMargin, y, size: 8, font: helvetica, color: gray });
+    page.drawText("AFM vergunningsnummer: 12050363", { x: textStartX, y, size: 8, font: helvetica, color: gray });
 
     // Invoice title - right aligned
     const titleText = "FACTUUR";
