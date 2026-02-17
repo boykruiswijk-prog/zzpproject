@@ -472,6 +472,17 @@ serve(async (req) => {
     y -= 20;
     drawRow("Voor gezien ZP Zaken:", policy.issued_by, y);
 
+    // === Footer text ===
+    const footerText1 = "De verzekeringsmantel van ZP Zaken zijn alleen toegankelijk voor klanten van ZP Zaken en treedt hierbij op geen enkele";
+    const footerText2 = "wijze op als financiële dienstverlener of bemiddelaar zoals gesteld onder de Wft. De verstrekte gegevens zullen strikt";
+    const footerText3 = "vertrouwelijk worden behandeld. ZP Zaken in ingeschreven in het register Wft bij de AFM onder vergunningsnummer: 12050363.";
+    const footerFontSize = 6.5;
+    const footerY = 38;
+
+    page.drawText(footerText1, { x: labelX, y: footerY + 16, size: footerFontSize, font: helvetica, color: gray });
+    page.drawText(footerText2, { x: labelX, y: footerY + 8, size: footerFontSize, font: helvetica, color: gray });
+    page.drawText(footerText3, { x: labelX, y: footerY, size: footerFontSize, font: helvetica, color: gray });
+
     // === Save & upload PDF ===
     const pdfBytes = await pdfDoc.save();
     const fileName = `${policy.certificate_number}.pdf`;
