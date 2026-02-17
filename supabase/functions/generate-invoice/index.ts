@@ -88,7 +88,7 @@ serve(async (req) => {
 
     // Calculate BTW
     const amountExcl = parseFloat(data.amount_excl_btw) || 0;
-    const btwPercentage = parseFloat(data.btw_percentage) || 21;
+    const btwPercentage = parseFloat(data.btw_percentage) || 0;
     const btwAmount = Math.round(amountExcl * (btwPercentage / 100) * 100) / 100;
     const amountIncl = Math.round((amountExcl + btwAmount) * 100) / 100;
 

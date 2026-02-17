@@ -1,0 +1,1 @@
+ALTER TABLE public.invoices ALTER COLUMN btw_percentage SET DEFAULT 0;
