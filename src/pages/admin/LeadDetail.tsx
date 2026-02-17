@@ -424,7 +424,7 @@ export default function AdminLeadDetail() {
                         <span className="text-muted-foreground text-sm">
                           Opmerkingen:
                         </span>
-                        <p className="mt-1 text-sm bg-secondary/50 p-3 rounded-lg">
+                        <p className="mt-1 text-sm bg-secondary/50 p-3 rounded-lg whitespace-pre-line">
                           {lead.opmerkingen}
                         </p>
                       </div>
