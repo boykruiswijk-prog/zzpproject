@@ -199,6 +199,25 @@ serve(async (req) => {
       return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
     };
 
+    // Helper: wrap text to fit within maxWidth (in PDF points)
+    const wrapText = (text: string, font: typeof helvetica, size: number, maxWidth: number): string[] => {
+      const words = text.split(" ");
+      const lines: string[] = [];
+      let currentLine = "";
+      for (const word of words) {
+        const testLine = currentLine ? `${currentLine} ${word}` : word;
+        const width = font.widthOfTextAtSize(testLine, size);
+        if (width > maxWidth && currentLine) {
+          lines.push(currentLine);
+          currentLine = word;
+        } else {
+          currentLine = testLine;
+        }
+      }
+      if (currentLine) lines.push(currentLine);
+      return lines;
+    };
+
     // Helper: draw a label + value row
     const drawRow = (
       label: string,
@@ -333,18 +352,19 @@ serve(async (req) => {
 
     // Italicized note
     y -= lineHeight + 5;
-    page.drawText(
-      'Waar op het polis blad wordt vermeld "per jaar voor alle leden tezamen" wordt',
-      { x: valueX, y, size: smallFontSize, font: helveticaOblique, color: gray }
-    );
-    y -= 10;
-    page.drawText("gerefereerd aan het verzekerd bedrag per jaar.", {
-      x: valueX,
-      y,
-      size: smallFontSize,
-      font: helveticaOblique,
-      color: gray,
+    const maxValueWidth = pageWidth - valueX - 40; // right margin of 40pt
+    const noteText = 'Waar op het polis blad wordt vermeld "per jaar voor alle leden tezamen" wordt gerefereerd aan het verzekerd bedrag per jaar.';
+    const noteLines = wrapText(noteText, helveticaOblique, smallFontSize, maxValueWidth);
+    noteLines.forEach((line: string, i: number) => {
+      page.drawText(line, {
+        x: valueX,
+        y: y - i * 10,
+        size: smallFontSize,
+        font: helveticaOblique,
+        color: gray,
+      });
     });
+    y -= (noteLines.length - 1) * 10;
 
     // Eigen risico
     y -= 20;
@@ -421,21 +441,23 @@ serve(async (req) => {
 
     // Dekkingsgebied
     y -= 20;
-    drawRow(
-      "Dekkingsgebied:",
-      policy.coverage_area ||
-        "De verzekering biedt dekking ongeacht waar\nin de EU het handelen en/of nalaten zich\nheeft voorgedaan.",
-      y
-    );
+    const dekkingText = policy.coverage_area || "De verzekering biedt dekking ongeacht waar in de EU het handelen en/of nalaten zich heeft voorgedaan.";
+    const dekkingLines = wrapText(dekkingText, helvetica, fontSize, maxValueWidth);
+    page.drawText("Dekkingsgebied:", { x: labelX, y, size: fontSize, font: helvetica, color: gray });
+    dekkingLines.forEach((line: string, i: number) => {
+      page.drawText(line, { x: valueX, y: y - i * lineHeight, size: fontSize, font: helvetica, color: black });
+    });
+    y -= (dekkingLines.length - 1) * lineHeight;
 
     // Contractduur
-    y -= 16 + lineHeight * 2;
-    drawRow(
-      "Contractduur:",
-      policy.contract_duration ||
-        "12 maanden doorlopend, met stilzwijgende\nverlenging voor telkens 12 maanden,\nper direct opzegbaar.",
-      y
-    );
+    y -= 20;
+    const contractText = policy.contract_duration || "12 maanden doorlopend, met stilzwijgende verlenging voor telkens 12 maanden, per direct opzegbaar.";
+    const contractLines = wrapText(contractText, helvetica, fontSize, maxValueWidth);
+    page.drawText("Contractduur:", { x: labelX, y, size: fontSize, font: helvetica, color: gray });
+    contractLines.forEach((line: string, i: number) => {
+      page.drawText(line, { x: valueX, y: y - i * lineHeight, size: fontSize, font: helvetica, color: black });
+    });
+    y -= (contractLines.length - 1) * lineHeight;
 
     // Tussenpersoon
     y -= 16 + lineHeight;
