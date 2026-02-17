@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { AnimatedSection } from "@/components/ui/animated-section";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const packages = [
   { id: "basis", name: "Combi Basis", coverage: "€ 500.000 per gebeurtenis", yearCoverage: "€ 1.000.000 per jaar", priceMonthly: 27.70, priceYearly: 292.40, popular: false },
@@ -44,6 +45,7 @@ function FieldError({ message }: { message?: string }) {
 
 export function BAVApplicationModule() {
    const { t } = useTranslation();
+   const { toast } = useToast();
    const [currentStep, setCurrentStep] = useState(1);
    const [selectedPackage, setSelectedPackage] = useState<string>("uitgebreid");
    const [paymentType, setPaymentType] = useState<"monthly" | "yearly">("monthly");
@@ -152,11 +154,16 @@ export function BAVApplicationModule() {
            bron: "website",
          });
 
-         if (error) throw error;
-         setIsSubmitted(true);
-       } catch (error) {
-         console.error("Error submitting application:", error);
-       }
+      if (error) throw error;
+          setIsSubmitted(true);
+        } catch (error) {
+          console.error("Error submitting application:", error);
+          toast({
+            title: "Er ging iets mis",
+            description: "Probeer het opnieuw of neem telefonisch contact op: 023 - 201 0502",
+            variant: "destructive",
+          });
+        }
      }
    };
 
@@ -197,7 +204,7 @@ export function BAVApplicationModule() {
           </div>
         </DialogContent>
       </Dialog>
-    <section className="section-padding bg-secondary" id="aanvraag">
+    <section className="section-padding bg-secondary" id="combinatiepolis">
       <div className="container-wide">
         <AnimatedSection className="text-center max-w-2xl mx-auto mb-10">
           <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
