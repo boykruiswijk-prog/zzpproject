@@ -242,8 +242,8 @@ serve(async (req) => {
     // The template PNG is 1654x2339 pixels, mapped to 595.28x841.89 pts
     // =================================================================
 
-    // Certificaathouder: ~line at Y=625 from bottom
-    let y = 625;
+    // Certificaathouder: lowered to avoid overlapping with template header
+    let y = 590;
     drawRow("Certificaathouder:", policy.certificate_holder, y);
 
     // Verzekeringsnemer:
