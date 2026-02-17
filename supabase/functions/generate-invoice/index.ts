@@ -255,7 +255,6 @@ serve(async (req) => {
 
     page.drawText("Omschrijving", { x: colDesc, y, size: 9, font: helveticaBold, color: rgb(1, 1, 1) });
     page.drawText("Bedrag", { x: colAmount, y, size: 9, font: helveticaBold, color: rgb(1, 1, 1) });
-    page.drawText("BTW", { x: colBtw, y, size: 9, font: helveticaBold, color: rgb(1, 1, 1) });
     page.drawText("Totaal", { x: colTotal, y, size: 9, font: helveticaBold, color: rgb(1, 1, 1) });
 
     // === TABLE ROW ===
@@ -266,7 +265,6 @@ serve(async (req) => {
       page.drawText(line, { x: colDesc, y: y - i * 13, size: 9, font: helvetica, color: black });
     });
     page.drawText(formatCurrency(amountExcl), { x: colAmount, y, size: 9, font: helvetica, color: black });
-    page.drawText(`${btwPercentage}%`, { x: colBtw, y, size: 9, font: helvetica, color: black });
     page.drawText(formatCurrency(amountIncl), { x: colTotal, y, size: 9, font: helveticaBold, color: black });
 
     y -= Math.max(descLines.length * 13, 13) + 5;
@@ -286,7 +284,7 @@ serve(async (req) => {
 
     drawTotalRow("Subtotaal:", formatCurrency(amountExcl), y);
     y -= lineHeight;
-    drawTotalRow(`BTW (${btwPercentage}%):`, formatCurrency(btwAmount), y);
+    page.drawText("Vrijgesteld van BTW", { x: colAmount, y, size: 9, font: helvetica, color: gray });
     y -= lineHeight + 5;
     page.drawLine({ start: { x: colAmount - 10, y: y + 12 }, end: { x: rightMargin, y: y + 12 }, thickness: 1, color: brandRed });
     drawTotalRow("Totaal:", formatCurrency(amountIncl), y, true);
