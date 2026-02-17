@@ -57,7 +57,6 @@ serve(async (req) => {
 
     // Build invoice data from lead if not provided
     let data = invoice_data;
-    // Package price mapping (yearly, excl. BTW)
     const packagePrices: Record<string, number> = {
       "Combi Basis": 292.40,
       "Combi Uitgebreid": 482.48,
@@ -83,14 +82,12 @@ serve(async (req) => {
         kvk_nummer: lead.kvk_nummer || null,
         package_type: pkgName,
         amount_excl_btw: priceExcl,
+        beroep: lead.beroep || null,
       };
     }
 
-    // Calculate BTW
     const amountExcl = parseFloat(data.amount_excl_btw) || 0;
-    const btwPercentage = parseFloat(data.btw_percentage) || 0;
-    const btwAmount = Math.round(amountExcl * (btwPercentage / 100) * 100) / 100;
-    const amountIncl = Math.round((amountExcl + btwAmount) * 100) / 100;
+    const amountIncl = amountExcl; // Vrijgesteld van BTW
 
     // Insert invoice record
     const { data: invoice, error: invoiceError } = await adminClient
@@ -107,12 +104,12 @@ serve(async (req) => {
         description: data.description || "Combinatiepolis Beroeps- en Bedrijfsaansprakelijkheid",
         package_type: data.package_type || "Combi Uitgebreid",
         amount_excl_btw: amountExcl,
-        btw_percentage: btwPercentage,
-        btw_amount: btwAmount,
+        btw_percentage: 0,
+        btw_amount: 0,
         amount_incl_btw: amountIncl,
         payment_method: data.payment_method || "Automatische incasso",
         payment_terms: data.payment_terms || "Wordt binnen 7 dagen automatisch geïncasseerd",
-        bank_account: data.bank_account || "NL00 BANK 0000 0000 00",
+        bank_account: data.bank_account || "NL25 ABNA 0477 3302 23",
         bank_name: data.bank_name || "ZP Zaken B.V.",
         status: "definitief",
       })
@@ -131,6 +128,7 @@ serve(async (req) => {
     const pdfDoc = await PDFDocument.create();
     const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    const helveticaOblique = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
 
     const pageWidth = 595.28;
     const pageHeight = 841.89;
@@ -143,38 +141,23 @@ serve(async (req) => {
 
     const leftMargin = 56;
     const rightMargin = pageWidth - 56;
-    const lineHeight = 16;
+    const lineHeight = 15;
 
-    // Helper: wrap text
-    const wrapText = (text: string, font: typeof helvetica, size: number, maxWidth: number): string[] => {
-      const words = text.split(" ");
-      const lines: string[] = [];
-      let currentLine = "";
-      for (const word of words) {
-        const testLine = currentLine ? `${currentLine} ${word}` : word;
-        if (font.widthOfTextAtSize(testLine, size) > maxWidth && currentLine) {
-          lines.push(currentLine);
-          currentLine = word;
-        } else {
-          currentLine = testLine;
-        }
-      }
-      if (currentLine) lines.push(currentLine);
-      return lines;
-    };
-
-    // Format currency
     const formatCurrency = (amount: number) => {
-      return `€ ${amount.toFixed(2).replace('.', ',')}`;
+      return amount.toFixed(2).replace('.', ',');
     };
 
-    // Format date
     const formatDate = (dateStr: string) => {
       const d = new Date(dateStr);
       return d.toLocaleDateString("nl-NL", { day: "2-digit", month: "2-digit", year: "numeric" });
     };
 
-    // === EMBED LOGO ===
+    const formatDateLong = (dateStr: string) => {
+      const d = new Date(dateStr);
+      return `${d.getDate()}-${d.getMonth() + 1}-${d.getFullYear()}`;
+    };
+
+    // === EMBED LOGO (top right) ===
     let logoImage;
     try {
       const logoUrl = `${supabaseUrl}/storage/v1/object/public/certificates/assets/logo-zp.jpg`;
@@ -185,147 +168,135 @@ serve(async (req) => {
       console.error("Logo embed error:", e);
     }
 
-    let y = pageHeight - 60;
+    // === TOP RIGHT: Logo + Company info ===
+    const companyInfoX = 380;
+    let y = pageHeight - 50;
 
-    // === HEADER ===
-    const logoSize = 45;
     if (logoImage) {
-      page.drawImage(logoImage, { x: leftMargin, y: y - logoSize + 18, width: logoSize, height: logoSize });
+      const logoSize = 65;
+      // Center logo above company info block
+      const logoCenterX = companyInfoX + (rightMargin - companyInfoX) / 2 - logoSize / 2;
+      page.drawImage(logoImage, { x: logoCenterX, y: y - logoSize + 10, width: logoSize, height: logoSize });
+      y -= logoSize + 15;
     }
-    const textStartX = logoImage ? leftMargin + logoSize + 10 : leftMargin;
-    page.drawText("ZP Zaken B.V.", { x: textStartX, y, size: 18, font: helveticaBold, color: brandRed });
-    y -= 16;
-    page.drawText("Tupolevlaan 41, 1119 NW Schiphol-Rijk", { x: textStartX, y, size: 8, font: helvetica, color: gray });
-    y -= 11;
-    page.drawText("AFM vergunningsnummer: 12050363", { x: textStartX, y, size: 8, font: helvetica, color: gray });
 
-    // Invoice title - right aligned
-    const titleText = "FACTUUR";
-    const titleWidth = helveticaBold.widthOfTextAtSize(titleText, 22);
-    page.drawText(titleText, { x: rightMargin - titleWidth, y: pageHeight - 60, size: 22, font: helveticaBold, color: brandRed });
+    const companyLines = [
+      "ZP Zaken B.V.",
+      "Tupolevlaan 41",
+      "1119 NW",
+      "Schiphol-Rijk",
+      "NL25 ABNA 0477 3302 23",
+      "KVK: 62117092",
+      "BTW: NL854862431B01",
+      "Telefoon: 023-2010502",
+      "administratie@zpzaken.nl",
+      "www.zpzaken.nl",
+    ];
 
-    // Invoice number & date - right aligned
-    const invoiceNumText = `Factuurnummer: ${invoice.invoice_number}`;
-    page.drawText(invoiceNumText, {
-      x: rightMargin - helvetica.widthOfTextAtSize(invoiceNumText, 9),
-      y: pageHeight - 80,
-      size: 9,
-      font: helvetica,
-      color: black,
-    });
-    const invoiceDateText = `Factuurdatum: ${formatDate(invoice.invoice_date)}`;
-    page.drawText(invoiceDateText, {
-      x: rightMargin - helvetica.widthOfTextAtSize(invoiceDateText, 9),
-      y: pageHeight - 93,
-      size: 9,
-      font: helvetica,
-      color: black,
-    });
-    const dueDateText = `Vervaldatum: ${formatDate(invoice.due_date)}`;
-    page.drawText(dueDateText, {
-      x: rightMargin - helvetica.widthOfTextAtSize(dueDateText, 9),
-      y: pageHeight - 106,
-      size: 9,
-      font: helvetica,
-      color: black,
+    companyLines.forEach((line) => {
+      page.drawText(line, { x: companyInfoX, y, size: 8, font: helvetica, color: gray });
+      y -= 11;
     });
 
-    // === Divider line ===
-    y -= 25;
-    page.drawLine({ start: { x: leftMargin, y }, end: { x: rightMargin, y }, thickness: 1, color: brandRed });
-
-    // === CLIENT DETAILS ===
-    y -= 25;
-    page.drawText("Factuur aan:", { x: leftMargin, y, size: 9, font: helveticaBold, color: gray });
-    y -= lineHeight;
+    // === LEFT: Client address block ===
+    let clientY = pageHeight - 170;
     if (invoice.company_name) {
-      page.drawText(invoice.company_name, { x: leftMargin, y, size: 10, font: helveticaBold, color: black });
-      y -= lineHeight;
+      page.drawText(invoice.company_name, { x: leftMargin, y: clientY, size: 10, font: helvetica, color: black });
+      clientY -= lineHeight;
     }
-    page.drawText(invoice.client_name, { x: leftMargin, y, size: 10, font: helvetica, color: black });
-    y -= lineHeight;
+    page.drawText(`t.a.v. ${invoice.client_name}`, { x: leftMargin, y: clientY, size: 10, font: helvetica, color: black });
+    clientY -= lineHeight;
     if (invoice.client_address) {
-      page.drawText(invoice.client_address, { x: leftMargin, y, size: 10, font: helvetica, color: black });
-      y -= lineHeight;
+      page.drawText(invoice.client_address, { x: leftMargin, y: clientY, size: 10, font: helvetica, color: black });
+      clientY -= lineHeight;
     }
     if (invoice.client_postcode || invoice.client_city) {
-      page.drawText(`${invoice.client_postcode || ""} ${invoice.client_city || ""}`.trim(), {
-        x: leftMargin, y, size: 10, font: helvetica, color: black,
+      page.drawText(`${invoice.client_postcode || ""}  ${invoice.client_city || ""}`.trim(), {
+        x: leftMargin, y: clientY, size: 10, font: helvetica, color: black,
       });
-      y -= lineHeight;
-    }
-    if (invoice.kvk_nummer) {
-      page.drawText(`KvK: ${invoice.kvk_nummer}`, { x: leftMargin, y, size: 9, font: helvetica, color: gray });
-      y -= lineHeight;
+      clientY -= lineHeight;
     }
 
-    // === TABLE HEADER ===
-    y -= 20;
+    // === FACTUUR title ===
+    let sectionY = clientY - 30;
+    page.drawText("FACTUUR", { x: leftMargin, y: sectionY, size: 16, font: helveticaBold, color: black });
+
+    // === Invoice meta fields ===
+    sectionY -= 30;
+    const labelX = leftMargin;
+    const colonX = 170;
+    const valueX = 180;
+
+    const metaFields = [
+      ["Factuurdatum", formatDate(invoice.invoice_date)],
+      ["Factuurnummer", invoice.invoice_number],
+      ["Debiteurennummer", invoice.kvk_nummer || "-"],
+      ["Behandeld door", "administratie@zpzaken.nl"],
+    ];
+
+    metaFields.forEach(([label, value]) => {
+      page.drawText(label, { x: labelX, y: sectionY, size: 9, font: helvetica, color: black });
+      page.drawText(":", { x: colonX, y: sectionY, size: 9, font: helvetica, color: black });
+      page.drawText(value, { x: valueX, y: sectionY, size: 9, font: helvetica, color: black });
+      sectionY -= lineHeight;
+    });
+
+    // === TABLE ===
+    sectionY -= 20;
     const colDesc = leftMargin;
-    const colAmount = 420;
-    const colBtw = 470;
-    const colTotal = 520;
+    const colBedrag = rightMargin - 50;
 
-    // Table header background
-    page.drawRectangle({ x: leftMargin - 5, y: y - 4, width: rightMargin - leftMargin + 10, height: 20, color: brandRed });
+    // Table header bar
+    page.drawRectangle({ x: leftMargin - 5, y: sectionY - 4, width: rightMargin - leftMargin + 10, height: 18, color: brandRed });
+    page.drawText("Omschrijving", { x: colDesc, y: sectionY, size: 9, font: helveticaBold, color: rgb(1, 1, 1) });
+    const bedragLabel = "Bedrag";
+    const bedragLabelW = helveticaBold.widthOfTextAtSize(bedragLabel, 9);
+    page.drawText(bedragLabel, { x: colBedrag - bedragLabelW + 50, y: sectionY, size: 9, font: helveticaBold, color: rgb(1, 1, 1) });
 
-    page.drawText("Omschrijving", { x: colDesc, y, size: 9, font: helveticaBold, color: rgb(1, 1, 1) });
-    page.drawText("Bedrag", { x: colAmount, y, size: 9, font: helveticaBold, color: rgb(1, 1, 1) });
-    page.drawText("Totaal", { x: colTotal, y, size: 9, font: helveticaBold, color: rgb(1, 1, 1) });
+    // Table row
+    sectionY -= 22;
+    const descText = `Verzekering: ${invoice.description}`;
+    page.drawText(descText, { x: colDesc, y: sectionY, size: 9, font: helvetica, color: black });
+    const amountStr = formatCurrency(amountExcl);
+    const amountW = helvetica.widthOfTextAtSize(amountStr, 9);
+    page.drawText(amountStr, { x: colBedrag - amountW + 50, y: sectionY, size: 9, font: helvetica, color: black });
 
-    // === TABLE ROW ===
-    y -= 22;
-    // Description may wrap
-    const descLines = wrapText(invoice.description, helvetica, 9, colAmount - colDesc - 15);
-    descLines.forEach((line: string, i: number) => {
-      page.drawText(line, { x: colDesc, y: y - i * 13, size: 9, font: helvetica, color: black });
+    sectionY -= lineHeight;
+    if (data.beroep) {
+      page.drawText(`Branche: ${data.beroep}`, { x: colDesc, y: sectionY, size: 9, font: helvetica, color: black });
+      sectionY -= lineHeight;
+    }
+
+    // Period line in italic
+    const startDate = formatDateLong(invoice.invoice_date);
+    const endDate = new Date(invoice.invoice_date);
+    endDate.setFullYear(endDate.getFullYear() + 1);
+    const endDateStr = `${endDate.getDate()}-${endDate.getMonth() + 1}-${endDate.getFullYear()}`;
+    page.drawText(`Periode: ${startDate} t/m ${endDateStr}`, { x: colDesc, y: sectionY, size: 9, font: helveticaOblique, color: black });
+
+    sectionY -= 5;
+    // Line under table
+    page.drawLine({ start: { x: leftMargin - 5, y: sectionY }, end: { x: rightMargin + 5, y: sectionY }, thickness: 0.5, color: gray });
+
+    // === TOTAL ===
+    sectionY -= 30;
+    const totalLabel = "Door u te betalen in EUR";
+    const totalLabelW = helveticaBold.widthOfTextAtSize(totalLabel, 10);
+    page.drawText(totalLabel, { x: colBedrag - totalLabelW - 10, y: sectionY, size: 10, font: helveticaBold, color: black });
+    const totalStr = formatCurrency(amountIncl);
+    const totalW = helvetica.widthOfTextAtSize(totalStr, 10);
+    page.drawText(totalStr, { x: colBedrag - totalW + 50, y: sectionY, size: 10, font: helvetica, color: black });
+
+    // === BTW vrijstelling ===
+    sectionY -= 40;
+    page.drawText("Conform artikel 11.K van de Wet op de omzetbelasting 1968 is deze factuur vrijgesteld van BTW.", {
+      x: leftMargin, y: sectionY, size: 9, font: helvetica, color: black,
     });
-    page.drawText(formatCurrency(amountExcl), { x: colAmount, y, size: 9, font: helvetica, color: black });
-    page.drawText(formatCurrency(amountIncl), { x: colTotal, y, size: 9, font: helveticaBold, color: black });
 
-    y -= Math.max(descLines.length * 13, 13) + 5;
-
-    // Package type
-    page.drawText(`Pakket: ${invoice.package_type}`, { x: colDesc, y, size: 8, font: helvetica, color: gray });
-
-    // === TOTALS ===
-    y -= 30;
-    page.drawLine({ start: { x: colAmount - 10, y: y + 12 }, end: { x: rightMargin, y: y + 12 }, thickness: 0.5, color: gray });
-
-    const drawTotalRow = (label: string, value: string, yPos: number, bold = false) => {
-      const font = bold ? helveticaBold : helvetica;
-      page.drawText(label, { x: colAmount, y: yPos, size: 9, font: helvetica, color: gray });
-      page.drawText(value, { x: colTotal, y: yPos, size: bold ? 11 : 9, font, color: bold ? brandRed : black });
-    };
-
-    drawTotalRow("Subtotaal:", formatCurrency(amountExcl), y);
-    y -= lineHeight;
-    page.drawText("Vrijgesteld van BTW", { x: colAmount, y, size: 9, font: helvetica, color: gray });
-    y -= lineHeight + 5;
-    page.drawLine({ start: { x: colAmount - 10, y: y + 12 }, end: { x: rightMargin, y: y + 12 }, thickness: 1, color: brandRed });
-    drawTotalRow("Totaal:", formatCurrency(amountIncl), y, true);
-
-    // === PAYMENT DETAILS ===
-    y -= 50;
-    page.drawRectangle({ x: leftMargin - 5, y: y - 50, width: rightMargin - leftMargin + 10, height: 65, color: lightGray });
-    y -= 5;
-    page.drawText("Betaalgegevens", { x: leftMargin, y, size: 10, font: helveticaBold, color: brandRed });
-    y -= lineHeight;
-    page.drawText(`Betaalwijze: ${invoice.payment_method}`, { x: leftMargin, y, size: 9, font: helvetica, color: black });
-    y -= 13;
-    page.drawText(`Betaaltermijn: ${invoice.payment_terms}`, { x: leftMargin, y, size: 9, font: helvetica, color: black });
-    y -= 13;
-    page.drawText(`Ten name van: ${invoice.bank_name}`, { x: leftMargin, y, size: 9, font: helvetica, color: black });
-
-    // === FOOTER ===
-    const footerY = 40;
-    const footerFontSize = 6.5;
-    page.drawLine({ start: { x: leftMargin, y: footerY + 20 }, end: { x: rightMargin, y: footerY + 20 }, thickness: 0.5, color: gray });
-    page.drawText("ZP Zaken B.V. | Tupolevlaan 41, 1119 NW Schiphol-Rijk | AFM vergunningsnummer: 12050363", {
-      x: leftMargin, y: footerY + 8, size: footerFontSize, font: helvetica, color: gray,
-    });
-    page.drawText("De verstrekte gegevens zullen strikt vertrouwelijk worden behandeld.", {
-      x: leftMargin, y: footerY, size: footerFontSize, font: helvetica, color: gray,
+    // === Payment note ===
+    sectionY -= 25;
+    page.drawText("Het door u te betalen/ontvangen bedrag zullen wij binnen drie werkdagen incasseren of overmaken.", {
+      x: leftMargin, y: sectionY, size: 9, font: helvetica, color: black,
     });
 
     // === Save & upload PDF ===
