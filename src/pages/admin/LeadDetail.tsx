@@ -378,7 +378,7 @@ export default function AdminLeadDetail() {
                       {lead.omzet && (
                         <div>
                           <span className="text-muted-foreground text-sm">Betaalfrequentie:</span>{" "}
-                          {lead.omzet === "1" ? "Jaarlijks" : lead.omzet === "2" ? "Maandelijks" : lead.omzet}
+                          {lead.omzet === "1" ? "Jaarlijks" : lead.omzet === "2" ? "Maandelijks" : lead.omzet === "maandelijks" ? "Maandelijks" : lead.omzet === "jaarlijks" ? "Jaarlijks" : lead.omzet}
                         </div>
                       )}
                     </div>

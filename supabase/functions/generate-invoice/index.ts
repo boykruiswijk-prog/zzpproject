@@ -57,9 +57,13 @@ serve(async (req) => {
 
     // Build invoice data from lead if not provided
     let data = invoice_data;
-    const packagePrices: Record<string, number> = {
+    const packagePricesYearly: Record<string, number> = {
       "Combi Basis": 292.40,
       "Combi Uitgebreid": 482.48,
+    };
+    const packagePricesMonthly: Record<string, number> = {
+      "Combi Basis": 27.70,
+      "Combi Uitgebreid": 43.54,
     };
 
     if (lead_id && !data) {
@@ -75,7 +79,9 @@ serve(async (req) => {
         });
       }
       const pkgName = lead.verzekering_type || "Combi Uitgebreid";
-      const priceExcl = packagePrices[pkgName] || packagePrices["Combi Uitgebreid"];
+      const isMonthly = lead.omzet === "maandelijks" || lead.omzet === "2";
+      const priceMap = isMonthly ? packagePricesMonthly : packagePricesYearly;
+      const priceExcl = priceMap[pkgName] || priceMap["Combi Uitgebreid"];
       data = {
         client_name: `${lead.voornaam} ${lead.achternaam}`,
         company_name: lead.bedrijfsnaam || null,
@@ -83,6 +89,7 @@ serve(async (req) => {
         package_type: pkgName,
         amount_excl_btw: priceExcl,
         beroep: lead.beroep || null,
+        betaalfrequentie: isMonthly ? "Maandelijks" : "Jaarlijks",
       };
     }
 
@@ -261,6 +268,11 @@ serve(async (req) => {
     page.drawText(amountStr, { x: colBedrag - amountW + 50, y: sectionY, size: 9, font: helvetica, color: black });
 
     sectionY -= lineHeight;
+    // Betaalfrequentie
+    if (data.betaalfrequentie) {
+      page.drawText(`Betaalfrequentie: ${data.betaalfrequentie}`, { x: colDesc, y: sectionY, size: 9, font: helvetica, color: black });
+      sectionY -= lineHeight;
+    }
     if (data.beroep) {
       page.drawText(`Branche: ${data.beroep}`, { x: colDesc, y: sectionY, size: 9, font: helvetica, color: black });
       sectionY -= lineHeight;

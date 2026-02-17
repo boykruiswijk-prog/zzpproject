@@ -137,22 +137,22 @@ export function BAVApplicationModule() {
    const handleSubmit = async () => {
      if (validateStep(currentStep)) {
        try {
-         const { error } = await supabase.from("leads").insert({
-           type: "verzekering_aanvraag",
-           voornaam: formData.voornaam,
-           achternaam: formData.achternaam,
-           email: formData.email,
-           telefoon: formData.telefoon || null,
-           bedrijfsnaam: formData.bedrijfsnaam || null,
-           kvk_nummer: formData.kvkNummer || null,
-           beroep: formData.beroep || null,
-           omzet: formData.aantalMedewerkers || null,
-           verzekering_type: selectedPkg?.name || null,
-           verzekerd_bedrag: selectedPkg?.coverage || null,
-           ingangsdatum: startDate || null,
-           opmerkingen: `IBAN: ${formData.iban}\nOpdrachtgever: ${formData.opdrachtgever}${formData.bemiddelaarNaam ? `\nBemiddelaar: ${formData.bemiddelaarNaam}` : ''}`,
-           bron: "website",
-         });
+          const { error } = await supabase.from("leads").insert({
+            type: "verzekering_aanvraag",
+            voornaam: formData.voornaam,
+            achternaam: formData.achternaam,
+            email: formData.email,
+            telefoon: formData.telefoon || null,
+            bedrijfsnaam: formData.bedrijfsnaam || null,
+            kvk_nummer: formData.kvkNummer || null,
+            beroep: formData.beroep || null,
+            omzet: paymentType === "monthly" ? "maandelijks" : "jaarlijks",
+            verzekering_type: selectedPkg?.name || null,
+            verzekerd_bedrag: selectedPkg?.coverage || null,
+            ingangsdatum: startDate || null,
+            opmerkingen: `IBAN: ${formData.iban}\nOpdrachtgever: ${formData.opdrachtgever}${formData.bemiddelaarNaam ? `\nBemiddelaar: ${formData.bemiddelaarNaam}` : ''}${formData.aantalMedewerkers ? `\nAantal medewerkers: ${formData.aantalMedewerkers}` : ''}${formData.functie ? `\nFunctie: ${formData.functie}` : ''}`,
+            bron: "website",
+          });
 
       if (error) throw error;
           setIsSubmitted(true);
