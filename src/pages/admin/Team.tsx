@@ -48,11 +48,6 @@ export default function AdminTeam() {
   const [role, setRole] = useState<AppRole>("medewerker");
   const [isCreating, setIsCreating] = useState(false);
 
-  // Redirect if not admin
-  if (!isAdmin) {
-    return <Navigate to="/admin" replace />;
-  }
-
   // Get all user roles
   const { data: userRoles, isLoading: rolesLoading } = useQuery({
     queryKey: ["user-roles"],
@@ -147,6 +142,11 @@ export default function AdminTeam() {
     // We don't have email in profiles, return userId for now
     return userId.substring(0, 8) + "...";
   };
+
+  // Redirect if not admin (after all hooks)
+  if (!isAdmin) {
+    return <Navigate to="/admin" replace />;
+  }
 
   return (
     <AdminLayout>
