@@ -103,7 +103,7 @@ serve(async (req) => {
         bav_per_year: data.bav_per_year || "€ 15.000.000",
         avb_per_event: data.avb_per_event || "€ 2.500.000",
         avb_per_year: data.avb_per_year || "€ 5.000.000",
-        issued_by: data.issued_by || "Michel Verheij",
+        issued_by: data.issued_by || "Ellen Baars",
       })
       .select()
       .single();
