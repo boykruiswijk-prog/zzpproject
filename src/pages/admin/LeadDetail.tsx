@@ -312,7 +312,7 @@ export default function AdminLeadDetail() {
                           <span className="text-muted-foreground text-sm">
                             Verzekerd bedrag:
                           </span>{" "}
-                          €{parseInt(lead.verzekerd_bedrag).toLocaleString("nl-NL")}
+                          {lead.verzekerd_bedrag}
                         </div>
                       )}
                       {lead.eigen_risico && (
