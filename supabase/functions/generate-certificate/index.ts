@@ -113,162 +113,369 @@ serve(async (req) => {
 
     const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
     const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const helveticaOblique = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
 
-    const brandRed = rgb(0.76, 0.07, 0.16); // #c2122a - ZP Zaken red
+    const brandRed = rgb(0.76, 0.07, 0.16); // #c2122a
     const black = rgb(0, 0, 0);
-    const gray = rgb(0.45, 0.45, 0.45);
-    const lightGray = rgb(0.85, 0.85, 0.85);
+    const gray = rgb(0.4, 0.4, 0.4);
+    const lightGray = rgb(0.88, 0.88, 0.88);
+    const watermarkGray = rgb(0.94, 0.94, 0.94);
 
-    const leftMargin = 60;
-    const valueX = 210;
-    let y = height - 55;
+    const leftMargin = 56;
+    const labelX = leftMargin;
+    const valueX = 200;
+    const rightMargin = width - 56;
+
+    // === WATERMARK DIAGONAL LINES (subtle background pattern) ===
+    for (let i = -800; i < 1200; i += 18) {
+      page.drawLine({
+        start: { x: i, y: 0 },
+        end: { x: i + height, y: height },
+        thickness: 0.3,
+        color: watermarkGray,
+      });
+    }
+
+    let y = height - 50;
 
     // === LOGO ===
-    // Draw the ZP logo circle approximation
-    page.drawCircle({ x: leftMargin + 22, y: y - 2, size: 18, borderColor: brandRed, borderWidth: 1.5, color: rgb(1, 1, 1) });
-    page.drawText("ZP", { x: leftMargin + 12, y: y - 8, size: 14, font: helveticaBold, color: brandRed });
-    page.drawText("Zaken", { x: leftMargin + 48, y: y - 8, size: 16, font: helvetica, color: black });
+    // Draw hexagon/shield shape for ZP logo
+    const logoX = leftMargin + 20;
+    const logoY = y - 5;
+    const logoSize = 20;
+    // Simplified shield/hexagon as rounded rectangle
+    page.drawRectangle({
+      x: logoX - logoSize + 2,
+      y: logoY - logoSize + 5,
+      width: logoSize * 2 - 4,
+      height: logoSize * 2 - 4,
+      borderColor: brandRed,
+      borderWidth: 1.8,
+      color: rgb(1, 1, 1),
+      borderOpacity: 1,
+    });
+    page.drawText("ZP", {
+      x: logoX - 8,
+      y: logoY - 5,
+      size: 16,
+      font: helveticaBold,
+      color: brandRed,
+    });
 
-    y -= 45;
+    // "Zaken" text next to logo
+    page.drawText("Zaken", {
+      x: logoX + logoSize + 8,
+      y: logoY - 5,
+      size: 18,
+      font: helvetica,
+      color: black,
+    });
+
+    y -= 55;
 
     // === TITLE ===
     page.drawText("VERZEKERINGSCERTIFICAAT", {
-      x: leftMargin, y, size: 15, font: helveticaBold, color: brandRed,
+      x: leftMargin,
+      y,
+      size: 18,
+      font: helveticaBold,
+      color: brandRed,
     });
-    y -= 18;
+    y -= 16;
     page.drawText("BEROEPS- EN BEDRIJFSAANSPRAKELIJKHEIDSVERZEKERING", {
-      x: leftMargin, y, size: 8.5, font: helveticaBold, color: brandRed,
+      x: leftMargin,
+      y,
+      size: 8,
+      font: helveticaBold,
+      color: brandRed,
     });
-    y -= 13;
-    page.drawText("Dit certificaat maakt onderdeel uit van de polis van ZP Zaken b.v. onder polisnummer HPI.1006446", {
-      x: leftMargin, y, size: 6.5, font: helvetica, color: gray,
-    });
+    y -= 12;
+    page.drawText(
+      "Dit certificaat maakt onderdeel uit van de polis van ZP Zaken b.v. onder polisnummer HPI.1006446",
+      { x: leftMargin, y, size: 6.5, font: helveticaOblique, color: gray }
+    );
 
-    y -= 25;
+    y -= 24;
 
-    // === FIELD ROWS ===
-    const labelFontSize = 8.5;
-    const valueFontSize = 8.5;
+    // === HELPER FUNCTIONS ===
+    const fontSize = 9;
+    const lineHeight = 14;
 
-    const drawField = (label: string, value: string, extraSpacing = 0) => {
-      page.drawText(label, { x: leftMargin, y, size: labelFontSize, font: helvetica, color: gray });
+    const drawRow = (label: string, value: string, boldValue = false) => {
+      page.drawText(label, {
+        x: labelX,
+        y,
+        size: fontSize,
+        font: helvetica,
+        color: gray,
+      });
       const lines = value.split("\n");
       lines.forEach((line: string, i: number) => {
-        page.drawText(line, { x: valueX, y: y - i * 13, size: valueFontSize, font: helvetica, color: black });
+        page.drawText(line, {
+          x: valueX,
+          y: y - i * lineHeight,
+          size: fontSize,
+          font: boldValue ? helveticaBold : helvetica,
+          color: black,
+        });
       });
-      y -= Math.max(18, lines.length * 13 + 5) + extraSpacing;
-    };
-
-    const drawFieldBold = (label: string, value: string) => {
-      page.drawText(label, { x: leftMargin, y, size: labelFontSize, font: helvetica, color: gray });
-      page.drawText(value, { x: valueX, y, size: valueFontSize, font: helveticaBold, color: black });
-      y -= 18;
+      y -= Math.max(lineHeight + 4, lines.length * lineHeight + 4);
     };
 
     // Format date: "vrijdag 5 december 2025"
-    const formatDate = (dateStr: string) => {
+    const formatLongDate = (dateStr: string) => {
       const d = new Date(dateStr);
       const days = ["zondag", "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag"];
       const months = ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"];
       return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
     };
 
-    drawField("Certificaathouder:", policy.certificate_holder);
-    drawField("Verzekeringsnemer:", policy.insured_name);
+    // Format date short: "08-12-2025"
+    const formatShortDate = (dateStr: string) => {
+      const d = new Date(dateStr);
+      const dd = String(d.getDate()).padStart(2, "0");
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const yyyy = d.getFullYear();
+      return `${dd}-${mm}-${yyyy}`;
+    };
+
+    // === CERTIFICAATHOUDER ===
+    drawRow("Certificaathouder:", policy.certificate_holder);
+
+    // === VERZEKERINGSNEMER ===
+    drawRow("Verzekeringsnemer:", policy.insured_name);
+
     y -= 2;
-    drawFieldBold("Certificaatnummer:", policy.certificate_number);
+
+    // === CERTIFICAATNUMMER (bold value) ===
+    drawRow("Certificaatnummer:", policy.certificate_number, true);
+
     y -= 2;
-    drawField("Ingangsdatum:", formatDate(policy.start_date));
+
+    // === INGANGSDATUM (short format like original: 08-12-2025) ===
+    drawRow("Ingangsdatum:", formatShortDate(policy.start_date));
+
     y -= 2;
-    drawField("Hoedanigheid:", policy.profession);
+
+    // === HOEDANIGHEID ===
+    drawRow("Hoedanigheid:", policy.profession);
 
     y -= 6;
 
     // === VERZEKERDE BEDRAGEN ===
-    page.drawText("Verzekerde bedragen:", { x: leftMargin, y, size: labelFontSize, font: helvetica, color: gray });
-
-    page.drawText("Beroepsaansprakelijkheid", { x: valueX, y, size: valueFontSize, font: helveticaBold, color: brandRed });
-    y -= 14;
-    page.drawText(`${policy.bav_per_event}, - per aanspraak`, { x: valueX, y, size: valueFontSize, font: helvetica, color: black });
-    y -= 13;
-    page.drawText(`${policy.bav_per_year}, - per verzekeringsjaar`, { x: valueX, y, size: valueFontSize, font: helvetica, color: black });
-    y -= 18;
-
-    page.drawText("Bedrijfsaansprakelijkheid", { x: valueX, y, size: valueFontSize, font: helveticaBold, color: brandRed });
-    y -= 14;
-    page.drawText(`${policy.avb_per_event}, - per aanspraak`, { x: valueX, y, size: valueFontSize, font: helvetica, color: black });
-    y -= 13;
-    page.drawText(`${policy.avb_per_year}, - per verzekeringsjaar`, { x: valueX, y, size: valueFontSize, font: helvetica, color: black });
-    y -= 18;
-
-    // Note about "per jaar voor alle leden tezamen"
-    page.drawText('Waar op het polis blad wordt vermeld "per jaar voor alle leden tezamen" wordt', {
-      x: valueX, y, size: 7, font: helvetica, color: gray,
+    page.drawText("Verzekerde bedragen:", {
+      x: labelX,
+      y,
+      size: fontSize,
+      font: helvetica,
+      color: gray,
     });
-    y -= 11;
+
+    // Beroepsaansprakelijkheid header
+    page.drawText("Beroepsaansprakelijkheid", {
+      x: valueX,
+      y,
+      size: fontSize,
+      font: helveticaBold,
+      color: brandRed,
+    });
+    y -= lineHeight;
+
+    page.drawText(`${policy.bav_per_event}, - per aanspraak`, {
+      x: valueX,
+      y,
+      size: fontSize,
+      font: helvetica,
+      color: black,
+    });
+    y -= lineHeight;
+
+    page.drawText(`${policy.bav_per_year}, - per verzekeringsjaar`, {
+      x: valueX,
+      y,
+      size: fontSize,
+      font: helvetica,
+      color: black,
+    });
+    y -= lineHeight + 6;
+
+    // Bedrijfsaansprakelijkheid header
+    page.drawText("Bedrijfsaansprakelijkheid", {
+      x: valueX,
+      y,
+      size: fontSize,
+      font: helveticaBold,
+      color: brandRed,
+    });
+    y -= lineHeight;
+
+    page.drawText(`${policy.avb_per_event}, - per aanspraak`, {
+      x: valueX,
+      y,
+      size: fontSize,
+      font: helvetica,
+      color: black,
+    });
+    y -= lineHeight;
+
+    page.drawText(`${policy.avb_per_year}, - per verzekeringsjaar`, {
+      x: valueX,
+      y,
+      size: fontSize,
+      font: helvetica,
+      color: black,
+    });
+    y -= lineHeight + 6;
+
+    // Note
+    page.drawText(
+      'Waar op het polis blad wordt vermeld "per jaar voor alle leden tezamen" wordt',
+      { x: valueX, y, size: 7, font: helveticaOblique, color: gray }
+    );
+    y -= 10;
     page.drawText("gerefereerd aan het verzekerd bedrag per jaar.", {
-      x: valueX, y, size: 7, font: helvetica, color: gray,
+      x: valueX,
+      y,
+      size: 7,
+      font: helveticaOblique,
+      color: gray,
     });
-    y -= 20;
+    y -= lineHeight + 6;
 
     // === EIGEN RISICO ===
-    drawField("Eigen risico:", policy.own_risk || "ZP Zaken draagt de kosten voor het eigen risico.");
+    drawRow(
+      "Eigen risico:",
+      policy.own_risk || "ZP Zaken draagt de kosten voor het eigen risico."
+    );
 
     y -= 4;
 
     // === POLISVOORWAARDEN ===
-    page.drawText("Polisvoorwaarden:", { x: leftMargin, y, size: labelFontSize, font: helvetica, color: gray });
-    page.drawText("Informatie en Communicatie Technologie", { x: valueX, y, size: valueFontSize, font: helvetica, color: black });
-    y -= 14;
-    // Draw checkmark boxes manually (WinAnsi can't encode unicode checkmarks)
+    page.drawText("Polisvoorwaarden:", {
+      x: labelX,
+      y,
+      size: fontSize,
+      font: helvetica,
+      color: gray,
+    });
+    page.drawText("Informatie en Communicatie Technologie", {
+      x: valueX,
+      y,
+      size: fontSize,
+      font: helvetica,
+      color: black,
+    });
+    y -= lineHeight + 2;
+
+    // Checkmark items - draw a small filled checkmark icon then text
     const drawCheckItem = (text: string) => {
-      // Draw checkbox square
-      const boxSize = 6;
       const boxX = valueX;
       const boxY = y - 1;
-      page.drawRectangle({ x: boxX, y: boxY, width: boxSize, height: boxSize, borderColor: brandRed, borderWidth: 0.8, color: rgb(1, 1, 1) });
-      // Draw checkmark lines inside box
-      page.drawLine({ start: { x: boxX + 1, y: boxY + 3 }, end: { x: boxX + 2.5, y: boxY + 1 }, thickness: 0.8, color: brandRed });
-      page.drawLine({ start: { x: boxX + 2.5, y: boxY + 1 }, end: { x: boxX + 5, y: boxY + 5 }, thickness: 0.8, color: brandRed });
-      page.drawText(text, { x: valueX + 10, y, size: 7.5, font: helvetica, color: brandRed });
-      y -= 12;
+      const boxSize = 7;
+      // Draw small rounded checkbox
+      page.drawRectangle({
+        x: boxX,
+        y: boxY,
+        width: boxSize,
+        height: boxSize,
+        borderColor: brandRed,
+        borderWidth: 0.6,
+        color: rgb(1, 1, 1),
+      });
+      // Draw checkmark V shape inside
+      page.drawLine({
+        start: { x: boxX + 1.2, y: boxY + 3.5 },
+        end: { x: boxX + 2.8, y: boxY + 1.2 },
+        thickness: 1,
+        color: brandRed,
+      });
+      page.drawLine({
+        start: { x: boxX + 2.8, y: boxY + 1.2 },
+        end: { x: boxX + 5.8, y: boxY + 5.8 },
+        thickness: 1,
+        color: brandRed,
+      });
+      // Text after checkbox
+      page.drawText(text, {
+        x: valueX + 11,
+        y,
+        size: 8,
+        font: helvetica,
+        color: brandRed,
+      });
+      y -= lineHeight;
     };
+
     drawCheckItem("Voorwaarden beroepsaansprakelijkheid");
     drawCheckItem("Voorwaarden bedrijfsaansprakelijkheid (kantoorrisico)");
     drawCheckItem("Verzekeringskaart");
-    y -= 20;
+
+    y -= 6;
 
     // === DEKKINGSGEBIED ===
-    drawField("Dekkingsgebied:", policy.coverage_area || "De verzekering biedt dekking ongeacht waar in de EU het handelen\nen/of nalaten zich heeft voorgedaan.");
+    drawRow(
+      "Dekkingsgebied:",
+      policy.coverage_area ||
+        "De verzekering biedt dekking ongeacht waar in de EU het handelen\nen/of nalaten zich heeft voorgedaan."
+    );
 
     // === CONTRACTDUUR ===
-    drawField("Contractduur:", policy.contract_duration || "12 maanden doorlopend, met stilzwijgende verlenging voor telkens 12 maanden,\nper direct opzegbaar.");
+    drawRow(
+      "Contractduur:",
+      policy.contract_duration ||
+        "12 maanden doorlopend, met stilzwijgende verlenging voor telkens 12 maanden,\nper direct opzegbaar."
+    );
 
     y -= 4;
 
     // === TUSSENPERSOON ===
-    page.drawText("Tussenpersoon:", { x: leftMargin, y, size: labelFontSize, font: helvetica, color: gray });
-    page.drawText("ZP Zaken.", { x: valueX, y, size: valueFontSize, font: helvetica, color: black });
-    y -= 13;
-    page.drawText("AFM vergunningnummer: 12050636", { x: valueX, y, size: valueFontSize, font: helvetica, color: black });
-    y -= 22;
+    page.drawText("Tussenpersoon:", {
+      x: labelX,
+      y,
+      size: fontSize,
+      font: helvetica,
+      color: gray,
+    });
+    page.drawText("ZP Zaken.", {
+      x: valueX,
+      y,
+      size: fontSize,
+      font: helvetica,
+      color: black,
+    });
+    y -= lineHeight;
+    page.drawText("AFM vergunningnummer: 12050636", {
+      x: valueX,
+      y,
+      size: fontSize,
+      font: helvetica,
+      color: black,
+    });
+    y -= lineHeight + 8;
 
-    // === AFGIFTEDATUM ===
-    drawField("Afgiftedatum:", formatDate(policy.issued_date));
+    // === AFGIFTEDATUM (long date like original: "vrijdag 5 december 2025") ===
+    drawRow("Afgiftedatum:", formatLongDate(policy.issued_date));
+
+    y -= 2;
 
     // === VOOR GEZIEN ===
-    drawField("Voor gezien ZP Zaken:", policy.issued_by);
+    drawRow("Voor gezien ZP Zaken:", policy.issued_by);
 
     // === FOOTER ===
-    const footerY = 38;
-    page.drawLine({ start: { x: leftMargin, y: footerY + 12 }, end: { x: width - 60, y: footerY + 12 }, thickness: 0.4, color: lightGray });
+    const footerY = 36;
+    page.drawLine({
+      start: { x: leftMargin, y: footerY + 14 },
+      end: { x: rightMargin, y: footerY + 14 },
+      thickness: 0.4,
+      color: lightGray,
+    });
     page.drawText(
-      "De verzekeringsmaterialen van ZP Zaken zijn alleen toegankelijk voor klanten van ZP Zaken en treedt hierbij op geen enkele wijze op als financiële dienstverlener of bemiddelaar zoals gesteld onder de Wft.",
-      { x: leftMargin, y: footerY, size: 5, font: helvetica, color: gray }
+      "De verzekeringsmaterialen van ZP Zaken zijn alleen toegankelijk voor klanten van ZP Zaken en treedt hierbij op geen enkele wijze op als financiele dienstverlener of bemiddelaar zoals gesteld onder de Wft.",
+      { x: leftMargin, y: footerY + 2, size: 5.5, font: helvetica, color: gray }
     );
     page.drawText(
       "De verstrekte gegevens zullen strikt vertrouwelijk worden behandeld. ZP Zaken is ingeschreven in het register Wft bij de AFM onder vergunningnummer: 12050363.",
-      { x: leftMargin, y: footerY - 8, size: 5, font: helvetica, color: gray }
+      { x: leftMargin, y: footerY - 7, size: 5.5, font: helvetica, color: gray }
     );
 
     // Save & upload PDF
@@ -284,10 +491,16 @@ serve(async (req) => {
 
     if (uploadError) {
       console.error("Upload error:", uploadError);
-      return new Response(JSON.stringify({ error: "Failed to upload PDF", details: uploadError.message }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({
+          error: "Failed to upload PDF",
+          details: uploadError.message,
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
     }
 
     const { data: signedUrlData } = await adminClient.storage
