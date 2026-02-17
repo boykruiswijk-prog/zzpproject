@@ -188,11 +188,9 @@ export function BAVApplicationModule() {
               {t("bavApp.thankYouFollowUp")}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-              <Button variant="accent" size="default" asChild className="w-full sm:w-auto">
-                <Link to="/">
+              <Button variant="accent" size="default" className="w-full sm:w-auto" onClick={() => { setIsSubmitted(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
                   <ArrowLeft className="h-4 w-4" />
                   {t("bavApp.backToHome")}
-                </Link>
               </Button>
               <Button variant="outline" size="default" asChild className="w-full sm:w-auto">
                 <Link to="/contact">
