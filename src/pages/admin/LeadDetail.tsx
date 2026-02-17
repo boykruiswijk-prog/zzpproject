@@ -163,13 +163,20 @@ export default function AdminLeadDetail() {
       refetchInvoices();
 
       if (result.invoice.pdf_url) {
-        const a = document.createElement("a");
-        a.href = result.invoice.pdf_url;
-        a.download = `${result.invoice.invoice_number}.pdf`;
-        a.target = "_blank";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        try {
+          const pdfResponse = await fetch(result.invoice.pdf_url);
+          const blob = await pdfResponse.blob();
+          const blobUrl = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = blobUrl;
+          a.download = `${result.invoice.invoice_number}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(blobUrl);
+        } catch (e) {
+          console.error("Download error:", e);
+        }
       }
     } catch (error: any) {
       console.error("Invoice generation error:", error);
@@ -184,13 +191,20 @@ export default function AdminLeadDetail() {
       .from("certificates")
       .createSignedUrl(pdfPath, 3600);
     if (data?.signedUrl) {
-      const a = document.createElement("a");
-      a.href = data.signedUrl;
-      a.download = pdfPath.split("/").pop() || "factuur.pdf";
-      a.target = "_blank";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      try {
+        const pdfResponse = await fetch(data.signedUrl);
+        const blob = await pdfResponse.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download = pdfPath.split("/").pop() || "factuur.pdf";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(blobUrl);
+      } catch (e) {
+        console.error("Download error:", e);
+      }
     }
   };
 
