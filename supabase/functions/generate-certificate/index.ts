@@ -472,6 +472,15 @@ serve(async (req) => {
     y -= 20;
     drawRow("Voor gezien ZP Zaken:", policy.issued_by, y);
 
+    // === Cover template footer with white rectangle ===
+    page.drawRectangle({
+      x: 0,
+      y: 0,
+      width: pageWidth,
+      height: 65,
+      color: rgb(1, 1, 1),
+    });
+
     // === Footer text ===
     const footerText1 = "De verzekeringsmantel van ZP Zaken zijn alleen toegankelijk voor klanten van ZP Zaken en treedt hierbij op geen enkele";
     const footerText2 = "wijze op als financiële dienstverlener of bemiddelaar zoals gesteld onder de Wft. De verstrekte gegevens zullen strikt";
