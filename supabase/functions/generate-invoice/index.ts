@@ -157,7 +157,7 @@ serve(async (req) => {
       return `${d.getDate()}-${d.getMonth() + 1}-${d.getFullYear()}`;
     };
 
-    // === EMBED LOGO (top right) ===
+    // === EMBED LOGO ===
     let logoImage;
     try {
       const logoUrl = `${supabaseUrl}/storage/v1/object/public/certificates/assets/logo-zp.jpg`;
@@ -168,16 +168,15 @@ serve(async (req) => {
       console.error("Logo embed error:", e);
     }
 
-    // === TOP RIGHT: Logo + Company info ===
-    const companyInfoX = 380;
+    // === TOP: Logo centered, company info right ===
+    const companyInfoX = 410;
     let y = pageHeight - 50;
 
+    // Logo centered between left margin and company info
     if (logoImage) {
       const logoSize = 65;
-      // Center logo above company info block
-      const logoCenterX = companyInfoX + (rightMargin - companyInfoX) / 2 - logoSize / 2;
+      const logoCenterX = (leftMargin + companyInfoX) / 2 - logoSize / 2 + 50;
       page.drawImage(logoImage, { x: logoCenterX, y: y - logoSize + 10, width: logoSize, height: logoSize });
-      y -= logoSize + 15;
     }
 
     const companyLines = [
