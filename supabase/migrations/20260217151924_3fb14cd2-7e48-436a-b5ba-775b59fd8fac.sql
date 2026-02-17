@@ -1,0 +1,1 @@
+ALTER TABLE public.invoices ADD COLUMN ubl_exported_at timestamp with time zone DEFAULT NULL;
