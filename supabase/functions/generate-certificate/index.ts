@@ -477,7 +477,7 @@ serve(async (req) => {
       x: 0,
       y: 0,
       width: pageWidth,
-      height: 65,
+      height: 120,
       color: rgb(1, 1, 1),
     });
 
