@@ -220,12 +220,22 @@ serve(async (req) => {
     page.drawText("Polisvoorwaarden:", { x: leftMargin, y, size: labelFontSize, font: helvetica, color: gray });
     page.drawText("Informatie en Communicatie Technologie", { x: valueX, y, size: valueFontSize, font: helvetica, color: black });
     y -= 14;
-    // Checkmark items in brand red
-    page.drawText("\u2611 Voorwaarden beroepsaansprakelijkheid", { x: valueX, y, size: 7.5, font: helvetica, color: brandRed });
-    y -= 12;
-    page.drawText("\u2611 Voorwaarden bedrijfsaansprakelijkheid (kantoorrisico)", { x: valueX, y, size: 7.5, font: helvetica, color: brandRed });
-    y -= 12;
-    page.drawText("\u2611 Verzekeringskaart", { x: valueX, y, size: 7.5, font: helvetica, color: brandRed });
+    // Draw checkmark boxes manually (WinAnsi can't encode unicode checkmarks)
+    const drawCheckItem = (text: string) => {
+      // Draw checkbox square
+      const boxSize = 6;
+      const boxX = valueX;
+      const boxY = y - 1;
+      page.drawRectangle({ x: boxX, y: boxY, width: boxSize, height: boxSize, borderColor: brandRed, borderWidth: 0.8, color: rgb(1, 1, 1) });
+      // Draw checkmark lines inside box
+      page.drawLine({ start: { x: boxX + 1, y: boxY + 3 }, end: { x: boxX + 2.5, y: boxY + 1 }, thickness: 0.8, color: brandRed });
+      page.drawLine({ start: { x: boxX + 2.5, y: boxY + 1 }, end: { x: boxX + 5, y: boxY + 5 }, thickness: 0.8, color: brandRed });
+      page.drawText(text, { x: valueX + 10, y, size: 7.5, font: helvetica, color: brandRed });
+      y -= 12;
+    };
+    drawCheckItem("Voorwaarden beroepsaansprakelijkheid");
+    drawCheckItem("Voorwaarden bedrijfsaansprakelijkheid (kantoorrisico)");
+    drawCheckItem("Verzekeringskaart");
     y -= 20;
 
     // === DEKKINGSGEBIED ===
