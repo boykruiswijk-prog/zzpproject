@@ -377,7 +377,7 @@ export default function AdminLeadDetail() {
                       )}
                       {lead.omzet && (
                         <div>
-                          <span className="text-muted-foreground text-sm">Omzet:</span>{" "}
+                          <span className="text-muted-foreground text-sm">Jaaromzet (klasse):</span>{" "}
                           {lead.omzet}
                         </div>
                       )}
