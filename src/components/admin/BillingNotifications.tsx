@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Receipt, AlertTriangle, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { CheckCircle } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
@@ -25,6 +26,8 @@ export function BillingNotifications() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [generatingKey, setGeneratingKey] = useState<string | null>(null);
+  const [isBulkGenerating, setIsBulkGenerating] = useState(false);
+  const [bulkProgress, setBulkProgress] = useState({ done: 0, total: 0 });
 
   const { data: billingItems, isLoading } = useQuery({
     queryKey: ["billing-notifications"],
@@ -173,6 +176,54 @@ export function BillingNotifications() {
     }
   };
 
+  const handleBulkInvoice = async () => {
+    if (!billingItems || billingItems.length === 0) return;
+    if (!confirm(`Weet je zeker dat je ${billingItems.length} facturen wilt aanmaken?`)) return;
+
+    setIsBulkGenerating(true);
+    setBulkProgress({ done: 0, total: billingItems.length });
+    let successes = 0;
+    let failures = 0;
+
+    const { data: { session } } = await supabase.auth.getSession();
+
+    for (const item of billingItems) {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-invoice`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session?.access_token}`,
+              apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            },
+            body: JSON.stringify({
+              lead_id: item.lead_id,
+              invoice_date: item.period_start,
+            }),
+          }
+        );
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error);
+        successes++;
+      } catch {
+        failures++;
+      }
+      setBulkProgress((p) => ({ ...p, done: p.done + 1 }));
+    }
+
+    toast({
+      title: "Bulk facturatie voltooid",
+      description: `${successes} facturen aangemaakt${failures > 0 ? `, ${failures} mislukt` : ""}`,
+      variant: failures > 0 ? "destructive" : "default",
+    });
+
+    queryClient.invalidateQueries({ queryKey: ["billing-notifications"] });
+    queryClient.invalidateQueries({ queryKey: ["invoices"] });
+    setIsBulkGenerating(false);
+  };
+
   const formatNL = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString("nl-NL", { day: "2-digit", month: "short", year: "numeric" });
   };
@@ -217,6 +268,24 @@ export function BillingNotifications() {
           Te factureren
           <Badge variant="destructive" className="ml-auto">{billingItems.length}</Badge>
         </CardTitle>
+        <Button
+          size="sm"
+          onClick={handleBulkInvoice}
+          disabled={isBulkGenerating}
+          className="w-full mt-2"
+        >
+          {isBulkGenerating ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              {bulkProgress.done}/{bulkProgress.total} verwerkt...
+            </>
+          ) : (
+            <>
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Alles factureren ({billingItems.length})
+            </>
+          )}
+        </Button>
       </CardHeader>
       <CardContent>
         <div className="space-y-2 max-h-96 overflow-y-auto">
