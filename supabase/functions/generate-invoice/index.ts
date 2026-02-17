@@ -47,7 +47,7 @@ serve(async (req) => {
       });
     }
 
-    const { lead_id, invoice_data } = await req.json();
+    const { lead_id, invoice_data, invoice_date: customInvoiceDate } = await req.json();
     if (!lead_id && !invoice_data) {
       return new Response(JSON.stringify({ error: "lead_id or invoice_data required" }), {
         status: 400,
@@ -96,12 +96,16 @@ serve(async (req) => {
     const amountExcl = parseFloat(data.amount_excl_btw) || 0;
     const amountIncl = amountExcl; // Vrijgesteld van BTW
 
+    // Determine invoice date
+    const invoiceDate = customInvoiceDate || new Date().toISOString().slice(0, 10);
+
     // Insert invoice record
     const { data: invoice, error: invoiceError } = await adminClient
       .from("invoices")
       .insert({
         lead_id: lead_id || null,
         invoice_number: "",
+        invoice_date: invoiceDate,
         client_name: data.client_name,
         company_name: data.company_name || null,
         client_address: data.client_address || null,
