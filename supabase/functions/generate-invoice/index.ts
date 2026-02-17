@@ -99,6 +99,34 @@ serve(async (req) => {
     // Determine invoice date
     const invoiceDate = customInvoiceDate || new Date().toISOString().slice(0, 10);
 
+    // === Duplicate period check ===
+    if (lead_id) {
+      const isMonthlyCheck = data.betaalfrequentie === "Maandelijks";
+      const periodStart = new Date(invoiceDate);
+      const periodEnd = new Date(periodStart);
+      if (isMonthlyCheck) {
+        periodEnd.setMonth(periodEnd.getMonth() + 1);
+      } else {
+        periodEnd.setFullYear(periodEnd.getFullYear() + 1);
+      }
+
+      const { data: existingInvoices } = await adminClient
+        .from("invoices")
+        .select("id, invoice_number, invoice_date")
+        .eq("lead_id", lead_id)
+        .gte("invoice_date", invoiceDate)
+        .lt("invoice_date", periodEnd.toISOString().slice(0, 10));
+
+      if (existingInvoices && existingInvoices.length > 0) {
+        return new Response(JSON.stringify({
+          error: `Er bestaat al een factuur voor deze periode (${existingInvoices[0].invoice_number}, datum ${existingInvoices[0].invoice_date}). Dubbele facturatie voorkomen.`,
+        }), {
+          status: 409,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
     // Insert invoice record
     const { data: invoice, error: invoiceError } = await adminClient
       .from("invoices")

@@ -90,19 +90,29 @@ export function BillingNotifications() {
             periodEnd.setFullYear(periodEnd.getFullYear() + 1);
           }
 
-          const isOverdue = periodEnd < now;
-
-          items.push({
-            lead_id: lead.id,
-            client_name: `${lead.voornaam} ${lead.achternaam}`,
-            company_name: lead.bedrijfsnaam,
-            package_type: lead.verzekering_type || "Combi Uitgebreid",
-            betaalfrequentie: isMonthly ? "Maandelijks" : "Jaarlijks",
-            period_start: periodStart.toISOString().slice(0, 10),
-            period_end: periodEnd.toISOString().slice(0, 10),
-            is_overdue: isOverdue,
-            periods_behind: periodIndex,
+          // Check if an invoice already exists for this period
+          const periodStartStr = periodStart.toISOString().slice(0, 10);
+          const periodEndStr = periodEnd.toISOString().slice(0, 10);
+          const hasInvoiceForPeriod = leadInvoices.some((inv) => {
+            const invDate = inv.invoice_date;
+            return invDate >= periodStartStr && invDate < periodEndStr;
           });
+
+          if (!hasInvoiceForPeriod) {
+            const isOverdue = periodEnd < now;
+
+            items.push({
+              lead_id: lead.id,
+              client_name: `${lead.voornaam} ${lead.achternaam}`,
+              company_name: lead.bedrijfsnaam,
+              package_type: lead.verzekering_type || "Combi Uitgebreid",
+              betaalfrequentie: isMonthly ? "Maandelijks" : "Jaarlijks",
+              period_start: periodStartStr,
+              period_end: periodEndStr,
+              is_overdue: isOverdue,
+              periods_behind: periodIndex,
+            });
+          }
 
           // Move to next period
           periodStart = new Date(periodEnd);
