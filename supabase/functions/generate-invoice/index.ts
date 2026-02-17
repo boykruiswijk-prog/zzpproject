@@ -57,6 +57,12 @@ serve(async (req) => {
 
     // Build invoice data from lead if not provided
     let data = invoice_data;
+    // Package price mapping (yearly, excl. BTW)
+    const packagePrices: Record<string, number> = {
+      "Combi Basis": 292.40,
+      "Combi Uitgebreid": 482.48,
+    };
+
     if (lead_id && !data) {
       const { data: lead, error: leadError } = await adminClient
         .from("leads")
@@ -69,12 +75,14 @@ serve(async (req) => {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
+      const pkgName = lead.verzekering_type || "Combi Uitgebreid";
+      const priceExcl = packagePrices[pkgName] || packagePrices["Combi Uitgebreid"];
       data = {
         client_name: `${lead.voornaam} ${lead.achternaam}`,
         company_name: lead.bedrijfsnaam || null,
         kvk_nummer: lead.kvk_nummer || null,
-        package_type: lead.verzekering_type || "Combi Uitgebreid",
-        amount_excl_btw: 0,
+        package_type: pkgName,
+        amount_excl_btw: priceExcl,
       };
     }
 
