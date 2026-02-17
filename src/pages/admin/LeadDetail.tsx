@@ -481,43 +481,34 @@ export default function AdminLeadDetail() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {policies && policies.length > 0 ? (
-                  <>
-                    {policies.map((p) => (
-                      <div key={p.id} className="flex items-center justify-between p-2 bg-secondary rounded-lg">
-                        <div>
-                          <p className="font-medium text-sm">{p.certificate_number}</p>
-                          <p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString("nl-NL")}</p>
-                        </div>
-                        {p.pdf_url && (
-                          <Button size="sm" variant="outline" onClick={() => handleDownloadCertificate(p.pdf_url!)}>
-                            <Download className="h-3 w-3 mr-1" />
-                            PDF
-                          </Button>
-                        )}
-                      </div>
-                    ))}
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      onClick={handleGenerateCertificate}
-                      disabled={isGenerating}
-                    >
-                      {isGenerating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <FileText className="h-4 w-4 mr-2" />}
-                      Nieuw certificaat
-                    </Button>
-                  </>
-                ) : (
-                  <Button
-                    variant="accent"
-                    className="w-full"
-                    onClick={handleGenerateCertificate}
-                    disabled={isGenerating}
-                  >
-                    {isGenerating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <FileText className="h-4 w-4 mr-2" />}
-                    Certificaat genereren
-                  </Button>
+                {lead.status !== "klant" && (
+                  <p className="text-sm text-muted-foreground bg-secondary/50 p-3 rounded-lg">
+                    Certificaten kunnen alleen worden aangemaakt als de lead de status <strong>Klant</strong> heeft.
+                  </p>
                 )}
+                {policies && policies.length > 0 && policies.map((p) => (
+                  <div key={p.id} className="flex items-center justify-between p-2 bg-secondary rounded-lg">
+                    <div>
+                      <p className="font-medium text-sm">{p.certificate_number}</p>
+                      <p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString("nl-NL")}</p>
+                    </div>
+                    {p.pdf_url && (
+                      <Button size="sm" variant="outline" onClick={() => handleDownloadCertificate(p.pdf_url!)}>
+                        <Download className="h-3 w-3 mr-1" />
+                        PDF
+                      </Button>
+                    )}
+                  </div>
+                ))}
+                <Button
+                  variant={policies && policies.length > 0 ? "outline" : "accent"}
+                  className="w-full"
+                  onClick={handleGenerateCertificate}
+                  disabled={isGenerating || lead.status !== "klant"}
+                >
+                  {isGenerating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <FileText className="h-4 w-4 mr-2" />}
+                  {policies && policies.length > 0 ? "Nieuw certificaat" : "Certificaat genereren"}
+                </Button>
               </CardContent>
             </Card>
 
@@ -530,45 +521,36 @@ export default function AdminLeadDetail() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {invoices && invoices.length > 0 ? (
-                  <>
-                    {invoices.map((inv) => (
-                      <div key={inv.id} className="flex items-center justify-between p-2 bg-secondary rounded-lg">
-                        <div>
-                          <p className="font-medium text-sm">{inv.invoice_number}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {new Date(inv.created_at).toLocaleDateString("nl-NL")} — {`€ ${Number(inv.amount_incl_btw).toFixed(2).replace('.', ',')}`}
-                          </p>
-                        </div>
-                        {inv.pdf_url && (
-                          <Button size="sm" variant="outline" onClick={() => handleDownloadInvoice(inv.pdf_url!)}>
-                            <Download className="h-3 w-3 mr-1" />
-                            PDF
-                          </Button>
-                        )}
-                      </div>
-                    ))}
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      onClick={handleGenerateInvoice}
-                      disabled={isGeneratingInvoice}
-                    >
-                      {isGeneratingInvoice ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Receipt className="h-4 w-4 mr-2" />}
-                      Nieuwe factuur
-                    </Button>
-                  </>
-                ) : (
-                  <Button
-                    variant="accent"
-                    className="w-full"
-                    onClick={handleGenerateInvoice}
-                    disabled={isGeneratingInvoice}
-                  >
-                    {isGeneratingInvoice ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Receipt className="h-4 w-4 mr-2" />}
-                    Factuur genereren
-                  </Button>
+                {lead.status !== "klant" && (
+                  <p className="text-sm text-muted-foreground bg-secondary/50 p-3 rounded-lg">
+                    Facturen kunnen alleen worden aangemaakt als de lead de status <strong>Klant</strong> heeft.
+                  </p>
                 )}
+                {invoices && invoices.length > 0 && invoices.map((inv) => (
+                  <div key={inv.id} className="flex items-center justify-between p-2 bg-secondary rounded-lg">
+                    <div>
+                      <p className="font-medium text-sm">{inv.invoice_number}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(inv.created_at).toLocaleDateString("nl-NL")} — {`€ ${Number(inv.amount_incl_btw).toFixed(2).replace('.', ',')}`}
+                      </p>
+                    </div>
+                    {inv.pdf_url && (
+                      <Button size="sm" variant="outline" onClick={() => handleDownloadInvoice(inv.pdf_url!)}>
+                        <Download className="h-3 w-3 mr-1" />
+                        PDF
+                      </Button>
+                    )}
+                  </div>
+                ))}
+                <Button
+                  variant={invoices && invoices.length > 0 ? "outline" : "accent"}
+                  className="w-full"
+                  onClick={handleGenerateInvoice}
+                  disabled={isGeneratingInvoice || lead.status !== "klant"}
+                >
+                  {isGeneratingInvoice ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Receipt className="h-4 w-4 mr-2" />}
+                  {invoices && invoices.length > 0 ? "Nieuwe factuur" : "Factuur genereren"}
+                </Button>
               </CardContent>
             </Card>
           </div>
