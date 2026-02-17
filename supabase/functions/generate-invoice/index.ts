@@ -138,7 +138,7 @@ serve(async (req) => {
 
     const black = rgb(0, 0, 0);
     const gray = rgb(0.4, 0.4, 0.4);
-    const brandRed = rgb(0.76, 0.07, 0.16);
+    const brandRed = rgb(0.91, 0.26, 0.29);
     const lightGray = rgb(0.95, 0.95, 0.95);
 
     const leftMargin = 56;
