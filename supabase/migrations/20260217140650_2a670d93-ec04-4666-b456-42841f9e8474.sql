@@ -1,0 +1,1 @@
+ALTER TABLE public.policies ALTER COLUMN issued_by SET DEFAULT 'Ellen Baars';

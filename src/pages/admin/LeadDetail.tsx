@@ -25,6 +25,7 @@ import {
   UserCheck,
   FileText,
   Download,
+  Receipt,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -60,6 +61,7 @@ export default function AdminLeadDetail() {
   const updateLead = useUpdateLead();
   const deleteLead = useDeleteLead();
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
 
   // Fetch existing policies for this lead
   const { data: policies, refetch: refetchPolicies } = useQuery({
@@ -68,6 +70,22 @@ export default function AdminLeadDetail() {
       if (!id) return [];
       const { data, error } = await supabase
         .from("policies")
+        .select("*")
+        .eq("lead_id", id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!id,
+  });
+
+  // Fetch existing invoices for this lead
+  const { data: invoices, refetch: refetchInvoices } = useQuery({
+    queryKey: ["invoices", id],
+    queryFn: async () => {
+      if (!id) return [];
+      const { data, error } = await supabase
+        .from("invoices")
         .select("*")
         .eq("lead_id", id)
         .order("created_at", { ascending: false });
@@ -113,6 +131,49 @@ export default function AdminLeadDetail() {
   };
 
   const handleDownloadCertificate = async (pdfPath: string) => {
+    const { data } = await supabase.storage
+      .from("certificates")
+      .createSignedUrl(pdfPath, 3600);
+    if (data?.signedUrl) {
+      window.open(data.signedUrl, "_blank");
+    }
+  };
+
+  const handleGenerateInvoice = async () => {
+    if (!id) return;
+    setIsGeneratingInvoice(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-invoice`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.access_token}`,
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({ lead_id: id }),
+        }
+      );
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Fout bij genereren");
+
+      toast({ title: "Factuur aangemaakt!", description: `Nummer: ${result.invoice.invoice_number}` });
+      refetchInvoices();
+
+      if (result.invoice.pdf_url) {
+        window.open(result.invoice.pdf_url, "_blank");
+      }
+    } catch (error: any) {
+      console.error("Invoice generation error:", error);
+      toast({ title: "Fout", description: error.message, variant: "destructive" });
+    } finally {
+      setIsGeneratingInvoice(false);
+    }
+  };
+
+  const handleDownloadInvoice = async (pdfPath: string) => {
     const { data } = await supabase.storage
       .from("certificates")
       .createSignedUrl(pdfPath, 3600);
@@ -429,6 +490,57 @@ export default function AdminLeadDetail() {
                   >
                     {isGenerating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <FileText className="h-4 w-4 mr-2" />}
                     Certificaat genereren
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Invoice */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Receipt className="h-5 w-5" />
+                  Factuur
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {invoices && invoices.length > 0 ? (
+                  <>
+                    {invoices.map((inv) => (
+                      <div key={inv.id} className="flex items-center justify-between p-2 bg-secondary rounded-lg">
+                        <div>
+                          <p className="font-medium text-sm">{inv.invoice_number}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(inv.created_at).toLocaleDateString("nl-NL")} — {`€ ${Number(inv.amount_incl_btw).toFixed(2).replace('.', ',')}`}
+                          </p>
+                        </div>
+                        {inv.pdf_url && (
+                          <Button size="sm" variant="outline" onClick={() => handleDownloadInvoice(inv.pdf_url!)}>
+                            <Download className="h-3 w-3 mr-1" />
+                            PDF
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={handleGenerateInvoice}
+                      disabled={isGeneratingInvoice}
+                    >
+                      {isGeneratingInvoice ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Receipt className="h-4 w-4 mr-2" />}
+                      Nieuwe factuur
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    variant="accent"
+                    className="w-full"
+                    onClick={handleGenerateInvoice}
+                    disabled={isGeneratingInvoice}
+                  >
+                    {isGeneratingInvoice ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Receipt className="h-4 w-4 mr-2" />}
+                    Factuur genereren
                   </Button>
                 )}
               </CardContent>
