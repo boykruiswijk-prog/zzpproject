@@ -529,7 +529,14 @@ export default function AdminLeadDetail() {
                 {invoices && invoices.length > 0 && invoices.map((inv) => (
                   <div key={inv.id} className="flex items-center justify-between p-2 bg-secondary rounded-lg">
                     <div>
-                      <p className="font-medium text-sm">{inv.invoice_number}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-sm">{inv.invoice_number}</p>
+                        {inv.ubl_exported_at ? (
+                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-green-50 text-green-700 border-green-200">UBL</Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-muted-foreground">Niet geëxporteerd</Badge>
+                        )}
+                      </div>
                       <p className="text-xs text-muted-foreground">
                         {new Date(inv.created_at).toLocaleDateString("nl-NL")} — {`€ ${Number(inv.amount_incl_btw).toFixed(2).replace('.', ',')}`}
                       </p>
