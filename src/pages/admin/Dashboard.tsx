@@ -64,9 +64,8 @@ export default function AdminDashboard() {
         return;
       }
 
-      const today = new Date().toISOString().slice(0, 10);
       const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/export-ubl?date=${today}`,
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/export-ubl`,
         {
           headers: {
             Authorization: `Bearer ${session.access_token}`,
@@ -83,7 +82,7 @@ export default function AdminDashboard() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `zpzaken-ubl-${today}.xml`;
+      a.download = `zpzaken-ubl-${new Date().toISOString().slice(0, 10)}.xml`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

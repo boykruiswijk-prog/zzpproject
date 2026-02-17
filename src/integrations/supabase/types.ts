@@ -182,6 +182,7 @@ export type Database = {
           pdf_url: string | null
           policy_id: string | null
           status: string
+          ubl_exported_at: string | null
           updated_at: string
         }
         Insert: {
@@ -210,6 +211,7 @@ export type Database = {
           pdf_url?: string | null
           policy_id?: string | null
           status?: string
+          ubl_exported_at?: string | null
           updated_at?: string
         }
         Update: {
@@ -238,6 +240,7 @@ export type Database = {
           pdf_url?: string | null
           policy_id?: string | null
           status?: string
+          ubl_exported_at?: string | null
           updated_at?: string
         }
         Relationships: [

@@ -22,7 +22,7 @@ function generateUBLInvoice(invoice: any, lead: any): string {
   const issueDate = formatDate(new Date(invoice.invoice_date));
   const dueDate = formatDate(new Date(invoice.due_date));
   const isMonthly = lead?.omzet === "maandelijks" || lead?.omzet === "2";
-  
+
   const periodEnd = new Date(invoice.invoice_date);
   if (isMonthly) {
     periodEnd.setMonth(periodEnd.getMonth() + 1);
@@ -156,12 +156,14 @@ Deno.serve(async (req) => {
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey, {
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+
+    // Verify user auth
+    const authClient = createClient(supabaseUrl, anonKey, {
       global: { headers: { Authorization: authHeader } },
     });
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const { data: { user }, error: authError } = await authClient.auth.getUser();
     if (authError || !user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
@@ -169,22 +171,20 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Parse optional date filter (default: today's invoices)
-    const url = new URL(req.url);
-    const dateParam = url.searchParams.get("date") || new Date().toISOString().slice(0, 10);
+    // Use service role to update ubl_exported_at
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    // Fetch invoices created on or after the given date
+    // Fetch all invoices that have NOT been exported yet
     const { data: invoices, error: invError } = await supabase
       .from("invoices")
       .select("*")
-      .gte("created_at", `${dateParam}T00:00:00`)
-      .lte("created_at", `${dateParam}T23:59:59`)
-      .order("created_at", { ascending: true });
+      .is("ubl_exported_at", null)
+      .order("invoice_date", { ascending: true });
 
     if (invError) throw invError;
 
     if (!invoices || invoices.length === 0) {
-      return new Response(JSON.stringify({ error: "Geen facturen gevonden voor deze datum" }), {
+      return new Response(JSON.stringify({ error: "Geen nieuwe facturen om te exporteren" }), {
         status: 404,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -203,13 +203,12 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Generate combined XML with multiple invoices
+    // Generate UBL XML
     const xmlParts = invoices.map((inv) => {
       const lead = inv.lead_id ? leadsMap[inv.lead_id] : null;
       return generateUBLInvoice(inv, lead);
     });
 
-    // If single invoice, return single XML; if multiple, wrap in batch
     let xmlContent: string;
     if (xmlParts.length === 1) {
       xmlContent = xmlParts[0];
@@ -217,7 +216,19 @@ Deno.serve(async (req) => {
       xmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<InvoiceBatch count="${xmlParts.length}">\n${xmlParts.map(x => x.replace('<?xml version="1.0" encoding="UTF-8"?>\n', '')).join('\n')}\n</InvoiceBatch>`;
     }
 
-    const fileName = `zpzaken-ubl-${dateParam}.xml`;
+    // Mark all exported invoices
+    const exportedIds = invoices.map(i => i.id);
+    const { error: updateError } = await supabase
+      .from("invoices")
+      .update({ ubl_exported_at: new Date().toISOString() })
+      .in("id", exportedIds);
+
+    if (updateError) {
+      console.error("Failed to mark invoices as exported:", updateError);
+    }
+
+    const today = new Date().toISOString().slice(0, 10);
+    const fileName = `zpzaken-ubl-${today}.xml`;
     return new Response(xmlContent, {
       status: 200,
       headers: {
