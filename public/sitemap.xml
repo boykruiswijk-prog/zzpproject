@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   
   <!-- Homepage -->
   <url>
     <loc>https://zpzaken.nl/</loc>
-    <lastmod>2026-02-12</lastmod>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://zpzaken.nl/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://zpzaken.nl/en/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://zpzaken.nl/de/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://zpzaken.nl/fr/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zpzaken.nl/" />
+    <lastmod>2026-02-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -13,7 +19,11 @@
   <!-- Diensten -->
   <url>
     <loc>https://zpzaken.nl/diensten</loc>
-    <lastmod>2026-02-12</lastmod>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://zpzaken.nl/diensten" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://zpzaken.nl/en/diensten" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://zpzaken.nl/de/diensten" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://zpzaken.nl/fr/diensten" />
+    <lastmod>2026-02-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -21,7 +31,21 @@
   <!-- Verzekeringen -->
   <url>
     <loc>https://zpzaken.nl/verzekeringen</loc>
-    <lastmod>2026-02-12</lastmod>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://zpzaken.nl/verzekeringen" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://zpzaken.nl/en/verzekeringen" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://zpzaken.nl/de/verzekeringen" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://zpzaken.nl/fr/verzekeringen" />
+    <lastmod>2026-02-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- CreditControl -->
+  <url>
+    <loc>https://zpzaken.nl/creditcontrol</loc>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://zpzaken.nl/creditcontrol" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://zpzaken.nl/en/creditcontrol" />
+    <lastmod>2026-02-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -29,7 +53,9 @@
   <!-- Kennisbank -->
   <url>
     <loc>https://zpzaken.nl/kennisbank</loc>
-    <lastmod>2026-02-12</lastmod>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://zpzaken.nl/kennisbank" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://zpzaken.nl/en/kennisbank" />
+    <lastmod>2026-02-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
@@ -98,38 +124,52 @@
     <priority>0.7</priority>
   </url>
   
+  <!-- Kennis (kennispagina) -->
+  <url>
+    <loc>https://zpzaken.nl/kennis</loc>
+    <lastmod>2026-02-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
   <!-- Over ons pagina's -->
   <url>
     <loc>https://zpzaken.nl/over-ons</loc>
-    <lastmod>2026-02-12</lastmod>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://zpzaken.nl/over-ons" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://zpzaken.nl/en/over-ons" />
+    <lastmod>2026-02-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>https://zpzaken.nl/voor-wie</loc>
-    <lastmod>2026-02-12</lastmod>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://zpzaken.nl/voor-wie" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://zpzaken.nl/en/voor-wie" />
+    <lastmod>2026-02-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>https://zpzaken.nl/zo-werken-wij</loc>
-    <lastmod>2026-02-12</lastmod>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://zpzaken.nl/zo-werken-wij" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://zpzaken.nl/en/zo-werken-wij" />
+    <lastmod>2026-02-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>https://zpzaken.nl/partners</loc>
-    <lastmod>2026-02-12</lastmod>
+    <lastmod>2026-02-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://zpzaken.nl/historie</loc>
-    <lastmod>2026-02-12</lastmod>
+    <lastmod>2026-02-19</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -137,7 +177,23 @@
   <!-- Social Media -->
   <url>
     <loc>https://zpzaken.nl/social-media</loc>
-    <lastmod>2026-02-13</lastmod>
+    <lastmod>2026-02-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Collectieve Inkoop -->
+  <url>
+    <loc>https://zpzaken.nl/collectieve-inkoop</loc>
+    <lastmod>2026-02-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Collectief Ledenorganisaties -->
+  <url>
+    <loc>https://zpzaken.nl/collectief-ledenorganisaties</loc>
+    <lastmod>2026-02-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -145,14 +201,18 @@
   <!-- Contact & FAQ -->
   <url>
     <loc>https://zpzaken.nl/contact</loc>
-    <lastmod>2026-02-12</lastmod>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://zpzaken.nl/contact" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://zpzaken.nl/en/contact" />
+    <lastmod>2026-02-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>https://zpzaken.nl/faq</loc>
-    <lastmod>2026-02-12</lastmod>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://zpzaken.nl/faq" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://zpzaken.nl/en/faq" />
+    <lastmod>2026-02-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -160,7 +220,7 @@
   <!-- Juridisch -->
   <url>
     <loc>https://zpzaken.nl/cookies</loc>
-    <lastmod>2026-02-12</lastmod>
+    <lastmod>2026-02-19</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

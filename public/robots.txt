@@ -1,17 +1,23 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /admin
 
-# Sitemap locatie
+# Sitemap
 Sitemap: https://zpzaken.nl/sitemap.xml
 
-# Blokkeer admin pagina's
-Disallow: /admin/
-
-# Speciale crawlers
+# Crawl-delay voor specifieke bots
 User-agent: Googlebot
-Allow: /kennisbank/
+Allow: /
 Crawl-delay: 1
 
 User-agent: Bingbot
-Allow: /kennisbank/
+Allow: /
 Crawl-delay: 2
+
+User-agent: AdsBot-Google
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /assets/
+Allow: /images/

@@ -1,5 +1,5 @@
 import { LocalizedLink } from "@/components/LocalizedLink";
-import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -57,12 +57,12 @@ export default function Diensten() {
 
   return (
     <Layout>
-      <Helmet>
-        <title>{t("diensten.title")} {t("diensten.titleAccent")} | ZP Zaken</title>
-        <meta name="description" content={t("diensten.subtitle")} />
-        <link rel="canonical" href="https://zpzaken.nl/diensten" />
+      <SEOHead
+        title={`${t("diensten.title")} ${t("diensten.titleAccent")} | ZP Zaken`}
+        description={t("diensten.subtitle")}
+      >
         <script type="application/ld+json">{JSON.stringify(dienstenSchema)}</script>
-      </Helmet>
+      </SEOHead>
       <PageHero
         title={<>{t("diensten.title")} <span className="text-accent">{t("diensten.titleAccent")}</span></>}
         subtitle={t("diensten.subtitle")}
