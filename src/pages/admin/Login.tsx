@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,9 +23,32 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<LoginStep>("credentials");
+  const [mfaChecked, setMfaChecked] = useState(false);
 
-  // If already logged in and is team member, redirect
-  if (!authLoading && user && isTeamMember) {
+  // Check MFA assurance level for already-logged-in users
+  useEffect(() => {
+    const checkMFA = async () => {
+      if (!user || !isTeamMember) {
+        setMfaChecked(true);
+        return;
+      }
+      const { data } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (data) {
+        const { currentLevel, nextLevel } = data;
+        if (nextLevel === "aal2" && currentLevel !== "aal2") {
+          // User has MFA but hasn't verified this session
+          setStep("mfa_verify");
+          setMfaChecked(true);
+          return;
+        }
+      }
+      setMfaChecked(true);
+    };
+    if (!authLoading) checkMFA();
+  }, [user, isTeamMember, authLoading]);
+
+  // Only redirect if MFA is satisfied
+  if (!authLoading && mfaChecked && user && isTeamMember && step === "credentials") {
     return <Navigate to="/admin" replace />;
   }
 

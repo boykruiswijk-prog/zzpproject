@@ -2,6 +2,7 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { DashboardStats } from "@/components/admin/DashboardStats";
 import { DashboardCharts } from "@/components/admin/DashboardCharts";
 import { BillingNotifications } from "@/components/admin/BillingNotifications";
+import { MFAManagement } from "@/components/admin/MFAManagement";
 import { Button } from "@/components/ui/button";
 import { Download, FileCode, Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -120,6 +121,7 @@ export default function AdminDashboard() {
         </div>
 
         <BillingNotifications />
+        <MFAManagement />
         <DashboardStats />
         <DashboardCharts />
       </div>

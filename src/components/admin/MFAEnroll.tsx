@@ -9,7 +9,6 @@ import { useToast } from "@/hooks/use-toast";
 
 interface MFAEnrollProps {
   onEnrolled: () => void;
-  
 }
 
 export function MFAEnroll({ onEnrolled }: MFAEnrollProps) {
@@ -28,6 +27,17 @@ export function MFAEnroll({ onEnrolled }: MFAEnrollProps) {
 
   const enrollFactor = async () => {
     setIsEnrolling(true);
+
+    // First check for existing unverified factors and remove them
+    const { data: existingFactors } = await supabase.auth.mfa.listFactors();
+    if (existingFactors?.totp) {
+      for (const factor of existingFactors.totp) {
+        if ((factor.status as string) !== "verified") {
+          await supabase.auth.mfa.unenroll({ factorId: factor.id });
+        }
+      }
+    }
+
     const { data, error } = await supabase.auth.mfa.enroll({
       factorType: "totp",
       friendlyName: "Authenticator App",
@@ -117,14 +127,12 @@ export function MFAEnroll({ onEnrolled }: MFAEnrollProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* QR Code */}
         <div className="flex justify-center">
           <div className="rounded-lg border bg-white p-3">
             <img src={qrCode} alt="QR Code voor 2FA" className="h-48 w-48" />
           </div>
         </div>
 
-        {/* Manual secret */}
         <div className="space-y-2">
           <Label className="text-xs text-muted-foreground">
             Kun je niet scannen? Voer deze code handmatig in:
@@ -139,7 +147,6 @@ export function MFAEnroll({ onEnrolled }: MFAEnrollProps) {
           </div>
         </div>
 
-        {/* Verify code */}
         <div className="space-y-2">
           <Label htmlFor="totp-code">Verificatiecode</Label>
           <Input
@@ -170,7 +177,6 @@ export function MFAEnroll({ onEnrolled }: MFAEnrollProps) {
             "Activeer 2FA"
           )}
         </Button>
-
       </CardContent>
     </Card>
   );
