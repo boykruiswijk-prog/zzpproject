@@ -40,7 +40,7 @@ const Index = () => {
   return (
     <Layout>
       <SEOHead
-        title="ZP Zaken - Onafhankelijk advies voor zzp'ers | Verzekeringen & Zakelijke Zekerheid"
+        title="ZP Zaken | Zorgeloos ZZP'en | Goedkoopste BAV & AVB"
         description="ZP Zaken is al 10+ jaar dé onafhankelijke adviseur voor zzp'ers. BAV, AVB, AOV en meer. Persoonlijk advies, scherpe premies. Binnen 24 uur verzekerd."
         canonical="https://zpzaken.nl/"
       >
