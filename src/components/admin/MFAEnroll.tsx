@@ -9,10 +9,10 @@ import { useToast } from "@/hooks/use-toast";
 
 interface MFAEnrollProps {
   onEnrolled: () => void;
-  onSkip?: () => void;
+  
 }
 
-export function MFAEnroll({ onEnrolled, onSkip }: MFAEnrollProps) {
+export function MFAEnroll({ onEnrolled }: MFAEnrollProps) {
   const { toast } = useToast();
   const [factorId, setFactorId] = useState<string>("");
   const [qrCode, setQrCode] = useState<string>("");
@@ -171,11 +171,6 @@ export function MFAEnroll({ onEnrolled, onSkip }: MFAEnrollProps) {
           )}
         </Button>
 
-        {onSkip && (
-          <Button variant="ghost" onClick={onSkip} className="w-full text-muted-foreground">
-            Later instellen
-          </Button>
-        )}
       </CardContent>
     </Card>
   );

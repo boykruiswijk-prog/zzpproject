@@ -77,10 +77,6 @@ export default function AdminLogin() {
     navigate("/admin");
   };
 
-  const handleMFASkip = () => {
-    navigate("/admin");
-  };
-
   const handleCancel = async () => {
     await supabase.auth.signOut();
     setStep("credentials");
@@ -98,7 +94,7 @@ export default function AdminLogin() {
   if (step === "mfa_enroll") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <MFAEnroll onEnrolled={handleMFAEnrolled} onSkip={handleMFASkip} />
+        <MFAEnroll onEnrolled={handleMFAEnrolled} />
       </div>
     );
   }
