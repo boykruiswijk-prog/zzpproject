@@ -23,6 +23,7 @@ import NotFound from "./pages/NotFound";
 import CollectieveInkoop from "./pages/CollectieveInkoop";
 import CollectiefLedenorganisaties from "./pages/CollectiefLedenorganisaties";
 import SocialMedia from "./pages/SocialMedia";
+import CreditControl from "./pages/CreditControl";
 import AdminLogin from "./pages/admin/Login";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminLeads from "./pages/admin/Leads";
@@ -50,6 +51,7 @@ const publicRoutes = (
     <Route path="collectieve-inkoop" element={<CollectieveInkoop />} />
     <Route path="collectief-ledenorganisaties" element={<CollectiefLedenorganisaties />} />
     <Route path="social-media" element={<SocialMedia />} />
+    <Route path="creditcontrol" element={<CreditControl />} />
   </>
 );
 
