@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
 import { HeroSection } from "@/components/home/HeroSection";
 import { BAVApplicationModule } from "@/components/home/BAVApplicationModule";
@@ -39,16 +39,13 @@ const organizationSchema = {
 const Index = () => {
   return (
     <Layout>
-      <Helmet>
-        <title>ZP Zaken - Onafhankelijk advies voor zzp'ers | Verzekeringen & Zakelijke Zekerheid</title>
-        <meta name="description" content="ZP Zaken is al 10+ jaar dé onafhankelijke adviseur voor zzp'ers. BAV, AVB, AOV en meer. Persoonlijk advies, scherpe premies. Binnen 24 uur verzekerd." />
-        <link rel="canonical" href="https://zpzaken.nl/" />
-        <meta property="og:title" content="ZP Zaken - Onafhankelijk advies voor zzp'ers" />
-        <meta property="og:description" content="Al 10+ jaar dé onafhankelijke adviseur voor zzp'ers. BAV, AVB, AOV en meer." />
-        <meta property="og:url" content="https://zpzaken.nl/" />
-        <meta property="og:type" content="website" />
+      <SEOHead
+        title="ZP Zaken - Onafhankelijk advies voor zzp'ers | Verzekeringen & Zakelijke Zekerheid"
+        description="ZP Zaken is al 10+ jaar dé onafhankelijke adviseur voor zzp'ers. BAV, AVB, AOV en meer. Persoonlijk advies, scherpe premies. Binnen 24 uur verzekerd."
+        canonical="https://zpzaken.nl/"
+      >
         <script type="application/ld+json">{JSON.stringify(organizationSchema)}</script>
-      </Helmet>
+      </SEOHead>
       <HeroSection />
       <BAVApplicationModule />
       <CombiPackageSection />

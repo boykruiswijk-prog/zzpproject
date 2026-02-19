@@ -1,4 +1,5 @@
 import { Layout } from "@/components/layout/Layout";
+import { SEOHead } from "@/components/SEOHead";
 import { PageHero } from "@/components/layout/PageHero";
 import { Cookie, Shield, BarChart3, Megaphone, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -76,6 +77,10 @@ export default function Cookies() {
 
   return (
     <Layout>
+      <SEOHead
+        title="Cookiebeleid | ZP Zaken"
+        description="Lees hoe ZP Zaken cookies gebruikt om jouw ervaring te verbeteren. Beheer je cookie-voorkeuren."
+      />
       <PageHero
         title="Cookiebeleid"
         subtitle="Transparantie over hoe wij cookies gebruiken om jouw ervaring te verbeteren."

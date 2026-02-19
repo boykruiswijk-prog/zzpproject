@@ -1,5 +1,6 @@
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { Layout } from "@/components/layout/Layout";
+import { SEOHead } from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, BookOpen, HelpCircle, FileText, ChevronDown } from "lucide-react";
 import {
@@ -62,6 +63,10 @@ const faqs = [
 export default function Kennis() {
   return (
     <Layout>
+      <SEOHead
+        title="Kennis & Advies voor ZZP'ers | ZP Zaken"
+        description="Handige informatie over verzekeringen, ondernemerschap en alles wat je als zzp'er moet weten. Geen jargon, wel duidelijke taal."
+      />
       {/* Hero */}
       <section className="bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground py-16 md:py-24">
         <div className="container-wide">

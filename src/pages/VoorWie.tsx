@@ -1,5 +1,5 @@
 import { LocalizedLink } from "@/components/LocalizedLink";
-import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -23,11 +23,10 @@ export default function VoorWie() {
 
   return (
     <Layout>
-      <Helmet>
-        <title>{t("voorWie.title")} {t("voorWie.titleAccent")} | ZP Zaken</title>
-        <meta name="description" content={t("voorWie.subtitle")} />
-        <link rel="canonical" href="https://zpzaken.nl/voor-wie" />
-      </Helmet>
+      <SEOHead
+        title={`${t("voorWie.title")} ${t("voorWie.titleAccent")} | ZP Zaken`}
+        description={t("voorWie.subtitle")}
+      />
 
       <PageHero
         title={<>{t("voorWie.title")} <span className="text-accent">{t("voorWie.titleAccent")}</span>?</>}
