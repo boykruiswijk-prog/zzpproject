@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
@@ -29,6 +29,32 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import AdminLeads from "./pages/admin/Leads";
 import AdminLeadDetail from "./pages/admin/LeadDetail";
 import AdminTeam from "./pages/admin/Team";
+
+/** Old WordPress URLs indexed by Google → redirect to new routes */
+const wpRedirects: Array<[string, string]> = [
+  ["belastingen", "/kennisbank"],
+  ["ondernemen", "/kennisbank"],
+  ["financien", "/kennisbank"],
+  ["verzekeringen-info", "/kennisbank"],
+  ["movir", "/verzekeringen"],
+  ["wijzijnaov", "/verzekeringen"],
+  ["aov-via-centraalbeheer", "/verzekeringen"],
+  ["sharepeople", "/partners"],
+  ["eherkenning", "/kennisbank"],
+  ["verplichte-aov-voor-zzp", "/kennisbank/aov-arbeidsongeschiktheidsverzekering"],
+  ["nieuwe-regels-zzp", "/kennisbank/nieuwe-regels-zzp-2025"],
+  ["hoeveel-opdrachtgevers-zzp", "/kennisbank"],
+  ["alles-over-een-zzp-factuur", "/kennisbank"],
+  ["inschrijven-bij-de-kamer-van-koophandel", "/kennisbank"],
+  ["zzp-administratie-en-boekhouding", "/diensten"],
+  ["hoe-bereken-ik-bijtelling-als-zzper", "/kennisbank"],
+  ["is-eten-en-drinken-aftrekbaar-als-zzp-er", "/kennisbank"],
+  ["winkel", "/"],
+  ["shop", "/"],
+  ["product", "/"],
+  ["mijn-account", "/"],
+  ["my-account", "/"],
+];
 
 const queryClient = new QueryClient();
 
@@ -66,6 +92,11 @@ const App = () => (
           <Routes>
             {/* Default (NL) routes */}
             <Route path="/">{publicRoutes}</Route>
+
+            {/* WordPress legacy redirects — MUST come before /:lang */}
+            {wpRedirects.map(([from, to]) => (
+              <Route key={from} path={`/${from}`} element={<Navigate to={to} replace />} />
+            ))}
             
             {/* Language-prefixed routes */}
             <Route path="/:lang">{publicRoutes}</Route>
