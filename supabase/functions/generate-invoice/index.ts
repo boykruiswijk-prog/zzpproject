@@ -59,11 +59,11 @@ serve(async (req) => {
     let data = invoice_data;
     const packagePricesYearly: Record<string, number> = {
       "Combi Basis": 360.00,
-      "Combi Uitgebreid": 482.48,
+      "Combi Uitgebreid": 540.00,
     };
     const packagePricesMonthly: Record<string, number> = {
       "Combi Basis": 30.00,
-      "Combi Uitgebreid": 43.54,
+      "Combi Uitgebreid": 45.00,
     };
 
     if (lead_id && !data) {
