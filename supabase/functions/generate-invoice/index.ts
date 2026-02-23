@@ -58,11 +58,11 @@ serve(async (req) => {
     // Build invoice data from lead if not provided
     let data = invoice_data;
     const packagePricesYearly: Record<string, number> = {
-      "Combi Basis": 292.40,
+      "Combi Basis": 360.00,
       "Combi Uitgebreid": 482.48,
     };
     const packagePricesMonthly: Record<string, number> = {
-      "Combi Basis": 27.70,
+      "Combi Basis": 30.00,
       "Combi Uitgebreid": 43.54,
     };
 

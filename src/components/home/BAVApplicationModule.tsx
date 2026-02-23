@@ -17,7 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const packages = [
-  { id: "basis", name: "Combi Basis", coverage: "€ 500.000 per gebeurtenis", yearCoverage: "€ 1.000.000 per jaar", priceMonthly: 27.70, priceYearly: 292.40, popular: false },
+  { id: "basis", name: "Combi Basis", coverage: "€ 500.000 per gebeurtenis", yearCoverage: "€ 1.000.000 per jaar", priceMonthly: 30.00, priceYearly: 360.00, popular: false },
   { id: "uitgebreid", name: "Combi Uitgebreid", coverage: "€ 2.500.000 per gebeurtenis", yearCoverage: "€ 5.000.000 per jaar", priceMonthly: 43.54, priceYearly: 482.48, popular: true },
 ];
 
