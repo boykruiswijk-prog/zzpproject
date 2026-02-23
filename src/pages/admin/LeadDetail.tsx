@@ -120,7 +120,25 @@ export default function AdminLeadDetail() {
 
       // Auto-download
       if (result.policy.pdf_url) {
-        window.open(result.policy.pdf_url, "_blank");
+        try {
+          const { data } = await supabase.storage
+            .from("certificates")
+            .createSignedUrl(result.policy.pdf_url, 3600);
+          if (data?.signedUrl) {
+            const pdfResponse = await fetch(data.signedUrl);
+            const blob = await pdfResponse.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = blobUrl;
+            a.download = `${result.policy.certificate_number}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(blobUrl);
+          }
+        } catch (e) {
+          console.error("Auto-download error:", e);
+        }
       }
     } catch (error: any) {
       console.error("Certificate generation error:", error);
@@ -135,7 +153,20 @@ export default function AdminLeadDetail() {
       .from("certificates")
       .createSignedUrl(pdfPath, 3600);
     if (data?.signedUrl) {
-      window.open(data.signedUrl, "_blank");
+      try {
+        const pdfResponse = await fetch(data.signedUrl);
+        const blob = await pdfResponse.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download = pdfPath.split("/").pop() || "certificaat.pdf";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(blobUrl);
+      } catch (e) {
+        console.error("Download error:", e);
+      }
     }
   };
 
