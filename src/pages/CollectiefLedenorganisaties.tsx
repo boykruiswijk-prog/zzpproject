@@ -85,7 +85,7 @@ const doelgroepen = [
 ];
 
 const usps = [
-  { icon: Shield, title: "Collectieve korting op BAV", desc: "Directe premiekorting voor jouw leden — tot 25% voordeliger dan individuele tarieven.", nr: "01" },
+  { icon: Shield, title: "Collectieve korting op BAV", desc: "Directe premiekorting voor jouw leden — minimaal 7,5% oplopend tot 12,5% korting op de standaardtarieven.", nr: "01" },
   { icon: CheckCircle, title: "Onafhankelijk en transparant", desc: "Geen verplichte bundels. Eerlijk advies, altijd in het belang van jouw leden.", nr: "02" },
   { icon: HeadphonesIcon, title: "Persoonlijke ondersteuning", desc: "Elke lid krijgt een vaste adviseur — geen callcenters, altijd een mens aan de lijn.", nr: "03" },
   { icon: Settings, title: "Volledige ontzorging", desc: "Van communicatie tot onboarding: wij nemen het werk uit handen.", nr: "04" },
@@ -273,7 +273,7 @@ export default function CollectiefLedenorganisaties() {
               animate={{ opacity: 1 }}
               transition={{ delay: 1.2 }}
             >
-              {["Collectieve korting op BAV", "Binnen 24 uur betaald", "Persoonlijke adviseur", "Volledig ontzorgd"].map((item, i) => (
+              {["7,5% – 12,5% collectieve korting", "Binnen 24 uur betaald", "Persoonlijke adviseur", "Volledig ontzorgd"].map((item, i) => (
                 <motion.span
                   key={item}
                   className="inline-flex items-center gap-2 text-sm px-4 py-2 rounded-full border border-white/10 backdrop-blur-sm text-white/80"
