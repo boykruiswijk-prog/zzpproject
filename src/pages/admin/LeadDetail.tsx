@@ -472,7 +472,8 @@ export default function AdminLeadDetail() {
               </CardContent>
             </Card>
 
-            {/* Certificate */}
+            {/* Certificate - only for BAV leads */}
+            {lead.type === "verzekering_aanvraag" && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -511,8 +512,10 @@ export default function AdminLeadDetail() {
                 </Button>
               </CardContent>
             </Card>
+            )}
 
-            {/* Invoice */}
+            {/* Invoice - only for BAV leads */}
+            {lead.type === "verzekering_aanvraag" && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -560,6 +563,7 @@ export default function AdminLeadDetail() {
                 </Button>
               </CardContent>
             </Card>
+            )}
           </div>
         </div>
       </div>
