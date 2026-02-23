@@ -139,7 +139,8 @@ export default function AdminTeam() {
   };
 
   const getProfileEmail = (userId: string) => {
-    // We don't have email in profiles, return userId for now
+    const role = userRoles?.find((r) => r.user_id === userId);
+    // Show user_id short form as fallback
     return userId.substring(0, 8) + "...";
   };
 
