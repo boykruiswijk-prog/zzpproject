@@ -34,6 +34,8 @@ export interface KvkCheckResult {
   work_description: string;
   explanation: string;
   suggestions?: string[];
+  kvk_extract_date?: string | null;
+  kvk_extract_expired?: boolean | null;
 }
 
 export interface FieldResult {

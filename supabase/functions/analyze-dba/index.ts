@@ -266,28 +266,33 @@ Geef ALLEEN de herschreven tekst terug, geen uitleg.`;
 
       const workDescription = check.project_description || check.extracted_text || "";
       const systemPrompt = `Je bent een expert op het gebied van KVK-registraties en de Wet DBA in Nederland.
-Vergelijk de KVK bedrijfsomschrijving/activiteiten met de feitelijke werkzaamheden uit de overeenkomst.
-Beoordeel of de werkzaamheden passen binnen de KVK-omschrijving.
 
-Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht die niet passen bij zijn/haar KVK-registratie, kan dit wijzen op een schijnconstructie.`;
+Je hebt TWEE taken:
+1. Vergelijk de KVK bedrijfsomschrijving/activiteiten met de feitelijke werkzaamheden uit de overeenkomst.
+   Beoordeel of de werkzaamheden passen binnen de KVK-omschrijving.
+2. Zoek de datum van het KVK-uittreksel in de tekst (vaak staat er "Datum uittreksel", "Uittreksel d.d.", "Datum" of een vergelijkbare aanduiding).
+   Als je een datum vindt, geef deze terug in het formaat YYYY-MM-DD.
+
+Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht die niet passen bij zijn/haar KVK-registratie, kan dit wijzen op een schijnconstructie.
+Een KVK-uittreksel dat ouder is dan 3 maanden is een aandachtspunt.`;
 
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${lovableKey}`,
+          Authorization: \`Bearer \${lovableKey}\`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           model: "google/gemini-3-flash-preview",
           messages: [
             { role: "system", content: systemPrompt },
-            { role: "user", content: `KVK bedrijfsomschrijving/activiteiten:\n${check.kvk_text}\n\nWerkzaamheden uit de overeenkomst:\n${workDescription}` },
+            { role: "user", content: \`KVK bedrijfsomschrijving/activiteiten:\\n\${check.kvk_text}\\n\\nWerkzaamheden uit de overeenkomst:\\n\${workDescription}\` },
           ],
           tools: [{
             type: "function",
             function: {
               name: "report_kvk_check",
-              description: "Report whether the KVK activities match the work being performed",
+              description: "Report whether the KVK activities match the work being performed and the age of the KVK extract",
               parameters: {
                 type: "object",
                 properties: {
@@ -296,6 +301,7 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
                   work_description: { type: "string", description: "Samenvatting van de feitelijke werkzaamheden" },
                   explanation: { type: "string", description: "Uitleg waarom het wel of niet matcht" },
                   suggestions: { type: "array", items: { type: "string" }, description: "Eventuele suggesties als het niet matcht" },
+                  kvk_extract_date: { type: "string", description: "Datum van het KVK-uittreksel in YYYY-MM-DD formaat, of null als niet gevonden" },
                 },
                 required: ["match", "kvk_activities", "work_description", "explanation"],
               },
@@ -320,6 +326,16 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
       }
 
       const kvkResult = JSON.parse(toolCall.function.arguments);
+
+      // Check if KVK extract is older than 3 months
+      if (kvkResult.kvk_extract_date) {
+        const extractDate = new Date(kvkResult.kvk_extract_date);
+        const threeMonthsAgo = new Date();
+        threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+        kvkResult.kvk_extract_expired = extractDate < threeMonthsAgo;
+      } else {
+        kvkResult.kvk_extract_expired = null; // could not determine
+      }
 
       await supabase.from("dba_checks").update({
         kvk_check_result: kvkResult,

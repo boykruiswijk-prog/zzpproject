@@ -318,35 +318,79 @@ export default function DbaCheckDetail() {
                     </div>
                   </div>
                   {check.kvk_check_result && (
-                    <div className={`p-4 rounded-lg border ${
-                      check.kvk_check_result.match
-                        ? "border-green-200 bg-green-50"
-                        : "border-red-200 bg-red-50"
-                    }`}>
-                      <div className="flex items-start gap-3">
-                        {check.kvk_check_result.match ? (
-                          <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
-                        ) : (
-                          <XCircle className="h-5 w-5 text-red-600 mt-0.5 shrink-0" />
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium">
-                            {check.kvk_check_result.match ? "Werkzaamheden passen bij KVK" : "Werkzaamheden passen NIET bij KVK"}
-                          </p>
-                          <p className="text-sm mt-2">{check.kvk_check_result.explanation}</p>
-                          {check.kvk_check_result.suggestions && check.kvk_check_result.suggestions.length > 0 && (
-                            <div className="mt-3">
-                              <p className="text-sm font-medium">Suggesties:</p>
-                              <ul className="list-disc list-inside text-sm mt-1 space-y-1">
-                                {check.kvk_check_result.suggestions.map((s, i) => (
-                                  <li key={i}>{s}</li>
-                                ))}
-                              </ul>
+                    <>
+                      {/* KVK Age Warning */}
+                      {check.kvk_check_result.kvk_extract_expired === true && (
+                        <div className="p-4 rounded-lg border border-orange-200 bg-orange-50">
+                          <div className="flex items-start gap-3">
+                            <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
+                            <div>
+                              <p className="font-medium text-orange-800">KVK-uittreksel ouder dan 3 maanden</p>
+                              <p className="text-sm text-orange-700 mt-1">
+                                Het KVK-uittreksel is gedateerd op {check.kvk_check_result.kvk_extract_date ? new Date(check.kvk_check_result.kvk_extract_date).toLocaleDateString("nl-NL") : "onbekend"}.
+                                Vraag een recent uittreksel op (niet ouder dan 3 maanden).
+                              </p>
                             </div>
+                          </div>
+                        </div>
+                      )}
+                      {check.kvk_check_result.kvk_extract_expired === null && (
+                        <div className="p-4 rounded-lg border border-yellow-200 bg-yellow-50">
+                          <div className="flex items-start gap-3">
+                            <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5 shrink-0" />
+                            <div>
+                              <p className="font-medium text-yellow-800">KVK-uittreksel datum niet gevonden</p>
+                              <p className="text-sm text-yellow-700 mt-1">
+                                De datum van het KVK-uittreksel kon niet worden bepaald. Controleer handmatig of het niet ouder is dan 3 maanden.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      {check.kvk_check_result.kvk_extract_expired === false && check.kvk_check_result.kvk_extract_date && (
+                        <div className="p-4 rounded-lg border border-green-200 bg-green-50">
+                          <div className="flex items-start gap-3">
+                            <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
+                            <div>
+                              <p className="font-medium text-green-800">KVK-uittreksel is recent</p>
+                              <p className="text-sm text-green-700 mt-1">
+                                Gedateerd op {new Date(check.kvk_check_result.kvk_extract_date).toLocaleDateString("nl-NL")} — niet ouder dan 3 maanden.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      {/* KVK Match Result */}
+                      <div className={`p-4 rounded-lg border ${
+                        check.kvk_check_result.match
+                          ? "border-green-200 bg-green-50"
+                          : "border-red-200 bg-red-50"
+                      }`}>
+                        <div className="flex items-start gap-3">
+                          {check.kvk_check_result.match ? (
+                            <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
+                          ) : (
+                            <XCircle className="h-5 w-5 text-red-600 mt-0.5 shrink-0" />
                           )}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium">
+                              {check.kvk_check_result.match ? "Werkzaamheden passen bij KVK" : "Werkzaamheden passen NIET bij KVK"}
+                            </p>
+                            <p className="text-sm mt-2">{check.kvk_check_result.explanation}</p>
+                            {check.kvk_check_result.suggestions && check.kvk_check_result.suggestions.length > 0 && (
+                              <div className="mt-3">
+                                <p className="text-sm font-medium">Suggesties:</p>
+                                <ul className="list-disc list-inside text-sm mt-1 space-y-1">
+                                  {check.kvk_check_result.suggestions.map((s, i) => (
+                                    <li key={i}>{s}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </>
                   )}
                 </CardContent>
               </Card>
