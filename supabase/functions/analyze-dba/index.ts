@@ -67,8 +67,6 @@ Het formulier "Gegevens met betrekking tot toetsing ZP kandidaat - Wet DBA" beva
 
 VERPLICHTE VELDEN:
 - Naam ZP kandidaat
-- E-mailadres
-- Telefoonnummer
 - Opdrachtgever
 - Eindopdrachtgever
 - Functie
