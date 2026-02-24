@@ -83,7 +83,12 @@ export default function AdminDbaChecks() {
     doc.setFontSize(9);
     doc.text(`Gegenereerd op ${new Date().toLocaleDateString("nl-NL")}`, pageWidth / 2, 30, { align: "center" });
 
-    const certifiedChecks = checks.filter((c) => c.certificate_number);
+    const certifiedChecks = checks.filter((c) => c.certificate_number && !c.invoiced_at);
+
+    if (certifiedChecks.length === 0) {
+      toast({ title: "Geen checks om te exporteren", description: "Alle gecertificeerde checks zijn al gefactureerd." });
+      return;
+    }
     
     const tableData = certifiedChecks.map((check) => {
       let opdrachtgever = "";
