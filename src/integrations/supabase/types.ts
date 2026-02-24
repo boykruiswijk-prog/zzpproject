@@ -243,6 +243,7 @@ export type Database = {
           field_results: Json | null
           functie: string | null
           id: string
+          invoiced_at: string | null
           kvk_check_result: Json | null
           kvk_file_url: string | null
           kvk_filename: string | null
@@ -285,6 +286,7 @@ export type Database = {
           field_results?: Json | null
           functie?: string | null
           id?: string
+          invoiced_at?: string | null
           kvk_check_result?: Json | null
           kvk_file_url?: string | null
           kvk_filename?: string | null
@@ -327,6 +329,7 @@ export type Database = {
           field_results?: Json | null
           functie?: string | null
           id?: string
+          invoiced_at?: string | null
           kvk_check_result?: Json | null
           kvk_file_url?: string | null
           kvk_filename?: string | null
