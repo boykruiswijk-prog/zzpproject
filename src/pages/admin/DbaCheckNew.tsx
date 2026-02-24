@@ -231,7 +231,28 @@ export default function DbaCheckNew() {
                     id="kvkFile"
                     type="file"
                     accept=".pdf"
-                    onChange={(e) => setKvkFile(e.target.files?.[0] || null)}
+                    onChange={async (e) => {
+                      const f = e.target.files?.[0] || null;
+                      setKvkFile(f);
+                      if (f && f.name.toLowerCase().endsWith(".pdf")) {
+                        try {
+                          const pdfjsLib = await import("pdfjs-dist");
+                          pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+                          const arrayBuffer = await f.arrayBuffer();
+                          const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                          let text = "";
+                          for (let i = 1; i <= pdf.numPages; i++) {
+                            const page = await pdf.getPage(i);
+                            const content = await page.getTextContent();
+                            text += content.items.map((item: any) => item.str).join(" ") + "\n";
+                          }
+                          setKvkText(text.trim());
+                          toast({ title: "Tekst geëxtraheerd uit KVK uittreksel" });
+                        } catch {
+                          toast({ title: "Kon PDF niet uitlezen", description: "Plak de tekst handmatig.", variant: "destructive" });
+                        }
+                      }
+                    }}
                     className="hidden"
                   />
                 </div>
@@ -239,7 +260,7 @@ export default function DbaCheckNew() {
 
               <div>
                 <Label htmlFor="kvkText">
-                  KVK bedrijfsomschrijving (plak hier de activiteiten uit het KVK uittreksel)
+                  KVK bedrijfsomschrijving (automatisch uit PDF, of plak handmatig)
                 </Label>
                 <Textarea
                   id="kvkText"
