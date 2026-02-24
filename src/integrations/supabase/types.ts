@@ -193,6 +193,10 @@ export type Database = {
           extracted_text: string | null
           field_results: Json | null
           id: string
+          kvk_check_result: Json | null
+          kvk_file_url: string | null
+          kvk_filename: string | null
+          kvk_text: string | null
           lead_id: string | null
           missing_fields: Json | null
           original_filename: string | null
@@ -214,6 +218,10 @@ export type Database = {
           extracted_text?: string | null
           field_results?: Json | null
           id?: string
+          kvk_check_result?: Json | null
+          kvk_file_url?: string | null
+          kvk_filename?: string | null
+          kvk_text?: string | null
           lead_id?: string | null
           missing_fields?: Json | null
           original_filename?: string | null
@@ -235,6 +243,10 @@ export type Database = {
           extracted_text?: string | null
           field_results?: Json | null
           id?: string
+          kvk_check_result?: Json | null
+          kvk_file_url?: string | null
+          kvk_filename?: string | null
+          kvk_text?: string | null
           lead_id?: string | null
           missing_fields?: Json | null
           original_filename?: string | null
