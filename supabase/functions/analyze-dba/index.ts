@@ -239,7 +239,14 @@ Geef ALLEEN de herschreven tekst terug, geen uitleg.`;
       }
 
       const aiResult = await response.json();
-      const rewritten = aiResult.choices?.[0]?.message?.content || "";
+      // Strip markdown formatting (**, *, #, etc.)
+      const rawRewritten = aiResult.choices?.[0]?.message?.content || "";
+      const rewritten = rawRewritten
+        .replace(/\*\*(.+?)\*\*/g, "$1")
+        .replace(/\*(.+?)\*/g, "$1")
+        .replace(/^#{1,6}\s+/gm, "")
+        .replace(/^[-*]\s+/gm, "- ")
+        .trim();
 
       await supabase.from("dba_checks").update({
         rewritten_description: rewritten,
