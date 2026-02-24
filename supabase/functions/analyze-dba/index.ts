@@ -422,10 +422,14 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
           }
         } catch { /* skip */ }
 
-        // Draw logos — aligned on same baseline
+        // Draw logos — aligned on same baseline, preserving aspect ratio
         const logoY = pageHeight - 75;
         if (zpLogoImage) {
-          page.drawImage(zpLogoImage, { x: margin, y: logoY - 40, width: 80, height: 80 });
+          const zpOrigW = zpLogoImage.width;
+          const zpOrigH = zpLogoImage.height;
+          const zpTargetH = 50;
+          const zpTargetW = (zpOrigW / zpOrigH) * zpTargetH;
+          page.drawImage(zpLogoImage, { x: margin, y: logoY - 20, width: zpTargetW, height: zpTargetH });
         }
         if (ofLogoImage) {
           page.drawImage(ofLogoImage, { x: pageWidth - rightMargin - 140, y: logoY - 5, width: 140, height: 30 });
