@@ -24,15 +24,25 @@ export default function DbaCheckNew() {
   const [isUploading, setIsUploading] = useState(false);
   const [extractedText, setExtractedText] = useState("");
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
-      // For .txt files, read directly
-      if (selectedFile.name.endsWith(".txt")) {
+      const name = selectedFile.name.toLowerCase();
+      if (name.endsWith(".txt")) {
         const reader = new FileReader();
         reader.onload = (evt) => setExtractedText(evt.target?.result as string || "");
         reader.readAsText(selectedFile);
+      } else if (name.endsWith(".docx") || name.endsWith(".doc")) {
+        try {
+          const mammoth = await import("mammoth");
+          const arrayBuffer = await selectedFile.arrayBuffer();
+          const result = await mammoth.default.extractRawText({ arrayBuffer });
+          setExtractedText(result.value);
+          toast({ title: "Tekst geëxtraheerd uit document" });
+        } catch {
+          toast({ title: "Kon tekst niet automatisch uitlezen", description: "Plak de tekst handmatig hieronder.", variant: "destructive" });
+        }
       }
     }
   };
@@ -64,16 +74,14 @@ export default function DbaCheckNew() {
         if (uploadError) throw uploadError;
         uploadedUrl = filePath;
 
-        if (!extractedText && !file.name.endsWith(".txt")) {
-          if (!projectDescription && !extractedText) {
-            toast({
-              title: "Plak de inhoud van het document",
-              description: "Word-documenten kunnen niet automatisch uitgelezen worden. Plak de tekst hieronder.",
-              variant: "destructive",
-            });
-            setIsUploading(false);
-            return;
-          }
+        if (!extractedText && !projectDescription) {
+          toast({
+            title: "Geen tekst beschikbaar",
+            description: "Upload een .docx of .txt bestand, of plak de tekst handmatig.",
+            variant: "destructive",
+          });
+          setIsUploading(false);
+          return;
         }
       }
 
