@@ -370,7 +370,7 @@ export default function DbaCheckDetail() {
             {check.extracted_text && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Document inhoud</CardTitle>
+                  <CardTitle>{check.client_name}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="max-h-64 overflow-y-auto p-3 rounded-lg bg-secondary/50 text-sm whitespace-pre-line">
