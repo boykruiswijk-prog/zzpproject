@@ -692,11 +692,11 @@ Een KVK-uittreksel dat ouder is dan 3 maanden is een aandachtspunt.`;
           }
         });
         // Add KVK extract age warning
-        const kvkResult = check.kvk_check_result as any;
-        if (kvkResult?.kvk_extract_expired === true) {
-          const dateStr = kvkResult.kvk_extract_date || "onbekend";
+        const kvkForAge = check.kvk_check_result as any;
+        if (kvkForAge?.kvk_extract_expired === true) {
+          const dateStr = kvkForAge.kvk_extract_date || "onbekend";
           uniqueAandachtspunten.add(`KVK-uittreksel is ouder dan 3 maanden (datum: ${dateStr})`);
-        } else if (kvkResult && kvkResult.kvk_extract_date === null && kvkResult.kvk_extract_expired === null) {
+        } else if (kvkForAge && kvkForAge.kvk_extract_date === null && kvkForAge.kvk_extract_expired === null) {
           uniqueAandachtspunten.add("Datum KVK-uittreksel kon niet worden vastgesteld");
         }
 
