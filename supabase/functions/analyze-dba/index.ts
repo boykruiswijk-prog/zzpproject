@@ -313,7 +313,7 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
       });
 
     } else if (action === "certify") {
-      // Generate ZP Approved stempel PDF
+      // Generate ZP Approved stempel PDF - exact branding match
       const verificationToken = crypto.randomUUID();
       const { data: seqData } = await supabase.rpc("nextval_text", { seq_name: "dba_cert_seq" });
       const certNum = "ZPDBA" + (seqData || Math.floor(Math.random() * 9000 + 1000));
@@ -324,22 +324,24 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
         const pdfDoc = await PDFDocument.create();
         const pageWidth = 595.28;
         const pageHeight = 841.89;
-        const page = pdfDoc.addPage([pageWidth, pageHeight]);
 
         const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
         const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
         const black = rgb(0, 0, 0);
-        const gray = rgb(0.35, 0.35, 0.35);
-        const brandColor = rgb(0.76, 0.07, 0.16);
-        const green = rgb(0.1, 0.55, 0.1);
-        const lightGray = rgb(0.92, 0.92, 0.92);
+        const gray = rgb(0.4, 0.4, 0.4);
+        const darkGray = rgb(0.25, 0.25, 0.25);
+        const headerBg = rgb(0.85, 0.85, 0.85);
+        const tableBorder = rgb(0.75, 0.75, 0.75);
+        const aandachtColor = rgb(0.8, 0.2, 0.0); // Orange-red for aandachtspunten
+        const white = rgb(1, 1, 1);
 
-        const labelX = 56;
-        const valueX = 220;
-        const fontSize = 9;
-        const lineHeight = 16;
-        const maxValueWidth = pageWidth - valueX - 40;
+        const margin = 56;
+        const tableWidth = pageWidth - margin * 2;
+        const labelColWidth = 170;
+        const valueColX = margin + labelColWidth;
+        const fontSize = 8.5;
+        const rowHeight = 20;
 
         const formatDate = (d: string) => {
           const dt = new Date(d);
@@ -347,6 +349,7 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
         };
 
         const wrapText = (text: string, font: typeof helvetica, size: number, maxW: number): string[] => {
+          if (!text) return ["-"];
           const words = text.split(" ");
           const lines: string[] = [];
           let cur = "";
@@ -356,45 +359,64 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
             else cur = test;
           }
           if (cur) lines.push(cur);
-          return lines;
+          return lines.length > 0 ? lines : ["-"];
         };
 
-        const drawField = (label: string, value: string, yPos: number): number => {
-          page.drawText(label, { x: labelX, y: yPos, size: fontSize, font: helveticaBold, color: gray });
-          const lines = wrapText(value || "-", helvetica, fontSize, maxValueWidth);
-          lines.forEach((line, i) => {
-            page.drawText(line, { x: valueX, y: yPos - i * 12, size: fontSize, font: helvetica, color: black });
-          });
-          return yPos - Math.max(lines.length, 1) * lineHeight;
-        };
+        // === PAGE 1 ===
+        const page = pdfDoc.addPage([pageWidth, pageHeight]);
 
-        // === Header ===
-        // Try to load template for background/logo
+        // --- Logos ---
         try {
-          const { data: templateData } = await supabase.storage.from("certificates").download("templates/certificate-template.png");
-          if (templateData) {
-            const templateBytes = new Uint8Array(await templateData.arrayBuffer());
-            const templateImage = await pdfDoc.embedPng(templateBytes);
-            page.drawImage(templateImage, { x: 0, y: 0, width: pageWidth, height: pageHeight });
+          const { data: zpLogoData } = await supabase.storage.from("certificates").download("templates/zp-approved-logo.jpg");
+          if (zpLogoData) {
+            const zpLogoBytes = new Uint8Array(await zpLogoData.arrayBuffer());
+            const zpLogoImage = await pdfDoc.embedJpg(zpLogoBytes);
+            page.drawImage(zpLogoImage, { x: margin, y: pageHeight - 130, width: 120, height: 120 });
           }
-        } catch { /* continue without template */ }
+        } catch { /* skip logo */ }
 
-        // White header area for title
-        page.drawRectangle({ x: 0, y: pageHeight - 130, width: pageWidth, height: 130, color: rgb(1, 1, 1) });
+        try {
+          const { data: ofLogoData } = await supabase.storage.from("certificates").download("templates/onefellow-logo.jpg");
+          if (ofLogoData) {
+            const ofLogoBytes = new Uint8Array(await ofLogoData.arrayBuffer());
+            const ofLogoImage = await pdfDoc.embedJpg(ofLogoBytes);
+            page.drawImage(ofLogoImage, { x: pageWidth - margin - 200, y: pageHeight - 90, width: 200, height: 45 });
+          }
+        } catch { /* skip logo */ }
 
-        // Title
-        page.drawText("Toetsing ZP kandidaat - Wet DBA", {
-          x: labelX, y: pageHeight - 50, size: 18, font: helveticaBold, color: black,
-        });
-        page.drawText(`Documentnummer: ${certNum}`, {
-          x: labelX, y: pageHeight - 72, size: 10, font: helvetica, color: gray,
-        });
+        // --- Table starts below logos ---
+        let y = pageHeight - 170;
 
-        // Separator line
-        page.drawRectangle({ x: labelX, y: pageHeight - 85, width: pageWidth - labelX * 2, height: 1, color: lightGray });
+        // Helper: draw a table row
+        const drawTableRow = (label: string, value: string, yPos: number, opts?: { headerRow?: boolean; valueColor?: typeof black; valueBold?: boolean }): number => {
+          const valueMaxW = tableWidth - labelColWidth - 10;
+          const lines = wrapText(value || "-", opts?.valueBold ? helveticaBold : helvetica, fontSize, valueMaxW);
+          const cellHeight = Math.max(rowHeight, lines.length * 13 + 6);
 
-        // === Form Fields ===
-        let y = pageHeight - 110;
+          if (opts?.headerRow) {
+            page.drawRectangle({ x: margin, y: yPos - cellHeight, width: tableWidth, height: cellHeight, color: headerBg });
+          }
+
+          // Cell borders
+          page.drawRectangle({ x: margin, y: yPos - cellHeight, width: tableWidth, height: cellHeight, borderColor: tableBorder, borderWidth: 0.5, color: opts?.headerRow ? headerBg : white });
+          // Vertical divider
+          page.drawLine({ start: { x: valueColX, y: yPos }, end: { x: valueColX, y: yPos - cellHeight }, thickness: 0.5, color: tableBorder });
+
+          // Label
+          page.drawText(label, { x: margin + 6, y: yPos - 14, size: fontSize, font: helveticaBold, color: darkGray });
+
+          // Value
+          const valColor = opts?.valueColor || black;
+          const valFont = opts?.valueBold ? helveticaBold : helvetica;
+          lines.forEach((line, i) => {
+            page.drawText(line, { x: valueColX + 6, y: yPos - 14 - i * 13, size: fontSize, font: valFont, color: valColor });
+          });
+
+          return yPos - cellHeight;
+        };
+
+        // Header row
+        y = drawTableRow("Toetsing ZP kandidaat - Wet DBA", "", y, { headerRow: true });
 
         // Extract values from form_fields analysis
         const fieldResults = (check.field_results || []) as any[];
@@ -403,108 +425,155 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
           return field?.value || "";
         };
 
-        y = drawField("Naam ZP kandidaat:", getFieldValue("naam"), y);
-        y = drawField("Rechtsvorm:", check.rechtsvorm || getFieldValue("rechtsvorm") || "-", y);
-        y = drawField("Opdrachtgever:", check.opdrachtgever || check.client_name || "", y);
-        y = drawField("Eindopdrachtgever:", check.eindopdrachtgever || getFieldValue("eindopdrachtgever") || "-", y);
-        y = drawField("Functie:", check.functie || getFieldValue("functie") || "-", y);
+        // Form fields
+        y = drawTableRow("Documentnummer", certNum, y);
+        y = drawTableRow("Naam ZP kandidaat", getFieldValue("naam"), y);
+        y = drawTableRow("Rechtsvorm", check.rechtsvorm || getFieldValue("rechtsvorm") || "-", y);
+        y = drawTableRow("Opdrachtgever", check.opdrachtgever || check.client_name || "", y);
+        y = drawTableRow("Eindopdrachtgever", check.eindopdrachtgever || getFieldValue("eindopdrachtgever") || "-", y);
+        y = drawTableRow("Functie", check.functie || getFieldValue("functie") || "-", y);
+        y = drawTableRow("Opdrachtomschrijving", check.project_description || getFieldValue("opdrachtomschrijving") || "-", y);
+        y = drawTableRow("Project", check.project_name || getFieldValue("project") || "-", y);
+        y = drawTableRow("Startdatum", check.startdatum ? formatDate(check.startdatum) : getFieldValue("startdatum") || "-", y);
+        y = drawTableRow("Einddatum", check.einddatum ? formatDate(check.einddatum) : getFieldValue("einddatum") || "-", y);
+        y = drawTableRow("Optie tot verlenging", check.optie_verlenging || getFieldValue("verlenging") || "-", y);
 
-        // Opdrachtomschrijving (potentially longer)
-        const omschrijving = check.project_description || getFieldValue("opdrachtomschrijving") || "-";
-        page.drawText("Opdrachtomschrijving:", { x: labelX, y, size: fontSize, font: helveticaBold, color: gray });
-        const omschLines = wrapText(omschrijving, helvetica, 8, pageWidth - labelX - 60);
-        y -= 2;
-        omschLines.slice(0, 4).forEach((line, i) => {
-          y -= 11;
-          page.drawText(line, { x: labelX + 10, y, size: 8, font: helvetica, color: black });
-        });
-        y -= 8;
-
-        y = drawField("Project:", check.project_name || getFieldValue("project") || "-", y);
-        y = drawField("Startdatum:", check.startdatum ? formatDate(check.startdatum) : getFieldValue("startdatum") || "-", y);
-        y = drawField("Einddatum:", check.einddatum ? formatDate(check.einddatum) : getFieldValue("einddatum") || "-", y);
-        y = drawField("Optie tot verlenging:", check.optie_verlenging || getFieldValue("verlenging") || "-", y);
-
-        // === Dossier (checklist) ===
-        y -= 8;
-        page.drawRectangle({ x: labelX, y: y + 4, width: pageWidth - labelX * 2, height: 1, color: lightGray });
-        y -= 4;
-        page.drawText("Dossier:", { x: labelX, y, size: 10, font: helveticaBold, color: black });
-        y -= 4;
-
-        const checklist = (check.document_checklist || []) as any[];
-        for (const item of checklist) {
-          y -= lineHeight;
-          const icon = item.status === "aanwezig" ? "✓" : "✗";
-          const color = item.status === "aanwezig" ? green : brandColor;
-          page.drawText(icon, { x: labelX + 10, y, size: 10, font: helveticaBold, color });
-          page.drawText(item.document_name || "", { x: labelX + 26, y, size: fontSize, font: helvetica, color: black });
-        }
-
-        // === Aandachtspunten ===
+        // Dossier + Aandachtspunten row
         const suggestions = check.suggestions as any[];
         const aandachtspunten: string[] = suggestions?.[0]?.aandachtspunten || [];
-        
-        y -= 12;
-        page.drawRectangle({ x: labelX, y: y + 4, width: pageWidth - labelX * 2, height: 1, color: lightGray });
-        y -= 4;
-        page.drawText("Aandachtspunten:", { x: labelX, y, size: 10, font: helveticaBold, color: brandColor });
+        const checklist = (check.document_checklist || []) as any[];
 
-        if (aandachtspunten.length === 0) {
-          y -= lineHeight;
-          page.drawText("Geen aandachtspunten.", { x: labelX + 10, y, size: fontSize, font: helvetica, color: green });
-        } else {
-          for (const punt of aandachtspunten) {
-            const puntLines = wrapText(`• ${punt}`, helvetica, 8, pageWidth - labelX - 70);
-            for (const line of puntLines) {
-              y -= 12;
-              if (y < 80) break;
-              page.drawText(line, { x: labelX + 10, y, size: 8, font: helvetica, color: brandColor });
-            }
-            if (y < 80) break;
+        // Dossier items as bullet list
+        const dossierLines = checklist.map((item: any) => {
+          const icon = item.status === "aanwezig" ? "•" : "•";
+          return `${icon} ${item.document_name || ""}`;
+        });
+        const dossierText = dossierLines.join("\n") || "-";
+
+        // Draw dossier/aandachtspunten combined row
+        const dossierHeight = Math.max(checklist.length * 14 + 10, rowHeight);
+        const aandachtHeight = Math.max(aandachtspunten.length * 14 + 10, rowHeight);
+        const combinedHeight = Math.max(dossierHeight, aandachtHeight, 60);
+
+        // Outer border for combined row
+        page.drawRectangle({ x: margin, y: y - combinedHeight, width: tableWidth, height: combinedHeight, borderColor: tableBorder, borderWidth: 0.5, color: white });
+        page.drawLine({ start: { x: valueColX, y }, end: { x: valueColX, y: y - combinedHeight }, thickness: 0.5, color: tableBorder });
+
+        // Dossier label
+        page.drawText("Dossier", { x: margin + 6, y: y - 14, size: fontSize, font: helveticaBold, color: darkGray });
+
+        // Aandachtspunten header
+        page.drawText("Aandachtspunten:", { x: valueColX + 6, y: y - 14, size: fontSize, font: helveticaBold, color: aandachtColor });
+
+        // Dossier items with checkmarks
+        checklist.forEach((item: any, i: number) => {
+          const yItem = y - 30 - i * 14;
+          const statusIcon = item.status === "aanwezig" ? "✓" : "✗";
+          const statusColor = item.status === "aanwezig" ? rgb(0.1, 0.55, 0.1) : aandachtColor;
+          page.drawText(statusIcon, { x: margin + 10, y: yItem, size: 9, font: helveticaBold, color: statusColor });
+          page.drawText(item.document_name || "", { x: margin + 24, y: yItem, size: 7.5, font: helvetica, color: darkGray });
+        });
+
+        // Aandachtspunten items
+        aandachtspunten.forEach((punt, i) => {
+          const yItem = y - 30 - i * 14;
+          if (yItem > y - combinedHeight + 5) {
+            page.drawText(`• ${punt}`, { x: valueColX + 10, y: yItem, size: 7.5, font: helvetica, color: aandachtColor });
           }
-        }
+        });
 
-        // === Zelfstandigheid ===
-        y -= 12;
+        y -= combinedHeight;
+
+        // Zelfstandigheid rows
         const zelfstandig = check.treedt_zelfstandig_op;
         const eigenMateriaal = check.eigen_materiaal_werkwijze;
-        page.drawText(zelfstandig ? "✓" : "✗", { x: labelX + 10, y, size: 10, font: helveticaBold, color: zelfstandig ? green : brandColor });
-        page.drawText("Treedt zelfstandig naar buiten", { x: labelX + 26, y, size: fontSize, font: helvetica, color: black });
-        y -= lineHeight;
-        page.drawText(eigenMateriaal ? "✓" : "✗", { x: labelX + 10, y, size: 10, font: helveticaBold, color: eigenMateriaal ? green : brandColor });
-        page.drawText("Eigen materiaal en werkwijze", { x: labelX + 26, y, size: fontSize, font: helvetica, color: black });
+        y = drawTableRow("Treedt zelfstandig naar buiten", zelfstandig ? "Ja" : "Nee", y, { valueColor: zelfstandig ? rgb(0.1, 0.55, 0.1) : aandachtColor, valueBold: true });
+        y = drawTableRow("Eigen materiaal en werkwijze", eigenMateriaal ? "Ja" : "Nee", y, { valueColor: eigenMateriaal ? rgb(0.1, 0.55, 0.1) : aandachtColor, valueBold: true });
 
-        // === Approval section ===
-        y -= 20;
-        page.drawRectangle({ x: labelX, y: y + 4, width: pageWidth - labelX * 2, height: 1, color: lightGray });
-        y -= 8;
-        drawField("Toetsingsdatum:", formatDate(certifiedAt), y);
-        y -= lineHeight;
-        drawField("Afgiftedatum:", formatDate(certifiedAt), y);
+        // Voor akkoord header row
+        const akkoordHeight = rowHeight;
+        page.drawRectangle({ x: margin, y: y - akkoordHeight, width: tableWidth, height: akkoordHeight, color: rgb(0.15, 0.15, 0.15) });
+        page.drawRectangle({ x: margin, y: y - akkoordHeight, width: tableWidth, height: akkoordHeight, borderColor: tableBorder, borderWidth: 0.5 });
+        page.drawText("Voor akkoord", { x: pageWidth - margin - 80, y: y - 14, size: fontSize, font: helveticaBold, color: white });
+        y -= akkoordHeight;
 
-        // Score
+        // Toetsingsdatum & Afgiftedatum
+        y = drawTableRow("Toetsingsdatum", formatDate(certifiedAt), y);
+
+        // Afgiftedatum row with signature
+        const sigRowHeight = 40;
+        page.drawRectangle({ x: margin, y: y - sigRowHeight, width: tableWidth, height: sigRowHeight, borderColor: tableBorder, borderWidth: 0.5, color: white });
+        page.drawLine({ start: { x: valueColX, y }, end: { x: valueColX, y: y - sigRowHeight }, thickness: 0.5, color: tableBorder });
+        page.drawText("Afgiftedatum", { x: margin + 6, y: y - 16, size: fontSize, font: helveticaBold, color: darkGray });
+        page.drawText(formatDate(certifiedAt), { x: valueColX + 6, y: y - 16, size: fontSize, font: helvetica, color: black });
+
+        // Embed signature
+        try {
+          const { data: sigData } = await supabase.storage.from("certificates").download("templates/signature-gertjan.jpg");
+          if (sigData) {
+            const sigBytes = new Uint8Array(await sigData.arrayBuffer());
+            const sigImage = await pdfDoc.embedJpg(sigBytes);
+            page.drawImage(sigImage, { x: pageWidth - margin - 120, y: y - sigRowHeight + 4, width: 100, height: 32 });
+          }
+        } catch { /* skip signature */ }
+
+        y -= sigRowHeight;
+
+        // Compliance score
         const score = suggestions?.[0]?.score;
         if (score !== undefined) {
-          y -= lineHeight + 4;
-          page.drawText("Compliance score:", { x: labelX, y, size: fontSize, font: helveticaBold, color: gray });
-          page.drawText(`${score}%`, { x: valueX, y, size: 12, font: helveticaBold, color: score >= 80 ? green : brandColor });
+          y -= 15;
+          page.drawText(`Compliance score: ${score}%`, { x: margin, y, size: 10, font: helveticaBold, color: score >= 80 ? rgb(0.1, 0.55, 0.1) : aandachtColor });
         }
 
-        // Verification
-        y -= 20;
+        // Verification URL
+        y -= 15;
         const verifyUrl = `https://zzpproject.lovable.app/verificatie/dba/${verificationToken}`;
-        page.drawText("Verificatie:", { x: labelX, y, size: 7.5, font: helvetica, color: gray });
-        page.drawText(verifyUrl, { x: valueX, y, size: 7, font: helvetica, color: gray });
+        page.drawText(`Verificatie: ${verifyUrl}`, { x: margin, y, size: 6.5, font: helvetica, color: gray });
 
-        // Footer
-        page.drawRectangle({ x: 0, y: 0, width: pageWidth, height: 50, color: rgb(1, 1, 1) });
+        // === Footer ===
+        const footerY = 55;
+        page.drawLine({ start: { x: margin, y: footerY + 18 }, end: { x: pageWidth - margin, y: footerY + 18 }, thickness: 0.5, color: tableBorder });
+        page.drawText("TOETSING ZP KANDIDAAT – WET DBA / VERSIE 2.1", {
+          x: margin + 80, y: footerY + 5, size: 7, font: helveticaBold, color: darkGray,
+        });
+        page.drawLine({ start: { x: margin, y: footerY }, end: { x: pageWidth - margin, y: footerY }, thickness: 0.5, color: tableBorder });
+
         const footerLines = [
-          "Deze toetsing is uitgevoerd door ZP Zaken B.V. op basis van een AI-gestuurde analyse van het toetsingsformulier.",
-          "ZP Zaken is ingeschreven in het register Wft bij de AFM onder vergunningsnummer: 12050363.",
+          "Onefellow B.V. | Tupolevlaan 41, 1119 NW, Schiphol-Rijk",
+          "Kamer van Koophandel: 81550022 | Bank: NL08 RABO 0343814471 | BTW nummer: NL862134754B01",
+          "Telefoon: 06 – 270 20 140 | E-mail: info@onefellow.nl | Website: www.onefellow.nl",
         ];
         footerLines.forEach((line, i) => {
-          page.drawText(line, { x: labelX, y: 30 - i * 9, size: 6.5, font: helvetica, color: gray });
+          page.drawText(line, { x: margin + 40, y: footerY - 12 - i * 9, size: 6, font: helvetica, color: gray });
+        });
+
+        // === PAGE 2 (blank with logos + footer, matching original) ===
+        const page2 = pdfDoc.addPage([pageWidth, pageHeight]);
+        try {
+          const { data: zpLogoData } = await supabase.storage.from("certificates").download("templates/zp-approved-logo.jpg");
+          if (zpLogoData) {
+            const zpLogoBytes = new Uint8Array(await zpLogoData.arrayBuffer());
+            const zpLogoImage = await pdfDoc.embedJpg(zpLogoBytes);
+            page2.drawImage(zpLogoImage, { x: margin, y: pageHeight - 130, width: 120, height: 120 });
+          }
+        } catch {}
+        try {
+          const { data: ofLogoData } = await supabase.storage.from("certificates").download("templates/onefellow-logo.jpg");
+          if (ofLogoData) {
+            const ofLogoBytes = new Uint8Array(await ofLogoData.arrayBuffer());
+            const ofLogoImage = await pdfDoc.embedJpg(ofLogoBytes);
+            page2.drawImage(ofLogoImage, { x: pageWidth - margin - 200, y: pageHeight - 90, width: 200, height: 45 });
+          }
+        } catch {}
+        // Page 2 footer
+        page2.drawLine({ start: { x: margin, y: footerY + 18 }, end: { x: pageWidth - margin, y: footerY + 18 }, thickness: 0.5, color: tableBorder });
+        page2.drawText("TOETSING ZP KANDIDAAT – WET DBA / VERSIE 2.1", {
+          x: margin + 80, y: footerY + 5, size: 7, font: helveticaBold, color: darkGray,
+        });
+        page2.drawLine({ start: { x: margin, y: footerY }, end: { x: pageWidth - margin, y: footerY }, thickness: 0.5, color: tableBorder });
+        footerLines.forEach((line, i) => {
+          page2.drawText(line, { x: margin + 40, y: footerY - 12 - i * 9, size: 6, font: helvetica, color: gray });
         });
 
         // Save & upload
