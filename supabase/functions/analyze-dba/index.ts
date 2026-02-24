@@ -300,7 +300,9 @@ Geef ALLEEN de herschreven tekst terug, geen uitleg.`;
       }
 
       const workDescription = check.project_description || check.extracted_text || "";
+      const todayStr = new Date().toISOString().split("T")[0];
       const systemPrompt = `Je bent een expert op het gebied van KVK-registraties en de Wet DBA in Nederland.
+De huidige datum is ${todayStr}.
 
 Je hebt TWEE taken:
 1. Vergelijk de KVK bedrijfsomschrijving/activiteiten met de feitelijke werkzaamheden uit de overeenkomst.
@@ -308,8 +310,13 @@ Je hebt TWEE taken:
 2. Zoek de datum van het KVK-uittreksel in de tekst (vaak staat er "Datum uittreksel", "Uittreksel d.d.", "Datum" of een vergelijkbare aanduiding).
    Als je een datum vindt, geef deze terug in het formaat YYYY-MM-DD.
 
-Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht die niet passen bij zijn/haar KVK-registratie, kan dit wijzen op een schijnconstructie.
-Een KVK-uittreksel dat ouder is dan 3 maanden is een aandachtspunt.`;
+BELANGRIJK over de ouderdom van het uittreksel:
+- Vergelijk de gevonden datum ALTIJD met de huidige datum (${todayStr}).
+- Een KVK-uittreksel dat ouder is dan 3 maanden ten opzichte van vandaag is een aandachtspunt.
+- Vermeld in je uitleg of het uittreksel recent of verouderd is, gebaseerd op de werkelijke datum en vandaag.
+- Zeg NOOIT dat een uittreksel "recent" is als het ouder is dan 3 maanden.
+
+Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht die niet passen bij zijn/haar KVK-registratie, kan dit wijzen op een schijnconstructie.`;
 
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
