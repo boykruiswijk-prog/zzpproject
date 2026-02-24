@@ -1,8 +1,10 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, useCallback, useRef, ReactNode } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
 type AppRole = "admin" | "medewerker";
+
+const INACTIVITY_TIMEOUT = 60 * 60 * 1000; // 1 hour in ms
 
 interface AuthContextType {
   user: User | null;
@@ -22,6 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const inactivityTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchUserRole = async (userId: string) => {
     try {
@@ -42,6 +45,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return null;
     }
   };
+
+  const signOut = useCallback(async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    setSession(null);
+    setRole(null);
+  }, []);
+
+  // Inactivity auto-logout
+  const resetInactivityTimer = useCallback(() => {
+    if (inactivityTimer.current) {
+      clearTimeout(inactivityTimer.current);
+    }
+    inactivityTimer.current = setTimeout(() => {
+      // Only sign out if there's an active session
+      if (session) {
+        console.log("Sessie verlopen door inactiviteit");
+        signOut();
+      }
+    }, INACTIVITY_TIMEOUT);
+  }, [session, signOut]);
+
+  useEffect(() => {
+    if (!session) return;
+
+    const events = ["mousedown", "keydown", "scroll", "touchstart", "mousemove"];
+    
+    // Throttle to avoid excessive resets
+    let lastReset = Date.now();
+    const throttledReset = () => {
+      const now = Date.now();
+      if (now - lastReset > 30000) { // Only reset every 30s
+        lastReset = now;
+        resetInactivityTimer();
+      }
+    };
+
+    events.forEach((event) => window.addEventListener(event, throttledReset, { passive: true }));
+    resetInactivityTimer(); // Start timer
+
+    return () => {
+      events.forEach((event) => window.removeEventListener(event, throttledReset));
+      if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
+    };
+  }, [session, resetInactivityTimer]);
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -88,13 +136,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password,
     });
     return { error };
-  };
-
-  const signOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setSession(null);
-    setRole(null);
   };
 
   const value: AuthContextType = {
