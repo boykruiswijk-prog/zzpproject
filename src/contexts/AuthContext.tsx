@@ -4,7 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 
 type AppRole = "admin" | "medewerker";
 
-const INACTIVITY_TIMEOUT = 60 * 60 * 1000; // 1 hour in ms
+const INACTIVITY_TIMEOUT = 60 * 60 * 1000; // 1 hour
+const ABSOLUTE_TIMEOUT = 8 * 60 * 60 * 1000; // 8 hours
+const SESSION_START_KEY = "session_start_time";
 
 interface AuthContextType {
   user: User | null;
@@ -68,28 +70,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [session, signOut]);
 
   useEffect(() => {
-    if (!session) return;
+    if (!session) {
+      localStorage.removeItem(SESSION_START_KEY);
+      return;
+    }
+
+    // Track absolute session start
+    if (!localStorage.getItem(SESSION_START_KEY)) {
+      localStorage.setItem(SESSION_START_KEY, Date.now().toString());
+    }
+
+    // Check absolute timeout every minute
+    const absoluteCheck = setInterval(() => {
+      const start = localStorage.getItem(SESSION_START_KEY);
+      if (start && Date.now() - parseInt(start) > ABSOLUTE_TIMEOUT) {
+        console.log("Sessie verlopen na 8 uur");
+        localStorage.removeItem(SESSION_START_KEY);
+        signOut();
+      }
+    }, 60000);
 
     const events = ["mousedown", "keydown", "scroll", "touchstart", "mousemove"];
     
-    // Throttle to avoid excessive resets
     let lastReset = Date.now();
     const throttledReset = () => {
       const now = Date.now();
-      if (now - lastReset > 30000) { // Only reset every 30s
+      if (now - lastReset > 30000) {
         lastReset = now;
         resetInactivityTimer();
       }
     };
 
     events.forEach((event) => window.addEventListener(event, throttledReset, { passive: true }));
-    resetInactivityTimer(); // Start timer
+    resetInactivityTimer();
 
     return () => {
       events.forEach((event) => window.removeEventListener(event, throttledReset));
       if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
+      clearInterval(absoluteCheck);
     };
-  }, [session, resetInactivityTimer]);
+  }, [session, resetInactivityTimer, signOut]);
 
   useEffect(() => {
     // Set up auth state listener FIRST
