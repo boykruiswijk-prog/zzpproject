@@ -126,9 +126,8 @@ export default function DbaCheckDetail() {
 
   const score = check.suggestions?.[0]?.score;
   const summary = check.suggestions?.[0]?.summary;
-  const allFieldsPresent = check.field_results?.every((f: any) => f.present ?? f.filled);
   const kvkMatch = check.kvk_check_result?.match;
-  const canCertify = check.status === "analyzed" && allFieldsPresent && (kvkMatch !== false);
+  const canCertify = check.status === "analyzed";
 
   return (
     <AdminLayout>
@@ -443,24 +442,23 @@ export default function DbaCheckDetail() {
               </Card>
             )}
 
-            {/* Not certified warnings */}
-            {check.status === "analyzed" && !allFieldsPresent && (
+            {/* Aandachtspunten (informatief, blokkeert certificering niet) */}
+            {check.status === "analyzed" && check.missing_fields && check.missing_fields.length > 0 && (
               <Card className="border-yellow-200 bg-yellow-50">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-yellow-800 text-base">
                     <AlertTriangle className="h-5 w-5" />
-                    Certificering niet mogelijk
+                    Aandachtspunten
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-yellow-700">
-                    Niet alle verplichte velden zijn aanwezig in de overeenkomst. 
-                    Los de ontbrekende velden op voordat een certificaat kan worden afgegeven.
+                  <p className="text-sm text-yellow-700 mb-3">
+                    Deze punten worden als aandachtspunt opgenomen in het certificaat.
                   </p>
-                  <div className="mt-3 space-y-1">
-                    {check.missing_fields?.map((field, idx) => (
+                  <div className="space-y-1">
+                    {check.missing_fields.map((field, idx) => (
                       <div key={idx} className="flex items-center gap-2 text-sm text-yellow-800">
-                        <XCircle className="h-3 w-3" />
+                        <AlertTriangle className="h-3 w-3" />
                         {field}
                       </div>
                     ))}
