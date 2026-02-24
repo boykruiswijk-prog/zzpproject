@@ -50,7 +50,7 @@ export default function AdminDbaChecks() {
   const handleExportPdf = async () => {
     if (!checks?.length) return;
     const { default: jsPDF } = await import("jspdf");
-    await import("jspdf-autotable");
+    const autoTable = (await import("jspdf-autotable")).default;
 
     // Load logos as base64
     const loadImage = async (url: string): Promise<string> => {
@@ -101,7 +101,7 @@ export default function AdminDbaChecks() {
       ];
     });
 
-    (doc as any).autoTable({
+    autoTable(doc, {
       startY: 42,
       head: [["Kandidaat", "Entiteit Opdrachtgever", "Certificaatnummer"]],
       body: tableData,
