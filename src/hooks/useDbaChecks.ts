@@ -37,8 +37,10 @@ export interface KvkCheckResult {
 
 export interface FieldResult {
   field_name: string;
-  present: boolean;
+  present?: boolean;
+  filled?: boolean;
   excerpt?: string;
+  value?: string;
   issue?: string;
 }
 

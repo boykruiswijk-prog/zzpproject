@@ -126,7 +126,7 @@ export default function DbaCheckDetail() {
 
   const score = check.suggestions?.[0]?.score;
   const summary = check.suggestions?.[0]?.summary;
-  const allFieldsPresent = check.field_results?.every((f) => f.present);
+  const allFieldsPresent = check.field_results?.every((f: any) => f.present ?? f.filled);
   const kvkMatch = check.kvk_check_result?.match;
   const canCertify = check.status === "analyzed" && allFieldsPresent && (kvkMatch !== false);
 
@@ -218,23 +218,23 @@ export default function DbaCheckDetail() {
                       <div
                         key={idx}
                         className={`p-4 rounded-lg border ${
-                          field.present
+                          (field.present ?? field.filled)
                             ? "border-green-200 bg-green-50"
                             : "border-red-200 bg-red-50"
                         }`}
                       >
                         <div className="flex items-start gap-3">
-                          {field.present ? (
+                          {(field.present ?? field.filled) ? (
                             <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
                           ) : (
                             <XCircle className="h-5 w-5 text-red-600 mt-0.5 shrink-0" />
                           )}
                           <div className="flex-1 min-w-0">
                             <p className="font-medium">{field.field_name}</p>
-                            {field.present && field.excerpt && (
-                              <p className="text-sm text-green-700 mt-1 italic">"{field.excerpt}"</p>
+                            {(field.present ?? field.filled) && (field.excerpt || field.value) && (
+                              <p className="text-sm text-green-700 mt-1 italic">"{field.excerpt || field.value}"</p>
                             )}
-                            {!field.present && field.issue && (
+                            {!(field.present ?? field.filled) && field.issue && (
                               <p className="text-sm text-red-700 mt-1">{field.issue}</p>
                             )}
                           </div>
