@@ -184,14 +184,21 @@ export type Database = {
       }
       dba_checks: {
         Row: {
+          candidate_email: string | null
+          candidate_phone: string | null
           certificate_number: string | null
           certificate_pdf_url: string | null
           certified_at: string | null
           certified_by: string | null
           client_name: string
           created_at: string
+          document_checklist: Json | null
+          eigen_materiaal_werkwijze: boolean | null
+          einddatum: string | null
+          eindopdrachtgever: string | null
           extracted_text: string | null
           field_results: Json | null
+          functie: string | null
           id: string
           kvk_check_result: Json | null
           kvk_file_url: string | null
@@ -199,24 +206,40 @@ export type Database = {
           kvk_text: string | null
           lead_id: string | null
           missing_fields: Json | null
+          opdrachtgever: string | null
+          optie_verlenging: string | null
           original_filename: string | null
           project_description: string | null
+          project_name: string | null
+          rechtsvorm: string | null
           rewritten_description: string | null
+          specifieke_vaardigheden: string | null
+          startdatum: string | null
           status: string
           suggestions: Json | null
+          treedt_zelfstandig_op: boolean | null
           updated_at: string
           uploaded_file_url: string | null
+          uren_per_week: string | null
+          uurtarief: string | null
           verification_token: string | null
         }
         Insert: {
+          candidate_email?: string | null
+          candidate_phone?: string | null
           certificate_number?: string | null
           certificate_pdf_url?: string | null
           certified_at?: string | null
           certified_by?: string | null
           client_name: string
           created_at?: string
+          document_checklist?: Json | null
+          eigen_materiaal_werkwijze?: boolean | null
+          einddatum?: string | null
+          eindopdrachtgever?: string | null
           extracted_text?: string | null
           field_results?: Json | null
+          functie?: string | null
           id?: string
           kvk_check_result?: Json | null
           kvk_file_url?: string | null
@@ -224,24 +247,40 @@ export type Database = {
           kvk_text?: string | null
           lead_id?: string | null
           missing_fields?: Json | null
+          opdrachtgever?: string | null
+          optie_verlenging?: string | null
           original_filename?: string | null
           project_description?: string | null
+          project_name?: string | null
+          rechtsvorm?: string | null
           rewritten_description?: string | null
+          specifieke_vaardigheden?: string | null
+          startdatum?: string | null
           status?: string
           suggestions?: Json | null
+          treedt_zelfstandig_op?: boolean | null
           updated_at?: string
           uploaded_file_url?: string | null
+          uren_per_week?: string | null
+          uurtarief?: string | null
           verification_token?: string | null
         }
         Update: {
+          candidate_email?: string | null
+          candidate_phone?: string | null
           certificate_number?: string | null
           certificate_pdf_url?: string | null
           certified_at?: string | null
           certified_by?: string | null
           client_name?: string
           created_at?: string
+          document_checklist?: Json | null
+          eigen_materiaal_werkwijze?: boolean | null
+          einddatum?: string | null
+          eindopdrachtgever?: string | null
           extracted_text?: string | null
           field_results?: Json | null
+          functie?: string | null
           id?: string
           kvk_check_result?: Json | null
           kvk_file_url?: string | null
@@ -249,13 +288,22 @@ export type Database = {
           kvk_text?: string | null
           lead_id?: string | null
           missing_fields?: Json | null
+          opdrachtgever?: string | null
+          optie_verlenging?: string | null
           original_filename?: string | null
           project_description?: string | null
+          project_name?: string | null
+          rechtsvorm?: string | null
           rewritten_description?: string | null
+          specifieke_vaardigheden?: string | null
+          startdatum?: string | null
           status?: string
           suggestions?: Json | null
+          treedt_zelfstandig_op?: boolean | null
           updated_at?: string
           uploaded_file_url?: string | null
+          uren_per_week?: string | null
+          uurtarief?: string | null
           verification_token?: string | null
         }
         Relationships: [

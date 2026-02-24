@@ -59,18 +59,44 @@ serve(async (req) => {
     const fieldNames = (fields || []).map((f: any) => `- ${f.field_name}: ${f.description}`).join("\n");
 
     if (action === "analyze") {
-      // Analyze document for missing fields
-      const systemPrompt = `Je bent een juridisch expert op het gebied van de Nederlandse Wet DBA (Wet Deregulering Beoordeling Arbeidsrelaties). 
-Je analyseert overeenkomsten tussen opdrachtgevers en opdrachtnemers (zzp'ers) op compliance met de Wet DBA.
+      // Screen the form for missing/unfilled fields and checklist items
+      const systemPrompt = `Je bent een expert op het gebied van de Nederlandse Wet DBA (Wet Deregulering Beoordeling Arbeidsrelaties).
+Je screent ingevulde toetsingsformulieren van ZP kandidaten op volledigheid.
 
-Je moet de volgende verplichte velden controleren:
-${fieldNames}
+Het formulier "Gegevens met betrekking tot toetsing ZP kandidaat - Wet DBA" bevat de volgende velden die ingevuld moeten zijn:
 
-Antwoord ALLEEN met een JSON tool call. Voor elk veld geef je aan:
-- field_name: de naam van het veld
-- present: true/false of het veld aanwezig is in de tekst
-- excerpt: een kort citaat uit de tekst als het veld aanwezig is, anders null
-- issue: als het veld ontbreekt of onvoldoende is, leg uit wat er mist`;
+VERPLICHTE VELDEN:
+- Naam ZP kandidaat
+- E-mailadres
+- Telefoonnummer
+- Opdrachtgever
+- Eindopdrachtgever
+- Functie
+- Opdrachtomschrijving
+- Project
+- Startdatum
+- Einddatum
+- Optie tot verlenging
+- Uurtarief ZP'er
+- Aantal uur per week
+- Specifieke vaardigheden, kennis, opleiding
+- Treedt zelfstandig naar buiten toe (ja/nee)
+- Zelfstandigheid - eigen materiaal, werkwijze enz. (ja/nee)
+
+AANVULLENDE DOCUMENTATIE CHECKLIST:
+Voor elk document moet aangegeven zijn of het "van toepassing / aanwezig" of "niet van toepassing / niet aanwezig" is:
+- Overeenkomst Eindopdrachtgever
+- Identiteits verklaring
+- Curriculum Vitae
+- Uittreksel Kamer van Koophandel
+- Polis beroeps en bedrijfsaansprakelijkheid
+- VOG verklaring
+- VCA certificering (VCA basis / VCA VOL / VIL VCU)
+
+Controleer het ingevulde formulier en rapporteer voor elk veld of het is ingevuld.
+Als een veld leeg is, niet ingevuld is, of als documentatie ontbreekt/niet aanwezig is: markeer dit als aandachtspunt.
+
+Antwoord ALLEEN met een JSON tool call.`;
 
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
@@ -82,37 +108,56 @@ Antwoord ALLEEN met een JSON tool call. Voor elk veld geef je aan:
           model: "google/gemini-3-flash-preview",
           messages: [
             { role: "system", content: systemPrompt },
-            { role: "user", content: `Analyseer deze overeenkomst:\n\n${check.extracted_text}` },
+            { role: "user", content: `Analyseer dit ingevulde toetsingsformulier:\n\n${check.extracted_text}` },
           ],
           tools: [{
             type: "function",
             function: {
-              name: "report_field_analysis",
-              description: "Report the analysis of each required field in the contract",
+              name: "report_form_screening",
+              description: "Report the screening results of the ZP candidate verification form",
               parameters: {
                 type: "object",
                 properties: {
-                  field_results: {
+                  form_fields: {
                     type: "array",
+                    description: "Resultaten per verplicht veld",
                     items: {
                       type: "object",
                       properties: {
-                        field_name: { type: "string" },
-                        present: { type: "boolean" },
-                        excerpt: { type: "string" },
-                        issue: { type: "string" },
+                        field_name: { type: "string", description: "Naam van het veld" },
+                        filled: { type: "boolean", description: "Of het veld is ingevuld" },
+                        value: { type: "string", description: "De ingevulde waarde, of null als leeg" },
+                        issue: { type: "string", description: "Aandachtspunt als het veld niet ingevuld is" },
                       },
-                      required: ["field_name", "present"],
+                      required: ["field_name", "filled"],
                     },
                   },
-                  overall_score: { type: "number", description: "Score van 0-100 hoe compliant de overeenkomst is" },
-                  summary: { type: "string", description: "Korte samenvatting van de analyse" },
+                  checklist_items: {
+                    type: "array",
+                    description: "Resultaten per documentatie-item uit de checklist",
+                    items: {
+                      type: "object",
+                      properties: {
+                        document_name: { type: "string", description: "Naam van het document" },
+                        status: { type: "string", enum: ["aanwezig", "niet_aanwezig", "niet_ingevuld"], description: "Status van het document" },
+                        issue: { type: "string", description: "Aandachtspunt als document ontbreekt of niet is aangevinkt" },
+                      },
+                      required: ["document_name", "status"],
+                    },
+                  },
+                  aandachtspunten: {
+                    type: "array",
+                    items: { type: "string" },
+                    description: "Lijst van alle aandachtspunten: ontbrekende velden en niet-aanwezige documentatie",
+                  },
+                  overall_score: { type: "number", description: "Score van 0-100 hoe volledig het formulier is ingevuld" },
+                  summary: { type: "string", description: "Korte samenvatting van de screening" },
                 },
-                required: ["field_results", "overall_score", "summary"],
+                required: ["form_fields", "checklist_items", "aandachtspunten", "overall_score", "summary"],
               },
             },
           }],
-          tool_choice: { type: "function", function: { name: "report_field_analysis" } },
+          tool_choice: { type: "function", function: { name: "report_form_screening" } },
         }),
       });
 
@@ -133,12 +178,13 @@ Antwoord ALLEEN met een JSON tool call. Voor elk veld geef je aan:
       }
 
       const analysis = JSON.parse(toolCall.function.arguments);
-      const missingFields = analysis.field_results.filter((f: any) => !f.present).map((f: any) => f.field_name);
+      const missingFields = analysis.aandachtspunten || [];
 
       await supabase.from("dba_checks").update({
-        field_results: analysis.field_results,
+        field_results: analysis.form_fields,
         missing_fields: missingFields,
-        suggestions: [{ score: analysis.overall_score, summary: analysis.summary }],
+        document_checklist: analysis.checklist_items,
+        suggestions: [{ score: analysis.overall_score, summary: analysis.summary, aandachtspunten: analysis.aandachtspunten }],
         status: "analyzed",
       }).eq("id", check_id);
 
