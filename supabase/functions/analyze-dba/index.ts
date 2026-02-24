@@ -301,14 +301,14 @@ Een KVK-uittreksel dat ouder is dan 3 maanden is een aandachtspunt.`;
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
         headers: {
-          Authorization: \`Bearer \${lovableKey}\`,
+          Authorization: `Bearer ${lovableKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           model: "google/gemini-3-flash-preview",
           messages: [
             { role: "system", content: systemPrompt },
-            { role: "user", content: \`KVK bedrijfsomschrijving/activiteiten:\\n\${check.kvk_text}\\n\\nWerkzaamheden uit de overeenkomst:\\n\${workDescription}\` },
+            { role: "user", content: `KVK bedrijfsomschrijving/activiteiten:\n${check.kvk_text}\n\nWerkzaamheden uit de overeenkomst:\n${workDescription}` },
           ],
           tools: [{
             type: "function",
@@ -691,6 +691,24 @@ Een KVK-uittreksel dat ouder is dan 3 maanden is een aandachtspunt.`;
             }
           }
         });
+        // Add KVK extract age warning
+        const kvkResult = check.kvk_check_result as any;
+        if (kvkResult?.kvk_extract_expired === true) {
+          const dateStr = kvkResult.kvk_extract_date || "onbekend";
+          uniqueAandachtspunten.add(`KVK-uittreksel is ouder dan 3 maanden (datum: ${dateStr})`);
+        } else if (kvkResult && kvkResult.kvk_extract_date === null && kvkResult.kvk_extract_expired === null) {
+          uniqueAandachtspunten.add("Datum KVK-uittreksel kon niet worden vastgesteld");
+        }
+
+        // Add insurance policy age warning
+        const insurancePolicyDate = suggestions?.[0]?.insurance_policy_date;
+        const insurancePolicyExpired = suggestions?.[0]?.insurance_policy_expired;
+        if (insurancePolicyExpired === true) {
+          uniqueAandachtspunten.add(`Polis beroeps-/bedrijfsaansprakelijkheid is ouder dan 1 jaar (datum: ${insurancePolicyDate})`);
+        } else if (insurancePolicyDate === null || insurancePolicyDate === undefined) {
+          uniqueAandachtspunten.add("Datum polis beroeps-/bedrijfsaansprakelijkheid kon niet worden vastgesteld");
+        }
+
         const aandachtspunten = Array.from(uniqueAandachtspunten);
 
         if (aandachtspunten.length > 0) {
