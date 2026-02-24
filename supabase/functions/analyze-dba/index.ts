@@ -428,11 +428,12 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
         // Header row
         y = drawTableRow("Toetsing ZP kandidaat - Wet DBA", "", y, { headerRow: true });
 
-        // Extract values from form_fields analysis
+        // Extract values from field_results analysis
+        const suggestions = check.suggestions as any[];
         const fieldResults = (check.field_results || []) as any[];
         const getFieldValue = (name: string) => {
           const field = fieldResults.find((f: any) => f.field_name?.toLowerCase().includes(name.toLowerCase()));
-          return field?.value || "";
+          return field?.value || field?.excerpt || "";
         };
 
         // Form fields
@@ -448,49 +449,82 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
         y = drawTableRow("Einddatum", check.einddatum ? formatDate(check.einddatum) : getFieldValue("einddatum") || "-", y);
         y = drawTableRow("Optie tot verlenging", check.optie_verlenging || getFieldValue("verlenging") || "-", y);
 
-        // Dossier + Aandachtspunten row
-        const suggestions = check.suggestions as any[];
-        const aandachtspunten: string[] = suggestions?.[0]?.aandachtspunten || [];
+        // Build aandachtspunten from missing fields + missing documents
         const checklist = (check.document_checklist || []) as any[];
-
-        // Dossier items as bullet list
-        const dossierLines = checklist.map((item: any) => {
-          const icon = item.status === "aanwezig" ? "•" : "•";
-          return `${icon} ${item.document_name || ""}`;
+        const missingFields = (check.missing_fields || []) as string[];
+        
+        // Collect all aandachtspunten
+        const aandachtspunten: string[] = [];
+        
+        // 1. Fields not filled in by the client
+        fieldResults.forEach((f: any) => {
+          if (!(f.present ?? f.filled)) {
+            aandachtspunten.push(f.field_name || "Onbekend veld");
+          }
         });
-        const dossierText = dossierLines.join("\n") || "-";
+        
+        // 2. Missing fields from AI analysis
+        missingFields.forEach((mf: string) => {
+          if (!aandachtspunten.includes(mf)) {
+            aandachtspunten.push(mf);
+          }
+        });
+        
+        // 3. Missing documents from checklist
+        checklist.forEach((item: any) => {
+          if (item.status !== "aanwezig") {
+            const docName = item.document_name || "";
+            if (docName && !aandachtspunten.includes(docName)) {
+              aandachtspunten.push(docName);
+            }
+          }
+        });
 
-        // Draw dossier/aandachtspunten combined row
-        const dossierHeight = Math.max(checklist.length * 14 + 10, rowHeight);
-        const aandachtHeight = Math.max(aandachtspunten.length * 14 + 10, rowHeight);
-        const combinedHeight = Math.max(dossierHeight, aandachtHeight, 60);
+        // Dossier section - show checklist items
+        const dossierItems = checklist.length > 0 ? checklist : [];
+        const dossierCount = Math.max(dossierItems.length, 1);
+        const aandachtCount = Math.max(aandachtspunten.length, 1);
+        const maxItems = Math.max(dossierCount, aandachtCount);
+        const combinedHeight = Math.max(maxItems * 14 + 30, 60);
 
         // Outer border for combined row
         page.drawRectangle({ x: margin, y: y - combinedHeight, width: tableWidth, height: combinedHeight, borderColor: tableBorder, borderWidth: 0.5, color: white });
         page.drawLine({ start: { x: valueColX, y }, end: { x: valueColX, y: y - combinedHeight }, thickness: 0.5, color: tableBorder });
 
         // Dossier label
-        page.drawText("Dossier", { x: margin + 6, y: y - 14, size: fontSize, font: helveticaBold, color: darkGray });
+        page.drawText("Dossier:", { x: margin + 6, y: y - 14, size: fontSize, font: helveticaBold, color: darkGray });
 
         // Aandachtspunten header
         page.drawText("Aandachtspunten:", { x: valueColX + 6, y: y - 14, size: fontSize, font: helveticaBold, color: aandachtColor });
 
         // Dossier items with checkmarks
-        checklist.forEach((item: any, i: number) => {
-          const yItem = y - 30 - i * 14;
-          const statusIcon = item.status === "aanwezig" ? "✓" : "✗";
-          const statusColor = item.status === "aanwezig" ? rgb(0.1, 0.55, 0.1) : aandachtColor;
-          page.drawText(statusIcon, { x: margin + 10, y: yItem, size: 9, font: helveticaBold, color: statusColor });
-          page.drawText(item.document_name || "", { x: margin + 24, y: yItem, size: 7.5, font: helvetica, color: darkGray });
-        });
+        if (dossierItems.length > 0) {
+          dossierItems.forEach((item: any, i: number) => {
+            const yItem = y - 30 - i * 14;
+            if (yItem > y - combinedHeight + 5) {
+              const isPresent = item.status === "aanwezig";
+              const statusIcon = isPresent ? "V" : "X";
+              const statusColor = isPresent ? rgb(0.1, 0.55, 0.1) : aandachtColor;
+              page.drawText(statusIcon, { x: margin + 10, y: yItem, size: 8, font: helveticaBold, color: statusColor });
+              page.drawText(item.document_name || "", { x: margin + 24, y: yItem, size: 7.5, font: helvetica, color: darkGray });
+            }
+          });
+        } else {
+          page.drawText("-", { x: margin + 10, y: y - 30, size: 7.5, font: helvetica, color: gray });
+        }
 
         // Aandachtspunten items
-        aandachtspunten.forEach((punt, i) => {
-          const yItem = y - 30 - i * 14;
-          if (yItem > y - combinedHeight + 5) {
-            page.drawText(`• ${punt}`, { x: valueColX + 10, y: yItem, size: 7.5, font: helvetica, color: aandachtColor });
-          }
-        });
+        if (aandachtspunten.length > 0) {
+          aandachtspunten.forEach((punt, i) => {
+            const yItem = y - 30 - i * 14;
+            if (yItem > y - combinedHeight + 5) {
+              const cleaned = punt.replace(/[\n\r\t\x00-\x1F]/g, " ").replace(/\s+/g, " ").trim();
+              page.drawText(`- ${cleaned}`, { x: valueColX + 10, y: yItem, size: 7.5, font: helvetica, color: aandachtColor });
+            }
+          });
+        } else {
+          page.drawText("Geen aandachtspunten", { x: valueColX + 10, y: y - 30, size: 7.5, font: helvetica, color: rgb(0.1, 0.55, 0.1) });
+        }
 
         y -= combinedHeight;
 
