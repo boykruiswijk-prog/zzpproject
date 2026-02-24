@@ -5,23 +5,7 @@ export interface DbaCheck {
   id: string;
   lead_id: string | null;
   client_name: string;
-  candidate_email: string | null;
-  candidate_phone: string | null;
-  rechtsvorm: string | null;
-  opdrachtgever: string | null;
-  eindopdrachtgever: string | null;
-  functie: string | null;
-  project_name: string | null;
   project_description: string | null;
-  startdatum: string | null;
-  einddatum: string | null;
-  optie_verlenging: string | null;
-  uurtarief: string | null;
-  uren_per_week: string | null;
-  specifieke_vaardigheden: string | null;
-  treedt_zelfstandig_op: boolean;
-  eigen_materiaal_werkwijze: boolean;
-  document_checklist: Record<string, boolean>;
   uploaded_file_url: string | null;
   original_filename: string | null;
   extracted_text: string | null;
@@ -118,23 +102,7 @@ export function useCreateDbaCheck() {
   return useMutation({
     mutationFn: async (check: {
       client_name: string;
-      candidate_email?: string | null;
-      candidate_phone?: string | null;
-      rechtsvorm?: string | null;
-      opdrachtgever?: string | null;
-      eindopdrachtgever?: string | null;
-      functie?: string | null;
-      project_name?: string | null;
       project_description?: string | null;
-      startdatum?: string | null;
-      einddatum?: string | null;
-      optie_verlenging?: string | null;
-      uurtarief?: string | null;
-      uren_per_week?: string | null;
-      specifieke_vaardigheden?: string | null;
-      treedt_zelfstandig_op?: boolean;
-      eigen_materiaal_werkwijze?: boolean;
-      document_checklist?: Record<string, boolean>;
       uploaded_file_url?: string | null;
       original_filename?: string | null;
       extracted_text?: string | null;
