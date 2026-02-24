@@ -71,17 +71,17 @@ export default function AdminDbaChecks() {
     const doc = new jsPDF({ orientation: "landscape" });
     const pageWidth = doc.internal.pageSize.getWidth();
 
-    // ZP Approved logo top-left
-    doc.addImage(zpLogo, "PNG", 14, 8, 30, 30);
+    // ZP Approved logo top-left (maintain aspect ratio, ~2:1 width:height)
+    doc.addImage(zpLogo, "PNG", 14, 10, 40, 20);
 
-    // Onefellow logo top-right
-    doc.addImage(onefellowLogo, "PNG", pageWidth - 54, 14, 40, 12);
+    // Onefellow logo top-right (maintain aspect ratio, ~4:1 width:height)
+    doc.addImage(onefellowLogo, "PNG", pageWidth - 54, 14, 40, 10);
 
     // Title centered
     doc.setFontSize(16);
-    doc.text("ZP Approved - Overzicht Wet DBA Checks", pageWidth / 2, 22, { align: "center" });
+    doc.text("ZP Approved - Overzicht Wet DBA Checks", pageWidth / 2, 24, { align: "center" });
     doc.setFontSize(9);
-    doc.text(`Gegenereerd op ${new Date().toLocaleDateString("nl-NL")}`, pageWidth / 2, 28, { align: "center" });
+    doc.text(`Gegenereerd op ${new Date().toLocaleDateString("nl-NL")}`, pageWidth / 2, 30, { align: "center" });
 
     const certifiedChecks = checks.filter((c) => c.certificate_number);
     
