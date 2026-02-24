@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   ArrowLeft, Loader2, Play, RefreshCw, ShieldCheck, CheckCircle2,
-  XCircle, AlertTriangle, Award, Copy, ExternalLink, Building2,
+  XCircle, AlertTriangle, Award, Copy, ExternalLink, Building2, Download,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
@@ -78,6 +78,27 @@ export default function DbaCheckDetail() {
     const url = `${window.location.origin}/verificatie/dba/${check.verification_token}`;
     navigator.clipboard.writeText(url);
     toast({ title: "Link gekopieerd!" });
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!check?.certificate_pdf_url) return;
+    try {
+      const { data, error } = await (await import("@/integrations/supabase/client")).supabase.storage
+        .from("certificates")
+        .download(check.certificate_pdf_url);
+      if (error || !data) {
+        toast({ title: "Fout bij downloaden", description: error?.message, variant: "destructive" });
+        return;
+      }
+      const url = URL.createObjectURL(data);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${check.certificate_number || "certificaat"}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err: any) {
+      toast({ title: "Fout bij downloaden", description: err.message, variant: "destructive" });
+    }
   };
 
   if (isLoading) {
@@ -386,6 +407,17 @@ export default function DbaCheckDetail() {
                     </p>
                   </div>
                   <div className="pt-2 space-y-2">
+                    {check.certificate_pdf_url && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={handleDownloadPdf}
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Download PDF
+                      </Button>
+                    )}
                     <Button
                       variant="outline"
                       size="sm"
