@@ -357,7 +357,10 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
 
         const wrapText = (text: string, font: typeof helvetica, size: number, maxW: number): string[] => {
           if (!text) return ["-"];
-          const words = text.split(" ");
+          // Strip newlines and other control characters that pdf-lib cannot encode
+          const cleaned = text.replace(/[\n\r\t\x00-\x1F]/g, " ").replace(/\s+/g, " ").trim();
+          if (!cleaned) return ["-"];
+          const words = cleaned.split(" ");
           const lines: string[] = [];
           let cur = "";
           for (const w of words) {
