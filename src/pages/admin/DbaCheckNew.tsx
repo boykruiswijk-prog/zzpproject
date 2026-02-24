@@ -38,7 +38,83 @@ export default function DbaCheckNew() {
           const mammoth = await import("mammoth");
           const arrayBuffer = await selectedFile.arrayBuffer();
           const result = await mammoth.default.extractRawText({ arrayBuffer });
-          setExtractedText(result.value);
+          let text = result.value;
+          
+          // Parse docx XML to extract checkbox states (mammoth strips these)
+          try {
+            const { unzipSync } = await import("fflate");
+            const uint8 = new Uint8Array(arrayBuffer);
+            const files = unzipSync(uint8);
+            const docXml = files["word/document.xml"];
+            if (docXml) {
+              const xmlText = new TextDecoder().decode(docXml);
+              // Find all checkbox SDT elements and their checked state
+              // Word uses <w14:checked w14:val="1"/> for checked, val="0" for unchecked
+              const checkboxRegex = /<w:sdt>[\s\S]*?<\/w:sdt>/g;
+              const checkboxStates: boolean[] = [];
+              
+              let match;
+              while ((match = checkboxRegex.exec(xmlText)) !== null) {
+                const sdtBlock = match[0];
+                if (sdtBlock.includes("w14:checkbox") || sdtBlock.includes("w:checkbox")) {
+                  const isChecked = /w14:checked[^/]*w14:val="1"/.test(sdtBlock) || 
+                                    /w14:checked[^>]*val="1"/.test(sdtBlock);
+                  checkboxStates.push(isChecked);
+                }
+              }
+              
+              if (checkboxStates.length > 0) {
+                console.log("Extracted checkbox states:", checkboxStates);
+                // Inject checkbox symbols into the checklist section
+                const checklistIdx = text.indexOf("Aanvullende documentatie");
+                if (checklistIdx !== -1) {
+                  const before = text.substring(0, checklistIdx);
+                  let after = text.substring(checklistIdx);
+                  
+                  const docNames = [
+                    "Overeenkomst Eindopdrachtgever",
+                    "Identiteits verklaring",
+                    "Curriculum Vitae",
+                    "Uittreksel Kamer van Koophandel",
+                    "Polis beroeps en bedrijfsaansprakelijkheid",
+                    "VOG verklaring",
+                    "VCA certificering",
+                  ];
+                  
+                  // Checkboxes come in pairs per doc: [aanwezig, niet_aanwezig]
+                  for (let i = 0; i < docNames.length; i++) {
+                    const cbIdx = i * 2;
+                    if (cbIdx + 1 < checkboxStates.length) {
+                      const sym1 = checkboxStates[cbIdx] ? "☒" : "☐";
+                      const sym2 = checkboxStates[cbIdx + 1] ? "☒" : "☐";
+                      // Replace doc name with annotated version
+                      after = after.replace(
+                        docNames[i],
+                        `${docNames[i]}\t${sym1}\t${sym2}`
+                      );
+                    }
+                  }
+                  
+                  // Handle VCA sub-items
+                  const vcaStart = docNames.length * 2;
+                  if (vcaStart < checkboxStates.length) {
+                    const vcaBaseSym = checkboxStates[vcaStart] ? "☒" : "☐";
+                    after = after.replace("VCA basis", `${vcaBaseSym}  VCA basis`);
+                  }
+                  if (vcaStart + 1 < checkboxStates.length) {
+                    const vcaVolSym = checkboxStates[vcaStart + 1] ? "☒" : "☐";
+                    after = after.replace("VCA VOL", `${vcaVolSym}  VCA VOL`);
+                  }
+                  
+                  text = before + after;
+                }
+              }
+            }
+          } catch (zipErr) {
+            console.warn("Could not parse docx XML for checkboxes:", zipErr);
+          }
+          
+          setExtractedText(text);
           toast({ title: "Tekst geëxtraheerd uit document" });
         } catch {
           toast({ title: "Kon tekst niet automatisch uitlezen", description: "Plak de tekst handmatig hieronder.", variant: "destructive" });
