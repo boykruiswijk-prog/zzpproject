@@ -67,28 +67,17 @@ export default function AdminTeam() {
   // Create user mutation
   const createUser = useMutation({
     mutationFn: async () => {
-      // Sign up user
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { full_name: fullName },
-          emailRedirectTo: window.location.origin,
-        },
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Niet ingelogd");
+
+      const response = await supabase.functions.invoke("create-team-user", {
+        body: { email, password, fullName, role },
       });
 
-      if (authError) throw authError;
-      if (!authData.user) throw new Error("Geen gebruiker aangemaakt");
+      if (response.error) throw new Error(response.error.message || "Fout bij aanmaken");
+      if (response.data?.error) throw new Error(response.data.error);
 
-      // Add role
-      const { error: roleError } = await supabase.from("user_roles").insert({
-        user_id: authData.user.id,
-        role,
-      });
-
-      if (roleError) throw roleError;
-
-      return authData.user;
+      return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user-roles"] });
