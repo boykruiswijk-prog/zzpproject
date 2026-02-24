@@ -17,6 +17,7 @@ export interface DbaCheck {
   certificate_number: string | null;
   certificate_pdf_url: string | null;
   verification_token: string | null;
+  invoiced_at: string | null;
   certified_at: string | null;
   certified_by: string | null;
   kvk_file_url: string | null;

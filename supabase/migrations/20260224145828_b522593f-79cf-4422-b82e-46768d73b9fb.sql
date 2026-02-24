@@ -1,0 +1,1 @@
+ALTER TABLE public.dba_checks ADD COLUMN invoiced_at timestamp with time zone DEFAULT NULL;

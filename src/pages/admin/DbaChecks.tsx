@@ -110,7 +110,22 @@ export default function AdminDbaChecks() {
     });
 
     doc.save("zp-approved-overzicht.pdf");
-    toast({ title: "PDF geëxporteerd" });
+
+    // Mark exported checks as invoiced
+    const now = new Date().toISOString();
+    const uninvoicedIds = certifiedChecks
+      .filter((c) => !c.invoiced_at)
+      .map((c) => c.id);
+    
+    if (uninvoicedIds.length > 0) {
+      await supabase
+        .from("dba_checks")
+        .update({ invoiced_at: now } as any)
+        .in("id", uninvoicedIds);
+      queryClient.invalidateQueries({ queryKey: ["dba-checks"] });
+    }
+
+    toast({ title: "PDF geëxporteerd", description: `${uninvoicedIds.length} check(s) als gefactureerd gemarkeerd` });
   };
 
   return (
@@ -155,19 +170,20 @@ export default function AdminDbaChecks() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Klant</TableHead>
-                  <TableHead>Document</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Score</TableHead>
-                  <TableHead>Datum</TableHead>
-                  <TableHead className="w-20">Acties</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {checks?.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                      Nog geen DBA checks uitgevoerd
+                   <TableHead>Klant</TableHead>
+                   <TableHead>Document</TableHead>
+                   <TableHead>Status</TableHead>
+                   <TableHead>Facturatie</TableHead>
+                   <TableHead>Score</TableHead>
+                   <TableHead>Datum</TableHead>
+                   <TableHead className="w-20">Acties</TableHead>
+                 </TableRow>
+               </TableHeader>
+               <TableBody>
+                 {checks?.length === 0 ? (
+                   <TableRow>
+                     <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                       Nog geen DBA checks uitgevoerd
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -190,6 +206,19 @@ export default function AdminDbaChecks() {
                           <Badge className={statusColors[check.status] || ""} variant="secondary">
                             {statusLabels[check.status] || check.status}
                           </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {check.invoiced_at ? (
+                            <Badge className="bg-green-100 text-green-800" variant="secondary">
+                              Gefactureerd {new Date(check.invoiced_at).toLocaleDateString("nl-NL")}
+                            </Badge>
+                          ) : check.status === "certified" ? (
+                            <Badge className="bg-orange-100 text-orange-800" variant="secondary">
+                              Niet gefactureerd
+                            </Badge>
+                          ) : (
+                            <span className="text-muted-foreground">-</span>
+                          )}
                         </TableCell>
                         <TableCell>
                           {score !== undefined ? (
