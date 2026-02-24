@@ -129,7 +129,7 @@ export default function DbaCheckNew() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold">Nieuwe Wet DBA Check</h1>
-            <p className="text-muted-foreground">Upload een overeenkomst voor analyse</p>
+            <p className="text-muted-foreground">Upload het toetsingsformulier voor screening</p>
           </div>
         </div>
 
@@ -154,11 +154,11 @@ export default function DbaCheckNew() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Document uploaden</CardTitle>
+              <CardTitle>Gegevens ter toetsing</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="file">Overeenkomst (Word of tekst)</Label>
+                <Label htmlFor="file">Toetsingsformulier ZP kandidaat (Word of tekst)</Label>
                 <div className="mt-2">
                   <label
                     htmlFor="file"
@@ -172,7 +172,7 @@ export default function DbaCheckNew() {
                     ) : (
                       <div className="flex flex-col items-center gap-2 text-muted-foreground">
                         <Upload className="h-8 w-8" />
-                        <span className="text-sm">Klik om een bestand te selecteren</span>
+                        <span className="text-sm">Upload het ingevulde toetsingsformulier</span>
                         <span className="text-xs">.docx, .doc, .txt</span>
                       </div>
                     )}
@@ -185,19 +185,6 @@ export default function DbaCheckNew() {
                     className="hidden"
                   />
                 </div>
-              </div>
-
-              <div>
-                <Label htmlFor="extractedText">
-                  Inhoud overeenkomst (plak hier de volledige tekst)
-                </Label>
-                <Textarea
-                  id="extractedText"
-                  value={extractedText}
-                  onChange={(e) => setExtractedText(e.target.value)}
-                  placeholder="Plak hier de volledige tekst van de overeenkomst..."
-                  className="min-h-[200px]"
-                />
               </div>
             </CardContent>
           </Card>
