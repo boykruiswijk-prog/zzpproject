@@ -29,6 +29,10 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import AdminLeads from "./pages/admin/Leads";
 import AdminLeadDetail from "./pages/admin/LeadDetail";
 import AdminTeam from "./pages/admin/Team";
+import AdminDbaChecks from "./pages/admin/DbaChecks";
+import DbaCheckNew from "./pages/admin/DbaCheckNew";
+import DbaCheckDetail from "./pages/admin/DbaCheckDetail";
+import DbaVerificatie from "./pages/DbaVerificatie";
 
 /** Old WordPress URLs indexed by Google → redirect to new routes */
 const wpRedirects: Array<[string, string]> = [
@@ -107,6 +111,12 @@ const App = () => (
             <Route path="/admin/leads" element={<AdminLeads />} />
             <Route path="/admin/leads/:id" element={<AdminLeadDetail />} />
             <Route path="/admin/team" element={<AdminTeam />} />
+            <Route path="/admin/dba-checks" element={<AdminDbaChecks />} />
+            <Route path="/admin/dba-checks/nieuw" element={<DbaCheckNew />} />
+            <Route path="/admin/dba-checks/:id" element={<DbaCheckDetail />} />
+            
+            {/* Public verification */}
+            <Route path="/verificatie/dba/:token" element={<DbaVerificatie />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

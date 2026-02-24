@@ -14,3 +14,6 @@ project_id = "eugkavokktjwpqaqlwsj"
 
  [functions.export-ubl]
  verify_jwt = false
+
+ [functions.analyze-dba]
+ verify_jwt = false

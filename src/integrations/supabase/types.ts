@@ -155,6 +155,107 @@ export type Database = {
         }
         Relationships: []
       }
+      dba_check_fields: {
+        Row: {
+          created_at: string
+          description: string | null
+          field_name: string
+          id: string
+          is_active: boolean
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          field_name: string
+          id?: string
+          is_active?: boolean
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          field_name?: string
+          id?: string
+          is_active?: boolean
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      dba_checks: {
+        Row: {
+          certificate_number: string | null
+          certificate_pdf_url: string | null
+          certified_at: string | null
+          certified_by: string | null
+          client_name: string
+          created_at: string
+          extracted_text: string | null
+          field_results: Json | null
+          id: string
+          lead_id: string | null
+          missing_fields: Json | null
+          original_filename: string | null
+          project_description: string | null
+          rewritten_description: string | null
+          status: string
+          suggestions: Json | null
+          updated_at: string
+          uploaded_file_url: string | null
+          verification_token: string | null
+        }
+        Insert: {
+          certificate_number?: string | null
+          certificate_pdf_url?: string | null
+          certified_at?: string | null
+          certified_by?: string | null
+          client_name: string
+          created_at?: string
+          extracted_text?: string | null
+          field_results?: Json | null
+          id?: string
+          lead_id?: string | null
+          missing_fields?: Json | null
+          original_filename?: string | null
+          project_description?: string | null
+          rewritten_description?: string | null
+          status?: string
+          suggestions?: Json | null
+          updated_at?: string
+          uploaded_file_url?: string | null
+          verification_token?: string | null
+        }
+        Update: {
+          certificate_number?: string | null
+          certificate_pdf_url?: string | null
+          certified_at?: string | null
+          certified_by?: string | null
+          client_name?: string
+          created_at?: string
+          extracted_text?: string | null
+          field_results?: Json | null
+          id?: string
+          lead_id?: string | null
+          missing_fields?: Json | null
+          original_filename?: string | null
+          project_description?: string | null
+          rewritten_description?: string | null
+          status?: string
+          suggestions?: Json | null
+          updated_at?: string
+          uploaded_file_url?: string | null
+          verification_token?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dba_checks_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invoices: {
         Row: {
           amount_excl_btw: number
@@ -506,6 +607,7 @@ export type Database = {
         Returns: boolean
       }
       is_team_member: { Args: { _user_id: string }; Returns: boolean }
+      nextval_text: { Args: { seq_name: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "medewerker"
