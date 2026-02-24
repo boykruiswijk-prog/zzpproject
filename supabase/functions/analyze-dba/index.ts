@@ -443,7 +443,7 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
         y = drawTableRow("Opdrachtgever", check.opdrachtgever || check.client_name || "", y);
         y = drawTableRow("Eindopdrachtgever", check.eindopdrachtgever || getFieldValue("eindopdrachtgever") || "-", y);
         y = drawTableRow("Functie", check.functie || getFieldValue("functie") || "-", y);
-        y = drawTableRow("Opdrachtomschrijving", check.project_description || getFieldValue("opdrachtomschrijving") || "-", y);
+        y = drawTableRow("Opdrachtomschrijving", check.rewritten_description || check.project_description || getFieldValue("opdrachtomschrijving") || "-", y);
         y = drawTableRow("Project", check.project_name || getFieldValue("project") || "-", y);
         y = drawTableRow("Startdatum", check.startdatum ? formatDate(check.startdatum) : getFieldValue("startdatum") || "-", y);
         y = drawTableRow("Einddatum", check.einddatum ? formatDate(check.einddatum) : getFieldValue("einddatum") || "-", y);
