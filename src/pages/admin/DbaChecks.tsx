@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Plus, Loader2, FileCheck, ShieldCheck, Trash2, Package } from "lucide-react";
+import { Eye, Plus, Loader2, FileCheck, ShieldCheck, Trash2, Package, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -47,6 +47,48 @@ export default function AdminDbaChecks() {
     }
   };
 
+  const handleExportPdf = async () => {
+    if (!checks?.length) return;
+    const { default: jsPDF } = await import("jspdf");
+    await import("jspdf-autotable");
+
+    const doc = new jsPDF({ orientation: "landscape" });
+    
+    doc.setFontSize(16);
+    doc.text("ZP Approved - Overzicht Wet DBA Checks", 14, 18);
+    doc.setFontSize(9);
+    doc.text(`Gegenereerd op ${new Date().toLocaleDateString("nl-NL")}`, 14, 24);
+
+    const certifiedChecks = checks.filter((c) => c.certificate_number);
+    
+    const tableData = certifiedChecks.map((check) => {
+      let opdrachtgever = "";
+      if (check.field_results?.length) {
+        const field = check.field_results.find(
+          (f) => f.field_name?.toLowerCase().includes("opdrachtgever") && !f.field_name?.toLowerCase().includes("eind")
+        );
+        if (field) opdrachtgever = field.value || "";
+      }
+
+      return [
+        check.client_name,
+        opdrachtgever,
+        check.certificate_number || "-",
+      ];
+    });
+
+    (doc as any).autoTable({
+      startY: 30,
+      head: [["Kandidaat", "Entiteit Opdrachtgever", "Certificaatnummer"]],
+      body: tableData,
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [30, 64, 124] },
+    });
+
+    doc.save("zp-approved-overzicht.pdf");
+    toast({ title: "PDF geëxporteerd" });
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -61,6 +103,10 @@ export default function AdminDbaChecks() {
             </p>
           </div>
           <div className="flex gap-2">
+            <Button variant="outline" onClick={handleExportPdf} disabled={!checks?.length}>
+              <Download className="h-4 w-4 mr-2" />
+              Export PDF
+            </Button>
             <Button variant="outline" asChild>
               <Link to="/admin/dba-checks/bulk">
                 <Package className="h-4 w-4 mr-2" />
