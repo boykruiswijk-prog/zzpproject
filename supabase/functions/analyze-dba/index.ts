@@ -267,162 +267,199 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
       });
 
     } else if (action === "certify") {
-      // Generate DBA certificate with PDF
+      // Generate DBA certificate with PDF in Onefellow ZP Approved format
       const verificationToken = crypto.randomUUID();
       const { data: seqData } = await supabase.rpc("nextval_text", { seq_name: "dba_cert_seq" });
       const certNum = "ZPDBA" + (seqData || Math.floor(Math.random() * 9000 + 1000));
       const certifiedAt = new Date().toISOString();
 
+      // Calculate aandachtspunten from document_checklist
+      const CHECKLIST_LABELS: Record<string, string> = {
+        overeenkomst_eindopdrachtgever: "Overeenkomst Eindopdrachtgever",
+        identiteitsverklaring: "Identiteitsverklaring",
+        curriculum_vitae: "Curriculum Vitae",
+        kvk_uittreksel: "Uittreksel Kamer van Koophandel",
+        polis_bav: "Polis beroeps- en bedrijfsaansprakelijkheid",
+        vog_verklaring: "VOG verklaring",
+        vca_basis: "VCA basis",
+        vca_vol: "VCA VOL",
+        vil_vcu: "VIL VCU",
+      };
+      const docChecklist = (check.document_checklist || {}) as Record<string, boolean>;
+      const aandachtspunten: string[] = [];
+      const dossierItems: string[] = [];
+      for (const [key, label] of Object.entries(CHECKLIST_LABELS)) {
+        if (docChecklist[key]) {
+          dossierItems.push(label);
+        } else {
+          aandachtspunten.push(label);
+        }
+      }
+      if (!check.treedt_zelfstandig_op) aandachtspunten.push("Treedt zelfstandig naar buiten toe");
+      else dossierItems.push("Treedt zelfstandig naar buiten toe");
+      if (!check.eigen_materiaal_werkwijze) aandachtspunten.push("Eigen materiaal en werkwijze");
+      else dossierItems.push("Eigen materiaal en werkwijze");
+
       // === Generate PDF ===
       let pdfPath: string | null = null;
       try {
-        // Load template
-        const { data: templateData, error: templateError } = await supabase.storage
-          .from("certificates")
-          .download("templates/certificate-template.png");
+        const pdfDoc = await PDFDocument.create();
+        const pageWidth = 595.28;
+        const pageHeight = 841.89;
+        const page = pdfDoc.addPage([pageWidth, pageHeight]);
 
-        if (templateError || !templateData) {
-          console.error("Template load error:", templateError);
-        } else {
-          const templateBytes = new Uint8Array(await templateData.arrayBuffer());
-          const pdfDoc = await PDFDocument.create();
-          const templateImage = await pdfDoc.embedPng(templateBytes);
+        const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-          const pageWidth = 595.28;
-          const pageHeight = 841.89;
-          const page = pdfDoc.addPage([pageWidth, pageHeight]);
+        const black = rgb(0, 0, 0);
+        const gray = rgb(0.35, 0.35, 0.35);
+        const green = rgb(0.1, 0.55, 0.1);
+        const red = rgb(0.76, 0.07, 0.16);
 
-          // Draw template background
-          page.drawImage(templateImage, { x: 0, y: 0, width: pageWidth, height: pageHeight });
+        const labelX = 56;
+        const valueX = 210;
+        const fontSize = 9;
+        const lineHeight = 15;
 
-          const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
-          const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+        const formatDate = (d: string) => {
+          const dt = new Date(d);
+          return `${String(dt.getDate()).padStart(2, "0")}-${String(dt.getMonth() + 1).padStart(2, "0")}-${dt.getFullYear()}`;
+        };
 
-          const black = rgb(0, 0, 0);
-          const gray = rgb(0.35, 0.35, 0.35);
-          const brandRed = rgb(0.76, 0.07, 0.16);
-          const green = rgb(0.1, 0.55, 0.1);
+        // Header
+        let y = pageHeight - 60;
+        page.drawText("Onefellow B.V.", { x: labelX, y, size: 14, font: helveticaBold, color: black });
+        y -= 30;
 
-          const labelX = 56;
-          const valueX = 195;
-          const fontSize = 9;
-          const lineHeight = 13;
-          const maxValueWidth = pageWidth - valueX - 40;
+        // Title
+        page.drawText("Toetsing ZP kandidaat - Wet DBA", { x: labelX, y, size: 18, font: helveticaBold, color: black });
+        y -= 30;
 
-          // Helper: wrap text
-          const wrapText = (text: string, font: typeof helvetica, size: number, maxW: number): string[] => {
-            const words = text.split(" ");
-            const lines: string[] = [];
-            let cur = "";
-            for (const w of words) {
-              const test = cur ? `${cur} ${w}` : w;
-              if (font.widthOfTextAtSize(test, size) > maxW && cur) { lines.push(cur); cur = w; }
-              else cur = test;
-            }
-            if (cur) lines.push(cur);
-            return lines;
-          };
+        // Document number
+        page.drawText("Documentnummer:", { x: labelX, y, size: fontSize, font: helvetica, color: gray });
+        page.drawText(certNum, { x: valueX, y, size: fontSize, font: helveticaBold, color: black });
+        y -= lineHeight * 1.5;
 
-          const drawRow = (label: string, value: string, yPos: number, opts?: { bold?: boolean; color?: typeof black }) => {
-            page.drawText(label, { x: labelX, y: yPos, size: fontSize, font: helvetica, color: gray });
-            page.drawText(value, { x: valueX, y: yPos, size: fontSize, font: opts?.bold ? helveticaBold : helvetica, color: opts?.color || black });
-          };
+        // Candidate details
+        const drawRow = (label: string, value: string) => {
+          page.drawText(label, { x: labelX, y, size: fontSize, font: helvetica, color: gray });
+          page.drawText(value || "-", { x: valueX, y, size: fontSize, font: helvetica, color: black });
+          y -= lineHeight;
+        };
 
-          // Cover original title area with white
-          page.drawRectangle({ x: 0, y: pageHeight - 250, width: pageWidth, height: 120, color: rgb(1, 1, 1) });
+        drawRow("Naam ZP kandidaat:", check.client_name);
+        drawRow("Rechtsvorm:", check.rechtsvorm || "-");
+        drawRow("Opdrachtgever:", check.opdrachtgever || "-");
+        drawRow("Eindopdrachtgever:", check.eindopdrachtgever || "-");
+        drawRow("Functie:", check.functie || "-");
+        y -= 5;
 
-          // Title
-          page.drawText("WET DBA CERTIFICAAT", {
-            x: labelX, y: pageHeight - 175, size: 24, font: helveticaBold, color: black,
-          });
-          page.drawText("COMPLIANCE VERKLARING", {
-            x: labelX, y: pageHeight - 200, size: 14, font: helveticaBold, color: brandRed,
-          });
-
-          // Subtitle
-          const subtitleText = `Dit certificaat verklaart dat de overeenkomst van opdracht is getoetst aan de Wet DBA en voldoet aan de gestelde eisen.`;
-          const subLines = wrapText(subtitleText, helvetica, 8, pageWidth - labelX * 2);
-          subLines.forEach((line, i) => {
-            page.drawText(line, { x: labelX, y: pageHeight - 225 - i * 11, size: 8, font: helvetica, color: gray });
-          });
-
-          // Fields
-          let y = 570;
-          drawRow("Opdrachtgever:", check.client_name, y, { bold: true });
-          y -= 22;
-          drawRow("Certificaatnummer:", certNum, y, { bold: true, color: brandRed });
-          y -= 22;
-
-          const formatDate = (d: string) => {
-            const dt = new Date(d);
-            const dd = String(dt.getDate()).padStart(2, "0");
-            const mm = String(dt.getMonth() + 1).padStart(2, "0");
-            return `${dd}-${mm}-${dt.getFullYear()}`;
-          };
-          drawRow("Afgiftedatum:", formatDate(certifiedAt), y, { bold: true });
-
-          // Score
-          const score = check.suggestions?.[0]?.score;
-          if (score !== undefined) {
-            y -= 30;
-            drawRow("Compliance score:", `${score}%`, y, { bold: true, color: score >= 80 ? green : brandRed });
-          }
-
-          // Field results summary
-          if (check.field_results && check.field_results.length > 0) {
-            y -= 30;
-            page.drawText("Gecontroleerde velden:", { x: labelX, y, size: fontSize, font: helveticaBold, color: black });
-            y -= 5;
-            for (const field of check.field_results as any[]) {
-              y -= lineHeight + 2;
-              const icon = field.present ? "✓" : "✗";
-              const color = field.present ? green : brandRed;
-              page.drawText(icon, { x: valueX, y, size: 10, font: helveticaBold, color });
-              page.drawText(field.field_name, { x: valueX + 14, y, size: fontSize, font: helvetica, color: black });
-            }
-          }
-
-          // KVK check result
-          if (check.kvk_check_result) {
-            const kvk = check.kvk_check_result as any;
-            y -= 25;
-            page.drawText("KVK Verificatie:", { x: labelX, y, size: fontSize, font: helveticaBold, color: black });
-            const kvkStatus = kvk.match ? "Werkzaamheden passen bij KVK-registratie" : "Werkzaamheden passen NIET bij KVK-registratie";
-            page.drawText(kvkStatus, { x: valueX, y, size: fontSize, font: helveticaBold, color: kvk.match ? green : brandRed });
-          }
-
-          // Verification info
-          y -= 35;
-          page.drawText("Verificatie:", { x: labelX, y, size: fontSize, font: helvetica, color: gray });
-          const verifyUrl = `https://zzpproject.lovable.app/verificatie/dba/${verificationToken}`;
-          const verifyLines = wrapText(`Dit certificaat kan online geverifieerd worden via: ${verifyUrl}`, helvetica, 7.5, maxValueWidth);
-          verifyLines.forEach((line, i) => {
-            page.drawText(line, { x: valueX, y: y - i * 10, size: 7.5, font: helvetica, color: gray });
-          });
-
-          // Footer
-          page.drawRectangle({ x: 0, y: 0, width: pageWidth, height: 60, color: rgb(1, 1, 1) });
-          const footerLines = [
-            "Dit Wet DBA certificaat is afgegeven door ZP Zaken B.V. op basis van een AI-gestuurde analyse van de overeenkomst.",
-            "ZP Zaken is ingeschreven in het register Wft bij de AFM onder vergunningsnummer: 12050363.",
-          ];
-          footerLines.forEach((line, i) => {
-            page.drawText(line, { x: labelX, y: 35 - i * 9, size: 6.5, font: helvetica, color: gray });
-          });
-
-          // Save & upload
-          const pdfBytes = await pdfDoc.save();
-          const fileName = `dba/${certNum}.pdf`;
-          const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
-          const { error: uploadError } = await supabase.storage
-            .from("certificates")
-            .upload(fileName, pdfBlob, { contentType: "application/pdf", upsert: true });
-
-          if (uploadError) {
-            console.error("PDF upload error:", uploadError);
+        // Opdrachtomschrijving (wrapped)
+        page.drawText("Opdrachtomschrijving:", { x: labelX, y, size: fontSize, font: helvetica, color: gray });
+        y -= lineHeight;
+        const desc = check.rewritten_description || check.project_description || "-";
+        const descWords = desc.split(" ");
+        let descLine = "";
+        const maxW = pageWidth - labelX - 40;
+        for (const w of descWords) {
+          const test = descLine ? `${descLine} ${w}` : w;
+          if (helvetica.widthOfTextAtSize(test, fontSize) > maxW && descLine) {
+            page.drawText(descLine, { x: labelX + 10, y, size: fontSize, font: helvetica, color: black });
+            y -= lineHeight;
+            descLine = w;
           } else {
-            pdfPath = fileName;
+            descLine = test;
           }
+        }
+        if (descLine) {
+          page.drawText(descLine, { x: labelX + 10, y, size: fontSize, font: helvetica, color: black });
+          y -= lineHeight;
+        }
+        y -= 5;
+
+        drawRow("Project:", check.project_name || "-");
+        drawRow("Startdatum:", check.startdatum ? formatDate(check.startdatum) : "-");
+        drawRow("Einddatum:", check.einddatum ? formatDate(check.einddatum) : "-");
+        drawRow("Optie tot verlenging:", check.optie_verlenging || "-");
+        y -= 10;
+
+        // Dossier
+        page.drawText("Dossier:", { x: labelX, y, size: fontSize, font: helveticaBold, color: black });
+        y -= lineHeight;
+        for (const item of dossierItems) {
+          page.drawText("✓", { x: labelX + 10, y, size: 10, font: helveticaBold, color: green });
+          page.drawText(item, { x: labelX + 25, y, size: fontSize, font: helvetica, color: black });
+          y -= lineHeight;
+        }
+        y -= 10;
+
+        // Aandachtspunten
+        page.drawText("Aandachtspunten:", { x: labelX, y, size: fontSize, font: helveticaBold, color: red });
+        y -= lineHeight;
+        if (aandachtspunten.length === 0) {
+          page.drawText("Geen aandachtspunten", { x: labelX + 10, y, size: fontSize, font: helvetica, color: green });
+          y -= lineHeight;
+        } else {
+          for (const item of aandachtspunten) {
+            page.drawText("•", { x: labelX + 10, y, size: 10, font: helveticaBold, color: red });
+            page.drawText(item, { x: labelX + 25, y, size: fontSize, font: helvetica, color: black });
+            y -= lineHeight;
+          }
+        }
+        y -= 10;
+
+        // Zelfstandigheid
+        const selfIcon = check.treedt_zelfstandig_op ? "✓" : "✗";
+        const selfColor = check.treedt_zelfstandig_op ? green : red;
+        page.drawText(selfIcon, { x: labelX, y, size: 10, font: helveticaBold, color: selfColor });
+        page.drawText("Treedt zelfstandig naar buiten", { x: labelX + 15, y, size: fontSize, font: helvetica, color: black });
+        y -= lineHeight;
+        const matIcon = check.eigen_materiaal_werkwijze ? "✓" : "✗";
+        const matColor = check.eigen_materiaal_werkwijze ? green : red;
+        page.drawText(matIcon, { x: labelX, y, size: 10, font: helveticaBold, color: matColor });
+        page.drawText("Eigen materiaal en werkwijze", { x: labelX + 15, y, size: fontSize, font: helvetica, color: black });
+        y -= lineHeight * 2;
+
+        // Approval
+        page.drawText("Voor akkoord", { x: labelX, y, size: fontSize, font: helveticaBold, color: black });
+        y -= lineHeight;
+        drawRow("Toetsingsdatum:", formatDate(certifiedAt));
+        drawRow("Afgiftedatum:", formatDate(certifiedAt));
+        y -= 10;
+
+        // KVK check result
+        if (check.kvk_check_result) {
+          const kvk = check.kvk_check_result as any;
+          page.drawText("KVK Verificatie:", { x: labelX, y, size: fontSize, font: helveticaBold, color: black });
+          const kvkStatus = kvk.match ? "Werkzaamheden passen bij KVK" : "NIET passend bij KVK";
+          page.drawText(kvkStatus, { x: valueX, y, size: fontSize, font: helveticaBold, color: kvk.match ? green : red });
+          y -= lineHeight * 2;
+        }
+
+        // Verification
+        const verifyUrl = `https://zzpproject.lovable.app/verificatie/dba/${verificationToken}`;
+        page.drawText("Verificatie:", { x: labelX, y, size: 7.5, font: helvetica, color: gray });
+        page.drawText(verifyUrl, { x: valueX, y, size: 7.5, font: helvetica, color: gray });
+        y -= lineHeight;
+
+        // Footer
+        const footerY = 45;
+        page.drawText("TOETSING ZP KANDIDAAT – WET DBA / VERSIE 2.1", { x: labelX, y: footerY, size: 6.5, font: helveticaBold, color: gray });
+        page.drawText("Onefellow B.V. | Tupolevlaan 41, 1119 NW, Schiphol-Rijk", { x: labelX, y: footerY - 10, size: 6.5, font: helvetica, color: gray });
+        page.drawText("KvK: 81550022 | Bank: NL08 RABO 0343814471 | BTW: NL862134754B01", { x: labelX, y: footerY - 20, size: 6.5, font: helvetica, color: gray });
+
+        // Save & upload
+        const pdfBytes = await pdfDoc.save();
+        const fileName = `dba/${certNum}.pdf`;
+        const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
+        const { error: uploadError } = await supabase.storage
+          .from("certificates")
+          .upload(fileName, pdfBlob, { contentType: "application/pdf", upsert: true });
+
+        if (uploadError) {
+          console.error("PDF upload error:", uploadError);
+        } else {
+          pdfPath = fileName;
         }
       } catch (pdfErr) {
         console.error("PDF generation error:", pdfErr);
