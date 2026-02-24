@@ -34,8 +34,30 @@ export default function DbaCheckDetail() {
   const handleAnalyze = async () => {
     if (!id) return;
     try {
+      // Step 1: Analyze fields
       await analyzeDba.mutateAsync({ checkId: id, action: "analyze" });
-      toast({ title: "Analyse voltooid!" });
+      toast({ title: "Veldenanalyse voltooid!" });
+
+      // Step 2: KVK check (if kvk text available)
+      if (check?.kvk_text) {
+        try {
+          await analyzeDba.mutateAsync({ checkId: id, action: "check_kvk" });
+          toast({ title: "KVK check voltooid!" });
+        } catch (e: any) {
+          toast({ title: "KVK check mislukt", description: e.message, variant: "destructive" });
+        }
+      }
+
+      // Step 3: Rewrite project description
+      if (check?.project_description || check?.extracted_text) {
+        try {
+          await analyzeDba.mutateAsync({ checkId: id, action: "rewrite" });
+          toast({ title: "Projectomschrijving herschreven!" });
+        } catch (e: any) {
+          toast({ title: "Herschrijving mislukt", description: e.message, variant: "destructive" });
+        }
+      }
+
       queryClient.invalidateQueries({ queryKey: ["dba-check", id] });
     } catch (error: any) {
       toast({ title: "Fout bij analyse", description: error.message, variant: "destructive" });
