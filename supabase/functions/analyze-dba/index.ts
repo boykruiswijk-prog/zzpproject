@@ -464,7 +464,7 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
         // Form fields
         y = drawTableRow("Documentnummer", certNum, y);
         y = drawTableRow("Naam ZP kandidaat", getFieldValue("naam"), y);
-        y = drawTableRow("Rechtsvorm", deriveRechtsvorm(), y);
+        // Rechtsvorm removed per request
         y = drawTableRow("Opdrachtgever", check.opdrachtgever || check.client_name || "", y);
         y = drawTableRow("Eindopdrachtgever", check.eindopdrachtgever || getFieldValue("eindopdrachtgever") || "-", y);
         y = drawTableRow("Functie", check.functie || getFieldValue("functie") || "-", y);
