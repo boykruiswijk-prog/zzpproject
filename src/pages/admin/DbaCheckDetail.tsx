@@ -130,6 +130,25 @@ export default function DbaCheckDetail() {
   const kvkMatch = check.kvk_check_result?.match;
   const canCertify = check.status === "analyzed" && allFieldsPresent && (kvkMatch !== false);
 
+  // Calculate aandachtspunten from document checklist
+  const CHECKLIST_LABELS: Record<string, string> = {
+    overeenkomst_eindopdrachtgever: "Overeenkomst Eindopdrachtgever",
+    identiteitsverklaring: "Identiteitsverklaring",
+    curriculum_vitae: "Curriculum Vitae",
+    kvk_uittreksel: "Uittreksel Kamer van Koophandel",
+    polis_bav: "Polis beroeps- en bedrijfsaansprakelijkheid",
+    vog_verklaring: "VOG verklaring",
+    vca_basis: "VCA basis",
+    vca_vol: "VCA VOL",
+    vil_vcu: "VIL VCU",
+  };
+  const docChecklist = (check.document_checklist || {}) as Record<string, boolean>;
+  const aandachtspunten = Object.entries(CHECKLIST_LABELS)
+    .filter(([key]) => !docChecklist[key])
+    .map(([, label]) => label);
+  if (!check.treedt_zelfstandig_op) aandachtspunten.push("Treedt zelfstandig naar buiten toe");
+  if (!check.eigen_materiaal_werkwijze) aandachtspunten.push("Zelfstandigheid (eigen materiaal, werkwijze)");
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -205,6 +224,74 @@ export default function DbaCheckDetail() {
                 </CardContent>
               </Card>
             )}
+
+            {/* Kandidaat & Opdrachtgegevens */}
+            {(check.opdrachtgever || check.functie || check.startdatum) && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Kandidaat & Opdrachtgegevens</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                    {check.rechtsvorm && <><span className="text-muted-foreground">Rechtsvorm:</span><span>{check.rechtsvorm}</span></>}
+                    {check.opdrachtgever && <><span className="text-muted-foreground">Opdrachtgever:</span><span>{check.opdrachtgever}</span></>}
+                    {check.eindopdrachtgever && <><span className="text-muted-foreground">Eindopdrachtgever:</span><span>{check.eindopdrachtgever}</span></>}
+                    {check.functie && <><span className="text-muted-foreground">Functie:</span><span>{check.functie}</span></>}
+                    {check.project_name && <><span className="text-muted-foreground">Project:</span><span>{check.project_name}</span></>}
+                    {check.startdatum && <><span className="text-muted-foreground">Startdatum:</span><span>{check.startdatum}</span></>}
+                    {check.einddatum && <><span className="text-muted-foreground">Einddatum:</span><span>{check.einddatum}</span></>}
+                    {check.optie_verlenging && <><span className="text-muted-foreground">Optie verlenging:</span><span>{check.optie_verlenging}</span></>}
+                    {check.uurtarief && <><span className="text-muted-foreground">Uurtarief:</span><span>{check.uurtarief}</span></>}
+                    {check.uren_per_week && <><span className="text-muted-foreground">Uren per week:</span><span>{check.uren_per_week}</span></>}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Document Checklist & Aandachtspunten */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Dossier & Aandachtspunten</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <p className="text-sm font-medium mb-2">Dossier (aanwezig):</p>
+                  <div className="space-y-1">
+                    {Object.entries(CHECKLIST_LABELS).filter(([key]) => docChecklist[key]).map(([key, label]) => (
+                      <div key={key} className="flex items-center gap-2 text-sm">
+                        <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
+                        <span>{label}</span>
+                      </div>
+                    ))}
+                    {check.treedt_zelfstandig_op && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
+                        <span>Treedt zelfstandig naar buiten toe</span>
+                      </div>
+                    )}
+                    {check.eigen_materiaal_werkwijze && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
+                        <span>Eigen materiaal en werkwijze</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                {aandachtspunten.length > 0 && (
+                  <div>
+                    <p className="text-sm font-medium mb-2 text-amber-700">Aandachtspunten:</p>
+                    <div className="space-y-1">
+                      {aandachtspunten.map((item, idx) => (
+                        <div key={idx} className="flex items-center gap-2 text-sm text-amber-700">
+                          <AlertTriangle className="h-4 w-4 shrink-0" />
+                          <span>{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
             {/* Field Results */}
             {check.field_results && check.field_results.length > 0 && (

@@ -7,22 +7,61 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Upload, Loader2, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 
+const DOCUMENT_CHECKLIST_ITEMS = [
+  { key: "overeenkomst_eindopdrachtgever", label: "Overeenkomst Eindopdrachtgever" },
+  { key: "identiteitsverklaring", label: "Identiteitsverklaring" },
+  { key: "curriculum_vitae", label: "Curriculum Vitae" },
+  { key: "kvk_uittreksel", label: "Uittreksel Kamer van Koophandel" },
+  { key: "polis_bav", label: "Polis beroeps- en bedrijfsaansprakelijkheid" },
+  { key: "vog_verklaring", label: "VOG verklaring" },
+  { key: "vca_basis", label: "VCA basis" },
+  { key: "vca_vol", label: "VCA VOL" },
+  { key: "vil_vcu", label: "VIL VCU" },
+];
+
 export default function DbaCheckNew() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const createCheck = useCreateDbaCheck();
+  const [isUploading, setIsUploading] = useState(false);
+
+  // Candidate fields
   const [clientName, setClientName] = useState("");
+  const [candidateEmail, setCandidateEmail] = useState("");
+  const [candidatePhone, setCandidatePhone] = useState("");
+  const [rechtsvorm, setRechtsvorm] = useState("");
+  const [opdrachtgever, setOpdrachtgever] = useState("");
+  const [eindopdrachtgever, setEindopdrachtgever] = useState("");
+  const [functie, setFunctie] = useState("");
+  const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
+  const [startdatum, setStartdatum] = useState("");
+  const [einddatum, setEinddatum] = useState("");
+  const [optieVerlenging, setOptieVerlenging] = useState("");
+  const [uurtarief, setUurtarief] = useState("");
+  const [urenPerWeek, setUrenPerWeek] = useState("");
+  const [specifiekeVaardigheden, setSpecifiekeVaardigheden] = useState("");
+  const [treedtZelfstandigOp, setTreedtZelfstandigOp] = useState(false);
+  const [eigenMateriaalWerkwijze, setEigenMateriaalWerkwijze] = useState(false);
+
+  // Document checklist
+  const [checklist, setChecklist] = useState<Record<string, boolean>>({});
+
+  // File uploads
   const [file, setFile] = useState<File | null>(null);
   const [kvkFile, setKvkFile] = useState<File | null>(null);
   const [kvkText, setKvkText] = useState("");
-  const [isUploading, setIsUploading] = useState(false);
   const [extractedText, setExtractedText] = useState("");
+
+  const toggleChecklist = (key: string) => {
+    setChecklist((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -50,7 +89,7 @@ export default function DbaCheckNew() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!clientName.trim()) {
-      toast({ title: "Vul een klantnaam in", variant: "destructive" });
+      toast({ title: "Vul een naam ZP kandidaat in", variant: "destructive" });
       return;
     }
     if (!file && !extractedText && !projectDescription) {
@@ -99,7 +138,23 @@ export default function DbaCheckNew() {
 
       const result = await createCheck.mutateAsync({
         client_name: clientName.trim(),
+        candidate_email: candidateEmail || null,
+        candidate_phone: candidatePhone || null,
+        rechtsvorm: rechtsvorm || null,
+        opdrachtgever: opdrachtgever || null,
+        eindopdrachtgever: eindopdrachtgever || null,
+        functie: functie || null,
+        project_name: projectName || null,
         project_description: projectDescription || null,
+        startdatum: startdatum || null,
+        einddatum: einddatum || null,
+        optie_verlenging: optieVerlenging || null,
+        uurtarief: uurtarief || null,
+        uren_per_week: urenPerWeek || null,
+        specifieke_vaardigheden: specifiekeVaardigheden || null,
+        treedt_zelfstandig_op: treedtZelfstandigOp,
+        eigen_materiaal_werkwijze: eigenMateriaalWerkwijze,
+        document_checklist: checklist,
         uploaded_file_url: uploadedUrl || null,
         original_filename: originalFilename || null,
         extracted_text: textToAnalyze || null,
@@ -129,41 +184,146 @@ export default function DbaCheckNew() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold">Nieuwe Wet DBA Check</h1>
-            <p className="text-muted-foreground">Upload een overeenkomst voor analyse</p>
+            <p className="text-muted-foreground">Toetsing ZP kandidaat</p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* ZP Kandidaat gegevens */}
           <Card>
             <CardHeader>
-              <CardTitle>Klantgegevens</CardTitle>
+              <CardTitle>Gegevens ZP kandidaat</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="clientName">Klantnaam / Bedrijfsnaam *</Label>
-                <Input
-                  id="clientName"
-                  value={clientName}
-                  onChange={(e) => setClientName(e.target.value)}
-                  placeholder="bijv. PB Projects"
-                  required
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="clientName">Naam ZP kandidaat *</Label>
+                  <Input id="clientName" value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Volledige naam" required />
+                </div>
+                <div>
+                  <Label htmlFor="rechtsvorm">Rechtsvorm</Label>
+                  <Input id="rechtsvorm" value={rechtsvorm} onChange={(e) => setRechtsvorm(e.target.value)} placeholder="bijv. Eenmanszaak, VOF, BV" />
+                </div>
+                <div>
+                  <Label htmlFor="candidateEmail">E-mailadres</Label>
+                  <Input id="candidateEmail" type="email" value={candidateEmail} onChange={(e) => setCandidateEmail(e.target.value)} placeholder="email@voorbeeld.nl" />
+                </div>
+                <div>
+                  <Label htmlFor="candidatePhone">Telefoonnummer</Label>
+                  <Input id="candidatePhone" value={candidatePhone} onChange={(e) => setCandidatePhone(e.target.value)} placeholder="06-12345678" />
+                </div>
               </div>
             </CardContent>
           </Card>
 
+          {/* Opdrachtgegevens */}
           <Card>
             <CardHeader>
-              <CardTitle>Document uploaden</CardTitle>
+              <CardTitle>Opdrachtgegevens</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="opdrachtgever">Opdrachtgever</Label>
+                  <Input id="opdrachtgever" value={opdrachtgever} onChange={(e) => setOpdrachtgever(e.target.value)} placeholder="bijv. PB Projects" />
+                </div>
+                <div>
+                  <Label htmlFor="eindopdrachtgever">Eindopdrachtgever</Label>
+                  <Input id="eindopdrachtgever" value={eindopdrachtgever} onChange={(e) => setEindopdrachtgever(e.target.value)} />
+                </div>
+                <div>
+                  <Label htmlFor="functie">Functie</Label>
+                  <Input id="functie" value={functie} onChange={(e) => setFunctie(e.target.value)} />
+                </div>
+                <div>
+                  <Label htmlFor="projectName">Project</Label>
+                  <Input id="projectName" value={projectName} onChange={(e) => setProjectName(e.target.value)} />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="projectDescription">Opdrachtomschrijving</Label>
+                <Textarea id="projectDescription" value={projectDescription} onChange={(e) => setProjectDescription(e.target.value)} placeholder="Beschrijf de werkzaamheden..." className="min-h-[100px]" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="startdatum">Startdatum</Label>
+                  <Input id="startdatum" type="date" value={startdatum} onChange={(e) => setStartdatum(e.target.value)} />
+                </div>
+                <div>
+                  <Label htmlFor="einddatum">Einddatum</Label>
+                  <Input id="einddatum" type="date" value={einddatum} onChange={(e) => setEinddatum(e.target.value)} />
+                </div>
+                <div>
+                  <Label htmlFor="optieVerlenging">Optie tot verlenging</Label>
+                  <Input id="optieVerlenging" value={optieVerlenging} onChange={(e) => setOptieVerlenging(e.target.value)} placeholder="Ja / Nee" />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="uurtarief">Uurtarief ZP'er</Label>
+                  <Input id="uurtarief" value={uurtarief} onChange={(e) => setUurtarief(e.target.value)} placeholder="€" />
+                </div>
+                <div>
+                  <Label htmlFor="urenPerWeek">Aantal uur per week</Label>
+                  <Input id="urenPerWeek" value={urenPerWeek} onChange={(e) => setUrenPerWeek(e.target.value)} />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="specifiekeVaardigheden">Specifieke vaardigheden, kennis, opleiding</Label>
+                <Textarea id="specifiekeVaardigheden" value={specifiekeVaardigheden} onChange={(e) => setSpecifiekeVaardigheden(e.target.value)} className="min-h-[80px]" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Zelfstandigheid */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Zelfstandigheid</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center space-x-3">
+                <Checkbox id="treedtZelfstandig" checked={treedtZelfstandigOp} onCheckedChange={(c) => setTreedtZelfstandigOp(!!c)} />
+                <Label htmlFor="treedtZelfstandig" className="cursor-pointer">Treedt zelfstandig naar buiten toe</Label>
+              </div>
+              <div className="flex items-center space-x-3">
+                <Checkbox id="eigenMateriaal" checked={eigenMateriaalWerkwijze} onCheckedChange={(c) => setEigenMateriaalWerkwijze(!!c)} />
+                <Label htmlFor="eigenMateriaal" className="cursor-pointer">Zelfstandigheid (eigen materiaal, werkwijze enz.)</Label>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Aanvullende documentatie checklist */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Aanvullende documentatie</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">Vink aan welke documenten aanwezig zijn. Niet-aangevinkte items worden als aandachtspunt opgenomen in het ZP Approved stempel.</p>
+              <div className="space-y-3">
+                {DOCUMENT_CHECKLIST_ITEMS.map((item) => (
+                  <div key={item.key} className="flex items-center space-x-3">
+                    <Checkbox
+                      id={item.key}
+                      checked={!!checklist[item.key]}
+                      onCheckedChange={() => toggleChecklist(item.key)}
+                    />
+                    <Label htmlFor={item.key} className="cursor-pointer">{item.label}</Label>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Document uploaden */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Overeenkomst uploaden</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <Label htmlFor="file">Overeenkomst (Word of tekst)</Label>
                 <div className="mt-2">
-                  <label
-                    htmlFor="file"
-                    className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-secondary/50 transition-colors"
-                  >
+                  <label htmlFor="file" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-secondary/50 transition-colors">
                     {file ? (
                       <div className="flex items-center gap-2 text-sm">
                         <FileText className="h-5 w-5 text-primary" />
@@ -177,31 +337,17 @@ export default function DbaCheckNew() {
                       </div>
                     )}
                   </label>
-                  <input
-                    id="file"
-                    type="file"
-                    accept=".docx,.doc,.txt,.pdf"
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
+                  <input id="file" type="file" accept=".docx,.doc,.txt,.pdf" onChange={handleFileChange} className="hidden" />
                 </div>
               </div>
-
               <div>
-                <Label htmlFor="extractedText">
-                  Inhoud overeenkomst (plak hier de volledige tekst)
-                </Label>
-                <Textarea
-                  id="extractedText"
-                  value={extractedText}
-                  onChange={(e) => setExtractedText(e.target.value)}
-                  placeholder="Plak hier de volledige tekst van de overeenkomst..."
-                  className="min-h-[200px]"
-                />
+                <Label htmlFor="extractedText">Inhoud overeenkomst (automatisch uit document, of plak handmatig)</Label>
+                <Textarea id="extractedText" value={extractedText} onChange={(e) => setExtractedText(e.target.value)} placeholder="Tekst wordt automatisch ingevuld bij upload..." className="min-h-[200px]" />
               </div>
             </CardContent>
           </Card>
 
+          {/* KVK Uittreksel */}
           <Card>
             <CardHeader>
               <CardTitle>KVK Uittreksel</CardTitle>
@@ -210,10 +356,7 @@ export default function DbaCheckNew() {
               <div>
                 <Label htmlFor="kvkFile">Upload KVK uittreksel (PDF)</Label>
                 <div className="mt-2">
-                  <label
-                    htmlFor="kvkFile"
-                    className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-secondary/50 transition-colors"
-                  >
+                  <label htmlFor="kvkFile" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-secondary/50 transition-colors">
                     {kvkFile ? (
                       <div className="flex items-center gap-2 text-sm">
                         <FileText className="h-5 w-5 text-primary" />
@@ -257,38 +400,9 @@ export default function DbaCheckNew() {
                   />
                 </div>
               </div>
-
               <div>
-                <Label htmlFor="kvkText">
-                  KVK bedrijfsomschrijving (automatisch uit PDF, of plak handmatig)
-                </Label>
-                <Textarea
-                  id="kvkText"
-                  value={kvkText}
-                  onChange={(e) => setKvkText(e.target.value)}
-                  placeholder="bijv. 'Adviesbureau op het gebied van organisatie en management', 'IT-consultancy en softwareontwikkeling'..."
-                  className="min-h-[100px]"
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Projectomschrijving</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div>
-                <Label htmlFor="projectDescription">
-                  Projectomschrijving (optioneel - wordt apart geanalyseerd en herschreven)
-                </Label>
-                <Textarea
-                  id="projectDescription"
-                  value={projectDescription}
-                  onChange={(e) => setProjectDescription(e.target.value)}
-                  placeholder="Beschrijf het project / de werkzaamheden..."
-                  className="min-h-[120px]"
-                />
+                <Label htmlFor="kvkText">KVK bedrijfsomschrijving (automatisch uit PDF, of plak handmatig)</Label>
+                <Textarea id="kvkText" value={kvkText} onChange={(e) => setKvkText(e.target.value)} placeholder="Tekst wordt automatisch ingevuld bij upload..." className="min-h-[100px]" />
               </div>
             </CardContent>
           </Card>
