@@ -167,7 +167,8 @@ export default function DbaCheckDetail() {
 
   const score = check.suggestions?.[0]?.score;
   const summary = check.suggestions?.[0]?.summary;
-  const kvkMatch = check.kvk_check_result?.match;
+  const insurancePolicyDate = check.suggestions?.[0]?.insurance_policy_date;
+  const insurancePolicyExpired = check.suggestions?.[0]?.insurance_policy_expired;
   const canCertify = check.status === "analyzed";
 
   return (
@@ -246,7 +247,59 @@ export default function DbaCheckDetail() {
               </Card>
             )}
 
-            {/* Field Results */}
+            {/* Insurance Policy Age Warning */}
+            {check.status !== "uploaded" && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <ShieldCheck className="h-5 w-5" />
+                    Polis beroeps-/bedrijfsaansprakelijkheid
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {insurancePolicyExpired === true && (
+                    <div className="p-4 rounded-lg border border-orange-200 bg-orange-50">
+                      <div className="flex items-start gap-3">
+                        <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
+                        <div>
+                          <p className="font-medium text-orange-800">Polis ouder dan 1 jaar</p>
+                          <p className="text-sm text-orange-700 mt-1">
+                            De polis is gedateerd op {insurancePolicyDate ? new Date(insurancePolicyDate).toLocaleDateString("nl-NL") : "onbekend"}.
+                            Vraag een actuele polis op (niet ouder dan 1 jaar).
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {insurancePolicyExpired === false && insurancePolicyDate && (
+                    <div className="p-4 rounded-lg border border-green-200 bg-green-50">
+                      <div className="flex items-start gap-3">
+                        <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
+                        <div>
+                          <p className="font-medium text-green-800">Polis is actueel</p>
+                          <p className="text-sm text-green-700 mt-1">
+                            Gedateerd op {new Date(insurancePolicyDate).toLocaleDateString("nl-NL")} — niet ouder dan 1 jaar.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {(insurancePolicyExpired === null || insurancePolicyExpired === undefined) && check.status !== "uploaded" && (
+                    <div className="p-4 rounded-lg border border-yellow-200 bg-yellow-50">
+                      <div className="flex items-start gap-3">
+                        <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5 shrink-0" />
+                        <div>
+                          <p className="font-medium text-yellow-800">Polisdatum niet gevonden</p>
+                          <p className="text-sm text-yellow-700 mt-1">
+                            De datum van de polis kon niet worden bepaald. Controleer handmatig of deze niet ouder is dan 1 jaar.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
             {check.field_results && check.field_results.length > 0 && (
               <Card>
                 <CardHeader>

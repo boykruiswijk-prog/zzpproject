@@ -106,6 +106,9 @@ BELANGRIJK BIJ HET BEOORDELEN VAN DE CHECKLIST:
 Controleer het ingevulde formulier en rapporteer voor elk veld of het is ingevuld.
 Alleen als een veld ECHT leeg is of ontbreekt in het document: markeer dit als aandachtspunt.
 
+EXTRA: Zoek ook naar de datum/geldigheid van de polis beroeps- en bedrijfsaansprakelijkheid als die vermeld staat in het document.
+Geef de datum terug in YYYY-MM-DD formaat als je die vindt. Dit kan een ingangsdatum, afgiftedatum of geldigheidsdatum zijn.
+
 Antwoord ALLEEN met een JSON tool call.`;
 
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -162,6 +165,7 @@ Antwoord ALLEEN met een JSON tool call.`;
                   },
                   overall_score: { type: "number", description: "Score van 0-100 hoe volledig het formulier is ingevuld" },
                   summary: { type: "string", description: "Korte samenvatting van de screening" },
+                  insurance_policy_date: { type: "string", description: "Datum van de polis beroeps-/bedrijfsaansprakelijkheid in YYYY-MM-DD formaat, of null als niet gevonden" },
                 },
                 required: ["form_fields", "checklist_items", "aandachtspunten", "overall_score", "summary"],
               },
@@ -190,11 +194,29 @@ Antwoord ALLEEN met een JSON tool call.`;
       const analysis = JSON.parse(toolCall.function.arguments);
       const missingFields = analysis.aandachtspunten || [];
 
+      // Check insurance policy age (older than 1 year = aandachtspunt)
+      let insurancePolicyExpired: boolean | null = null;
+      if (analysis.insurance_policy_date) {
+        const policyDate = new Date(analysis.insurance_policy_date);
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        insurancePolicyExpired = policyDate < oneYearAgo;
+        if (insurancePolicyExpired) {
+          missingFields.push(`Polis beroeps-/bedrijfsaansprakelijkheid is ouder dan 1 jaar (datum: ${analysis.insurance_policy_date})`);
+        }
+      }
+
       await supabase.from("dba_checks").update({
         field_results: analysis.form_fields,
         missing_fields: missingFields,
         document_checklist: analysis.checklist_items,
-        suggestions: [{ score: analysis.overall_score, summary: analysis.summary, aandachtspunten: analysis.aandachtspunten }],
+        suggestions: [{
+          score: analysis.overall_score,
+          summary: analysis.summary,
+          aandachtspunten: missingFields,
+          insurance_policy_date: analysis.insurance_policy_date || null,
+          insurance_policy_expired: insurancePolicyExpired,
+        }],
         status: "analyzed",
       }).eq("id", check_id);
 
