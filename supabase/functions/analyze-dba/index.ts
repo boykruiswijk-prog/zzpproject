@@ -194,9 +194,21 @@ Antwoord ALLEEN met een JSON tool call.`;
       const analysis = JSON.parse(toolCall.function.arguments);
       const missingFields = analysis.aandachtspunten || [];
 
+      // Check insurance policy status from checklist
+      const insuranceChecklist = analysis.checklist_items?.find(
+        (item: any) => item.document_name?.toLowerCase().includes("polis") || item.document_name?.toLowerCase().includes("aansprakelijkheid")
+      );
+      const insuranceMissing = insuranceChecklist?.status === "niet_aanwezig" || insuranceChecklist?.status === "niet_ingevuld";
+
       // Check insurance policy age (older than 1 year = aandachtspunt)
       let insurancePolicyExpired: boolean | null = null;
-      if (analysis.insurance_policy_date) {
+      if (insuranceMissing) {
+        // Policy not provided at all - flag it
+        insurancePolicyExpired = null;
+        if (!missingFields.some((f: string) => f.toLowerCase().includes("polis") && f.toLowerCase().includes("niet aanwezig"))) {
+          missingFields.push("Polis beroeps- en bedrijfsaansprakelijkheid is niet aangeleverd");
+        }
+      } else if (analysis.insurance_policy_date) {
         const policyDate = new Date(analysis.insurance_policy_date);
         const oneYearAgo = new Date();
         oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
@@ -216,6 +228,7 @@ Antwoord ALLEEN met een JSON tool call.`;
           aandachtspunten: missingFields,
           insurance_policy_date: analysis.insurance_policy_date || null,
           insurance_policy_expired: insurancePolicyExpired,
+          insurance_missing: insuranceMissing || false,
         }],
         status: "analyzed",
       }).eq("id", check_id);
@@ -700,12 +713,15 @@ Een KVK-uittreksel dat ouder is dan 3 maanden is een aandachtspunt.`;
           uniqueAandachtspunten.add("Datum KVK-uittreksel kon niet worden vastgesteld");
         }
 
-        // Add insurance policy age warning
+        // Add insurance policy warning
         const insurancePolicyDate = suggestions?.[0]?.insurance_policy_date;
-        const insurancePolicyExpired = suggestions?.[0]?.insurance_policy_expired;
-        if (insurancePolicyExpired === true) {
+        const certInsuranceExpired = suggestions?.[0]?.insurance_policy_expired;
+        const certInsuranceMissing = suggestions?.[0]?.insurance_missing;
+        if (certInsuranceMissing) {
+          uniqueAandachtspunten.add("Polis beroeps- en bedrijfsaansprakelijkheid is niet aangeleverd");
+        } else if (certInsuranceExpired === true) {
           uniqueAandachtspunten.add(`Polis beroeps-/bedrijfsaansprakelijkheid is ouder dan 1 jaar (datum: ${insurancePolicyDate})`);
-        } else if (insurancePolicyDate === null || insurancePolicyDate === undefined) {
+        } else if (!certInsuranceMissing && (insurancePolicyDate === null || insurancePolicyDate === undefined)) {
           uniqueAandachtspunten.add("Datum polis beroeps-/bedrijfsaansprakelijkheid kon niet worden vastgesteld");
         }
 
