@@ -389,8 +389,9 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
           return lines.length > 0 ? lines : ["-"];
         };
 
-        // === PAGE 1 ===
-        const page = pdfDoc.addPage([pageWidth, pageHeight]);
+        // === PAGE SETUP ===
+        let page = pdfDoc.addPage([pageWidth, pageHeight]);
+        let currentPage = page;
 
         // --- Embed logos (PNG) ---
         let zpLogoImage: any = null;
@@ -421,57 +422,69 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
           }
         } catch { /* skip */ }
 
-        // Draw logos
+        // Draw logos — aligned on same baseline
+        const logoY = pageHeight - 75;
         if (zpLogoImage) {
-          page.drawImage(zpLogoImage, { x: margin, y: pageHeight - 110, width: 90, height: 90 });
+          page.drawImage(zpLogoImage, { x: margin, y: logoY - 40, width: 80, height: 80 });
         }
         if (ofLogoImage) {
-          page.drawImage(ofLogoImage, { x: pageWidth - rightMargin - 160, y: pageHeight - 72, width: 160, height: 35 });
+          page.drawImage(ofLogoImage, { x: pageWidth - rightMargin - 140, y: logoY - 5, width: 140, height: 30 });
         }
 
-        // --- Table helper ---
-        let y = pageHeight - 140;
-        const lineHeight = 12;
-        const valueMaxW = tableWidth - labelColWidth - 12;
+        // --- Table helper with auto-pagination ---
+        let y = pageHeight - 130;
+        const lineHeight = 13;
+        const valueMaxW = tableWidth - labelColWidth - 14;
+        const footerZone = 75;
+
+        const addNewPage = () => {
+          currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
+          y = pageHeight - 50;
+          return currentPage;
+        };
+
+        const ensureSpace = (needed: number) => {
+          if (y - needed < footerZone) {
+            addNewPage();
+          }
+        };
 
         const drawRow = (label: string, value: string, opts?: { headerRow?: boolean; valueColor?: typeof black; valueBold?: boolean; altBg?: boolean }): void => {
           const valFont = opts?.valueBold ? helveticaBold : helvetica;
           const lines = wrapText(value || "-", valFont, fontSize, valueMaxW);
-          const cellH = Math.max(22, lines.length * lineHeight + rowPadding * 2);
+          const cellH = Math.max(24, lines.length * lineHeight + rowPadding * 2);
 
-          // Check page overflow
-          if (y - cellH < 80) return; // safety: don't draw below footer
+          ensureSpace(cellH);
 
           // Background
           if (opts?.headerRow) {
-            page.drawRectangle({ x: margin, y: y - cellH, width: tableWidth, height: cellH, color: headerBg });
+            currentPage.drawRectangle({ x: margin, y: y - cellH, width: tableWidth, height: cellH, color: headerBg });
           } else if (opts?.altBg) {
-            page.drawRectangle({ x: margin, y: y - cellH, width: tableWidth, height: cellH, color: lightGrayBg });
+            currentPage.drawRectangle({ x: margin, y: y - cellH, width: tableWidth, height: cellH, color: lightGrayBg });
           }
 
           // Border
-          page.drawRectangle({ x: margin, y: y - cellH, width: tableWidth, height: cellH, borderColor: tableBorder, borderWidth: 0.4 });
+          currentPage.drawRectangle({ x: margin, y: y - cellH, width: tableWidth, height: cellH, borderColor: tableBorder, borderWidth: 0.4 });
 
           if (!opts?.headerRow) {
             // Vertical divider
-            page.drawLine({ start: { x: valueColX, y }, end: { x: valueColX, y: y - cellH }, thickness: 0.4, color: tableBorder });
+            currentPage.drawLine({ start: { x: valueColX, y }, end: { x: valueColX, y: y - cellH }, thickness: 0.4, color: tableBorder });
             // Label
-            page.drawText(label, { x: margin + 8, y: y - 15, size: fontSize, font: helveticaBold, color: darkGray });
+            currentPage.drawText(label, { x: margin + 8, y: y - 16, size: fontSize, font: helveticaBold, color: darkGray });
             // Value lines
             const valColor = opts?.valueColor || black;
             lines.forEach((line, i) => {
-              page.drawText(line, { x: valueColX + 8, y: y - 15 - i * lineHeight, size: fontSize, font: valFont, color: valColor });
+              currentPage.drawText(line, { x: valueColX + 8, y: y - 16 - i * lineHeight, size: fontSize, font: valFont, color: valColor });
             });
           } else {
-            // Header: centered text
-            page.drawText(label, { x: margin + 8, y: y - 15, size: 9, font: helveticaBold, color: white });
+            currentPage.drawText(label, { x: margin + 8, y: y - 16, size: 10, font: helveticaBold, color: white });
           }
 
           y -= cellH;
         };
 
         // === HEADER ROW ===
-        drawRow("TOETSING ZP KANDIDAAT – WET DBA", "", { headerRow: true });
+        drawRow("TOETSING ZP KANDIDAAT - WET DBA", "", { headerRow: true });
 
         // === Extract field values ===
         const suggestions = check.suggestions as any[];
@@ -507,87 +520,75 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
         drawRow("Aantal uur per week", check.uren_per_week || getFieldValue("uur per week") || "-", { altBg: alt() });
         drawRow("Specifieke vaardigheden", check.specifieke_vaardigheden || getFieldValue("specifieke vaardigheden") || "-", { altBg: alt() });
 
-        // === AANDACHTSPUNTEN - deduplicated ===
-        const checklist = (check.document_checklist || []) as any[];
-        const uniqueAandachtspunten = new Set<string>();
-
-        // From AI analysis suggestions (primary source)
-        const aiAandachtspunten = suggestions?.[0]?.aandachtspunten as string[] || [];
-        aiAandachtspunten.forEach((a: string) => {
-          const cleaned = cleanText(a);
-          if (cleaned !== "-") uniqueAandachtspunten.add(cleaned);
-        });
-
-        // From checklist: missing docs
-        checklist.forEach((item: any) => {
-          if (item.status !== "aanwezig") {
-            const docName = item.document_name || "";
-            if (docName) {
-              const label = item.status === "niet_aanwezig" ? `${docName} (niet aanwezig)` : `${docName} (niet geverifieerd)`;
-              // Only add if not already covered
-              const alreadyCovered = Array.from(uniqueAandachtspunten).some(a => a.toLowerCase().includes(docName.toLowerCase()));
-              if (!alreadyCovered) uniqueAandachtspunten.add(label);
-            }
-          }
-        });
-
-        const aandachtspunten = Array.from(uniqueAandachtspunten);
-
-        // === DOSSIER + AANDACHTSPUNTEN combined section ===
-        const dossierItems = checklist.length > 0 ? checklist : [];
-        const dossierLineCount = Math.max(dossierItems.length, 1);
-        const aandachtLineCount = Math.max(aandachtspunten.length, 1);
-        const maxLines = Math.max(dossierLineCount, aandachtLineCount);
-        const sectionHeight = Math.max(maxLines * 14 + 30, 50);
-
-        // Only draw if fits
-        if (y - sectionHeight > 80) {
-          page.drawRectangle({ x: margin, y: y - sectionHeight, width: tableWidth, height: sectionHeight, borderColor: tableBorder, borderWidth: 0.4, color: white });
-          page.drawLine({ start: { x: valueColX, y }, end: { x: valueColX, y: y - sectionHeight }, thickness: 0.4, color: tableBorder });
-
-          // Dossier header + items
-          page.drawText("Dossier:", { x: margin + 8, y: y - 14, size: fontSize, font: helveticaBold, color: darkGray });
-          if (dossierItems.length > 0) {
-            dossierItems.forEach((item: any, i: number) => {
-              const yItem = y - 30 - i * 14;
-              if (yItem > y - sectionHeight + 5) {
-                const isPresent = item.status === "aanwezig";
-                const icon = isPresent ? "V" : "X";
-                const color = isPresent ? green : aandachtColor;
-                page.drawText(icon, { x: margin + 12, y: yItem, size: 8, font: helveticaBold, color });
-                page.drawText(item.document_name || "", { x: margin + 26, y: yItem, size: smallFont, font: helvetica, color: darkGray });
-              }
-            });
-          }
-
-          // Aandachtspunten header + items
-          page.drawText("Aandachtspunten:", { x: valueColX + 8, y: y - 14, size: fontSize, font: helveticaBold, color: aandachtColor });
-          if (aandachtspunten.length > 0) {
-            aandachtspunten.forEach((punt, i) => {
-              const yItem = y - 30 - i * 14;
-              if (yItem > y - sectionHeight + 5) {
-                // Truncate if too wide
-                let text = punt;
-                while (helvetica.widthOfTextAtSize(`• ${text}`, smallFont) > valueMaxW - 10 && text.length > 10) {
-                  text = text.substring(0, text.length - 4) + "...";
-                }
-                page.drawText(`• ${text}`, { x: valueColX + 10, y: yItem, size: smallFont, font: helvetica, color: aandachtColor });
-              }
-            });
-          } else {
-            page.drawText("Geen aandachtspunten", { x: valueColX + 10, y: y - 30, size: smallFont, font: helvetica, color: green });
-          }
-
-          y -= sectionHeight;
-        }
-
         // === Zelfstandigheid rows ===
         const zelfstandigFromField = getFieldBool("zelfstandig naar buiten");
         const eigenMateriaalFromField = getFieldBool("eigen materiaal") ?? getFieldBool("zelfstandigheid");
         const zelfstandig = zelfstandigFromField ?? check.treedt_zelfstandig_op ?? false;
         const eigenMateriaal = eigenMateriaalFromField ?? check.eigen_materiaal_werkwijze ?? false;
-        drawRow("Treedt zelfstandig naar buiten", zelfstandig ? "Ja" : "Nee", { valueColor: zelfstandig ? green : aandachtColor, valueBold: true, altBg: true });
-        drawRow("Eigen materiaal en werkwijze", eigenMateriaal ? "Ja" : "Nee", { valueColor: eigenMateriaal ? green : aandachtColor, valueBold: true });
+        drawRow("Treedt zelfstandig naar buiten", zelfstandig ? "Ja" : "Nee", { valueColor: zelfstandig ? green : aandachtColor, valueBold: true, altBg: alt() });
+        drawRow("Eigen materiaal en werkwijze", eigenMateriaal ? "Ja" : "Nee", { valueColor: eigenMateriaal ? green : aandachtColor, valueBold: true, altBg: alt() });
+
+        // === DOSSIER SECTION ===
+        const checklist = (check.document_checklist || []) as any[];
+        if (checklist.length > 0) {
+          y -= 6;
+          ensureSpace(24 + checklist.length * 15);
+          // Section header
+          currentPage.drawRectangle({ x: margin, y: y - 20, width: tableWidth, height: 20, color: rgb(0.92, 0.92, 0.92), borderColor: tableBorder, borderWidth: 0.4 });
+          currentPage.drawText("Dossier overzicht", { x: margin + 8, y: y - 14, size: fontSize, font: helveticaBold, color: darkGray });
+          y -= 20;
+          
+          checklist.forEach((item: any) => {
+            ensureSpace(16);
+            const isPresent = item.status === "aanwezig";
+            const icon = isPresent ? "V" : "X";
+            const color = isPresent ? green : aandachtColor;
+            const statusText = isPresent ? "Aanwezig" : "Niet aanwezig";
+            currentPage.drawText(icon, { x: margin + 10, y: y - 12, size: 9, font: helveticaBold, color });
+            currentPage.drawText(item.document_name || "", { x: margin + 26, y: y - 12, size: fontSize, font: helvetica, color: darkGray });
+            currentPage.drawText(statusText, { x: pageWidth - rightMargin - 80, y: y - 12, size: smallFont, font: helvetica, color });
+            y -= 16;
+          });
+          y -= 4;
+        }
+
+        // === AANDACHTSPUNTEN SECTION ===
+        const uniqueAandachtspunten = new Set<string>();
+        const aiAandachtspunten = suggestions?.[0]?.aandachtspunten as string[] || [];
+        aiAandachtspunten.forEach((a: string) => {
+          const cleaned = cleanText(a);
+          if (cleaned !== "-") uniqueAandachtspunten.add(cleaned);
+        });
+        checklist.forEach((item: any) => {
+          if (item.status !== "aanwezig") {
+            const docName = item.document_name || "";
+            if (docName) {
+              const label = item.status === "niet_aanwezig" ? `${docName} (niet aanwezig)` : `${docName} (niet geverifieerd)`;
+              const alreadyCovered = Array.from(uniqueAandachtspunten).some(a => a.toLowerCase().includes(docName.toLowerCase()));
+              if (!alreadyCovered) uniqueAandachtspunten.add(label);
+            }
+          }
+        });
+        const aandachtspunten = Array.from(uniqueAandachtspunten);
+
+        if (aandachtspunten.length > 0) {
+          y -= 4;
+          ensureSpace(24 + aandachtspunten.length * 14);
+          currentPage.drawRectangle({ x: margin, y: y - 20, width: tableWidth, height: 20, color: rgb(1, 0.95, 0.9), borderColor: aandachtColor, borderWidth: 0.4 });
+          currentPage.drawText("Aandachtspunten", { x: margin + 8, y: y - 14, size: fontSize, font: helveticaBold, color: aandachtColor });
+          y -= 20;
+
+          aandachtspunten.forEach((punt) => {
+            ensureSpace(14);
+            let text = punt;
+            while (helvetica.widthOfTextAtSize(`- ${text}`, smallFont) > tableWidth - 20 && text.length > 10) {
+              text = text.substring(0, text.length - 4) + "...";
+            }
+            currentPage.drawText(`- ${text}`, { x: margin + 10, y: y - 11, size: smallFont, font: helvetica, color: aandachtColor });
+            y -= 14;
+          });
+          y -= 4;
+        }
 
         // === KVK CHECK CONCLUSIE ===
         const kvkResult = check.kvk_check_result as any;
@@ -597,123 +598,116 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
           const kvkBgColor = kvkMatch ? rgb(0.93, 0.98, 0.93) : rgb(1, 0.95, 0.9);
           const kvkTitle = kvkMatch ? "KVK Check: Positief - Activiteiten komen overeen" : "KVK Check: Afwijking geconstateerd";
 
-          // Header
-          y -= 3;
-          if (y - 22 > 80) {
-            page.drawRectangle({ x: margin, y: y - 22, width: tableWidth, height: 22, color: kvkBgColor, borderColor: kvkColor, borderWidth: 0.6 });
-            page.drawText(kvkTitle, { x: margin + 10, y: y - 15, size: 9, font: helveticaBold, color: kvkColor });
-            y -= 22;
-          }
+          y -= 6;
+          ensureSpace(26);
+          currentPage.drawRectangle({ x: margin, y: y - 22, width: tableWidth, height: 22, color: kvkBgColor, borderColor: kvkColor, borderWidth: 0.6 });
+          currentPage.drawText(kvkTitle, { x: margin + 10, y: y - 15, size: 9, font: helveticaBold, color: kvkColor });
+          y -= 24;
 
-          // Explanation
           const kvkExplanation = kvkResult.explanation || "";
-          if (kvkExplanation && y - 14 > 80) {
+          if (kvkExplanation) {
             const expLines = wrapText(kvkExplanation, helvetica, smallFont, tableWidth - 16);
             expLines.forEach((line: string) => {
-              if (y - 11 > 80) {
-                page.drawText(line, { x: margin + 8, y: y - 10, size: smallFont, font: helvetica, color: darkGray });
-                y -= 11;
-              }
+              ensureSpace(13);
+              currentPage.drawText(line, { x: margin + 8, y: y - 10, size: smallFont, font: helvetica, color: darkGray });
+              y -= 12;
             });
           }
 
-          // If mismatch: show suggestions
           if (!kvkMatch && kvkResult.suggestions && kvkResult.suggestions.length > 0) {
-            if (y - 14 > 80) {
-              y -= 4;
-              page.drawText("Suggesties:", { x: margin + 8, y: y - 10, size: smallFont, font: helveticaBold, color: aandachtColor });
-              y -= 14;
-              kvkResult.suggestions.forEach((sug: string) => {
-                const sugLines = wrapText(sug, helvetica, smallFont, tableWidth - 30);
-                sugLines.forEach((line: string) => {
-                  if (y - 11 > 80) {
-                    page.drawText(`- ${line}`, { x: margin + 14, y: y - 10, size: smallFont, font: helvetica, color: aandachtColor });
-                    y -= 11;
-                  }
-                });
+            y -= 4;
+            ensureSpace(16);
+            currentPage.drawText("Suggesties:", { x: margin + 8, y: y - 10, size: smallFont, font: helveticaBold, color: aandachtColor });
+            y -= 14;
+            kvkResult.suggestions.forEach((sug: string) => {
+              const sugLines = wrapText(sug, helvetica, smallFont, tableWidth - 30);
+              sugLines.forEach((line: string) => {
+                ensureSpace(13);
+                currentPage.drawText(`- ${line}`, { x: margin + 14, y: y - 10, size: smallFont, font: helvetica, color: aandachtColor });
+                y -= 12;
               });
-            }
+            });
           }
-          y -= 3;
+          y -= 4;
         }
 
         // === COMPLIANCE SCORE ===
         const score = suggestions?.[0]?.score;
         const summary = suggestions?.[0]?.summary;
-        if (score !== undefined && y - 30 > 80) {
-          y -= 5;
+        if (score !== undefined) {
+          y -= 8;
+          ensureSpace(32);
           const scoreColor = score >= 80 ? green : aandachtColor;
           const scoreBgColor = score >= 80 ? rgb(0.93, 0.98, 0.93) : rgb(1, 0.95, 0.9);
-          const scoreBoxH = 28;
-          page.drawRectangle({ x: margin, y: y - scoreBoxH, width: tableWidth, height: scoreBoxH, color: scoreBgColor, borderColor: scoreColor, borderWidth: 0.6 });
-          page.drawText(`Compliance score: ${score}%`, { x: margin + 10, y: y - 18, size: 11, font: helveticaBold, color: scoreColor });
-          y -= scoreBoxH + 3;
+          const scoreBoxH = 30;
+          currentPage.drawRectangle({ x: margin, y: y - scoreBoxH, width: tableWidth, height: scoreBoxH, color: scoreBgColor, borderColor: scoreColor, borderWidth: 0.6 });
+          currentPage.drawText(`Compliance score: ${score}%`, { x: margin + 12, y: y - 20, size: 12, font: helveticaBold, color: scoreColor });
+          y -= scoreBoxH + 4;
         }
 
-        if (summary && y - 30 > 80) {
-          const summaryLines = wrapText(summary, helvetica, smallFont, tableWidth - 10);
+        if (summary) {
+          const summaryLines = wrapText(summary, helvetica, smallFont, tableWidth - 14);
           summaryLines.forEach((line) => {
-            if (y - 12 > 80) {
-              page.drawText(line, { x: margin + 5, y: y - 10, size: smallFont, font: helvetica, color: darkGray });
-              y -= 11;
-            }
+            ensureSpace(13);
+            currentPage.drawText(line, { x: margin + 6, y: y - 10, size: smallFont, font: helvetica, color: darkGray });
+            y -= 12;
           });
-          y -= 3;
+          y -= 6;
         }
 
-        // === VOOR AKKOORD section ===
-        if (y - 90 > 80) {
-          y -= 10;
-          // Dark header bar
-          page.drawRectangle({ x: margin, y: y - 22, width: tableWidth, height: 22, color: headerBg });
-          page.drawText("Voor akkoord", { x: margin + 8, y: y - 15, size: 9, font: helveticaBold, color: white });
-          y -= 22;
+        // === VOOR AKKOORD section (always rendered, new page if needed) ===
+        ensureSpace(110);
+        y -= 10;
 
-          // Afgiftedatum row
-          const dateRowH = 22;
-          page.drawRectangle({ x: margin, y: y - dateRowH, width: tableWidth, height: dateRowH, borderColor: tableBorder, borderWidth: 0.4, color: white });
-          page.drawLine({ start: { x: valueColX, y }, end: { x: valueColX, y: y - dateRowH }, thickness: 0.4, color: tableBorder });
-          page.drawText("Afgiftedatum", { x: margin + 8, y: y - 15, size: fontSize, font: helveticaBold, color: darkGray });
-          page.drawText(formatLongDate(certifiedAt), { x: valueColX + 8, y: y - 15, size: fontSize, font: helveticaBold, color: black });
-          y -= dateRowH;
+        // Dark header bar
+        currentPage.drawRectangle({ x: margin, y: y - 24, width: tableWidth, height: 24, color: headerBg });
+        currentPage.drawText("Voor akkoord", { x: margin + 8, y: y - 17, size: 10, font: helveticaBold, color: white });
+        y -= 24;
 
-          // Signature row
-          const sigRowH = 50;
-          page.drawRectangle({ x: margin, y: y - sigRowH, width: tableWidth, height: sigRowH, borderColor: tableBorder, borderWidth: 0.4, color: white });
-          page.drawLine({ start: { x: valueColX, y }, end: { x: valueColX, y: y - sigRowH }, thickness: 0.4, color: tableBorder });
-          page.drawText("Ondertekend door", { x: margin + 8, y: y - 15, size: fontSize, font: helveticaBold, color: darkGray });
-          page.drawText("Gert-Jan Schellingerhout", { x: valueColX + 8, y: y - 15, size: fontSize, font: helvetica, color: black });
+        // Afgiftedatum row
+        const dateRowH = 24;
+        currentPage.drawRectangle({ x: margin, y: y - dateRowH, width: tableWidth, height: dateRowH, borderColor: tableBorder, borderWidth: 0.4, color: white });
+        currentPage.drawLine({ start: { x: valueColX, y }, end: { x: valueColX, y: y - dateRowH }, thickness: 0.4, color: tableBorder });
+        currentPage.drawText("Afgiftedatum", { x: margin + 8, y: y - 16, size: fontSize, font: helveticaBold, color: darkGray });
+        currentPage.drawText(formatLongDate(certifiedAt), { x: valueColX + 8, y: y - 16, size: fontSize, font: helveticaBold, color: black });
+        y -= dateRowH;
 
-          // Draw signature image
-          if (sigImage) {
-            page.drawImage(sigImage, { x: valueColX + 8, y: y - sigRowH + 5, width: 100, height: 30 });
-          }
-          y -= sigRowH;
+        // Signature row — bigger for signature image
+        const sigRowH = 60;
+        currentPage.drawRectangle({ x: margin, y: y - sigRowH, width: tableWidth, height: sigRowH, borderColor: tableBorder, borderWidth: 0.4, color: white });
+        currentPage.drawLine({ start: { x: valueColX, y }, end: { x: valueColX, y: y - sigRowH }, thickness: 0.4, color: tableBorder });
+        currentPage.drawText("Ondertekend door", { x: margin + 8, y: y - 16, size: fontSize, font: helveticaBold, color: darkGray });
+        currentPage.drawText("Gert-Jan Schellingerhout", { x: valueColX + 8, y: y - 16, size: fontSize, font: helvetica, color: black });
+
+        // Draw signature image
+        if (sigImage) {
+          currentPage.drawImage(sigImage, { x: valueColX + 8, y: y - sigRowH + 8, width: 120, height: 35 });
         }
+        y -= sigRowH;
 
         // === Verification URL ===
-        if (y - 20 > 60) {
-          y -= 8;
-          const verifyUrl = `https://zzpproject.lovable.app/verificatie/dba/${verificationToken}`;
-          page.drawText(`Verificatie: ${verifyUrl}`, { x: margin, y, size: 6, font: helvetica, color: gray });
-          y -= 12;
-        }
+        y -= 10;
+        const verifyUrl = `https://zzpproject.lovable.app/verificatie/dba/${verificationToken}`;
+        currentPage.drawText(`Verificatie: ${verifyUrl}`, { x: margin, y, size: 6.5, font: helvetica, color: gray });
 
-        // === FOOTER ===
-        const footerY = 40;
-        page.drawLine({ start: { x: margin, y: footerY + 15 }, end: { x: pageWidth - rightMargin, y: footerY + 15 }, thickness: 0.5, color: tableBorder });
-        page.drawText("TOETSING ZP KANDIDAAT – WET DBA / VERSIE 2.1", {
-          x: margin + 60, y: footerY + 4, size: 6.5, font: helveticaBold, color: darkGray,
-        });
-        page.drawLine({ start: { x: margin, y: footerY }, end: { x: pageWidth - rightMargin, y: footerY }, thickness: 0.5, color: tableBorder });
-        const footerLines = [
-          "Onefellow B.V. | Tupolevlaan 41, 1119 NW, Schiphol-Rijk",
-          "KvK: 81550022 | Bank: NL08 RABO 0343814471 | BTW: NL862134754B01",
-          "Tel: 06 – 270 20 140 | E-mail: info@onefellow.nl | Web: www.onefellow.nl",
-        ];
-        footerLines.forEach((line, i) => {
-          page.drawText(line, { x: margin + 30, y: footerY - 10 - i * 8, size: 5.5, font: helvetica, color: gray });
-        });
+        // === FOOTER on every page ===
+        const pages = pdfDoc.getPages();
+        for (const p of pages) {
+          const footerY = 35;
+          p.drawLine({ start: { x: margin, y: footerY + 15 }, end: { x: pageWidth - rightMargin, y: footerY + 15 }, thickness: 0.5, color: tableBorder });
+          p.drawText("TOETSING ZP KANDIDAAT - WET DBA / VERSIE 2.1", {
+            x: margin + 60, y: footerY + 4, size: 6.5, font: helveticaBold, color: darkGray,
+          });
+          p.drawLine({ start: { x: margin, y: footerY }, end: { x: pageWidth - rightMargin, y: footerY }, thickness: 0.5, color: tableBorder });
+          const footerLines = [
+            "Onefellow B.V. | Tupolevlaan 41, 1119 NW, Schiphol-Rijk",
+            "KvK: 81550022 | Bank: NL08 RABO 0343814471 | BTW: NL862134754B01",
+            "Tel: 06 - 270 20 140 | E-mail: info@onefellow.nl | Web: www.onefellow.nl",
+          ];
+          footerLines.forEach((line, i) => {
+            p.drawText(line, { x: margin + 30, y: footerY - 10 - i * 8, size: 5.5, font: helvetica, color: gray });
+          });
+        }
 
         // Save & upload
         const pdfBytes = await pdfDoc.save();
