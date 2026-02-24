@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useDbaCheck, useAnalyzeDba } from "@/hooks/useDbaChecks";
@@ -9,6 +10,7 @@ import {
   ArrowLeft, Loader2, Play, RefreshCw, ShieldCheck, CheckCircle2,
   XCircle, AlertTriangle, Award, Copy, ExternalLink, Building2, Download,
 } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -27,6 +29,7 @@ export default function DbaCheckDetail() {
   const queryClient = useQueryClient();
   const { data: check, isLoading } = useDbaCheck(id);
   const analyzeDba = useAnalyzeDba();
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
   const handleAnalyze = async () => {
     if (!id) return;
@@ -112,7 +115,7 @@ export default function DbaCheckDetail() {
         return;
       }
       const url = URL.createObjectURL(data);
-      window.open(url, "_blank");
+      setPdfUrl(url);
     } catch (err: any) {
       toast({ title: "Fout bij openen", description: err.message, variant: "destructive" });
     }
@@ -524,6 +527,15 @@ export default function DbaCheckDetail() {
           </div>
         </div>
       </div>
+
+      {/* PDF Viewer Dialog */}
+      <Dialog open={!!pdfUrl} onOpenChange={(open) => { if (!open) { if (pdfUrl) URL.revokeObjectURL(pdfUrl); setPdfUrl(null); } }}>
+        <DialogContent className="max-w-4xl h-[90vh] p-0">
+          {pdfUrl && (
+            <iframe src={pdfUrl} className="w-full h-full rounded-lg" title="Certificaat PDF" />
+          )}
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }
