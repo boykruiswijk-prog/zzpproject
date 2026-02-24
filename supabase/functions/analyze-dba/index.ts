@@ -589,6 +589,54 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
         drawRow("Treedt zelfstandig naar buiten", zelfstandig ? "Ja" : "Nee", { valueColor: zelfstandig ? green : aandachtColor, valueBold: true, altBg: true });
         drawRow("Eigen materiaal en werkwijze", eigenMateriaal ? "Ja" : "Nee", { valueColor: eigenMateriaal ? green : aandachtColor, valueBold: true });
 
+        // === KVK CHECK CONCLUSIE ===
+        const kvkResult = check.kvk_check_result as any;
+        if (kvkResult) {
+          const kvkMatch = kvkResult.match === true;
+          const kvkColor = kvkMatch ? green : aandachtColor;
+          const kvkBgColor = kvkMatch ? rgb(0.93, 0.98, 0.93) : rgb(1, 0.95, 0.9);
+          const kvkTitle = kvkMatch ? "KVK Check: Positief - Activiteiten komen overeen" : "KVK Check: Afwijking geconstateerd";
+
+          // Header
+          y -= 3;
+          if (y - 22 > 80) {
+            page.drawRectangle({ x: margin, y: y - 22, width: tableWidth, height: 22, color: kvkBgColor, borderColor: kvkColor, borderWidth: 0.6 });
+            page.drawText(kvkTitle, { x: margin + 10, y: y - 15, size: 9, font: helveticaBold, color: kvkColor });
+            y -= 22;
+          }
+
+          // Explanation
+          const kvkExplanation = kvkResult.explanation || "";
+          if (kvkExplanation && y - 14 > 80) {
+            const expLines = wrapText(kvkExplanation, helvetica, smallFont, tableWidth - 16);
+            expLines.forEach((line: string) => {
+              if (y - 11 > 80) {
+                page.drawText(line, { x: margin + 8, y: y - 10, size: smallFont, font: helvetica, color: darkGray });
+                y -= 11;
+              }
+            });
+          }
+
+          // If mismatch: show suggestions
+          if (!kvkMatch && kvkResult.suggestions && kvkResult.suggestions.length > 0) {
+            if (y - 14 > 80) {
+              y -= 4;
+              page.drawText("Suggesties:", { x: margin + 8, y: y - 10, size: smallFont, font: helveticaBold, color: aandachtColor });
+              y -= 14;
+              kvkResult.suggestions.forEach((sug: string) => {
+                const sugLines = wrapText(sug, helvetica, smallFont, tableWidth - 30);
+                sugLines.forEach((line: string) => {
+                  if (y - 11 > 80) {
+                    page.drawText(`- ${line}`, { x: margin + 14, y: y - 10, size: smallFont, font: helvetica, color: aandachtColor });
+                    y -= 11;
+                  }
+                });
+              });
+            }
+          }
+          y -= 3;
+        }
+
         // === COMPLIANCE SCORE ===
         const score = suggestions?.[0]?.score;
         const summary = suggestions?.[0]?.summary;
