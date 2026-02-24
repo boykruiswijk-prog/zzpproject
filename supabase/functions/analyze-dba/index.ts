@@ -93,8 +93,17 @@ Voor elk document moet aangegeven zijn of het "van toepassing / aanwezig" of "ni
 - VOG verklaring
 - VCA certificering (VCA basis / VCA VOL / VIL VCU)
 
+BELANGRIJK BIJ HET BEOORDELEN:
+1. De tekst is geëxtraheerd uit een Word-document. Checkboxes, vinkjes en selectievakjes worden NIET bewaard bij extractie. 
+   Als je in de checklist-sectie de documentnamen ziet staan maar geen duidelijke tekst "aanwezig" of "niet aanwezig", 
+   dan betekent dit dat er WEL een selectie is gemaakt in het originele document maar dat deze niet zichtbaar is in de platte tekst.
+   Markeer deze items dan als "aanwezig" (status: "aanwezig"), NIET als "niet_ingevuld".
+2. Beoordeel alleen een veld als NIET ingevuld als het veld echt volledig leeg is (geen tekst na de veldnaam).
+3. Als een veld tekst bevat (ook al is het kort), markeer het als ingevuld (filled: true).
+4. Het veld "Specifieke vaardigheden" is optioneel - als het leeg is, is dit een OPMERKING maar geen kritisch aandachtspunt.
+
 Controleer het ingevulde formulier en rapporteer voor elk veld of het is ingevuld.
-Als een veld leeg is, niet ingevuld is, of als documentatie ontbreekt/niet aanwezig is: markeer dit als aandachtspunt.
+Alleen als een veld ECHT leeg is of ontbreekt in het document: markeer dit als aandachtspunt.
 
 Antwoord ALLEEN met een JSON tool call.`;
 
