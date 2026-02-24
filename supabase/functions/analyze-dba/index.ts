@@ -92,13 +92,15 @@ Voor elk document moet aangegeven zijn of het "van toepassing / aanwezig" of "ni
 - VCA certificering (VCA basis / VCA VOL / VIL VCU)
 
 BELANGRIJK BIJ HET BEOORDELEN:
-1. De tekst is geëxtraheerd uit een Word-document. Checkboxes, vinkjes en selectievakjes worden NIET bewaard bij extractie. 
-   Als je in de checklist-sectie de documentnamen ziet staan maar geen duidelijke tekst "aanwezig" of "niet aanwezig", 
-   dan betekent dit dat er WEL een selectie is gemaakt in het originele document maar dat deze niet zichtbaar is in de platte tekst.
-   Markeer deze items dan als "aanwezig" (status: "aanwezig"), NIET als "niet_ingevuld".
+1. De tekst is geëxtraheerd uit een Word-document. Checkboxes en selectievakjes worden NIET bewaard bij extractie.
+   In de checklist-sectie staan twee kolommen: "van toepassing / aanwezig" en "niet van toepassing / niet aanwezig".
+   Omdat checkboxes niet zichtbaar zijn in platte tekst, kun je NIET bepalen welke kolom is aangevinkt.
+   Markeer deze items daarom als "niet_ingevuld" (status: "niet_ingevuld") zodat een medewerker dit handmatig kan controleren.
+   Markeer een item ALLEEN als "aanwezig" als er EXPLICIET tekst staat die aangeeft dat het aanwezig is.
 2. Beoordeel alleen een veld als NIET ingevuld als het veld echt volledig leeg is (geen tekst na de veldnaam).
 3. Als een veld tekst bevat (ook al is het kort), markeer het als ingevuld (filled: true).
 4. Het veld "Specifieke vaardigheden" is optioneel - als het leeg is, is dit een OPMERKING maar geen kritisch aandachtspunt.
+5. Zoek ook naar het veld "Rechtsvorm" - als dit niet expliciet in het formulier staat, probeer het af te leiden uit bedrijfsnamen (bijv. "B.V.", "V.O.F.", "Eenmanszaak").
 
 Controleer het ingevulde formulier en rapporteer voor elk veld of het is ingevuld.
 Alleen als een veld ECHT leeg is of ontbreekt in het document: markeer dit als aandachtspunt.
@@ -436,10 +438,33 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
           return field?.value || field?.excerpt || "";
         };
 
+        // Derive booleans from field_results if DB columns are null/false
+        const getFieldBool = (name: string): boolean | null => {
+          const val = getFieldValue(name);
+          if (!val) return null;
+          const lower = val.toLowerCase().trim();
+          if (lower === "ja" || lower === "yes" || lower === "true") return true;
+          if (lower === "nee" || lower === "no" || lower === "false") return false;
+          return null;
+        };
+
+        // Derive rechtsvorm from DB, field_results, or company name
+        const deriveRechtsvorm = (): string => {
+          if (check.rechtsvorm) return check.rechtsvorm;
+          const fromField = getFieldValue("rechtsvorm");
+          if (fromField) return fromField;
+          // Try to derive from company names
+          const names = [check.client_name, check.opdrachtgever, check.eindopdrachtgever, getFieldValue("opdrachtgever")].filter(Boolean).join(" ");
+          if (names.includes("B.V.") || names.includes("BV")) return "B.V.";
+          if (names.includes("V.O.F.")) return "V.O.F.";
+          if (names.includes("N.V.")) return "N.V.";
+          return "-";
+        };
+
         // Form fields
         y = drawTableRow("Documentnummer", certNum, y);
         y = drawTableRow("Naam ZP kandidaat", getFieldValue("naam"), y);
-        y = drawTableRow("Rechtsvorm", check.rechtsvorm || getFieldValue("rechtsvorm") || "-", y);
+        y = drawTableRow("Rechtsvorm", deriveRechtsvorm(), y);
         y = drawTableRow("Opdrachtgever", check.opdrachtgever || check.client_name || "", y);
         y = drawTableRow("Eindopdrachtgever", check.eindopdrachtgever || getFieldValue("eindopdrachtgever") || "-", y);
         y = drawTableRow("Functie", check.functie || getFieldValue("functie") || "-", y);
@@ -470,12 +495,13 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
           }
         });
         
-        // 3. Missing documents from checklist
+        // 3. Missing or unverified documents from checklist
         checklist.forEach((item: any) => {
           if (item.status !== "aanwezig") {
             const docName = item.document_name || "";
-            if (docName && !aandachtspunten.includes(docName)) {
-              aandachtspunten.push(docName);
+            const label = item.status === "niet_aanwezig" ? `${docName} (niet aanwezig)` : `${docName} (niet geverifieerd)`;
+            if (docName && !aandachtspunten.some((a: string) => a.includes(docName))) {
+              aandachtspunten.push(label);
             }
           }
         });
@@ -528,9 +554,11 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
 
         y -= combinedHeight;
 
-        // Zelfstandigheid rows
-        const zelfstandig = check.treedt_zelfstandig_op;
-        const eigenMateriaal = check.eigen_materiaal_werkwijze;
+        // Zelfstandigheid rows - prioritize field_results over DB columns
+        const zelfstandigFromField = getFieldBool("zelfstandig naar buiten");
+        const eigenMateriaalFromField = getFieldBool("eigen materiaal") ?? getFieldBool("zelfstandigheid");
+        const zelfstandig = zelfstandigFromField ?? check.treedt_zelfstandig_op ?? false;
+        const eigenMateriaal = eigenMateriaalFromField ?? check.eigen_materiaal_werkwijze ?? false;
         y = drawTableRow("Treedt zelfstandig naar buiten", zelfstandig ? "Ja" : "Nee", y, { valueColor: zelfstandig ? rgb(0.1, 0.55, 0.1) : aandachtColor, valueBold: true });
         y = drawTableRow("Eigen materiaal en werkwijze", eigenMateriaal ? "Ja" : "Nee", y, { valueColor: eigenMateriaal ? rgb(0.1, 0.55, 0.1) : aandachtColor, valueBold: true });
 
