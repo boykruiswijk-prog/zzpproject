@@ -115,6 +115,44 @@ export default function DbaCheckNew() {
           }
           
           setExtractedText(text);
+          
+          // Auto-extract project description from document
+          // Look for "Omschrijving werkzaamheden" or "Projectomschrijving" section
+          const descriptionLabels = [
+            "Omschrijving werkzaamheden",
+            "Projectomschrijving", 
+            "Omschrijving van de werkzaamheden",
+            "Werkzaamheden",
+          ];
+          for (const label of descriptionLabels) {
+            const labelIdx = text.toLowerCase().indexOf(label.toLowerCase());
+            if (labelIdx !== -1) {
+              // Get text after the label until the next section header or double newline
+              const afterLabel = text.substring(labelIdx + label.length);
+              // Skip any colons, newlines, or whitespace right after label
+              const contentStart = afterLabel.search(/[^\s:]/);
+              if (contentStart !== -1) {
+                const content = afterLabel.substring(contentStart);
+                // Find end: next section header (line starting with a known header pattern) or "Aanvullende documentatie"
+                const endPatterns = [
+                  /\n\s*(?:Aanvullende documentatie|Startdatum|Einddatum|Uurtarief|Uren per week|Opdrachtgever|Eindopdrachtgever|Specifieke vaardigheden|Eigen materiaal)/i,
+                ];
+                let endIdx = content.length;
+                for (const pattern of endPatterns) {
+                  const match = content.match(pattern);
+                  if (match && match.index !== undefined && match.index < endIdx) {
+                    endIdx = match.index;
+                  }
+                }
+                const extracted = content.substring(0, endIdx).trim();
+                if (extracted.length > 10) {
+                  setProjectDescription(extracted);
+                  break;
+                }
+              }
+            }
+          }
+          
           toast({ title: "Tekst geëxtraheerd uit document" });
         } catch {
           toast({ title: "Kon tekst niet automatisch uitlezen", description: "Plak de tekst handmatig hieronder.", variant: "destructive" });
