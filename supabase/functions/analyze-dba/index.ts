@@ -101,7 +101,7 @@ BELANGRIJK BIJ HET BEOORDELEN VAN DE CHECKLIST:
 2. Beoordeel alleen een veld als NIET ingevuld als het veld echt volledig leeg is (geen tekst na de veldnaam).
 3. Als een veld tekst bevat (ook al is het kort), markeer het als ingevuld (filled: true).
 4. Het veld "Specifieke vaardigheden" is optioneel - als het leeg is, is dit een OPMERKING maar geen kritisch aandachtspunt.
-5. Het veld "Rechtsvorm" is NIET onderdeel van de check - negeer dit volledig en meld het NIET als aandachtspunt.
+5. Het veld "Rechtsvorm" is NIET onderdeel van de check - negeer dit volledig, meld het NIET als aandachtspunt, en tel het NIET mee in de overall_score berekening. De rechtsvorm van de opdrachtgevers (bijv. B.V.) is al bekend en hoeft niet gecontroleerd te worden.
 
 Controleer het ingevulde formulier en rapporteer voor elk veld of het is ingevuld.
 Alleen als een veld ECHT leeg is of ontbreekt in het document: markeer dit als aandachtspunt.
