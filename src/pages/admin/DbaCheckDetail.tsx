@@ -109,13 +109,12 @@ export default function DbaCheckDetail() {
     try {
       const { data, error } = await (await import("@/integrations/supabase/client")).supabase.storage
         .from("certificates")
-        .download(check.certificate_pdf_url);
-      if (error || !data) {
-        toast({ title: "Fout bij openen", description: error?.message, variant: "destructive" });
+        .createSignedUrl(check.certificate_pdf_url, 3600);
+      if (error || !data?.signedUrl) {
+        toast({ title: "Fout bij openen", description: error?.message || "Kon URL niet ophalen", variant: "destructive" });
         return;
       }
-      const url = URL.createObjectURL(data);
-      setPdfUrl(url);
+      setPdfUrl(data.signedUrl);
     } catch (err: any) {
       toast({ title: "Fout bij openen", description: err.message, variant: "destructive" });
     }
@@ -529,10 +528,10 @@ export default function DbaCheckDetail() {
       </div>
 
       {/* PDF Viewer Dialog */}
-      <Dialog open={!!pdfUrl} onOpenChange={(open) => { if (!open) { if (pdfUrl) URL.revokeObjectURL(pdfUrl); setPdfUrl(null); } }}>
-        <DialogContent className="max-w-4xl h-[90vh] p-0">
+      <Dialog open={!!pdfUrl} onOpenChange={(open) => { if (!open) { setPdfUrl(null); } }}>
+        <DialogContent className="max-w-4xl h-[90vh] p-0 overflow-hidden">
           {pdfUrl && (
-            <iframe src={pdfUrl} className="w-full h-full rounded-lg" title="Certificaat PDF" />
+            <iframe src={pdfUrl + "#toolbar=1&navpanes=0"} className="w-full h-full rounded-lg border-0" title="Certificaat PDF" style={{ minHeight: "80vh" }} />
           )}
         </DialogContent>
       </Dialog>
