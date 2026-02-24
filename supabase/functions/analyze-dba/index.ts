@@ -550,7 +550,10 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
               currentPage.drawText(line, { x: valueColX + 8, y: y - 16 - i * lineHeight, size: fontSize, font: valFont, color: valColor });
             });
           } else {
-            currentPage.drawText(label, { x: margin + 8, y: y - 16, size: 10, font: helveticaBold, color: white });
+            const headerText = label;
+            const headerTextWidth = helveticaBold.widthOfTextAtSize(headerText, 10);
+            const headerX = margin + (tableWidth - headerTextWidth) / 2;
+            currentPage.drawText(headerText, { x: headerX, y: y - 16, size: 10, font: helveticaBold, color: white });
           }
 
           y -= cellH;
@@ -765,8 +768,11 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
         for (const p of pages) {
           const footerY = 35;
           p.drawLine({ start: { x: margin, y: footerY + 15 }, end: { x: pageWidth - rightMargin, y: footerY + 15 }, thickness: 0.5, color: tableBorder });
-          p.drawText("TOETSING ZP KANDIDAAT - WET DBA / VERSIE 2.1", {
-            x: margin + 60, y: footerY + 4, size: 6.5, font: helveticaBold, color: darkGray,
+          const footerTitle = "TOETSING ZP KANDIDAAT - WET DBA / VERSIE 2.1";
+          const footerTitleWidth = helveticaBold.widthOfTextAtSize(footerTitle, 6.5);
+          const footerTitleX = margin + (tableWidth - footerTitleWidth) / 2;
+          p.drawText(footerTitle, {
+            x: footerTitleX, y: footerY + 4, size: 6.5, font: helveticaBold, color: darkGray,
           });
           p.drawLine({ start: { x: margin, y: footerY }, end: { x: pageWidth - rightMargin, y: footerY }, thickness: 0.5, color: tableBorder });
           const footerLines = [
