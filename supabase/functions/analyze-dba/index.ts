@@ -503,6 +503,9 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
         drawRow("Startdatum", check.startdatum ? formatDate(check.startdatum) : getFieldValue("startdatum") || "-", { altBg: alt() });
         drawRow("Einddatum", check.einddatum ? formatDate(check.einddatum) : getFieldValue("einddatum") || "-", { altBg: alt() });
         drawRow("Optie tot verlenging", check.optie_verlenging || getFieldValue("verlenging") || "-", { altBg: alt() });
+        drawRow("Uurtarief", check.uurtarief || getFieldValue("uurtarief") || "-", { altBg: alt() });
+        drawRow("Aantal uur per week", check.uren_per_week || getFieldValue("uur per week") || "-", { altBg: alt() });
+        drawRow("Specifieke vaardigheden", check.specifieke_vaardigheden || getFieldValue("specifieke vaardigheden") || "-", { altBg: alt() });
 
         // === AANDACHTSPUNTEN - deduplicated ===
         const checklist = (check.document_checklist || []) as any[];
