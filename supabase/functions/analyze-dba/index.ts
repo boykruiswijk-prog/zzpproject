@@ -389,6 +389,75 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
           return lines.length > 0 ? lines : ["-"];
         };
 
+        // Parse rich description text into structured blocks (paragraphs + bullet points)
+        const parseDescriptionBlocks = (text: string): Array<{ type: "paragraph" | "bullet"; text: string }> => {
+          if (!text || text.trim() === "-") return [{ type: "paragraph", text: "-" }];
+          // Split on real newlines
+          const rawLines = text.split(/\n/).map(l => l.trim()).filter(l => l.length > 0);
+          const blocks: Array<{ type: "paragraph" | "bullet"; text: string }> = [];
+          for (const line of rawLines) {
+            // Detect bullet points: lines starting with -, *, •, or numbered (1., 2.)
+            if (/^[-*•]\s+/.test(line)) {
+              blocks.push({ type: "bullet", text: line.replace(/^[-*•]\s+/, "").trim() });
+            } else if (/^\d+[.)]\s+/.test(line)) {
+              blocks.push({ type: "bullet", text: line.trim() });
+            } else {
+              blocks.push({ type: "paragraph", text: line });
+            }
+          }
+          return blocks.length > 0 ? blocks : [{ type: "paragraph", text: "-" }];
+        };
+
+        // Render rich description inside a table cell
+        const drawDescriptionRow = (label: string, rawText: string, altBg: boolean): void => {
+          const blocks = parseDescriptionBlocks(rawText || "-");
+          const bulletIndent = 12;
+          const paragraphSpacing = 4;
+
+          // Pre-calculate total height
+          let totalLines = 0;
+          const renderedBlocks: Array<{ type: string; lines: string[]; spaceBefore: number }> = [];
+          blocks.forEach((block, idx) => {
+            const spaceBefore = idx > 0 ? paragraphSpacing : 0;
+            const maxW = block.type === "bullet" ? valueMaxW - bulletIndent : valueMaxW;
+            const lines = wrapText(block.text, helvetica, fontSize, maxW);
+            renderedBlocks.push({ type: block.type, lines, spaceBefore });
+            totalLines += lines.length;
+          });
+          const totalExtraSpacing = renderedBlocks.reduce((sum, b) => sum + b.spaceBefore, 0);
+          const cellH = Math.max(24, totalLines * lineHeight + totalExtraSpacing + rowPadding * 2);
+
+          ensureSpace(cellH);
+
+          // Background
+          if (altBg) {
+            currentPage.drawRectangle({ x: margin, y: y - cellH, width: tableWidth, height: cellH, color: lightGrayBg });
+          }
+          // Border
+          currentPage.drawRectangle({ x: margin, y: y - cellH, width: tableWidth, height: cellH, borderColor: tableBorder, borderWidth: 0.4 });
+          // Vertical divider
+          currentPage.drawLine({ start: { x: valueColX, y }, end: { x: valueColX, y: y - cellH }, thickness: 0.4, color: tableBorder });
+          // Label
+          currentPage.drawText(label, { x: margin + 8, y: y - 16, size: fontSize, font: helveticaBold, color: darkGray });
+
+          // Draw blocks
+          let drawY = y - 16;
+          renderedBlocks.forEach((block) => {
+            drawY -= block.spaceBefore;
+            const xOffset = block.type === "bullet" ? bulletIndent : 0;
+            block.lines.forEach((line, li) => {
+              if (block.type === "bullet" && li === 0) {
+                // Draw bullet marker
+                currentPage.drawText("\u2022", { x: valueColX + 8, y: drawY, size: fontSize, font: helvetica, color: darkGray });
+              }
+              currentPage.drawText(line, { x: valueColX + 8 + xOffset, y: drawY, size: fontSize, font: helvetica, color: black });
+              drawY -= lineHeight;
+            });
+          });
+
+          y -= cellH;
+        };
+
         // === PAGE SETUP ===
         let page = pdfDoc.addPage([pageWidth, pageHeight]);
         let currentPage = page;
@@ -515,7 +584,8 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
         drawRow("Opdrachtgever", check.opdrachtgever || check.client_name || "", { altBg: alt() });
         drawRow("Eindopdrachtgever", check.eindopdrachtgever || getFieldValue("eindopdrachtgever") || "-", { altBg: alt() });
         drawRow("Functie", check.functie || getFieldValue("functie") || "-", { altBg: alt() });
-        drawRow("Opdrachtomschrijving", check.rewritten_description || check.project_description || getFieldValue("opdrachtomschrijving") || "-", { altBg: alt() });
+        const descAlt = alt();
+        drawDescriptionRow("Opdrachtomschrijving", check.rewritten_description || check.project_description || getFieldValue("opdrachtomschrijving") || "-", descAlt);
         drawRow("Project", check.project_name || getFieldValue("project") || "-", { altBg: alt() });
         drawRow("Startdatum", check.startdatum ? formatDate(check.startdatum) : getFieldValue("startdatum") || "-", { altBg: alt() });
         drawRow("Einddatum", check.einddatum ? formatDate(check.einddatum) : getFieldValue("einddatum") || "-", { altBg: alt() });
