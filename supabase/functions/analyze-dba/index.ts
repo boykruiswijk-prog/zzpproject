@@ -192,6 +192,79 @@ Geef ALLEEN de herschreven tekst terug, geen uitleg.`;
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
 
+    } else if (action === "check_kvk") {
+      // Check KVK description against actual work
+      if (!check.kvk_text) {
+        return new Response(JSON.stringify({ error: "Geen KVK tekst beschikbaar" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const workDescription = check.project_description || check.extracted_text || "";
+      const systemPrompt = `Je bent een expert op het gebied van KVK-registraties en de Wet DBA in Nederland.
+Vergelijk de KVK bedrijfsomschrijving/activiteiten met de feitelijke werkzaamheden uit de overeenkomst.
+Beoordeel of de werkzaamheden passen binnen de KVK-omschrijving.
+
+Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht die niet passen bij zijn/haar KVK-registratie, kan dit wijzen op een schijnconstructie.`;
+
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${lovableKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-3-flash-preview",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: `KVK bedrijfsomschrijving/activiteiten:\n${check.kvk_text}\n\nWerkzaamheden uit de overeenkomst:\n${workDescription}` },
+          ],
+          tools: [{
+            type: "function",
+            function: {
+              name: "report_kvk_check",
+              description: "Report whether the KVK activities match the work being performed",
+              parameters: {
+                type: "object",
+                properties: {
+                  match: { type: "boolean", description: "Of de werkzaamheden passen bij de KVK-omschrijving" },
+                  kvk_activities: { type: "string", description: "Samenvatting van de KVK-activiteiten" },
+                  work_description: { type: "string", description: "Samenvatting van de feitelijke werkzaamheden" },
+                  explanation: { type: "string", description: "Uitleg waarom het wel of niet matcht" },
+                  suggestions: { type: "array", items: { type: "string" }, description: "Eventuele suggesties als het niet matcht" },
+                },
+                required: ["match", "kvk_activities", "work_description", "explanation"],
+              },
+            },
+          }],
+          tool_choice: { type: "function", function: { name: "report_kvk_check" } },
+        }),
+      });
+
+      if (!response.ok) {
+        return new Response(JSON.stringify({ error: "AI KVK check mislukt" }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const aiResult = await response.json();
+      const toolCall = aiResult.choices?.[0]?.message?.tool_calls?.[0];
+      if (!toolCall) {
+        return new Response(JSON.stringify({ error: "Geen KVK check resultaat" }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const kvkResult = JSON.parse(toolCall.function.arguments);
+
+      await supabase.from("dba_checks").update({
+        kvk_check_result: kvkResult,
+      }).eq("id", check_id);
+
+      return new Response(JSON.stringify({ success: true, kvk_check_result: kvkResult }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+
     } else if (action === "certify") {
       // Generate DBA certificate
       const verificationToken = crypto.randomUUID();

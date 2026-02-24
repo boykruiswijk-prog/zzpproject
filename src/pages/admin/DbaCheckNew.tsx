@@ -19,6 +19,8 @@ export default function DbaCheckNew() {
   const [clientName, setClientName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [kvkFile, setKvkFile] = useState<File | null>(null);
+  const [kvkText, setKvkText] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [extractedText, setExtractedText] = useState("");
 
@@ -50,6 +52,8 @@ export default function DbaCheckNew() {
     try {
       let uploadedUrl = "";
       let originalFilename = "";
+      let kvkFileUrl = "";
+      let kvkFilename = "";
 
       if (file) {
         originalFilename = file.name;
@@ -57,13 +61,10 @@ export default function DbaCheckNew() {
         const { error: uploadError } = await supabase.storage
           .from("dba-documents")
           .upload(filePath, file);
-
         if (uploadError) throw uploadError;
         uploadedUrl = filePath;
 
-        // If Word document, we need the user to also paste text content
         if (!extractedText && !file.name.endsWith(".txt")) {
-          // For Word docs, we'll use the project description + whatever text we have
           if (!projectDescription && !extractedText) {
             toast({
               title: "Plak de inhoud van het document",
@@ -76,6 +77,16 @@ export default function DbaCheckNew() {
         }
       }
 
+      if (kvkFile) {
+        kvkFilename = kvkFile.name;
+        const kvkPath = `kvk/${crypto.randomUUID()}_${kvkFile.name}`;
+        const { error: kvkUploadError } = await supabase.storage
+          .from("dba-documents")
+          .upload(kvkPath, kvkFile);
+        if (kvkUploadError) throw kvkUploadError;
+        kvkFileUrl = kvkPath;
+      }
+
       const textToAnalyze = extractedText || projectDescription;
 
       const result = await createCheck.mutateAsync({
@@ -84,6 +95,9 @@ export default function DbaCheckNew() {
         uploaded_file_url: uploadedUrl || null,
         original_filename: originalFilename || null,
         extracted_text: textToAnalyze || null,
+        kvk_file_url: kvkFileUrl || null,
+        kvk_filename: kvkFilename || null,
+        kvk_text: kvkText || null,
       });
 
       toast({ title: "Check aangemaakt!", description: "Je kunt nu de analyse starten." });
@@ -175,6 +189,56 @@ export default function DbaCheckNew() {
                   onChange={(e) => setExtractedText(e.target.value)}
                   placeholder="Plak hier de volledige tekst van de overeenkomst..."
                   className="min-h-[200px]"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>KVK Uittreksel</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="kvkFile">Upload KVK uittreksel (PDF)</Label>
+                <div className="mt-2">
+                  <label
+                    htmlFor="kvkFile"
+                    className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-secondary/50 transition-colors"
+                  >
+                    {kvkFile ? (
+                      <div className="flex items-center gap-2 text-sm">
+                        <FileText className="h-5 w-5 text-primary" />
+                        <span className="font-medium">{kvkFile.name}</span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                        <Upload className="h-8 w-8" />
+                        <span className="text-sm">Upload KVK uittreksel</span>
+                        <span className="text-xs">.pdf</span>
+                      </div>
+                    )}
+                  </label>
+                  <input
+                    id="kvkFile"
+                    type="file"
+                    accept=".pdf"
+                    onChange={(e) => setKvkFile(e.target.files?.[0] || null)}
+                    className="hidden"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="kvkText">
+                  KVK bedrijfsomschrijving (plak hier de activiteiten uit het KVK uittreksel)
+                </Label>
+                <Textarea
+                  id="kvkText"
+                  value={kvkText}
+                  onChange={(e) => setKvkText(e.target.value)}
+                  placeholder="bijv. 'Adviesbureau op het gebied van organisatie en management', 'IT-consultancy en softwareontwikkeling'..."
+                  className="min-h-[100px]"
                 />
               </div>
             </CardContent>

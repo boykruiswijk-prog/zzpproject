@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   ArrowLeft, Loader2, Play, RefreshCw, ShieldCheck, CheckCircle2,
-  XCircle, AlertTriangle, Award, Copy, ExternalLink,
+  XCircle, AlertTriangle, Award, Copy, ExternalLink, Building2,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
@@ -47,6 +47,17 @@ export default function DbaCheckDetail() {
       queryClient.invalidateQueries({ queryKey: ["dba-check", id] });
     } catch (error: any) {
       toast({ title: "Fout bij herschrijven", description: error.message, variant: "destructive" });
+    }
+  };
+
+  const handleKvkCheck = async () => {
+    if (!id) return;
+    try {
+      await analyzeDba.mutateAsync({ checkId: id, action: "check_kvk" });
+      toast({ title: "KVK check voltooid!" });
+      queryClient.invalidateQueries({ queryKey: ["dba-check", id] });
+    } catch (error: any) {
+      toast({ title: "Fout bij KVK check", description: error.message, variant: "destructive" });
     }
   };
 
@@ -95,7 +106,8 @@ export default function DbaCheckDetail() {
   const score = check.suggestions?.[0]?.score;
   const summary = check.suggestions?.[0]?.summary;
   const allFieldsPresent = check.field_results?.every((f) => f.present);
-  const canCertify = check.status === "analyzed" && allFieldsPresent;
+  const kvkMatch = check.kvk_check_result?.match;
+  const canCertify = check.status === "analyzed" && allFieldsPresent && (kvkMatch !== false);
 
   return (
     <AdminLayout>
@@ -209,6 +221,72 @@ export default function DbaCheckDetail() {
                       </div>
                     ))}
                   </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* KVK Check */}
+            {check.kvk_text && check.status !== "uploaded" && (
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2">
+                      <Building2 className="h-5 w-5" />
+                      KVK Check
+                    </CardTitle>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleKvkCheck}
+                      disabled={analyzeDba.isPending}
+                    >
+                      {analyzeDba.isPending ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Play className="h-4 w-4 mr-2" />
+                      )}
+                      {check.kvk_check_result ? "Opnieuw checken" : "Start KVK check"}
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-2">KVK bedrijfsomschrijving:</p>
+                    <div className="p-3 rounded-lg bg-secondary/50 text-sm whitespace-pre-line">
+                      {check.kvk_text}
+                    </div>
+                  </div>
+                  {check.kvk_check_result && (
+                    <div className={`p-4 rounded-lg border ${
+                      check.kvk_check_result.match
+                        ? "border-green-200 bg-green-50"
+                        : "border-red-200 bg-red-50"
+                    }`}>
+                      <div className="flex items-start gap-3">
+                        {check.kvk_check_result.match ? (
+                          <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
+                        ) : (
+                          <XCircle className="h-5 w-5 text-red-600 mt-0.5 shrink-0" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium">
+                            {check.kvk_check_result.match ? "Werkzaamheden passen bij KVK" : "Werkzaamheden passen NIET bij KVK"}
+                          </p>
+                          <p className="text-sm mt-2">{check.kvk_check_result.explanation}</p>
+                          {check.kvk_check_result.suggestions && check.kvk_check_result.suggestions.length > 0 && (
+                            <div className="mt-3">
+                              <p className="text-sm font-medium">Suggesties:</p>
+                              <ul className="list-disc list-inside text-sm mt-1 space-y-1">
+                                {check.kvk_check_result.suggestions.map((s, i) => (
+                                  <li key={i}>{s}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}

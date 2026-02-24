@@ -19,8 +19,20 @@ export interface DbaCheck {
   verification_token: string | null;
   certified_at: string | null;
   certified_by: string | null;
+  kvk_file_url: string | null;
+  kvk_filename: string | null;
+  kvk_text: string | null;
+  kvk_check_result: KvkCheckResult | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface KvkCheckResult {
+  match: boolean;
+  kvk_activities: string;
+  work_description: string;
+  explanation: string;
+  suggestions?: string[];
 }
 
 export interface FieldResult {
@@ -90,11 +102,14 @@ export function useCreateDbaCheck() {
   return useMutation({
     mutationFn: async (check: {
       client_name: string;
-      project_description?: string;
-      uploaded_file_url?: string;
-      original_filename?: string;
-      extracted_text?: string;
+      project_description?: string | null;
+      uploaded_file_url?: string | null;
+      original_filename?: string | null;
+      extracted_text?: string | null;
       lead_id?: string;
+      kvk_file_url?: string | null;
+      kvk_filename?: string | null;
+      kvk_text?: string | null;
     }) => {
       const { data, error } = await supabase
         .from("dba_checks")
@@ -113,7 +128,7 @@ export function useCreateDbaCheck() {
 export function useAnalyzeDba() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ checkId, action }: { checkId: string; action: "analyze" | "rewrite" | "certify" }) => {
+    mutationFn: async ({ checkId, action }: { checkId: string; action: "analyze" | "rewrite" | "certify" | "check_kvk" }) => {
       const { data: { session } } = await supabase.auth.getSession();
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-dba`,
