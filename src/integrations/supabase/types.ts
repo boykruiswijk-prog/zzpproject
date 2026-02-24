@@ -155,6 +155,48 @@ export type Database = {
         }
         Relationships: []
       }
+      dba_batches: {
+        Row: {
+          certified_count: number
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+          processed_count: number
+          status: string
+          total_candidates: number
+          updated_at: string
+          zip_file_url: string | null
+          zip_filename: string | null
+        }
+        Insert: {
+          certified_count?: number
+          created_at?: string
+          created_by: string
+          id?: string
+          name?: string
+          processed_count?: number
+          status?: string
+          total_candidates?: number
+          updated_at?: string
+          zip_file_url?: string | null
+          zip_filename?: string | null
+        }
+        Update: {
+          certified_count?: number
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+          processed_count?: number
+          status?: string
+          total_candidates?: number
+          updated_at?: string
+          zip_file_url?: string | null
+          zip_filename?: string | null
+        }
+        Relationships: []
+      }
       dba_check_fields: {
         Row: {
           created_at: string
@@ -184,6 +226,7 @@ export type Database = {
       }
       dba_checks: {
         Row: {
+          batch_id: string | null
           candidate_email: string | null
           candidate_phone: string | null
           certificate_number: string | null
@@ -225,6 +268,7 @@ export type Database = {
           verification_token: string | null
         }
         Insert: {
+          batch_id?: string | null
           candidate_email?: string | null
           candidate_phone?: string | null
           certificate_number?: string | null
@@ -266,6 +310,7 @@ export type Database = {
           verification_token?: string | null
         }
         Update: {
+          batch_id?: string | null
           candidate_email?: string | null
           candidate_phone?: string | null
           certificate_number?: string | null
@@ -307,6 +352,13 @@ export type Database = {
           verification_token?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "dba_checks_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "dba_batches"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "dba_checks_lead_id_fkey"
             columns: ["lead_id"]

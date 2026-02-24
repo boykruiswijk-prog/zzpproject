@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Plus, Loader2, FileCheck, ShieldCheck, Trash2 } from "lucide-react";
+import { Eye, Plus, Loader2, FileCheck, ShieldCheck, Trash2, Package } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -60,12 +60,20 @@ export default function AdminDbaChecks() {
               Upload overeenkomsten en controleer op Wet DBA compliance
             </p>
           </div>
-          <Button asChild>
-            <Link to="/admin/dba-checks/nieuw">
-              <Plus className="h-4 w-4 mr-2" />
-              Nieuwe check
-            </Link>
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" asChild>
+              <Link to="/admin/dba-checks/bulk">
+                <Package className="h-4 w-4 mr-2" />
+                Bulk upload
+              </Link>
+            </Button>
+            <Button asChild>
+              <Link to="/admin/dba-checks/nieuw">
+                <Plus className="h-4 w-4 mr-2" />
+                Nieuwe check
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {isLoading ? (

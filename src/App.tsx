@@ -32,6 +32,8 @@ import AdminTeam from "./pages/admin/Team";
 import AdminDbaChecks from "./pages/admin/DbaChecks";
 import DbaCheckNew from "./pages/admin/DbaCheckNew";
 import DbaCheckDetail from "./pages/admin/DbaCheckDetail";
+import DbaCheckBulk from "./pages/admin/DbaCheckBulk";
+import DbaCheckBatchDetail from "./pages/admin/DbaCheckBatchDetail";
 import DbaVerificatie from "./pages/DbaVerificatie";
 
 /** Old WordPress URLs indexed by Google → redirect to new routes */
@@ -113,6 +115,8 @@ const App = () => (
             <Route path="/admin/team" element={<AdminTeam />} />
             <Route path="/admin/dba-checks" element={<AdminDbaChecks />} />
             <Route path="/admin/dba-checks/nieuw" element={<DbaCheckNew />} />
+            <Route path="/admin/dba-checks/bulk" element={<DbaCheckBulk />} />
+            <Route path="/admin/dba-checks/bulk/:id" element={<DbaCheckBatchDetail />} />
             <Route path="/admin/dba-checks/:id" element={<DbaCheckDetail />} />
             
             {/* Public verification */}
