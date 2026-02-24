@@ -101,6 +101,23 @@ export default function DbaCheckDetail() {
     }
   };
 
+  const handleViewPdf = async () => {
+    if (!check?.certificate_pdf_url) return;
+    try {
+      const { data, error } = await (await import("@/integrations/supabase/client")).supabase.storage
+        .from("certificates")
+        .download(check.certificate_pdf_url);
+      if (error || !data) {
+        toast({ title: "Fout bij openen", description: error?.message, variant: "destructive" });
+        return;
+      }
+      const url = URL.createObjectURL(data);
+      window.open(url, "_blank");
+    } catch (err: any) {
+      toast({ title: "Fout bij openen", description: err.message, variant: "destructive" });
+    }
+  };
+
   if (isLoading) {
     return (
       <AdminLayout>
@@ -407,15 +424,26 @@ export default function DbaCheckDetail() {
                   </div>
                   <div className="pt-2 space-y-2">
                     {check.certificate_pdf_url && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full"
-                        onClick={handleDownloadPdf}
-                      >
-                        <Download className="h-4 w-4 mr-2" />
-                        Download PDF
-                      </Button>
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={handleViewPdf}
+                        >
+                          <ExternalLink className="h-4 w-4 mr-2" />
+                          Bekijk PDF
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={handleDownloadPdf}
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          Download PDF
+                        </Button>
+                      </>
                     )}
                     <Button
                       variant="outline"
