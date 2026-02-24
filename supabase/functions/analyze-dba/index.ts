@@ -592,11 +592,36 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
 
         y -= sigRowHeight;
 
-        // Compliance score
+        // Compliance score with explanation
         const score = suggestions?.[0]?.score;
+        const summary = suggestions?.[0]?.summary;
         if (score !== undefined) {
           y -= 15;
           page.drawText(`Compliance score: ${score}%`, { x: margin, y, size: 10, font: helveticaBold, color: score >= 80 ? rgb(0.1, 0.55, 0.1) : aandachtColor });
+        }
+        if (summary) {
+          y -= 13;
+          // Word-wrap the summary text to fit within page width
+          const maxLineWidth = pageWidth - margin * 2;
+          const summaryFontSize = 8;
+          const words = String(summary).split(" ");
+          let currentLine = "";
+          const summaryLines: string[] = [];
+          for (const word of words) {
+            const testLine = currentLine ? `${currentLine} ${word}` : word;
+            const testWidth = helvetica.widthOfTextAtSize(testLine, summaryFontSize);
+            if (testWidth > maxLineWidth && currentLine) {
+              summaryLines.push(currentLine);
+              currentLine = word;
+            } else {
+              currentLine = testLine;
+            }
+          }
+          if (currentLine) summaryLines.push(currentLine);
+          for (const line of summaryLines) {
+            page.drawText(line, { x: margin, y, size: summaryFontSize, font: helvetica, color: darkGray });
+            y -= 11;
+          }
         }
 
         // Verification URL
