@@ -52,12 +52,36 @@ export default function AdminDbaChecks() {
     const { default: jsPDF } = await import("jspdf");
     await import("jspdf-autotable");
 
+    // Load logos as base64
+    const loadImage = async (url: string): Promise<string> => {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(blob);
+      });
+    };
+
+    const [zpLogo, onefellowLogo] = await Promise.all([
+      loadImage("/templates/zp-approved-export.png"),
+      loadImage("/templates/onefellow-export.png"),
+    ]);
+
     const doc = new jsPDF({ orientation: "landscape" });
-    
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // ZP Approved logo top-left
+    doc.addImage(zpLogo, "PNG", 14, 8, 30, 30);
+
+    // Onefellow logo top-right
+    doc.addImage(onefellowLogo, "PNG", pageWidth - 54, 14, 40, 12);
+
+    // Title centered
     doc.setFontSize(16);
-    doc.text("ZP Approved - Overzicht Wet DBA Checks", 14, 18);
+    doc.text("ZP Approved - Overzicht Wet DBA Checks", pageWidth / 2, 22, { align: "center" });
     doc.setFontSize(9);
-    doc.text(`Gegenereerd op ${new Date().toLocaleDateString("nl-NL")}`, 14, 24);
+    doc.text(`Gegenereerd op ${new Date().toLocaleDateString("nl-NL")}`, pageWidth / 2, 28, { align: "center" });
 
     const certifiedChecks = checks.filter((c) => c.certificate_number);
     
@@ -78,7 +102,7 @@ export default function AdminDbaChecks() {
     });
 
     (doc as any).autoTable({
-      startY: 30,
+      startY: 42,
       head: [["Kandidaat", "Entiteit Opdrachtgever", "Certificaatnummer"]],
       body: tableData,
       styles: { fontSize: 10 },
