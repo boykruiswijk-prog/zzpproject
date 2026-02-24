@@ -335,8 +335,7 @@ export default function DbaCheckNew() {
                       if (f && f.name.toLowerCase().endsWith(".pdf")) {
                         try {
                           const pdfjsLib = await import("pdfjs-dist");
-                          // Use fake worker to avoid CORS/CDN issues
-                          pdfjsLib.GlobalWorkerOptions.workerSrc = "";
+                          pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
                           const arrayBuffer = await f.arrayBuffer();
                           const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
                           let text = "";
