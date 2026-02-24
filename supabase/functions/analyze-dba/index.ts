@@ -549,7 +549,7 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
               const yItem = y - 30 - i * 14;
               if (yItem > y - sectionHeight + 5) {
                 const isPresent = item.status === "aanwezig";
-                const icon = isPresent ? "✓" : "✗";
+                const icon = isPresent ? "V" : "X";
                 const color = isPresent ? green : aandachtColor;
                 page.drawText(icon, { x: margin + 12, y: yItem, size: 8, font: helveticaBold, color });
                 page.drawText(item.document_name || "", { x: margin + 26, y: yItem, size: smallFont, font: helvetica, color: darkGray });
