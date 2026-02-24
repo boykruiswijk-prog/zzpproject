@@ -91,12 +91,13 @@ Voor elk document moet aangegeven zijn of het "van toepassing / aanwezig" of "ni
 - VOG verklaring
 - VCA certificering (VCA basis / VCA VOL / VIL VCU)
 
-BELANGRIJK BIJ HET BEOORDELEN:
-1. De tekst is geëxtraheerd uit een Word-document. Checkboxes en selectievakjes worden NIET bewaard bij extractie.
-   In de checklist-sectie staan twee kolommen: "van toepassing / aanwezig" en "niet van toepassing / niet aanwezig".
-   Omdat checkboxes niet zichtbaar zijn in platte tekst, kun je NIET bepalen welke kolom is aangevinkt.
-   Markeer deze items daarom als "niet_ingevuld" (status: "niet_ingevuld") zodat een medewerker dit handmatig kan controleren.
-   Markeer een item ALLEEN als "aanwezig" als er EXPLICIET tekst staat die aangeeft dat het aanwezig is.
+BELANGRIJK BIJ HET BEOORDELEN VAN DE CHECKLIST:
+1. De checklist heeft TWEE kolommen: "van toepassing / aanwezig" (links) en "niet van toepassing / niet aanwezig" (rechts).
+   Checkboxes worden weergegeven als ☒ (aangevinkt) of ☐ (niet aangevinkt).
+   - Als ☒ in de LINKER kolom ("van toepassing / aanwezig") staat: het document IS aanwezig → status "aanwezig"
+   - Als ☒ in de RECHTER kolom ("niet van toepassing / niet aanwezig") staat: het document is NIET aanwezig → status "niet_aanwezig"
+   - Als beide ☐ zijn of niet te bepalen: status "niet_ingevuld"
+   Let op de volgorde: per rij staat eerst het resultaat voor "aanwezig", dan voor "niet aanwezig".
 2. Beoordeel alleen een veld als NIET ingevuld als het veld echt volledig leeg is (geen tekst na de veldnaam).
 3. Als een veld tekst bevat (ook al is het kort), markeer het als ingevuld (filled: true).
 4. Het veld "Specifieke vaardigheden" is optioneel - als het leeg is, is dit een OPMERKING maar geen kritisch aandachtspunt.
