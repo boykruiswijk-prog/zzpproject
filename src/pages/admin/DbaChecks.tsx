@@ -1,12 +1,16 @@
 import { Link } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
+import { useAuth } from "@/contexts/AuthContext";
 import { useDbaChecks } from "@/hooks/useDbaChecks";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Plus, Loader2, FileCheck, ShieldCheck } from "lucide-react";
+import { Eye, Plus, Loader2, FileCheck, ShieldCheck, Trash2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 const statusLabels: Record<string, string> = {
   uploaded: "Geüpload",
@@ -28,6 +32,20 @@ const statusColors: Record<string, string> = {
 
 export default function AdminDbaChecks() {
   const { data: checks, isLoading } = useDbaChecks();
+  const { isAdmin } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const handleDelete = async (id: string, name: string) => {
+    if (!confirm(`Weet je zeker dat je de check voor "${name}" wilt verwijderen?`)) return;
+    const { error } = await supabase.from("dba_checks").delete().eq("id", id);
+    if (error) {
+      toast({ title: "Fout bij verwijderen", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Check verwijderd" });
+      queryClient.invalidateQueries({ queryKey: ["dba-checks"] });
+    }
+  };
 
   return (
     <AdminLayout>
@@ -108,11 +126,22 @@ export default function AdminDbaChecks() {
                           {new Date(check.created_at).toLocaleDateString("nl-NL")}
                         </TableCell>
                         <TableCell>
-                          <Button variant="ghost" size="icon" asChild>
-                            <Link to={`/admin/dba-checks/${check.id}`}>
-                              <Eye className="h-4 w-4" />
-                            </Link>
-                          </Button>
+                          <div className="flex items-center gap-1">
+                            <Button variant="ghost" size="icon" asChild>
+                              <Link to={`/admin/dba-checks/${check.id}`}>
+                                <Eye className="h-4 w-4" />
+                              </Link>
+                            </Button>
+                            {isAdmin && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDelete(check.id, check.client_name)}
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     );
