@@ -759,10 +759,6 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
         }
         y -= sigRowH;
 
-        // === Verification URL ===
-        y -= 10;
-        const verifyUrl = `https://zzpproject.lovable.app/verificatie/dba/${verificationToken}`;
-        currentPage.drawText(`Verificatie: ${verifyUrl}`, { x: margin, y, size: 6.5, font: helvetica, color: gray });
 
         // === FOOTER on every page ===
         const pages = pdfDoc.getPages();
