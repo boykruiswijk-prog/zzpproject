@@ -24,6 +24,9 @@ export interface DbaCheck {
   kvk_filename: string | null;
   kvk_text: string | null;
   kvk_check_result: KvkCheckResult | null;
+  polis_file_url: string | null;
+  polis_filename: string | null;
+  polis_text: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -115,6 +118,9 @@ export function useCreateDbaCheck() {
       kvk_file_url?: string | null;
       kvk_filename?: string | null;
       kvk_text?: string | null;
+      polis_file_url?: string | null;
+      polis_filename?: string | null;
+      polis_text?: string | null;
     }) => {
       const { data, error } = await supabase
         .from("dba_checks")
@@ -133,7 +139,7 @@ export function useCreateDbaCheck() {
 export function useAnalyzeDba() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ checkId, action }: { checkId: string; action: "analyze" | "rewrite" | "certify" | "check_kvk" }) => {
+    mutationFn: async ({ checkId, action }: { checkId: string; action: "analyze" | "rewrite" | "certify" | "check_kvk" | "check_polis" }) => {
       const { data: { session } } = await supabase.auth.getSession();
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-dba`,

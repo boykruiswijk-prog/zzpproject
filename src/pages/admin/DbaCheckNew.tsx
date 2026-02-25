@@ -21,6 +21,8 @@ export default function DbaCheckNew() {
   const [file, setFile] = useState<File | null>(null);
   const [kvkFile, setKvkFile] = useState<File | null>(null);
   const [kvkText, setKvkText] = useState("");
+  const [polisFile, setPolisFile] = useState<File | null>(null);
+  const [polisText, setPolisText] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [extractedText, setExtractedText] = useState("");
 
@@ -175,6 +177,8 @@ export default function DbaCheckNew() {
       let originalFilename = "";
       let kvkFileUrl = "";
       let kvkFilename = "";
+      let polisFileUrl = "";
+      let polisFilename = "";
 
       if (file) {
         originalFilename = file.name;
@@ -205,6 +209,15 @@ export default function DbaCheckNew() {
         if (kvkUploadError) throw kvkUploadError;
         kvkFileUrl = kvkPath;
       }
+      if (polisFile) {
+        polisFilename = polisFile.name;
+        const polisPath = `polis/${crypto.randomUUID()}_${polisFile.name}`;
+        const { error: polisUploadError } = await supabase.storage
+          .from("dba-documents")
+          .upload(polisPath, polisFile);
+        if (polisUploadError) throw polisUploadError;
+        polisFileUrl = polisPath;
+      }
 
       const textToAnalyze = extractedText || projectDescription;
 
@@ -217,6 +230,9 @@ export default function DbaCheckNew() {
         kvk_file_url: kvkFileUrl || null,
         kvk_filename: kvkFilename || null,
         kvk_text: kvkText || null,
+        polis_file_url: polisFileUrl || null,
+        polis_filename: polisFilename || null,
+        polis_text: polisText || null,
       });
 
       toast({ title: "Check aangemaakt!", description: "Je kunt nu de analyse starten." });
@@ -369,6 +385,81 @@ export default function DbaCheckNew() {
                   value={kvkText}
                   onChange={(e) => setKvkText(e.target.value)}
                   placeholder="bijv. 'Adviesbureau op het gebied van organisatie en management', 'IT-consultancy en softwareontwikkeling'..."
+                  className="min-h-[100px]"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Polis Beroeps- en Bedrijfsaansprakelijkheid</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="polisFile">Upload polis (PDF)</Label>
+                <div className="mt-2">
+                  <label
+                    htmlFor="polisFile"
+                    className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-secondary/50 transition-colors"
+                  >
+                    {polisFile ? (
+                      <div className="flex items-center gap-2 text-sm">
+                        <FileText className="h-5 w-5 text-primary" />
+                        <span className="font-medium">{polisFile.name}</span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                        <Upload className="h-8 w-8" />
+                        <span className="text-sm">Upload de verzekeringspolis</span>
+                        <span className="text-xs">.pdf</span>
+                      </div>
+                    )}
+                  </label>
+                  <input
+                    id="polisFile"
+                    type="file"
+                    accept=".pdf"
+                    onChange={async (e) => {
+                      const f = e.target.files?.[0] || null;
+                      setPolisFile(f);
+                      if (f && f.name.toLowerCase().endsWith(".pdf")) {
+                        try {
+                          const pdfjsLib = await import("pdfjs-dist");
+                          pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+                          const arrayBuffer = await f.arrayBuffer();
+                          const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+                          let text = "";
+                          for (let i = 1; i <= pdf.numPages; i++) {
+                            const page = await pdf.getPage(i);
+                            const content = await page.getTextContent();
+                            const pageText = content.items
+                              .map((item: any) => item.str)
+                              .filter((s: string) => s.trim().length > 0)
+                              .join(" ");
+                            text += pageText + "\n";
+                          }
+                          setPolisText(text.trim());
+                          toast({ title: "Tekst geëxtraheerd uit polis" });
+                        } catch {
+                          toast({ title: "Kon PDF niet uitlezen", description: "Plak de tekst handmatig.", variant: "destructive" });
+                        }
+                      }
+                    }}
+                    className="hidden"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="polisText">
+                  Polistekst (automatisch uit PDF, of plak handmatig)
+                </Label>
+                <Textarea
+                  id="polisText"
+                  value={polisText}
+                  onChange={(e) => setPolisText(e.target.value)}
+                  placeholder="De tekst van de verzekeringspolis wordt hier getoond na upload..."
                   className="min-h-[100px]"
                 />
               </div>
