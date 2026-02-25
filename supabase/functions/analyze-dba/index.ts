@@ -216,14 +216,19 @@ Antwoord ALLEEN met een JSON tool call.`;
         if (insurancePolicyExpired) {
           missingFields.push(`Polis beroeps-/bedrijfsaansprakelijkheid is ouder dan 1 jaar (datum: ${analysis.insurance_policy_date})`);
         }
+      } else {
+        // Policy marked as present but no date found
+        if (!missingFields.some((f: string) => f.toLowerCase().includes("polisdatum") || (f.toLowerCase().includes("polis") && f.toLowerCase().includes("datum")))) {
+          missingFields.push("Datum polis beroeps- en bedrijfsaansprakelijkheid kon niet worden vastgesteld");
+        }
       }
 
       await supabase.from("dba_checks").update({
         field_results: analysis.form_fields,
         missing_fields: missingFields,
         document_checklist: analysis.checklist_items,
-        suggestions: [{
-          score: analysis.overall_score,
+      suggestions: [{
+          score: missingFields.length > 0 ? Math.min(analysis.overall_score, Math.max(0, 100 - missingFields.length * 5)) : analysis.overall_score,
           summary: analysis.summary,
           aandachtspunten: missingFields,
           insurance_policy_date: analysis.insurance_policy_date || null,
