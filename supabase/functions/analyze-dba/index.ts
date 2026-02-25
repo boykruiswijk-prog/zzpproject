@@ -260,6 +260,8 @@ Geef ALLEEN de herschreven tekst terug, geen uitleg.`;
         },
         body: JSON.stringify({
           model: "google/gemini-3-flash-preview",
+          temperature: 0,
+          seed: 42,
           messages: [
             { role: "system", content: systemPrompt },
             { role: "user", content: `Herschrijf deze projectomschrijving:\n\n${check.project_description}` },
