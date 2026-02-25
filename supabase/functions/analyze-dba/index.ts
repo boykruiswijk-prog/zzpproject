@@ -202,10 +202,12 @@ Antwoord ALLEEN met een JSON tool call.`;
 
       // Check insurance policy age (older than 1 year = aandachtspunt)
       let insurancePolicyExpired: boolean | null = null;
-      if (insuranceMissing) {
-        // Policy not provided at all - flag it
+      const hasPolisUploaded = !!check.polis_text;
+      
+      if (insuranceMissing && !hasPolisUploaded) {
+        // Policy not provided at all and no separate polis uploaded
         insurancePolicyExpired = null;
-        if (!missingFields.some((f: string) => f.toLowerCase().includes("polis") && f.toLowerCase().includes("niet aanwezig"))) {
+        if (!missingFields.some((f: string) => f.toLowerCase().includes("polis") && f.toLowerCase().includes("niet aangeleverd"))) {
           missingFields.push("Polis beroeps- en bedrijfsaansprakelijkheid is niet aangeleverd");
         }
       } else if (analysis.insurance_policy_date) {
@@ -216,12 +218,13 @@ Antwoord ALLEEN met een JSON tool call.`;
         if (insurancePolicyExpired) {
           missingFields.push(`Polis beroeps-/bedrijfsaansprakelijkheid is ouder dan 1 jaar (datum: ${analysis.insurance_policy_date})`);
         }
-      } else {
-        // Policy marked as present but no date found
+      } else if (!hasPolisUploaded) {
+        // No date found in form and no separate polis uploaded
         if (!missingFields.some((f: string) => f.toLowerCase().includes("polisdatum") || (f.toLowerCase().includes("polis") && f.toLowerCase().includes("datum")))) {
-          missingFields.push("Datum polis beroeps- en bedrijfsaansprakelijkheid kon niet worden vastgesteld");
+          missingFields.push("Datum polis beroeps- en bedrijfsaansprakelijkheid kon niet worden vastgesteld - upload de polis apart");
         }
       }
+      // If polis is uploaded separately, the check_polis action will handle date extraction
 
       await supabase.from("dba_checks").update({
         field_results: analysis.form_fields,
@@ -391,6 +394,128 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
       }).eq("id", check_id);
 
       return new Response(JSON.stringify({ success: true, kvk_check_result: kvkResult }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+
+    } else if (action === "check_polis") {
+      // Extract date from uploaded insurance policy
+      if (!check.polis_text) {
+        return new Response(JSON.stringify({ error: "Geen polistekst beschikbaar" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const todayStr = new Date().toISOString().split("T")[0];
+      const polisSystemPrompt = `Je bent een expert op het gebied van verzekeringen in Nederland.
+De huidige datum is ${todayStr}.
+
+Analyseer de tekst van een polis beroeps- en/of bedrijfsaansprakelijkheidsverzekering.
+
+Je taak:
+1. Zoek de afgiftedatum, ingangsdatum of datum van het polisblad. Dit kan staan als "Datum", "Ingangsdatum", "Afgiftedatum", "Datum polisblad", "Polisdatum", "Datum polis", of vergelijkbare aanduidingen.
+2. Als er meerdere datums zijn, gebruik dan de AFGIFTEDATUM of DATUM POLISBLAD (niet de ingangsdatum van de verzekering zelf, tenzij er geen afgiftedatum is).
+3. Geef de datum terug in YYYY-MM-DD formaat.
+4. Beoordeel of de polis ouder is dan 1 jaar ten opzichte van vandaag (${todayStr}).
+5. Geef een korte samenvatting van wat de polis dekt.
+
+BELANGRIJK:
+- Een polis die ouder is dan 1 jaar is een aandachtspunt.
+- Zeg NOOIT dat een polis "actueel" is als de afgiftedatum ouder is dan 1 jaar.`;
+
+      const polisResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${lovableKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-3-flash-preview",
+          temperature: 0,
+          messages: [
+            { role: "system", content: polisSystemPrompt },
+            { role: "user", content: `Analyseer deze polistekst:\n\n${check.polis_text}` },
+          ],
+          tools: [{
+            type: "function",
+            function: {
+              name: "report_polis_check",
+              description: "Report the insurance policy analysis results",
+              parameters: {
+                type: "object",
+                properties: {
+                  polis_date: { type: "string", description: "Afgiftedatum van de polis in YYYY-MM-DD formaat, of null als niet gevonden" },
+                  coverage_summary: { type: "string", description: "Korte samenvatting van de dekking" },
+                  explanation: { type: "string", description: "Uitleg over de gevonden datum en beoordeling" },
+                },
+                required: ["explanation"],
+              },
+            },
+          }],
+          tool_choice: { type: "function", function: { name: "report_polis_check" } },
+        }),
+      });
+
+      if (!polisResponse.ok) {
+        return new Response(JSON.stringify({ error: "AI polis check mislukt" }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const polisAiResult = await polisResponse.json();
+      const polisToolCall = polisAiResult.choices?.[0]?.message?.tool_calls?.[0];
+      if (!polisToolCall) {
+        return new Response(JSON.stringify({ error: "Geen polis check resultaat" }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const polisResult = JSON.parse(polisToolCall.function.arguments);
+
+      // Check if policy is older than 1 year
+      let polisExpired: boolean | null = null;
+      if (polisResult.polis_date) {
+        const polisDate = new Date(polisResult.polis_date);
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        polisExpired = polisDate < oneYearAgo;
+      } else {
+        polisExpired = null;
+      }
+      polisResult.polis_expired = polisExpired;
+
+      // Update the suggestions with the polis check result
+      const currentSuggestions = check.suggestions as any[] || [];
+      const updatedSuggestion = currentSuggestions[0] || {};
+      updatedSuggestion.insurance_policy_date = polisResult.polis_date || null;
+      updatedSuggestion.insurance_policy_expired = polisExpired;
+      updatedSuggestion.insurance_missing = false;
+      updatedSuggestion.polis_check_result = polisResult;
+
+      // Update missing_fields: remove old polis-related issues and add new if needed
+      let updatedMissingFields = ((check.missing_fields as string[]) || []).filter(
+        (f: string) => !f.toLowerCase().includes("polis") || (!f.toLowerCase().includes("datum") && !f.toLowerCase().includes("aangeleverd") && !f.toLowerCase().includes("ouder"))
+      );
+      if (polisExpired === true) {
+        updatedMissingFields.push(`Polis beroeps-/bedrijfsaansprakelijkheid is ouder dan 1 jaar (datum: ${polisResult.polis_date})`);
+      } else if (polisExpired === null) {
+        updatedMissingFields.push("Datum polis beroeps- en bedrijfsaansprakelijkheid kon niet worden vastgesteld");
+      }
+
+      // Recalculate score
+      if (updatedSuggestion.score !== undefined) {
+        const baseScore = 100;
+        updatedSuggestion.score = updatedMissingFields.length > 0 
+          ? Math.max(0, baseScore - updatedMissingFields.length * 5)
+          : baseScore;
+      }
+      updatedSuggestion.aandachtspunten = updatedMissingFields;
+
+      await supabase.from("dba_checks").update({
+        suggestions: [updatedSuggestion],
+        missing_fields: updatedMissingFields,
+      }).eq("id", check_id);
+
+      return new Response(JSON.stringify({ success: true, polis_check_result: polisResult }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
 

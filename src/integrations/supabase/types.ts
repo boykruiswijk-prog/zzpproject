@@ -253,6 +253,9 @@ export type Database = {
           opdrachtgever: string | null
           optie_verlenging: string | null
           original_filename: string | null
+          polis_file_url: string | null
+          polis_filename: string | null
+          polis_text: string | null
           project_description: string | null
           project_name: string | null
           rechtsvorm: string | null
@@ -296,6 +299,9 @@ export type Database = {
           opdrachtgever?: string | null
           optie_verlenging?: string | null
           original_filename?: string | null
+          polis_file_url?: string | null
+          polis_filename?: string | null
+          polis_text?: string | null
           project_description?: string | null
           project_name?: string | null
           rechtsvorm?: string | null
@@ -339,6 +345,9 @@ export type Database = {
           opdrachtgever?: string | null
           optie_verlenging?: string | null
           original_filename?: string | null
+          polis_file_url?: string | null
+          polis_filename?: string | null
+          polis_text?: string | null
           project_description?: string | null
           project_name?: string | null
           rechtsvorm?: string | null
