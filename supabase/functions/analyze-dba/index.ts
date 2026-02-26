@@ -721,7 +721,11 @@ BELANGRIJK:
           page.drawImage(zpLogoImage, { x: margin, y: logoY - 20, width: zpTargetW, height: zpTargetH });
         }
         if (ofLogoImage) {
-          page.drawImage(ofLogoImage, { x: pageWidth - rightMargin - 140, y: logoY - 5, width: 140, height: 30 });
+          const ofOrigW = ofLogoImage.width;
+          const ofOrigH = ofLogoImage.height;
+          const ofTargetH = 35;
+          const ofTargetW = (ofOrigW / ofOrigH) * ofTargetH;
+          page.drawImage(ofLogoImage, { x: pageWidth - rightMargin - ofTargetW, y: logoY - 5, width: ofTargetW, height: ofTargetH });
         }
 
         // --- Table helper with auto-pagination ---
