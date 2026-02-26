@@ -704,10 +704,10 @@ BELANGRIJK:
         } catch { /* skip */ }
 
         try {
-          const { data: sigData } = await supabase.storage.from("certificates").download("templates/signature-gertjan.png");
+          const { data: sigData } = await supabase.storage.from("certificates").download("templates/signature-gertjan.jpg");
           if (sigData) {
             const sigBytes = new Uint8Array(await sigData.arrayBuffer());
-            sigImage = await pdfDoc.embedPng(sigBytes);
+            sigImage = await pdfDoc.embedJpg(sigBytes);
           }
         } catch { /* skip */ }
 
