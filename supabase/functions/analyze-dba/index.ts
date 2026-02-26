@@ -688,10 +688,10 @@ BELANGRIJK:
         let sigImage: any = null;
 
         try {
-          const { data: zpLogoData } = await supabase.storage.from("certificates").download("templates/zp-approved-logo.png");
+          const { data: zpLogoData } = await supabase.storage.from("certificates").download("templates/zp-approved-logo.jpg");
           if (zpLogoData) {
             const zpLogoBytes = new Uint8Array(await zpLogoData.arrayBuffer());
-            zpLogoImage = await pdfDoc.embedPng(zpLogoBytes);
+            zpLogoImage = await pdfDoc.embedJpg(zpLogoBytes);
           }
         } catch { /* skip */ }
 
