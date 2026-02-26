@@ -418,9 +418,19 @@ Je taak:
 4. Beoordeel of de polis ouder is dan 1 jaar ten opzichte van vandaag (${todayStr}).
 5. Geef een korte samenvatting van wat de polis dekt.
 
+CRUCIAAL - DEKKINGSCONTROLE:
+6. Controleer of de polis ZOWEL beroepsaansprakelijkheid (BAV) ALS bedrijfsaansprakelijkheid (AVB) dekt.
+   - Een combinatiepolis die beide dekt is correct.
+   - Als de polis ALLEEN beroepsaansprakelijkheid (BAV) dekt maar GEEN bedrijfsaansprakelijkheid (AVB): dit is een afwijking.
+   - Als de polis ALLEEN bedrijfsaansprakelijkheid (AVB) dekt maar GEEN beroepsaansprakelijkheid (BAV): dit is een afwijking.
+   - Zoek naar termen als: "beroepsaansprakelijkheid", "bedrijfsaansprakelijkheid", "BAV", "AVB", "combinatiepolis", "combi polis", "beroeps- en bedrijfsaansprakelijkheid".
+   - Stel has_bav op true als beroepsaansprakelijkheid gedekt is.
+   - Stel has_avb op true als bedrijfsaansprakelijkheid gedekt is.
+
 BELANGRIJK:
 - Een polis die ouder is dan 1 jaar is een aandachtspunt.
-- Zeg NOOIT dat een polis "actueel" is als de afgiftedatum ouder is dan 1 jaar.`;
+- Zeg NOOIT dat een polis "actueel" is als de afgiftedatum ouder is dan 1 jaar.
+- Een polis die niet BEIDE dekkingen (BAV + AVB) bevat is een aandachtspunt.`;
 
       const polisResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
@@ -445,7 +455,9 @@ BELANGRIJK:
                 properties: {
                   polis_date: { type: "string", description: "Afgiftedatum van de polis in YYYY-MM-DD formaat, of null als niet gevonden" },
                   coverage_summary: { type: "string", description: "Korte samenvatting van de dekking" },
-                  explanation: { type: "string", description: "Uitleg over de gevonden datum en beoordeling" },
+                  has_bav: { type: "boolean", description: "Of de polis beroepsaansprakelijkheid (BAV) dekt" },
+                  has_avb: { type: "boolean", description: "Of de polis bedrijfsaansprakelijkheid (AVB) dekt" },
+                  explanation: { type: "string", description: "Uitleg over de gevonden datum, dekkingstype en beoordeling" },
                 },
                 required: ["explanation"],
               },
@@ -493,12 +505,23 @@ BELANGRIJK:
 
       // Update missing_fields: remove old polis-related issues and add new if needed
       let updatedMissingFields = ((check.missing_fields as string[]) || []).filter(
-        (f: string) => !f.toLowerCase().includes("polis") || (!f.toLowerCase().includes("datum") && !f.toLowerCase().includes("aangeleverd") && !f.toLowerCase().includes("ouder"))
+        (f: string) => !f.toLowerCase().includes("polis") || (!f.toLowerCase().includes("datum") && !f.toLowerCase().includes("aangeleverd") && !f.toLowerCase().includes("ouder") && !f.toLowerCase().includes("bav") && !f.toLowerCase().includes("avb") && !f.toLowerCase().includes("dekking"))
       );
       if (polisExpired === true) {
         updatedMissingFields.push(`Polis beroeps-/bedrijfsaansprakelijkheid is ouder dan 1 jaar (datum: ${polisResult.polis_date})`);
       } else if (polisExpired === null) {
         updatedMissingFields.push("Datum polis beroeps- en bedrijfsaansprakelijkheid kon niet worden vastgesteld");
+      }
+
+      // Check BAV + AVB coverage
+      const hasBav = polisResult.has_bav === true;
+      const hasAvb = polisResult.has_avb === true;
+      if (!hasBav && !hasAvb) {
+        updatedMissingFields.push("Polis dekt geen beroepsaansprakelijkheid (BAV) noch bedrijfsaansprakelijkheid (AVB)");
+      } else if (!hasBav) {
+        updatedMissingFields.push("Polis dekt alleen bedrijfsaansprakelijkheid (AVB) — beroepsaansprakelijkheid (BAV) ontbreekt");
+      } else if (!hasAvb) {
+        updatedMissingFields.push("Polis dekt alleen beroepsaansprakelijkheid (BAV) — bedrijfsaansprakelijkheid (AVB) ontbreekt");
       }
 
       // Recalculate score
