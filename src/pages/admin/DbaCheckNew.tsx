@@ -410,6 +410,10 @@ export default function DbaCheckNew() {
                     accept=".pdf"
                     onChange={async (e) => {
                       const f = e.target.files?.[0] || null;
+                      if (f && f.size > MAX_FILE_SIZE) {
+                        toast({ title: "Bestand te groot", description: "Maximale bestandsgrootte is 20MB.", variant: "destructive" });
+                        return;
+                      }
                       setKvkFile(f);
                       if (f && f.name.toLowerCase().endsWith(".pdf")) {
                         try {
@@ -488,6 +492,10 @@ export default function DbaCheckNew() {
                     accept=".pdf"
                     onChange={async (e) => {
                       const f = e.target.files?.[0] || null;
+                      if (f && f.size > MAX_FILE_SIZE) {
+                        toast({ title: "Bestand te groot", description: "Maximale bestandsgrootte is 20MB.", variant: "destructive" });
+                        return;
+                      }
                       setPolisFile(f);
                       if (f && f.name.toLowerCase().endsWith(".pdf")) {
                         try {

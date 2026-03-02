@@ -547,8 +547,14 @@ BELANGRIJK:
     } else if (action === "certify") {
       // Generate ZP Approved certificate PDF
       const verificationToken = crypto.randomUUID();
-      const { data: seqData } = await supabase.rpc("nextval_text", { seq_name: "dba_cert_seq" });
-      const certNum = "ZPDBA" + (seqData || Math.floor(Math.random() * 9000 + 1000));
+      const { data: seqData, error: seqError } = await supabase.rpc("nextval_text", { seq_name: "dba_cert_seq" });
+      if (seqError || !seqData) {
+        console.error("Sequence error:", seqError);
+        return new Response(JSON.stringify({ error: "Certificaatnummer kon niet worden gegenereerd. Controleer of de sequence 'dba_cert_seq' bestaat." }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const certNum = "ZPDBA" + seqData;
       const certifiedAt = new Date().toISOString();
 
       let pdfPath: string | null = null;
@@ -1047,6 +1053,13 @@ BELANGRIJK:
         }
       } catch (pdfErr) {
         console.error("PDF generation error:", pdfErr);
+      }
+
+      // Only certify if PDF was successfully generated and uploaded
+      if (!pdfPath) {
+        return new Response(JSON.stringify({ error: "PDF generatie of upload is mislukt. Certificaat is NIET aangemaakt. Probeer opnieuw." }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
       // Update check record
