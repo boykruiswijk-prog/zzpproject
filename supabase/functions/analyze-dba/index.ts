@@ -524,12 +524,14 @@ BELANGRIJK:
         updatedMissingFields.push("Polis dekt alleen beroepsaansprakelijkheid (BAV) — bedrijfsaansprakelijkheid (AVB) ontbreekt");
       }
 
-      // Recalculate score
+      // Recalculate score: use original AI score as base, subtract 5 per new issue
       if (updatedSuggestion.score !== undefined) {
-        const baseScore = 100;
+        // Get the original AI base score (before any polis adjustments)
+        const originalAiScore = updatedSuggestion._original_ai_score ?? updatedSuggestion.score;
+        updatedSuggestion._original_ai_score = originalAiScore; // preserve for future recalculations
         updatedSuggestion.score = updatedMissingFields.length > 0 
-          ? Math.max(0, baseScore - updatedMissingFields.length * 5)
-          : baseScore;
+          ? Math.max(0, Math.min(originalAiScore, 100 - updatedMissingFields.length * 5))
+          : originalAiScore;
       }
       updatedSuggestion.aandachtspunten = updatedMissingFields;
 

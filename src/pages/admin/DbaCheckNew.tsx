@@ -35,6 +35,63 @@ export default function DbaCheckNew() {
         const reader = new FileReader();
         reader.onload = (evt) => setExtractedText(evt.target?.result as string || "");
         reader.readAsText(selectedFile);
+      } else if (name.endsWith(".pdf")) {
+        try {
+          const pdfjsLib = await import("pdfjs-dist");
+          pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+            "pdfjs-dist/build/pdf.worker.min.mjs",
+            import.meta.url
+          ).toString();
+          const arrayBuffer = await selectedFile.arrayBuffer();
+          const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+          let text = "";
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const content = await page.getTextContent();
+            const pageText = content.items
+              .map((item: any) => item.str)
+              .filter((s: string) => s.trim().length > 0)
+              .join(" ");
+            text += pageText + "\n";
+          }
+          text = text.trim();
+          setExtractedText(text);
+
+          // Auto-extract project description from PDF text
+          const descriptionLabels = [
+            "Opdrachtomschrijving",
+            "Omschrijving werkzaamheden",
+            "Projectomschrijving",
+            "Omschrijving van de werkzaamheden",
+          ];
+          for (const label of descriptionLabels) {
+            const labelIdx = text.toLowerCase().indexOf(label.toLowerCase());
+            if (labelIdx !== -1) {
+              const afterLabel = text.substring(labelIdx + label.length);
+              const contentStart = afterLabel.search(/[^\s:]/);
+              if (contentStart !== -1) {
+                let content = afterLabel.substring(contentStart);
+                if (content.toLowerCase().startsWith(label.toLowerCase())) {
+                  content = content.substring(label.length);
+                  const innerStart = content.search(/[^\s:]/);
+                  if (innerStart !== -1) content = content.substring(innerStart);
+                }
+                const endPattern = /\n\s*(?:Project\s*\n|Startdatum|Einddatum|Uurtarief|Uren per week|Aantal uur|Opdrachtgever|Eindopdrachtgever|Specifieke vaardigheden|Eigen materiaal|Aanvullende documentatie|Treedt zelfstandig|Zelfstandigheid)/i;
+                const match = content.match(endPattern);
+                const endIdx = match?.index ?? content.length;
+                const extracted = content.substring(0, endIdx).trim();
+                if (extracted.length > 10) {
+                  setProjectDescription(extracted);
+                  break;
+                }
+              }
+            }
+          }
+
+          toast({ title: "Tekst geëxtraheerd uit PDF" });
+        } catch {
+          toast({ title: "Kon PDF niet uitlezen", description: "Probeer een .docx of plak de tekst handmatig.", variant: "destructive" });
+        }
       } else if (name.endsWith(".docx") || name.endsWith(".doc")) {
         try {
           const mammoth = await import("mammoth");
@@ -351,7 +408,10 @@ export default function DbaCheckNew() {
                       if (f && f.name.toLowerCase().endsWith(".pdf")) {
                         try {
                           const pdfjsLib = await import("pdfjs-dist");
-                          pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+                          pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+                            "pdfjs-dist/build/pdf.worker.min.mjs",
+                            import.meta.url
+                          ).toString();
                           const arrayBuffer = await f.arrayBuffer();
                           const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
                           let text = "";
@@ -426,7 +486,10 @@ export default function DbaCheckNew() {
                       if (f && f.name.toLowerCase().endsWith(".pdf")) {
                         try {
                           const pdfjsLib = await import("pdfjs-dist");
-                          pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+                          pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+                            "pdfjs-dist/build/pdf.worker.min.mjs",
+                            import.meta.url
+                          ).toString();
                           const arrayBuffer = await f.arrayBuffer();
                           const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
                           let text = "";
