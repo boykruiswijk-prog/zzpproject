@@ -15,7 +15,7 @@ export default function DbaVerificatie() {
       if (!token) return null;
       const { data, error } = await supabase
         .from("dba_checks")
-        .select("client_name, certificate_number, certified_at, status, field_results, suggestions, verification_token")
+        .select("client_name, certificate_number, certified_at, status, verification_token")
         .eq("verification_token", token)
         .eq("status", "certified")
         .maybeSingle();
@@ -50,7 +50,7 @@ export default function DbaVerificatie() {
     );
   }
 
-  const score = (check.suggestions as any)?.[0]?.score;
+  // Score is no longer exposed on the public verification page for privacy
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 to-background p-4">
@@ -84,12 +84,6 @@ export default function DbaVerificatie() {
                 <span className="font-medium text-emerald-700">Gecertificeerd</span>
               </div>
             </div>
-            {score !== undefined && (
-              <div className="flex justify-between items-center py-2 border-b">
-                <span className="text-muted-foreground">Compliance score</span>
-                <span className="font-bold text-emerald-700">{score}/100</span>
-              </div>
-            )}
             <div className="flex justify-between items-center py-2 border-b">
               <span className="text-muted-foreground">Afgegeven op</span>
               <span className="font-medium">
