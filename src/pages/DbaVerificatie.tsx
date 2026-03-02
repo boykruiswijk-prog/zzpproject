@@ -14,13 +14,11 @@ export default function DbaVerificatie() {
     queryFn: async () => {
       if (!token) return null;
       const { data, error } = await supabase
-        .from("dba_checks")
-        .select("client_name, certificate_number, certified_at, status, verification_token")
-        .eq("verification_token", token)
-        .eq("status", "certified")
-        .maybeSingle();
+        .rpc("verify_dba_certificate", { _token: token });
       if (error) throw error;
-      return data;
+      // RPC returns an array, take first result
+      const result = Array.isArray(data) ? data[0] : data;
+      return result || null;
     },
     enabled: !!token,
   });

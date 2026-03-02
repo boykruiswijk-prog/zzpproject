@@ -732,6 +732,15 @@ export type Database = {
       }
       is_team_member: { Args: { _user_id: string }; Returns: boolean }
       nextval_text: { Args: { seq_name: string }; Returns: string }
+      verify_dba_certificate: {
+        Args: { _token: string }
+        Returns: {
+          certificate_number: string
+          certified_at: string
+          client_name: string
+          status: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "medewerker"
