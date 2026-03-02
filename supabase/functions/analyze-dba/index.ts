@@ -66,7 +66,7 @@ Je screent ingevulde toetsingsformulieren van ZP kandidaten op volledigheid.
 Het formulier "Gegevens met betrekking tot toetsing ZP kandidaat - Wet DBA" bevat de volgende velden die ingevuld moeten zijn:
 
 VERPLICHTE VELDEN:
-- Naam ZP kandidaat
+${fieldNames || `- Naam ZP kandidaat
 - Opdrachtgever
 - Eindopdrachtgever
 - Functie
@@ -79,7 +79,7 @@ VERPLICHTE VELDEN:
 - Aantal uur per week
 - Specifieke vaardigheden, kennis, opleiding
 - Treedt zelfstandig naar buiten toe (ja/nee)
-- Zelfstandigheid - eigen materiaal, werkwijze enz. (ja/nee)
+- Zelfstandigheid - eigen materiaal, werkwijze enz. (ja/nee)`}
 
 AANVULLENDE DOCUMENTATIE CHECKLIST:
 Voor elk document moet aangegeven zijn of het "van toepassing / aanwezig" of "niet van toepassing / niet aanwezig" is:
@@ -272,7 +272,7 @@ Geef ALLEEN de herschreven tekst terug, geen uitleg.`;
           seed: 42,
           messages: [
             { role: "system", content: systemPrompt },
-            { role: "user", content: `Herschrijf deze projectomschrijving:\n\n${check.project_description}` },
+            { role: "user", content: `Herschrijf deze projectomschrijving:\n\n${check.project_description || check.extracted_text}` },
           ],
         }),
       });

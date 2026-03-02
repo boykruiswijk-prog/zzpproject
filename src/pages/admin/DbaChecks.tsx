@@ -114,13 +114,17 @@ export default function AdminDbaChecks() {
       headStyles: { fillColor: [30, 64, 124] },
     });
 
-    doc.save("zp-approved-overzicht.pdf");
+    // Save PDF first - only mark as invoiced after successful save
+    try {
+      doc.save("zp-approved-overzicht.pdf");
+    } catch (saveError: any) {
+      toast({ title: "PDF opslaan mislukt", description: saveError.message, variant: "destructive" });
+      return;
+    }
 
-    // Mark exported checks as invoiced
+    // Mark exported checks as invoiced only after successful PDF generation
     const now = new Date().toISOString();
-    const uninvoicedIds = certifiedChecks
-      .filter((c) => !c.invoiced_at)
-      .map((c) => c.id);
+    const uninvoicedIds = certifiedChecks.map((c) => c.id);
     
     if (uninvoicedIds.length > 0) {
       await supabase

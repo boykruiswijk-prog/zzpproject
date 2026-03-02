@@ -78,6 +78,10 @@ export default function DbaCheckDetail() {
 
   const handlePolisUpload = async (file: File) => {
     if (!id) return;
+    if (file.size > 20 * 1024 * 1024) {
+      toast({ title: "Bestand te groot", description: "Maximale bestandsgrootte is 20MB.", variant: "destructive" });
+      return;
+    }
     setPolisUploading(true);
     try {
       // Upload file
@@ -118,21 +122,17 @@ export default function DbaCheckDetail() {
 
       toast({ title: "Polis geüpload!" });
 
+      queryClient.invalidateQueries({ queryKey: ["dba-check", id] });
+
       // Auto-run polis check if text was extracted
       if (polisText) {
-        queryClient.invalidateQueries({ queryKey: ["dba-check", id] });
-        // Wait for invalidation then run check
-        setTimeout(async () => {
-          try {
-            await analyzeDba.mutateAsync({ checkId: id, action: "check_polis" });
-            toast({ title: "Polis check voltooid!" });
-            queryClient.invalidateQueries({ queryKey: ["dba-check", id] });
-          } catch (e: any) {
-            toast({ title: "Polis check mislukt", description: e.message, variant: "destructive" });
-          }
-        }, 500);
-      } else {
-        queryClient.invalidateQueries({ queryKey: ["dba-check", id] });
+        try {
+          await analyzeDba.mutateAsync({ checkId: id, action: "check_polis" });
+          toast({ title: "Polis check voltooid!" });
+          queryClient.invalidateQueries({ queryKey: ["dba-check", id] });
+        } catch (e: any) {
+          toast({ title: "Polis check mislukt", description: e.message, variant: "destructive" });
+        }
       }
     } catch (error: any) {
       toast({ title: "Fout bij uploaden", description: error.message, variant: "destructive" });

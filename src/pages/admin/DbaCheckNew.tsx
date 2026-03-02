@@ -26,9 +26,15 @@ export default function DbaCheckNew() {
   const [isUploading, setIsUploading] = useState(false);
   const [extractedText, setExtractedText] = useState("");
 
+  const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
+      if (selectedFile.size > MAX_FILE_SIZE) {
+        toast({ title: "Bestand te groot", description: "Maximale bestandsgrootte is 20MB.", variant: "destructive" });
+        return;
+      }
       setFile(selectedFile);
       const name = selectedFile.name.toLowerCase();
       if (name.endsWith(".txt")) {
@@ -357,7 +363,7 @@ export default function DbaCheckNew() {
                       <div className="flex flex-col items-center gap-2 text-muted-foreground">
                         <Upload className="h-8 w-8" />
                         <span className="text-sm">Upload het ingevulde toetsingsformulier</span>
-                        <span className="text-xs">.docx, .doc, .txt</span>
+                        <span className="text-xs">.docx, .doc, .txt, .pdf</span>
                       </div>
                     )}
                   </label>
