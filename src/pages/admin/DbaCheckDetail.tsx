@@ -32,15 +32,15 @@ export default function DbaCheckDetail() {
   const analyzeDba = useAnalyzeDba();
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [polisUploading, setPolisUploading] = useState(false);
+  const [activeAction, setActiveAction] = useState<string | null>(null);
 
   const handleAnalyze = async () => {
     if (!id) return;
+    setActiveAction("analyze");
     try {
-      // Step 1: Analyze fields
       await analyzeDba.mutateAsync({ checkId: id, action: "analyze" });
       toast({ title: "Veldenanalyse voltooid!" });
 
-      // Step 2: KVK check (if kvk text available)
       if (check?.kvk_text) {
         try {
           await analyzeDba.mutateAsync({ checkId: id, action: "check_kvk" });
@@ -50,7 +50,6 @@ export default function DbaCheckDetail() {
         }
       }
 
-      // Step 3: Polis check (if polis text available)
       if (check?.polis_text) {
         try {
           await analyzeDba.mutateAsync({ checkId: id, action: "check_polis" });
@@ -60,7 +59,6 @@ export default function DbaCheckDetail() {
         }
       }
 
-      // Step 4: Rewrite project description
       if (check?.project_description || check?.extracted_text) {
         try {
           await analyzeDba.mutateAsync({ checkId: id, action: "rewrite" });
@@ -73,6 +71,8 @@ export default function DbaCheckDetail() {
       queryClient.invalidateQueries({ queryKey: ["dba-check", id] });
     } catch (error: any) {
       toast({ title: "Fout bij analyse", description: error.message, variant: "destructive" });
+    } finally {
+      setActiveAction(null);
     }
   };
 
@@ -143,46 +143,58 @@ export default function DbaCheckDetail() {
 
   const handlePolisCheck = async () => {
     if (!id) return;
+    setActiveAction("check_polis");
     try {
       await analyzeDba.mutateAsync({ checkId: id, action: "check_polis" });
       toast({ title: "Polis check voltooid!" });
       queryClient.invalidateQueries({ queryKey: ["dba-check", id] });
     } catch (error: any) {
       toast({ title: "Fout bij polis check", description: error.message, variant: "destructive" });
+    } finally {
+      setActiveAction(null);
     }
   };
 
   const handleRewrite = async () => {
     if (!id) return;
+    setActiveAction("rewrite");
     try {
       await analyzeDba.mutateAsync({ checkId: id, action: "rewrite" });
       toast({ title: "Projectomschrijving herschreven!" });
       queryClient.invalidateQueries({ queryKey: ["dba-check", id] });
     } catch (error: any) {
       toast({ title: "Fout bij herschrijven", description: error.message, variant: "destructive" });
+    } finally {
+      setActiveAction(null);
     }
   };
 
   const handleKvkCheck = async () => {
     if (!id) return;
+    setActiveAction("check_kvk");
     try {
       await analyzeDba.mutateAsync({ checkId: id, action: "check_kvk" });
       toast({ title: "KVK check voltooid!" });
       queryClient.invalidateQueries({ queryKey: ["dba-check", id] });
     } catch (error: any) {
       toast({ title: "Fout bij KVK check", description: error.message, variant: "destructive" });
+    } finally {
+      setActiveAction(null);
     }
   };
 
   const handleCertify = async () => {
     if (!id) return;
     if (!confirm("Weet je zeker dat je een Wet DBA certificaat wilt afgeven?")) return;
+    setActiveAction("certify");
     try {
       const result = await analyzeDba.mutateAsync({ checkId: id, action: "certify" });
       toast({ title: "Certificaat afgegeven!", description: `Nummer: ${result.certificate_number}` });
       queryClient.invalidateQueries({ queryKey: ["dba-check", id] });
     } catch (error: any) {
       toast({ title: "Fout bij certificering", description: error.message, variant: "destructive" });
+    } finally {
+      setActiveAction(null);
     }
   };
 
@@ -286,8 +298,8 @@ export default function DbaCheckDetail() {
           </div>
           <div className="flex gap-2">
             {check.status === "uploaded" && (
-              <Button onClick={handleAnalyze} disabled={analyzeDba.isPending}>
-                {analyzeDba.isPending ? (
+              <Button onClick={handleAnalyze} disabled={activeAction !== null}>
+                {activeAction === "analyze" ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 ) : (
                   <Play className="h-4 w-4 mr-2" />
@@ -297,13 +309,21 @@ export default function DbaCheckDetail() {
             )}
             {check.status === "analyzed" && (
               <>
-                <Button variant="outline" onClick={handleAnalyze} disabled={analyzeDba.isPending}>
-                  <RefreshCw className="h-4 w-4 mr-2" />
+                <Button variant="outline" onClick={handleAnalyze} disabled={activeAction !== null}>
+                  {activeAction === "analyze" ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                  )}
                   Opnieuw analyseren
                 </Button>
                 {canCertify && (
-                  <Button onClick={handleCertify} disabled={analyzeDba.isPending} className="bg-emerald-600 hover:bg-emerald-700">
-                    <Award className="h-4 w-4 mr-2" />
+                  <Button onClick={handleCertify} disabled={activeAction !== null} className="bg-primary hover:bg-primary/90">
+                    {activeAction === "certify" ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Award className="h-4 w-4 mr-2" />
+                    )}
                     Certificaat afgeven
                   </Button>
                 )}
@@ -350,9 +370,9 @@ export default function DbaCheckDetail() {
                           variant="outline"
                           size="sm"
                           onClick={handlePolisCheck}
-                          disabled={analyzeDba.isPending}
+                          disabled={activeAction !== null}
                         >
-                          {analyzeDba.isPending ? (
+                          {activeAction === "check_polis" ? (
                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                           ) : (
                             <Play className="h-4 w-4 mr-2" />
@@ -528,9 +548,9 @@ export default function DbaCheckDetail() {
                       variant="outline"
                       size="sm"
                       onClick={handleKvkCheck}
-                      disabled={analyzeDba.isPending}
+                      disabled={activeAction !== null}
                     >
-                      {analyzeDba.isPending ? (
+                      {activeAction === "check_kvk" ? (
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                       ) : (
                         <Play className="h-4 w-4 mr-2" />
@@ -626,7 +646,7 @@ export default function DbaCheckDetail() {
             )}
 
             {/* Project description rewrite */}
-            {check.project_description && check.status !== "uploaded" && (
+            {(check.project_description || check.extracted_text) && check.status !== "uploaded" && (
               <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -635,9 +655,9 @@ export default function DbaCheckDetail() {
                       variant="outline"
                       size="sm"
                       onClick={handleRewrite}
-                      disabled={analyzeDba.isPending}
+                      disabled={activeAction !== null}
                     >
-                      {analyzeDba.isPending ? (
+                      {activeAction === "rewrite" ? (
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                       ) : (
                         <RefreshCw className="h-4 w-4 mr-2" />
@@ -650,7 +670,7 @@ export default function DbaCheckDetail() {
                   <div>
                     <p className="text-sm font-medium text-muted-foreground mb-2">Origineel:</p>
                     <div className="p-3 rounded-lg bg-secondary/50 text-sm whitespace-pre-line">
-                      {check.project_description}
+                      {check.project_description || check.extracted_text}
                     </div>
                   </div>
                   {check.rewritten_description && (
