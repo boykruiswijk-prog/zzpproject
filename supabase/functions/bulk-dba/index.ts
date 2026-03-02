@@ -464,8 +464,8 @@ Antwoord ALLEEN met een JSON tool call.`;
               });
             } catch { /* skip */ }
           }
-          // Rewrite if project_description available
-          if (check.project_description) {
+          // Rewrite if project_description or extracted_text available
+          if (check.project_description || check.extracted_text) {
             try {
               await fetch(`${supabaseUrl}/functions/v1/analyze-dba`, {
                 method: "POST",

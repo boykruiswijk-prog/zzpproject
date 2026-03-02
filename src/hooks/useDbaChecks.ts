@@ -27,6 +27,7 @@ export interface DbaCheck {
   polis_file_url: string | null;
   polis_filename: string | null;
   polis_text: string | null;
+  document_checklist: Record<string, boolean> | null;
   created_at: string;
   updated_at: string;
 }

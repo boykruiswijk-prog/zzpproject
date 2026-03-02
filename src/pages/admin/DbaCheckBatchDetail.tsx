@@ -186,7 +186,7 @@ export default function DbaCheckBatchDetail() {
               <Button
                 onClick={handleCertifySelected}
                 disabled={isCertifying}
-                className="bg-emerald-600 hover:bg-emerald-700"
+                className="bg-primary hover:bg-primary/90"
               >
                 {isCertifying ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
