@@ -14,6 +14,7 @@ import {
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { extractTextFromPdf } from "@/lib/pdfExtract";
 
 const statusLabels: Record<string, string> = {
   uploaded: "Geüpload",
@@ -94,23 +95,16 @@ export default function DbaCheckDetail() {
       // Extract text from PDF
       let polisText = "";
       if (file.name.toLowerCase().endsWith(".pdf")) {
-        const pdfjsLib = await import("pdfjs-dist");
-        pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-          "pdfjs-dist/build/pdf.worker.min.mjs",
-          import.meta.url
-        ).toString();
-        const arrayBuffer = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const content = await page.getTextContent();
-          const pageText = content.items
-            .map((item: any) => item.str)
-            .filter((s: string) => s.trim().length > 0)
-            .join(" ");
-          polisText += pageText + "\n";
+        try {
+          const result = await extractTextFromPdf(file);
+          polisText = result.text;
+          if (result.warning) {
+            toast({ title: "Let op", description: result.warning, variant: "destructive" });
+          }
+        } catch (err: any) {
+          console.error("Polis PDF extraction error:", err);
+          toast({ title: "Kon polis PDF niet uitlezen", description: err?.message || "De tekst kon niet worden geëxtraheerd.", variant: "destructive" });
         }
-        polisText = polisText.trim();
       }
 
       // Update the check record
