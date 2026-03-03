@@ -351,6 +351,48 @@ Antwoord ALLEEN met een JSON tool call.`;
         if (val) extractedColumns.specifieke_vaardigheden = val;
       }
 
+      // Extract boolean fields: treedt_zelfstandig_op and eigen_materiaal_werkwijze
+      // Check extracted text for "Ja" answers, then AI field results as fallback
+      const parseBooleanField = (labels: string[]): boolean | null => {
+        for (const label of labels) {
+          // Look for "Label\n\nJa" or "Label: Ja" or checkbox patterns "☒ Ja"
+          const patterns = [
+            new RegExp(`${label}[^\\n]*\\n\\s*\\n\\s*(ja|nee)`, "i"),
+            new RegExp(`${label}[^\\n]*\\n\\s*(ja|nee)`, "i"),
+            new RegExp(`${label}[^\\n]*:\\s*(ja|nee)`, "i"),
+            new RegExp(`${label}[^\\n]*☒\\s*ja`, "i"),
+            new RegExp(`${label}[^\\n]*ja\\s*☒`, "i"),
+          ];
+          for (const pat of patterns) {
+            const match = txt.match(pat);
+            if (match) {
+              const val = match[1] || "ja"; // If matched a checkbox pattern, it's ja
+              return val.toLowerCase() === "ja";
+            }
+          }
+        }
+        // Fallback: check AI results
+        for (const label of labels) {
+          const aiField = (analysis.form_fields || []).find((f: any) => 
+            f.field_name?.toLowerCase().includes(label.toLowerCase())
+          );
+          if (aiField?.value) {
+            return aiField.value.toLowerCase().includes("ja");
+          }
+        }
+        return null;
+      };
+
+      const zelfstandigVal = parseBooleanField(["zelfstandig naar buiten", "treedt zelfstandig"]);
+      if (zelfstandigVal !== null) {
+        extractedColumns.treedt_zelfstandig_op = zelfstandigVal;
+      }
+      
+      const eigenMateriaalVal = parseBooleanField(["eigen materiaal", "zelfstandigheid"]);
+      if (eigenMateriaalVal !== null) {
+        extractedColumns.eigen_materiaal_werkwijze = eigenMateriaalVal;
+      }
+
       console.log("Extracted columns from text:", JSON.stringify(extractedColumns));
 
       await supabase.from("dba_checks").update({
