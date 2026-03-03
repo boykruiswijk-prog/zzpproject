@@ -47,7 +47,7 @@ export default function DbaCheckNew() {
           const { text, warning } = await extractTextFromPdf(selectedFile);
           setExtractedText(text);
           if (warning) {
-            toast({ title: "Let op", description: warning, variant: "destructive" });
+            toast({ title: "Gescand document", description: "De tekst kon niet automatisch worden uitgelezen. Plak de tekst handmatig in het veld hieronder." });
           }
 
           // Auto-extract project description from PDF text
@@ -408,7 +408,7 @@ export default function DbaCheckNew() {
                           const { text, warning } = await extractTextFromPdf(f);
                           setKvkText(text);
                           if (warning) {
-                            toast({ title: "Let op", description: warning, variant: "destructive" });
+                            toast({ title: "Gescand document", description: "Tekst kon niet automatisch worden uitgelezen. Plak de KVK bedrijfsomschrijving handmatig hieronder." });
                           } else {
                             toast({ title: "Tekst geëxtraheerd uit KVK uittreksel" });
                           }
@@ -479,7 +479,7 @@ export default function DbaCheckNew() {
                           const { text, warning } = await extractTextFromPdf(f);
                           setPolisText(text);
                           if (warning) {
-                            toast({ title: "Let op", description: warning, variant: "destructive" });
+                            toast({ title: "Gescand document", description: "Tekst kon niet automatisch worden uitgelezen. Plak de polistekst handmatig hieronder." });
                           } else {
                             toast({ title: "Tekst geëxtraheerd uit polis" });
                           }
