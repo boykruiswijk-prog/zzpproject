@@ -815,7 +815,7 @@ BELANGRIJK:
         const alt = () => { rowIdx++; return rowIdx % 2 === 0; };
 
         drawRow("Documentnummer", certNum, { valueBold: true, altBg: alt() });
-        drawRow("Naam ZP kandidaat", getFieldValue("naam"), { altBg: alt() });
+        drawRow("Naam ZP kandidaat", getFieldValue("naam") || check.client_name || "-", { altBg: alt() });
         drawRow("Opdrachtgever", check.opdrachtgever || check.client_name || "", { altBg: alt() });
         drawRow("Eindopdrachtgever", check.eindopdrachtgever || getFieldValue("eindopdrachtgever") || "-", { altBg: alt() });
         drawRow("Functie", check.functie || getFieldValue("functie") || "-", { altBg: alt() });
