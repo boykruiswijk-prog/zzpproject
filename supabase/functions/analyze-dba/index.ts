@@ -789,12 +789,7 @@ BELANGRIJK:
           const { data: zpLogoData } = await supabase.storage.from("certificates").download("templates/zp-approved-logo.png");
           if (zpLogoData) {
             const zpLogoBytes = new Uint8Array(await zpLogoData.arrayBuffer());
-            // Try PNG first, fall back to JPG
-            try {
-              zpLogoImage = await pdfDoc.embedPng(zpLogoBytes);
-            } catch {
-              zpLogoImage = await pdfDoc.embedJpg(zpLogoBytes);
-            }
+            zpLogoImage = await pdfDoc.embedPng(zpLogoBytes);
           }
         } catch { /* skip */ }
 
@@ -823,7 +818,13 @@ BELANGRIJK:
           const zpTargetW = (zpOrigW / zpOrigH) * zpTargetH;
           page.drawImage(zpLogoImage, { x: margin, y: logoY - 20, width: zpTargetW, height: zpTargetH });
         }
-        // Onefellow logo removed per request
+        if (ofLogoImage) {
+          const ofOrigW = ofLogoImage.width;
+          const ofOrigH = ofLogoImage.height;
+          const ofTargetH = 35;
+          const ofTargetW = (ofOrigW / ofOrigH) * ofTargetH;
+          page.drawImage(ofLogoImage, { x: pageWidth - rightMargin - ofTargetW, y: logoY - 5, width: ofTargetW, height: ofTargetH });
+        }
 
         // --- Table helper with auto-pagination ---
         let y = pageHeight - 130;
