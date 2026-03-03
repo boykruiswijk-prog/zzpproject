@@ -22,7 +22,7 @@ export async function generateAnalysisReport(check: DbaCheck) {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   const score = check.suggestions?.[0]?.score ?? 0;
-  const summary = check.suggestions?.[0]?.summary ?? "";
+  
 
   // Header logos
   doc.addImage(zpLogo, "PNG", 14, 10, 36, 18);
@@ -114,13 +114,6 @@ export async function generateAnalysisReport(check: DbaCheck) {
   }
 
   // Summary
-  if (summary) {
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    const lines = doc.splitTextToSize(summary, pageWidth - 28);
-    doc.text(lines, 14, y);
-    y += lines.length * 5 + 6;
-  }
 
   // Field results table
   if (check.field_results?.length) {

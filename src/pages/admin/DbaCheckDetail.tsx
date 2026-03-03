@@ -261,7 +261,7 @@ export default function DbaCheckDetail() {
   }
 
   const score = check.suggestions?.[0]?.score;
-  const summary = check.suggestions?.[0]?.summary;
+  
   const rawPolicyDate = check.suggestions?.[0]?.insurance_policy_date;
   const insurancePolicyDate = (rawPolicyDate && rawPolicyDate !== "null" && rawPolicyDate !== "undefined") ? rawPolicyDate : null;
   const insurancePolicyExpired = check.suggestions?.[0]?.insurance_policy_expired;
@@ -356,7 +356,7 @@ export default function DbaCheckDetail() {
                       {score}%
                     </span>
                   </div>
-                  {summary && <p className="text-sm text-muted-foreground">{summary}</p>}
+                  
                 </CardContent>
               </Card>
             )}
