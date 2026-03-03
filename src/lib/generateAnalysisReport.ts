@@ -21,7 +21,22 @@ export async function generateAnalysisReport(check: DbaCheck) {
 
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
+  const maxTextWidth = pageWidth - 28;
   const score = check.suggestions?.[0]?.score ?? 0;
+
+  // Helper: draw wrapped text line-by-line with automatic page breaks
+  const drawWrappedText = (text: string, x: number, currentY: number, lineSpacing = 5): number => {
+    const lines = doc.splitTextToSize(text, maxTextWidth - (x - 14));
+    for (const line of lines) {
+      if (currentY > 275) {
+        doc.addPage();
+        currentY = 20;
+      }
+      doc.text(line, x, currentY);
+      currentY += lineSpacing;
+    }
+    return currentY;
+  };
   
 
   // Header logos
@@ -62,12 +77,10 @@ export async function generateAnalysisReport(check: DbaCheck) {
   if ((check as any).uren_per_week) candidateLines.push(`Uren per week: ${(check as any).uren_per_week}`);
 
   candidateLines.forEach((line) => {
-    doc.text(line, 14, y);
-    y += 5;
+    y = drawWrappedText(line, 14, y);
   });
   if (candidateLines.length === 0) {
-    doc.text(check.client_name || "-", 14, y);
-    y += 5;
+    y = drawWrappedText(check.client_name || "-", 14, y);
   }
 
   // Score section
@@ -206,9 +219,10 @@ export async function generateAnalysisReport(check: DbaCheck) {
     y += 6;
 
     if (check.kvk_check_result.explanation) {
-      const expLines = doc.splitTextToSize(check.kvk_check_result.explanation, pageWidth - 28);
-      doc.text(expLines, 14, y);
-      y += expLines.length * 5 + 4;
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      y = drawWrappedText(check.kvk_check_result.explanation, 14, y);
+      y += 2;
     }
 
     if (check.kvk_check_result.suggestions?.length) {
@@ -217,12 +231,8 @@ export async function generateAnalysisReport(check: DbaCheck) {
       y += 6;
       doc.setFont("helvetica", "normal");
       check.kvk_check_result.suggestions.forEach((s: string) => {
-        if (y > 275) {
-          doc.addPage();
-          y = 20;
-        }
-        doc.text(`•  ${s}`, 16, y);
-        y += 6;
+        y = drawWrappedText(`•  ${s}`, 16, y, 5.5);
+        y += 1;
       });
     }
 
@@ -245,14 +255,12 @@ export async function generateAnalysisReport(check: DbaCheck) {
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     if (polisResult.coverage_summary) {
-      const covLines = doc.splitTextToSize(`Dekking: ${polisResult.coverage_summary}`, pageWidth - 28);
-      doc.text(covLines, 14, y);
-      y += covLines.length * 5 + 4;
+      y = drawWrappedText(`Dekking: ${polisResult.coverage_summary}`, 14, y);
+      y += 2;
     }
     if (polisResult.explanation) {
-      const expLines = doc.splitTextToSize(polisResult.explanation, pageWidth - 28);
-      doc.text(expLines, 14, y);
-      y += expLines.length * 5 + 4;
+      y = drawWrappedText(polisResult.explanation, 14, y);
+      y += 2;
     }
   }
 
@@ -270,9 +278,8 @@ export async function generateAnalysisReport(check: DbaCheck) {
 
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    const rwLines = doc.splitTextToSize(check.rewritten_description, pageWidth - 28);
-    doc.text(rwLines, 14, y);
-    y += rwLines.length * 4 + 4;
+    y = drawWrappedText(check.rewritten_description, 14, y, 4.5);
+    y += 2;
   }
 
   // Footer
