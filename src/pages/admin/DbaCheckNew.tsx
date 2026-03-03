@@ -209,7 +209,7 @@ export default function DbaCheckNew() {
                   if (innerStart !== -1) content = content.substring(innerStart);
                 }
                 // Find end: next known section header
-                const endPattern = /\n\s*(?:Project\s*\n|Startdatum|Einddatum|Uurtarief|Uren per week|Aantal uur|Opdrachtgever|Eindopdrachtgever|Specifieke vaardigheden|Eigen materiaal|Aanvullende documentatie|Treedt zelfstandig|Zelfstandigheid)/i;
+                const endPattern = /\n\s*(?:Project\s*\n|Startdatum|Einddatum|Uurtarief|Uren per week|Aantal uur|Opdrachtgever|Eindopdrachtgever|Specifieke vaardigheden|Eigen materiaal|Aanvullende documentatie|Treedt zelfstandig|Zelfstandigheid|De navolgende|Resultaatgebieden|Verantwoordelijkheden|Taken en verantwoordelijkheden|Deliverables|Resultaten|Werkzaamheden omvatten)/i;
                 const match = content.match(endPattern);
                 const endIdx = match?.index ?? content.length;
                 const extracted = content.substring(0, endIdx).trim();
