@@ -194,6 +194,45 @@ Antwoord ALLEEN met een JSON tool call.`;
       const analysis = JSON.parse(toolCall.function.arguments);
       const missingFields = analysis.aandachtspunten || [];
 
+      // If KVK uittreksel is uploaded separately, mark KvK-nummer field as filled and remove from aandachtspunten
+      const hasKvkUploaded = !!(check.kvk_file_url || check.kvk_text);
+      if (hasKvkUploaded) {
+        // Fix form_fields: mark KvK-nummer as filled
+        if (analysis.form_fields) {
+          for (const field of analysis.form_fields) {
+            if (field.field_name?.toLowerCase().includes("kvk") && !field.filled) {
+              field.filled = true;
+              field.value = "Zie apart geüpload KVK-uittreksel";
+              field.issue = undefined;
+            }
+          }
+        }
+        // Fix checklist: mark KVK as aanwezig
+        if (analysis.checklist_items) {
+          for (const item of analysis.checklist_items) {
+            if (item.document_name?.toLowerCase().includes("kamer van koophandel") || item.document_name?.toLowerCase().includes("kvk")) {
+              item.status = "aanwezig";
+              item.issue = undefined;
+            }
+          }
+        }
+        // Remove KVK-related aandachtspunten
+        const kvkFiltered = missingFields.filter((f: string) => !f.toLowerCase().includes("kvk") && !f.toLowerCase().includes("kamer van koophandel"));
+        missingFields.length = 0;
+        missingFields.push(...kvkFiltered);
+      }
+
+      // If polis is uploaded separately, mark polis checklist item as aanwezig
+      const hasPolisFile = !!(check.polis_file_url || check.polis_text);
+      if (hasPolisFile && analysis.checklist_items) {
+        for (const item of analysis.checklist_items) {
+          if (item.document_name?.toLowerCase().includes("polis") || item.document_name?.toLowerCase().includes("aansprakelijkheid")) {
+            item.status = "aanwezig";
+            item.issue = undefined;
+          }
+        }
+      }
+
       // Check insurance policy status from checklist
       const insuranceChecklist = analysis.checklist_items?.find(
         (item: any) => item.document_name?.toLowerCase().includes("polis") || item.document_name?.toLowerCase().includes("aansprakelijkheid")
