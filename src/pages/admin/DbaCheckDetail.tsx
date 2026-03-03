@@ -265,7 +265,7 @@ export default function DbaCheckDetail() {
   const rawPolicyDate = check.suggestions?.[0]?.insurance_policy_date;
   const insurancePolicyDate = (rawPolicyDate && rawPolicyDate !== "null" && rawPolicyDate !== "undefined") ? rawPolicyDate : null;
   const insurancePolicyExpired = check.suggestions?.[0]?.insurance_policy_expired;
-  const canCertify = check.status === "analyzed" && score !== undefined && score >= 75;
+  const canCertify = check.status === "analyzed";
 
   return (
     <AdminLayout>
@@ -323,7 +323,7 @@ export default function DbaCheckDetail() {
                     Certificaat afgeven
                   </Button>
                 )}
-                {check.status === "analyzed" && score !== undefined && score < 75 && (
+                {check.status === "analyzed" && (
                   <Button
                     variant="outline"
                     onClick={() => generateAnalysisReport(check)}
@@ -795,19 +795,19 @@ export default function DbaCheckDetail() {
 
             {/* Score too low warning */}
             {check.status === "analyzed" && score !== undefined && score < 75 && (
-              <Card className="border-red-200 bg-red-50">
+              <Card className="border-orange-200 bg-orange-50">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-red-800 text-base">
-                    <XCircle className="h-5 w-5" />
-                    Certificering niet mogelijk
+                  <CardTitle className="flex items-center gap-2 text-orange-800 text-base">
+                    <AlertTriangle className="h-5 w-5" />
+                    Lage compliance score
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-red-700 mb-3">
-                    De compliance score ({score}%) is lager dan 75%. Certificering is pas mogelijk bij een score van 75% of hoger.
+                  <p className="text-sm text-orange-700 mb-3">
+                    De compliance score ({score}%) is lager dan 75%. De scorebalk op het certificaat wordt rood weergegeven.
                   </p>
-                  <p className="text-sm text-red-700">
-                    Gebruik het analyserapport om de bevindingen terug te sturen naar de klant.
+                  <p className="text-sm text-orange-700">
+                    U kunt ook het analyserapport exporteren om de bevindingen terug te sturen naar de klant.
                   </p>
                 </CardContent>
               </Card>

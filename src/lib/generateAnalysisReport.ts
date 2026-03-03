@@ -82,16 +82,17 @@ export async function generateAnalysisReport(check: DbaCheck) {
 
   y += 14;
 
-  // Status warning
-  doc.setFillColor(255, 243, 205);
-  doc.roundedRect(14, y, pageWidth - 28, 16, 2, 2, "F");
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(146, 100, 0);
-  doc.text("! Score onder 75% - Certificering niet mogelijk", 20, y + 10);
-  doc.setTextColor(0);
-
-  y += 22;
+  // Status warning (only show if score < 75)
+  if (score < 75) {
+    doc.setFillColor(255, 243, 205);
+    doc.roundedRect(14, y, pageWidth - 28, 16, 2, 2, "F");
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(146, 100, 0);
+    doc.text("! Score onder 75% - Aandacht vereist", 20, y + 10);
+    doc.setTextColor(0);
+    y += 22;
+  }
 
   // Summary
   if (summary) {
