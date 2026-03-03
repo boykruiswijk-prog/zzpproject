@@ -231,7 +231,7 @@ Antwoord ALLEEN met een JSON tool call.`;
         missing_fields: missingFields,
         document_checklist: analysis.checklist_items,
       suggestions: [{
-          score: missingFields.length > 0 ? Math.min(analysis.overall_score, Math.max(0, 100 - missingFields.length * 5)) : analysis.overall_score,
+          score: missingFields.length > 0 ? Math.min(analysis.overall_score, Math.max(0, 100 - missingFields.length * 10)) : analysis.overall_score,
           summary: analysis.summary,
           aandachtspunten: missingFields,
           insurance_policy_date: (analysis.insurance_policy_date && analysis.insurance_policy_date !== "null" && analysis.insurance_policy_date !== "undefined") ? analysis.insurance_policy_date : null,
