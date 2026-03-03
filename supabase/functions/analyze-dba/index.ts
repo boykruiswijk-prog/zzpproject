@@ -198,8 +198,25 @@ Antwoord ALLEEN met een JSON tool call.`;
       }
 
       const analysis = JSON.parse(toolCall.function.arguments);
-      const missingFields = analysis.aandachtspunten || [];
       const txt = check.extracted_text || "";
+
+      // Filter aandachtspunten: only keep items that reference known fields/documents
+      const allowedKeywords = [
+        "naam", "kandidaat", "opdrachtgever", "eindopdrachtgever", "functie",
+        "opdrachtomschrijving", "project", "startdatum", "einddatum", "verlenging",
+        "uurtarief", "tarief", "uur per week", "vaardigheden", "kennis", "opleiding",
+        "zelfstandig", "eigen materiaal", "werkwijze",
+        "overeenkomst", "identiteit", "curriculum", "cv", "kamer van koophandel", "kvk",
+        "polis", "aansprakelijkheid", "vog", "vca", "bav", "avb",
+      ];
+      const rawAandachtspunten: string[] = analysis.aandachtspunten || [];
+      const missingFields = rawAandachtspunten.filter((item: string) => {
+        const lower = item.toLowerCase();
+        return allowedKeywords.some(k => lower.includes(k));
+      });
+      if (missingFields.length < rawAandachtspunten.length) {
+        console.log(`Filtered ${rawAandachtspunten.length - missingFields.length} hallucinated aandachtspunten`);
+      }
 
       // Fix KVK-nummer: mark as filled if KVK file uploaded OR if KVK number exists in form text
       const hasKvkUploaded = !!(check.kvk_file_url || check.kvk_text);
@@ -405,23 +422,36 @@ Antwoord ALLEEN met een JSON tool call.`;
       console.log("Extracted columns from text:", JSON.stringify(extractedColumns));
 
       // Deterministic score: count unfilled fields + missing checklist items + extra penalties
-      // This prevents AI from inconsistently grouping aandachtspunten
+      // Only count fields from our known required field list — ignore AI-hallucinated extras
+      const knownFieldNames = [
+        "naam", "kandidaat", "opdrachtgever", "eindopdrachtgever", "functie",
+        "opdrachtomschrijving", "project", "startdatum", "einddatum", "verlenging",
+        "uurtarief", "tarief", "uur per week", "vaardigheden", "kennis", "opleiding",
+        "zelfstandig", "eigen materiaal", "werkwijze",
+      ];
+      const knownChecklistNames = [
+        "overeenkomst", "identiteit", "curriculum", "cv", "kamer van koophandel", "kvk",
+        "polis", "aansprakelijkheid", "vog", "vca",
+      ];
+      const isKnownField = (name: string) => knownFieldNames.some(k => name.toLowerCase().includes(k));
+      const isKnownChecklist = (name: string) => knownChecklistNames.some(k => name.toLowerCase().includes(k));
+
       const unfilledFieldCount = (analysis.form_fields || []).filter((f: any) => {
         const name = (f.field_name || "").toLowerCase();
-        // Skip rechtsvorm and specifieke vaardigheden (optional)
         if (name.includes("rechtsvorm")) return false;
         if (name.includes("specifieke vaardigheden")) return false;
+        if (!isKnownField(f.field_name || "")) return false;
         return !f.filled;
       }).length;
 
       const missingChecklistCount = (analysis.checklist_items || []).filter((item: any) => {
+        if (!isKnownChecklist(item.document_name || "")) return false;
         return item.status === "niet_aanwezig" || item.status === "niet_ingevuld";
       }).length;
 
       // Extra penalties: expired polis, expired KVK, missing BAV coverage
       let extraPenalties = 0;
       if (insurancePolicyExpired) extraPenalties++;
-      // Count polis coverage issues that were added to missingFields
       const hasBavMissing = missingFields.some((f: string) => f.toLowerCase().includes("bav") && f.toLowerCase().includes("ontbreekt"));
       if (hasBavMissing) extraPenalties++;
 
