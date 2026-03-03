@@ -14,10 +14,7 @@ export async function generateAnalysisReport(check: DbaCheck) {
     });
   };
 
-  const [zpLogo, onefellowLogo] = await Promise.all([
-    loadImage("/templates/zp-approved-export.png"),
-    loadImage("/templates/onefellow-export.png"),
-  ]);
+  const zpLogo = await loadImage("/templates/zp-approved-export.png");
 
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -26,7 +23,6 @@ export async function generateAnalysisReport(check: DbaCheck) {
 
   // Header logos
   doc.addImage(zpLogo, "PNG", 14, 10, 36, 18);
-  doc.addImage(onefellowLogo, "PNG", pageWidth - 54, 14, 40, 10);
 
   // Title
   let y = 38;
