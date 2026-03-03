@@ -1,21 +1,22 @@
 /**
- * Extract text from a PDF file using pdfjs-dist.
- * Disables the worker to avoid Vite cache version mismatches.
+ * Extract text from a PDF file using pdfjs-dist v4.
  */
 export async function extractTextFromPdf(file: File): Promise<{ text: string; warning?: string }> {
   const pdfjsLib = await import("pdfjs-dist");
 
-  // Disable worker to avoid version mismatch issues with Vite's dep cache
-  pdfjsLib.GlobalWorkerOptions.workerSrc = "";
-  
+  // Set worker path for pdfjs-dist v4
+  if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+      "pdfjs-dist/build/pdf.worker.min.mjs",
+      import.meta.url
+    ).toString();
+  }
+
   const arrayBuffer = await file.arrayBuffer();
 
   let pdf;
   try {
-    pdf = await (pdfjsLib as any).getDocument({ 
-      data: new Uint8Array(arrayBuffer.slice(0)),
-      disableWorker: true,
-    }).promise;
+    pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer.slice(0)) }).promise;
   } catch (loadErr) {
     console.error("PDF load error:", loadErr);
     throw new Error("PDF kon niet worden geopend. Controleer of het bestand niet beschadigd of beveiligd is.");
