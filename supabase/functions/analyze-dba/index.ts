@@ -102,13 +102,14 @@ BELANGRIJK BIJ HET BEOORDELEN VAN DE CHECKLIST:
 3. Als een veld tekst bevat (ook al is het kort), markeer het als ingevuld (filled: true).
 4. Het veld "Specifieke vaardigheden" is optioneel - als het leeg is, is dit een OPMERKING maar geen kritisch aandachtspunt.
 5. Het veld "Rechtsvorm" is NIET onderdeel van de check - negeer dit volledig, meld het NIET als aandachtspunt, en tel het NIET mee in de overall_score berekening. De rechtsvorm van de opdrachtgevers (bijv. B.V.) is al bekend en hoeft niet gecontroleerd te worden.
+6. Het veld "Tarief en facturatie" of "Uurtarief": als er een uurtarief of projectprijs is vermeld, is dit veld VOLLEDIG VOLDAAN. Facturatievoorwaarden, betaalafspraken of betalingstermijnen zijn NIET vereist. Meld NOOIT dat facturatievoorwaarden ontbreken als er een tarief staat.
 
 Controleer het ingevulde formulier en rapporteer voor elk veld of het is ingevuld.
 Alleen als een veld ECHT leeg is of ontbreekt in het document: markeer dit als aandachtspunt.
 
 KRITIEKE INSTRUCTIE VOOR AANDACHTSPUNTEN:
 - Aandachtspunten mogen UITSLUITEND gaan over velden uit de bovenstaande lijsten (VERPLICHTE VELDEN en DOCUMENTATIE CHECKLIST) die daadwerkelijk LEEG of NIET INGEVULD zijn in het document.
-- Verzin GEEN aandachtspunten over zaken die niet in de veldlijst staan (zoals adresgegevens, bedrijfsgegevens, rechtsvorm van partijen, specifieke contractbepalingen, etc.).
+- Verzin GEEN aandachtspunten over zaken die niet in de veldlijst staan (zoals adresgegevens, bedrijfsgegevens, rechtsvorm van partijen, specifieke contractbepalingen, facturatievoorwaarden, etc.).
 - Als een veld IS ingevuld, mag het NIET als aandachtspunt worden vermeld, ook al lijkt de inhoud kort of onvolledig.
 - Baseer je ALLEEN op feitelijke data uit het document. Voeg geen interpretaties, suggesties of aannames toe.
 
@@ -212,6 +213,9 @@ Antwoord ALLEEN met een JSON tool call.`;
       const rawAandachtspunten: string[] = analysis.aandachtspunten || [];
       const missingFields = rawAandachtspunten.filter((item: string) => {
         const lower = item.toLowerCase();
+        // Strip facturatievoorwaarden complaints when tarief is present
+        if (lower.includes("facturatie") && !lower.includes("tarief")) return false;
+        if (lower.includes("betalingsvoorwaarden") || lower.includes("betaalafspraken") || lower.includes("betalingstermijn")) return false;
         return allowedKeywords.some(k => lower.includes(k));
       });
       if (missingFields.length < rawAandachtspunten.length) {
