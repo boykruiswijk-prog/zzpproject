@@ -448,10 +448,55 @@ Antwoord ALLEEN met een JSON tool call.`;
         return !f.filled;
       }).length;
 
-      const missingChecklistCount = (analysis.checklist_items || []).filter((item: any) => {
-        if (!isKnownChecklist(item.document_name || "")) return false;
-        return item.status === "niet_aanwezig" || item.status === "niet_ingevuld";
-      }).length;
+      // Use pre-parsed document_checklist from upload if available (deterministic)
+      // Fall back to AI-parsed checklist_items only when no pre-parsed data exists
+      const preChecklist = check.document_checklist as Record<string, string> | null;
+      let missingChecklistCount = 0;
+      let finalChecklistItems = analysis.checklist_items || [];
+      
+      if (preChecklist && typeof preChecklist === "object" && Object.keys(preChecklist).length > 0) {
+        // Use deterministic client-parsed checklist
+        console.log("Using pre-parsed checklist from upload:", JSON.stringify(preChecklist));
+        finalChecklistItems = Object.entries(preChecklist).map(([name, status]) => ({
+          document_name: name,
+          status: status,
+        }));
+        missingChecklistCount = Object.values(preChecklist).filter(
+          (s: string) => s === "niet_aanwezig" || s === "niet_ingevuld"
+        ).length;
+        
+        // Override KVK if uploaded separately
+        if (shouldFixKvk) {
+          const kvkKey = Object.keys(preChecklist).find(k => k.toLowerCase().includes("kamer van koophandel") || k.toLowerCase().includes("kvk"));
+          if (kvkKey && preChecklist[kvkKey] !== "aanwezig") {
+            missingChecklistCount = Math.max(0, missingChecklistCount - 1);
+            finalChecklistItems = finalChecklistItems.map((item: any) => 
+              (item.document_name?.toLowerCase().includes("kamer van koophandel") || item.document_name?.toLowerCase().includes("kvk"))
+                ? { ...item, status: "aanwezig" }
+                : item
+            );
+          }
+        }
+        // Override polis if uploaded separately
+        if (hasPolisFile) {
+          const polisKey = Object.keys(preChecklist).find(k => k.toLowerCase().includes("polis") || k.toLowerCase().includes("aansprakelijkheid"));
+          if (polisKey && preChecklist[polisKey] !== "aanwezig") {
+            missingChecklistCount = Math.max(0, missingChecklistCount - 1);
+            finalChecklistItems = finalChecklistItems.map((item: any) =>
+              (item.document_name?.toLowerCase().includes("polis") || item.document_name?.toLowerCase().includes("aansprakelijkheid"))
+                ? { ...item, status: "aanwezig" }
+                : item
+            );
+          }
+        }
+      } else {
+        // Fallback: use AI-parsed checklist (less reliable)
+        console.log("No pre-parsed checklist, using AI checklist");
+        missingChecklistCount = (analysis.checklist_items || []).filter((item: any) => {
+          if (!isKnownChecklist(item.document_name || "")) return false;
+          return item.status === "niet_aanwezig" || item.status === "niet_ingevuld";
+        }).length;
+      }
 
       // Extra penalties: expired polis, expired KVK, missing BAV coverage
       let extraPenalties = 0;
@@ -467,7 +512,7 @@ Antwoord ALLEEN met een JSON tool call.`;
       await supabase.from("dba_checks").update({
         field_results: analysis.form_fields,
         missing_fields: missingFields,
-        document_checklist: analysis.checklist_items,
+        document_checklist: finalChecklistItems,
         suggestions: [{
           score: deterministicScore,
           _original_ai_score: analysis.overall_score,

@@ -26,6 +26,7 @@ export default function DbaCheckNew() {
   const [polisText, setPolisText] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [extractedText, setExtractedText] = useState("");
+  const [parsedChecklist, setParsedChecklist] = useState<Record<string, string> | null>(null);
 
   const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 
@@ -116,23 +117,41 @@ export default function DbaCheckNew() {
                 }
               }
               
-              if (checkboxStates.length > 0) {
+                if (checkboxStates.length > 0) {
                 console.log("Extracted checkbox states:", checkboxStates);
+                
+                const docNames = [
+                  "Overeenkomst Eindopdrachtgever",
+                  "Identiteits verklaring",
+                  "Curriculum Vitae",
+                  "Uittreksel Kamer van Koophandel",
+                  "Polis beroeps en bedrijfsaansprakelijkheid",
+                  "VOG verklaring",
+                  "VCA certificering",
+                ];
+                
+                // Build deterministic checklist from checkbox states
+                const checklist: Record<string, string> = {};
+                for (let i = 0; i < docNames.length; i++) {
+                  const cbIdx = i * 2;
+                  if (cbIdx + 1 < checkboxStates.length) {
+                    if (checkboxStates[cbIdx]) {
+                      checklist[docNames[i]] = "aanwezig";
+                    } else if (checkboxStates[cbIdx + 1]) {
+                      checklist[docNames[i]] = "niet_aanwezig";
+                    } else {
+                      checklist[docNames[i]] = "niet_ingevuld";
+                    }
+                  }
+                }
+                setParsedChecklist(checklist);
+                console.log("Parsed checklist:", checklist);
+                
                 // Inject checkbox symbols into the checklist section
                 const checklistIdx = text.indexOf("Aanvullende documentatie");
                 if (checklistIdx !== -1) {
                   const before = text.substring(0, checklistIdx);
                   let after = text.substring(checklistIdx);
-                  
-                  const docNames = [
-                    "Overeenkomst Eindopdrachtgever",
-                    "Identiteits verklaring",
-                    "Curriculum Vitae",
-                    "Uittreksel Kamer van Koophandel",
-                    "Polis beroeps en bedrijfsaansprakelijkheid",
-                    "VOG verklaring",
-                    "VCA certificering",
-                  ];
                   
                   // Checkboxes come in pairs per doc: [aanwezig, niet_aanwezig]
                   for (let i = 0; i < docNames.length; i++) {
@@ -140,7 +159,6 @@ export default function DbaCheckNew() {
                     if (cbIdx + 1 < checkboxStates.length) {
                       const sym1 = checkboxStates[cbIdx] ? "☒" : "☐";
                       const sym2 = checkboxStates[cbIdx + 1] ? "☒" : "☐";
-                      // Replace doc name with annotated version
                       after = after.replace(
                         docNames[i],
                         `${docNames[i]}\t${sym1}\t${sym2}`
@@ -284,7 +302,8 @@ export default function DbaCheckNew() {
         polis_file_url: polisFileUrl || null,
         polis_filename: polisFilename || null,
         polis_text: polisText || null,
-      });
+        ...(parsedChecklist ? { document_checklist: parsedChecklist } : {}),
+      } as any);
 
       toast({ title: "Check aangemaakt!", description: "Je kunt nu de analyse starten." });
       navigate(`/admin/dba-checks/${result.id}`);
