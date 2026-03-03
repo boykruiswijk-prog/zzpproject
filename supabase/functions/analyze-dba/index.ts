@@ -193,6 +193,7 @@ Antwoord ALLEEN met een JSON tool call.`;
 
       const analysis = JSON.parse(toolCall.function.arguments);
       const missingFields = analysis.aandachtspunten || [];
+      const txt = check.extracted_text || "";
 
       // Fix KVK-nummer: mark as filled if KVK file uploaded OR if KVK number exists in form text
       const hasKvkUploaded = !!(check.kvk_file_url || check.kvk_text);
@@ -295,7 +296,6 @@ Antwoord ALLEEN met een JSON tool call.`;
         return val && val !== "null" ? val.trim() : null;
       };
 
-      const txt = check.extracted_text || "";
       const extractedColumns: Record<string, any> = {};
 
       // Parse DD-MM-YYYY dates common in Dutch documents
