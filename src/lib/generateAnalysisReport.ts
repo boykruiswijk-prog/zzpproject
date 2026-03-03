@@ -49,7 +49,26 @@ export async function generateAnalysisReport(check: DbaCheck) {
   y += 7;
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  doc.text(check.client_name, 14, y);
+
+  const candidateLines: string[] = [];
+  if (check.client_name) candidateLines.push(`Naam: ${check.client_name}`);
+  if ((check as any).functie) candidateLines.push(`Functie: ${(check as any).functie}`);
+  if ((check as any).opdrachtgever) candidateLines.push(`Opdrachtgever: ${(check as any).opdrachtgever}`);
+  if ((check as any).eindopdrachtgever) candidateLines.push(`Eindopdrachtgever: ${(check as any).eindopdrachtgever}`);
+  if ((check as any).project_name) candidateLines.push(`Project: ${(check as any).project_name}`);
+  if ((check as any).startdatum) candidateLines.push(`Startdatum: ${(check as any).startdatum}`);
+  if ((check as any).einddatum) candidateLines.push(`Einddatum: ${(check as any).einddatum}`);
+  if ((check as any).uurtarief) candidateLines.push(`Uurtarief: ${(check as any).uurtarief}`);
+  if ((check as any).uren_per_week) candidateLines.push(`Uren per week: ${(check as any).uren_per_week}`);
+
+  candidateLines.forEach((line) => {
+    doc.text(line, 14, y);
+    y += 5;
+  });
+  if (candidateLines.length === 0) {
+    doc.text(check.client_name || "-", 14, y);
+    y += 5;
+  }
 
   // Score section
   y += 12;
