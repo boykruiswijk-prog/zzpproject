@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Upload, Loader2, FileText } from "lucide-react";
+import { extractTextFromPdf } from "@/lib/pdfExtract";
 import { Link } from "react-router-dom";
 
 export default function DbaCheckNew() {
@@ -43,25 +44,11 @@ export default function DbaCheckNew() {
         reader.readAsText(selectedFile);
       } else if (name.endsWith(".pdf")) {
         try {
-          const pdfjsLib = await import("pdfjs-dist");
-          pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-            "pdfjs-dist/build/pdf.worker.min.mjs",
-            import.meta.url
-          ).toString();
-          const arrayBuffer = await selectedFile.arrayBuffer();
-          const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
-          let text = "";
-          for (let i = 1; i <= pdf.numPages; i++) {
-            const page = await pdf.getPage(i);
-            const content = await page.getTextContent();
-            const pageText = content.items
-              .map((item: any) => item.str)
-              .filter((s: string) => s.trim().length > 0)
-              .join(" ");
-            text += pageText + "\n";
-          }
-          text = text.trim();
+          const { text, warning } = await extractTextFromPdf(selectedFile);
           setExtractedText(text);
+          if (warning) {
+            toast({ title: "Let op", description: warning, variant: "destructive" });
+          }
 
           // Auto-extract project description from PDF text
           const descriptionLabels = [
@@ -94,9 +81,10 @@ export default function DbaCheckNew() {
             }
           }
 
-          toast({ title: "Tekst geëxtraheerd uit PDF" });
-        } catch {
-          toast({ title: "Kon PDF niet uitlezen", description: "Probeer een .docx of plak de tekst handmatig.", variant: "destructive" });
+          if (!warning) toast({ title: "Tekst geëxtraheerd uit PDF" });
+        } catch (err: any) {
+          console.error("PDF extraction error:", err);
+          toast({ title: "Kon PDF niet uitlezen", description: err?.message || "Probeer een .docx of plak de tekst handmatig.", variant: "destructive" });
         }
       } else if (name.endsWith(".docx") || name.endsWith(".doc")) {
         try {
@@ -417,27 +405,16 @@ export default function DbaCheckNew() {
                       setKvkFile(f);
                       if (f && f.name.toLowerCase().endsWith(".pdf")) {
                         try {
-                          const pdfjsLib = await import("pdfjs-dist");
-                          pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-                            "pdfjs-dist/build/pdf.worker.min.mjs",
-                            import.meta.url
-                          ).toString();
-                          const arrayBuffer = await f.arrayBuffer();
-                          const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
-                          let text = "";
-                          for (let i = 1; i <= pdf.numPages; i++) {
-                            const page = await pdf.getPage(i);
-                            const content = await page.getTextContent();
-                            const pageText = content.items
-                              .map((item: any) => item.str)
-                              .filter((s: string) => s.trim().length > 0)
-                              .join(" ");
-                            text += pageText + "\n";
+                          const { text, warning } = await extractTextFromPdf(f);
+                          setKvkText(text);
+                          if (warning) {
+                            toast({ title: "Let op", description: warning, variant: "destructive" });
+                          } else {
+                            toast({ title: "Tekst geëxtraheerd uit KVK uittreksel" });
                           }
-                          setKvkText(text.trim());
-                          toast({ title: "Tekst geëxtraheerd uit KVK uittreksel" });
-                        } catch {
-                          toast({ title: "Kon PDF niet uitlezen", description: "Plak de tekst handmatig.", variant: "destructive" });
+                        } catch (err: any) {
+                          console.error("KVK PDF extraction error:", err);
+                          toast({ title: "Kon PDF niet uitlezen", description: err?.message || "Plak de tekst handmatig.", variant: "destructive" });
                         }
                       }
                     }}
@@ -499,27 +476,16 @@ export default function DbaCheckNew() {
                       setPolisFile(f);
                       if (f && f.name.toLowerCase().endsWith(".pdf")) {
                         try {
-                          const pdfjsLib = await import("pdfjs-dist");
-                          pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-                            "pdfjs-dist/build/pdf.worker.min.mjs",
-                            import.meta.url
-                          ).toString();
-                          const arrayBuffer = await f.arrayBuffer();
-                          const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
-                          let text = "";
-                          for (let i = 1; i <= pdf.numPages; i++) {
-                            const page = await pdf.getPage(i);
-                            const content = await page.getTextContent();
-                            const pageText = content.items
-                              .map((item: any) => item.str)
-                              .filter((s: string) => s.trim().length > 0)
-                              .join(" ");
-                            text += pageText + "\n";
+                          const { text, warning } = await extractTextFromPdf(f);
+                          setPolisText(text);
+                          if (warning) {
+                            toast({ title: "Let op", description: warning, variant: "destructive" });
+                          } else {
+                            toast({ title: "Tekst geëxtraheerd uit polis" });
                           }
-                          setPolisText(text.trim());
-                          toast({ title: "Tekst geëxtraheerd uit polis" });
-                        } catch {
-                          toast({ title: "Kon PDF niet uitlezen", description: "Plak de tekst handmatig.", variant: "destructive" });
+                        } catch (err: any) {
+                          console.error("Polis PDF extraction error:", err);
+                          toast({ title: "Kon PDF niet uitlezen", description: err?.message || "Plak de tekst handmatig.", variant: "destructive" });
                         }
                       }
                     }}
