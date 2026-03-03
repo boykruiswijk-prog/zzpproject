@@ -148,11 +148,12 @@ export async function generateAnalysisReport(check: DbaCheck) {
       startY: y,
       head: [["", "Veld", "Resultaat"]],
       body: tableData,
-      styles: { fontSize: 9, cellPadding: 3 },
+      styles: { fontSize: 9, cellPadding: 3, overflow: "linebreak" },
       headStyles: { fillColor: [30, 64, 124] },
       columnStyles: {
         0: { cellWidth: 10, halign: "center", fontStyle: "bold" },
-        1: { cellWidth: 55 },
+        1: { cellWidth: 40 },
+        2: { cellWidth: pageWidth - 28 - 10 - 40 },
       },
       didParseCell: (data: any) => {
         if (data.column.index === 0 && data.section === "body") {
