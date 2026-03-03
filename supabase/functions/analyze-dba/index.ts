@@ -398,13 +398,39 @@ Antwoord ALLEEN met een JSON tool call.`;
 
       console.log("Extracted columns from text:", JSON.stringify(extractedColumns));
 
+      // Deterministic score: count unfilled fields + missing checklist items + extra penalties
+      // This prevents AI from inconsistently grouping aandachtspunten
+      const unfilledFieldCount = (analysis.form_fields || []).filter((f: any) => {
+        const name = (f.field_name || "").toLowerCase();
+        // Skip rechtsvorm and specifieke vaardigheden (optional)
+        if (name.includes("rechtsvorm")) return false;
+        if (name.includes("specifieke vaardigheden")) return false;
+        return !f.filled;
+      }).length;
+
+      const missingChecklistCount = (analysis.checklist_items || []).filter((item: any) => {
+        return item.status === "niet_aanwezig" || item.status === "niet_ingevuld";
+      }).length;
+
+      // Extra penalties: expired polis, expired KVK, missing BAV coverage
+      let extraPenalties = 0;
+      if (insurancePolicyExpired) extraPenalties++;
+      // Count polis coverage issues that were added to missingFields
+      const hasBavMissing = missingFields.some((f: string) => f.toLowerCase().includes("bav") && f.toLowerCase().includes("ontbreekt"));
+      if (hasBavMissing) extraPenalties++;
+
+      const totalIssues = unfilledFieldCount + missingChecklistCount + extraPenalties;
+      const deterministicScore = Math.max(0, 100 - totalIssues * 10);
+      
+      console.log(`Score calculation: ${unfilledFieldCount} unfilled fields + ${missingChecklistCount} missing checklist + ${extraPenalties} extra = ${totalIssues} issues → score ${deterministicScore}`);
+
       await supabase.from("dba_checks").update({
         field_results: analysis.form_fields,
         missing_fields: missingFields,
         document_checklist: analysis.checklist_items,
         suggestions: [{
-          score: missingFields.length > 0 ? Math.min(analysis.overall_score, Math.max(0, 100 - missingFields.length * 10)) : analysis.overall_score,
-          summary: analysis.summary,
+          score: deterministicScore,
+          _original_ai_score: analysis.overall_score,
           aandachtspunten: missingFields,
           insurance_policy_date: (analysis.insurance_policy_date && analysis.insurance_policy_date !== "null" && analysis.insurance_policy_date !== "undefined") ? analysis.insurance_policy_date : null,
           insurance_policy_expired: insurancePolicyExpired,
