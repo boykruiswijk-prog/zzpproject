@@ -210,7 +210,7 @@ Antwoord ALLEEN met een JSON tool call.`;
         if (!missingFields.some((f: string) => f.toLowerCase().includes("polis") && f.toLowerCase().includes("niet aangeleverd"))) {
           missingFields.push("Polis beroeps- en bedrijfsaansprakelijkheid is niet aangeleverd");
         }
-      } else if (analysis.insurance_policy_date) {
+      } else if (analysis.insurance_policy_date && analysis.insurance_policy_date !== "null" && analysis.insurance_policy_date !== "undefined") {
         const policyDate = new Date(analysis.insurance_policy_date);
         const oneYearAgo = new Date();
         oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
@@ -234,7 +234,7 @@ Antwoord ALLEEN met een JSON tool call.`;
           score: missingFields.length > 0 ? Math.min(analysis.overall_score, Math.max(0, 100 - missingFields.length * 5)) : analysis.overall_score,
           summary: analysis.summary,
           aandachtspunten: missingFields,
-          insurance_policy_date: analysis.insurance_policy_date || null,
+          insurance_policy_date: (analysis.insurance_policy_date && analysis.insurance_policy_date !== "null" && analysis.insurance_policy_date !== "undefined") ? analysis.insurance_policy_date : null,
           insurance_policy_expired: insurancePolicyExpired,
           insurance_missing: insuranceMissing || false,
         }],
