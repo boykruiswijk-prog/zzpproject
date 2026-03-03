@@ -170,13 +170,18 @@ export async function generateAnalysisReport(check: DbaCheck) {
 
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
+    const bulletMaxWidth = pageWidth - 34; // 16 left + 18 right margin
     check.missing_fields.forEach((field) => {
-      if (y > 275) {
-        doc.addPage();
-        y = 20;
-      }
-      doc.text(`•  ${field}`, 16, y);
-      y += 6;
+      const lines = doc.splitTextToSize(`•  ${field}`, bulletMaxWidth);
+      lines.forEach((line: string, idx: number) => {
+        if (y > 275) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(idx === 0 ? line : `   ${line}`, 16, y);
+        y += 5.5;
+      });
+      y += 1; // extra space between items
     });
 
     y += 4;
