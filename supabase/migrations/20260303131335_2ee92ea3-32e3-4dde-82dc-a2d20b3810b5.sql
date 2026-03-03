@@ -1,0 +1,1 @@
+UPDATE public.dba_check_fields SET description = 'Afgesproken tarief (uurtarief of projectprijs)' WHERE field_name = 'Tarief en facturatie';
