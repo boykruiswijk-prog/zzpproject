@@ -226,70 +226,87 @@ Antwoord ALLEEN met een JSON tool call.`;
       }
       // If polis is uploaded separately, the check_polis action will handle date extraction
 
-      // Extract structured field values from AI analysis to populate direct columns
+      // Extract structured field values directly from the extracted text (more reliable than AI field names)
+      const extractFromText = (label: string, text: string): string | null => {
+        // Match "Label\n\nValue" or "Label\nValue" patterns
+        const patterns = [
+          new RegExp(`${label}\\s*\\n\\s*\\n?\\s*([^\\n]+)`, "i"),
+          new RegExp(`${label}\\s*:\\s*([^\\n]+)`, "i"),
+        ];
+        for (const pat of patterns) {
+          const match = text.match(pat);
+          if (match && match[1]?.trim()) return match[1].trim();
+        }
+        return null;
+      };
+
+      // Also check AI field results as fallback
       const getAnalyzedValue = (name: string): string | null => {
         const field = (analysis.form_fields || []).find((f: any) => f.field_name?.toLowerCase().includes(name.toLowerCase()));
         const val = field?.value || field?.excerpt || "";
-        return val ? val.trim() : null;
+        return val && val !== "null" ? val.trim() : null;
       };
 
+      const txt = check.extracted_text || "";
       const extractedColumns: Record<string, any> = {};
-      // Only set columns that are currently empty on the check record
-      if (!check.client_name || check.client_name === "-") {
-        const naam = getAnalyzedValue("naam");
-        if (naam) extractedColumns.client_name = naam;
-      }
+
+      // Parse DD-MM-YYYY dates common in Dutch documents
+      const parseDutchDate = (val: string): string | null => {
+        const m = val.match(/(\d{2})-(\d{2})-(\d{4})/);
+        if (m) return `${m[3]}-${m[2]}-${m[1]}`; // YYYY-MM-DD
+        const parsed = new Date(val);
+        return !isNaN(parsed.getTime()) ? parsed.toISOString().split("T")[0] : null;
+      };
+
+      // Extract from text first, then AI results as fallback
       if (!check.opdrachtgever) {
-        const val = getAnalyzedValue("opdrachtgever");
+        const val = extractFromText("Opdrachtgever", txt) || getAnalyzedValue("opdrachtgever");
         if (val && !val.toLowerCase().includes("eindopdrachtgever")) extractedColumns.opdrachtgever = val;
       }
       if (!check.eindopdrachtgever) {
-        const val = getAnalyzedValue("eindopdrachtgever");
+        const val = extractFromText("Eindopdrachtgever", txt) || getAnalyzedValue("eindopdrachtgever");
         if (val) extractedColumns.eindopdrachtgever = val;
       }
       if (!check.functie) {
-        const val = getAnalyzedValue("functie");
+        const val = extractFromText("Functie", txt) || getAnalyzedValue("functie");
         if (val) extractedColumns.functie = val;
       }
       if (!check.project_name) {
-        const val = getAnalyzedValue("project");
+        const val = extractFromText("Project", txt) || getAnalyzedValue("project");
         if (val) extractedColumns.project_name = val;
       }
-      if (!check.project_description) {
-        const val = getAnalyzedValue("opdrachtomschrijving");
-        if (val) extractedColumns.project_description = val;
-      }
       if (!check.startdatum) {
-        const val = getAnalyzedValue("startdatum");
+        const val = extractFromText("Startdatum", txt);
         if (val) {
-          // Try to parse date in various formats
-          const parsed = new Date(val);
-          if (!isNaN(parsed.getTime())) extractedColumns.startdatum = parsed.toISOString().split("T")[0];
+          const d = parseDutchDate(val);
+          if (d) extractedColumns.startdatum = d;
         }
       }
       if (!check.einddatum) {
-        const val = getAnalyzedValue("einddatum");
+        const val = extractFromText("Einddatum", txt);
         if (val) {
-          const parsed = new Date(val);
-          if (!isNaN(parsed.getTime())) extractedColumns.einddatum = parsed.toISOString().split("T")[0];
+          const d = parseDutchDate(val);
+          if (d) extractedColumns.einddatum = d;
         }
       }
       if (!check.optie_verlenging) {
-        const val = getAnalyzedValue("verlenging");
+        const val = extractFromText("Optie tot verlenging", txt) || getAnalyzedValue("verlenging");
         if (val) extractedColumns.optie_verlenging = val;
       }
       if (!check.uurtarief) {
-        const val = getAnalyzedValue("uurtarief");
+        const val = extractFromText("Uurtarief", txt) || getAnalyzedValue("uurtarief");
         if (val) extractedColumns.uurtarief = val;
       }
       if (!check.uren_per_week) {
-        const val = getAnalyzedValue("uur per week");
+        const val = extractFromText("Aantal uur per week", txt) || getAnalyzedValue("uur per week");
         if (val) extractedColumns.uren_per_week = val;
       }
       if (!check.specifieke_vaardigheden) {
-        const val = getAnalyzedValue("specifieke vaardigheden");
+        const val = extractFromText("Specifieke vaardigheden", txt) || getAnalyzedValue("specifieke vaardigheden");
         if (val) extractedColumns.specifieke_vaardigheden = val;
       }
+
+      console.log("Extracted columns from text:", JSON.stringify(extractedColumns));
 
       await supabase.from("dba_checks").update({
         field_results: analysis.form_fields,
@@ -665,7 +682,8 @@ BELANGRIJK:
 
         const cleanText = (text: string): string => {
           if (!text) return "-";
-          return text.replace(/[\n\r\t\x00-\x1F]/g, " ").replace(/\s+/g, " ").trim() || "-";
+          // Strip control chars AND non-Latin1 characters (pdf-lib WinAnsi only supports 0x00-0xFF)
+          return text.replace(/[\n\r\t\x00-\x1F]/g, " ").replace(/[^\x20-\xFF]/g, "").replace(/\s+/g, " ").trim() || "-";
         };
 
         const wrapText = (text: string, font: typeof helvetica, size: number, maxW: number): string[] => {
