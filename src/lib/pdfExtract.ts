@@ -1,16 +1,15 @@
 /**
- * Extract text from a PDF file using pdfjs-dist v4.
+ * Extract text from a PDF file using pdfjs-dist v3.
  * Returns { text, warning? } on success, throws on hard failure.
  */
 export async function extractTextFromPdf(file: File): Promise<{ text: string; warning?: string }> {
   const pdfjsLib = await import("pdfjs-dist");
 
   pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-    "pdfjs-dist/build/pdf.worker.min.mjs",
+    "pdfjs-dist/build/pdf.worker.min.js",
     import.meta.url
   ).toString();
 
-  // Read buffer once - copy for potential retry
   const arrayBuffer = await file.arrayBuffer();
 
   let pdf;
@@ -18,13 +17,7 @@ export async function extractTextFromPdf(file: File): Promise<{ text: string; wa
     pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer.slice(0)) }).promise;
   } catch (loadErr) {
     console.error("PDF load error:", loadErr);
-    // Retry with fresh copy
-    try {
-      pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer.slice(0)) }).promise;
-    } catch (retryErr) {
-      console.error("PDF retry load error:", retryErr);
-      throw new Error("PDF kon niet worden geopend. Mogelijk is het bestand beschadigd of beveiligd.");
-    }
+    throw new Error("PDF kon niet worden geopend. Mogelijk is het bestand beschadigd of beveiligd.");
   }
 
   let fullText = "";
@@ -32,11 +25,8 @@ export async function extractTextFromPdf(file: File): Promise<{ text: string; wa
     const page = await pdf.getPage(i);
     const content = await page.getTextContent();
     const pageText = content.items
-      .map((item: any) => {
-        const str = item.str || "";
-        const hasEOL = item.hasEOL;
-        return str + (hasEOL ? "\n" : "");
-      })
+      .map((item: any) => item.str || "")
+      .filter((s: string) => s.trim().length > 0)
       .join(" ");
     fullText += pageText + "\n";
   }
