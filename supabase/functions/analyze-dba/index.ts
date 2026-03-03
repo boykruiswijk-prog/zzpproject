@@ -529,6 +529,7 @@ Antwoord ALLEEN met een JSON tool call.`;
         "geheimhouding", "aansprakelijkheid", "intellectueel eigendom", "vervanging",
         "boeteclausule", "concurrentiebeding", "relatiebeding", "geschillen",
         "toepasselijk recht", "opzegtermijn", "beëindiging", "overmacht",
+        "gezagsverhouding", "geen gezagsverhouding",
       ];
       const filteredFieldResults = (analysis.form_fields || []).filter((f: any) => {
         const name = (f.field_name || "").toLowerCase();
