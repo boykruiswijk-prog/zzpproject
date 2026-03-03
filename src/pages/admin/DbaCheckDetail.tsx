@@ -830,9 +830,9 @@ export default function DbaCheckDetail() {
                   </p>
                   <div className="space-y-1">
                     {check.missing_fields.map((field, idx) => (
-                      <div key={idx} className="flex items-center gap-2 text-sm text-yellow-800">
-                        <AlertTriangle className="h-3 w-3" />
-                        {field}
+                      <div key={idx} className="flex items-start gap-2 text-sm text-yellow-800">
+                        <AlertTriangle className="h-3 w-3 mt-1 shrink-0" />
+                        <span>{field}</span>
                       </div>
                     ))}
                   </div>
