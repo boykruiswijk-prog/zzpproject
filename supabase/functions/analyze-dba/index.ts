@@ -106,6 +106,12 @@ BELANGRIJK BIJ HET BEOORDELEN VAN DE CHECKLIST:
 Controleer het ingevulde formulier en rapporteer voor elk veld of het is ingevuld.
 Alleen als een veld ECHT leeg is of ontbreekt in het document: markeer dit als aandachtspunt.
 
+KRITIEKE INSTRUCTIE VOOR AANDACHTSPUNTEN:
+- Aandachtspunten mogen UITSLUITEND gaan over velden uit de bovenstaande lijsten (VERPLICHTE VELDEN en DOCUMENTATIE CHECKLIST) die daadwerkelijk LEEG of NIET INGEVULD zijn in het document.
+- Verzin GEEN aandachtspunten over zaken die niet in de veldlijst staan (zoals adresgegevens, bedrijfsgegevens, rechtsvorm van partijen, specifieke contractbepalingen, etc.).
+- Als een veld IS ingevuld, mag het NIET als aandachtspunt worden vermeld, ook al lijkt de inhoud kort of onvolledig.
+- Baseer je ALLEEN op feitelijke data uit het document. Voeg geen interpretaties, suggesties of aannames toe.
+
 EXTRA: Zoek ook naar de datum/geldigheid van de polis beroeps- en bedrijfsaansprakelijkheid als die vermeld staat in het document.
 Geef de datum terug in YYYY-MM-DD formaat als je die vindt. Dit kan een ingangsdatum, afgiftedatum of geldigheidsdatum zijn.
 
