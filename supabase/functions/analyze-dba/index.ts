@@ -110,8 +110,10 @@ Alleen als een veld ECHT leeg is of ontbreekt in het document: markeer dit als a
 KRITIEKE INSTRUCTIE VOOR AANDACHTSPUNTEN:
 - Aandachtspunten mogen UITSLUITEND gaan over velden uit de bovenstaande lijsten (VERPLICHTE VELDEN en DOCUMENTATIE CHECKLIST) die daadwerkelijk LEEG of NIET INGEVULD zijn in het document.
 - Verzin GEEN aandachtspunten over zaken die niet in de veldlijst staan (zoals adresgegevens, bedrijfsgegevens, rechtsvorm van partijen, specifieke contractbepalingen, facturatievoorwaarden, etc.).
+- Verzin ABSOLUUT GEEN aandachtspunten over aansprakelijkheid, intellectueel eigendom, geheimhouding, vervanging, of andere contractuele bepalingen. Dit zijn GEEN onderdeel van de DBA-toetsing.
 - Als een veld IS ingevuld, mag het NIET als aandachtspunt worden vermeld, ook al lijkt de inhoud kort of onvolledig.
 - Baseer je ALLEEN op feitelijke data uit het document. Voeg geen interpretaties, suggesties of aannames toe.
+- De enige aandachtspunten die zijn toegestaan zijn: "Veld X is niet ingevuld" of "Document Y is niet aanwezig/aangevinkt". NIETS ANDERS.
 
 EXTRA: Zoek ook naar de datum/geldigheid van de polis beroeps- en bedrijfsaansprakelijkheid als die vermeld staat in het document.
 Geef de datum terug in YYYY-MM-DD formaat als je die vindt. Dit kan een ingangsdatum, afgiftedatum of geldigheidsdatum zijn.
@@ -202,20 +204,33 @@ Antwoord ALLEEN met een JSON tool call.`;
       const txt = check.extracted_text || "";
 
       // Filter aandachtspunten: only keep items that reference known fields/documents
+      // and are about MISSING/EMPTY fields, not about content quality or contract clauses
       const allowedKeywords = [
         "naam", "kandidaat", "opdrachtgever", "eindopdrachtgever", "functie",
         "opdrachtomschrijving", "project", "startdatum", "einddatum", "verlenging",
         "uurtarief", "tarief", "uur per week", "vaardigheden", "kennis", "opleiding",
         "zelfstandig", "eigen materiaal", "werkwijze",
-        "overeenkomst", "identiteit", "curriculum", "cv", "kamer van koophandel", "kvk",
-        "polis", "aansprakelijkheid", "vog", "vca", "bav", "avb",
+        "overeenkomst eindopdrachtgever", "identiteit", "curriculum", "cv", "kamer van koophandel", "kvk",
+        "polis", "vog", "vca",
+      ];
+      // Block hallucinated topics about contract clauses, legal content, etc.
+      const blockedKeywords = [
+        "aansprakelijkheid", "intellectueel eigendom", "geheimhouding", "vervanging",
+        "contractbepaling", "regeling", "clausule", "ontbreekt in de tekst",
+        "expliciet", "bepaling", "verzekering" /* but not "polis" which is allowed */,
+        "facturatie", "betalingsvoorwaarden", "betaalafspraken", "betalingstermijn",
       ];
       const rawAandachtspunten: string[] = analysis.aandachtspunten || [];
       const missingFields = rawAandachtspunten.filter((item: string) => {
         const lower = item.toLowerCase();
-        // Strip facturatievoorwaarden complaints when tarief is present
-        if (lower.includes("facturatie") && !lower.includes("tarief")) return false;
-        if (lower.includes("betalingsvoorwaarden") || lower.includes("betaalafspraken") || lower.includes("betalingstermijn")) return false;
+        // Block hallucinated contract/legal clause observations
+        if (blockedKeywords.some(k => lower.includes(k))) {
+          // Exception: allow "polis" related items about missing documents
+          if (lower.includes("polis") && (lower.includes("niet aangeleverd") || lower.includes("niet aanwezig") || lower.includes("ouder dan"))) {
+            return true;
+          }
+          return false;
+        }
         return allowedKeywords.some(k => lower.includes(k));
       });
       if (missingFields.length < rawAandachtspunten.length) {
