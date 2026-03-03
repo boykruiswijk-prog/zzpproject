@@ -789,7 +789,12 @@ BELANGRIJK:
           const { data: zpLogoData } = await supabase.storage.from("certificates").download("templates/zp-approved-logo.png");
           if (zpLogoData) {
             const zpLogoBytes = new Uint8Array(await zpLogoData.arrayBuffer());
-            zpLogoImage = await pdfDoc.embedPng(zpLogoBytes);
+            // Try PNG first, fall back to JPG (uploaded file may be JPEG with .png extension)
+            try {
+              zpLogoImage = await pdfDoc.embedPng(zpLogoBytes);
+            } catch {
+              zpLogoImage = await pdfDoc.embedJpg(zpLogoBytes);
+            }
           }
         } catch { /* skip */ }
 
