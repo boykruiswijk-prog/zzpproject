@@ -97,9 +97,10 @@ export async function generateAnalysisReport(check: DbaCheck) {
   if (summary) {
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    const lines = doc.splitTextToSize(summary, pageWidth - 28);
+    const maxTextWidth = pageWidth - 28;
+    const lines = doc.splitTextToSize(summary, maxTextWidth);
     doc.text(lines, 14, y);
-    y += lines.length * 5 + 6;
+    y += lines.length * 5.5 + 6;
   }
 
   // Field results table
@@ -122,12 +123,14 @@ export async function generateAnalysisReport(check: DbaCheck) {
       startY: y,
       head: [["", "Veld", "Resultaat"]],
       body: tableData,
-      styles: { fontSize: 9, cellPadding: 3 },
+      styles: { fontSize: 9, cellPadding: 3, overflow: "linebreak" },
       headStyles: { fillColor: [30, 64, 124] },
       columnStyles: {
         0: { cellWidth: 10, halign: "center", fontStyle: "bold" },
-        1: { cellWidth: 55 },
+        1: { cellWidth: 50 },
+        2: { cellWidth: "auto" },
       },
+      tableWidth: pageWidth - 28,
       didParseCell: (data: any) => {
         if (data.column.index === 0 && data.section === "body") {
           if (data.cell.raw === "V") {
@@ -142,28 +145,36 @@ export async function generateAnalysisReport(check: DbaCheck) {
     y = (doc as any).lastAutoTable.finalY + 8;
   }
 
+  const maxW = pageWidth - 28;
+  const lineH = 5;
+  const pageH = doc.internal.pageSize.getHeight();
+  const marginBottom = 20;
+
+  const printWrapped = (text: string, x: number, indent = 0) => {
+    doc.setFontSize(10);
+    const wrapped = doc.splitTextToSize(text, maxW - indent);
+    wrapped.forEach((line: string) => {
+      if (y > pageH - marginBottom) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.text(line, x, y);
+      y += lineH;
+    });
+  };
+
   // Missing fields / aandachtspunten
   if (check.missing_fields?.length) {
-    // Check if we need a new page
-    if (y > 240) {
-      doc.addPage();
-      y = 20;
-    }
+    if (y > pageH - 40) { doc.addPage(); y = 20; }
 
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
     doc.text("Aandachtspunten", 14, y);
     y += 7;
 
-    doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     check.missing_fields.forEach((field) => {
-      if (y > 275) {
-        doc.addPage();
-        y = 20;
-      }
-      doc.text(`•  ${field}`, 16, y);
-      y += 6;
+      printWrapped(`•  ${field}`, 16, 6);
     });
 
     y += 4;
@@ -171,10 +182,7 @@ export async function generateAnalysisReport(check: DbaCheck) {
 
   // KVK check result
   if (check.kvk_check_result) {
-    if (y > 240) {
-      doc.addPage();
-      y = 20;
-    }
+    if (y > pageH - 40) { doc.addPage(); y = 20; }
 
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
@@ -188,9 +196,9 @@ export async function generateAnalysisReport(check: DbaCheck) {
     y += 6;
 
     if (check.kvk_check_result.explanation) {
-      const expLines = doc.splitTextToSize(check.kvk_check_result.explanation, pageWidth - 28);
-      doc.text(expLines, 14, y);
-      y += expLines.length * 5 + 4;
+      doc.setFont("helvetica", "normal");
+      printWrapped(check.kvk_check_result.explanation, 14);
+      y += 2;
     }
 
     if (check.kvk_check_result.suggestions?.length) {
@@ -199,12 +207,7 @@ export async function generateAnalysisReport(check: DbaCheck) {
       y += 6;
       doc.setFont("helvetica", "normal");
       check.kvk_check_result.suggestions.forEach((s: string) => {
-        if (y > 275) {
-          doc.addPage();
-          y = 20;
-        }
-        doc.text(`•  ${s}`, 16, y);
-        y += 6;
+        printWrapped(`•  ${s}`, 16, 6);
       });
     }
 
@@ -214,36 +217,27 @@ export async function generateAnalysisReport(check: DbaCheck) {
   // Polis check
   const polisResult = check.suggestions?.[0]?.polis_check_result;
   if (polisResult) {
-    if (y > 240) {
-      doc.addPage();
-      y = 20;
-    }
+    if (y > pageH - 40) { doc.addPage(); y = 20; }
 
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
     doc.text("Polis Check", 14, y);
     y += 7;
 
-    doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     if (polisResult.coverage_summary) {
-      const covLines = doc.splitTextToSize(`Dekking: ${polisResult.coverage_summary}`, pageWidth - 28);
-      doc.text(covLines, 14, y);
-      y += covLines.length * 5 + 4;
+      printWrapped(`Dekking: ${polisResult.coverage_summary}`, 14);
+      y += 2;
     }
     if (polisResult.explanation) {
-      const expLines = doc.splitTextToSize(polisResult.explanation, pageWidth - 28);
-      doc.text(expLines, 14, y);
-      y += expLines.length * 5 + 4;
+      printWrapped(polisResult.explanation, 14);
+      y += 2;
     }
   }
 
   // Rewritten description
   if (check.rewritten_description) {
-    if (y > 220) {
-      doc.addPage();
-      y = 20;
-    }
+    if (y > pageH - 50) { doc.addPage(); y = 20; }
 
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
@@ -252,9 +246,15 @@ export async function generateAnalysisReport(check: DbaCheck) {
 
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    const rwLines = doc.splitTextToSize(check.rewritten_description, pageWidth - 28);
-    doc.text(rwLines, 14, y);
-    y += rwLines.length * 4 + 4;
+    const rwLines = doc.splitTextToSize(check.rewritten_description, maxW);
+    rwLines.forEach((line: string) => {
+      if (y > pageH - marginBottom) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.text(line, 14, y);
+      y += 4.5;
+    });
   }
 
   // Footer
