@@ -35,10 +35,10 @@ export async function extractTextFromPdf(file: File): Promise<{ text: string; wa
 
   const trimmed = fullText.trim();
 
-  if (trimmed.length < 20) {
+  if (trimmed.length === 0) {
     return {
       text: trimmed,
-      warning: "Dit lijkt een gescand document (afbeelding). Er kon weinig tot geen tekst worden uitgelezen. Plak de tekst handmatig in het tekstveld.",
+      warning: "Dit lijkt een gescand document (afbeelding). Er kon geen tekst worden uitgelezen. Plak de tekst handmatig in het tekstveld.",
     };
   }
 
