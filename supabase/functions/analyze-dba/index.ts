@@ -524,8 +524,19 @@ Antwoord ALLEEN met een JSON tool call.`;
       
       console.log(`Score calculation: ${unfilledFieldCount} unfilled fields + ${missingChecklistCount} missing checklist + ${extraPenalties} extra = ${totalIssues} issues → score ${deterministicScore}`);
 
+      // Filter field_results: only keep known fields, remove hallucinated ones like "Geheimhouding"
+      const blockedFieldNames = [
+        "geheimhouding", "aansprakelijkheid", "intellectueel eigendom", "vervanging",
+        "boeteclausule", "concurrentiebeding", "relatiebeding", "geschillen",
+        "toepasselijk recht", "opzegtermijn", "beëindiging", "overmacht",
+      ];
+      const filteredFieldResults = (analysis.form_fields || []).filter((f: any) => {
+        const name = (f.field_name || "").toLowerCase();
+        return !blockedFieldNames.some(b => name.includes(b));
+      });
+
       await supabase.from("dba_checks").update({
-        field_results: analysis.form_fields,
+        field_results: filteredFieldResults,
         missing_fields: missingFields,
         document_checklist: finalChecklistItems,
         suggestions: [{
