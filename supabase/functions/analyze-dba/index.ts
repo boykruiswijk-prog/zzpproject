@@ -226,11 +226,76 @@ Antwoord ALLEEN met een JSON tool call.`;
       }
       // If polis is uploaded separately, the check_polis action will handle date extraction
 
+      // Extract structured field values from AI analysis to populate direct columns
+      const getAnalyzedValue = (name: string): string | null => {
+        const field = (analysis.form_fields || []).find((f: any) => f.field_name?.toLowerCase().includes(name.toLowerCase()));
+        const val = field?.value || field?.excerpt || "";
+        return val ? val.trim() : null;
+      };
+
+      const extractedColumns: Record<string, any> = {};
+      // Only set columns that are currently empty on the check record
+      if (!check.client_name || check.client_name === "-") {
+        const naam = getAnalyzedValue("naam");
+        if (naam) extractedColumns.client_name = naam;
+      }
+      if (!check.opdrachtgever) {
+        const val = getAnalyzedValue("opdrachtgever");
+        if (val && !val.toLowerCase().includes("eindopdrachtgever")) extractedColumns.opdrachtgever = val;
+      }
+      if (!check.eindopdrachtgever) {
+        const val = getAnalyzedValue("eindopdrachtgever");
+        if (val) extractedColumns.eindopdrachtgever = val;
+      }
+      if (!check.functie) {
+        const val = getAnalyzedValue("functie");
+        if (val) extractedColumns.functie = val;
+      }
+      if (!check.project_name) {
+        const val = getAnalyzedValue("project");
+        if (val) extractedColumns.project_name = val;
+      }
+      if (!check.project_description) {
+        const val = getAnalyzedValue("opdrachtomschrijving");
+        if (val) extractedColumns.project_description = val;
+      }
+      if (!check.startdatum) {
+        const val = getAnalyzedValue("startdatum");
+        if (val) {
+          // Try to parse date in various formats
+          const parsed = new Date(val);
+          if (!isNaN(parsed.getTime())) extractedColumns.startdatum = parsed.toISOString().split("T")[0];
+        }
+      }
+      if (!check.einddatum) {
+        const val = getAnalyzedValue("einddatum");
+        if (val) {
+          const parsed = new Date(val);
+          if (!isNaN(parsed.getTime())) extractedColumns.einddatum = parsed.toISOString().split("T")[0];
+        }
+      }
+      if (!check.optie_verlenging) {
+        const val = getAnalyzedValue("verlenging");
+        if (val) extractedColumns.optie_verlenging = val;
+      }
+      if (!check.uurtarief) {
+        const val = getAnalyzedValue("uurtarief");
+        if (val) extractedColumns.uurtarief = val;
+      }
+      if (!check.uren_per_week) {
+        const val = getAnalyzedValue("uur per week");
+        if (val) extractedColumns.uren_per_week = val;
+      }
+      if (!check.specifieke_vaardigheden) {
+        const val = getAnalyzedValue("specifieke vaardigheden");
+        if (val) extractedColumns.specifieke_vaardigheden = val;
+      }
+
       await supabase.from("dba_checks").update({
         field_results: analysis.form_fields,
         missing_fields: missingFields,
         document_checklist: analysis.checklist_items,
-      suggestions: [{
+        suggestions: [{
           score: missingFields.length > 0 ? Math.min(analysis.overall_score, Math.max(0, 100 - missingFields.length * 10)) : analysis.overall_score,
           summary: analysis.summary,
           aandachtspunten: missingFields,
@@ -239,6 +304,7 @@ Antwoord ALLEEN met een JSON tool call.`;
           insurance_missing: insuranceMissing || false,
         }],
         status: "analyzed",
+        ...extractedColumns,
       }).eq("id", check_id);
 
       return new Response(JSON.stringify({ success: true, analysis }), {
