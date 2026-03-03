@@ -228,14 +228,20 @@ Antwoord ALLEEN met een JSON tool call.`;
 
       // Extract structured field values directly from the extracted text (more reliable than AI field names)
       const extractFromText = (label: string, text: string): string | null => {
-        // Match "Label\n\nValue" or "Label\nValue" patterns
+        // Match "Label [optional extra words]\n\nValue" or "Label: Value" patterns
+        // The label may have additional text on the same line (e.g. "Uurtarief ZZP'er")
         const patterns = [
-          new RegExp(`${label}\\s*\\n\\s*\\n?\\s*([^\\n]+)`, "i"),
-          new RegExp(`${label}\\s*:\\s*([^\\n]+)`, "i"),
+          new RegExp(`${label}[^\\n]*\\n\\s*\\n\\s*([^\\n]+)`, "i"),  // label...blank line...value
+          new RegExp(`${label}[^\\n]*\\n\\s*([^\\n]+)`, "i"),          // label...value on next line
+          new RegExp(`${label}\\s*:\\s*([^\\n]+)`, "i"),               // label: value
         ];
         for (const pat of patterns) {
           const match = text.match(pat);
-          if (match && match[1]?.trim()) return match[1].trim();
+          if (match && match[1]?.trim() && match[1].trim().length > 0) {
+            // Skip if captured value looks like another label
+            const val = match[1].trim();
+            if (val.length > 0 && val !== "-") return val;
+          }
         }
         return null;
       };
