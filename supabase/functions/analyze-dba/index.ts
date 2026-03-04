@@ -362,8 +362,23 @@ Antwoord ALLEEN met een JSON tool call.`;
         if (val) extractedColumns.functie = val;
       }
       if (!check.project_name) {
-        const val = extractFromText("Project", txt) || getAnalyzedValue("project");
-        if (val) extractedColumns.project_name = val;
+        let val = extractFromText("Project", txt) || getAnalyzedValue("project");
+        if (val) {
+          // Stop-markers: truncate if we accidentally grabbed text from the next section
+          const stopMarkers = [
+            "de navolgende", "resultaatgebieden", "maken onderdeel",
+            "onderdeel uit van", "werkzaamheden", "taken en verantwoordelijkheden",
+            "beschrijving van de opdracht", "opdrachtomschrijving",
+          ];
+          const lowerVal = val.toLowerCase();
+          for (const marker of stopMarkers) {
+            if (lowerVal.includes(marker)) {
+              val = null;
+              break;
+            }
+          }
+          if (val) extractedColumns.project_name = val;
+        }
       }
       if (!check.startdatum) {
         const val = extractFromText("Startdatum", txt);
