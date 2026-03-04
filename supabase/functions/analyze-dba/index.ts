@@ -518,6 +518,15 @@ Antwoord ALLEEN met een JSON tool call.`;
       if (insurancePolicyExpired) extraPenalties++;
       const hasBavMissing = missingFields.some((f: string) => f.toLowerCase().includes("bav") && f.toLowerCase().includes("ontbreekt"));
       if (hasBavMissing) extraPenalties++;
+      
+      // Check KVK expiry if kvk_check_result already available from a previous check_kvk run
+      const kvkCheckResult = check.kvk_check_result as any;
+      if (kvkCheckResult?.kvk_extract_expired === true) {
+        extraPenalties++;
+        if (!missingFields.some((f: string) => f.toLowerCase().includes("kvk") && f.toLowerCase().includes("verouderd"))) {
+          missingFields.push(`KVK-uittreksel is ouder dan 3 maanden (datum: ${kvkCheckResult.kvk_extract_date})`);
+        }
+      }
 
       const totalIssues = unfilledFieldCount + missingChecklistCount + extraPenalties;
       const deterministicScore = Math.max(0, 100 - totalIssues * 10);
@@ -542,7 +551,6 @@ Antwoord ALLEEN met een JSON tool call.`;
         document_checklist: finalChecklistItems,
         suggestions: [{
           score: deterministicScore,
-          _original_ai_score: analysis.overall_score,
           aandachtspunten: missingFields,
           insurance_policy_date: (analysis.insurance_policy_date && analysis.insurance_policy_date !== "null" && analysis.insurance_policy_date !== "undefined") ? analysis.insurance_policy_date : null,
           insurance_policy_expired: insurancePolicyExpired,
@@ -700,8 +708,26 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
         kvkResult.kvk_extract_expired = null; // could not determine
       }
 
+      // Update KVK check result and recalculate score if KVK is expired
+      const currentSuggestionsKvk = check.suggestions as any[] || [];
+      const kvkSuggestion = currentSuggestionsKvk[0] || {};
+      let kvkMissingFields = ((check.missing_fields as string[]) || []).filter(
+        (f: string) => !(f.toLowerCase().includes("kvk") && f.toLowerCase().includes("verouderd"))
+      );
+      
+      if (kvkResult.kvk_extract_expired === true) {
+        kvkMissingFields.push(`KVK-uittreksel is ouder dan 3 maanden (datum: ${kvkResult.kvk_extract_date})`);
+      }
+      
+      // Recalculate score deterministically
+      kvkSuggestion.score = Math.max(0, 100 - kvkMissingFields.length * 10);
+      kvkSuggestion.aandachtspunten = kvkMissingFields;
+      delete kvkSuggestion._original_ai_score;
+
       await supabase.from("dba_checks").update({
         kvk_check_result: kvkResult,
+        suggestions: [kvkSuggestion],
+        missing_fields: kvkMissingFields,
       }).eq("id", check_id);
 
       return new Response(JSON.stringify({ success: true, kvk_check_result: kvkResult }), {
@@ -835,15 +861,10 @@ BELANGRIJK:
         updatedMissingFields.push("Polis dekt alleen beroepsaansprakelijkheid (BAV) — bedrijfsaansprakelijkheid (AVB) ontbreekt");
       }
 
-      // Recalculate score: use original AI score as base, subtract 5 per new issue
-      if (updatedSuggestion.score !== undefined) {
-        // Get the original AI base score (before any polis adjustments)
-        const originalAiScore = updatedSuggestion._original_ai_score ?? updatedSuggestion.score;
-        updatedSuggestion._original_ai_score = originalAiScore; // preserve for future recalculations
-        updatedSuggestion.score = updatedMissingFields.length > 0 
-          ? Math.max(0, Math.min(originalAiScore, 100 - updatedMissingFields.length * 5))
-          : originalAiScore;
-      }
+      // Recalculate score deterministically: 100 - (number of issues * 10)
+      updatedSuggestion.score = Math.max(0, 100 - updatedMissingFields.length * 10);
+      // Remove legacy _original_ai_score if present
+      delete updatedSuggestion._original_ai_score;
       updatedSuggestion.aandachtspunten = updatedMissingFields;
 
       await supabase.from("dba_checks").update({
