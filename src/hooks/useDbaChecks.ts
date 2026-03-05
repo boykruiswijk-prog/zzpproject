@@ -30,6 +30,22 @@ export interface DbaCheck {
   document_checklist: Record<string, boolean> | null;
   created_at: string;
   updated_at: string;
+  opdrachtgever: string | null;
+  eindopdrachtgever: string | null;
+  functie: string | null;
+  project_name: string | null;
+  startdatum: string | null;
+  einddatum: string | null;
+  optie_verlenging: string | null;
+  uurtarief: string | null;
+  uren_per_week: string | null;
+  specifieke_vaardigheden: string | null;
+  treedt_zelfstandig_op: boolean | null;
+  eigen_materiaal_werkwijze: boolean | null;
+  batch_id: string | null;
+  candidate_email: string | null;
+  candidate_phone: string | null;
+  rechtsvorm: string | null;
 }
 
 export interface KvkCheckResult {
