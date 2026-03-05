@@ -38,7 +38,9 @@ export default function DbaCheckDetail() {
   const [polisUploading, setPolisUploading] = useState(false);
   const [activeAction, setActiveAction] = useState<string | null>(null);
   const [certPreviewOpen, setCertPreviewOpen] = useState(false);
-
+  const [editingDescription, setEditingDescription] = useState(false);
+  const [editedDescription, setEditedDescription] = useState("");
+  const [savingDescription, setSavingDescription] = useState(false);
   const handleAnalyze = async () => {
     if (!id) return;
     setActiveAction("analyze");
