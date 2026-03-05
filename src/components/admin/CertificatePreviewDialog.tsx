@@ -43,14 +43,44 @@ interface Props {
 export function CertificatePreviewDialog({ open, onOpenChange, check, onSaveAndCertify, isLoading }: Props) {
   const [values, setValues] = useState<Record<string, any>>({});
 
+  // Helper: try to get a value from field_results by matching field name
+  const getFromFieldResults = (fieldKey: string): string => {
+    if (!check?.field_results?.length) return "";
+    const nameMap: Record<string, string[]> = {
+      client_name: ["naam zp kandidaat", "naam zp", "naam"],
+      opdrachtgever: ["opdrachtgever"],
+      eindopdrachtgever: ["eindopdrachtgever"],
+      functie: ["functie"],
+      project_name: ["project"],
+      startdatum: ["startdatum"],
+      einddatum: ["einddatum"],
+      optie_verlenging: ["optie tot verlenging", "verlenging"],
+      uurtarief: ["uurtarief", "tarief"],
+      uren_per_week: ["aantal uur per week", "uur per week", "uren"],
+      specifieke_vaardigheden: ["specifieke vaardigheden", "vaardigheden"],
+    };
+    const searchTerms = nameMap[fieldKey] || [fieldKey.replace(/_/g, " ")];
+    for (const result of check.field_results) {
+      const fn = (result.field_name || "").toLowerCase();
+      if (searchTerms.some(t => fn.includes(t))) {
+        return result.value || result.excerpt || "";
+      }
+    }
+    return "";
+  };
+
   useEffect(() => {
     if (open && check) {
       const initial: Record<string, any> = {};
       for (const field of CERTIFICATE_FIELDS) {
         if (field.key === "opdrachtomschrijving") {
-          initial[field.key] = (check as any).rewritten_description || (check as any).project_description || "";
+          initial[field.key] = check.rewritten_description || check.project_description || "";
+        } else if (field.type === "boolean") {
+          initial[field.key] = (check as any)[field.dbColumn] ?? false;
         } else {
-          initial[field.key] = (check as any)[field.dbColumn] ?? "";
+          // Direct DB value first, then fallback to field_results extraction
+          const directVal = (check as any)[field.dbColumn];
+          initial[field.key] = directVal || getFromFieldResults(field.key) || "";
         }
       }
       setValues(initial);
