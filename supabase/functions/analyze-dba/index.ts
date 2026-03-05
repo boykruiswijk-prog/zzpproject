@@ -379,6 +379,14 @@ Antwoord ALLEEN met een JSON tool call.`;
           }
           if (val) extractedColumns.project_name = val;
         }
+        // Fallback: try to find project name in rewritten_description or opdrachtomschrijving field
+        if (!extractedColumns.project_name) {
+          const descText = check.rewritten_description || check.project_description || txt || "";
+          const projectMatch = descText.match(/[Pp]roject[:\s]+([A-Z][A-Za-z0-9\-\s]{2,40})(?:\n|\.|\s{2,}|$)/);
+          if (projectMatch) {
+            extractedColumns.project_name = projectMatch[1].trim();
+          }
+        }
       }
       if (!check.startdatum) {
         const val = extractFromText("Startdatum", txt);
@@ -990,48 +998,81 @@ BELANGRIJK:
           const bulletIndent = 12;
           const paragraphSpacing = 4;
 
-          // Pre-calculate total height
-          let totalLines = 0;
+          // Pre-calculate all lines
           const renderedBlocks: Array<{ type: string; lines: string[]; spaceBefore: number }> = [];
           blocks.forEach((block, idx) => {
             const spaceBefore = idx > 0 ? paragraphSpacing : 0;
             const maxW = block.type === "bullet" ? valueMaxW - bulletIndent : valueMaxW;
             const lines = wrapText(block.text, helvetica, fontSize, maxW);
             renderedBlocks.push({ type: block.type, lines, spaceBefore });
-            totalLines += lines.length;
           });
-          const totalExtraSpacing = renderedBlocks.reduce((sum, b) => sum + b.spaceBefore, 0);
-          const cellH = Math.max(24, totalLines * lineHeight + totalExtraSpacing + rowPadding * 2);
 
-          ensureSpace(cellH);
-
-          // Background
-          if (altBg) {
-            currentPage.drawRectangle({ x: margin, y: y - cellH, width: tableWidth, height: cellH, color: lightGrayBg });
-          }
-          // Border
-          currentPage.drawRectangle({ x: margin, y: y - cellH, width: tableWidth, height: cellH, borderColor: tableBorder, borderWidth: 0.4 });
-          // Vertical divider
-          currentPage.drawLine({ start: { x: valueColX, y }, end: { x: valueColX, y: y - cellH }, thickness: 0.4, color: tableBorder });
-          // Label
-          currentPage.drawText(label, { x: margin + 8, y: y - 16, size: fontSize, font: helveticaBold, color: darkGray });
-
-          // Draw blocks
-          let drawY = y - 16;
+          // Flatten all drawable items into a sequential list
+          const items: Array<{ text: string; xOffset: number; bullet: boolean; spaceBefore: number }> = [];
           renderedBlocks.forEach((block) => {
-            drawY -= block.spaceBefore;
-            const xOffset = block.type === "bullet" ? bulletIndent : 0;
             block.lines.forEach((line, li) => {
-              if (block.type === "bullet" && li === 0) {
-                // Draw bullet marker
-                currentPage.drawText("\u2022", { x: valueColX + 8, y: drawY, size: fontSize, font: helvetica, color: darkGray });
-              }
-              currentPage.drawText(line, { x: valueColX + 8 + xOffset, y: drawY, size: fontSize, font: helvetica, color: black });
-              drawY -= lineHeight;
+              items.push({
+                text: line,
+                xOffset: block.type === "bullet" ? bulletIndent : 0,
+                bullet: block.type === "bullet" && li === 0,
+                spaceBefore: li === 0 ? block.spaceBefore : 0,
+              });
             });
           });
 
-          y -= cellH;
+          // Calculate total height
+          const totalExtraSpacing = items.reduce((sum, item) => sum + item.spaceBefore, 0);
+          const totalH = Math.max(24, items.length * lineHeight + totalExtraSpacing + rowPadding * 2);
+
+          // Available space on current page
+          const availableH = y - footerZone;
+
+          if (totalH <= availableH) {
+            // Fits on one page — draw single cell
+            ensureSpace(totalH);
+            if (altBg) currentPage.drawRectangle({ x: margin, y: y - totalH, width: tableWidth, height: totalH, color: lightGrayBg });
+            currentPage.drawRectangle({ x: margin, y: y - totalH, width: tableWidth, height: totalH, borderColor: tableBorder, borderWidth: 0.4 });
+            currentPage.drawLine({ start: { x: valueColX, y }, end: { x: valueColX, y: y - totalH }, thickness: 0.4, color: tableBorder });
+            currentPage.drawText(label, { x: margin + 8, y: y - 16, size: fontSize, font: helveticaBold, color: darkGray });
+            let drawY = y - 16;
+            items.forEach((item) => {
+              drawY -= item.spaceBefore;
+              if (item.bullet) currentPage.drawText("\u2022", { x: valueColX + 8, y: drawY, size: fontSize, font: helvetica, color: darkGray });
+              currentPage.drawText(item.text, { x: valueColX + 8 + item.xOffset, y: drawY, size: fontSize, font: helvetica, color: black });
+              drawY -= lineHeight;
+            });
+            y -= totalH;
+          } else {
+            // Multi-page: draw items line by line with page breaks
+            const drawCellBorders = (topY: number, bottomY: number) => {
+              const h = topY - bottomY;
+              if (altBg) currentPage.drawRectangle({ x: margin, y: bottomY, width: tableWidth, height: h, color: lightGrayBg });
+              currentPage.drawRectangle({ x: margin, y: bottomY, width: tableWidth, height: h, borderColor: tableBorder, borderWidth: 0.4 });
+              currentPage.drawLine({ start: { x: valueColX, y: topY }, end: { x: valueColX, y: bottomY }, thickness: 0.4, color: tableBorder });
+            };
+
+            let cellTopY = y;
+            // Label on first page
+            currentPage.drawText(label, { x: margin + 8, y: y - 16, size: fontSize, font: helveticaBold, color: darkGray });
+            let drawY = y - 16;
+
+            for (const item of items) {
+              drawY -= item.spaceBefore;
+              if (drawY - lineHeight < footerZone) {
+                // Close current cell segment
+                drawCellBorders(cellTopY, footerZone);
+                addNewPage();
+                cellTopY = y;
+                drawY = y - 16;
+              }
+              if (item.bullet) currentPage.drawText("\u2022", { x: valueColX + 8, y: drawY, size: fontSize, font: helvetica, color: darkGray });
+              currentPage.drawText(item.text, { x: valueColX + 8 + item.xOffset, y: drawY, size: fontSize, font: helvetica, color: black });
+              drawY -= lineHeight;
+            }
+            // Close final segment
+            drawCellBorders(cellTopY, drawY + lineHeight - rowPadding);
+            y = drawY + lineHeight - rowPadding;
+          }
         };
 
         // === PAGE SETUP ===
