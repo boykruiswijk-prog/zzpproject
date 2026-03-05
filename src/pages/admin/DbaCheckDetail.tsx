@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { generateAnalysisReport } from "@/lib/generateAnalysisReport";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { CertificatePreviewDialog } from "@/components/admin/CertificatePreviewDialog";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { extractTextFromPdf } from "@/lib/pdfExtract";
@@ -35,6 +36,7 @@ export default function DbaCheckDetail() {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [polisUploading, setPolisUploading] = useState(false);
   const [activeAction, setActiveAction] = useState<string | null>(null);
+  const [certPreviewOpen, setCertPreviewOpen] = useState(false);
 
   const handleAnalyze = async () => {
     if (!id) return;
@@ -178,13 +180,21 @@ export default function DbaCheckDetail() {
     }
   };
 
-  const handleCertify = async () => {
+  const handleSaveAndCertify = async (updatedValues: Record<string, any>) => {
     if (!id) return;
-    if (!confirm("Weet je zeker dat je een Wet DBA certificaat wilt afgeven?")) return;
     setActiveAction("certify");
     try {
+      // First save the edited values to the DB
+      const { error: updateError } = await supabase
+        .from("dba_checks")
+        .update(updatedValues as any)
+        .eq("id", id);
+      if (updateError) throw updateError;
+
+      // Then generate the certificate
       const result = await analyzeDba.mutateAsync({ checkId: id, action: "certify" });
       toast({ title: "Certificaat afgegeven!", description: `Nummer: ${result.certificate_number}` });
+      setCertPreviewOpen(false);
       queryClient.invalidateQueries({ queryKey: ["dba-check", id] });
     } catch (error: any) {
       toast({ title: "Fout bij certificering", description: error.message, variant: "destructive" });
@@ -314,12 +324,8 @@ export default function DbaCheckDetail() {
                   Opnieuw analyseren
                 </Button>
                 {canCertify && (
-                  <Button onClick={handleCertify} disabled={activeAction !== null} className="bg-primary hover:bg-primary/90">
-                    {activeAction === "certify" ? (
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    ) : (
-                      <Award className="h-4 w-4 mr-2" />
-                    )}
+                  <Button onClick={() => setCertPreviewOpen(true)} disabled={activeAction !== null} className="bg-primary hover:bg-primary/90">
+                    <Award className="h-4 w-4 mr-2" />
                     Certificaat afgeven
                   </Button>
                 )}
@@ -869,6 +875,17 @@ export default function DbaCheckDetail() {
           </div>
         </div>
       </div>
+
+      {/* Certificate Preview Dialog */}
+      {check && (
+        <CertificatePreviewDialog
+          open={certPreviewOpen}
+          onOpenChange={setCertPreviewOpen}
+          check={check}
+          onSaveAndCertify={handleSaveAndCertify}
+          isLoading={activeAction === "certify"}
+        />
+      )}
 
       {/* PDF Viewer Dialog */}
       <Dialog open={!!pdfUrl} onOpenChange={(open) => { if (!open) { setPdfUrl(null); } }}>
