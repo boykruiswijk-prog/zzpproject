@@ -694,21 +694,73 @@ export default function DbaCheckDetail() {
                         <CheckCircle2 className="h-4 w-4" />
                         Herschreven (DBA-proof):
                       </p>
-                      <div className="p-3 rounded-lg bg-green-50 border border-green-200 text-sm whitespace-pre-line">
-                        {check.rewritten_description}
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-2"
-                        onClick={() => {
-                          navigator.clipboard.writeText(check.rewritten_description || "");
-                          toast({ title: "Tekst gekopieerd!" });
-                        }}
-                      >
-                        <Copy className="h-4 w-4 mr-2" />
-                        Kopieer tekst
-                      </Button>
+                      {editingDescription ? (
+                        <div className="space-y-2">
+                          <Textarea
+                            value={editedDescription}
+                            onChange={(e) => setEditedDescription(e.target.value)}
+                            rows={10}
+                            className="text-sm"
+                          />
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              disabled={savingDescription}
+                              onClick={async () => {
+                                setSavingDescription(true);
+                                try {
+                                  await supabase.from("dba_checks").update({
+                                    rewritten_description: editedDescription,
+                                  } as any).eq("id", id!);
+                                  queryClient.invalidateQueries({ queryKey: ["dba-check", id] });
+                                  setEditingDescription(false);
+                                  toast({ title: "Projectomschrijving opgeslagen!" });
+                                } catch (err: any) {
+                                  toast({ title: "Fout bij opslaan", description: err.message, variant: "destructive" });
+                                } finally {
+                                  setSavingDescription(false);
+                                }
+                              }}
+                            >
+                              {savingDescription ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                              Opslaan
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={() => setEditingDescription(false)}>
+                              Annuleren
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="p-3 rounded-lg bg-green-50 border border-green-200 text-sm whitespace-pre-line">
+                            {check.rewritten_description}
+                          </div>
+                          <div className="flex gap-2 mt-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setEditedDescription(check.rewritten_description || "");
+                                setEditingDescription(true);
+                              }}
+                            >
+                              <Pencil className="h-4 w-4 mr-2" />
+                              Bewerken
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                navigator.clipboard.writeText(check.rewritten_description || "");
+                                toast({ title: "Tekst gekopieerd!" });
+                              }}
+                            >
+                              <Copy className="h-4 w-4 mr-2" />
+                              Kopieer tekst
+                            </Button>
+                          </div>
+                        </>
+                      )}
                     </div>
                   )}
                 </CardContent>
