@@ -9,8 +9,9 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   ArrowLeft, Loader2, Play, RefreshCw, ShieldCheck, CheckCircle2,
-  XCircle, AlertTriangle, Award, Copy, ExternalLink, Building2, Download, Upload, FileText, FileDown,
+  XCircle, AlertTriangle, Award, Copy, ExternalLink, Building2, Download, Upload, FileText, FileDown, Pencil, Save,
 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { generateAnalysisReport } from "@/lib/generateAnalysisReport";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { CertificatePreviewDialog } from "@/components/admin/CertificatePreviewDialog";
