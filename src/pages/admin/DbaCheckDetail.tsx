@@ -278,7 +278,7 @@ export default function DbaCheckDetail() {
   const rawPolicyDate = check.suggestions?.[0]?.insurance_policy_date;
   const insurancePolicyDate = (rawPolicyDate && rawPolicyDate !== "null" && rawPolicyDate !== "undefined") ? rawPolicyDate : null;
   const insurancePolicyExpired = check.suggestions?.[0]?.insurance_policy_expired;
-  const canCertify = check.status === "analyzed";
+  const canCertify = check.status === "analyzed" || check.status === "certified";
 
   return (
     <AdminLayout>
