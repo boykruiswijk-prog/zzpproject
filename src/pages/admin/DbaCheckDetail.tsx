@@ -278,7 +278,7 @@ export default function DbaCheckDetail() {
   const rawPolicyDate = check.suggestions?.[0]?.insurance_policy_date;
   const insurancePolicyDate = (rawPolicyDate && rawPolicyDate !== "null" && rawPolicyDate !== "undefined") ? rawPolicyDate : null;
   const insurancePolicyExpired = check.suggestions?.[0]?.insurance_policy_expired;
-  const canCertify = check.status === "analyzed";
+  const canCertify = check.status === "analyzed" || check.status === "certified";
 
   return (
     <AdminLayout>
@@ -316,7 +316,7 @@ export default function DbaCheckDetail() {
                 Start analyse
               </Button>
             )}
-            {check.status === "analyzed" && (
+            {(check.status === "analyzed" || check.status === "certified") && (
               <>
                 <Button variant="outline" onClick={handleAnalyze} disabled={activeAction !== null}>
                   {activeAction === "analyze" ? (
@@ -329,19 +329,17 @@ export default function DbaCheckDetail() {
                 {canCertify && (
                   <Button onClick={() => setCertPreviewOpen(true)} disabled={activeAction !== null} className="bg-primary hover:bg-primary/90">
                     <Award className="h-4 w-4 mr-2" />
-                    Certificaat afgeven
+                    {check.status === "certified" ? "Nieuw certificaat" : "Certificaat afgeven"}
                   </Button>
                 )}
-                {check.status === "analyzed" && (
-                  <Button
-                    variant="outline"
-                    onClick={() => generateAnalysisReport(check)}
-                    disabled={activeAction !== null}
-                  >
-                    <FileDown className="h-4 w-4 mr-2" />
-                    Export analyserapport
-                  </Button>
-                )}
+                <Button
+                  variant="outline"
+                  onClick={() => generateAnalysisReport(check)}
+                  disabled={activeAction !== null}
+                >
+                  <FileDown className="h-4 w-4 mr-2" />
+                  Export analyserapport
+                </Button>
               </>
             )}
           </div>
@@ -855,7 +853,7 @@ export default function DbaCheckDetail() {
             )}
 
             {/* Score too low warning */}
-            {check.status === "analyzed" && score !== undefined && score < 75 && (
+            {(check.status === "analyzed" || check.status === "certified") && score !== undefined && score < 75 && (
               <Card className="border-orange-200 bg-orange-50">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-orange-800 text-base">
@@ -875,7 +873,7 @@ export default function DbaCheckDetail() {
             )}
 
             {/* Aandachtspunten (informatief, blokkeert certificering niet) */}
-            {check.status === "analyzed" && check.missing_fields && check.missing_fields.length > 0 && (
+            {(check.status === "analyzed" || check.status === "certified") && check.missing_fields && check.missing_fields.length > 0 && (
               <Card className="border-yellow-200 bg-yellow-50">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-yellow-800 text-base">
