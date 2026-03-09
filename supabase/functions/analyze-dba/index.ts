@@ -1214,7 +1214,9 @@ BELANGRIJK:
         drawRow("Eindopdrachtgever", check.eindopdrachtgever || getFieldValue("eindopdrachtgever") || "-", { altBg: alt() });
         drawRow("Functie", check.functie || getFieldValue("functie") || "-", { altBg: alt() });
         const descAlt = alt();
-        drawDescriptionRow("Opdrachtomschrijving", check.rewritten_description || check.project_description || getFieldValue("opdrachtomschrijving") || "-", descAlt);
+        const descriptionText = check.rewritten_description || check.project_description || getFieldValue("opdrachtomschrijving") || "-";
+        console.log("Description text length:", descriptionText.length, "First 200 chars:", descriptionText.substring(0, 200));
+        drawDescriptionRow("Opdrachtomschrijving", descriptionText, descAlt);
         drawRow("Project", check.project_name || getFieldValue("project") || "-", { altBg: alt() });
         drawRow("Startdatum", check.startdatum ? formatDate(check.startdatum) : getFieldValue("startdatum") || "-", { altBg: alt() });
         drawRow("Einddatum", check.einddatum ? formatDate(check.einddatum) : getFieldValue("einddatum") || "-", { altBg: alt() });
