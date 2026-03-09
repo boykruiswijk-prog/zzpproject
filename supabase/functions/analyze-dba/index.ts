@@ -979,18 +979,24 @@ BELANGRIJK:
           return lines.length > 0 ? lines : ["-"];
         };
 
-        // Parse rich description text into structured blocks (paragraphs + bullet points)
-        const parseDescriptionBlocks = (text: string): Array<{ type: "paragraph" | "bullet"; text: string }> => {
+        // Parse rich description text into structured blocks
+        const parseDescriptionBlocks = (text: string): Array<{ type: "paragraph" | "bullet" | "heading"; text: string }> => {
           if (!text || text.trim() === "-") return [{ type: "paragraph", text: "-" }];
-          // Split on real newlines
           const rawLines = text.split(/\n/).map(l => l.trim()).filter(l => l.length > 0);
-          const blocks: Array<{ type: "paragraph" | "bullet"; text: string }> = [];
-          for (const line of rawLines) {
-            // Detect bullet points: lines starting with -, *, •, or numbered (1., 2.)
-            if (/^[-*•]\s+/.test(line)) {
-              blocks.push({ type: "bullet", text: line.replace(/^[-*•]\s+/, "").trim() });
+          const blocks: Array<{ type: "paragraph" | "bullet" | "heading"; text: string }> = [];
+          for (let i = 0; i < rawLines.length; i++) {
+            const line = rawLines[i];
+            // Detect bullet points
+            if (/^[-*]\s+/.test(line)) {
+              blocks.push({ type: "bullet", text: line.replace(/^[-*]\s+/, "").trim() });
             } else if (/^\d+[.)]\s+/.test(line)) {
               blocks.push({ type: "bullet", text: line.trim() });
+            } else if (
+              // Detect headings: short lines (< 60 chars), no period at end, followed by longer text
+              line.length < 60 && !line.endsWith(".") && !line.endsWith(",") &&
+              i + 1 < rawLines.length && rawLines[i + 1].length > line.length
+            ) {
+              blocks.push({ type: "heading", text: line });
             } else {
               blocks.push({ type: "paragraph", text: line });
             }
@@ -1002,26 +1008,25 @@ BELANGRIJK:
         const drawDescriptionRow = (label: string, rawText: string, altBg: boolean): void => {
           const blocks = parseDescriptionBlocks(rawText || "-");
           const bulletIndent = 12;
-          const paragraphSpacing = 4;
+          const headingSpacing = 8;
+          const paragraphSpacing = 5;
 
-          // Pre-calculate all lines
-          const renderedBlocks: Array<{ type: string; lines: string[]; spaceBefore: number }> = [];
+          // Flatten into drawable items with font info
+          const items: Array<{ text: string; xOffset: number; bullet: boolean; spaceBefore: number; bold: boolean }> = [];
           blocks.forEach((block, idx) => {
-            const spaceBefore = idx > 0 ? paragraphSpacing : 0;
-            const maxW = block.type === "bullet" ? valueMaxW - bulletIndent : valueMaxW;
-            const lines = wrapText(block.text, helvetica, fontSize, maxW);
-            renderedBlocks.push({ type: block.type, lines, spaceBefore });
-          });
-
-          // Flatten all drawable items into a sequential list
-          const items: Array<{ text: string; xOffset: number; bullet: boolean; spaceBefore: number }> = [];
-          renderedBlocks.forEach((block) => {
-            block.lines.forEach((line, li) => {
+            const isHeading = block.type === "heading";
+            const isBullet = block.type === "bullet";
+            const spaceBefore = idx === 0 ? 0 : isHeading ? headingSpacing : paragraphSpacing;
+            const font = isHeading ? helveticaBold : helvetica;
+            const maxW = isBullet ? valueMaxW - bulletIndent : valueMaxW;
+            const lines = wrapText(block.text, font, fontSize, maxW);
+            lines.forEach((line, li) => {
               items.push({
                 text: line,
-                xOffset: block.type === "bullet" ? bulletIndent : 0,
-                bullet: block.type === "bullet" && li === 0,
-                spaceBefore: li === 0 ? block.spaceBefore : 0,
+                xOffset: isBullet ? bulletIndent : 0,
+                bullet: isBullet && li === 0,
+                spaceBefore: li === 0 ? spaceBefore : 0,
+                bold: isHeading,
               });
             });
           });
@@ -1030,29 +1035,36 @@ BELANGRIJK:
           const totalExtraSpacing = items.reduce((sum, item) => sum + item.spaceBefore, 0);
           const totalH = Math.max(24, items.length * lineHeight + totalExtraSpacing + rowPadding * 2);
 
-          // Available space on current page
           const availableH = y - footerZone;
 
-          if (totalH <= availableH) {
-            // Fits on one page — draw single cell
-            ensureSpace(totalH);
-            if (altBg) currentPage.drawRectangle({ x: margin, y: y - totalH, width: tableWidth, height: totalH, color: lightGrayBg });
-            currentPage.drawRectangle({ x: margin, y: y - totalH, width: tableWidth, height: totalH, borderColor: tableBorder, borderWidth: 0.4 });
-            currentPage.drawLine({ start: { x: valueColX, y }, end: { x: valueColX, y: y - totalH }, thickness: 0.4, color: tableBorder });
+          const drawLabel = () => {
             const labelLines = label.split("\n");
             labelLines.forEach((ll, li) => {
               currentPage.drawText(ll, { x: margin + 8, y: y - 16 - li * lineHeight, size: fontSize, font: helveticaBold, color: darkGray });
             });
+          };
+
+          const drawItem = (item: typeof items[0], drawY: number) => {
+            const font = item.bold ? helveticaBold : helvetica;
+            if (item.bullet) currentPage.drawText("-", { x: valueColX + 8, y: drawY, size: fontSize, font: helvetica, color: darkGray });
+            currentPage.drawText(item.text, { x: valueColX + 8 + item.xOffset, y: drawY, size: fontSize, font, color: black });
+          };
+
+          if (totalH <= availableH) {
+            ensureSpace(totalH);
+            if (altBg) currentPage.drawRectangle({ x: margin, y: y - totalH, width: tableWidth, height: totalH, color: lightGrayBg });
+            currentPage.drawRectangle({ x: margin, y: y - totalH, width: tableWidth, height: totalH, borderColor: tableBorder, borderWidth: 0.4 });
+            currentPage.drawLine({ start: { x: valueColX, y }, end: { x: valueColX, y: y - totalH }, thickness: 0.4, color: tableBorder });
+            drawLabel();
             let drawY = y - 16;
             items.forEach((item) => {
               drawY -= item.spaceBefore;
-              if (item.bullet) currentPage.drawText("\u2022", { x: valueColX + 8, y: drawY, size: fontSize, font: helvetica, color: darkGray });
-              currentPage.drawText(item.text, { x: valueColX + 8 + item.xOffset, y: drawY, size: fontSize, font: helvetica, color: black });
+              drawItem(item, drawY);
               drawY -= lineHeight;
             });
             y -= totalH;
           } else {
-            // Multi-page: draw items line by line with page breaks
+            // Multi-page
             const drawCellBorders = (topY: number, bottomY: number) => {
               const h = topY - bottomY;
               if (altBg) currentPage.drawRectangle({ x: margin, y: bottomY, width: tableWidth, height: h, color: lightGrayBg });
@@ -1061,27 +1073,20 @@ BELANGRIJK:
             };
 
             let cellTopY = y;
-            // Label on first page
-            const labelLines2 = label.split("\n");
-            labelLines2.forEach((ll, li) => {
-              currentPage.drawText(ll, { x: margin + 8, y: y - 16 - li * lineHeight, size: fontSize, font: helveticaBold, color: darkGray });
-            });
+            drawLabel();
             let drawY = y - 16;
 
             for (const item of items) {
               drawY -= item.spaceBefore;
               if (drawY - lineHeight < footerZone) {
-                // Close current cell segment
                 drawCellBorders(cellTopY, footerZone);
                 addNewPage();
                 cellTopY = y;
                 drawY = y - 16;
               }
-              if (item.bullet) currentPage.drawText("\u2022", { x: valueColX + 8, y: drawY, size: fontSize, font: helvetica, color: darkGray });
-              currentPage.drawText(item.text, { x: valueColX + 8 + item.xOffset, y: drawY, size: fontSize, font: helvetica, color: black });
+              drawItem(item, drawY);
               drawY -= lineHeight;
             }
-            // Close final segment
             drawCellBorders(cellTopY, drawY + lineHeight - rowPadding);
             y = drawY + lineHeight - rowPadding;
           }
