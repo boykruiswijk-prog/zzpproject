@@ -1328,8 +1328,8 @@ BELANGRIJK:
         if (score !== undefined) {
           y -= 8;
           ensureSpace(32);
-          const scoreColor = score >= 80 ? green : aandachtColor;
-          const scoreBgColor = score >= 80 ? rgb(0.93, 0.98, 0.93) : rgb(1, 0.95, 0.9);
+          const scoreColor = score >= 75 ? green : aandachtColor;
+          const scoreBgColor = score >= 75 ? rgb(0.93, 0.98, 0.93) : rgb(1, 0.95, 0.9);
           const scoreBoxH = 30;
           currentPage.drawRectangle({ x: margin, y: y - scoreBoxH, width: tableWidth, height: scoreBoxH, color: scoreBgColor, borderColor: scoreColor, borderWidth: 0.6 });
           currentPage.drawText(`Compliance score: ${score}%`, { x: margin + 12, y: y - 20, size: 12, font: helveticaBold, color: scoreColor });
