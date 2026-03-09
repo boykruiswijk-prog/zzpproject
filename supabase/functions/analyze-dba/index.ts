@@ -1293,7 +1293,19 @@ BELANGRIJK:
         drawRow("Eigen materiaal en werkwijze", eigenMateriaal ? "Ja" : "Nee", { valueColor: eigenMateriaal ? green : aandachtColor, valueBold: true, altBg: alt() });
 
         // === DOSSIER SECTION ===
-        const checklist = (check.document_checklist || []) as any[];
+        const rawChecklist = (check.document_checklist || []) as any[];
+        // Normalize checklist items using recursive unwrapping (same helper as analyze)
+        function flattenItem(item: any): { document_name: string; status: string } {
+          let current = item;
+          while (current.status && typeof current.status === "object" && current.status.document_name !== undefined) {
+            current = current.status;
+          }
+          return {
+            document_name: current.document_name || "",
+            status: typeof current.status === "string" ? current.status : "niet_aanwezig",
+          };
+        }
+        const checklist = Array.isArray(rawChecklist) ? rawChecklist.map(flattenItem) : [];
         if (checklist.length > 0) {
           y -= 6;
           ensureSpace(24 + checklist.length * 15);
@@ -1302,16 +1314,14 @@ BELANGRIJK:
           currentPage.drawText("Dossier overzicht", { x: margin + 8, y: y - 14, size: fontSize, font: helveticaBold, color: darkGray });
           y -= 20;
           
-          checklist.forEach((item: any) => {
+          checklist.forEach((item) => {
             ensureSpace(16);
-            // Handle both flat and nested data structures
-            const actualItem = (item.status && typeof item.status === "object" && item.status.document_name) ? item.status : item;
-            const isPresent = actualItem.status === "aanwezig";
+            const isPresent = item.status === "aanwezig";
             const icon = isPresent ? "V" : "X";
             const color = isPresent ? green : aandachtColor;
             const statusText = isPresent ? "Aanwezig" : "Niet aanwezig";
             currentPage.drawText(icon, { x: margin + 10, y: y - 12, size: 9, font: helveticaBold, color });
-            currentPage.drawText(actualItem.document_name || "", { x: margin + 26, y: y - 12, size: fontSize, font: helvetica, color: darkGray });
+            currentPage.drawText(item.document_name, { x: margin + 26, y: y - 12, size: fontSize, font: helvetica, color: darkGray });
             currentPage.drawText(statusText, { x: pageWidth - rightMargin - 80, y: y - 12, size: smallFont, font: helvetica, color });
             y -= 16;
           });
