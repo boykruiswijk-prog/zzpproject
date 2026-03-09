@@ -251,7 +251,8 @@ export function BAVApplicationModule() {
                       <p className="text-muted-foreground text-sm">{t("home.bavChooseDesc")}</p>
                     </div>
                     <div className="grid gap-4">
-                      {packages.map((pkg) => (
+                      {/* TODO: Re-enable "basis" package later by removing the filter below */}
+                      {packages.filter(pkg => pkg.id === "uitgebreid").map((pkg) => (
                         <button key={pkg.id} onClick={() => setSelectedPackage(pkg.id)}
                           className={cn("relative p-5 rounded-xl border-2 text-left transition-all", selectedPackage === pkg.id ? "border-accent bg-accent/5" : "border-border hover:border-accent/50")}>
                           {pkg.popular && <span className="absolute -top-3 left-4 bg-accent text-accent-foreground text-xs font-medium px-3 py-1 rounded-full">{t("home.bavMostChosen")}</span>}
