@@ -580,6 +580,12 @@ Antwoord ALLEEN met een JSON tool call.`;
           insurance_missing: insuranceMissing || false,
         }],
         status: "analyzed",
+        // Reset certificate fields so a new certificate can be generated
+        certificate_number: null,
+        certificate_pdf_url: null,
+        verification_token: null,
+        certified_at: null,
+        certified_by: null,
         ...extractedColumns,
       }).eq("id", check_id);
 
