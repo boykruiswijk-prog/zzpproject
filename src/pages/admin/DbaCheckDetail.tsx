@@ -316,7 +316,7 @@ export default function DbaCheckDetail() {
                 Start analyse
               </Button>
             )}
-            {check.status === "analyzed" && (
+            {(check.status === "analyzed" || check.status === "certified") && (
               <>
                 <Button variant="outline" onClick={handleAnalyze} disabled={activeAction !== null}>
                   {activeAction === "analyze" ? (
@@ -329,19 +329,17 @@ export default function DbaCheckDetail() {
                 {canCertify && (
                   <Button onClick={() => setCertPreviewOpen(true)} disabled={activeAction !== null} className="bg-primary hover:bg-primary/90">
                     <Award className="h-4 w-4 mr-2" />
-                    Certificaat afgeven
+                    {check.status === "certified" ? "Nieuw certificaat" : "Certificaat afgeven"}
                   </Button>
                 )}
-                {check.status === "analyzed" && (
-                  <Button
-                    variant="outline"
-                    onClick={() => generateAnalysisReport(check)}
-                    disabled={activeAction !== null}
-                  >
-                    <FileDown className="h-4 w-4 mr-2" />
-                    Export analyserapport
-                  </Button>
-                )}
+                <Button
+                  variant="outline"
+                  onClick={() => generateAnalysisReport(check)}
+                  disabled={activeAction !== null}
+                >
+                  <FileDown className="h-4 w-4 mr-2" />
+                  Export analyserapport
+                </Button>
               </>
             )}
           </div>
