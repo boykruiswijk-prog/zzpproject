@@ -81,7 +81,8 @@ const publicRoutes = (
     <Route path="cookies" element={<Cookies />} />
     <Route path="faq" element={<FAQ />} />
     <Route path="collectieve-inkoop" element={<CollectieveInkoop />} />
-    <Route path="collectief-ledenorganisaties" element={<CollectiefLedenorganisaties />} />
+    {/* TODO: Re-enable collectief-ledenorganisaties route when ready to go live */}
+    {/* <Route path="collectief-ledenorganisaties" element={<CollectiefLedenorganisaties />} /> */}
     <Route path="social-media" element={<SocialMedia />} />
     <Route path="creditcontrol" element={<CreditControl />} />
   </>
