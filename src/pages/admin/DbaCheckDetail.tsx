@@ -853,7 +853,7 @@ export default function DbaCheckDetail() {
             )}
 
             {/* Score too low warning */}
-            {check.status === "analyzed" && score !== undefined && score < 75 && (
+            {(check.status === "analyzed" || check.status === "certified") && score !== undefined && score < 75 && (
               <Card className="border-orange-200 bg-orange-50">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-orange-800 text-base">
