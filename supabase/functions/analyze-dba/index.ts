@@ -1064,31 +1064,54 @@ BELANGRIJK:
             });
             y -= totalH;
           } else {
-            // Multi-page
-            const drawCellBorders = (topY: number, bottomY: number) => {
-              const h = topY - bottomY;
-              if (altBg) currentPage.drawRectangle({ x: margin, y: bottomY, width: tableWidth, height: h, color: lightGrayBg });
-              currentPage.drawRectangle({ x: margin, y: bottomY, width: tableWidth, height: h, borderColor: tableBorder, borderWidth: 0.4 });
-              currentPage.drawLine({ start: { x: valueColX, y: topY }, end: { x: valueColX, y: bottomY }, thickness: 0.4, color: tableBorder });
-            };
-
+            // Multi-page: collect items per page, draw bg first then text
+            const pageSegments: Array<{ page: any; topY: number; items: Array<{ item: typeof items[0]; drawY: number }> }> = [];
             let cellTopY = y;
-            drawLabel();
             let drawY = y - 16;
+            let currentSegmentItems: Array<{ item: typeof items[0]; drawY: number }> = [];
 
             for (const item of items) {
               drawY -= item.spaceBefore;
               if (drawY - lineHeight < footerZone) {
-                drawCellBorders(cellTopY, footerZone);
+                // Save current segment
+                pageSegments.push({ page: currentPage, topY: cellTopY, items: [...currentSegmentItems] });
+                currentSegmentItems = [];
                 addNewPage();
                 cellTopY = y;
                 drawY = y - 16;
               }
-              drawItem(item, drawY);
+              currentSegmentItems.push({ item, drawY });
               drawY -= lineHeight;
             }
-            drawCellBorders(cellTopY, drawY + lineHeight - rowPadding);
-            y = drawY + lineHeight - rowPadding;
+            // Save final segment
+            const finalBottomY = drawY + lineHeight - rowPadding;
+            pageSegments.push({ page: currentPage, topY: cellTopY, items: [...currentSegmentItems] });
+
+            // Now render each segment: backgrounds first, then text
+            pageSegments.forEach((seg, segIdx) => {
+              const bottomY = segIdx < pageSegments.length - 1 ? footerZone : finalBottomY;
+              const h = seg.topY - bottomY;
+              if (altBg) seg.page.drawRectangle({ x: margin, y: bottomY, width: tableWidth, height: h, color: lightGrayBg });
+              seg.page.drawRectangle({ x: margin, y: bottomY, width: tableWidth, height: h, borderColor: tableBorder, borderWidth: 0.4 });
+              seg.page.drawLine({ start: { x: valueColX, y: seg.topY }, end: { x: valueColX, y: bottomY }, thickness: 0.4, color: tableBorder });
+
+              // Draw label on first segment
+              if (segIdx === 0) {
+                const labelLines = label.split("\n");
+                labelLines.forEach((ll, li) => {
+                  seg.page.drawText(ll, { x: margin + 8, y: seg.topY - 16 - li * lineHeight, size: fontSize, font: helveticaBold, color: darkGray });
+                });
+              }
+
+              // Draw text items
+              seg.items.forEach(({ item, drawY: dy }) => {
+                const font = item.bold ? helveticaBold : helvetica;
+                if (item.bullet) seg.page.drawText("-", { x: valueColX + 8, y: dy, size: fontSize, font: helvetica, color: darkGray });
+                seg.page.drawText(item.text, { x: valueColX + 8 + item.xOffset, y: dy, size: fontSize, font, color: black });
+              });
+            });
+
+            y = finalBottomY;
           }
         };
 
