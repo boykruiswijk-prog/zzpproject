@@ -365,6 +365,72 @@ export function CertificatePreviewDialog({ open, onOpenChange, check, onSaveAndC
           </>
         )}
 
+        {/* ═══ SECTION 3b: Dossier Checklist ═══ */}
+        {documentChecklist.length > 0 && (
+          <>
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Dossier Checklist</h3>
+              <div className="space-y-2">
+                {documentChecklist.map((item, i) => (
+                  <div key={i} className="flex items-center gap-3 p-2 rounded-md bg-muted/30">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const updated = [...documentChecklist];
+                        updated[i] = {
+                          ...updated[i],
+                          status: updated[i].status === "aanwezig" ? "niet_aanwezig" : "aanwezig",
+                        };
+                        setDocumentChecklist(updated);
+                      }}
+                      className="flex-shrink-0"
+                      disabled={isLoading}
+                    >
+                      {item.status === "aanwezig" ? (
+                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                      ) : (
+                        <XCircle className="h-5 w-5 text-destructive" />
+                      )}
+                    </button>
+                    <Input
+                      value={item.document_name}
+                      onChange={(e) => {
+                        const updated = [...documentChecklist];
+                        updated[i] = { ...updated[i], document_name: e.target.value };
+                        setDocumentChecklist(updated);
+                      }}
+                      className="h-8 text-sm flex-1"
+                      placeholder="Documentnaam"
+                      disabled={isLoading}
+                    />
+                    <span className="text-xs text-muted-foreground w-24 text-right">
+                      {item.status === "aanwezig" ? "Aanwezig" : "Niet aanwezig"}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setDocumentChecklist(documentChecklist.filter((_, j) => j !== i))}
+                      className="text-muted-foreground hover:text-destructive flex-shrink-0"
+                      disabled={isLoading}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setDocumentChecklist([...documentChecklist, { document_name: "", status: "aanwezig" }])}
+                disabled={isLoading}
+              >
+                <Plus className="h-3 w-3 mr-1" /> Document toevoegen
+              </Button>
+            </div>
+            <Separator className="my-4" />
+          </>
+        )}
+
         {/* ═══ SECTION 4: Aandachtspunten ═══ */}
         <div className="space-y-3">
           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Aandachtspunten</h3>
