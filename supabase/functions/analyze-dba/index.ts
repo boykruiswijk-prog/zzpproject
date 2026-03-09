@@ -1256,44 +1256,11 @@ BELANGRIJK:
         }
 
         // === AANDACHTSPUNTEN SECTION ===
-        const uniqueAandachtspunten = new Set<string>();
-        const aiAandachtspunten = suggestions?.[0]?.aandachtspunten as string[] || [];
-        aiAandachtspunten.forEach((a: string) => {
-          const cleaned = cleanText(a);
-          if (cleaned !== "-") uniqueAandachtspunten.add(cleaned);
-        });
-        checklist.forEach((item: any) => {
-          if (item.status !== "aanwezig") {
-            const docName = item.document_name || "";
-            if (docName) {
-              const label = item.status === "niet_aanwezig" ? `${docName} (niet aanwezig)` : `${docName} (niet geverifieerd)`;
-              const alreadyCovered = Array.from(uniqueAandachtspunten).some(a => a.toLowerCase().includes(docName.toLowerCase()));
-              if (!alreadyCovered) uniqueAandachtspunten.add(label);
-            }
-          }
-        });
-        // Add KVK extract age warning
-        const kvkForAge = check.kvk_check_result as any;
-        if (kvkForAge?.kvk_extract_expired === true) {
-          const dateStr = kvkForAge.kvk_extract_date || "onbekend";
-          uniqueAandachtspunten.add(`KVK-uittreksel is ouder dan 3 maanden (datum: ${dateStr})`);
-        } else if (kvkForAge && kvkForAge.kvk_extract_date === null && kvkForAge.kvk_extract_expired === null) {
-          uniqueAandachtspunten.add("Datum KVK-uittreksel kon niet worden vastgesteld");
-        }
-
-        // Add insurance policy warning
-        const insurancePolicyDate = suggestions?.[0]?.insurance_policy_date;
-        const certInsuranceExpired = suggestions?.[0]?.insurance_policy_expired;
-        const certInsuranceMissing = suggestions?.[0]?.insurance_missing;
-        if (certInsuranceMissing) {
-          uniqueAandachtspunten.add("Polis beroeps- en bedrijfsaansprakelijkheid is niet aangeleverd");
-        } else if (certInsuranceExpired === true) {
-          uniqueAandachtspunten.add(`Polis beroeps-/bedrijfsaansprakelijkheid is ouder dan 1 jaar (datum: ${insurancePolicyDate})`);
-        } else if (!certInsuranceMissing && (insurancePolicyDate === null || insurancePolicyDate === undefined)) {
-          uniqueAandachtspunten.add("Datum polis beroeps-/bedrijfsaansprakelijkheid kon niet worden vastgesteld");
-        }
-
-        const aandachtspunten = Array.from(uniqueAandachtspunten);
+        // Use manually edited missing_fields as primary source (from CertificatePreviewDialog)
+        const manualMissingFields = (check.missing_fields || []) as string[];
+        const aandachtspunten: string[] = manualMissingFields
+          .map((a: string) => cleanText(a))
+          .filter((a: string) => a !== "-" && a.trim() !== "");
 
         if (aandachtspunten.length > 0) {
           y -= 4;
