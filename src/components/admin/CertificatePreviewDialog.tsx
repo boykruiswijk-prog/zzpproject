@@ -183,6 +183,11 @@ export function CertificatePreviewDialog({ open, onOpenChange, check, onSaveAndC
       }));
     }
 
+    // Save document checklist
+    if (documentChecklist.length > 0) {
+      dbValues["document_checklist"] = documentChecklist.filter(d => d.document_name.trim() !== "");
+    }
+
     await onSaveAndCertify(dbValues);
   };
 
