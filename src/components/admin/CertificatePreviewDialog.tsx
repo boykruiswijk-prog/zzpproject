@@ -120,6 +120,17 @@ export function CertificatePreviewDialog({ open, onOpenChange, check, onSaveAndC
       } else {
         setFieldResults([]);
       }
+
+      // Initialize document checklist
+      const rawChecklist = check.document_checklist;
+      if (Array.isArray(rawChecklist) && rawChecklist.length > 0) {
+        setDocumentChecklist(rawChecklist.map((item: any) => ({
+          document_name: item.document_name || "",
+          status: typeof item.status === "string" ? item.status : "niet_aanwezig",
+        })));
+      } else {
+        setDocumentChecklist([]);
+      }
     }
   }, [open, check]);
 
