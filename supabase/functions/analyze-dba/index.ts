@@ -1062,7 +1062,10 @@ BELANGRIJK:
 
             let cellTopY = y;
             // Label on first page
-            currentPage.drawText(label, { x: margin + 8, y: y - 16, size: fontSize, font: helveticaBold, color: darkGray });
+            const labelLines2 = label.split("\n");
+            labelLines2.forEach((ll, li) => {
+              currentPage.drawText(ll, { x: margin + 8, y: y - 16 - li * lineHeight, size: fontSize, font: helveticaBold, color: darkGray });
+            });
             let drawY = y - 16;
 
             for (const item of items) {
