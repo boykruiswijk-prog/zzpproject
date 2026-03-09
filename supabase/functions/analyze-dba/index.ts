@@ -1221,8 +1221,11 @@ BELANGRIJK:
         drawRow("Functie", check.functie || getFieldValue("functie") || "-", { altBg: alt() });
         const descAlt = alt();
         const descriptionText = check.rewritten_description || check.project_description || getFieldValue("opdrachtomschrijving") || "-";
-        console.log("Description text length:", descriptionText.length, "First 200 chars:", descriptionText.substring(0, 200));
-        drawDescriptionRow("Opdrachtomschrijving", descriptionText, descAlt);
+        const descLabel = check.rewritten_description ? "Opdrachtomschrijving\n(DBA-proof)" : "Opdrachtomschrijving";
+        console.log("Description source:", check.rewritten_description ? "rewritten_description" : check.project_description ? "project_description" : "field_value");
+        console.log("Description text length:", descriptionText.length, "First 300 chars:", descriptionText.substring(0, 300));
+        drawDescriptionRow(descLabel, descriptionText, descAlt);
+        console.log("After drawDescriptionRow, y =", y, "page count =", pdfDoc.getPageCount());
         drawRow("Project", check.project_name || getFieldValue("project") || "-", { altBg: alt() });
         drawRow("Startdatum", check.startdatum ? formatDate(check.startdatum) : getFieldValue("startdatum") || "-", { altBg: alt() });
         drawRow("Einddatum", check.einddatum ? formatDate(check.einddatum) : getFieldValue("einddatum") || "-", { altBg: alt() });
