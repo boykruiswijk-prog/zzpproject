@@ -1286,12 +1286,14 @@ BELANGRIJK:
           
           checklist.forEach((item: any) => {
             ensureSpace(16);
-            const isPresent = item.status === "aanwezig";
+            // Handle both flat and nested data structures
+            const actualItem = (item.status && typeof item.status === "object" && item.status.document_name) ? item.status : item;
+            const isPresent = actualItem.status === "aanwezig";
             const icon = isPresent ? "V" : "X";
             const color = isPresent ? green : aandachtColor;
             const statusText = isPresent ? "Aanwezig" : "Niet aanwezig";
             currentPage.drawText(icon, { x: margin + 10, y: y - 12, size: 9, font: helveticaBold, color });
-            currentPage.drawText(item.document_name || "", { x: margin + 26, y: y - 12, size: fontSize, font: helvetica, color: darkGray });
+            currentPage.drawText(actualItem.document_name || "", { x: margin + 26, y: y - 12, size: fontSize, font: helvetica, color: darkGray });
             currentPage.drawText(statusText, { x: pageWidth - rightMargin - 80, y: y - 12, size: smallFont, font: helvetica, color });
             y -= 16;
           });
