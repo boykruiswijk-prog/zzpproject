@@ -873,7 +873,7 @@ export default function DbaCheckDetail() {
             )}
 
             {/* Aandachtspunten (informatief, blokkeert certificering niet) */}
-            {check.status === "analyzed" && check.missing_fields && check.missing_fields.length > 0 && (
+            {(check.status === "analyzed" || check.status === "certified") && check.missing_fields && check.missing_fields.length > 0 && (
               <Card className="border-yellow-200 bg-yellow-50">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-yellow-800 text-base">
