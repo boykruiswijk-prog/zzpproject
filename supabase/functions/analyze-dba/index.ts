@@ -1039,7 +1039,10 @@ BELANGRIJK:
             if (altBg) currentPage.drawRectangle({ x: margin, y: y - totalH, width: tableWidth, height: totalH, color: lightGrayBg });
             currentPage.drawRectangle({ x: margin, y: y - totalH, width: tableWidth, height: totalH, borderColor: tableBorder, borderWidth: 0.4 });
             currentPage.drawLine({ start: { x: valueColX, y }, end: { x: valueColX, y: y - totalH }, thickness: 0.4, color: tableBorder });
-            currentPage.drawText(label, { x: margin + 8, y: y - 16, size: fontSize, font: helveticaBold, color: darkGray });
+            const labelLines = label.split("\n");
+            labelLines.forEach((ll, li) => {
+              currentPage.drawText(ll, { x: margin + 8, y: y - 16 - li * lineHeight, size: fontSize, font: helveticaBold, color: darkGray });
+            });
             let drawY = y - 16;
             items.forEach((item) => {
               drawY -= item.spaceBefore;
