@@ -34,7 +34,8 @@ function useNavItems() {
       label: t("nav.collectief"), 
       isNew: true,
       children: [
-        { href: "/collectief-ledenorganisaties", label: t("nav.collectiefLedenorganisaties") },
+        /* TODO: Re-enable ledenorganisaties link when ready to go live */
+        // { href: "/collectief-ledenorganisaties", label: t("nav.collectiefLedenorganisaties") },
         { href: "/collectieve-inkoop", label: t("nav.collectieveInkoopOverzicht") },
       ]
     },
