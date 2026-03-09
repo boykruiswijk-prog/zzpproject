@@ -486,35 +486,43 @@ Antwoord ALLEEN met een JSON tool call.`;
         return !f.filled;
       }).length;
 
+      // Helper: recursively unwrap nested checklist items to flat {document_name, status} format
+      function flattenChecklistItem(item: any): { document_name: string; status: string } {
+        // Recursively dig into nested status objects until we find a string status
+        let current = item;
+        while (current.status && typeof current.status === "object" && current.status.document_name !== undefined) {
+          current = current.status;
+        }
+        return {
+          document_name: current.document_name || "",
+          status: typeof current.status === "string" ? current.status : "niet_aanwezig",
+        };
+      }
+
       // Use pre-parsed document_checklist from upload if available (deterministic)
       // Fall back to AI-parsed checklist_items only when no pre-parsed data exists
       const preChecklist = check.document_checklist;
       let missingChecklistCount = 0;
       let finalChecklistItems = analysis.checklist_items || [];
       
-      // Check if preChecklist is already an array (saved from a previous analysis run)
       if (Array.isArray(preChecklist) && preChecklist.length > 0) {
-        console.log("Using previously saved checklist array:", JSON.stringify(preChecklist));
-        // Normalize: handle nested {status: {status, document_name}, document_name: "0"} format
-        finalChecklistItems = preChecklist.map((item: any) => {
-          if (item.status && typeof item.status === "object" && item.status.document_name) {
-            return { document_name: item.status.document_name, status: item.status.status };
-          }
-          return { document_name: item.document_name || "", status: item.status || "niet_aanwezig" };
-        });
+        console.log("Using previously saved checklist array");
+        // Normalize: recursively unwrap any level of nesting
+        finalChecklistItems = preChecklist.map(flattenChecklistItem);
+        console.log("Normalized checklist:", JSON.stringify(finalChecklistItems));
         missingChecklistCount = finalChecklistItems.filter(
           (item: any) => item.status === "niet_aanwezig" || item.status === "niet_ingevuld"
         ).length;
       } else if (preChecklist && typeof preChecklist === "object" && !Array.isArray(preChecklist) && Object.keys(preChecklist).length > 0) {
         // Original format: object with {documentName: status} entries
-        console.log("Using pre-parsed checklist object from upload:", JSON.stringify(preChecklist));
+        console.log("Using pre-parsed checklist object from upload");
         const checklistObj = preChecklist as Record<string, string>;
         finalChecklistItems = Object.entries(checklistObj).map(([name, status]) => ({
           document_name: name,
-          status: status,
+          status: typeof status === "string" ? status : "niet_aanwezig",
         }));
-        missingChecklistCount = Object.values(checklistObj).filter(
-          (s: string) => s === "niet_aanwezig" || s === "niet_ingevuld"
+        missingChecklistCount = finalChecklistItems.filter(
+          (item: any) => item.status === "niet_aanwezig" || item.status === "niet_ingevuld"
         ).length;
       } else {
         // Fallback: use AI-parsed checklist (less reliable)
@@ -1285,7 +1293,19 @@ BELANGRIJK:
         drawRow("Eigen materiaal en werkwijze", eigenMateriaal ? "Ja" : "Nee", { valueColor: eigenMateriaal ? green : aandachtColor, valueBold: true, altBg: alt() });
 
         // === DOSSIER SECTION ===
-        const checklist = (check.document_checklist || []) as any[];
+        const rawChecklist = (check.document_checklist || []) as any[];
+        // Normalize checklist items using recursive unwrapping (same helper as analyze)
+        function flattenItem(item: any): { document_name: string; status: string } {
+          let current = item;
+          while (current.status && typeof current.status === "object" && current.status.document_name !== undefined) {
+            current = current.status;
+          }
+          return {
+            document_name: current.document_name || "",
+            status: typeof current.status === "string" ? current.status : "niet_aanwezig",
+          };
+        }
+        const checklist = Array.isArray(rawChecklist) ? rawChecklist.map(flattenItem) : [];
         if (checklist.length > 0) {
           y -= 6;
           ensureSpace(24 + checklist.length * 15);
@@ -1294,16 +1314,14 @@ BELANGRIJK:
           currentPage.drawText("Dossier overzicht", { x: margin + 8, y: y - 14, size: fontSize, font: helveticaBold, color: darkGray });
           y -= 20;
           
-          checklist.forEach((item: any) => {
+          checklist.forEach((item) => {
             ensureSpace(16);
-            // Handle both flat and nested data structures
-            const actualItem = (item.status && typeof item.status === "object" && item.status.document_name) ? item.status : item;
-            const isPresent = actualItem.status === "aanwezig";
+            const isPresent = item.status === "aanwezig";
             const icon = isPresent ? "V" : "X";
             const color = isPresent ? green : aandachtColor;
             const statusText = isPresent ? "Aanwezig" : "Niet aanwezig";
             currentPage.drawText(icon, { x: margin + 10, y: y - 12, size: 9, font: helveticaBold, color });
-            currentPage.drawText(actualItem.document_name || "", { x: margin + 26, y: y - 12, size: fontSize, font: helvetica, color: darkGray });
+            currentPage.drawText(item.document_name, { x: margin + 26, y: y - 12, size: fontSize, font: helvetica, color: darkGray });
             currentPage.drawText(statusText, { x: pageWidth - rightMargin - 80, y: y - 12, size: smallFont, font: helvetica, color });
             y -= 16;
           });
