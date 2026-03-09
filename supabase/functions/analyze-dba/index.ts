@@ -1209,8 +1209,8 @@ BELANGRIJK:
         const alt = () => { rowIdx++; return rowIdx % 2 === 0; };
 
         drawRow("Documentnummer", certNum, { valueBold: true, altBg: alt() });
-        drawRow("Naam ZP kandidaat", getFieldValue("naam") || check.client_name || "-", { altBg: alt() });
-        drawRow("Opdrachtgever", check.opdrachtgever || check.client_name || "", { altBg: alt() });
+        drawRow("Naam ZP kandidaat", check.client_name || getFieldValue("naam") || "-", { altBg: alt() });
+        drawRow("Opdrachtgever", check.opdrachtgever || getFieldValue("opdrachtgever") || "-", { altBg: alt() });
         drawRow("Eindopdrachtgever", check.eindopdrachtgever || getFieldValue("eindopdrachtgever") || "-", { altBg: alt() });
         drawRow("Functie", check.functie || getFieldValue("functie") || "-", { altBg: alt() });
         const descAlt = alt();
@@ -1223,11 +1223,9 @@ BELANGRIJK:
         drawRow("Aantal uur per week", check.uren_per_week || getFieldValue("uur per week") || "-", { altBg: alt() });
         drawRow("Specifieke vaardigheden", check.specifieke_vaardigheden || getFieldValue("specifieke vaardigheden") || "-", { altBg: alt() });
 
-        // === Zelfstandigheid rows ===
-        const zelfstandigFromField = getFieldBool("zelfstandig naar buiten");
-        const eigenMateriaalFromField = getFieldBool("eigen materiaal") ?? getFieldBool("zelfstandigheid");
-        const zelfstandig = zelfstandigFromField ?? check.treedt_zelfstandig_op ?? false;
-        const eigenMateriaal = eigenMateriaalFromField ?? check.eigen_materiaal_werkwijze ?? false;
+        // === Zelfstandigheid rows — DB columns take priority over AI field_results ===
+        const zelfstandig = check.treedt_zelfstandig_op ?? getFieldBool("zelfstandig naar buiten") ?? false;
+        const eigenMateriaal = check.eigen_materiaal_werkwijze ?? getFieldBool("eigen materiaal") ?? getFieldBool("zelfstandigheid") ?? false;
         drawRow("Treedt zelfstandig naar buiten", zelfstandig ? "Ja" : "Nee", { valueColor: zelfstandig ? green : aandachtColor, valueBold: true, altBg: alt() });
         drawRow("Eigen materiaal en werkwijze", eigenMateriaal ? "Ja" : "Nee", { valueColor: eigenMateriaal ? green : aandachtColor, valueBold: true, altBg: alt() });
 
