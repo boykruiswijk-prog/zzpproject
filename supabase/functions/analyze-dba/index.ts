@@ -1039,7 +1039,10 @@ BELANGRIJK:
             if (altBg) currentPage.drawRectangle({ x: margin, y: y - totalH, width: tableWidth, height: totalH, color: lightGrayBg });
             currentPage.drawRectangle({ x: margin, y: y - totalH, width: tableWidth, height: totalH, borderColor: tableBorder, borderWidth: 0.4 });
             currentPage.drawLine({ start: { x: valueColX, y }, end: { x: valueColX, y: y - totalH }, thickness: 0.4, color: tableBorder });
-            currentPage.drawText(label, { x: margin + 8, y: y - 16, size: fontSize, font: helveticaBold, color: darkGray });
+            const labelLines = label.split("\n");
+            labelLines.forEach((ll, li) => {
+              currentPage.drawText(ll, { x: margin + 8, y: y - 16 - li * lineHeight, size: fontSize, font: helveticaBold, color: darkGray });
+            });
             let drawY = y - 16;
             items.forEach((item) => {
               drawY -= item.spaceBefore;
@@ -1059,7 +1062,10 @@ BELANGRIJK:
 
             let cellTopY = y;
             // Label on first page
-            currentPage.drawText(label, { x: margin + 8, y: y - 16, size: fontSize, font: helveticaBold, color: darkGray });
+            const labelLines2 = label.split("\n");
+            labelLines2.forEach((ll, li) => {
+              currentPage.drawText(ll, { x: margin + 8, y: y - 16 - li * lineHeight, size: fontSize, font: helveticaBold, color: darkGray });
+            });
             let drawY = y - 16;
 
             for (const item of items) {
@@ -1221,8 +1227,11 @@ BELANGRIJK:
         drawRow("Functie", check.functie || getFieldValue("functie") || "-", { altBg: alt() });
         const descAlt = alt();
         const descriptionText = check.rewritten_description || check.project_description || getFieldValue("opdrachtomschrijving") || "-";
-        console.log("Description text length:", descriptionText.length, "First 200 chars:", descriptionText.substring(0, 200));
-        drawDescriptionRow("Opdrachtomschrijving", descriptionText, descAlt);
+        const descLabel = check.rewritten_description ? "Opdrachtomschrijving\n(DBA-proof)" : "Opdrachtomschrijving";
+        console.log("Description source:", check.rewritten_description ? "rewritten_description" : check.project_description ? "project_description" : "field_value");
+        console.log("Description text length:", descriptionText.length, "First 300 chars:", descriptionText.substring(0, 300));
+        drawDescriptionRow(descLabel, descriptionText, descAlt);
+        console.log("After drawDescriptionRow, y =", y, "page count =", pdfDoc.getPageCount());
         drawRow("Project", check.project_name || getFieldValue("project") || "-", { altBg: alt() });
         drawRow("Startdatum", check.startdatum ? formatDate(check.startdatum) : getFieldValue("startdatum") || "-", { altBg: alt() });
         drawRow("Einddatum", check.einddatum ? formatDate(check.einddatum) : getFieldValue("einddatum") || "-", { altBg: alt() });
