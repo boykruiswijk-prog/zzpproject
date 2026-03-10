@@ -8,24 +8,26 @@ interface SEOHeadProps {
   ogType?: string;
   ogImage?: string;
   noindex?: boolean;
+  keywords?: string;
   children?: React.ReactNode;
 }
 
 const BASE_URL = "https://zpzaken.nl";
 const SUPPORTED_LANGS = ["en", "de", "fr"];
+const DEFAULT_OG_IMAGE = `${BASE_URL}/og-image.jpg`;
 
 export function SEOHead({
   title,
   description,
   canonical,
   ogType = "website",
-  ogImage = `${BASE_URL}/favicon.webp`,
+  ogImage = DEFAULT_OG_IMAGE,
   noindex = false,
+  keywords,
   children,
 }: SEOHeadProps) {
   const { pathname } = useLocation();
 
-  // Determine canonical URL - strip language prefix for default NL
   const cleanPath = pathname.replace(/^\/(en|de|fr)(\/|$)/, "/");
   const canonicalUrl = canonical || `${BASE_URL}${cleanPath === "/" ? "/" : cleanPath.replace(/\/$/, "")}`;
 
@@ -33,8 +35,9 @@ export function SEOHead({
     <Helmet>
       <title>{title}</title>
       <meta name="description" content={description} />
+      <meta name="author" content="ZP Zaken" />
+      {keywords && <meta name="keywords" content={keywords} />}
       <link rel="canonical" href={canonicalUrl} />
-
       {noindex && <meta name="robots" content="noindex, nofollow" />}
 
       {/* Open Graph */}
@@ -43,14 +46,19 @@ export function SEOHead({
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:type" content={ogType} />
       <meta property="og:image" content={ogImage} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content={title} />
       <meta property="og:locale" content="nl_NL" />
       <meta property="og:site_name" content="ZP Zaken" />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:site" content="@zpzaken" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
+      <meta name="twitter:image:alt" content={title} />
 
       {/* Hreflang alternates */}
       <link rel="alternate" hrefLang="nl" href={`${BASE_URL}${cleanPath}`} />
