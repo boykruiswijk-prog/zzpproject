@@ -171,7 +171,7 @@ export function Header() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="lg:hidden border-t border-border bg-background overflow-hidden"
+            className="lg:hidden border-t border-border bg-background overflow-y-auto max-h-screen"
           >
             <nav className="container-wide py-4 flex flex-col gap-1">
             {navItems.map((item) => (
