@@ -2,7 +2,11 @@ import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
 import { HeroSection } from "@/components/home/HeroSection";
 import { BAVApplicationModule } from "@/components/home/BAVApplicationModule";
+import { ServicesSection } from "@/components/home/ServicesSection";
+import { ProcessSection } from "@/components/home/ProcessSection";
+import { PartnersSection } from "@/components/home/PartnersSection";
 import { CombiPackageSection } from "@/components/home/CombiPackageSection";
+import { TeamSection } from "@/components/home/TeamSection";
 import { SocialProofSection } from "@/components/home/SocialProofSection";
 import { CTASection } from "@/components/home/CTASection";
 
@@ -46,10 +50,32 @@ const Index = () => {
       >
         <script type="application/ld+json">{JSON.stringify(organizationSchema)}</script>
       </SEOHead>
+
+      {/* 1. Eerste indruk */}
       <HeroSection />
+
+      {/* 2. Directe conversie — BAV aanvraag */}
       <BAVApplicationModule />
+
+      {/* 3. Wat bieden we aan */}
+      <ServicesSection />
+
+      {/* 4. Hoe werkt het */}
+      <ProcessSection />
+
+      {/* 5. Vertrouwen — partners */}
+      <PartnersSection />
+
+      {/* 6. Upsell — combipakket */}
       <CombiPackageSection />
+
+      {/* 7. Menselijk & persoonlijk — team */}
+      <TeamSection />
+
+      {/* 8. Social proof — reviews */}
       <SocialProofSection />
+
+      {/* 9. Laatste call to action */}
       <CTASection />
     </Layout>
   );
