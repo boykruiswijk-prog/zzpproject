@@ -2,7 +2,7 @@ import { LocalizedLink } from "@/components/LocalizedLink";
 import { Layout } from "@/components/layout/Layout";
 import { SEOHead } from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, HelpCircle, FileText, ChevronDown } from "lucide-react";
+import { ArrowRight, BookOpen, HelpCircle } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -71,9 +71,7 @@ export default function Kennis() {
       <section className="bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground py-16 md:py-24">
         <div className="container-wide">
           <div className="max-w-3xl">
-            <h1 className="mb-6">
-              Kennis & advies
-            </h1>
+            <h1 className="mb-6">Kennis & advies</h1>
             <p className="text-lg md:text-xl text-primary-foreground/80 mb-8">
               Handige informatie over verzekeringen, ondernemerschap en alles wat je als 
               zzp'er moet weten. Geen jargon, wel duidelijke taal.
@@ -92,9 +90,10 @@ export default function Kennis() {
 
           <div className="grid md:grid-cols-2 gap-6 mb-12">
             {articles.map((article) => (
-              <article
+              <LocalizedLink
                 key={article.title}
-                className="bg-card rounded-2xl p-8 shadow-card border border-border/50 hover:shadow-card-hover hover:border-accent/30 transition-all duration-300 group cursor-pointer"
+                to="/contact"
+                className="bg-card rounded-2xl p-8 shadow-card border border-border/50 hover:shadow-card-hover hover:border-accent/30 transition-all duration-300 group"
               >
                 <span className="inline-block px-3 py-1 bg-accent/10 text-accent text-sm font-medium rounded-full mb-4">
                   {article.category}
@@ -107,7 +106,7 @@ export default function Kennis() {
                   Lees meer
                   <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </span>
-              </article>
+              </LocalizedLink>
             ))}
           </div>
 
