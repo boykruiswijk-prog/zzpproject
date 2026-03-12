@@ -25,10 +25,7 @@ export function SEOHead({
     "@type": "InsuranceAgency",
     name: "ZP Zaken",
     url: siteUrl,
-    logo: `${siteUrl}/logo.png`,
-    description:
-      "ZP Zaken helpt ZZP'ers aan de juiste beroeps- en bedrijfsaansprakelijkheidsverzekering. Binnen 24 uur verzekerd.",
-    telephone: "+31-XXXXXXXXX",
+    description: "ZP Zaken helpt ZZP'ers aan de juiste beroeps- en bedrijfsaansprakelijkheidsverzekering. Binnen 24 uur verzekerd.",
     address: {
       "@type": "PostalAddress",
       addressCountry: "NL",
@@ -51,7 +48,6 @@ export function SEOHead({
       <link rel="canonical" href={fullCanonical} />
       {noindex && <meta name="robots" content="noindex, nofollow" />}
 
-      {/* Open Graph */}
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:type" content={type} />
@@ -59,12 +55,10 @@ export function SEOHead({
       <meta property="og:site_name" content="ZP Zaken" />
       <meta property="og:locale" content="nl_NL" />
 
-      {/* Twitter Card */}
       <meta name="twitter:card" content="summary" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
 
-      {/* Schema.org */}
       <script type="application/ld+json">
         {JSON.stringify(activeSchema)}
       </script>
