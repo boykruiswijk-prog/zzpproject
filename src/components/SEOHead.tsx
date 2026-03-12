@@ -1,78 +1,73 @@
 import { Helmet } from "react-helmet-async";
-import { useLocation } from "react-router-dom";
 
 interface SEOHeadProps {
   title: string;
   description: string;
   canonical?: string;
-  ogType?: string;
-  ogImage?: string;
+  type?: "website" | "article";
+  schema?: object;
   noindex?: boolean;
-  keywords?: string;
-  children?: React.ReactNode;
 }
-
-const BASE_URL = "https://zpzaken.nl";
-const SUPPORTED_LANGS = ["en", "de", "fr"];
-const DEFAULT_OG_IMAGE = `${BASE_URL}/og-image.jpg`;
 
 export function SEOHead({
   title,
   description,
   canonical,
-  ogType = "website",
-  ogImage = DEFAULT_OG_IMAGE,
+  type = "website",
+  schema,
   noindex = false,
-  keywords,
-  children,
 }: SEOHeadProps) {
-  const { pathname } = useLocation();
+  const siteUrl = "https://zpzaken.nl";
+  const fullCanonical = canonical ? `${siteUrl}${canonical}` : siteUrl;
 
-  const cleanPath = pathname.replace(/^\/(en|de|fr)(\/|$)/, "/");
-  const canonicalUrl = canonical || `${BASE_URL}${cleanPath === "/" ? "/" : cleanPath.replace(/\/$/, "")}`;
+  const defaultSchema = {
+    "@context": "https://schema.org",
+    "@type": "InsuranceAgency",
+    name: "ZP Zaken",
+    url: siteUrl,
+    logo: `${siteUrl}/logo.png`,
+    description:
+      "ZP Zaken helpt ZZP'ers aan de juiste beroeps- en bedrijfsaansprakelijkheidsverzekering. Binnen 24 uur verzekerd.",
+    telephone: "+31-XXXXXXXXX",
+    address: {
+      "@type": "PostalAddress",
+      addressCountry: "NL",
+    },
+    areaServed: "NL",
+    knowsAbout: [
+      "Beroepsaansprakelijkheidsverzekering",
+      "Bedrijfsaansprakelijkheidsverzekering",
+      "ZZP verzekeringen",
+      "AOV",
+    ],
+  };
+
+  const activeSchema = schema ?? defaultSchema;
 
   return (
     <Helmet>
       <title>{title}</title>
       <meta name="description" content={description} />
-      <meta name="author" content="ZP Zaken" />
-      {keywords && <meta name="keywords" content={keywords} />}
-      <link rel="canonical" href={canonicalUrl} />
+      <link rel="canonical" href={fullCanonical} />
       {noindex && <meta name="robots" content="noindex, nofollow" />}
 
       {/* Open Graph */}
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
-      <meta property="og:url" content={canonicalUrl} />
-      <meta property="og:type" content={ogType} />
-      <meta property="og:image" content={ogImage} />
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
-      <meta property="og:image:alt" content={title} />
-      <meta property="og:locale" content="nl_NL" />
+      <meta property="og:type" content={type} />
+      <meta property="og:url" content={fullCanonical} />
       <meta property="og:site_name" content="ZP Zaken" />
+      <meta property="og:locale" content="nl_NL" />
 
-      {/* Twitter */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:site" content="@zpzaken" />
+      {/* Twitter Card */}
+      <meta name="twitter:card" content="summary" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={ogImage} />
-      <meta name="twitter:image:alt" content={title} />
 
-      {/* Hreflang alternates */}
-      <link rel="alternate" hrefLang="nl" href={`${BASE_URL}${cleanPath}`} />
-      {SUPPORTED_LANGS.map((lang) => (
-        <link
-          key={lang}
-          rel="alternate"
-          hrefLang={lang}
-          href={`${BASE_URL}/${lang}${cleanPath === "/" ? "/" : cleanPath}`}
-        />
-      ))}
-      <link rel="alternate" hrefLang="x-default" href={`${BASE_URL}${cleanPath}`} />
-
-      {children}
+      {/* Schema.org */}
+      <script type="application/ld+json">
+        {JSON.stringify(activeSchema)}
+      </script>
     </Helmet>
   );
 }
