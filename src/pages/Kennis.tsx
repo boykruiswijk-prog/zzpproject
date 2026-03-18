@@ -2,7 +2,7 @@ import { LocalizedLink } from "@/components/LocalizedLink";
 import { Layout } from "@/components/layout/Layout";
 import { SEOHead } from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, HelpCircle } from "lucide-react";
+import { ArrowRight, BookOpen, HelpCircle, FileText, ChevronDown } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -64,19 +64,18 @@ export default function Kennis() {
   return (
     <Layout>
       <SEOHead
-        title="Kennis & Advies voor ZZP'ers | Verzekeringen uitgelegd | ZP Zaken"
-        description="Alles wat je als ZZP'er moet weten over BAV, AVB, AOV en de wet VBAR. Duidelijke uitleg zonder jargon van onafhankelijk verzekeringsadviseur ZP Zaken."
-        canonical="/kennis"
-        type="article"
+        title="Kennis & Advies voor ZZP'ers | ZP Zaken"
+        description="Handige informatie over verzekeringen, ondernemerschap en alles wat je als zzp'er moet weten. Geen jargon, wel duidelijke taal."
       />
-
       {/* Hero */}
       <section className="bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground py-16 md:py-24">
         <div className="container-wide">
           <div className="max-w-3xl">
-            <h1 className="mb-6">Kennis & advies</h1>
+            <h1 className="mb-6">
+              Kennis & advies
+            </h1>
             <p className="text-lg md:text-xl text-primary-foreground/80 mb-8">
-              Handige informatie over verzekeringen, ondernemerschap en alles wat je als
+              Handige informatie over verzekeringen, ondernemerschap en alles wat je als 
               zzp'er moet weten. Geen jargon, wel duidelijke taal.
             </p>
           </div>
@@ -90,12 +89,12 @@ export default function Kennis() {
             <BookOpen className="h-6 w-6 text-accent" />
             <h2 className="text-2xl font-semibold">Artikelen</h2>
           </div>
+
           <div className="grid md:grid-cols-2 gap-6 mb-12">
             {articles.map((article) => (
-              <LocalizedLink
+              <article
                 key={article.title}
-                to="/contact"
-                className="bg-card rounded-2xl p-8 shadow-card border border-border/50 hover:shadow-card-hover hover:border-accent/30 transition-all duration-300 group"
+                className="bg-card rounded-2xl p-8 shadow-card border border-border/50 hover:shadow-card-hover hover:border-accent/30 transition-all duration-300 group cursor-pointer"
               >
                 <span className="inline-block px-3 py-1 bg-accent/10 text-accent text-sm font-medium rounded-full mb-4">
                   {article.category}
@@ -108,9 +107,10 @@ export default function Kennis() {
                   Lees meer
                   <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </span>
-              </LocalizedLink>
+              </article>
             ))}
           </div>
+
           <div className="text-center">
             <p className="text-muted-foreground mb-4">
               Meer artikelen worden binnenkort toegevoegd.
@@ -127,6 +127,7 @@ export default function Kennis() {
               <HelpCircle className="h-6 w-6 text-accent" />
               <h2 className="text-2xl font-semibold">Veelgestelde vragen</h2>
             </div>
+
             <Accordion type="single" collapsible className="space-y-4">
               {faqs.map((faq, index) => (
                 <AccordionItem
@@ -153,7 +154,7 @@ export default function Kennis() {
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="mb-4">Vraag niet beantwoord?</h2>
             <p className="text-lg text-muted-foreground mb-8">
-              Neem contact met ons op. We helpen je graag met al je vragen over
+              Neem contact met ons op. We helpen je graag met al je vragen over 
               verzekeringen en ondernemerschap.
             </p>
             <Button variant="accent" size="lg" asChild>
