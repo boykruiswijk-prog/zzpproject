@@ -201,10 +201,7 @@ Antwoord ALLEEN met een JSON tool call.`;
 
       if (!response.ok) {
         const errText = await response.text();
-        console.error("AI error:", response.status, errText);
-        return new Response(JSON.stringify({ error: "AI analyse mislukt" }), {
-          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return handleAiError(response.status, errText);
       }
 
       const aiResult = await response.json();
