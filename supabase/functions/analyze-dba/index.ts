@@ -7,6 +7,21 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+function handleAiError(status: number, body: string): Response {
+  console.error("AI error:", status, body);
+  let userMessage = "AI analyse mislukt";
+  if (status === 402) {
+    userMessage = "AI credits zijn op. Neem contact op met de beheerder om de credits aan te vullen.";
+  } else if (status === 429) {
+    userMessage = "AI rate limit bereikt. Probeer het over een paar minuten opnieuw.";
+  } else if (status === 401 || status === 403) {
+    userMessage = "AI API-sleutel is ongeldig of verlopen. Neem contact op met de beheerder.";
+  }
+  return new Response(JSON.stringify({ error: userMessage, error_code: status }), {
+    status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -186,10 +201,7 @@ Antwoord ALLEEN met een JSON tool call.`;
 
       if (!response.ok) {
         const errText = await response.text();
-        console.error("AI error:", response.status, errText);
-        return new Response(JSON.stringify({ error: "AI analyse mislukt" }), {
-          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return handleAiError(response.status, errText);
       }
 
       const aiResult = await response.json();
@@ -644,9 +656,8 @@ Geef ALLEEN de herschreven tekst terug, geen uitleg.`;
       });
 
       if (!response.ok) {
-        return new Response(JSON.stringify({ error: "AI herschrijving mislukt" }), {
-          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        const errText = await response.text();
+        return handleAiError(response.status, errText);
       }
 
       const aiResult = await response.json();
@@ -730,9 +741,8 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
       });
 
       if (!response.ok) {
-        return new Response(JSON.stringify({ error: "AI KVK check mislukt" }), {
-          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        const errText = await response.text();
+        return handleAiError(response.status, errText);
       }
 
       const aiResult = await response.json();
@@ -852,9 +862,8 @@ BELANGRIJK:
       });
 
       if (!polisResponse.ok) {
-        return new Response(JSON.stringify({ error: "AI polis check mislukt" }), {
-          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        const errText = await polisResponse.text();
+        return handleAiError(polisResponse.status, errText);
       }
 
       const polisAiResult = await polisResponse.json();
