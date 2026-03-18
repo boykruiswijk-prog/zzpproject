@@ -741,9 +741,8 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
       });
 
       if (!response.ok) {
-        return new Response(JSON.stringify({ error: "AI KVK check mislukt" }), {
-          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        const errText = await response.text();
+        return handleAiError(response.status, errText);
       }
 
       const aiResult = await response.json();
