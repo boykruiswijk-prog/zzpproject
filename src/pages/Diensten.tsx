@@ -60,9 +60,8 @@ export default function Diensten() {
       <SEOHead
         title={`${t("diensten.title")} ${t("diensten.titleAccent")} | ZP Zaken`}
         description={t("diensten.subtitle")}
-      >
-        <script type="application/ld+json">{JSON.stringify(dienstenSchema)}</script>
-      </SEOHead>
+        schema={dienstenSchema}
+      />
       <PageHero
         title={<>{t("diensten.title")} <span className="text-accent">{t("diensten.titleAccent")}</span></>}
         subtitle={t("diensten.subtitle")}
