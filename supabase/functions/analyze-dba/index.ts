@@ -862,9 +862,8 @@ BELANGRIJK:
       });
 
       if (!polisResponse.ok) {
-        return new Response(JSON.stringify({ error: "AI polis check mislukt" }), {
-          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        const errText = await polisResponse.text();
+        return handleAiError(polisResponse.status, errText);
       }
 
       const polisAiResult = await polisResponse.json();
