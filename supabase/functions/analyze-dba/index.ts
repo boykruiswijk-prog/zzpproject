@@ -656,9 +656,8 @@ Geef ALLEEN de herschreven tekst terug, geen uitleg.`;
       });
 
       if (!response.ok) {
-        return new Response(JSON.stringify({ error: "AI herschrijving mislukt" }), {
-          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        const errText = await response.text();
+        return handleAiError(response.status, errText);
       }
 
       const aiResult = await response.json();
