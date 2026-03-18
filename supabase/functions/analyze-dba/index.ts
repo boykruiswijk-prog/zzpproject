@@ -7,6 +7,21 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+function handleAiError(status: number, body: string): Response {
+  console.error("AI error:", status, body);
+  let userMessage = "AI analyse mislukt";
+  if (status === 402) {
+    userMessage = "AI credits zijn op. Neem contact op met de beheerder om de credits aan te vullen.";
+  } else if (status === 429) {
+    userMessage = "AI rate limit bereikt. Probeer het over een paar minuten opnieuw.";
+  } else if (status === 401 || status === 403) {
+    userMessage = "AI API-sleutel is ongeldig of verlopen. Neem contact op met de beheerder.";
+  }
+  return new Response(JSON.stringify({ error: userMessage, error_code: status }), {
+    status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
