@@ -1,84 +1,89 @@
-import { SEOHead } from "@/components/SEOHead";
-import { Layout } from "@/components/layout/Layout";
-import { HeroSection } from "@/components/home/HeroSection";
-import { BAVApplicationModule } from "@/components/home/BAVApplicationModule";
-import { ServicesSection } from "@/components/home/ServicesSection";
-import { ProcessSection } from "@/components/home/ProcessSection";
-import { PartnersSection } from "@/components/home/PartnersSection";
-import { CombiPackageSection } from "@/components/home/CombiPackageSection";
-import { TeamSection } from "@/components/home/TeamSection";
-import { SocialProofSection } from "@/components/home/SocialProofSection";
-import { CTASection } from "@/components/home/CTASection";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-const organizationSchema = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "ZP Zaken",
-  "url": "https://zpzaken.nl",
-  "logo": "https://zpzaken.nl/favicon.png",
-  "foundingDate": "2014",
-  "description": "Onafhankelijk advies voor zzp'ers op het gebied van verzekeringen, administratie, juridisch advies en screening.",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Tupolevlaan 41",
-    "addressLocality": "Schiphol-Rijk",
-    "addressCountry": "NL"
-  },
-  "contactPoint": {
-    "@type": "ContactPoint",
-    "telephone": "+31-23-201-0502",
-    "contactType": "customer service",
-    "availableLanguage": "Dutch"
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.9",
-    "bestRating": "5",
-    "worstRating": "1",
-    "ratingCount": "2500"
-  },
-  "sameAs": []
-};
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 220 25% 14%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 25% 14%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 25% 14%;
+    --primary: 220 40% 20%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 220 20% 96%;
+    --secondary-foreground: 220 25% 14%;
+    --muted: 220 15% 92%;
+    --muted-foreground: 220 10% 46%;
+    --accent: 25 95% 53%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 220 40% 20%;
+    --radius: 0.5rem;
 
-const Index = () => {
-  return (
-    <Layout>
-      <SEOHead
-        title="ZP Zaken | Zorgeloos ZZP'en | Goedkoopste BAV & AVB"
-        description="ZP Zaken is al 10+ jaar dé onafhankelijke adviseur voor zzp'ers. BAV, AVB, AOV en meer. Persoonlijk advies, scherpe premies. Binnen 24 uur verzekerd."
-        canonical="https://zpzaken.nl/"
-      >
-        <script type="application/ld+json">{JSON.stringify(organizationSchema)}</script>
-      </SEOHead>
+    --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
+    --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.06);
 
-      {/* 1. Eerste indruk */}
-      <HeroSection />
+    --sidebar-background: 220 40% 20%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 25 95% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 35% 28%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 220 30% 30%;
+    --sidebar-ring: 25 95% 53%;
+  }
 
-      {/* 2. Directe conversie — BAV aanvraag */}
-      <BAVApplicationModule />
+  .dark {
+    --background: 220 25% 10%;
+    --foreground: 0 0% 95%;
+    --card: 220 25% 13%;
+    --card-foreground: 0 0% 95%;
+    --popover: 220 25% 13%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 220 40% 50%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 220 20% 18%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 220 15% 20%;
+    --muted-foreground: 220 10% 60%;
+    --accent: 25 95% 53%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 13% 22%;
+    --input: 220 13% 22%;
+    --ring: 220 40% 50%;
+  }
+}
 
-      {/* 3. Wat bieden we aan */}
-      <ServicesSection />
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  h1 {
+    @apply text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight;
+  }
+  h2 {
+    @apply text-2xl md:text-3xl font-bold tracking-tight;
+  }
+  h3 {
+    @apply text-xl font-semibold;
+  }
+}
 
-      {/* 4. Hoe werkt het */}
-      <ProcessSection />
-
-      {/* 5. Vertrouwen — partners */}
-      <PartnersSection />
-
-      {/* 6. Upsell — combipakket */}
-      <CombiPackageSection />
-
-      {/* 7. Menselijk & persoonlijk — team */}
-      <TeamSection />
-
-      {/* 8. Social proof — reviews */}
-      <SocialProofSection />
-
-      {/* 9. Laatste call to action */}
-      <CTASection />
-    </Layout>
-  );
-};
-
-export default Index;
+@layer components {
+  .container-wide {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  .section-padding {
+    @apply py-16 md:py-24;
+  }
+}
