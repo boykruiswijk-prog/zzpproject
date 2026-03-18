@@ -41,6 +41,16 @@ export default function Contact() {
       });
       if (error) console.error("Database error:", error);
 
+      // Send email notification (fire-and-forget)
+      supabase.functions.invoke("send-notification", {
+        body: {
+          type: "contact",
+          naam: naam,
+          email: email,
+          bericht: `Onderwerp: ${onderwerp}\n\n${bericht}`,
+        },
+      }).catch((err) => console.error("Email notification failed:", err));
+
       setIsSubmitted(true);
       toast({ title: t("contact.toastSuccess"), description: t("contact.toastSuccessDesc") });
     } catch (error) {

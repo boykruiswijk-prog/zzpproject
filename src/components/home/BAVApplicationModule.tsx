@@ -155,6 +155,18 @@ export function BAVApplicationModule() {
           });
 
       if (error) throw error;
+
+          // Send email notifications (fire-and-forget)
+          supabase.functions.invoke("send-notification", {
+            body: {
+              type: "bav",
+              naam: `${formData.voornaam} ${formData.achternaam}`,
+              email: formData.email,
+              telefoon: formData.telefoon || "-",
+              dekking: `${selectedPkg?.name} — ${selectedPkg?.coverage}`,
+            },
+          }).catch((err) => console.error("Email notification failed:", err));
+
           setIsSubmitted(true);
         } catch (error) {
           console.error("Error submitting application:", error);

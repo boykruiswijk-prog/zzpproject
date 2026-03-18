@@ -17,3 +17,6 @@ project_id = "eugkavokktjwpqaqlwsj"
 
  [functions.analyze-dba]
  verify_jwt = false
+
+ [functions.send-notification]
+ verify_jwt = false
