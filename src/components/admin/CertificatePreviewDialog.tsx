@@ -381,6 +381,7 @@ export function CertificatePreviewDialog({ open, onOpenChange, check, onSaveAndC
                         updated[i] = {
                           ...updated[i],
                           status: updated[i].status === "aanwezig" ? "niet_aanwezig" : "aanwezig",
+                          manually_overridden: true,
                         };
                         setDocumentChecklist(updated);
                       }}
