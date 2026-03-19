@@ -73,6 +73,10 @@ const publicRoutes = (
     <Route index element={<Index />} />
     <Route path="diensten" element={<Diensten />} />
     <Route path="verzekeringen" element={<Verzekeringen />} />
+    <Route path="aov" element={<AOV />} />
+    <Route path="pensioen" element={<Pensioen />} />
+    <Route path="zorgverzekering" element={<Zorgverzekering />} />
+    <Route path="mentale-gezondheid" element={<MentaleGezondheid />} />
     <Route path="voor-wie" element={<VoorWie />} />
     <Route path="zo-werken-wij" element={<ZoWerkenWij />} />
     <Route path="kennis" element={<Kennis />} />
