@@ -220,6 +220,9 @@ export default function WaaromZpZaken() {
         </div>
       </section>
 
+      {/* ── FAQ ── */}
+      <FAQSection />
+
       {/* ── FIGHTER AFSLUITER ── */}
       <section className="section-padding bg-[hsl(0,0%,10%)]">
         <div className="container-wide">
