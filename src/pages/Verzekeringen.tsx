@@ -70,6 +70,9 @@ export default function Verzekeringen() {
         </Button>
       </PageHero>
 
+      {/* BAV Wizard */}
+      <BAVApplicationModule />
+
       {/* Trust bar */}
       <div className="bg-secondary border-b border-border py-4">
         <TrustBar />
