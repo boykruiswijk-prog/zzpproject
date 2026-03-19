@@ -127,6 +127,7 @@ export function CertificatePreviewDialog({ open, onOpenChange, check, onSaveAndC
         setDocumentChecklist(rawChecklist.map((item: any) => ({
           document_name: item.document_name || "",
           status: typeof item.status === "string" ? item.status : "niet_aanwezig",
+          manually_overridden: item.manually_overridden || false,
         })));
       } else {
         setDocumentChecklist([]);
