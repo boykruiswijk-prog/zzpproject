@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useDbaCheck, useAnalyzeDba } from "@/hooks/useDbaChecks";
@@ -18,6 +18,7 @@ import { CertificatePreviewDialog } from "@/components/admin/CertificatePreviewD
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { extractTextFromPdf } from "@/lib/pdfExtract";
+
 
 const statusLabels: Record<string, string> = {
   uploaded: "Geüpload",
@@ -41,6 +42,45 @@ export default function DbaCheckDetail() {
   const [editingDescription, setEditingDescription] = useState(false);
   const [editedDescription, setEditedDescription] = useState("");
   const [savingDescription, setSavingDescription] = useState(false);
+  const [dossierChecklist, setDossierChecklist] = useState<Array<{ document_name: string; status: string; manually_overridden?: boolean }>>([]);
+  const [savingDossier, setSavingDossier] = useState(false);
+
+  // Sync dossier checklist from check data
+  useEffect(() => {
+    if (check?.document_checklist) {
+      const raw = check.document_checklist as any;
+      if (Array.isArray(raw) && raw.length > 0) {
+        setDossierChecklist(raw.map((item: any) => ({
+          document_name: item.document_name || "",
+          status: typeof item.status === "string" ? item.status : "niet_aanwezig",
+          manually_overridden: item.manually_overridden || false,
+        })));
+      }
+    }
+  }, [check?.document_checklist]);
+
+  const handleToggleDossierItem = useCallback(async (index: number) => {
+    if (!id) return;
+    const updated = [...dossierChecklist];
+    updated[index] = {
+      ...updated[index],
+      status: updated[index].status === "aanwezig" ? "niet_aanwezig" : "aanwezig",
+      manually_overridden: true,
+    };
+    setDossierChecklist(updated);
+    setSavingDossier(true);
+    try {
+      await supabase.from("dba_checks").update({
+        document_checklist: updated,
+      } as any).eq("id", id);
+      queryClient.invalidateQueries({ queryKey: ["dba-check", id] });
+    } catch (err: any) {
+      toast({ title: "Fout bij opslaan", description: err.message, variant: "destructive" });
+    } finally {
+      setSavingDossier(false);
+    }
+  }, [id, dossierChecklist, queryClient, toast]);
+
   const handleAnalyze = async () => {
     if (!id) return;
     setActiveAction("analyze");
@@ -544,6 +584,55 @@ export default function DbaCheckDetail() {
                       </div>
                     ))}
                   </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Dossier Overzicht */}
+            {dossierChecklist.length > 0 && check.status !== "uploaded" && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Dossier overzicht
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {dossierChecklist.map((item, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => handleToggleDossierItem(idx)}
+                        className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-colors text-left ${
+                          item.status === "aanwezig"
+                            ? "border-green-200 bg-green-50 hover:bg-green-100"
+                            : "border-red-200 bg-red-50 hover:bg-red-100"
+                        }`}
+                        disabled={savingDossier}
+                      >
+                        {item.status === "aanwezig" ? (
+                          <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />
+                        ) : (
+                          <XCircle className="h-5 w-5 text-red-600 shrink-0" />
+                        )}
+                        <span className="flex-1 font-medium text-sm">{item.document_name}</span>
+                        <span className={`text-xs font-medium ${
+                          item.status === "aanwezig" ? "text-green-700" : "text-red-700"
+                        }`}>
+                          {item.status === "aanwezig" ? "Aanwezig" : "Niet aanwezig"}
+                        </span>
+                        {item.manually_overridden && (
+                          <span className="flex items-center gap-1 text-xs text-muted-foreground" title="Handmatig aangepast">
+                            <Pencil className="h-3 w-3" />
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-3">
+                    Klik op een item om de status handmatig te wijzigen.
+                  </p>
                 </CardContent>
               </Card>
             )}

@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, Award, Save, AlertTriangle, CheckCircle2, XCircle, Plus, Trash2 } from "lucide-react";
+import { Loader2, Award, Save, AlertTriangle, CheckCircle2, XCircle, Plus, Trash2, Pencil } from "lucide-react";
 import type { DbaCheck } from "@/hooks/useDbaChecks";
 
 interface CertificateField {
@@ -49,7 +49,7 @@ export function CertificatePreviewDialog({ open, onOpenChange, check, onSaveAndC
   const [kvkExplanation, setKvkExplanation] = useState("");
   const [kvkSuggestions, setKvkSuggestions] = useState<string[]>([]);
   const [fieldResults, setFieldResults] = useState<Array<{ field_name: string; present: boolean; value: string }>>([]);
-  const [documentChecklist, setDocumentChecklist] = useState<Array<{ document_name: string; status: string }>>([]);
+  const [documentChecklist, setDocumentChecklist] = useState<Array<{ document_name: string; status: string; manually_overridden?: boolean }>>([]);
 
   // Helper: try to get a value from field_results by matching field name
   const getFromFieldResults = (fieldKey: string): string => {
@@ -127,6 +127,7 @@ export function CertificatePreviewDialog({ open, onOpenChange, check, onSaveAndC
         setDocumentChecklist(rawChecklist.map((item: any) => ({
           document_name: item.document_name || "",
           status: typeof item.status === "string" ? item.status : "niet_aanwezig",
+          manually_overridden: item.manually_overridden || false,
         })));
       } else {
         setDocumentChecklist([]);
@@ -380,6 +381,7 @@ export function CertificatePreviewDialog({ open, onOpenChange, check, onSaveAndC
                         updated[i] = {
                           ...updated[i],
                           status: updated[i].status === "aanwezig" ? "niet_aanwezig" : "aanwezig",
+                          manually_overridden: true,
                         };
                         setDocumentChecklist(updated);
                       }}
@@ -403,9 +405,10 @@ export function CertificatePreviewDialog({ open, onOpenChange, check, onSaveAndC
                       placeholder="Documentnaam"
                       disabled={isLoading}
                     />
-                    <span className="text-xs text-muted-foreground w-24 text-right">
-                      {item.status === "aanwezig" ? "Aanwezig" : "Niet aanwezig"}
-                    </span>
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground w-28 text-right justify-end">
+                      {item.manually_overridden && <Pencil className="h-3 w-3" />}
+                      <span>{item.status === "aanwezig" ? "Aanwezig" : "Niet aanwezig"}</span>
+                    </div>
                     <button
                       type="button"
                       onClick={() => setDocumentChecklist(documentChecklist.filter((_, j) => j !== i))}
