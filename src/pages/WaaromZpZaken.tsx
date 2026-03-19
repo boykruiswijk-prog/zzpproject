@@ -2,7 +2,7 @@ import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { LocalizedLink } from "@/components/LocalizedLink";
-import { ArrowRight, Shield, Users, KeyRound, CheckCircle } from "lucide-react";
+import { ArrowRight, Shield, Users, KeyRound, Quote, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { MiniSocialProof } from "@/components/shared/MiniSocialProof";
 import { SavingsCalculator } from "@/components/waarom/SavingsCalculator";
