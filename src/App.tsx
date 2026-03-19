@@ -8,6 +8,10 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Diensten from "./pages/Diensten";
 import Verzekeringen from "./pages/Verzekeringen";
+import AOV from "./pages/AOV";
+import Pensioen from "./pages/Pensioen";
+import Zorgverzekering from "./pages/Zorgverzekering";
+import MentaleGezondheid from "./pages/MentaleGezondheid";
 import VoorWie from "./pages/VoorWie";
 import ZoWerkenWij from "./pages/ZoWerkenWij";
 import Kennis from "./pages/Kennis";
@@ -69,6 +73,10 @@ const publicRoutes = (
     <Route index element={<Index />} />
     <Route path="diensten" element={<Diensten />} />
     <Route path="verzekeringen" element={<Verzekeringen />} />
+    <Route path="aov" element={<AOV />} />
+    <Route path="pensioen" element={<Pensioen />} />
+    <Route path="zorgverzekering" element={<Zorgverzekering />} />
+    <Route path="mentale-gezondheid" element={<MentaleGezondheid />} />
     <Route path="voor-wie" element={<VoorWie />} />
     <Route path="zo-werken-wij" element={<ZoWerkenWij />} />
     <Route path="kennis" element={<Kennis />} />
