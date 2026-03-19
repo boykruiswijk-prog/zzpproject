@@ -46,7 +46,46 @@ export default function DbaCheckDetail() {
   const [certPreviewOpen, setCertPreviewOpen] = useState(false);
   const [editingDescription, setEditingDescription] = useState(false);
   const [editedDescription, setEditedDescription] = useState("");
-  const [savingDescription, setSavingDescription] = useState(false);
+  const [savingDescription, setSavingDescription] = false);
+  const [dossierChecklist, setDossierChecklist] = useState<Array<{ document_name: string; status: string; manually_overridden?: boolean }>>([]);
+  const [savingDossier, setSavingDossier] = useState(false);
+
+  // Sync dossier checklist from check data
+  useEffect(() => {
+    if (check?.document_checklist) {
+      const raw = check.document_checklist as any;
+      if (Array.isArray(raw) && raw.length > 0) {
+        setDossierChecklist(raw.map((item: any) => ({
+          document_name: item.document_name || "",
+          status: typeof item.status === "string" ? item.status : "niet_aanwezig",
+          manually_overridden: item.manually_overridden || false,
+        })));
+      }
+    }
+  }, [check?.document_checklist]);
+
+  const handleToggleDossierItem = useCallback(async (index: number) => {
+    if (!id) return;
+    const updated = [...dossierChecklist];
+    updated[index] = {
+      ...updated[index],
+      status: updated[index].status === "aanwezig" ? "niet_aanwezig" : "aanwezig",
+      manually_overridden: true,
+    };
+    setDossierChecklist(updated);
+    setSavingDossier(true);
+    try {
+      await supabase.from("dba_checks").update({
+        document_checklist: updated,
+      } as any).eq("id", id);
+      queryClient.invalidateQueries({ queryKey: ["dba-check", id] });
+    } catch (err: any) {
+      toast({ title: "Fout bij opslaan", description: err.message, variant: "destructive" });
+    } finally {
+      setSavingDossier(false);
+    }
+  }, [id, dossierChecklist, queryClient, toast]);
+
   const handleAnalyze = async () => {
     if (!id) return;
     setActiveAction("analyze");
