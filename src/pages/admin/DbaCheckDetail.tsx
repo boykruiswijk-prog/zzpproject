@@ -19,11 +19,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { extractTextFromPdf } from "@/lib/pdfExtract";
 
-interface ChecklistItem {
-  document_name: string;
-  status: string;
-  manually_overridden?: boolean;
-}
 
 const statusLabels: Record<string, string> = {
   uploaded: "Geüpload",
