@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useDbaCheck, useAnalyzeDba } from "@/hooks/useDbaChecks";
@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   ArrowLeft, Loader2, Play, RefreshCw, ShieldCheck, CheckCircle2,
-  XCircle, AlertTriangle, Award, Copy, ExternalLink, Building2, Download, Upload, FileText, FileDown, Pencil, Save,
+  XCircle, AlertTriangle, Award, Copy, ExternalLink, Building2, Download, Upload, FileText, FileDown, Pencil, Save, FolderOpen,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { generateAnalysisReport } from "@/lib/generateAnalysisReport";
@@ -18,6 +18,12 @@ import { CertificatePreviewDialog } from "@/components/admin/CertificatePreviewD
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { extractTextFromPdf } from "@/lib/pdfExtract";
+
+interface ChecklistItem {
+  document_name: string;
+  status: string;
+  manually_overridden?: boolean;
+}
 
 const statusLabels: Record<string, string> = {
   uploaded: "Geüpload",
