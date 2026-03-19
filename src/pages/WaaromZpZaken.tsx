@@ -6,6 +6,10 @@ import { ArrowRight, Shield, Users, KeyRound, Quote, CheckCircle } from "lucide-
 import { motion } from "framer-motion";
 import { MiniSocialProof } from "@/components/shared/MiniSocialProof";
 import { SavingsCalculator } from "@/components/waarom/SavingsCalculator";
+import { EyeopenerBanner } from "@/components/waarom/EyeopenerBanner";
+import { IntermediaryCards } from "@/components/waarom/IntermediaryCards";
+import { BemiddelingSection } from "@/components/waarom/BemiddelingSection";
+import { FAQSection, faqSchema } from "@/components/waarom/FAQSection";
 import teamHero from "@/assets/team-hero.jpg";
 
 const schema = {
@@ -18,13 +22,7 @@ const schema = {
       "url": "https://zpzaken.nl/waarom-zp-zaken",
       "provider": { "@type": "Organization", "name": "ZP Zaken", "url": "https://zpzaken.nl" },
     },
-    {
-      "@type": "FAQPage",
-      "mainEntity": [
-        { "@type": "Question", "name": "Waarom is ZP Zaken goedkoper dan een intermediair?", "acceptedAnswer": { "@type": "Answer", "text": "ZP Zaken werkt zonder tussenpersoon. De marge die een intermediair rekent, vervalt. Daarnaast profiteren onze 2.500+ zzp'ers van een mantelovereenkomst die de premie structureel laag houdt." } },
-        { "@type": "Question", "name": "Wat gebeurt er met mijn dekking als ik even geen opdracht heb?", "acceptedAnswer": { "@type": "Answer", "text": "Bij ZP Zaken loop je een vaste maandpolis, ongeacht of je een opdracht hebt. Je bent dus altijd gedekt, ook tussen opdrachten in." } },
-      ],
-    },
+    faqSchema,
   ],
 };
 
@@ -109,6 +107,9 @@ export default function WaaromZpZaken() {
         </div>
       </section>
 
+      {/* ── EYEOPENER BANNER ── */}
+      <EyeopenerBanner />
+
       {/* ── HET BEWIJS ── */}
       <section className="section-padding bg-secondary">
         <div className="container-wide max-w-3xl mx-auto">
@@ -138,6 +139,12 @@ export default function WaaromZpZaken() {
           <SavingsCalculator />
         </div>
       </section>
+
+      {/* ── DE DRIE GROTE ── */}
+      <IntermediaryCards />
+
+      {/* ── BEMIDDELING ── */}
+      <BemiddelingSection />
 
       {/* ── HET ECHTE VERSCHIL ── */}
       <section className="section-padding bg-secondary">
@@ -212,6 +219,9 @@ export default function WaaromZpZaken() {
           </motion.div>
         </div>
       </section>
+
+      {/* ── FAQ ── */}
+      <FAQSection />
 
       {/* ── FIGHTER AFSLUITER ── */}
       <section className="section-padding bg-[hsl(0,0%,10%)]">
