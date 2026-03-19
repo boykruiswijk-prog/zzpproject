@@ -140,6 +140,12 @@ export default function WaaromZpZaken() {
         </div>
       </section>
 
+      {/* ── DE DRIE GROTE ── */}
+      <IntermediaryCards />
+
+      {/* ── BEMIDDELING ── */}
+      <BemiddelingSection />
+
       {/* ── HET ECHTE VERSCHIL ── */}
       <section className="section-padding bg-secondary">
         <div className="container-wide">
