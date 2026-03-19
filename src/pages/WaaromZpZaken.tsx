@@ -2,72 +2,67 @@ import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { LocalizedLink } from "@/components/LocalizedLink";
-import { ArrowRight, X, CheckCircle, Star, Shield, Quote } from "lucide-react";
+import { ArrowRight, Shield, Users, KeyRound, Quote, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { MiniSocialProof } from "@/components/shared/MiniSocialProof";
+import { SavingsCalculator } from "@/components/waarom/SavingsCalculator";
 import teamHero from "@/assets/team-hero.jpg";
-import teamCheers from "@/assets/team-cheers.jpg";
-import teamWalking from "@/assets/team-walking.jpg";
 
 const schema = {
   "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Direct verzekerd via de bron | Geen intermediair | ZP Zaken",
-  "description": "ZP Zaken leverde de verzekeringsproposities achter grote intermediairs. Nu sluit je direct bij ons af. Zelfde kwaliteit, lagere prijs, altijd onafhankelijk.",
-  "url": "https://zpzaken.nl/waarom-zp-zaken",
-  "provider": { "@type": "Organization", "name": "ZP Zaken", "url": "https://zpzaken.nl" },
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "name": "Waarom betaal je een tussenpersoon voor jouw verzekering? | ZP Zaken",
+      "description": "ZP Zaken was de verzekeringsspecialist achter grote intermediairs. Nu sluit je direct bij ons af. Bereken hoeveel je bespaart — vaak meer dan €600 per jaar.",
+      "url": "https://zpzaken.nl/waarom-zp-zaken",
+      "provider": { "@type": "Organization", "name": "ZP Zaken", "url": "https://zpzaken.nl" },
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Waarom is ZP Zaken goedkoper dan een intermediair?", "acceptedAnswer": { "@type": "Answer", "text": "ZP Zaken werkt zonder tussenpersoon. De marge die een intermediair rekent, vervalt. Daarnaast profiteren onze 2.500+ zzp'ers van een mantelovereenkomst die de premie structureel laag houdt." } },
+        { "@type": "Question", "name": "Wat gebeurt er met mijn dekking als ik even geen opdracht heb?", "acceptedAnswer": { "@type": "Answer", "text": "Bij ZP Zaken loop je een vaste maandpolis, ongeacht of je een opdracht hebt. Je bent dus altijd gedekt, ook tussen opdrachten in." } },
+      ],
+    },
+  ],
 };
 
-const comparisonRows = [
-  {
-    label: "Herkomst",
-    intermediair: "Verzekering ingekocht bij een specialist",
-    zpzaken: "Wij zijn die specialist — rechtstreeks aan jou",
-  },
-  {
-    label: "Prijs",
-    intermediair: "Basisprijs + marge intermediair",
-    zpzaken: "Laagste prijs, geen tussenpersoon",
-  },
-  {
-    label: "Dekking",
-    intermediair: "Stopt als jouw opdracht stopt",
-    zpzaken: "Altijd verzekerd, ongeacht opdrachtgever",
-  },
-  {
-    label: "Vrijheid",
-    intermediair: "Gebonden aan hun pakket en hun verzekeraar",
-    zpzaken: "Dagelijks opzegbaar, geen eigen risico",
-  },
-  {
-    label: "Transparantie",
-    intermediair: "Zij ontvangen commissie over jouw premie",
-    zpzaken: "Geen verborgen kosten, directe relatie",
-  },
-  {
-    label: "Expertise",
-    intermediair: "Verzekering als bijproduct van bemiddeling",
-    zpzaken: "10+ jaar specialist in zzp-verzekeringen",
-  },
-];
-
-const testimonials = [
-  { name: "Thomas de Wit", role: "Testmanager", content: "De combinatiepolis van beroeps- en bedrijfsaansprakelijkheid scheelt me honderden euro's per jaar. Slim geregeld." },
-  { name: "Michelle Groot", role: "Interimmanager", content: "Na jaren bij een grote verzekeraar eindelijk persoonlijk contact. Ze kennen mijn situatie en denken proactief mee." },
-  { name: "Fatima El Amrani", role: "Changemanager", content: "In de zorg is goede verzekering essentieel. ZP Zaken begreep direct wat ik nodig had. Zeer tevreden met het advies." },
-];
-
-const fadeUp = {
+const fade = {
   hidden: { opacity: 0, y: 24 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.21, 0.47, 0.32, 0.98] } },
 };
+
+const packages = [
+  { name: "Combi Basis", price: 30, eventCoverage: "€ 500.000", yearCoverage: "€ 1.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Dagelijks opzegbaar"] },
+  { name: "Combi Uitgebreid", price: 45, eventCoverage: "€ 2.500.000", yearCoverage: "€ 5.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Dagelijks opzegbaar", "Rechtsbijstand bij claims"], popular: true },
+  { name: "Combi Compleet", price: 65, eventCoverage: "€ 5.000.000", yearCoverage: "€ 10.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Dagelijks opzegbaar", "Rechtsbijstand bij claims", "Cyberdekking"] },
+];
+
+const diffBlocks = [
+  {
+    icon: Shield,
+    title: "Verzekerd ook als je even niet werkt",
+    text: "Een intermediair koppelt je dekking aan een lopende opdracht. Tussen twee opdrachten in? Dan ben je onverzekerd — precies op het moment dat je kwetsbaar bent. Bij ZP Zaken loop je een vaste maandpolis. Dagelijks opzegbaar, maar nooit automatisch gestopt. Jij bepaalt wanneer je stopt, niet je opdrachtgever.",
+  },
+  {
+    icon: Users,
+    title: "2.500+ zzp'ers delen de premie — jij profiteert",
+    text: "ZP Zaken werkt met een mantelovereenkomst. Dat betekent dat het verzekerde bedrag gedeeld wordt over duizenden zelfstandigen tegelijk. Daardoor kan de premie structureel laag blijven — niet als tijdelijke aanbieding, maar als permanent voordeel. Een intermediair koopt individueel in en telt zijn marge bovenop. Dat verschil betaal jij.",
+  },
+  {
+    icon: KeyRound,
+    title: "Jij beheert je polis — niemand anders",
+    text: "Via een intermediair zit je verzekeringsrelatie ingebed in een groter contract. Aanpassen, opzeggen of upgraden? Dat gaat via hun administratie, op hun tijdlijn. Bij ZP Zaken log je direct in op Mijn ZP Zaken en regel je alles zelf — direct, zonder tussenkomst.",
+  },
+];
 
 export default function WaaromZpZaken() {
   return (
     <Layout>
       <SEOHead
-        title="Direct verzekerd via de bron | Geen intermediair | ZP Zaken"
-        description="ZP Zaken leverde de verzekeringsproposities achter grote intermediairs. Nu sluit je direct bij ons af. Zelfde kwaliteit, lagere prijs, altijd onafhankelijk."
+        title="Waarom betaal je een tussenpersoon voor jouw verzekering? | ZP Zaken"
+        description="ZP Zaken was de verzekeringsspecialist achter grote intermediairs. Nu sluit je direct bij ons af. Bereken hoeveel je bespaart — vaak meer dan €600 per jaar."
       >
         <script type="application/ld+json">{JSON.stringify(schema)}</script>
       </SEOHead>
@@ -79,234 +74,178 @@ export default function WaaromZpZaken() {
           <div className="absolute inset-0 bg-gradient-to-r from-foreground/95 via-foreground/90 to-foreground/80" />
         </div>
         <div className="container-wide relative z-10 py-20 md:py-28">
-          <motion.div initial="hidden" animate="visible" variants={fadeUp} className="max-w-3xl">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="inline-flex items-center gap-2 bg-accent/20 backdrop-blur-sm border border-accent/30 text-white px-4 py-2 rounded-full mb-6"
-            >
-              <Shield className="h-4 w-4" />
-              <span className="text-sm font-medium">Rechtstreeks van de bron</span>
-            </motion.div>
-
+          <motion.div initial="hidden" animate="visible" variants={fade} className="max-w-3xl">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
               className="text-primary-foreground leading-tight mb-6"
             >
               Wij waren de bron.{" "}
-              <span className="text-accent">Nu ben jij de winnaar.</span>
+              <span className="text-accent">Nu betaal je eindelijk de eerlijke prijs.</span>
             </motion.h1>
-
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
               className="text-lg md:text-xl text-primary-foreground/80 mb-8 max-w-2xl"
             >
-              ZP Zaken leverde jarenlang de verzekeringsproposities achter de schermen bij grote intermediairs. Nu doe je het direct bij ons — zonder tussenpersoon, zonder opslag.
+              ZP Zaken leverde jarenlang de verzekeringsproposities achter grote intermediairs. Dat staat zwart op wit. Nu sluit je direct bij ons af — zonder opslag, zonder afhankelijkheid.
             </motion.p>
-
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="flex flex-wrap gap-4"
             >
               <Button variant="accent" size="lg" asChild className="shadow-lg">
-                <LocalizedLink to="/verzekeringen">
-                  Sluit direct af bij ZP Zaken <ArrowRight className="h-5 w-5" />
-                </LocalizedLink>
+                <a href="#rekentool">Bereken jouw besparing <ArrowRight className="h-5 w-5" /></a>
+              </Button>
+              <Button variant="heroOutline" size="lg" asChild>
+                <LocalizedLink to="/verzekeringen">Direct afsluiten</LocalizedLink>
               </Button>
             </motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* ── ONTHULLING ── */}
+      {/* ── HET BEWIJS ── */}
       <section className="section-padding bg-secondary">
         <div className="container-wide max-w-3xl mx-auto">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
-            <h2 className="mb-6">Het open geheim van de intermediair</h2>
-            <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-              Grote intermediairs bieden zzp'ers verzekeringen aan als onderdeel van hun servicepakket. Handig, zo lijkt het. Maar wat ze niet vertellen: die verzekeringen werden geleverd door gespecialiseerde partijen zoals ZP Zaken. Wij waren de bron achter hun propositie.
-            </p>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              Het verschil? Als jij via een intermediair een verzekering afsloot, betaalde je hun marge bovenop onze prijs. Nu je rechtstreeks bij ons komt, vervalt die opslag volledig. Zelfde product. Zelfde expertise. Lagere prijs.
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade}>
+            <h2 className="mb-10 text-center">Niet ons woord. Hun woord.</h2>
+            <div className="relative bg-card border border-border rounded-2xl p-8 md:p-12 shadow-sm">
+              <Quote className="absolute top-6 left-6 h-10 w-10 text-accent/15" />
+              <blockquote className="text-xl md:text-2xl font-medium text-foreground leading-relaxed mb-6 pl-4 border-l-4 border-accent">
+                "Omdat ZP Zaken zich al ruim zeven jaar richt op de ondersteunende producten en diensten voor zelfstandig professionals, zien wij in hen de ideale partner."
+              </blockquote>
+              <p className="font-semibold text-foreground">Pascal van der Hart</p>
+              <p className="text-sm text-muted-foreground">Director Operations, Circle8</p>
+            </div>
+            <p className="text-sm text-muted-foreground text-center mt-6 max-w-xl mx-auto">
+              Dit citaat stond op de website van Circle8 bij de aankondiging van hun samenwerking met ZP Zaken. Wij waren de specialist achter hun servicepakket. Het enige wat veranderd is: je betaalt niet langer hun marge.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* ── VERGELIJKINGSTABEL ── */}
-      <section className="section-padding bg-background">
+      {/* ── REKENMODEL ── */}
+      <section id="rekentool" className="section-padding bg-background scroll-mt-20">
         <div className="container-wide">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-center mb-12">
-            <h2 className="mb-4">Jij verdient de beste deal — zonder omweg</h2>
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center mb-12">
+            <h2 className="mb-4">Wat kost een tussenpersoon jou per jaar?</h2>
           </motion.div>
-
-          <div className="max-w-4xl mx-auto">
-            {/* Header */}
-            <div className="grid grid-cols-[1fr_1fr_1fr] gap-4 mb-2">
-              <div />
-              <div className="bg-muted rounded-t-xl px-4 py-3 text-center">
-                <p className="text-sm font-semibold text-muted-foreground">Via een intermediair</p>
-              </div>
-              <div className="bg-accent/10 border border-accent/20 rounded-t-xl px-4 py-3 text-center">
-                <p className="text-sm font-semibold text-accent">Direct via ZP Zaken</p>
-              </div>
-            </div>
-
-            {/* Rows */}
-            {comparisonRows.map((row, i) => (
-              <motion.div
-                key={row.label}
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.07 }}
-                className={`grid grid-cols-[1fr_1fr_1fr] gap-4 ${i % 2 === 0 ? "bg-secondary/50" : ""} ${i === comparisonRows.length - 1 ? "rounded-b-xl" : ""}`}
-              >
-                <div className="px-4 py-4 flex items-center">
-                  <p className="font-semibold text-sm">{row.label}</p>
-                </div>
-                <div className="px-4 py-4 flex items-start gap-2">
-                  <X className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                  <p className="text-sm text-muted-foreground">{row.intermediair}</p>
-                </div>
-                <div className="px-4 py-4 flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
-                  <p className="text-sm font-medium">{row.zpzaken}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <SavingsCalculator />
         </div>
       </section>
 
-      {/* ── FIGHTER TEKST ── */}
-      <section className="section-padding relative overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img src={teamWalking} alt="" className="w-full h-full object-cover" aria-hidden="true" />
-          <div className="absolute inset-0 bg-gradient-to-r from-foreground/97 via-foreground/95 to-foreground/90" />
-        </div>
-        <div className="container-wide relative z-10 max-w-3xl mx-auto">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
-            <h2 className="text-primary-foreground mb-8">Jij bent geen bijproduct van een opdracht</h2>
-            <div className="space-y-6 text-primary-foreground/80 text-lg leading-relaxed">
-              <p>
-                Intermediairs bieden verzekeringen aan als 'service module' bij een opdracht. Klinkt handig. Maar ze verdienen commissie over elke module die jij afneemt. Jouw verzekering is hun verdienmodel — niet jouw belang.
-              </p>
-              <p>
-                Als jouw opdracht stopt, stopt jouw dekking. Precies op het moment dat je het meest kwetsbaar bent. Dat is geen service — dat is afhankelijkheid.
-              </p>
-              <p>
-                ZP Zaken werkt andersom. Wij bestaan alleen voor jou als zzp'er. Geen opdracht nodig. Geen tussenpersoon. Gewoon de beste dekking, rechtstreeks van de bron.
-              </p>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── SOCIAL PROOF ── */}
+      {/* ── HET ECHTE VERSCHIL ── */}
       <section className="section-padding bg-secondary">
         <div className="container-wide">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-center mb-12">
-            <h2 className="mb-4">2.500+ zzp'ers kozen voor onafhankelijkheid</h2>
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center mb-12">
+            <h2 className="mb-4">Meer dan prijs alleen — dit is wat je terugwint</h2>
           </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
-            {testimonials.map((t, i) => (
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {diffBlocks.map((block, i) => (
               <motion.div
-                key={t.name}
+                key={block.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="bg-card rounded-xl p-6 shadow-sm border border-border relative hover:shadow-md transition-shadow"
+                className="bg-card rounded-2xl p-8 border border-border shadow-sm"
               >
-                <Quote className="absolute top-5 right-5 h-6 w-6 text-primary/10" />
-                <div className="flex gap-0.5 mb-3">
-                  {[...Array(5)].map((_, j) => (
-                    <Star key={j} className="h-4 w-4 fill-accent text-accent" />
-                  ))}
+                <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-5">
+                  <block.icon className="h-6 w-6 text-accent" />
                 </div>
-                <p className="text-foreground text-sm mb-5 leading-relaxed">"{t.content}"</p>
-                <div>
-                  <p className="font-medium text-foreground text-sm">{t.name}</p>
-                  <p className="text-xs text-muted-foreground">{t.role}</p>
-                </div>
+                <h3 className="text-lg font-bold mb-3">{block.title}</h3>
+                <p className="text-muted-foreground leading-relaxed text-sm">{block.text}</p>
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
 
-          <motion.div
-            initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-            className="flex flex-wrap justify-center items-center gap-8 pt-8 border-t border-border"
-          >
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <div className="h-10 w-10 rounded-lg bg-card border border-border flex items-center justify-center font-bold text-xs text-primary">AFM</div>
-              <span className="text-sm">Vergunning 12050636</span>
-            </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <div className="h-10 w-10 rounded-lg bg-card border border-border flex items-center justify-center font-bold text-xs text-primary">Kifid</div>
-              <span className="text-sm">Kifid aangesloten</span>
-            </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <div className="h-10 w-10 rounded-lg bg-card border border-border flex items-center justify-center">
-                <Star className="h-5 w-5 fill-accent text-accent" />
-              </div>
-              <span className="text-sm">10+ jaar ervaring</span>
-            </div>
+      {/* ── PAKKETVERGELIJKING ── */}
+      <section className="section-padding bg-background">
+        <div className="container-wide">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center mb-12">
+            <h2 className="mb-4">Onze pakketten — transparant en compleet</h2>
+          </motion.div>
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-8">
+            {packages.map((pkg, i) => (
+              <motion.div
+                key={pkg.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className={`relative bg-card rounded-2xl p-8 border-2 transition-shadow ${pkg.popular ? "border-accent shadow-lg" : "border-border"}`}
+              >
+                {pkg.popular && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-xs font-bold px-4 py-1 rounded-full">
+                    Meest gekozen
+                  </span>
+                )}
+                <h3 className="text-lg font-bold mb-1">{pkg.name}</h3>
+                <p className="text-3xl font-bold text-accent mb-1">€{pkg.price}<span className="text-sm font-normal text-muted-foreground">/maand</span></p>
+                <div className="text-xs text-muted-foreground mb-6 space-y-0.5">
+                  <p>{pkg.eventCoverage} per gebeurtenis</p>
+                  <p>{pkg.yearCoverage} per jaar</p>
+                </div>
+                <ul className="space-y-2">
+                  {pkg.features.map((f) => (
+                    <li key={f} className="flex items-start gap-2 text-sm">
+                      <CheckCircle className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center">
+            <p className="text-muted-foreground mb-6">Geen eigen risico. Geen medische keuring. Dagelijks opzegbaar. Direct gedekt.</p>
+            <Button variant="accent" size="lg" asChild>
+              <LocalizedLink to="/verzekeringen">Sluit nu direct af <ArrowRight className="h-5 w-5" /></LocalizedLink>
+            </Button>
           </motion.div>
         </div>
       </section>
 
-      {/* ── FINALE CTA ── */}
-      <section className="section-padding relative overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img src={teamCheers} alt="" className="w-full h-full object-cover" aria-hidden="true" />
-          <div className="absolute inset-0 bg-gradient-to-r from-accent/95 via-accent/90 to-accent/85" />
-        </div>
-        <div className="container-wide relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="mb-4 text-white"
-            >
-              Stop met betalen voor de tussenpersoon
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="text-lg text-white/80 mb-8"
-            >
-              Sluit vandaag direct af. In 5 stappen geregeld. Zelfde kwaliteit — rechtstreeks van de bron.
-            </motion.p>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-            >
-              <Button size="lg" asChild className="bg-white text-accent hover:bg-white/90 shadow-lg">
-                <LocalizedLink to="/verzekeringen">
-                  Start direct <ArrowRight className="h-5 w-5" />
-                </LocalizedLink>
-              </Button>
-              <a
-                href="tel:0232010502"
-                className="inline-flex items-center gap-2 text-white border border-white/40 rounded-lg px-5 py-3 hover:bg-white/10 transition-all font-medium"
+      {/* ── FIGHTER AFSLUITER ── */}
+      <section className="section-padding bg-[hsl(0,0%,10%)]">
+        <div className="container-wide">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="max-w-3xl mx-auto text-center mb-12">
+            <blockquote className="text-2xl md:text-3xl font-bold text-white leading-snug mb-2">
+              "Je hoeft geen opdracht te hebben om goed verzekerd te zijn. Je hoeft geen tussenpersoon te betalen om goed verzekerd te zijn. Je hebt alleen ZP Zaken nodig."
+            </blockquote>
+          </motion.div>
+
+          <div className="grid grid-cols-3 gap-6 max-w-2xl mx-auto mb-12">
+            {[
+              { number: "10+", label: "jaar specialist in zzp-verzekeringen" },
+              { number: "2.500+", label: "tevreden zzp'ers" },
+              { number: "€0", label: "eigen risico" },
+            ].map((stat, i) => (
+              <motion.div
+                key={stat.number}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="text-center"
               >
-                📞 023 - 201 0502
-              </a>
-            </motion.div>
+                <p className="text-3xl md:text-4xl font-bold text-accent">{stat.number}</p>
+                <p className="text-xs md:text-sm text-white/60 mt-1">{stat.label}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Button size="lg" asChild className="bg-white text-accent hover:bg-white/90 shadow-lg font-bold">
+              <LocalizedLink to="/verzekeringen">Start vandaag <ArrowRight className="h-5 w-5" /></LocalizedLink>
+            </Button>
             <div className="mt-6">
               <MiniSocialProof variant="dark" className="justify-center" />
             </div>
