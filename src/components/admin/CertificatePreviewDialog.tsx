@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, Award, Save, AlertTriangle, CheckCircle2, XCircle, Plus, Trash2 } from "lucide-react";
+import { Loader2, Award, Save, AlertTriangle, CheckCircle2, XCircle, Plus, Trash2, Pencil } from "lucide-react";
 import type { DbaCheck } from "@/hooks/useDbaChecks";
 
 interface CertificateField {
