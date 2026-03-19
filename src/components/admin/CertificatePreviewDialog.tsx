@@ -49,7 +49,7 @@ export function CertificatePreviewDialog({ open, onOpenChange, check, onSaveAndC
   const [kvkExplanation, setKvkExplanation] = useState("");
   const [kvkSuggestions, setKvkSuggestions] = useState<string[]>([]);
   const [fieldResults, setFieldResults] = useState<Array<{ field_name: string; present: boolean; value: string }>>([]);
-  const [documentChecklist, setDocumentChecklist] = useState<Array<{ document_name: string; status: string }>>([]);
+  const [documentChecklist, setDocumentChecklist] = useState<Array<{ document_name: string; status: string; manually_overridden?: boolean }>>([]);
 
   // Helper: try to get a value from field_results by matching field name
   const getFromFieldResults = (fieldKey: string): string => {
