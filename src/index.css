@@ -16,7 +16,7 @@
     --secondary-foreground: 220 25% 14%;
     --muted: 220 15% 92%;
     --muted-foreground: 220 10% 46%;
-    --accent: 25 95% 53%;
+    --accent: 5 85% 54%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
@@ -30,12 +30,12 @@
 
     --sidebar-background: 220 40% 20%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 25 95% 53%;
+    --sidebar-primary: 5 85% 54%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 35% 28%;
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 220 30% 30%;
-    --sidebar-ring: 25 95% 53%;
+    --sidebar-ring: 5 85% 54%;
   }
 
   .dark {
@@ -51,7 +51,7 @@
     --secondary-foreground: 0 0% 95%;
     --muted: 220 15% 20%;
     --muted-foreground: 220 10% 60%;
-    --accent: 25 95% 53%;
+    --accent: 5 85% 54%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 98%;
