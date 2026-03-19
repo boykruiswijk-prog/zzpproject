@@ -78,6 +78,7 @@ const publicRoutes = (
     <Route path="pensioen" element={<Pensioen />} />
     <Route path="zorgverzekering" element={<Zorgverzekering />} />
     <Route path="mentale-gezondheid" element={<MentaleGezondheid />} />
+    <Route path="waarom-zp-zaken" element={<WaaromZpZaken />} />
     <Route path="voor-wie" element={<VoorWie />} />
     <Route path="zo-werken-wij" element={<ZoWerkenWij />} />
     <Route path="kennis" element={<Kennis />} />
