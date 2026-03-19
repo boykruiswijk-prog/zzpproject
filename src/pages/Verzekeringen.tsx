@@ -1,5 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { LocalizedLink } from "@/components/LocalizedLink";
+import { BAVApplicationModule } from "@/components/home/BAVApplicationModule";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
