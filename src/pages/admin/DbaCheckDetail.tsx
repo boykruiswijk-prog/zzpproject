@@ -46,7 +46,7 @@ export default function DbaCheckDetail() {
   const [certPreviewOpen, setCertPreviewOpen] = useState(false);
   const [editingDescription, setEditingDescription] = useState(false);
   const [editedDescription, setEditedDescription] = useState("");
-  const [savingDescription, setSavingDescription] = false);
+  const [savingDescription, setSavingDescription] = useState(false);
   const [dossierChecklist, setDossierChecklist] = useState<Array<{ document_name: string; status: string; manually_overridden?: boolean }>>([]);
   const [savingDossier, setSavingDossier] = useState(false);
 
