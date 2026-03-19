@@ -177,22 +177,22 @@ export default function Verzekeringen() {
         </div>
       </section>
 
-      <section className="section-padding text-primary-foreground relative overflow-hidden">
+      <section className="section-padding text-white relative overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img src={teamCheers} alt="" className="w-full h-full object-cover" aria-hidden="true" />
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
+          <div className="absolute inset-0 bg-gradient-to-r from-accent/95 via-accent/90 to-accent/85" />
         </div>
         <div className="container-wide relative z-10">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="mb-4 text-primary-foreground">{t("verzekeringenPage.ctaTitle")}</h2>
-            <p className="text-lg text-primary-foreground/80 mb-6">{t("verzekeringenPage.ctaSubtitle")}</p>
+            <h2 className="mb-4 text-white">{t("verzekeringenPage.ctaTitle")}</h2>
+            <p className="text-lg text-white/80 mb-6">{t("verzekeringenPage.ctaSubtitle")}</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
-              <Button variant="accent" size="lg" asChild>
+              <Button size="lg" asChild className="bg-white text-accent hover:bg-white/90 shadow-lg">
                 <LocalizedLink to="/contact">{t("verzekeringenPage.ctaButton")}<ArrowRight className="h-5 w-5" /></LocalizedLink>
               </Button>
               <a
                 href="tel:0232010502"
-                className="inline-flex items-center justify-center gap-2 text-primary-foreground border border-primary-foreground/40 rounded-lg px-4 py-2 hover:bg-primary-foreground/10 transition-all font-medium"
+                className="inline-flex items-center justify-center gap-2 text-white border border-white/40 rounded-lg px-4 py-2 hover:bg-white/10 transition-all font-medium"
               >
                 📞 023 - 201 0502
               </a>
