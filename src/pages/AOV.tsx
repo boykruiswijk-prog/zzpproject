@@ -6,16 +6,26 @@ import teamMeeting from "@/assets/team-meeting.jpg";
 import officeCoffee from "@/assets/office-coffee.jpg";
 import teamBoyCalling from "@/assets/team-boy-calling.jpg";
 
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "AOV Arbeidsongeschiktheidsverzekering voor ZZP'ers",
+  "provider": { "@type": "Organization", "name": "ZP Zaken", "url": "https://zpzaken.nl" },
+  "description": "Bescherm je inkomen als zzp'er bij ziekte. Vergelijk en sluit direct een AOV af via ZP Zaken. Persoonlijk advies, snel geregeld.",
+  "areaServed": "NL",
+};
+
 export default function AOV() {
   return (
     <ServicePageTemplate
-      seoTitle="AOV Arbeidsongeschiktheidsverzekering voor ZZP'ers"
-      seoDescription="Bescherm je inkomen als zelfstandig professional met een AOV. Vergelijk tarieven en sluit snel af via ZP Zaken."
+      seoTitle="AOV Arbeidsongeschiktheidsverzekering ZZP | ZP Zaken"
+      seoDescription="Bescherm je inkomen als zzp'er bij ziekte. Vergelijk en sluit direct een AOV af via ZP Zaken. Persoonlijk advies, snel geregeld."
       canonicalPath="/aov"
       heroImage={teamBoyCalling}
       badge="Bescherm je inkomen"
-      title={<>Arbeidsongeschiktheids­verzekering <span className="text-accent">voor ZZP'ers</span></>}
+      title={<>AOV voor zzp'ers — <span className="text-accent">Zeker van je inkomen bij ziekte</span></>}
       subtitle="Als zelfstandige ben je zelf verantwoordelijk voor je inkomen bij ziekte of arbeidsongeschiktheid. Een AOV vangt je op wanneer je niet kunt werken."
+      schema={schema}
       benefits={[
         {
           icon: Shield,
