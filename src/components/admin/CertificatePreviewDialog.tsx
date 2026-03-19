@@ -405,9 +405,10 @@ export function CertificatePreviewDialog({ open, onOpenChange, check, onSaveAndC
                       placeholder="Documentnaam"
                       disabled={isLoading}
                     />
-                    <span className="text-xs text-muted-foreground w-24 text-right">
-                      {item.status === "aanwezig" ? "Aanwezig" : "Niet aanwezig"}
-                    </span>
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground w-28 text-right justify-end">
+                      {item.manually_overridden && <Pencil className="h-3 w-3" />}
+                      <span>{item.status === "aanwezig" ? "Aanwezig" : "Niet aanwezig"}</span>
+                    </div>
                     <button
                       type="button"
                       onClick={() => setDocumentChecklist(documentChecklist.filter((_, j) => j !== i))}
