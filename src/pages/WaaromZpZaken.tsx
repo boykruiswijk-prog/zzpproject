@@ -107,6 +107,9 @@ export default function WaaromZpZaken() {
         </div>
       </section>
 
+      {/* ── EYEOPENER BANNER ── */}
+      <EyeopenerBanner />
+
       {/* ── HET BEWIJS ── */}
       <section className="section-padding bg-secondary">
         <div className="container-wide max-w-3xl mx-auto">
