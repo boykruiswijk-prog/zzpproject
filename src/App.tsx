@@ -12,6 +12,7 @@ import AOV from "./pages/AOV";
 import Pensioen from "./pages/Pensioen";
 import Zorgverzekering from "./pages/Zorgverzekering";
 import MentaleGezondheid from "./pages/MentaleGezondheid";
+import WaaromZpZaken from "./pages/WaaromZpZaken";
 import VoorWie from "./pages/VoorWie";
 import ZoWerkenWij from "./pages/ZoWerkenWij";
 import Kennis from "./pages/Kennis";
@@ -77,6 +78,7 @@ const publicRoutes = (
     <Route path="pensioen" element={<Pensioen />} />
     <Route path="zorgverzekering" element={<Zorgverzekering />} />
     <Route path="mentale-gezondheid" element={<MentaleGezondheid />} />
+    <Route path="waarom-zp-zaken" element={<WaaromZpZaken />} />
     <Route path="voor-wie" element={<VoorWie />} />
     <Route path="zo-werken-wij" element={<ZoWerkenWij />} />
     <Route path="kennis" element={<Kennis />} />
