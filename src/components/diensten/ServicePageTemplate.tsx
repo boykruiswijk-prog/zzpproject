@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,7 @@ interface ServicePageTemplateProps {
   ctaSubtitle: string;
   ctaButton: string;
   children?: ReactNode;
+  schema?: Record<string, unknown>;
 }
 
 const fadeUp = {
@@ -61,14 +62,17 @@ export function ServicePageTemplate({
   ctaSubtitle,
   ctaButton,
   children,
+  schema,
 }: ServicePageTemplateProps) {
   return (
     <Layout>
-      <Helmet>
-        <title>{seoTitle} | ZP Zaken</title>
-        <meta name="description" content={seoDescription} />
-        <link rel="canonical" href={`https://zpzaken.nl${canonicalPath}`} />
-      </Helmet>
+      <SEOHead
+        title={seoTitle}
+        description={seoDescription}
+        canonical={`https://zpzaken.nl${canonicalPath}`}
+      >
+        {schema && <script type="application/ld+json">{JSON.stringify(schema)}</script>}
+      </SEOHead>
 
       {/* Hero */}
       <PageHero

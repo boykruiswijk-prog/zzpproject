@@ -6,16 +6,26 @@ import officeMeetingRoom from "@/assets/office-meeting-room.jpg";
 import teamWalking from "@/assets/team-walking.jpg";
 import officeFlowers from "@/assets/office-flowers.jpg";
 
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Pensioen opbouwen voor ZZP'ers",
+  "provider": { "@type": "Organization", "name": "ZP Zaken", "url": "https://zpzaken.nl" },
+  "description": "Als zzp'er zelf je pensioen regelen? ZP Zaken helpt je met de beste pensioenoplossing. Persoonlijk advies op maat.",
+  "areaServed": "NL",
+};
+
 export default function Pensioen() {
   return (
     <ServicePageTemplate
-      seoTitle="Pensioen opbouwen als ZZP'er"
-      seoDescription="Bouw als zelfstandige aan je pensioen. Ontdek de mogelijkheden voor pensioenopbouw via ZP Zaken — fiscaal voordelig en flexibel."
+      seoTitle="ZZP Pensioen opbouwen | Advies & Oplossingen | ZP Zaken"
+      seoDescription="Als zzp'er zelf je pensioen regelen? ZP Zaken helpt je met de beste pensioenoplossing. Persoonlijk advies op maat."
       canonicalPath="/pensioen"
       heroImage={teamHero}
       badge="Investeer in je toekomst"
-      title={<>Pensioen opbouwen <span className="text-accent">als ZZP'er</span></>}
+      title={<>Pensioen voor zzp'ers — <span className="text-accent">Regel het nu, profiteer later</span></>}
       subtitle="Als zelfstandige bouw je niet automatisch pensioen op. Maar er zijn slimme, fiscaal voordelige manieren om toch goed voor je oude dag te zorgen."
+      schema={schema}
       benefits={[
         {
           icon: PiggyBank,

@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { BAVApplicationModule } from "@/components/home/BAVApplicationModule";
 import { useTranslation } from "react-i18next";
@@ -28,21 +28,21 @@ export default function Verzekeringen() {
   const insuranceSchema = {
     "@context": "https://schema.org",
     "@type": "Service",
-    "name": "Beroeps- en Bedrijfsaansprakelijkheidsverzekering voor ZZP'ers",
+    "name": "BAV & AVB Verzekering voor ZZP'ers",
     "provider": {
       "@type": "Organization",
       "name": "ZP Zaken",
       "url": "https://zpzaken.nl"
     },
-    "description": "Unieke combinatiepolis BAV + AVB voor zzp'ers in kantoorberoepen. Vanaf €20 per maand, dagelijks opzegbaar, binnen 24 uur verzekerd.",
+    "description": "Sluit direct online je beroeps- en bedrijfsaansprakelijkheidsverzekering af. De goedkoopste BAV + AVB combinatiepolis voor zzp'ers. Geen eigen risico.",
     "areaServed": "NL",
     "offers": {
       "@type": "Offer",
       "priceCurrency": "EUR",
-      "price": "20",
+      "price": "22",
       "priceSpecification": {
         "@type": "UnitPriceSpecification",
-        "price": "20",
+        "price": "22",
         "priceCurrency": "EUR",
         "unitText": "maand",
         "description": "Vanaf-prijs per maand"
@@ -52,15 +52,15 @@ export default function Verzekeringen() {
 
   return (
     <Layout>
-      <Helmet>
-        <title>{t("verzekeringenPage.title")} {t("verzekeringenPage.titleAccent")} | ZP Zaken</title>
-        <meta name="description" content={t("verzekeringenPage.subtitle")} />
-        <link rel="canonical" href="https://zpzaken.nl/verzekeringen" />
+      <SEOHead
+        title="BAV & AVB Verzekering voor ZZP'ers | Vanaf €22/maand | ZP Zaken"
+        description="Sluit direct online je beroeps- en bedrijfsaansprakelijkheidsverzekering af. De goedkoopste BAV + AVB combinatiepolis voor zzp'ers. Geen eigen risico."
+      >
         <script type="application/ld+json">{JSON.stringify(insuranceSchema)}</script>
-      </Helmet>
+      </SEOHead>
 
       <PageHero
-        title={<>{t("verzekeringenPage.title")} <span className="text-accent">{t("verzekeringenPage.titleAccent")}</span></>}
+        title={<>BAV &amp; AVB — <span className="text-accent">De goedkoopste combinatiepolis voor zzp'ers</span></>}
         subtitle={t("verzekeringenPage.subtitle")}
         badge={{ icon: <Sparkles className="h-4 w-4" />, text: t("verzekeringenPage.badge") }}
         backgroundImage={teamBoyCalling}

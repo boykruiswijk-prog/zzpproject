@@ -6,16 +6,26 @@ import officeCookies from "@/assets/office-cookies.jpg";
 import teamMeeting from "@/assets/team-meeting.jpg";
 import officeFlowers from "@/assets/office-flowers.jpg";
 
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Collectieve Zorgverzekering voor ZZP'ers",
+  "provider": { "@type": "Organization", "name": "ZP Zaken", "url": "https://zpzaken.nl" },
+  "description": "Profiteer van een collectieve zorgverzekering als zzp'er via ZP Zaken. Samen sterker, betere dekking voor een lagere premie.",
+  "areaServed": "NL",
+};
+
 export default function Zorgverzekering() {
   return (
     <ServicePageTemplate
-      seoTitle="Zorgverzekering voor ZZP'ers met collectieve korting"
-      seoDescription="Profiteer als zelfstandige van collectieve korting op je zorgverzekering via ZP Zaken. Bespaar op je premie zonder in te leveren op dekking."
+      seoTitle="ZZP Zorgverzekering Collectief | ZP Zaken"
+      seoDescription="Profiteer van een collectieve zorgverzekering als zzp'er via ZP Zaken. Samen sterker, betere dekking voor een lagere premie."
       canonicalPath="/zorgverzekering"
       heroImage={teamRoxy}
       badge="Collectief voordeel"
-      title={<>Zorgverzekering <span className="text-accent">met korting</span></>}
+      title={<>Zorgverzekering voor zzp'ers — <span className="text-accent">Collectief voordeel</span></>}
       subtitle="Als lid van het ZP Zaken collectief profiteer je van korting op je zorgverzekering. Dezelfde dekking, lagere premie."
+      schema={schema}
       benefits={[
         {
           icon: Heart,

@@ -6,16 +6,26 @@ import officeFlowers from "@/assets/office-flowers.jpg";
 import teamWalking from "@/assets/team-walking.jpg";
 import officeCoffee from "@/assets/office-coffee.jpg";
 
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Mentale Gezondheid voor ZZP'ers",
+  "provider": { "@type": "Organization", "name": "ZP Zaken", "url": "https://zpzaken.nl" },
+  "description": "Als zzp'er is mentale fitheid cruciaal. Doe de gratis mentale gezondheidstest via Mirro en ontdek hoe fit jij bent.",
+  "areaServed": "NL",
+};
+
 export default function MentaleGezondheid() {
   return (
     <ServicePageTemplate
-      seoTitle="Mentale gezondheid voor ZZP'ers"
-      seoDescription="Zorg goed voor jezelf als zelfstandige. Ontdek ondersteuning voor mentale gezondheid, burn-out preventie en coaching via ZP Zaken."
+      seoTitle="Mentale Gezondheid voor ZZP'ers | Mirro Test | ZP Zaken"
+      seoDescription="Als zzp'er is mentale fitheid cruciaal. Doe de gratis mentale gezondheidstest via Mirro en ontdek hoe fit jij bent."
       canonicalPath="/mentale-gezondheid"
       heroImage={teamCheers}
       badge="Zorg voor jezelf"
-      title={<>Mentale gezondheid <span className="text-accent">voor ZZP'ers</span></>}
+      title={<>Mentale gezondheid — <span className="text-accent">De basis voor succesvol ondernemerschap</span></>}
       subtitle="Ondernemen is geweldig, maar kan ook eenzaam en stressvol zijn. Investeer in je mentale gezondheid — dat is geen luxe, maar noodzaak."
+      schema={schema}
       benefits={[
         {
           icon: Brain,
