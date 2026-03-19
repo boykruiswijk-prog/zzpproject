@@ -593,6 +593,55 @@ export default function DbaCheckDetail() {
               </Card>
             )}
 
+            {/* Dossier Overzicht */}
+            {dossierChecklist.length > 0 && check.status !== "uploaded" && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Dossier overzicht
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {dossierChecklist.map((item, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => handleToggleDossierItem(idx)}
+                        className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-colors text-left ${
+                          item.status === "aanwezig"
+                            ? "border-green-200 bg-green-50 hover:bg-green-100"
+                            : "border-red-200 bg-red-50 hover:bg-red-100"
+                        }`}
+                        disabled={savingDossier}
+                      >
+                        {item.status === "aanwezig" ? (
+                          <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />
+                        ) : (
+                          <XCircle className="h-5 w-5 text-red-600 shrink-0" />
+                        )}
+                        <span className="flex-1 font-medium text-sm">{item.document_name}</span>
+                        <span className={`text-xs font-medium ${
+                          item.status === "aanwezig" ? "text-green-700" : "text-red-700"
+                        }`}>
+                          {item.status === "aanwezig" ? "Aanwezig" : "Niet aanwezig"}
+                        </span>
+                        {item.manually_overridden && (
+                          <span className="flex items-center gap-1 text-xs text-muted-foreground" title="Handmatig aangepast">
+                            <Pencil className="h-3 w-3" />
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-3">
+                    Klik op een item om de status handmatig te wijzigen.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
             {/* KVK Check */}
             {check.kvk_text && check.status !== "uploaded" && (
               <Card>
