@@ -53,6 +53,7 @@ function useNavItems() {
       label: t("nav.overOns"),
       children: [
         { href: "/over-ons", label: t("nav.hetTeam") },
+        { href: "/waarom-zp-zaken", label: "Waarom ZP Zaken" },
         { href: "/voor-wie", label: t("nav.voorWie") },
         { href: "/zo-werken-wij", label: t("nav.zoWerkenWij") },
         { href: "/partners", label: t("nav.partners") },

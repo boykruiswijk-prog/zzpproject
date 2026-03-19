@@ -12,6 +12,7 @@ import AOV from "./pages/AOV";
 import Pensioen from "./pages/Pensioen";
 import Zorgverzekering from "./pages/Zorgverzekering";
 import MentaleGezondheid from "./pages/MentaleGezondheid";
+import WaaromZpZaken from "./pages/WaaromZpZaken";
 import VoorWie from "./pages/VoorWie";
 import ZoWerkenWij from "./pages/ZoWerkenWij";
 import Kennis from "./pages/Kennis";
