@@ -1,5 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { LocalizedLink } from "@/components/LocalizedLink";
+import { BAVApplicationModule } from "@/components/home/BAVApplicationModule";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -68,6 +69,9 @@ export default function Verzekeringen() {
           <LocalizedLink to="/contact">{t("verzekeringenPage.ctaAdvies")}<ArrowRight className="h-5 w-5" /></LocalizedLink>
         </Button>
       </PageHero>
+
+      {/* BAV Wizard */}
+      <BAVApplicationModule />
 
       {/* Trust bar */}
       <div className="bg-secondary border-b border-border py-4">
