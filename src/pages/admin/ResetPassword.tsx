@@ -18,23 +18,26 @@ export default function ResetPassword() {
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "PASSWORD_RECOVERY") {
         setIsRecovery(true);
+        setChecking(false);
+      } else if (event === "SIGNED_IN" && session) {
+        // Recovery token was exchanged for a session — allow reset
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        if (hashParams.get("type") === "recovery") {
+          setIsRecovery(true);
+          setChecking(false);
+        }
+      } else if (event === "TOKEN_REFRESHED") {
+        // Ignore — don't change state on token refresh
+      } else if (event === "SIGNED_OUT") {
+        // Token was invalid or expired
         setChecking(false);
       }
     });
 
-    // Give the auth state change listener enough time to fire
-    // before concluding the link is invalid
-    const timeout = setTimeout(() => {
-      setChecking(false);
-    }, 4000);
-
-    return () => {
-      subscription.unsubscribe();
-      clearTimeout(timeout);
-    };
+    return () => subscription.unsubscribe();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
