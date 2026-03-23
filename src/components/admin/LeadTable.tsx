@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useLeads, useUpdateLead } from "@/hooks/useLeads";
+import { useLeads, useUpdateLead, useDeleteLead } from "@/hooks/useLeads";
 import {
   Table,
   TableBody,
@@ -19,10 +19,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Eye, Search, Loader2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Eye, Search, Loader2, Trash2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
+
+const AUTHORIZED_DELETE_EMAIL = "boy@zpzaken.nl";
 
 const statusLabels: Record<LeadStatus, string> = {
   nieuw: "Nieuw",
@@ -45,6 +59,10 @@ const statusColors: Record<LeadStatus, string> = {
 export function LeadTable() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "all">("all");
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+
+  const { user } = useAuth();
+  const canDelete = user?.email === AUTHORIZED_DELETE_EMAIL;
 
   const { data: leads, isLoading, isFetching } = useLeads({
     search: search || undefined,
@@ -52,6 +70,7 @@ export function LeadTable() {
   });
 
   const updateLead = useUpdateLead();
+  const deleteLead = useDeleteLead();
 
   const handleStatusChange = (leadId: string, newStatus: LeadStatus) => {
     const updates: { status: LeadStatus; converted_at?: string | null } = {
@@ -65,6 +84,20 @@ export function LeadTable() {
     }
 
     updateLead.mutate({ id: leadId, updates });
+  };
+
+  const handleDeleteConfirm = () => {
+    if (!deleteTarget) return;
+    deleteLead.mutate(deleteTarget.id, {
+      onSuccess: () => {
+        toast.success("Lead succesvol verwijderd");
+        setDeleteTarget(null);
+      },
+      onError: () => {
+        toast.error("Fout bij het verwijderen van de lead. Probeer het opnieuw.");
+        setDeleteTarget(null);
+      },
+    });
   };
 
   if (isLoading) {
@@ -177,11 +210,28 @@ export function LeadTable() {
                     {new Date(lead.created_at).toLocaleDateString("nl-NL")}
                   </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="icon" asChild>
-                      <Link to={`/admin/leads/${lead.id}`}>
-                        <Eye className="h-4 w-4" />
-                      </Link>
-                    </Button>
+                    <div className="flex items-center gap-1">
+                      <Button variant="ghost" size="icon" asChild>
+                        <Link to={`/admin/leads/${lead.id}`}>
+                          <Eye className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                      {canDelete && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          onClick={() =>
+                            setDeleteTarget({
+                              id: lead.id,
+                              name: `${lead.voornaam} ${lead.achternaam}`,
+                            })
+                          }
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
@@ -189,6 +239,27 @@ export function LeadTable() {
           </TableBody>
         </Table>
       </div>
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Lead verwijderen</AlertDialogTitle>
+            <AlertDialogDescription>
+              Weet je zeker dat je {deleteTarget?.name} wilt verwijderen? Dit kan niet ongedaan worden gemaakt.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuleren</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Verwijderen
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
