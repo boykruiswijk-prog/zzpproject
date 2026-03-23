@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useNavigate, Navigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -177,6 +177,14 @@ export default function AdminLogin() {
                   )}
                 </Button>
               </div>
+            </div>
+            <div className="text-right">
+              <Link
+                to="/admin/wachtwoord-vergeten"
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                Wachtwoord vergeten?
+              </Link>
             </div>
             <Button
               type="submit"
