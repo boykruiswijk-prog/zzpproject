@@ -25,19 +25,16 @@ export default function ResetPassword() {
       }
     });
 
-    // Also check current session for recovery state
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        // If we have a session from a recovery link, allow reset
-        const hashParams = new URLSearchParams(window.location.hash.substring(1));
-        if (hashParams.get("type") === "recovery") {
-          setIsRecovery(true);
-        }
-      }
+    // Give the auth state change listener enough time to fire
+    // before concluding the link is invalid
+    const timeout = setTimeout(() => {
       setChecking(false);
-    });
+    }, 4000);
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
