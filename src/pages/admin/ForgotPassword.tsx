@@ -44,8 +44,8 @@ export default function ForgotPassword() {
         <CardContent>
           {isSent ? (
             <div className="text-center space-y-4">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                <CheckCircle className="h-6 w-6 text-green-600" />
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                <CheckCircle className="h-6 w-6 text-primary" />
               </div>
               <p className="text-sm text-muted-foreground">
                 Als dit e-mailadres bekend is, ontvang je binnen enkele minuten een resetlink.
