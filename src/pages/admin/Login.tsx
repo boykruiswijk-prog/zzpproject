@@ -178,6 +178,14 @@ export default function AdminLogin() {
                 </Button>
               </div>
             </div>
+            <div className="text-right">
+              <Link
+                to="/admin/wachtwoord-vergeten"
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                Wachtwoord vergeten?
+              </Link>
+            </div>
             <Button
               type="submit"
               className="w-full"
