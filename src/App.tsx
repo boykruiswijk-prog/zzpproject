@@ -122,6 +122,8 @@ const App = () => (
 
             {/* Admin routes (no i18n) */}
             <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/wachtwoord-vergeten" element={<ForgotPassword />} />
+            <Route path="/admin/reset-password" element={<ResetPassword />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/leads" element={<AdminLeads />} />
             <Route path="/admin/leads/:id" element={<AdminLeadDetail />} />
