@@ -36,7 +36,7 @@ import type { Database } from "@/integrations/supabase/types";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
 
-const AUTHORIZED_DELETE_EMAIL = "boy@zpzaken.nl";
+const AUTHORIZED_DELETE_EMAIL = "boy.kruiswijk@zpzaken.nl";
 
 const statusLabels: Record<LeadStatus, string> = {
   nieuw: "Nieuw",
