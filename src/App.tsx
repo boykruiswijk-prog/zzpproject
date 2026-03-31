@@ -42,6 +42,7 @@ import DbaCheckBatchDetail from "./pages/admin/DbaCheckBatchDetail";
 import DbaVerificatie from "./pages/DbaVerificatie";
 import ForgotPassword from "./pages/admin/ForgotPassword";
 import ResetPassword from "./pages/admin/ResetPassword";
+import ScreenshotHelper from "./pages/ScreenshotHelper";
 
 /** Old WordPress URLs indexed by Google → redirect to new routes */
 const wpRedirects: Array<[string, string]> = [
