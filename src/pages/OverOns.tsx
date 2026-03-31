@@ -34,7 +34,7 @@ const team = [
   { name: "Roxy Taskin", role: "Backoffice", image: teamMember2, description: "Zorgt ervoor dat alles op de achtergrond soepel verloopt. Van administratie tot klantondersteuning." },
   { name: "Ellen Baars", role: "Senior Adviseur", image: teamMember3, description: "Met jarenlange ervaring in verzekeringen helpt zij ondernemers met passend advies voor hun situatie." },
   { name: "Gert-Jan Schellingerhout", role: "Adviseur", image: teamMember4, description: "Versterkt ons team met gedegen kennis en persoonlijk advies voor zelfstandig ondernemers." },
-  { name: "Binnenkort bekend", role: "Nieuw teamlid", image: teamMemberMystery, description: "We verwelkomen binnenkort een nieuw gezicht in ons team. Wordt vervolgd!" },
+  { name: "We groeien!", role: "Nieuw teamlid", image: null, description: "ZP Zaken is op zoek naar versterking. Wil jij onderdeel worden van ons team?" },
 ];
 
 const registrations = [
@@ -137,7 +137,13 @@ export default function OverOns() {
             {team.map((member) => (
               <div key={member.name} className="bg-card rounded-2xl overflow-hidden shadow-card border border-border/50">
                 <div className="aspect-[4/3] overflow-hidden">
-                  <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                  {member.image ? (
+                    <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
+                      <UserPlus className="h-16 w-16 text-muted-foreground/40 mb-2" />
+                    </div>
+                  )}
                 </div>
                 <div className="p-6">
                   <h3 className="text-xl font-semibold">{member.name}</h3>
@@ -145,6 +151,11 @@ export default function OverOns() {
                     <Shield className="h-3.5 w-3.5" />{member.role}
                   </span>
                   <p className="text-muted-foreground text-sm">{member.description}</p>
+                  {!member.image && (
+                    <Button variant="outline" size="sm" className="mt-4" asChild>
+                      <LocalizedLink to="/contact">Bekijk vacatures →</LocalizedLink>
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}
