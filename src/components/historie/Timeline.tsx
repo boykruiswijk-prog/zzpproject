@@ -136,9 +136,9 @@ function TimelineItem({ event, index, isVisible }: TimelineItemProps) {
             
 
             {/* Year Badge with animation */}
-            <div className={`relative inline-flex items-center gap-2 bg-gradient-to-r ${event.color} text-white px-5 py-2.5 rounded-full text-lg font-bold mb-4 shadow-lg group-hover:scale-105 transition-transform duration-300 ${
+            <div className={`relative inline-flex items-center gap-2 text-white px-5 py-2.5 rounded-full text-lg font-bold mb-4 shadow-lg group-hover:scale-105 transition-transform duration-300 ${
               isEven ? "lg:ml-auto" : ""
-            }`}>
+            }`} style={{ backgroundColor: '#E53E2F' }}>
               <PartyPopper className="h-4 w-4 animate-pulse" />
               {event.year}
             </div>
