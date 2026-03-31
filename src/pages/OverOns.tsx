@@ -23,7 +23,7 @@ const values = [
 ];
 
 const facts = [
-  { value: "2012", label: "Opgericht" },
+  { value: "2014", label: "Opgericht" },
   { value: "2.500+", label: "Klanten" },
   { value: "13+", label: "Jaar ervaring" },
   { value: "4.9/5", label: "Beoordeling" },

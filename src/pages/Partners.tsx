@@ -57,7 +57,7 @@ export default function Partners() {
         title={t("partners.title")}
         subtitle={t("partners.subtitle")}
         badge={{ icon: <Handshake className="h-4 w-4" />, text: t("partners.badge") }}
-        backgroundImage={officeCookies}
+        backgroundImage={partnerHeroBg}
       />
 
       <section className="bg-secondary py-6 border-b border-border/50">

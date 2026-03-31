@@ -41,7 +41,7 @@ const Index = () => {
     <Layout>
       <SEOHead
         title="ZP Zaken | Zorgeloos ZZP'en | Goedkoopste BAV & AVB"
-        description="ZP Zaken is al 10+ jaar dé onafhankelijke adviseur voor zzp'ers. BAV, AVB, AOV en meer. Persoonlijk advies, scherpe premies. Binnen 24 uur verzekerd."
+        description="ZP Zaken is al 13+ jaar dé onafhankelijke adviseur voor zzp'ers. BAV, AVB, AOV en meer. Persoonlijk advies, scherpe premies. Binnen 24 uur verzekerd."
         canonical="https://zpzaken.nl/"
       >
         <script type="application/ld+json">{JSON.stringify(organizationSchema)}</script>

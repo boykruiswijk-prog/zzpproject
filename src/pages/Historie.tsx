@@ -16,7 +16,7 @@ export default function Historie() {
 
   const values = [
     { icon: Heart, title: "Persoonlijk", description: "Geen callcenters, maar échte mensen die je naam kennen." },
-    { icon: Shield, title: "Betrouwbaar", description: "10+ jaar ervaring en bewezen track record." },
+    { icon: Shield, title: "Betrouwbaar", description: "13+ jaar ervaring en bewezen track record." },
     { icon: Users, title: "Door ondernemers", description: "We begrijpen je omdat we zelf ondernemen." },
     { icon: Sparkles, title: "Uniek", description: "Innovatieve oplossingen die je nergens anders vindt." },
   ];
