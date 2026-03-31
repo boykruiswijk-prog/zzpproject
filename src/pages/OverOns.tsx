@@ -137,7 +137,13 @@ export default function OverOns() {
             {team.map((member) => (
               <div key={member.name} className="bg-card rounded-2xl overflow-hidden shadow-card border border-border/50">
                 <div className="aspect-[4/3] overflow-hidden">
-                  <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                  {member.image ? (
+                    <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
+                      <UserPlus className="h-16 w-16 text-muted-foreground/40 mb-2" />
+                    </div>
+                  )}
                 </div>
                 <div className="p-6">
                   <h3 className="text-xl font-semibold">{member.name}</h3>
@@ -145,6 +151,11 @@ export default function OverOns() {
                     <Shield className="h-3.5 w-3.5" />{member.role}
                   </span>
                   <p className="text-muted-foreground text-sm">{member.description}</p>
+                  {!member.image && (
+                    <Button variant="outline" size="sm" className="mt-4" asChild>
+                      <LocalizedLink to="/contact">Bekijk vacatures →</LocalizedLink>
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}

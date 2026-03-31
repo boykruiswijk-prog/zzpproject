@@ -84,7 +84,7 @@ function PilotCard({ pilot, t }: { pilot: { slug: string; titleKey: string; desc
           )}
 
           <Button onClick={() => setOpen(true)} className="w-full" variant="accent">
-            {t("collectieveInkoop.signUpFree")}
+            Meld je aan voor de wachtlijst
           </Button>
         </div>
         </div>
