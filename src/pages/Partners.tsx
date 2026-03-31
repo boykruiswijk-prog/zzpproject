@@ -30,8 +30,9 @@ const partners = [
   { name: "Homy Capital", category: "Financiering", description: "Factoring en financiering voor de flexbranche. Facturen binnen 24 uur uitbetaald, 7 dagen per week.", logo: homyCapitalLogo, icon: Banknote, link: "/diensten#financiering", features: ["Uitbetaling binnen 24 uur", "Geautomatiseerde facturering", "Debiteurenbeheer"] },
   { name: "Circle8", category: "Opdrachten", description: "Toonaangevende intermediair op de Nederlandse arbeidsmarkt. Toegang tot opdrachten bij grote opdrachtgevers.", logo: circle8Logo, icon: Briefcase, link: "/contact", features: ["Opdrachten-marktplaats", "Contractmanagement", "Wet DBA compliant"] },
   { name: "Onefellow", category: "Opdrachten", description: "Het platform voor freelancers en bemiddelaars. Vind de beste opdrachten en automatiseer je volledige inhuurproces.", logo: onefellowLogo, icon: Crown, link: "/contact", features: ["Marketplace voor opdrachten", "Geautomatiseerde facturatie", "Community netwerk"] },
-  { name: "AFM", category: "Toezicht", description: "De Autoriteit Financiële Markten houdt toezicht op financiële dienstverleners. ZP Zaken staat geregistreerd bij de AFM.", logo: afmLogo, icon: Scale, link: "https://www.afm.nl", features: ["Toezichthouder", "Consumentenbescherming", "Geregistreerd"] },
 ];
+
+const afmPartner = { name: "AFM", category: "Toezicht", description: "De Autoriteit Financiële Markten houdt toezicht op financiële dienstverleners. ZP Zaken staat geregistreerd bij de AFM.", logo: afmLogo, icon: Scale, link: "https://www.afm.nl", features: ["Toezichthouder", "Consumentenbescherming", "Geregistreerd"] };
 
 const serviceCategories = [
   { id: "verzekeringen", label: "Verzekeringen", icon: Shield },
