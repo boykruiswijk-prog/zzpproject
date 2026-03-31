@@ -137,6 +137,7 @@ const App = () => (
             
             {/* Public verification */}
             <Route path="/verificatie/dba/:token" element={<DbaVerificatie />} />
+            <Route path="/screenshot-helper" element={<ScreenshotHelper />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
