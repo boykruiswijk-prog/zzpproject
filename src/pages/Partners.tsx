@@ -142,6 +142,7 @@ export default function Partners() {
             </div>
           </div>
         </div>
+      </section>
 
       <section className="section-padding bg-secondary">
         <div className="container-wide">
