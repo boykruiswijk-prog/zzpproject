@@ -60,6 +60,7 @@ function PilotCard({ pilot, t }: { pilot: { slug: string; titleKey: string; desc
             </div>
             <h3 className="text-lg font-bold text-white drop-shadow-md">{t(pilot.titleKey)}</h3>
           </div>
+          <span className="absolute top-3 right-3 text-white text-xs font-semibold px-3 py-1" style={{ backgroundColor: '#E53E2F', borderRadius: '12px' }}>Binnenkort</span>
         </div>
         <div className="p-6 flex flex-col flex-grow bg-card">
         <p className="text-muted-foreground mb-6 flex-grow">{t(pilot.descKey)}</p>
