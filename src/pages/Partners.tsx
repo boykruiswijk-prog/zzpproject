@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
-import officeCookies from "@/assets/office-cookies.jpg";
+const partnerHeroBg = "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1200&q=80";
 import { Button } from "@/components/ui/button";
 import { Handshake, ExternalLink, Shield, Heart, PiggyBank, Umbrella, Users, Calculator, Scale, UserCheck, CheckCircle, Banknote, Briefcase, Crown } from "lucide-react";
 import { LocalizedLink } from "@/components/LocalizedLink";
@@ -30,8 +30,9 @@ const partners = [
   { name: "Homy Capital", category: "Financiering", description: "Factoring en financiering voor de flexbranche. Facturen binnen 24 uur uitbetaald, 7 dagen per week.", logo: homyCapitalLogo, icon: Banknote, link: "/diensten#financiering", features: ["Uitbetaling binnen 24 uur", "Geautomatiseerde facturering", "Debiteurenbeheer"] },
   { name: "Circle8", category: "Opdrachten", description: "Toonaangevende intermediair op de Nederlandse arbeidsmarkt. Toegang tot opdrachten bij grote opdrachtgevers.", logo: circle8Logo, icon: Briefcase, link: "/contact", features: ["Opdrachten-marktplaats", "Contractmanagement", "Wet DBA compliant"] },
   { name: "Onefellow", category: "Opdrachten", description: "Het platform voor freelancers en bemiddelaars. Vind de beste opdrachten en automatiseer je volledige inhuurproces.", logo: onefellowLogo, icon: Crown, link: "/contact", features: ["Marketplace voor opdrachten", "Geautomatiseerde facturatie", "Community netwerk"] },
-  { name: "AFM", category: "Toezicht", description: "De Autoriteit Financiële Markten houdt toezicht op financiële dienstverleners. ZP Zaken staat geregistreerd bij de AFM.", logo: afmLogo, icon: Scale, link: "https://www.afm.nl", features: ["Toezichthouder", "Consumentenbescherming", "Geregistreerd"] },
 ];
+
+const afmPartner = { name: "AFM", category: "Toezicht", description: "De Autoriteit Financiële Markten houdt toezicht op financiële dienstverleners. ZP Zaken staat geregistreerd bij de AFM.", logo: afmLogo, icon: Scale, link: "https://www.afm.nl", features: ["Toezichthouder", "Consumentenbescherming", "Geregistreerd"] };
 
 const serviceCategories = [
   { id: "verzekeringen", label: "Verzekeringen", icon: Shield },
@@ -57,7 +58,7 @@ export default function Partners() {
         title={t("partners.title")}
         subtitle={t("partners.subtitle")}
         badge={{ icon: <Handshake className="h-4 w-4" />, text: t("partners.badge") }}
-        backgroundImage={officeCookies}
+        backgroundImage={partnerHeroBg}
       />
 
       <section className="bg-secondary py-6 border-b border-border/50">
@@ -101,6 +102,44 @@ export default function Partners() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* AFM Officieel toezicht sectie */}
+      <section className="section-padding" style={{ backgroundColor: '#F8F8F8' }}>
+        <div className="container-wide">
+          <div className="max-w-3xl mx-auto text-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <Scale className="h-4 w-4" />
+              Officieel toezicht
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold mb-2">Geregistreerd bij de AFM</h2>
+            <p className="text-muted-foreground">ZP Zaken staat onder toezicht van de Autoriteit Financiële Markten.</p>
+          </div>
+          <div className="max-w-lg mx-auto">
+            <div className="bg-card rounded-2xl shadow-card border border-border overflow-hidden">
+              <div className="p-6 flex items-center justify-center h-32 bg-secondary/50">
+                <img src={afmPartner.logo} alt="AFM logo" className="max-h-16 max-w-[160px] object-contain" />
+              </div>
+              <div className="p-6">
+                <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 px-3 py-1.5 rounded-lg mb-4">
+                  <afmPartner.icon className="h-4 w-4 text-accent" />
+                  <span className="text-sm font-semibold">{afmPartner.name}</span>
+                </div>
+                <p className="text-muted-foreground text-sm mb-4">{afmPartner.description}</p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {afmPartner.features.map((feature) => (
+                    <span key={feature} className="inline-flex items-center gap-1.5 bg-secondary text-foreground px-2.5 py-1 rounded-md text-xs">
+                      <CheckCircle className="h-3 w-3 text-accent" />{feature}
+                    </span>
+                  ))}
+                </div>
+                <Button variant="outline" size="sm" className="w-full" asChild>
+                  <a href={afmPartner.link} target="_blank" rel="noopener noreferrer">{t("partners.moreInfo")}<ExternalLink className="h-4 w-4" /></a>
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </section>

@@ -19,11 +19,11 @@ const values = [
   { icon: Target, title: "Onafhankelijk", description: "We zijn niet gebonden aan één verzekeraar. Ons advies is gebaseerd op wat het beste bij jou past, niet op commissies." },
   { icon: Eye, title: "Transparant", description: "Geen kleine lettertjes of verborgen kosten. We leggen alles helder uit zodat je weet waar je aan toe bent." },
   { icon: Users, title: "Persoonlijk", description: "Je spreekt met echte adviseurs die je situatie kennen. Geen callcenters of doorverwijzingen." },
-  { icon: Award, title: "Deskundig", description: "Meer dan 10 jaar ervaring in verzekeringen voor zelfstandigen. We kennen de markt en jouw uitdagingen." },
+  { icon: Award, title: "Deskundig", description: "Meer dan 13 jaar ervaring in verzekeringen voor zelfstandigen. We kennen de markt en jouw uitdagingen." },
 ];
 
 const facts = [
-  { value: "2012", label: "Opgericht" },
+  { value: "2014", label: "Opgericht" },
   { value: "2.500+", label: "Klanten" },
   { value: "13+", label: "Jaar ervaring" },
   { value: "4.9/5", label: "Beoordeling" },

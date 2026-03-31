@@ -16,7 +16,7 @@ export default function Historie() {
 
   const values = [
     { icon: Heart, title: "Persoonlijk", description: "Geen callcenters, maar échte mensen die je naam kennen." },
-    { icon: Shield, title: "Betrouwbaar", description: "10+ jaar ervaring en bewezen track record." },
+    { icon: Shield, title: "Betrouwbaar", description: "13+ jaar ervaring en bewezen track record." },
     { icon: Users, title: "Door ondernemers", description: "We begrijpen je omdat we zelf ondernemen." },
     { icon: Sparkles, title: "Uniek", description: "Innovatieve oplossingen die je nergens anders vindt." },
   ];
@@ -108,8 +108,8 @@ export default function Historie() {
               <Button variant="accent" size="lg" asChild>
                 <LocalizedLink to="/contact">{t("historie.ctaButton")}<ArrowRight className="h-4 w-4 ml-2" /></LocalizedLink>
               </Button>
-              <Button variant="outline" size="lg" className="border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10" asChild>
-                <LocalizedLink to="/over-ons">{t("historie.ctaTeam")}</LocalizedLink>
+              <Button variant="outline" size="lg" className="bg-white border border-[#E53E2F] text-[#E53E2F] hover:bg-[#E53E2F]/10" asChild>
+                <LocalizedLink to="/diensten">Bekijk onze diensten →</LocalizedLink>
               </Button>
             </div>
           </div>
