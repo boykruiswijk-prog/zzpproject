@@ -34,7 +34,7 @@ const team = [
   { name: "Roxy Taskin", role: "Backoffice", image: teamMember2, description: "Zorgt ervoor dat alles op de achtergrond soepel verloopt. Van administratie tot klantondersteuning." },
   { name: "Ellen Baars", role: "Senior Adviseur", image: teamMember3, description: "Met jarenlange ervaring in verzekeringen helpt zij ondernemers met passend advies voor hun situatie." },
   { name: "Gert-Jan Schellingerhout", role: "Adviseur", image: teamMember4, description: "Versterkt ons team met gedegen kennis en persoonlijk advies voor zelfstandig ondernemers." },
-  { name: "Binnenkort bekend", role: "Nieuw teamlid", image: teamMemberMystery, description: "We verwelkomen binnenkort een nieuw gezicht in ons team. Wordt vervolgd!" },
+  { name: "We groeien!", role: "Nieuw teamlid", image: null, description: "ZP Zaken is op zoek naar versterking. Wil jij onderdeel worden van ons team?" },
 ];
 
 const registrations = [
