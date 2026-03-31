@@ -106,6 +106,43 @@ export default function Partners() {
         </div>
       </section>
 
+      {/* AFM Officieel toezicht sectie */}
+      <section className="section-padding" style={{ backgroundColor: '#F8F8F8' }}>
+        <div className="container-wide">
+          <div className="max-w-3xl mx-auto text-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <Scale className="h-4 w-4" />
+              Officieel toezicht
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold mb-2">Geregistreerd bij de AFM</h2>
+            <p className="text-muted-foreground">ZP Zaken staat onder toezicht van de Autoriteit Financiële Markten.</p>
+          </div>
+          <div className="max-w-lg mx-auto">
+            <div className="bg-card rounded-2xl shadow-card border border-border overflow-hidden">
+              <div className="p-6 flex items-center justify-center h-32 bg-secondary/50">
+                <img src={afmPartner.logo} alt="AFM logo" className="max-h-16 max-w-[160px] object-contain" />
+              </div>
+              <div className="p-6">
+                <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 px-3 py-1.5 rounded-lg mb-4">
+                  <afmPartner.icon className="h-4 w-4 text-accent" />
+                  <span className="text-sm font-semibold">{afmPartner.name}</span>
+                </div>
+                <p className="text-muted-foreground text-sm mb-4">{afmPartner.description}</p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {afmPartner.features.map((feature) => (
+                    <span key={feature} className="inline-flex items-center gap-1.5 bg-secondary text-foreground px-2.5 py-1 rounded-md text-xs">
+                      <CheckCircle className="h-3 w-3 text-accent" />{feature}
+                    </span>
+                  ))}
+                </div>
+                <Button variant="outline" size="sm" className="w-full" asChild>
+                  <a href={afmPartner.link} target="_blank" rel="noopener noreferrer">{t("partners.moreInfo")}<ExternalLink className="h-4 w-4" /></a>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
       <section className="section-padding bg-secondary">
         <div className="container-wide">
           <div className="max-w-3xl mx-auto text-center">

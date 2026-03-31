@@ -227,17 +227,9 @@ export default function SocialMedia() {
                 </div>
               </div>
               <div className="space-y-4 border-t border-border pt-6">
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="aspect-square bg-primary/10 rounded-lg flex items-center justify-center">
-                    <Shield className="h-6 w-6 text-primary/40" />
-                  </div>
-                  <div className="aspect-square bg-accent/10 rounded-lg flex items-center justify-center">
-                    <Users className="h-6 w-6 text-accent/40" />
-                  </div>
-                  <div className="aspect-square bg-primary/10 rounded-lg flex items-center justify-center">
-                    <BookOpen className="h-6 w-6 text-primary/40" />
-                  </div>
-                </div>
+                <p className="text-sm text-muted-foreground italic">
+                  Volg ons op Instagram voor dagelijkse tips en updates over ondernemen als zzp'er.
+                </p>
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1"><Users className="h-4 w-4" /> Volgers</span>
                   <span className="flex items-center gap-1"><BookOpen className="h-4 w-4" /> Posts & Reels</span>
