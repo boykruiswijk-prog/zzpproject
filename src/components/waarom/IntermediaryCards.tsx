@@ -56,12 +56,7 @@ export function IntermediaryCards() {
                 <p className="text-sm text-muted-foreground">{card.subtitle}</p>
               </div>
 
-              {card.quote && (
-                <div className="px-6 py-4 bg-muted/50 border-b border-border">
-                  <p className="text-sm italic text-muted-foreground leading-relaxed">"{card.quote.text}"</p>
-                  <p className="text-xs text-muted-foreground mt-2">— {card.quote.author}</p>
-                </div>
-              )}
+
 
               <div className="p-6 space-y-3">
                 {card.rows.map(([label, value]) => (
