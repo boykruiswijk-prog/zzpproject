@@ -71,6 +71,104 @@ export type Database = {
         }
         Relationships: []
       }
+      bav_aanmeldingen: {
+        Row: {
+          aangemeld_op: string
+          achternaam: string
+          bedrijfsnaam: string
+          beroep: string | null
+          betaalwijze: string
+          bijgewerkt_op: string
+          email: string
+          exact_abonnement_id: string | null
+          exact_fout: string | null
+          exact_relatie_id: string | null
+          exact_status: string
+          exact_sync_op: string | null
+          iban: string | null
+          id: string
+          ingangsdatum: string
+          jaarpremie: number | null
+          kvk_nummer: string | null
+          lead_id: string | null
+          maandpremie: number | null
+          pakket: string
+          pakket_naam: string
+          premiebedrag: number
+          rekeninghouder: string | null
+          sector: string | null
+          status: string
+          telefoon: string | null
+          voornaam: string
+        }
+        Insert: {
+          aangemeld_op?: string
+          achternaam: string
+          bedrijfsnaam: string
+          beroep?: string | null
+          betaalwijze: string
+          bijgewerkt_op?: string
+          email: string
+          exact_abonnement_id?: string | null
+          exact_fout?: string | null
+          exact_relatie_id?: string | null
+          exact_status?: string
+          exact_sync_op?: string | null
+          iban?: string | null
+          id?: string
+          ingangsdatum: string
+          jaarpremie?: number | null
+          kvk_nummer?: string | null
+          lead_id?: string | null
+          maandpremie?: number | null
+          pakket: string
+          pakket_naam: string
+          premiebedrag: number
+          rekeninghouder?: string | null
+          sector?: string | null
+          status?: string
+          telefoon?: string | null
+          voornaam: string
+        }
+        Update: {
+          aangemeld_op?: string
+          achternaam?: string
+          bedrijfsnaam?: string
+          beroep?: string | null
+          betaalwijze?: string
+          bijgewerkt_op?: string
+          email?: string
+          exact_abonnement_id?: string | null
+          exact_fout?: string | null
+          exact_relatie_id?: string | null
+          exact_status?: string
+          exact_sync_op?: string | null
+          iban?: string | null
+          id?: string
+          ingangsdatum?: string
+          jaarpremie?: number | null
+          kvk_nummer?: string | null
+          lead_id?: string | null
+          maandpremie?: number | null
+          pakket?: string
+          pakket_naam?: string
+          premiebedrag?: number
+          rekeninghouder?: string | null
+          sector?: string | null
+          status?: string
+          telefoon?: string | null
+          voornaam?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bav_aanmeldingen_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       collective_newsletter: {
         Row: {
           created_at: string
@@ -380,6 +478,36 @@ export type Database = {
           },
         ]
       }
+      integratie_config: {
+        Row: {
+          aangemaakt_op: string
+          bijgewerkt_op: string
+          division: string | null
+          enabled: boolean
+          id: string
+          naam: string
+          notities: string | null
+        }
+        Insert: {
+          aangemaakt_op?: string
+          bijgewerkt_op?: string
+          division?: string | null
+          enabled?: boolean
+          id?: string
+          naam: string
+          notities?: string | null
+        }
+        Update: {
+          aangemaakt_op?: string
+          bijgewerkt_op?: string
+          division?: string | null
+          enabled?: boolean
+          id?: string
+          naam?: string
+          notities?: string | null
+        }
+        Relationships: []
+      }
       invoices: {
         Row: {
           amount_excl_btw: number
@@ -531,6 +659,11 @@ export type Database = {
           created_at: string
           eigen_risico: string | null
           email: string
+          exact_abonnement_id: string | null
+          exact_fout: string | null
+          exact_relatie_id: string | null
+          exact_status: string | null
+          exact_sync_op: string | null
           geboortedatum: string | null
           id: string
           ingangsdatum: string | null
@@ -555,6 +688,11 @@ export type Database = {
           created_at?: string
           eigen_risico?: string | null
           email: string
+          exact_abonnement_id?: string | null
+          exact_fout?: string | null
+          exact_relatie_id?: string | null
+          exact_status?: string | null
+          exact_sync_op?: string | null
           geboortedatum?: string | null
           id?: string
           ingangsdatum?: string | null
@@ -579,6 +717,11 @@ export type Database = {
           created_at?: string
           eigen_risico?: string | null
           email?: string
+          exact_abonnement_id?: string | null
+          exact_fout?: string | null
+          exact_relatie_id?: string | null
+          exact_status?: string | null
+          exact_sync_op?: string | null
           geboortedatum?: string | null
           id?: string
           ingangsdatum?: string | null
