@@ -137,47 +137,46 @@ export function BAVApplicationModule() {
    const handleSubmit = async () => {
      if (validateStep(currentStep)) {
        try {
-          const { error } = await supabase.from("leads").insert({
-            type: "verzekering_aanvraag",
-            voornaam: formData.voornaam,
-            achternaam: formData.achternaam,
-            email: formData.email,
-            telefoon: formData.telefoon || null,
-            bedrijfsnaam: formData.bedrijfsnaam || null,
-            kvk_nummer: formData.kvkNummer || null,
-            beroep: formData.beroep || null,
-            omzet: paymentType === "monthly" ? "maandelijks" : "jaarlijks",
-            verzekering_type: selectedPkg?.name || null,
-            verzekerd_bedrag: selectedPkg?.coverage || null,
-            ingangsdatum: startDate || null,
-            opmerkingen: `IBAN: ${formData.iban}\nOpdrachtgever: ${formData.opdrachtgever}${formData.bemiddelaarNaam ? `\nBemiddelaar: ${formData.bemiddelaarNaam}` : ''}${formData.aantalMedewerkers ? `\nAantal medewerkers: ${formData.aantalMedewerkers}` : ''}${formData.functie ? `\nFunctie: ${formData.functie}` : ''}`,
-            bron: "website",
-          });
+         const { data, error } = await supabase.functions.invoke("process-bav-wizard", {
+           body: {
+             pakket: selectedPackage,
+             betaalwijze: paymentType === "monthly" ? "maandelijks" : "jaarlijks",
+             ingangsdatum: startDate,
+             voornaam: formData.voornaam,
+             achternaam: formData.achternaam,
+             email: formData.email,
+             telefoon: formData.telefoon || null,
+             bedrijfsnaam: formData.bedrijfsnaam,
+             kvk_nummer: formData.kvkNummer || null,
+             beroep: formData.beroep || null,
+             iban: formData.iban || null,
+             rekeninghouder: `${formData.voornaam} ${formData.achternaam}`.trim(),
+             opmerkingen: [
+               formData.opdrachtgever ? `Opdrachtgever: ${formData.opdrachtgever}` : null,
+               formData.bemiddelaarNaam ? `Bemiddelaar: ${formData.bemiddelaarNaam}` : null,
+               formData.aantalMedewerkers ? `Aantal medewerkers: ${formData.aantalMedewerkers}` : null,
+               formData.functie ? `Functie: ${formData.functie}` : null,
+             ]
+               .filter(Boolean)
+               .join("\n") || null,
+           },
+         });
 
-      if (error) throw error;
+         if (error) throw error;
+         if (!data?.success) throw new Error(data?.error || "Onbekende fout");
 
-          // Send email notifications (fire-and-forget)
-          supabase.functions.invoke("send-notification", {
-            body: {
-              type: "bav",
-              naam: `${formData.voornaam} ${formData.achternaam}`,
-              email: formData.email,
-              telefoon: formData.telefoon || "-",
-              dekking: `${selectedPkg?.name} — ${selectedPkg?.coverage}`,
-            },
-          }).catch((err) => console.error("Email notification failed:", err));
-
-          setIsSubmitted(true);
-        } catch (error) {
-          console.error("Error submitting application:", error);
-          toast({
-            title: "Er ging iets mis",
-            description: "Probeer het opnieuw of neem telefonisch contact op: 023 - 201 0502",
-            variant: "destructive",
-          });
-        }
+         setIsSubmitted(true);
+       } catch (error) {
+         console.error("Error submitting application:", error);
+         toast({
+           title: "Er ging iets mis",
+           description: "Probeer het opnieuw of neem telefonisch contact op: 023 - 201 0502",
+           variant: "destructive",
+         });
+       }
      }
    };
+
 
   return (
     <>
