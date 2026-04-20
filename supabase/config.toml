@@ -20,3 +20,6 @@ project_id = "eugkavokktjwpqaqlwsj"
 
  [functions.send-notification]
  verify_jwt = false
+
+ [functions.process-bav-wizard]
+ verify_jwt = false
