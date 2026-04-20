@@ -29,8 +29,11 @@ export function BemiddelingSection() {
   return (
     <section className="section-padding bg-background">
       <div className="container-wide">
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center mb-12">
-          <h2 className="mb-4">Bemiddeling: zij rekenen. Onefellow niet.</h2>
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center mb-12 max-w-3xl mx-auto">
+          <h2 className="mb-4">Opdrachten vinden zonder bemiddelingskosten</h2>
+          <p className="text-muted-foreground">
+            Naast verzekeringen helpt ZP Zaken je ook aan opdrachten via Onefellow — het recruitmentplatform van dezelfde mensen. Bemiddeling is gratis voor de zzp'er. Jij betaalt niets, de opdrachtgever betaalt de fee.
+          </p>
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto mb-10">
@@ -42,7 +45,7 @@ export function BemiddelingSection() {
             transition={{ duration: 0.5 }}
             className="bg-muted rounded-2xl p-8 border border-border"
           >
-            <h3 className="text-lg font-bold text-muted-foreground mb-6">Bemiddeling via een groot platform</h3>
+            <h3 className="text-lg font-bold text-muted-foreground mb-6">Bemiddeling via een traditioneel platform</h3>
             <ul className="space-y-4">
               {intermediairPoints.map((point) => (
                 <li key={point} className="flex items-start gap-3 text-sm text-muted-foreground">

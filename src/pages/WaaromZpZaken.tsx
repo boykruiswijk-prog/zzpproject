@@ -2,7 +2,7 @@ import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { LocalizedLink } from "@/components/LocalizedLink";
-import { ArrowRight, Shield, Users, KeyRound, Quote, CheckCircle } from "lucide-react";
+import { ArrowRight, Shield, Users, KeyRound, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { MiniSocialProof } from "@/components/shared/MiniSocialProof";
 import { SavingsCalculator } from "@/components/waarom/SavingsCalculator";
@@ -79,8 +79,8 @@ export default function WaaromZpZaken() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-primary-foreground leading-tight mb-6"
             >
-              Wij waren de bron.{" "}
-              <span className="text-accent">Nu betaal je eindelijk de eerlijke prijs.</span>
+              Onafhankelijk verzekerd.{" "}
+              <span className="text-accent">Zonder tussenkomst.</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -88,7 +88,7 @@ export default function WaaromZpZaken() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="text-lg md:text-xl text-primary-foreground/80 mb-8 max-w-2xl"
             >
-              ZP Zaken leverde jarenlang de verzekeringsproposities achter grote intermediairs. Dat staat zwart op wit. Nu sluit je direct bij ons af — zonder opslag, zonder afhankelijkheid.
+              Als zzp'er betaal je vaak meer dan je denkt. Niet aan je verzekering, maar aan de partij die hem voor jou regelt. ZP Zaken is de enige AFM-gecertificeerde specialist die direct met jou werkt — zonder platform, zonder opslag, zonder afhankelijkheid.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -110,31 +110,14 @@ export default function WaaromZpZaken() {
       {/* ── EYEOPENER BANNER ── */}
       <EyeopenerBanner />
 
-      {/* ── HET BEWIJS ── */}
-      <section className="section-padding bg-secondary">
-        <div className="container-wide max-w-3xl mx-auto">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade}>
-            <h2 className="mb-10 text-center">Niet ons woord. Hun woord.</h2>
-            <div className="relative bg-card border border-border rounded-2xl p-8 md:p-12 shadow-sm">
-              <Quote className="absolute top-6 left-6 h-10 w-10 text-accent/15" />
-              <blockquote className="text-xl md:text-2xl font-medium text-foreground leading-relaxed mb-6 pl-4 border-l-4 border-accent">
-                "Omdat ZP Zaken zich al ruim zeven jaar richt op de ondersteunende producten en diensten voor zelfstandig professionals, zien wij in hen de ideale partner."
-              </blockquote>
-              <p className="font-semibold text-foreground">Pascal van der Hart</p>
-              <p className="text-sm text-muted-foreground">Director Operations, Circle8</p>
-            </div>
-            <p className="text-sm text-muted-foreground text-center mt-6 max-w-xl mx-auto">
-              Dit citaat stond op de website van Circle8 bij de aankondiging van hun samenwerking met ZP Zaken. Wij waren de specialist achter hun servicepakket. Het enige wat veranderd is: je betaalt niet langer hun marge.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
       {/* ── REKENMODEL ── */}
       <section id="rekentool" className="section-padding bg-background scroll-mt-20">
         <div className="container-wide">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center mb-12">
-            <h2 className="mb-4">Wat kost een tussenpersoon jou per jaar?</h2>
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center mb-12 max-w-3xl mx-auto">
+            <h2 className="mb-4">Wat kost een platform jou per jaar?</h2>
+            <p className="text-muted-foreground">
+              Grote platforms en intermediairs bundelen verzekeringen in hun servicepakketten. Handig — maar niet gratis. Bereken hieronder wat jij werkelijk betaalt en wat je overhoudt als je direct bij de bron afsluit.
+            </p>
           </motion.div>
           <SavingsCalculator />
         </div>
@@ -228,13 +211,13 @@ export default function WaaromZpZaken() {
         <div className="container-wide">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="max-w-3xl mx-auto text-center mb-12">
             <blockquote className="text-2xl md:text-3xl font-bold text-white leading-snug mb-2">
-              "Je hoeft geen opdracht te hebben om goed verzekerd te zijn. Je hoeft geen tussenpersoon te betalen om goed verzekerd te zijn. Je hebt alleen ZP Zaken nodig."
+              "Onafhankelijk advies betekent dat wij werken voor jou — niet voor het platform, niet voor de verzekeraar, niet voor de opdrachtgever. Gewoon voor jou."
             </blockquote>
           </motion.div>
 
           <div className="grid grid-cols-3 gap-6 max-w-2xl mx-auto mb-12">
             {[
-              { number: "10+", label: "jaar specialist in zzp-verzekeringen" },
+              { number: "13+", label: "jaar specialist in zzp-verzekeringen" },
               { number: "2.500+", label: "tevreden zzp'ers" },
               { number: "€0", label: "eigen risico" },
             ].map((stat, i) => (

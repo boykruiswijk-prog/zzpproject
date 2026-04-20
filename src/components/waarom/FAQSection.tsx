@@ -3,8 +3,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 
 const faqs = [
   {
-    q: "Is de verzekering via mijn intermediair niet gewoon makkelijker?",
-    a: "Makkelijk, ja. Maar je betaalt per gewerkt uur, je hebt €2.500 eigen risico bij een beroepsfout en je dekking stopt zodra je opdracht stopt. Bij ZP Zaken betaal je een vaste lage maandpremie, geen eigen risico en blijf je altijd verzekerd.",
+    q: "Wat is het verschil tussen een platformverzekering en een eigen polis bij ZP Zaken?",
+    a: "Een platformverzekering is gekoppeld aan jouw opdracht bij dat platform. Zodra de opdracht eindigt, eindigt ook je dekking. Een eigen polis bij ZP Zaken staat op jouw naam, loopt door zolang jij dat wilt en is dagelijks opzegbaar. Jij hebt de controle.",
   },
   {
     q: "Kan ik naast mijn intermediairverzekering ook bij ZP Zaken verzekerd zijn?",
