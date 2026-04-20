@@ -7,20 +7,6 @@ const fade = {
 
 const cards = [
   {
-    name: "Circle8",
-    subtitle: "Voorheen in samenwerking met ZP Zaken",
-    quote: {
-      text: "Omdat ZP Zaken zich al ruim zeven jaar richt op de ondersteunende producten en diensten voor zelfstandige professionals, zien wij in hen de ideale partner.",
-      author: "Pascal van der Hart, Director Operations Circle8",
-    },
-    rows: [
-      ["Model", "Verzekering per gewerkt uur via servicepakket"],
-      ["Afhankelijkheid", "Dekking eindigt bij einde opdracht"],
-      ["Eigen risico BAV", "n.v.t. (via bundel)"],
-      ["Bemiddeling", "Actief, via eigen platform, tegen vergoeding"],
-    ],
-  },
-  {
     name: "HeadFirst Group",
     subtitle: "Verzekering via Alicia Benefits",
     rows: [
@@ -48,11 +34,14 @@ export function IntermediaryCards() {
   return (
     <section className="section-padding bg-secondary">
       <div className="container-wide">
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center mb-12">
-          <h2 className="mb-4">Zo werken de drie grootste intermediairs in Nederland</h2>
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center mb-12 max-w-3xl mx-auto">
+          <h2 className="mb-4">Hoe werken platforms en intermediairs?</h2>
+          <p className="text-muted-foreground">
+            De meeste grote platforms in Nederland koppelen verzekeringen aan hun opdrachten. Dat lijkt handig, maar heeft consequenties die zzp'ers zich vaak niet realiseren.
+          </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto mb-8">
+        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-8">
           {cards.map((card, i) => (
             <motion.div
               key={card.name}
@@ -89,7 +78,7 @@ export function IntermediaryCards() {
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade}>
           <div className="bg-accent text-accent-foreground rounded-xl p-5 text-center max-w-4xl mx-auto">
             <p className="font-semibold text-sm md:text-base">
-              Wat ze gemeen hebben: jouw verzekering is gekoppeld aan hun opdracht. Jouw bemiddeling kost geld. Jij bent hun product.
+              Wat ze gemeen hebben: jouw verzekering is gekoppeld aan hun opdracht. Stopt de opdracht? Dan stopt je dekking. ZP Zaken werkt anders — jij beheert je eigen polis, los van wie je opdrachtgever is.
             </p>
           </div>
         </motion.div>
