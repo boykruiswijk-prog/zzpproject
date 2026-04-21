@@ -33,7 +33,7 @@ export function SocialProofSection() {
   const statsInView = useInView(statsRef, { once: true, margin: "-50px" });
 
   const stats = [
-    { value: "5000", label: t("home.tevredenKlanten") },
+    { value: "5000+", label: t("home.tevredenKlanten") },
     { value: "4.9/5", label: t("home.gemiddeldeBeoordeling") },
     { value: "10+", label: t("home.jaarErvaring") },
     { value: "24u", label: t("home.gemiddeldeReactietijd") },
