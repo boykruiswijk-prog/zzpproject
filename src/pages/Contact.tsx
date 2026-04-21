@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { trackContactFormSubmit } from "@/lib/tracking";
 import teamRoxy from "@/assets/team-roxy.jpg";
-import officeMeetingRoom from "@/assets/office-meeting-room.jpg";
+import ellenPortrait from "@/assets/ellen-baars-portrait.jpg";
 
 export default function Contact() {
   const { t } = useTranslation();
@@ -159,8 +159,20 @@ export default function Contact() {
                 </div>
               </div>
 
-              <div className="rounded-2xl overflow-hidden shadow-card border border-border/50">
-                <img src={officeMeetingRoom} alt="Vergaderruimte ZP Zaken" className="w-full h-48 object-cover" />
+              <div className="bg-card rounded-2xl overflow-hidden shadow-card border border-border/50">
+                <img
+                  src={ellenPortrait}
+                  alt="Ellen Baars - Senior Adviseur ZP Zaken"
+                  className="w-full object-cover"
+                  style={{ borderRadius: "12px 12px 0 0", objectPosition: "center top", maxHeight: "400px" }}
+                />
+                <div className="p-6">
+                  <p className="font-semibold text-foreground">Ellen Baars</p>
+                  <p className="text-sm text-accent mb-3">Senior Adviseur — ZP Zaken</p>
+                  <p className="text-sm text-muted-foreground">
+                    Ik help je graag bij het vinden van de juiste verzekering. Neem gerust contact op — ik reageer binnen 24 uur.
+                  </p>
+                </div>
               </div>
 
               <div className="bg-card rounded-2xl p-8 shadow-card border border-border/50">
