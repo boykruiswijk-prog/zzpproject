@@ -12,7 +12,6 @@ import teamMember4 from "@/assets/team-member-4.jpg";
 import teamMemberMystery from "@/assets/team-member-mystery.jpg";
 import teamWalking from "@/assets/team-walking.jpg";
 import teamCheers from "@/assets/team-cheers.jpg";
-import officeFlowers from "@/assets/office-flowers.jpg";
 import ellenPortrait from "@/assets/ellen-baars-portrait.jpg";
 
 // Team and content data stays in Dutch as it's specific content
