@@ -264,6 +264,7 @@ export function SavingsCalculator() {
                 subtext={<>Ter vergelijking: via jouw platform betaal je €{fmt2(platformRate)} per uur</>}
                 badge="Alleen ZP Zaken rekent dit zo transparant"
               />
+              <CancellationBlock />
             </div>
           </div>
         </TabsContent>
@@ -346,6 +347,7 @@ export function SavingsCalculator() {
                   Bij een claim betaal je bij ZP Zaken nooit eigen risico
                 </p>
               </div>
+              <CancellationBlock />
             </div>
           </div>
         </TabsContent>
