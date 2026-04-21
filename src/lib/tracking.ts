@@ -28,14 +28,18 @@ export function trackEvent({ action, category, label, value }: TrackingEvent) {
 }
 
 // Pre-defined events for consistent naming
-export const trackCTA = (label: string) =>
+export const trackCTA = (label: string) => {
   trackEvent({ action: "cta_click", category: "conversion", label });
+  if (label.includes("gesprek") || label.includes("advies")) {
+    trackEvent({ action: "adviesgesprek_click", category: "lead", label: "adviesgesprek CTA geklikt" });
+  }
+};
 
 export const trackPhone = () =>
   trackEvent({ action: "phone_click", category: "contact", label: "023-201-0502" });
 
 export const trackWhatsApp = () =>
-  trackEvent({ action: "whatsapp_click", category: "contact", label: "whatsapp" });
+  trackEvent({ action: "whatsapp_click", category: "contact", label: "whatsapp geklikt" });
 
 export const trackFormStart = (form: string) =>
   trackEvent({ action: "form_start", category: "lead", label: form });
@@ -49,3 +53,12 @@ export const trackQualificationResult = (qualified: boolean, branch: string) =>
     category: "qualification",
     label: branch,
   });
+
+export const trackBeginWizard = () =>
+  trackEvent({ action: "begin_wizard", category: "wizard", label: "BAV AVB wizard gestart" });
+
+export const trackWizardComplete = (pakketNaam: string, premieBedrag: number) =>
+  trackEvent({ action: "wizard_complete", category: "conversie", label: pakketNaam, value: premieBedrag });
+
+export const trackContactFormSubmit = () =>
+  trackEvent({ action: "contact_form_submit", category: "lead", label: "contactformulier verzonden" });
