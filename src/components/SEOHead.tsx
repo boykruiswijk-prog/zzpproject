@@ -11,7 +11,7 @@ interface SEOHeadProps {
   children?: React.ReactNode;
 }
 
-const BASE_URL = "https://zpzaken.nl";
+const BASE_URL = "https://www.zpzaken.nl";
 const SUPPORTED_LANGS = ["en", "de", "fr"];
 
 export function SEOHead({
@@ -19,7 +19,7 @@ export function SEOHead({
   description,
   canonical,
   ogType = "website",
-  ogImage = `${BASE_URL}/favicon.webp`,
+  ogImage = `${BASE_URL}/og-image.jpg`,
   noindex = false,
   children,
 }: SEOHeadProps) {
