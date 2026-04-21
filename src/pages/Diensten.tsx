@@ -14,7 +14,8 @@ import teamWalking from "@/assets/team-walking.jpg";
 import teamCheers from "@/assets/team-cheers.jpg";
 import officeFlowers from "@/assets/office-flowers.jpg";
 import officeMeetingRoom from "@/assets/office-meeting-room.jpg";
-import teamBoyCalling from "@/assets/zp-logo-glass.jpg";
+import teamBoyCalling from "@/assets/team-boy-calling.jpg";
+import zpLogoGlass from "@/assets/zp-logo-glass.jpg";
 import { Shield, Calculator, Scale, UserCheck, Banknote } from "lucide-react";
 
 // Services data stays in Dutch as it's domain content passed to ServiceCard
