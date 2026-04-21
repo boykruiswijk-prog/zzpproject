@@ -236,6 +236,26 @@ export function BAVApplicationModule() {
           <p className="text-muted-foreground">{t("home.bavDescription")}</p>
         </AnimatedSection>
 
+        {/* Social proof bar */}
+        <AnimatedSection delay={0.15} className="max-w-4xl mx-auto mb-8">
+          <div className="bg-card rounded-xl shadow-sm border border-border px-4 py-3 sm:px-6 sm:py-3 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-8 text-xs sm:text-sm text-foreground">
+            <div className="flex items-center gap-2">
+              <span className="text-accent tracking-tight" aria-hidden>★★★★★</span>
+              <span><span className="font-semibold">4.9/5</span> Google Reviews</span>
+            </div>
+            <span className="hidden sm:inline-block h-4 w-px bg-border" aria-hidden />
+            <div className="flex items-center gap-2">
+              <span aria-hidden>👥</span>
+              <span><span className="font-semibold">5.000+</span> tevreden zzp'ers</span>
+            </div>
+            <span className="hidden sm:inline-block h-4 w-px bg-border" aria-hidden />
+            <div className="flex items-center gap-2">
+              <Check className="h-4 w-4 text-accent" aria-hidden />
+              <span>AFM geregistreerd · Nr. 12050636</span>
+            </div>
+          </div>
+        </AnimatedSection>
+
         <AnimatedSection delay={0.2} className="max-w-4xl mx-auto">
           {/* Progress Steps */}
           <div className="flex justify-between mb-8 relative">
