@@ -1,5 +1,6 @@
 import { Star } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import ellenAvatar from "@/assets/ellen-baars-avatar.jpg";
 
 interface MiniSocialProofProps {
   variant?: "light" | "dark";
@@ -9,22 +10,38 @@ interface MiniSocialProofProps {
 export function MiniSocialProof({ variant = "light", className = "" }: MiniSocialProofProps) {
   const { t } = useTranslation();
   const isDark = variant === "dark";
+  const initials = ["BK", "RT", "EB", "GJ"];
 
   return (
     <div className={`inline-flex items-center gap-3 ${className}`}>
       <div className="flex -space-x-2">
-        {[1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            className={`h-7 w-7 rounded-full border-2 flex items-center justify-center text-[10px] font-bold ${
-              isDark
-                ? "border-primary bg-primary-foreground/20 text-primary-foreground"
-                : "border-background bg-accent/20 text-accent"
-            }`}
-          >
-            {["BK", "RT", "EB", "GJ"][i - 1]}
-          </div>
-        ))}
+        {initials.map((label, i) => {
+          const isEllen = label === "EB";
+          if (isEllen) {
+            return (
+              <img
+                key={label}
+                src={ellenAvatar}
+                alt="Ellen Baars"
+                className={`h-7 w-7 rounded-full border-2 object-cover ${
+                  isDark ? "border-primary" : "border-background"
+                }`}
+              />
+            );
+          }
+          return (
+            <div
+              key={label}
+              className={`h-7 w-7 rounded-full border-2 flex items-center justify-center text-[10px] font-bold ${
+                isDark
+                  ? "border-primary bg-primary-foreground/20 text-primary-foreground"
+                  : "border-background bg-accent/20 text-accent"
+              }`}
+            >
+              {label}
+            </div>
+          );
+        })}
       </div>
       <div className={`text-xs ${isDark ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
         <div className="flex items-center gap-1">

@@ -1,12 +1,14 @@
 import { MessageCircle, FileSearch, CheckCircle } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/animated-section";
 import { useTranslation } from "react-i18next";
+import ellenAvatar from "@/assets/ellen-baars-avatar.jpg";
 
 interface StepsProcessProps {
   variant?: "light" | "dark";
+  showAdvisor?: boolean;
 }
 
-export function StepsProcess({ variant = "light" }: StepsProcessProps) {
+export function StepsProcess({ variant = "light", showAdvisor = true }: StepsProcessProps) {
   const { t } = useTranslation();
   const isDark = variant === "dark";
 
@@ -19,6 +21,21 @@ export function StepsProcess({ variant = "light" }: StepsProcessProps) {
   return (
     <AnimatedSection delay={0.2}>
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
+        {showAdvisor && (
+          <div className="flex flex-col items-center sm:items-end sm:mr-2 mb-2 sm:mb-0">
+            <img
+              src={ellenAvatar}
+              alt="Ellen Baars"
+              className={`h-14 w-14 rounded-full object-cover border-2 ${isDark ? "border-primary-foreground/40" : "border-background shadow-sm"}`}
+            />
+            <p className={`text-xs mt-2 font-medium text-center ${isDark ? "text-primary-foreground" : "text-foreground"}`}>
+              Ellen Baars
+            </p>
+            <p className={`text-[11px] text-center ${isDark ? "text-primary-foreground/60" : "text-muted-foreground"}`}>
+              Senior Adviseur
+            </p>
+          </div>
+        )}
         {steps.map((step, i) => (
           <div key={step.number} className="flex items-center gap-3">
             <div className="flex items-center gap-3">

@@ -16,6 +16,7 @@ import { AnimatedSection } from "@/components/ui/animated-section";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import ellenAvatar from "@/assets/ellen-baars-avatar.jpg";
 
 const packages = [
   { id: "basis", name: "Combi Basis", coverage: "€ 500.000 per gebeurtenis", yearCoverage: "€ 1.000.000 per jaar", priceMonthly: 30.00, priceYearly: 360.00, popular: false },
@@ -238,10 +239,19 @@ export function BAVApplicationModule() {
 
         {/* Social proof bar */}
         <AnimatedSection delay={0.15} className="max-w-4xl mx-auto mb-8">
-          <div className="bg-card rounded-xl shadow-sm border border-border px-4 py-3 sm:px-6 sm:py-3 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-8 text-xs sm:text-sm text-foreground">
+          <div className="bg-card rounded-xl shadow-sm border border-border px-4 py-3 sm:px-6 sm:py-3 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm text-foreground">
             <div className="flex items-center gap-2">
+              <div className="flex -space-x-2">
+                {["BK", "RT", "EB", "GJ"].map((label) => label === "EB" ? (
+                  <img key={label} src={ellenAvatar} alt="Ellen Baars" className="h-7 w-7 rounded-full border-2 border-background object-cover" />
+                ) : (
+                  <div key={label} className="h-7 w-7 rounded-full border-2 border-background bg-accent/20 text-accent flex items-center justify-center text-[10px] font-bold">
+                    {label}
+                  </div>
+                ))}
+              </div>
               <span className="text-accent tracking-tight" aria-hidden>★★★★★</span>
-              <span><span className="font-semibold">4.9/5</span> Google Reviews</span>
+              <span><span className="font-semibold">4.9/5</span></span>
             </div>
             <span className="hidden sm:inline-block h-4 w-px bg-border" aria-hidden />
             <div className="flex items-center gap-2">

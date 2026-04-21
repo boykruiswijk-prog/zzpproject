@@ -6,6 +6,7 @@ import { LocalizedLink } from "@/components/LocalizedLink";
 import { TrustBar } from "@/components/shared/TrustBar";
 import { trackCTA, trackPhone } from "@/lib/tracking";
 import teamWalking from "@/assets/team-walking.jpg";
+import ellenAvatar from "@/assets/ellen-baars-avatar.jpg";
 
 export function HeroSection() {
   const { t } = useTranslation();
@@ -132,7 +133,7 @@ export function HeroSection() {
               className="relative"
             >
               <div className="bg-card/95 backdrop-blur-md rounded-2xl p-8 shadow-lg border border-border/50 max-w-sm hover:shadow-xl transition-shadow duration-300">
-                <div className="flex items-center gap-4 mb-6">
+                <div className="flex items-center gap-4 mb-4">
                   <div className="h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center">
                     <Users className="h-7 w-7 text-primary" />
                   </div>
@@ -140,6 +141,19 @@ export function HeroSection() {
                     <h3 className="text-3xl font-bold text-foreground">5.000+</h3>
                     <p className="text-muted-foreground">{t("home.satisfied")}</p>
                   </div>
+                </div>
+
+                <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border">
+                  <div className="flex -space-x-2">
+                    {["BK", "RT", "EB", "GJ"].map((label) => label === "EB" ? (
+                      <img key={label} src={ellenAvatar} alt="Ellen Baars" className="h-7 w-7 rounded-full border-2 border-background object-cover" />
+                    ) : (
+                      <div key={label} className="h-7 w-7 rounded-full border-2 border-background bg-accent/20 text-accent flex items-center justify-center text-[10px] font-bold">
+                        {label}
+                      </div>
+                    ))}
+                  </div>
+                  <span className="text-xs text-muted-foreground">Jouw team van adviseurs</span>
                 </div>
 
                 <div className="space-y-4">

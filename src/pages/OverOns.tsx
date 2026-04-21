@@ -12,7 +12,7 @@ import teamMember4 from "@/assets/team-member-4.jpg";
 import teamMemberMystery from "@/assets/team-member-mystery.jpg";
 import teamWalking from "@/assets/team-walking.jpg";
 import teamCheers from "@/assets/team-cheers.jpg";
-import officeFlowers from "@/assets/office-flowers.jpg";
+import ellenPortrait from "@/assets/ellen-baars-portrait.jpg";
 
 // Team and content data stays in Dutch as it's specific content
 const values = [
@@ -121,10 +121,13 @@ export default function OverOns() {
                 ))}
               </div>
             </div>
-            <div className="bg-primary/5 border border-primary/10 rounded-2xl p-8 lg:p-12 relative overflow-hidden">
-              <img src={officeFlowers} alt="" className="absolute inset-0 w-full h-full object-cover opacity-10" aria-hidden="true" />
-              <blockquote className="text-xl lg:text-2xl font-medium mb-6 text-foreground">{t("overOns.quote")}</blockquote>
-              <p className="text-muted-foreground font-medium">{t("overOns.quoteAuthor")}</p>
+            <div className="relative rounded-2xl p-8 lg:p-12 overflow-hidden">
+              <img src={ellenPortrait} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />
+              <div className="absolute inset-0" style={{ backgroundColor: "rgba(0,0,0,0.45)" }} aria-hidden="true" />
+              <div className="relative z-10">
+                <blockquote className="text-xl lg:text-2xl font-medium mb-6 text-primary-foreground">{t("overOns.quote")}</blockquote>
+                <p className="text-primary-foreground/80 font-medium">{t("overOns.quoteAuthor")}</p>
+              </div>
             </div>
           </div>
         </div>
