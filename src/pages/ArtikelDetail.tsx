@@ -1,13 +1,56 @@
- import { useParams } from "react-router-dom";
- import { LocalizedLink } from "@/components/LocalizedLink";
- import { Helmet } from "react-helmet-async";
- import { Layout } from "@/components/layout/Layout";
- import { useArticle } from "@/hooks/useArticles";
- import { ArrowLeft, Calendar, Clock, ExternalLink, Shield } from "lucide-react";
- import { Button } from "@/components/ui/button";
- import { Skeleton } from "@/components/ui/skeleton";
- import ReactMarkdown from "react-markdown";
- import remarkGfm from "remark-gfm";
+import { useParams } from "react-router-dom";
+import { LocalizedLink } from "@/components/LocalizedLink";
+import { Helmet } from "react-helmet-async";
+import { Layout } from "@/components/layout/Layout";
+import { useArticle } from "@/hooks/useArticles";
+import { ArrowLeft, ArrowRight, Calendar, Check, Clock, ExternalLink, Shield } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
+const BAV_AVB_SLUG = "zp-zaken-zorgeloos-zzpen-goedkoopste-bav-avb";
+
+const InlineCTA = () => (
+  <div
+    className="my-8 rounded-lg p-5"
+    style={{ background: "#FFF5F5", borderLeft: "4px solid #E53E2F" }}
+  >
+    <div className="text-xs font-semibold uppercase tracking-wide text-accent mb-1">
+      Direct geregeld
+    </div>
+    <h3 className="text-lg font-bold mb-1 text-foreground">
+      Sluit nu direct online af — vanaf €30/maand
+    </h3>
+    <p className="text-sm text-muted-foreground mb-4">
+      Geen eigen risico. Dagelijks opzegbaar. BAV + AVB gecombineerd.
+    </p>
+    <Button variant="accent" asChild>
+      <LocalizedLink to="/verzekeringen">
+        Direct online afsluiten <ArrowRight className="h-4 w-4" />
+      </LocalizedLink>
+    </Button>
+  </div>
+);
+
+/** Splits markdown content after the second paragraph and injects the inline CTA. */
+const renderContentWithCTA = (content: string) => {
+  const parts = content.split(/\n\n+/);
+  if (parts.length < 3) {
+    return (
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+    );
+  }
+  const before = parts.slice(0, 2).join("\n\n");
+  const after = parts.slice(2).join("\n\n");
+  return (
+    <>
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>{before}</ReactMarkdown>
+      <InlineCTA />
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>{after}</ReactMarkdown>
+    </>
+  );
+};
  
  export default function ArtikelDetail() {
    const { slug } = useParams<{ slug: string }>();

@@ -2,7 +2,10 @@ User-agent: *
 Allow: /
 
 Disallow: /admin
+Disallow: /admin/
 Disallow: /screenshot-helper
-Disallow: /api/
+Disallow: /verificatie/
+Disallow: /creditcontrol
+Disallow: /collectief-ledenorganisaties
 
 Sitemap: https://www.zpzaken.nl/sitemap.xml
