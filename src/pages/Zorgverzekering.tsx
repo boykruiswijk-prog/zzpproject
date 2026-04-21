@@ -2,7 +2,7 @@ import { ServicePageTemplate } from "@/components/diensten/ServicePageTemplate";
 import { Heart, Users, Euro } from "lucide-react";
 
 import teamRoxy from "@/assets/team-roxy.jpg";
-const officeCookies = "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1200&q=80";
+import officeCookies from "@/assets/zp-boy-laptop.jpg";
 import teamMeeting from "@/assets/team-meeting.jpg";
 import officeFlowers from "@/assets/office-flowers.jpg";
 
