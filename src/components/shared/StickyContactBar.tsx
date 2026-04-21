@@ -25,7 +25,7 @@ export function StickyContactBar() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="fixed bottom-4 right-4 z-50 flex items-center gap-2"
+          className="fixed bottom-20 right-4 md:bottom-4 z-50 flex items-center gap-2"
         >
           <a
             href="tel:0232010502"

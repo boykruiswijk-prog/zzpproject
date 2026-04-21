@@ -17,6 +17,7 @@ export function ExitIntentPopup() {
     const path = location.pathname.replace(/\/(nl|en|de|fr)(?=\/|$)/, "") || "/";
     if (EXCLUDED_PATHS.includes(path)) return;
     if (EXCLUDED_WIZARD_PATHS.includes(path)) return;
+    if (path.startsWith("/admin")) return;
     if (sessionStorage.getItem(SESSION_KEY)) return;
 
     let lastY = window.scrollY;
