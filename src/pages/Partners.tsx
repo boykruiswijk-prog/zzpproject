@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Handshake, ExternalLink, Shield, Heart, PiggyBank, Umbrella, Users, Calculator, Scale, UserCheck, CheckCircle, Banknote, Briefcase, Crown } from "lucide-react";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import otenticaLogo from "@/assets/partner-otentica.png";
-import homyCapitalLogo from "@/assets/partner-homy-capital.png";
+import zpLogo from "@/assets/logo-zp.png";
 import circle8Logo from "@/assets/partner-circle8.svg";
 import onefellowLogo from "@/assets/partner-onefellow.png";
 import afmLogo from "@/assets/afm-logo.png";
@@ -27,7 +27,7 @@ const partners = [
   { name: "Centraal Beheer", category: "Verzekeringen", description: "Betrouwbare AOV met ledenkorting via ZP Zaken.", logo: centraalBeheerLogo, icon: Shield, link: "/diensten#verzekeringen", features: ["Ledenkorting", "Betrouwbaar", "Uitgebreide dekking"] },
   { name: "SharePeople", category: "Verzekeringen", description: "Vernieuwend crowdsurance concept: onderling geregeld.", logo: sharePeopleLogo, icon: Users, link: "/contact", features: ["Crowdsurance", "Onderling geregeld", "Transparant"] },
   { name: "Otentica", category: "Screening", description: "Eenvoudige, snelle en transparante screening voor ondernemers.", logo: otenticaLogo, icon: UserCheck, link: "/diensten#screening", features: ["Snelle verificatie", "Officiële instanties", "In eigen huisstijl"] },
-  { name: "Homy Capital", category: "Financiering", description: "Factoring en financiering voor de flexbranche. Facturen binnen 24 uur uitbetaald, 7 dagen per week.", logo: homyCapitalLogo, icon: Banknote, link: "/diensten#financiering", features: ["Uitbetaling binnen 24 uur", "Geautomatiseerde facturering", "Debiteurenbeheer"] },
+  { name: "ZP Zaken Factoring", category: "Financiering", description: "Factoring en financiering direct via ZP Zaken. Facturen binnen 24 uur uitbetaald, 7 dagen per week. Geen externe partij — wij regelen het zelf.", logo: zpLogo, icon: Banknote, link: "/diensten", features: ["Uitbetaling binnen 24 uur", "Geautomatiseerde facturering", "Debiteurenbeheer"] },
   { name: "Circle8", category: "Opdrachten", description: "Via Circle8 actief als zzp'er? ZP Zaken verzorgt de BAV (beroepsaansprakelijkheid) en Cyberverzekering voor zzp'ers die werken binnen het Circle8 platform.", logo: circle8Logo, icon: Briefcase, link: "/contact", features: ["BAV verzekering", "Cyberverzekering", "Speciaal voor Circle8 zzp'ers"] },
   { name: "Onefellow", category: "Opdrachten", description: "Het platform voor freelancers en bemiddelaars. Vind de beste opdrachten en automatiseer je volledige inhuurproces.", logo: onefellowLogo, icon: Crown, link: "/contact", features: ["Marketplace voor opdrachten", "Geautomatiseerde facturatie", "Community netwerk"] },
 ];
