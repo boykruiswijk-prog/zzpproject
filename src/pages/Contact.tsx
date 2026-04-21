@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { trackContactFormSubmit } from "@/lib/tracking";
 import teamRoxy from "@/assets/team-roxy.jpg";
-import ellenPortrait from "@/assets/ellen-baars-portrait.jpg";
+import ellenPortrait from "@/assets/ellen-baars-avatar.jpg";
 
 export default function Contact() {
   const { t } = useTranslation();
@@ -163,8 +163,8 @@ export default function Contact() {
                 <img
                   src={ellenPortrait}
                   alt="Ellen Baars - Senior Adviseur ZP Zaken"
-                  className="w-full object-cover"
-                  style={{ borderRadius: "12px 12px 0 0", objectPosition: "center top", maxHeight: "400px" }}
+                  className="w-full"
+                  style={{ height: "400px", objectFit: "cover", objectPosition: "center 20%", borderRadius: "12px 12px 0 0" }}
                 />
                 <div className="p-6">
                   <p className="font-semibold text-foreground">Ellen Baars</p>
