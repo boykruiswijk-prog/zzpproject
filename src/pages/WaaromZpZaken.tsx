@@ -114,9 +114,9 @@ export default function WaaromZpZaken() {
       <section id="rekentool" className="section-padding bg-background scroll-mt-20">
         <div className="container-wide">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center mb-12 max-w-3xl mx-auto">
-            <h2 className="mb-4">Wat kost een platform jou per jaar?</h2>
+            <h2 className="mb-4">Wat betaal jij werkelijk voor jouw verzekering?</h2>
             <p className="text-muted-foreground">
-              Grote platforms en intermediairs bundelen verzekeringen in hun servicepakketten. Handig — maar niet gratis. Bereken hieronder wat jij werkelijk betaalt en wat je overhoudt als je direct bij de bron afsluit.
+              Bereken en vergelijk — kies je situatie en zie direct het verschil.
             </p>
           </motion.div>
           <SavingsCalculator />
