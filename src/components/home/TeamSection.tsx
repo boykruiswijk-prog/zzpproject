@@ -60,7 +60,7 @@ export function TeamSection() {
             <span className="text-primary">echte mensen</span>
           </h2>
           <p className="text-muted-foreground text-lg">
-            Geen callcenters of chatbots, maar een klein team van experts die je persoonlijk 
+            Geen callcenters of chatbots, maar een team van experts die je persoonlijk 
             verder helpen. Wij kennen onze klanten bij naam.
           </p>
         </div>
