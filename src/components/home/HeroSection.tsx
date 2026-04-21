@@ -44,10 +44,10 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="mb-6 leading-tight text-primary-foreground"
+              className="mb-6 leading-tight text-primary-foreground drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
             >
               {t("home.heroTitle")}{" "}
-              <span className="text-primary">{t("home.heroTitleAccent")}</span>
+              <span className="text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{t("home.heroTitleAccent")}</span>
             </motion.h1>
 
             <motion.p 
