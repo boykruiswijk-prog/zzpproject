@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { trackBeginWizard, trackWizardComplete } from "@/lib/tracking";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -55,6 +56,7 @@ export function BAVApplicationModule() {
    const [slotverklaringAkkoord, setSlotverklaringAkkoord] = useState(false);
    const [errors, setErrors] = useState<ValidationErrors>({});
    const [isSubmitted, setIsSubmitted] = useState(false);
+   useEffect(() => { trackBeginWizard(); }, []);
   const [formData, setFormData] = useState({
     bedrijfsnaam: "", kvkNummer: "", beroep: "", functie: "", aantalMedewerkers: "",
     voornaam: "", achternaam: "", email: "", telefoon: "",
@@ -165,6 +167,8 @@ export function BAVApplicationModule() {
          if (error) throw error;
          if (!data?.success) throw new Error(data?.error || "Onbekende fout");
 
+         const _pkg = packages.find(p => p.id === selectedPackage);
+         if (_pkg) trackWizardComplete(_pkg.name, paymentType === "monthly" ? _pkg.priceMonthly : _pkg.priceYearly);
          setIsSubmitted(true);
        } catch (error) {
          console.error("Error submitting application:", error);

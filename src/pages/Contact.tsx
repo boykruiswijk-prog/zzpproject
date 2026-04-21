@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Phone, Mail, MapPin, Clock, CheckCircle, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { trackContactFormSubmit } from "@/lib/tracking";
 import teamRoxy from "@/assets/team-roxy.jpg";
 import officeMeetingRoom from "@/assets/office-meeting-room.jpg";
 
@@ -51,6 +52,7 @@ export default function Contact() {
         },
       }).catch((err) => console.error("Email notification failed:", err));
 
+      trackContactFormSubmit();
       setIsSubmitted(true);
       toast({ title: t("contact.toastSuccess"), description: t("contact.toastSuccessDesc") });
     } catch (error) {
@@ -64,8 +66,8 @@ export default function Contact() {
   return (
     <Layout>
       <Helmet>
-        <title>{t("contact.title")} | ZP Zaken</title>
-        <meta name="description" content={t("contact.subtitle")} />
+        <title>Contact | Gratis Adviesgesprek Aanvragen | ZP Zaken</title>
+        <meta name="description" content="Neem contact op met ZP Zaken voor persoonlijk verzekeringsadvies. Bel 023 - 201 0502, mail info@zpzaken.nl of plan een gratis adviesgesprek." />
         <link rel="canonical" href="https://zpzaken.nl/contact" />
       </Helmet>
       <PageHero

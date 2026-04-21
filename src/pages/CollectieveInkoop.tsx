@@ -359,8 +359,8 @@ export default function CollectieveInkoop() {
   return (
     <Layout>
       <Helmet>
-        <title>{t("collectieveInkoop.metaTitle")}</title>
-        <meta name="description" content={t("collectieveInkoop.metaDesc")} />
+        <title>Collectieve Inkoop voor ZZP'ers | Samen Sterker | ZP Zaken</title>
+        <meta name="description" content="Profiteer van collectieve inkoopkracht als zzp'er. ZP Zaken bundelt ondernemers voor betere deals op energie, software, telefonie en meer." />
         <link rel="canonical" href="https://zzpproject.lovable.app/collectieve-inkoop" />
       </Helmet>
 

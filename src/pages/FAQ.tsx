@@ -71,8 +71,8 @@ export default function FAQ() {
   return (
     <Layout>
       <Helmet>
-        <title>{t("faq.title")} | ZP Zaken</title>
-        <meta name="description" content={t("faq.subtitle")} />
+        <title>Veelgestelde Vragen over ZZP Verzekeringen | ZP Zaken</title>
+        <meta name="description" content="Antwoorden op de meest gestelde vragen over BAV, AVB, AOV en ondernemen als zzp'er. Duidelijk uitgelegd door specialisten van ZP Zaken." />
         <link rel="canonical" href="https://zpzaken.nl/faq" />
       </Helmet>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />

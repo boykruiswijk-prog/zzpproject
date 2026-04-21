@@ -59,8 +59,8 @@ export default function WaaromZpZaken() {
   return (
     <Layout>
       <SEOHead
-        title="Waarom betaal je een tussenpersoon voor jouw verzekering? | ZP Zaken"
-        description="ZP Zaken was de verzekeringsspecialist achter grote intermediairs. Nu sluit je direct bij ons af. Bereken hoeveel je bespaart — vaak meer dan €600 per jaar."
+        title="Waarom ZP Zaken? | Onafhankelijk Verzekerd Zonder Tussenkomst"
+        description="ZP Zaken werkt direct voor jou als zzp'er, zonder platform of tussenpersoon. Vergelijk wat je betaalt via een intermediair versus direct bij ZP Zaken."
       >
         <script type="application/ld+json">{JSON.stringify(schema)}</script>
       </SEOHead>
