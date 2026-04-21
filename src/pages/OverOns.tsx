@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Target, Eye, Users, Award, Heart, Shield, CheckCircle, UserPlus } from "lucide-react";
+import { ArrowRight, Target, Eye, Users, Award, Heart, Shield, CheckCircle, UserPlus, Mail, Phone } from "lucide-react";
 import teamMember1 from "@/assets/team-member-1.jpg";
 import teamMember2 from "@/assets/team-member-2.jpg";
 import teamMember3 from "@/assets/team-member-3.jpg";
@@ -33,6 +33,7 @@ const team = [
   { name: "Boy Kruiswijk", role: "Oprichter", image: teamMember1, description: "Ruim 13 jaar geleden bedenker van de unieke polis voor zzp'ers in Nederland. Zijn visie: iedere ondernemer goed en zorgeloos verzekerd." },
   { name: "Roxy Taskin", role: "Backoffice", image: teamMember2, description: "Zorgt ervoor dat alles op de achtergrond soepel verloopt. Van administratie tot klantondersteuning." },
   { name: "Ellen Baars", role: "Senior Adviseur", image: teamMember3, description: "Met jarenlange ervaring in verzekeringen helpt zij ondernemers met passend advies voor hun situatie." },
+  { name: "Sandra Jonker - van Nobelen", role: "Financieel & Administratief", image: teamMemberMystery, description: "Sandra is onze financiële steunpilaar. Met meer dan 30 jaar ervaring in financiële administratie en salarisverwerking weet zij als geen ander hoe de backoffice van een dienstverlener in elkaar steekt. Na een loopbaan van 24 jaar bij HeadFirst Group brengt Sandra precisie en persoonlijk contact samen.", email: "sandra@zpzaken.nl", phone: "06 37 27 00 09" },
   { name: "Gert-Jan Schellingerhout", role: "Adviseur", image: teamMember4, description: "Versterkt ons team met gedegen kennis en persoonlijk advies voor zelfstandig ondernemers." },
   { name: "We groeien!", role: "Nieuw teamlid", image: null, description: "ZP Zaken is op zoek naar versterking. Wil jij onderdeel worden van ons team?" },
 ];
@@ -151,6 +152,20 @@ export default function OverOns() {
                     <Shield className="h-3.5 w-3.5" />{member.role}
                   </span>
                   <p className="text-muted-foreground text-sm">{member.description}</p>
+                  {("email" in member && member.email) || ("phone" in member && member.phone) ? (
+                    <div className="mt-4 pt-4 border-t border-border/50 space-y-2">
+                      {"email" in member && member.email && (
+                        <a href={`mailto:${member.email}`} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors">
+                          <Mail className="h-3.5 w-3.5 text-accent" />{member.email}
+                        </a>
+                      )}
+                      {"phone" in member && member.phone && (
+                        <a href={`tel:${(member.phone as string).replace(/\s/g, "")}`} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors">
+                          <Phone className="h-3.5 w-3.5 text-accent" />{member.phone}
+                        </a>
+                      )}
+                    </div>
+                  ) : null}
                   {!member.image && (
                     <Button variant="outline" size="sm" className="mt-4" asChild>
                       <LocalizedLink to="/contact">Bekijk vacatures →</LocalizedLink>
