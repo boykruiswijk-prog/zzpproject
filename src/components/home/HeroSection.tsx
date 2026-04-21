@@ -6,6 +6,7 @@ import { LocalizedLink } from "@/components/LocalizedLink";
 import { TrustBar } from "@/components/shared/TrustBar";
 import { trackCTA, trackPhone } from "@/lib/tracking";
 import teamWalking from "@/assets/team-walking.jpg";
+import ellenAvatar from "@/assets/ellen-baars-avatar.jpg";
 
 export function HeroSection() {
   const { t } = useTranslation();
