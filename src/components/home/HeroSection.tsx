@@ -48,7 +48,7 @@ export function HeroSection() {
               className="mb-6 leading-tight text-primary-foreground drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
             >
               {t("home.heroTitle")}{" "}
-              <span className="text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{t("home.heroTitleAccent")}</span>
+              <span style={{ color: "#E53E2F" }} className="drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{t("home.heroTitleAccent")}</span>
             </motion.h1>
 
             <motion.p 
