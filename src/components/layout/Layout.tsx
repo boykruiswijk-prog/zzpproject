@@ -2,6 +2,7 @@ import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { CookieConsent } from "@/components/CookieConsent";
 import { StickyContactBar } from "@/components/shared/StickyContactBar";
+import { ExitIntentPopup } from "@/components/shared/ExitIntentPopup";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -15,6 +16,7 @@ export function Layout({ children }: LayoutProps) {
       <Footer />
       <CookieConsent />
       <StickyContactBar />
+      <ExitIntentPopup />
     </div>
   );
 }
