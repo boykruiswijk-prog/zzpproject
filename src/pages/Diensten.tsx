@@ -15,6 +15,7 @@ import teamCheers from "@/assets/team-cheers.jpg";
 import officeFlowers from "@/assets/office-flowers.jpg";
 import officeMeetingRoom from "@/assets/office-meeting-room.jpg";
 import teamBoyCalling from "@/assets/team-boy-calling.jpg";
+import zpLogoGlass from "@/assets/zp-logo-glass.jpg";
 import { Shield, Calculator, Scale, UserCheck, Banknote } from "lucide-react";
 
 // Services data stays in Dutch as it's domain content passed to ServiceCard
@@ -67,7 +68,7 @@ export default function Diensten() {
         title={<>{t("diensten.title")} <span className="text-accent">{t("diensten.titleAccent")}</span></>}
         subtitle={t("diensten.subtitle")}
         badge={{ icon: <Sparkles className="h-4 w-4" />, text: t("diensten.badge") }}
-        backgroundImage={teamBoyCalling}
+        backgroundImage={zpLogoGlass}
       >
         <Button variant="accent" size="lg" asChild>
           <LocalizedLink to="/contact">{t("diensten.ctaAdvies")}<ArrowRight className="h-5 w-5" /></LocalizedLink>

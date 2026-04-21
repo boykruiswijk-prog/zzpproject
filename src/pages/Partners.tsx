@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
-const partnerHeroBg = "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1200&q=80";
+import partnerHeroBg from "@/assets/zp-logo-glass.jpg";
 import { Button } from "@/components/ui/button";
 import { Handshake, ExternalLink, Shield, Heart, PiggyBank, Umbrella, Users, Calculator, Scale, UserCheck, CheckCircle, Banknote, Briefcase, Crown } from "lucide-react";
 import { LocalizedLink } from "@/components/LocalizedLink";

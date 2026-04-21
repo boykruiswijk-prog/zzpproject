@@ -1,6 +1,6 @@
 import { Star, Quote } from "lucide-react";
 import { motion, useInView } from "framer-motion";
-const officeCookies = "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1200&q=80";
+import officeCookies from "@/assets/zp-boy-laptop.jpg";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
