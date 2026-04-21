@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Target, Eye, Users, Award, Heart, Shield, CheckCircle, UserPlus, Mail, Phone } from "lucide-react";
+import { ArrowRight, Target, Eye, Users, Award, Heart, Shield, CheckCircle, UserPlus, Mail, Phone, User } from "lucide-react";
 import teamMember1 from "@/assets/team-member-1.jpg";
 import teamMember2 from "@/assets/team-member-2.jpg";
 import teamMember3 from "@/assets/team-member-3.jpg";
@@ -144,7 +144,11 @@ export default function OverOns() {
                     <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
-                      <UserPlus className="h-16 w-16 text-muted-foreground/40 mb-2" />
+                      {"vacancy" in member && member.vacancy ? (
+                        <User className="h-16 w-16 text-muted-foreground/40 mb-2" />
+                      ) : (
+                        <UserPlus className="h-16 w-16 text-muted-foreground/40 mb-2" />
+                      )}
                     </div>
                   )}
                 </div>
@@ -168,11 +172,20 @@ export default function OverOns() {
                       )}
                     </div>
                   ) : null}
-                  {!member.image && (
+                  {"vacancy" in member && member.vacancy ? (
+                    <div className="mt-4 flex flex-col items-start gap-3">
+                      <span className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 text-accent px-3 py-1 rounded-full text-sm font-medium">
+                        <Shield className="h-3.5 w-3.5" />Vacature open
+                      </span>
+                      <Button variant="outline" size="sm" asChild>
+                        <LocalizedLink to="/contact">Solliciteer direct →</LocalizedLink>
+                      </Button>
+                    </div>
+                  ) : !member.image ? (
                     <Button variant="outline" size="sm" className="mt-4" asChild>
                       <LocalizedLink to="/contact">Bekijk vacatures →</LocalizedLink>
                     </Button>
-                  )}
+                  ) : null}
                 </div>
               </div>
             ))}
