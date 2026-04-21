@@ -163,8 +163,7 @@ export default function Contact() {
                 <img
                   src={ellenPortrait}
                   alt="Ellen Baars - Senior Adviseur ZP Zaken"
-                  className="w-full"
-                  style={{ height: "400px", objectFit: "cover", objectPosition: "center 20%", borderRadius: "12px 12px 0 0" }}
+                  style={{ width: "100%", height: "auto", display: "block", borderRadius: "12px 12px 0 0" }}
                 />
                 <div className="p-6">
                   <p className="font-semibold text-foreground">Ellen Baars</p>

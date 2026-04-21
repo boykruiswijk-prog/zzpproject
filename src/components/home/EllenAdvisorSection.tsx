@@ -17,8 +17,7 @@ export function EllenAdvisorSection() {
               <img
                 src={ellenPortrait}
                 alt="Ellen Baars - Senior Adviseur ZP Zaken"
-                className="w-full object-cover"
-                style={{ height: "320px", borderRadius: "12px", objectPosition: "center top" }}
+                style={{ width: "100%", height: "auto", display: "block", borderRadius: "12px" }}
               />
             </div>
             <div>
