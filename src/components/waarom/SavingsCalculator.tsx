@@ -51,6 +51,7 @@ function PackageCards({ value, onChange }: { value: string; onChange: (v: string
               <p className="text-xs font-semibold text-foreground leading-tight">{p.label}</p>
               <p className="text-base font-bold text-accent mt-1">€{p.monthly}<span className="text-xs font-normal text-muted-foreground">/mnd</span></p>
               <p className="text-[11px] text-muted-foreground mt-0.5">{p.dekking}</p>
+              <p className="text-[11px] text-accent font-medium mt-1">✓ Dagelijks opzegbaar</p>
             </button>
           );
         })}
@@ -88,6 +89,33 @@ function ResultBlock({
       <p className="text-xs text-muted-foreground mb-1">{label}</p>
       <div className={`text-2xl font-bold ${variant === "highlight" ? "text-accent text-3xl md:text-4xl" : "text-foreground"}`}>{value}</div>
       {subtext && <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{subtext}</p>}
+    </div>
+  );
+}
+
+function CancellationBlock() {
+  return (
+    <div className="rounded-xl p-5 bg-[#FFF5F5] border border-accent/20">
+      <span className="inline-block bg-accent text-accent-foreground text-[10px] font-semibold px-2 py-0.5 rounded-full mb-2">
+        Uniek in Nederland
+      </span>
+      <p className="text-xs text-muted-foreground mb-3">Opzegtermijn</p>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-card rounded-lg p-3">
+          <p className="text-[11px] text-muted-foreground mb-1">Markt standaard</p>
+          <p className="text-xl font-bold text-foreground">1 jaar</p>
+          <p className="text-[11px] text-muted-foreground mt-2 leading-snug">
+            De meeste verzekeraars hanteren een minimale looptijd van 1 jaar met opzegtermijn van 1-3 maanden
+          </p>
+        </div>
+        <div className="bg-accent/10 border border-accent/20 rounded-lg p-3">
+          <p className="text-[11px] text-accent mb-1">ZP Zaken</p>
+          <p className="text-xl font-bold text-accent">Dagelijks</p>
+          <p className="text-[11px] text-muted-foreground mt-2 leading-snug">
+            Geen minimale looptijd. Geen opzegtermijn. Jij bepaalt wanneer je stopt.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -236,6 +264,7 @@ export function SavingsCalculator() {
                 subtext={<>Ter vergelijking: via jouw platform betaal je €{fmt2(platformRate)} per uur</>}
                 badge="Alleen ZP Zaken rekent dit zo transparant"
               />
+              <CancellationBlock />
             </div>
           </div>
         </TabsContent>
@@ -318,6 +347,7 @@ export function SavingsCalculator() {
                   Bij een claim betaal je bij ZP Zaken nooit eigen risico
                 </p>
               </div>
+              <CancellationBlock />
             </div>
           </div>
         </TabsContent>
