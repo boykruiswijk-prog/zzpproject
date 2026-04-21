@@ -137,7 +137,7 @@ export function HeroSection() {
                     <Users className="h-7 w-7 text-primary" />
                   </div>
                   <div>
-                    <h3 className="text-3xl font-bold text-foreground">2.500+</h3>
+                    <h3 className="text-3xl font-bold text-foreground">5.000+</h3>
                     <p className="text-muted-foreground">{t("home.satisfied")}</p>
                   </div>
                 </div>

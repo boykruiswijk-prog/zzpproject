@@ -31,7 +31,7 @@ const organizationSchema = {
     "ratingValue": "4.9",
     "bestRating": "5",
     "worstRating": "1",
-    "ratingCount": "2500"
+    "ratingCount": "5000"
   },
   "sameAs": []
 };

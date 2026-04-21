@@ -24,7 +24,7 @@ const trustPoints = [
 ];
 
 const stats = [
-  { value: "2.500+", label: "Tevreden zzp'ers" },
+  { value: "5.000+", label: "Tevreden zzp'ers" },
   { value: "4.9/5", label: "Google Reviews" },
   { value: "13+", label: "Jaar ervaring" },
   { value: "< 24u", label: "Reactietijd" },

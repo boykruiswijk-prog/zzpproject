@@ -16,7 +16,7 @@ const faqs = [
   },
   {
     q: "Hoe kan ZP Zaken zoveel goedkoper zijn?",
-    a: "Wij werken met een mantelovereenkomst voor 2.500+ zzp'ers. Door de premie te delen over een grote groep blijft de prijs structureel laag. Geen winstmarge voor een tussenpersoon bovenop.",
+    a: "Wij werken met een mantelovereenkomst voor 5.000+ zzp'ers. Door de premie te delen over een grote groep blijft de prijs structureel laag. Geen winstmarge voor een tussenpersoon bovenop.",
   },
   {
     q: "Wat als ik tussen opdrachten zit — ben ik dan verzekerd?",
