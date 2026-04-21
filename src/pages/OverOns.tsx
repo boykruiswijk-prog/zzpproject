@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Target, Eye, Users, Award, Heart, Shield, CheckCircle, UserPlus, Mail, Phone } from "lucide-react";
+import { ArrowRight, Target, Eye, Users, Award, Heart, Shield, CheckCircle, UserPlus, Mail, Phone, User } from "lucide-react";
 import teamMember1 from "@/assets/team-member-1.jpg";
 import teamMember2 from "@/assets/team-member-2.jpg";
 import teamMember3 from "@/assets/team-member-3.jpg";
@@ -36,6 +36,8 @@ const team = [
   { name: "Sandra Jonker - van Nobelen", role: "Financieel & Administratief", image: teamMemberMystery, description: "Sandra is onze financiële steunpilaar. Met meer dan 30 jaar ervaring in financiële administratie en salarisverwerking weet zij als geen ander hoe de backoffice van een dienstverlener in elkaar steekt. Na een loopbaan van 24 jaar bij HeadFirst Group brengt Sandra precisie en persoonlijk contact samen.", email: "sandra@zpzaken.nl", phone: "06 37 27 00 09" },
   { name: "Gert-Jan Schellingerhout", role: "Adviseur", image: teamMember4, description: "Versterkt ons team met gedegen kennis en persoonlijk advies voor zelfstandig ondernemers." },
   { name: "We groeien!", role: "Nieuw teamlid", image: null, description: "ZP Zaken is op zoek naar versterking. Wil jij onderdeel worden van ons team?" },
+  { name: "Online Sales Adviseur", role: "Sales", image: null, vacancy: true, description: "Wij zijn op zoek naar een gedreven online sales adviseur die zzp'ers helpt de juiste verzekering te vinden. Jij bent het eerste aanspreekpunt voor nieuwe klanten via de website, chat en telefoon. Je werkt vanuit huis of kantoor en combineert commercieel inzicht met oprechte aandacht voor de klant." },
+  { name: "Sales Adviseur Buitendienst", role: "Sales", image: null, vacancy: true, description: "Wij zoeken een energieke buitendienstadviseur die actief op pad gaat om zzp'ers persoonlijk te begeleiden. Jij bouwt relaties op bij netwerkevenementen, bij opdrachtgevers en in het veld. Je combineert zelfstandigheid met de kracht van een sterk merk achter je." },
 ];
 
 const registrations = [
@@ -142,7 +144,11 @@ export default function OverOns() {
                     <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
-                      <UserPlus className="h-16 w-16 text-muted-foreground/40 mb-2" />
+                      {"vacancy" in member && member.vacancy ? (
+                        <User className="h-16 w-16 text-muted-foreground/40 mb-2" />
+                      ) : (
+                        <UserPlus className="h-16 w-16 text-muted-foreground/40 mb-2" />
+                      )}
                     </div>
                   )}
                 </div>
@@ -166,11 +172,20 @@ export default function OverOns() {
                       )}
                     </div>
                   ) : null}
-                  {!member.image && (
+                  {"vacancy" in member && member.vacancy ? (
+                    <div className="mt-4 flex flex-col items-start gap-3">
+                      <span className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 text-accent px-3 py-1 rounded-full text-sm font-medium">
+                        <Shield className="h-3.5 w-3.5" />Vacature open
+                      </span>
+                      <Button variant="outline" size="sm" asChild>
+                        <LocalizedLink to="/contact">Solliciteer direct →</LocalizedLink>
+                      </Button>
+                    </div>
+                  ) : !member.image ? (
                     <Button variant="outline" size="sm" className="mt-4" asChild>
                       <LocalizedLink to="/contact">Bekijk vacatures →</LocalizedLink>
                     </Button>
-                  )}
+                  ) : null}
                 </div>
               </div>
             ))}
