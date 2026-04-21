@@ -43,6 +43,7 @@ import DbaVerificatie from "./pages/DbaVerificatie";
 import ForgotPassword from "./pages/admin/ForgotPassword";
 import ResetPassword from "./pages/admin/ResetPassword";
 import ScreenshotHelper from "./pages/ScreenshotHelper";
+import AlgemeneVoorwaarden from "./pages/AlgemeneVoorwaarden";
 
 /** Old WordPress URLs indexed by Google → redirect to new routes */
 const wpRedirects: Array<[string, string]> = [
@@ -105,7 +106,7 @@ const wpRedirects: Array<[string, string]> = [
   ["wie-zijn-wij", "/over-ons"],
   ["privacy", "/cookies"],
   ["privacyverklaring", "/cookies"],
-  ["voorwaarden", "/faq"],
+  ["voorwaarden", "/algemene-voorwaarden"],
   ["disclaimer", "/faq"],
 ];
 
@@ -132,6 +133,7 @@ const publicRoutes = (
     <Route path="contact" element={<Contact />} />
     <Route path="cookies" element={<Cookies />} />
     <Route path="faq" element={<FAQ />} />
+    <Route path="algemene-voorwaarden" element={<AlgemeneVoorwaarden />} />
     <Route path="collectieve-inkoop" element={<CollectieveInkoop />} />
     {/* TODO: Re-enable collectief-ledenorganisaties route when ready to go live */}
     {/* <Route path="collectief-ledenorganisaties" element={<CollectiefLedenorganisaties />} /> */}
