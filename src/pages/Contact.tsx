@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Phone, Mail, MapPin, Clock, CheckCircle, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { trackContactFormSubmit } from "@/lib/tracking";
 import teamRoxy from "@/assets/team-roxy.jpg";
 import officeMeetingRoom from "@/assets/office-meeting-room.jpg";
 
@@ -51,6 +52,7 @@ export default function Contact() {
         },
       }).catch((err) => console.error("Email notification failed:", err));
 
+      trackContactFormSubmit();
       setIsSubmitted(true);
       toast({ title: t("contact.toastSuccess"), description: t("contact.toastSuccessDesc") });
     } catch (error) {

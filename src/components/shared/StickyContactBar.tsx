@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Phone, MessageCircle, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { trackWhatsApp, trackPhone } from "@/lib/tracking";
 
 export function StickyContactBar() {
   const [visible, setVisible] = useState(false);
@@ -28,6 +29,7 @@ export function StickyContactBar() {
         >
           <a
             href="tel:0232010502"
+            onClick={() => trackPhone()}
             className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded-full shadow-lg hover:scale-105 transition-transform text-sm font-medium"
           >
             <Phone className="h-4 w-4" />
@@ -37,6 +39,7 @@ export function StickyContactBar() {
             href="https://wa.me/31612345678"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackWhatsApp()}
             className="flex items-center gap-2 bg-accent text-accent-foreground px-4 py-3 rounded-full shadow-lg hover:scale-105 transition-transform text-sm font-medium"
           >
             <MessageCircle className="h-4 w-4" />
