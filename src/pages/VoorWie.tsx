@@ -24,8 +24,8 @@ export default function VoorWie() {
   return (
     <Layout>
       <SEOHead
-        title={`${t("voorWie.title")} ${t("voorWie.titleAccent")} | ZP Zaken`}
-        description={t("voorWie.subtitle")}
+        title="Voor Wie is ZP Zaken? | ZZP Starters, ICT, Zorg & Meer"
+        description="ZP Zaken helpt zzp'ers in alle sectoren. Of je nu starter bent of al jaren zelfstandig — wij hebben het juiste verzekeringsadvies voor jouw situatie."
       />
 
       <PageHero

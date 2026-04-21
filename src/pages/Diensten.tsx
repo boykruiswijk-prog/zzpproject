@@ -58,8 +58,8 @@ export default function Diensten() {
   return (
     <Layout>
       <SEOHead
-        title={`${t("diensten.title")} ${t("diensten.titleAccent")} | ZP Zaken`}
-        description={t("diensten.subtitle")}
+        title="Diensten voor ZZP'ers | Verzekeringen, Screening & Administratie | ZP Zaken"
+        description="Ontdek alle diensten van ZP Zaken voor zelfstandig professionals. Van verzekeringen en screening tot juridisch advies en factoring. Persoonlijk advies, geen callcenter."
       >
         <script type="application/ld+json">{JSON.stringify(dienstenSchema)}</script>
       </SEOHead>

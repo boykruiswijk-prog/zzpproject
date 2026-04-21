@@ -53,8 +53,8 @@ export default function Verzekeringen() {
   return (
     <Layout>
       <SEOHead
-        title="BAV & AVB Verzekering voor ZZP'ers | Vanaf €22/maand | ZP Zaken"
-        description="Sluit direct online je beroeps- en bedrijfsaansprakelijkheidsverzekering af. De goedkoopste BAV + AVB combinatiepolis voor zzp'ers. Geen eigen risico."
+        title="BAV + AVB Combinatieverzekering voor ZZP'ers | Direct Online Afsluiten | ZP Zaken"
+        description="De enige gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering in Nederland. Vanaf €30 per maand, geen eigen risico. Direct online afsluiten in 5 stappen."
       >
         <script type="application/ld+json">{JSON.stringify(insuranceSchema)}</script>
       </SEOHead>

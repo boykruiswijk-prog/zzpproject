@@ -21,8 +21,8 @@ export default function Kennisbank() {
   return (
     <Layout>
       <Helmet>
-        <title>{t("kennisbank.badge")} | ZP Zaken</title>
-        <meta name="description" content={t("kennisbank.subtitle")} />
+        <title>Kennisbank ZZP Verzekeringen | Artikelen & Nieuws | ZP Zaken</title>
+        <meta name="description" content="Blijf op de hoogte van wet DBA, verzekeringen en regelgeving voor zzp'ers. Praktische artikelen geschreven door specialisten met 13 jaar marktkennis." />
         <link rel="canonical" href="https://zpzaken.nl/kennisbank" />
       </Helmet>
 

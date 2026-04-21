@@ -49,8 +49,8 @@ export default function OverOns() {
   return (
     <Layout>
       <Helmet>
-        <title>{t("overOns.title")} | ZP Zaken</title>
-        <meta name="description" content={t("overOns.subtitle")} />
+        <title>Over ZP Zaken | Onafhankelijk Verzekeringsadvies Sinds 2014</title>
+        <meta name="description" content="ZP Zaken is opgericht in 2014 door Boy Kruiswijk. Meer dan 2.500 tevreden zzp'ers, AFM geregistreerd, Kifid aangesloten. Persoonlijk advies zonder callcenter." />
         <link rel="canonical" href="https://zpzaken.nl/over-ons" />
       </Helmet>
 
