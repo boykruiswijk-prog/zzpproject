@@ -20,7 +20,7 @@ const trustPoints = [
   { icon: Users, title: "Directe benadering", description: "Geen onnodige tussenpartijen — je spreekt direct met een adviseur die jouw situatie begrijpt." },
   { icon: Shield, title: "Specialist in aansprakelijkheid", description: "Beroeps- én bedrijfsaansprakelijkheid onder één dak, met onze unieke BAV+AVB combinatiepolis." },
   { icon: CheckCircle, title: "Transparant advies", description: "Eerlijk, onafhankelijk advies zonder verborgen kosten. Wij adviseren alleen wat je écht nodig hebt." },
-  { icon: Star, title: "Persoonlijke begeleiding", description: "Een klein team dat klaarstaat. Altijd een mens aan de lijn, nooit een callcenter." },
+  { icon: Star, title: "Persoonlijke begeleiding", description: "Een team dat klaarstaat. Altijd een mens aan de lijn, nooit een callcenter." },
 ];
 
 const stats = [
