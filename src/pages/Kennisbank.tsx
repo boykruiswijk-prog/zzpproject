@@ -10,7 +10,7 @@ import { ArrowRight, BookOpen, Shield } from "lucide-react";
 import { useArticles, useArticleCategories } from "@/hooks/useArticles";
 import { ArticleCard } from "@/components/kennisbank/ArticleCard";
 import { CategoryFilter } from "@/components/kennisbank/CategoryFilter";
-import officeFlowers from "@/assets/office-flowers.jpg";
+import officeFlowers from "@/assets/zp-boy-laptop.jpg";
 
 export default function Kennisbank() {
   const { t } = useTranslation();
