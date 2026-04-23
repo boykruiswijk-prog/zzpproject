@@ -32,7 +32,7 @@ export function PageHero({
           <img
             src={bgImage}
             alt=""
-            className="w-full h-full object-cover bg-person"
+            className="w-full h-full object-cover"
             aria-hidden="true"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-foreground/95 via-foreground/90 to-foreground/80" />
