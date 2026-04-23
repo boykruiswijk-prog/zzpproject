@@ -478,6 +478,48 @@ export type Database = {
           },
         ]
       }
+      exact_config: {
+        Row: {
+          access_token: string | null
+          base_url: string | null
+          client_id: string | null
+          client_secret: string | null
+          divisie_code: string | null
+          id: string
+          is_actief: boolean
+          laatste_sync: string | null
+          refresh_token: string | null
+          token_expires_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_token?: string | null
+          base_url?: string | null
+          client_id?: string | null
+          client_secret?: string | null
+          divisie_code?: string | null
+          id?: string
+          is_actief?: boolean
+          laatste_sync?: string | null
+          refresh_token?: string | null
+          token_expires_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string | null
+          base_url?: string | null
+          client_id?: string | null
+          client_secret?: string | null
+          divisie_code?: string | null
+          id?: string
+          is_actief?: boolean
+          laatste_sync?: string | null
+          refresh_token?: string | null
+          token_expires_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       integratie_config: {
         Row: {
           aangemaakt_op: string
@@ -537,6 +579,7 @@ export type Database = {
           status: string
           ubl_exported_at: string | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           amount_excl_btw?: number
@@ -566,6 +609,7 @@ export type Database = {
           status?: string
           ubl_exported_at?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           amount_excl_btw?: number
@@ -595,6 +639,7 @@ export type Database = {
           status?: string
           ubl_exported_at?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -760,6 +805,7 @@ export type Database = {
           profession: string
           start_date: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           avb_per_event?: string
@@ -782,6 +828,7 @@ export type Database = {
           profession: string
           start_date: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           avb_per_event?: string
@@ -804,10 +851,58 @@ export type Database = {
           profession?: string
           start_date?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "policies_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portal_invitations: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string | null
+          lead_id: string | null
+          status: string
+          token: string
+          user_id: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          invited_by?: string | null
+          lead_id?: string | null
+          status?: string
+          token?: string
+          user_id?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string | null
+          lead_id?: string | null
+          status?: string
+          token?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_invitations_lead_id_fkey"
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
@@ -865,6 +960,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_portal_invitation: { Args: { _token: string }; Returns: Json }
       get_pilot_signup_count: { Args: { pilot: string }; Returns: number }
       has_role: {
         Args: {
