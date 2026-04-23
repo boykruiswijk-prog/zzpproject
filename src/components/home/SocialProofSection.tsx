@@ -1,6 +1,6 @@
 import { Star, Quote } from "lucide-react";
 import { motion, useInView } from "framer-motion";
-import officeCookies from "@/assets/team-cheers.jpg";
+import officeCookies from "@/assets/zp-logo-glass-door.jpg";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -98,7 +98,7 @@ export function SocialProofSection() {
         </AnimatedSection>
 
         <div className="mt-12 rounded-2xl overflow-hidden">
-          <img src={officeCookies} alt="ZP Zaken team" className="w-full h-48 md:h-64 object-cover rounded-2xl" style={{ objectFit: "cover", objectPosition: "center 25%", width: "100%", height: "100%" }} />
+          <img src={officeCookies} alt="ZP Zaken kantoor" className="w-full h-48 md:h-64 object-cover rounded-2xl" style={{ objectFit: "cover", objectPosition: "center center", width: "100%", height: "100%" }} />
         </div>
 
         <AnimatedSection delay={0.4} className="mt-8 pt-10 border-t border-border">
