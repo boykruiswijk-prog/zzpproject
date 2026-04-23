@@ -1,6 +1,6 @@
 import { Star, Quote } from "lucide-react";
 import { motion, useInView } from "framer-motion";
-import officeCookies from "@/assets/zp-boy-laptop.jpg";
+import officeCookies from "@/assets/ellen-baars-portrait.jpg";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
