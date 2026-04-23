@@ -98,7 +98,7 @@ export function SocialProofSection() {
         </AnimatedSection>
 
         <div className="mt-12 rounded-2xl overflow-hidden">
-          <img src={officeCookies} alt="ZP Zaken team" className="w-full h-48 md:h-64 object-cover rounded-2xl" />
+          <img src={officeCookies} alt="Ellen Baars - ZP Zaken" className="w-full h-48 md:h-64 object-cover rounded-2xl" style={{ objectFit: "cover", objectPosition: "center 10%", width: "100%", height: "100%" }} />
         </div>
 
         <AnimatedSection delay={0.4} className="mt-8 pt-10 border-t border-border">
