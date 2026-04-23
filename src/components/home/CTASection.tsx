@@ -14,7 +14,7 @@ export function CTASection() {
   return (
     <section className="relative section-padding overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <img src={teamBoyCalling} alt="" className="w-full h-full object-cover" />
+        <img src={teamBoyCalling} alt="" className="w-full h-full object-cover bg-person" />
         <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
       </div>
 

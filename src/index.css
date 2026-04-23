@@ -87,3 +87,20 @@
     @apply py-16 md:py-24;
   }
 }
+
+@layer utilities {
+  /* Universele fix: alle hero/section achtergrondfotos
+     (img die het volledige absolute container vult)
+     krijgen consistente framing zonder onnatuurlijke zoom. */
+  .absolute.inset-0 > img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center 25% !important;
+    transform: none !important;
+  }
+  /* Personen foto's (gezicht moet zichtbaar blijven) */
+  .absolute.inset-0 > img.bg-person {
+    object-position: center 10% !important;
+  }
+}

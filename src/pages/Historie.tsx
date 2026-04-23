@@ -38,7 +38,7 @@ export default function Historie() {
 
       <section className="py-16 md:py-24 text-primary-foreground relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={teamCheers} alt="" className="w-full h-full object-cover" aria-hidden="true" />
+          <img src={teamCheers} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
         </div>
         <div className="container-wide relative z-10">
@@ -97,7 +97,7 @@ export default function Historie() {
 
       <section className="section-padding relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={teamMeeting} alt="" className="w-full h-full object-cover" aria-hidden="true" />
+          <img src={teamMeeting} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-foreground/90 via-foreground/85 to-foreground/80" />
         </div>
         <div className="container-wide relative z-10">

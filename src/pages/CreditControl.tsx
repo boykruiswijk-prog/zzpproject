@@ -552,7 +552,7 @@ export default function CreditControl() {
       {/* ─── 11. FINAL CTA ─── */}
       <section className="relative section-padding overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={teamBoyCalling} alt="" className="w-full h-full object-cover" aria-hidden="true" />
+          <img src={teamBoyCalling} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
         </div>
         <div className="container-wide relative z-10">
