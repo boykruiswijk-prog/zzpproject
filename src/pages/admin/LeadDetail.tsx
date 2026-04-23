@@ -4,6 +4,7 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { LeadNotes } from "@/components/admin/LeadNotes";
 import { useLead, useUpdateLead, useDeleteLead } from "@/hooks/useLeads";
 import { useAuth } from "@/contexts/AuthContext";
+import { PortalInviteButton } from "@/components/admin/PortalInviteButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -543,6 +544,24 @@ export default function AdminLeadDetail() {
                 </Button>
               </CardContent>
             </Card>
+            )}
+
+            {/* Klantportaal uitnodiging — alleen voor klanten */}
+            {lead.status === "klant" && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <UserCheck className="h-5 w-5" />
+                    Klantportaal
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    Stuur een uitnodiging zodat de klant zijn polis, documenten en facturen kan inzien.
+                  </p>
+                  <PortalInviteButton leadId={lead.id} email={lead.email} />
+                </CardContent>
+              </Card>
             )}
 
             {/* Invoice - only for BAV leads */}

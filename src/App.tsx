@@ -45,6 +45,14 @@ import ResetPassword from "./pages/admin/ResetPassword";
 import ScreenshotHelper from "./pages/ScreenshotHelper";
 import AlgemeneVoorwaarden from "./pages/AlgemeneVoorwaarden";
 import Klachtenprocedure from "./pages/Klachtenprocedure";
+import { PortalAuthProvider } from "@/contexts/PortalAuthContext";
+import { RequirePortalAuth } from "@/components/portal/RequirePortalAuth";
+import PortalLogin from "./pages/portal/PortalLogin";
+import PortalInviteAccept from "./pages/portal/PortalInviteAccept";
+import PortalOverview from "./pages/portal/PortalOverview";
+import PortalPolicy from "./pages/portal/PortalPolicy";
+import PortalDocuments from "./pages/portal/PortalDocuments";
+import PortalInvoices from "./pages/portal/PortalInvoices";
 
 /** Old WordPress URLs indexed by Google → redirect to new routes */
 const wpRedirects: Array<[string, string]> = [
@@ -148,6 +156,7 @@ const publicRoutes = (
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
+      <PortalAuthProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -182,12 +191,21 @@ const App = () => (
             {/* Public verification */}
             <Route path="/verificatie/dba/:token" element={<DbaVerificatie />} />
             <Route path="/screenshot-helper" element={<ScreenshotHelper />} />
+
+            {/* Klantportaal */}
+            <Route path="/portal/login" element={<PortalLogin />} />
+            <Route path="/portal/invite/:token" element={<PortalInviteAccept />} />
+            <Route path="/portal" element={<RequirePortalAuth><PortalOverview /></RequirePortalAuth>} />
+            <Route path="/portal/polis" element={<RequirePortalAuth><PortalPolicy /></RequirePortalAuth>} />
+            <Route path="/portal/documenten" element={<RequirePortalAuth><PortalDocuments /></RequirePortalAuth>} />
+            <Route path="/portal/facturen" element={<RequirePortalAuth><PortalInvoices /></RequirePortalAuth>} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
+      </PortalAuthProvider>
     </AuthProvider>
   </QueryClientProvider>
 );
