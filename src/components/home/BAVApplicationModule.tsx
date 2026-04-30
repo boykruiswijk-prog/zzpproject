@@ -418,11 +418,13 @@ export function BAVApplicationModule() {
                         <Label className="text-sm font-medium mb-3 block">{t("home.bavMediator")} *</Label>
                         <div className="grid grid-cols-2 gap-3">
                           <button onClick={() => { setViaBemiddelaar(true); if (errors.bemiddelaar) setErrors(prev => { const n = { ...prev }; delete n.bemiddelaar; return n; }); }}
-                            className={cn("p-3 rounded-lg border-2 text-center transition-all", viaBemiddelaar === true ? "border-accent bg-accent/5" : "border-border hover:border-accent/50", errors.bemiddelaar && "border-destructive")}>
+                            style={viaBemiddelaar === true ? { borderColor: '#16A34A', backgroundColor: '#F0FDF4', color: '#16A34A' } : undefined}
+                            className={cn("p-3 rounded-lg border-2 text-center transition-all", viaBemiddelaar !== true && "border-border hover:border-accent/50 bg-card", errors.bemiddelaar && viaBemiddelaar !== true && "border-destructive")}>
                             <p className="font-medium">{t("home.bavMediatorYes")}</p>
                           </button>
                           <button onClick={() => { setViaBemiddelaar(false); setFormData(prev => ({ ...prev, bemiddelaarNaam: "" })); if (errors.bemiddelaar) setErrors(prev => { const n = { ...prev }; delete n.bemiddelaar; return n; }); }}
-                            className={cn("p-3 rounded-lg border-2 text-center transition-all", viaBemiddelaar === false ? "border-accent bg-accent/5" : "border-border hover:border-accent/50", errors.bemiddelaar && "border-destructive")}>
+                            style={viaBemiddelaar === false ? { borderColor: '#16A34A', backgroundColor: '#F0FDF4', color: '#16A34A' } : undefined}
+                            className={cn("p-3 rounded-lg border-2 text-center transition-all", viaBemiddelaar !== false && "border-border hover:border-accent/50 bg-card", errors.bemiddelaar && viaBemiddelaar !== false && "border-destructive")}>
                             <p className="font-medium">{t("home.bavMediatorNo")}</p>
                           </button>
                         </div>
