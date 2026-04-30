@@ -92,7 +92,12 @@ export function BAVApplicationModule() {
     const newErrors: ValidationErrors = {};
 
     if (step === 1) {
+      const today = new Date().toISOString().split('T')[0];
       if (!startDate) newErrors.startDate = t("bavApp.valStartDate");
+      else if (startDate < today) {
+        setStartDate(today);
+        newErrors.startDate = "Een verzekering kan niet met terugwerkende kracht worden afgesloten. De vroegste ingangsdatum is vandaag.";
+      }
     }
 
     if (step === 2) {
