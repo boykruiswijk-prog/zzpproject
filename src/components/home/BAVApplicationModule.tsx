@@ -632,7 +632,7 @@ export function BAVApplicationModule() {
                     <div className="border-t border-white/20 pt-4">
                       <div className="flex justify-between items-end">
                         <div>
-                          <p className="text-sm text-background/70">{paymentType === "monthly" ? t("home.bavPerMonth") : t("home.bavPerYear")}</p>
+                          <p className="text-sm text-background/70">{selectedPkg?.period}</p>
                           <p className="text-3xl font-bold">€{currentPrice?.toFixed(2).replace('.', ',')}</p>
                         </div>
                         {savings > 0 && <span className="bg-accent text-accent-foreground text-xs font-medium px-2 py-1 rounded">-€{savings}</span>}
