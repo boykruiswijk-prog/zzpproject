@@ -10,7 +10,7 @@ export function Footer() {
     diensten: [
       { href: "/diensten", label: t("footer.alleDiensten") },
       { href: "/verzekeringen", label: t("footer.verzekeringen") },
-      { href: "/diensten#screening", label: t("footer.screening") },
+      { href: "/screening", label: "Screening" },
     ],
     informatie: [
       { href: "/voor-wie", label: t("footer.voorWie") },
