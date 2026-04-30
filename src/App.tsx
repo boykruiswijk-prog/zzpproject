@@ -152,6 +152,7 @@ const publicRoutes = (
     {/* <Route path="collectief-ledenorganisaties" element={<CollectiefLedenorganisaties />} /> */}
     <Route path="social-media" element={<SocialMedia />} />
     <Route path="creditcontrol" element={<CreditControl />} />
+    <Route path="screening" element={<Screening />} />
   </>
 );
 
