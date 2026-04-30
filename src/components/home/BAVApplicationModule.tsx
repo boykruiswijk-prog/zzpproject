@@ -587,10 +587,10 @@ export function BAVApplicationModule() {
                       <li key={usp} className="flex items-center gap-2 text-sm"><CheckCircle className="h-4 w-4 text-accent flex-shrink-0" /><span className="text-background/90">{usp}</span></li>
                     ))}
                   </ul>
-                  <div className="mt-6 pt-6 border-t border-white/20">
-                    <p className="text-xs text-background/60">
+                  <div className="mt-6 -mx-6 md:-mx-8 -mb-6 md:-mb-8 px-6 md:px-8 py-4" style={{ backgroundColor: '#16A34A' }}>
+                    <p className="text-xs text-white">
                       {t("common.contactUs")}?{" "}
-                      <a href="tel:0232010502" className="text-accent hover:underline">023 - 201 0502</a>
+                      <a href="tel:0232010502" className="text-white font-semibold hover:underline">023 - 201 0502</a>
                     </p>
                   </div>
                 </div>
