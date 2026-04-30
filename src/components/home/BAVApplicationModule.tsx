@@ -78,8 +78,7 @@ export function BAVApplicationModule() {
    const { t } = useTranslation();
    const { toast } = useToast();
    const [currentStep, setCurrentStep] = useState(1);
-   const [selectedPackage, setSelectedPackage] = useState<string>("uitgebreid");
-   const [paymentType, setPaymentType] = useState<"monthly" | "yearly">("monthly");
+   const [selectedPackage, setSelectedPackage] = useState<string>("jaarlijks");
    const [startDate, setStartDate] = useState<string>("");
    const [viaBemiddelaar, setViaBemiddelaar] = useState<boolean | null>(null);
    const [incassoAkkoord, setIncassoAkkoord] = useState(false);
