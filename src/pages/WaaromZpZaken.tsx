@@ -32,9 +32,45 @@ const fade = {
 };
 
 const packages = [
-  { name: "Combi Basis", price: 30, eventCoverage: "€ 500.000", yearCoverage: "€ 1.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Dagelijks opzegbaar"] },
-  { name: "Combi Uitgebreid", price: 45, eventCoverage: "€ 2.500.000", yearCoverage: "€ 5.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Dagelijks opzegbaar", "Rechtsbijstand bij claims"], popular: true },
-  { name: "Combi Compleet", price: 65, eventCoverage: "€ 5.000.000", yearCoverage: "€ 10.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Dagelijks opzegbaar", "Rechtsbijstand bij claims", "Cyberdekking"] },
+  {
+    name: "BAV + AVB Maandelijks",
+    price: 55,
+    period: "/maand",
+    eventCoverage: "€ 5.000.000",
+    yearCoverage: "€ 15.000.000",
+    avbEvent: "€ 2.500.000",
+    avbYear: "€ 5.000.000",
+    features: ["Dagelijks opzegbaar", "Premie inclusief kosten en assurantiebelasting", "BAV + AVB gecombineerd", "Geen eigen risico"],
+    cyber: false,
+    shopUrl: "https://shop.zpzaken.nl/bav-maandelijks",
+  },
+  {
+    name: "BAV + AVB Jaarlijks",
+    price: 600,
+    period: "/jaar",
+    eventCoverage: "€ 5.000.000",
+    yearCoverage: "€ 15.000.000",
+    avbEvent: "€ 2.500.000",
+    avbYear: "€ 5.000.000",
+    features: ["Dagelijks opzegbaar", "Premie inclusief kosten en assurantiebelasting", "BAV + AVB gecombineerd", "Geen eigen risico"],
+    cyber: false,
+    badge: "Goedkoopste premie",
+    popular: true,
+    shopUrl: "https://shop.zpzaken.nl/bav-jaarlijks",
+  },
+  {
+    name: "BAV + AVB + Cyberdekking",
+    price: 750,
+    period: "/jaar",
+    eventCoverage: "€ 5.000.000",
+    yearCoverage: "€ 15.000.000",
+    avbEvent: "€ 2.500.000",
+    avbYear: "€ 5.000.000",
+    features: ["Dagelijks opzegbaar", "Premie inclusief kosten en assurantiebelasting", "BAV + AVB gecombineerd", "Cyberdekking €50.000 per schade / €5.000.000 per jaar"],
+    cyber: true,
+    badge: "Optimale dekking",
+    shopUrl: "https://shop.zpzaken.nl/bav-jaarlijks-met-cyber",
+  },
 ];
 
 const diffBlocks = [
