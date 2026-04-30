@@ -299,7 +299,7 @@ export default function Screening() {
                               <ShieldCheck className={cn("h-5 w-5", selected ? "text-accent" : "text-muted-foreground")} />
                               <h3 className="font-semibold">{p.titel}</h3>
                             </div>
-                            <p className="text-sm text-muted-foreground mb-3">Op aanvraag</p>
+                            <p className="mb-3"><span className="text-2xl font-bold text-foreground">{p.prijs}</span> <span className="text-sm text-muted-foreground">{p.subtekst}</span></p>
                             <ul className="space-y-1.5 mb-3">
                               {p.inhoud.map((item) => (
                                 <li key={item} className="flex items-start gap-2 text-sm">
