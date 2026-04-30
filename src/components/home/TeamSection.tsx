@@ -117,11 +117,11 @@ export function TeamSection() {
         <div className="text-center">
           <div className="inline-flex flex-col sm:flex-row items-center gap-4">
             <a 
-              href="tel:0232010502"
+              href="tel:0204573077"
               className="inline-flex items-center gap-2 text-foreground font-medium hover:text-primary transition-colors"
             >
               <Phone className="h-5 w-5" />
-              023 - 201 0502
+              020 - 457 3077
             </a>
             <span className="hidden sm:inline text-muted-foreground">of</span>
             <Button variant="accent" size="lg" asChild>

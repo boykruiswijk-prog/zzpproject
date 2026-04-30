@@ -209,10 +209,10 @@ export function ServicePageTemplate({
                 </LocalizedLink>
               </Button>
               <a
-                href="tel:0232010502"
+                href="tel:0204573077"
                 className="inline-flex items-center gap-2 text-white border border-white/40 rounded-lg px-5 py-3 hover:bg-white/10 transition-all font-medium"
               >
-                📞 023 - 201 0502
+                📞 020 - 457 3077
               </a>
             </motion.div>
             <div className="mt-6">

@@ -76,7 +76,7 @@ serve(async (req) => {
               <li>Je ontvangt een persoonlijk adviesgesprek</li>
               <li>Na akkoord ben je direct verzekerd</li>
             </ul>
-            <p>Heb je in de tussentijd vragen? Bel ons gerust op <strong>023 - 201 0502</strong> of mail naar <a href="mailto:info@zpzaken.nl">info@zpzaken.nl</a>.</p>
+            <p>Heb je in de tussentijd vragen? Bel ons gerust op <strong>020 - 457 3077</strong> of mail naar <a href="mailto:info@zpzaken.nl">info@zpzaken.nl</a>.</p>
             <p style="margin-top:24px;">Met vriendelijke groet,<br/><strong>Team ZP Zaken</strong></p>
           </div>
         `,
