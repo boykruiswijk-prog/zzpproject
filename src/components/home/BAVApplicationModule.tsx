@@ -18,38 +18,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import ellenAvatar from "@/assets/ellen-baars-avatar.jpg";
 
-// Drie pakketten: maandelijks, jaarlijks, jaarlijks + cyber
 const packages = [
-  {
-    id: "maandelijks",
-    name: "BAV + AVB Maandelijks",
-    coverage: "€ 5.000.000 per gebeurtenis",
-    yearCoverage: "€ 15.000.000 per jaar",
-    price: 55.00,
-    period: "per maand",
-    badge: null as string | null,
-    cyber: false,
-  },
-  {
-    id: "jaarlijks",
-    name: "BAV + AVB Jaarlijks",
-    coverage: "€ 5.000.000 per gebeurtenis",
-    yearCoverage: "€ 15.000.000 per jaar",
-    price: 600.00,
-    period: "per jaar",
-    badge: "Goedkoopste premie",
-    cyber: false,
-  },
-  {
-    id: "jaarlijks_cyber",
-    name: "BAV + AVB + Cyberdekking",
-    coverage: "€ 5.000.000 per gebeurtenis",
-    yearCoverage: "€ 15.000.000 per jaar",
-    price: 750.00,
-    period: "per jaar",
-    badge: "Optimale dekking",
-    cyber: true,
-  },
+  { id: "basis", name: "Combi Basis", coverage: "€ 500.000 per gebeurtenis", yearCoverage: "€ 1.000.000 per jaar", priceMonthly: 30.00, priceYearly: 360.00, popular: false },
+  { id: "uitgebreid", name: "Combi Uitgebreid", coverage: "€ 2.500.000 per gebeurtenis", yearCoverage: "€ 5.000.000 per jaar", priceMonthly: 45.00, priceYearly: 540.00, popular: true },
 ];
 
 const TOTAL_STEPS = 5;
@@ -78,7 +49,8 @@ export function BAVApplicationModule() {
    const { t } = useTranslation();
    const { toast } = useToast();
    const [currentStep, setCurrentStep] = useState(1);
-   const [selectedPackage, setSelectedPackage] = useState<string>("jaarlijks");
+   const [selectedPackage, setSelectedPackage] = useState<string>("uitgebreid");
+   const [paymentType, setPaymentType] = useState<"monthly" | "yearly">("monthly");
    const [startDate, setStartDate] = useState<string>("");
    const [viaBemiddelaar, setViaBemiddelaar] = useState<boolean | null>(null);
    const [incassoAkkoord, setIncassoAkkoord] = useState(false);
@@ -104,9 +76,8 @@ export function BAVApplicationModule() {
   const usps = t("home.bavUsps", { returnObjects: true }) as string[];
 
   const selectedPkg = packages.find(p => p.id === selectedPackage);
-  const currentPrice = selectedPkg?.price;
-  const isMonthly = selectedPkg?.id === "maandelijks";
-  const savings = selectedPkg?.id === "jaarlijks" ? 60 : 0;
+  const currentPrice = paymentType === "monthly" ? selectedPkg?.priceMonthly : selectedPkg?.priceYearly;
+  const savings = paymentType === "yearly" ? 40 : 0;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -177,7 +148,7 @@ export function BAVApplicationModule() {
          const { data, error } = await supabase.functions.invoke("process-bav-wizard", {
            body: {
              pakket: selectedPackage,
-             betaalwijze: isMonthly ? "maandelijks" : "jaarlijks",
+             betaalwijze: paymentType === "monthly" ? "maandelijks" : "jaarlijks",
              ingangsdatum: startDate,
              voornaam: formData.voornaam,
              achternaam: formData.achternaam,
@@ -203,7 +174,7 @@ export function BAVApplicationModule() {
          if (!data?.success) throw new Error(data?.error || "Onbekende fout");
 
          const _pkg = packages.find(p => p.id === selectedPackage);
-         if (_pkg) trackWizardComplete(_pkg.name, _pkg.price);
+         if (_pkg) trackWizardComplete(_pkg.name, paymentType === "monthly" ? _pkg.priceMonthly : _pkg.priceYearly);
          setIsSubmitted(true);
        } catch (error) {
          console.error("Error submitting application:", error);
@@ -330,25 +301,39 @@ export function BAVApplicationModule() {
                       <p className="text-muted-foreground text-sm">{t("home.bavChooseDesc")}</p>
                     </div>
                     <div className="grid gap-4">
-                      {packages.map((pkg) => (
+                      {/* TODO: Re-enable "basis" package later by removing the filter below */}
+                      {packages.filter(pkg => pkg.id === "uitgebreid").map((pkg) => (
                         <button key={pkg.id} onClick={() => setSelectedPackage(pkg.id)}
                           className={cn("relative p-5 rounded-xl border-2 text-left transition-all", selectedPackage === pkg.id ? "border-accent bg-accent/5" : "border-border hover:border-accent/50")}>
-                          {pkg.badge && <span className="absolute -top-3 left-4 bg-accent text-accent-foreground text-xs font-medium px-3 py-1 rounded-full">{pkg.badge}</span>}
+                          {pkg.popular && <span className="absolute -top-3 left-4 bg-accent text-accent-foreground text-xs font-medium px-3 py-1 rounded-full">{t("home.bavMostChosen")}</span>}
                           <div className="flex justify-between items-start">
                             <div>
                               <h4 className="font-semibold text-lg">{pkg.name}</h4>
-                              <p className="text-muted-foreground text-sm mt-1">BAV: {pkg.coverage} / {pkg.yearCoverage}</p>
-                              <p className="text-muted-foreground text-sm">AVB: € 2.500.000 per gebeurtenis / € 5.000.000 per jaar</p>
-                              {pkg.cyber && <p className="text-muted-foreground text-sm">Cyber: € 50.000 per schade / € 5.000.000 per jaar</p>}
+                              <p className="text-muted-foreground text-sm mt-1">{pkg.coverage}</p>
+                              <p className="text-muted-foreground text-sm">{pkg.yearCoverage}</p>
                             </div>
                             <div className="text-right">
-                              <p className="text-2xl font-bold text-foreground">€{pkg.price.toFixed(2).replace('.', ',')}</p>
-                              <p className="text-muted-foreground text-sm">{pkg.period}</p>
+                              <p className="text-2xl font-bold text-foreground">€{(paymentType === "monthly" ? pkg.priceMonthly : pkg.priceYearly).toFixed(2).replace('.', ',')}</p>
+                              <p className="text-muted-foreground text-sm">{paymentType === "monthly" ? t("home.bavPerMonth") : t("home.bavPerYear")}</p>
                             </div>
                           </div>
                           {selectedPackage === pkg.id && <div className="absolute bottom-3 right-3"><CheckCircle className="h-5 w-5 text-accent" /></div>}
                         </button>
                       ))}
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium mb-3 block">{t("home.bavPayment")}</Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button onClick={() => setPaymentType("monthly")} className={cn("p-4 rounded-lg border-2 text-center transition-all", paymentType === "monthly" ? "border-accent bg-accent/5" : "border-border hover:border-accent/50")}>
+                          <p className="font-medium">{t("home.bavMonthly")}</p>
+                          <p className="text-muted-foreground text-sm">{t("home.bavMonthlyDesc")}</p>
+                        </button>
+                        <button onClick={() => setPaymentType("yearly")} className={cn("p-4 rounded-lg border-2 text-center transition-all relative", paymentType === "yearly" ? "border-accent bg-accent/5" : "border-border hover:border-accent/50")}>
+                          <span className="absolute -top-2 right-2 bg-accent text-accent-foreground text-xs font-medium px-2 py-0.5 rounded-full">{t("home.bavSave")}</span>
+                          <p className="font-medium">{t("home.bavYearly")}</p>
+                          <p className="text-muted-foreground text-sm">{t("home.bavYearlyDesc")}</p>
+                        </button>
+                      </div>
                     </div>
                     <div>
                        <Label htmlFor="startDate" className="text-sm font-medium mb-2 block">{t("home.bavStartDate")}</Label>
@@ -531,8 +516,7 @@ export function BAVApplicationModule() {
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.package")}</span><span className="font-medium">{selectedPkg?.name}</span></div>
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.coverage")}</span><span>{selectedPkg?.coverage}</span></div>
-                          <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.payment")}</span><span>{isMonthly ? t("home.bavMonthly") : t("home.bavYearly")}</span></div>
-                          <div className="flex justify-between"><span className="text-muted-foreground">Premie</span><span>€{selectedPkg?.price.toFixed(2).replace('.', ',')} {selectedPkg?.period}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.payment")}</span><span>{paymentType === "monthly" ? t("home.bavMonthly") : t("home.bavYearly")}</span></div>
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.startDate")}</span><span>{startDate || t("bavApp.immediately")}</span></div>
                         </div>
                       </div>
@@ -623,24 +607,16 @@ export function BAVApplicationModule() {
                   <div className="bg-white/10 rounded-xl p-5 mb-6">
                     <div className="flex items-center gap-3 mb-4">
                       <div className="h-10 w-10 rounded-lg bg-accent flex items-center justify-center"><Shield className="h-5 w-5 text-accent-foreground" /></div>
-                      <div><p className="font-semibold">{selectedPkg?.name}</p><p className="text-sm text-background/70">BAV + AVB{selectedPkg?.cyber ? " + Cyber" : ""}</p></div>
+                      <div><p className="font-semibold">{selectedPkg?.name}</p><p className="text-sm text-background/70">BAV + AVB</p></div>
                     </div>
                     <div className="space-y-2 text-sm mb-4">
-                      <div className="flex justify-between"><span className="text-background/70">BAV per gebeurtenis</span><span>€5.000.000</span></div>
-                      <div className="flex justify-between"><span className="text-background/70">BAV per jaar</span><span>€15.000.000</span></div>
-                      <div className="flex justify-between"><span className="text-background/70">AVB per gebeurtenis</span><span>€2.500.000</span></div>
-                      <div className="flex justify-between"><span className="text-background/70">AVB per jaar</span><span>€5.000.000</span></div>
-                      {selectedPkg?.cyber && (
-                        <>
-                          <div className="flex justify-between"><span className="text-background/70">Cyber per schade</span><span>€50.000</span></div>
-                          <div className="flex justify-between"><span className="text-background/70">Cyber per jaar</span><span>€5.000.000</span></div>
-                        </>
-                      )}
+                      <div className="flex justify-between"><span className="text-background/70">{t("bavApp.perEvent")}</span><span>{selectedPkg?.coverage.replace('€ ', '€').replace(/\s*per gebeurtenis$/i, '')}</span></div>
+                      <div className="flex justify-between"><span className="text-background/70">{t("bavApp.perYear")}</span><span>{selectedPkg?.yearCoverage.replace('€ ', '€').replace(/\s*per jaar$/i, '')}</span></div>
                     </div>
                     <div className="border-t border-white/20 pt-4">
                       <div className="flex justify-between items-end">
                         <div>
-                          <p className="text-sm text-background/70">{selectedPkg?.period}</p>
+                          <p className="text-sm text-background/70">{paymentType === "monthly" ? t("home.bavPerMonth") : t("home.bavPerYear")}</p>
                           <p className="text-3xl font-bold">€{currentPrice?.toFixed(2).replace('.', ',')}</p>
                         </div>
                         {savings > 0 && <span className="bg-accent text-accent-foreground text-xs font-medium px-2 py-1 rounded">-€{savings}</span>}

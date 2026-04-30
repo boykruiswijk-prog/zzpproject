@@ -32,45 +32,9 @@ const fade = {
 };
 
 const packages = [
-  {
-    name: "BAV + AVB Maandelijks",
-    price: 55,
-    period: "/maand",
-    eventCoverage: "€ 5.000.000",
-    yearCoverage: "€ 15.000.000",
-    avbEvent: "€ 2.500.000",
-    avbYear: "€ 5.000.000",
-    features: ["Dagelijks opzegbaar", "Premie inclusief kosten en assurantiebelasting", "BAV + AVB gecombineerd", "Geen eigen risico"],
-    cyber: false,
-    shopUrl: "https://shop.zpzaken.nl/bav-maandelijks",
-  },
-  {
-    name: "BAV + AVB Jaarlijks",
-    price: 600,
-    period: "/jaar",
-    eventCoverage: "€ 5.000.000",
-    yearCoverage: "€ 15.000.000",
-    avbEvent: "€ 2.500.000",
-    avbYear: "€ 5.000.000",
-    features: ["Dagelijks opzegbaar", "Premie inclusief kosten en assurantiebelasting", "BAV + AVB gecombineerd", "Geen eigen risico"],
-    cyber: false,
-    badge: "Goedkoopste premie",
-    popular: true,
-    shopUrl: "https://shop.zpzaken.nl/bav-jaarlijks",
-  },
-  {
-    name: "BAV + AVB + Cyberdekking",
-    price: 750,
-    period: "/jaar",
-    eventCoverage: "€ 5.000.000",
-    yearCoverage: "€ 15.000.000",
-    avbEvent: "€ 2.500.000",
-    avbYear: "€ 5.000.000",
-    features: ["Dagelijks opzegbaar", "Premie inclusief kosten en assurantiebelasting", "BAV + AVB gecombineerd", "Cyberdekking €50.000 per schade / €5.000.000 per jaar"],
-    cyber: true,
-    badge: "Optimale dekking",
-    shopUrl: "https://shop.zpzaken.nl/bav-jaarlijks-met-cyber",
-  },
+  { name: "Combi Basis", price: 30, eventCoverage: "€ 500.000", yearCoverage: "€ 1.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Dagelijks opzegbaar"] },
+  { name: "Combi Uitgebreid", price: 45, eventCoverage: "€ 2.500.000", yearCoverage: "€ 5.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Dagelijks opzegbaar", "Rechtsbijstand bij claims"], popular: true },
+  { name: "Combi Compleet", price: 65, eventCoverage: "€ 5.000.000", yearCoverage: "€ 10.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Dagelijks opzegbaar", "Rechtsbijstand bij claims", "Cyberdekking"] },
 ];
 
 const diffBlocks = [
@@ -208,41 +172,25 @@ export default function WaaromZpZaken() {
                 transition={{ duration: 0.5, delay: i * 0.1 }}
                 className={`relative bg-card rounded-2xl p-8 border-2 transition-shadow ${pkg.popular ? "border-accent shadow-lg" : "border-border"}`}
               >
-                {pkg.popular || pkg.badge ? (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap">
-                    {pkg.badge ?? "Meest gekozen"}
+                {pkg.popular && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-xs font-bold px-4 py-1 rounded-full">
+                    Meest gekozen
                   </span>
-                ) : null}
+                )}
                 <h3 className="text-lg font-bold mb-1">{pkg.name}</h3>
-                <p className="text-3xl font-bold text-accent mb-1">€{pkg.price}<span className="text-sm font-normal text-muted-foreground">{pkg.period}</span></p>
-                <div className="text-xs text-muted-foreground mb-4 space-y-0.5">
-                  <p>BAV: {pkg.eventCoverage} per gebeurtenis</p>
-                  <p>BAV: {pkg.yearCoverage} per jaar</p>
-                  <p>AVB: {pkg.avbEvent} per gebeurtenis</p>
-                  <p>AVB: {pkg.avbYear} per jaar</p>
+                <p className="text-3xl font-bold text-accent mb-1">€{pkg.price}<span className="text-sm font-normal text-muted-foreground">/maand</span></p>
+                <div className="text-xs text-muted-foreground mb-6 space-y-0.5">
+                  <p>{pkg.eventCoverage} per gebeurtenis</p>
+                  <p>{pkg.yearCoverage} per jaar</p>
                 </div>
-                <ul className="space-y-2 mb-6">
+                <ul className="space-y-2">
                   {pkg.features.map((f) => (
                     <li key={f} className="flex items-start gap-2 text-sm">
                       <CheckCircle className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
                       <span>{f}</span>
                     </li>
                   ))}
-                  {!pkg.cyber && (
-                    <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <span className="h-4 w-4 mt-0.5 flex-shrink-0 text-center leading-none">✗</span>
-                      <span>Cyberdekking niet inbegrepen{pkg.price === 55 ? " (apart af te sluiten)" : ""}</span>
-                    </li>
-                  )}
                 </ul>
-                <div className="flex flex-col gap-2">
-                  <Button asChild size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground">
-                    <a href={pkg.shopUrl} target="_blank" rel="noopener noreferrer">Direct afsluiten <ArrowRight className="h-4 w-4" /></a>
-                  </Button>
-                  <Button asChild size="sm" variant="outline">
-                    <a href="https://shop.zpzaken.nl/bav-offerte" target="_blank" rel="noopener noreferrer">Offerte aanvragen <ArrowRight className="h-4 w-4" /></a>
-                  </Button>
-                </div>
               </motion.div>
             ))}
           </div>

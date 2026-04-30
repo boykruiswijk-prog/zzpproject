@@ -10,26 +10,23 @@ const PAKKET_CONFIG: Record<
   string,
   { naam: string; maandprijs: number; jaarprijs: number; dekking: string }
 > = {
-  maandelijks: {
-    naam: "BAV + AVB Maandelijks",
-    maandprijs: 55,
-    jaarprijs: 660,
-    dekking:
-      "BAV €5.000.000 per gebeurtenis / €15.000.000 per jaar — AVB €2.500.000 per gebeurtenis / €5.000.000 per jaar",
+  basis: {
+    naam: "Combi Basis",
+    maandprijs: 30,
+    jaarprijs: 324,
+    dekking: "€500.000 per gebeurtenis / €1.000.000 per jaar",
   },
-  jaarlijks: {
-    naam: "BAV + AVB Jaarlijks",
-    maandprijs: 50,
-    jaarprijs: 600,
-    dekking:
-      "BAV €5.000.000 per gebeurtenis / €15.000.000 per jaar — AVB €2.500.000 per gebeurtenis / €5.000.000 per jaar",
+  uitgebreid: {
+    naam: "Combi Uitgebreid",
+    maandprijs: 45,
+    jaarprijs: 486,
+    dekking: "€2.500.000 per gebeurtenis / €5.000.000 per jaar",
   },
-  jaarlijks_cyber: {
-    naam: "BAV + AVB + Cyberdekking",
-    maandprijs: 62.5,
-    jaarprijs: 750,
-    dekking:
-      "BAV €5.000.000/€15.000.000 — AVB €2.500.000/€5.000.000 — Cyber €50.000 per schade / €5.000.000 per jaar",
+  compleet: {
+    naam: "Combi Compleet",
+    maandprijs: 65,
+    jaarprijs: 702,
+    dekking: "€5.000.000 per gebeurtenis / €10.000.000 per jaar",
   },
 };
 
