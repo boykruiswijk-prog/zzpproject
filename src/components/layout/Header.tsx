@@ -25,8 +25,7 @@ function useNavItems() {
         { href: "/verzekeringen", label: "Verzekeringen" },
         { href: "/diensten#administratie", label: "Administratie & Boekhouding" },
         { href: "/diensten#juridisch", label: "Juridisch Advies" },
-        { href: "/diensten#screening", label: "Screening" },
-        { href: "/screening", label: "Screening aanvragen" },
+        { href: "/screening", label: "Screening" },
         { href: "/diensten#financiering", label: "Factoring & Financiering" },
       ]
     },
