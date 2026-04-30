@@ -29,6 +29,8 @@ import CollectieveInkoop from "./pages/CollectieveInkoop";
 import CollectiefLedenorganisaties from "./pages/CollectiefLedenorganisaties";
 import SocialMedia from "./pages/SocialMedia";
 import CreditControl from "./pages/CreditControl";
+import Screening from "./pages/Screening";
+import AdminScreeningAanvragen from "./pages/admin/ScreeningAanvragen";
 import AdminLogin from "./pages/admin/Login";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminLeads from "./pages/admin/Leads";
