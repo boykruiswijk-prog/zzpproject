@@ -44,9 +44,9 @@ export function Footer() {
               {t("footer.description")}
             </p>
             <div className="space-y-2">
-              <a href="tel:0232010502" className="flex items-center gap-2 text-sm text-background/70 hover:text-background transition-colors">
+              <a href="tel:0204573077" className="flex items-center gap-2 text-sm text-background/70 hover:text-background transition-colors">
                 <Phone className="h-4 w-4" />
-                023 - 201 0502
+                020 - 457 3077
               </a>
               <a href="mailto:info@zpzaken.nl" className="flex items-center gap-2 text-sm text-background/70 hover:text-background transition-colors">
                 <Mail className="h-4 w-4" />

@@ -226,7 +226,7 @@ serve(async (req) => {
       "NL25 ABNA 0477 3302 23",
       "KVK: 62117092",
       "BTW: NL854862431B01",
-      "Telefoon: 023-2010502",
+      "Telefoon: 020-4573077",
       "administratie@zpzaken.nl",
       "www.zpzaken.nl",
     ];

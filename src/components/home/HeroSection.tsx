@@ -108,12 +108,12 @@ export function HeroSection() {
               className="flex flex-col sm:flex-row items-start sm:items-center gap-4"
             >
               <a 
-                href="tel:0232010502" 
+                href="tel:0204573077" 
                 className="inline-flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground transition-colors"
                 onClick={() => trackPhone()}
               >
                 <Phone className="h-4 w-4" />
-                <span>023 - 201 0502</span>
+                <span>020 - 457 3077</span>
               </a>
               <div className="inline-flex items-center gap-1 text-primary-foreground/70">
                 {[...Array(5)].map((_, i) => (

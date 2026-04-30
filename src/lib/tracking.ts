@@ -36,7 +36,7 @@ export const trackCTA = (label: string) => {
 };
 
 export const trackPhone = () =>
-  trackEvent({ action: "phone_click", category: "contact", label: "023-201-0502" });
+  trackEvent({ action: "phone_click", category: "contact", label: "020-457-3077" });
 
 export const trackWhatsApp = () =>
   trackEvent({ action: "whatsapp_click", category: "contact", label: "whatsapp geklikt" });

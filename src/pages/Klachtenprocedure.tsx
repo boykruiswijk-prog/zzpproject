@@ -81,7 +81,7 @@ export default function Klachtenprocedure() {
                 <div className="bg-card rounded-xl border border-border/50 p-4 shadow-card">
                   <Phone className="h-5 w-5 text-accent mb-2" />
                   <p className="text-xs text-muted-foreground mb-1">Telefonisch</p>
-                  <a href="tel:0232010502" className="text-sm font-semibold text-foreground hover:text-accent transition-colors">023 - 201 0502</a>
+                  <a href="tel:0204573077" className="text-sm font-semibold text-foreground hover:text-accent transition-colors">020 - 457 3077</a>
                 </div>
                 <div className="bg-card rounded-xl border border-border/50 p-4 shadow-card">
                   <MessageSquare className="h-5 w-5 text-accent mb-2" />
@@ -171,7 +171,7 @@ export default function Klachtenprocedure() {
                 <p>Tupolevlaan 41</p>
                 <p>1119 NW Schiphol-Rijk</p>
                 <p>E-mail: <a href="mailto:klachten@zpzaken.nl" className="text-accent hover:underline">klachten@zpzaken.nl</a></p>
-                <p>Telefoon: <a href="tel:0232010502" className="text-accent hover:underline">023 - 201 0502</a></p>
+                <p>Telefoon: <a href="tel:0204573077" className="text-accent hover:underline">020 - 457 3077</a></p>
                 <p>KvK: 62117092</p>
                 <p>AFM vergunningsnummer: 12050636</p>
                 <p className="flex items-center gap-2 pt-2">

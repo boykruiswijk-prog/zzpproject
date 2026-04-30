@@ -191,10 +191,10 @@ export default function Verzekeringen() {
                 <LocalizedLink to="/contact">{t("verzekeringenPage.ctaButton")}<ArrowRight className="h-5 w-5" /></LocalizedLink>
               </Button>
               <a
-                href="tel:0232010502"
+                href="tel:0204573077"
                 className="inline-flex items-center justify-center gap-2 text-white border border-white/40 rounded-lg px-4 py-2 hover:bg-white/10 transition-all font-medium"
               >
-                📞 023 - 201 0502
+                📞 020 - 457 3077
               </a>
             </div>
             <MiniSocialProof variant="dark" className="justify-center" />

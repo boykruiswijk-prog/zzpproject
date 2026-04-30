@@ -684,7 +684,7 @@ export default function CollectiefLedenorganisaties() {
                 {[
                   { icon: Clock, text: "Binnen 24 uur reactie" },
                   { icon: BadgeCheck, text: "AFM geregistreerd (12050636)" },
-                  { icon: Phone, text: "Persoonlijk contact: 023 - 201 0502" },
+                  { icon: Phone, text: "Persoonlijk contact: 020 - 457 3077" },
                   { icon: CheckCircle, text: "Kosteloos voor jouw organisatie" },
                 ].map((t, i) => (
                   <motion.div

@@ -180,7 +180,7 @@ export function BAVApplicationModule() {
          console.error("Error submitting application:", error);
          toast({
            title: "Er ging iets mis",
-           description: "Probeer het opnieuw of neem telefonisch contact op: 023 - 201 0502",
+           description: "Probeer het opnieuw of neem telefonisch contact op: 020 - 457 3077",
            variant: "destructive",
          });
        }
@@ -631,7 +631,7 @@ export function BAVApplicationModule() {
                   <div className="mt-6 -mx-6 md:-mx-8 -mb-6 md:-mb-8 px-6 md:px-8 py-4" style={{ backgroundColor: '#16A34A' }}>
                     <p className="text-xs text-white">
                       {t("common.contactUs")}?{" "}
-                      <a href="tel:0232010502" className="text-white font-semibold hover:underline">023 - 201 0502</a>
+                      <a href="tel:0204573077" className="text-white font-semibold hover:underline">020 - 457 3077</a>
                     </p>
                   </div>
                 </div>

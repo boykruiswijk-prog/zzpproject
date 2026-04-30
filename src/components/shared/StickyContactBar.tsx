@@ -28,12 +28,12 @@ export function StickyContactBar() {
           className="fixed bottom-20 right-4 md:bottom-4 z-50 flex items-center gap-2"
         >
           <a
-            href="tel:0232010502"
+            href="tel:0204573077"
             onClick={() => trackPhone()}
             className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded-full shadow-lg hover:scale-105 transition-transform text-sm font-medium"
           >
             <Phone className="h-4 w-4" />
-            <span className="hidden sm:inline">023 - 201 0502</span>
+            <span className="hidden sm:inline">020 - 457 3077</span>
           </a>
           <a
             href="https://wa.me/31612345678"

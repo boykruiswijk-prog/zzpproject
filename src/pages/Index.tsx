@@ -23,7 +23,7 @@ const organizationSchema = {
   },
   "contactPoint": {
     "@type": "ContactPoint",
-    "telephone": "+31-23-201-0502",
+    "telephone": "+31-20-457-3077",
     "contactType": "customer service",
     "availableLanguage": "Dutch"
   },

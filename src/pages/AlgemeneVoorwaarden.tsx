@@ -215,7 +215,7 @@ export default function AlgemeneVoorwaarden() {
                 <p>Tupolevlaan 41</p>
                 <p>1119 NW Schiphol-Rijk</p>
                 <p>E-mail: <a href="mailto:info@zpzaken.nl" className="text-accent hover:underline">info@zpzaken.nl</a></p>
-                <p>Telefoon: <a href="tel:0232010502" className="text-accent hover:underline">023 - 201 0502</a></p>
+                <p>Telefoon: <a href="tel:0204573077" className="text-accent hover:underline">020 - 457 3077</a></p>
                 <p>KvK: 62117092</p>
                 <p>AFM vergunningsnummer: 12050636</p>
               </div>
