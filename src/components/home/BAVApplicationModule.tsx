@@ -333,9 +333,8 @@ export function BAVApplicationModule() {
                     <div>
                        <Label htmlFor="startDate" className="text-sm font-medium mb-2 block">{t("home.bavStartDate")}</Label>
                        <div className="relative">
-                         <Input id="startDate" type="date" value={startDate} onChange={(e) => { setStartDate(e.target.value); if (errors.startDate) setErrors(prev => { const n = { ...prev }; delete n.startDate; return n; }); }} className={cn(errors.startDate && "border-destructive")} />
+                        <Input id="startDate" type="date" min={new Date().toISOString().split('T')[0]} value={startDate} onChange={(e) => { setStartDate(e.target.value); if (errors.startDate) setErrors(prev => { const n = { ...prev }; delete n.startDate; return n; }); }} className={cn(errors.startDate && "border-destructive")} />
                        </div>
-                       <p className="text-xs text-muted-foreground mt-1.5">Ook een datum in het verleden is mogelijk. Neem contact op voor de voorwaarden bij terugwerkende kracht.</p>
                        <FieldError message={errors.startDate} />
                      </div>
                   </motion.div>
