@@ -934,6 +934,69 @@ export type Database = {
         }
         Relationships: []
       }
+      screening_aanvragen: {
+        Row: {
+          aangemeld_op: string
+          achternaam: string
+          bedrijfsnaam: string | null
+          beroep: string | null
+          bijgewerkt_op: string
+          email: string
+          id: string
+          kvk_nummer: string | null
+          notities: string | null
+          otentica_flow_id: string | null
+          otentica_rapport_url: string | null
+          otentica_status: string
+          otentica_webhook_data: Json | null
+          screening_type: string | null
+          sector: string | null
+          status: string
+          telefoon: string | null
+          voornaam: string
+        }
+        Insert: {
+          aangemeld_op?: string
+          achternaam: string
+          bedrijfsnaam?: string | null
+          beroep?: string | null
+          bijgewerkt_op?: string
+          email: string
+          id?: string
+          kvk_nummer?: string | null
+          notities?: string | null
+          otentica_flow_id?: string | null
+          otentica_rapport_url?: string | null
+          otentica_status?: string
+          otentica_webhook_data?: Json | null
+          screening_type?: string | null
+          sector?: string | null
+          status?: string
+          telefoon?: string | null
+          voornaam: string
+        }
+        Update: {
+          aangemeld_op?: string
+          achternaam?: string
+          bedrijfsnaam?: string | null
+          beroep?: string | null
+          bijgewerkt_op?: string
+          email?: string
+          id?: string
+          kvk_nummer?: string | null
+          notities?: string | null
+          otentica_flow_id?: string | null
+          otentica_rapport_url?: string | null
+          otentica_status?: string
+          otentica_webhook_data?: Json | null
+          screening_type?: string | null
+          sector?: string | null
+          status?: string
+          telefoon?: string | null
+          voornaam?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string

@@ -29,6 +29,8 @@ import CollectieveInkoop from "./pages/CollectieveInkoop";
 import CollectiefLedenorganisaties from "./pages/CollectiefLedenorganisaties";
 import SocialMedia from "./pages/SocialMedia";
 import CreditControl from "./pages/CreditControl";
+import Screening from "./pages/Screening";
+import AdminScreeningAanvragen from "./pages/admin/ScreeningAanvragen";
 import AdminLogin from "./pages/admin/Login";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminLeads from "./pages/admin/Leads";
@@ -150,6 +152,7 @@ const publicRoutes = (
     {/* <Route path="collectief-ledenorganisaties" element={<CollectiefLedenorganisaties />} /> */}
     <Route path="social-media" element={<SocialMedia />} />
     <Route path="creditcontrol" element={<CreditControl />} />
+    <Route path="screening" element={<Screening />} />
   </>
 );
 
@@ -187,6 +190,7 @@ const App = () => (
             <Route path="/admin/dba-checks/bulk" element={<DbaCheckBulk />} />
             <Route path="/admin/dba-checks/bulk/:id" element={<DbaCheckBatchDetail />} />
             <Route path="/admin/dba-checks/:id" element={<DbaCheckDetail />} />
+            <Route path="/admin/screening-aanvragen" element={<AdminScreeningAanvragen />} />
             
             {/* Public verification */}
             <Route path="/verificatie/dba/:token" element={<DbaVerificatie />} />
