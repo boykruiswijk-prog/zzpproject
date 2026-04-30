@@ -583,7 +583,11 @@ export function BAVApplicationModule() {
                     <Button variant="outline" onClick={prevStep}><ArrowLeft className="h-4 w-4" />{t("home.bavPrev")}</Button>
                   ) : <div />}
                   {currentStep < TOTAL_STEPS ? (
-                    <Button onClick={nextStep} className="bg-accent hover:bg-accent/90 text-accent-foreground">{t("home.bavNext")}<ArrowRight className="h-4 w-4" /></Button>
+                    <Button
+                      onClick={nextStep}
+                      disabled={currentStep === 1 && !!startDate && startDate < new Date().toISOString().split('T')[0]}
+                      className="bg-accent hover:bg-accent/90 text-accent-foreground"
+                    >{t("home.bavNext")}<ArrowRight className="h-4 w-4" /></Button>
                   ) : (
                     <Button
                       onClick={handleSubmit}
