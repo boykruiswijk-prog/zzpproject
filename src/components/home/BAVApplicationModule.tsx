@@ -105,8 +105,9 @@ export function BAVApplicationModule() {
   const usps = t("home.bavUsps", { returnObjects: true }) as string[];
 
   const selectedPkg = packages.find(p => p.id === selectedPackage);
-  const currentPrice = paymentType === "monthly" ? selectedPkg?.priceMonthly : selectedPkg?.priceYearly;
-  const savings = paymentType === "yearly" ? 40 : 0;
+  const currentPrice = selectedPkg?.price;
+  const isMonthly = selectedPkg?.id === "maandelijks";
+  const savings = selectedPkg?.id === "jaarlijks" ? 60 : 0;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
