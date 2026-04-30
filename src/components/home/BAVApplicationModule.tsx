@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Shield, CheckCircle, Building2, User, FileCheck, CreditCard,
-  ArrowRight, ArrowLeft, Check, Sparkles, ExternalLink, AlertCircle
+  ArrowRight, ArrowLeft, Check, Sparkles, ExternalLink, AlertCircle, HelpCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatedSection } from "@/components/ui/animated-section";
@@ -333,8 +333,9 @@ export function BAVApplicationModule() {
                     <div>
                        <Label htmlFor="startDate" className="text-sm font-medium mb-2 block">{t("home.bavStartDate")}</Label>
                        <div className="relative">
-                         <Input id="startDate" type="date" value={startDate} onChange={(e) => { setStartDate(e.target.value); if (errors.startDate) setErrors(prev => { const n = { ...prev }; delete n.startDate; return n; }); }} className={cn(errors.startDate && "border-destructive")} min={new Date().toISOString().split('T')[0]} />
+                         <Input id="startDate" type="date" value={startDate} onChange={(e) => { setStartDate(e.target.value); if (errors.startDate) setErrors(prev => { const n = { ...prev }; delete n.startDate; return n; }); }} className={cn(errors.startDate && "border-destructive")} />
                        </div>
+                       <p className="text-xs text-muted-foreground mt-1.5">Ook een datum in het verleden is mogelijk. Neem contact op voor de voorwaarden bij terugwerkende kracht.</p>
                        <FieldError message={errors.startDate} />
                      </div>
                   </motion.div>
@@ -371,6 +372,17 @@ export function BAVApplicationModule() {
                         <Label htmlFor="aantalMedewerkers">{t("home.bavEmployees")} *</Label>
                         <Input id="aantalMedewerkers" name="aantalMedewerkers" type="number" min="0" value={formData.aantalMedewerkers} onChange={handleInputChange} className={cn(errors.aantalMedewerkers && "border-destructive")} />
                         <FieldError message={errors.aantalMedewerkers} />
+                        {formData.aantalMedewerkers && parseInt(formData.aantalMedewerkers) > 3 && (
+                          <div
+                            className="mt-2 flex items-start gap-2 p-3 rounded-md"
+                            style={{ backgroundColor: '#FFF5F5', borderLeft: '3px solid #E53E2F', color: '#E53E2F' }}
+                          >
+                            <HelpCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                            <p className="text-sm">
+                              Let op: bij meer dan 3 medewerkers kunnen aanvullende voorwaarden gelden. Onze adviseur neemt contact met je op om de dekking te bespreken.
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </motion.div>
@@ -418,11 +430,13 @@ export function BAVApplicationModule() {
                         <Label className="text-sm font-medium mb-3 block">{t("home.bavMediator")} *</Label>
                         <div className="grid grid-cols-2 gap-3">
                           <button onClick={() => { setViaBemiddelaar(true); if (errors.bemiddelaar) setErrors(prev => { const n = { ...prev }; delete n.bemiddelaar; return n; }); }}
-                            className={cn("p-3 rounded-lg border-2 text-center transition-all", viaBemiddelaar === true ? "border-accent bg-accent/5" : "border-border hover:border-accent/50", errors.bemiddelaar && "border-destructive")}>
+                            style={viaBemiddelaar === true ? { borderColor: '#16A34A', backgroundColor: '#F0FDF4', color: '#16A34A' } : undefined}
+                            className={cn("p-3 rounded-lg border-2 text-center transition-all", viaBemiddelaar !== true && "border-border hover:border-accent/50 bg-card", errors.bemiddelaar && viaBemiddelaar !== true && "border-destructive")}>
                             <p className="font-medium">{t("home.bavMediatorYes")}</p>
                           </button>
                           <button onClick={() => { setViaBemiddelaar(false); setFormData(prev => ({ ...prev, bemiddelaarNaam: "" })); if (errors.bemiddelaar) setErrors(prev => { const n = { ...prev }; delete n.bemiddelaar; return n; }); }}
-                            className={cn("p-3 rounded-lg border-2 text-center transition-all", viaBemiddelaar === false ? "border-accent bg-accent/5" : "border-border hover:border-accent/50", errors.bemiddelaar && "border-destructive")}>
+                            style={viaBemiddelaar === false ? { borderColor: '#16A34A', backgroundColor: '#F0FDF4', color: '#16A34A' } : undefined}
+                            className={cn("p-3 rounded-lg border-2 text-center transition-all", viaBemiddelaar !== false && "border-border hover:border-accent/50 bg-card", errors.bemiddelaar && viaBemiddelaar !== false && "border-destructive")}>
                             <p className="font-medium">{t("home.bavMediatorNo")}</p>
                           </button>
                         </div>
@@ -569,8 +583,8 @@ export function BAVApplicationModule() {
                       <div><p className="font-semibold">{selectedPkg?.name}</p><p className="text-sm text-background/70">BAV + AVB</p></div>
                     </div>
                     <div className="space-y-2 text-sm mb-4">
-                      <div className="flex justify-between"><span className="text-background/70">{t("bavApp.perEvent")}</span><span>{selectedPkg?.coverage.replace('€ ', '€')}</span></div>
-                      <div className="flex justify-between"><span className="text-background/70">{t("bavApp.perYear")}</span><span>{selectedPkg?.yearCoverage.replace('€ ', '€')}</span></div>
+                      <div className="flex justify-between"><span className="text-background/70">{t("bavApp.perEvent")}</span><span>{selectedPkg?.coverage.replace('€ ', '€').replace(/\s*per gebeurtenis$/i, '')}</span></div>
+                      <div className="flex justify-between"><span className="text-background/70">{t("bavApp.perYear")}</span><span>{selectedPkg?.yearCoverage.replace('€ ', '€').replace(/\s*per jaar$/i, '')}</span></div>
                     </div>
                     <div className="border-t border-white/20 pt-4">
                       <div className="flex justify-between items-end">
@@ -587,10 +601,10 @@ export function BAVApplicationModule() {
                       <li key={usp} className="flex items-center gap-2 text-sm"><CheckCircle className="h-4 w-4 text-accent flex-shrink-0" /><span className="text-background/90">{usp}</span></li>
                     ))}
                   </ul>
-                  <div className="mt-6 pt-6 border-t border-white/20">
-                    <p className="text-xs text-background/60">
+                  <div className="mt-6 -mx-6 md:-mx-8 -mb-6 md:-mb-8 px-6 md:px-8 py-4" style={{ backgroundColor: '#16A34A' }}>
+                    <p className="text-xs text-white">
                       {t("common.contactUs")}?{" "}
-                      <a href="tel:0232010502" className="text-accent hover:underline">023 - 201 0502</a>
+                      <a href="tel:0232010502" className="text-white font-semibold hover:underline">023 - 201 0502</a>
                     </p>
                   </div>
                 </div>
