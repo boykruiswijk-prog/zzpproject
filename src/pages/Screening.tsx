@@ -314,8 +314,21 @@ export default function Screening() {
                       })}
                     </div>
 
-                    <div className="bg-secondary rounded-lg p-4 text-sm text-muted-foreground">
-                      De exacte prijs van jouw screening wordt bepaald door de gekozen checks en jouw sector. Na je aanvraag neemt een adviseur van ZP Zaken binnen 24 uur contact met je op.
+                    <div className="bg-secondary rounded-lg p-4 text-sm text-muted-foreground space-y-3">
+                      <p>
+                        Alle screenings worden uitgevoerd via Otentica — ISO 27001 gecertificeerd specialist in geautomatiseerde screening. Na je aanvraag ontvang je binnen 24 uur een uitnodiging om de screening digitaal te doorlopen. Gemiddelde doorlooptijd: 1 tot 3 werkdagen.
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        <span className="inline-flex items-center gap-1 bg-background border border-border rounded-full px-3 py-1 text-xs font-medium text-foreground">
+                          <ShieldCheck className="h-3 w-3 text-accent" /> ISO 27001 gecertificeerd
+                        </span>
+                        <span className="inline-flex items-center gap-1 bg-background border border-border rounded-full px-3 py-1 text-xs font-medium text-foreground">
+                          <ShieldCheck className="h-3 w-3 text-accent" /> AVG-proof
+                        </span>
+                        <span className="inline-flex items-center gap-1 bg-background border border-border rounded-full px-3 py-1 text-xs font-medium text-foreground">
+                          <ShieldCheck className="h-3 w-3 text-accent" /> Resultaat binnen 3 werkdagen
+                        </span>
+                      </div>
                     </div>
 
                     <div className="flex justify-between pt-2">
