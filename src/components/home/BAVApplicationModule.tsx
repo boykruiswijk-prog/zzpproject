@@ -177,7 +177,7 @@ export function BAVApplicationModule() {
          const { data, error } = await supabase.functions.invoke("process-bav-wizard", {
            body: {
              pakket: selectedPackage,
-             betaalwijze: paymentType === "monthly" ? "maandelijks" : "jaarlijks",
+             betaalwijze: isMonthly ? "maandelijks" : "jaarlijks",
              ingangsdatum: startDate,
              voornaam: formData.voornaam,
              achternaam: formData.achternaam,
