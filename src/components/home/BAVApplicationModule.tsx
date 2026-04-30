@@ -569,8 +569,8 @@ export function BAVApplicationModule() {
                       <div><p className="font-semibold">{selectedPkg?.name}</p><p className="text-sm text-background/70">BAV + AVB</p></div>
                     </div>
                     <div className="space-y-2 text-sm mb-4">
-                      <div className="flex justify-between"><span className="text-background/70">{t("bavApp.perEvent")}</span><span>{selectedPkg?.coverage.replace('€ ', '€')}</span></div>
-                      <div className="flex justify-between"><span className="text-background/70">{t("bavApp.perYear")}</span><span>{selectedPkg?.yearCoverage.replace('€ ', '€')}</span></div>
+                      <div className="flex justify-between"><span className="text-background/70">{t("bavApp.perEvent")}</span><span>{selectedPkg?.coverage.replace('€ ', '€').replace(/\s*per gebeurtenis$/i, '')}</span></div>
+                      <div className="flex justify-between"><span className="text-background/70">{t("bavApp.perYear")}</span><span>{selectedPkg?.yearCoverage.replace('€ ', '€').replace(/\s*per jaar$/i, '')}</span></div>
                     </div>
                     <div className="border-t border-white/20 pt-4">
                       <div className="flex justify-between items-end">
