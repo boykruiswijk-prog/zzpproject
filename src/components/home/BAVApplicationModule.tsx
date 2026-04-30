@@ -203,7 +203,7 @@ export function BAVApplicationModule() {
          if (!data?.success) throw new Error(data?.error || "Onbekende fout");
 
          const _pkg = packages.find(p => p.id === selectedPackage);
-         if (_pkg) trackWizardComplete(_pkg.name, paymentType === "monthly" ? _pkg.priceMonthly : _pkg.priceYearly);
+         if (_pkg) trackWizardComplete(_pkg.name, _pkg.price);
          setIsSubmitted(true);
        } catch (error) {
          console.error("Error submitting application:", error);
