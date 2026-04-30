@@ -190,6 +190,7 @@ const App = () => (
             <Route path="/admin/dba-checks/bulk" element={<DbaCheckBulk />} />
             <Route path="/admin/dba-checks/bulk/:id" element={<DbaCheckBatchDetail />} />
             <Route path="/admin/dba-checks/:id" element={<DbaCheckDetail />} />
+            <Route path="/admin/screening-aanvragen" element={<AdminScreeningAanvragen />} />
             
             {/* Public verification */}
             <Route path="/verificatie/dba/:token" element={<DbaVerificatie />} />
