@@ -531,7 +531,8 @@ export function BAVApplicationModule() {
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.package")}</span><span className="font-medium">{selectedPkg?.name}</span></div>
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.coverage")}</span><span>{selectedPkg?.coverage}</span></div>
-                          <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.payment")}</span><span>{paymentType === "monthly" ? t("home.bavMonthly") : t("home.bavYearly")}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.payment")}</span><span>{isMonthly ? t("home.bavMonthly") : t("home.bavYearly")}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">Premie</span><span>€{selectedPkg?.price.toFixed(2).replace('.', ',')} {selectedPkg?.period}</span></div>
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.startDate")}</span><span>{startDate || t("bavApp.immediately")}</span></div>
                         </div>
                       </div>
