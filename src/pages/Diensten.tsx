@@ -94,7 +94,43 @@ export default function Diensten() {
       </motion.section>
 
       {services.map((service, index) => (
-        <ServiceCard key={service.id} {...service} index={index} />
+        <div key={service.id}>
+          <ServiceCard {...service} index={index} />
+          {service.id === "administratie" && (
+            <section className="bg-secondary py-16 lg:py-20 border-y border-border/50">
+              <div className="container-wide">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.5 }}
+                  className="max-w-2xl mx-auto bg-card rounded-2xl p-8 shadow-lg border border-border/50"
+                >
+                  <div className="inline-flex items-center gap-2 bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-semibold mb-4">
+                    <Calculator className="h-3.5 w-3.5" />
+                    Administratie
+                  </div>
+                  <h3 className="text-2xl md:text-3xl mb-3">Informer</h3>
+                  <p className="text-muted-foreground mb-6 leading-relaxed">
+                    Online boekhoud- en facturatiesoftware speciaal voor zzp'ers en kleine bedrijven. ZP Zaken heeft een officiële samenwerking met Informer.
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {["Online boekhouding", "Facturatie", "Samenwerking ZP Zaken"].map((feat) => (
+                      <span key={feat} className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 text-foreground px-3 py-1.5 rounded-lg text-sm">
+                        <Shield className="h-3.5 w-3.5 text-accent" />{feat}
+                      </span>
+                    ))}
+                  </div>
+                  <Button variant="accent" asChild>
+                    <a href="https://www.informer.nl" target="_blank" rel="noopener noreferrer">
+                      Meer informatie <ArrowRight className="h-4 w-4" />
+                    </a>
+                  </Button>
+                </motion.div>
+              </div>
+            </section>
+          )}
+        </div>
       ))}
 
       <motion.section initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="section-padding relative overflow-hidden">
