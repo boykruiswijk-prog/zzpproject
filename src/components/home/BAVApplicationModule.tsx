@@ -372,6 +372,17 @@ export function BAVApplicationModule() {
                         <Label htmlFor="aantalMedewerkers">{t("home.bavEmployees")} *</Label>
                         <Input id="aantalMedewerkers" name="aantalMedewerkers" type="number" min="0" value={formData.aantalMedewerkers} onChange={handleInputChange} className={cn(errors.aantalMedewerkers && "border-destructive")} />
                         <FieldError message={errors.aantalMedewerkers} />
+                        {formData.aantalMedewerkers && parseInt(formData.aantalMedewerkers) > 3 && (
+                          <div
+                            className="mt-2 flex items-start gap-2 p-3 rounded-md"
+                            style={{ backgroundColor: '#FFF5F5', borderLeft: '3px solid #E53E2F', color: '#E53E2F' }}
+                          >
+                            <HelpCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                            <p className="text-sm">
+                              Let op: bij meer dan 3 medewerkers kunnen aanvullende voorwaarden gelden. Onze adviseur neemt contact met je op om de dekking te bespreken.
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </motion.div>
