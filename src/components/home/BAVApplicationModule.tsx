@@ -18,9 +18,38 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import ellenAvatar from "@/assets/ellen-baars-avatar.jpg";
 
+// Drie pakketten: maandelijks, jaarlijks, jaarlijks + cyber
 const packages = [
-  { id: "basis", name: "Combi Basis", coverage: "€ 500.000 per gebeurtenis", yearCoverage: "€ 1.000.000 per jaar", priceMonthly: 30.00, priceYearly: 360.00, popular: false },
-  { id: "uitgebreid", name: "Combi Uitgebreid", coverage: "€ 2.500.000 per gebeurtenis", yearCoverage: "€ 5.000.000 per jaar", priceMonthly: 45.00, priceYearly: 540.00, popular: true },
+  {
+    id: "maandelijks",
+    name: "BAV + AVB Maandelijks",
+    coverage: "€ 5.000.000 per gebeurtenis",
+    yearCoverage: "€ 15.000.000 per jaar",
+    price: 55.00,
+    period: "per maand",
+    badge: null as string | null,
+    cyber: false,
+  },
+  {
+    id: "jaarlijks",
+    name: "BAV + AVB Jaarlijks",
+    coverage: "€ 5.000.000 per gebeurtenis",
+    yearCoverage: "€ 15.000.000 per jaar",
+    price: 600.00,
+    period: "per jaar",
+    badge: "Goedkoopste premie",
+    cyber: false,
+  },
+  {
+    id: "jaarlijks_cyber",
+    name: "BAV + AVB + Cyberdekking",
+    coverage: "€ 5.000.000 per gebeurtenis",
+    yearCoverage: "€ 15.000.000 per jaar",
+    price: 750.00,
+    period: "per jaar",
+    badge: "Optimale dekking",
+    cyber: true,
+  },
 ];
 
 const TOTAL_STEPS = 5;
