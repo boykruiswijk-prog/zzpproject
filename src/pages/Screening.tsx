@@ -30,37 +30,50 @@ const PAKKETTEN: Array<{
   id: ScreeningType;
   titel: string;
   badge?: string;
+  prijs: string;
+  subtekst: string;
   inhoud: string[];
   geschiktVoor: string;
 }> = [
   {
     id: "basis",
-    titel: "Basis screening",
+    titel: "ZP Check Basis",
     badge: "Meest gekozen",
-    inhoud: ["Identiteitsverificatie", "KvK-nummer check", "Adresverificatie"],
-    geschiktVoor: "Algemene opdrachten",
+    prijs: "€49,-",
+    subtekst: "eenmalig",
+    inhoud: [
+      "ID verificatie",
+      "Bedrijfscheck (KVK)",
+      "BTW check",
+      "IBAN check",
+    ],
+    geschiktVoor: "Algemene opdrachten, ICT en consultancy",
   },
   {
     id: "uitgebreid",
-    titel: "Uitgebreide screening",
+    titel: "ZP Check Uitgebreid",
+    prijs: "€129,-",
+    subtekst: "eenmalig",
     inhoud: [
-      "Alles uit Basis",
-      "VOG (Verklaring Omtrent Gedrag)",
-      "Referentiecheck",
-      "Diploma verificatie via DUO",
+      "Alles uit ZP Check Basis",
+      "VOG aanvragen",
+      "Diploma check via DUO",
+      "Referentiecontrole",
     ],
-    geschiktVoor: "Overheid en financiële sector",
+    geschiktVoor: "Overheid, financiële sector en juridisch",
   },
   {
     id: "compleet",
-    titel: "Complete screening",
+    titel: "ZP Check Compleet",
+    prijs: "€179,-",
+    subtekst: "eenmalig",
     inhoud: [
-      "Alles uit Uitgebreid",
-      "BIG-register check (zorg)",
-      "Beroepsregistratie verificatie",
-      "Compliance check Wet DBA",
+      "Alles uit ZP Check Uitgebreid",
+      "BIG register check",
+      "SKJ register check",
+      "Otentic AI documentverificatie",
     ],
-    geschiktVoor: "Zorg, finance en gereguleerde sectoren",
+    geschiktVoor: "Zorg, jeugdzorg en gereguleerde sectoren",
   },
 ];
 
