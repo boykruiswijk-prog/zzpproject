@@ -8,6 +8,7 @@ import {
   LogOut,
   ChevronLeft,
   ShieldCheck,
+  UserCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +16,7 @@ const navItems = [
   { to: "/admin", icon: LayoutDashboard, label: "Dashboard", end: true },
   { to: "/admin/leads", icon: Users, label: "Leads" },
   { to: "/admin/dba-checks", icon: ShieldCheck, label: "Wet DBA" },
+  { to: "/admin/screening-aanvragen", icon: UserCheck, label: "Screening aanvragen" },
   { to: "/admin/team", icon: UserCog, label: "Team", adminOnly: true },
 ];
 
