@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Shield, CheckCircle, Building2, User, FileCheck, CreditCard,
-  ArrowRight, ArrowLeft, Check, Sparkles, ExternalLink, AlertCircle
+  ArrowRight, ArrowLeft, Check, Sparkles, ExternalLink, AlertCircle, HelpCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatedSection } from "@/components/ui/animated-section";
