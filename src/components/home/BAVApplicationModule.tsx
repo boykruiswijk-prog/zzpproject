@@ -92,7 +92,12 @@ export function BAVApplicationModule() {
     const newErrors: ValidationErrors = {};
 
     if (step === 1) {
+      const today = new Date().toISOString().split('T')[0];
       if (!startDate) newErrors.startDate = t("bavApp.valStartDate");
+      else if (startDate < today) {
+        setStartDate(today);
+        newErrors.startDate = "Een verzekering kan niet met terugwerkende kracht worden afgesloten. De vroegste ingangsdatum is vandaag.";
+      }
     }
 
     if (step === 2) {
@@ -333,9 +338,28 @@ export function BAVApplicationModule() {
                     <div>
                        <Label htmlFor="startDate" className="text-sm font-medium mb-2 block">{t("home.bavStartDate")}</Label>
                        <div className="relative">
-                        <Input id="startDate" type="date" min={new Date().toISOString().split('T')[0]} value={startDate} onChange={(e) => { setStartDate(e.target.value); if (errors.startDate) setErrors(prev => { const n = { ...prev }; delete n.startDate; return n; }); }} className={cn(errors.startDate && "border-destructive")} />
+                        <Input
+                          id="startDate"
+                          type="date"
+                          min={new Date().toISOString().split('T')[0]}
+                          value={startDate}
+                          onChange={(e) => {
+                            setStartDate(e.target.value);
+                            if (errors.startDate) setErrors(prev => { const n = { ...prev }; delete n.startDate; return n; });
+                          }}
+                          onBlur={(e) => {
+                            const today = new Date().toISOString().split('T')[0];
+                            if (e.target.value && e.target.value < today) {
+                              setStartDate(today);
+                              setErrors(prev => ({ ...prev, startDate: "Een verzekering kan niet met terugwerkende kracht worden afgesloten. De vroegste ingangsdatum is vandaag." }));
+                            }
+                          }}
+                          className={cn(errors.startDate && "border-destructive")}
+                        />
                        </div>
-                       <FieldError message={errors.startDate} />
+                       {errors.startDate ? (
+                         <p className="text-xs mt-1.5" style={{ color: '#E53E2F' }}>{errors.startDate}</p>
+                       ) : null}
                      </div>
                   </motion.div>
                 )}
@@ -559,7 +583,11 @@ export function BAVApplicationModule() {
                     <Button variant="outline" onClick={prevStep}><ArrowLeft className="h-4 w-4" />{t("home.bavPrev")}</Button>
                   ) : <div />}
                   {currentStep < TOTAL_STEPS ? (
-                    <Button onClick={nextStep} className="bg-accent hover:bg-accent/90 text-accent-foreground">{t("home.bavNext")}<ArrowRight className="h-4 w-4" /></Button>
+                    <Button
+                      onClick={nextStep}
+                      disabled={currentStep === 1 && !!startDate && startDate < new Date().toISOString().split('T')[0]}
+                      className="bg-accent hover:bg-accent/90 text-accent-foreground"
+                    >{t("home.bavNext")}<ArrowRight className="h-4 w-4" /></Button>
                   ) : (
                     <Button
                       onClick={handleSubmit}

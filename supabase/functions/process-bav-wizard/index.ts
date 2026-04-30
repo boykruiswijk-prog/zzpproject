@@ -77,6 +77,18 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Server-side: ingangsdatum mag niet in het verleden liggen
+    const todayStr = new Date().toISOString().split("T")[0];
+    if (submission.ingangsdatum < todayStr) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Een verzekering kan niet met terugwerkende kracht worden afgesloten. De vroegste ingangsdatum is vandaag.",
+        }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const pakket = PAKKET_CONFIG[submission.pakket];
     const premium =
       submission.betaalwijze === "jaarlijks" ? pakket.jaarprijs : pakket.maandprijs;
