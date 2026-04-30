@@ -623,11 +623,19 @@ export function BAVApplicationModule() {
                   <div className="bg-white/10 rounded-xl p-5 mb-6">
                     <div className="flex items-center gap-3 mb-4">
                       <div className="h-10 w-10 rounded-lg bg-accent flex items-center justify-center"><Shield className="h-5 w-5 text-accent-foreground" /></div>
-                      <div><p className="font-semibold">{selectedPkg?.name}</p><p className="text-sm text-background/70">BAV + AVB</p></div>
+                      <div><p className="font-semibold">{selectedPkg?.name}</p><p className="text-sm text-background/70">BAV + AVB{selectedPkg?.cyber ? " + Cyber" : ""}</p></div>
                     </div>
                     <div className="space-y-2 text-sm mb-4">
-                      <div className="flex justify-between"><span className="text-background/70">{t("bavApp.perEvent")}</span><span>{selectedPkg?.coverage.replace('€ ', '€').replace(/\s*per gebeurtenis$/i, '')}</span></div>
-                      <div className="flex justify-between"><span className="text-background/70">{t("bavApp.perYear")}</span><span>{selectedPkg?.yearCoverage.replace('€ ', '€').replace(/\s*per jaar$/i, '')}</span></div>
+                      <div className="flex justify-between"><span className="text-background/70">BAV per gebeurtenis</span><span>€5.000.000</span></div>
+                      <div className="flex justify-between"><span className="text-background/70">BAV per jaar</span><span>€15.000.000</span></div>
+                      <div className="flex justify-between"><span className="text-background/70">AVB per gebeurtenis</span><span>€2.500.000</span></div>
+                      <div className="flex justify-between"><span className="text-background/70">AVB per jaar</span><span>€5.000.000</span></div>
+                      {selectedPkg?.cyber && (
+                        <>
+                          <div className="flex justify-between"><span className="text-background/70">Cyber per schade</span><span>€50.000</span></div>
+                          <div className="flex justify-between"><span className="text-background/70">Cyber per jaar</span><span>€5.000.000</span></div>
+                        </>
+                      )}
                     </div>
                     <div className="border-t border-white/20 pt-4">
                       <div className="flex justify-between items-end">
