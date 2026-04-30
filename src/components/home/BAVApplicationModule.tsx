@@ -330,39 +330,25 @@ export function BAVApplicationModule() {
                       <p className="text-muted-foreground text-sm">{t("home.bavChooseDesc")}</p>
                     </div>
                     <div className="grid gap-4">
-                      {/* TODO: Re-enable "basis" package later by removing the filter below */}
-                      {packages.filter(pkg => pkg.id === "uitgebreid").map((pkg) => (
+                      {packages.map((pkg) => (
                         <button key={pkg.id} onClick={() => setSelectedPackage(pkg.id)}
                           className={cn("relative p-5 rounded-xl border-2 text-left transition-all", selectedPackage === pkg.id ? "border-accent bg-accent/5" : "border-border hover:border-accent/50")}>
-                          {pkg.popular && <span className="absolute -top-3 left-4 bg-accent text-accent-foreground text-xs font-medium px-3 py-1 rounded-full">{t("home.bavMostChosen")}</span>}
+                          {pkg.badge && <span className="absolute -top-3 left-4 bg-accent text-accent-foreground text-xs font-medium px-3 py-1 rounded-full">{pkg.badge}</span>}
                           <div className="flex justify-between items-start">
                             <div>
                               <h4 className="font-semibold text-lg">{pkg.name}</h4>
-                              <p className="text-muted-foreground text-sm mt-1">{pkg.coverage}</p>
-                              <p className="text-muted-foreground text-sm">{pkg.yearCoverage}</p>
+                              <p className="text-muted-foreground text-sm mt-1">BAV: {pkg.coverage} / {pkg.yearCoverage}</p>
+                              <p className="text-muted-foreground text-sm">AVB: € 2.500.000 per gebeurtenis / € 5.000.000 per jaar</p>
+                              {pkg.cyber && <p className="text-muted-foreground text-sm">Cyber: € 50.000 per schade / € 5.000.000 per jaar</p>}
                             </div>
                             <div className="text-right">
-                              <p className="text-2xl font-bold text-foreground">€{(paymentType === "monthly" ? pkg.priceMonthly : pkg.priceYearly).toFixed(2).replace('.', ',')}</p>
-                              <p className="text-muted-foreground text-sm">{paymentType === "monthly" ? t("home.bavPerMonth") : t("home.bavPerYear")}</p>
+                              <p className="text-2xl font-bold text-foreground">€{pkg.price.toFixed(2).replace('.', ',')}</p>
+                              <p className="text-muted-foreground text-sm">{pkg.period}</p>
                             </div>
                           </div>
                           {selectedPackage === pkg.id && <div className="absolute bottom-3 right-3"><CheckCircle className="h-5 w-5 text-accent" /></div>}
                         </button>
                       ))}
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium mb-3 block">{t("home.bavPayment")}</Label>
-                      <div className="grid grid-cols-2 gap-3">
-                        <button onClick={() => setPaymentType("monthly")} className={cn("p-4 rounded-lg border-2 text-center transition-all", paymentType === "monthly" ? "border-accent bg-accent/5" : "border-border hover:border-accent/50")}>
-                          <p className="font-medium">{t("home.bavMonthly")}</p>
-                          <p className="text-muted-foreground text-sm">{t("home.bavMonthlyDesc")}</p>
-                        </button>
-                        <button onClick={() => setPaymentType("yearly")} className={cn("p-4 rounded-lg border-2 text-center transition-all relative", paymentType === "yearly" ? "border-accent bg-accent/5" : "border-border hover:border-accent/50")}>
-                          <span className="absolute -top-2 right-2 bg-accent text-accent-foreground text-xs font-medium px-2 py-0.5 rounded-full">{t("home.bavSave")}</span>
-                          <p className="font-medium">{t("home.bavYearly")}</p>
-                          <p className="text-muted-foreground text-sm">{t("home.bavYearlyDesc")}</p>
-                        </button>
-                      </div>
                     </div>
                     <div>
                        <Label htmlFor="startDate" className="text-sm font-medium mb-2 block">{t("home.bavStartDate")}</Label>
