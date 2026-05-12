@@ -145,6 +145,14 @@ export default function OverOns() {
                 <div className="aspect-[4/3] overflow-hidden">
                   {member.image ? (
                     <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                  ) : "photoPending" in member && member.photoPending ? (
+                    <div
+                      className="w-full h-full flex flex-col items-center justify-center text-white"
+                      style={{ background: "linear-gradient(135deg, #2f5d3a 0%, #3d7a4a 50%, #2f5d3a 100%)" }}
+                    >
+                      <Camera className="h-12 w-12 text-white/70 mb-2" />
+                      <span className="text-sm font-medium text-white/90">Foto volgt</span>
+                    </div>
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
                       {"vacancy" in member && member.vacancy ? (
@@ -161,18 +169,11 @@ export default function OverOns() {
                     <Shield className="h-3.5 w-3.5" />{member.role}
                   </span>
                   <p className="text-muted-foreground text-sm">{member.description}</p>
-                  {("email" in member && member.email) || ("phone" in member && member.phone) ? (
+                  {"email" in member && member.email ? (
                     <div className="mt-4 pt-4 border-t border-border/50 space-y-2">
-                      {"email" in member && member.email && (
-                        <a href={`mailto:${member.email}`} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors">
-                          <Mail className="h-3.5 w-3.5 text-accent" />{member.email}
-                        </a>
-                      )}
-                      {"phone" in member && member.phone && (
-                        <a href={`tel:${(member.phone as string).replace(/\s/g, "")}`} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors">
-                          <Phone className="h-3.5 w-3.5 text-accent" />{member.phone}
-                        </a>
-                      )}
+                      <a href={`mailto:${member.email}`} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors">
+                        <Mail className="h-3.5 w-3.5 text-accent" />{member.email}
+                      </a>
                     </div>
                   ) : null}
                   {"vacancy" in member && member.vacancy ? (
