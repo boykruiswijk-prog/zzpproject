@@ -185,7 +185,7 @@ export default function OverOns() {
                         <LocalizedLink to="/contact">Solliciteer direct →</LocalizedLink>
                       </Button>
                     </div>
-                  ) : !member.image ? (
+                  ) : !member.image && !("photoPending" in member && member.photoPending) ? (
                     <Button variant="outline" size="sm" className="mt-4" asChild>
                       <LocalizedLink to="/contact">Bekijk vacatures →</LocalizedLink>
                     </Button>
