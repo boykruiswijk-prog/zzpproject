@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Target, Eye, Users, Award, Heart, Shield, CheckCircle, UserPlus, Mail, Phone, User } from "lucide-react";
+import { ArrowRight, Target, Eye, Users, Award, Heart, Shield, CheckCircle, UserPlus, Mail, Phone, User, Camera } from "lucide-react";
 import teamMember1 from "@/assets/team-member-1.jpg";
 import teamMember2 from "@/assets/team-member-2.jpg";
 import teamMember3 from "@/assets/team-member-3.jpg";
