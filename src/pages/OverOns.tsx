@@ -216,6 +216,18 @@ export default function OverOns() {
               </div>
             </div>
           </div>
+
+          {/* Gezamenlijk telefoonnummer team */}
+          <div className="max-w-2xl mx-auto mt-10 flex items-start gap-3 bg-secondary/60 border border-border/60 p-4 rounded-lg">
+            <Phone className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-muted-foreground">
+              Telefonisch zijn wij bereikbaar via{" "}
+              <a href="tel:0204573077" className="font-medium text-foreground hover:text-accent transition-colors">
+                020 - 457 3077
+              </a>
+              . Via ons telefoonmenu ben je altijd bij de juiste persoon.
+            </p>
+          </div>
         </div>
       </section>
 
