@@ -4,28 +4,29 @@ import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Monitor, Palette, Wrench, Stethoscope, Briefcase, Rocket, Users, Shield, CheckCircle } from "lucide-react";
+import { ArrowRight, Monitor, Briefcase, Users, UserCog, Calculator, Scale, Megaphone, Compass, GraduationCap, Shield } from "lucide-react";
 import teamWalking from "@/assets/team-walking.jpg";
 import teamCheers from "@/assets/team-cheers.jpg";
 
-const audienceIcons = [Rocket, Briefcase, Monitor, Palette, Wrench, Stethoscope];
-const audienceKeys = ["starters", "experienced", "ict", "creative", "construction", "healthcare"] as const;
+const audiences = [
+  { icon: Monitor, title: "ICT & Software", description: "Developers, architects, consultants en andere IT-professionals." },
+  { icon: Briefcase, title: "Management Consultancy", description: "Zelfstandige adviseurs en interim managers in strategie, organisatie en verandering." },
+  { icon: UserCog, title: "HR & Recruitment", description: "HR managers, recruiters, L&D specialisten en organisatieadviseurs." },
+  { icon: Calculator, title: "Finance", description: "Financieel adviseurs, controllers, accountants en interim CFO's." },
+  { icon: Scale, title: "Zakelijke Dienstverlening", description: "Zelfstandige professionals in juridisch advies, notariaat en bedrijfsadvies." },
+  { icon: Megaphone, title: "PR & Marketing", description: "Communicatieadviseurs, marketeers, content specialisten en PR professionals." },
+  { icon: Compass, title: "Architectuur & Design", description: "Architecten, interieurontwerpers en ruimtelijk adviseurs." },
+  { icon: GraduationCap, title: "Coaching & Training", description: "Executive coaches, trainers, loopbaanadviseurs en facilitators." },
+];
 
 export default function VoorWie() {
   const { t } = useTranslation();
 
-  const audiences = audienceKeys.map((key, i) => ({
-    icon: audienceIcons[i],
-    title: t(`audiences.${key}`),
-    description: t(`audiences.${key}Desc`),
-    needs: t(`audiences.${key}Needs`, { returnObjects: true }) as string[],
-  }));
-
   return (
     <Layout>
       <SEOHead
-        title="Voor Wie is ZP Zaken? | ZZP Starters, ICT, Zorg & Meer"
-        description="ZP Zaken helpt zzp'ers in alle sectoren. Of je nu starter bent of al jaren zelfstandig — wij hebben het juiste verzekeringsadvies voor jouw situatie."
+        title="Voor Wie is ZP Zaken? | ICT, Consultancy, Finance & Meer"
+        description="ZP Zaken helpt zelfstandig professionals in ICT, consultancy, finance, marketing en meer. Persoonlijk verzekeringsadvies op maat voor jouw beroep."
       />
 
       <PageHero
@@ -37,26 +38,29 @@ export default function VoorWie() {
 
       <section className="section-padding bg-background">
         <div className="container-wide">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {audiences.map((audience) => (
-              <div key={audience.title} className="bg-card rounded-2xl p-8 shadow-card border border-border/50 hover:shadow-lg hover:border-accent/30 transition-all duration-300">
-                <div className="inline-flex items-center gap-3 bg-accent/10 border border-accent/20 px-4 py-2 rounded-xl mb-6">
-                  <audience.icon className="h-5 w-5 text-accent" />
-                  <h3 className="text-lg font-semibold">{audience.title}</h3>
+              <div key={audience.title} className="bg-card rounded-2xl p-6 shadow-card border border-border/50 hover:shadow-lg hover:border-accent/30 transition-all duration-300">
+                <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
+                  <audience.icon className="h-6 w-6 text-accent" />
                 </div>
-                <p className="text-muted-foreground mb-6">{audience.description}</p>
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {audience.needs.map((need) => (
-                    <span key={need} className="inline-flex items-center gap-1.5 bg-secondary text-foreground px-3 py-1.5 rounded-lg text-sm">
-                      <CheckCircle className="h-3.5 w-3.5 text-accent" />{need}
-                    </span>
-                  ))}
-                </div>
-                <Button variant="outline" size="sm" className="w-full" asChild>
-                  <LocalizedLink to="/contact">{t("voorWie.askAdvice")}<ArrowRight className="h-4 w-4" /></LocalizedLink>
-                </Button>
+                <h3 className="text-lg font-semibold mb-2">{audience.title}</h3>
+                <p className="text-sm text-muted-foreground">{audience.description}</p>
               </div>
             ))}
+          </div>
+
+          {/* Info block - Twijfel je */}
+          <div
+            className="max-w-3xl mx-auto mt-12 p-6 rounded-lg flex flex-col sm:flex-row sm:items-center gap-4 justify-between"
+            style={{ backgroundColor: "#FFF5F5", borderLeft: "3px solid #E53E2F" }}
+          >
+            <p className="text-sm text-foreground">
+              Twijfel je of jouw beroep onder onze dekking valt? Neem contact op — we denken graag met je mee.
+            </p>
+            <Button variant="accent" size="sm" asChild className="flex-shrink-0">
+              <LocalizedLink to="/contact">Neem contact op <ArrowRight className="h-4 w-4" /></LocalizedLink>
+            </Button>
           </div>
         </div>
       </section>
