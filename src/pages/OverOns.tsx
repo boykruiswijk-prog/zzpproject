@@ -4,11 +4,11 @@ import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Target, Eye, Users, Award, Heart, Shield, CheckCircle, UserPlus, Mail, Phone, User } from "lucide-react";
+import { ArrowRight, Target, Eye, Users, Award, Heart, Shield, CheckCircle, UserPlus, Mail, Phone, User, Camera } from "lucide-react";
 import teamMember1 from "@/assets/team-member-1.jpg";
 import teamMember2 from "@/assets/team-member-2.jpg";
 import teamMember3 from "@/assets/team-member-3.jpg";
-import teamMember4 from "@/assets/team-member-4.jpg";
+
 import teamMemberMystery from "@/assets/team-member-mystery.jpg";
 import teamWalking from "@/assets/team-walking.jpg";
 import teamCheers from "@/assets/team-cheers.jpg";
@@ -33,8 +33,8 @@ const team = [
   { name: "Boy Kruiswijk", role: "Oprichter", image: teamMember1, description: "Ruim 13 jaar geleden bedenker van de unieke polis voor zzp'ers in Nederland. Zijn visie: iedere ondernemer goed en zorgeloos verzekerd." },
   { name: "Roxy Taskin", role: "Backoffice", image: teamMember2, description: "Zorgt ervoor dat alles op de achtergrond soepel verloopt. Van administratie tot klantondersteuning." },
   { name: "Ellen Baars", role: "Senior Adviseur", image: teamMember3, description: "Met jarenlange ervaring in verzekeringen helpt zij ondernemers met passend advies voor hun situatie." },
-  { name: "Sandra Jonker - van Nobelen", role: "Financieel & Administratief", image: teamMemberMystery, description: "Sandra is onze financiële steunpilaar. Met meer dan 30 jaar ervaring in financiële administratie en salarisverwerking weet zij als geen ander hoe de backoffice van een dienstverlener in elkaar steekt. Na een loopbaan van 24 jaar bij HeadFirst Group brengt Sandra precisie en persoonlijk contact samen.", email: "sandra@zpzaken.nl", phone: "06 37 27 00 09" },
-  { name: "Gert-Jan Schellingerhout", role: "Adviseur", image: teamMember4, description: "Versterkt ons team met gedegen kennis en persoonlijk advies voor zelfstandig ondernemers." },
+  { name: "Sandra Jonker - van Nobelen", role: "Financieel & Administratief", image: teamMemberMystery, description: "Sandra is onze financiële steunpilaar. Met meer dan 30 jaar ervaring in financiële administratie en salarisverwerking weet zij als geen ander hoe de backoffice van een dienstverlener in elkaar steekt. Na een loopbaan van 24 jaar bij HeadFirst Group brengt Sandra precisie en persoonlijk contact samen.", email: "sandra@zpzaken.nl" },
+  { name: "Gert-Jan Schellingerhout", role: "Adviseur", image: null, photoPending: true, description: "Versterkt ons team met gedegen kennis en persoonlijk advies voor zelfstandig ondernemers." },
   { name: "We groeien!", role: "Nieuw teamlid", image: null, description: "ZP Zaken is op zoek naar versterking. Wil jij onderdeel worden van ons team?" },
   { name: "Online Sales Adviseur", role: "Sales", image: null, vacancy: true, description: "Wij zijn op zoek naar een gedreven online sales adviseur die zzp'ers helpt de juiste verzekering te vinden. Jij bent het eerste aanspreekpunt voor nieuwe klanten via de website, chat en telefoon. Je werkt vanuit huis of kantoor en combineert commercieel inzicht met oprechte aandacht voor de klant." },
   { name: "Sales Adviseur Buitendienst", role: "Sales", image: null, vacancy: true, description: "Wij zoeken een energieke buitendienstadviseur die actief op pad gaat om zzp'ers persoonlijk te begeleiden. Jij bouwt relaties op bij netwerkevenementen, bij opdrachtgevers en in het veld. Je combineert zelfstandigheid met de kracht van een sterk merk achter je." },
@@ -145,6 +145,14 @@ export default function OverOns() {
                 <div className="aspect-[4/3] overflow-hidden">
                   {member.image ? (
                     <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                  ) : "photoPending" in member && member.photoPending ? (
+                    <div
+                      className="w-full h-full flex flex-col items-center justify-center text-white"
+                      style={{ background: "linear-gradient(135deg, #2f5d3a 0%, #3d7a4a 50%, #2f5d3a 100%)" }}
+                    >
+                      <Camera className="h-12 w-12 text-white/70 mb-2" />
+                      <span className="text-sm font-medium text-white/90">Foto volgt</span>
+                    </div>
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
                       {"vacancy" in member && member.vacancy ? (
@@ -161,18 +169,11 @@ export default function OverOns() {
                     <Shield className="h-3.5 w-3.5" />{member.role}
                   </span>
                   <p className="text-muted-foreground text-sm">{member.description}</p>
-                  {("email" in member && member.email) || ("phone" in member && member.phone) ? (
+                  {"email" in member && member.email ? (
                     <div className="mt-4 pt-4 border-t border-border/50 space-y-2">
-                      {"email" in member && member.email && (
-                        <a href={`mailto:${member.email}`} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors">
-                          <Mail className="h-3.5 w-3.5 text-accent" />{member.email}
-                        </a>
-                      )}
-                      {"phone" in member && member.phone && (
-                        <a href={`tel:${(member.phone as string).replace(/\s/g, "")}`} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors">
-                          <Phone className="h-3.5 w-3.5 text-accent" />{member.phone}
-                        </a>
-                      )}
+                      <a href={`mailto:${member.email}`} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors">
+                        <Mail className="h-3.5 w-3.5 text-accent" />{member.email}
+                      </a>
                     </div>
                   ) : null}
                   {"vacancy" in member && member.vacancy ? (
@@ -184,7 +185,7 @@ export default function OverOns() {
                         <LocalizedLink to="/contact">Solliciteer direct →</LocalizedLink>
                       </Button>
                     </div>
-                  ) : !member.image ? (
+                  ) : !member.image && !("photoPending" in member && member.photoPending) ? (
                     <Button variant="outline" size="sm" className="mt-4" asChild>
                       <LocalizedLink to="/contact">Bekijk vacatures →</LocalizedLink>
                     </Button>
@@ -214,6 +215,18 @@ export default function OverOns() {
                 </Button>
               </div>
             </div>
+          </div>
+
+          {/* Gezamenlijk telefoonnummer team */}
+          <div className="max-w-2xl mx-auto mt-10 flex items-start gap-3 bg-secondary/60 border border-border/60 p-4 rounded-lg">
+            <Phone className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-muted-foreground">
+              Telefonisch zijn wij bereikbaar via{" "}
+              <a href="tel:0204573077" className="font-medium text-foreground hover:text-accent transition-colors">
+                020 - 457 3077
+              </a>
+              . Via ons telefoonmenu ben je altijd bij de juiste persoon.
+            </p>
           </div>
         </div>
       </section>
