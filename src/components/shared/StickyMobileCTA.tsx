@@ -1,4 +1,6 @@
 import { useLocation, Link } from "react-router-dom";
+import { Phone } from "lucide-react";
+import { trackPhone } from "@/lib/tracking";
 
 const HIDDEN_PATHS = ["/contact", "/verzekeringen"];
 
@@ -12,12 +14,26 @@ export function StickyMobileCTA() {
   }
 
   return (
-    <Link
-      to="/contact"
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center justify-center text-center font-bold text-white"
-      style={{ backgroundColor: "#E53E2F", height: "56px" }}
+    <div
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex text-white font-semibold"
+      style={{ height: "56px" }}
     >
-      Gratis adviesgesprek →
-    </Link>
+      <a
+        href="tel:0204573077"
+        onClick={() => trackPhone()}
+        className="flex-1 flex items-center justify-center gap-2 text-center"
+        style={{ backgroundColor: "#1f1f1f" }}
+      >
+        <Phone className="h-4 w-4" />
+        020 - 457 3077
+      </a>
+      <Link
+        to="/contact"
+        className="flex-1 flex items-center justify-center text-center"
+        style={{ backgroundColor: "#E53E2F" }}
+      >
+        Gratis advies →
+      </Link>
+    </div>
   );
 }
