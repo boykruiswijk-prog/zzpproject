@@ -9,14 +9,18 @@ import {
   ChevronLeft,
   ShieldCheck,
   UserCheck,
+  Plug,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+const ADMIN_EMAIL = "boy.kruiswijk@zpzaken.nl";
 
 const navItems = [
   { to: "/admin", icon: LayoutDashboard, label: "Dashboard", end: true },
   { to: "/admin/leads", icon: Users, label: "Leads" },
   { to: "/admin/dba-checks", icon: ShieldCheck, label: "Wet DBA" },
   { to: "/admin/screening-aanvragen", icon: UserCheck, label: "Screening aanvragen" },
+  { to: "/admin/integraties", icon: Plug, label: "Integraties", superAdminOnly: true },
   { to: "/admin/team", icon: UserCog, label: "Team", adminOnly: true },
 ];
 
@@ -41,6 +45,7 @@ export function AdminSidebar() {
       <nav className="flex-1 p-4 space-y-1">
         {navItems.map((item) => {
           if (item.adminOnly && !isAdmin) return null;
+          if (item.superAdminOnly && user?.email?.toLowerCase() !== ADMIN_EMAIL) return null;
           return (
             <NavLink
               key={item.to}

@@ -23,3 +23,12 @@ project_id = "eugkavokktjwpqaqlwsj"
 
  [functions.process-bav-wizard]
  verify_jwt = false
+
+ [functions.exact-oauth-callback]
+ verify_jwt = false
+
+ [functions.exact-oauth-init]
+ verify_jwt = false
+
+ [functions.exact-refresh-token]
+ verify_jwt = false
