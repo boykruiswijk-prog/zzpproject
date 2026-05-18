@@ -169,124 +169,141 @@ Deno.serve(async (req) => {
       })
       .catch((err) => console.error("send-notification failed:", err));
 
-    // ── 4. EXACT ONLINE (alleen als enabled + secrets aanwezig) ──
-    const { data: exactConfig } = await supabase
-      .from("integratie_config")
-      .select("*")
-      .eq("naam", "exact_online")
-      .maybeSingle();
+    // ── 4. EXACT ONLINE SYNC (via exact_tokens + subscription mapping) ──
+    try {
+      const TEST_MODE = Deno.env.get("EXACT_TEST_MODE") === "true";
+      const BASE_URL = Deno.env.get("EXACT_BASE_URL") ?? "https://start.exactonline.nl";
+      const environment = TEST_MODE ? "test" : "production";
 
-    const exactClientId = Deno.env.get("EXACT_CLIENT_ID");
-    const exactClientSecret = Deno.env.get("EXACT_CLIENT_SECRET");
-    const exactRefreshToken = Deno.env.get("EXACT_REFRESH_TOKEN");
-    const exactDivision = exactConfig?.division || Deno.env.get("EXACT_DIVISION");
+      // Haal token op; refresh als bijna verlopen (<60s)
+      let { data: tokenRow } = await supabase
+        .from("exact_tokens")
+        .select("*")
+        .eq("environment", environment)
+        .maybeSingle();
 
-    if (
-      exactConfig?.enabled &&
-      exactClientId &&
-      exactClientSecret &&
-      exactRefreshToken &&
-      exactDivision
-    ) {
-      try {
-        const tokenRes = await fetch("https://start.exactonline.nl/api/oauth2/token", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({
-            grant_type: "refresh_token",
-            refresh_token: exactRefreshToken,
-            client_id: exactClientId,
-            client_secret: exactClientSecret,
-          }),
-        });
-        if (!tokenRes.ok) throw new Error(`Token ${tokenRes.status}`);
-        const { access_token } = await tokenRes.json();
-
-        const base = `https://start.exactonline.nl/api/v1/${exactDivision}`;
-        const headers = {
-          Authorization: `Bearer ${access_token}`,
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        };
-
-        // Bestaande relatie zoeken
-        const safeEmail = submission.email.replace(/'/g, "''");
-        const zoekRes = await fetch(
-          `${base}/crm/Accounts?$filter=Email eq '${safeEmail}'&$select=ID`,
-          { headers }
-        );
-        const zoekData = await zoekRes.json();
-        let relatieId: string;
-
-        if (zoekData?.d?.results?.length > 0) {
-          relatieId = zoekData.d.results[0].ID;
-        } else {
-          const relatieRes = await fetch(`${base}/crm/Accounts`, {
-            method: "POST",
-            headers,
-            body: JSON.stringify({
-              Name: submission.bedrijfsnaam,
-              Email: submission.email,
-              Phone: submission.telefoon,
-              ChamberOfCommerce: submission.kvk_nummer,
-              IBAN: submission.iban,
-            }),
-          });
-          if (!relatieRes.ok) throw new Error(`Relatie aanmaken ${relatieRes.status}`);
-          const relatieData = await relatieRes.json();
-          relatieId = relatieData.d.ID;
-        }
-
-        // Abonnement aanmaken
-        const abonnementRes = await fetch(`${base}/subscription/Subscriptions`, {
-          method: "POST",
-          headers,
-          body: JSON.stringify({
-            OrderedBy: relatieId,
-            Description: `${pakket.naam} — BAV+AVB verzekering`,
-            StartDate: submission.ingangsdatum,
-            InvoicingStartDate: submission.ingangsdatum,
-            TimeUnit: submission.betaalwijze === "maandelijks" ? 3 : 12,
-            InvoiceDay: 1,
-            Notes: `Beroep: ${submission.beroep ?? "-"} | Betaalwijze: ${submission.betaalwijze}`,
-          }),
-        });
-        if (!abonnementRes.ok) throw new Error(`Abonnement ${abonnementRes.status}`);
-        const abonnementData = await abonnementRes.json();
-
-        const syncOp = new Date().toISOString();
-        await supabase
-          .from("bav_aanmeldingen")
-          .update({
-            exact_status: "gesynchroniseerd",
-            exact_relatie_id: relatieId,
-            exact_abonnement_id: abonnementData.d.EntryID,
-            exact_sync_op: syncOp,
-          })
-          .eq("id", aanmelding.id);
-
-        await supabase
-          .from("leads")
-          .update({
-            exact_status: "gesynchroniseerd",
-            exact_relatie_id: relatieId,
-            exact_abonnement_id: abonnementData.d.EntryID,
-            exact_sync_op: syncOp,
-          })
-          .eq("id", lead.id);
-      } catch (exactError) {
-        const foutBericht =
-          exactError instanceof Error ? exactError.message : "Onbekende fout";
-        console.error("Exact sync failed:", foutBericht);
-        await supabase
-          .from("bav_aanmeldingen")
-          .update({ exact_status: "gefaald", exact_fout: foutBericht })
-          .eq("id", aanmelding.id);
-        await supabase
-          .from("leads")
-          .update({ exact_status: "gefaald", exact_fout: foutBericht })
-          .eq("id", lead.id);
+      if (!tokenRow) {
+        throw new Error("Geen Exact token aanwezig — autoriseer eerst via /admin/integraties");
       }
+
+      const expiresMs = new Date(tokenRow.expires_at).getTime();
+      if (expiresMs - Date.now() < 60_000) {
+        const refreshRes = await supabase.functions.invoke("exact-refresh-token");
+        if (refreshRes.error) throw new Error(`Token refresh: ${refreshRes.error.message}`);
+        const { data: fresh } = await supabase
+          .from("exact_tokens").select("*").eq("environment", environment).maybeSingle();
+        if (fresh) tokenRow = fresh;
+      }
+
+      const accessToken = tokenRow.access_token;
+      const divisionCode = tokenRow.division_code;
+      const bedrijfsnaam = TEST_MODE
+        ? `TEST_${submission.bedrijfsnaam}`
+        : submission.bedrijfsnaam;
+
+      const apiHeaders = {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      };
+
+      // Stap A: Account aanmaken
+      const accountRes = await fetch(
+        `${BASE_URL}/api/v1/${divisionCode}/crm/Accounts`,
+        {
+          method: "POST",
+          headers: apiHeaders,
+          body: JSON.stringify({
+            Name: bedrijfsnaam,
+            Email: submission.email,
+            Phone: submission.telefoon,
+            ChamberOfCommerce: submission.kvk_nummer,
+            Country: "NL",
+            Status: "C",
+            IsSales: true,
+          }),
+        }
+      );
+      if (!accountRes.ok) throw new Error(`Account ${accountRes.status}: ${await accountRes.text()}`);
+      const accountData = await accountRes.json();
+      const accountId = accountData.d.ID;
+
+      // Stap B: Subscription type ophalen via mapping
+      const { data: mapping } = await supabase
+        .from("exact_subscription_mapping")
+        .select("exact_subscription_type_id")
+        .eq("pakket_naam", pakket.naam)
+        .eq("actief", true)
+        .maybeSingle();
+
+      if (!mapping || mapping.exact_subscription_type_id.startsWith("TODO_")) {
+        throw new Error(`Geen Exact subscription type GUID gekoppeld aan "${pakket.naam}"`);
+      }
+
+      // Stap C: Subscription aanmaken
+      const subRes = await fetch(
+        `${BASE_URL}/api/v1/${divisionCode}/subscription/Subscriptions`,
+        {
+          method: "POST",
+          headers: apiHeaders,
+          body: JSON.stringify({
+            OrderedBy: accountId,
+            InvoicedTo: accountId,
+            StartDate: submission.ingangsdatum,
+            SubscriptionType: mapping.exact_subscription_type_id,
+            Description: `BAV ${pakket.naam} - ${bedrijfsnaam}`,
+          }),
+        }
+      );
+      if (!subRes.ok) throw new Error(`Subscription ${subRes.status}: ${await subRes.text()}`);
+      const subData = await subRes.json();
+      const subscriptionId = subData.d.ID;
+
+      const syncOp = new Date().toISOString();
+      await supabase
+        .from("bav_aanmeldingen")
+        .update({
+          exact_status: "gesynchroniseerd",
+          exact_account_id: accountId,
+          exact_subscription_id: subscriptionId,
+          exact_relatie_id: accountId,
+          exact_abonnement_id: subscriptionId,
+          exact_gesynchroniseerd_op: syncOp,
+          exact_sync_op: syncOp,
+        })
+        .eq("id", aanmelding.id);
+
+      await supabase
+        .from("leads")
+        .update({
+          exact_status: "gesynchroniseerd",
+          exact_relatie_id: accountId,
+          exact_abonnement_id: subscriptionId,
+          exact_sync_op: syncOp,
+        })
+        .eq("id", lead.id);
+    } catch (exactError) {
+      const foutBericht = exactError instanceof Error ? exactError.message : "Onbekende fout";
+      console.error("Exact sync failed:", foutBericht);
+      await supabase
+        .from("bav_aanmeldingen")
+        .update({ exact_status: "fout", exact_fout: foutBericht, exact_foutmelding: foutBericht })
+        .eq("id", aanmelding.id);
+      await supabase
+        .from("leads")
+        .update({ exact_status: "gefaald", exact_fout: foutBericht })
+        .eq("id", lead.id);
+
+      // Notificatie mail naar info@zpzaken.nl
+      supabase.functions.invoke("send-notification", {
+        body: {
+          type: "exact_error",
+          naam: volledigeNaam,
+          email: submission.email,
+          telefoon: submission.telefoon || "-",
+          dekking: `Exact sync mislukt: ${foutBericht}`,
+        },
+      }).catch((e) => console.error("error mail failed:", e));
     }
 
     return new Response(
