@@ -81,9 +81,13 @@ export type Database = {
           bijgewerkt_op: string
           email: string
           exact_abonnement_id: string | null
+          exact_account_id: string | null
           exact_fout: string | null
+          exact_foutmelding: string | null
+          exact_gesynchroniseerd_op: string | null
           exact_relatie_id: string | null
           exact_status: string
+          exact_subscription_id: string | null
           exact_sync_op: string | null
           iban: string | null
           id: string
@@ -110,9 +114,13 @@ export type Database = {
           bijgewerkt_op?: string
           email: string
           exact_abonnement_id?: string | null
+          exact_account_id?: string | null
           exact_fout?: string | null
+          exact_foutmelding?: string | null
+          exact_gesynchroniseerd_op?: string | null
           exact_relatie_id?: string | null
           exact_status?: string
+          exact_subscription_id?: string | null
           exact_sync_op?: string | null
           iban?: string | null
           id?: string
@@ -139,9 +147,13 @@ export type Database = {
           bijgewerkt_op?: string
           email?: string
           exact_abonnement_id?: string | null
+          exact_account_id?: string | null
           exact_fout?: string | null
+          exact_foutmelding?: string | null
+          exact_gesynchroniseerd_op?: string | null
           exact_relatie_id?: string | null
           exact_status?: string
+          exact_subscription_id?: string | null
           exact_sync_op?: string | null
           iban?: string | null
           id?: string
@@ -516,6 +528,66 @@ export type Database = {
           laatste_sync?: string | null
           refresh_token?: string | null
           token_expires_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      exact_subscription_mapping: {
+        Row: {
+          aangemaakt_op: string
+          actief: boolean
+          exact_subscription_type_id: string
+          id: string
+          omschrijving: string | null
+          pakket_naam: string
+        }
+        Insert: {
+          aangemaakt_op?: string
+          actief?: boolean
+          exact_subscription_type_id: string
+          id?: string
+          omschrijving?: string | null
+          pakket_naam: string
+        }
+        Update: {
+          aangemaakt_op?: string
+          actief?: boolean
+          exact_subscription_type_id?: string
+          id?: string
+          omschrijving?: string | null
+          pakket_naam?: string
+        }
+        Relationships: []
+      }
+      exact_tokens: {
+        Row: {
+          access_token: string
+          created_at: string
+          division_code: string
+          environment: string
+          expires_at: string
+          id: string
+          refresh_token: string
+          updated_at: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string
+          division_code: string
+          environment?: string
+          expires_at: string
+          id?: string
+          refresh_token: string
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string
+          division_code?: string
+          environment?: string
+          expires_at?: string
+          id?: string
+          refresh_token?: string
           updated_at?: string
         }
         Relationships: []
