@@ -37,6 +37,32 @@
    }
  
    try {
+     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+     const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+
+     // Require team-member authentication
+     const authHeader = req.headers.get('Authorization');
+     if (!authHeader) {
+       return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
+         status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+       });
+     }
+     const userClient = createClient(supabaseUrl, anonKey, { global: { headers: { Authorization: authHeader } } });
+     const { data: { user } } = await userClient.auth.getUser();
+     if (!user) {
+       return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
+         status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+       });
+     }
+     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+     const { data: isTeam } = await supabase.rpc('is_team_member', { _user_id: user.id });
+     if (!isTeam) {
+       return new Response(JSON.stringify({ success: false, error: 'Forbidden' }), {
+         status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+       });
+     }
+
      const apiKey = Deno.env.get('FIRECRAWL_API_KEY');
      if (!apiKey) {
        console.error('FIRECRAWL_API_KEY not configured');
@@ -45,10 +71,7 @@
          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
        );
      }
- 
-     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
  
      const articles: Article[] = [];
  
