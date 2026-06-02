@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   UserCheck,
   Plug,
+  KeyRound,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +20,7 @@ const navItems = [
   { to: "/admin", icon: LayoutDashboard, label: "Dashboard", end: true },
   { to: "/admin/leads", icon: Users, label: "Leads" },
   { to: "/admin/dba-checks", icon: ShieldCheck, label: "Wet DBA" },
+  { to: "/admin/wachtwoord-wijzigen", icon: KeyRound, label: "Wachtwoord wijzigen" },
   { to: "/admin/screening-aanvragen", icon: UserCheck, label: "Screening aanvragen" },
   { to: "/admin/integraties", icon: Plug, label: "Integraties", superAdminOnly: true },
   { to: "/admin/exact-koppeling", icon: Plug, label: "Exact koppeling", superAdminOnly: true },

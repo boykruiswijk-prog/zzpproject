@@ -34,7 +34,8 @@ import AdminScreeningAanvragen from "./pages/admin/ScreeningAanvragen";
 import AdminIntegraties from "./pages/admin/Integraties";
 import AdminExactKoppeling from "./pages/admin/ExactKoppeling";
 import ExactCallback from "./pages/ExactCallback";
-import AdminLogin from "./pages/admin/Login";
+import AdminLogin from "./pages/admin/LoginPage";
+import ChangePasswordPage from "./pages/admin/ChangePasswordPage";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminLeads from "./pages/admin/Leads";
 import AdminLeadDetail from "./pages/admin/LeadDetail";
@@ -45,8 +46,8 @@ import DbaCheckDetail from "./pages/admin/DbaCheckDetail";
 import DbaCheckBulk from "./pages/admin/DbaCheckBulk";
 import DbaCheckBatchDetail from "./pages/admin/DbaCheckBatchDetail";
 import DbaVerificatie from "./pages/DbaVerificatie";
-import ForgotPassword from "./pages/admin/ForgotPassword";
-import ResetPassword from "./pages/admin/ResetPassword";
+import ForgotPassword from "./pages/admin/ForgotPasswordPage";
+import ResetPassword from "./pages/admin/ResetPasswordPage";
 import ScreenshotHelper from "./pages/ScreenshotHelper";
 import AlgemeneVoorwaarden from "./pages/AlgemeneVoorwaarden";
 import Klachtenprocedure from "./pages/Klachtenprocedure";
@@ -183,7 +184,9 @@ const App = () => (
             {/* Admin routes (no i18n) */}
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/wachtwoord-vergeten" element={<ForgotPassword />} />
+            <Route path="/admin/wachtwoord-reset" element={<ResetPassword />} />
             <Route path="/admin/reset-password" element={<ResetPassword />} />
+            <Route path="/admin/wachtwoord-wijzigen" element={<ChangePasswordPage />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/leads" element={<AdminLeads />} />
             <Route path="/admin/leads/:id" element={<AdminLeadDetail />} />
