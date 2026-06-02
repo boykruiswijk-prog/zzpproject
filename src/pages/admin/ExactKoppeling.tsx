@@ -75,9 +75,9 @@ export default function ExactKoppeling() {
   const loadAll = async () => {
     setLoading(true);
     const [{ data: cfg }, { data: logRows }] = await Promise.all([
-      // @ts-expect-error - table not yet in generated types
+      // table not yet in generated types
       supabase.from("exact_config").select("*").maybeSingle(),
-      // @ts-expect-error - table not yet in generated types
+      // table not yet in generated types
       supabase
         .from("exact_sync_log")
         .select("id,created_at,trigger_type,status,exact_account_id,error_message,http_status")
@@ -111,10 +111,10 @@ export default function ExactKoppeling() {
     };
     let error;
     if (config) {
-      // @ts-expect-error - table not yet in generated types
+      // table not yet in generated types
       ({ error } = await supabase.from("exact_config").update(payload).eq("id", config.id));
     } else {
-      // @ts-expect-error - table not yet in generated types
+      // table not yet in generated types
       ({ error } = await supabase.from("exact_config").insert(payload));
     }
     setSaving(false);
@@ -157,7 +157,7 @@ export default function ExactKoppeling() {
   const disconnect = async () => {
     if (!config) return;
     if (!confirm("Weet je zeker dat je de Exact-koppeling wilt ontkoppelen?")) return;
-    // @ts-expect-error - table not yet in generated types
+    // table not yet in generated types
     const { error } = await supabase
       .from("exact_config")
       .update({
