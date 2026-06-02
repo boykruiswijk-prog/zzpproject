@@ -493,6 +493,7 @@ export type Database = {
       exact_config: {
         Row: {
           access_token: string | null
+          access_token_expires_at: string | null
           base_url: string | null
           client_id: string | null
           client_secret: string | null
@@ -500,12 +501,18 @@ export type Database = {
           id: string
           is_actief: boolean
           laatste_sync: string | null
+          last_error: string | null
+          last_sync_at: string | null
+          redirect_uri: string | null
           refresh_token: string | null
+          refresh_token_obtained_at: string | null
           token_expires_at: string | null
           updated_at: string
+          webhook_secret: string | null
         }
         Insert: {
           access_token?: string | null
+          access_token_expires_at?: string | null
           base_url?: string | null
           client_id?: string | null
           client_secret?: string | null
@@ -513,12 +520,18 @@ export type Database = {
           id?: string
           is_actief?: boolean
           laatste_sync?: string | null
+          last_error?: string | null
+          last_sync_at?: string | null
+          redirect_uri?: string | null
           refresh_token?: string | null
+          refresh_token_obtained_at?: string | null
           token_expires_at?: string | null
           updated_at?: string
+          webhook_secret?: string | null
         }
         Update: {
           access_token?: string | null
+          access_token_expires_at?: string | null
           base_url?: string | null
           client_id?: string | null
           client_secret?: string | null
@@ -526,9 +539,32 @@ export type Database = {
           id?: string
           is_actief?: boolean
           laatste_sync?: string | null
+          last_error?: string | null
+          last_sync_at?: string | null
+          redirect_uri?: string | null
           refresh_token?: string | null
+          refresh_token_obtained_at?: string | null
           token_expires_at?: string | null
           updated_at?: string
+          webhook_secret?: string | null
+        }
+        Relationships: []
+      }
+      exact_oauth_state: {
+        Row: {
+          created_at: string
+          expires_at: string
+          state: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          state: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          state?: string
         }
         Relationships: []
       }
@@ -556,6 +592,39 @@ export type Database = {
           id?: string
           omschrijving?: string | null
           pakket_naam?: string
+        }
+        Relationships: []
+      }
+      exact_sync_log: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          exact_account_id: string | null
+          http_status: number | null
+          id: string
+          payload: Json | null
+          status: string | null
+          trigger_type: string | null
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          exact_account_id?: string | null
+          http_status?: number | null
+          id?: string
+          payload?: Json | null
+          status?: string | null
+          trigger_type?: string | null
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          exact_account_id?: string | null
+          http_status?: number | null
+          id?: string
+          payload?: Json | null
+          status?: string | null
+          trigger_type?: string | null
         }
         Relationships: []
       }
@@ -1096,6 +1165,7 @@ export type Database = {
     }
     Functions: {
       accept_portal_invitation: { Args: { _token: string }; Returns: Json }
+      cleanup_expired_oauth_states: { Args: never; Returns: undefined }
       get_pilot_signup_count: { Args: { pilot: string }; Returns: number }
       has_role: {
         Args: {
