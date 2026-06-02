@@ -174,6 +174,15 @@ Deno.serve(async (req) => {
     // Use service role to update ubl_exported_at
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
+    // Team-member check (prevent portal customers from exporting all invoices)
+    const { data: isTeam, error: roleErr } = await supabase.rpc("is_team_member", { _user_id: user.id });
+    if (roleErr || !isTeam) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Fetch all invoices that have NOT been exported yet
     const { data: invoices, error: invError } = await supabase
       .from("invoices")
