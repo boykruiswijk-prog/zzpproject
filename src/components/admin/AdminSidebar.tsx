@@ -21,6 +21,7 @@ const navItems = [
   { to: "/admin/dba-checks", icon: ShieldCheck, label: "Wet DBA" },
   { to: "/admin/screening-aanvragen", icon: UserCheck, label: "Screening aanvragen" },
   { to: "/admin/integraties", icon: Plug, label: "Integraties", superAdminOnly: true },
+  { to: "/admin/exact-koppeling", icon: Plug, label: "Exact koppeling", superAdminOnly: true },
   { to: "/admin/team", icon: UserCog, label: "Team", adminOnly: true },
 ];
 
