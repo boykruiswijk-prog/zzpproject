@@ -42,7 +42,7 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const RECOMMENDED_REDIRECT = `${SUPABASE_URL}/functions/v1/exact-oauth-callback`;
 
 export default function ExactKoppeling() {
-  const { user, isAdmin, loading: authLoading } = useAuth();
+  const { user, isAdmin, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
