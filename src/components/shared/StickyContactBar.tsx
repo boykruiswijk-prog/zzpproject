@@ -36,7 +36,7 @@ export function StickyContactBar() {
             <span className="hidden sm:inline">020 - 457 3077</span>
           </a>
           <a
-            href="https://wa.me/31204573077"
+            href="https://wa.me/31652064589"
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => trackWhatsApp()}

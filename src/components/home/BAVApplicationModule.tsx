@@ -93,10 +93,15 @@ export function BAVApplicationModule() {
 
     if (step === 1) {
       const today = new Date().toISOString().split('T')[0];
+      const maxDate = new Date();
+      maxDate.setMonth(maxDate.getMonth() + 6);
+      const maxStr = maxDate.toISOString().split('T')[0];
       if (!startDate) newErrors.startDate = t("bavApp.valStartDate");
       else if (startDate < today) {
         setStartDate(today);
-        newErrors.startDate = "Een verzekering kan niet met terugwerkende kracht worden afgesloten. De vroegste ingangsdatum is vandaag.";
+        newErrors.startDate = "De ingangsdatum kan niet in het verleden liggen. Neem contact op als je met terugwerkende kracht wilt verzekeren.";
+      } else if (startDate > maxStr) {
+        newErrors.startDate = "Kies een datum binnen 6 maanden. Voor latere ingangsdata neem contact op.";
       }
     }
 
@@ -108,6 +113,7 @@ export function BAVApplicationModule() {
       if (!formData.functie.trim()) newErrors.functie = t("bavApp.valFunction");
       if (!formData.aantalMedewerkers.trim()) newErrors.aantalMedewerkers = t("bavApp.valEmployees");
       else if (parseInt(formData.aantalMedewerkers) < 0) newErrors.aantalMedewerkers = t("bavApp.valEmployeesInvalid");
+      // >3 medewerkers blokkeert niet: gebruiker mag door, aanvraag wordt gemarkeerd voor handmatige beoordeling.
     }
 
     if (step === 3) {
@@ -159,6 +165,7 @@ export function BAVApplicationModule() {
              beroep: formData.beroep || null,
              iban: formData.iban || null,
              rekeninghouder: `${formData.voornaam} ${formData.achternaam}`.trim(),
+             vereist_handmatige_beoordeling: parseInt(formData.aantalMedewerkers || "0") > 3,
              opmerkingen: [
                formData.opdrachtgever ? `Opdrachtgever: ${formData.opdrachtgever}` : null,
                formData.bemiddelaarNaam ? `Bemiddelaar: ${formData.bemiddelaarNaam}` : null,
@@ -342,6 +349,7 @@ export function BAVApplicationModule() {
                           id="startDate"
                           type="date"
                           min={new Date().toISOString().split('T')[0]}
+                          max={(() => { const d = new Date(); d.setMonth(d.getMonth() + 6); return d.toISOString().split('T')[0]; })()}
                           value={startDate}
                           onChange={(e) => {
                             setStartDate(e.target.value);
@@ -349,9 +357,13 @@ export function BAVApplicationModule() {
                           }}
                           onBlur={(e) => {
                             const today = new Date().toISOString().split('T')[0];
+                            const max = new Date(); max.setMonth(max.getMonth() + 6);
+                            const maxStr = max.toISOString().split('T')[0];
                             if (e.target.value && e.target.value < today) {
                               setStartDate(today);
-                              setErrors(prev => ({ ...prev, startDate: "Een verzekering kan niet met terugwerkende kracht worden afgesloten. De vroegste ingangsdatum is vandaag." }));
+                              setErrors(prev => ({ ...prev, startDate: "De ingangsdatum kan niet in het verleden liggen. Neem contact op als je met terugwerkende kracht wilt verzekeren." }));
+                            } else if (e.target.value && e.target.value > maxStr) {
+                              setErrors(prev => ({ ...prev, startDate: "Kies een datum binnen 6 maanden. Voor latere ingangsdata neem contact op." }));
                             }
                           }}
                           className={cn(errors.startDate && "border-destructive")}
@@ -393,17 +405,30 @@ export function BAVApplicationModule() {
                       </div>
                       <div>
                         <Label htmlFor="aantalMedewerkers">{t("home.bavEmployees")} *</Label>
-                        <Input id="aantalMedewerkers" name="aantalMedewerkers" type="number" min="0" value={formData.aantalMedewerkers} onChange={handleInputChange} className={cn(errors.aantalMedewerkers && "border-destructive")} />
+                        <Input
+                          id="aantalMedewerkers"
+                          name="aantalMedewerkers"
+                          type="number"
+                          min="0"
+                          value={formData.aantalMedewerkers}
+                          onChange={handleInputChange}
+                          className={cn(
+                            errors.aantalMedewerkers && "border-destructive",
+                            !errors.aantalMedewerkers && formData.aantalMedewerkers && parseInt(formData.aantalMedewerkers) > 3 && "border-orange-400 focus-visible:ring-orange-400"
+                          )}
+                        />
                         <FieldError message={errors.aantalMedewerkers} />
                         {formData.aantalMedewerkers && parseInt(formData.aantalMedewerkers) > 3 && (
-                          <div
-                            className="mt-2 flex items-start gap-2 p-3 rounded-md"
-                            style={{ backgroundColor: '#FFF5F5', borderLeft: '3px solid #E53E2F', color: '#E53E2F' }}
-                          >
-                            <HelpCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
-                            <p className="text-sm">
-                              Let op: bij meer dan 3 medewerkers kunnen aanvullende voorwaarden gelden. Onze adviseur neemt contact met je op om de dekking te bespreken.
-                            </p>
+                          <div className="mt-2 flex flex-col sm:flex-row sm:items-center gap-3 p-3 rounded-md border border-orange-300 bg-orange-50">
+                            <div className="flex items-start gap-2 flex-1">
+                              <HelpCircle className="h-4 w-4 flex-shrink-0 mt-0.5 text-orange-600" />
+                              <p className="text-sm text-orange-900">
+                                Voor meer dan 3 medewerkers vragen we je contact met ons op te nemen voor een passend voorstel. Onze adviseurs helpen je graag verder.
+                              </p>
+                            </div>
+                            <Button variant="outline" size="sm" asChild className="flex-shrink-0 border-orange-400 text-orange-700 hover:bg-orange-100">
+                              <Link to="/contact">Neem contact op</Link>
+                            </Button>
                           </div>
                         )}
                       </div>

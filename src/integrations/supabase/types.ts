@@ -860,6 +860,7 @@ export type Database = {
           telefoon: string | null
           type: Database["public"]["Enums"]["lead_type"]
           updated_at: string
+          vereist_handmatige_beoordeling: boolean
           verzekerd_bedrag: string | null
           verzekering_type: string | null
           voornaam: string
@@ -889,6 +890,7 @@ export type Database = {
           telefoon?: string | null
           type?: Database["public"]["Enums"]["lead_type"]
           updated_at?: string
+          vereist_handmatige_beoordeling?: boolean
           verzekerd_bedrag?: string | null
           verzekering_type?: string | null
           voornaam: string
@@ -918,6 +920,7 @@ export type Database = {
           telefoon?: string | null
           type?: Database["public"]["Enums"]["lead_type"]
           updated_at?: string
+          vereist_handmatige_beoordeling?: boolean
           verzekerd_bedrag?: string | null
           verzekering_type?: string | null
           voornaam?: string

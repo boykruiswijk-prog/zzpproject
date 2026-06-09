@@ -51,6 +51,7 @@ import ResetPassword from "./pages/admin/ResetPasswordPage";
 import ScreenshotHelper from "./pages/ScreenshotHelper";
 import AlgemeneVoorwaarden from "./pages/AlgemeneVoorwaarden";
 import Klachtenprocedure from "./pages/Klachtenprocedure";
+import Documenten from "./pages/Documenten";
 import { PortalAuthProvider } from "@/contexts/PortalAuthContext";
 import { RequirePortalAuth } from "@/components/portal/RequirePortalAuth";
 import PortalLogin from "./pages/portal/PortalLogin";
@@ -151,6 +152,7 @@ const publicRoutes = (
     <Route path="algemene-voorwaarden" element={<AlgemeneVoorwaarden />} />
     <Route path="klachtenprocedure" element={<Klachtenprocedure />} />
     <Route path="klachten" element={<Klachtenprocedure />} />
+    <Route path="documenten" element={<Documenten />} />
     <Route path="collectieve-inkoop" element={<CollectieveInkoop />} />
     {/* TODO: Re-enable collectief-ledenorganisaties route when ready to go live */}
     {/* <Route path="collectief-ledenorganisaties" element={<CollectiefLedenorganisaties />} /> */}
