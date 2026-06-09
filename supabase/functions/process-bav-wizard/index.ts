@@ -45,6 +45,7 @@ interface BavSubmission {
   iban?: string;
   rekeninghouder?: string;
   opmerkingen?: string;
+  vereist_handmatige_beoordeling?: boolean;
 }
 
 Deno.serve(async (req) => {
@@ -120,6 +121,7 @@ Deno.serve(async (req) => {
           .join("\n") || null,
         bron: "website",
         exact_status: "wachtend",
+        vereist_handmatige_beoordeling: submission.vereist_handmatige_beoordeling === true,
       })
       .select()
       .single();

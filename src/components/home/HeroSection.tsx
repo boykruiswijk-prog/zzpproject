@@ -7,6 +7,7 @@ import { TrustBar } from "@/components/shared/TrustBar";
 import { trackCTA, trackPhone } from "@/lib/tracking";
 import teamWalking from "@/assets/team-walking.jpg";
 import ellenAvatar from "@/assets/ellen-baars-avatar.jpg";
+import { ResponseTimePromise } from "@/components/common/ResponseTimePromise";
 
 export function HeroSection() {
   const { t } = useTranslation();
@@ -105,10 +106,10 @@ export function HeroSection() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 1 }}
-              className="flex flex-col sm:flex-row items-start sm:items-center gap-4"
+              className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4"
             >
               <a 
-                href="tel:0204573077" 
+                href="tel:+31204573077" 
                 className="inline-flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground transition-colors"
                 onClick={() => trackPhone()}
               >
@@ -122,6 +123,14 @@ export function HeroSection() {
                 <span className="text-sm font-semibold text-primary-foreground ml-1">4.9/5</span>
                 <span className="text-sm text-primary-foreground/60 ml-1">· {t("shared.satisfiedFreelancers")}</span>
               </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.1 }}
+            >
+              <ResponseTimePromise variant="dark" />
             </motion.div>
           </motion.div>
 
