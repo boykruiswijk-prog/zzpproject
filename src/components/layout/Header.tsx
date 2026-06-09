@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import logoZp from "@/assets/logo-zp.webp";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { LocalizedLink } from "@/components/LocalizedLink";
+import { SiteSearch } from "@/components/search/SiteSearch";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -139,11 +140,12 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="hidden lg:flex items-center gap-4">
+        <div className="hidden lg:flex items-center gap-3">
+          <SiteSearch />
           <LanguageSwitcher />
-          <a href="tel:0204573077" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <a href="tel:+31204573077" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
             <Phone className="h-4 w-4" />
-            {t("nav.phone")}
+            020 - 457 3077
           </a>
           <Button
             variant="outline"
