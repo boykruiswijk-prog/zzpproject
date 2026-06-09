@@ -93,10 +93,15 @@ export function BAVApplicationModule() {
 
     if (step === 1) {
       const today = new Date().toISOString().split('T')[0];
+      const maxDate = new Date();
+      maxDate.setMonth(maxDate.getMonth() + 6);
+      const maxStr = maxDate.toISOString().split('T')[0];
       if (!startDate) newErrors.startDate = t("bavApp.valStartDate");
       else if (startDate < today) {
         setStartDate(today);
-        newErrors.startDate = "Een verzekering kan niet met terugwerkende kracht worden afgesloten. De vroegste ingangsdatum is vandaag.";
+        newErrors.startDate = "De ingangsdatum kan niet in het verleden liggen. Neem contact op als je met terugwerkende kracht wilt verzekeren.";
+      } else if (startDate > maxStr) {
+        newErrors.startDate = "Kies een datum binnen 6 maanden. Voor latere ingangsdata neem contact op.";
       }
     }
 
@@ -108,6 +113,7 @@ export function BAVApplicationModule() {
       if (!formData.functie.trim()) newErrors.functie = t("bavApp.valFunction");
       if (!formData.aantalMedewerkers.trim()) newErrors.aantalMedewerkers = t("bavApp.valEmployees");
       else if (parseInt(formData.aantalMedewerkers) < 0) newErrors.aantalMedewerkers = t("bavApp.valEmployeesInvalid");
+      // >3 medewerkers blokkeert niet: gebruiker mag door, aanvraag wordt gemarkeerd voor handmatige beoordeling.
     }
 
     if (step === 3) {
@@ -159,6 +165,7 @@ export function BAVApplicationModule() {
              beroep: formData.beroep || null,
              iban: formData.iban || null,
              rekeninghouder: `${formData.voornaam} ${formData.achternaam}`.trim(),
+             vereist_handmatige_beoordeling: parseInt(formData.aantalMedewerkers || "0") > 3,
              opmerkingen: [
                formData.opdrachtgever ? `Opdrachtgever: ${formData.opdrachtgever}` : null,
                formData.bemiddelaarNaam ? `Bemiddelaar: ${formData.bemiddelaarNaam}` : null,
