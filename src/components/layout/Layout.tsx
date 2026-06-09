@@ -4,6 +4,7 @@ import { CookieConsent } from "@/components/CookieConsent";
 import { StickyContactBar } from "@/components/shared/StickyContactBar";
 import { StickyMobileCTA } from "@/components/shared/StickyMobileCTA";
 import { ExitIntentPopup } from "@/components/shared/ExitIntentPopup";
+import { WhatsAppFloatingButton } from "@/components/common/WhatsAppFloatingButton";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -19,6 +20,7 @@ export function Layout({ children }: LayoutProps) {
       <StickyMobileCTA />
       <StickyContactBar />
       <ExitIntentPopup />
+      <WhatsAppFloatingButton />
     </div>
   );
 }
