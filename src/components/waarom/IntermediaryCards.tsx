@@ -7,19 +7,19 @@ const fade = {
 
 const cards = [
   {
-    name: "HeadFirst Group",
-    subtitle: "Verzekering via Alicia Benefits",
+    name: "Bemiddelaar A",
+    subtitle: "Verzekering via verzekeraar A",
     rows: [
-      ["Model", "Verzekering per gewerkt uur, collectief via Alicia"],
+      ["Model", "Verzekering per gewerkt uur, collectief via verzekeraar A"],
       ["Afhankelijkheid", "Dekking eindigt bij einde opdracht"],
       ["Eigen risico AVB", "€500 per schade"],
       ["Eigen risico BAV", "€2.500 per beroepsfout"],
-      ["Bemiddeling", "Actief, via Select-platform, tegen vergoeding"],
+      ["Bemiddeling", "Actief, via hun platform, tegen vergoeding"],
     ],
   },
   {
-    name: "Magnit",
-    subtitle: "Verzekering via Alicia Benefits",
+    name: "Bemiddelaar B",
+    subtitle: "Verzekering via verzekeraar A",
     rows: [
       ["Model", "Verzekering per gewerkt uur, automatisch geïncasseerd"],
       ["Afhankelijkheid", "Dekking eindigt bij einde opdracht"],
