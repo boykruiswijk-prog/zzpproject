@@ -7,8 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Mail, ArrowLeft, CheckCircle } from "lucide-react";
 
-// TODO: Update this URL to https://zpzaken.nl/admin/reset-password when going live
-const RESET_REDIRECT_URL = "https://zzpproject.lovable.app/admin/reset-password";
+const RESET_REDIRECT_PATH = "/admin/reset-password";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -21,7 +20,7 @@ export default function ForgotPassword() {
     setIsLoading(true);
 
     await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: RESET_REDIRECT_URL,
+      redirectTo: `${window.location.origin}${RESET_REDIRECT_PATH}`,
     });
 
     // Always show success — don't reveal if email exists
