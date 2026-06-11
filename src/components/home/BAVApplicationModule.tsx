@@ -621,15 +621,16 @@ export function BAVApplicationModule() {
                         <p className="text-xs text-muted-foreground">
                           Door op 'Verstuur aanvraag' te klikken bevestig je dat je deze documenten hebt gelezen.
                         </p>
-                        <div className="grid sm:grid-cols-3 gap-2">
+                        <div className="grid sm:grid-cols-2 gap-2">
                           {/* TODO: Boy upload PDFs naar /public/documenten/ */}
                           {[
                             { href: "/documenten/slotverklaring-2026.pdf", title: "Slotverklaring 2026" },
                             { href: "/documenten/dienstverleningsdocument.pdf", title: "Dienstverleningsdocument" },
-                            { href: "/documenten/verzekeringskaart-zakelijke-dienstverlening.pdf", title: "Verzekeringskaart" },
+                            { href: verzekeringskaartPaden[formData.branche] || "/documenten/verzekeringskaart-zakelijke-dienstverlening.pdf", title: "Verzekeringskaart Beroepsaansprakelijkheid" },
+                            { href: "/documenten/verzekeringskaart-bedrijfsaansprakelijkheid.pdf", title: "Verzekeringskaart Bedrijfsaansprakelijkheid" },
                           ].map((doc) => (
                             <a
-                              key={doc.href}
+                              key={doc.href + doc.title}
                               href={doc.href}
                               target="_blank"
                               rel="noopener noreferrer"
