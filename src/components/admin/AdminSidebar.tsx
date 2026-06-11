@@ -11,6 +11,7 @@ import {
   UserCheck,
   Plug,
   KeyRound,
+  ConciergeBell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +23,7 @@ const navItems = [
   { to: "/admin/dba-checks", icon: ShieldCheck, label: "Wet DBA" },
   { to: "/admin/wachtwoord-wijzigen", icon: KeyRound, label: "Wachtwoord wijzigen" },
   { to: "/admin/screening-aanvragen", icon: UserCheck, label: "Screening aanvragen" },
+  { to: "/admin/service-aanvragen", icon: ConciergeBell, label: "Service-aanvragen" },
   { to: "/admin/integraties", icon: Plug, label: "Integraties", superAdminOnly: true },
   { to: "/admin/exact-koppeling", icon: Plug, label: "Exact koppeling", superAdminOnly: true },
   { to: "/admin/team", icon: UserCog, label: "Team", adminOnly: true },
