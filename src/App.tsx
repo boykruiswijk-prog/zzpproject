@@ -206,6 +206,7 @@ const App = () => (
             <Route path="/admin/dba-checks/bulk/:id" element={<DbaCheckBatchDetail />} />
             <Route path="/admin/dba-checks/:id" element={<DbaCheckDetail />} />
             <Route path="/admin/screening-aanvragen" element={<AdminScreeningAanvragen />} />
+            <Route path="/admin/service-aanvragen" element={<AdminServiceAanvragen />} />
             <Route path="/admin/integraties" element={<AdminIntegraties />} />
             <Route path="/admin/exact-koppeling" element={<AdminExactKoppeling />} />
             <Route path="/api/exact/callback" element={<ExactCallback />} />
