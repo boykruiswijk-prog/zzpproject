@@ -3,6 +3,7 @@ Allow: /
 
 Disallow: /admin
 Disallow: /admin/
+Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /verificatie/
 Disallow: /creditcontrol

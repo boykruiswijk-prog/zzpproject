@@ -799,6 +799,57 @@ export type Database = {
           },
         ]
       }
+      klant_service_aanvragen: {
+        Row: {
+          achternaam: string
+          behandeld_door: string | null
+          behandeld_op: string | null
+          created_at: string
+          details: Json
+          email: string
+          id: string
+          notities: string | null
+          polisnummer: string
+          status: string
+          telefoon: string
+          type: string
+          updated_at: string
+          voornaam: string
+        }
+        Insert: {
+          achternaam: string
+          behandeld_door?: string | null
+          behandeld_op?: string | null
+          created_at?: string
+          details?: Json
+          email: string
+          id?: string
+          notities?: string | null
+          polisnummer: string
+          status?: string
+          telefoon: string
+          type: string
+          updated_at?: string
+          voornaam: string
+        }
+        Update: {
+          achternaam?: string
+          behandeld_door?: string | null
+          behandeld_op?: string | null
+          created_at?: string
+          details?: Json
+          email?: string
+          id?: string
+          notities?: string | null
+          polisnummer?: string
+          status?: string
+          telefoon?: string
+          type?: string
+          updated_at?: string
+          voornaam?: string
+        }
+        Relationships: []
+      }
       lead_notes: {
         Row: {
           content: string
@@ -1138,6 +1189,45 @@ export type Database = {
           status?: string
           telefoon?: string | null
           voornaam?: string
+        }
+        Relationships: []
+      }
+      social_media_features: {
+        Row: {
+          active: boolean
+          created_at: string
+          featured_until: string | null
+          id: string
+          platform: string
+          post_url: string
+          preview_image_url: string | null
+          preview_text: string | null
+          published_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          featured_until?: string | null
+          id?: string
+          platform: string
+          post_url: string
+          preview_image_url?: string | null
+          preview_text?: string | null
+          published_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          featured_until?: string | null
+          id?: string
+          platform?: string
+          post_url?: string
+          preview_image_url?: string | null
+          preview_text?: string | null
+          published_at?: string | null
+          updated_at?: string
         }
         Relationships: []
       }

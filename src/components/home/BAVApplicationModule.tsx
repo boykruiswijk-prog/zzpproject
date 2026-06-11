@@ -19,9 +19,10 @@ import { useToast } from "@/hooks/use-toast";
 import ellenAvatar from "@/assets/ellen-baars-avatar.jpg";
 import { TrustSignalsStrip } from "@/components/social-proof/TrustSignalsStrip";
 
+// Pakketten gebaseerd op src/data/bavPakketten.ts (SSOT). Wizard toont BAV & AVB Uitgebreid.
 const packages = [
   { id: "basis", name: "Combi Basis", coverage: "€ 500.000 per gebeurtenis", yearCoverage: "€ 1.000.000 per jaar", priceMonthly: 30.00, priceYearly: 360.00, popular: false },
-  { id: "uitgebreid", name: "Combi Uitgebreid", coverage: "€ 2.500.000 per gebeurtenis", yearCoverage: "€ 5.000.000 per jaar", priceMonthly: 45.00, priceYearly: 540.00, popular: true },
+  { id: "uitgebreid", name: "BAV & AVB", coverage: "€ 5.000.000 per gebeurtenis", yearCoverage: "€ 15.000.000 per jaar", priceMonthly: 55.00, priceYearly: 600.00, popular: true },
 ];
 
 const TOTAL_STEPS = 5;
@@ -574,6 +575,34 @@ export function BAVApplicationModule() {
                         </div>
                       </div>
 
+                      {/* Belangrijke documenten — Deel 6 */}
+                      <div className="border border-border rounded-lg p-4 bg-background space-y-3">
+                        <h4 className="font-semibold text-sm">Belangrijke documenten om door te lezen</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Door op 'Verstuur aanvraag' te klikken bevestig je dat je deze documenten hebt gelezen.
+                        </p>
+                        <div className="grid sm:grid-cols-3 gap-2">
+                          {/* TODO: Boy upload PDFs naar /public/documenten/ */}
+                          {[
+                            { href: "/documenten/slotverklaring-2026.pdf", title: "Slotverklaring 2026" },
+                            { href: "/documenten/dienstverleningsdocument.pdf", title: "Dienstverleningsdocument" },
+                            { href: "/documenten/verzekeringskaart-zakelijke-dienstverlening.pdf", title: "Verzekeringskaart" },
+                          ].map((doc) => (
+                            <a
+                              key={doc.href}
+                              href={doc.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 p-2 rounded border border-border hover:border-accent hover:bg-accent/5 transition-colors text-xs"
+                            >
+                              <FileCheck className="h-4 w-4 text-accent flex-shrink-0" />
+                              <span className="truncate">{doc.title}</span>
+                              <ExternalLink className="h-3 w-3 ml-auto flex-shrink-0 opacity-60" />
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+
                       {/* Slotverklaring */}
                       <div className={cn("border rounded-lg p-4 bg-accent/5 space-y-3", errors.slotverklaring ? "border-destructive" : "border-accent/30")}>
                         <div className="flex items-start gap-3">
@@ -584,19 +613,10 @@ export function BAVApplicationModule() {
                             className="mt-0.5"
                           />
                           <Label htmlFor="slotverklaring" className="text-sm leading-relaxed cursor-pointer">
-                            {t("home.bavSlotverklaringAgree")}
+                            Ik bevestig dat ik de slotverklaring, het dienstverleningsdocument en de verzekeringskaart heb gelezen.
                           </Label>
                         </div>
                         <FieldError message={errors.slotverklaring} />
-                        <a
-                          href="/documents/ZP_Slotverklaring.pdf"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 text-sm text-accent hover:underline"
-                        >
-                          <ExternalLink className="h-3.5 w-3.5" />
-                          {t("home.bavSlotverklaringLink")}
-                        </a>
                       </div>
                     </div>
                   </motion.div>

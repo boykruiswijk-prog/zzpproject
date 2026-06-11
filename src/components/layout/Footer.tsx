@@ -134,14 +134,22 @@ export function Footer() {
 
         {/* Bottom */}
         <div className="mt-12 pt-6 border-t border-background/10">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-3">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
             <p className="text-background/50 text-xs">
               {t("footer.copyright")}
             </p>
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-background/50">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-background/50">
               <span>AFM nr. 12050636</span>
-              <span>KvK 53658234</span>
-              <span>Kifid aangesloten</span>
+              <span>KvK 62117092</span>
+              <span>Kifid nr. 300.019283</span>
+              <a
+                href="/documenten/gedragscode.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-background transition-colors underline-offset-2 hover:underline"
+              >
+                Gedragscode
+              </a>
             </div>
           </div>
         </div>

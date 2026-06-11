@@ -18,8 +18,7 @@ export const SITE_CONFIG = {
   registrations: {
     afm: "12050636",
     kvk: "62117092",
-    // TODO: vul Kifid-aansluitnummer aan zodra beschikbaar
-    kifid: "",
+    kifid: "300.019283",
   },
   // TODO: verifieer onderstaande social URLs voor ZP Zaken
   social: {
