@@ -77,7 +77,6 @@ export function GoogleReviewsSection({ className = "" }: Props) {
             <Stars count={5} className="h-6 w-6" />
           </div>
           <p className="text-muted-foreground">
-            Op basis van {reviewCount} reviews.{" "}
             <a
               href={reviewsUrl}
               target="_blank"
