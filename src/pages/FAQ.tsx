@@ -35,12 +35,28 @@ const faqItems = [
     ]
   },
   {
-    category: "Voor zzp'ers",
+    category: "Mijn verzekering beheren",
     questions: [
-      { question: "Welke verzekeringen zijn verplicht als zzp'er?", answer: "Er zijn geen verzekeringen wettelijk verplicht voor zzp'ers, maar opdrachtgevers eisen vaak een BAV en/of AVB. Daarnaast is een zorgverzekering verplicht voor iedereen in Nederland. Een AOV is niet verplicht maar wel sterk aan te raden om je inkomen te beschermen bij arbeidsongeschiktheid." },
-      { question: "Moet ik een KvK-nummer hebben om me te verzekeren?", answer: "Voor zakelijke verzekeringen zoals een BAV of AVB heb je inderdaad een KvK-inschrijving nodig. Dit bewijst dat je als ondernemer actief bent. Voor persoonlijke verzekeringen zoals een AOV is dit niet altijd noodzakelijk, maar wel gebruikelijk." },
-      { question: "Kan ik mijn premie aftrekken van de belasting?", answer: "Ja, de premie voor zakelijke verzekeringen zoals een BAV en AVB zijn volledig aftrekbaar als bedrijfskosten. De premie voor een AOV is deels aftrekbaar in box 1 als uitgave voor inkomensvoorziening. We adviseren je om met je boekhouder te overleggen over de exacte fiscale behandeling." },
-      { question: "Wat gebeurt er met mijn verzekering als ik in loondienst ga?", answer: "Als je (tijdelijk) in loondienst gaat, kun je je zakelijke verzekeringen vaak pauzeren of opzeggen. Bij een AOV hangt het af van de voorwaarden of je de verzekering kunt voortzetten. We helpen je graag met het aanpassen van je verzekeringspakket aan je nieuwe situatie." },
+      { question: "Hoe kan ik mijn verzekering opzeggen?", answer: "Je verzekering opzeggen kan dagelijks. Stuur een mail naar info@zpzaken.nl met je polisnummer en de gewenste opzegdatum, of bel ons via 020 - 457 3077. Wij verwerken je opzegging binnen 24 uur en sturen je een bevestiging." },
+      { question: "Hoe pauzeer ik mijn verzekering?", answer: "Heb je tijdelijk geen opdracht of ga je tijdelijk in loondienst? Dan kun je je verzekering eenvoudig pauzeren via de pauzeer-wizard op /mijn-zp/pauzeren. Wij verwerken je pauzering binnen 24 uur en jouw uitlooprisico blijft tijdens de pauze gewoon behouden." },
+      { question: "Hoe vraag ik een verzekeringscertificaat aan?", answer: "Heeft een opdrachtgever om een verzekeringsbewijs gevraagd? Vraag eenvoudig een certificaat aan via de wizard op /mijn-zp/certificaat. Wij sturen het certificaat binnen 24 uur naar het opgegeven adres." },
+      { question: "Hoe ontvang ik kopieën van mijn polisstukken?", answer: "Heb je je polisblad, polisvoorwaarden of een ander document nodig? Vraag je documenten op via de wizard op /mijn-zp/documenten. Je ontvangt ze binnen 24 uur per mail of per post." },
+      { question: "Wat gebeurt er met mijn uitlooprisico als ik pauzeer?", answer: "Jouw uitlooprisico blijft tijdens een pauze gewoon behouden. Schades die voortvloeien uit werkzaamheden van vóór de pauze blijven gedekt. Je bent alleen niet verzekerd voor nieuwe werkzaamheden tijdens de pauze." },
+    ]
+  },
+  {
+    category: "Onze verzekering",
+    questions: [
+      { question: "Bieden jullie een passende oplossing voor een BV?", answer: "Ja, ook voor een besloten vennootschap (BV) hebben wij passende beroeps- en bedrijfsaansprakelijkheidsverzekeringen. Neem contact op via 020 - 457 3077 voor een persoonlijk advies." },
+      { question: "Heb ik zowel een beroeps- als een bedrijfsaansprakelijkheidsverzekering nodig?", answer: "Een BAV dekt schade door fouten in je werk (verkeerd advies, fout ontwerp). Een AVB dekt schade aan personen of spullen. Voor de meeste zzp'ers zijn beide aan te raden. Onze combinatiepolis bundelt ze met korting." },
+      { question: "Kan ik mijn beroep altijd verzekeren bij ZP Zaken?", answer: "Wij verzekeren een groot deel van de zakelijke dienstverlening: ICT, consultancy, HR & finance, PR & marketing, coaching en management. Voor andere beroepen overleggen we graag of dekking mogelijk is." },
+      { question: "Moet ik doorgeven dat ik nieuwe opdrachten heb?", answer: "Nee. Zolang je werkzaamheden binnen je verzekerde beroep vallen, ben je automatisch gedekt voor nieuwe opdrachten. Verandert de aard van je werk substantieel, geef dit dan even door." },
+      { question: "Kunnen mijn andere opdrachten ook onder deze polis?", answer: "Ja, alle zakelijke werkzaamheden binnen het verzekerde beroep vallen onder dezelfde polis — ongeacht hoeveel opdrachtgevers je hebt." },
+      { question: "Hoe lang zit ik aan deze verzekering vast?", answer: "Onze verzekeringen zijn dagelijks opzegbaar. Geen jaarcontract, geen verborgen voorwaarden." },
+      { question: "Wat moet ik doen als mijn bedrijf aansprakelijk wordt gesteld?", answer: "Neem direct contact op met ons via 020 - 457 3077 of info@zpzaken.nl. Wij melden de schade bij de verzekeraar en begeleiden je door het proces." },
+      { question: "Wanneer begint en eindigt de verzekering?", answer: "De verzekering begint op de door jou gekozen ingangsdatum (maximaal 6 maanden vooruit) en loopt door totdat je opzegt. Dagelijks opzegbaar." },
+      { question: "Mijn bedrijfsgegevens veranderen, hoe geef ik dat door?", answer: "Mail je nieuwe gegevens naar info@zpzaken.nl met je polisnummer. Wij werken je polis binnen 24 uur bij." },
+      { question: "Hoeveel personen zijn er verzekerd met de BAV & AVB verzekering van ZP Zaken?", answer: "Standaard ben je als zzp'er met maximaal 3 medewerkers verzekerd binnen onze polis. Heb je meer medewerkers? Neem contact op voor een passend voorstel." },
     ]
   },
   {
