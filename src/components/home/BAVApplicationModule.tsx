@@ -420,6 +420,27 @@ export function BAVApplicationModule() {
                         <FieldError message={errors.beroep} />
                       </div>
                       <div>
+                        <Label className="mb-2 block">Branche *</Label>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                          {BRANCHES.map((b) => (
+                            <button
+                              type="button"
+                              key={b.value}
+                              onClick={() => setFormData((prev) => ({ ...prev, branche: b.value }))}
+                              className={cn(
+                                "text-left p-3 rounded-lg border-2 transition-all text-xs",
+                                formData.branche === b.value
+                                  ? "border-accent bg-accent/5"
+                                  : "border-border hover:border-accent/50"
+                              )}
+                            >
+                              <div className="font-medium">{b.label}</div>
+                              <div className="text-muted-foreground text-[11px] mt-0.5">{b.desc}</div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
                         <Label htmlFor="functie">{t("home.bavFunction")} *</Label>
                         <Input id="functie" name="functie" value={formData.functie} onChange={handleInputChange} placeholder={t("bavApp.functionPlaceholder")} className={cn(errors.functie && "border-destructive")} />
                         <FieldError message={errors.functie} />
