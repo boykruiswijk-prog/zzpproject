@@ -28,7 +28,7 @@ const teamMembers = [
   },
   {
     name: "Gert-Jan Schellingerhout",
-    role: "Adviseur",
+    role: "Backoffice medewerker",
     image: teamMember4,
     description: "Versterkt ons team met gedegen kennis en persoonlijk advies.",
   },
