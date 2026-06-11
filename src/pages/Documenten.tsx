@@ -3,6 +3,7 @@ import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { FileText, Download, Phone } from "lucide-react";
+import { TrustSignalsStrip } from "@/components/social-proof/TrustSignalsStrip";
 
 const documents = [
   {
