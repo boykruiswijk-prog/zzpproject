@@ -65,7 +65,26 @@ export function BAVApplicationModule() {
     voornaam: "", achternaam: "", email: "", telefoon: "",
     opdrachtgever: "", bemiddelaarNaam: "",
     iban: "",
+    branche: "zakelijke-dienstverlening",
   });
+
+  const BRANCHES = [
+    { value: "ict", label: "IT & ICT", desc: "Voor IT-professionals, developers, scrum masters" },
+    { value: "hr-finance", label: "HR & Finance consultancy", desc: "HR-, finance- en compliance-specialisten" },
+    { value: "pr-marketing", label: "PR & Marketing", desc: "Communicatie, content en marketing" },
+    { value: "management-consultancy", label: "Management consultancy", desc: "Strategie- en organisatieadvies" },
+    { value: "coaches", label: "Coaches", desc: "Loopbaan-, life- en business coaches" },
+    { value: "zakelijke-dienstverlening", label: "Zakelijke dienstverlening", desc: "Overige zakelijke dienstverlening" },
+  ];
+
+  const verzekeringskaartPaden: Record<string, string> = {
+    "ict": "/documenten/verzekeringskaart-ict.pdf",
+    "hr-finance": "/documenten/verzekeringskaart-management-consultancy.pdf",
+    "pr-marketing": "/documenten/verzekeringskaart-pr-marketing.pdf",
+    "management-consultancy": "/documenten/verzekeringskaart-management-consultancy.pdf",
+    "coaches": "/documenten/verzekeringskaart-coaches.pdf",
+    "zakelijke-dienstverlening": "/documenten/verzekeringskaart-zakelijke-dienstverlening.pdf",
+  };
 
   const steps = [
     { id: 1, name: t("home.bavStep1"), icon: Shield },
