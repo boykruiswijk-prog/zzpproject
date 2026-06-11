@@ -25,7 +25,7 @@ type Aanvraag = {
   notities: string | null;
   behandeld_door: string | null;
   behandeld_op: string | null;
-  aangemaakt_op: string;
+  created_at: string;
 };
 
 const STATUS = [
@@ -67,7 +67,7 @@ export default function ServiceAanvragen() {
     const { data, error } = await supabase
       .from("klant_service_aanvragen" as any)
       .select("*")
-      .order("aangemaakt_op", { ascending: false });
+      .order("created_at", { ascending: false });
     if (error) {
       toast({ title: "Fout bij laden", description: error.message, variant: "destructive" });
     } else {
@@ -190,7 +190,7 @@ export default function ServiceAanvragen() {
                 <tr><td colSpan={7} className="p-8 text-center text-muted-foreground">Geen aanvragen</td></tr>
               ) : filtered.map((it) => (
                 <tr key={it.id} className="border-t border-border hover:bg-muted/30 cursor-pointer" onClick={() => setSelected(it)}>
-                  <td className="p-3 whitespace-nowrap">{formatDate(it.aangemaakt_op)}</td>
+                  <td className="p-3 whitespace-nowrap">{formatDate(it.created_at)}</td>
                   <td className="p-3"><Badge className={TYPE_COLOR[it.type]}>{it.type}</Badge></td>
                   <td className="p-3">{it.voornaam} {it.achternaam}</td>
                   <td className="p-3 font-mono text-xs">{it.polisnummer}</td>
@@ -221,7 +221,7 @@ export default function ServiceAanvragen() {
               </DialogHeader>
               <div className="space-y-4 text-sm">
                 <div className="grid grid-cols-2 gap-3">
-                  <div><div className="text-muted-foreground">Datum</div><div>{formatDate(selected.aangemaakt_op)}</div></div>
+                  <div><div className="text-muted-foreground">Datum</div><div>{formatDate(selected.created_at)}</div></div>
                   <div><div className="text-muted-foreground">Status</div><div><Badge className={STATUS_COLOR[selected.status]}>{selected.status}</Badge></div></div>
                   <div><div className="text-muted-foreground">Email</div><div>{selected.email}</div></div>
                   <div><div className="text-muted-foreground">Telefoon</div><div>{selected.telefoon}</div></div>
