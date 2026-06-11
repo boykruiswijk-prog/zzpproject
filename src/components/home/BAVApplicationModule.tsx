@@ -17,6 +17,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import ellenAvatar from "@/assets/ellen-baars-avatar.jpg";
+import { TrustSignalsStrip } from "@/components/social-proof/TrustSignalsStrip";
 
 const packages = [
   { id: "basis", name: "Combi Basis", coverage: "€ 500.000 per gebeurtenis", yearCoverage: "€ 1.000.000 per jaar", priceMonthly: 30.00, priceYearly: 360.00, popular: false },
@@ -623,6 +624,11 @@ export function BAVApplicationModule() {
                     </Button>
                   )}
                 </div>
+                {currentStep === TOTAL_STEPS && (
+                  <div className="mt-6">
+                    <TrustSignalsStrip compact />
+                  </div>
+                )}
               </div>
 
               {/* Price Sidebar */}
