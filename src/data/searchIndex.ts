@@ -134,4 +134,9 @@ export const searchIndex: SearchEntry[] = [
     keywords: "cookies privacy tracking",
     snippet: "Cookie- en privacy-informatie.",
   },
+  { title: "Mijn ZP — Certificaat opvragen", path: "/mijn-zp/certificaat", keywords: "certificaat verzekeringsbewijs opdrachtgever", snippet: "Vraag een verzekeringscertificaat aan voor je opdrachtgever." },
+  { title: "Mijn ZP — Verzekering pauzeren", path: "/mijn-zp/pauzeren", keywords: "pauzeren tijdelijk loondienst opzeggen uitloop", snippet: "Pauzeer tijdelijk je verzekering met behoud van uitlooprisico." },
+  { title: "Mijn ZP — Documenten opvragen", path: "/mijn-zp/documenten", keywords: "polisblad polisvoorwaarden documenten kopie", snippet: "Vraag een kopie op van je polisblad, voorwaarden of ander document." },
+  { title: "FAQ — Hoe pauzeer ik mijn verzekering?", path: "/faq", keywords: "pauzeren verzekering opzeggen uitlooprisico mijn verzekering beheren", snippet: "Pauzeer je verzekering via de wizard; uitlooprisico blijft behouden." },
+  { title: "FAQ — Verzekeringscertificaat aanvragen", path: "/faq", keywords: "certificaat verzekeringsbewijs aanvragen", snippet: "Hoe vraag je een verzekeringscertificaat aan." },
 ];
