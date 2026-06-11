@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/integrations/supabase/client'
 import { getAuthErrorMessage, isPasswordStrong, parseRecoveryTokens } from '@/lib/auth-utils'
@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Eye, EyeOff, Loader2, AlertTriangle, CheckCircle2 } from 'lucide-react'
 import { toast } from 'sonner'
 
-type Status = 'initializing' | 'ready' | 'invalid' | 'expired' | 'updating' | 'success' | 'error'
+type Status = 'initializing' | 'mfa_required' | 'mfa_verifying' | 'ready' | 'invalid' | 'expired' | 'updating' | 'success' | 'error'
 
 export function ResetPasswordForm() {
   const navigate = useNavigate()
@@ -19,11 +19,28 @@ export function ResetPasswordForm() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [mfaFactor, setMfaFactor] = useState<{ id: string } | null>(null)
+  const [totpCode, setTotpCode] = useState('')
+  const totpInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     let cancelled = false
 
     async function setupRecoverySession() {
+      async function checkMfaRequirement() {
+        const { data: factorsData, error: factorsError } = await supabase.auth.mfa.listFactors()
+        if (cancelled) return
+        if (factorsError) throw factorsError
+
+        const verifiedFactor = factorsData.totp.find((factor) => factor.status === 'verified')
+        if (verifiedFactor) {
+          setMfaFactor(verifiedFactor)
+          setStatus('mfa_required')
+          return
+        }
+        setStatus('ready')
+      }
+
       const tokens = parseRecoveryTokens()
 
       if (tokens.error) {
@@ -42,7 +59,13 @@ export function ResetPasswordForm() {
         const { data } = await supabase.auth.getSession()
         if (cancelled) return
         if (data.session) {
-          setStatus('ready')
+          try {
+            await checkMfaRequirement()
+          } catch (err) {
+            if (cancelled) return
+            setStatus('error')
+            setStatusMessage(getAuthErrorMessage(err))
+          }
           return
         }
         setStatus('invalid')
@@ -77,7 +100,7 @@ export function ResetPasswordForm() {
           )
           return
         }
-        setStatus('ready')
+        await checkMfaRequirement()
         window.history.replaceState({}, document.title, window.location.pathname)
       } catch (err) {
         if (cancelled) return
@@ -92,6 +115,35 @@ export function ResetPasswordForm() {
       cancelled = true
     }
   }, [])
+
+  async function handleMfaSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!mfaFactor || totpCode.length !== 6) return
+
+    setError(null)
+    setStatus('mfa_verifying')
+    try {
+      const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({
+        factorId: mfaFactor.id,
+      })
+      if (challengeError) throw challengeError
+
+      const { error: verifyError } = await supabase.auth.mfa.verify({
+        factorId: mfaFactor.id,
+        challengeId: challengeData.id,
+        code: totpCode,
+      })
+      if (verifyError) throw verifyError
+
+      setError(null)
+      setStatus('ready')
+    } catch {
+      setError('Code is onjuist of verlopen. Probeer een nieuwe code uit je authenticator.')
+      setTotpCode('')
+      setStatus('mfa_required')
+      window.setTimeout(() => totpInputRef.current?.focus(), 0)
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -160,6 +212,51 @@ export function ResetPasswordForm() {
         </div>
         <h2 className="text-xl font-semibold">Wachtwoord gewijzigd</h2>
         <p className="text-sm text-muted-foreground">Je wordt nu doorgestuurd...</p>
+      </div>
+    )
+  }
+
+  if (status === 'mfa_required' || status === 'mfa_verifying') {
+    const isVerifying = status === 'mfa_verifying'
+    return (
+      <div className="space-y-4">
+        <div className="space-y-1">
+          <h2 className="text-lg font-semibold">Bevestig met authenticator-code</h2>
+          <p className="text-sm text-muted-foreground">
+            Vul de 6-cijferige code uit je authenticator-app in om door te gaan met het wijzigen van je wachtwoord.
+          </p>
+        </div>
+        <form onSubmit={handleMfaSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="reset-totp-code">Authenticator-code</Label>
+            <Input
+              ref={totpInputRef}
+              id="reset-totp-code"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]{6}"
+              maxLength={6}
+              autoComplete="one-time-code"
+              autoFocus
+              value={totpCode}
+              onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ''))}
+              disabled={isVerifying}
+              className="text-center font-mono text-2xl tracking-[0.5em]"
+              required
+            />
+            {error && <p className="text-sm text-destructive" role="alert">{error}</p>}
+          </div>
+          <Button type="submit" className="w-full" disabled={isVerifying || totpCode.length !== 6}>
+            {isVerifying ? (
+              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Verifiëren...</>
+            ) : (
+              'Verifieer en ga verder'
+            )}
+          </Button>
+        </form>
+        <p className="text-center text-xs text-muted-foreground">
+          Kan je geen code genereren? Neem contact op met de beheerder.
+        </p>
       </div>
     )
   }

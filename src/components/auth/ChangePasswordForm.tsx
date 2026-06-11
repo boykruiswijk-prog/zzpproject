@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { getAuthErrorMessage, isPasswordStrong } from '@/lib/auth-utils'
 import { PasswordStrengthIndicator } from './PasswordStrengthIndicator'
@@ -15,6 +15,23 @@ export function ChangePasswordForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [step, setStep] = useState<'password' | 'mfa'>('password')
+  const [mfaFactor, setMfaFactor] = useState<{ id: string } | null>(null)
+  const [totpCode, setTotpCode] = useState('')
+  const totpInputRef = useRef<HTMLInputElement>(null)
+
+  async function updatePassword() {
+    const { error: updateError } = await supabase.auth.updateUser({ password: newPassword })
+    if (updateError) throw updateError
+
+    toast.success('Wachtwoord gewijzigd')
+    setCurrentPassword('')
+    setNewPassword('')
+    setConfirmPassword('')
+    setTotpCode('')
+    setMfaFactor(null)
+    setStep('password')
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -50,21 +67,99 @@ export function ChangePasswordForm() {
         return
       }
 
-      const { error: updateError } = await supabase.auth.updateUser({ password: newPassword })
-      if (updateError) {
-        setError(getAuthErrorMessage(updateError))
+      const { data: factorsData, error: factorsError } = await supabase.auth.mfa.listFactors()
+      if (factorsError) throw factorsError
+      const verifiedFactor = factorsData.totp.find((factor) => factor.status === 'verified')
+      if (verifiedFactor) {
+        setMfaFactor(verifiedFactor)
+        setStep('mfa')
         return
       }
 
-      toast.success('Wachtwoord gewijzigd')
-      setCurrentPassword('')
-      setNewPassword('')
-      setConfirmPassword('')
+      await updatePassword()
     } catch (err) {
       setError(getAuthErrorMessage(err))
     } finally {
       setLoading(false)
     }
+  }
+
+  async function handleMfaSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!mfaFactor || totpCode.length !== 6) return
+
+    setError(null)
+    setLoading(true)
+    try {
+      const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({
+        factorId: mfaFactor.id,
+      })
+      if (challengeError) throw challengeError
+
+      const { error: verifyError } = await supabase.auth.mfa.verify({
+        factorId: mfaFactor.id,
+        challengeId: challengeData.id,
+        code: totpCode,
+      })
+      if (verifyError) throw verifyError
+
+      await updatePassword()
+    } catch (err) {
+      const authMessage = getAuthErrorMessage(err)
+      setError(
+        authMessage.startsWith('Code is') || authMessage.startsWith('De code is')
+          ? 'Code is onjuist of verlopen. Probeer een nieuwe code uit je authenticator.'
+          : authMessage
+      )
+      setTotpCode('')
+      window.setTimeout(() => totpInputRef.current?.focus(), 0)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (step === 'mfa') {
+    return (
+      <div className="max-w-md space-y-4">
+        <div className="space-y-1">
+          <h2 className="text-lg font-semibold">Bevestig met authenticator-code</h2>
+          <p className="text-sm text-muted-foreground">
+            Vul de 6-cijferige code uit je authenticator-app in om door te gaan met het wijzigen van je wachtwoord.
+          </p>
+        </div>
+        <form onSubmit={handleMfaSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="change-password-totp-code">Authenticator-code</Label>
+            <Input
+              ref={totpInputRef}
+              id="change-password-totp-code"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]{6}"
+              maxLength={6}
+              autoComplete="one-time-code"
+              autoFocus
+              value={totpCode}
+              onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ''))}
+              disabled={loading}
+              className="text-center font-mono text-2xl tracking-[0.5em]"
+              required
+            />
+            {error && <p className="text-sm text-destructive" role="alert">{error}</p>}
+          </div>
+          <Button type="submit" disabled={loading || totpCode.length !== 6} className="w-full">
+            {loading ? (
+              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Verifiëren...</>
+            ) : (
+              'Verifieer en ga verder'
+            )}
+          </Button>
+        </form>
+        <p className="text-center text-xs text-muted-foreground">
+          Kan je geen code genereren? Neem contact op met de beheerder.
+        </p>
+      </div>
+    )
   }
 
   return (

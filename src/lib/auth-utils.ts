@@ -8,6 +8,12 @@ export function getAuthErrorMessage(error: AuthError | Error | null | unknown): 
   const code = anyErr?.code || ''
   const status = anyErr?.status || 0
 
+  if (code === 'mfa_challenge_expired') {
+    return 'De code is verlopen. Vraag een nieuwe code aan in je app.'
+  }
+  if (code === 'mfa_verification_failed' || msg.includes('invalid totp code')) {
+    return 'Code is onjuist of verlopen. Probeer een nieuwe code.'
+  }
   if (code === 'invalid_credentials' || msg.includes('invalid login credentials')) {
     return 'E-mailadres of wachtwoord onjuist.'
   }
