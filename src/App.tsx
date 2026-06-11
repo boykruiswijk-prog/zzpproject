@@ -31,6 +31,7 @@ import SocialMedia from "./pages/SocialMedia";
 import CreditControl from "./pages/CreditControl";
 import Screening from "./pages/Screening";
 import AdminScreeningAanvragen from "./pages/admin/ScreeningAanvragen";
+import AdminServiceAanvragen from "./pages/admin/ServiceAanvragen";
 import AdminIntegraties from "./pages/admin/Integraties";
 import AdminExactKoppeling from "./pages/admin/ExactKoppeling";
 import ExactCallback from "./pages/ExactCallback";
