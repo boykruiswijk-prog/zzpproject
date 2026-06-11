@@ -1,17 +1,19 @@
-// Static Google reviews data. Later replace with Google Places API response
-// without changing the consumer components.
+// Single source of truth for Google reviews shown on the public website.
+// All review-displaying components MUST import from here. Do not duplicate
+// review text or rating values elsewhere.
 
 export interface GoogleReview {
+  name: string;
   rating: number;
   text: string;
+  sourceUrl: string;
 }
 
 export interface GoogleReviewsData {
-  businessName: string;
   placeId: string;
-  reviewsUrl: string;
   averageRating: number;
-  reviewCount: number;
+  totalReviews: number;
+  googleReviewsUrl: string;
   address: {
     streetAddress: string;
     postalCode: string;
@@ -23,12 +25,11 @@ export interface GoogleReviewsData {
 }
 
 export const googleReviewsData: GoogleReviewsData = {
-  businessName: "ZP Zaken | Specialist in BAV",
   placeId: "ChIJ5wXTzBPnxUcR5NGNhaq2lJA",
-  reviewsUrl:
-    "https://search.google.com/local/reviews?placeid=ChIJ5wXTzBPnxUcR5NGNhaq2lJA",
   averageRating: 5.0,
-  reviewCount: 4,
+  totalReviews: 4,
+  googleReviewsUrl:
+    "https://search.google.com/local/reviews?placeid=ChIJ5wXTzBPnxUcR5NGNhaq2lJA",
   address: {
     streetAddress: "Tupolevlaan 41",
     postalCode: "1119 NW",
@@ -38,16 +39,22 @@ export const googleReviewsData: GoogleReviewsData = {
   geo: { latitude: 52.2796022, longitude: 4.7514364 },
   reviews: [
     {
+      name: "Maikel Buijze",
       rating: 5,
-      text: "I searched for a business insurance policy (BAV) for my company on Google. I found ZP Zaken! They had a good price for the BAV/AVB, a clear website, and very friendly service over the phone. Best regards from a satisfied customer.",
+      text: "Via Google zocht ik naar een BAV voor mijn onderneming. Uitgekomen bij ZP Zaken! Goeie prijs voor de BAV/AVB, duidelijke website en erg vriendelijk geholpen via de telefoon. Groetjes van een tevreden klant:)",
+      sourceUrl: "https://g.co/kgs/9LscLL9",
     },
     {
+      name: "Max Leuftink",
       rating: 5,
-      text: "Friendly people instead of robots to communicate with, to the point and fast. It was a pleasure doing business with them.",
+      text: "Na online wat zoekwerk te hebben verricht uiteindelijk uitgekomen bij ZP Zaken voor een BAV. Snel, duidelijk en vriendelijk contact en tevreden met de gemaakte afspraken!",
+      sourceUrl: "https://g.co/kgs/9LscLL9",
     },
     {
+      name: "Elke Wijnands",
       rating: 5,
-      text: "Quickly arranged!",
+      text: "Uitstekende service bij ZP Zaken! Hun communicatie is helder en efficiënt, en ze zijn altijd bereid om te helpen. Een absolute aanrader voor elke zelfstandige professional.",
+      sourceUrl: "https://g.co/kgs/csJFuFT",
     },
   ],
-};
+} as const;

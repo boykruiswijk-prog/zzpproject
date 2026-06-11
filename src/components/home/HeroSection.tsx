@@ -120,7 +120,7 @@ export function HeroSection() {
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="h-3.5 w-3.5 fill-accent text-accent" />
                 ))}
-                <span className="text-sm font-semibold text-primary-foreground ml-1">4.9/5</span>
+                <span className="text-sm font-semibold text-primary-foreground ml-1">5,0/5</span>
                 <span className="text-sm text-primary-foreground/60 ml-1">· {t("shared.satisfiedFreelancers")}</span>
               </div>
             </motion.div>
@@ -169,7 +169,7 @@ export function HeroSection() {
                   <div className="flex items-center justify-between py-3 border-b border-border">
                     <span className="text-muted-foreground">{t("home.satisfaction")}</span>
                     <div className="flex items-center gap-1">
-                      <span className="font-semibold text-foreground">4.9/5</span>
+                      <span className="font-semibold text-foreground">5,0/5</span>
                       <span className="text-amber-500">⭐</span>
                     </div>
                   </div>

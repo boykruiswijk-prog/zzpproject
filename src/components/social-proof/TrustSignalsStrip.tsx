@@ -51,7 +51,7 @@ export function TrustSignalsStrip({
       iconClass: "text-yellow-400 fill-yellow-400",
       label: `${googleReviewsData.averageRating.toFixed(1).replace(".", ",")} sterren op Google`,
       sublabel: "Onafhankelijke beoordelingen",
-      href: googleReviewsData.reviewsUrl,
+      href: googleReviewsData.googleReviewsUrl,
     },
   ];
 

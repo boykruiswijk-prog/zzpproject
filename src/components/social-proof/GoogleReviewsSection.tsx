@@ -31,7 +31,7 @@ interface Props {
 }
 
 export function GoogleReviewsSection({ className = "" }: Props) {
-  const { averageRating, reviewCount, reviews, reviewsUrl } = googleReviewsData;
+  const { averageRating, totalReviews, reviews, googleReviewsUrl } = googleReviewsData;
 
   const schema = {
     "@context": "https://schema.org",
@@ -46,12 +46,13 @@ export function GoogleReviewsSection({ className = "" }: Props) {
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: averageRating.toFixed(1),
-      reviewCount: String(reviewCount),
+      reviewCount: String(totalReviews),
       bestRating: "5",
       worstRating: "1",
     },
     review: reviews.map((r) => ({
       "@type": "Review",
+      author: { "@type": "Person", name: r.name },
       reviewRating: {
         "@type": "Rating",
         ratingValue: String(r.rating),
@@ -78,7 +79,7 @@ export function GoogleReviewsSection({ className = "" }: Props) {
           </div>
           <p className="text-muted-foreground">
             <a
-              href={reviewsUrl}
+              href={googleReviewsUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="underline hover:text-accent"
@@ -105,9 +106,17 @@ export function GoogleReviewsSection({ className = "" }: Props) {
                   {review.text}
                 </p>
               </div>
-              <div className="mt-6 pt-4 border-t border-border/40 flex items-center gap-2 text-xs text-muted-foreground">
-                <GoogleG className="h-4 w-4" />
-                <span>via Google</span>
+              <div className="mt-6 pt-4 border-t border-border/40 flex items-center justify-between gap-3">
+                <p className="text-sm font-semibold text-foreground">{review.name}</p>
+                <a
+                  href={review.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-accent transition-colors"
+                >
+                  <GoogleG className="h-4 w-4" />
+                  <span>via Google</span>
+                </a>
               </div>
             </motion.div>
           ))}
@@ -115,7 +124,7 @@ export function GoogleReviewsSection({ className = "" }: Props) {
 
         <div className="text-center mt-10">
           <Button variant="outline" asChild>
-            <a href={reviewsUrl} target="_blank" rel="noopener noreferrer">
+            <a href={googleReviewsUrl} target="_blank" rel="noopener noreferrer">
               Lees alle reviews op Google
               <ExternalLink className="h-4 w-4" />
             </a>

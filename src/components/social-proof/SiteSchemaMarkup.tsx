@@ -37,10 +37,20 @@ export function SiteSchemaMarkup() {
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: googleReviewsData.averageRating.toFixed(1),
-      reviewCount: String(googleReviewsData.reviewCount),
+      reviewCount: String(googleReviewsData.totalReviews),
       bestRating: "5",
       worstRating: "1",
     },
+    review: googleReviewsData.reviews.map((r) => ({
+      "@type": "Review",
+      author: { "@type": "Person", name: r.name },
+      reviewRating: {
+        "@type": "Rating",
+        ratingValue: String(r.rating),
+        bestRating: "5",
+      },
+      reviewBody: r.text,
+    })),
     areaServed: {
       "@type": "Country",
       name: "Netherlands",
