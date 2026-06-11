@@ -62,6 +62,16 @@ function useNavItems() {
         { href: "/social-media", label: t("nav.socialMedia") },
       ]
     },
+    {
+      href: "/mijn-zp/certificaat",
+      label: "Mijn ZP",
+      isService: true,
+      children: [
+        { href: "/mijn-zp/certificaat", label: "Certificaat opvragen", icon: FileText },
+        { href: "/mijn-zp/pauzeren", label: "Verzekering pauzeren", icon: Pause },
+        { href: "/mijn-zp/documenten", label: "Documenten opvragen", icon: FolderDown },
+      ],
+    },
     { href: "/contact", label: t("nav.contact") },
   ];
 }
