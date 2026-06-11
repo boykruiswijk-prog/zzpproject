@@ -52,6 +52,9 @@ import ScreenshotHelper from "./pages/ScreenshotHelper";
 import AlgemeneVoorwaarden from "./pages/AlgemeneVoorwaarden";
 import Klachtenprocedure from "./pages/Klachtenprocedure";
 import Documenten from "./pages/Documenten";
+import MijnZpCertificaat from "./pages/mijn-zp/Certificaat";
+import MijnZpPauzeren from "./pages/mijn-zp/Pauzeren";
+import MijnZpDocumenten from "./pages/mijn-zp/Documenten";
 import { PortalAuthProvider } from "@/contexts/PortalAuthContext";
 import { RequirePortalAuth } from "@/components/portal/RequirePortalAuth";
 import PortalLogin from "./pages/portal/PortalLogin";
@@ -159,6 +162,9 @@ const publicRoutes = (
     <Route path="social-media" element={<SocialMedia />} />
     <Route path="creditcontrol" element={<CreditControl />} />
     <Route path="screening" element={<Screening />} />
+    <Route path="mijn-zp/certificaat" element={<MijnZpCertificaat />} />
+    <Route path="mijn-zp/pauzeren" element={<MijnZpPauzeren />} />
+    <Route path="mijn-zp/documenten" element={<MijnZpDocumenten />} />
   </>
 );
 

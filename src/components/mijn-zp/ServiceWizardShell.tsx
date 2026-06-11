@@ -103,9 +103,9 @@ export function ServiceWizardShell({
         <link rel="canonical" href={`https://zpzaken.nl/mijn-zp/${type}`} />
       </Helmet>
       <PageHero
-        eyebrow="Mijn ZP"
+        badge={{ text: "Mijn ZP" }}
         title={introTitle}
-        description={introText}
+        subtitle={introText}
       />
       <section className="section-padding bg-secondary/30">
         <div className="container-wide max-w-2xl">
