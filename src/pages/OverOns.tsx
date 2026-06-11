@@ -27,7 +27,7 @@ const facts = [
   { value: "2014", label: "Opgericht" },
   { value: "5.000+", label: "Klanten" },
   { value: "13+", label: "Jaar ervaring" },
-  { value: "4.9/5", label: "Beoordeling" },
+  { value: "5,0/5", label: "Beoordeling" },
 ];
 
 const team = [

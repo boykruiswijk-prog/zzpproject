@@ -264,7 +264,7 @@ export function BAVApplicationModule() {
                 ))}
               </div>
               <span className="text-accent tracking-tight" aria-hidden>★★★★★</span>
-              <span><span className="font-semibold">4.9/5</span></span>
+              <span><span className="font-semibold">5,0/5</span></span>
             </div>
             <span className="hidden sm:inline-block h-4 w-px bg-border" aria-hidden />
             <div className="flex items-center gap-2">

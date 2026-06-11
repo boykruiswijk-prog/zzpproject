@@ -48,7 +48,7 @@ export function MiniSocialProof({ variant = "light", className = "" }: MiniSocia
           {[...Array(5)].map((_, i) => (
             <Star key={i} className="h-3 w-3 fill-accent text-accent" />
           ))}
-          <span className="font-semibold ml-1">4.9/5</span>
+          <span className="font-semibold ml-1">5,0/5</span>
         </div>
         <span>{t("shared.satisfiedFreelancers")}</span>
       </div>

@@ -168,7 +168,7 @@ const NotFound = () => {
               <div className="text-sm text-muted-foreground">tevreden zzp'ers</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-accent mb-1">4.9/5</div>
+              <div className="text-3xl font-bold text-accent mb-1">5,0/5</div>
               <div className="text-sm text-muted-foreground">Google Reviews</div>
             </div>
             <div>
