@@ -71,7 +71,7 @@ export default function ServiceAanvragen() {
     if (error) {
       toast({ title: "Fout bij laden", description: error.message, variant: "destructive" });
     } else {
-      setItems((data ?? []) as Aanvraag[]);
+      setItems((data ?? []) as unknown as Aanvraag[]);
     }
     setLoading(false);
   }
