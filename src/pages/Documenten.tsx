@@ -3,6 +3,7 @@ import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { FileText, Download, Phone } from "lucide-react";
+import { TrustSignalsStrip } from "@/components/social-proof/TrustSignalsStrip";
 
 const documents = [
   {
@@ -62,6 +63,12 @@ export default function Documenten() {
               </div>
             ))}
           </div>
+
+          <div className="max-w-5xl mx-auto mt-12">
+            <TrustSignalsStrip />
+          </div>
+
+
 
           <div className="max-w-3xl mx-auto mt-12 flex items-center justify-center gap-3 text-sm text-muted-foreground">
             <Phone className="h-4 w-4 text-accent" />

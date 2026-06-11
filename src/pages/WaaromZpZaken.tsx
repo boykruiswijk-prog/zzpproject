@@ -10,6 +10,7 @@ import { EyeopenerBanner } from "@/components/waarom/EyeopenerBanner";
 import { IntermediaryCards } from "@/components/waarom/IntermediaryCards";
 import { BemiddelingSection } from "@/components/waarom/BemiddelingSection";
 import { FAQSection, faqSchema } from "@/components/waarom/FAQSection";
+import { GoogleReviewsSection } from "@/components/social-proof/GoogleReviewsSection";
 import teamHero from "@/assets/team-hero.jpg";
 
 const schema = {
@@ -205,6 +206,9 @@ export default function WaaromZpZaken() {
 
       {/* ── FAQ ── */}
       <FAQSection />
+
+      {/* ── GOOGLE REVIEWS ── */}
+      <GoogleReviewsSection />
 
       {/* ── FIGHTER AFSLUITER ── */}
       <section className="section-padding bg-[hsl(0,0%,10%)]">
