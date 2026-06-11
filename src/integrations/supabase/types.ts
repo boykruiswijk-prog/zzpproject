@@ -885,6 +885,48 @@ export type Database = {
           },
         ]
       }
+      lead_notification_log: {
+        Row: {
+          cc: string | null
+          created_at: string
+          error_message: string | null
+          id: string
+          lead_id: string | null
+          lead_type: string
+          metadata: Json | null
+          recipient: string
+          resend_message_id: string | null
+          status: string
+          subject: string | null
+        }
+        Insert: {
+          cc?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          lead_id?: string | null
+          lead_type: string
+          metadata?: Json | null
+          recipient: string
+          resend_message_id?: string | null
+          status: string
+          subject?: string | null
+        }
+        Update: {
+          cc?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          lead_id?: string | null
+          lead_type?: string
+          metadata?: Json | null
+          recipient?: string
+          resend_message_id?: string | null
+          status?: string
+          subject?: string | null
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           achternaam: string
