@@ -139,7 +139,7 @@ Deno.serve(async (req) => {
               Authorization: `Bearer ${RESEND_API_KEY}`,
             },
             body: JSON.stringify({
-              from: "ZP Zaken <info@zpzaken.nl>",
+              from: Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <onboarding@resend.dev>",
               to: [to],
               subject,
               html,

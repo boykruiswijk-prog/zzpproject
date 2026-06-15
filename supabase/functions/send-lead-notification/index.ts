@@ -111,18 +111,29 @@ Deno.serve(async (req) => {
     const text = renderText(label, fields);
 
     try {
-      const sendRes = await resend.emails.send({
-        from: "ZP Zaken <noreply@zpzaken.nl>",
+      const sendRes: any = await resend.emails.send({
+        from: Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <onboarding@resend.dev>",
         to: [recipient],
         cc: userEmail ? [userEmail] : undefined,
         reply_to: (fields.email as string) || undefined,
         subject, html, text,
       });
 
+      if (sendRes?.error) {
+        const msg = `${sendRes.error.name ?? "resend"}: ${sendRes.error.message ?? JSON.stringify(sendRes.error)}`;
+        await supabase.from("lead_notification_log").insert({
+          lead_type: type, lead_id: leadId ?? null, recipient, cc: userEmail ?? null,
+          subject, status: "failed", error_message: msg, metadata: fields,
+        });
+        return new Response(JSON.stringify({ success: false, error: msg }), {
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       await supabase.from("lead_notification_log").insert({
         lead_type: type, lead_id: leadId ?? null, recipient, cc: userEmail ?? null,
         subject, status: "sent",
-        resend_message_id: (sendRes as any)?.data?.id ?? null,
+        resend_message_id: sendRes?.data?.id ?? null,
         metadata: fields,
       });
 

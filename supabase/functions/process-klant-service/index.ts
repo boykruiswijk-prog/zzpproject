@@ -1,7 +1,11 @@
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { Resend } from "npm:resend@4.0.0";
 import { z } from "npm:zod@3.23.8";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -112,55 +116,38 @@ Deno.serve(async (req) => {
         console.error("log insert failed:", e);
       }
     };
+    const FROM_ADDRESS = Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <onboarding@resend.dev>";
 
     if (resend) {
-      try {
-        const adminRes = await resend.emails.send({
-          from: "ZP Zaken <noreply@zpzaken.nl>",
-          to: ["info@zpzaken.nl"],
-          subject,
-          html: baseHtml,
-          reply_to: v.email,
-        });
-        await logEntry({
-          recipient: "info@zpzaken.nl",
-          subject,
-          status: "sent",
-          resend_message_id: (adminRes as any)?.data?.id ?? null,
-        });
-      } catch (mailErr) {
-        const msg = mailErr instanceof Error ? mailErr.message : String(mailErr);
-        console.error("Resend admin error", msg);
-        await logEntry({ recipient: "info@zpzaken.nl", subject, status: "failed", error_message: msg });
-      }
+      const sendAndLog = async (to: string, sub: string, html: string) => {
+        try {
+          const res: any = await resend.emails.send({ from: FROM_ADDRESS, to: [to], subject: sub, html, reply_to: v.email });
+          if (res?.error) {
+            await logEntry({ recipient: to, subject: sub, status: "failed", error_message: `${res.error.name ?? "resend"}: ${res.error.message ?? JSON.stringify(res.error)}` });
+          } else {
+            await logEntry({ recipient: to, subject: sub, status: "sent", resend_message_id: res?.data?.id ?? null });
+          }
+        } catch (mailErr) {
+          const msg = mailErr instanceof Error ? mailErr.message : String(mailErr);
+          await logEntry({ recipient: to, subject: sub, status: "failed", error_message: msg });
+        }
+      };
 
-      const confirmSubject = `Bevestiging: ${labels[v.type]}`;
-      try {
-        const userRes = await resend.emails.send({
-          from: "ZP Zaken <noreply@zpzaken.nl>",
-          to: [v.email],
-          subject: confirmSubject,
-          html: `
-            <p>Hoi ${v.voornaam},</p>
-            <p>We hebben je aanvraag (<strong>${labels[v.type].toLowerCase()}</strong>) ontvangen.
-            Een medewerker neemt binnen 24 uur contact met je op.</p>
-            <h3>Wat je hebt doorgegeven</h3>
-            <ul>${renderDetails(v.details)}</ul>
-            <p>Met vriendelijke groet,<br/>Team ZP Zaken</p>
-          `,
-        });
-        await logEntry({
-          recipient: v.email,
-          subject: confirmSubject,
-          status: "sent",
-          resend_message_id: (userRes as any)?.data?.id ?? null,
-        });
-      } catch (mailErr) {
-        const msg = mailErr instanceof Error ? mailErr.message : String(mailErr);
-        console.error("Resend user error", msg);
-        await logEntry({ recipient: v.email, subject: confirmSubject, status: "failed", error_message: msg });
-      }
+      await sendAndLog("info@zpzaken.nl", subject, baseHtml);
+      await sendAndLog(
+        v.email,
+        `Bevestiging: ${labels[v.type]}`,
+        `
+          <p>Hoi ${v.voornaam},</p>
+          <p>We hebben je aanvraag (<strong>${labels[v.type].toLowerCase()}</strong>) ontvangen.
+          Een medewerker neemt binnen 24 uur contact met je op.</p>
+          <h3>Wat je hebt doorgegeven</h3>
+          <ul>${renderDetails(v.details)}</ul>
+          <p>Met vriendelijke groet,<br/>Team ZP Zaken</p>
+        `,
+      );
     }
+
 
     return new Response(JSON.stringify({ success: true, id: data.id }), {
       status: 200,

@@ -72,7 +72,7 @@ serve(async (req) => {
     const payload: EmailPayload = await req.json();
     const emails: Array<{ from: string; to: string[]; subject: string; html: string }> = [];
 
-    const from = "ZP Zaken <onboarding@resend.dev>";
+    const from = Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <onboarding@resend.dev>";
 
     if (payload.type === "bav") {
       // 1. Notification to info@zpzaken.nl
