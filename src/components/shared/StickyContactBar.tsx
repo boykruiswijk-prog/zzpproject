@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Phone, MessageCircle, X } from "lucide-react";
+import { Phone, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { trackWhatsApp, trackPhone } from "@/lib/tracking";
+import { trackPhone } from "@/lib/tracking";
 
 export function StickyContactBar() {
   const [visible, setVisible] = useState(false);
@@ -34,16 +34,6 @@ export function StickyContactBar() {
           >
             <Phone className="h-4 w-4" />
             <span className="hidden sm:inline">020 - 457 3077</span>
-          </a>
-          <a
-            href="https://wa.me/31652064589"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => trackWhatsApp()}
-            className="flex items-center gap-2 bg-accent text-accent-foreground px-4 py-3 rounded-full shadow-lg hover:scale-105 transition-transform text-sm font-medium"
-          >
-            <MessageCircle className="h-4 w-4" />
-            <span className="hidden sm:inline">WhatsApp</span>
           </a>
           <button
             onClick={() => setDismissed(true)}
