@@ -13,6 +13,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MessageSquare, Phone, Calendar, Trash2, Loader2 } from "lucide-react";
+import { formatDateTimeNL } from "@/lib/dateFormat";
 import type { Database } from "@/integrations/supabase/types";
 
 type NoteType = Database["public"]["Enums"]["note_type"];

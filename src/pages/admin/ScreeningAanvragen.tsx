@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { formatDateNL } from "@/lib/dateFormat";
 
 interface ScreeningAanvraag {
   id: string;
