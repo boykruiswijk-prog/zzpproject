@@ -65,8 +65,32 @@ export const searchIndex: SearchEntry[] = [
   {
     title: "Kennisbank",
     path: "/kennisbank",
-    keywords: "blog artikelen tips advies zzp ondernemen",
+    keywords: "blog artikelen tips advies zzp ondernemen kennisbank",
     snippet: "Praktische artikelen voor zzp'ers over verzekeringen, ondernemen en regelgeving.",
+  },
+  {
+    title: "Wet en regelgeving — Kennisbank",
+    path: "/kennisbank/wet-en-regelgeving",
+    keywords: "wet DBA modelovereenkomst regelgeving juridisch zelfstandigenregeling wetgeving",
+    snippet: "Alles over Wet DBA, zelfstandigenregelingen en juridische aspecten voor zzp'ers.",
+  },
+  {
+    title: "Ondernemen — Kennisbank",
+    path: "/kennisbank/ondernemen",
+    keywords: "ondernemen groei klantrelaties professionalisering risicomanagement zelfstandig",
+    snippet: "Praktische tips voor groei, klantrelaties en risicomanagement als zelfstandige.",
+  },
+  {
+    title: "Belastingen — Kennisbank",
+    path: "/kennisbank/belastingen",
+    keywords: "belasting belastingaangifte BTW aftrekposten fiscaal zzp",
+    snippet: "Belastingaangifte, BTW en fiscale aftrekposten voor zzp'ers — helder uitgelegd.",
+  },
+  {
+    title: "Financiën — Kennisbank",
+    path: "/kennisbank/financien",
+    keywords: "financien financieel beheer pensioen sparen beleggen toekomst",
+    snippet: "Financieel beheer, pensioen en sparen voor zzp'ers.",
   },
   {
     title: "FAQ — Veelgestelde vragen",
