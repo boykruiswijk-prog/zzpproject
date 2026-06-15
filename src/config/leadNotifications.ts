@@ -9,7 +9,8 @@ export type LeadType =
   | "screening-compleet"
   | "mijn-zp-certificaat"
   | "mijn-zp-pauzeren"
-  | "mijn-zp-documenten";
+  | "mijn-zp-documenten"
+  | "verzekering-aanvraag";
 
 export interface LeadNotificationConfig {
   recipient: string;
