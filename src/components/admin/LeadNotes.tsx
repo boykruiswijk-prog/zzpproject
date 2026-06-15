@@ -13,6 +13,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MessageSquare, Phone, Calendar, Trash2, Loader2 } from "lucide-react";
+import { formatDateTimeNL } from "@/lib/dateFormat";
 import type { Database } from "@/integrations/supabase/types";
 
 type NoteType = Database["public"]["Enums"]["note_type"];
@@ -125,7 +126,7 @@ export function LeadNotes({ leadId }: LeadNotesProps) {
                           {noteTypeLabels[note.type]}
                         </Badge>
                         <span className="text-xs text-muted-foreground">
-                          {new Date(note.created_at).toLocaleString("nl-NL")}
+                          {formatDateTimeNL(note.created_at)}
                         </span>
                       </div>
                       <p className="text-sm whitespace-pre-wrap">{note.content}</p>

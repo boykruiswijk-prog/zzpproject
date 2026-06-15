@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { formatDateNL } from "@/lib/dateFormat";
 
 const BAV_AVB_SLUG = "zp-zaken-zorgeloos-zzpen-goedkoopste-bav-avb";
 
@@ -92,13 +93,7 @@ const renderContentWithCTA = (content: string) => {
      );
    }
  
-   const formattedDate = article.published_at
-     ? new Date(article.published_at).toLocaleDateString("nl-NL", {
-         day: "numeric",
-         month: "long",
-         year: "numeric",
-       })
-     : null;
+  const formattedDate = article.published_at ? formatDateNL(article.published_at) : null;
  
    // Structured data for article
    const articleSchema = {

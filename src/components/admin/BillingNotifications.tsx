@@ -9,6 +9,7 @@ import { CheckCircle } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { formatDateNL } from "@/lib/dateFormat";
 
 interface BillingPeriod {
   lead_id: string;
@@ -234,9 +235,7 @@ export function BillingNotifications() {
     setIsBulkGenerating(false);
   };
 
-  const formatNL = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString("nl-NL", { day: "2-digit", month: "short", year: "numeric" });
-  };
+  const formatNL = (dateStr: string) => formatDateNL(dateStr);
 
   if (isLoading) {
     return (

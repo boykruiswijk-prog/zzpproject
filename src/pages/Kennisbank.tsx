@@ -6,11 +6,18 @@ import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowRight, BookOpen, Shield } from "lucide-react";
+import { ArrowRight, BookOpen, Scale, Briefcase, Calculator, Wallet, Shield } from "lucide-react";
 import { useArticles, useArticleCategories } from "@/hooks/useArticles";
 import { ArticleCard } from "@/components/kennisbank/ArticleCard";
 import { CategoryFilter } from "@/components/kennisbank/CategoryFilter";
 import officeFlowers from "@/assets/zp-boy-laptop.jpg";
+
+const categoryCards = [
+  { icon: Scale, title: "Wet en regelgeving", desc: "Wet DBA, zelfstandigenregelingen en juridische zaken.", href: "/kennisbank/wet-en-regelgeving" },
+  { icon: Briefcase, title: "Ondernemen", desc: "Groei, klantrelaties en risicomanagement voor zzp'ers.", href: "/kennisbank/ondernemen" },
+  { icon: Calculator, title: "Belastingen", desc: "Belastingaangifte, BTW en fiscale aftrekposten.", href: "/kennisbank/belastingen" },
+  { icon: Wallet, title: "Financiën", desc: "Financieel beheer, pensioen en sparen.", href: "/kennisbank/financien" },
+];
 
 export default function Kennisbank() {
   const { t } = useTranslation();
@@ -32,6 +39,29 @@ export default function Kennisbank() {
         badge={{ icon: <BookOpen className="h-4 w-4" />, text: t("kennisbank.badge") }}
         backgroundImage={officeFlowers}
       />
+
+      <section className="section-padding bg-secondary/30">
+        <div className="container-wide">
+          <div className="max-w-2xl mx-auto text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold mb-3">Categorieën</h2>
+            <p className="text-muted-foreground">Blader door onze thema-pagina's.</p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
+            {categoryCards.map((c) => (
+              <LocalizedLink key={c.href} to={c.href} className="bg-card border border-border/50 rounded-2xl p-6 hover:border-accent/40 hover:shadow-md transition-all group">
+                <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center mb-3 group-hover:bg-accent/20 transition-colors">
+                  <c.icon className="h-5 w-5 text-accent" />
+                </div>
+                <h3 className="font-semibold mb-1 group-hover:text-accent transition-colors">{c.title}</h3>
+                <p className="text-sm text-muted-foreground mb-3">{c.desc}</p>
+                <span className="inline-flex items-center gap-1 text-sm font-medium text-accent">
+                  Bekijk artikelen <ArrowRight className="h-4 w-4" />
+                </span>
+              </LocalizedLink>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <CategoryFilter categories={categories} activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
 

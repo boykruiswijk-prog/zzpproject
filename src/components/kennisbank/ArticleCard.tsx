@@ -1,7 +1,8 @@
  import { ArrowRight, Calendar, Clock, Shield } from "lucide-react";
  import { motion } from "framer-motion";
  import type { Article } from "@/hooks/useArticles";
- import { LocalizedLink } from "@/components/LocalizedLink";
+import { LocalizedLink } from "@/components/LocalizedLink";
+import { formatDateNL } from "@/lib/dateFormat";
  
  // Default images based on category
  const categoryImages: Record<string, string> = {
@@ -22,13 +23,7 @@
  
  export function ArticleCard({ article, index }: ArticleCardProps) {
    const imageUrl = article.image_url || categoryImages[article.category] || "/placeholder.svg";
-   const formattedDate = article.published_at
-     ? new Date(article.published_at).toLocaleDateString("nl-NL", {
-         day: "numeric",
-         month: "long",
-         year: "numeric",
-       })
-     : null;
+  const formattedDate = article.published_at ? formatDateNL(article.published_at) : null;
  
    return (
      <motion.article

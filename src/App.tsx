@@ -17,6 +17,10 @@ import VoorWie from "./pages/VoorWie";
 import ZoWerkenWij from "./pages/ZoWerkenWij";
 import Kennis from "./pages/Kennis";
 import Kennisbank from "./pages/Kennisbank";
+import KennisbankWetEnRegelgeving from "./pages/kennisbank/WetEnRegelgeving";
+import KennisbankOndernemen from "./pages/kennisbank/Ondernemen";
+import KennisbankBelastingen from "./pages/kennisbank/Belastingen";
+import KennisbankFinancien from "./pages/kennisbank/Financien";
 import ArtikelDetail from "./pages/ArtikelDetail";
 import OverOns from "./pages/OverOns";
 import Partners from "./pages/Partners";
@@ -146,6 +150,10 @@ const publicRoutes = (
     <Route path="zo-werken-wij" element={<ZoWerkenWij />} />
     <Route path="kennis" element={<Kennis />} />
     <Route path="kennisbank" element={<Kennisbank />} />
+    <Route path="kennisbank/wet-en-regelgeving" element={<KennisbankWetEnRegelgeving />} />
+    <Route path="kennisbank/ondernemen" element={<KennisbankOndernemen />} />
+    <Route path="kennisbank/belastingen" element={<KennisbankBelastingen />} />
+    <Route path="kennisbank/financien" element={<KennisbankFinancien />} />
     <Route path="kennisbank/:slug" element={<ArtikelDetail />} />
     <Route path="over-ons" element={<OverOns />} />
     <Route path="partners" element={<Partners />} />

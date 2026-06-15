@@ -45,6 +45,10 @@ function useNavItems() {
       label: t("nav.kennisbank"),
       children: [
         { href: "/kennisbank", label: t("nav.artikelen") },
+        { href: "/kennisbank/wet-en-regelgeving", label: "Wet en regelgeving" },
+        { href: "/kennisbank/ondernemen", label: "Ondernemen" },
+        { href: "/kennisbank/belastingen", label: "Belastingen" },
+        { href: "/kennisbank/financien", label: "Financiën" },
         { href: "/faq", label: t("nav.faq") },
         { href: "/kennis", label: t("nav.kennisAdvies") },
       ]
