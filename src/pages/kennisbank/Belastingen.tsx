@@ -6,7 +6,7 @@ export default function KennisbankBelastingen() {
       slug="belastingen"
       title="Belastingen"
       intro="Belastingaangifte, BTW, fiscale aftrekposten en andere fiscale onderwerpen voor zzp'ers."
-      categoryTags={["Fiscaal", "Belastingen"]}
+      categoryTags={["Fiscaal"]}
       metaTitle="Belastingen voor ZZP'ers | Kennisbank | ZP Zaken"
       metaDescription="Belastingaangifte, BTW en fiscale aftrekposten voor zzp'ers — helder uitgelegd. Lees onze artikelen voor zelfstandigen."
     />

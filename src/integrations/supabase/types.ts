@@ -944,6 +944,7 @@ export type Database = {
           exact_status: string | null
           exact_sync_op: string | null
           geboortedatum: string | null
+          gekozen_pakket: string | null
           id: string
           ingangsdatum: string | null
           kvk_nummer: string | null
@@ -974,6 +975,7 @@ export type Database = {
           exact_status?: string | null
           exact_sync_op?: string | null
           geboortedatum?: string | null
+          gekozen_pakket?: string | null
           id?: string
           ingangsdatum?: string | null
           kvk_nummer?: string | null
@@ -1004,6 +1006,7 @@ export type Database = {
           exact_status?: string | null
           exact_sync_op?: string | null
           geboortedatum?: string | null
+          gekozen_pakket?: string | null
           id?: string
           ingangsdatum?: string | null
           kvk_nummer?: string | null

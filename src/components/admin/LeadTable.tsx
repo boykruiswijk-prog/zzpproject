@@ -57,6 +57,18 @@ const statusColors: Record<LeadStatus, string> = {
   afgewezen: "bg-red-100 text-red-800",
 };
 
+const pakketLabels: Record<string, string> = {
+  "maandelijks": "Maandelijks",
+  "jaarlijks": "Jaarlijks",
+  "jaarlijks-cyber": "Jaarlijks + Cyber",
+};
+
+const pakketColors: Record<string, string> = {
+  "maandelijks": "bg-slate-100 text-slate-800 border-slate-300",
+  "jaarlijks": "bg-blue-100 text-blue-800 border-blue-300",
+  "jaarlijks-cyber": "bg-accent/10 text-accent border-accent/30",
+};
+
 export function LeadTable() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "all">("all");
@@ -152,6 +164,7 @@ export function LeadTable() {
               <TableHead>Naam</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Verzekering</TableHead>
+              <TableHead>Pakket</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Datum</TableHead>
               <TableHead className="w-20">Acties</TableHead>
@@ -160,7 +173,7 @@ export function LeadTable() {
           <TableBody>
             {leads?.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                   Geen leads gevonden
                 </TableCell>
               </TableRow>
@@ -179,6 +192,15 @@ export function LeadTable() {
                   <TableCell>
                     {lead.verzekering_type ? (
                       <Badge variant="outline">{lead.verzekering_type}</Badge>
+                    ) : (
+                      <span className="text-muted-foreground">-</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {lead.gekozen_pakket ? (
+                      <Badge variant="outline" className={pakketColors[lead.gekozen_pakket] || ""}>
+                        {pakketLabels[lead.gekozen_pakket] || lead.gekozen_pakket}
+                      </Badge>
                     ) : (
                       <span className="text-muted-foreground">-</span>
                     )}
