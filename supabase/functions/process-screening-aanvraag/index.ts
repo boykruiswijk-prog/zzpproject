@@ -102,23 +102,60 @@ Deno.serve(async (req) => {
 
     if (insertError) throw new Error(`Aanvraag insert: ${insertError.message}`);
 
-    // 2. Mailnotificaties via Resend
+    // 2. Mailnotificaties via Resend (+ logging in lead_notification_log)
+    const leadType = `screening-${data.screening_type}`;
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+
+    const logEntry = async (entry: {
+      recipient: string;
+      subject: string;
+      status: "sent" | "failed";
+      resend_message_id?: string | null;
+      error_message?: string | null;
+    }) => {
+      try {
+        await supabase.from("lead_notification_log").insert({
+          lead_type: leadType,
+          lead_id: aanvraag.id,
+          recipient: entry.recipient,
+          subject: entry.subject,
+          status: entry.status,
+          resend_message_id: entry.resend_message_id ?? null,
+          error_message: entry.error_message ?? null,
+          metadata: { naam: volledigeNaam, email: data.email, pakket: data.screening_type },
+        });
+      } catch (e) {
+        console.error("log insert failed:", e);
+      }
+    };
+
     if (RESEND_API_KEY) {
-      const sendMail = (to: string, subject: string, html: string) =>
-        fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${RESEND_API_KEY}`,
-          },
-          body: JSON.stringify({
-            from: "ZP Zaken <info@zpzaken.nl>",
-            to: [to],
-            subject,
-            html,
-          }),
-        }).catch((err) => console.error(`Resend ${to} failed:`, err));
+      const sendMail = async (to: string, subject: string, html: string) => {
+        try {
+          const res = await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${RESEND_API_KEY}`,
+            },
+            body: JSON.stringify({
+              from: "ZP Zaken <info@zpzaken.nl>",
+              to: [to],
+              subject,
+              html,
+            }),
+          });
+          const body = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            await logEntry({ recipient: to, subject, status: "failed", error_message: `Resend ${res.status}: ${JSON.stringify(body)}` });
+          } else {
+            await logEntry({ recipient: to, subject, status: "sent", resend_message_id: body?.id ?? null });
+          }
+        } catch (err) {
+          console.error(`Resend ${to} failed:`, err);
+          await logEntry({ recipient: to, subject, status: "failed", error_message: err instanceof Error ? err.message : String(err) });
+        }
+      };
 
       // Naar info@zpzaken.nl
       const adminHtml = `
