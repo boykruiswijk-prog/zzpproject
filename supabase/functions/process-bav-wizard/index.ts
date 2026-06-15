@@ -158,18 +158,29 @@ Deno.serve(async (req) => {
 
     if (dbError) throw new Error(`Aanmelding insert: ${dbError.message}`);
 
-    // ── 3. E-MAIL VIA BESTAANDE send-notification (fire-and-forget) ──
+    // ── 3. E-MAIL VIA send-lead-notification (logt automatisch in lead_notification_log) ──
     supabase.functions
-      .invoke("send-notification", {
+      .invoke("send-lead-notification", {
         body: {
           type: "bav",
-          naam: volledigeNaam,
-          email: submission.email,
-          telefoon: submission.telefoon || "-",
-          dekking: `${pakket.naam} — ${pakket.dekking}`,
+          leadId: lead.id,
+          reference: lead.id.slice(0, 8),
+          userEmail: submission.email,
+          fields: {
+            naam: volledigeNaam,
+            email: submission.email,
+            telefoon: submission.telefoon || "-",
+            bedrijfsnaam: submission.bedrijfsnaam,
+            kvk_nummer: submission.kvk_nummer || "-",
+            pakket: pakket.naam,
+            dekking: pakket.dekking,
+            betaalwijze: submission.betaalwijze,
+            ingangsdatum: submission.ingangsdatum,
+            premie: `€${premium}`,
+          },
         },
       })
-      .catch((err) => console.error("send-notification failed:", err));
+      .catch((err) => console.error("send-lead-notification failed:", err));
 
     // ── 4. EXACT ONLINE SYNC (via exact_tokens + subscription mapping) ──
     try {
