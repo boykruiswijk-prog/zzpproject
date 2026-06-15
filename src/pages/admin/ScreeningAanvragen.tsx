@@ -94,7 +94,7 @@ export default function AdminScreeningAanvragen() {
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">{a.otentica_status.replace("_", " ")}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">
-                      {new Date(a.aangemeld_op).toLocaleDateString("nl-NL", { day: "2-digit", month: "2-digit", year: "numeric" })}
+                      {formatDateNL(a.aangemeld_op)}
                     </TableCell>
                   </TableRow>
                 ))

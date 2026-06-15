@@ -92,13 +92,7 @@ const renderContentWithCTA = (content: string) => {
      );
    }
  
-   const formattedDate = article.published_at
-     ? new Date(article.published_at).toLocaleDateString("nl-NL", {
-         day: "numeric",
-         month: "long",
-         year: "numeric",
-       })
-     : null;
+  const formattedDate = article.published_at ? formatDateNL(article.published_at) : null;
  
    // Structured data for article
    const articleSchema = {

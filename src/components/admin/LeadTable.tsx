@@ -207,7 +207,7 @@ export function LeadTable() {
                     </Select>
                   </TableCell>
                   <TableCell>
-                    {new Date(lead.created_at).toLocaleDateString("nl-NL")}
+                    {formatDateNL(lead.created_at)}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">

@@ -125,7 +125,7 @@ export function LeadNotes({ leadId }: LeadNotesProps) {
                           {noteTypeLabels[note.type]}
                         </Badge>
                         <span className="text-xs text-muted-foreground">
-                          {new Date(note.created_at).toLocaleString("nl-NL")}
+                          {formatDateTimeNL(note.created_at)}
                         </span>
                       </div>
                       <p className="text-sm whitespace-pre-wrap">{note.content}</p>

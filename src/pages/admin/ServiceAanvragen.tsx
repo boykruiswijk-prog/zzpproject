@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ConciergeBell, RotateCw, Mail } from "lucide-react";
+import { formatDateNL } from "@/lib/dateFormat";
 
 type Aanvraag = {
   id: string;
@@ -48,10 +49,7 @@ const STATUS_COLOR: Record<string, string> = {
   gearchiveerd: "bg-gray-100 text-gray-700",
 };
 
-function formatDate(d: string) {
-  const dt = new Date(d);
-  return `${String(dt.getDate()).padStart(2, "0")}-${String(dt.getMonth() + 1).padStart(2, "0")}-${dt.getFullYear()}`;
-}
+const formatDate = formatDateNL;
 
 export default function ServiceAanvragen() {
   const { toast } = useToast();
