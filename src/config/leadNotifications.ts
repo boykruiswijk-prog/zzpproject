@@ -64,4 +64,10 @@ export const LEAD_NOTIFICATIONS: Record<LeadType, LeadNotificationConfig> = {
     subjectTemplate: (ref) => `Documenten opgevraagd via zpzaken.nl - ${ref}`,
     label: "Documenten opgevraagd",
   },
+  "verzekering-aanvraag": {
+    recipient: "info@zpzaken.nl",
+    ccUser: true,
+    subjectTemplate: (ref) => `Nieuwe verzekeringsaanvraag via zpzaken.nl - ${ref}`,
+    label: "Verzekeringsaanvraag",
+  },
 };
