@@ -10,9 +10,12 @@ export function HiscoxTrustStrip() {
     <section className="bg-secondary/40 border-y border-border">
       <div className="container-wide py-10">
         <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10 max-w-4xl mx-auto">
-          <div className="flex-shrink-0 flex items-center justify-center h-20 w-44 rounded-lg bg-background border border-border">
-            {/* TODO: vervang door <img src="/logos/hiscox.svg" alt="Hiscox" /> zodra Boy het logo uploadt */}
-            <span className="font-serif text-3xl tracking-tight text-foreground">Hiscox</span>
+          <div className="flex-shrink-0 flex items-center justify-center h-20 w-44 rounded-lg bg-background border border-border px-4 py-3">
+            <img
+              src="/logos/hiscox.png"
+              alt="Hiscox - onze verzekeringspartner"
+              className="h-8 md:h-12 w-auto object-contain"
+            />
           </div>
           <div className="flex-1 text-center md:text-left">
             <div className="flex items-center gap-2 justify-center md:justify-start mb-2 text-xs font-semibold uppercase tracking-wide text-accent">
