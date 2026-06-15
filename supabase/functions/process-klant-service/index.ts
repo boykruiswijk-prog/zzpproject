@@ -1,7 +1,11 @@
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { Resend } from "npm:resend@4.0.0";
 import { z } from "npm:zod@3.23.8";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
