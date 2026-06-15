@@ -1,0 +1,2 @@
+ALTER TABLE public.klant_service_aanvragen DROP CONSTRAINT IF EXISTS klant_service_aanvragen_type_check;
+ALTER TABLE public.klant_service_aanvragen ADD CONSTRAINT klant_service_aanvragen_type_check CHECK (type = ANY (ARRAY['certificaat'::text, 'pauzeren'::text, 'documenten'::text, 'opzeggen'::text]));
