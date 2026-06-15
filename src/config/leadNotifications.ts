@@ -9,7 +9,8 @@ export type LeadType =
   | "screening-compleet"
   | "mijn-zp-certificaat"
   | "mijn-zp-pauzeren"
-  | "mijn-zp-documenten";
+  | "mijn-zp-documenten"
+  | "verzekering-aanvraag";
 
 export interface LeadNotificationConfig {
   recipient: string;
@@ -62,5 +63,11 @@ export const LEAD_NOTIFICATIONS: Record<LeadType, LeadNotificationConfig> = {
     ccUser: true,
     subjectTemplate: (ref) => `Documenten opgevraagd via zpzaken.nl - ${ref}`,
     label: "Documenten opgevraagd",
+  },
+  "verzekering-aanvraag": {
+    recipient: "info@zpzaken.nl",
+    ccUser: true,
+    subjectTemplate: (ref) => `Nieuwe verzekeringsaanvraag via zpzaken.nl - ${ref}`,
+    label: "Verzekeringsaanvraag",
   },
 };

@@ -1,4 +1,35 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "npm:@supabase/supabase-js@2.45.4";
+
+const supabaseLog = createClient(
+  Deno.env.get("SUPABASE_URL") ?? "",
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+);
+
+async function logNotification(entry: {
+  lead_type: string;
+  recipient: string;
+  subject: string;
+  status: "sent" | "failed";
+  resend_message_id?: string | null;
+  error_message?: string | null;
+  metadata?: Record<string, unknown>;
+}) {
+  try {
+    await supabaseLog.from("lead_notification_log").insert({
+      lead_type: entry.lead_type,
+      recipient: entry.recipient,
+      subject: entry.subject,
+      status: entry.status,
+      resend_message_id: entry.resend_message_id ?? null,
+      error_message: entry.error_message ?? null,
+      metadata: entry.metadata ?? {},
+    });
+  } catch (e) {
+    console.error("lead_notification_log insert failed:", e);
+  }
+}
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -102,7 +133,8 @@ serve(async (req) => {
       });
     }
 
-    // Send all emails via Resend
+    // Send all emails via Resend (per-email logging into lead_notification_log)
+    const leadType = payload.type === "bav" ? "bav" : "contact";
     const results = await Promise.allSettled(
       emails.map((email) =>
         fetch("https://api.resend.com/emails", {
@@ -116,8 +148,22 @@ serve(async (req) => {
           const body = await res.json();
           if (!res.ok) {
             console.error("Resend error:", JSON.stringify(body));
+            await logNotification({
+              lead_type: leadType,
+              recipient: email.to[0],
+              subject: email.subject,
+              status: "failed",
+              error_message: `Resend ${res.status}: ${JSON.stringify(body)}`,
+            });
             throw new Error(`Resend API error [${res.status}]: ${JSON.stringify(body)}`);
           }
+          await logNotification({
+            lead_type: leadType,
+            recipient: email.to[0],
+            subject: email.subject,
+            status: "sent",
+            resend_message_id: body?.id ?? null,
+          });
           return body;
         })
       )

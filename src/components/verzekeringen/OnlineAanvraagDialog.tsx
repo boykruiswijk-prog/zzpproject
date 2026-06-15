@@ -129,7 +129,7 @@ export function OnlineAanvraagDialog({
     
     try {
        // Save to database for admin dashboard
-      const { error } = await supabase.from("leads").insert({
+      const { data: lead, error } = await supabase.from("leads").insert({
         type: "verzekering_aanvraag",
         voornaam: formData.voornaam,
         achternaam: formData.achternaam,
@@ -146,12 +146,39 @@ export function OnlineAanvraagDialog({
         ingangsdatum: formData.ingangsdatum || null,
         opmerkingen: formData.opmerkingen || null,
         bron: "website",
-      });
+      }).select().single();
 
        if (error) {
          console.error("Database error:", error);
          throw error;
        }
+
+      // Mail-notificatie (logt zelf in lead_notification_log)
+      supabase.functions
+        .invoke("send-lead-notification", {
+          body: {
+            type: "verzekering-aanvraag",
+            leadId: lead?.id,
+            reference: lead?.id ? String(lead.id).slice(0, 8) : "",
+            userEmail: formData.email,
+            fields: {
+              naam: `${formData.voornaam} ${formData.achternaam}`,
+              email: formData.email,
+              telefoon: formData.telefoon,
+              geboortedatum: formData.geboortedatum,
+              bedrijfsnaam: formData.bedrijfsnaam,
+              kvk_nummer: formData.kvkNummer,
+              beroep: formData.beroep,
+              jaaromzet: formData.jaarOmzet,
+              verzekering: insuranceTitle,
+              dekkingsbedrag: formData.dekkingsBedrag,
+              eigen_risico: formData.eigenRisico || "-",
+              ingangsdatum: formData.ingangsdatum,
+              opmerkingen: formData.opmerkingen || "-",
+            },
+          },
+        })
+        .catch((err) => console.error("send-lead-notification failed:", err));
 
       trackFormComplete(insuranceTitle);
       setIsCompleted(true);
