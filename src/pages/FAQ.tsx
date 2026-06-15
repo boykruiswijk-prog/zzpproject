@@ -37,10 +37,10 @@ const faqItems = [
   {
     category: "Mijn verzekering beheren",
     questions: [
-      { question: "Hoe kan ik mijn verzekering opzeggen?", answer: "Je verzekering opzeggen kan dagelijks. Stuur een mail naar info@zpzaken.nl met je polisnummer en de gewenste opzegdatum, of bel ons via 020 - 457 3077. Wij verwerken je opzegging binnen 24 uur en sturen je een bevestiging." },
+      { question: "Hoe kan ik mijn verzekering opzeggen?", answer: "Je verzekering opzeggen kan dagelijks. Start de opzeg-wizard op /mijn-zp/opzeggen en geef de reden en gewenste opzegdatum op. Wij verwerken je opzegging binnen 24 uur en sturen je een bevestiging per mail." },
       { question: "Hoe pauzeer ik mijn verzekering?", answer: "Heb je tijdelijk geen opdracht of ga je tijdelijk in loondienst? Dan kun je je verzekering eenvoudig pauzeren via de pauzeer-wizard op /mijn-zp/pauzeren. Wij verwerken je pauzering binnen 24 uur en jouw uitlooprisico blijft tijdens de pauze gewoon behouden." },
-      { question: "Hoe vraag ik een verzekeringscertificaat aan?", answer: "Heeft een opdrachtgever om een verzekeringsbewijs gevraagd? Vraag eenvoudig een certificaat aan via de wizard op /mijn-zp/certificaat. Wij sturen het certificaat binnen 24 uur naar het opgegeven adres." },
-      { question: "Hoe ontvang ik kopieën van mijn polisstukken?", answer: "Heb je je polisblad, polisvoorwaarden of een ander document nodig? Vraag je documenten op via de wizard op /mijn-zp/documenten. Je ontvangt ze binnen 24 uur per mail of per post." },
+      { question: "Hoe vraag ik mijn polis op?", answer: "Heb je je polis nodig om aan een opdrachtgever te tonen? Vraag je polis op via de wizard op /mijn-zp/polis. Wij sturen je polis binnen 24 uur per mail." },
+      { question: "Hoe ontvang ik kopieën van mijn polisstukken?", answer: "Heb je je polisblad, polisvoorwaarden of een ander document nodig? Vraag je documenten op via de wizard op /mijn-zp/documenten. Je ontvangt ze binnen 24 uur per mail." },
       { question: "Wat gebeurt er met mijn uitlooprisico als ik pauzeer?", answer: "Jouw uitlooprisico blijft tijdens een pauze gewoon behouden. Schades die voortvloeien uit werkzaamheden van vóór de pauze blijven gedekt. Je bent alleen niet verzekerd voor nieuwe werkzaamheden tijdens de pauze." },
     ]
   },

@@ -4,9 +4,9 @@ import {
   validateIdentificatie,
 } from "@/components/mijn-zp/ServiceWizardShell";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Mail } from "lucide-react";
 
 const DOCS = [
   "Polisblad",
@@ -21,9 +21,9 @@ export default function DocumentenWizard() {
     <ServiceWizardShell
       type="documenten"
       pageTitle="Documenten opvragen | Mijn ZP — ZP Zaken"
-      pageDescription="Vraag eenvoudig je polisstukken op (polisblad, voorwaarden, premiebewijs). Binnen 24 uur."
+      pageDescription="Vraag eenvoudig je polisstukken op (polisblad, voorwaarden, premiebewijs). Binnen 24 uur per mail."
       introTitle="Documenten ontvangen"
-      introText="Vraag je polisstukken op. Je ontvangt ze binnen 24 uur per mail of post."
+      introText="Vraag je polisstukken op. Je ontvangt ze binnen 24 uur per mail."
       steps={[
         {
           title: "Identificatie",
@@ -64,53 +64,20 @@ export default function DocumentenWizard() {
               : { documenten: "Selecteer minimaal één document of vul 'Anders' in" },
         },
         {
-          title: "Verzendwijze",
-          render: ({ details, setDetails }) => (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                {["email", "post"].map((v) => (
-                  <button
-                    key={v}
-                    type="button"
-                    onClick={() => setDetails({ ...details, verzending: v })}
-                    className={`p-3 rounded border-2 text-sm font-medium transition-colors ${
-                      details.verzending === v ? "border-accent bg-accent/5" : "border-border"
-                    }`}
-                  >
-                    {v === "email" ? "Per e-mail" : "Per post"}
-                  </button>
-                ))}
+          title: "Bevestiging",
+          render: ({ formData }) => (
+            <div className="p-4 rounded-lg border border-accent/30 bg-accent/5 flex gap-3">
+              <Mail className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
+              <div className="text-sm">
+                <p className="font-semibold mb-1">Verzending per e-mail</p>
+                <p className="text-muted-foreground">
+                  We sturen je documenten per e-mail naar{" "}
+                  <strong>{formData.email || "het adres dat je hebt opgegeven in stap 1"}</strong>.
+                  Je ontvangt ze binnen 24 uur.
+                </p>
               </div>
-              {details.verzending === "post" && (
-                <div className="space-y-3">
-                  <div>
-                    <Label>Straat + huisnummer *</Label>
-                    <Input value={details.straat ?? ""} onChange={(e) => setDetails({ ...details, straat: e.target.value })} />
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label>Postcode *</Label>
-                      <Input value={details.postcode ?? ""} onChange={(e) => setDetails({ ...details, postcode: e.target.value })} />
-                    </div>
-                    <div>
-                      <Label>Plaats *</Label>
-                      <Input value={details.plaats ?? ""} onChange={(e) => setDetails({ ...details, plaats: e.target.value })} />
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           ),
-          validate: (_, d) => {
-            const e: Record<string, string> = {};
-            if (!d.verzending) e.verzending = "Kies verzendwijze";
-            if (d.verzending === "post") {
-              if (!d.straat?.trim()) e.straat = "Verplicht";
-              if (!d.postcode?.trim()) e.postcode = "Verplicht";
-              if (!d.plaats?.trim()) e.plaats = "Verplicht";
-            }
-            return e;
-          },
         },
       ]}
     />

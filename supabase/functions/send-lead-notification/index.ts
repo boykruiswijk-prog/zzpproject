@@ -23,9 +23,10 @@ const LEAD_LABELS: Record<string, string> = {
   "screening-basis": "Screening Basis (€49)",
   "screening-uitgebreid": "Screening Uitgebreid (€129)",
   "screening-compleet": "Screening Compleet (€179)",
-  "mijn-zp-certificaat": "Certificaat-aanvraag",
+  "mijn-zp-certificaat": "Polis-aanvraag",
   "mijn-zp-pauzeren": "Pauzeer-aanvraag",
   "mijn-zp-documenten": "Documenten opgevraagd",
+  "mijn-zp-opzeggen": "Opzegging",
   "verzekering-aanvraag": "Verzekeringsaanvraag",
 };
 
@@ -35,9 +36,10 @@ const SUBJECTS: Record<string, (ref: string) => string> = {
   "screening-basis": (r) => `Nieuwe screening (Basis €49) via zpzaken.nl - ${r}`,
   "screening-uitgebreid": (r) => `Nieuwe screening (Uitgebreid €129) via zpzaken.nl - ${r}`,
   "screening-compleet": (r) => `Nieuwe screening (Compleet €179) via zpzaken.nl - ${r}`,
-  "mijn-zp-certificaat": (r) => `Nieuwe certificaat-aanvraag via zpzaken.nl - ${r}`,
+  "mijn-zp-certificaat": (r) => `Nieuwe polis-aanvraag via zpzaken.nl - ${r}`,
   "mijn-zp-pauzeren": (r) => `Nieuwe pauzeer-aanvraag via zpzaken.nl - ${r}`,
   "mijn-zp-documenten": (r) => `Documenten opgevraagd via zpzaken.nl - ${r}`,
+  "mijn-zp-opzeggen": (r) => `Nieuwe opzegging via zpzaken.nl - ${r}`,
   "verzekering-aanvraag": (r) => `Nieuwe verzekeringsaanvraag via zpzaken.nl - ${r}`,
 };
 

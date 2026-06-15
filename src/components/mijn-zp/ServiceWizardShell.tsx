@@ -12,7 +12,7 @@ import { ArrowLeft, ArrowRight, CheckCircle, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-export type ServiceType = "certificaat" | "pauzeren" | "documenten";
+export type ServiceType = "certificaat" | "pauzeren" | "documenten" | "opzeggen";
 
 export interface BaseFormData {
   voornaam: string;

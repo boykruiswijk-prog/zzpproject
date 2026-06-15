@@ -15,7 +15,7 @@ import { formatDateNL } from "@/lib/dateFormat";
 
 type Aanvraag = {
   id: string;
-  type: "certificaat" | "pauzeren" | "documenten";
+  type: "certificaat" | "pauzeren" | "documenten" | "opzeggen";
   voornaam: string;
   achternaam: string;
   email: string;
@@ -40,6 +40,14 @@ const TYPE_COLOR: Record<string, string> = {
   certificaat: "bg-blue-100 text-blue-800",
   pauzeren: "bg-amber-100 text-amber-800",
   documenten: "bg-emerald-100 text-emerald-800",
+  opzeggen: "bg-red-100 text-red-800",
+};
+
+const TYPE_LABEL: Record<string, string> = {
+  certificaat: "Polis",
+  pauzeren: "Pauzeren",
+  documenten: "Documenten",
+  opzeggen: "Opzeggen",
 };
 
 const STATUS_COLOR: Record<string, string> = {
@@ -108,6 +116,7 @@ export default function ServiceAanvragen() {
       certificaat: "mijn-zp-certificaat",
       pauzeren: "mijn-zp-pauzeren",
       documenten: "mijn-zp-documenten",
+      opzeggen: "mijn-zp-opzeggen",
     } as const;
     const { error } = await supabase.functions.invoke("send-lead-notification", {
       body: {
@@ -137,7 +146,7 @@ export default function ServiceAanvragen() {
               <ConciergeBell className="h-7 w-7 text-primary" /> Service-aanvragen
             </h1>
             <p className="text-muted-foreground">
-              Certificaat-, pauzeer- en documentaanvragen vanuit Mijn ZP
+              Polis-, pauzeer-, document- en opzeg-aanvragen vanuit Mijn ZP
             </p>
           </div>
           <Button variant="outline" onClick={load}><RotateCw className="h-4 w-4 mr-2" />Herladen</Button>
@@ -148,9 +157,10 @@ export default function ServiceAanvragen() {
             <SelectTrigger className="w-48"><SelectValue placeholder="Type" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="alle">Alle types</SelectItem>
-              <SelectItem value="certificaat">Certificaat</SelectItem>
+              <SelectItem value="certificaat">Polis</SelectItem>
               <SelectItem value="pauzeren">Pauzeren</SelectItem>
               <SelectItem value="documenten">Documenten</SelectItem>
+              <SelectItem value="opzeggen">Opzeggen</SelectItem>
             </SelectContent>
           </Select>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -189,7 +199,7 @@ export default function ServiceAanvragen() {
               ) : filtered.map((it) => (
                 <tr key={it.id} className="border-t border-border hover:bg-muted/30 cursor-pointer" onClick={() => setSelected(it)}>
                   <td className="p-3 whitespace-nowrap">{formatDate(it.created_at)}</td>
-                  <td className="p-3"><Badge className={TYPE_COLOR[it.type]}>{it.type}</Badge></td>
+                  <td className="p-3"><Badge className={TYPE_COLOR[it.type]}>{TYPE_LABEL[it.type] ?? it.type}</Badge></td>
                   <td className="p-3">{it.voornaam} {it.achternaam}</td>
                   <td className="p-3 font-mono text-xs">{it.polisnummer}</td>
                   <td className="p-3">{it.email}</td>
@@ -213,7 +223,7 @@ export default function ServiceAanvragen() {
             <>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
-                  <Badge className={TYPE_COLOR[selected.type]}>{selected.type}</Badge>
+                  <Badge className={TYPE_COLOR[selected.type]}>{TYPE_LABEL[selected.type] ?? selected.type}</Badge>
                   {selected.voornaam} {selected.achternaam}
                 </DialogTitle>
               </DialogHeader>
