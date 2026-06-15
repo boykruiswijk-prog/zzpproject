@@ -112,7 +112,7 @@ Deno.serve(async (req) => {
 
     try {
       const sendRes = await resend.emails.send({
-        from: "ZP Zaken <noreply@zpzaken.nl>",
+        from: Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <onboarding@resend.dev>",
         to: [recipient],
         cc: userEmail ? [userEmail] : undefined,
         reply_to: (fields.email as string) || undefined,
