@@ -6,32 +6,39 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// Sync met src/data/bavPakketten.ts — single source of truth voor BAV-prijzen.
 const PAKKET_CONFIG: Record<
   string,
-  { naam: string; maandprijs: number; jaarprijs: number; dekking: string }
+  { naam: string; prijs: number; betaalwijze: "maandelijks" | "jaarlijks"; maandprijs: number; jaarprijs: number; dekking: string }
 > = {
-  basis: {
-    naam: "Combi Basis",
-    maandprijs: 30,
-    jaarprijs: 324,
-    dekking: "€500.000 per gebeurtenis / €1.000.000 per jaar",
+  "maandelijks": {
+    naam: "BAV & AVB Maandelijks",
+    prijs: 55,
+    betaalwijze: "maandelijks",
+    maandprijs: 55,
+    jaarprijs: 660,
+    dekking: "BAV €5.000.000 / AVB €2.500.000 per gebeurtenis",
   },
-  uitgebreid: {
-    naam: "Combi Uitgebreid",
-    maandprijs: 45,
-    jaarprijs: 486,
-    dekking: "€2.500.000 per gebeurtenis / €5.000.000 per jaar",
+  "jaarlijks": {
+    naam: "BAV & AVB Jaarlijks",
+    prijs: 600,
+    betaalwijze: "jaarlijks",
+    maandprijs: 50,
+    jaarprijs: 600,
+    dekking: "BAV €5.000.000 / AVB €2.500.000 per gebeurtenis",
   },
-  compleet: {
-    naam: "Combi Compleet",
-    maandprijs: 65,
-    jaarprijs: 702,
-    dekking: "€5.000.000 per gebeurtenis / €10.000.000 per jaar",
+  "jaarlijks-cyber": {
+    naam: "BAV & AVB Jaarlijks + Cyber",
+    prijs: 750,
+    betaalwijze: "jaarlijks",
+    maandprijs: 62.5,
+    jaarprijs: 750,
+    dekking: "BAV €5.000.000 / AVB €2.500.000 / Cyber tot €5.000.000 per jaar",
   },
 };
 
 interface BavSubmission {
-  pakket: keyof typeof PAKKET_CONFIG;
+  gekozen_pakket: keyof typeof PAKKET_CONFIG;
   betaalwijze: "maandelijks" | "jaarlijks";
   ingangsdatum: string;
   voornaam: string;
@@ -61,10 +68,9 @@ Deno.serve(async (req) => {
   try {
     const submission = (await req.json()) as BavSubmission;
 
-    // Basisvalidatie
     if (
-      !submission?.pakket ||
-      !PAKKET_CONFIG[submission.pakket] ||
+      !submission?.gekozen_pakket ||
+      !PAKKET_CONFIG[submission.gekozen_pakket] ||
       !submission.voornaam ||
       !submission.achternaam ||
       !submission.email ||
@@ -78,7 +84,6 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Server-side: ingangsdatum mag niet in het verleden liggen
     const todayStr = new Date().toISOString().split("T")[0];
     if (submission.ingangsdatum < todayStr) {
       return new Response(
@@ -90,12 +95,11 @@ Deno.serve(async (req) => {
       );
     }
 
-    const pakket = PAKKET_CONFIG[submission.pakket];
-    const premium =
-      submission.betaalwijze === "jaarlijks" ? pakket.jaarprijs : pakket.maandprijs;
+    const pakket = PAKKET_CONFIG[submission.gekozen_pakket];
+    const premium = pakket.prijs;
     const volledigeNaam = `${submission.voornaam} ${submission.achternaam}`;
 
-    // ── 1. INSERT IN LEADS (admin dashboard) ──
+    // ── 1. INSERT IN LEADS ──
     const { data: lead, error: leadError } = await supabase
       .from("leads")
       .insert({
@@ -111,6 +115,7 @@ Deno.serve(async (req) => {
         verzekering_type: pakket.naam,
         verzekerd_bedrag: pakket.dekking,
         ingangsdatum: submission.ingangsdatum,
+        gekozen_pakket: submission.gekozen_pakket,
         opmerkingen: [
           submission.iban ? `IBAN: ${submission.iban}` : null,
           submission.rekeninghouder ? `Rekeninghouder: ${submission.rekeninghouder}` : null,
@@ -128,7 +133,7 @@ Deno.serve(async (req) => {
 
     if (leadError) throw new Error(`Lead insert: ${leadError.message}`);
 
-    // ── 2. INSERT IN BAV_AANMELDINGEN (Exact sync bron) ──
+    // ── 2. INSERT IN BAV_AANMELDINGEN ──
     const { data: aanmelding, error: dbError } = await supabase
       .from("bav_aanmeldingen")
       .insert({
@@ -141,9 +146,9 @@ Deno.serve(async (req) => {
         kvk_nummer: submission.kvk_nummer || null,
         beroep: submission.beroep || null,
         sector: submission.sector || null,
-        pakket: submission.pakket,
+        pakket: submission.gekozen_pakket,
         pakket_naam: pakket.naam,
-        betaalwijze: submission.betaalwijze,
+        betaalwijze: pakket.betaalwijze,
         ingangsdatum: submission.ingangsdatum,
         maandpremie: pakket.maandprijs,
         jaarpremie: pakket.jaarprijs,
@@ -158,7 +163,7 @@ Deno.serve(async (req) => {
 
     if (dbError) throw new Error(`Aanmelding insert: ${dbError.message}`);
 
-    // ── 3. E-MAIL VIA send-lead-notification (logt automatisch in lead_notification_log) ──
+    // ── 3. E-MAIL VIA send-lead-notification ──
     supabase.functions
       .invoke("send-lead-notification", {
         body: {
@@ -174,7 +179,7 @@ Deno.serve(async (req) => {
             kvk_nummer: submission.kvk_nummer || "-",
             pakket: pakket.naam,
             dekking: pakket.dekking,
-            betaalwijze: submission.betaalwijze,
+            betaalwijze: pakket.betaalwijze,
             ingangsdatum: submission.ingangsdatum,
             premie: `€${premium}`,
           },
@@ -182,13 +187,12 @@ Deno.serve(async (req) => {
       })
       .catch((err) => console.error("send-lead-notification failed:", err));
 
-    // ── 4. EXACT ONLINE SYNC (via exact_tokens + subscription mapping) ──
+    // ── 4. EXACT ONLINE SYNC ──
     try {
       const TEST_MODE = Deno.env.get("EXACT_TEST_MODE") === "true";
       const BASE_URL = Deno.env.get("EXACT_BASE_URL") ?? "https://start.exactonline.nl";
       const environment = TEST_MODE ? "test" : "production";
 
-      // Haal token op; refresh als bijna verlopen (<60s)
       let { data: tokenRow } = await supabase
         .from("exact_tokens")
         .select("*")
@@ -210,9 +214,7 @@ Deno.serve(async (req) => {
 
       const accessToken = tokenRow.access_token;
       const divisionCode = tokenRow.division_code;
-      const bedrijfsnaam = TEST_MODE
-        ? `TEST_${submission.bedrijfsnaam}`
-        : submission.bedrijfsnaam;
+      const bedrijfsnaam = TEST_MODE ? `TEST_${submission.bedrijfsnaam}` : submission.bedrijfsnaam;
 
       const apiHeaders = {
         Authorization: `Bearer ${accessToken}`,
@@ -220,7 +222,6 @@ Deno.serve(async (req) => {
         Accept: "application/json",
       };
 
-      // Stap A: Account aanmaken
       const accountRes = await fetch(
         `${BASE_URL}/api/v1/${divisionCode}/crm/Accounts`,
         {
@@ -241,7 +242,6 @@ Deno.serve(async (req) => {
       const accountData = await accountRes.json();
       const accountId = accountData.d.ID;
 
-      // Stap B: Subscription type ophalen via mapping
       const { data: mapping } = await supabase
         .from("exact_subscription_mapping")
         .select("exact_subscription_type_id")
@@ -253,7 +253,6 @@ Deno.serve(async (req) => {
         throw new Error(`Geen Exact subscription type GUID gekoppeld aan "${pakket.naam}"`);
       }
 
-      // Stap C: Subscription aanmaken
       const subRes = await fetch(
         `${BASE_URL}/api/v1/${divisionCode}/subscription/Subscriptions`,
         {
@@ -307,7 +306,6 @@ Deno.serve(async (req) => {
         .update({ exact_status: "gefaald", exact_fout: foutBericht })
         .eq("id", lead.id);
 
-      // Notificatie mail naar info@zpzaken.nl
       supabase.functions.invoke("send-notification", {
         body: {
           type: "exact_error",
