@@ -26,6 +26,7 @@ const LEAD_LABELS: Record<string, string> = {
   "mijn-zp-certificaat": "Certificaat-aanvraag",
   "mijn-zp-pauzeren": "Pauzeer-aanvraag",
   "mijn-zp-documenten": "Documenten opgevraagd",
+  "verzekering-aanvraag": "Verzekeringsaanvraag",
 };
 
 const SUBJECTS: Record<string, (ref: string) => string> = {
@@ -37,6 +38,7 @@ const SUBJECTS: Record<string, (ref: string) => string> = {
   "mijn-zp-certificaat": (r) => `Nieuwe certificaat-aanvraag via zpzaken.nl - ${r}`,
   "mijn-zp-pauzeren": (r) => `Nieuwe pauzeer-aanvraag via zpzaken.nl - ${r}`,
   "mijn-zp-documenten": (r) => `Documenten opgevraagd via zpzaken.nl - ${r}`,
+  "verzekering-aanvraag": (r) => `Nieuwe verzekeringsaanvraag via zpzaken.nl - ${r}`,
 };
 
 const schema = z.object({
