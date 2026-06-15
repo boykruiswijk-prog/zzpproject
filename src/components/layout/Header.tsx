@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Phone, ChevronDown, FileText, Pause, FolderDown, Shield } from "lucide-react";
+import { Menu, X, Phone, ChevronDown, FileText, Pause, FolderDown, Shield, XCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import logoZp from "@/assets/logo-zp.webp";
 import { LanguageSwitcher } from "./LanguageSwitcher";
@@ -67,13 +67,14 @@ function useNavItems() {
       ]
     },
     {
-      href: "/mijn-zp/certificaat",
+      href: "/mijn-zp/polis",
       label: "Mijn ZP",
       isService: true,
       children: [
-        { href: "/mijn-zp/certificaat", label: "Certificaat opvragen", icon: FileText },
+        { href: "/mijn-zp/polis", label: "Polis opvragen", icon: FileText },
         { href: "/mijn-zp/pauzeren", label: "Verzekering pauzeren", icon: Pause },
         { href: "/mijn-zp/documenten", label: "Documenten opvragen", icon: FolderDown },
+        { href: "/mijn-zp/opzeggen", label: "Verzekering opzeggen", icon: XCircle },
       ],
     },
     { href: "/contact", label: t("nav.contact") },

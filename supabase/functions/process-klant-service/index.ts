@@ -16,7 +16,7 @@ const resendKey = Deno.env.get("RESEND_API_KEY");
 const resend = resendKey ? new Resend(resendKey) : null;
 
 const schema = z.object({
-  type: z.enum(["certificaat", "pauzeren", "documenten"]),
+  type: z.enum(["certificaat", "pauzeren", "documenten", "opzeggen"]),
   voornaam: z.string().trim().min(1).max(100),
   achternaam: z.string().trim().min(1).max(100),
   email: z.string().trim().email().max(255),
@@ -26,9 +26,10 @@ const schema = z.object({
 });
 
 const labels: Record<string, string> = {
-  certificaat: "Certificaat opgevraagd",
+  certificaat: "Polis opgevraagd",
   pauzeren: "Pauzeringsaanvraag",
   documenten: "Documenten opgevraagd",
+  opzeggen: "Opzegging",
 };
 
 function renderDetails(details: Record<string, unknown>): string {

@@ -7,14 +7,14 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-export default function CertificaatWizard() {
+export default function PolisWizard() {
   return (
     <ServiceWizardShell
       type="certificaat"
-      pageTitle="Certificaat opvragen | Mijn ZP — ZP Zaken"
-      pageDescription="Vraag een verzekeringscertificaat (BAV/AVB) aan via Mijn ZP. Binnen 24 uur per mail."
-      introTitle="Certificaat opvragen"
-      introText="Heb je een verzekeringsbewijs nodig voor een opdrachtgever? Vul de wizard in — we sturen het binnen 24 uur op."
+      pageTitle="Polis opvragen | Mijn ZP — ZP Zaken"
+      pageDescription="Vraag een verzekeringspolis (BAV/AVB) aan via Mijn ZP. Binnen 24 uur per mail."
+      introTitle="Polis opvragen"
+      introText="Heb je een verzekeringspolis nodig voor een opdrachtgever? Vul de wizard in — we sturen hem binnen 24 uur op."
       steps={[
         {
           title: "Identificatie",
@@ -22,7 +22,7 @@ export default function CertificaatWizard() {
           validate: (f) => validateIdentificatie(f),
         },
         {
-          title: "Waarvoor heb je het certificaat nodig?",
+          title: "Waarvoor heb je de polis nodig?",
           render: ({ details, setDetails }) => (
             <div className="space-y-4">
               <div>
@@ -64,7 +64,7 @@ export default function CertificaatWizard() {
                 <Input type="email" value={details.opdrachtgeverEmail ?? ""}
                   onChange={(e) => setDetails({ ...details, opdrachtgeverEmail: e.target.value })} />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Wij sturen het certificaat dan direct naar dit adres.
+                  Wij sturen de polis dan direct naar dit adres.
                 </p>
               </div>
             </div>
