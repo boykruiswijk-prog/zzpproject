@@ -53,6 +53,7 @@ export function BAVApplicationModule() {
    const [currentStep, setCurrentStep] = useState(1);
    const [selectedPackage, setSelectedPackage] = useState<string>("uitgebreid");
    const [paymentType, setPaymentType] = useState<"monthly" | "yearly">("monthly");
+   const [cyberAddon, setCyberAddon] = useState(false);
    const [startDate, setStartDate] = useState<string>("");
    const [viaBemiddelaar, setViaBemiddelaar] = useState<boolean | null>(null);
    const [incassoAkkoord, setIncassoAkkoord] = useState(false);
@@ -97,8 +98,13 @@ export function BAVApplicationModule() {
   const usps = t("home.bavUsps", { returnObjects: true }) as string[];
 
   const selectedPkg = packages.find(p => p.id === selectedPackage);
-  const currentPrice = paymentType === "monthly" ? selectedPkg?.priceMonthly : selectedPkg?.priceYearly;
+  const cyberToeslag = paymentType === "yearly" && cyberAddon ? 150 : 0;
+  const baseCurrentPrice = paymentType === "monthly" ? selectedPkg?.priceMonthly : selectedPkg?.priceYearly;
+  const currentPrice = (baseCurrentPrice ?? 0) + cyberToeslag;
   const savings = paymentType === "yearly" ? 40 : 0;
+  // Gekozen pakket-id (sync met src/data/bavPakketten.ts) — wordt naar backend gestuurd.
+  const gekozenPakketId = paymentType === "monthly" ? "maandelijks" : (cyberAddon ? "jaarlijks-cyber" : "jaarlijks");
+  const gekozenPakketLabel = paymentType === "monthly" ? "BAV & AVB Maandelijks" : (cyberAddon ? "BAV & AVB Jaarlijks + Cyber" : "BAV & AVB Jaarlijks");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -176,6 +182,8 @@ export function BAVApplicationModule() {
            body: {
              pakket: selectedPackage,
              betaalwijze: paymentType === "monthly" ? "maandelijks" : "jaarlijks",
+             cyber_addon: cyberAddon && paymentType === "yearly",
+             gekozen_pakket: gekozenPakketId,
              ingangsdatum: startDate,
              voornaam: formData.voornaam,
              achternaam: formData.achternaam,
@@ -192,6 +200,7 @@ export function BAVApplicationModule() {
                formData.bemiddelaarNaam ? `Bemiddelaar: ${formData.bemiddelaarNaam}` : null,
                formData.aantalMedewerkers ? `Aantal medewerkers: ${formData.aantalMedewerkers}` : null,
                formData.functie ? `Functie: ${formData.functie}` : null,
+               cyberAddon && paymentType === "yearly" ? "Cyberdekking: ja (+€150/jaar)" : null,
              ]
                .filter(Boolean)
                .join("\n") || null,
@@ -352,7 +361,7 @@ export function BAVApplicationModule() {
                     <div>
                       <Label className="text-sm font-medium mb-3 block">{t("home.bavPayment")}</Label>
                       <div className="grid grid-cols-2 gap-3">
-                        <button onClick={() => setPaymentType("monthly")} className={cn("p-4 rounded-lg border-2 text-center transition-all", paymentType === "monthly" ? "border-accent bg-accent/5" : "border-border hover:border-accent/50")}>
+                        <button onClick={() => { setPaymentType("monthly"); setCyberAddon(false); }} className={cn("p-4 rounded-lg border-2 text-center transition-all", paymentType === "monthly" ? "border-accent bg-accent/5" : "border-border hover:border-accent/50")}>
                           <p className="font-medium">{t("home.bavMonthly")}</p>
                           <p className="text-muted-foreground text-sm">{t("home.bavMonthlyDesc")}</p>
                         </button>
@@ -362,6 +371,29 @@ export function BAVApplicationModule() {
                           <p className="text-muted-foreground text-sm">{t("home.bavYearlyDesc")}</p>
                         </button>
                       </div>
+                      {paymentType === "yearly" && (
+                        <div className="mt-3">
+                          <button
+                            type="button"
+                            onClick={() => setCyberAddon((v) => !v)}
+                            className={cn(
+                              "w-full p-4 rounded-lg border-2 text-left transition-all flex items-start justify-between gap-3",
+                              cyberAddon ? "border-accent bg-accent/5" : "border-border hover:border-accent/50"
+                            )}
+                          >
+                            <div>
+                              <p className="font-medium flex items-center gap-2">
+                                <Shield className="h-4 w-4 text-accent" />
+                                Cyberdekking toevoegen
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                Bescherming bij datalekken, hacks en cyberincidenten — tot € 5.000.000 per jaar.
+                              </p>
+                            </div>
+                            <span className="text-sm font-semibold text-accent whitespace-nowrap">+€150/jaar</span>
+                          </button>
+                        </div>
+                      )}
                     </div>
                     <div>
                        <Label htmlFor="startDate" className="text-sm font-medium mb-2 block">{t("home.bavStartDate")}</Label>
