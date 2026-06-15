@@ -112,11 +112,12 @@ Deno.serve(async (req) => {
         console.error("log insert failed:", e);
       }
     };
+    const FROM_ADDRESS = Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <onboarding@resend.dev>";
 
     if (resend) {
       try {
         const adminRes = await resend.emails.send({
-          from: "ZP Zaken <noreply@zpzaken.nl>",
+          from: FROM_ADDRESS,
           to: ["info@zpzaken.nl"],
           subject,
           html: baseHtml,
@@ -137,7 +138,7 @@ Deno.serve(async (req) => {
       const confirmSubject = `Bevestiging: ${labels[v.type]}`;
       try {
         const userRes = await resend.emails.send({
-          from: "ZP Zaken <noreply@zpzaken.nl>",
+          from: FROM_ADDRESS,
           to: [v.email],
           subject: confirmSubject,
           html: `
