@@ -133,7 +133,8 @@ serve(async (req) => {
       });
     }
 
-    // Send all emails via Resend
+    // Send all emails via Resend (per-email logging into lead_notification_log)
+    const leadType = payload.type === "bav" ? "bav" : "contact";
     const results = await Promise.allSettled(
       emails.map((email) =>
         fetch("https://api.resend.com/emails", {
@@ -147,8 +148,22 @@ serve(async (req) => {
           const body = await res.json();
           if (!res.ok) {
             console.error("Resend error:", JSON.stringify(body));
+            await logNotification({
+              lead_type: leadType,
+              recipient: email.to[0],
+              subject: email.subject,
+              status: "failed",
+              error_message: `Resend ${res.status}: ${JSON.stringify(body)}`,
+            });
             throw new Error(`Resend API error [${res.status}]: ${JSON.stringify(body)}`);
           }
+          await logNotification({
+            lead_type: leadType,
+            recipient: email.to[0],
+            subject: email.subject,
+            status: "sent",
+            resend_message_id: body?.id ?? null,
+          });
           return body;
         })
       )
