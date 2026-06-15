@@ -87,19 +87,59 @@ Deno.serve(async (req) => {
       <p style="color:#888;font-size:12px">Aanvraag-ID: ${data.id}</p>
     `;
 
+    const leadType = `mijn-zp-${v.type}`;
+    const logEntry = async (entry: {
+      recipient: string;
+      subject: string;
+      status: "sent" | "failed";
+      resend_message_id?: string | null;
+      error_message?: string | null;
+      cc?: string | null;
+    }) => {
+      try {
+        await supabase.from("lead_notification_log").insert({
+          lead_type: leadType,
+          lead_id: data.id,
+          recipient: entry.recipient,
+          cc: entry.cc ?? null,
+          subject: entry.subject,
+          status: entry.status,
+          resend_message_id: entry.resend_message_id ?? null,
+          error_message: entry.error_message ?? null,
+          metadata: { type: v.type, email: v.email, polisnummer: v.polisnummer },
+        });
+      } catch (e) {
+        console.error("log insert failed:", e);
+      }
+    };
+
     if (resend) {
       try {
-        await resend.emails.send({
+        const adminRes = await resend.emails.send({
           from: "ZP Zaken <noreply@zpzaken.nl>",
           to: ["info@zpzaken.nl"],
           subject,
           html: baseHtml,
           reply_to: v.email,
         });
-        await resend.emails.send({
+        await logEntry({
+          recipient: "info@zpzaken.nl",
+          subject,
+          status: "sent",
+          resend_message_id: (adminRes as any)?.data?.id ?? null,
+        });
+      } catch (mailErr) {
+        const msg = mailErr instanceof Error ? mailErr.message : String(mailErr);
+        console.error("Resend admin error", msg);
+        await logEntry({ recipient: "info@zpzaken.nl", subject, status: "failed", error_message: msg });
+      }
+
+      const confirmSubject = `Bevestiging: ${labels[v.type]}`;
+      try {
+        const userRes = await resend.emails.send({
           from: "ZP Zaken <noreply@zpzaken.nl>",
           to: [v.email],
-          subject: `Bevestiging: ${labels[v.type]}`,
+          subject: confirmSubject,
           html: `
             <p>Hoi ${v.voornaam},</p>
             <p>We hebben je aanvraag (<strong>${labels[v.type].toLowerCase()}</strong>) ontvangen.
@@ -109,9 +149,16 @@ Deno.serve(async (req) => {
             <p>Met vriendelijke groet,<br/>Team ZP Zaken</p>
           `,
         });
+        await logEntry({
+          recipient: v.email,
+          subject: confirmSubject,
+          status: "sent",
+          resend_message_id: (userRes as any)?.data?.id ?? null,
+        });
       } catch (mailErr) {
-        console.error("Resend error", mailErr);
-        // Niet falen op mail-fout — record staat al in DB.
+        const msg = mailErr instanceof Error ? mailErr.message : String(mailErr);
+        console.error("Resend user error", msg);
+        await logEntry({ recipient: v.email, subject: confirmSubject, status: "failed", error_message: msg });
       }
     }
 
