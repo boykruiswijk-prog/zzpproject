@@ -1,21 +1,27 @@
 import { ShieldCheck } from "lucide-react";
 import { LocalizedLink } from "@/components/LocalizedLink";
+import hiscoxLogo from "@/assets/partner-hiscox.webp";
 
 /**
  * Trust-builder strip: licht Hiscox uit als risicodrager voor de BAV/AVB.
- * Boy levert /public/logos/hiscox.svg aan; tot dan placeholder met serif-tekst.
  */
 export function HiscoxTrustStrip() {
   return (
     <section className="bg-secondary/40 border-y border-border">
       <div className="container-wide py-10">
         <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10 max-w-4xl mx-auto">
-          <div className="flex items-center justify-center bg-white rounded-lg p-6 shadow-sm">
+          <div className="flex-shrink-0 flex items-center justify-center bg-white rounded-lg py-6 px-10 shadow-sm">
             <img
-              src="/logos/hiscox.png"
+              src={hiscoxLogo}
               alt="Hiscox - onze verzekeringspartner"
-              className="h-12 md:h-14 w-auto"
-              style={{ maxWidth: 'none' }}
+              style={{
+                display: "block",
+                height: "48px",
+                width: "auto",
+                maxWidth: "none",
+                maxHeight: "none",
+                objectFit: "contain",
+              }}
             />
           </div>
           <div className="flex-1 text-center md:text-left">
