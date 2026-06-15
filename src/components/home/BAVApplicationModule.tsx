@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { trackBeginWizard, trackWizardComplete } from "@/lib/tracking";
+import { formatDateNL } from "@/lib/dateFormat";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -613,10 +614,10 @@ export function BAVApplicationModule() {
                       <div className="bg-secondary rounded-lg p-4">
                         <h4 className="font-medium mb-3">{t("home.bavStep1")}</h4>
                         <div className="space-y-2 text-sm">
-                          <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.package")}</span><span className="font-medium">{selectedPkg?.name}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.package")}</span><span className="font-medium">{gekozenPakketLabel}</span></div>
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.coverage")}</span><span>{selectedPkg?.coverage}</span></div>
-                          <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.payment")}</span><span>{paymentType === "monthly" ? t("home.bavMonthly") : t("home.bavYearly")}</span></div>
-                          <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.startDate")}</span><span>{startDate || t("bavApp.immediately")}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.payment")}</span><span>{paymentType === "monthly" ? t("home.bavMonthly") : t("home.bavYearly")}{cyberAddon && paymentType === "yearly" ? " + Cyber" : ""}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.startDate")}</span><span>{startDate ? formatDateNL(startDate) : t("bavApp.immediately")}</span></div>
                         </div>
                       </div>
                       <div className="bg-secondary rounded-lg p-4">
