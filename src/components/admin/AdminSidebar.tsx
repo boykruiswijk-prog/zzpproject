@@ -12,6 +12,7 @@ import {
   Plug,
   KeyRound,
   ConciergeBell,
+  Share2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +25,7 @@ const navItems = [
   { to: "/admin/wachtwoord-wijzigen", icon: KeyRound, label: "Wachtwoord wijzigen" },
   { to: "/admin/screening-aanvragen", icon: UserCheck, label: "Screening aanvragen" },
   { to: "/admin/service-aanvragen", icon: ConciergeBell, label: "Service-aanvragen" },
+  { to: "/admin/social-media", icon: Share2, label: "Social media" },
   { to: "/admin/integraties", icon: Plug, label: "Integraties", superAdminOnly: true },
   { to: "/admin/exact-koppeling", icon: Plug, label: "Exact koppeling", superAdminOnly: true },
   { to: "/admin/team", icon: UserCog, label: "Team", adminOnly: true },
