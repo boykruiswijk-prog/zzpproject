@@ -129,10 +129,10 @@ export const searchIndex: SearchEntry[] = [
     snippet: "Profiteer van collectieve inkoopvoordelen via ZP Zaken.",
   },
   {
-    title: "Documenten",
+    title: "Documenten en downloads",
     path: "/documenten",
-    keywords: "dienstverleningsdocument gedragscode slotverklaring pdf download",
-    snippet: "Download het dienstverleningsdocument, de gedragscode en de slotverklaring.",
+    keywords: "documenten downloads polisvoorwaarden verzekeringskaart brochure voorwaarden polis dienstverleningsdocument gedragscode slotverklaring pdf branche ICT consultancy marketing coaches",
+    snippet: "Download polisvoorwaarden, verzekeringskaarten en brochures per branche, plus ZP Zaken eigen documenten.",
   },
   {
     title: "Contact",
