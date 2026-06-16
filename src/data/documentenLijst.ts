@@ -61,6 +61,7 @@ export const branches: DocumentBranche[] = [
     naam: 'Zakelijke dienstverlening',
     subnaam: 'Niet-uitvoerende beroepen',
     documenten: [
+      { id: 'polis-zd', titel: 'Polisvoorwaarden beroepsaansprakelijkheid', type: 'polisvoorwaarden', path: '/documenten/Overige-zakelijke-dienstverlening-Polisvoorwaarden-beroepsaansprakelijkheid-MPH-2013B.pdf', productCode: 'MPH-2013B' },
       { id: 'kaart-zd', titel: 'Verzekeringskaart beroepsaansprakelijkheid', type: 'verzekeringskaart', path: '/documenten/Overige-zakelijke-dienstverlening-Verzekeringskaart-beroepsaansprakelijkheid-MPH-2013B.pdf', productCode: 'MPH-2013B' },
     ],
   },
