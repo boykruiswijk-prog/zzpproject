@@ -14,6 +14,7 @@ import teamWalking from "@/assets/team-walking.jpg";
 import teamCheers from "@/assets/team-cheers.jpg";
 import ellenPortrait from "@/assets/ellen-baars-portrait.jpg";
 import { GoogleReviewsSection } from "@/components/social-proof/GoogleReviewsSection";
+import { SocialFeaturesSection } from "@/components/over-ons/SocialFeaturesSection";
 
 // Team and content data stays in Dutch as it's specific content
 const values = [
@@ -294,6 +295,8 @@ export default function OverOns() {
       </section>
 
       <GoogleReviewsSection />
+
+      <SocialFeaturesSection />
 
       <section className="section-padding bg-secondary">
         <div className="container-wide">
