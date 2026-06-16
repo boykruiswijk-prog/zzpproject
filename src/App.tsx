@@ -36,6 +36,7 @@ import CreditControl from "./pages/CreditControl";
 import Screening from "./pages/Screening";
 import AdminScreeningAanvragen from "./pages/admin/ScreeningAanvragen";
 import AdminServiceAanvragen from "./pages/admin/ServiceAanvragen";
+import AdminSocialMediaFeatures from "./pages/admin/SocialMediaFeatures";
 import AdminIntegraties from "./pages/admin/Integraties";
 import AdminExactKoppeling from "./pages/admin/ExactKoppeling";
 import ExactCallback from "./pages/ExactCallback";
@@ -218,6 +219,7 @@ const App = () => (
             <Route path="/admin/dba-checks/:id" element={<DbaCheckDetail />} />
             <Route path="/admin/screening-aanvragen" element={<AdminScreeningAanvragen />} />
             <Route path="/admin/service-aanvragen" element={<AdminServiceAanvragen />} />
+            <Route path="/admin/social-media" element={<AdminSocialMediaFeatures />} />
             <Route path="/admin/integraties" element={<AdminIntegraties />} />
             <Route path="/admin/exact-koppeling" element={<AdminExactKoppeling />} />
             <Route path="/api/exact/callback" element={<ExactCallback />} />

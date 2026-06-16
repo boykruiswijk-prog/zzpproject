@@ -1,16 +1,48 @@
 import { useParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { Helmet } from "react-helmet-async";
 import { Layout } from "@/components/layout/Layout";
-import { useArticle } from "@/hooks/useArticles";
-import { ArrowLeft, ArrowRight, Calendar, Check, Clock, ExternalLink, Shield } from "lucide-react";
+import { useArticle, useArticles } from "@/hooks/useArticles";
+import {
+  ArrowLeft, ArrowRight, Calendar, Check, ChevronRight, Clock,
+  ExternalLink, Linkedin, Mail, Phone, Share2, Twitter, User, Link as LinkIcon, Shield,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { formatDateNL } from "@/lib/dateFormat";
+import { toast } from "@/hooks/use-toast";
 
 const BAV_AVB_SLUG = "zp-zaken-zorgeloos-zzpen-goedkoopste-bav-avb";
+
+// Categorie → kleur-classes
+const CATEGORY_STYLES: Record<string, string> = {
+  "Wet- en regelgeving": "bg-blue-100 text-blue-800 border-blue-200",
+  "Wetgeving": "bg-blue-100 text-blue-800 border-blue-200",
+  "Belastingen": "bg-orange-100 text-orange-800 border-orange-200",
+  "Fiscaal": "bg-orange-100 text-orange-800 border-orange-200",
+  "Verzekeringen": "bg-green-100 text-green-800 border-green-200",
+  "Ondernemen": "bg-purple-100 text-purple-800 border-purple-200",
+  "Financiën": "bg-pink-100 text-pink-800 border-pink-200",
+};
+const defaultCategoryStyle = "bg-accent/10 text-accent border-accent/20";
+
+const CATEGORY_SLUGS: Record<string, string> = {
+  "Wet- en regelgeving": "wet-en-regelgeving",
+  "Wetgeving": "wet-en-regelgeving",
+  "Belastingen": "belastingen",
+  "Ondernemen": "ondernemen",
+  "Financiën": "financien",
+  "Verzekeringen": "verzekeringen",
+};
+
+function estimateReadTime(content?: string | null) {
+  if (!content) return "3 min";
+  const words = content.trim().split(/\s+/).length;
+  return `${Math.max(1, Math.round(words / 200))} min`;
+}
 
 const InlineCTA = () => (
   <div
@@ -34,13 +66,10 @@ const InlineCTA = () => (
   </div>
 );
 
-/** Splits markdown content after the second paragraph and injects the inline CTA. */
 const renderContentWithCTA = (content: string) => {
   const parts = content.split(/\n\n+/);
   if (parts.length < 3) {
-    return (
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
-    );
+    return <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>;
   }
   const before = parts.slice(0, 2).join("\n\n");
   const after = parts.slice(2).join("\n\n");
@@ -52,235 +81,282 @@ const renderContentWithCTA = (content: string) => {
     </>
   );
 };
- 
- export default function ArtikelDetail() {
-   const { slug } = useParams<{ slug: string }>();
-   const { data: article, isLoading, error } = useArticle(slug || "");
- 
-   if (isLoading) {
-     return (
-       <Layout>
-         <div className="container-wide section-padding">
-           <Skeleton className="h-8 w-32 mb-6" />
-           <Skeleton className="h-12 w-3/4 mb-4" />
-           <Skeleton className="h-6 w-1/2 mb-8" />
-           <div className="space-y-4">
-             <Skeleton className="h-4 w-full" />
-             <Skeleton className="h-4 w-full" />
-             <Skeleton className="h-4 w-3/4" />
-           </div>
-         </div>
-       </Layout>
-     );
-   }
- 
-   if (error || !article) {
-     return (
-       <Layout>
-         <div className="container-wide section-padding text-center">
-           <h1 className="text-2xl font-bold mb-4">Artikel niet gevonden</h1>
-           <p className="text-muted-foreground mb-6">
-             Het artikel dat je zoekt bestaat niet of is verwijderd.
-           </p>
-            <Button asChild>
-              <LocalizedLink to="/kennisbank">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Terug naar kennisbank
-              </LocalizedLink>
-            </Button>
-         </div>
-       </Layout>
-     );
-   }
- 
-  const formattedDate = article.published_at ? formatDateNL(article.published_at) : null;
- 
-   // Structured data for article
-   const articleSchema = {
-     "@context": "https://schema.org",
-     "@type": "Article",
-     headline: article.seo_title || article.title,
-     description: article.seo_description || article.excerpt,
-     datePublished: article.published_at,
-     author: {
-       "@type": "Organization",
-       name: "ZP Zaken",
-     },
-     publisher: {
-       "@type": "Organization",
-       name: "ZP Zaken",
-       logo: {
-         "@type": "ImageObject",
-         url: "https://zpzaken.nl/favicon.png",
-       },
-     },
-     mainEntityOfPage: {
-       "@type": "WebPage",
-       "@id": `https://zpzaken.nl/kennisbank/${article.slug}`,
-     },
-     image: article.image_url || "https://zpzaken.nl/favicon.png",
-  };
 
-  const isBavAvb = article.slug === BAV_AVB_SLUG;
-  const bavAvbSchema = {
+function ShareButtons({ url, title }: { url: string; title: string }) {
+  const copy = () => {
+    navigator.clipboard.writeText(url);
+    toast({ title: "Link gekopieerd" });
+  };
+  const enc = encodeURIComponent;
+  const linkedin = `https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}`;
+  const twitter = `https://twitter.com/intent/tweet?text=${enc(title)}&url=${enc(url)}`;
+  const email = `mailto:?subject=${enc(title)}&body=${enc(url)}`;
+  const cls = "h-9 w-9 rounded-full bg-muted hover:bg-accent hover:text-accent-foreground flex items-center justify-center text-muted-foreground transition-colors";
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-xs text-muted-foreground mr-1 inline-flex items-center gap-1"><Share2 className="h-3.5 w-3.5" /> Deel:</span>
+      <a className={cls} href={linkedin} target="_blank" rel="noopener noreferrer" aria-label="Deel op LinkedIn"><Linkedin className="h-4 w-4" /></a>
+      <a className={cls} href={twitter} target="_blank" rel="noopener noreferrer" aria-label="Deel op X / Twitter"><Twitter className="h-4 w-4" /></a>
+      <a className={cls} href={email} aria-label="Deel via e-mail"><Mail className="h-4 w-4" /></a>
+      <button type="button" className={cls} onClick={copy} aria-label="Link kopiëren"><LinkIcon className="h-4 w-4" /></button>
+    </div>
+  );
+}
+
+export default function ArtikelDetail() {
+  const { slug } = useParams<{ slug: string }>();
+  const { data: article, isLoading, error } = useArticle(slug || "");
+  const { data: allArticles } = useArticles();
+
+  useEffect(() => { window.scrollTo({ top: 0, behavior: "auto" }); }, [slug]);
+
+  const related = useMemo(() => {
+    if (!article || !allArticles) return [];
+    const same = allArticles.filter((a) => a.category === article.category && a.slug !== article.slug);
+    const others = allArticles.filter((a) => a.category !== article.category && a.slug !== article.slug);
+    return [...same, ...others].slice(0, 3);
+  }, [article, allArticles]);
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="container-wide section-padding max-w-3xl mx-auto">
+          <Skeleton className="h-6 w-48 mb-6" />
+          <Skeleton className="h-12 w-3/4 mb-4" />
+          <Skeleton className="h-6 w-1/2 mb-8" />
+          <Skeleton className="h-64 w-full mb-8 rounded-xl" />
+          <div className="space-y-4">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (error || !article) {
+    return (
+      <Layout>
+        <div className="container-wide section-padding text-center">
+          <h1 className="text-2xl font-bold mb-4">Artikel niet gevonden</h1>
+          <p className="text-muted-foreground mb-6">Het artikel dat je zoekt bestaat niet of is verwijderd.</p>
+          <Button asChild>
+            <LocalizedLink to="/kennisbank">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Terug naar kennisbank
+            </LocalizedLink>
+          </Button>
+        </div>
+      </Layout>
+    );
+  }
+
+  const formattedDate = article.published_at ? formatDateNL(article.published_at) : null;
+  const readTime = article.read_time || estimateReadTime(article.content);
+  const categoryStyle = CATEGORY_STYLES[article.category] || defaultCategoryStyle;
+  const categorySlug = CATEGORY_SLUGS[article.category];
+  const articleUrl = `https://zpzaken.nl/kennisbank/${article.slug}`;
+
+  const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: "BAV en AVB verzekering voor zzp'ers: alles wat je moet weten",
-    description:
-      "Alles over beroeps- en bedrijfsaansprakelijkheidsverzekering voor zzp'ers. Vergelijk pakketten en sluit direct online af.",
+    headline: article.seo_title || article.title,
+    description: article.seo_description || article.excerpt,
+    datePublished: article.published_at,
+    dateModified: article.published_at,
+    author: { "@type": "Organization", name: "ZP Zaken" },
     publisher: {
       "@type": "Organization",
       name: "ZP Zaken",
-      url: "https://www.zpzaken.nl",
+      logo: { "@type": "ImageObject", url: "https://zpzaken.nl/favicon.png" },
     },
-    url: "https://www.zpzaken.nl/kennisbank/zp-zaken-zorgeloos-zzpen-goedkoopste-bav-avb",
-    dateModified: "2026-03-31",
+    mainEntityOfPage: { "@type": "WebPage", "@id": articleUrl },
+    image: article.image_url || "https://zpzaken.nl/favicon.png",
   };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://zpzaken.nl/" },
+      { "@type": "ListItem", position: 2, name: "Kennisbank", item: "https://zpzaken.nl/kennisbank" },
+      { "@type": "ListItem", position: 3, name: article.category, item: categorySlug ? `https://zpzaken.nl/kennisbank/${categorySlug}` : "https://zpzaken.nl/kennisbank" },
+      { "@type": "ListItem", position: 4, name: article.title, item: articleUrl },
+    ],
+  };
+
+  const isBavAvb = article.slug === BAV_AVB_SLUG;
+  const metaDescription = article.seo_description || article.excerpt || (article.content || "").slice(0, 160);
 
   return (
     <Layout>
       <Helmet>
-        <title>{article.seo_title || article.title} | ZP Zaken Kennisbank</title>
-        <meta
-          name="description"
-          content={article.seo_description || article.excerpt || ""}
-        />
+        <title>{article.seo_title || article.title} | Kennisbank | ZP Zaken</title>
+        <meta name="description" content={metaDescription} />
         <meta property="og:title" content={article.seo_title || article.title} />
-        <meta
-          property="og:description"
-          content={article.seo_description || article.excerpt || ""}
-        />
+        <meta property="og:description" content={metaDescription} />
         <meta property="og:type" content="article" />
-        {article.image_url && (
-          <meta property="og:image" content={article.image_url} />
-        )}
-        <link
-          rel="canonical"
-          href={`https://zpzaken.nl/kennisbank/${article.slug}`}
-        />
-        <script type="application/ld+json">
-          {JSON.stringify(articleSchema)}
-        </script>
-        {isBavAvb && (
-          <script type="application/ld+json">
-            {JSON.stringify(bavAvbSchema)}
-          </script>
-        )}
+        <meta property="og:url" content={articleUrl} />
+        {article.image_url && <meta property="og:image" content={article.image_url} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        <link rel="canonical" href={articleUrl} />
+        <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
       </Helmet>
 
-      <div className={`container-wide section-padding ${isBavAvb ? "lg:max-w-7xl" : "max-w-4xl"} mx-auto`}>
-        <div className={isBavAvb ? "lg:grid lg:grid-cols-[1fr_320px] lg:gap-10" : ""}>
-          <article className={isBavAvb ? "max-w-3xl" : ""}>
-            {/* Back button */}
-            <LocalizedLink
-              to="/kennisbank"
-              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Terug naar kennisbank
-            </LocalizedLink>
+      <article className="bg-background">
+        {/* Hero */}
+        <header className="border-b border-border/40 bg-gradient-to-b from-secondary/40 to-background">
+          <div className="container-wide max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-10 md:pt-12 md:pb-14">
+            {/* Breadcrumbs */}
+            <nav className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground mb-6" aria-label="Breadcrumb">
+              <LocalizedLink to="/" className="hover:text-foreground transition-colors">Home</LocalizedLink>
+              <ChevronRight className="h-3 w-3" />
+              <LocalizedLink to="/kennisbank" className="hover:text-foreground transition-colors">Kennisbank</LocalizedLink>
+              <ChevronRight className="h-3 w-3" />
+              {categorySlug ? (
+                <LocalizedLink to={`/kennisbank/${categorySlug}`} className="hover:text-foreground transition-colors">{article.category}</LocalizedLink>
+              ) : (
+                <span>{article.category}</span>
+              )}
+              <ChevronRight className="h-3 w-3" />
+              <span className="text-foreground/70 line-clamp-1">{article.title}</span>
+            </nav>
 
-            {/* Category badge */}
-            <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 text-accent px-3 py-1.5 rounded-lg text-sm font-medium mb-4">
-              <Shield className="h-3.5 w-3.5" />
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider border ${categoryStyle} mb-4`}>
+              <Shield className="h-3 w-3" />
               {article.category}
-            </div>
+            </span>
 
-            {/* Title */}
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">{article.title}</h1>
+            <h1 className="text-[28px] md:text-[36px] lg:text-[42px] leading-tight font-bold text-foreground mb-4">
+              {article.title}
+            </h1>
 
-            {/* Meta */}
-            <div className="flex flex-wrap items-center gap-4 text-muted-foreground mb-8">
+            {article.excerpt && (
+              <p className="text-lg md:text-xl text-slate-600 font-normal leading-relaxed mb-6 max-w-3xl">
+                {article.excerpt}
+              </p>
+            )}
+
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5">
+                <User className="h-4 w-4" />
+                Redactie ZP Zaken
+              </span>
               {formattedDate && (
                 <span className="inline-flex items-center gap-1.5">
                   <Calendar className="h-4 w-4" />
                   {formattedDate}
                 </span>
               )}
-              {article.read_time && (
-                <span className="inline-flex items-center gap-1.5">
-                  <Clock className="h-4 w-4" />
-                  {article.read_time} leestijd
-                </span>
-              )}
+              <span className="inline-flex items-center gap-1.5">
+                <Clock className="h-4 w-4" />
+                {readTime} lezen
+              </span>
               {article.source_name && article.source_url && (
-                <a
-                  href={article.source_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
-                >
+                <a href={article.source_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors">
                   <ExternalLink className="h-4 w-4" />
                   Bron: {article.source_name}
                 </a>
               )}
             </div>
+          </div>
+        </header>
 
-            {/* Featured image */}
-            {article.image_url && (
-              <img
-                src={article.image_url}
-                alt={article.title}
-                className="w-full h-64 md:h-96 object-cover rounded-2xl mb-8"
-              />
-            )}
+        {/* Featured image */}
+        {article.image_url && (
+          <div className="container-wide max-w-3xl mx-auto px-4 sm:px-6 -mt-2 mb-8">
+            <img
+              src={article.image_url}
+              alt={article.title}
+              className="w-full aspect-[16/9] object-cover rounded-xl shadow-md"
+            />
+          </div>
+        )}
 
-            {/* Content */}
-            <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:text-foreground prose-headings:mt-8 prose-headings:mb-4 prose-h2:text-2xl prose-h2:border-b prose-h2:border-border/50 prose-h2:pb-3 prose-h3:text-xl prose-p:text-muted-foreground prose-p:leading-relaxed prose-p:mb-4 prose-a:text-primary hover:prose-a:text-accent prose-strong:text-foreground prose-ul:my-4 prose-ul:space-y-2 prose-li:text-muted-foreground prose-ol:my-4 prose-ol:space-y-2 prose-table:my-6 prose-table:rounded-xl prose-table:overflow-hidden prose-th:bg-secondary prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:font-semibold prose-th:text-foreground prose-td:px-4 prose-td:py-3 prose-td:border-t prose-td:border-border/50 prose-hr:my-8 prose-hr:border-border/30">
-              {isBavAvb ? (
-                renderContentWithCTA(article.content || "")
-              ) : (
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {article.content || ""}
-                </ReactMarkdown>
-              )}
+        {/* Body */}
+        <div className="container-wide max-w-3xl mx-auto px-4 sm:px-6 pb-16">
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-border/40">
+            <ShareButtons url={articleUrl} title={article.title} />
+          </div>
+
+          <div className="prose prose-lg max-w-none
+            prose-headings:text-foreground prose-headings:font-semibold
+            prose-h2:text-[24px] md:prose-h2:text-[28px] prose-h2:mt-12 prose-h2:mb-4
+            prose-h3:text-[20px] md:prose-h3:text-[22px] prose-h3:mt-8 prose-h3:mb-3
+            prose-h4:text-[18px] prose-h4:mt-6
+            prose-p:text-slate-700 prose-p:text-base md:prose-p:text-[18px] prose-p:leading-[1.75] prose-p:mb-6
+            prose-a:text-accent prose-a:underline hover:prose-a:opacity-80
+            prose-strong:text-foreground
+            prose-ul:my-6 prose-ul:space-y-2 prose-ul:pl-6 prose-li:text-slate-700 prose-li:marker:text-accent
+            prose-ol:my-6 prose-ol:space-y-2 prose-ol:pl-6
+            prose-blockquote:border-l-4 prose-blockquote:border-accent prose-blockquote:bg-slate-50 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:not-italic prose-blockquote:my-8
+            prose-code:bg-slate-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
+            prose-img:rounded-lg prose-img:shadow-md prose-img:my-8
+            prose-table:my-8 prose-th:bg-secondary prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:font-semibold prose-td:px-4 prose-td:py-3 prose-td:border-t prose-td:border-border/50
+            prose-hr:my-10 prose-hr:border-border/40">
+            {isBavAvb
+              ? renderContentWithCTA(article.content || "")
+              : <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.content || ""}</ReactMarkdown>}
+          </div>
+
+          {/* CTA-blok */}
+          <div className="mt-12 rounded-2xl p-7 md:p-9 text-white" style={{ background: "linear-gradient(135deg, #1f2937 0%, #0f172a 100%)" }}>
+            <h3 className="text-2xl font-bold mb-2">Vragen na het lezen?</h3>
+            <p className="text-white/80 mb-6">Onze specialisten helpen je graag verder. Bel ons of stuur een mail — meestal binnen 24 uur antwoord.</p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <a href="tel:0204573077" className="inline-flex items-center justify-center gap-2 bg-accent hover:opacity-90 text-accent-foreground px-5 py-3 rounded-lg font-semibold transition">
+                <Phone className="h-4 w-4" /> Bel 020 - 457 3077
+              </a>
+              <a href="mailto:info@zpzaken.nl" className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-lg font-semibold transition">
+                <Mail className="h-4 w-4" /> Stuur een mail
+              </a>
             </div>
+          </div>
 
-            {/* CTA */}
-            <div className="mt-12 p-6 bg-secondary rounded-2xl text-center">
-              <h3 className="text-xl font-semibold mb-2">Vragen over dit onderwerp?</h3>
-              <p className="text-muted-foreground mb-4">
-                Onze adviseurs helpen je graag met persoonlijk advies.
-              </p>
-              <Button variant="accent" asChild>
-                <LocalizedLink to="/contact">Neem contact op</LocalizedLink>
-              </Button>
-            </div>
-          </article>
-
-          {/* Sticky sidebar — alleen op BAV/AVB artikel, alleen desktop */}
-          {isBavAvb && (
-            <aside className="hidden lg:block">
-              <div className="sticky top-24 bg-card border border-border/50 rounded-2xl p-6 shadow-sm">
-                <h3 className="text-lg font-bold mb-2">Gratis advies op maat</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Weet je niet welk pakket bij jou past? Wij helpen je in 15 minuten.
-                </p>
-                <Button variant="accent" className="w-full mb-4" asChild>
-                  <LocalizedLink to="/contact">
-                    Plan gratis gesprek <ArrowRight className="h-4 w-4" />
-                  </LocalizedLink>
-                </Button>
-                <hr className="border-border/50 mb-4" />
-                <ul className="space-y-2 text-sm">
-                  <li className="flex items-start gap-2">
-                    <Check className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
-                    <span>Geen verplichtingen</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
-                    <span>Binnen 24 uur reactie</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
-                    <span>AFM geregistreerd adviseur</span>
-                  </li>
-                </ul>
-              </div>
-            </aside>
-          )}
+          <div className="mt-8">
+            <ShareButtons url={articleUrl} title={article.title} />
+          </div>
         </div>
-      </div>
+
+        {/* Related articles */}
+        {related.length > 0 && (
+          <section className="border-t border-border/40 bg-secondary/30">
+            <div className="container-wide max-w-5xl mx-auto px-4 sm:px-6 py-14">
+              <h2 className="text-2xl md:text-3xl font-bold mb-8">Verder lezen</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {related.map((r) => {
+                  const rStyle = CATEGORY_STYLES[r.category] || defaultCategoryStyle;
+                  return (
+                    <LocalizedLink
+                      key={r.id}
+                      to={`/kennisbank/${r.slug}`}
+                      className="group bg-background border border-border/50 rounded-xl overflow-hidden hover:shadow-lg transition-shadow"
+                    >
+                      {r.image_url ? (
+                        <img src={r.image_url} alt={r.title} className="w-full aspect-[16/9] object-cover" />
+                      ) : (
+                        <div className="w-full aspect-[16/9] bg-gradient-to-br from-secondary to-muted" />
+                      )}
+                      <div className="p-5">
+                        <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${rStyle} mb-3`}>
+                          {r.category}
+                        </span>
+                        <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors line-clamp-2 mb-2">{r.title}</h3>
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <span>{r.published_at ? formatDateNL(r.published_at) : ""}</span>
+                          <span className="inline-flex items-center gap-1 text-accent font-semibold">Lees meer <ArrowRight className="h-3 w-3" /></span>
+                        </div>
+                      </div>
+                    </LocalizedLink>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        )}
+      </article>
     </Layout>
   );
 }
