@@ -23,6 +23,9 @@
   <url><loc>https://www.zpzaken.nl/faq</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://www.zpzaken.nl/contact</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.zpzaken.nl/documenten</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://www.zpzaken.nl/documenten/slotverklaring</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://www.zpzaken.nl/documenten/dienstverleningsdocument</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://www.zpzaken.nl/documenten/gedragscode</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
   <url><loc>https://www.zpzaken.nl/algemene-voorwaarden</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
   <url><loc>https://www.zpzaken.nl/klachten</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
   <url><loc>https://www.zpzaken.nl/cookies</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>

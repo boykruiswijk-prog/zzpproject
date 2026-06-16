@@ -2,7 +2,8 @@ import { Helmet } from "react-helmet-async";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
-import { FileText, Phone, Mail } from "lucide-react";
+import { FileText, BookOpen, Phone, Mail } from "lucide-react";
+import { Link } from "react-router-dom";
 import {
   branches,
   algemeneBavDocumenten,
@@ -12,12 +13,30 @@ import {
 } from "@/data/documentenLijst";
 
 function DocLink({ doc }: { doc: Document }) {
+  const Icon = doc.isHtmlPage ? BookOpen : FileText;
+  const inner = (
+    <>
+      <Icon className="h-4 w-4 mt-1 flex-shrink-0 text-accent" />
+      <span className="text-sm leading-snug">
+        <span className="text-accent group-hover:underline font-medium">
+          {doc.titel}
+        </span>
+        {doc.productCode && (
+          <span className="text-muted-foreground font-normal"> ({doc.productCode})</span>
+        )}
+      </span>
+    </>
+  );
+  const className = "group flex items-start gap-3 rounded-lg px-3 py-2 -mx-3 hover:bg-accent/5 transition-colors";
+  if (doc.isHtmlPage) {
+    return <Link to={doc.path} className={className}>{inner}</Link>;
+  }
   return (
     <a
       href={doc.path}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex items-start gap-3 rounded-lg px-3 py-2 -mx-3 hover:bg-accent/5 transition-colors"
+      className={className}
     >
       <FileText className="h-4 w-4 mt-1 flex-shrink-0 text-accent" />
       <span className="text-sm leading-snug">

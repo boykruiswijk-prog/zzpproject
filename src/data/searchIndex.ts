@@ -135,6 +135,24 @@ export const searchIndex: SearchEntry[] = [
     snippet: "Download polisvoorwaarden, verzekeringskaarten en brochures per branche, plus ZP Zaken eigen documenten.",
   },
   {
+    title: "Slotverklaring 2026",
+    path: "/documenten/slotverklaring",
+    keywords: "slotverklaring verklaring aanvraag BAV AVB compliance",
+    snippet: "Slotverklaring bij de aanvraag van een beroeps- en bedrijfsaansprakelijkheidsverzekering.",
+  },
+  {
+    title: "Dienstverleningsdocument",
+    path: "/documenten/dienstverleningsdocument",
+    keywords: "dienstverleningsdocument DVD AFM Wft kosten provisie klachten Kifid toezicht",
+    snippet: "Wie wij zijn, hoe wij werken, kosten, klachten en toezicht.",
+  },
+  {
+    title: "Gedragscode",
+    path: "/documenten/gedragscode",
+    keywords: "gedragscode integriteit klantbelang vakbekwaamheid transparantie Wft AFM compliance",
+    snippet: "Onze gedragscode: integriteit, klantbelang, vakbekwaamheid en zorgvuldigheid.",
+  },
+  {
     title: "Contact",
     path: "/contact",
     keywords: "contact bellen mail whatsapp adres Schiphol-Rijk Tupolevlaan",

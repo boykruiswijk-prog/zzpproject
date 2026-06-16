@@ -6,6 +6,7 @@ export interface Document {
   type: DocumentType;
   path: string;
   productCode?: string;
+  isHtmlPage?: boolean;
 }
 
 export interface DocumentBranche {
@@ -74,7 +75,7 @@ export const aanvullendeDocumenten: Document[] = [
 ];
 
 export const zpZakenEigenDocumenten: Document[] = [
-  { id: 'slotverklaring', titel: 'Slotverklaring 2026', type: 'eigen', path: '/documenten/slotverklaring-2026.pdf' },
-  { id: 'dvd', titel: 'Dienstverleningsdocument', type: 'eigen', path: '/documenten/dienstverleningsdocument.pdf' },
-  { id: 'gedragscode', titel: 'Gedragscode', type: 'eigen', path: '/documenten/gedragscode.pdf' },
+  { id: 'slotverklaring', titel: 'Slotverklaring 2026', type: 'eigen', path: '/documenten/slotverklaring', isHtmlPage: true },
+  { id: 'dvd', titel: 'Dienstverleningsdocument', type: 'eigen', path: '/documenten/dienstverleningsdocument', isHtmlPage: true },
+  { id: 'gedragscode', titel: 'Gedragscode', type: 'eigen', path: '/documenten/gedragscode', isHtmlPage: true },
 ];

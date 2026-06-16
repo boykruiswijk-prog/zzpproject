@@ -58,6 +58,9 @@ import ScreenshotHelper from "./pages/ScreenshotHelper";
 import AlgemeneVoorwaarden from "./pages/AlgemeneVoorwaarden";
 import Klachtenprocedure from "./pages/Klachtenprocedure";
 import Documenten from "./pages/Documenten";
+import SlotverklaringPage from "./pages/documenten/SlotverklaringPage";
+import DienstverleningsdocumentPage from "./pages/documenten/DienstverleningsdocumentPage";
+import GedragscodePage from "./pages/documenten/GedragscodePage";
 import MijnZpPolis from "./pages/mijn-zp/Certificaat";
 import MijnZpPauzeren from "./pages/mijn-zp/Pauzeren";
 import MijnZpDocumenten from "./pages/mijn-zp/Documenten";
@@ -167,6 +170,9 @@ const publicRoutes = (
     <Route path="klachtenprocedure" element={<Klachtenprocedure />} />
     <Route path="klachten" element={<Klachtenprocedure />} />
     <Route path="documenten" element={<Documenten />} />
+    <Route path="documenten/slotverklaring" element={<SlotverklaringPage />} />
+    <Route path="documenten/dienstverleningsdocument" element={<DienstverleningsdocumentPage />} />
+    <Route path="documenten/gedragscode" element={<GedragscodePage />} />
     <Route path="collectieve-inkoop" element={<CollectieveInkoop />} />
     {/* TODO: Re-enable collectief-ledenorganisaties route when ready to go live */}
     {/* <Route path="collectief-ledenorganisaties" element={<CollectiefLedenorganisaties />} /> */}
