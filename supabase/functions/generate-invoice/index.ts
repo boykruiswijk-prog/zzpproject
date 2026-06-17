@@ -57,13 +57,21 @@ serve(async (req) => {
 
     // Build invoice data from lead if not provided
     let data = invoice_data;
+    // Prijzen in lijn met src/data/bavPakketten.ts (single source of truth).
+    // Legacy pakketnamen blijven gemapt voor historische facturen.
     const packagePricesYearly: Record<string, number> = {
+      "BAV & AVB Jaarlijks": 600.00,
+      "BAV & AVB Jaarlijks + Cyber": 750.00,
+      "BAV & AVB Maandelijks": 660.00,
       "Combi Basis": 360.00,
-      "Combi Uitgebreid": 540.00,
+      "Combi Uitgebreid": 600.00,
     };
     const packagePricesMonthly: Record<string, number> = {
+      "BAV & AVB Maandelijks": 55.00,
+      "BAV & AVB Jaarlijks": 50.00,
+      "BAV & AVB Jaarlijks + Cyber": 62.50,
       "Combi Basis": 30.00,
-      "Combi Uitgebreid": 45.00,
+      "Combi Uitgebreid": 55.00,
     };
 
     if (lead_id && !data) {
