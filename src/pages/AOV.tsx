@@ -23,7 +23,7 @@ export default function AOV() {
       canonicalPath="/aov"
       heroImage={teamBoyCalling}
       badge="Bescherm je inkomen"
-      title={<>AOV voor zzp'ers — <span className="text-accent">Zeker van je inkomen bij ziekte</span></>}
+      title={<>AOV voor zzp'ers: <span className="text-accent">Zeker van je inkomen bij ziekte</span></>}
       subtitle="Als zelfstandige ben je zelf verantwoordelijk voor je inkomen bij ziekte of arbeidsongeschiktheid. Een AOV vangt je op wanneer je niet kunt werken."
       schema={schema}
       benefits={[
@@ -67,7 +67,7 @@ export default function AOV() {
         {
           image: officeCoffee,
           title: "Wat kost een AOV?",
-          text: "De premie hangt af van je beroep, leeftijd, gewenste dekking en eigen risicoperiode. Gemiddeld betalen ZZP'ers in kantoorberoepen tussen €100 en €300 per maand — en dat is volledig aftrekbaar.",
+          text: "De premie hangt af van je beroep, leeftijd, gewenste dekking en eigen risicoperiode. Gemiddeld betalen ZZP'ers in kantoorberoepen tussen €100 en €300 per maand: en dat is volledig aftrekbaar.",
           bullets: [
             "Premie afhankelijk van je beroep en leeftijd",
             "Eigen risicoperiode verlaagt de premie",

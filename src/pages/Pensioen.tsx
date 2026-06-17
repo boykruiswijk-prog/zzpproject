@@ -23,7 +23,7 @@ export default function Pensioen() {
       canonicalPath="/pensioen"
       heroImage={teamHero}
       badge="Investeer in je toekomst"
-      title={<>Pensioen voor zzp'ers — <span className="text-accent">Regel het nu, profiteer later</span></>}
+      title={<>Pensioen voor zzp'ers: <span className="text-accent">Regel het nu, profiteer later</span></>}
       subtitle="Als zelfstandige bouw je niet automatisch pensioen op. Maar er zijn slimme, fiscaal voordelige manieren om toch goed voor je oude dag te zorgen."
       schema={schema}
       benefits={[
@@ -35,7 +35,7 @@ export default function Pensioen() {
         {
           icon: TrendingUp,
           title: "Flexibel beleggen",
-          description: "Kies zelf hoeveel risico je wilt nemen. Van defensief sparen tot offensief beleggen — afgestemd op jouw horizon en wensen.",
+          description: "Kies zelf hoeveel risico je wilt nemen. Van defensief sparen tot offensief beleggen: afgestemd op jouw horizon en wensen.",
         },
         {
           icon: CalendarCheck,
