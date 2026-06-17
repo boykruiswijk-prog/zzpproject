@@ -1,4 +1,5 @@
 import { PortalLayout } from "@/components/portal/PortalLayout";
+import { formatDateNL } from "@/lib/dateFormat";
 import { usePortalInvoices } from "@/hooks/usePortalData";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -46,7 +47,7 @@ export default function PortalInvoices() {
                   </Badge>
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {new Date(inv.invoice_date).toLocaleDateString("nl-NL")}: {" "}
+                  {formatDateNL(inv.invoice_date)}: {" "}
                   € {Number(inv.amount_incl_btw).toFixed(2).replace(".", ",")}
                 </p>
                 <p className="text-xs text-muted-foreground">{inv.description}</p>

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { formatDateNL } from "@/lib/dateFormat";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDbaChecks } from "@/hooks/useDbaChecks";
@@ -81,7 +82,7 @@ export default function AdminDbaChecks() {
     doc.setFontSize(16);
     doc.text("ZP Approved - Overzicht Wet DBA Checks", pageWidth / 2, 24, { align: "center" });
     doc.setFontSize(9);
-    doc.text(`Gegenereerd op ${new Date().toLocaleDateString("nl-NL")}`, pageWidth / 2, 30, { align: "center" });
+    doc.text(`Gegenereerd op ${formatDateNL()}`, pageWidth / 2, 30, { align: "center" });
 
     const certifiedChecks = checks.filter((c) => c.certificate_number && !c.invoiced_at);
 
@@ -219,7 +220,7 @@ export default function AdminDbaChecks() {
                         <TableCell>
                           {check.invoiced_at ? (
                             <Badge className="bg-green-100 text-green-800" variant="secondary">
-                              Gefactureerd {new Date(check.invoiced_at).toLocaleDateString("nl-NL")}
+                              Gefactureerd {formatDateNL(check.invoiced_at)}
                             </Badge>
                           ) : check.status === "certified" ? (
                             <Badge className="bg-orange-100 text-orange-800" variant="secondary">
@@ -239,7 +240,7 @@ export default function AdminDbaChecks() {
                           )}
                         </TableCell>
                         <TableCell>
-                          {new Date(check.created_at).toLocaleDateString("nl-NL")}
+                          {formatDateNL(check.created_at)}
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1">

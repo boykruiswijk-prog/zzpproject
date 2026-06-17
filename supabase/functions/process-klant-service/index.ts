@@ -1,6 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import { Resend } from "npm:resend@4.0.0";
 import { z } from "npm:zod@3.23.8";
+import { maybeFormatDate } from "../_shared/dateFormat.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -32,9 +33,18 @@ const labels: Record<string, string> = {
   opzeggen: "Opzegging",
 };
 
+const DATE_KEYS = new Set(["opzegdatum", "ingangsdatum", "pauzedatum", "geboortedatum", "datum"]);
+
+function fmtValue(key: string, v: unknown): string {
+  if (Array.isArray(v)) return v.join(", ");
+  if (v == null) return "-";
+  if (DATE_KEYS.has(key)) return maybeFormatDate(v);
+  return String(v);
+}
+
 function renderDetails(details: Record<string, unknown>): string {
   return Object.entries(details)
-    .map(([k, v]) => `<li><strong>${k}:</strong> ${Array.isArray(v) ? v.join(", ") : String(v ?? "-")}</li>`)
+    .map(([k, v]) => `<li><strong>${k}:</strong> ${fmtValue(k, v)}</li>`)
     .join("");
 }
 
@@ -57,6 +67,20 @@ Deno.serve(async (req) => {
       });
     }
     const v = parsed.data;
+
+    // Server-side bescherming tegen API-manipulatie: opzegdatum mag niet in het verleden liggen.
+    if (v.type === "opzeggen") {
+      const opzegdatum = v.details?.opzegdatum;
+      if (typeof opzegdatum === "string" && opzegdatum) {
+        const today = new Date().toISOString().split("T")[0];
+        if (opzegdatum < today) {
+          return new Response(
+            JSON.stringify({ error: "Opzegdatum kan niet in het verleden liggen." }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          );
+        }
+      }
+    }
 
     const { data, error } = await supabase
       .from("klant_service_aanvragen")
