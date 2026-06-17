@@ -747,9 +747,9 @@ export function BAVApplicationModule() {
                         <p className="text-sm text-background/70">{periodeLabel}</p>
                         <p className="text-3xl font-bold whitespace-nowrap">€{Number.isInteger(currentPrice) ? currentPrice : currentPrice.toFixed(2).replace('.', ',')}</p>
                       </div>
-                      </div>
                     </div>
                   </div>
+
                   <ul className="space-y-3">
                     {usps.map((usp) => (
                       <li key={usp} className="flex items-center gap-2 text-sm"><CheckCircle className="h-4 w-4 text-accent flex-shrink-0" /><span className="text-background/90">{usp}</span></li>
