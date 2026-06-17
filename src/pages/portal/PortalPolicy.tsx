@@ -1,4 +1,5 @@
 import { PortalLayout } from "@/components/portal/PortalLayout";
+import { formatDateNL } from "@/lib/dateFormat";
 import { usePortalPolicies } from "@/hooks/usePortalData";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -62,7 +63,7 @@ export default function PortalPolicy() {
                 </div>
                 <div>
                   <dt className="text-muted-foreground">Ingangsdatum</dt>
-                  <dd className="font-medium">{new Date(p.start_date).toLocaleDateString("nl-NL")}</dd>
+                  <dd className="font-medium">{formatDateNL(p.start_date)}</dd>
                 </div>
                 <div>
                   <dt className="text-muted-foreground">Looptijd</dt>

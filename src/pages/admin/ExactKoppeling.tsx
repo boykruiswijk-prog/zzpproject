@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { formatDateNL } from "@/lib/dateFormat";
 import { useNavigate } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useAuth } from "@/contexts/AuthContext";
@@ -355,7 +356,7 @@ export default function ExactKoppeling() {
                 <p className="text-muted-foreground">Refresh token geldig tot</p>
                 <p className="font-medium">
                   {refreshTokenValidUntil
-                    ? refreshTokenValidUntil.toLocaleDateString("nl-NL")
+                    ? formatDateNL(refreshTokenValidUntil)
                     : "—"}
                 </p>
               </div>
