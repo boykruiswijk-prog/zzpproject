@@ -73,7 +73,7 @@ export function IntermediaryCards() {
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade}>
           <div className="bg-accent text-accent-foreground rounded-xl p-5 text-center max-w-4xl mx-auto">
             <p className="font-semibold text-sm md:text-base">
-              Wat ze gemeen hebben: jouw verzekering is gekoppeld aan hun opdracht. Stopt de opdracht? Dan stopt je dekking. ZP Zaken werkt anders — jij beheert je eigen polis, los van wie je opdrachtgever is.
+              Wat ze gemeen hebben: jouw verzekering is gekoppeld aan hun opdracht. Stopt de opdracht? Dan stopt je dekking. ZP Zaken werkt anders :  jij beheert je eigen polis, los van wie je opdrachtgever is.
             </p>
           </div>
         </motion.div>

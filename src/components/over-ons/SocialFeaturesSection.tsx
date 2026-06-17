@@ -26,7 +26,7 @@ function PostCard({ feature, platform }: { feature: SocialFeature | null; platfo
     return (
       <div className="rounded-2xl border border-border/50 bg-background p-6 flex flex-col items-start gap-4">
         <Icon className={`h-8 w-8 ${cfg.color}`} />
-        <p className="text-muted-foreground text-sm flex-1">Nog geen recente post — volg ons om geen update te missen.</p>
+        <p className="text-muted-foreground text-sm flex-1">Nog geen recente post :  volg ons om geen update te missen.</p>
         <a href={cfg.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-accent font-semibold text-sm hover:underline">
           {cfg.label} <ExternalLink className="h-4 w-4" />
         </a>

@@ -360,7 +360,7 @@ export function SavingsCalculator() {
       <div className="mt-8 max-w-2xl mx-auto text-center space-y-3">
         <Button asChild size="lg" className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
           <LocalizedLink to="/verzekeringen">
-            Direct afsluiten — {ctaPkg.label} voor €{ctaPkg.monthly}/maand <ArrowRight className="h-5 w-5 ml-1" />
+            Direct afsluiten :  {ctaPkg.label} voor €{ctaPkg.monthly}/maand <ArrowRight className="h-5 w-5 ml-1" />
           </LocalizedLink>
         </Button>
         <div>
