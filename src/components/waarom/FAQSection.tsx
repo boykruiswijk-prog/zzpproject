@@ -35,7 +35,7 @@ export function FAQSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-10"
         >
-          <h2>Veelgestelde vragen</h2>
+          <h2>Vragen</h2>
         </motion.div>
 
         <Accordion type="single" collapsible className="space-y-3">

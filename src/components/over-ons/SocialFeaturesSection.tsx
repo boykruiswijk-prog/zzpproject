@@ -92,7 +92,7 @@ export function SocialFeaturesSection() {
     <section className="section-padding bg-secondary/40">
       <div className="container-wide max-w-5xl mx-auto">
         <div className="text-center mb-10">
-          <h2 className="mb-3">Volg ons op social media</h2>
+          <h2 className="mb-3">Volg ons</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Zo blijf je op de hoogte van het laatste nieuws over ZZP'en, regelgeving en verzekeringen.
           </p>

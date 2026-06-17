@@ -35,9 +35,9 @@ export function IntermediaryCards() {
     <section className="section-padding bg-secondary">
       <div className="container-wide">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center mb-12 max-w-3xl mx-auto">
-          <h2 className="mb-4">Hoe werken platforms en intermediairs?</h2>
+          <h2 className="mb-4">Hoe werken platforms?</h2>
           <p className="text-muted-foreground">
-            De meeste grote platforms in Nederland koppelen verzekeringen aan hun opdrachten. Dat lijkt handig, maar heeft consequenties die zzp'ers zich vaak niet realiseren.
+            Grote platforms koppelen verzekeringen aan hun opdrachten. Dat heeft nadelen die je misschien niet direct ziet.
           </p>
         </motion.div>
 

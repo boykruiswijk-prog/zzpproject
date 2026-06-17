@@ -28,7 +28,7 @@ export function ProcessSection() {
     <section className="section-padding bg-background">
       <div className="container-wide">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <h2 className="mb-4">Zo werken wij</h2>
+          <h2 className="mb-4">Onze werkwijze</h2>
           <p className="text-muted-foreground">
             Persoonlijk advies in drie simpele stappen. Geen verkooppraatjes, 
             wel eerlijk advies dat past bij jouw situatie.

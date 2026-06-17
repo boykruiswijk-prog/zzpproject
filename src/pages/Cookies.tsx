@@ -12,7 +12,7 @@ const cookieTypes = [
     title: "Noodzakelijke cookies",
     description: "Deze cookies zijn nodig voor de website. Zonder deze cookies kan de website niet correct functioneren. Ze worden gebruikt voor:",
     items: [
-      "Onthouden van je cookie-voorkeuren",
+      "Onthouden van je voorkeuren",
       "Beveiligen van formulieren tegen misbruik",
       "Laden van pagina's en navigatie",
       "Sessie- en authenticatiebeheer",
@@ -198,7 +198,7 @@ export default function Cookies() {
       <section className="section-padding bg-background">
         <div className="container-wide">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold mb-6">Jouw rechten</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-6">Je rechten</h2>
             <div className="space-y-4 text-muted-foreground">
               <p>
                 Op grond van de Algemene Verordening Gegevensbescherming (AVG/GDPR) en de Telecommunicatiewet heb je het recht om:
@@ -206,7 +206,7 @@ export default function Cookies() {
               <ul className="space-y-2 ml-4">
                 <li className="flex items-start gap-2">
                   <span className="text-accent mt-1">•</span>
-                  Je toestemming voor cookies in te trekken of aan te passen
+                  Je toestemming in te trekken of aan te passen
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-accent mt-1">•</span>
@@ -214,7 +214,7 @@ export default function Cookies() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-accent mt-1">•</span>
-                  Inzage te vragen in de gegevens die wij verzamelen
+                  Inzage te vragen in de gegevens die we verzamelen
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-accent mt-1">•</span>
@@ -256,7 +256,7 @@ export default function Cookies() {
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-2xl md:text-3xl font-bold mb-4">Vragen?</h2>
             <p className="text-muted-foreground mb-6">
-              Heb je vragen over ons cookiebeleid of over hoe wij met je gegevens omgaan? Neem dan contact met ons op.
+              Heb je vragen over ons cookiebeleid of over hoe we met je gegevens omgaan? Neem dan contact met ons op.
             </p>
             <div className="text-sm text-muted-foreground space-y-1">
               <p><strong>ZP Zaken B.V.</strong></p>

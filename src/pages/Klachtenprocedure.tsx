@@ -40,7 +40,7 @@ export default function Klachtenprocedure() {
         <div className="container-wide">
           <div className="max-w-3xl mx-auto">
             <p className="text-lg text-muted-foreground leading-relaxed">
-              ZP Zaken B.V. vindt het belangrijk de tevredenheid van haar klanten. Bent u niet tevreden over onze dienstverlening? Dan horen wij dat graag. Wij behandelen uw klacht serieus, vertrouwelijk en zo snel mogelijk. ZP Zaken is geregistreerd bij de Autoriteit Financiële Markten (AFM) onder vergunningsnummer <strong>12050636</strong> en aangesloten bij het Klachteninstituut Financiële Dienstverlening (Kifid).
+              ZP Zaken B.V. vindt het belangrijk de tevredenheid van haar klanten. Ben je niet tevreden over onze dienstverlening? Dan horen we dat graag. Wij behandelen je klacht serieus, vertrouwelijk en zo snel mogelijk. ZP Zaken is geregistreerd bij de Autoriteit Financiële Markten (AFM) onder vergunningsnummer <strong>12050636</strong> en aangesloten bij het Klachteninstituut Financiële Dienstverlening (Kifid).
             </p>
           </div>
         </div>
@@ -71,7 +71,7 @@ export default function Klachtenprocedure() {
         <div className="container-wide">
           <div className="max-w-3xl mx-auto space-y-16">
             <Section id="stap-1" title="Stap 1: Neem contact met ons op">
-              <p>Dien uw klacht eerst in bij ZP Zaken zelf. Dat kan op de volgende manieren:</p>
+              <p>Dien je klacht eerst in bij ZP Zaken zelf. Dat kan op de volgende manieren:</p>
               <div className="grid sm:grid-cols-3 gap-4 not-prose pt-2">
                 <div className="bg-card rounded-xl border border-border/50 p-4 shadow-card">
                   <Mail className="h-5 w-5 text-accent mb-2" />
@@ -89,13 +89,13 @@ export default function Klachtenprocedure() {
                   <p className="text-sm font-semibold text-foreground">ZP Zaken B.V.<br />Tupolevlaan 41<br />1119 NW Schiphol-Rijk</p>
                 </div>
               </div>
-              <p className="pt-2">Vermeld bij uw klacht:</p>
+              <p className="pt-2">Vermeld bij je klacht:</p>
               <ul className="space-y-2 ml-4">
                 {[
-                  "Uw naam en contactgegevens",
+                  "Je naam en contactgegevens",
                   "Een duidelijke omschrijving van de klacht",
                   "De datum waarop het voorval heeft plaatsgevonden",
-                  "Wat u van ons verwacht als oplossing",
+                  "Wat je van ons verwacht als oplossing",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2">
                     <span className="text-accent mt-1">•</span>
@@ -106,9 +106,9 @@ export default function Klachtenprocedure() {
             </Section>
 
             <Section id="stap-2" title="Stap 2: Wij behandelen de klacht">
-              <p>Na ontvangst van uw klacht ontvangt u binnen <strong>5 werkdagen</strong> een schriftelijke ontvangstbevestiging.</p>
-              <p>Wij streven ernaar uw klacht binnen <strong>6 weken</strong> volledig te behandelen. Indien dit niet mogelijk is, ontvangt u hierover tijdig bericht met een indicatie van de nieuwe verwachte afdoeningtermijn.</p>
-              <p>U ontvangt onze reactie schriftelijk, met daarin:</p>
+              <p>Na ontvangst van uw klacht ontvang je binnen <strong>5 werkdagen</strong> een schriftelijke ontvangstbevestiging.</p>
+              <p>Wij streven ernaar uw klacht binnen <strong>6 weken</strong> volledig te behandelen. Als dit niet mogelijk is, ontvang je hierover tijdig bericht met een indicatie van de nieuwe verwachte afdoeningtermijn.</p>
+              <p>Je ontvangt onze reactie schriftelijk, met daarin:</p>
               <ul className="space-y-2 ml-4">
                 {[
                   "Een oordeel over uw klacht",
@@ -124,7 +124,7 @@ export default function Klachtenprocedure() {
             </Section>
 
             <Section id="stap-3" title="Stap 3: Kifid als externe klachteninstantie">
-              <p>Bent u niet tevreden met de uitkomst van onze klachtbehandeling, of heeft u na 6 weken nog geen reactie ontvangen? Dan kunt u uw klacht voorleggen aan het Klachteninstituut Financiële Dienstverlening (Kifid).</p>
+              <p>Ben je niet tevreden met de uitkomst van onze klachtbehandeling, of heb je na 6 weken nog geen reactie ontvangen? Dan kun je je klacht voorleggen aan het Klachteninstituut Financiële Dienstverlening (Kifid).</p>
               <p>Kifid is een onafhankelijke instantie die geschillen behandelt tussen consumenten en financiële dienstverleners.</p>
               <div className="bg-secondary rounded-xl p-6 mt-2 text-sm space-y-1">
                 <p className="font-semibold text-foreground">Kifid</p>
@@ -134,7 +134,7 @@ export default function Klachtenprocedure() {
                 <p>Website: <a href="https://www.kifid.nl" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">www.kifid.nl</a></p>
               </div>
               <p className="pt-2">
-                U kunt uw klacht online indienen via{" "}
+                Je kunt je klacht online indienen via{" "}
                 <a href="https://www.kifid.nl/klacht-indienen" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">
                   www.kifid.nl/klacht-indienen
                 </a>
@@ -143,7 +143,7 @@ export default function Klachtenprocedure() {
             </Section>
 
             <Section id="stap-4" title="Stap 4: Geschil voorleggen aan de rechter">
-              <p>U heeft ook altijd het recht om uw klacht voor te leggen aan de bevoegde rechter, ongeacht of u gebruik heeft gemaakt van de Kifid-procedure.</p>
+              <p>Je hebt ook altijd het recht om uw klacht voor te leggen aan de bevoegde rechter, ongeacht of u gebruik hebt gemaakt van de Kifid-procedure.</p>
               <p>Op alle geschillen tussen ZP Zaken en haar klanten is Nederlands recht van toepassing.</p>
             </Section>
 
@@ -153,7 +153,7 @@ export default function Klachtenprocedure() {
                 {[
                   "Serieus en met respect",
                   "Vertrouwelijk",
-                  "Zonder extra kosten voor u",
+                  "Zonder extra kosten voor jou",
                   "Binnen de gestelde termijnen",
                 ].map((item) => (
                   <div key={item} className="flex items-start gap-2 bg-card rounded-xl border border-border/50 p-4 shadow-card">
@@ -162,7 +162,7 @@ export default function Klachtenprocedure() {
                   </div>
                 ))}
               </div>
-              <p className="pt-4">Uw klacht helpt ons onze dienstverlening te verbeteren. Wij zijn u erkentelijk voor uw terugkoppeling.</p>
+              <p className="pt-4">Je klacht helpt ons onze dienstverlening te verbeteren. We zijn je dankbaar voor uw terugkoppeling.</p>
             </Section>
 
             <Section id="contact" title="Contactgegevens">

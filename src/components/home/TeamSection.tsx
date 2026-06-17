@@ -61,7 +61,7 @@ export function TeamSection() {
           </h2>
           <p className="text-muted-foreground text-lg">
             Geen callcenters of chatbots, maar een team van experts die je persoonlijk 
-            verder helpen. Wij kennen onze klanten bij naam.
+            verder helpen. We kennen onze klanten.
           </p>
         </div>
 

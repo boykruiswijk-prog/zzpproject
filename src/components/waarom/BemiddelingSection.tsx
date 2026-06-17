@@ -32,7 +32,7 @@ export function BemiddelingSection() {
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center mb-12 max-w-3xl mx-auto">
           <h2 className="mb-4">Opdrachten vinden zonder bemiddelingskosten</h2>
           <p className="text-muted-foreground">
-            Naast verzekeringen helpt ZP Zaken je ook aan opdrachten via Onefellow :  het recruitmentplatform van dezelfde mensen. Bemiddeling is gratis voor de zzp'er. Jij betaalt niets, de opdrachtgever betaalt de fee.
+            Naast verzekeringen helpt ZP Zaken je ook aan opdrachten via Onefellow :  het recruitmentplatform van dezelfde mensen. Bemiddeling is gratis voor jou. De opdrachtgever betaalt de fee.
           </p>
         </motion.div>
 
