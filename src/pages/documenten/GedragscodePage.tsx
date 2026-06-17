@@ -16,7 +16,7 @@ export default function GedragscodePage() {
 
       <h2>Klantbelang centraal</h2>
       <p>
-        Wij stellen het belang van de klant voorop. Wij adviseren alleen producten die
+        Wij stellen het belang van de klant voorop. Wij bemiddelen alleen in producten die
         passend zijn bij de werkzaamheden en risico's van de klant en wijzen aanvragen af
         als deze niet aansluiten.
       </p>
@@ -47,7 +47,7 @@ export default function GedragscodePage() {
 
       <h2>Nazorg</h2>
       <p>
-        Wij blijven betrokken tijdens de looptijd en adviseren klanten om wijzigingen in
+        Wij blijven betrokken tijdens de looptijd en vragen klanten om wijzigingen in
         werkzaamheden tijdig door te geven.
       </p>
 
