@@ -39,6 +39,12 @@ export const searchIndex: SearchEntry[] = [
     snippet: "BAV en AVB combinatiepolis, AOV en rechtsbijstand. Direct online afsluiten of advies aanvragen.",
   },
   {
+    title: "Offerte aanvragen | ZP Zaken",
+    path: "/offerte",
+    keywords: "offerte aanvraag vrijblijvend prijsindicatie premie BAV offerte kosten tarief",
+    snippet: "Vraag vrijblijvend een offerte aan voor je BAV-verzekering. Binnen 24 uur reactie.",
+  },
+  {
     title: "AOV",
     path: "/aov",
     keywords: "arbeidsongeschiktheid zzp AOV inkomen",

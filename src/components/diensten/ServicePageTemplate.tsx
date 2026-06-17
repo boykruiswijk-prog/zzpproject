@@ -7,6 +7,7 @@ import { LocalizedLink } from "@/components/LocalizedLink";
 import { ArrowRight, Sparkles, CheckCircle, LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { MiniSocialProof } from "@/components/shared/MiniSocialProof";
+import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
 import teamCheers from "@/assets/team-cheers.jpg";
 
 interface Benefit {
@@ -219,6 +220,17 @@ export function ServicePageTemplate({
               <MiniSocialProof variant="dark" className="justify-center" />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Drie-keuze CTA */}
+      <section className="section-padding bg-background border-t border-border">
+        <div className="container-wide">
+          <div className="text-center mb-8 max-w-2xl mx-auto">
+            <h2 className="mb-3">Zo werken we samen</h2>
+            <p className="text-muted-foreground">Kies de route die bij je past.</p>
+          </div>
+          <ThreeOptionCTA />
         </div>
       </section>
     </Layout>

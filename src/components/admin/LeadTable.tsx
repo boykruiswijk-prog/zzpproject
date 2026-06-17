@@ -72,6 +72,7 @@ const pakketColors: Record<string, string> = {
 export function LeadTable() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "all">("all");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
   const { user } = useAuth();
@@ -80,6 +81,7 @@ export function LeadTable() {
   const { data: leads, isLoading, isFetching } = useLeads({
     search: search || undefined,
     status: statusFilter === "all" ? undefined : statusFilter,
+    type: typeFilter === "all" ? undefined : typeFilter,
   });
 
   const updateLead = useUpdateLead();
@@ -154,6 +156,20 @@ export function LeadTable() {
             ))}
           </SelectContent>
         </Select>
+        <Select
+          value={typeFilter}
+          onValueChange={(value) => setTypeFilter(value)}
+        >
+          <SelectTrigger className="w-full sm:w-56">
+            <SelectValue placeholder="Filter op type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Alle types</SelectItem>
+            <SelectItem value="contact">Contactverzoek</SelectItem>
+            <SelectItem value="verzekering_aanvraag">Verzekeringsaanvraag</SelectItem>
+            <SelectItem value="offerte-aanvraag">Offerteaanvraag</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Table */}
@@ -162,6 +178,7 @@ export function LeadTable() {
           <TableHeader>
             <TableRow>
               <TableHead>Naam</TableHead>
+              <TableHead>Type</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Verzekering</TableHead>
               <TableHead>Pakket</TableHead>
@@ -173,7 +190,7 @@ export function LeadTable() {
           <TableBody>
             {leads?.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                   Geen leads gevonden
                 </TableCell>
               </TableRow>
@@ -186,6 +203,15 @@ export function LeadTable() {
                       <span className="block text-sm text-muted-foreground">
                         {lead.bedrijfsnaam}
                       </span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {lead.type === "offerte-aanvraag" ? (
+                      <Badge className="bg-purple-100 text-purple-800 border-purple-300" variant="outline">Offerte</Badge>
+                    ) : lead.type === "verzekering_aanvraag" ? (
+                      <Badge variant="outline">Verzekering</Badge>
+                    ) : (
+                      <Badge variant="outline" className="bg-slate-100 text-slate-700">Contact</Badge>
                     )}
                   </TableCell>
                   <TableCell>{lead.email}</TableCell>

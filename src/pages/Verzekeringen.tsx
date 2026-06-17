@@ -12,6 +12,7 @@ import { QualificationCheck } from "@/components/shared/QualificationCheck";
 import { StepsProcess } from "@/components/shared/StepsProcess";
 import { WhyAffordable } from "@/components/shared/WhyAffordable";
 import { MiniSocialProof } from "@/components/shared/MiniSocialProof";
+import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
 import teamBoyCalling from "@/assets/team-boy-calling.jpg";
 import teamCheers from "@/assets/team-cheers.jpg";
 
@@ -72,6 +73,18 @@ export default function Verzekeringen() {
 
       {/* BAV Wizard */}
       <BAVApplicationModule />
+
+      {/* Drie-keuze CTA */}
+      <section className="section-padding bg-secondary border-y border-border">
+        <div className="container-wide">
+          <div className="text-center mb-8 max-w-2xl mx-auto">
+            <h2 className="mb-3">Liever advies of een offerte op maat?</h2>
+            <p className="text-muted-foreground">Kies wat het beste bij je past.</p>
+          </div>
+          <ThreeOptionCTA />
+        </div>
+      </section>
+
 
       {/* Trust bar */}
       <div className="bg-secondary border-b border-border py-4">

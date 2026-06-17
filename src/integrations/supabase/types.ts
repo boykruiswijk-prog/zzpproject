@@ -943,6 +943,7 @@ export type Database = {
           exact_relatie_id: string | null
           exact_status: string | null
           exact_sync_op: string | null
+          extra_data: Json
           geboortedatum: string | null
           gekozen_pakket: string | null
           id: string
@@ -974,6 +975,7 @@ export type Database = {
           exact_relatie_id?: string | null
           exact_status?: string | null
           exact_sync_op?: string | null
+          extra_data?: Json
           geboortedatum?: string | null
           gekozen_pakket?: string | null
           id?: string
@@ -1005,6 +1007,7 @@ export type Database = {
           exact_relatie_id?: string | null
           exact_status?: string | null
           exact_sync_op?: string | null
+          extra_data?: Json
           geboortedatum?: string | null
           gekozen_pakket?: string | null
           id?: string
@@ -1334,7 +1337,7 @@ export type Database = {
         | "offerte_verstuurd"
         | "klant"
         | "afgewezen"
-      lead_type: "contact" | "verzekering_aanvraag"
+      lead_type: "contact" | "verzekering_aanvraag" | "offerte-aanvraag"
       note_type: "notitie" | "follow_up" | "telefoongesprek"
     }
     CompositeTypes: {
@@ -1473,7 +1476,7 @@ export const Constants = {
         "klant",
         "afgewezen",
       ],
-      lead_type: ["contact", "verzekering_aanvraag"],
+      lead_type: ["contact", "verzekering_aanvraag", "offerte-aanvraag"],
       note_type: ["notitie", "follow_up", "telefoongesprek"],
     },
   },

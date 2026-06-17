@@ -10,6 +10,7 @@ type LeadStatus = Database["public"]["Enums"]["lead_status"];
 export function useLeads(filters?: {
   status?: LeadStatus;
   verzekeringType?: string;
+  type?: string;
   assignedTo?: string;
   search?: string;
 }) {
@@ -27,6 +28,9 @@ export function useLeads(filters?: {
       }
       if (filters?.verzekeringType) {
         query = query.eq("verzekering_type", filters.verzekeringType);
+      }
+      if (filters?.type) {
+        query = query.eq("type", filters.type as Database["public"]["Enums"]["lead_type"]);
       }
       if (filters?.assignedTo) {
         query = query.eq("assigned_to", filters.assignedTo);
