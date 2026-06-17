@@ -14,6 +14,8 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { formatDateNL } from "@/lib/dateFormat";
 import { toast } from "@/hooks/use-toast";
+import { ReadingProgress } from "@/components/kennisbank/ReadingProgress";
+import { TableOfContents } from "@/components/kennisbank/TableOfContents";
 
 const BAV_AVB_SLUG = "zp-zaken-zorgeloos-zzpen-goedkoopste-bav-avb";
 
@@ -32,11 +34,39 @@ const defaultCategoryStyle = "bg-accent/10 text-accent border-accent/20";
 const CATEGORY_SLUGS: Record<string, string> = {
   "Wet- en regelgeving": "wet-en-regelgeving",
   "Wetgeving": "wet-en-regelgeving",
+  "Regelgeving": "wet-en-regelgeving",
   "Belastingen": "belastingen",
+  "Fiscaal": "belastingen",
   "Ondernemen": "ondernemen",
   "Financiën": "financien",
-  "Verzekeringen": "verzekeringen",
+  "Verzekeringen": "wet-en-regelgeving",
+  "Nieuws": "wet-en-regelgeving",
 };
+
+const FALLBACK_OG_IMAGE = "https://www.zpzaken.nl/og-image.jpg";
+
+function stripMarkdown(s: string) {
+  return s
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`[^`]*`/g, " ")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/[#>*_~`-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function makeFallbackDescription(content: string | null | undefined, excerpt?: string | null) {
+  if (excerpt) return excerpt.length > 160 ? excerpt.slice(0, 155).trimEnd() + "…" : excerpt;
+  if (!content) return "Kennisbank artikel van ZP Zaken voor zzp'ers.";
+  const plain = stripMarkdown(content);
+  return plain.length > 160 ? plain.slice(0, 155).trimEnd() + "…" : plain;
+}
+
+function countWords(content: string | null | undefined) {
+  if (!content) return 0;
+  return stripMarkdown(content).split(/\s+/).filter(Boolean).length;
+}
 
 function estimateReadTime(content?: string | null) {
   if (!content) return "3 min";
