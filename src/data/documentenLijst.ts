@@ -61,6 +61,7 @@ export const branches: DocumentBranche[] = [
     naam: 'Zakelijke dienstverlening',
     subnaam: 'Niet-uitvoerende beroepen',
     documenten: [
+      { id: 'brochure-zd', titel: 'Brochure beroepsaansprakelijkheid', type: 'brochure', path: '/documenten/Brochure-beroepsaansprakelijkheid.pdf' },
       { id: 'polis-zd', titel: 'Polisvoorwaarden beroepsaansprakelijkheid', type: 'polisvoorwaarden', path: '/documenten/Overige-zakelijke-dienstverlening-Polisvoorwaarden-beroepsaansprakelijkheid-MPH-2013B.pdf', productCode: 'MPH-2013B' },
       { id: 'kaart-zd', titel: 'Verzekeringskaart beroepsaansprakelijkheid', type: 'verzekeringskaart', path: '/documenten/Overige-zakelijke-dienstverlening-Verzekeringskaart-beroepsaansprakelijkheid-MPH-2013B.pdf', productCode: 'MPH-2013B' },
     ],
@@ -68,6 +69,7 @@ export const branches: DocumentBranche[] = [
 ];
 
 export const algemeneBavDocumenten: Document[] = [
+  { id: 'polis-bav', titel: 'Polisvoorwaarden bedrijfsaansprakelijkheid', type: 'polisvoorwaarden', path: '/documenten/Verzekeringskaart-bedrijfsaansprakelijkheid-HAVB-08B.pdf', productCode: 'HAVB-08B' },
   { id: 'kaart-bav', titel: 'Verzekeringskaart bedrijfsaansprakelijkheid', type: 'verzekeringskaart', path: '/documenten/Verzekeringskaart-bedrijfsaansprakelijkheid-HAVB-08B.pdf', productCode: 'HAVB-08B' },
 ];
 
