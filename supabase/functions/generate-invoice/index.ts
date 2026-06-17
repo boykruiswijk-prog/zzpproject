@@ -89,7 +89,7 @@ serve(async (req) => {
       const pkgName = lead.verzekering_type || "BAV & AVB Jaarlijks";
       const isMonthly = lead.omzet === "maandelijks" || lead.omzet === "2";
       const priceMap = isMonthly ? packagePricesMonthly : packagePricesYearly;
-      const priceExcl = priceMap[pkgName] || priceMap["Combi Uitgebreid"];
+      const priceExcl = priceMap[pkgName] || priceMap["BAV & AVB Jaarlijks"];
       data = {
         client_name: `${lead.voornaam} ${lead.achternaam}`,
         company_name: lead.bedrijfsnaam || null,
