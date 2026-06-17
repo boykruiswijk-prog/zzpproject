@@ -376,7 +376,7 @@ export function SavingsCalculator() {
         </Button>
         <div>
           <LocalizedLink to="/contact" className="text-sm text-muted-foreground hover:text-accent underline-offset-4 hover:underline">
-            Of plan eerst een gratis adviesgesprek →
+            Of plan eerst een vrijblijvend gesprek →
           </LocalizedLink>
         </div>
       </div>

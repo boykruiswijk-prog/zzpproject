@@ -30,7 +30,7 @@ export const searchIndex: SearchEntry[] = [
     title: "Diensten",
     path: "/diensten",
     keywords: "diensten verzekering screening factoring juridisch administratie boekhouding",
-    snippet: "Een overzicht van alle diensten: verzekeringen, screening, factoring, juridisch advies en administratie.",
+    snippet: "Een overzicht van alle diensten: verzekeringen, screening, factoring, juridische hulp en administratie.",
   },
   {
     title: "Verzekeringen",
@@ -108,7 +108,7 @@ export const searchIndex: SearchEntry[] = [
     title: "Waarom ZP Zaken",
     path: "/waarom-zp-zaken",
     keywords: "voordelen onafhankelijk transparant directe partner geen bemiddelaar",
-    snippet: "Onafhankelijk advies, transparante tarieven en direct contact. Geen tussenpersonen.",
+    snippet: "Onafhankelijke bemiddeling, transparante tarieven en direct contact. Geen tussenpersonen.",
   },
   {
     title: "Zo werken wij",

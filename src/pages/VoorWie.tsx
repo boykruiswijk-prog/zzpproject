@@ -60,7 +60,7 @@ export default function VoorWie() {
     <Layout>
       <SEOHead
         title="Voor Wie is ZP Zaken? | Bouw, Zorg, ICT, Consultancy en meer"
-        description="ZP Zaken helpt zelfstandig professionals in bouw, zorg, consultancy, HR, finance, marketing en ICT. Persoonlijk verzekeringsadvies op maat voor jouw beroep."
+        description="ZP Zaken helpt zelfstandig professionals in bouw, zorg, consultancy, HR, finance, marketing en ICT. Persoonlijk verzekeringsbemiddeling op maat voor jouw beroep."
       />
 
       <PageHero

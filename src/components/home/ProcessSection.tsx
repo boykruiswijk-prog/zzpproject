@@ -12,14 +12,14 @@ const steps = [
   {
     number: "02",
     icon: FileSearch,
-    title: "Persoonlijk advies",
+    title: "Persoonlijk gesprek",
     description: "Op basis van je situatie krijg je een helder overzicht van relevante verzekeringen en opties.",
   },
   {
     number: "03",
     icon: CheckCircle,
     title: "Regelen we samen",
-    description: "Kies je voor ons advies? Dan regelen we alles voor je. Snel, transparant en zonder gedoe.",
+    description: "Kies je voor onze bemiddeling? Dan regelen we alles voor je. Snel, transparant en zonder gedoe.",
   },
 ];
 
@@ -30,8 +30,8 @@ export function ProcessSection() {
         <div className="text-center max-w-2xl mx-auto mb-12">
           <h2 className="mb-4">Onze werkwijze</h2>
           <p className="text-muted-foreground">
-            Persoonlijk advies in drie simpele stappen. Geen verkooppraatjes, 
-            wel eerlijk advies dat past bij jouw situatie.
+            Persoonlijk gesprek in drie simpele stappen. Geen verkooppraatjes, 
+            wel eerlijke informatie dat past bij jouw situatie.
           </p>
         </div>
 

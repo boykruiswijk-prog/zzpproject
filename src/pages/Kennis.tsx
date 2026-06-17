@@ -39,7 +39,7 @@ const faqs = [
     answer: "Dat hangt af van je beroep en situatie. Een beroepsaansprakelijkheidsverzekering is vaak verplicht of aangeraden, vooral in de IT, zorg en consultancy. Een arbeidsongeschiktheidsverzekering is niet verplicht, maar wel verstandig omdat je als zzp'er geen WIA opbouwt.",
   },
   {
-    question: "Wat kost een adviesgesprek?",
+    question: "Wat kost een persoonlijk gesprek?",
     answer: "Het eerste kennismakingsgesprek is altijd gratis en vrijblijvend. We bespreken je situatie en geven een eerste indicatie van welke verzekeringen relevant zijn. Er zijn geen verborgen kosten.",
   },
   {
@@ -48,11 +48,11 @@ const faqs = [
   },
   {
     question: "Kan ik mijn huidige verzekeringen laten checken?",
-    answer: "Ja, dat kan! We kijken graag naar je huidige polissen en adviseren of de dekking nog past bij je situatie. Vaak kun je besparen of de dekking verbeteren.",
+    answer: "Ja, dat kan! We kijken graag naar je huidige polissen en kijken of de dekking nog past bij je situatie. Vaak kun je besparen of de dekking verbeteren.",
   },
   {
     question: "Zijn jullie onafhankelijk?",
-    answer: "Ja, wij zijn volledig onafhankelijk en niet gebonden aan één verzekeraar. We vergelijken aanbiedingen van verschillende verzekeraars en adviseren over de passende dekking.",
+    answer: "Ja, wij zijn volledig onafhankelijk en niet gebonden aan één verzekeraar. We vergelijken aanbiedingen van verschillende verzekeraars en informeren over de passende dekking.",
   },
   {
     question: "Wat als mijn situatie verandert?",
@@ -64,7 +64,7 @@ export default function Kennis() {
   return (
     <Layout>
       <SEOHead
-        title="Kennis & Advies voor ZZP'ers | ZP Zaken"
+        title="Kennis & Informatie voor ZZP'ers | ZP Zaken"
         description="Handige informatie over verzekeringen, ondernemerschap en alles wat je als zzp'er moet weten. Duidelijke uitleg zonder jargon."
       />
       {/* Hero */}
@@ -72,7 +72,7 @@ export default function Kennis() {
         <div className="container-wide">
           <div className="max-w-3xl">
             <h1 className="mb-6">
-              Kennis & advies
+              Kennis & informatie
             </h1>
             <p className="text-lg md:text-xl text-primary-foreground/80 mb-8">
               Handige informatie over verzekeringen, ondernemerschap en alles wat je als 

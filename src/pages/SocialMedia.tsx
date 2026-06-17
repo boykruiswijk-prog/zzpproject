@@ -19,7 +19,7 @@ import teamCheers from "@/assets/team-cheers.jpg";
 const trustPoints = [
   { icon: Users, title: "Directe benadering", description: "Geen onnodige tussenpartijen:  je spreekt direct met een adviseur die jouw situatie begrijpt." },
   { icon: Shield, title: "Specialist in aansprakelijkheid", description: "Beroeps- én bedrijfsaansprakelijkheid onder één dak, met onze unieke BAV+AVB combinatiepolis." },
-  { icon: CheckCircle, title: "Transparant advies", description: "Eerlijk, onafhankelijk advies zonder verborgen kosten. Wij adviseren alleen wat je écht nodig hebt." },
+  { icon: CheckCircle, title: "Transparante werkwijze", description: "Eerlijk, onafhankelijke bemiddeling zonder verborgen kosten. Wij bemiddelen alleen wat je écht nodig hebt." },
   { icon: Star, title: "Persoonlijke begeleiding", description: "Een team dat klaarstaat. Altijd een mens aan de lijn, nooit een callcenter." },
 ];
 
@@ -41,7 +41,7 @@ const linkedInContent = [
 const faqs = [
   {
     q: "Welke verzekering heeft een zzp'er nodig?",
-    a: "Dat hangt af van je beroep en situatie. De meeste zzp'ers hebben minimaal een beroepsaansprakelijkheidsverzekering (BAV) en bedrijfsaansprakelijkheidsverzekering (AVB) nodig. Wij bieden een unieke combinatiepolis die beide dekt. Plan een gratis adviesgesprek en we bekijken samen wat bij jou past."
+    a: "Dat hangt af van je beroep en situatie. De meeste zzp'ers hebben minimaal een beroepsaansprakelijkheidsverzekering (BAV) en bedrijfsaansprakelijkheidsverzekering (AVB) nodig. Wij bieden een unieke combinatiepolis die beide dekt. Plan een vrijblijvend gesprek en we bekijken samen wat bij jou past."
   },
   {
     q: "Is een beroepsaansprakelijkheidsverzekering verplicht?",
@@ -73,7 +73,7 @@ export default function SocialMedia() {
             "https://www.linkedin.com/company/zp-zaken/",
             "https://www.instagram.com/zp_zaken/"
           ],
-          "description": "Onafhankelijk advies over verzekeringen voor zzp'ers en zelfstandig ondernemers."
+          "description": "Onafhankelijke bemiddeling over verzekeringen voor zzp'ers en zelfstandig ondernemers."
         })}</script>
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
@@ -105,7 +105,7 @@ export default function SocialMedia() {
             </a>
           </Button>
           <Button size="lg" variant="outline" className="bg-background/10 text-primary-foreground border-primary-foreground/30 hover:bg-background/20" asChild>
-            <LocalizedLink to="/contact">Vraag gratis advies aan <ArrowRight className="h-4 w-4" /></LocalizedLink>
+            <LocalizedLink to="/contact">Plan een vrijblijvend gesprek <ArrowRight className="h-4 w-4" /></LocalizedLink>
           </Button>
         </div>
       </PageHero>
@@ -298,11 +298,11 @@ export default function SocialMedia() {
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="mb-4 text-primary-foreground">Wil jij weten welke verzekering past bij jouw onderneming?</h2>
             <p className="text-lg text-primary-foreground/80 mb-8">
-              Plan een gratis adviesgesprek en zie binnen 15 minuten welke verzekeringen bij jouw situatie passen. Eerlijk, onafhankelijk en zonder verplichtingen.
+              Plan een vrijblijvend gesprek en zie binnen 15 minuten welke verzekeringen bij jouw situatie passen. Eerlijk, onafhankelijk en zonder verplichtingen.
             </p>
             <div className="flex flex-wrap justify-center gap-4 mb-8">
               <Button variant="accent" size="lg" asChild>
-                <LocalizedLink to="/contact">Gratis adviesgesprek <ArrowRight className="h-4 w-4" /></LocalizedLink>
+                <LocalizedLink to="/contact">Vrijblijvend gesprek <ArrowRight className="h-4 w-4" /></LocalizedLink>
               </Button>
               <Button size="lg" variant="outline" className="bg-primary-foreground/10 text-primary-foreground border-primary-foreground/30 hover:bg-primary-foreground/20" asChild>
                 <a href="tel:0204573077"><Phone className="h-4 w-4" /> Bel 020 - 457 3077</a>

@@ -11,7 +11,7 @@ const schema = {
   "@type": "Service",
   "name": "Pensioen opbouwen voor ZZP'ers",
   "provider": { "@type": "Organization", "name": "ZP Zaken", "url": "https://zpzaken.nl" },
-  "description": "Als zzp'er zelf je pensioen regelen? ZP Zaken helpt je met de beste pensioenoplossing. Persoonlijk advies op maat.",
+  "description": "Als zzp'er zelf je pensioen regelen? ZP Zaken helpt je met de beste pensioenoplossing. Persoonlijk gesprek op maat.",
   "areaServed": "NL",
 };
 
@@ -19,7 +19,7 @@ export default function Pensioen() {
   return (
     <ServicePageTemplate
       seoTitle="ZZP Pensioen opbouwen | Advies & Oplossingen | ZP Zaken"
-      seoDescription="Als zzp'er zelf je pensioen regelen? ZP Zaken helpt je met de beste pensioenoplossing. Persoonlijk advies op maat."
+      seoDescription="Als zzp'er zelf je pensioen regelen? ZP Zaken helpt je met de beste pensioenoplossing. Persoonlijk gesprek op maat."
       canonicalPath="/pensioen"
       heroImage={teamHero}
       badge="Investeer in je toekomst"
@@ -76,8 +76,8 @@ export default function Pensioen() {
         },
       ]}
       ctaTitle="Start vandaag met pensioen opbouwen"
-      ctaSubtitle="Krijg advies over een pensioenplan dat bij je past."
-      ctaButton="Gratis pensioenadvies aanvragen"
+      ctaSubtitle="Plan een gesprek over een pensioenplan dat bij je past."
+      ctaButton="Pensioeninformatie aanvragen"
     />
   );
 }

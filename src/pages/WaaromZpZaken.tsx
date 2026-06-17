@@ -212,7 +212,7 @@ export default function WaaromZpZaken() {
         <div className="container-wide">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="max-w-3xl mx-auto text-center mb-12">
             <blockquote className="text-2xl md:text-3xl font-bold text-white leading-snug mb-2">
-              "Onafhankelijk advies betekent dat wij werken voor jou:  niet voor het platform, niet voor de verzekeraar, niet voor de opdrachtgever. Gewoon voor jou."
+              "Onafhankelijke bemiddeling betekent dat wij werken voor jou:  niet voor het platform, niet voor de verzekeraar, niet voor de opdrachtgever. Gewoon voor jou."
             </blockquote>
           </motion.div>
 

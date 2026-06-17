@@ -13,9 +13,9 @@ const POPUP_CONFIGS: Record<string, PopupConfig> = {
   "/verzekeringen": {
     badge: "Hulp nodig?",
     title: "Welk product past bij jou?",
-    body: "We hebben verzekeringen voor BAV, AOV, pensioen en zorg. Niet zeker welke je nodig hebt? Vraag advies.",
+    body: "We hebben verzekeringen voor BAV, AOV, pensioen en zorg. Niet zeker welke je nodig hebt? Neem contact op.",
     ctas: [
-      { label: "Vraag advies", href: "/contact", variant: "primary", icon: ArrowRight },
+      { label: "Neem contact op", href: "/contact", variant: "primary", icon: ArrowRight },
       { label: "Sluit", href: "#close", variant: "secondary" },
     ],
   },
@@ -40,7 +40,7 @@ const POPUP_CONFIGS: Record<string, PopupConfig> = {
     ],
   },
   "/pensioen": {
-    badge: "Pensioenadvies",
+    badge: "Pensioeninformatie",
     title: "Pensioenkeuzes voor zelfstandigen",
     body: "Je pensioen is belangrijk. Wij leggen graag in een gratis gesprek je opties uit.",
     ctas: [

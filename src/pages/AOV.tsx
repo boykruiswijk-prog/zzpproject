@@ -11,7 +11,7 @@ const schema = {
   "@type": "Service",
   "name": "AOV Arbeidsongeschiktheidsverzekering voor ZZP'ers",
   "provider": { "@type": "Organization", "name": "ZP Zaken", "url": "https://zpzaken.nl" },
-  "description": "Bescherm je inkomen als zzp'er bij ziekte. Vergelijk en sluit direct een AOV af via ZP Zaken. Persoonlijk advies, snel geregeld.",
+  "description": "Bescherm je inkomen als zzp'er bij ziekte. Vergelijk en sluit direct een AOV af via ZP Zaken. Persoonlijk gesprek, snel geregeld.",
   "areaServed": "NL",
 };
 
@@ -19,7 +19,7 @@ export default function AOV() {
   return (
     <ServicePageTemplate
       seoTitle="AOV Arbeidsongeschiktheidsverzekering ZZP | ZP Zaken"
-      seoDescription="Bescherm je inkomen als zzp'er bij ziekte. Vergelijk en sluit direct een AOV af via ZP Zaken. Persoonlijk advies, snel geregeld."
+      seoDescription="Bescherm je inkomen als zzp'er bij ziekte. Vergelijk en sluit direct een AOV af via ZP Zaken. Persoonlijk gesprek, snel geregeld."
       canonicalPath="/aov"
       heroImage={teamBoyCalling}
       badge="Bescherm je inkomen"
@@ -59,7 +59,7 @@ export default function AOV() {
           title: "Hoe werkt het afsluiten?",
           text: "Via ZP Zaken krijg je advies over de AOV die bij je past. We vergelijken verzekeraars en regelen een scherpe premie.",
           bullets: [
-            "Persoonlijk advies op maat",
+            "Persoonlijk gesprek op maat",
             "Vergelijking van top-verzekeraars",
             "Hulp bij acceptatie en medische keuring",
           ],
@@ -76,8 +76,8 @@ export default function AOV() {
         },
       ]}
       ctaTitle="Bescherm je inkomen als zelfstandige"
-      ctaSubtitle="Vraag advies aan en zie welke AOV bij je past."
-      ctaButton="Gratis AOV-advies aanvragen"
+      ctaSubtitle="Plan een gesprek en zie welke AOV bij je past."
+      ctaButton="AOV-informatie aanvragen"
     />
   );
 }
