@@ -84,7 +84,7 @@ serve(async (req) => {
         start_date:
           lead.ingangsdatum || new Date().toISOString().split("T")[0],
         profession: lead.beroep || "Onbekend",
-        package_type: lead.verzekering_type || "Combi Uitgebreid",
+        package_type: lead.verzekering_type || "BAV & AVB Jaarlijks",
       };
     }
 
@@ -98,7 +98,7 @@ serve(async (req) => {
         insured_name: data.insured_name,
         start_date: data.start_date,
         profession: data.profession,
-        package_type: data.package_type || "Combi Uitgebreid",
+        package_type: data.package_type || "BAV & AVB Jaarlijks",
         bav_per_event: data.bav_per_event || "€ 5.000.000",
         bav_per_year: data.bav_per_year || "€ 15.000.000",
         avb_per_event: data.avb_per_event || "€ 2.500.000",

@@ -86,7 +86,7 @@ serve(async (req) => {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const pkgName = lead.verzekering_type || "Combi Uitgebreid";
+      const pkgName = lead.verzekering_type || "BAV & AVB Jaarlijks";
       const isMonthly = lead.omzet === "maandelijks" || lead.omzet === "2";
       const priceMap = isMonthly ? packagePricesMonthly : packagePricesYearly;
       const priceExcl = priceMap[pkgName] || priceMap["Combi Uitgebreid"];
@@ -149,7 +149,7 @@ serve(async (req) => {
         client_city: data.client_city || null,
         kvk_nummer: data.kvk_nummer || null,
         description: data.description || "Combinatiepolis Beroeps- en Bedrijfsaansprakelijkheid",
-        package_type: data.package_type || "Combi Uitgebreid",
+        package_type: data.package_type || "BAV & AVB Jaarlijks",
         amount_excl_btw: amountExcl,
         btw_percentage: 0,
         btw_amount: 0,

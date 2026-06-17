@@ -106,7 +106,7 @@ export function BillingNotifications() {
               lead_id: lead.id,
               client_name: `${lead.voornaam} ${lead.achternaam}`,
               company_name: lead.bedrijfsnaam,
-              package_type: lead.verzekering_type || "Combi Uitgebreid",
+              package_type: lead.verzekering_type || "BAV & AVB Jaarlijks",
               betaalfrequentie: isMonthly ? "Maandelijks" : "Jaarlijks",
               period_start: periodStartStr,
               period_end: periodEndStr,
