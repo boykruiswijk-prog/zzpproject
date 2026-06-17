@@ -61,6 +61,8 @@ import Documenten from "./pages/Documenten";
 import SlotverklaringPage from "./pages/documenten/SlotverklaringPage";
 import DienstverleningsdocumentPage from "./pages/documenten/DienstverleningsdocumentPage";
 import GedragscodePage from "./pages/documenten/GedragscodePage";
+import OffertePage from "./pages/OffertePage";
+import OfferteBedankt from "./pages/OfferteBedankt";
 import MijnZpPolis from "./pages/mijn-zp/Certificaat";
 import MijnZpPauzeren from "./pages/mijn-zp/Pauzeren";
 import MijnZpDocumenten from "./pages/mijn-zp/Documenten";
@@ -179,6 +181,8 @@ const publicRoutes = (
     <Route path="social-media" element={<SocialMedia />} />
     <Route path="creditcontrol" element={<CreditControl />} />
     <Route path="screening" element={<Screening />} />
+    <Route path="offerte" element={<OffertePage />} />
+    <Route path="offerte/bedankt" element={<OfferteBedankt />} />
     <Route path="mijn-zp/polis" element={<MijnZpPolis />} />
     <Route path="mijn-zp/certificaat" element={<Navigate to="/mijn-zp/polis" replace />} />
     <Route path="mijn-zp/pauzeren" element={<MijnZpPauzeren />} />

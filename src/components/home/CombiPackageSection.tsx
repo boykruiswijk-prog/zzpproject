@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, Shield, ArrowRight } from "lucide-react";
 import { AnimatedSection, StaggerContainer, StaggerItem } from "@/components/ui/animated-section";
 import { LocalizedLink } from "@/components/LocalizedLink";
+import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
 import { bavPakketten } from "@/data/bavPakketten";
 import { cn } from "@/lib/utils";
 
@@ -132,14 +133,10 @@ export function CombiPackageSection() {
           })}
         </StaggerContainer>
 
-        <AnimatedSection delay={0.3} className="text-center">
-          <Button variant="outline" size="lg" asChild>
-            <LocalizedLink to="/diensten">
-              {t("home.bekijkAlleDiensten")}
-              <ArrowRight className="h-4 w-4" />
-            </LocalizedLink>
-          </Button>
+        <AnimatedSection delay={0.3} className="mt-12">
+          <ThreeOptionCTA />
         </AnimatedSection>
+
       </div>
     </section>
   );

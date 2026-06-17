@@ -11,6 +11,7 @@ import { IntermediaryCards } from "@/components/waarom/IntermediaryCards";
 import { BemiddelingSection } from "@/components/waarom/BemiddelingSection";
 import { FAQSection, faqSchema } from "@/components/waarom/FAQSection";
 import { GoogleReviewsSection } from "@/components/social-proof/GoogleReviewsSection";
+import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
 import teamHero from "@/assets/team-hero.jpg";
 
 const schema = {
@@ -97,14 +98,8 @@ export default function WaaromZpZaken() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="flex flex-wrap gap-4"
             >
-              <Button variant="accent" size="lg" asChild className="shadow-lg">
-                <a href="#rekentool">Bereken je besparing <ArrowRight className="h-5 w-5" /></a>
-              </Button>
-              <Button variant="heroOutline" size="lg" asChild>
-                <LocalizedLink to="/verzekeringen">Direct afsluiten</LocalizedLink>
-              </Button>
+              <ThreeOptionCTA variant="hero" showHelperText={false} className="sm:[&_>div]:justify-start" />
             </motion.div>
           </motion.div>
         </div>
