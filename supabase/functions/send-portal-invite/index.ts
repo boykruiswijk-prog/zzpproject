@@ -85,7 +85,7 @@ Deno.serve(async (req) => {
           <p style="font-size:13px;color:#666">Of kopieer deze link:<br/><span style="word-break:break-all">${acceptUrl}</span></p>
           <p style="font-size:13px;color:#666">Deze uitnodiging is 14 dagen geldig.</p>
           <hr style="border:none;border-top:1px solid #eee;margin:24px 0"/>
-          <p style="font-size:12px;color:#888">ZP Zaken B.V. — Zorgeloos ZZP'en</p>
+          <p style="font-size:12px;color:#888">ZP Zaken B.V. | Zorgeloos ZZP'en</p>
         </div>`;
 
       const emailRes = await fetch("https://api.resend.com/emails", {

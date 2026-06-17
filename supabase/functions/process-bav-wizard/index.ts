@@ -200,7 +200,7 @@ Deno.serve(async (req) => {
         .maybeSingle();
 
       if (!tokenRow) {
-        throw new Error("Geen Exact token aanwezig — autoriseer eerst via /admin/integraties");
+        throw new Error("Geen Exact token aanwezig. autoriseer eerst via /admin/integraties");
       }
 
       const expiresMs = new Date(tokenRow.expires_at).getTime();

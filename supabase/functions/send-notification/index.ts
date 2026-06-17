@@ -79,7 +79,7 @@ serve(async (req) => {
       emails.push({
         from,
         to: ["info@zpzaken.nl"],
-        subject: `Nieuwe BAV-aanmelding — ${payload.naam}`,
+        subject: `Nieuwe BAV-aanmelding: ${payload.naam}`,
         html: `
           <h2>Nieuwe BAV-aanmelding</h2>
           <table style="border-collapse:collapse;font-family:sans-serif;">
@@ -103,8 +103,8 @@ serve(async (req) => {
             <p>We hebben je BAV-aanmelding in goede orde ontvangen.</p>
             <p><strong>Wat kun je verwachten?</strong></p>
             <ul>
-              <li>Wij nemen binnen 24 uur contact met je op</li>
-              <li>Je ontvangt een persoonlijk adviesgesprek</li>
+              <li>Je krijgt binnen 24 uur bericht</li>
+              <li>We bellen je voor een kort adviesgesprek</li>
               <li>Na akkoord ben je direct verzekerd</li>
             </ul>
             <p>Heb je in de tussentijd vragen? Bel ons gerust op <strong>020 - 457 3077</strong> of mail naar <a href="mailto:info@zpzaken.nl">info@zpzaken.nl</a>.</p>

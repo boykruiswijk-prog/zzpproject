@@ -57,7 +57,7 @@ export default function Zorgverzekering() {
         {
           image: teamMeeting,
           title: "Welke verzekeraars zijn beschikbaar?",
-          text: "We werken samen met betrouwbare zorgverzekeraars die ruime keuze bieden in pakketten. Zo vind je altijd een verzekering die past bij jouw situatie en budget.",
+          text: "We werken samen met betrouwbare zorgverzekeraars die ruime keuze bieden in pakketten. Zo vind je een verzekering die bij je past.",
           bullets: [
             "Breed aanbod van zorgverzekeraars",
             "Vergelijking op maat door onze adviseurs",
@@ -67,7 +67,7 @@ export default function Zorgverzekering() {
         {
           image: officeFlowers,
           title: "Wanneer overstappen?",
-          text: "Elk jaar kun je in november en december overstappen naar een andere zorgverzekering. Wij herinneren je tijdig en helpen je met de overstap, zodat je altijd de beste deal hebt.",
+          text: "Elk jaar kun je in november en december overstappen naar een andere zorgverzekering. We herinneren je en helpen bij de overstap.",
           bullets: [
             "Overstapperiode: november – december",
             "Wij sturen je een herinnering",

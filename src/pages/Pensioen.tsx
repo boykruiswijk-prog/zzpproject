@@ -35,7 +35,7 @@ export default function Pensioen() {
         {
           icon: TrendingUp,
           title: "Flexibel beleggen",
-          description: "Kies zelf hoeveel risico je wilt nemen. Van defensief sparen tot offensief beleggen: afgestemd op jouw horizon en wensen.",
+          description: "Kies zelf hoeveel risico je wilt nemen. Van defensief sparen tot offensief beleggen, afgestemd op jouw situatie.",
         },
         {
           icon: CalendarCheck,
@@ -57,7 +57,7 @@ export default function Pensioen() {
         {
           image: teamWalking,
           title: "Welke opties heb je als ZZP'er?",
-          text: "Er zijn verschillende manieren om pensioen op te bouwen: via een lijfrenteverzekering, banksparen, beleggen of een combinatie. Wij helpen je de juiste keuze maken.",
+          text: "Er zijn verschillende manieren om pensioen op te bouwen: via een lijfrenteverzekering, banksparen, beleggen of een combinatie. Wij helpen je bij het kiezen.",
           bullets: [
             "Lijfrenteverzekering of banksparen",
             "Pensioen beleggen met vrije keuze",
@@ -76,7 +76,7 @@ export default function Pensioen() {
         },
       ]}
       ctaTitle="Start vandaag met pensioen opbouwen"
-      ctaSubtitle="Ontvang persoonlijk advies over de beste pensioenoplossing voor jouw situatie."
+      ctaSubtitle="Krijg advies over een pensioenplan dat bij je past."
       ctaButton="Gratis pensioenadvies aanvragen"
     />
   );

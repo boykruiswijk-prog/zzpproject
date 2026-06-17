@@ -30,7 +30,7 @@ export default function AOV() {
         {
           icon: Shield,
           title: "Inkomen beschermd",
-          description: "Ontvang een maandelijkse uitkering als je door ziekte of een ongeval niet kunt werken. Zo behoud je financiële zekerheid.",
+          description: "Ontvang een maandelijkse uitkering als je door ziekte of een ongeval niet kunt werken. Zo heb je financiële zekerheid.",
         },
         {
           icon: Clock,
@@ -57,7 +57,7 @@ export default function AOV() {
         {
           image: teamMeeting,
           title: "Hoe werkt het afsluiten?",
-          text: "Via ZP Zaken krijg je persoonlijk advies over de AOV die het beste bij jouw situatie past. We vergelijken de beste verzekeraars en zorgen voor een scherpe premie.",
+          text: "Via ZP Zaken krijg je advies over de AOV die bij je past. We vergelijken verzekeraars en regelen een scherpe premie.",
           bullets: [
             "Persoonlijk advies op maat",
             "Vergelijking van top-verzekeraars",
@@ -76,7 +76,7 @@ export default function AOV() {
         },
       ]}
       ctaTitle="Bescherm je inkomen als zelfstandige"
-      ctaSubtitle="Vraag vrijblijvend advies aan en ontdek welke AOV het beste bij jou past."
+      ctaSubtitle="Vraag advies aan en zie welke AOV bij je past."
       ctaButton="Gratis AOV-advies aanvragen"
     />
   );

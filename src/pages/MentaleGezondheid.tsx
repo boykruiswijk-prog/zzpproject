@@ -76,7 +76,7 @@ export default function MentaleGezondheid() {
         },
       ]}
       ctaTitle="Zorg goed voor jezelf als ondernemer"
-      ctaSubtitle="Neem contact op voor een vrijblijvend gesprek over mentale ondersteuning."
+      ctaSubtitle="Neem contact op voor een gesprek over mentale ondersteuning."
       ctaButton="Vrijblijvend gesprek aanvragen"
     />
   );
