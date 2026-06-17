@@ -63,7 +63,7 @@ export default function PortalInviteAccept() {
           {status === "success" && (
             <>
               <CheckCircle2 className="h-12 w-12 text-green-600 mx-auto" />
-              <p>Gelukt! Je wordt doorgestuurd…</p>
+              <p>Gelukt! Je wordt doorgestuurd...</p>
             </>
           )}
           {status === "error" && (

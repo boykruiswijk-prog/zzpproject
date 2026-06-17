@@ -79,7 +79,7 @@ export function SiteSearch() {
                 ref={inputRef}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Zoek op de website…"
+                placeholder="Zoek op de website..."
                 className="flex-1 bg-transparent outline-none text-base placeholder:text-muted-foreground"
               />
               <button

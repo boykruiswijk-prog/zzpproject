@@ -20,7 +20,7 @@ export default function DocumentenWizard() {
   return (
     <ServiceWizardShell
       type="documenten"
-      pageTitle="Documenten opvragen | Mijn ZP — ZP Zaken"
+      pageTitle="Documenten opvragen | Mijn ZP, ZP Zaken"
       pageDescription="Vraag eenvoudig je polisstukken op (polisblad, voorwaarden, premiebewijs). Binnen 24 uur per mail."
       introTitle="Documenten ontvangen"
       introText="Vraag je polisstukken op. Je ontvangt ze binnen 24 uur per mail."

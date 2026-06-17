@@ -32,7 +32,7 @@ export default function PolisWizard() {
                   value={details.doel ?? ""}
                   onChange={(e) => setDetails({ ...details, doel: e.target.value })}
                 >
-                  <option value="">— kies —</option>
+                  <option value="">- kies -</option>
                   <option>Opdrachtgever vraagt verzekeringsbewijs</option>
                   <option>Aanbesteding</option>
                   <option>Persoonlijk archief</option>

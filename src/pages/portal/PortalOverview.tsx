@@ -34,7 +34,7 @@ export default function PortalOverview() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {activePolicy ? activePolicy.package_type : "—"}
+                {activePolicy ? activePolicy.package_type : "-"}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
                 {activePolicy ? `Certificaat ${activePolicy.certificate_number}` : "Nog geen polis gekoppeld"}
@@ -66,7 +66,7 @@ export default function PortalOverview() {
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-sm text-foreground/80">
-              Via Onefellow — onderdeel van dezelfde eigenaren als ZP Zaken — word je gratis
+              Via Onefellow, onderdeel van dezelfde eigenaren als ZP Zaken. Je wordt gratis
               voorgesteld aan opdrachtgevers die op zoek zijn naar zelfstandige professionals. Geen
               tussenpartij die meedeelt in je tarief: de opdrachtgever betaalt, jij ontvangt je
               volledige uurtarief.

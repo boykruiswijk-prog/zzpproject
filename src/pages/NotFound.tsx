@@ -110,7 +110,7 @@ const NotFound = () => {
               Deze pagina bestaat niet meer
             </h1>
             <p className="text-lg text-muted-foreground mb-8">
-              Geen zorgen — je bent wel op de juiste plek voor zorgeloos ondernemen.
+              Geen zorgen, je bent wel op de juiste plek voor zorgeloos ondernemen.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button variant="accent" size="lg" asChild>

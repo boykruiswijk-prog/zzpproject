@@ -317,7 +317,7 @@ export default function CollectiefLedenorganisaties() {
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
-          <span className="text-xs tracking-widest uppercase">Ontdek meer</span>
+          <span className="text-xs tracking-widest uppercase">Meer informatie</span>
           <ArrowDown className="h-5 w-5" />
         </motion.button>
       </section>
@@ -671,7 +671,7 @@ export default function CollectiefLedenorganisaties() {
               transition={{ duration: 0.8 }}
             >
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white leading-tight mb-6">
-                Ontdek wat wij voor jouw leden
+                Onze service voor leden
                 <br />
                 <span className="bg-clip-text text-transparent" style={{
                   backgroundImage: "linear-gradient(135deg, hsl(213 60% 65%), hsl(250 50% 70%))"

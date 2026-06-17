@@ -298,7 +298,7 @@ export default function SocialMedia() {
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="mb-4 text-primary-foreground">Wil jij weten welke verzekering past bij jouw onderneming?</h2>
             <p className="text-lg text-primary-foreground/80 mb-8">
-              Plan een gratis adviesgesprek en ontdek binnen 15 minuten welke verzekeringen bij jouw situatie passen. Eerlijk, onafhankelijk en zonder verplichtingen.
+              Plan een gratis adviesgesprek en zie binnen 15 minuten welke verzekeringen bij jouw situatie passen. Eerlijk, onafhankelijk en zonder verplichtingen.
             </p>
             <div className="flex flex-wrap justify-center gap-4 mb-8">
               <Button variant="accent" size="lg" asChild>
