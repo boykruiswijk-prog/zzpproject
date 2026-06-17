@@ -20,10 +20,10 @@ export default function PauzerenWizard() {
   return (
     <ServiceWizardShell
       type="pauzeren"
-      pageTitle="Verzekering pauzeren | Mijn ZP — ZP Zaken"
+      pageTitle="Verzekering pauzeren | Mijn ZP, ZP Zaken"
       pageDescription="Pauzeer tijdelijk je BAV/AVB. Je uitlooprisico blijft behouden. Binnen 24 uur verwerkt."
       introTitle="Verzekering pauzeren"
-      introText="Tijdelijk geen opdracht of in loondienst? Pauzeer je verzekering eenvoudig — je uitlooprisico blijft behouden."
+      introText="Tijdelijk geen opdracht of in loondienst? Pauzeer je verzekering: je uitlooprisico blijft behouden."
       steps={[
         {
           title: "Identificatie",

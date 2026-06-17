@@ -153,7 +153,7 @@ export default function Screening() {
     <Layout>
       <SEOHead
         title="Start je screening | ZP Zaken"
-        description="Bewijs je betrouwbaarheid aan opdrachtgevers met een professionele screening. Vraag binnen enkele minuten je screening aan via ZP Zaken."
+        description="Laat zien dat je betrouwbaar bent met een screening. Vraag binnen enkele minuten je screening aan via ZP Zaken."
       />
       <PageHero
         title={<>Start je <span className="text-accent">screening</span></>}
@@ -316,7 +316,7 @@ export default function Screening() {
 
                     <div className="bg-secondary rounded-lg p-4 text-sm text-muted-foreground space-y-3">
                       <p>
-                        Alle screenings worden uitgevoerd via Otentica — ISO 27001 gecertificeerd specialist in geautomatiseerde screening. Na je aanvraag ontvang je binnen 24 uur een uitnodiging om de screening digitaal te doorlopen. Gemiddelde doorlooptijd: 1 tot 3 werkdagen.
+                        Alle screenings worden uitgevoerd via Otentica — ISO 27001 gecertificeerd partner voor screening. Na je aanvraag ontvang je binnen 24 uur een uitnodiging om de screening digitaal te doorlopen. Gemiddelde doorlooptijd: 1 tot 3 werkdagen.
                       </p>
                       <div className="flex flex-wrap gap-2">
                         <span className="inline-flex items-center gap-1 bg-background border border-border rounded-full px-3 py-1 text-xs font-medium text-foreground">

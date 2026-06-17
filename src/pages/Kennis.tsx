@@ -36,7 +36,7 @@ const articles = [
 const faqs = [
   {
     question: "Heb ik als zzp'er verzekeringen nodig?",
-    answer: "Dat hangt af van je beroep en situatie. Een beroepsaansprakelijkheidsverzekering is vaak verplicht of sterk aanbevolen, vooral in de IT, zorg en consultancy. Een arbeidsongeschiktheidsverzekering is niet verplicht, maar wel verstandig omdat je als zzp'er geen WIA opbouwt.",
+    answer: "Dat hangt af van je beroep en situatie. Een beroepsaansprakelijkheidsverzekering is vaak verplicht of aangeraden, vooral in de IT, zorg en consultancy. Een arbeidsongeschiktheidsverzekering is niet verplicht, maar wel verstandig omdat je als zzp'er geen WIA opbouwt.",
   },
   {
     question: "Wat kost een adviesgesprek?",
@@ -48,11 +48,11 @@ const faqs = [
   },
   {
     question: "Kan ik mijn huidige verzekeringen laten checken?",
-    answer: "Ja, dat kan! We kijken graag naar je huidige polissen en adviseren of de dekking nog past bij je situatie. Soms kun je besparen of juist beter gedekt worden.",
+    answer: "Ja, dat kan! We kijken graag naar je huidige polissen en adviseren of de dekking nog past bij je situatie. Vaak kun je besparen of de dekking verbeteren.",
   },
   {
     question: "Zijn jullie onafhankelijk?",
-    answer: "Ja, wij zijn volledig onafhankelijk en niet gebonden aan één verzekeraar. We vergelijken aanbiedingen van verschillende verzekeraars en adviseren wat het beste bij jou past.",
+    answer: "Ja, wij zijn volledig onafhankelijk en niet gebonden aan één verzekeraar. We vergelijken aanbiedingen van verschillende verzekeraars en adviseren over de passende dekking.",
   },
   {
     question: "Wat als mijn situatie verandert?",
@@ -65,7 +65,7 @@ export default function Kennis() {
     <Layout>
       <SEOHead
         title="Kennis & Advies voor ZZP'ers | ZP Zaken"
-        description="Handige informatie over verzekeringen, ondernemerschap en alles wat je als zzp'er moet weten. Geen jargon, wel duidelijke taal."
+        description="Handige informatie over verzekeringen, ondernemerschap en alles wat je als zzp'er moet weten. Duidelijke uitleg zonder jargon."
       />
       {/* Hero */}
       <section className="bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground py-16 md:py-24">
@@ -76,7 +76,7 @@ export default function Kennis() {
             </h1>
             <p className="text-lg md:text-xl text-primary-foreground/80 mb-8">
               Handige informatie over verzekeringen, ondernemerschap en alles wat je als 
-              zzp'er moet weten. Geen jargon, wel duidelijke taal.
+              zzp'er moet weten. Duidelijke uitleg zonder jargon.
             </p>
           </div>
         </div>
@@ -113,7 +113,7 @@ export default function Kennis() {
 
           <div className="text-center">
             <p className="text-muted-foreground mb-4">
-              Meer artikelen worden binnenkort toegevoegd.
+              Binnenkort meer artikelen.
             </p>
           </div>
         </div>

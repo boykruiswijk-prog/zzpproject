@@ -117,7 +117,7 @@ serve(async (req) => {
       emails.push({
         from,
         to: ["info@zpzaken.nl"],
-        subject: `Nieuw contactverzoek via zpzaken — ${payload.naam}`,
+        subject: `Nieuw contactverzoek via zpzaken: ${payload.naam}`,
         html: `
           <h2>Nieuw contactverzoek</h2>
           <table style="border-collapse:collapse;font-family:sans-serif;">

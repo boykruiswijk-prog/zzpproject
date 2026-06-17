@@ -4,11 +4,11 @@ import { PageHero } from "@/components/layout/PageHero";
 import { MessageSquare, Phone, Mail, Scale, Shield, CheckCircle2 } from "lucide-react";
 
 const tocItems = [
-  { id: "stap-1", label: "Stap 1 — Neem contact met ons op" },
-  { id: "stap-2", label: "Stap 2 — Wij behandelen uw klacht" },
-  { id: "stap-3", label: "Stap 3 — Kifid als externe klachteninstantie" },
-  { id: "stap-4", label: "Stap 4 — Geschil voorleggen aan de rechter" },
-  { id: "belofte", label: "Onze belofte aan u" },
+  { id: "stap-1", label: "Stap 1: Neem contact met ons op" },
+  { id: "stap-2", label: "Stap 2: Wij behandelen de klacht" },
+  { id: "stap-3", label: "Stap 3: Kifid als externe klachteninstantie" },
+  { id: "stap-4", label: "Stap 4: Geschil voorleggen aan de rechter" },
+  { id: "belofte", label: "Onze belofte" },
   { id: "contact", label: "Contactgegevens" },
 ];
 
@@ -40,7 +40,7 @@ export default function Klachtenprocedure() {
         <div className="container-wide">
           <div className="max-w-3xl mx-auto">
             <p className="text-lg text-muted-foreground leading-relaxed">
-              ZP Zaken B.V. hecht groot belang aan de tevredenheid van haar klanten. Bent u niet tevreden over onze dienstverlening? Dan horen wij dat graag. Wij behandelen uw klacht serieus, vertrouwelijk en zo snel mogelijk. ZP Zaken is geregistreerd bij de Autoriteit Financiële Markten (AFM) onder vergunningsnummer <strong>12050636</strong> en aangesloten bij het Klachteninstituut Financiële Dienstverlening (Kifid).
+              ZP Zaken B.V. vindt het belangrijk de tevredenheid van haar klanten. Bent u niet tevreden over onze dienstverlening? Dan horen wij dat graag. Wij behandelen uw klacht serieus, vertrouwelijk en zo snel mogelijk. ZP Zaken is geregistreerd bij de Autoriteit Financiële Markten (AFM) onder vergunningsnummer <strong>12050636</strong> en aangesloten bij het Klachteninstituut Financiële Dienstverlening (Kifid).
             </p>
           </div>
         </div>
@@ -70,7 +70,7 @@ export default function Klachtenprocedure() {
       <section className="section-padding bg-background">
         <div className="container-wide">
           <div className="max-w-3xl mx-auto space-y-16">
-            <Section id="stap-1" title="Stap 1 — Neem contact met ons op">
+            <Section id="stap-1" title="Stap 1: Neem contact met ons op">
               <p>Dien uw klacht eerst in bij ZP Zaken zelf. Dat kan op de volgende manieren:</p>
               <div className="grid sm:grid-cols-3 gap-4 not-prose pt-2">
                 <div className="bg-card rounded-xl border border-border/50 p-4 shadow-card">
@@ -105,7 +105,7 @@ export default function Klachtenprocedure() {
               </ul>
             </Section>
 
-            <Section id="stap-2" title="Stap 2 — Wij behandelen uw klacht">
+            <Section id="stap-2" title="Stap 2: Wij behandelen de klacht">
               <p>Na ontvangst van uw klacht ontvangt u binnen <strong>5 werkdagen</strong> een schriftelijke ontvangstbevestiging.</p>
               <p>Wij streven ernaar uw klacht binnen <strong>6 weken</strong> volledig te behandelen. Indien dit niet mogelijk is, ontvangt u hierover tijdig bericht met een indicatie van de nieuwe verwachte afdoeningtermijn.</p>
               <p>U ontvangt onze reactie schriftelijk, met daarin:</p>
@@ -123,7 +123,7 @@ export default function Klachtenprocedure() {
               </ul>
             </Section>
 
-            <Section id="stap-3" title="Stap 3 — Kifid als externe klachteninstantie">
+            <Section id="stap-3" title="Stap 3: Kifid als externe klachteninstantie">
               <p>Bent u niet tevreden met de uitkomst van onze klachtbehandeling, of heeft u na 6 weken nog geen reactie ontvangen? Dan kunt u uw klacht voorleggen aan het Klachteninstituut Financiële Dienstverlening (Kifid).</p>
               <p>Kifid is een onafhankelijke instantie die geschillen behandelt tussen consumenten en financiële dienstverleners.</p>
               <div className="bg-secondary rounded-xl p-6 mt-2 text-sm space-y-1">
@@ -142,12 +142,12 @@ export default function Klachtenprocedure() {
               </p>
             </Section>
 
-            <Section id="stap-4" title="Stap 4 — Geschil voorleggen aan de rechter">
+            <Section id="stap-4" title="Stap 4: Geschil voorleggen aan de rechter">
               <p>U heeft ook altijd het recht om uw klacht voor te leggen aan de bevoegde rechter, ongeacht of u gebruik heeft gemaakt van de Kifid-procedure.</p>
               <p>Op alle geschillen tussen ZP Zaken en haar klanten is Nederlands recht van toepassing.</p>
             </Section>
 
-            <Section id="belofte" title="Onze belofte aan u">
+            <Section id="belofte" title="Onze belofte">
               <p>Wij behandelen elke klacht:</p>
               <div className="grid sm:grid-cols-2 gap-3 not-prose pt-2">
                 {[

@@ -53,7 +53,7 @@ const InlineCTA = () => (
       Direct geregeld
     </div>
     <h3 className="text-lg font-bold mb-1 text-foreground">
-      Sluit nu direct online af — vanaf €30/maand
+      Sluit direct online af vanaf €30 per maand
     </h3>
     <p className="text-sm text-muted-foreground mb-4">
       Geen eigen risico. Dagelijks opzegbaar. BAV + AVB gecombineerd.
@@ -304,7 +304,7 @@ export default function ArtikelDetail() {
           {/* CTA-blok */}
           <div className="mt-12 rounded-2xl p-7 md:p-9 text-white" style={{ background: "linear-gradient(135deg, #1f2937 0%, #0f172a 100%)" }}>
             <h3 className="text-2xl font-bold mb-2">Vragen na het lezen?</h3>
-            <p className="text-white/80 mb-6">Onze specialisten helpen je graag verder. Bel ons of stuur een mail — meestal binnen 24 uur antwoord.</p>
+            <p className="text-white/80 mb-6">Heb je vragen? Bel of mail ons voor een reactie binnen 24 uur.</p>
             <div className="flex flex-col sm:flex-row gap-3">
               <a href="tel:0204573077" className="inline-flex items-center justify-center gap-2 bg-accent hover:opacity-90 text-accent-foreground px-5 py-3 rounded-lg font-semibold transition">
                 <Phone className="h-4 w-4" /> Bel 020 - 457 3077

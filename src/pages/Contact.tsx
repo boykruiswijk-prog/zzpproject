@@ -167,9 +167,9 @@ export default function Contact() {
                 />
                 <div className="p-6">
                   <p className="font-semibold text-foreground">Ellen Baars</p>
-                  <p className="text-sm text-accent mb-3">Senior Adviseur — ZP Zaken</p>
+                  <p className="text-sm text-accent mb-3">Senior Adviseur :  ZP Zaken</p>
                   <p className="text-sm text-muted-foreground">
-                    Ik help je graag bij het vinden van de juiste verzekering. Neem gerust contact op — ik reageer binnen 24 uur.
+                    Ik help je graag bij het vinden van de juiste verzekering. Neem gerust contact op :  ik reageer binnen 24 uur.
                   </p>
                 </div>
               </div>

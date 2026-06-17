@@ -11,10 +11,10 @@ export default function PolisWizard() {
   return (
     <ServiceWizardShell
       type="certificaat"
-      pageTitle="Polis opvragen | Mijn ZP — ZP Zaken"
+      pageTitle="Polis opvragen | Mijn ZP, ZP Zaken"
       pageDescription="Vraag een verzekeringspolis (BAV/AVB) aan via Mijn ZP. Binnen 24 uur per mail."
       introTitle="Polis opvragen"
-      introText="Heb je een verzekeringspolis nodig voor een opdrachtgever? Vul de wizard in — we sturen hem binnen 24 uur op."
+      introText="Heb je een verzekeringspolis nodig voor een opdrachtgever? Vul het formulier in. We sturen hem binnen 24 uur op."
       steps={[
         {
           title: "Identificatie",

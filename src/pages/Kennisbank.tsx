@@ -29,7 +29,7 @@ export default function Kennisbank() {
     <Layout>
       <Helmet>
         <title>Kennisbank ZZP Verzekeringen | Artikelen & Nieuws | ZP Zaken</title>
-        <meta name="description" content="Blijf op de hoogte van wet DBA, verzekeringen en regelgeving voor zzp'ers. Praktische artikelen geschreven door specialisten met 13 jaar marktkennis." />
+        <meta name="description" content="Blijf op de hoogte van wet DBA, verzekeringen en regelgeving voor zzp'ers. Praktische artikelen door specialisten met 13 jaar marktkennis." />
         <link rel="canonical" href="https://zpzaken.nl/kennisbank" />
       </Helmet>
 
@@ -44,7 +44,7 @@ export default function Kennisbank() {
         <div className="container-wide">
           <div className="max-w-2xl mx-auto text-center mb-10">
             <h2 className="text-2xl md:text-3xl font-bold mb-3">Categorieën</h2>
-            <p className="text-muted-foreground">Blader door onze thema-pagina's.</p>
+            <p className="text-muted-foreground">Bekijk de thema-pagina's.</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
             {categoryCards.map((c) => (
@@ -130,7 +130,7 @@ export default function Kennisbank() {
             <LocalizedLink to="/verzekeringen#combinatiepolis" className="bg-card border border-border/50 rounded-xl p-6 hover:border-accent/30 hover:shadow-md transition-all group">
               <Shield className="h-6 w-6 text-accent mb-3" />
               <h3 className="font-semibold text-sm mb-1 group-hover:text-accent transition-colors">BAV + AVB Combinatiepolis</h3>
-              <p className="text-xs text-muted-foreground">Onze unieke bundel voor kantoorberoepen — vanaf €20/maand</p>
+              <p className="text-xs text-muted-foreground">Onze bundel voor kantoorberoepen vanaf €20 per maand</p>
             </LocalizedLink>
             <LocalizedLink to="/faq" className="bg-card border border-border/50 rounded-xl p-6 hover:border-accent/30 hover:shadow-md transition-all group">
               <Shield className="h-6 w-6 text-accent mb-3" />

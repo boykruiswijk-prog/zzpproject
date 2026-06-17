@@ -174,7 +174,7 @@ export default function Documenten() {
               Vragen over een document?
             </h2>
             <p className="text-background/70 mb-8">
-              Onze specialisten beantwoorden je vragen graag.
+              We beantwoorden je vragen graag.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button variant="accent" asChild>

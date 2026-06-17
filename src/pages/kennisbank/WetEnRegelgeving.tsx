@@ -8,7 +8,7 @@ export default function KennisbankWetEnRegelgeving() {
       intro="Alles over Wet DBA, zelfstandigenregelingen en juridische aspecten van het ondernemen als zzp'er."
       categoryTags={["Wetgeving", "Regelgeving"]}
       metaTitle="Wet en regelgeving voor ZZP'ers | Kennisbank | ZP Zaken"
-      metaDescription="Wet DBA, zelfstandigenregelingen en juridische zaken voor zzp'ers — uitgelegd door specialisten. Lees praktische artikelen in onze kennisbank."
+      metaDescription="Wet DBA, zelfstandigenregelingen en juridische zaken voor zzp'ers, uitgelegd door specialisten. Lees praktische artikelen in onze kennisbank."
     />
   );
 }

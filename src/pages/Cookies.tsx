@@ -10,7 +10,7 @@ const cookieTypes = [
   {
     icon: Shield,
     title: "Noodzakelijke cookies",
-    description: "Deze cookies zijn essentieel voor de basisfunctionaliteit van de website. Zonder deze cookies kan de website niet correct functioneren. Ze worden gebruikt voor:",
+    description: "Deze cookies zijn nodig voor de website. Zonder deze cookies kan de website niet correct functioneren. Ze worden gebruikt voor:",
     items: [
       "Onthouden van je cookie-voorkeuren",
       "Beveiligen van formulieren tegen misbruik",
@@ -26,7 +26,7 @@ const cookieTypes = [
     items: [
       "Meten van bezoekersaantallen",
       "Analyseren van gebruikersgedrag",
-      "Verbeteren van de gebruikerservaring",
+      "Verbeteren van de website",
       "Identificeren van populaire pagina's",
     ],
     canDisable: true,
@@ -83,7 +83,7 @@ export default function Cookies() {
       />
       <PageHero
         title="Cookiebeleid"
-        subtitle="Transparantie over hoe wij cookies gebruiken om jouw ervaring te verbeteren."
+        subtitle="Hoe we cookies gebruiken."
         badge={{
           icon: <Cookie className="h-4 w-4" />,
           text: "Privacy & Cookies"

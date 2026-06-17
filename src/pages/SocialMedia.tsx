@@ -17,7 +17,7 @@ import teamWalking from "@/assets/team-walking.jpg";
 import teamCheers from "@/assets/team-cheers.jpg";
 
 const trustPoints = [
-  { icon: Users, title: "Directe benadering", description: "Geen onnodige tussenpartijen — je spreekt direct met een adviseur die jouw situatie begrijpt." },
+  { icon: Users, title: "Directe benadering", description: "Geen onnodige tussenpartijen :  je spreekt direct met een adviseur die jouw situatie begrijpt." },
   { icon: Shield, title: "Specialist in aansprakelijkheid", description: "Beroeps- én bedrijfsaansprakelijkheid onder één dak, met onze unieke BAV+AVB combinatiepolis." },
   { icon: CheckCircle, title: "Transparant advies", description: "Eerlijk, onafhankelijk advies zonder verborgen kosten. Wij adviseren alleen wat je écht nodig hebt." },
   { icon: Star, title: "Persoonlijke begeleiding", description: "Een team dat klaarstaat. Altijd een mens aan de lijn, nooit een callcenter." },
@@ -117,13 +117,13 @@ export default function SocialMedia() {
             <h2 className="mb-6">Waarom online zichtbaarheid belangrijk is voor <span className="text-primary">zzp'ers</span></h2>
             <div className="prose prose-lg text-muted-foreground space-y-4">
               <p>
-                Als zelfstandig ondernemer is het essentieel om op de hoogte te blijven van ontwikkelingen rondom <strong>zzp verzekeringen</strong>, <strong>aansprakelijkheid</strong> en wet- en regelgeving. De wereld van ondernemerschap verandert snel — en de risico's veranderen mee.
+                Als zelfstandig ondernemer is het essentieel om op de hoogte te blijven van ontwikkelingen rondom <strong>zzp verzekeringen</strong>, <strong>aansprakelijkheid</strong> en wet- en regelgeving. De wereld van ondernemerschap verandert snel :  en de risico's veranderen mee.
               </p>
               <p>
                 Bij ZP Zaken geloven we dat kennis delen de basis is van goed ondernemerschap. Via onze social media kanalen delen we praktische tips, updates over <strong>beroepsaansprakelijkheid</strong> en <strong>bedrijfsaansprakelijkheid</strong>, en inzichten die je helpen om weloverwogen beslissingen te nemen over je <strong>ondernemersrisico</strong>.
               </p>
               <p>
-                Of je nu net start als zzp'er of al jaren zelfstandig bent: door ons te volgen blijf je altijd een stap voor. Zo kun je focussen op wat je het beste doet — je vak uitoefenen — terwijl wij je helpen de risico's te beperken.
+                Of je nu net start als zzp'er of al jaren zelfstandig bent: door ons te volgen blijf je altijd een stap voor. Zo kun je focussen op wat je het beste doet :  je vak uitoefenen :  terwijl wij je helpen de risico's te beperken.
               </p>
             </div>
           </div>

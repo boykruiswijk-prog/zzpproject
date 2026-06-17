@@ -19,7 +19,7 @@ const schema = {
     {
       "@type": "WebPage",
       "name": "Waarom betaal je een tussenpersoon voor jouw verzekering? | ZP Zaken",
-      "description": "ZP Zaken was de verzekeringsspecialist achter grote intermediairs. Nu sluit je direct bij ons af. Bereken hoeveel je bespaart — vaak meer dan €600 per jaar.",
+      "description": "ZP Zaken was de verzekeringsspecialist achter grote intermediairs. Nu sluit je direct bij ons af. Bereken hoeveel je bespaart :  vaak meer dan €600 per jaar.",
       "url": "https://zpzaken.nl/waarom-zp-zaken",
       "provider": { "@type": "Organization", "name": "ZP Zaken", "url": "https://zpzaken.nl" },
     },
@@ -44,17 +44,17 @@ const diffBlocks = [
   {
     icon: Shield,
     title: "Verzekerd ook als je even niet werkt",
-    text: "Een intermediair koppelt je dekking aan een lopende opdracht. Tussen twee opdrachten in? Dan ben je onverzekerd — precies op het moment dat je kwetsbaar bent. Bij ZP Zaken loop je een vaste maandpolis. Dagelijks opzegbaar, maar nooit automatisch gestopt. Jij bepaalt wanneer je stopt, niet je opdrachtgever.",
+    text: "Een intermediair koppelt je dekking aan een lopende opdracht. Tussen twee opdrachten in? Dan ben je onverzekerd :  precies op het moment dat je kwetsbaar bent. Bij ZP Zaken loop je een vaste maandpolis. Dagelijks opzegbaar, maar nooit automatisch gestopt. Jij bepaalt wanneer je stopt, niet je opdrachtgever.",
   },
   {
     icon: Users,
-    title: "5.000+ zzp'ers delen de premie — jij profiteert",
-    text: "ZP Zaken werkt met een mantelovereenkomst. Dat betekent dat het verzekerde bedrag gedeeld wordt over duizenden zelfstandigen tegelijk. Daardoor kan de premie structureel laag blijven — niet als tijdelijke aanbieding, maar als permanent voordeel. Een intermediair koopt individueel in en telt zijn marge bovenop. Dat verschil betaal jij.",
+    title: "5.000+ zzp'ers delen de premie :  jij profiteert",
+    text: "ZP Zaken werkt met een mantelovereenkomst. Dat betekent dat het verzekerde bedrag gedeeld wordt over duizenden zelfstandigen tegelijk. Daardoor kan de premie structureel laag blijven :  niet als tijdelijke aanbieding, maar als permanent voordeel. Een intermediair koopt individueel in en telt zijn marge bovenop. Dat verschil betaal jij.",
   },
   {
     icon: KeyRound,
-    title: "Jij beheert je polis — niemand anders",
-    text: "Via een intermediair zit je verzekeringsrelatie ingebed in een groter contract. Aanpassen, opzeggen of upgraden? Dat gaat via hun administratie, op hun tijdlijn. Bij ZP Zaken log je direct in op Mijn ZP Zaken en regel je alles zelf — direct, zonder tussenkomst.",
+    title: "Jij beheert je polis :  niemand anders",
+    text: "Via een intermediair zit je verzekeringsrelatie ingebed in een groter contract. Aanpassen, opzeggen of upgraden? Dat gaat via hun administratie, op hun tijdlijn. Bij ZP Zaken log je direct in op Mijn ZP Zaken en regel je alles zelf :  direct, zonder tussenkomst.",
   },
 ];
 
@@ -91,7 +91,7 @@ export default function WaaromZpZaken() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="text-lg md:text-xl text-primary-foreground/80 mb-8 max-w-2xl"
             >
-              ZP Zaken is de enige verzekeringsadviseur die BAV en AVB combineert in één polis — direct voor jou als zzp'er, bij elke opdrachtgever en via elke bemiddelaar. Zonder platform, zonder opslag, zonder afhankelijkheid.
+              ZP Zaken is de enige verzekeringsadviseur die BAV en AVB combineert in één polis :  direct voor jou als zzp'er, bij elke opdrachtgever en via elke bemiddelaar. Zonder platform, zonder opslag, zonder afhankelijkheid.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -119,7 +119,7 @@ export default function WaaromZpZaken() {
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center mb-12 max-w-3xl mx-auto">
             <h2 className="mb-4">Wat betaal jij werkelijk voor jouw verzekering?</h2>
             <p className="text-muted-foreground">
-              Bereken en vergelijk — kies je situatie en zie direct het verschil.
+              Bereken en vergelijk :  kies je situatie en zie direct het verschil.
             </p>
           </motion.div>
           <SavingsCalculator />
@@ -136,7 +136,7 @@ export default function WaaromZpZaken() {
       <section className="section-padding bg-secondary">
         <div className="container-wide">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center mb-12">
-            <h2 className="mb-4">Meer dan prijs alleen — dit is wat je terugwint</h2>
+            <h2 className="mb-4">Meer dan prijs alleen :  dit is wat je terugwint</h2>
           </motion.div>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {diffBlocks.map((block, i) => (
@@ -163,7 +163,7 @@ export default function WaaromZpZaken() {
       <section className="section-padding bg-background">
         <div className="container-wide">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center mb-12">
-            <h2 className="mb-4">Onze pakketten — transparant en compleet</h2>
+            <h2 className="mb-4">Onze pakketten :  transparant en compleet</h2>
           </motion.div>
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-8">
             {packages.map((pkg, i) => (
@@ -217,7 +217,7 @@ export default function WaaromZpZaken() {
         <div className="container-wide">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="max-w-3xl mx-auto text-center mb-12">
             <blockquote className="text-2xl md:text-3xl font-bold text-white leading-snug mb-2">
-              "Onafhankelijk advies betekent dat wij werken voor jou — niet voor het platform, niet voor de verzekeraar, niet voor de opdrachtgever. Gewoon voor jou."
+              "Onafhankelijk advies betekent dat wij werken voor jou :  niet voor het platform, niet voor de verzekeraar, niet voor de opdrachtgever. Gewoon voor jou."
             </blockquote>
           </motion.div>
 

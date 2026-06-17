@@ -77,10 +77,10 @@ export default function OverOns() {
               </div>
               <h2 className="mb-4">Boy Kruiswijk</h2>
               <p className="text-lg text-muted-foreground mb-4">
-                "Meer dan 13 jaar geleden zag ik dat zzp'ers niet dezelfde zekerheid kregen als werknemers. Dat moest anders. Ik ontwikkelde de eerste gecombineerde BAV+AVB polis in Nederland — speciaal voor zelfstandig professionals."
+                "Meer dan 13 jaar geleden zag ik dat zzp'ers niet dezelfde zekerheid kregen als werknemers. Dat moest anders. Ik ontwikkelde de eerste gecombineerde BAV+AVB polis in Nederland , speciaal voor zelfstandig professionals."
               </p>
               <p className="text-lg text-muted-foreground mb-6">
-                Zijn visie: iedere ondernemer goed en zorgeloos verzekerd, met persoonlijk contact en eerlijk advies. Geen callcenters, geen verkooppraatjes — gewoon een partner die met je meedenkt.
+                Zijn visie: iedere ondernemer goed en zorgeloos verzekerd, met persoonlijk contact en eerlijk advies. Geen callcenters, geen verkooppraatjes , gewoon een partner die met je meedenkt.
               </p>
               <div className="flex flex-wrap gap-2">
                 {["13+ jaar ervaring", "Bedenker unieke BAV+AVB polis", "NEN-gecertificeerd", "AFM geregistreerd"].map((tag) => (
@@ -99,7 +99,7 @@ export default function OverOns() {
                   <blockquote className="text-lg font-medium mb-2 text-foreground italic">
                     "Zzp'ers verdienen dezelfde zekerheid als werknemers, maar dan op een manier die past bij het ondernemersleven."
                   </blockquote>
-                  <p className="text-sm text-muted-foreground">— Boy Kruiswijk, Oprichter ZP Zaken</p>
+                  <p className="text-sm text-muted-foreground">, Boy Kruiswijk, Oprichter ZP Zaken</p>
                 </div>
               </div>
             </div>

@@ -106,7 +106,7 @@ export default function CreditControl() {
   const cases = [
     {
       title: "Failliete broker",
-      text: "Een bemiddelaar factureert bij de opdrachtgever, factorert de omzet, gebruikt het geld als werkkapitaal en gaat vervolgens failliet. ZZP'ers wachten maanden — of verliezen hun geld volledig.",
+      text: "Een bemiddelaar factureert bij de opdrachtgever, factorert de omzet, gebruikt het geld als werkkapitaal en gaat vervolgens failliet. ZZP'ers wachten maanden :  of verliezen hun geld volledig.",
     },
     {
       title: "Dubbele afhankelijkheid",
@@ -114,7 +114,7 @@ export default function CreditControl() {
     },
     {
       title: "Onzichtbare factoring",
-      text: "ZZP'er ontdekt pas achteraf dat facturen structureel zijn gefactord tegen hoge kosten — zonder inspraak of transparantie.",
+      text: "ZZP'er ontdekt pas achteraf dat facturen structureel zijn gefactord tegen hoge kosten :  zonder inspraak of transparantie.",
     },
   ];
 
@@ -148,7 +148,7 @@ export default function CreditControl() {
   return (
     <Layout>
       <Helmet>
-        <title>CreditControl — Eerder betaald, volledige zekerheid | ZP Zaken</title>
+        <title>CreditControl :  Eerder betaald, volledige zekerheid | ZP Zaken</title>
         <meta
           name="description"
           content="ZP Zaken CreditControl: eerder betaald worden als ZZP'er met volledige zekerheid. Bescherming tegen faillissement, transparante factoring en 100% regie."
