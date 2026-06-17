@@ -1,6 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import { Resend } from "npm:resend@4.0.0";
 import { z } from "npm:zod@3.23.8";
+import { maybeFormatDate } from "../_shared/dateFormat.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
