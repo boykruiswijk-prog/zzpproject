@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { formatDateNL } from "@/lib/dateFormat";
 import { useParams, Link } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useDbaCheck, useAnalyzeDba } from "@/hooks/useDbaChecks";
@@ -513,7 +514,7 @@ export default function DbaCheckDetail() {
                         <div>
                           <p className="font-medium text-orange-800">Polis ouder dan 1 jaar</p>
                           <p className="text-sm text-orange-700 mt-1">
-                            De polis is gedateerd op {insurancePolicyDate ? new Date(insurancePolicyDate).toLocaleDateString("nl-NL") : "onbekend"}.
+                            De polis is gedateerd op {insurancePolicyDate ? formatDateNL(insurancePolicyDate) : "onbekend"}.
                             Vraag een actuele polis op (niet ouder dan 1 jaar).
                           </p>
                         </div>
@@ -527,7 +528,7 @@ export default function DbaCheckDetail() {
                         <div>
                           <p className="font-medium text-green-800">Polis is actueel</p>
                           <p className="text-sm text-green-700 mt-1">
-                            Gedateerd op {new Date(insurancePolicyDate).toLocaleDateString("nl-NL")} — niet ouder dan 1 jaar.
+                            Gedateerd op {formatDateNL(insurancePolicyDate)} — niet ouder dan 1 jaar.
                           </p>
                         </div>
                       </div>
@@ -678,7 +679,7 @@ export default function DbaCheckDetail() {
                             <div>
                               <p className="font-medium text-orange-800">KVK-uittreksel ouder dan 3 maanden</p>
                               <p className="text-sm text-orange-700 mt-1">
-                                Het KVK-uittreksel is gedateerd op {check.kvk_check_result.kvk_extract_date ? new Date(check.kvk_check_result.kvk_extract_date).toLocaleDateString("nl-NL") : "onbekend"}.
+                                Het KVK-uittreksel is gedateerd op {check.kvk_check_result.kvk_extract_date ? formatDateNL(check.kvk_check_result.kvk_extract_date) : "onbekend"}.
                                 Vraag een recent uittreksel op (niet ouder dan 3 maanden).
                               </p>
                             </div>
@@ -705,7 +706,7 @@ export default function DbaCheckDetail() {
                             <div>
                               <p className="font-medium text-green-800">KVK-uittreksel is recent</p>
                               <p className="text-sm text-green-700 mt-1">
-                                Gedateerd op {new Date(check.kvk_check_result.kvk_extract_date).toLocaleDateString("nl-NL")} — niet ouder dan 3 maanden.
+                                Gedateerd op {formatDateNL(check.kvk_check_result.kvk_extract_date)} — niet ouder dan 3 maanden.
                               </p>
                             </div>
                           </div>

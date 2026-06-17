@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { formatDateNL } from "@/lib/dateFormat";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { LeadNotes } from "@/components/admin/LeadNotes";
@@ -378,7 +379,7 @@ export default function AdminLeadDetail() {
                       <div className="flex items-center gap-3">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
                         <span>
-                          {new Date(lead.geboortedatum).toLocaleDateString("nl-NL")}
+                          {formatDateNL(lead.geboortedatum)}
                         </span>
                       </div>
                     )}
@@ -448,7 +449,7 @@ export default function AdminLeadDetail() {
                           <span className="text-muted-foreground text-sm">
                             Ingangsdatum:
                           </span>{" "}
-                          {new Date(lead.ingangsdatum).toLocaleDateString("nl-NL")}
+                          {formatDateNL(lead.ingangsdatum)}
                         </div>
                       )}
                     </div>
@@ -524,7 +525,7 @@ export default function AdminLeadDetail() {
                   <div key={p.id} className="flex items-center justify-between p-2 bg-secondary rounded-lg">
                     <div>
                       <p className="font-medium text-sm">{p.certificate_number}</p>
-                      <p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString("nl-NL")}</p>
+                      <p className="text-xs text-muted-foreground">{formatDateNL(p.created_at)}</p>
                     </div>
                     {p.pdf_url && (
                       <Button size="sm" variant="outline" onClick={() => handleDownloadCertificate(p.pdf_url!)}>
@@ -592,7 +593,7 @@ export default function AdminLeadDetail() {
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        {new Date(inv.created_at).toLocaleDateString("nl-NL")} — {`€ ${Number(inv.amount_incl_btw).toFixed(2).replace('.', ',')}`}
+                        {formatDateNL(inv.created_at)} — {`€ ${Number(inv.amount_incl_btw).toFixed(2).replace('.', ',')}`}
                       </p>
                     </div>
                     {inv.pdf_url && (
