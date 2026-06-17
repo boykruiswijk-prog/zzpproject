@@ -143,7 +143,7 @@ export function SavingsCalculator() {
   // Tab 2
   const [revenue, setRevenue] = useState(80000);
   const [profession, setProfession] = useState("ict");
-  const [pkg2, setPkg2] = useState("uitgebreid");
+  const [pkg2, setPkg2] = useState("jaarlijks");
 
   const selectedPkg1 = packages.find((p) => p.id === pkg1)!;
   const selectedPkg2 = packages.find((p) => p.id === pkg2)!;
