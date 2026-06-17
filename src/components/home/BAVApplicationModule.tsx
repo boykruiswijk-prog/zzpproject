@@ -726,19 +726,27 @@ export function BAVApplicationModule() {
                       <div className="h-10 w-10 rounded-lg bg-accent flex items-center justify-center"><Shield className="h-5 w-5 text-accent-foreground" /></div>
                       <div><p className="font-semibold">{selectedBavPakket.name}</p><p className="text-sm text-background/70">BAV + AVB{selectedBavPakket.dekkingen.cyber ? " + Cyber" : ""}</p></div>
                     </div>
-                    <div className="space-y-2 text-sm mb-4">
-                      <div className="flex justify-between"><span className="text-background/70">BAV per gebeurtenis</span><span>{formatBedrag(selectedBavPakket.dekkingen.bav.perGebeurtenis)}</span></div>
-                      <div className="flex justify-between"><span className="text-background/70">AVB per gebeurtenis</span><span>{formatBedrag(selectedBavPakket.dekkingen.avb.perGebeurtenis)}</span></div>
+                    <div className="space-y-3 text-sm mb-4">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-background/70">BAV per gebeurtenis</span>
+                        <span className="font-semibold whitespace-nowrap">{formatBedrag(selectedBavPakket.dekkingen.bav.perGebeurtenis)}</span>
+                      </div>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-background/70">AVB per gebeurtenis</span>
+                        <span className="font-semibold whitespace-nowrap">{formatBedrag(selectedBavPakket.dekkingen.avb.perGebeurtenis)}</span>
+                      </div>
                       {selectedBavPakket.dekkingen.cyber && (
-                        <div className="flex justify-between"><span className="text-background/70">Cyber per jaar</span><span>{formatBedrag(selectedBavPakket.dekkingen.cyber.perJaar)}</span></div>
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-background/70">Cyber per jaar</span>
+                          <span className="font-semibold whitespace-nowrap">{formatBedrag(selectedBavPakket.dekkingen.cyber.perJaar)}</span>
+                        </div>
                       )}
                     </div>
                     <div className="border-t border-white/20 pt-4">
-                      <div className="flex justify-between items-end">
-                        <div>
-                          <p className="text-sm text-background/70">{periodeLabel}</p>
-                          <p className="text-3xl font-bold">€{currentPrice.toFixed(2).replace('.', ',')}</p>
-                        </div>
+                      <div className="flex flex-col gap-1">
+                        <p className="text-sm text-background/70">{periodeLabel}</p>
+                        <p className="text-3xl font-bold whitespace-nowrap">€{Number.isInteger(currentPrice) ? currentPrice : currentPrice.toFixed(2).replace('.', ',')}</p>
+                      </div>
                       </div>
                     </div>
                   </div>
