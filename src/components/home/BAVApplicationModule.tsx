@@ -21,7 +21,7 @@ import ellenAvatar from "@/assets/ellen-baars-avatar.jpg";
 import { TrustSignalsStrip } from "@/components/social-proof/TrustSignalsStrip";
 import { bavPakketten, getPakket, type BavPakketId } from "@/data/bavPakketten";
 
-const formatBedrag = (n: number) => `€ ${n.toLocaleString("nl-NL")}`;
+const formatBedrag = (n: number) => `€${n.toLocaleString("nl-NL")}`;
 
 const TOTAL_STEPS = 5;
 
@@ -366,16 +366,16 @@ export function BAVApplicationModule() {
                             <ul className="space-y-1.5 text-xs text-muted-foreground">
                               <li className="flex items-start gap-1.5">
                                 <Check className="h-3.5 w-3.5 text-accent mt-0.5 flex-shrink-0" />
-                                <span>BAV {formatBedrag(pkg.dekkingen.bav.perGebeurtenis)}</span>
+                                <span>BAV <span className="whitespace-nowrap">{formatBedrag(pkg.dekkingen.bav.perGebeurtenis)}</span></span>
                               </li>
                               <li className="flex items-start gap-1.5">
                                 <Check className="h-3.5 w-3.5 text-accent mt-0.5 flex-shrink-0" />
-                                <span>AVB {formatBedrag(pkg.dekkingen.avb.perGebeurtenis)}</span>
+                                <span>AVB <span className="whitespace-nowrap">{formatBedrag(pkg.dekkingen.avb.perGebeurtenis)}</span></span>
                               </li>
                               {pkg.dekkingen.cyber && (
                                 <li className="flex items-start gap-1.5">
                                   <Check className="h-3.5 w-3.5 text-accent mt-0.5 flex-shrink-0" />
-                                  <span>Cyber tot {formatBedrag(pkg.dekkingen.cyber.perJaar)}/jr</span>
+                                  <span>Cyber tot <span className="whitespace-nowrap">{formatBedrag(pkg.dekkingen.cyber.perJaar)}</span>/jr</span>
                                 </li>
                               )}
                             </ul>
@@ -726,22 +726,30 @@ export function BAVApplicationModule() {
                       <div className="h-10 w-10 rounded-lg bg-accent flex items-center justify-center"><Shield className="h-5 w-5 text-accent-foreground" /></div>
                       <div><p className="font-semibold">{selectedBavPakket.name}</p><p className="text-sm text-background/70">BAV + AVB{selectedBavPakket.dekkingen.cyber ? " + Cyber" : ""}</p></div>
                     </div>
-                    <div className="space-y-2 text-sm mb-4">
-                      <div className="flex justify-between"><span className="text-background/70">BAV per gebeurtenis</span><span>{formatBedrag(selectedBavPakket.dekkingen.bav.perGebeurtenis)}</span></div>
-                      <div className="flex justify-between"><span className="text-background/70">AVB per gebeurtenis</span><span>{formatBedrag(selectedBavPakket.dekkingen.avb.perGebeurtenis)}</span></div>
+                    <div className="space-y-3 text-sm mb-4">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-background/70">BAV per gebeurtenis</span>
+                        <span className="font-semibold whitespace-nowrap">{formatBedrag(selectedBavPakket.dekkingen.bav.perGebeurtenis)}</span>
+                      </div>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-background/70">AVB per gebeurtenis</span>
+                        <span className="font-semibold whitespace-nowrap">{formatBedrag(selectedBavPakket.dekkingen.avb.perGebeurtenis)}</span>
+                      </div>
                       {selectedBavPakket.dekkingen.cyber && (
-                        <div className="flex justify-between"><span className="text-background/70">Cyber per jaar</span><span>{formatBedrag(selectedBavPakket.dekkingen.cyber.perJaar)}</span></div>
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-background/70">Cyber per jaar</span>
+                          <span className="font-semibold whitespace-nowrap">{formatBedrag(selectedBavPakket.dekkingen.cyber.perJaar)}</span>
+                        </div>
                       )}
                     </div>
                     <div className="border-t border-white/20 pt-4">
-                      <div className="flex justify-between items-end">
-                        <div>
-                          <p className="text-sm text-background/70">{periodeLabel}</p>
-                          <p className="text-3xl font-bold">€{currentPrice.toFixed(2).replace('.', ',')}</p>
-                        </div>
+                      <div className="flex flex-col gap-1">
+                        <p className="text-sm text-background/70">{periodeLabel}</p>
+                        <p className="text-3xl font-bold whitespace-nowrap">€{Number.isInteger(currentPrice) ? currentPrice : currentPrice.toFixed(2).replace('.', ',')}</p>
                       </div>
                     </div>
                   </div>
+
                   <ul className="space-y-3">
                     {usps.map((usp) => (
                       <li key={usp} className="flex items-center gap-2 text-sm"><CheckCircle className="h-4 w-4 text-accent flex-shrink-0" /><span className="text-background/90">{usp}</span></li>
