@@ -181,10 +181,10 @@ export default function WaaromZpZaken() {
                   </span>
                 )}
                 <h3 className="text-lg font-bold mb-1">{pkg.name}</h3>
-                <p className="text-3xl font-bold text-accent mb-1">€{pkg.price}<span className="text-sm font-normal text-muted-foreground">/{pkg.periode}</span></p>
+                <p className="text-3xl font-bold text-accent mb-1 whitespace-nowrap">€{pkg.price}<span className="text-sm font-normal text-muted-foreground">/{pkg.periode}</span></p>
                 <div className="text-xs text-muted-foreground mb-6 space-y-0.5">
-                  <p>{pkg.eventCoverage} per gebeurtenis</p>
-                  <p>{pkg.yearCoverage} per jaar</p>
+                  <p className="flex justify-between gap-2"><span>Per gebeurtenis</span><span className="font-medium whitespace-nowrap">{pkg.eventCoverage}</span></p>
+                  <p className="flex justify-between gap-2"><span>Per jaar</span><span className="font-medium whitespace-nowrap">{pkg.yearCoverage}</span></p>
                 </div>
                 <ul className="space-y-2">
                   {pkg.features.map((f) => (
