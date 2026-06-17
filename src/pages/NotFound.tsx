@@ -43,7 +43,7 @@ const popularPages = [
   {
     icon: Shield,
     title: "BAV + AVB Verzekering",
-    text: "Direct online afsluiten vanaf €30/maand",
+    text: "Direct online afsluiten vanaf €55/maand",
     link: "/verzekeringen",
   },
   {

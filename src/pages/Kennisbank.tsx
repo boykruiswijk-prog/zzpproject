@@ -130,7 +130,7 @@ export default function Kennisbank() {
             <LocalizedLink to="/verzekeringen#combinatiepolis" className="bg-card border border-border/50 rounded-xl p-6 hover:border-accent/30 hover:shadow-md transition-all group">
               <Shield className="h-6 w-6 text-accent mb-3" />
               <h3 className="font-semibold text-sm mb-1 group-hover:text-accent transition-colors">BAV + AVB Combinatiepolis</h3>
-              <p className="text-xs text-muted-foreground">Onze bundel voor kantoorberoepen vanaf €20 per maand</p>
+              <p className="text-xs text-muted-foreground">Onze bundel voor kantoorberoepen vanaf €55 per maand</p>
             </LocalizedLink>
             <LocalizedLink to="/faq" className="bg-card border border-border/50 rounded-xl p-6 hover:border-accent/30 hover:shadow-md transition-all group">
               <Shield className="h-6 w-6 text-accent mb-3" />

@@ -7,11 +7,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowRight } from "lucide-react";
 import { LocalizedLink } from "@/components/LocalizedLink";
 
-const packages = [
-  { id: "basis", label: "Combi Basis", monthly: 30, yearly: 324, dekking: "€500.000" },
-  { id: "uitgebreid", label: "Combi Uitgebreid", monthly: 45, yearly: 486, dekking: "€2.500.000", popular: true },
-  { id: "compleet", label: "Combi Compleet", monthly: 65, yearly: 702, dekking: "€5.000.000" },
-];
+import { bavPakketten } from "@/data/bavPakketten";
+
+// Pakketten afgeleid uit single source of truth (src/data/bavPakketten.ts).
+// 'monthly' = vergelijkbare maandprijs, 'yearly' = jaarbedrag.
+const packages = bavPakketten.map((p) => {
+  const yearly = p.periode === "jaar" ? p.prijs : p.prijs * 12;
+  const monthly = p.periode === "jaar" ? Math.round(p.prijs / 12) : p.prijs;
+  return {
+    id: p.id,
+    label: p.name,
+    monthly,
+    yearly,
+    dekking: `€${(p.dekkingen.bav.perGebeurtenis / 1_000_000).toLocaleString("nl-NL")}.000.000`,
+    popular: p.id === "jaarlijks-cyber",
+  };
+});
 
 const professions = [
   { id: "ict", label: "ICT & Software (laag risico)", monthly: 42 },
@@ -127,12 +138,12 @@ export function SavingsCalculator() {
   const [hourlyRate, setHourlyRate] = useState(85);
   const [hoursPerYear, setHoursPerYear] = useState(1400);
   const [platformRate, setPlatformRate] = useState(0.85);
-  const [pkg1, setPkg1] = useState("uitgebreid");
+  const [pkg1, setPkg1] = useState("jaarlijks");
 
   // Tab 2
   const [revenue, setRevenue] = useState(80000);
   const [profession, setProfession] = useState("ict");
-  const [pkg2, setPkg2] = useState("uitgebreid");
+  const [pkg2, setPkg2] = useState("jaarlijks");
 
   const selectedPkg1 = packages.find((p) => p.id === pkg1)!;
   const selectedPkg2 = packages.find((p) => p.id === pkg2)!;
@@ -154,7 +165,7 @@ export function SavingsCalculator() {
     return { marketCost, zpCost, saving, saving5y: saving * 5 };
   }, [selectedProfession, selectedPkg2]);
 
-  const ctaPkg = tab === "platform" ? selectedPkg1 : selectedPkg2;
+  
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -360,7 +371,7 @@ export function SavingsCalculator() {
       <div className="mt-8 max-w-2xl mx-auto text-center space-y-3">
         <Button asChild size="lg" className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
           <LocalizedLink to="/verzekeringen">
-            Direct afsluiten :  {ctaPkg.label} voor €{ctaPkg.monthly}/maand <ArrowRight className="h-5 w-5 ml-1" />
+            Sluit direct online af vanaf €55 per maand <ArrowRight className="h-5 w-5 ml-1" />
           </LocalizedLink>
         </Button>
         <div>

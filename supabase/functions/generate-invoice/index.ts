@@ -57,13 +57,21 @@ serve(async (req) => {
 
     // Build invoice data from lead if not provided
     let data = invoice_data;
+    // Prijzen in lijn met src/data/bavPakketten.ts (single source of truth).
+    // Legacy pakketnamen blijven gemapt voor historische facturen.
     const packagePricesYearly: Record<string, number> = {
+      "BAV & AVB Jaarlijks": 600.00,
+      "BAV & AVB Jaarlijks + Cyber": 750.00,
+      "BAV & AVB Maandelijks": 660.00,
       "Combi Basis": 360.00,
-      "Combi Uitgebreid": 540.00,
+      "Combi Uitgebreid": 600.00,
     };
     const packagePricesMonthly: Record<string, number> = {
+      "BAV & AVB Maandelijks": 55.00,
+      "BAV & AVB Jaarlijks": 50.00,
+      "BAV & AVB Jaarlijks + Cyber": 62.50,
       "Combi Basis": 30.00,
-      "Combi Uitgebreid": 45.00,
+      "Combi Uitgebreid": 55.00,
     };
 
     if (lead_id && !data) {
@@ -78,10 +86,10 @@ serve(async (req) => {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const pkgName = lead.verzekering_type || "Combi Uitgebreid";
+      const pkgName = lead.verzekering_type || "BAV & AVB Jaarlijks";
       const isMonthly = lead.omzet === "maandelijks" || lead.omzet === "2";
       const priceMap = isMonthly ? packagePricesMonthly : packagePricesYearly;
-      const priceExcl = priceMap[pkgName] || priceMap["Combi Uitgebreid"];
+      const priceExcl = priceMap[pkgName] || priceMap["BAV & AVB Jaarlijks"];
       data = {
         client_name: `${lead.voornaam} ${lead.achternaam}`,
         company_name: lead.bedrijfsnaam || null,
@@ -141,7 +149,7 @@ serve(async (req) => {
         client_city: data.client_city || null,
         kvk_nummer: data.kvk_nummer || null,
         description: data.description || "Combinatiepolis Beroeps- en Bedrijfsaansprakelijkheid",
-        package_type: data.package_type || "Combi Uitgebreid",
+        package_type: data.package_type || "BAV & AVB Jaarlijks",
         amount_excl_btw: amountExcl,
         btw_percentage: 0,
         btw_amount: 0,
