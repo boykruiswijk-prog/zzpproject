@@ -18,8 +18,8 @@ export default function DienstverleningsdocumentPage() {
 
       <h2>Onze dienstverlening</h2>
       <p>
-        Wij adviseren en bemiddelen in schadeverzekeringen, met name op het gebied van
-        beroeps- en bedrijfsaansprakelijkheid. Wij richten ons op ondernemers.
+        Wij bemiddelen in schadeverzekeringen, met name op het gebied van beroeps- en
+        bedrijfsaansprakelijkheid. Wij richten ons op ondernemers.
       </p>
 
       <h2>Hoe werken wij</h2>
