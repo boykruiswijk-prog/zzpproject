@@ -36,7 +36,7 @@ export const searchIndex: SearchEntry[] = [
     title: "Verzekeringen",
     path: "/verzekeringen",
     keywords: "BAV AVB rechtsbijstand AOV beroepsaansprakelijkheid bedrijfsaansprakelijkheid",
-    snippet: "BAV en AVB combinatiepolis, AOV en rechtsbijstand. Direct online afsluiten of advies aanvragen.",
+    snippet: "BAV en AVB combinatiepolis, AOV en rechtsbijstand. Direct online afsluiten of contact opnemen.",
   },
   {
     title: "Offerte aanvragen | ZP Zaken",
@@ -71,7 +71,7 @@ export const searchIndex: SearchEntry[] = [
   {
     title: "Kennisbank",
     path: "/kennisbank",
-    keywords: "blog artikelen tips advies zzp ondernemen kennisbank",
+    keywords: "blog artikelen tips informatie zzp ondernemen kennisbank",
     snippet: "Praktische artikelen voor zzp'ers over verzekeringen, ondernemen en regelgeving.",
   },
   {
@@ -113,7 +113,7 @@ export const searchIndex: SearchEntry[] = [
   {
     title: "Zo werken wij",
     path: "/zo-werken-wij",
-    keywords: "werkwijze proces stappen advies",
+    keywords: "werkwijze proces stappen gesprek",
     snippet: "Onze werkwijze in heldere stappen, van eerste contact tot polis.",
   },
   {

@@ -78,7 +78,7 @@ export default function Verzekeringen() {
       <section className="section-padding bg-secondary border-y border-border">
         <div className="container-wide">
           <div className="text-center mb-8 max-w-2xl mx-auto">
-            <h2 className="mb-3">Liever advies of een offerte op maat?</h2>
+            <h2 className="mb-3">Liever overleg of een offerte op maat?</h2>
             <p className="text-muted-foreground">Kies wat het beste bij je past.</p>
           </div>
           <ThreeOptionCTA />

@@ -84,7 +84,7 @@ export function ServicePageTemplate({
       >
         <Button variant="accent" size="lg" asChild>
           <LocalizedLink to="/contact">
-            Advies aanvragen <ArrowRight className="h-5 w-5" />
+            Neem contact op <ArrowRight className="h-5 w-5" />
           </LocalizedLink>
         </Button>
       </PageHero>
