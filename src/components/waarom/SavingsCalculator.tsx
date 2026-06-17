@@ -138,7 +138,7 @@ export function SavingsCalculator() {
   const [hourlyRate, setHourlyRate] = useState(85);
   const [hoursPerYear, setHoursPerYear] = useState(1400);
   const [platformRate, setPlatformRate] = useState(0.85);
-  const [pkg1, setPkg1] = useState("uitgebreid");
+  const [pkg1, setPkg1] = useState("jaarlijks");
 
   // Tab 2
   const [revenue, setRevenue] = useState(80000);
