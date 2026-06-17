@@ -378,10 +378,15 @@ export default function ArtikelDetail() {
             </div>
           </div>
 
-          <div className="mt-8">
-            <ShareButtons url={articleUrl} title={article.title} />
+              <div className="mt-8">
+                <ShareButtons url={articleUrl} title={article.title} />
+              </div>
+            </div>
+
+            <TableOfContents content={article.content || ""} />
           </div>
         </div>
+
 
         {/* Related articles */}
         {related.length > 0 && (
