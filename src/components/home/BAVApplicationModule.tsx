@@ -366,16 +366,16 @@ export function BAVApplicationModule() {
                             <ul className="space-y-1.5 text-xs text-muted-foreground">
                               <li className="flex items-start gap-1.5">
                                 <Check className="h-3.5 w-3.5 text-accent mt-0.5 flex-shrink-0" />
-                                <span>BAV {formatBedrag(pkg.dekkingen.bav.perGebeurtenis)}</span>
+                                <span>BAV <span className="whitespace-nowrap">{formatBedrag(pkg.dekkingen.bav.perGebeurtenis)}</span></span>
                               </li>
                               <li className="flex items-start gap-1.5">
                                 <Check className="h-3.5 w-3.5 text-accent mt-0.5 flex-shrink-0" />
-                                <span>AVB {formatBedrag(pkg.dekkingen.avb.perGebeurtenis)}</span>
+                                <span>AVB <span className="whitespace-nowrap">{formatBedrag(pkg.dekkingen.avb.perGebeurtenis)}</span></span>
                               </li>
                               {pkg.dekkingen.cyber && (
                                 <li className="flex items-start gap-1.5">
                                   <Check className="h-3.5 w-3.5 text-accent mt-0.5 flex-shrink-0" />
-                                  <span>Cyber tot {formatBedrag(pkg.dekkingen.cyber.perJaar)}/jr</span>
+                                  <span>Cyber tot <span className="whitespace-nowrap">{formatBedrag(pkg.dekkingen.cyber.perJaar)}</span>/jr</span>
                                 </li>
                               )}
                             </ul>
