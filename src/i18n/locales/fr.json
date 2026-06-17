@@ -570,7 +570,7 @@
     "combiDesc": "Seul fournisseur aux Pays-Bas à offrir une police combinée responsabilité professionnelle et entreprise.",
     "combiFeatures": ["Responsabilité professionnelle : couverture des dommages financiers", "Responsabilité entreprise : couverture des dommages corporels et matériels", "Assistance juridique incluse", "Une police, une prime: confort maximum", "Couvertures sur mesure par profession", "Exclusivement via ZP Zaken"],
     "combiForWho": "Professionnels IT, consultants, coaches, formateurs, conseillers, créatifs",
-    "combiPrice": "À partir de 20€ par mois",
+    "combiPrice": "À partir de 55€ par mois",
     "aovTitle": "Assurance Invalidité",
     "aovSubtitle": "Revenu en cas de maladie ou d'accident",
     "aovDesc": "En tant que freelance, vous ne cotisez pas à l'assurance invalidité. Une assurance invalidité vous offre une sécurité financière.",
@@ -582,7 +582,7 @@
     "rechtsbijstandDesc": "Les conflits avec les clients ou le fisc peuvent coûter cher. Avec une assurance protection juridique, vous obtenez de l'aide.",
     "rechtsbijstandFeatures": ["Conseil juridique et médiation", "Frais de procédure et d'avocat couverts", "Aide en cas de conflits clients", "Protection juridique fiscale"],
     "rechtsbijstandForWho": "Freelances avec clients, contrats ou personnel",
-    "rechtsbijstandPrice": "À partir de 20€ par mois",
+    "rechtsbijstandPrice": "À partir de 55€ par mois",
     "mostChosen": "Le plus choisi par les freelances"
   },
   "faqLinks": {
