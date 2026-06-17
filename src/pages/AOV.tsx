@@ -57,7 +57,7 @@ export default function AOV() {
         {
           image: teamMeeting,
           title: "Hoe werkt het afsluiten?",
-          text: "Via ZP Zaken krijg je advies over de AOV die bij je past. We vergelijken verzekeraars en regelen een scherpe premie.",
+          text: "Via ZP Zaken krijg je informatie over de AOV die bij je past. We vergelijken verzekeraars en regelen een scherpe premie.",
           bullets: [
             "Persoonlijk gesprek op maat",
             "Vergelijking van top-verzekeraars",

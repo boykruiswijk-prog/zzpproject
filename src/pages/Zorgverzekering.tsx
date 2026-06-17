@@ -71,7 +71,7 @@ export default function Zorgverzekering() {
           bullets: [
             "Overstapperiode: november – december",
             "Wij sturen je een herinnering",
-            "Persoonlijke vergelijking en advies",
+            "Persoonlijke vergelijking en informatie",
           ],
         },
       ]}

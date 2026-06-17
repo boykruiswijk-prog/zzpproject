@@ -29,7 +29,7 @@ const faqItems = [
     category: "Over ZP Zaken",
     questions: [
       { question: "Is ZP Zaken onafhankelijk?", answer: "Ja, ZP Zaken is volledig onafhankelijk. Wij zijn niet gebonden aan één verzekeraar en kunnen daarom informeren welke verzekering bij je past. We vergelijken producten van verschillende aanbieders om de beste oplossing voor jou te vinden." },
-      { question: "Wat kost advies bij ZP Zaken?", answer: "Een eerste persoonlijk gesprek bij ZP Zaken is altijd gratis en vrijblijvend. We bespreken je situatie, wensen en mogelijkheden zonder dat je ergens aan vastzit. Pas als je besluit een verzekering af te sluiten, ontvangen wij een vergoeding van de verzekeraar." },
+      { question: "Wat kost een gesprek bij ZP Zaken?", answer: "Een eerste persoonlijk gesprek bij ZP Zaken is altijd gratis en vrijblijvend. We bespreken je situatie, wensen en mogelijkheden zonder dat je ergens aan vastzit. Pas als je besluit een verzekering af te sluiten, ontvangen wij een vergoeding van de verzekeraar." },
       { question: "Hoe kan ik contact opnemen met ZP Zaken?", answer: "Je kunt ons bereiken via telefoon (020 - 457 3077), e-mail (info@zpzaken.nl) of via het contactformulier op onze website. We reageren binnen 24 uur op alle berichten. Je kunt ook langskomen op ons kantoor in Schiphol-Rijk voor een persoonlijk gesprek." },
       { question: "Is ZP Zaken aangesloten bij een klachteninstantie?", answer: "Ja, ZP Zaken is aangesloten bij het Kifid (Klachteninstituut Financiële Dienstverlening). Mocht je onverhoopt een klacht hebben die we niet samen kunnen oplossen, dan kun je deze voorleggen aan het Kifid. We staan ook geregistreerd bij de AFM onder vergunningsnummer 12050636." },
     ]

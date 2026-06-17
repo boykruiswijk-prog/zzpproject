@@ -18,7 +18,7 @@ const schema = {
 export default function Pensioen() {
   return (
     <ServicePageTemplate
-      seoTitle="ZZP Pensioen opbouwen | Advies & Oplossingen | ZP Zaken"
+      seoTitle="ZZP Pensioen opbouwen | Informatie & Oplossingen | ZP Zaken"
       seoDescription="Als zzp'er zelf je pensioen regelen? ZP Zaken helpt je met de beste pensioenoplossing. Persoonlijk gesprek op maat."
       canonicalPath="/pensioen"
       heroImage={teamHero}
