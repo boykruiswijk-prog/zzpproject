@@ -35,9 +35,9 @@ export function IntermediaryCards() {
     <section className="section-padding bg-secondary">
       <div className="container-wide">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center mb-12 max-w-3xl mx-auto">
-          <h2 className="mb-4">Hoe werken platforms en intermediairs?</h2>
+          <h2 className="mb-4">Hoe werken platforms?</h2>
           <p className="text-muted-foreground">
-            De meeste grote platforms in Nederland koppelen verzekeringen aan hun opdrachten. Dat lijkt handig, maar heeft consequenties die zzp'ers zich vaak niet realiseren.
+            Grote platforms koppelen verzekeringen aan hun opdrachten. Dat heeft nadelen die je misschien niet direct ziet.
           </p>
         </motion.div>
 
@@ -73,7 +73,7 @@ export function IntermediaryCards() {
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade}>
           <div className="bg-accent text-accent-foreground rounded-xl p-5 text-center max-w-4xl mx-auto">
             <p className="font-semibold text-sm md:text-base">
-              Wat ze gemeen hebben: jouw verzekering is gekoppeld aan hun opdracht. Stopt de opdracht? Dan stopt je dekking. ZP Zaken werkt anders — jij beheert je eigen polis, los van wie je opdrachtgever is.
+              Wat ze gemeen hebben: jouw verzekering is gekoppeld aan hun opdracht. Stopt de opdracht? Dan stopt je dekking. ZP Zaken werkt anders :  jij beheert je eigen polis, los van wie je opdrachtgever is.
             </p>
           </div>
         </motion.div>

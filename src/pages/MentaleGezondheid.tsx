@@ -23,14 +23,14 @@ export default function MentaleGezondheid() {
       canonicalPath="/mentale-gezondheid"
       heroImage={teamCheers}
       badge="Zorg voor jezelf"
-      title={<>Mentale gezondheid — <span className="text-accent">De basis voor succesvol ondernemerschap</span></>}
-      subtitle="Ondernemen is geweldig, maar kan ook eenzaam en stressvol zijn. Investeer in je mentale gezondheid — dat is geen luxe, maar noodzaak."
+      title={<>Mentale gezondheid: <span className="text-accent">De basis voor succesvol ondernemerschap</span></>}
+      subtitle="Ondernemen is geweldig, maar kan ook eenzaam en stressvol zijn. Investeer in je mentale gezondheid: dat is geen luxe, maar noodzaak."
       schema={schema}
       benefits={[
         {
           icon: Brain,
           title: "Burn-out preventie",
-          description: "Herken signalen van overbelasting op tijd en leer grenzen stellen. Preventie is altijd beter — en goedkoper — dan genezen.",
+          description: "Herken signalen van overbelasting op tijd en leer grenzen stellen. Preventie is altijd beter en goedkoper dan genezen.",
         },
         {
           icon: HeartHandshake,
@@ -76,7 +76,7 @@ export default function MentaleGezondheid() {
         },
       ]}
       ctaTitle="Zorg goed voor jezelf als ondernemer"
-      ctaSubtitle="Neem contact op voor een vrijblijvend gesprek over mentale ondersteuning."
+      ctaSubtitle="Neem contact op voor een gesprek over mentale ondersteuning."
       ctaButton="Vrijblijvend gesprek aanvragen"
     />
   );

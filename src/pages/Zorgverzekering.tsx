@@ -23,7 +23,7 @@ export default function Zorgverzekering() {
       canonicalPath="/zorgverzekering"
       heroImage={teamRoxy}
       badge="Collectief voordeel"
-      title={<>Zorgverzekering voor zzp'ers — <span className="text-accent">Collectief voordeel</span></>}
+      title={<>Zorgverzekering voor zzp'ers: <span className="text-accent">Collectief voordeel</span></>}
       subtitle="Als lid van het ZP Zaken collectief profiteer je van korting op je zorgverzekering. Dezelfde dekking, lagere premie."
       schema={schema}
       benefits={[
@@ -35,7 +35,7 @@ export default function Zorgverzekering() {
         {
           icon: Users,
           title: "Collectieve korting",
-          description: "Via het ZP Zaken collectief ontvang je korting op je premie — zonder dat je inlevert op dekking of keuze.",
+          description: "Via het ZP Zaken collectief ontvang je korting op je premie: zonder dat je inlevert op dekking of keuze.",
         },
         {
           icon: Euro,
@@ -47,7 +47,7 @@ export default function Zorgverzekering() {
         {
           image: officeCookies,
           title: "Hoe werkt de collectieve korting?",
-          text: "ZP Zaken heeft als collectief afspraken gemaakt met zorgverzekeraars. Door gebruik te maken van de collectiviteit betaal je minder premie — terwijl je dezelfde dekking houdt.",
+          text: "ZP Zaken heeft als collectief afspraken gemaakt met zorgverzekeraars. Door gebruik te maken van de collectiviteit betaal je minder premie en houd je dezelfde dekking.",
           bullets: [
             "Korting op basis- en aanvullende verzekering",
             "Geen inlevering op dekking of keuze",
@@ -57,7 +57,7 @@ export default function Zorgverzekering() {
         {
           image: teamMeeting,
           title: "Welke verzekeraars zijn beschikbaar?",
-          text: "We werken samen met betrouwbare zorgverzekeraars die ruime keuze bieden in pakketten. Zo vind je altijd een verzekering die past bij jouw situatie en budget.",
+          text: "We werken samen met betrouwbare zorgverzekeraars die ruime keuze bieden in pakketten. Zo vind je een verzekering die bij je past.",
           bullets: [
             "Breed aanbod van zorgverzekeraars",
             "Vergelijking op maat door onze adviseurs",
@@ -67,7 +67,7 @@ export default function Zorgverzekering() {
         {
           image: officeFlowers,
           title: "Wanneer overstappen?",
-          text: "Elk jaar kun je in november en december overstappen naar een andere zorgverzekering. Wij herinneren je tijdig en helpen je met de overstap, zodat je altijd de beste deal hebt.",
+          text: "Elk jaar kun je in november en december overstappen naar een andere zorgverzekering. We herinneren je en helpen bij de overstap.",
           bullets: [
             "Overstapperiode: november – december",
             "Wij sturen je een herinnering",

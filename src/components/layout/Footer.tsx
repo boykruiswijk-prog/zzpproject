@@ -43,7 +43,7 @@ export function Footer() {
               <img src={logoZp} alt="ZP Zaken logo" className="h-8 w-auto object-contain" />
             </LocalizedLink>
             <p className="text-background/70 mb-5 max-w-sm text-sm">
-              <span className="font-semibold text-background">ZP Zaken B.V.</span> — {t("footer.description")}
+              <span className="font-semibold text-background">ZP Zaken B.V.</span>, {t("footer.description")}
             </p>
             <div className="space-y-2">
               <a href="tel:+31204573077" className="flex items-center gap-2 text-sm text-background/70 hover:text-background transition-colors">

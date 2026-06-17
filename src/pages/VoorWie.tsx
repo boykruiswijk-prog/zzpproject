@@ -64,8 +64,8 @@ export default function VoorWie() {
       />
 
       <PageHero
-        title={<>Voor wie is <span className="text-accent">ZP Zaken</span>?</>}
-        subtitle="Wij verzekeren zelfstandige professionals met adviserende, ontwerpende of coördinerende rollen — binnen een groot aantal vakgebieden."
+        title={<>Voor wie is ZP Zaken?</>}
+        subtitle="We verzekeren zelfstandigen met adviserende, ontwerpende of coördinerende rollen,  binnen een groot aantal vakgebieden."
         badge={{ icon: <Users className="h-4 w-4" />, text: "Voor zelfstandig professionals" }}
         backgroundImage={teamWalking}
       />
@@ -95,7 +95,7 @@ export default function VoorWie() {
             style={{ backgroundColor: "#FFF5F5", borderLeft: "3px solid #E53E2F" }}
           >
             <p className="text-sm text-foreground">
-              Twijfel je of jouw beroep onder onze dekking valt? Neem contact op — we denken graag met je mee.
+              Twijfel je of jouw beroep onder onze dekking valt? Neem contact op,  we denken graag met je mee.
             </p>
             <Button variant="accent" size="sm" asChild className="flex-shrink-0">
               <LocalizedLink to="/contact">Neem contact op <ArrowRight className="h-4 w-4" /></LocalizedLink>

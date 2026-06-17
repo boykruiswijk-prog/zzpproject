@@ -24,7 +24,7 @@ export function CombiPackageSection() {
             <span className="text-accent">{t("home.allUnderOneRoofAccent")}</span>
           </h2>
           <p className="text-muted-foreground">
-            Kies het pakket dat bij je past. Alle pakketten zijn dagelijks opzegbaar en
+            Kies je pakket. Alle pakketten zijn dagelijks opzegbaar en
             inclusief kosten en assurantiebelasting.
           </p>
         </AnimatedSection>

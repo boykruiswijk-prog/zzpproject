@@ -49,7 +49,7 @@ export function PartnersSection() {
             Onze Partners
           </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Trots dat we met onze partners samenwerken!
+            We werken samen met deze partners:
           </h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
             Bij ZP Zaken zorgen we ervoor dat jij zorgeloos kunt ondernemen. Dit doen we in samenwerking met onze partners, 

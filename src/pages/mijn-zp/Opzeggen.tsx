@@ -25,10 +25,10 @@ export default function OpzeggenWizard() {
   return (
     <ServiceWizardShell
       type="opzeggen"
-      pageTitle="Verzekering opzeggen | Mijn ZP — ZP Zaken"
+      pageTitle="Verzekering opzeggen | Mijn ZP, ZP Zaken"
       pageDescription="Zeg je BAV-verzekering bij ZP Zaken eenvoudig op. Dagelijks opzegbaar, binnen 24 uur verwerkt."
       introTitle="Verzekering opzeggen"
-      introText="Je BAV-verzekering opzeggen kan dagelijks. Vul de wizard in — wij verwerken je opzegging binnen 24 uur en sturen je per mail een bevestiging."
+      introText="Je BAV-verzekering opzeggen kan dagelijks. Vul het formulier in. Wij verwerken je opzegging binnen 24 uur en sturen je per mail een bevestiging."
       steps={[
         {
           title: "Identificatie",

@@ -6,11 +6,11 @@ export default function GedragscodePage() {
       title="Gedragscode"
       versie="Versie 2026"
       canonicalSlug="gedragscode"
-      metaDescription="De gedragscode van ZP Zaken: integriteit, klantbelang, vakbekwaamheid, transparantie en zorgvuldige dienstverlening."
+      metaDescription="De gedragscode van ZP Zaken: integriteit, klantbelang, vakbekwaamheid, duidelijkheid en zorgvuldigheid."
     >
       <h2>Inleiding</h2>
       <p>
-        Wij handelen integer, transparant en in het belang van onze klant. Deze gedragscode
+        We handelen eerlijk en in het belang van de klant. Deze gedragscode
         vormt de basis voor onze dienstverlening en besluitvorming.
       </p>
 
@@ -33,13 +33,13 @@ export default function GedragscodePage() {
         permanente educatie.
       </p>
 
-      <h2>Transparantie</h2>
+      <h2>Duidelijkheid</h2>
       <p>
         Wij communiceren duidelijk over onze dienstverlening, kosten, voorwaarden en
         eventuele beperkingen in de dekking.
       </p>
 
-      <h2>Zorgvuldige dienstverlening</h2>
+      <h2>Zorgvuldigheid</h2>
       <p>
         Wij inventariseren de situatie van de klant zorgvuldig en leggen relevante
         informatie en keuzes vast.

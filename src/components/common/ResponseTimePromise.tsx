@@ -27,7 +27,7 @@ export function ResponseTimePromise({ variant = "default", className = "" }: Pro
       <div className="leading-tight">
         <p className={`font-semibold ${isCompact ? "text-sm" : "text-base"}`}>Reactie binnen 24 uur</p>
         <p className={`text-xs ${isDark ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
-          Gegarandeerd. In de praktijk reageren we meestal sneller.
+          In de praktijk reageren we vaak sneller.
         </p>
       </div>
     </div>

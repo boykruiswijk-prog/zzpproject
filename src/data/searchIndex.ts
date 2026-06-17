@@ -9,7 +9,7 @@ export interface SearchEntry {
 // Werk dit bij wanneer pagina-inhoud significant wijzigt.
 export const searchIndex: SearchEntry[] = [
   {
-    title: "Home — ZP Zaken",
+    title: "Home | ZP Zaken",
     path: "/",
     keywords: "zzp verzekering BAV AVB combinatiepolis online afsluiten zelfstandig ondernemer",
     snippet: "BAV + AVB combinatieverzekering voor zzp'ers. Vanaf €30/maand, direct online afsluiten.",
@@ -69,31 +69,31 @@ export const searchIndex: SearchEntry[] = [
     snippet: "Praktische artikelen voor zzp'ers over verzekeringen, ondernemen en regelgeving.",
   },
   {
-    title: "Wet en regelgeving — Kennisbank",
+    title: "Wet en regelgeving | Kennisbank",
     path: "/kennisbank/wet-en-regelgeving",
     keywords: "wet DBA modelovereenkomst regelgeving juridisch zelfstandigenregeling wetgeving",
     snippet: "Alles over Wet DBA, zelfstandigenregelingen en juridische aspecten voor zzp'ers.",
   },
   {
-    title: "Ondernemen — Kennisbank",
+    title: "Ondernemen | Kennisbank",
     path: "/kennisbank/ondernemen",
     keywords: "ondernemen groei klantrelaties professionalisering risicomanagement zelfstandig",
     snippet: "Praktische tips voor groei, klantrelaties en risicomanagement als zelfstandige.",
   },
   {
-    title: "Belastingen — Kennisbank",
+    title: "Belastingen | Kennisbank",
     path: "/kennisbank/belastingen",
     keywords: "belasting belastingaangifte BTW aftrekposten fiscaal zzp",
-    snippet: "Belastingaangifte, BTW en fiscale aftrekposten voor zzp'ers — helder uitgelegd.",
+    snippet: "Belastingaangifte, BTW en fiscale aftrekposten voor zzp'ers, helder uitgelegd.",
   },
   {
-    title: "Financiën — Kennisbank",
+    title: "Financiën | Kennisbank",
     path: "/kennisbank/financien",
     keywords: "financien financieel beheer pensioen sparen beleggen toekomst",
     snippet: "Financieel beheer, pensioen en sparen voor zzp'ers.",
   },
   {
-    title: "FAQ — Veelgestelde vragen",
+    title: "FAQ | Veelgestelde vragen",
     path: "/faq",
     keywords: "vragen antwoorden faq help",
     snippet: "Antwoorden op de meest gestelde vragen over onze dienstverlening en verzekeringen.",
@@ -108,7 +108,7 @@ export const searchIndex: SearchEntry[] = [
     title: "Zo werken wij",
     path: "/zo-werken-wij",
     keywords: "werkwijze proces stappen advies",
-    snippet: "Onze werkwijze in heldere stappen — van eerste contact tot polis.",
+    snippet: "Onze werkwijze in heldere stappen, van eerste contact tot polis.",
   },
   {
     title: "Partners",
@@ -120,7 +120,7 @@ export const searchIndex: SearchEntry[] = [
     title: "Historie",
     path: "/historie",
     keywords: "geschiedenis tijdlijn 2014 jubileum",
-    snippet: "ZP Zaken sinds 2014 — onze tijdlijn.",
+    snippet: "ZP Zaken sinds 2014, onze tijdlijn.",
   },
   {
     title: "Collectieve inkoop",
@@ -176,10 +176,10 @@ export const searchIndex: SearchEntry[] = [
     keywords: "cookies privacy tracking",
     snippet: "Cookie- en privacy-informatie.",
   },
-  { title: "Mijn ZP — Polis opvragen", path: "/mijn-zp/polis", keywords: "polis verzekeringspolis verzekeringsbewijs opdrachtgever", snippet: "Vraag je verzekeringspolis op voor je opdrachtgever." },
-  { title: "Mijn ZP — Verzekering pauzeren", path: "/mijn-zp/pauzeren", keywords: "pauzeren tijdelijk loondienst uitloop", snippet: "Pauzeer tijdelijk je verzekering met behoud van uitlooprisico." },
-  { title: "Mijn ZP — Documenten opvragen", path: "/mijn-zp/documenten", keywords: "polisblad polisvoorwaarden documenten kopie", snippet: "Vraag een kopie op van je polisblad, voorwaarden of ander document." },
-  { title: "Mijn ZP — Verzekering opzeggen", path: "/mijn-zp/opzeggen", keywords: "opzeggen opzeg beëindigen stoppen verzekering opzeggen BAV opzeggen einde verzekering loondienst BV entiteit wijzigen", snippet: "Zeg je BAV-verzekering bij ZP Zaken eenvoudig op. Dagelijks opzegbaar, binnen 24 uur verwerkt." },
-  { title: "FAQ — Hoe pauzeer ik mijn verzekering?", path: "/faq", keywords: "pauzeren verzekering uitlooprisico mijn verzekering beheren", snippet: "Pauzeer je verzekering via de wizard; uitlooprisico blijft behouden." },
-  { title: "FAQ — Polis opvragen", path: "/faq", keywords: "polis verzekeringspolis opvragen aanvragen", snippet: "Hoe vraag je je polis op." },
+  { title: "Mijn ZP | Polis opvragen", path: "/mijn-zp/polis", keywords: "polis verzekeringspolis verzekeringsbewijs opdrachtgever", snippet: "Vraag je verzekeringspolis op voor je opdrachtgever." },
+  { title: "Mijn ZP | Verzekering pauzeren", path: "/mijn-zp/pauzeren", keywords: "pauzeren tijdelijk loondienst uitloop", snippet: "Pauzeer tijdelijk je verzekering met behoud van uitlooprisico." },
+  { title: "Mijn ZP | Documenten opvragen", path: "/mijn-zp/documenten", keywords: "polisblad polisvoorwaarden documenten kopie", snippet: "Vraag een kopie op van je polisblad, voorwaarden of ander document." },
+  { title: "Mijn ZP | Verzekering opzeggen", path: "/mijn-zp/opzeggen", keywords: "opzeggen opzeg beëindigen stoppen verzekering opzeggen BAV opzeggen einde verzekering loondienst BV entiteit wijzigen", snippet: "Zeg je BAV-verzekering bij ZP Zaken eenvoudig op. Dagelijks opzegbaar, binnen 24 uur verwerkt." },
+  { title: "FAQ | Hoe pauzeer ik mijn verzekering?", path: "/faq", keywords: "pauzeren verzekering uitlooprisico mijn verzekering beheren", snippet: "Pauzeer je verzekering via de wizard; uitlooprisico blijft behouden." },
+  { title: "FAQ | Polis opvragen", path: "/faq", keywords: "polis verzekeringspolis opvragen aanvragen", snippet: "Hoe vraag je je polis op." },
 ];

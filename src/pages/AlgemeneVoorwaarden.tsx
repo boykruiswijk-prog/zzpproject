@@ -92,7 +92,7 @@ export default function AlgemeneVoorwaarden() {
       <section className="section-padding bg-background">
         <div className="container-wide">
           <div className="max-w-3xl mx-auto space-y-16">
-            <Article id="artikel-1" title="Artikel 1 — Definities">
+            <Article id="artikel-1" title="Artikel 1: Definities">
               <Clause nr="1.1">
                 De hierna met een beginhoofdletter aangeduide begrippen hebben in deze Algemene Voorwaarden de navolgende betekenis:
               </Clause>
@@ -106,13 +106,13 @@ export default function AlgemeneVoorwaarden() {
               </dl>
             </Article>
 
-            <Article id="artikel-2" title="Artikel 2 — Toepasselijkheid algemene voorwaarden">
+            <Article id="artikel-2" title="Artikel 2: Toepasselijkheid algemene voorwaarden">
               <Clause nr="2.1">Deze Algemene Voorwaarden zijn van toepassing op de Registratie en op de Diensten van ZP Zaken.</Clause>
               <Clause nr="2.2">Wordt een Dienst afgenomen dan zal deze Dienst uitdrukkelijk worden beheerst door de daartoe overeengekomen Overeenkomst.</Clause>
               <Clause nr="2.3">De toepasselijkheid van deze Algemene Voorwaarden wordt door de Gebruiker aanvaard door het aangaan van de Overeenkomst en/of het gebruikmaken van de diensten en/of producten van ZP Zaken.</Clause>
             </Article>
 
-            <Article id="artikel-3" title="Artikel 3 — Profiel en gebruik diensten">
+            <Article id="artikel-3" title="Artikel 3: Profiel en gebruik diensten">
               <Clause nr="3.1">Wanneer Gebruiker Gegevens verstrekt aan ZP Zaken, stemt hij er mee in dat hij uitsluitend juiste, actuele en volledige Gegevens verstrekt. Gebruiker verplicht zich wijzigingen in het Profiel tijdig door te geven.</Clause>
               <Clause nr="3.2">ZP Zaken behoudt zich het recht voor om zonder nadere toelichting geen Profiel van Gebruiker aan te maken, hem toegang tot de Dienst te weigeren of geen Overeenkomst met Gebruiker te sluiten.</Clause>
               <Clause nr="3.3">Gebruiker zal derden geen toegang tot de Dienst verlenen en daartoe alle passende veiligheidsmaatregelen nemen. Gebruiker houdt zijn inloggegevens geheim en beperkt de toegang tot zijn apparaten door derden. Indien een derde mogelijk toegang heeft verkregen tot voornoemde inloggegevens dient Gebruiker ZP Zaken daarvan onverwijld op de hoogte te stellen.</Clause>
@@ -121,7 +121,7 @@ export default function AlgemeneVoorwaarden() {
               <Clause nr="3.6">Gebruiker dient zich te realiseren dat het verstrekken van Gegevens via het internet risico's met zich mee kan brengen, en dit in overweging te nemen bij het verstrekken van Gegevens aan ZP Zaken.</Clause>
             </Article>
 
-            <Article id="artikel-4" title="Artikel 4 — Rechten en verplichtingen van gebruiker">
+            <Article id="artikel-4" title="Artikel 4: Rechten en verplichtingen van gebruiker">
               <Clause nr="4.1">Gebruiker garandeert dat hij tijdens de Registratie en gebruikmaking van de Dienst geen inbreuk maakt op enige wet- en regelgeving.</Clause>
               <Clause nr="4.2">Gebruiker kan suggesties voor verbetering van de Dienst doorgeven aan ZP Zaken via de Website. ZP Zaken mag dergelijke suggesties overnemen en de Dienst aanpassen zonder enige vergoeding verschuldigd te zijn aan Gebruiker.</Clause>
               <Clause nr="4.3">Gebruiker dient gebreken in de Dienst zo spoedig mogelijk nadat hij daarvan op de hoogte is te melden aan ZP Zaken.</Clause>
@@ -131,7 +131,7 @@ export default function AlgemeneVoorwaarden() {
               <Clause nr="4.4.3">De bedenktijd gaat in op de dag die volgt op de dag waarop het product is ontvangen of de dag waarop de dienstenovereenkomst is afgesloten.</Clause>
             </Article>
 
-            <Article id="artikel-5" title="Artikel 5 — Gedragsregels">
+            <Article id="artikel-5" title="Artikel 5: Gedragsregels">
               <Clause nr="5.1">Gebruiker zal zich tijdens het gebruik van de Dienst fatsoenlijk gedragen en zal onder geen beding via de Website:</Clause>
               <Clause nr="5.1.1">Malware (virussen, ransomware, spyware enz.) verzenden, plaatsen of verspreiden.</Clause>
               <Clause nr="5.1.2">Valse, smadelijke, lasterlijke, obscene, beledigende, intimiderende of bedreigende gegevens verzenden of plaatsen.</Clause>
@@ -141,18 +141,18 @@ export default function AlgemeneVoorwaarden() {
               <Clause nr="5.1.6">Het functioneren van de Website in gevaar brengen of de aangeboden informatie of onderliggende software aantasten.</Clause>
             </Article>
 
-            <Article id="artikel-6" title="Artikel 6 — Naleving, opschorting en beëindiging van de Dienst">
+            <Article id="artikel-6" title="Artikel 6: Naleving, opschorting en beëindiging van de Dienst">
               <Clause nr="6.1">ZP Zaken behoudt zich het recht voor om de Dienst of enig deel daarvan te wijzigen of stop te zetten zonder kennisgeving aan Gebruiker.</Clause>
               <Clause nr="6.2">Wanneer Gebruiker in strijd handelt met de gedragsregels uit artikel 5, behoudt ZP Zaken zich het recht voor zijn Profiel te verwijderen en de Dienst te staken.</Clause>
               <Clause nr="6.3">Het abonnement kan door partijen te allen tijde worden opgezegd.</Clause>
             </Article>
 
-            <Article id="artikel-7" title="Artikel 7 — Intellectuele Eigendomsrechten">
+            <Article id="artikel-7" title="Artikel 7: Intellectuele Eigendomsrechten">
               <Clause nr="7.1">ZP Zaken behoudt alle intellectuele eigendomsrechten met betrekking tot alle op of via de Website of Dienst aangeboden informatie, waaronder alle teksten, grafisch materiaal en logo's. Kopiëren, verspreiden of openbaar maken is niet toegestaan zonder voorafgaande schriftelijke toestemming van ZP Zaken.</Clause>
               <Clause nr="7.2">Gebruiker verbindt zich geen inbreuk te maken op merken, handelsnamen, modellen of andere intellectuele eigendomsrechten van ZP Zaken of haar gelieerde ondernemingen.</Clause>
             </Article>
 
-            <Article id="artikel-8" title="Artikel 8 — Geen garantie, beperking aansprakelijkheid">
+            <Article id="artikel-8" title="Artikel 8: Geen garantie, beperking aansprakelijkheid">
               <Clause nr="8.1">Het gebruik van de Website is voor eigen rekening en risico van Gebruiker. ZP Zaken garandeert niet dat de Website foutloos of ononderbroken zal functioneren.</Clause>
               <Clause nr="8.2">ZP Zaken verstrekt geen garantie dat de op de Website aangeboden informatie juist, volledig of actueel is.</Clause>
               <Clause nr="8.3">ZP Zaken geeft geen garantie voor de geschiktheid, functionaliteit of beschikbaarheid van de Dienst.</Clause>
@@ -164,39 +164,39 @@ export default function AlgemeneVoorwaarden() {
               <Clause nr="8.9">De wettelijke verjaringstermijn voor vorderingen van Gebruiker wordt verkort tot één jaar.</Clause>
             </Article>
 
-            <Article id="artikel-9" title="Artikel 9 — Beleid voor linken">
+            <Article id="artikel-9" title="Artikel 9: Beleid voor linken">
               <Clause nr="9.1">Gebruiker zorgt ervoor dat een link naar de Website geen schade toebrengt aan ZP Zaken of afbreuk doet aan de goodwill van ZP Zaken. Gebruiker linkt de Website niet aan een website die onwettig, beledigend of onfatsoenlijk is.</Clause>
               <Clause nr="9.2">Hyperlinks naar websites van derden houden geen aanbeveling in van die websites of diensten. Het gebruik van dergelijke hyperlinks is voor eigen risico van Gebruiker.</Clause>
             </Article>
 
-            <Article id="artikel-10" title="Artikel 10 — Geheimhouding">
+            <Article id="artikel-10" title="Artikel 10: Geheimhouding">
               <Clause nr="10.1">Beide partijen zijn verplicht tot geheimhouding van alle informatie van vertrouwelijke aard, tenzij deze gegevens algemeen bekend zijn, openbaarmaking noodzakelijk is voor de uitvoering van de dienst, of een wettelijke verplichting openbaarmaking vereist.</Clause>
               <Clause nr="10.2">ZP Zaken is gerechtigd gegevens van Gebruiker te verstrekken aan gelieerde ondernemingen, professionele adviseurs en derden die betrokken zijn bij de verlening van de Dienst.</Clause>
             </Article>
 
-            <Article id="artikel-11" title="Artikel 11 — Overdracht rechten en verplichtingen">
+            <Article id="artikel-11" title="Artikel 11: Overdracht rechten en verplichtingen">
               <Clause nr="11.1">Gebruiker is niet gerechtigd zonder voorafgaande schriftelijke toestemming van ZP Zaken enige rechten of verplichtingen over te dragen.</Clause>
               <Clause nr="11.2">ZP Zaken heeft het recht om zonder toestemming van Gebruiker rechten en verplichtingen over te dragen aan gelieerde ondernemingen.</Clause>
             </Article>
 
-            <Article id="artikel-12" title="Artikel 12 — Werking van de Algemene Voorwaarden">
+            <Article id="artikel-12" title="Artikel 12: Werking van de Algemene Voorwaarden">
               <Clause nr="12.1">Afwijkende bedingen gelden slechts indien uitdrukkelijk schriftelijk overeengekomen tussen Gebruiker en een bevoegde vertegenwoordiger van ZP Zaken.</Clause>
               <Clause nr="12.2">Indien een bepaling nietig blijkt te zijn, laat dit de geldigheid van de overige bepalingen onverlet.</Clause>
               <Clause nr="12.3">ZP Zaken behoudt zich het recht voor deze voorwaarden te wijzigen. Wijzigingen worden kenbaar gemaakt aan Gebruiker met vermelding van de inhoud van de wijziging.</Clause>
             </Article>
 
-            <Article id="artikel-13" title="Artikel 13 — Geschillenregeling">
+            <Article id="artikel-13" title="Artikel 13: Geschillenregeling">
               <Clause nr="13.1">Op alle rechtsverhoudingen tussen ZP Zaken en Gebruiker is Nederlands recht van toepassing.</Clause>
               <Clause nr="13.2">Geschillen die niet minnelijk kunnen worden geschikt, worden voorgelegd aan de bevoegde rechter te Amsterdam.</Clause>
             </Article>
 
-            <Article id="artikel-14" title="Artikel 14 — Betaling">
+            <Article id="artikel-14" title="Artikel 14: Betaling">
               <Clause nr="14.1">Abonnementskosten worden jaarlijks in rekening gebracht via automatisch incasso, tenzij anders overeengekomen.</Clause>
               <Clause nr="14.2">Bij een niet-succesvolle betaling kan het abonnement eenzijdig worden opgeschort.</Clause>
               <Clause nr="14.3">ZP Zaken behoudt zich het recht voor abonnementen en/of prijzen te wijzigen. Wijzigingen zijn van toepassing vanaf de eerstvolgende kalendermaand na aankondiging.</Clause>
             </Article>
 
-            <Article id="artikel-15" title="Artikel 15 — Cookiebeleid">
+            <Article id="artikel-15" title="Artikel 15: Cookiebeleid">
               <Clause nr="15.1">
                 ZP Zaken gebruikt cookies en soortgelijke technieken voor technische, functionele en analytische doeleinden. Het volledige cookiebeleid is beschikbaar op{" "}
                 <a href="/cookies" className="text-accent hover:underline">zpzaken.nl/cookies</a>.
@@ -208,7 +208,7 @@ export default function AlgemeneVoorwaarden() {
               </Clause>
             </Article>
 
-            <Article id="artikel-16" title="Artikel 16 — Informatie">
+            <Article id="artikel-16" title="Artikel 16: Informatie">
               <Clause nr="16.1">Bij vragen, opmerkingen of klachten over onze Dienst of deze Algemene Voorwaarden kunt u contact opnemen via:</Clause>
               <div className="bg-secondary rounded-xl p-6 mt-4 text-sm space-y-1">
                 <p className="font-semibold text-foreground">ZP Zaken B.V.</p>

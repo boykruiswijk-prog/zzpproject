@@ -44,7 +44,7 @@ const timelineEvents = [
     year: "2019",
     title: "Het jaar van de automatisering",
     subtitle: "Schaalbaar met behoud van persoonlijk contact",
-    description: "Vergaande automatisering, maar met behoud van klantcontact — want wij geloven in mensen en zaken doen met mensen, niet in zakendoen met systemen.",
+    description: "Vergaande automatisering, maar met behoud van klantcontact :  we geloven in persoonlijk contact.",
     icon: Zap,
     highlight: "Automatisering",
     stats: "Schaalbaar & persoonlijk",
@@ -66,7 +66,7 @@ const timelineEvents = [
     year: "2024",
     title: "Marktleider in zzp-verzekeringen",
     subtitle: "Duizenden ondernemers geholpen",
-    description: "ZP Zaken is uitgegroeid tot dé specialist voor zzp'ers in Nederland. Het bewijs dat persoonlijke aandacht en expertise het verschil maken.",
+    description: "ZP Zaken is uitgegroeid tot dé specialist voor zzp'ers in Nederland. Persoonlijke aandacht maakt het verschil.",
     icon: Award,
     highlight: "Marktleider",
     stats: "Duizenden klanten",
@@ -77,7 +77,7 @@ const timelineEvents = [
     year: "Eind 2024",
     title: "Nieuw hoofdkantoor",
     subtitle: "Schiphol-Rijk, Tupolevlaan 41",
-    description: "Een gloednieuw kantoor op Schiphol-Rijk. Tupolevlaan 41 is nu ons thuis — een moderne werkplek waar ondernemers altijd welkom zijn. En ja, de koffie is hier écht lekker.",
+    description: "Een gloednieuw kantoor op Schiphol-Rijk. Tupolevlaan 41 is nu ons thuis :  een moderne werkplek waar ondernemers altijd welkom zijn. En ja, de koffie is hier écht lekker.",
     icon: Coffee,
     highlight: "Nieuwe locatie",
     stats: "Schiphol-Rijk",
@@ -251,7 +251,7 @@ export function Timeline() {
       <div className="flex justify-center mt-12 lg:mt-16">
         <div className="inline-flex items-center gap-3 bg-gradient-to-r from-accent/20 via-primary/20 to-accent/20 px-6 py-3 rounded-full border border-accent/30 animate-pulse">
           <PartyPopper className="h-5 w-5 text-accent" />
-          <span className="font-semibold text-foreground">En het avontuur gaat door...</span>
+          <span className="font-semibold text-foreground">En we gaan door...</span>
           <Sparkles className="h-5 w-5 text-primary" />
         </div>
       </div>

@@ -46,7 +46,7 @@ export default function PortalInvoices() {
                   </Badge>
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {new Date(inv.invoice_date).toLocaleDateString("nl-NL")} —{" "}
+                  {new Date(inv.invoice_date).toLocaleDateString("nl-NL")}: {" "}
                   € {Number(inv.amount_incl_btw).toFixed(2).replace(".", ",")}
                 </p>
                 <p className="text-xs text-muted-foreground">{inv.description}</p>

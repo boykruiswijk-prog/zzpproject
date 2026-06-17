@@ -23,14 +23,14 @@ export default function AOV() {
       canonicalPath="/aov"
       heroImage={teamBoyCalling}
       badge="Bescherm je inkomen"
-      title={<>AOV voor zzp'ers — <span className="text-accent">Zeker van je inkomen bij ziekte</span></>}
+      title={<>AOV voor zzp'ers: <span className="text-accent">Zeker van je inkomen bij ziekte</span></>}
       subtitle="Als zelfstandige ben je zelf verantwoordelijk voor je inkomen bij ziekte of arbeidsongeschiktheid. Een AOV vangt je op wanneer je niet kunt werken."
       schema={schema}
       benefits={[
         {
           icon: Shield,
           title: "Inkomen beschermd",
-          description: "Ontvang een maandelijkse uitkering als je door ziekte of een ongeval niet kunt werken. Zo behoud je financiële zekerheid.",
+          description: "Ontvang een maandelijkse uitkering als je door ziekte of een ongeval niet kunt werken. Zo heb je financiële zekerheid.",
         },
         {
           icon: Clock,
@@ -57,7 +57,7 @@ export default function AOV() {
         {
           image: teamMeeting,
           title: "Hoe werkt het afsluiten?",
-          text: "Via ZP Zaken krijg je persoonlijk advies over de AOV die het beste bij jouw situatie past. We vergelijken de beste verzekeraars en zorgen voor een scherpe premie.",
+          text: "Via ZP Zaken krijg je advies over de AOV die bij je past. We vergelijken verzekeraars en regelen een scherpe premie.",
           bullets: [
             "Persoonlijk advies op maat",
             "Vergelijking van top-verzekeraars",
@@ -67,7 +67,7 @@ export default function AOV() {
         {
           image: officeCoffee,
           title: "Wat kost een AOV?",
-          text: "De premie hangt af van je beroep, leeftijd, gewenste dekking en eigen risicoperiode. Gemiddeld betalen ZZP'ers in kantoorberoepen tussen €100 en €300 per maand — en dat is volledig aftrekbaar.",
+          text: "De premie hangt af van je beroep, leeftijd, gewenste dekking en eigen risicoperiode. Gemiddeld betalen ZZP'ers in kantoorberoepen tussen €100 en €300 per maand: en dat is volledig aftrekbaar.",
           bullets: [
             "Premie afhankelijk van je beroep en leeftijd",
             "Eigen risicoperiode verlaagt de premie",
@@ -76,7 +76,7 @@ export default function AOV() {
         },
       ]}
       ctaTitle="Bescherm je inkomen als zelfstandige"
-      ctaSubtitle="Vraag vrijblijvend advies aan en ontdek welke AOV het beste bij jou past."
+      ctaSubtitle="Vraag advies aan en zie welke AOV bij je past."
       ctaButton="Gratis AOV-advies aanvragen"
     />
   );

@@ -68,7 +68,7 @@ export function PortalLayout({ children }: { children: ReactNode }) {
               </SheetContent>
             </Sheet>
             <Link to="/portal" className="font-semibold">
-              ZP Zaken — Klantportaal
+              ZP Zaken | Klantportaal
             </Link>
           </div>
           <div className="flex items-center gap-3">

@@ -60,7 +60,7 @@ export default function Verzekeringen() {
       </SEOHead>
 
       <PageHero
-        title={<>BAV &amp; AVB — <span className="text-accent">De goedkoopste combinatiepolis voor zzp'ers</span></>}
+        title={<>BAV &amp; AVB: <span className="text-accent">De goedkoopste combinatiepolis voor zzp'ers</span></>}
         subtitle={t("verzekeringenPage.subtitle")}
         badge={{ icon: <Sparkles className="h-4 w-4" />, text: t("verzekeringenPage.badge") }}
         backgroundImage={teamBoyCalling}

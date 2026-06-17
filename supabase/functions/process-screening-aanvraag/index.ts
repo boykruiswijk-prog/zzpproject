@@ -173,17 +173,17 @@ Deno.serve(async (req) => {
         <hr/>
         <p>Aanvraag-ID: ${aanvraag.id}</p>
       `;
-      await sendMail("info@zpzaken.nl", `Nieuwe screeningsaanvraag — ${pakketLabel}`, adminHtml);
+      await sendMail("info@zpzaken.nl", `Nieuwe screeningsaanvraag: ${pakketLabel}`, adminHtml);
 
       // Bevestiging naar aanvrager
       const klantHtml = `
         <h2>Bedankt voor je screeningsaanvraag, ${data.voornaam}!</h2>
         <p>We hebben je aanvraag voor de <strong>${pakketLabel}</strong> ontvangen.</p>
-        <p>Een adviseur van ZP Zaken neemt binnen 24 uur contact met je op om de screening te bespreken en te starten.</p>
+        <p>We nemen binnen 24 uur contact met je op om de screening te starten.</p>
         <p>Heb je in de tussentijd vragen? Bel ons gerust op <strong>020 - 457 3077</strong> of mail naar <a href="mailto:info@zpzaken.nl">info@zpzaken.nl</a>.</p>
         <p>Met vriendelijke groet,<br/>Team ZP Zaken</p>
       `;
-      await sendMail(data.email, "Aanvraag screening ontvangen — ZP Zaken", klantHtml);
+      await sendMail(data.email, "Aanvraag screening ontvangen | ZP Zaken", klantHtml);
     }
 
     // 3. OTENTICA API — ACTIVEREN NA ONTVANGST API KEY

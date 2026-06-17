@@ -12,14 +12,14 @@ const intermediairPoints = [
   "Jij staat in hun database als één van de 50.000+ professionals",
   "Een algoritme bepaalt of jij wordt voorgesteld",
   "Je hebt geen direct contact met de recruiter",
-  "Opdrachten via vaste preferred suppliers — jij buiten beschouwing?",
+  "Opdrachten via vaste preferred suppliers :  jij buiten beschouwing?",
   "Jij betaalt indirect mee aan hun merkbudget, Formule 1-sponsoring en kantorenpanden",
 ];
 
 const onefellowPoints = [
   "Bemiddeling is gratis voor de zzp'er",
   "Persoonlijk contact met een recruiter die jouw profiel kent",
-  "Actief voorgesteld bij opdrachtgevers — niet passief in een database",
+  "Actief voorgesteld bij opdrachtgevers :  niet passief in een database",
   "Jij betaalt niets: de opdrachtgever betaalt de fee",
   "Werkzaam in heel Nederland",
   "Specialisatie in ZZP, detachering, detavast en payrolling",
@@ -32,7 +32,7 @@ export function BemiddelingSection() {
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center mb-12 max-w-3xl mx-auto">
           <h2 className="mb-4">Opdrachten vinden zonder bemiddelingskosten</h2>
           <p className="text-muted-foreground">
-            Naast verzekeringen helpt ZP Zaken je ook aan opdrachten via Onefellow — het recruitmentplatform van dezelfde mensen. Bemiddeling is gratis voor de zzp'er. Jij betaalt niets, de opdrachtgever betaalt de fee.
+            Naast verzekeringen helpt ZP Zaken je ook aan opdrachten via Onefellow :  het recruitmentplatform van dezelfde mensen. Bemiddeling is gratis voor jou. De opdrachtgever betaalt de fee.
           </p>
         </motion.div>
 
@@ -78,7 +78,7 @@ export function BemiddelingSection() {
 
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center max-w-2xl mx-auto">
           <p className="text-muted-foreground mb-6">
-            Onefellow is het recruitmentbedrijf van dezelfde mensen achter ZP Zaken. Wij bemiddelen gratis voor jou. Jij solliciteert bij ons — niet andersom.
+            Onefellow is het recruitmentbedrijf van dezelfde mensen achter ZP Zaken. Wij bemiddelen gratis voor jou. Jij solliciteert bij ons :  niet andersom.
           </p>
           <Button variant="accent" size="lg" asChild>
             <a href="https://www.onefellow.nl" target="_blank" rel="noopener noreferrer">

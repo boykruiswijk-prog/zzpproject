@@ -87,7 +87,7 @@ export default function Documenten() {
         badge={{ icon: <FileText className="h-4 w-4" />, text: "Officiële documenten" }}
       />
 
-      {/* Sectie 1 — Per branche */}
+      {/* Sectie 1: Per branche */}
       <section className="section-padding bg-background">
         <div className="container-wide">
           <div className="max-w-5xl mx-auto">
@@ -120,7 +120,7 @@ export default function Documenten() {
         </div>
       </section>
 
-      {/* Sectie 2 — Algemene BAV */}
+      {/* Sectie 2: Algemene BAV */}
       <section className="section-padding bg-muted/30">
         <div className="container-wide">
           <div className="max-w-5xl mx-auto">
@@ -137,7 +137,7 @@ export default function Documenten() {
         </div>
       </section>
 
-      {/* Sectie 3 — Aanvullende voorwaarden */}
+      {/* Sectie 3: Aanvullende voorwaarden */}
       {aanvullendeDocumenten.length > 0 && (
         <section className="section-padding bg-background">
           <div className="container-wide">
@@ -151,7 +151,7 @@ export default function Documenten() {
         </section>
       )}
 
-      {/* Sectie 4 — ZP Zaken eigen */}
+      {/* Sectie 4: ZP Zaken eigen */}
       <section className="section-padding bg-muted/30">
         <div className="container-wide">
           <div className="max-w-5xl mx-auto">
@@ -174,7 +174,7 @@ export default function Documenten() {
               Vragen over een document?
             </h2>
             <p className="text-background/70 mb-8">
-              Onze specialisten beantwoorden je vragen graag.
+              We beantwoorden je vragen graag.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button variant="accent" asChild>

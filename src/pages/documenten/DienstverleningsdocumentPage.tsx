@@ -11,7 +11,7 @@ export default function DienstverleningsdocumentPage() {
       <h2>Wie zijn wij</h2>
       <p>
         ZP Zaken B.V. is een financieel dienstverlener en staat onder toezicht van de
-        Autoriteit Financiële Markten (AFM). Wij zijn gespecialiseerd in
+        Autoriteit Financiële Markten (AFM). Wij bemiddelen in
         verzekeringsoplossingen voor zelfstandig ondernemers in de zakelijke
         dienstverlening.
       </p>
@@ -39,7 +39,7 @@ export default function DienstverleningsdocumentPage() {
 
       <h2>Belangen</h2>
       <p>
-        Wij stellen het belang van de klant centraal. Wij adviseren alleen producten die
+        Het belang van de klant staat voorop. Wij adviseren alleen producten die
         passend zijn bij de werkzaamheden en risico's van de klant en wijzen aanvragen af
         wanneer deze niet aansluiten.
       </p>
@@ -50,7 +50,7 @@ export default function DienstverleningsdocumentPage() {
         <a href="mailto:info@zpzaken.nl" className="text-accent hover:underline">
           info@zpzaken.nl
         </a>
-        . Wij zorgen voor een zorgvuldige en tijdige afhandeling.
+        . Wij zorgen voor een correcte afhandeling.
       </p>
       <p>
         Komen we er samen niet uit, dan kun je je klacht voorleggen aan het

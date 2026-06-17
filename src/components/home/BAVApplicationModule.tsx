@@ -490,7 +490,7 @@ export function BAVApplicationModule() {
                             <div className="flex items-start gap-2 flex-1">
                               <HelpCircle className="h-4 w-4 flex-shrink-0 mt-0.5 text-orange-600" />
                               <p className="text-sm text-orange-900">
-                                Voor meer dan 3 medewerkers vragen we je contact met ons op te nemen voor een passend voorstel. Onze adviseurs helpen je graag verder.
+                                Bij meer dan 3 medewerkers maken we graag een persoonlijk voorstel. We helpen je graag verder.
                               </p>
                             </div>
                             <Button variant="outline" size="sm" asChild className="flex-shrink-0 border-orange-400 text-orange-700 hover:bg-orange-100">
@@ -640,7 +640,7 @@ export function BAVApplicationModule() {
                         </div>
                       </div>
 
-                      {/* Belangrijke documenten — Deel 6 */}
+                      {/* Belangrijke documenten, Deel 6 */}
                       <div className="border border-border rounded-lg p-4 bg-background space-y-3">
                         <h4 className="font-semibold text-sm">Belangrijke documenten om door te lezen</h4>
                         <p className="text-xs text-muted-foreground">
