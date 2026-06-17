@@ -35,9 +35,9 @@ const fade = {
 // Tarieven gesynchroniseerd met src/data/bavPakketten.ts (single source of truth).
 // Toont anoniem concurrent-prijzen ter vergelijking; behoud de anonimisering.
 const packages = [
-  { name: "BAV & AVB Maandelijks", price: 55, periode: "maand", eventCoverage: "€ 5.000.000", yearCoverage: "€ 15.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Dagelijks opzegbaar"] },
-  { name: "BAV & AVB Jaarlijks", price: 600, periode: "jaar", eventCoverage: "€ 5.000.000", yearCoverage: "€ 15.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Dagelijks opzegbaar", "Goedkoopste premie"], popular: true },
-  { name: "BAV & AVB Jaarlijks + Cyber", price: 750, periode: "jaar", eventCoverage: "€ 5.000.000", yearCoverage: "€ 15.000.000", features: ["BAV + AVB + Cyber", "Cyber tot € 5.000.000 per jaar", "Geen eigen risico", "Dagelijks opzegbaar"] },
+  { name: "BAV & AVB Maandelijks", price: 55, periode: "maand", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Dagelijks opzegbaar"] },
+  { name: "BAV & AVB Jaarlijks", price: 600, periode: "jaar", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Dagelijks opzegbaar", "Goedkoopste premie"], popular: true },
+  { name: "BAV & AVB Jaarlijks + Cyber", price: 750, periode: "jaar", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB + Cyber", "Cyber tot €5.000.000 per jaar", "Geen eigen risico", "Dagelijks opzegbaar"] },
 ];
 
 const diffBlocks = [
