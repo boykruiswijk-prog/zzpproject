@@ -21,7 +21,7 @@ import ellenAvatar from "@/assets/ellen-baars-avatar.jpg";
 import { TrustSignalsStrip } from "@/components/social-proof/TrustSignalsStrip";
 import { bavPakketten, getPakket, type BavPakketId } from "@/data/bavPakketten";
 
-const formatBedrag = (n: number) => `€ ${n.toLocaleString("nl-NL")}`;
+const formatBedrag = (n: number) => `€${n.toLocaleString("nl-NL")}`;
 
 const TOTAL_STEPS = 5;
 
