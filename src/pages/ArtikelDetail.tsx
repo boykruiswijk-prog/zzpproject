@@ -319,30 +319,40 @@ export default function ArtikelDetail() {
 
         {/* Featured image */}
         {article.image_url && (
-          <div className="container-wide max-w-3xl mx-auto px-4 sm:px-6 -mt-2 mb-8">
-            <img
-              src={article.image_url}
-              alt={article.title}
-              className="w-full aspect-[16/9] object-cover rounded-xl shadow-md"
-            />
+          <div className="container-wide max-w-4xl mx-auto px-4 sm:px-6 -mt-2 mb-8">
+            <figure>
+              <img
+                src={article.image_url}
+                alt={article.title}
+                width={1600}
+                height={900}
+                loading="eager"
+                fetchPriority="high"
+                className="w-full aspect-[16/9] object-cover rounded-xl shadow-md"
+              />
+            </figure>
           </div>
         )}
 
-        {/* Body */}
-        <div className="container-wide max-w-3xl mx-auto px-4 sm:px-6 pb-16">
-          <div className="flex items-center justify-between mb-6 pb-4 border-b border-border/40">
-            <ShareButtons url={articleUrl} title={article.title} />
-          </div>
+        {/* Body with optional TOC sidebar */}
+        <div className="container-wide max-w-6xl mx-auto px-4 sm:px-6 pb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_240px] gap-10">
+            <div className="max-w-[720px] mx-auto w-full">
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-border/40">
+                <ShareButtons url={articleUrl} title={article.title} />
+              </div>
 
-          <div className="prose prose-lg max-w-none
-            prose-headings:text-foreground prose-headings:font-semibold
-            prose-h2:text-[24px] md:prose-h2:text-[28px] prose-h2:mt-12 prose-h2:mb-4
-            prose-h3:text-[20px] md:prose-h3:text-[22px] prose-h3:mt-8 prose-h3:mb-3
-            prose-h4:text-[18px] prose-h4:mt-6
-            prose-p:text-slate-700 prose-p:text-base md:prose-p:text-[18px] prose-p:leading-[1.75] prose-p:mb-6
-            prose-a:text-accent prose-a:underline hover:prose-a:opacity-80
-            prose-strong:text-foreground
-            prose-ul:my-6 prose-ul:space-y-2 prose-ul:pl-6 prose-li:text-slate-700 prose-li:marker:text-accent
+              <div
+                data-article-body
+                className="prose prose-lg max-w-none
+                  prose-headings:text-foreground prose-headings:font-semibold prose-headings:scroll-mt-24
+                  prose-h2:text-[24px] md:prose-h2:text-[28px] prose-h2:mt-12 prose-h2:mb-4
+                  prose-h3:text-[20px] md:prose-h3:text-[22px] prose-h3:mt-8 prose-h3:mb-3
+                  prose-h4:text-[18px] prose-h4:mt-6
+                  prose-p:text-slate-700 prose-p:text-base md:prose-p:text-[18px] prose-p:leading-[1.75] prose-p:mb-6
+                  prose-a:text-accent prose-a:underline hover:prose-a:opacity-80
+                  prose-strong:text-foreground
+                  prose-ul:my-6 prose-ul:space-y-2 prose-ul:pl-6 prose-li:text-slate-700 prose-li:marker:text-accent
             prose-ol:my-6 prose-ol:space-y-2 prose-ol:pl-6
             prose-blockquote:border-l-4 prose-blockquote:border-accent prose-blockquote:bg-slate-50 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:not-italic prose-blockquote:my-8
             prose-code:bg-slate-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
