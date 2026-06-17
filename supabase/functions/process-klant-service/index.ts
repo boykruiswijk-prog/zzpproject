@@ -68,6 +68,20 @@ Deno.serve(async (req) => {
     }
     const v = parsed.data;
 
+    // Server-side bescherming tegen API-manipulatie: opzegdatum mag niet in het verleden liggen.
+    if (v.type === "opzeggen") {
+      const opzegdatum = v.details?.opzegdatum;
+      if (typeof opzegdatum === "string" && opzegdatum) {
+        const today = new Date().toISOString().split("T")[0];
+        if (opzegdatum < today) {
+          return new Response(
+            JSON.stringify({ error: "Opzegdatum kan niet in het verleden liggen." }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          );
+        }
+      }
+    }
+
     const { data, error } = await supabase
       .from("klant_service_aanvragen")
       .insert({
