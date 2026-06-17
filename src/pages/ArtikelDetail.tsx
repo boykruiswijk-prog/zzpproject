@@ -186,54 +186,77 @@ export default function ArtikelDetail() {
   const readTime = article.read_time || estimateReadTime(article.content);
   const categoryStyle = CATEGORY_STYLES[article.category] || defaultCategoryStyle;
   const categorySlug = CATEGORY_SLUGS[article.category];
-  const articleUrl = `https://zpzaken.nl/kennisbank/${article.slug}`;
+  const articleUrl = `https://www.zpzaken.nl/kennisbank/${article.slug}`;
+  const wordCount = countWords(article.content);
+  const ogImage = article.image_url || FALLBACK_OG_IMAGE;
+  const metaDescription = article.seo_description || makeFallbackDescription(article.content, article.excerpt);
+  const seoTitle = article.seo_title || article.title;
+  const publishedAt = article.published_at || new Date().toISOString();
 
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: article.seo_title || article.title,
-    description: article.seo_description || article.excerpt,
-    datePublished: article.published_at,
-    dateModified: article.published_at,
-    author: { "@type": "Organization", name: "ZP Zaken" },
+    headline: seoTitle,
+    description: metaDescription,
+    image: [ogImage],
+    datePublished: publishedAt,
+    dateModified: publishedAt,
+    author: { "@type": "Organization", name: "ZP Zaken", url: "https://www.zpzaken.nl" },
     publisher: {
       "@type": "Organization",
       name: "ZP Zaken",
-      logo: { "@type": "ImageObject", url: "https://zpzaken.nl/favicon.png" },
+      logo: { "@type": "ImageObject", url: "https://www.zpzaken.nl/favicon.png" },
     },
     mainEntityOfPage: { "@type": "WebPage", "@id": articleUrl },
-    image: article.image_url || "https://zpzaken.nl/favicon.png",
+    articleSection: article.category,
+    wordCount,
+    inLanguage: "nl-NL",
   };
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://zpzaken.nl/" },
-      { "@type": "ListItem", position: 2, name: "Kennisbank", item: "https://zpzaken.nl/kennisbank" },
-      { "@type": "ListItem", position: 3, name: article.category, item: categorySlug ? `https://zpzaken.nl/kennisbank/${categorySlug}` : "https://zpzaken.nl/kennisbank" },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.zpzaken.nl/" },
+      { "@type": "ListItem", position: 2, name: "Kennisbank", item: "https://www.zpzaken.nl/kennisbank" },
+      { "@type": "ListItem", position: 3, name: article.category, item: categorySlug ? `https://www.zpzaken.nl/kennisbank/${categorySlug}` : "https://www.zpzaken.nl/kennisbank" },
       { "@type": "ListItem", position: 4, name: article.title, item: articleUrl },
     ],
   };
 
   const isBavAvb = article.slug === BAV_AVB_SLUG;
-  const metaDescription = article.seo_description || article.excerpt || (article.content || "").slice(0, 160);
 
   return (
     <Layout>
+      <ReadingProgress />
       <Helmet>
-        <title>{article.seo_title || article.title} | Kennisbank | ZP Zaken</title>
+        <title>{seoTitle} | Kennisbank | ZP Zaken</title>
         <meta name="description" content={metaDescription} />
-        <meta property="og:title" content={article.seo_title || article.title} />
-        <meta property="og:description" content={metaDescription} />
-        <meta property="og:type" content="article" />
-        <meta property="og:url" content={articleUrl} />
-        {article.image_url && <meta property="og:image" content={article.image_url} />}
-        <meta name="twitter:card" content="summary_large_image" />
         <link rel="canonical" href={articleUrl} />
+
+        <meta property="og:type" content="article" />
+        <meta property="og:site_name" content="ZP Zaken" />
+        <meta property="og:title" content={seoTitle} />
+        <meta property="og:description" content={metaDescription} />
+        <meta property="og:url" content={articleUrl} />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:locale" content="nl_NL" />
+        <meta property="article:published_time" content={publishedAt} />
+        <meta property="article:modified_time" content={publishedAt} />
+        <meta property="article:section" content={article.category} />
+        <meta property="article:author" content="ZP Zaken" />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={seoTitle} />
+        <meta name="twitter:description" content={metaDescription} />
+        <meta name="twitter:image" content={ogImage} />
+
+        {article.image_url && <link rel="preload" as="image" href={article.image_url} />}
+
         <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
       </Helmet>
+
 
       <article className="bg-background">
         {/* Hero */}
