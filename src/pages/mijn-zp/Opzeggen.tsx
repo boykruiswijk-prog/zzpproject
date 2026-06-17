@@ -134,7 +134,7 @@ export default function OpzeggenWizard() {
                 />
                 <span>
                   Ik bevestig dat ik mijn BAV verzekering bij ZP Zaken wil opzeggen per{" "}
-                  <strong>{details.opzegdatum ?? defaultDate(30)}</strong>
+                  <strong>{formatDateNL(details.opzegdatum ?? defaultDate(0))}</strong>
                 </span>
               </label>
             </div>
