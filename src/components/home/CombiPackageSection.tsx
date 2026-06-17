@@ -79,24 +79,31 @@ export function CombiPackageSection() {
                   <ul className="space-y-2 text-sm mb-5">
                     <li className="flex items-start gap-2">
                       <CheckCircle className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
-                      <span>
-                        BAV {formatBedrag(pkg.dekkingen.bav.perGebeurtenis)} per
-                        gebeurtenis
-                      </span>
+                      <div className="flex-1 flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-x-2">
+                        <span>BAV per gebeurtenis</span>
+                        <span className="font-semibold whitespace-nowrap">
+                          {formatBedrag(pkg.dekkingen.bav.perGebeurtenis)}
+                        </span>
+                      </div>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
-                      <span>
-                        AVB {formatBedrag(pkg.dekkingen.avb.perGebeurtenis)} per
-                        gebeurtenis
-                      </span>
+                      <div className="flex-1 flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-x-2">
+                        <span>AVB per gebeurtenis</span>
+                        <span className="font-semibold whitespace-nowrap">
+                          {formatBedrag(pkg.dekkingen.avb.perGebeurtenis)}
+                        </span>
+                      </div>
                     </li>
                     {pkg.dekkingen.cyber && (
                       <li className="flex items-start gap-2">
                         <CheckCircle className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
-                        <span>
-                          Cyber tot {formatBedrag(pkg.dekkingen.cyber.perJaar)} per jaar
-                        </span>
+                        <div className="flex-1 flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-x-2">
+                          <span>Cyber per jaar</span>
+                          <span className="font-semibold whitespace-nowrap">
+                            {formatBedrag(pkg.dekkingen.cyber.perJaar)}
+                          </span>
+                        </div>
                       </li>
                     )}
                     {pkg.usps.map((u) => (
