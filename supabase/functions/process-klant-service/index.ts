@@ -33,9 +33,18 @@ const labels: Record<string, string> = {
   opzeggen: "Opzegging",
 };
 
+const DATE_KEYS = new Set(["opzegdatum", "ingangsdatum", "pauzedatum", "geboortedatum", "datum"]);
+
+function fmtValue(key: string, v: unknown): string {
+  if (Array.isArray(v)) return v.join(", ");
+  if (v == null) return "-";
+  if (DATE_KEYS.has(key)) return maybeFormatDate(v);
+  return String(v);
+}
+
 function renderDetails(details: Record<string, unknown>): string {
   return Object.entries(details)
-    .map(([k, v]) => `<li><strong>${k}:</strong> ${Array.isArray(v) ? v.join(", ") : String(v ?? "-")}</li>`)
+    .map(([k, v]) => `<li><strong>${k}:</strong> ${fmtValue(k, v)}</li>`)
     .join("");
 }
 
