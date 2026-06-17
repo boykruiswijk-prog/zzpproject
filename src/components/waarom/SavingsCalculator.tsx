@@ -7,11 +7,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowRight } from "lucide-react";
 import { LocalizedLink } from "@/components/LocalizedLink";
 
-const packages = [
-  { id: "basis", label: "Combi Basis", monthly: 30, yearly: 324, dekking: "€500.000" },
-  { id: "uitgebreid", label: "Combi Uitgebreid", monthly: 45, yearly: 486, dekking: "€2.500.000", popular: true },
-  { id: "compleet", label: "Combi Compleet", monthly: 65, yearly: 702, dekking: "€5.000.000" },
-];
+import { bavPakketten } from "@/data/bavPakketten";
+
+// Pakketten afgeleid uit single source of truth (src/data/bavPakketten.ts).
+// 'monthly' = vergelijkbare maandprijs, 'yearly' = jaarbedrag.
+const packages = bavPakketten.map((p) => {
+  const yearly = p.periode === "jaar" ? p.prijs : p.prijs * 12;
+  const monthly = p.periode === "jaar" ? Math.round(p.prijs / 12) : p.prijs;
+  return {
+    id: p.id,
+    label: p.name,
+    monthly,
+    yearly,
+    dekking: `€${(p.dekkingen.bav.perGebeurtenis / 1_000_000).toLocaleString("nl-NL")}.000.000`,
+    popular: p.id === "jaarlijks-cyber",
+  };
+});
 
 const professions = [
   { id: "ict", label: "ICT & Software (laag risico)", monthly: 42 },
