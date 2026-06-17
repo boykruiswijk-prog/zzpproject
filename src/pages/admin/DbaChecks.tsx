@@ -82,7 +82,7 @@ export default function AdminDbaChecks() {
     doc.setFontSize(16);
     doc.text("ZP Approved - Overzicht Wet DBA Checks", pageWidth / 2, 24, { align: "center" });
     doc.setFontSize(9);
-    doc.text(`Gegenereerd op ${formatDateNL()}`, pageWidth / 2, 30, { align: "center" });
+    doc.text(`Gegenereerd op ${formatDateNL(new Date())}`, pageWidth / 2, 30, { align: "center" });
 
     const certifiedChecks = checks.filter((c) => c.certificate_number && !c.invoiced_at);
 

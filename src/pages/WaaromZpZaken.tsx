@@ -35,9 +35,9 @@ const fade = {
 // Tarieven gesynchroniseerd met src/data/bavPakketten.ts (single source of truth).
 // Toont anoniem concurrent-prijzen ter vergelijking; behoud de anonimisering.
 const packages = [
-  { name: "BAV & AVB Maandelijks", price: 55, periode: "maand", eventCoverage: "€ 5.000.000", yearCoverage: "€ 15.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Dagelijks opzegbaar"] },
-  { name: "BAV & AVB Jaarlijks", price: 600, periode: "jaar", eventCoverage: "€ 5.000.000", yearCoverage: "€ 15.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Dagelijks opzegbaar", "Goedkoopste premie"], popular: true },
-  { name: "BAV & AVB Jaarlijks + Cyber", price: 750, periode: "jaar", eventCoverage: "€ 5.000.000", yearCoverage: "€ 15.000.000", features: ["BAV + AVB + Cyber", "Cyber tot € 5.000.000 per jaar", "Geen eigen risico", "Dagelijks opzegbaar"] },
+  { name: "BAV & AVB Maandelijks", price: 55, periode: "maand", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Dagelijks opzegbaar"] },
+  { name: "BAV & AVB Jaarlijks", price: 600, periode: "jaar", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Dagelijks opzegbaar", "Goedkoopste premie"], popular: true },
+  { name: "BAV & AVB Jaarlijks + Cyber", price: 750, periode: "jaar", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB + Cyber", "Cyber tot €5.000.000 per jaar", "Geen eigen risico", "Dagelijks opzegbaar"] },
 ];
 
 const diffBlocks = [
@@ -181,10 +181,10 @@ export default function WaaromZpZaken() {
                   </span>
                 )}
                 <h3 className="text-lg font-bold mb-1">{pkg.name}</h3>
-                <p className="text-3xl font-bold text-accent mb-1">€{pkg.price}<span className="text-sm font-normal text-muted-foreground">/{pkg.periode}</span></p>
+                <p className="text-3xl font-bold text-accent mb-1 whitespace-nowrap">€{pkg.price}<span className="text-sm font-normal text-muted-foreground">/{pkg.periode}</span></p>
                 <div className="text-xs text-muted-foreground mb-6 space-y-0.5">
-                  <p>{pkg.eventCoverage} per gebeurtenis</p>
-                  <p>{pkg.yearCoverage} per jaar</p>
+                  <p className="flex justify-between gap-2"><span>Per gebeurtenis</span><span className="font-medium whitespace-nowrap">{pkg.eventCoverage}</span></p>
+                  <p className="flex justify-between gap-2"><span>Per jaar</span><span className="font-medium whitespace-nowrap">{pkg.yearCoverage}</span></p>
                 </div>
                 <ul className="space-y-2">
                   {pkg.features.map((f) => (
