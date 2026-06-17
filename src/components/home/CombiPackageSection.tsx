@@ -68,7 +68,7 @@ export function CombiPackageSection() {
                   </div>
 
                   <div className="mb-5">
-                    <p className="text-3xl font-bold text-foreground">
+                    <p className="text-3xl font-bold text-foreground whitespace-nowrap">
                       €{pkg.prijs}
                       <span className="text-sm font-normal text-muted-foreground">
                         {" "}/ {pkg.periode}
