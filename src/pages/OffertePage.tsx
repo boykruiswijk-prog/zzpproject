@@ -192,11 +192,27 @@ export default function OffertePage() {
       }
 
       navigate("/offerte/bedankt");
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      console.error("[Offerte] submit failed", err);
+      const code: string = err?.code ?? "";
+      const msg: string = err?.message ?? "";
+      let description =
+        "We konden je aanvraag niet verwerken. Probeer het over een paar minuten opnieuw of bel ons direct op 020 - 457 3077.";
+      if (code === "23505" || /duplicate|unique/i.test(msg)) {
+        description =
+          "Deze aanvraag staat al bij ons in het systeem. Bel ons op 020 - 457 3077 als je twijfelt.";
+      } else if (code === "42501" || /row-level security|permission/i.test(msg)) {
+        description =
+          "Je aanvraag kon niet worden opgeslagen door een beveiligingsfout. Bel ons op 020 - 457 3077, dan regelen we het persoonlijk.";
+      } else if (/network|fetch|failed to fetch/i.test(msg)) {
+        description =
+          "De server is even niet bereikbaar. Probeer het zo opnieuw of bel 020 - 457 3077.";
+      } else if (msg) {
+        description = `${msg}. Lukt het niet? Bel 020 - 457 3077.`;
+      }
       toast({
-        title: "Er ging iets mis",
-        description: "Probeer het opnieuw of bel ons op 020 - 457 3077.",
+        title: "Aanvraag niet verstuurd",
+        description,
         variant: "destructive",
       });
     } finally {
