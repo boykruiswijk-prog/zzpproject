@@ -13,7 +13,7 @@ export function CombiPackageSection() {
   const { t } = useTranslation();
 
   const formatBedrag = (n: number) =>
-    `€ ${n.toLocaleString("nl-NL")}`;
+    `€${n.toLocaleString("nl-NL")}`;
 
   return (
     <section className="section-padding bg-background" id="pakketten">
