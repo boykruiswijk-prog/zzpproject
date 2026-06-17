@@ -62,7 +62,7 @@ export default function OverOns() {
       <PageHero
         title={t("overOns.title")}
         subtitle={t("overOns.subtitle")}
-        badge={{ icon: <Heart className="h-4 w-4" />text: t("overOns.badge") }}
+        badge={{ icon: <Heart className="h-4 w-4" />, text: t("overOns.badge") }}
         backgroundImage={teamWalking}
       />
 
