@@ -53,7 +53,7 @@ const InlineCTA = () => (
       Direct geregeld
     </div>
     <h3 className="text-lg font-bold mb-1 text-foreground">
-      Sluit direct online af vanaf €30 per maand
+      Sluit direct online af vanaf €55 per maand
     </h3>
     <p className="text-sm text-muted-foreground mb-4">
       Geen eigen risico. Dagelijks opzegbaar. BAV + AVB gecombineerd.
