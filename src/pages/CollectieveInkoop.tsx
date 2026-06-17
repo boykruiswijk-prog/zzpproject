@@ -117,7 +117,7 @@ function PilotSignupDialog({ pilot, open, onOpenChange, t }: {
         pilot_slug: pilot.slug, naam: form.naam.trim(), email: form.email.trim(),
         telefoon: form.telefoon.trim() || null, postcode: form.postcode.trim() || null,
         type: form.type || null, huidige_leverancier: form.huidige_leverancier.trim() || null,
-        interesse_gebieden: form.interesse_gebieden.length > 0 ? form.interesse_gebieden : null,
+        interesse_gebieden: form.interesse_gebieden.length > 0 ? form.interesse_gebieden: null,
       });
       if (error) throw error;
       toast({ title: t("collectieveInkoop.signUpSuccess"), description: t("collectieveInkoop.signUpSuccessDesc") });
@@ -135,7 +135,7 @@ function PilotSignupDialog({ pilot, open, onOpenChange, t }: {
       ...prev,
       interesse_gebieden: prev.interesse_gebieden.includes(val)
         ? prev.interesse_gebieden.filter((v) => v !== val)
-        : [...prev.interesse_gebieden, val],
+       : [...prev.interesse_gebieden, val],
     }));
   };
 
@@ -171,7 +171,7 @@ function PilotSignupDialog({ pilot, open, onOpenChange, t }: {
                 <div className="flex gap-3 mt-1">
                   {[{ key: "private", label: t("collectieveInkoop.private") }, { key: "business", label: t("collectieveInkoop.business") }].map((opt) => (
                     <button key={opt.key} type="button" onClick={() => setForm({ ...form, type: opt.key })}
-                      className={`px-4 py-2 rounded-lg border text-sm transition-colors ${form.type === opt.key ? "bg-accent text-accent-foreground border-accent" : "bg-card text-muted-foreground border-border hover:border-foreground/30"}`}>
+                      className={`px-4 py-2 rounded-lg border text-sm transition-colors ${form.type === opt.key ? "bg-accent text-accent-foreground border-accent": "bg-card text-muted-foreground border-border hover:border-foreground/30"}`}>
                       {opt.label}
                     </button>
                   ))}
@@ -200,7 +200,7 @@ function PilotSignupDialog({ pilot, open, onOpenChange, t }: {
 
           <p className="text-xs text-muted-foreground">{t("collectieveInkoop.noObligation")}</p>
           <Button type="submit" className="w-full" variant="accent" disabled={loading}>
-            {loading ? t("collectieveInkoop.sending") : t("collectieveInkoop.signUp")}
+            {loading ? t("collectieveInkoop.sending"): t("collectieveInkoop.signUp")}
           </Button>
         </form>
       </DialogContent>
@@ -243,7 +243,7 @@ function NewsletterSection() {
               className="bg-background/10 border-background/20 text-background placeholder:text-background/50 flex-1" />
             <Button type="submit" variant="accent" disabled={loading || !privacy}>
               <Mail className="h-4 w-4 mr-2" />
-              {loading ? t("collectieveInkoop.sending") : t("collectieveInkoop.subscribe")}
+              {loading ? t("collectieveInkoop.sending"): t("collectieveInkoop.subscribe")}
             </Button>
           </form>
           <label className="flex items-center justify-center gap-2 text-sm text-background/60 cursor-pointer">
@@ -319,7 +319,7 @@ function SuggestionBox() {
             </div>
             <Button type="submit" variant="accent" disabled={loading || !form.suggestie.trim()}>
               <Lightbulb className="h-4 w-4 mr-2" />
-              {loading ? t("collectieveInkoop.suggestionSending") : t("collectieveInkoop.suggestionSubmit")}
+              {loading ? t("collectieveInkoop.suggestionSending"): t("collectieveInkoop.suggestionSubmit")}
             </Button>
           </form>
         </AnimatedSection>

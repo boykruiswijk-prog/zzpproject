@@ -62,7 +62,7 @@ export default function OverOns() {
       <PageHero
         title={t("overOns.title")}
         subtitle={t("overOns.subtitle")}
-        badge={{ icon: <Heart className="h-4 w-4" />, text: t("overOns.badge") }}
+        badge={{ icon: <Heart className="h-4 w-4" />text: t("overOns.badge") }}
         backgroundImage={teamWalking}
       />
 
@@ -77,10 +77,10 @@ export default function OverOns() {
               </div>
               <h2 className="mb-4">Boy Kruiswijk</h2>
               <p className="text-lg text-muted-foreground mb-4">
-                "Meer dan 13 jaar geleden zag ik dat zzp'ers niet dezelfde zekerheid kregen als werknemers. Dat moest anders. Ik ontwikkelde de eerste gecombineerde BAV+AVB polis in Nederland , speciaal voor zelfstandig professionals."
+                "Meer dan 13 jaar geleden zag ik dat zzp'ers niet dezelfde zekerheid kregen als werknemers. Dat moest anders. Ik ontwikkelde de eerste gecombineerde BAV+AVB polis in Nederland, speciaal voor zelfstandig professionals."
               </p>
               <p className="text-lg text-muted-foreground mb-6">
-                Zijn visie: ondernemers goed en zorgeloos verzekerd, met persoonlijk contact en eerlijk advies. Geen callcenters of verkooppraatjes , we denken met je mee.
+                Zijn visie: ondernemers goed en zorgeloos verzekerd, met persoonlijk contact en eerlijk advies. Geen callcenters of verkooppraatjes, we denken met je mee.
               </p>
               <div className="flex flex-wrap gap-2">
                 {["13+ jaar ervaring", "Bedenker unieke BAV+AVB polis", "NEN-gecertificeerd", "AFM geregistreerd"].map((tag) => (
@@ -99,7 +99,7 @@ export default function OverOns() {
                   <blockquote className="text-lg font-medium mb-2 text-foreground italic">
                     "Zzp'ers verdienen dezelfde zekerheid als werknemers, maar dan op een manier die past bij het ondernemersleven."
                   </blockquote>
-                  <p className="text-sm text-muted-foreground">, Boy Kruiswijk, Oprichter ZP Zaken</p>
+                  <p className="text-sm text-muted-foreground">Boy Kruiswijk, Oprichter ZP Zaken</p>
                 </div>
               </div>
             </div>
@@ -147,7 +147,7 @@ export default function OverOns() {
                 <div className="aspect-[4/3] overflow-hidden">
                   {member.image ? (
                     <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
-                  ) : "photoPending" in member && member.photoPending ? (
+                  ): "photoPending" in member && member.photoPending ? (
                     <div
                       className="w-full h-full flex flex-col items-center justify-center text-white"
                       style={{ background: "linear-gradient(135deg, #2f5d3a 0%, #3d7a4a 50%, #2f5d3a 100%)" }}
@@ -155,11 +155,11 @@ export default function OverOns() {
                       <Camera className="h-12 w-12 text-white/70 mb-2" />
                       <span className="text-sm font-medium text-white/90">Foto volgt</span>
                     </div>
-                  ) : (
+                  ): (
                     <div className="w-full h-full flex flex-col items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
                       {"vacancy" in member && member.vacancy ? (
                         <User className="h-16 w-16 text-muted-foreground/40 mb-2" />
-                      ) : (
+                      ): (
                         <UserPlus className="h-16 w-16 text-muted-foreground/40 mb-2" />
                       )}
                     </div>
@@ -177,7 +177,7 @@ export default function OverOns() {
                         <Mail className="h-3.5 w-3.5 text-accent" />{member.email}
                       </a>
                     </div>
-                  ) : null}
+                  ): null}
                   {"vacancy" in member && member.vacancy ? (
                     <div className="mt-4 flex flex-col items-start gap-3">
                       <span className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 text-accent px-3 py-1 rounded-full text-sm font-medium">
@@ -187,11 +187,11 @@ export default function OverOns() {
                         <LocalizedLink to="/contact">Direct solliciteren</LocalizedLink>
                       </Button>
                     </div>
-                  ) : !member.image && !("photoPending" in member && member.photoPending) ? (
+                  ): !member.image && !("photoPending" in member && member.photoPending) ? (
                     <Button variant="outline" size="sm" className="mt-4" asChild>
                       <LocalizedLink to="/contact">Bekijk vacatures</LocalizedLink>
                     </Button>
-                  ) : null}
+                  ): null}
                 </div>
               </div>
             ))}

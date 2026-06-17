@@ -94,7 +94,7 @@ export default function Contact() {
                     <p className="text-muted-foreground mb-6">{t("contact.successDesc")}</p>
                     <Button variant="outline" onClick={() => setIsSubmitted(false)}>{t("contact.newMessage")}</Button>
                   </div>
-                ) : (
+                ): (
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid sm:grid-cols-2 gap-6">
                       <div className="space-y-2">
@@ -129,7 +129,7 @@ export default function Contact() {
                       <Label htmlFor="privacy" className="text-sm text-muted-foreground font-normal">{t("contact.privacy")}</Label>
                     </div>
                     <Button type="submit" variant="accent" size="lg" className="w-full sm:w-auto" disabled={isSubmitting}>
-                      {isSubmitting ? t("contact.submitting") : t("contact.submit")}
+                      {isSubmitting ? t("contact.submitting"): t("contact.submit")}
                     </Button>
                   </form>
                 )}
@@ -167,9 +167,9 @@ export default function Contact() {
                 />
                 <div className="p-6">
                   <p className="font-semibold text-foreground">Ellen Baars</p>
-                  <p className="text-sm text-accent mb-3">Senior Adviseur :  ZP Zaken</p>
+                  <p className="text-sm text-accent mb-3">Senior Adviseur:  ZP Zaken</p>
                   <p className="text-sm text-muted-foreground">
-                    Ik help je graag bij het vinden van de juiste verzekering. Neem gerust contact op :  ik reageer binnen 24 uur.
+                    Ik help je graag bij het vinden van de juiste verzekering. Neem gerust contact op:  ik reageer binnen 24 uur.
                   </p>
                 </div>
               </div>

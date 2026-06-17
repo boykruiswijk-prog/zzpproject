@@ -40,7 +40,7 @@ function AnimatedCounter({ value, suffix = "", prefix = "" }: { value: number; s
     <motion.span
       ref={ref}
       initial={{ opacity: 0 }}
-      animate={isInView ? { opacity: 1 } : {}}
+      animate={isInView ? { opacity: 1 }: {}}
     >
       {isInView && (
         <motion.span
@@ -85,9 +85,9 @@ const doelgroepen = [
 ];
 
 const usps = [
-  { icon: Shield, title: "Collectieve korting op BAV", desc: "Directe premiekorting voor jouw leden :  minimaal 7,5% oplopend tot 12,5% korting op de standaardtarieven.", nr: "01" },
+  { icon: Shield, title: "Collectieve korting op BAV", desc: "Directe premiekorting voor jouw leden:  minimaal 7,5% oplopend tot 12,5% korting op de standaardtarieven.", nr: "01" },
   { icon: CheckCircle, title: "Onafhankelijk en transparant", desc: "Geen verplichte bundels. Eerlijk advies, altijd in het belang van jouw leden.", nr: "02" },
-  { icon: HeadphonesIcon, title: "Persoonlijke ondersteuning", desc: "Elke lid krijgt een vaste adviseur :  geen callcenters, altijd een mens aan de lijn.", nr: "03" },
+  { icon: HeadphonesIcon, title: "Persoonlijke ondersteuning", desc: "Elke lid krijgt een vaste adviseur:  geen callcenters, altijd een mens aan de lijn.", nr: "03" },
   { icon: Settings, title: "Volledige ontzorging", desc: "Van communicatie tot onboarding: wij nemen het werk uit handen.", nr: "04" },
 ];
 
@@ -322,7 +322,7 @@ export default function CollectiefLedenorganisaties() {
         </motion.button>
       </section>
 
-      {/* ════════════════ 2. VOOR WIE :  Bento Grid ════════════════ */}
+      {/* ════════════════ 2. VOOR WIE:  Bento Grid ════════════════ */}
       <section id="voor-wie" className="py-24 md:py-32 relative overflow-hidden" style={{ background: "hsl(220 20% 98%)" }}>
         {/* Subtle grid pattern */}
         <div className="absolute inset-0 opacity-[0.03]" style={{
@@ -392,7 +392,7 @@ export default function CollectiefLedenorganisaties() {
         </div>
       </section>
 
-      {/* ════════════════ 3. WAAROM ZPZAKEN :  Editorial ════════════════ */}
+      {/* ════════════════ 3. WAAROM ZPZAKEN:  Editorial ════════════════ */}
       <section className="py-24 md:py-32 relative overflow-hidden" style={{ background: "hsl(213 35% 12%)" }}>
         {/* Ambient glow */}
         <div className="absolute top-0 right-0 w-1/2 h-1/2 pointer-events-none" style={{
@@ -424,7 +424,7 @@ export default function CollectiefLedenorganisaties() {
                 key={u.title}
                 className="group relative p-8 md:p-10 rounded-3xl border border-white/5 hover:border-white/15 transition-all duration-500 cursor-default overflow-hidden"
                 style={{ background: "hsl(213 30% 16%)" }}
-                initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
+                initial={{ opacity: 0, x: i % 2 === 0 ? -30: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.7, delay: i * 0.15 }}
@@ -451,7 +451,7 @@ export default function CollectiefLedenorganisaties() {
         </div>
       </section>
 
-      {/* ════════════════ 4. FACTORING :  Split Feature ════════════════ */}
+      {/* ════════════════ 4. FACTORING:  Split Feature ════════════════ */}
       <section className="py-24 md:py-32 relative overflow-hidden" style={{ background: "hsl(220 20% 98%)" }}>
         <div className="container-wide max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -479,7 +479,7 @@ export default function CollectiefLedenorganisaties() {
                 betaald
               </h2>
               <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-                Naast collectieve korting op verzekeringen bieden wij leden ook onze eigen factoring-oplossing aan. Geen weken wachten op betaling :  leden ontvangen hun factuurbedrag dezelfde dag. Inclusief debiteurenbeheer en insolventiedekking.
+                Naast collectieve korting op verzekeringen bieden wij leden ook onze eigen factoring-oplossing aan. Geen weken wachten op betaling:  leden ontvangen hun factuurbedrag dezelfde dag. Inclusief debiteurenbeheer en insolventiedekking.
               </p>
               <Button onClick={scrollToForm} size="lg"
                 className="text-white font-bold rounded-xl px-8 py-6 shadow-lg hover:shadow-xl transition-all hover:scale-105"
@@ -493,7 +493,7 @@ export default function CollectiefLedenorganisaties() {
                 <motion.div
                   key={v.title}
                   className="group bg-white rounded-3xl p-6 border border-black/5 hover:border-black/10 transition-all cursor-default"
-                  initial={{ opacity: 0, y: 30, rotate: i % 2 === 0 ? -2 : 2 }}
+                  initial={{ opacity: 0, y: 30, rotate: i % 2 === 0 ? -2: 2 }}
                   whileInView={{ opacity: 1, y: 0, rotate: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.6, delay: i * 0.15 }}
@@ -515,7 +515,7 @@ export default function CollectiefLedenorganisaties() {
         </div>
       </section>
 
-      {/* ════════════════ 5. PRODUCTEN :  Scroll Reveal ════════════════ */}
+      {/* ════════════════ 5. PRODUCTEN:  Scroll Reveal ════════════════ */}
       <section className="py-24 md:py-32 bg-white relative">
         <div className="container-wide max-w-5xl">
           <motion.div
@@ -557,7 +557,7 @@ export default function CollectiefLedenorganisaties() {
             </motion.div>
             <div className="flex-1 text-center md:text-left relative z-10">
               <h3 className="text-2xl font-black text-white mb-3">BAV + AVB Combinatiepolis</h3>
-              <p className="text-white/60 text-lg">De enige gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering in Nederland :  met exclusieve collectieve korting.</p>
+              <p className="text-white/60 text-lg">De enige gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering in Nederland:  met exclusieve collectieve korting.</p>
             </div>
             <Button onClick={scrollToForm}
               className="text-white flex-shrink-0 font-bold rounded-xl px-6 py-5 relative z-10 border border-white/20 hover:bg-white/10 transition-all"
@@ -566,7 +566,7 @@ export default function CollectiefLedenorganisaties() {
             </Button>
           </motion.div>
 
-          {/* Extra products :  pill style */}
+          {/* Extra products:  pill style */}
           <div className="flex flex-wrap justify-center gap-3">
             {extraProducts.map((p, i) => (
               <motion.div
@@ -586,7 +586,7 @@ export default function CollectiefLedenorganisaties() {
         </div>
       </section>
 
-      {/* ════════════════ 6. HOE WERKT HET :  Interactive Steps ════════════════ */}
+      {/* ════════════════ 6. HOE WERKT HET:  Interactive Steps ════════════════ */}
       <section className="py-24 md:py-32 relative overflow-hidden" style={{ background: "hsl(213 35% 12%)" }}>
         <div className="absolute inset-0 pointer-events-none" style={{
           background: "radial-gradient(ellipse at center, hsl(213 60% 30% / 0.15) 0%, transparent 60%)"
@@ -616,13 +616,13 @@ export default function CollectiefLedenorganisaties() {
                   "rounded-3xl p-8 md:p-10 border cursor-pointer transition-all duration-500",
                   activeStep === i
                     ? "border-white/20 bg-white/5"
-                    : "border-white/5 bg-white/[0.02] hover:border-white/10"
+                   : "border-white/5 bg-white/[0.02] hover:border-white/10"
                 )}
-                initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
+                initial={{ opacity: 0, x: i % 2 === 0 ? -30: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: i * 0.2 }}
-                onClick={() => setActiveStep(activeStep === i ? null : i)}
+                onClick={() => setActiveStep(activeStep === i ? null: i)}
                 whileHover={{ scale: 1.01 }}
               >
                 <div className="flex items-start gap-6">
@@ -636,7 +636,7 @@ export default function CollectiefLedenorganisaties() {
                     <h3 className="text-xl md:text-2xl font-bold text-white mb-2">{s.title}</h3>
                     <motion.div
                       initial={false}
-                      animate={{ height: activeStep === i ? "auto" : 0, opacity: activeStep === i ? 1 : 0 }}
+                      animate={{ height: activeStep === i ? "auto": 0, opacity: activeStep === i ? 1: 0 }}
                       transition={{ duration: 0.3 }}
                       className="overflow-hidden"
                     >
@@ -653,7 +653,7 @@ export default function CollectiefLedenorganisaties() {
         </div>
       </section>
 
-      {/* ════════════════ 7. FORMULIER :  Glass Morphism ════════════════ */}
+      {/* ════════════════ 7. FORMULIER:  Glass Morphism ════════════════ */}
       <section id="collectief-form" className="py-24 md:py-32 relative overflow-hidden" style={{
         background: "linear-gradient(135deg, hsl(213 40% 15%) 0%, hsl(250 30% 18%) 100%)"
       }}>
@@ -678,7 +678,7 @@ export default function CollectiefLedenorganisaties() {
                 }}>kunnen betekenen</span>
               </h2>
               <p className="text-white/50 mb-10 text-lg leading-relaxed">
-                Plan vrijblijvend een kennismaking. Wij komen graag langs of bellen om de mogelijkheden te bespreken :  persoonlijk en zonder verplichtingen.
+                Plan vrijblijvend een kennismaking. Wij komen graag langs of bellen om de mogelijkheden te bespreken:  persoonlijk en zonder verplichtingen.
               </p>
               <div className="space-y-5">
                 {[
@@ -761,7 +761,7 @@ export default function CollectiefLedenorganisaties() {
                 <Button type="submit" size="lg" disabled={isSubmitting}
                   className="w-full text-white font-bold rounded-xl py-6 shadow-lg hover:shadow-xl transition-all"
                   style={{ background: "linear-gradient(135deg, hsl(213 60% 45%), hsl(250 50% 50%))" }}>
-                  {isSubmitting ? "Verzenden..." : "Ontvang collectief voorstel"}
+                  {isSubmitting ? "Verzenden...": "Ontvang collectief voorstel"}
                   <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>
               </form>
@@ -770,7 +770,7 @@ export default function CollectiefLedenorganisaties() {
         </div>
       </section>
 
-      {/* ════════════════ 8. FAQ :  Minimal ════════════════ */}
+      {/* ════════════════ 8. FAQ:  Minimal ════════════════ */}
       <section className="py-24 md:py-32 bg-white">
         <div className="container-wide max-w-3xl">
           <motion.div

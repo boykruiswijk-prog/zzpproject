@@ -27,7 +27,7 @@ const partners = [
   { name: "Centraal Beheer", category: "Verzekeringen", description: "Betrouwbare AOV met ledenkorting via ZP Zaken.", logo: centraalBeheerLogo, icon: Shield, link: "/diensten#verzekeringen", features: ["Ledenkorting", "Betrouwbaar", "Uitgebreide dekking"] },
   { name: "SharePeople", category: "Verzekeringen", description: "Vernieuwend crowdsurance concept: onderling geregeld.", logo: sharePeopleLogo, icon: Users, link: "/contact", features: ["Crowdsurance", "Onderling geregeld", "Transparant"] },
   { name: "Otentica", category: "Screening", description: "Eenvoudige, snelle en transparante screening voor ondernemers.", logo: otenticaLogo, icon: UserCheck, link: "/diensten#screening", features: ["Snelle verificatie", "Officiële instanties", "In eigen huisstijl"] },
-  { name: "ZP Zaken Factoring", category: "Financiering", description: "Factoring en financiering direct via ZP Zaken. Facturen binnen 24 uur uitbetaald, 7 dagen per week. Geen externe partij :  wij regelen het zelf.", logo: zpLogo, icon: Banknote, link: "/diensten", features: ["Uitbetaling binnen 24 uur", "Geautomatiseerde facturering", "Debiteurenbeheer"] },
+  { name: "ZP Zaken Factoring", category: "Financiering", description: "Factoring en financiering direct via ZP Zaken. Facturen binnen 24 uur uitbetaald, 7 dagen per week. Geen externe partij:  wij regelen het zelf.", logo: zpLogo, icon: Banknote, link: "/diensten", features: ["Uitbetaling binnen 24 uur", "Geautomatiseerde facturering", "Debiteurenbeheer"] },
   { name: "Circle8", category: "Opdrachten", description: "Via Circle8 actief als zzp'er? ZP Zaken verzorgt de BAV (beroepsaansprakelijkheid) en Cyberverzekering voor zzp'ers die werken binnen het Circle8 platform.", logo: circle8Logo, icon: Briefcase, link: "/contact", features: ["BAV verzekering", "Cyberverzekering", "Speciaal voor Circle8 zzp'ers"] },
   { name: "Onefellow", category: "Opdrachten", description: "Het platform voor freelancers en bemiddelaars. Vind de beste opdrachten en automatiseer je volledige inhuurproces.", logo: onefellowLogo, icon: Crown, link: "/contact", features: ["Marketplace voor opdrachten", "Geautomatiseerde facturatie", "Community netwerk"] },
 ];
@@ -80,7 +80,7 @@ export default function Partners() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {partners.map((partner) => (
               <div key={partner.name} className="bg-card rounded-2xl shadow-card border border-border/50 overflow-hidden hover:shadow-lg hover:border-accent/30 transition-all">
-                <div className={`p-6 flex items-center justify-center h-32 ${partner.name === "Onefellow" ? "bg-foreground" : "bg-secondary/50"}`}>
+                <div className={`p-6 flex items-center justify-center h-32 ${partner.name === "Onefellow" ? "bg-foreground": "bg-secondary/50"}`}>
                   <img src={partner.logo} alt={`${partner.name} logo`} className="max-h-16 max-w-[160px] object-contain" />
                 </div>
                 <div className="p-6">
