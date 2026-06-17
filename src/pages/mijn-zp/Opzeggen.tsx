@@ -76,23 +76,40 @@ export default function OpzeggenWizard() {
         },
         {
           title: "Gewenste opzegdatum",
-          render: ({ details, setDetails }) => (
-            <div className="space-y-2">
-              <Label>Opzegdatum *</Label>
-              <Input
-                type="date"
-                min={defaultDate(0)}
-                max={defaultDate(180)}
-                value={details.opzegdatum ?? defaultDate(30)}
-                onChange={(e) => setDetails({ ...details, opzegdatum: e.target.value })}
-              />
-              <p className="text-xs text-muted-foreground">
-                Per dag opzegbaar. Wij verwerken je opzegging binnen 24 uur en sturen je een
-                bevestiging per mail.
-              </p>
-            </div>
-          ),
-          validate: (_, d) => (d.opzegdatum ? {} : { opzegdatum: "Kies een opzegdatum" }),
+          render: ({ details, setDetails }) => {
+            const today = defaultDate(0);
+            const isPast = details.opzegdatum && details.opzegdatum < today;
+            return (
+              <div className="space-y-2">
+                <Label>Opzegdatum *</Label>
+                <Input
+                  type="date"
+                  min={today}
+                  max={defaultDate(180)}
+                  value={details.opzegdatum ?? today}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setDetails({ ...details, opzegdatum: v < today ? today : v });
+                  }}
+                />
+                {isPast && (
+                  <p className="text-xs text-destructive">
+                    Een verzekering kan niet met terugwerkende kracht worden opgezegd. Vroegste opzegdatum is vandaag.
+                  </p>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  Per dag opzegbaar, ten vroegste vanaf vandaag. Wij verwerken je opzegging binnen 24 uur en sturen je een
+                  bevestiging per mail.
+                </p>
+              </div>
+            );
+          },
+          validate: (_, d) => {
+            const today = defaultDate(0);
+            if (!d.opzegdatum) return { opzegdatum: "Kies een opzegdatum" };
+            if (d.opzegdatum < today) return { opzegdatum: "Opzegdatum kan niet in het verleden liggen" };
+            return {};
+          },
         },
         {
           title: "Bevestiging",
