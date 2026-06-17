@@ -465,6 +465,23 @@ export default function AdminLeadDetail() {
                     )}
                   </div>
                 )}
+
+                {lead.type === "offerte-aanvraag" && (lead as any).extra_data && (
+                  <div className="border-t pt-4">
+                    <h3 className="font-semibold mb-2">Offerte-aanvraag details</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                      {Object.entries((lead as any).extra_data as Record<string, unknown>).map(([k, v]) => (
+                        <div key={k}>
+                          <span className="text-muted-foreground">{k}:</span>{" "}
+                          <span className="font-medium break-words">{v == null || v === "" ? "-" : String(v)}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <Button variant="outline" size="sm" className="mt-4" disabled title="Komt binnenkort">
+                      <FileText className="h-4 w-4" /> Maak offerte (binnenkort)
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
