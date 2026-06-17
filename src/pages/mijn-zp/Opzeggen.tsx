@@ -125,7 +125,7 @@ export default function OpzeggenWizard() {
                 {details.toelichting && (
                   <div><span className="font-medium">Toelichting:</span> {details.toelichting}</div>
                 )}
-                <div><span className="font-medium">Opzegdatum:</span> {details.opzegdatum ?? defaultDate(30)}</div>
+                <div><span className="font-medium">Opzegdatum:</span> {formatDateNL(details.opzegdatum ?? defaultDate(0))}</div>
               </div>
               <label className="flex items-start gap-2 cursor-pointer">
                 <Checkbox
