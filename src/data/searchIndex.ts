@@ -12,7 +12,7 @@ export const searchIndex: SearchEntry[] = [
     title: "Home | ZP Zaken",
     path: "/",
     keywords: "zzp verzekering BAV AVB combinatiepolis online afsluiten zelfstandig ondernemer",
-    snippet: "BAV + AVB combinatieverzekering voor zzp'ers. Vanaf €30/maand, direct online afsluiten.",
+    snippet: "BAV + AVB combinatieverzekering voor zzp'ers. Vanaf €55/maand, direct online afsluiten.",
   },
   {
     title: "Over ons",
