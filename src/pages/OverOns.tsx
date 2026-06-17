@@ -18,7 +18,7 @@ import { SocialFeaturesSection } from "@/components/over-ons/SocialFeaturesSecti
 
 // Team and content data stays in Dutch as it's specific content
 const values = [
-  { icon: Target, title: "Onafhankelijk", description: "We zijn niet gebonden aan één verzekeraar. Ons advies is gebaseerd op wat het beste bij jou past, niet op commissies." },
+  { icon: Target, title: "Onafhankelijk", description: "We zijn niet gebonden aan één verzekeraar. Onze bemiddeling is gebaseerd op wat het beste bij jou past, niet op commissies." },
   { icon: Eye, title: "Transparant", description: "Geen kleine lettertjes of verborgen kosten. We leggen alles helder uit zodat je weet waar je aan toe bent." },
   { icon: Users, title: "Persoonlijk", description: "Je spreekt met echte adviseurs die je situatie kennen. Geen callcenters of doorverwijzingen." },
   { icon: Award, title: "Deskundig", description: "Meer dan 13 jaar ervaring in verzekeringen voor zelfstandigen. We kennen de markt en jouw uitdagingen." },
@@ -34,9 +34,9 @@ const facts = [
 const team = [
   { name: "Boy Kruiswijk", role: "Oprichter", image: teamMember1, description: "Ruim 13 jaar geleden bedenker van de unieke polis voor zzp'ers in Nederland. Zijn visie: ondernemers goed en zorgeloos verzekerd." },
   { name: "Roxy Taskin", role: "Backoffice", image: teamMember2, description: "Zorgt ervoor dat alles op de achtergrond soepel verloopt. Van administratie tot klantondersteuning." },
-  { name: "Ellen Baars", role: "Senior Adviseur", image: teamMember3, description: "Met jarenlange ervaring in verzekeringen helpt zij ondernemers met passend advies voor hun situatie." },
+  { name: "Ellen Baars", role: "Senior Adviseur", image: teamMember3, description: "Met jarenlange ervaring in verzekeringen helpt zij ondernemers met passende bemiddeling voor hun situatie." },
   { name: "Sandra Jonker - van Nobelen", role: "Financieel & Administratief", image: teamMemberMystery, description: "Sandra is onze financiële steunpilaar. Met meer dan 30 jaar ervaring in financiële administratie en salarisverwerking weet zij als geen ander hoe de backoffice van een dienstverlener in elkaar steekt. Na een loopbaan van 24 jaar bij HeadFirst Group brengt Sandra precisie en persoonlijk contact samen.", email: "sandra@zpzaken.nl" },
-  { name: "Gert-Jan Schellingerhout", role: "Backoffice medewerker", image: null, photoPending: true, description: "Versterkt ons team met gedegen kennis en persoonlijk advies voor zelfstandig ondernemers." },
+  { name: "Gert-Jan Schellingerhout", role: "Backoffice medewerker", image: null, photoPending: true, description: "Versterkt ons team met gedegen kennis en persoonlijk gesprek voor zelfstandig ondernemers." },
   { name: "We groeien!", role: "Nieuw teamlid", image: null, description: "ZP Zaken is op zoek naar versterking. Wil jij onderdeel worden van ons team?" },
   { name: "Online Sales Adviseur", role: "Sales", image: null, vacancy: true, description: "Wij zijn op zoek naar een gedreven online sales adviseur die zzp'ers helpt de juiste verzekering te vinden. Jij bent het eerste aanspreekpunt voor nieuwe klanten via de website, chat en telefoon. Je werkt vanuit huis of kantoor en combineert commercieel inzicht met oprechte aandacht voor de klant." },
   { name: "Sales Adviseur Buitendienst", role: "Sales", image: null, vacancy: true, description: "Wij zoeken een energieke buitendienstadviseur die actief op pad gaat om zzp'ers persoonlijk te begeleiden. Jij bouwt relaties op bij netwerkevenementen, bij opdrachtgevers en in het veld. Je combineert zelfstandigheid met de kracht van een sterk merk achter je." },
@@ -54,8 +54,8 @@ export default function OverOns() {
   return (
     <Layout>
       <Helmet>
-        <title>Over ZP Zaken | Onafhankelijk Verzekeringsadvies Sinds 2014</title>
-        <meta name="description" content="ZP Zaken is opgericht in 2014 door Boy Kruiswijk. Meer dan 2.500 tevreden zzp'ers, AFM geregistreerd, Kifid aangesloten. Persoonlijk advies zonder callcenter." />
+        <title>Over ZP Zaken | Onafhankelijke Bemiddeling Sinds 2014</title>
+        <meta name="description" content="ZP Zaken is opgericht in 2014 door Boy Kruiswijk. Meer dan 2.500 tevreden zzp'ers, AFM geregistreerd, Kifid aangesloten. Persoonlijk gesprek zonder callcenter." />
         <link rel="canonical" href="https://zpzaken.nl/over-ons" />
       </Helmet>
 
@@ -80,7 +80,7 @@ export default function OverOns() {
                 "Meer dan 13 jaar geleden zag ik dat zzp'ers niet dezelfde zekerheid kregen als werknemers. Dat moest anders. Ik ontwikkelde de eerste gecombineerde BAV+AVB polis in Nederland, speciaal voor zelfstandig professionals."
               </p>
               <p className="text-lg text-muted-foreground mb-6">
-                Zijn visie: ondernemers goed en zorgeloos verzekerd, met persoonlijk contact en eerlijk advies. Geen callcenters of verkooppraatjes, we denken met je mee.
+                Zijn visie: ondernemers goed en zorgeloos verzekerd, met persoonlijk contact en eerlijke informatie. Geen callcenters of verkooppraatjes, we denken met je mee.
               </p>
               <div className="flex flex-wrap gap-2">
                 {["13+ jaar ervaring", "Bedenker unieke BAV+AVB polis", "NEN-gecertificeerd", "AFM geregistreerd"].map((tag) => (

@@ -25,7 +25,7 @@ function useNavItems() {
         { href: "/diensten", label: t("nav.alleDiensten") },
         { href: "/verzekeringen", label: "Verzekeringen" },
         { href: "/diensten#administratie", label: "Administratie & Boekhouding" },
-        { href: "/diensten#juridisch", label: "Juridisch Advies" },
+        { href: "/diensten#juridisch", label: "Juridische Hulp" },
         { href: "/screening", label: "Screening" },
         { href: "/diensten#financiering", label: "Factoring & Financiering" },
       ]
@@ -252,7 +252,7 @@ export function Header() {
                 {t("nav.phone")}
               </a>
               <Button variant="accent" className="mx-4" asChild>
-                <LocalizedLink to="/contact" onClick={() => setIsOpen(false)}>{t("nav.gratisAdviesgesprek")}</LocalizedLink>
+                <LocalizedLink to="/contact" onClick={() => setIsOpen(false)}>{t("nav.gratisPersoonlijk gesprek")}</LocalizedLink>
               </Button>
             </div>
           </nav>

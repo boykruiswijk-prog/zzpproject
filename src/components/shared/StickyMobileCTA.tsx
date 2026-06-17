@@ -32,7 +32,7 @@ export function StickyMobileCTA() {
         className="flex-1 flex items-center justify-center text-center"
         style={{ backgroundColor: "#E53E2F" }}
       >
-        Gratis advies →
+        Vrijblijvend gesprek →
       </Link>
     </div>
   );

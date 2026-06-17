@@ -22,7 +22,7 @@ export function EllenAdvisorSection() {
             </div>
             <div>
               <span className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 text-accent px-3 py-1 rounded-full text-xs font-medium mb-4">
-                Persoonlijk advies
+                Persoonlijk gesprek
               </span>
               <h2 className="mb-1 text-2xl lg:text-3xl">Ellen Baars</h2>
               <p className="text-accent font-medium mb-5">Senior Adviseur, ZP Zaken</p>

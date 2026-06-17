@@ -30,7 +30,7 @@ const teamMembers = [
     name: "Gert-Jan Schellingerhout",
     role: "Backoffice medewerker",
     image: teamMember4,
-    description: "Versterkt ons team met gedegen kennis en persoonlijk advies.",
+    description: "Versterkt ons team met gedegen kennis en persoonlijk gesprek.",
   },
   {
     name: "Binnenkort bekend",
@@ -56,7 +56,7 @@ export function TeamSection() {
             Ons Team
           </span>
           <h2 className="mb-4">
-            Persoonlijk advies van{" "}
+            Persoonlijk gesprek van{" "}
             <span className="text-primary">echte mensen</span>
           </h2>
           <p className="text-muted-foreground text-lg">

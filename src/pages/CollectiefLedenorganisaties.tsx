@@ -86,7 +86,7 @@ const doelgroepen = [
 
 const usps = [
   { icon: Shield, title: "Collectieve korting op BAV", desc: "Directe premiekorting voor jouw leden:  minimaal 7,5% oplopend tot 12,5% korting op de standaardtarieven.", nr: "01" },
-  { icon: CheckCircle, title: "Onafhankelijk en transparant", desc: "Geen verplichte bundels. Eerlijk advies, altijd in het belang van jouw leden.", nr: "02" },
+  { icon: CheckCircle, title: "Onafhankelijk en transparant", desc: "Geen verplichte bundels. Eerlijke informatie, altijd in het belang van jouw leden.", nr: "02" },
   { icon: HeadphonesIcon, title: "Persoonlijke ondersteuning", desc: "Elke lid krijgt een vaste adviseur:  geen callcenters, altijd een mens aan de lijn.", nr: "03" },
   { icon: Settings, title: "Volledige ontzorging", desc: "Van communicatie tot onboarding: wij nemen het werk uit handen.", nr: "04" },
 ];

@@ -54,7 +54,7 @@ const popularPages = [
   },
   {
     icon: Phone,
-    title: "Gratis adviesgesprek",
+    title: "Vrijblijvend gesprek",
     text: "Binnen 24 uur persoonlijk antwoord",
     link: "/contact",
   },
@@ -125,7 +125,7 @@ const NotFound = () => {
                 className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
               >
                 <Link to="/contact">
-                  Gratis adviesgesprek <ArrowRight className="h-5 w-5" />
+                  Vrijblijvend gesprek <ArrowRight className="h-5 w-5" />
                 </Link>
               </Button>
             </div>

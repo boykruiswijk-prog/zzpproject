@@ -104,7 +104,7 @@ serve(async (req) => {
             <p><strong>Wat kun je verwachten?</strong></p>
             <ul>
               <li>Je krijgt binnen 24 uur bericht</li>
-              <li>We bellen je voor een kort adviesgesprek</li>
+              <li>We bellen je voor een kort persoonlijk gesprek</li>
               <li>Na akkoord ben je direct verzekerd</li>
             </ul>
             <p>Heb je in de tussentijd vragen? Bel ons gerust op <strong>020 - 457 3077</strong> of mail naar <a href="mailto:info@zpzaken.nl">info@zpzaken.nl</a>.</p>

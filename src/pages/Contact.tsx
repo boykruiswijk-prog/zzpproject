@@ -66,8 +66,8 @@ export default function Contact() {
   return (
     <Layout>
       <Helmet>
-        <title>Contact | Gratis Adviesgesprek Aanvragen | ZP Zaken</title>
-        <meta name="description" content="Neem contact op voor advies. Bel 020 - 457 3077, mail info@zpzaken.nl of plan een gratis adviesgesprek." />
+        <title>Contact | Vrijblijvend Gesprek Aanvragen | ZP Zaken</title>
+        <meta name="description" content="Neem contact op met ZP Zaken. Bel 020 - 457 3077, mail info@zpzaken.nl of plan een vrijblijvend gesprek." />
         <link rel="canonical" href="https://zpzaken.nl/contact" />
       </Helmet>
       <PageHero

@@ -13,7 +13,7 @@ export function SiteSchemaMarkup() {
     logo: SITE_CONFIG.logo,
     image: SITE_CONFIG.ogImage,
     description:
-      "ZP Zaken is al 10+ jaar dé onafhankelijke adviseur voor zzp'ers. BAV, AVB, AOV en meer. Persoonlijk advies, scherpe premies.",
+      "ZP Zaken is al 10+ jaar dé onafhankelijke adviseur voor zzp'ers. BAV, AVB, AOV en meer. Persoonlijk gesprek, scherpe premies.",
     telephone: SITE_CONFIG.phone,
     email: SITE_CONFIG.email,
     address: {
