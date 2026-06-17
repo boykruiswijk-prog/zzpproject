@@ -154,8 +154,8 @@ export default function Kennis() {
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="mb-4">Vraag niet beantwoord?</h2>
             <p className="text-lg text-muted-foreground mb-8">
-              Neem contact met ons op. We helpen je graag met al je vragen over 
-              verzekeringen en ondernemerschap.
+              Neem contact op voor al je vragen over 
+              verzekeringen en ondernemen.
             </p>
             <Button variant="accent" size="lg" asChild>
               <LocalizedLink to="/contact">

@@ -32,7 +32,7 @@ const facts = [
 ];
 
 const team = [
-  { name: "Boy Kruiswijk", role: "Oprichter", image: teamMember1, description: "Ruim 13 jaar geleden bedenker van de unieke polis voor zzp'ers in Nederland. Zijn visie: iedere ondernemer goed en zorgeloos verzekerd." },
+  { name: "Boy Kruiswijk", role: "Oprichter", image: teamMember1, description: "Ruim 13 jaar geleden bedenker van de unieke polis voor zzp'ers in Nederland. Zijn visie: ondernemers goed en zorgeloos verzekerd." },
   { name: "Roxy Taskin", role: "Backoffice", image: teamMember2, description: "Zorgt ervoor dat alles op de achtergrond soepel verloopt. Van administratie tot klantondersteuning." },
   { name: "Ellen Baars", role: "Senior Adviseur", image: teamMember3, description: "Met jarenlange ervaring in verzekeringen helpt zij ondernemers met passend advies voor hun situatie." },
   { name: "Sandra Jonker - van Nobelen", role: "Financieel & Administratief", image: teamMemberMystery, description: "Sandra is onze financiële steunpilaar. Met meer dan 30 jaar ervaring in financiële administratie en salarisverwerking weet zij als geen ander hoe de backoffice van een dienstverlener in elkaar steekt. Na een loopbaan van 24 jaar bij HeadFirst Group brengt Sandra precisie en persoonlijk contact samen.", email: "sandra@zpzaken.nl" },
@@ -73,14 +73,14 @@ export default function OverOns() {
             <div>
               <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 text-foreground px-4 py-2 rounded-full text-sm font-medium mb-6">
                 <Award className="h-4 w-4 text-accent" />
-                Oprichter & visionair
+                Oprichter
               </div>
               <h2 className="mb-4">Boy Kruiswijk</h2>
               <p className="text-lg text-muted-foreground mb-4">
                 "Meer dan 13 jaar geleden zag ik dat zzp'ers niet dezelfde zekerheid kregen als werknemers. Dat moest anders. Ik ontwikkelde de eerste gecombineerde BAV+AVB polis in Nederland , speciaal voor zelfstandig professionals."
               </p>
               <p className="text-lg text-muted-foreground mb-6">
-                Zijn visie: iedere ondernemer goed en zorgeloos verzekerd, met persoonlijk contact en eerlijk advies. Geen callcenters, geen verkooppraatjes , gewoon een partner die met je meedenkt.
+                Zijn visie: ondernemers goed en zorgeloos verzekerd, met persoonlijk contact en eerlijk advies. Geen callcenters of verkooppraatjes , we denken met je mee.
               </p>
               <div className="flex flex-wrap gap-2">
                 {["13+ jaar ervaring", "Bedenker unieke BAV+AVB polis", "NEN-gecertificeerd", "AFM geregistreerd"].map((tag) => (
@@ -184,12 +184,12 @@ export default function OverOns() {
                         <Shield className="h-3.5 w-3.5" />Vacature open
                       </span>
                       <Button variant="outline" size="sm" asChild>
-                        <LocalizedLink to="/contact">Solliciteer direct →</LocalizedLink>
+                        <LocalizedLink to="/contact">Direct solliciteren</LocalizedLink>
                       </Button>
                     </div>
                   ) : !member.image && !("photoPending" in member && member.photoPending) ? (
                     <Button variant="outline" size="sm" className="mt-4" asChild>
-                      <LocalizedLink to="/contact">Bekijk vacatures →</LocalizedLink>
+                      <LocalizedLink to="/contact">Bekijk vacatures</LocalizedLink>
                     </Button>
                   ) : null}
                 </div>
@@ -223,7 +223,7 @@ export default function OverOns() {
           <div className="max-w-2xl mx-auto mt-10 flex items-start gap-3 bg-secondary/60 border border-border/60 p-4 rounded-lg">
             <Phone className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
             <p className="text-sm text-muted-foreground">
-              Telefonisch zijn wij bereikbaar via{" "}
+              Bel ons op{" "}
               <a href="tel:0204573077" className="font-medium text-foreground hover:text-accent transition-colors">
                 020 - 457 3077
               </a>

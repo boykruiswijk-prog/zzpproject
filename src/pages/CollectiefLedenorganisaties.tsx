@@ -299,12 +299,12 @@ export default function CollectiefLedenorganisaties() {
               <Button size="lg" onClick={scrollToForm}
                 className="text-white font-bold text-base px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105"
                 style={{ background: "linear-gradient(135deg, hsl(213 60% 45%), hsl(250 50% 50%))" }}>
-                Plan een kennismaking <ArrowRight className="h-5 w-5 ml-2" />
+                Kennismaken <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
               <Button size="lg" onClick={scrollToForm}
                 className="font-bold text-base px-8 py-6 rounded-xl backdrop-blur-md border-white/20 text-white hover:bg-white/20 transition-all"
                 variant="outline">
-                Vraag een collectief voorstel aan
+                Collectief voorstel aanvragen
               </Button>
             </motion.div>
           </div>

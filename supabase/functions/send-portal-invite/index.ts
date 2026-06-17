@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
         <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#1a1a1a">
           <h2 style="color:#E53E2F;margin:0 0 16px">Welkom bij het ZP Zaken klantportaal</h2>
           <p>Hallo,</p>
-          <p>Je bent uitgenodigd voor het klantportaal van ZP Zaken. Hier vind je je polis, certificaten, facturen en documenten op één centrale plek.</p>
+          <p>Je bent uitgenodigd voor het ZP Zaken klantportaal. Hier staan je polis, facturen en documenten overzichtelijk bij elkaar.</p>
           <p style="margin:24px 0">
             <a href="${acceptUrl}" style="background:#E53E2F;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;display:inline-block">
               Account activeren

@@ -29,7 +29,7 @@ export default function Kennisbank() {
     <Layout>
       <Helmet>
         <title>Kennisbank ZZP Verzekeringen | Artikelen & Nieuws | ZP Zaken</title>
-        <meta name="description" content="Blijf op de hoogte van wet DBA, verzekeringen en regelgeving voor zzp'ers. Praktische artikelen door specialisten met 13 jaar marktkennis." />
+        <meta name="description" content="Blijf op de hoogte van wet DBA, verzekeringen en regelgeving voor zzp'ers. Praktische artikelen door specialisten met 13 jaar ervaring." />
         <link rel="canonical" href="https://zpzaken.nl/kennisbank" />
       </Helmet>
 

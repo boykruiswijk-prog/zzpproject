@@ -100,7 +100,7 @@ export default function WaaromZpZaken() {
               className="flex flex-wrap gap-4"
             >
               <Button variant="accent" size="lg" asChild className="shadow-lg">
-                <a href="#rekentool">Bereken jouw besparing <ArrowRight className="h-5 w-5" /></a>
+                <a href="#rekentool">Bereken je besparing <ArrowRight className="h-5 w-5" /></a>
               </Button>
               <Button variant="heroOutline" size="lg" asChild>
                 <LocalizedLink to="/verzekeringen">Direct afsluiten</LocalizedLink>
@@ -117,7 +117,7 @@ export default function WaaromZpZaken() {
       <section id="rekentool" className="section-padding bg-background scroll-mt-20">
         <div className="container-wide">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center mb-12 max-w-3xl mx-auto">
-            <h2 className="mb-4">Wat betaal jij werkelijk voor jouw verzekering?</h2>
+            <h2 className="mb-4">Wat betaal je echt voor je verzekering?</h2>
             <p className="text-muted-foreground">
               Bereken en vergelijk :  kies je situatie en zie direct het verschil.
             </p>
@@ -136,7 +136,7 @@ export default function WaaromZpZaken() {
       <section className="section-padding bg-secondary">
         <div className="container-wide">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center mb-12">
-            <h2 className="mb-4">Meer dan prijs alleen :  dit is wat je terugwint</h2>
+            <h2 className="mb-4">Meer dan alleen de prijs :  dit is wat je terugwint</h2>
           </motion.div>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {diffBlocks.map((block, i) => (
@@ -243,7 +243,7 @@ export default function WaaromZpZaken() {
 
           <div className="text-center">
             <Button size="lg" asChild className="bg-white text-accent hover:bg-white/90 shadow-lg font-bold">
-              <LocalizedLink to="/verzekeringen">Start vandaag <ArrowRight className="h-5 w-5" /></LocalizedLink>
+              <LocalizedLink to="/verzekeringen">Direct starten</LocalizedLink>
             </Button>
             <div className="mt-6">
               <MiniSocialProof variant="dark" className="justify-center" />

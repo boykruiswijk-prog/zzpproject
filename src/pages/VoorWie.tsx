@@ -64,8 +64,8 @@ export default function VoorWie() {
       />
 
       <PageHero
-        title={<>Voor wie is <span className="text-accent">ZP Zaken</span>?</>}
-        subtitle="Wij verzekeren zelfstandige professionals met adviserende, ontwerpende of coördinerende rollen ,  binnen een groot aantal vakgebieden."
+        title={<>Voor wie is ZP Zaken?</>}
+        subtitle="We verzekeren zelfstandigen met adviserende, ontwerpende of coördinerende rollen ,  binnen een groot aantal vakgebieden."
         badge={{ icon: <Users className="h-4 w-4" />, text: "Voor zelfstandig professionals" }}
         backgroundImage={teamWalking}
       />

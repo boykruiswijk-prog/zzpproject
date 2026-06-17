@@ -182,7 +182,7 @@ export default function CreditControl() {
               </span>
             </motion.div>
             <h1 className="text-primary-foreground mb-6 leading-tight">
-              Jouw factuur. Jouw geld.{" "}
+              Je factuur, je geld.{" "}
               <span className="text-accent">Jouw moment van uitbetaling.</span>
             </h1>
             <p className="text-lg md:text-xl text-primary-foreground/80 mb-10 max-w-2xl">
@@ -199,7 +199,7 @@ export default function CreditControl() {
               >
                 <a href="#hoe-het-werkt">
                   <Sparkles className="h-5 w-5" />
-                  Ontdek hoe het werkt
+                  Hoe het werkt
                   <ArrowRight className="h-5 w-5" />
                 </a>
               </Button>
@@ -212,7 +212,7 @@ export default function CreditControl() {
               >
                 <LocalizedLink to="/contact">
                   <Calendar className="h-5 w-5" />
-                  Vraag direct toegang aan
+                  Direct toegang aanvragen
                 </LocalizedLink>
               </Button>
             </div>
