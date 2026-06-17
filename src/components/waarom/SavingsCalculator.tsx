@@ -165,7 +165,7 @@ export function SavingsCalculator() {
     return { marketCost, zpCost, saving, saving5y: saving * 5 };
   }, [selectedProfession, selectedPkg2]);
 
-  const ctaPkg = tab === "platform" ? selectedPkg1 : selectedPkg2;
+  
 
   return (
     <div className="max-w-6xl mx-auto">
