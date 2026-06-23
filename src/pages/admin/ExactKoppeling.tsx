@@ -83,7 +83,7 @@ export default function ExactKoppeling() {
       // table not yet in generated types
       supabase
         .from("exact_sync_log")
-        .select("id,created_at,trigger_type,status,exact_account_id,error_message,http_status")
+        .select("id,created_at,trigger_type,status,exact_account_id,error_message,http_status,payload")
         .order("created_at", { ascending: false })
         .limit(50),
     ]);
