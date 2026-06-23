@@ -118,18 +118,24 @@ Deno.serve(async (req) => {
 
 
 
-  // ── Auth: admin only ──
-  const authHeader = req.headers.get("Authorization") ?? "";
-  if (!authHeader.toLowerCase().startsWith("bearer ")) {
-    return json({ success: false, error: "unauthorized" }, 401);
+  // ── Auth: admin only (skipped voor debugBypass) ──
+  let user: { id: string; email?: string };
+  if (debugBypass) {
+    user = { id: "00000000-0000-0000-0000-000000000000", email: "debug-bypass@zpzaken.nl" };
+  } else {
+    const authHeader = req.headers.get("Authorization") ?? "";
+    if (!authHeader.toLowerCase().startsWith("bearer ")) {
+      return json({ success: false, error: "unauthorized" }, 401);
+    }
+    const userClient = createClient(SUPABASE_URL, ANON_KEY, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: { user: u }, error: userErr } = await userClient.auth.getUser();
+    if (userErr || !u) return json({ success: false, error: "unauthorized" }, 401);
+    const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: u.id, _role: "admin" });
+    if (!isAdmin) return json({ success: false, error: "forbidden" }, 403);
+    user = { id: u.id, email: u.email };
   }
-  const userClient = createClient(SUPABASE_URL, ANON_KEY, {
-    global: { headers: { Authorization: authHeader } },
-  });
-  const { data: { user }, error: userErr } = await userClient.auth.getUser();
-  if (userErr || !user) return json({ success: false, error: "unauthorized" }, 401);
-  const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: user.id, _role: "admin" });
-  if (!isAdmin) return json({ success: false, error: "forbidden" }, 403);
 
   // deno-lint-ignore no-explicit-any
   let body: any = {};
