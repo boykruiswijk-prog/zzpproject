@@ -597,36 +597,50 @@ export type Database = {
       }
       exact_sync_log: {
         Row: {
+          admin_user_id: string | null
           created_at: string
           error_message: string | null
           exact_account_id: string | null
           http_status: number | null
           id: string
+          lead_id: string | null
           payload: Json | null
           status: string | null
           trigger_type: string | null
         }
         Insert: {
+          admin_user_id?: string | null
           created_at?: string
           error_message?: string | null
           exact_account_id?: string | null
           http_status?: number | null
           id?: string
+          lead_id?: string | null
           payload?: Json | null
           status?: string | null
           trigger_type?: string | null
         }
         Update: {
+          admin_user_id?: string | null
           created_at?: string
           error_message?: string | null
           exact_account_id?: string | null
           http_status?: number | null
           id?: string
+          lead_id?: string | null
           payload?: Json | null
           status?: string | null
           trigger_type?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "exact_sync_log_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       exact_tokens: {
         Row: {
@@ -930,27 +944,39 @@ export type Database = {
       leads: {
         Row: {
           achternaam: string
+          activatie_log: Json
+          adres_huisnummer: string | null
+          adres_plaats: string | null
+          adres_postcode: string | null
+          adres_straat: string | null
           assigned_to: string | null
           bedrijfsnaam: string | null
           beroep: string | null
+          branche: string | null
           bron: Database["public"]["Enums"]["lead_bron"]
           converted_at: string | null
           created_at: string
           eigen_risico: string | null
           email: string
           exact_abonnement_id: string | null
+          exact_account_id: string | null
           exact_fout: string | null
           exact_relatie_id: string | null
           exact_status: string | null
           exact_sync_op: string | null
           extra_data: Json
+          geactiveerd_door: string | null
+          geactiveerd_op: string | null
           geboortedatum: string | null
           gekozen_pakket: string | null
+          iban: string | null
           id: string
           ingangsdatum: string | null
           kvk_nummer: string | null
           omzet: string | null
           opmerkingen: string | null
+          sepa_akkoord: boolean
+          sepa_akkoord_datum: string | null
           status: Database["public"]["Enums"]["lead_status"]
           telefoon: string | null
           type: Database["public"]["Enums"]["lead_type"]
@@ -962,27 +988,39 @@ export type Database = {
         }
         Insert: {
           achternaam: string
+          activatie_log?: Json
+          adres_huisnummer?: string | null
+          adres_plaats?: string | null
+          adres_postcode?: string | null
+          adres_straat?: string | null
           assigned_to?: string | null
           bedrijfsnaam?: string | null
           beroep?: string | null
+          branche?: string | null
           bron?: Database["public"]["Enums"]["lead_bron"]
           converted_at?: string | null
           created_at?: string
           eigen_risico?: string | null
           email: string
           exact_abonnement_id?: string | null
+          exact_account_id?: string | null
           exact_fout?: string | null
           exact_relatie_id?: string | null
           exact_status?: string | null
           exact_sync_op?: string | null
           extra_data?: Json
+          geactiveerd_door?: string | null
+          geactiveerd_op?: string | null
           geboortedatum?: string | null
           gekozen_pakket?: string | null
+          iban?: string | null
           id?: string
           ingangsdatum?: string | null
           kvk_nummer?: string | null
           omzet?: string | null
           opmerkingen?: string | null
+          sepa_akkoord?: boolean
+          sepa_akkoord_datum?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
           telefoon?: string | null
           type?: Database["public"]["Enums"]["lead_type"]
@@ -994,27 +1032,39 @@ export type Database = {
         }
         Update: {
           achternaam?: string
+          activatie_log?: Json
+          adres_huisnummer?: string | null
+          adres_plaats?: string | null
+          adres_postcode?: string | null
+          adres_straat?: string | null
           assigned_to?: string | null
           bedrijfsnaam?: string | null
           beroep?: string | null
+          branche?: string | null
           bron?: Database["public"]["Enums"]["lead_bron"]
           converted_at?: string | null
           created_at?: string
           eigen_risico?: string | null
           email?: string
           exact_abonnement_id?: string | null
+          exact_account_id?: string | null
           exact_fout?: string | null
           exact_relatie_id?: string | null
           exact_status?: string | null
           exact_sync_op?: string | null
           extra_data?: Json
+          geactiveerd_door?: string | null
+          geactiveerd_op?: string | null
           geboortedatum?: string | null
           gekozen_pakket?: string | null
+          iban?: string | null
           id?: string
           ingangsdatum?: string | null
           kvk_nummer?: string | null
           omzet?: string | null
           opmerkingen?: string | null
+          sepa_akkoord?: boolean
+          sepa_akkoord_datum?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
           telefoon?: string | null
           type?: Database["public"]["Enums"]["lead_type"]
@@ -1337,6 +1387,10 @@ export type Database = {
         | "offerte_verstuurd"
         | "klant"
         | "afgewezen"
+        | "nieuw_te_beoordelen"
+        | "actief"
+        | "gepauzeerd"
+        | "opgezegd"
       lead_type: "contact" | "verzekering_aanvraag" | "offerte-aanvraag"
       note_type: "notitie" | "follow_up" | "telefoongesprek"
     }
@@ -1475,6 +1529,10 @@ export const Constants = {
         "offerte_verstuurd",
         "klant",
         "afgewezen",
+        "nieuw_te_beoordelen",
+        "actief",
+        "gepauzeerd",
+        "opgezegd",
       ],
       lead_type: ["contact", "verzekering_aanvraag", "offerte-aanvraag"],
       note_type: ["notitie", "follow_up", "telefoongesprek"],
