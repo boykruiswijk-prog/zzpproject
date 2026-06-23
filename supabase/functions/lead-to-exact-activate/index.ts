@@ -344,7 +344,9 @@ Deno.serve(async (req) => {
     }
     const invRes = await createExactInvoice({
       baseUrl, div, headers, accountId: lead.exact_account_id, lead, pakketSpec: spec,
+      itemId: config.exact_item_id_bav_avb ?? null,
     });
+
     if (!invRes.ok) {
       await logSync(supabase, {
         trigger_type: "invoice_retry", status: "error",
