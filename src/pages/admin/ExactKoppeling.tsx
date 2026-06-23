@@ -437,42 +437,114 @@ export default function ExactKoppeling() {
                       <th className="py-2 pr-3">Tijdstip</th>
                       <th className="py-2 pr-3">Trigger</th>
                       <th className="py-2 pr-3">Status</th>
-                      <th className="py-2 pr-3">Account ID</th>
                       <th className="py-2 pr-3">HTTP</th>
-                      <th className="py-2">Foutmelding</th>
+                      <th className="py-2 pr-3">Resultaat</th>
+                      <th className="py-2 pr-3">Foutmelding</th>
+                      <th className="py-2"></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {logs.map((l) => (
-                      <tr key={l.id} className="border-t">
-                        <td className="py-2 pr-3">{new Date(l.created_at).toLocaleString("nl-NL")}</td>
-                        <td className="py-2 pr-3">{l.trigger_type}</td>
-                        <td className="py-2 pr-3">
-                          <Badge
-                            className={
-                              l.status === "success"
-                                ? "bg-green-500 text-white"
-                                : l.status === "error"
-                                ? "bg-red-500 text-white"
-                                : "bg-muted text-muted-foreground"
-                            }
-                          >
-                            {l.status}
-                          </Badge>
-                        </td>
-                        <td className="py-2 pr-3 font-mono">{l.exact_account_id ?? "—"}</td>
-                        <td className="py-2 pr-3">{l.http_status ?? "—"}</td>
-                        <td className="py-2 text-red-600 max-w-md truncate" title={l.error_message ?? ""}>
-                          {l.error_message ?? ""}
-                        </td>
-                      </tr>
-                    ))}
+                    {logs.map((l) => {
+                      const p = (l.payload ?? {}) as {
+                        accounts_count?: number;
+                        invoices_count?: number;
+                        accounts_sample?: string[];
+                      };
+                      const hasCounts =
+                        typeof p.accounts_count === "number" || typeof p.invoices_count === "number";
+                      return (
+                        <tr key={l.id} className="border-t align-top">
+                          <td className="py-2 pr-3 whitespace-nowrap">
+                            {new Date(l.created_at).toLocaleString("nl-NL")}
+                          </td>
+                          <td className="py-2 pr-3">{l.trigger_type}</td>
+                          <td className="py-2 pr-3">
+                            <Badge
+                              className={
+                                l.status === "success"
+                                  ? "bg-green-500 text-white"
+                                  : l.status === "error"
+                                  ? "bg-red-500 text-white"
+                                  : "bg-muted text-muted-foreground"
+                              }
+                            >
+                              {l.status}
+                            </Badge>
+                          </td>
+                          <td className="py-2 pr-3">{l.http_status ?? "—"}</td>
+                          <td className="py-2 pr-3">
+                            {hasCounts ? (
+                              <div className="space-y-0.5">
+                                <p>
+                                  <span className="font-medium">{p.accounts_count ?? 0}</span> relaties
+                                  {" · "}
+                                  <span className="font-medium">{p.invoices_count ?? 0}</span> facturen
+                                </p>
+                                {p.accounts_sample && p.accounts_sample.length > 0 && (
+                                  <p className="text-[11px] text-muted-foreground">
+                                    {p.accounts_sample.join(" · ")}
+                                  </p>
+                                )}
+                              </div>
+                            ) : l.exact_account_id ? (
+                              <span className="font-mono">{l.exact_account_id}</span>
+                            ) : (
+                              "—"
+                            )}
+                          </td>
+                          <td className="py-2 pr-3 text-red-600 max-w-xs truncate" title={l.error_message ?? ""}>
+                            {l.error_message ?? ""}
+                          </td>
+                          <td className="py-2">
+                            {l.payload ? (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-7 gap-1 text-xs"
+                                onClick={() => setSelectedLog(l)}
+                              >
+                                <Eye className="h-3 w-3" />
+                                Bekijk
+                              </Button>
+                            ) : null}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
             )}
           </CardContent>
         </Card>
+
+        <Dialog open={!!selectedLog} onOpenChange={(o) => !o && setSelectedLog(null)}>
+          <DialogContent className="max-w-3xl max-h-[80vh] overflow-auto">
+            <DialogHeader>
+              <DialogTitle>
+                Sync details —{" "}
+                {selectedLog ? new Date(selectedLog.created_at).toLocaleString("nl-NL") : ""}
+              </DialogTitle>
+            </DialogHeader>
+            {selectedLog && (
+              <div className="space-y-3 text-xs">
+                <div className="grid grid-cols-3 gap-2">
+                  <div><span className="text-muted-foreground">Trigger: </span>{selectedLog.trigger_type}</div>
+                  <div><span className="text-muted-foreground">Status: </span>{selectedLog.status}</div>
+                  <div><span className="text-muted-foreground">HTTP: </span>{selectedLog.http_status ?? "—"}</div>
+                </div>
+                {selectedLog.error_message && (
+                  <div className="font-mono bg-red-50 text-red-700 p-2 rounded">
+                    {selectedLog.error_message}
+                  </div>
+                )}
+                <pre className="bg-muted p-3 rounded font-mono text-[11px] overflow-auto whitespace-pre-wrap">
+                  {JSON.stringify(selectedLog.payload, null, 2)}
+                </pre>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );
