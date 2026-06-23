@@ -256,7 +256,21 @@ export default function ExactKoppeling() {
           <CardContent className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <p className="text-muted-foreground">Divisie</p>
-              <p className="font-medium">{config?.divisie_code ?? "—"}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-medium">{config?.divisie_code ?? "—"}</p>
+                {isGreen && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-7 gap-1 text-xs"
+                    onClick={switchDivision}
+                    disabled={switchingDiv}
+                  >
+                    {switchingDiv ? <Loader2 className="h-3 w-3 animate-spin" /> : <Repeat className="h-3 w-3" />}
+                    Wissel administratie
+                  </Button>
+                )}
+              </div>
             </div>
             <div>
               <p className="text-muted-foreground">Laatste sync</p>
