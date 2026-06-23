@@ -345,38 +345,48 @@ export default function ArtikelDetail() {
               <div
                 data-article-body
                 className="prose prose-lg max-w-none
-                  prose-headings:text-foreground prose-headings:font-semibold prose-headings:scroll-mt-24
-                  prose-h2:text-[24px] md:prose-h2:text-[28px] prose-h2:mt-12 prose-h2:mb-4
-                  prose-h3:text-[20px] md:prose-h3:text-[22px] prose-h3:mt-8 prose-h3:mb-3
-                  prose-h4:text-[18px] prose-h4:mt-6
-                  prose-p:text-slate-700 prose-p:text-base md:prose-p:text-[18px] prose-p:leading-[1.75] prose-p:mb-6
-                  prose-a:text-accent prose-a:underline hover:prose-a:opacity-80
-                  prose-strong:text-foreground
-                  prose-ul:my-6 prose-ul:space-y-2 prose-ul:pl-6 prose-li:text-slate-700 prose-li:marker:text-accent
-            prose-ol:my-6 prose-ol:space-y-2 prose-ol:pl-6
-            prose-blockquote:border-l-4 prose-blockquote:border-accent prose-blockquote:bg-slate-50 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:not-italic prose-blockquote:my-8
-            prose-code:bg-slate-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
-            prose-img:rounded-lg prose-img:shadow-md prose-img:my-8
-            prose-table:my-8 prose-th:bg-secondary prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:font-semibold prose-td:px-4 prose-td:py-3 prose-td:border-t prose-td:border-border/50
-            prose-hr:my-10 prose-hr:border-border/40">
-            {isBavAvb
-              ? renderContentWithCTA(article.content || "")
-              : <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.content || ""}</ReactMarkdown>}
-          </div>
+                  prose-headings:text-foreground prose-headings:font-bold prose-headings:tracking-tight prose-headings:scroll-mt-24
+                  prose-h2:text-[26px] md:prose-h2:text-[32px] prose-h2:mt-16 prose-h2:mb-5 prose-h2:pb-2 prose-h2:border-b prose-h2:border-border/60
+                  prose-h3:text-[20px] md:prose-h3:text-[24px] prose-h3:mt-10 prose-h3:mb-3 prose-h3:font-semibold
+                  prose-h4:text-[18px] prose-h4:mt-8 prose-h4:font-semibold
+                  prose-p:text-slate-700 prose-p:text-base md:prose-p:text-[18px] prose-p:leading-[1.8] prose-p:mb-6
+                  prose-p:first-of-type:text-xl md:prose-p:first-of-type:text-[22px] prose-p:first-of-type:text-slate-600 prose-p:first-of-type:font-light prose-p:first-of-type:leading-[1.7] prose-p:first-of-type:mb-10
+                  prose-a:text-accent prose-a:underline prose-a:underline-offset-2 hover:prose-a:opacity-80
+                  prose-strong:text-foreground prose-strong:font-semibold
+                  prose-ul:my-6 prose-ul:space-y-2.5 prose-ul:pl-6 prose-ul:list-disc prose-ul:marker:text-accent
+                  prose-ol:my-6 prose-ol:space-y-2.5 prose-ol:pl-6 prose-ol:marker:text-accent prose-ol:marker:font-semibold
+                  prose-li:text-slate-700 prose-li:pl-2 prose-li:leading-relaxed
+                  prose-blockquote:border-l-4 prose-blockquote:border-accent prose-blockquote:bg-slate-50 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:not-italic prose-blockquote:my-8 prose-blockquote:text-slate-700
+                  prose-code:bg-slate-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-medium prose-code:before:content-none prose-code:after:content-none
+                  prose-pre:bg-slate-900 prose-pre:text-slate-100 prose-pre:rounded-lg prose-pre:p-4
+                  prose-img:rounded-xl prose-img:shadow-sm prose-img:my-10
+                  prose-table:w-full prose-table:my-8 prose-table:border-collapse
+                  prose-thead:bg-secondary prose-th:border prose-th:border-border/60 prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:font-semibold
+                  prose-td:border prose-td:border-border/60 prose-td:px-4 prose-td:py-3
+                  prose-hr:my-12 prose-hr:border-border/60">
+                {isBavAvb
+                  ? renderContentWithCTA(article.content || "")
+                  : <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.content || ""}</ReactMarkdown>}
+              </div>
 
-          {/* CTA-blok */}
-          <div className="mt-12 rounded-2xl p-7 md:p-9 text-white" style={{ background: "linear-gradient(135deg, #1f2937 0%, #0f172a 100%)" }}>
-            <h3 className="text-2xl font-bold mb-2">Vragen na het lezen?</h3>
-            <p className="text-white/80 mb-6">Heb je vragen? Bel of mail ons voor een reactie binnen 24 uur.</p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <a href="tel:0204573077" className="inline-flex items-center justify-center gap-2 bg-accent hover:opacity-90 text-accent-foreground px-5 py-3 rounded-lg font-semibold transition">
-                <Phone className="h-4 w-4" /> Bel 020 - 457 3077
-              </a>
-              <a href="mailto:info@zpzaken.nl" className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-lg font-semibold transition">
-                <Mail className="h-4 w-4" /> Stuur een mail
-              </a>
-            </div>
-          </div>
+              {showCommercialCTA ? (
+                <div className="mt-12">
+                  <ThreeOptionCTA />
+                </div>
+              ) : (
+                <div className="mt-12 rounded-2xl p-7 md:p-9 text-white" style={{ background: "linear-gradient(135deg, #1f2937 0%, #0f172a 100%)" }}>
+                  <h3 className="text-2xl font-bold mb-2">Vragen na het lezen?</h3>
+                  <p className="text-white/80 mb-6">Heb je vragen? Bel of mail ons voor een reactie binnen 24 uur.</p>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <a href="tel:0204573077" className="inline-flex items-center justify-center gap-2 bg-accent hover:opacity-90 text-accent-foreground px-5 py-3 rounded-lg font-semibold transition">
+                      <Phone className="h-4 w-4" /> Bel 020 - 457 3077
+                    </a>
+                    <a href="mailto:info@zpzaken.nl" className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-lg font-semibold transition">
+                      <Mail className="h-4 w-4" /> Stuur een mail
+                    </a>
+                  </div>
+                </div>
+              )}
 
               <div className="mt-8">
                 <ShareButtons url={articleUrl} title={article.title} />
