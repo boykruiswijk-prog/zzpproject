@@ -336,7 +336,11 @@ export default function ExactKoppeling() {
             )}
             {isGreen && (
               <>
-                <Button onClick={testConnection} disabled={testing} className="gap-2">
+                <Button onClick={syncNow} disabled={syncing} className="gap-2">
+                  {syncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                  Sync nu
+                </Button>
+                <Button onClick={testConnection} disabled={testing} variant="outline" className="gap-2">
                   {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ExternalLink className="h-4 w-4" />}
                   Test koppeling
                 </Button>
