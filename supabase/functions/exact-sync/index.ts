@@ -286,7 +286,7 @@ Deno.serve(async (req) => {
         const arr = Array.isArray(j?.d?.results) ? j.d.results : Array.isArray(j?.d) ? j.d : [];
         return { status: r.status, ok: r.ok, data: arr, raw: j };
       };
-      const items = await fetchJson(`${baseUrl}/api/v1/${divisionCode}/logistics/Items?$select=ID,Code,Description,SalesVatCode,GLSales&$top=20`);
+      const items = await fetchJson(`${baseUrl}/api/v1/${divisionCode}/logistics/Items?$select=ID,Code,Description,SalesVatCode&$top=20`);
       const gl = await fetchJson(`${baseUrl}/api/v1/${divisionCode}/financial/GLAccounts?$select=ID,Code,Description&$filter=startswith(Code,'8')&$top=20`);
       const vat = await fetchJson(`${baseUrl}/api/v1/${divisionCode}/vat/VATCodes?$select=ID,Code,Description,Percentage&$top=100`);
       return new Response(
