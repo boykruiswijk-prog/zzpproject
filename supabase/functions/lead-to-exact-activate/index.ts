@@ -115,8 +115,30 @@ Deno.serve(async (req) => {
     Prefer: "return=representation",
   };
 
+  // ── Actie: schema-introspectie ($metadata) ──
+  if (action === "introspect_metadata") {
+    const entity = body?.entity || "DirectDebitMandate";
+    const section = body?.section || "cashflow";
+    const url = `${baseUrl}/api/v1/${div}/${section}/$metadata`;
+    const r = await fetch(url, {
+      headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/xml" },
+    });
+    const xml = await r.text();
+    // Pak alleen <EntityType Name="<entity>"> ... </EntityType>
+    const re = new RegExp(`<EntityType[^>]*Name="${entity}"[\\s\\S]*?</EntityType>`);
+    const match = xml.match(re);
+    return json({
+      success: r.ok,
+      http_status: r.status,
+      entity,
+      entity_xml: match ? match[0] : null,
+      raw_length: xml.length,
+    });
+  }
+
   // ── Actie: alleen SEPA-mandaat (re)try voor reeds-geactiveerde lead ──
   if (action === "retry_mandate") {
+
     if (!lead.exact_account_id) {
       return json({ success: false, error: "lead_heeft_geen_exact_account" }, 400);
     }
