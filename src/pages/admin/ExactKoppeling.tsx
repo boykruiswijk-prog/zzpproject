@@ -158,6 +158,9 @@ export default function ExactKoppeling() {
   };
 
   const [syncing, setSyncing] = useState(false);
+  const [switchingDiv, setSwitchingDiv] = useState(false);
+  const [selectedLog, setSelectedLog] = useState<SyncLog | null>(null);
+
   const syncNow = async () => {
     setSyncing(true);
     const { data, error } = await supabase.functions.invoke("exact-sync", {
@@ -168,6 +171,20 @@ export default function ExactKoppeling() {
     const res = data as { success: boolean; accounts_count?: number; invoices_count?: number; divisie_code?: string; error?: string };
     if (!res.success) return toast.error(res.error ?? "Sync mislukt");
     toast.success(`Sync OK — divisie ${res.divisie_code}, ${res.accounts_count} relaties, ${res.invoices_count} facturen`);
+    loadAll();
+  };
+
+  const switchDivision = async () => {
+    setSwitchingDiv(true);
+    const { data, error } = await supabase.functions.invoke("exact-sync", {
+      body: { action: "switch_division", trigger_type: "switch_division" },
+    });
+    setSwitchingDiv(false);
+    if (error) return toast.error(`Wisselen mislukt: ${error.message}`);
+    const res = data as { success: boolean; previous_division?: string; new_division?: string; changed?: boolean; note?: string; error?: string };
+    if (!res.success) return toast.error(res.error ?? "Wisselen mislukt");
+    if (res.changed) toast.success(`Divisie gewisseld: ${res.previous_division} → ${res.new_division}`);
+    else toast.info(res.note ?? `Zelfde divisie: ${res.new_division}`);
     loadAll();
   };
 
