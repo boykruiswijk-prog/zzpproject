@@ -425,21 +425,30 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         Account: exactAccountId,
         BankAccount: exactBankAccountId,
-        MandateReference: `MNDT-${leadId.slice(0, 8)}`,
+        Reference: `MNDT-${leadId.slice(0, 8)}`,
         SignatureDate: signatureDate,
         Type: 1, // 1 = B2B
       }),
     });
-    const mJson = await mRes.json().catch(() => ({}));
     if (!mRes.ok) {
-      mandateWarning = `SEPA-mandaat niet aangemaakt (${mRes.status}): ${JSON.stringify(mJson).slice(0, 300)}. Account + bankrekening staan wel klaar.`;
+      const { summary, detail } = await captureExactError("DirectDebitMandates POST", mRes);
+      mandateWarning = `${summary}. Account + bankrekening staan wel klaar.`;
+      await logSync(supabase, {
+        trigger_type: "lead_activation", status: "error",
+        lead_id: leadId, admin_user_id: user.id,
+        http_status: mRes.status,
+        error_message: summary,
+        payload: detail,
+      });
       console.warn(mandateWarning);
     } else {
+      const mJson = await mRes.json().catch(() => ({}));
       exactMandateId = mJson?.d?.ID || mJson?.ID || null;
     }
   } catch (e) {
     mandateWarning = `SEPA-mandaat exception: ${e instanceof Error ? e.message : e}`;
   }
+
 
 
   // ── Stap H: lead updaten ──
