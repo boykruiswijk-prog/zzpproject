@@ -49,7 +49,13 @@ interface BavSubmission {
   kvk_nummer?: string;
   beroep?: string;
   sector?: string;
+  branche?: string;
+  adres_straat?: string;
+  adres_huisnummer?: string;
+  adres_postcode?: string;
+  adres_plaats?: string;
   iban?: string;
+  sepa_akkoord?: boolean;
   rekeninghouder?: string;
   opmerkingen?: string;
   vereist_handmatige_beoordeling?: boolean;
@@ -104,6 +110,7 @@ Deno.serve(async (req) => {
       .from("leads")
       .insert({
         type: "verzekering_aanvraag",
+        status: "nieuw_te_beoordelen",
         voornaam: submission.voornaam,
         achternaam: submission.achternaam,
         email: submission.email,
@@ -111,6 +118,14 @@ Deno.serve(async (req) => {
         bedrijfsnaam: submission.bedrijfsnaam,
         kvk_nummer: submission.kvk_nummer || null,
         beroep: submission.beroep || null,
+        branche: submission.branche || null,
+        adres_straat: submission.adres_straat || null,
+        adres_huisnummer: submission.adres_huisnummer || null,
+        adres_postcode: submission.adres_postcode || null,
+        adres_plaats: submission.adres_plaats || null,
+        iban: submission.iban || null,
+        sepa_akkoord: submission.sepa_akkoord === true,
+        sepa_akkoord_datum: submission.sepa_akkoord === true ? new Date().toISOString() : null,
         omzet: submission.betaalwijze,
         verzekering_type: pakket.naam,
         verzekerd_bedrag: pakket.dekking,
