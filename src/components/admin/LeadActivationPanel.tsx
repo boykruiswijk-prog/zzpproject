@@ -34,7 +34,11 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
   const qc = useQueryClient();
   const [isActivating, setIsActivating] = useState(false);
   const [isRetryingMandate, setIsRetryingMandate] = useState(false);
+  const [isRetryingInvoice, setIsRetryingInvoice] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  const formatEuro = (n: number | null | undefined) =>
+    typeof n === "number" ? `€ ${n.toFixed(2).replace(".", ",")}` : "—";
 
 
   const checks = useMemo(() => [
@@ -111,9 +115,36 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
     }
   };
 
+  const retryInvoice = async () => {
+    setIsRetryingInvoice(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("lead-to-exact-activate", {
+        body: { lead_id: lead.id, action: "retry_invoice" },
+      });
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || "Onbekende fout");
+      toast({
+        title: "Factuur aangemaakt",
+        description: `Exact factuur ${data.exact_invoice_number ?? "(concept)"} — ${formatEuro(data.amount)}`,
+      });
+      qc.invalidateQueries({ queryKey: ["lead", lead.id] });
+    } catch (e: any) {
+      toast({
+        title: "Factuur aanmaken mislukt",
+        description: e?.message || "Onbekende fout",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRetryingInvoice(false);
+    }
+  };
+
   const auditLog: any[] = Array.isArray(lead.activatie_log) ? lead.activatie_log : [];
   const lastEntry = auditLog[auditLog.length - 1];
   const hasMandateWarning = alreadyActivated && auditLog.some(e => e?.mandate_warning) && !auditLog.some(e => e?.exact_mandate_id);
+  const hasInvoice = !!lead.exact_invoice_id;
+  const hasInvoiceWarning = alreadyActivated && !hasInvoice;
+
 
 
   return (
@@ -156,6 +187,52 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
                     <><Loader2 className="h-3 w-3 mr-2 animate-spin" /> Bezig…</>
                   ) : (
                     <>SEPA-mandaat opnieuw aanmaken</>
+                  )}
+                </Button>
+              </div>
+            )}
+            {hasInvoice && (
+              <div className="rounded-lg border border-green-300 bg-green-50 p-4 flex items-start gap-3">
+                <CheckCircle2 className="h-5 w-5 text-green-700 mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-medium text-green-900">
+                    Factuur aangemaakt in Exact (concept).
+                  </p>
+                  <p className="text-green-800 mt-1">
+                    Factuurnummer:{" "}
+                    <code className="bg-white px-1.5 py-0.5 rounded">
+                      {lead.exact_invoice_number ?? "(concept)"}
+                    </code>{" "}
+                    — {formatEuro(Number(lead.exact_invoice_amount))}
+                  </p>
+                  <p className="text-green-700 text-xs mt-1">
+                    Exact factuur-ID: <code>{lead.exact_invoice_id}</code>
+                  </p>
+                  {lead.exact_invoice_created_at && (
+                    <p className="text-green-700 text-xs">
+                      Aangemaakt op {formatDateTimeNL(lead.exact_invoice_created_at)}. Status: concept — controleer en verstuur via Exact.
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+            {hasInvoiceWarning && (
+              <div className="rounded-md border border-amber-300 bg-amber-50 p-3 space-y-2">
+                <p className="text-xs text-amber-900 flex items-start gap-2">
+                  <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <span>Factuur is nog niet aangemaakt in Exact. Relatie en SEPA-mandaat staan wel klaar.</span>
+                </p>
+                <Button
+                  onClick={retryInvoice}
+                  disabled={isRetryingInvoice}
+                  size="sm"
+                  variant="outline"
+                  className="w-full border-amber-400 text-amber-900 hover:bg-amber-100"
+                >
+                  {isRetryingInvoice ? (
+                    <><Loader2 className="h-3 w-3 mr-2 animate-spin" /> Bezig…</>
+                  ) : (
+                    <>Factuur opnieuw aanmaken</>
                   )}
                 </Button>
               </div>
@@ -238,6 +315,17 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
                   )}
                   {entry.mandate_warning && (
                     <div className="text-amber-700">⚠ {entry.mandate_warning}</div>
+                  )}
+                  {entry.invoice_warning && (
+                    <div className="text-amber-700">⚠ {entry.invoice_warning}</div>
+                  )}
+                  {entry.exact_invoice_number && (
+                    <div className="text-muted-foreground">
+                      Factuur: <code>{entry.exact_invoice_number}</code>
+                      {typeof entry.exact_invoice_amount === "number" && (
+                        <> — {formatEuro(entry.exact_invoice_amount)}</>
+                      )}
+                    </div>
                   )}
                 </li>
               ))}

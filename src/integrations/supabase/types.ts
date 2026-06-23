@@ -961,6 +961,10 @@ export type Database = {
           exact_abonnement_id: string | null
           exact_account_id: string | null
           exact_fout: string | null
+          exact_invoice_amount: number | null
+          exact_invoice_created_at: string | null
+          exact_invoice_id: string | null
+          exact_invoice_number: string | null
           exact_relatie_id: string | null
           exact_status: string | null
           exact_sync_op: string | null
@@ -1005,6 +1009,10 @@ export type Database = {
           exact_abonnement_id?: string | null
           exact_account_id?: string | null
           exact_fout?: string | null
+          exact_invoice_amount?: number | null
+          exact_invoice_created_at?: string | null
+          exact_invoice_id?: string | null
+          exact_invoice_number?: string | null
           exact_relatie_id?: string | null
           exact_status?: string | null
           exact_sync_op?: string | null
@@ -1049,6 +1057,10 @@ export type Database = {
           exact_abonnement_id?: string | null
           exact_account_id?: string | null
           exact_fout?: string | null
+          exact_invoice_amount?: number | null
+          exact_invoice_created_at?: string | null
+          exact_invoice_id?: string | null
+          exact_invoice_number?: string | null
           exact_relatie_id?: string | null
           exact_status?: string | null
           exact_sync_op?: string | null
