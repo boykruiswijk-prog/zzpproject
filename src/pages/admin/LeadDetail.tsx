@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { LeadNotes } from "@/components/admin/LeadNotes";
+import { LeadActivationPanel } from "@/components/admin/LeadActivationPanel";
 import { useLead, useUpdateLead, useDeleteLead } from "@/hooks/useLeads";
 import { useAuth } from "@/contexts/AuthContext";
 import { PortalInviteButton } from "@/components/admin/PortalInviteButton";
@@ -499,6 +500,9 @@ export default function AdminLeadDetail() {
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {lead.type === "verzekering_aanvraag" && (
+              <LeadActivationPanel lead={lead} isAdmin={isAdmin} />
+            )}
             <Card>
               <CardHeader>
                 <CardTitle>Tijdlijn</CardTitle>
