@@ -216,9 +216,6 @@ Deno.serve(async (req) => {
           accounts_sample: accountsSample,
           accounts_preview: accounts.slice(0, 10),
           invoices_preview: invoices.slice(0, 10),
-          _debug_raw_keys: Object.keys(accJson ?? {}),
-          _debug_d_type: Array.isArray(accJson?.d) ? "array" : typeof accJson?.d,
-          _debug_d_sample: Array.isArray(accJson?.d) ? accJson.d.slice(0,1) : accJson?.d,
         },
         http_status: accRes.status,
       });
