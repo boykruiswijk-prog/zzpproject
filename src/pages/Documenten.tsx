@@ -7,7 +7,6 @@ import { Link } from "react-router-dom";
 import {
   branches,
   algemeneBavDocumenten,
-  aanvullendeDocumenten,
   zpZakenEigenDocumenten,
   type Document,
 } from "@/data/documentenLijst";
