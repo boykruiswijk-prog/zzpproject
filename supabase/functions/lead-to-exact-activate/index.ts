@@ -278,20 +278,26 @@ Deno.serve(async (req) => {
   }
 
   // ── Stap G: SEPA-mandaat (DirectDebitMandate) — niet-fataal ──
+  // Schema (Exact):
+  //   - Account (Guid, required)
+  //   - BankAccount (Guid, required)
+  //   - MandateReference (string, unique)
+  //   - SignatureDate (DateTime) ← NIET 'MandateDate'
+  //   - Type (Int16): 0=Core, 1=B2B, 2=Bottomline (UK)
   let exactMandateId: string | null = null;
   let mandateWarning: string | null = null;
   try {
-    const mandateDate = lead.sepa_akkoord_datum
-      ? new Date(lead.sepa_akkoord_datum).toISOString().split("T")[0]
-      : new Date().toISOString().split("T")[0];
+    const signatureDate = lead.sepa_akkoord_datum
+      ? new Date(lead.sepa_akkoord_datum).toISOString()
+      : new Date().toISOString();
     const mRes = await fetch(`${baseUrl}/api/v1/${div}/cashflow/DirectDebitMandates`, {
       method: "POST", headers,
       body: JSON.stringify({
         Account: exactAccountId,
         BankAccount: exactBankAccountId,
-        MandateDate: mandateDate,
-        Reference: `MNDT-${leadId.slice(0, 8)}`,
-        Type: "B2B",
+        MandateReference: `MNDT-${leadId.slice(0, 8)}`,
+        SignatureDate: signatureDate,
+        Type: 1, // 1 = B2B
       }),
     });
     const mJson = await mRes.json().catch(() => ({}));
@@ -304,6 +310,7 @@ Deno.serve(async (req) => {
   } catch (e) {
     mandateWarning = `SEPA-mandaat exception: ${e instanceof Error ? e.message : e}`;
   }
+
 
   // ── Stap H: lead updaten ──
   const auditEntry = {
