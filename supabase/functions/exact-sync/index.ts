@@ -86,6 +86,7 @@ Deno.serve(async (req) => {
   const testMode = body.test === true;
   const syncNow = body.action === "sync_now";
   const switchDivision = body.action === "switch_division";
+  const exploreMode = body.action === "explore";
 
   try {
     const { data: config } = await supabase
@@ -273,6 +274,23 @@ Deno.serve(async (req) => {
             ? "Divisie bijgewerkt op basis van /Me."
             : "Exact /Me retourneert dezelfde CurrentDivision — om naar een andere administratie te wisselen is een nieuwe OAuth-autorisatie nodig waarbij je in Exact de juiste administratie selecteert.",
         }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    if (exploreMode) {
+      const h = { Authorization: `Bearer ${accessToken}`, Accept: "application/json" };
+      const fetchJson = async (url: string) => {
+        const r = await fetch(url, { headers: h });
+        const j = await r.json().catch(() => ({}));
+        const arr = Array.isArray(j?.d?.results) ? j.d.results : Array.isArray(j?.d) ? j.d : [];
+        return { status: r.status, ok: r.ok, data: arr, raw: j };
+      };
+      const items = await fetchJson(`${baseUrl}/api/v1/${divisionCode}/logistics/Items?$select=ID,Code,Description,SalesVatCode&$top=20`);
+      const gl = await fetchJson(`${baseUrl}/api/v1/${divisionCode}/financial/GLAccounts?$select=ID,Code,Description&$filter=startswith(Code,'8')&$top=20`);
+      const vat = await fetchJson(`${baseUrl}/api/v1/${divisionCode}/vat/VATCodes?$select=ID,Code,Description,Percentage&$top=100`);
+      return new Response(
+        JSON.stringify({ success: true, divisie_code: divisionCode, items, gl_accounts: gl, vat_codes: vat }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
