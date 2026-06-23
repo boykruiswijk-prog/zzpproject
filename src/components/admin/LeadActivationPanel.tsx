@@ -316,6 +316,17 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
                   {entry.mandate_warning && (
                     <div className="text-amber-700">⚠ {entry.mandate_warning}</div>
                   )}
+                  {entry.invoice_warning && (
+                    <div className="text-amber-700">⚠ {entry.invoice_warning}</div>
+                  )}
+                  {entry.exact_invoice_number && (
+                    <div className="text-muted-foreground">
+                      Factuur: <code>{entry.exact_invoice_number}</code>
+                      {typeof entry.exact_invoice_amount === "number" && (
+                        <> — {formatEuro(entry.exact_invoice_amount)}</>
+                      )}
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
