@@ -197,6 +197,7 @@ Deno.serve(async (req) => {
       const accounts = Array.isArray(accJson?.d?.results)
         ? accJson.d.results
         : Array.isArray(accJson?.d) ? accJson.d : [];
+      console.log("[exact-sync] accounts raw keys:", Object.keys(accJson ?? {}), "d type:", Array.isArray(accJson?.d) ? "array" : typeof accJson?.d, "parsed:", accounts.length);
 
       const invRes = await fetch(
         `${baseUrl}/api/v1/${divisionCode}/salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,InvoiceDate,AmountDC,Status&$top=10&$orderby=InvoiceDate desc`,
