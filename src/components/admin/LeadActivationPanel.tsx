@@ -115,9 +115,36 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
     }
   };
 
+  const retryInvoice = async () => {
+    setIsRetryingInvoice(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("lead-to-exact-activate", {
+        body: { lead_id: lead.id, action: "retry_invoice" },
+      });
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || "Onbekende fout");
+      toast({
+        title: "Factuur aangemaakt",
+        description: `Exact factuur ${data.exact_invoice_number ?? "(concept)"} — ${formatEuro(data.amount)}`,
+      });
+      qc.invalidateQueries({ queryKey: ["lead", lead.id] });
+    } catch (e: any) {
+      toast({
+        title: "Factuur aanmaken mislukt",
+        description: e?.message || "Onbekende fout",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRetryingInvoice(false);
+    }
+  };
+
   const auditLog: any[] = Array.isArray(lead.activatie_log) ? lead.activatie_log : [];
   const lastEntry = auditLog[auditLog.length - 1];
   const hasMandateWarning = alreadyActivated && auditLog.some(e => e?.mandate_warning) && !auditLog.some(e => e?.exact_mandate_id);
+  const hasInvoice = !!lead.exact_invoice_id;
+  const hasInvoiceWarning = alreadyActivated && !hasInvoice;
+
 
 
   return (
