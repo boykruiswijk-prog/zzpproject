@@ -82,6 +82,105 @@ async function captureExactError(label: string, res: Response): Promise<{ summar
   return { summary, detail };
 }
 
+// ── Fase 2: factuur-aanmaak helpers ────────────────────────────────────────
+// Master data uit schema-introspectie ($metadata + lookups) — vaste codes.
+const INV_JOURNAL = "70";              // Verkoopboek (Edm.String)
+const INV_PAYMENT_COND = "IN";         // Incasso, 7 dagen, Method=I (Edm.String)
+const INV_VAT_CODE = "0";              // BTW 0% (Edm.String)
+const INV_GL_ACCOUNT = "d40fbb95-43b0-4503-9fe8-287f14d59120"; // 81000 Premie-omzet (Guid)
+const INV_STATUS_CONCEPT = 20;         // 20 = Concept, 50 = Open
+
+const PAKKET_INVOICE: Record<string, { naam: string; bedrag: number; betalingsregel: string }> = {
+  "maandelijks": {
+    naam: "BAV & AVB Maandelijks",
+    bedrag: 660,
+    betalingsregel: "Betaling: 12 termijnen van € 55 via SEPA-incasso",
+  },
+  "jaarlijks": {
+    naam: "BAV & AVB Jaarlijks",
+    bedrag: 600,
+    betalingsregel: "Betaling: jaarlijks vooraf via SEPA-incasso",
+  },
+  "jaarlijks-cyber": {
+    naam: "BAV & AVB Jaarlijks + Cyber",
+    bedrag: 750,
+    betalingsregel: "Betaling: jaarlijks vooraf via SEPA-incasso",
+  },
+  "jaarlijks_cyber": {
+    naam: "BAV & AVB Jaarlijks + Cyber",
+    bedrag: 750,
+    betalingsregel: "Betaling: jaarlijks vooraf via SEPA-incasso",
+  },
+};
+
+function resolvePakketInvoice(pakket: string | null | undefined) {
+  if (!pakket) return null;
+  return PAKKET_INVOICE[pakket] ?? null;
+}
+
+// deno-lint-ignore no-explicit-any
+async function createExactInvoice(opts: {
+  baseUrl: string;
+  div: string;
+  headers: Record<string, string>;
+  accountId: string;
+  lead: any;
+  pakketSpec: { naam: string; bedrag: number; betalingsregel: string };
+}): Promise<
+  | { ok: true; invoiceId: string; invoiceNumber: string | null; amount: number; raw: unknown }
+  | { ok: false; httpStatus: number; summary: string; detail: Record<string, unknown>; request: unknown }
+> {
+  const { baseUrl, div, headers, accountId, lead, pakketSpec } = opts;
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const invoiceDate = today.toISOString();
+
+  const lineDescription =
+    `${pakketSpec.naam} — jaarpremie ${yyyy}\n` +
+    `${pakketSpec.betalingsregel}\n` +
+    `Polisnummer volgt op het certificaat`;
+  const headerDescription =
+    `Beroepsaansprakelijkheidsverzekering ${pakketSpec.naam} voor ${lead.bedrijfsnaam}`;
+
+  const payload = {
+    InvoiceTo: accountId,
+    OrderedBy: accountId,
+    Journal: INV_JOURNAL,
+    PaymentCondition: INV_PAYMENT_COND,
+    Status: INV_STATUS_CONCEPT,
+    InvoiceDate: invoiceDate,
+    OrderDate: invoiceDate,
+    Description: headerDescription,
+    SalesInvoiceLines: [
+      {
+        GLAccount: INV_GL_ACCOUNT,
+        VATCode: INV_VAT_CODE,
+        Quantity: 1,
+        UnitPrice: pakketSpec.bedrag,
+        Description: lineDescription,
+      },
+    ],
+  };
+
+  const res = await fetch(`${baseUrl}/api/v1/${div}/salesinvoice/SalesInvoices`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const { summary, detail } = await captureExactError("SalesInvoices POST", res);
+    return { ok: false, httpStatus: res.status, summary, detail, request: payload };
+  }
+  const j = await res.json().catch(() => ({}));
+  // deno-lint-ignore no-explicit-any
+  const d: any = (j as any)?.d ?? j;
+  const invoiceId: string = d?.InvoiceID || d?.ID || "";
+  const invoiceNumber: string | null =
+    d?.InvoiceNumber != null ? String(d.InvoiceNumber) : null;
+  return { ok: true, invoiceId, invoiceNumber, amount: pakketSpec.bedrag, raw: d };
+}
+
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
