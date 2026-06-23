@@ -208,20 +208,9 @@ Deno.serve(async (req) => {
     return json({ success: false, error: "velden_ontbreken", missing }, 400);
   }
 
-  // ── Exact config laden ──
-  const { data: config } = await supabase.from("exact_config").select("*").maybeSingle();
-  if (!config?.is_actief) return json({ success: false, error: "exact_niet_actief" }, 400);
-  if (!config.divisie_code) return json({ success: false, error: "divisie_code_ontbreekt" }, 400);
+  // (Exact config + token reeds geladen bovenaan)
 
-  const baseUrl = config.base_url || "https://start.exactonline.nl";
-  const div = config.divisie_code;
-  const accessToken = await ensureValidToken(supabase, config);
-  const headers = {
-    Authorization: `Bearer ${accessToken}`,
-    "Content-Type": "application/json",
-    Accept: "application/json",
-    Prefer: "return=representation",
-  };
+
 
   // ── Duplicate check op KvK in Exact ──
   const kvk = String(lead.kvk_nummer);
