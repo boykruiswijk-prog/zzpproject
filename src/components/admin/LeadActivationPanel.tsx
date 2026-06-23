@@ -34,7 +34,11 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
   const qc = useQueryClient();
   const [isActivating, setIsActivating] = useState(false);
   const [isRetryingMandate, setIsRetryingMandate] = useState(false);
+  const [isRetryingInvoice, setIsRetryingInvoice] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  const formatEuro = (n: number | null | undefined) =>
+    typeof n === "number" ? `€ ${n.toFixed(2).replace(".", ",")}` : "—";
 
 
   const checks = useMemo(() => [
