@@ -44,6 +44,13 @@ type SyncLog = {
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const RECOMMENDED_REDIRECT = `${SUPABASE_URL}/functions/v1/exact-oauth-callback`;
 
+const KNOWN_DIVISIONS: { code: string; name: string }[] = [
+  { code: "4401707", name: "ZP Zaken B.V." },
+  { code: "3752614", name: "ZP Werkt B.V." },
+  { code: "4401895", name: "Business @Ventures B.V." },
+  { code: "2932076", name: "Onefellow B.V." },
+];
+
 export default function ExactKoppeling() {
   const { user, isAdmin, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
