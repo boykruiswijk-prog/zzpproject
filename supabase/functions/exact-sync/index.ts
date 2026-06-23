@@ -85,6 +85,7 @@ Deno.serve(async (req) => {
   const triggerType = body.trigger_type || "manual";
   const testMode = body.test === true;
   const syncNow = body.action === "sync_now";
+  const switchDivision = body.action === "switch_division";
 
   try {
     const { data: config } = await supabase
