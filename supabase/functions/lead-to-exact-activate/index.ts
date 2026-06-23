@@ -62,6 +62,27 @@ async function logSync(supabase: any, params: any) {
   }
 }
 
+// Vangt complete Exact API error-response (headers + body) en geeft een rijk error-object terug.
+async function captureExactError(label: string, res: Response): Promise<{ summary: string; detail: Record<string, unknown> }> {
+  const bodyText = await res.text().catch(() => "");
+  const headersObj: Record<string, string> = {};
+  res.headers.forEach((v, k) => { headersObj[k] = v; });
+  let bodyJson: unknown = null;
+  try { bodyJson = JSON.parse(bodyText); } catch (_) { /* niet-JSON */ }
+  const detail = {
+    label,
+    http_status: res.status,
+    http_status_text: res.statusText,
+    url: res.url,
+    headers: headersObj,
+    body_raw: bodyText,
+    body_json: bodyJson,
+  };
+  const summary = `${label} ${res.status} ${res.statusText} — ${bodyText.slice(0, 600)}`;
+  return { summary, detail };
+}
+
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -115,8 +136,30 @@ Deno.serve(async (req) => {
     Prefer: "return=representation",
   };
 
+  // ── Actie: schema-introspectie ($metadata) ──
+  if (action === "introspect_metadata") {
+    const entity = body?.entity || "DirectDebitMandate";
+    const section = body?.section || "cashflow";
+    const url = `${baseUrl}/api/v1/${div}/${section}/$metadata`;
+    const r = await fetch(url, {
+      headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/xml" },
+    });
+    const xml = await r.text();
+    // Pak alleen <EntityType Name="<entity>"> ... </EntityType>
+    const re = new RegExp(`<EntityType[^>]*Name="${entity}"[\\s\\S]*?</EntityType>`);
+    const match = xml.match(re);
+    return json({
+      success: r.ok,
+      http_status: r.status,
+      entity,
+      entity_xml: match ? match[0] : null,
+      raw_length: xml.length,
+    });
+  }
+
   // ── Actie: alleen SEPA-mandaat (re)try voor reeds-geactiveerde lead ──
   if (action === "retry_mandate") {
+
     if (!lead.exact_account_id) {
       return json({ success: false, error: "lead_heeft_geen_exact_account" }, 400);
     }
@@ -139,21 +182,24 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         Account: lead.exact_account_id,
         BankAccount: bankId,
-        MandateReference: `MNDT-${leadId.slice(0, 8)}`,
+        Reference: `MNDT-${leadId.slice(0, 8)}`,
         SignatureDate: signatureDate,
         Type: 1, // 0=Core, 1=B2B, 2=Bottomline
       }),
     });
-    const mJson = await mRes.json().catch(() => ({}));
     if (!mRes.ok) {
+      const { summary, detail } = await captureExactError("DirectDebitMandates POST (retry)", mRes);
       await logSync(supabase, {
         trigger_type: "lead_activation", status: "error",
         lead_id: leadId, admin_user_id: user.id,
         http_status: mRes.status,
-        error_message: `SEPA-mandaat retry mislukt: ${JSON.stringify(mJson).slice(0, 800)}`,
+        error_message: summary,
+        payload: detail,
       });
-      return json({ success: false, error: "mandate_create_failed", detail: mJson, http_status: mRes.status }, 500);
+      return json({ success: false, error: "mandate_create_failed", detail, http_status: mRes.status }, 500);
     }
+    const mJson = await mRes.json().catch(() => ({}));
+
     const mandateId = mJson?.d?.ID || mJson?.ID || null;
     const entry = {
       timestamp: new Date().toISOString(),
@@ -262,21 +308,23 @@ Deno.serve(async (req) => {
   const accRes = await fetch(`${baseUrl}/api/v1/${div}/crm/Accounts`, {
     method: "POST", headers, body: JSON.stringify(accountPayload),
   });
-  const accData = await accRes.json().catch(() => ({}));
   if (!accRes.ok) {
+    const { summary, detail } = await captureExactError("Accounts POST", accRes);
     await logSync(supabase, {
       trigger_type: "lead_activation", status: "error",
       lead_id: leadId, admin_user_id: user.id,
       http_status: accRes.status,
-      error_message: `Account-creatie mislukt: ${JSON.stringify(accData).slice(0, 1000)}`,
-      payload: accountPayload,
+      error_message: summary,
+      payload: { request: accountPayload, response: detail },
     });
-    return json({ success: false, error: "exact_account_create_failed", detail: accData, http_status: accRes.status }, 500);
+    return json({ success: false, error: "exact_account_create_failed", detail, http_status: accRes.status }, 500);
   }
+  const accData = await accRes.json().catch(() => ({}));
   const exactAccountId: string = accData?.d?.ID || accData?.ID;
   if (!exactAccountId) {
     return json({ success: false, error: "no_account_id_returned", raw: accData }, 500);
   }
+
 
   // ── Helper voor rollback ──
   const deleteAccount = async () => {
@@ -290,7 +338,7 @@ Deno.serve(async (req) => {
 
   // ── Stap E: Contact ──
   let exactContactId: string | null = null;
-  try {
+  {
     const cRes = await fetch(`${baseUrl}/api/v1/${div}/crm/Contacts`, {
       method: "POST", headers,
       body: JSON.stringify({
@@ -302,23 +350,25 @@ Deno.serve(async (req) => {
         IsMainContact: true,
       }),
     });
+    if (!cRes.ok) {
+      const { summary, detail } = await captureExactError("Contacts POST", cRes);
+      await deleteAccount();
+      await logSync(supabase, {
+        trigger_type: "lead_activation", status: "error",
+        lead_id: leadId, admin_user_id: user.id,
+        http_status: cRes.status,
+        error_message: `Contact creatie mislukt (rollback uitgevoerd): ${summary}`,
+        payload: detail,
+      });
+      return json({ success: false, error: "contact_create_failed", detail }, 500);
+    }
     const cJson = await cRes.json().catch(() => ({}));
-    if (!cRes.ok) throw new Error(`Contact ${cRes.status}: ${JSON.stringify(cJson).slice(0, 500)}`);
     exactContactId = cJson?.d?.ID || cJson?.ID || null;
-  } catch (e) {
-    await deleteAccount();
-    const msg = e instanceof Error ? e.message : String(e);
-    await logSync(supabase, {
-      trigger_type: "lead_activation", status: "error",
-      lead_id: leadId, admin_user_id: user.id,
-      error_message: `Contact creatie mislukt (rollback uitgevoerd): ${msg}`,
-    });
-    return json({ success: false, error: "contact_create_failed", detail: msg }, 500);
   }
 
   // ── Stap F: BankAccount ──
   let exactBankAccountId: string | null = null;
-  try {
+  {
     const ibanClean = String(lead.iban).replace(/\s+/g, "").toUpperCase();
     const bRes = await fetch(`${baseUrl}/api/v1/${div}/crm/BankAccounts`, {
       method: "POST", headers,
@@ -329,27 +379,30 @@ Deno.serve(async (req) => {
         Type: 10,
       }),
     });
+    if (!bRes.ok) {
+      const { summary, detail } = await captureExactError("BankAccounts POST", bRes);
+      await deleteAccount();
+      await logSync(supabase, {
+        trigger_type: "lead_activation", status: "error",
+        lead_id: leadId, admin_user_id: user.id,
+        http_status: bRes.status,
+        error_message: `BankAccount creatie mislukt (rollback): ${summary}`,
+        payload: detail,
+      });
+      return json({ success: false, error: "bankaccount_create_failed", detail }, 500);
+    }
     const bJson = await bRes.json().catch(() => ({}));
-    if (!bRes.ok) throw new Error(`BankAccount ${bRes.status}: ${JSON.stringify(bJson).slice(0, 500)}`);
     exactBankAccountId = bJson?.d?.ID || bJson?.ID || null;
-  } catch (e) {
-    await deleteAccount();
-    const msg = e instanceof Error ? e.message : String(e);
-    await logSync(supabase, {
-      trigger_type: "lead_activation", status: "error",
-      lead_id: leadId, admin_user_id: user.id,
-      error_message: `BankAccount creatie mislukt (rollback): ${msg}`,
-    });
-    return json({ success: false, error: "bankaccount_create_failed", detail: msg }, 500);
   }
 
   // ── Stap G: SEPA-mandaat (DirectDebitMandate) — niet-fataal ──
-  // Schema (Exact):
+  // Schema (Exact $metadata DirectDebitMandate):
   //   - Account (Guid, required)
   //   - BankAccount (Guid, required)
-  //   - MandateReference (string, unique)
-  //   - SignatureDate (DateTime) ← NIET 'MandateDate'
+  //   - Reference (string)              ← officiële veldnaam (NIET 'MandateReference')
+  //   - SignatureDate (DateTime)        ← NIET 'MandateDate'
   //   - Type (Int16): 0=Core, 1=B2B, 2=Bottomline (UK)
+
   let exactMandateId: string | null = null;
   let mandateWarning: string | null = null;
   try {
@@ -361,21 +414,30 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         Account: exactAccountId,
         BankAccount: exactBankAccountId,
-        MandateReference: `MNDT-${leadId.slice(0, 8)}`,
+        Reference: `MNDT-${leadId.slice(0, 8)}`,
         SignatureDate: signatureDate,
         Type: 1, // 1 = B2B
       }),
     });
-    const mJson = await mRes.json().catch(() => ({}));
     if (!mRes.ok) {
-      mandateWarning = `SEPA-mandaat niet aangemaakt (${mRes.status}): ${JSON.stringify(mJson).slice(0, 300)}. Account + bankrekening staan wel klaar.`;
+      const { summary, detail } = await captureExactError("DirectDebitMandates POST", mRes);
+      mandateWarning = `${summary}. Account + bankrekening staan wel klaar.`;
+      await logSync(supabase, {
+        trigger_type: "lead_activation", status: "error",
+        lead_id: leadId, admin_user_id: user.id,
+        http_status: mRes.status,
+        error_message: summary,
+        payload: detail,
+      });
       console.warn(mandateWarning);
     } else {
+      const mJson = await mRes.json().catch(() => ({}));
       exactMandateId = mJson?.d?.ID || mJson?.ID || null;
     }
   } catch (e) {
     mandateWarning = `SEPA-mandaat exception: ${e instanceof Error ? e.message : e}`;
   }
+
 
 
   // ── Stap H: lead updaten ──
