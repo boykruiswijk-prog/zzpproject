@@ -118,6 +118,66 @@ function resolvePakketInvoice(pakket: string | null | undefined) {
   return PAKKET_INVOICE[pakket] ?? null;
 }
 
+// Zorgt dat het BAV-AVB artikel in Exact bestaat en geeft de Guid terug.
+// Schrijft de Guid naar exact_config.exact_item_id_bav_avb zodra bekend.
+// deno-lint-ignore no-explicit-any
+async function ensureBavAvbItem(opts: {
+  supabase: any; config: any; baseUrl: string; div: string;
+  headers: Record<string, string>; accessToken: string;
+  // deno-lint-ignore no-explicit-any
+  logCtx: any;
+}): Promise<{ ok: true; itemId: string; created: boolean; foundExisting: boolean } | { ok: false; summary: string; detail: Record<string, unknown>; httpStatus: number }> {
+  const { supabase, config, baseUrl, div, headers, accessToken, logCtx } = opts;
+  if (config.exact_item_id_bav_avb) {
+    return { ok: true, itemId: config.exact_item_id_bav_avb, created: false, foundExisting: false };
+  }
+  // 1) Lookup op Code
+  const lookupRes = await fetch(
+    `${baseUrl}/api/v1/${div}/logistics/Items?$select=ID,Code&$filter=Code eq 'BAV-AVB'&$top=1`,
+    { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } },
+  );
+  if (lookupRes.ok) {
+    const lj = await lookupRes.json().catch(() => ({}));
+    const arr = Array.isArray(lj?.d?.results) ? lj.d.results : Array.isArray(lj?.d) ? lj.d : [];
+    if (arr[0]?.ID) {
+      await supabase.from("exact_config").update({ exact_item_id_bav_avb: arr[0].ID }).eq("id", config.id);
+      config.exact_item_id_bav_avb = arr[0].ID;
+      return { ok: true, itemId: arr[0].ID, created: false, foundExisting: true };
+    }
+  }
+  // 2) Aanmaken
+  const itemPayload = {
+    Code: "BAV-AVB",
+    Description: "Beroeps- en bedrijfsaansprakelijkheidsverzekering",
+    SalesVatCode: INV_VAT_CODE,
+    GLSales: INV_GL_ACCOUNT,
+    IsSalesItem: true,
+    IsMakeItem: false,
+    IsStockItem: false,
+  };
+  const itemRes = await fetch(`${baseUrl}/api/v1/${div}/logistics/Items`, {
+    method: "POST", headers, body: JSON.stringify(itemPayload),
+  });
+  if (!itemRes.ok) {
+    const { summary, detail } = await captureExactError("Items POST", itemRes);
+    await supabase.from("exact_sync_log").insert({
+      ...logCtx, trigger_type: "item_bootstrap", status: "error",
+      http_status: itemRes.status, error_message: summary,
+      payload: { request: itemPayload, response: detail },
+    });
+    return { ok: false, summary, detail, httpStatus: itemRes.status };
+  }
+  const itemJson = await itemRes.json().catch(() => ({}));
+  const itemId: string = itemJson?.d?.ID || itemJson?.ID || "";
+  await supabase.from("exact_config").update({ exact_item_id_bav_avb: itemId }).eq("id", config.id);
+  config.exact_item_id_bav_avb = itemId;
+  await supabase.from("exact_sync_log").insert({
+    ...logCtx, trigger_type: "item_bootstrap", status: "success",
+    http_status: itemRes.status, payload: { request: itemPayload, exact_item_id: itemId },
+  });
+  return { ok: true, itemId, created: true, foundExisting: false };
+}
+
 // deno-lint-ignore no-explicit-any
 async function createExactInvoice(opts: {
   baseUrl: string;
@@ -126,11 +186,12 @@ async function createExactInvoice(opts: {
   accountId: string;
   lead: any;
   pakketSpec: { naam: string; bedrag: number; betalingsregel: string };
+  itemId: string | null;
 }): Promise<
   | { ok: true; invoiceId: string; invoiceNumber: string | null; amount: number; raw: unknown }
   | { ok: false; httpStatus: number; summary: string; detail: Record<string, unknown>; request: unknown }
 > {
-  const { baseUrl, div, headers, accountId, lead, pakketSpec } = opts;
+  const { baseUrl, div, headers, accountId, lead, pakketSpec, itemId } = opts;
   const today = new Date();
   const yyyy = today.getFullYear();
   const invoiceDate = today.toISOString();
@@ -142,6 +203,17 @@ async function createExactInvoice(opts: {
   const headerDescription =
     `Beroepsaansprakelijkheidsverzekering ${pakketSpec.naam} voor ${lead.bedrijfsnaam}`;
 
+  // deno-lint-ignore no-explicit-any
+  const line: any = {
+    GLAccount: INV_GL_ACCOUNT,
+    VATCode: INV_VAT_CODE,
+    Quantity: 1,
+    UnitPrice: pakketSpec.bedrag,
+    Description: lineDescription,
+  };
+  // Exact divisie 4401707 vereist 'Artikel' op regelniveau (administratie-instelling).
+  if (itemId) line.Item = itemId;
+
   const payload = {
     InvoiceTo: accountId,
     OrderedBy: accountId,
@@ -151,15 +223,7 @@ async function createExactInvoice(opts: {
     InvoiceDate: invoiceDate,
     OrderDate: invoiceDate,
     Description: headerDescription,
-    SalesInvoiceLines: [
-      {
-        GLAccount: INV_GL_ACCOUNT,
-        VATCode: INV_VAT_CODE,
-        Quantity: 1,
-        UnitPrice: pakketSpec.bedrag,
-        Description: lineDescription,
-      },
-    ],
+    SalesInvoiceLines: [line],
   };
 
   const res = await fetch(`${baseUrl}/api/v1/${div}/salesinvoice/SalesInvoices`, {
@@ -180,6 +244,7 @@ async function createExactInvoice(opts: {
     d?.InvoiceNumber != null ? String(d.InvoiceNumber) : null;
   return { ok: true, invoiceId, invoiceNumber, amount: pakketSpec.bedrag, raw: d };
 }
+
 
 
 Deno.serve(async (req) => {
@@ -255,6 +320,74 @@ Deno.serve(async (req) => {
       raw_length: xml.length,
     });
   }
+
+  // ── Actie: BAV-AVB artikel aanmaken in Exact (eenmalig) ──
+  if (action === "bootstrap_item") {
+    // Idempotent: als kolom al gevuld is, gewoon teruggeven.
+    if (config.exact_item_id_bav_avb && !body?.force) {
+      return json({
+        success: true,
+        already_exists: true,
+        exact_item_id_bav_avb: config.exact_item_id_bav_avb,
+      });
+    }
+
+    // 1) Check of artikel met Code BAV-AVB al bestaat in Exact
+    const lookupRes = await fetch(
+      `${baseUrl}/api/v1/${div}/logistics/Items?$select=ID,Code,Description&$filter=Code eq 'BAV-AVB'&$top=1`,
+      { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } },
+    );
+    if (lookupRes.ok) {
+      const lj = await lookupRes.json().catch(() => ({}));
+      const arr = Array.isArray(lj?.d?.results) ? lj.d.results : Array.isArray(lj?.d) ? lj.d : [];
+      if (arr.length > 0 && arr[0]?.ID) {
+        await supabase.from("exact_config")
+          .update({ exact_item_id_bav_avb: arr[0].ID }).eq("id", config.id);
+        return json({
+          success: true, found_existing: true,
+          exact_item_id_bav_avb: arr[0].ID, code: arr[0].Code,
+        });
+      }
+    }
+
+    // 2) Aanmaken
+    const itemPayload = {
+      Code: "BAV-AVB",
+      Description: "Beroeps- en bedrijfsaansprakelijkheidsverzekering",
+      SalesVatCode: INV_VAT_CODE,
+      GLSales: INV_GL_ACCOUNT,
+      IsSalesItem: true,
+      IsMakeItem: false,
+      IsStockItem: false,
+    };
+    const itemRes = await fetch(`${baseUrl}/api/v1/${div}/logistics/Items`, {
+      method: "POST", headers, body: JSON.stringify(itemPayload),
+    });
+    if (!itemRes.ok) {
+      const { summary, detail } = await captureExactError("Items POST", itemRes);
+      await logSync(supabase, {
+        trigger_type: "item_bootstrap", status: "error",
+        admin_user_id: user.id, http_status: itemRes.status,
+        error_message: summary,
+        payload: { request: itemPayload, response: detail },
+      });
+      return json({ success: false, error: "item_create_failed", detail, http_status: itemRes.status }, 500);
+    }
+    const itemJson = await itemRes.json().catch(() => ({}));
+    const itemId: string = itemJson?.d?.ID || itemJson?.ID || "";
+    if (!itemId) {
+      return json({ success: false, error: "no_item_id_returned", raw: itemJson }, 500);
+    }
+    await supabase.from("exact_config")
+      .update({ exact_item_id_bav_avb: itemId }).eq("id", config.id);
+    await logSync(supabase, {
+      trigger_type: "item_bootstrap", status: "success",
+      admin_user_id: user.id, http_status: itemRes.status,
+      payload: { request: itemPayload, exact_item_id: itemId },
+    });
+    return json({ success: true, created: true, exact_item_id_bav_avb: itemId });
+  }
+
 
   // ── Actie: alleen SEPA-mandaat (re)try voor reeds-geactiveerde lead ──
   if (action === "retry_mandate") {
@@ -337,9 +470,20 @@ Deno.serve(async (req) => {
     if (!spec) {
       return json({ success: false, error: "onbekend_pakket", gekozen_pakket: lead.gekozen_pakket }, 400);
     }
+    // Zorg dat het BAV-AVB artikel in Exact bestaat (eenmalig, idempotent)
+    const itemEnsure = await ensureBavAvbItem({
+      supabase, config, baseUrl, div, headers, accessToken,
+      logCtx: { lead_id: leadId, admin_user_id: user.id },
+    });
+    if (!itemEnsure.ok) {
+      return json({ success: false, error: "item_bootstrap_failed", detail: itemEnsure.detail, http_status: itemEnsure.httpStatus }, 500);
+    }
     const invRes = await createExactInvoice({
       baseUrl, div, headers, accountId: lead.exact_account_id, lead, pakketSpec: spec,
+      itemId: itemEnsure.itemId,
     });
+
+
     if (!invRes.ok) {
       await logSync(supabase, {
         trigger_type: "invoice_retry", status: "error",
@@ -617,9 +761,18 @@ Deno.serve(async (req) => {
   if (!pakketSpec) {
     invoiceWarning = `Onbekend pakket "${lead.gekozen_pakket}" — geen factuur aangemaakt.`;
   } else {
-    const invRes = await createExactInvoice({
-      baseUrl, div, headers, accountId: exactAccountId, lead, pakketSpec,
+    const itemEnsure = await ensureBavAvbItem({
+      supabase, config, baseUrl, div, headers, accessToken,
+      logCtx: { lead_id: leadId, admin_user_id: user.id },
     });
+    const invRes = itemEnsure.ok
+      ? await createExactInvoice({
+          baseUrl, div, headers, accountId: exactAccountId, lead, pakketSpec,
+          itemId: itemEnsure.itemId,
+        })
+      : { ok: false as const, httpStatus: itemEnsure.httpStatus, summary: `Item bootstrap mislukt: ${itemEnsure.summary}`, detail: itemEnsure.detail, request: null };
+
+
     if (!invRes.ok) {
       invoiceWarning = `${invRes.summary}. Account staat klaar — retry via knop.`;
       await logSync(supabase, {
