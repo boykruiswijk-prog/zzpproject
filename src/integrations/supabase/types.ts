@@ -498,6 +498,7 @@ export type Database = {
           client_id: string | null
           client_secret: string | null
           divisie_code: string | null
+          exact_item_id_bav_avb: string | null
           id: string
           is_actief: boolean
           laatste_sync: string | null
@@ -517,6 +518,7 @@ export type Database = {
           client_id?: string | null
           client_secret?: string | null
           divisie_code?: string | null
+          exact_item_id_bav_avb?: string | null
           id?: string
           is_actief?: boolean
           laatste_sync?: string | null
@@ -536,6 +538,7 @@ export type Database = {
           client_id?: string | null
           client_secret?: string | null
           divisie_code?: string | null
+          exact_item_id_bav_avb?: string | null
           id?: string
           is_actief?: boolean
           laatste_sync?: string | null
