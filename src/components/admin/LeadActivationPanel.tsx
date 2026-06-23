@@ -51,8 +51,8 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
   const allGreen = checks.every(c => c.ok);
   const missing = checks.filter(c => !c.ok).map(c => c.label);
   const alreadyActivated = !!lead.exact_account_id;
-  const statusAllowsActivation = ["nieuw_te_beoordelen", "in_behandeling", "nieuw"].includes(lead.status);
-  const canShow = isAdmin && statusAllowsActivation && !alreadyActivated;
+  const isAfgewezen = lead.status === "afgewezen";
+  const canShow = isAdmin && !alreadyActivated && !isAfgewezen;
 
   const activate = async () => {
     setIsActivating(true);
@@ -130,7 +130,7 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
                 <AlertTriangle className="h-4 w-4 mt-0.5" />
                 <span>
                   {!isAdmin && "Alleen admins kunnen activeren."}
-                  {isAdmin && !statusAllowsActivation && `Activeren is alleen mogelijk vanuit status 'Te beoordelen' of 'In behandeling' (huidig: ${lead.status}).`}
+                  {isAdmin && isAfgewezen && "Afgewezen leads kunnen niet worden geactiveerd."}
                 </span>
               </div>
             ) : (

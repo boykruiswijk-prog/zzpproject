@@ -100,12 +100,15 @@ Deno.serve(async (req) => {
     .from("leads").select("*").eq("id", leadId).maybeSingle();
   if (leadErr || !lead) return json({ success: false, error: "lead_not_found" }, 404);
 
-  const allowedStatus = ["nieuw_te_beoordelen", "in_behandeling", "nieuw"];
-  if (!allowedStatus.includes(lead.status)) {
-    return json({ success: false, error: `lead_status_niet_activeerbaar (${lead.status})` }, 400);
-  }
   if (lead.exact_account_id) {
-    return json({ success: false, error: "lead_al_geactiveerd", exact_account_id: lead.exact_account_id }, 409);
+    return json({
+      success: false,
+      error: `Lead is al gekoppeld aan Exact relatie ${lead.exact_account_id}`,
+      exact_account_id: lead.exact_account_id,
+    }, 409);
+  }
+  if (lead.status === "afgewezen") {
+    return json({ success: false, error: "Afgewezen leads kunnen niet worden geactiveerd" }, 400);
   }
 
   const missing: string[] = [];
