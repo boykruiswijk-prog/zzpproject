@@ -9,8 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Copy, Loader2, RefreshCw, Plug, Unlink, ExternalLink } from "lucide-react";
+import { Copy, Loader2, RefreshCw, Plug, Unlink, ExternalLink, Eye, Repeat } from "lucide-react";
 
 type ExactConfig = {
   id: string;
