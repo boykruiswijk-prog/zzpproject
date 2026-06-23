@@ -137,19 +137,6 @@ export default function Documenten() {
         </div>
       </section>
 
-      {/* Sectie 3: Aanvullende voorwaarden */}
-      {aanvullendeDocumenten.length > 0 && (
-        <section className="section-padding bg-background">
-          <div className="container-wide">
-            <div className="max-w-5xl mx-auto">
-              <h2 className="text-2xl md:text-3xl font-bold mb-6">Aanvullende voorwaarden</h2>
-              <div className="bg-card border border-border/60 rounded-2xl p-6 shadow-card">
-                <DocList docs={aanvullendeDocumenten} />
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* Sectie 4: ZP Zaken eigen */}
       <section className="section-padding bg-muted/30">
