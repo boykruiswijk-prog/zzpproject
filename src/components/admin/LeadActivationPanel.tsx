@@ -33,7 +33,9 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [isActivating, setIsActivating] = useState(false);
+  const [isRetryingMandate, setIsRetryingMandate] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+
 
   const checks = useMemo(() => [
     { label: "Voor- en achternaam", ok: !!(lead.voornaam && lead.achternaam) },
