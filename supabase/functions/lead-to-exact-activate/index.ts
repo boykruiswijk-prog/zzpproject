@@ -118,6 +118,66 @@ function resolvePakketInvoice(pakket: string | null | undefined) {
   return PAKKET_INVOICE[pakket] ?? null;
 }
 
+// Zorgt dat het BAV-AVB artikel in Exact bestaat en geeft de Guid terug.
+// Schrijft de Guid naar exact_config.exact_item_id_bav_avb zodra bekend.
+// deno-lint-ignore no-explicit-any
+async function ensureBavAvbItem(opts: {
+  supabase: any; config: any; baseUrl: string; div: string;
+  headers: Record<string, string>; accessToken: string;
+  // deno-lint-ignore no-explicit-any
+  logCtx: any;
+}): Promise<{ ok: true; itemId: string; created: boolean; foundExisting: boolean } | { ok: false; summary: string; detail: Record<string, unknown>; httpStatus: number }> {
+  const { supabase, config, baseUrl, div, headers, accessToken, logCtx } = opts;
+  if (config.exact_item_id_bav_avb) {
+    return { ok: true, itemId: config.exact_item_id_bav_avb, created: false, foundExisting: false };
+  }
+  // 1) Lookup op Code
+  const lookupRes = await fetch(
+    `${baseUrl}/api/v1/${div}/logistics/Items?$select=ID,Code&$filter=Code eq 'BAV-AVB'&$top=1`,
+    { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } },
+  );
+  if (lookupRes.ok) {
+    const lj = await lookupRes.json().catch(() => ({}));
+    const arr = Array.isArray(lj?.d?.results) ? lj.d.results : Array.isArray(lj?.d) ? lj.d : [];
+    if (arr[0]?.ID) {
+      await supabase.from("exact_config").update({ exact_item_id_bav_avb: arr[0].ID }).eq("id", config.id);
+      config.exact_item_id_bav_avb = arr[0].ID;
+      return { ok: true, itemId: arr[0].ID, created: false, foundExisting: true };
+    }
+  }
+  // 2) Aanmaken
+  const itemPayload = {
+    Code: "BAV-AVB",
+    Description: "Beroeps- en bedrijfsaansprakelijkheidsverzekering",
+    SalesVatCode: INV_VAT_CODE,
+    GLSales: INV_GL_ACCOUNT,
+    IsSalesItem: true,
+    IsMakeItem: false,
+    IsStockItem: false,
+  };
+  const itemRes = await fetch(`${baseUrl}/api/v1/${div}/logistics/Items`, {
+    method: "POST", headers, body: JSON.stringify(itemPayload),
+  });
+  if (!itemRes.ok) {
+    const { summary, detail } = await captureExactError("Items POST", itemRes);
+    await supabase.from("exact_sync_log").insert({
+      ...logCtx, trigger_type: "item_bootstrap", status: "error",
+      http_status: itemRes.status, error_message: summary,
+      payload: { request: itemPayload, response: detail },
+    });
+    return { ok: false, summary, detail, httpStatus: itemRes.status };
+  }
+  const itemJson = await itemRes.json().catch(() => ({}));
+  const itemId: string = itemJson?.d?.ID || itemJson?.ID || "";
+  await supabase.from("exact_config").update({ exact_item_id_bav_avb: itemId }).eq("id", config.id);
+  config.exact_item_id_bav_avb = itemId;
+  await supabase.from("exact_sync_log").insert({
+    ...logCtx, trigger_type: "item_bootstrap", status: "success",
+    http_status: itemRes.status, payload: { request: itemPayload, exact_item_id: itemId },
+  });
+  return { ok: true, itemId, created: true, foundExisting: false };
+}
+
 // deno-lint-ignore no-explicit-any
 async function createExactInvoice(opts: {
   baseUrl: string;
