@@ -146,13 +146,13 @@ async function ensureBavAvbItem(opts: {
     }
   }
   // 2) Aanmaken
+  // NB: 'GLSales' bestaat NIET op Exact's Item entity (400: property name not valid).
+  // GL-rekening wordt per factuurregel meegegeven via GLAccount in createExactInvoice().
   const itemPayload = {
     Code: "BAV-AVB",
     Description: "Beroeps- en bedrijfsaansprakelijkheidsverzekering",
     SalesVatCode: INV_VAT_CODE,
-    GLSales: INV_GL_ACCOUNT,
     IsSalesItem: true,
-    IsMakeItem: false,
     IsStockItem: false,
   };
   const itemRes = await fetch(`${baseUrl}/api/v1/${div}/logistics/Items`, {
