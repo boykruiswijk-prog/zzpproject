@@ -38,6 +38,7 @@ type SyncLog = {
   exact_account_id: string | null;
   error_message: string | null;
   http_status: number | null;
+  payload: unknown;
 };
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
