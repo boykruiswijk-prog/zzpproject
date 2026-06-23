@@ -9,8 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Copy, Loader2, RefreshCw, Plug, Unlink, ExternalLink } from "lucide-react";
+import { Copy, Loader2, RefreshCw, Plug, Unlink, ExternalLink, Eye, Repeat } from "lucide-react";
 
 type ExactConfig = {
   id: string;
@@ -37,6 +38,7 @@ type SyncLog = {
   exact_account_id: string | null;
   error_message: string | null;
   http_status: number | null;
+  payload: unknown;
 };
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
@@ -81,7 +83,7 @@ export default function ExactKoppeling() {
       // table not yet in generated types
       supabase
         .from("exact_sync_log")
-        .select("id,created_at,trigger_type,status,exact_account_id,error_message,http_status")
+        .select("id,created_at,trigger_type,status,exact_account_id,error_message,http_status,payload")
         .order("created_at", { ascending: false })
         .limit(50),
     ]);
@@ -156,6 +158,9 @@ export default function ExactKoppeling() {
   };
 
   const [syncing, setSyncing] = useState(false);
+  const [switchingDiv, setSwitchingDiv] = useState(false);
+  const [selectedLog, setSelectedLog] = useState<SyncLog | null>(null);
+
   const syncNow = async () => {
     setSyncing(true);
     const { data, error } = await supabase.functions.invoke("exact-sync", {
@@ -166,6 +171,20 @@ export default function ExactKoppeling() {
     const res = data as { success: boolean; accounts_count?: number; invoices_count?: number; divisie_code?: string; error?: string };
     if (!res.success) return toast.error(res.error ?? "Sync mislukt");
     toast.success(`Sync OK — divisie ${res.divisie_code}, ${res.accounts_count} relaties, ${res.invoices_count} facturen`);
+    loadAll();
+  };
+
+  const switchDivision = async () => {
+    setSwitchingDiv(true);
+    const { data, error } = await supabase.functions.invoke("exact-sync", {
+      body: { action: "switch_division", trigger_type: "switch_division" },
+    });
+    setSwitchingDiv(false);
+    if (error) return toast.error(`Wisselen mislukt: ${error.message}`);
+    const res = data as { success: boolean; previous_division?: string; new_division?: string; changed?: boolean; note?: string; error?: string };
+    if (!res.success) return toast.error(res.error ?? "Wisselen mislukt");
+    if (res.changed) toast.success(`Divisie gewisseld: ${res.previous_division} → ${res.new_division}`);
+    else toast.info(res.note ?? `Zelfde divisie: ${res.new_division}`);
     loadAll();
   };
 
@@ -237,7 +256,21 @@ export default function ExactKoppeling() {
           <CardContent className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <p className="text-muted-foreground">Divisie</p>
-              <p className="font-medium">{config?.divisie_code ?? "—"}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-medium">{config?.divisie_code ?? "—"}</p>
+                {isGreen && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-7 gap-1 text-xs"
+                    onClick={switchDivision}
+                    disabled={switchingDiv}
+                  >
+                    {switchingDiv ? <Loader2 className="h-3 w-3 animate-spin" /> : <Repeat className="h-3 w-3" />}
+                    Wissel administratie
+                  </Button>
+                )}
+              </div>
             </div>
             <div>
               <p className="text-muted-foreground">Laatste sync</p>
@@ -404,42 +437,114 @@ export default function ExactKoppeling() {
                       <th className="py-2 pr-3">Tijdstip</th>
                       <th className="py-2 pr-3">Trigger</th>
                       <th className="py-2 pr-3">Status</th>
-                      <th className="py-2 pr-3">Account ID</th>
                       <th className="py-2 pr-3">HTTP</th>
-                      <th className="py-2">Foutmelding</th>
+                      <th className="py-2 pr-3">Resultaat</th>
+                      <th className="py-2 pr-3">Foutmelding</th>
+                      <th className="py-2"></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {logs.map((l) => (
-                      <tr key={l.id} className="border-t">
-                        <td className="py-2 pr-3">{new Date(l.created_at).toLocaleString("nl-NL")}</td>
-                        <td className="py-2 pr-3">{l.trigger_type}</td>
-                        <td className="py-2 pr-3">
-                          <Badge
-                            className={
-                              l.status === "success"
-                                ? "bg-green-500 text-white"
-                                : l.status === "error"
-                                ? "bg-red-500 text-white"
-                                : "bg-muted text-muted-foreground"
-                            }
-                          >
-                            {l.status}
-                          </Badge>
-                        </td>
-                        <td className="py-2 pr-3 font-mono">{l.exact_account_id ?? "—"}</td>
-                        <td className="py-2 pr-3">{l.http_status ?? "—"}</td>
-                        <td className="py-2 text-red-600 max-w-md truncate" title={l.error_message ?? ""}>
-                          {l.error_message ?? ""}
-                        </td>
-                      </tr>
-                    ))}
+                    {logs.map((l) => {
+                      const p = (l.payload ?? {}) as {
+                        accounts_count?: number;
+                        invoices_count?: number;
+                        accounts_sample?: string[];
+                      };
+                      const hasCounts =
+                        typeof p.accounts_count === "number" || typeof p.invoices_count === "number";
+                      return (
+                        <tr key={l.id} className="border-t align-top">
+                          <td className="py-2 pr-3 whitespace-nowrap">
+                            {new Date(l.created_at).toLocaleString("nl-NL")}
+                          </td>
+                          <td className="py-2 pr-3">{l.trigger_type}</td>
+                          <td className="py-2 pr-3">
+                            <Badge
+                              className={
+                                l.status === "success"
+                                  ? "bg-green-500 text-white"
+                                  : l.status === "error"
+                                  ? "bg-red-500 text-white"
+                                  : "bg-muted text-muted-foreground"
+                              }
+                            >
+                              {l.status}
+                            </Badge>
+                          </td>
+                          <td className="py-2 pr-3">{l.http_status ?? "—"}</td>
+                          <td className="py-2 pr-3">
+                            {hasCounts ? (
+                              <div className="space-y-0.5">
+                                <p>
+                                  <span className="font-medium">{p.accounts_count ?? 0}</span> relaties
+                                  {" · "}
+                                  <span className="font-medium">{p.invoices_count ?? 0}</span> facturen
+                                </p>
+                                {p.accounts_sample && p.accounts_sample.length > 0 && (
+                                  <p className="text-[11px] text-muted-foreground">
+                                    {p.accounts_sample.join(" · ")}
+                                  </p>
+                                )}
+                              </div>
+                            ) : l.exact_account_id ? (
+                              <span className="font-mono">{l.exact_account_id}</span>
+                            ) : (
+                              "—"
+                            )}
+                          </td>
+                          <td className="py-2 pr-3 text-red-600 max-w-xs truncate" title={l.error_message ?? ""}>
+                            {l.error_message ?? ""}
+                          </td>
+                          <td className="py-2">
+                            {l.payload ? (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-7 gap-1 text-xs"
+                                onClick={() => setSelectedLog(l)}
+                              >
+                                <Eye className="h-3 w-3" />
+                                Bekijk
+                              </Button>
+                            ) : null}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
             )}
           </CardContent>
         </Card>
+
+        <Dialog open={!!selectedLog} onOpenChange={(o) => !o && setSelectedLog(null)}>
+          <DialogContent className="max-w-3xl max-h-[80vh] overflow-auto">
+            <DialogHeader>
+              <DialogTitle>
+                Sync details —{" "}
+                {selectedLog ? new Date(selectedLog.created_at).toLocaleString("nl-NL") : ""}
+              </DialogTitle>
+            </DialogHeader>
+            {selectedLog && (
+              <div className="space-y-3 text-xs">
+                <div className="grid grid-cols-3 gap-2">
+                  <div><span className="text-muted-foreground">Trigger: </span>{selectedLog.trigger_type}</div>
+                  <div><span className="text-muted-foreground">Status: </span>{selectedLog.status}</div>
+                  <div><span className="text-muted-foreground">HTTP: </span>{selectedLog.http_status ?? "—"}</div>
+                </div>
+                {selectedLog.error_message && (
+                  <div className="font-mono bg-red-50 text-red-700 p-2 rounded">
+                    {selectedLog.error_message}
+                  </div>
+                )}
+                <pre className="bg-muted p-3 rounded font-mono text-[11px] overflow-auto whitespace-pre-wrap">
+                  {JSON.stringify(selectedLog.payload, null, 2)}
+                </pre>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );

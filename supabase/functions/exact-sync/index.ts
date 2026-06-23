@@ -85,6 +85,7 @@ Deno.serve(async (req) => {
   const triggerType = body.trigger_type || "manual";
   const testMode = body.test === true;
   const syncNow = body.action === "sync_now";
+  const switchDivision = body.action === "switch_division";
 
   try {
     const { data: config } = await supabase
@@ -202,9 +203,16 @@ Deno.serve(async (req) => {
       const invJson = await invRes.json();
       const invoices = invRes.ok ? (invJson?.d?.results ?? []) : [];
 
+      const accountsSample = accounts.slice(0, 3).map((a: { Name?: string }) => a?.Name ?? "—");
       await logSync(supabase, {
         trigger_type: triggerType, status: "success",
-        payload: { accounts_count: accounts.length, invoices_count: invoices.length },
+        payload: {
+          accounts_count: accounts.length,
+          invoices_count: invoices.length,
+          accounts_sample: accountsSample,
+          accounts_preview: accounts.slice(0, 10),
+          invoices_preview: invoices.slice(0, 10),
+        },
         http_status: accRes.status,
       });
       await supabase.from("exact_config")
@@ -218,6 +226,48 @@ Deno.serve(async (req) => {
           accounts_count: accounts.length,
           invoices_count: invoices.length,
           accounts_sample: accounts.slice(0, 3),
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    if (switchDivision) {
+      const meRes = await fetch(
+        `${baseUrl}/api/v1/current/Me?$select=CurrentDivision,UserName,DivisionCustomerCode`,
+        { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } },
+      );
+      const meJson = await meRes.json();
+      if (!meRes.ok) {
+        await logSync(supabase, {
+          trigger_type: triggerType, status: "error",
+          error_message: `Switch divisie mislukt: ${JSON.stringify(meJson)}`,
+          http_status: meRes.status,
+        });
+        throw new Error(`Switch divisie mislukt (${meRes.status})`);
+      }
+      const meRow = meJson?.d?.results?.[0] ?? meJson?.d ?? {};
+      const newDivision = meRow?.CurrentDivision ? String(meRow.CurrentDivision) : null;
+      const changed = newDivision && newDivision !== config.divisie_code;
+      if (newDivision) {
+        await supabase.from("exact_config")
+          .update({ divisie_code: newDivision })
+          .eq("id", config.id);
+      }
+      await logSync(supabase, {
+        trigger_type: triggerType, status: "success",
+        payload: { switch_division: true, me: meRow, previous_division: config.divisie_code, new_division: newDivision, changed },
+        http_status: meRes.status,
+      });
+      return new Response(
+        JSON.stringify({
+          success: true, switch_division: true,
+          previous_division: config.divisie_code,
+          new_division: newDivision,
+          changed,
+          me: meRow,
+          note: changed
+            ? "Divisie bijgewerkt op basis van /Me."
+            : "Exact /Me retourneert dezelfde CurrentDivision — om naar een andere administratie te wisselen is een nieuwe OAuth-autorisatie nodig waarbij je in Exact de juiste administratie selecteert.",
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
