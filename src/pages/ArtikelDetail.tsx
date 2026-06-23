@@ -16,6 +16,7 @@ import { formatDateNL } from "@/lib/dateFormat";
 import { toast } from "@/hooks/use-toast";
 import { ReadingProgress } from "@/components/kennisbank/ReadingProgress";
 import { TableOfContents } from "@/components/kennisbank/TableOfContents";
+import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
 
 const BAV_AVB_SLUG = "zp-zaken-zorgeloos-zzpen-goedkoopste-bav-avb";
 
