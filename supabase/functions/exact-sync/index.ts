@@ -84,6 +84,7 @@ Deno.serve(async (req) => {
 
   const triggerType = body.trigger_type || "manual";
   const testMode = body.test === true;
+  const syncNow = body.action === "sync_now";
 
   try {
     const { data: config } = await supabase
@@ -107,22 +108,43 @@ Deno.serve(async (req) => {
       );
     }
 
-    if (!config.client_id || !config.client_secret || !config.divisie_code) {
-      throw new Error("client_id, client_secret of divisie_code ontbreekt in exact_config");
+    if (!config.client_id || !config.client_secret) {
+      throw new Error("client_id of client_secret ontbreekt in exact_config");
     }
 
     const accessToken = await ensureValidToken(supabase, config);
     const baseUrl = config.base_url || "https://start.exactonline.nl";
 
+    // Auto-bootstrap divisie_code als die nog ontbreekt
+    let divisionCode: string | null = config.divisie_code ?? null;
+    if (!divisionCode) {
+      const meRes = await fetch(
+        `${baseUrl}/api/v1/current/Me?$select=CurrentDivision,UserName`,
+        { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } },
+      );
+      const meJson = await meRes.json();
+      if (!meRes.ok) {
+        await logSync(supabase, {
+          trigger_type: triggerType,
+          status: "error",
+          error_message: `Me-call mislukt: ${JSON.stringify(meJson)}`,
+          http_status: meRes.status,
+        });
+        throw new Error(`Kon CurrentDivision niet ophalen (${meRes.status})`);
+      }
+      const cd = meJson?.d?.results?.[0]?.CurrentDivision ?? meJson?.d?.CurrentDivision;
+      if (!cd) throw new Error("CurrentDivision niet gevonden in /Me response");
+      divisionCode = String(cd);
+      await supabase
+        .from("exact_config")
+        .update({ divisie_code: divisionCode })
+        .eq("id", config.id);
+    }
+
     if (testMode) {
       const testRes = await fetch(
         `${baseUrl}/api/v1/current/Me?$select=CurrentDivision,UserName`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            Accept: "application/json",
-          },
-        },
+        { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } },
       );
       const testData = await testRes.json();
 
@@ -149,7 +171,54 @@ Deno.serve(async (req) => {
         .eq("id", config.id);
 
       return new Response(
-        JSON.stringify({ success: true, test: true, exact_data: testData }),
+        JSON.stringify({ success: true, test: true, exact_data: testData, divisie_code: divisionCode }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    if (syncNow) {
+      const headers = { Authorization: `Bearer ${accessToken}`, Accept: "application/json" };
+      const accRes = await fetch(
+        `${baseUrl}/api/v1/${divisionCode}/crm/Accounts?$select=ID,Name,Email,ChamberOfCommerce&$top=50&$orderby=Modified desc`,
+        { headers },
+      );
+      const accJson = await accRes.json();
+      if (!accRes.ok) {
+        await logSync(supabase, {
+          trigger_type: triggerType, status: "error",
+          error_message: `Accounts ophalen mislukt: ${JSON.stringify(accJson)}`,
+          http_status: accRes.status,
+        });
+        await supabase.from("exact_config")
+          .update({ last_error: `Accounts ${accRes.status}` }).eq("id", config.id);
+        throw new Error(`Accounts ophalen mislukt (${accRes.status})`);
+      }
+      const accounts = accJson?.d?.results ?? [];
+
+      const invRes = await fetch(
+        `${baseUrl}/api/v1/${divisionCode}/salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,InvoiceDate,AmountDC,Status&$top=10&$orderby=InvoiceDate desc`,
+        { headers },
+      );
+      const invJson = await invRes.json();
+      const invoices = invRes.ok ? (invJson?.d?.results ?? []) : [];
+
+      await logSync(supabase, {
+        trigger_type: triggerType, status: "success",
+        payload: { accounts_count: accounts.length, invoices_count: invoices.length },
+        http_status: accRes.status,
+      });
+      await supabase.from("exact_config")
+        .update({ last_sync_at: new Date().toISOString(), last_error: null })
+        .eq("id", config.id);
+
+      return new Response(
+        JSON.stringify({
+          success: true, sync_now: true,
+          divisie_code: divisionCode,
+          accounts_count: accounts.length,
+          invoices_count: invoices.length,
+          accounts_sample: accounts.slice(0, 3),
+        }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
