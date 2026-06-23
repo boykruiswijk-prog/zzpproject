@@ -320,6 +320,74 @@ Deno.serve(async (req) => {
     return json({ success: true, exact_mandate_id: mandateId, exact_bankaccount_id: bankId, message: "SEPA-mandaat aangemaakt" });
   }
 
+  // ── Actie: retry factuur voor reeds-geactiveerde lead ──
+  if (action === "retry_invoice") {
+    if (!lead.exact_account_id) {
+      return json({ success: false, error: "lead_heeft_geen_exact_account" }, 400);
+    }
+    if (lead.exact_invoice_id) {
+      return json({
+        success: false,
+        error: "factuur_bestaat_al",
+        exact_invoice_id: lead.exact_invoice_id,
+        exact_invoice_number: lead.exact_invoice_number,
+      }, 409);
+    }
+    const spec = resolvePakketInvoice(lead.gekozen_pakket);
+    if (!spec) {
+      return json({ success: false, error: "onbekend_pakket", gekozen_pakket: lead.gekozen_pakket }, 400);
+    }
+    const invRes = await createExactInvoice({
+      baseUrl, div, headers, accountId: lead.exact_account_id, lead, pakketSpec: spec,
+    });
+    if (!invRes.ok) {
+      await logSync(supabase, {
+        trigger_type: "invoice_retry", status: "error",
+        lead_id: leadId, admin_user_id: user.id,
+        http_status: invRes.httpStatus,
+        error_message: invRes.summary,
+        payload: { request: invRes.request, response: invRes.detail },
+      });
+      return json({ success: false, error: "invoice_create_failed", detail: invRes.detail, http_status: invRes.httpStatus }, 500);
+    }
+    const nowIso = new Date().toISOString();
+    const entry = {
+      timestamp: nowIso,
+      action: `Factuur ${invRes.invoiceNumber ?? "(concept)"} aangemaakt (€${spec.bedrag.toFixed(2).replace(".", ",")})`,
+      admin_user_id: user.id,
+      admin_email: user.email,
+      exact_invoice_id: invRes.invoiceId,
+      exact_invoice_number: invRes.invoiceNumber,
+      exact_invoice_amount: spec.bedrag,
+    };
+    const newLog = Array.isArray(lead.activatie_log) ? [...lead.activatie_log, entry] : [entry];
+    await supabase.from("leads").update({
+      exact_invoice_id: invRes.invoiceId,
+      exact_invoice_number: invRes.invoiceNumber,
+      exact_invoice_amount: spec.bedrag,
+      exact_invoice_created_at: nowIso,
+      activatie_log: newLog,
+    }).eq("id", leadId);
+    await logSync(supabase, {
+      trigger_type: "invoice_retry", status: "success",
+      lead_id: leadId, admin_user_id: user.id,
+      exact_account_id: lead.exact_account_id,
+      http_status: 201,
+      payload: {
+        exact_invoice_id: invRes.invoiceId,
+        exact_invoice_number: invRes.invoiceNumber,
+        amount: spec.bedrag,
+      },
+    });
+    return json({
+      success: true,
+      exact_invoice_id: invRes.invoiceId,
+      exact_invoice_number: invRes.invoiceNumber,
+      amount: spec.bedrag,
+      message: "Factuur aangemaakt in Exact",
+    });
+  }
+
   // ── Actie: volledige activatie (default) ──
   if (lead.exact_account_id) {
     return json({
