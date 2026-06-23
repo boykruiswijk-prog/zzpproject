@@ -200,21 +200,24 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         Account: lead.exact_account_id,
         BankAccount: bankId,
-        MandateReference: `MNDT-${leadId.slice(0, 8)}`,
+        Reference: `MNDT-${leadId.slice(0, 8)}`,
         SignatureDate: signatureDate,
         Type: 1, // 0=Core, 1=B2B, 2=Bottomline
       }),
     });
-    const mJson = await mRes.json().catch(() => ({}));
     if (!mRes.ok) {
+      const { summary, detail } = await captureExactError("DirectDebitMandates POST (retry)", mRes);
       await logSync(supabase, {
         trigger_type: "lead_activation", status: "error",
         lead_id: leadId, admin_user_id: user.id,
         http_status: mRes.status,
-        error_message: `SEPA-mandaat retry mislukt: ${JSON.stringify(mJson).slice(0, 800)}`,
+        error_message: summary,
+        payload: detail,
       });
-      return json({ success: false, error: "mandate_create_failed", detail: mJson, http_status: mRes.status }, 500);
+      return json({ success: false, error: "mandate_create_failed", detail, http_status: mRes.status }, 500);
     }
+    const mJson = await mRes.json().catch(() => ({}));
+
     const mandateId = mJson?.d?.ID || mJson?.ID || null;
     const entry = {
       timestamp: new Date().toISOString(),
