@@ -605,9 +605,51 @@ Deno.serve(async (req) => {
     mandateWarning = `SEPA-mandaat exception: ${e instanceof Error ? e.message : e}`;
   }
 
+  // ── Stap H: SalesInvoice (concept) — niet-fataal voor activatie ──
+  // Bij failure: GEEN rollback van account. Lead blijft 'actief', UI toont
+  // amber retry-banner. Admin kan retry via action="retry_invoice".
+  let exactInvoiceId: string | null = null;
+  let exactInvoiceNumber: string | null = null;
+  let exactInvoiceAmount: number | null = null;
+  let exactInvoiceCreatedAt: string | null = null;
+  let invoiceWarning: string | null = null;
+  const pakketSpec = resolvePakketInvoice(lead.gekozen_pakket);
+  if (!pakketSpec) {
+    invoiceWarning = `Onbekend pakket "${lead.gekozen_pakket}" — geen factuur aangemaakt.`;
+  } else {
+    const invRes = await createExactInvoice({
+      baseUrl, div, headers, accountId: exactAccountId, lead, pakketSpec,
+    });
+    if (!invRes.ok) {
+      invoiceWarning = `${invRes.summary}. Account staat klaar — retry via knop.`;
+      await logSync(supabase, {
+        trigger_type: "invoice_create", status: "error",
+        lead_id: leadId, admin_user_id: user.id,
+        exact_account_id: exactAccountId,
+        http_status: invRes.httpStatus,
+        error_message: invRes.summary,
+        payload: { request: invRes.request, response: invRes.detail },
+      });
+    } else {
+      exactInvoiceId = invRes.invoiceId;
+      exactInvoiceNumber = invRes.invoiceNumber;
+      exactInvoiceAmount = invRes.amount;
+      exactInvoiceCreatedAt = new Date().toISOString();
+      await logSync(supabase, {
+        trigger_type: "invoice_create", status: "success",
+        lead_id: leadId, admin_user_id: user.id,
+        exact_account_id: exactAccountId,
+        http_status: 201,
+        payload: {
+          exact_invoice_id: exactInvoiceId,
+          exact_invoice_number: exactInvoiceNumber,
+          amount: exactInvoiceAmount,
+        },
+      });
+    }
+  }
 
-
-  // ── Stap H: lead updaten ──
+  // ── Stap I: lead updaten ──
   const auditEntry = {
     timestamp: new Date().toISOString(),
     action: "Polis geactiveerd in Exact",
@@ -619,9 +661,29 @@ Deno.serve(async (req) => {
     exact_mandate_id: exactMandateId,
     mandate_warning: mandateWarning,
   };
-  const newLog = Array.isArray(lead.activatie_log)
+  const log1 = Array.isArray(lead.activatie_log)
     ? [...lead.activatie_log, auditEntry]
     : [auditEntry];
+  const log2 = exactInvoiceId && pakketSpec
+    ? [...log1, {
+        timestamp: exactInvoiceCreatedAt,
+        action: `Factuur ${exactInvoiceNumber ?? "(concept)"} aangemaakt (€${pakketSpec.bedrag.toFixed(2).replace(".", ",")})`,
+        admin_user_id: user.id,
+        admin_email: user.email,
+        exact_invoice_id: exactInvoiceId,
+        exact_invoice_number: exactInvoiceNumber,
+        exact_invoice_amount: exactInvoiceAmount,
+      }]
+    : log1;
+  const newLog = invoiceWarning
+    ? [...log2, {
+        timestamp: new Date().toISOString(),
+        action: "Factuur-aanmaak gefaald",
+        admin_user_id: user.id,
+        admin_email: user.email,
+        invoice_warning: invoiceWarning,
+      }]
+    : log2;
 
   await supabase.from("leads").update({
     exact_account_id: exactAccountId,
@@ -633,6 +695,10 @@ Deno.serve(async (req) => {
     exact_status: "gesynchroniseerd",
     exact_sync_op: new Date().toISOString(),
     exact_fout: null,
+    exact_invoice_id: exactInvoiceId,
+    exact_invoice_number: exactInvoiceNumber,
+    exact_invoice_amount: exactInvoiceAmount,
+    exact_invoice_created_at: exactInvoiceCreatedAt,
   }).eq("id", leadId);
 
   await logSync(supabase, {
@@ -649,6 +715,10 @@ Deno.serve(async (req) => {
       exact_bankaccount_id: exactBankAccountId,
       exact_mandate_id: exactMandateId,
       mandate_warning: mandateWarning,
+      exact_invoice_id: exactInvoiceId,
+      exact_invoice_number: exactInvoiceNumber,
+      exact_invoice_amount: exactInvoiceAmount,
+      invoice_warning: invoiceWarning,
     },
   });
 
@@ -659,6 +729,10 @@ Deno.serve(async (req) => {
     exact_bankaccount_id: exactBankAccountId,
     exact_mandate_id: exactMandateId,
     mandate_warning: mandateWarning,
+    exact_invoice_id: exactInvoiceId,
+    exact_invoice_number: exactInvoiceNumber,
+    exact_invoice_amount: exactInvoiceAmount,
+    invoice_warning: invoiceWarning,
     message: "Klant succesvol geactiveerd in Exact",
   });
 });
