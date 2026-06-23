@@ -155,6 +155,20 @@ export default function ExactKoppeling() {
     loadAll();
   };
 
+  const [syncing, setSyncing] = useState(false);
+  const syncNow = async () => {
+    setSyncing(true);
+    const { data, error } = await supabase.functions.invoke("exact-sync", {
+      body: { action: "sync_now", trigger_type: "manual_sync" },
+    });
+    setSyncing(false);
+    if (error) return toast.error(`Sync mislukt: ${error.message}`);
+    const res = data as { success: boolean; accounts_count?: number; invoices_count?: number; divisie_code?: string; error?: string };
+    if (!res.success) return toast.error(res.error ?? "Sync mislukt");
+    toast.success(`Sync OK — divisie ${res.divisie_code}, ${res.accounts_count} relaties, ${res.invoices_count} facturen`);
+    loadAll();
+  };
+
   const disconnect = async () => {
     if (!config) return;
     if (!confirm("Weet je zeker dat je de Exact-koppeling wilt ontkoppelen?")) return;
