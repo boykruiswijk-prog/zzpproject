@@ -278,6 +278,23 @@ Deno.serve(async (req) => {
       );
     }
 
+    if (exploreMode) {
+      const h = { Authorization: `Bearer ${accessToken}`, Accept: "application/json" };
+      const fetchJson = async (url: string) => {
+        const r = await fetch(url, { headers: h });
+        const j = await r.json().catch(() => ({}));
+        const arr = Array.isArray(j?.d?.results) ? j.d.results : Array.isArray(j?.d) ? j.d : [];
+        return { status: r.status, ok: r.ok, data: arr, raw: j };
+      };
+      const items = await fetchJson(`${baseUrl}/api/v1/${divisionCode}/logistics/Items?$select=ID,Code,Description,SalesVatCode,GLSales&$top=20`);
+      const gl = await fetchJson(`${baseUrl}/api/v1/${divisionCode}/financial/GLAccounts?$select=ID,Code,Description&$filter=startswith(Code,'8')&$top=20`);
+      const vat = await fetchJson(`${baseUrl}/api/v1/${divisionCode}/vat/VATCodes?$select=ID,Code,Description,Percentage&$top=100`);
+      return new Response(
+        JSON.stringify({ success: true, divisie_code: divisionCode, items, gl_accounts: gl, vat_codes: vat }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
     const relatie = body.relatie;
     if (!relatie || !relatie.Name) {
       throw new Error("Geen relatie-data meegegeven (verwacht body.relatie met minimaal Name)");
