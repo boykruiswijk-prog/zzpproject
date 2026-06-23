@@ -86,6 +86,7 @@ Deno.serve(async (req) => {
   const testMode = body.test === true;
   const syncNow = body.action === "sync_now";
   const switchDivision = body.action === "switch_division";
+  const exploreMode = body.action === "explore";
 
   try {
     const { data: config } = await supabase
