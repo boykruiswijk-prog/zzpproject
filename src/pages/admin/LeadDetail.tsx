@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { LeadNotes } from "@/components/admin/LeadNotes";
+import { LeadActivationPanel } from "@/components/admin/LeadActivationPanel";
 import { useLead, useUpdateLead, useDeleteLead } from "@/hooks/useLeads";
 import { useAuth } from "@/contexts/AuthContext";
 import { PortalInviteButton } from "@/components/admin/PortalInviteButton";
@@ -39,19 +40,27 @@ type LeadStatus = Database["public"]["Enums"]["lead_status"];
 
 const statusLabels: Record<LeadStatus, string> = {
   nieuw: "Nieuw",
+  nieuw_te_beoordelen: "Te beoordelen",
   in_behandeling: "In behandeling",
   afspraak_gepland: "Afspraak gepland",
   offerte_verstuurd: "Offerte verstuurd",
   klant: "Klant",
+  actief: "Actief",
+  gepauzeerd: "Gepauzeerd",
+  opgezegd: "Opgezegd",
   afgewezen: "Afgewezen",
 };
 
 const statusColors: Record<LeadStatus, string> = {
   nieuw: "bg-blue-100 text-blue-800",
+  nieuw_te_beoordelen: "bg-blue-100 text-blue-800",
   in_behandeling: "bg-yellow-100 text-yellow-800",
   afspraak_gepland: "bg-purple-100 text-purple-800",
   offerte_verstuurd: "bg-orange-100 text-orange-800",
   klant: "bg-green-100 text-green-800",
+  actief: "bg-green-100 text-green-800",
+  gepauzeerd: "bg-gray-100 text-gray-800",
+  opgezegd: "bg-gray-200 text-gray-700",
   afgewezen: "bg-red-100 text-red-800",
 };
 
@@ -491,6 +500,9 @@ export default function AdminLeadDetail() {
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {lead.type === "verzekering_aanvraag" && (
+              <LeadActivationPanel lead={lead} isAdmin={isAdmin} />
+            )}
             <Card>
               <CardHeader>
                 <CardTitle>Tijdlijn</CardTitle>

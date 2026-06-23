@@ -63,6 +63,7 @@ export function BAVApplicationModule() {
     opdrachtgever: "", bemiddelaarNaam: "",
     iban: "",
     branche: "zakelijke-dienstverlening",
+    adresStraat: "", adresHuisnummer: "", adresPostcode: "", adresPlaats: "",
   });
 
   const BRANCHES = [
@@ -133,6 +134,11 @@ export function BAVApplicationModule() {
       if (!formData.functie.trim()) newErrors.functie = t("bavApp.valFunction");
       if (!formData.aantalMedewerkers.trim()) newErrors.aantalMedewerkers = t("bavApp.valEmployees");
       else if (parseInt(formData.aantalMedewerkers) < 0) newErrors.aantalMedewerkers = t("bavApp.valEmployeesInvalid");
+      if (!formData.adresStraat.trim()) newErrors.adresStraat = "Vul de straatnaam in";
+      if (!formData.adresHuisnummer.trim()) newErrors.adresHuisnummer = "Vul het huisnummer in";
+      if (!formData.adresPostcode.trim()) newErrors.adresPostcode = "Vul de postcode in";
+      else if (!/^[1-9][0-9]{3}\s?[A-Za-z]{2}$/.test(formData.adresPostcode.trim())) newErrors.adresPostcode = "Postcode moet formaat 1234 AB hebben";
+      if (!formData.adresPlaats.trim()) newErrors.adresPlaats = "Vul de plaats in";
       // >3 medewerkers blokkeert niet: gebruiker mag door, aanvraag wordt gemarkeerd voor handmatige beoordeling.
     }
 
@@ -183,7 +189,13 @@ export function BAVApplicationModule() {
              bedrijfsnaam: formData.bedrijfsnaam,
              kvk_nummer: formData.kvkNummer || null,
              beroep: formData.beroep || null,
+             branche: formData.branche || null,
+             adres_straat: formData.adresStraat || null,
+             adres_huisnummer: formData.adresHuisnummer || null,
+             adres_postcode: formData.adresPostcode || null,
+             adres_plaats: formData.adresPlaats || null,
              iban: formData.iban || null,
+             sepa_akkoord: incassoAkkoord,
              rekeninghouder: `${formData.voornaam} ${formData.achternaam}`.trim(),
              vereist_handmatige_beoordeling: parseInt(formData.aantalMedewerkers || "0") > 3,
              opmerkingen: [
@@ -438,6 +450,30 @@ export function BAVApplicationModule() {
                         <Label htmlFor="kvkNummer">{t("home.bavKvk")} *</Label>
                         <Input id="kvkNummer" name="kvkNummer" value={formData.kvkNummer} onChange={handleInputChange} maxLength={8} placeholder="12345678" className={cn(errors.kvkNummer && "border-destructive")} />
                         <FieldError message={errors.kvkNummer} />
+                      </div>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="col-span-2">
+                          <Label htmlFor="adresStraat">Straat *</Label>
+                          <Input id="adresStraat" name="adresStraat" value={formData.adresStraat} onChange={handleInputChange} className={cn(errors.adresStraat && "border-destructive")} />
+                          <FieldError message={errors.adresStraat} />
+                        </div>
+                        <div>
+                          <Label htmlFor="adresHuisnummer">Huisnr. *</Label>
+                          <Input id="adresHuisnummer" name="adresHuisnummer" value={formData.adresHuisnummer} onChange={handleInputChange} className={cn(errors.adresHuisnummer && "border-destructive")} />
+                          <FieldError message={errors.adresHuisnummer} />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <Label htmlFor="adresPostcode">Postcode *</Label>
+                          <Input id="adresPostcode" name="adresPostcode" value={formData.adresPostcode} onChange={handleInputChange} placeholder="1234 AB" className={cn("uppercase", errors.adresPostcode && "border-destructive")} />
+                          <FieldError message={errors.adresPostcode} />
+                        </div>
+                        <div className="col-span-2">
+                          <Label htmlFor="adresPlaats">Plaats *</Label>
+                          <Input id="adresPlaats" name="adresPlaats" value={formData.adresPlaats} onChange={handleInputChange} className={cn(errors.adresPlaats && "border-destructive")} />
+                          <FieldError message={errors.adresPlaats} />
+                        </div>
                       </div>
                       <div>
                         <Label htmlFor="beroep">{t("home.bavProfession")} *</Label>
