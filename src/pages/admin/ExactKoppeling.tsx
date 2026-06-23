@@ -166,7 +166,23 @@ export default function ExactKoppeling() {
 
   const [syncing, setSyncing] = useState(false);
   const [switchingDiv, setSwitchingDiv] = useState(false);
+  const [changingDiv, setChangingDiv] = useState(false);
   const [selectedLog, setSelectedLog] = useState<SyncLog | null>(null);
+
+  const setDivisionLocal = async (newCode: string) => {
+    if (!config || newCode === config.divisie_code) return;
+    const target = KNOWN_DIVISIONS.find((d) => d.code === newCode);
+    if (!confirm(`Actieve administratie wisselen naar ${newCode}${target ? ` (${target.name})` : ""}? Toekomstige syncs halen data uit deze administratie.`)) return;
+    setChangingDiv(true);
+    const { error } = await supabase
+      .from("exact_config")
+      .update({ divisie_code: newCode, last_error: null })
+      .eq("id", config.id);
+    setChangingDiv(false);
+    if (error) return toast.error(`Wisselen mislukt: ${error.message}`);
+    toast.success(`Administratie gewisseld naar ${newCode}${target ? ` — ${target.name}` : ""}`);
+    loadAll();
+  };
 
   const syncNow = async () => {
     setSyncing(true);
