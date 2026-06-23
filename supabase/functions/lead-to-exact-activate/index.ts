@@ -62,6 +62,27 @@ async function logSync(supabase: any, params: any) {
   }
 }
 
+// Vangt complete Exact API error-response (headers + body) en geeft een rijk error-object terug.
+async function captureExactError(label: string, res: Response): Promise<{ summary: string; detail: Record<string, unknown> }> {
+  const bodyText = await res.text().catch(() => "");
+  const headersObj: Record<string, string> = {};
+  res.headers.forEach((v, k) => { headersObj[k] = v; });
+  let bodyJson: unknown = null;
+  try { bodyJson = JSON.parse(bodyText); } catch (_) { /* niet-JSON */ }
+  const detail = {
+    label,
+    http_status: res.status,
+    http_status_text: res.statusText,
+    url: res.url,
+    headers: headersObj,
+    body_raw: bodyText,
+    body_json: bodyJson,
+  };
+  const summary = `${label} ${res.status} ${res.statusText} — ${bodyText.slice(0, 600)}`;
+  return { summary, detail };
+}
+
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
