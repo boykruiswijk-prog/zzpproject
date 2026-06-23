@@ -87,7 +87,34 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
     }
   };
 
+  const retryMandate = async () => {
+    setIsRetryingMandate(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("lead-to-exact-activate", {
+        body: { lead_id: lead.id, action: "retry_mandate" },
+      });
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || "Onbekende fout");
+      toast({
+        title: "SEPA-mandaat aangemaakt",
+        description: `Mandaat-ID: ${data.exact_mandate_id}`,
+      });
+      qc.invalidateQueries({ queryKey: ["lead", lead.id] });
+    } catch (e: any) {
+      toast({
+        title: "SEPA-mandaat mislukt",
+        description: e?.message || "Onbekende fout",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRetryingMandate(false);
+    }
+  };
+
   const auditLog: any[] = Array.isArray(lead.activatie_log) ? lead.activatie_log : [];
+  const lastEntry = auditLog[auditLog.length - 1];
+  const hasMandateWarning = alreadyActivated && auditLog.some(e => e?.mandate_warning) && !auditLog.some(e => e?.exact_mandate_id);
+
 
   return (
     <Card>
