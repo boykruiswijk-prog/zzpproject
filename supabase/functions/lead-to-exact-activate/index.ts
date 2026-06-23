@@ -126,11 +126,12 @@ async function createExactInvoice(opts: {
   accountId: string;
   lead: any;
   pakketSpec: { naam: string; bedrag: number; betalingsregel: string };
+  itemId: string | null;
 }): Promise<
   | { ok: true; invoiceId: string; invoiceNumber: string | null; amount: number; raw: unknown }
   | { ok: false; httpStatus: number; summary: string; detail: Record<string, unknown>; request: unknown }
 > {
-  const { baseUrl, div, headers, accountId, lead, pakketSpec } = opts;
+  const { baseUrl, div, headers, accountId, lead, pakketSpec, itemId } = opts;
   const today = new Date();
   const yyyy = today.getFullYear();
   const invoiceDate = today.toISOString();
@@ -142,6 +143,17 @@ async function createExactInvoice(opts: {
   const headerDescription =
     `Beroepsaansprakelijkheidsverzekering ${pakketSpec.naam} voor ${lead.bedrijfsnaam}`;
 
+  // deno-lint-ignore no-explicit-any
+  const line: any = {
+    GLAccount: INV_GL_ACCOUNT,
+    VATCode: INV_VAT_CODE,
+    Quantity: 1,
+    UnitPrice: pakketSpec.bedrag,
+    Description: lineDescription,
+  };
+  // Exact divisie 4401707 vereist 'Artikel' op regelniveau (administratie-instelling).
+  if (itemId) line.Item = itemId;
+
   const payload = {
     InvoiceTo: accountId,
     OrderedBy: accountId,
@@ -151,15 +163,7 @@ async function createExactInvoice(opts: {
     InvoiceDate: invoiceDate,
     OrderDate: invoiceDate,
     Description: headerDescription,
-    SalesInvoiceLines: [
-      {
-        GLAccount: INV_GL_ACCOUNT,
-        VATCode: INV_VAT_CODE,
-        Quantity: 1,
-        UnitPrice: pakketSpec.bedrag,
-        Description: lineDescription,
-      },
-    ],
+    SalesInvoiceLines: [line],
   };
 
   const res = await fetch(`${baseUrl}/api/v1/${div}/salesinvoice/SalesInvoices`, {
@@ -180,6 +184,7 @@ async function createExactInvoice(opts: {
     d?.InvoiceNumber != null ? String(d.InvoiceNumber) : null;
   return { ok: true, invoiceId, invoiceNumber, amount: pakketSpec.bedrag, raw: d };
 }
+
 
 
 Deno.serve(async (req) => {
