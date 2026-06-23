@@ -261,6 +261,74 @@ Deno.serve(async (req) => {
     });
   }
 
+  // ── Actie: BAV-AVB artikel aanmaken in Exact (eenmalig) ──
+  if (action === "bootstrap_item") {
+    // Idempotent: als kolom al gevuld is, gewoon teruggeven.
+    if (config.exact_item_id_bav_avb && !body?.force) {
+      return json({
+        success: true,
+        already_exists: true,
+        exact_item_id_bav_avb: config.exact_item_id_bav_avb,
+      });
+    }
+
+    // 1) Check of artikel met Code BAV-AVB al bestaat in Exact
+    const lookupRes = await fetch(
+      `${baseUrl}/api/v1/${div}/logistics/Items?$select=ID,Code,Description&$filter=Code eq 'BAV-AVB'&$top=1`,
+      { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } },
+    );
+    if (lookupRes.ok) {
+      const lj = await lookupRes.json().catch(() => ({}));
+      const arr = Array.isArray(lj?.d?.results) ? lj.d.results : Array.isArray(lj?.d) ? lj.d : [];
+      if (arr.length > 0 && arr[0]?.ID) {
+        await supabase.from("exact_config")
+          .update({ exact_item_id_bav_avb: arr[0].ID }).eq("id", config.id);
+        return json({
+          success: true, found_existing: true,
+          exact_item_id_bav_avb: arr[0].ID, code: arr[0].Code,
+        });
+      }
+    }
+
+    // 2) Aanmaken
+    const itemPayload = {
+      Code: "BAV-AVB",
+      Description: "Beroeps- en bedrijfsaansprakelijkheidsverzekering",
+      SalesVatCode: INV_VAT_CODE,
+      GLSales: INV_GL_ACCOUNT,
+      IsSalesItem: true,
+      IsMakeItem: false,
+      IsStockItem: false,
+    };
+    const itemRes = await fetch(`${baseUrl}/api/v1/${div}/logistics/Items`, {
+      method: "POST", headers, body: JSON.stringify(itemPayload),
+    });
+    if (!itemRes.ok) {
+      const { summary, detail } = await captureExactError("Items POST", itemRes);
+      await logSync(supabase, {
+        trigger_type: "item_bootstrap", status: "error",
+        admin_user_id: user.id, http_status: itemRes.status,
+        error_message: summary,
+        payload: { request: itemPayload, response: detail },
+      });
+      return json({ success: false, error: "item_create_failed", detail, http_status: itemRes.status }, 500);
+    }
+    const itemJson = await itemRes.json().catch(() => ({}));
+    const itemId: string = itemJson?.d?.ID || itemJson?.ID || "";
+    if (!itemId) {
+      return json({ success: false, error: "no_item_id_returned", raw: itemJson }, 500);
+    }
+    await supabase.from("exact_config")
+      .update({ exact_item_id_bav_avb: itemId }).eq("id", config.id);
+    await logSync(supabase, {
+      trigger_type: "item_bootstrap", status: "success",
+      admin_user_id: user.id, http_status: itemRes.status,
+      payload: { request: itemPayload, exact_item_id: itemId },
+    });
+    return json({ success: true, created: true, exact_item_id_bav_avb: itemId });
+  }
+
+
   // ── Actie: alleen SEPA-mandaat (re)try voor reeds-geactiveerde lead ──
   if (action === "retry_mandate") {
 
