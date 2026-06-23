@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { formatDateTimeNL } from "@/lib/dateFormat";
 
+
+
 type Lead = Record<string, any>;
 
 interface Props {
@@ -31,7 +33,9 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [isActivating, setIsActivating] = useState(false);
+  const [isRetryingMandate, setIsRetryingMandate] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+
 
   const checks = useMemo(() => [
     { label: "Voor- en achternaam", ok: !!(lead.voornaam && lead.achternaam) },
@@ -83,7 +87,34 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
     }
   };
 
+  const retryMandate = async () => {
+    setIsRetryingMandate(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("lead-to-exact-activate", {
+        body: { lead_id: lead.id, action: "retry_mandate" },
+      });
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || "Onbekende fout");
+      toast({
+        title: "SEPA-mandaat aangemaakt",
+        description: `Mandaat-ID: ${data.exact_mandate_id}`,
+      });
+      qc.invalidateQueries({ queryKey: ["lead", lead.id] });
+    } catch (e: any) {
+      toast({
+        title: "SEPA-mandaat mislukt",
+        description: e?.message || "Onbekende fout",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRetryingMandate(false);
+    }
+  };
+
   const auditLog: any[] = Array.isArray(lead.activatie_log) ? lead.activatie_log : [];
+  const lastEntry = auditLog[auditLog.length - 1];
+  const hasMandateWarning = alreadyActivated && auditLog.some(e => e?.mandate_warning) && !auditLog.some(e => e?.exact_mandate_id);
+
 
   return (
     <Card>
@@ -95,19 +126,43 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
       </CardHeader>
       <CardContent className="space-y-5">
         {alreadyActivated ? (
-          <div className="rounded-lg border border-green-300 bg-green-50 p-4 flex items-start gap-3">
-            <CheckCircle2 className="h-5 w-5 text-green-700 mt-0.5" />
-            <div className="text-sm">
-              <p className="font-medium text-green-900">Polis is geactiveerd in Exact.</p>
-              <p className="text-green-800 mt-1">Exact relatie-ID: <code className="bg-white px-1.5 py-0.5 rounded">{lead.exact_account_id}</code></p>
-              {lead.geactiveerd_op && (
-                <p className="text-green-700 text-xs mt-1">
-                  Op {formatDateTimeNL(lead.geactiveerd_op)}
-                </p>
-              )}
+          <>
+            <div className="rounded-lg border border-green-300 bg-green-50 p-4 flex items-start gap-3">
+              <CheckCircle2 className="h-5 w-5 text-green-700 mt-0.5" />
+              <div className="text-sm">
+                <p className="font-medium text-green-900">Polis is geactiveerd in Exact.</p>
+                <p className="text-green-800 mt-1">Exact relatie-ID: <code className="bg-white px-1.5 py-0.5 rounded">{lead.exact_account_id}</code></p>
+                {lead.geactiveerd_op && (
+                  <p className="text-green-700 text-xs mt-1">
+                    Op {formatDateTimeNL(lead.geactiveerd_op)}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
+            {hasMandateWarning && (
+              <div className="rounded-md border border-amber-300 bg-amber-50 p-3 space-y-2">
+                <p className="text-xs text-amber-900 flex items-start gap-2">
+                  <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <span>SEPA-mandaat is nog niet aangemaakt in Exact. Account en bankrekening staan wel klaar.</span>
+                </p>
+                <Button
+                  onClick={retryMandate}
+                  disabled={isRetryingMandate}
+                  size="sm"
+                  variant="outline"
+                  className="w-full border-amber-400 text-amber-900 hover:bg-amber-100"
+                >
+                  {isRetryingMandate ? (
+                    <><Loader2 className="h-3 w-3 mr-2 animate-spin" /> Bezig…</>
+                  ) : (
+                    <>SEPA-mandaat opnieuw aanmaken</>
+                  )}
+                </Button>
+              </div>
+            )}
+          </>
         ) : (
+
           <>
             <div>
               <h4 className="text-sm font-medium mb-2">Activatie-checklist</h4>
