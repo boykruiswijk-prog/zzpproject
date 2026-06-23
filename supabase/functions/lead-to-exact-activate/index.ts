@@ -470,10 +470,19 @@ Deno.serve(async (req) => {
     if (!spec) {
       return json({ success: false, error: "onbekend_pakket", gekozen_pakket: lead.gekozen_pakket }, 400);
     }
+    // Zorg dat het BAV-AVB artikel in Exact bestaat (eenmalig, idempotent)
+    const itemEnsure = await ensureBavAvbItem({
+      supabase, config, baseUrl, div, headers, accessToken,
+      logCtx: { lead_id: leadId, admin_user_id: user.id },
+    });
+    if (!itemEnsure.ok) {
+      return json({ success: false, error: "item_bootstrap_failed", detail: itemEnsure.detail, http_status: itemEnsure.httpStatus }, 500);
+    }
     const invRes = await createExactInvoice({
       baseUrl, div, headers, accountId: lead.exact_account_id, lead, pakketSpec: spec,
-      itemId: config.exact_item_id_bav_avb ?? null,
+      itemId: itemEnsure.itemId,
     });
+
 
     if (!invRes.ok) {
       await logSync(supabase, {
