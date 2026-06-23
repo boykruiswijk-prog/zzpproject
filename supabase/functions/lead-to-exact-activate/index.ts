@@ -761,10 +761,17 @@ Deno.serve(async (req) => {
   if (!pakketSpec) {
     invoiceWarning = `Onbekend pakket "${lead.gekozen_pakket}" — geen factuur aangemaakt.`;
   } else {
-    const invRes = await createExactInvoice({
-      baseUrl, div, headers, accountId: exactAccountId, lead, pakketSpec,
-      itemId: config.exact_item_id_bav_avb ?? null,
+    const itemEnsure = await ensureBavAvbItem({
+      supabase, config, baseUrl, div, headers, accessToken,
+      logCtx: { lead_id: leadId, admin_user_id: user.id },
     });
+    const invRes = itemEnsure.ok
+      ? await createExactInvoice({
+          baseUrl, div, headers, accountId: exactAccountId, lead, pakketSpec,
+          itemId: itemEnsure.itemId,
+        })
+      : { ok: false as const, httpStatus: itemEnsure.httpStatus, summary: `Item bootstrap mislukt: ${itemEnsure.summary}`, detail: itemEnsure.detail, request: null };
+
 
     if (!invRes.ok) {
       invoiceWarning = `${invRes.summary}. Account staat klaar — retry via knop.`;
