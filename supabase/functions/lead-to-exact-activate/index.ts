@@ -626,7 +626,9 @@ Deno.serve(async (req) => {
   } else {
     const invRes = await createExactInvoice({
       baseUrl, div, headers, accountId: exactAccountId, lead, pakketSpec,
+      itemId: config.exact_item_id_bav_avb ?? null,
     });
+
     if (!invRes.ok) {
       invoiceWarning = `${invRes.summary}. Account staat klaar — retry via knop.`;
       await logSync(supabase, {
