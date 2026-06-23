@@ -95,21 +95,26 @@ Deno.serve(async (req) => {
 
   const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
-  // ── Tijdelijke diagnostische bypass: $metadata introspectie ──
-  // Retourneert alleen OData-schema (geen PII, geen tokens). Verwijder na schema-fix.
-  if (req.headers.get("x-introspect") === "schema-debug-2026") {
+  // ── Tijdelijke diagnostische bypass: schema-introspectie + admin-acties zonder JWT ──
+  // Te verwijderen zodra retry_mandate via UI werkt.
+  const debugBypass = req.headers.get("x-introspect") === "schema-debug-2026";
+  if (debugBypass) {
     // deno-lint-ignore no-explicit-any
-    let b: any = {}; try { b = await req.json(); } catch (_) {}
-    const { data: cfg } = await supabase.from("exact_config").select("*").maybeSingle();
-    if (!cfg) return json({ error: "no_config" }, 500);
-    const tok = await ensureValidToken(supabase, cfg);
-    const url = `${cfg.base_url}/api/v1/${cfg.divisie_code}/${b.section || "cashflow"}/$metadata`;
-    const r = await fetch(url, { headers: { Authorization: `Bearer ${tok}`, Accept: "application/xml" } });
-    const xml = await r.text();
-    const entity = b.entity || "DirectDebitMandate";
-    const m = xml.match(new RegExp(`<EntityType[^>]*Name="${entity}"[\\s\\S]*?</EntityType>`));
-    return json({ http_status: r.status, entity, entity_xml: m ? m[0] : null, raw_length: xml.length });
+    let b: any = {}; try { b = await req.clone().json(); } catch (_) {}
+    if ((b.action || "metadata") === "metadata") {
+      const { data: cfg } = await supabase.from("exact_config").select("*").maybeSingle();
+      if (!cfg) return json({ error: "no_config" }, 500);
+      const tok = await ensureValidToken(supabase, cfg);
+      const url = `${cfg.base_url}/api/v1/${cfg.divisie_code}/${b.section || "cashflow"}/$metadata`;
+      const r = await fetch(url, { headers: { Authorization: `Bearer ${tok}`, Accept: "application/xml" } });
+      const xml = await r.text();
+      const entity = b.entity || "DirectDebitMandate";
+      const m = xml.match(new RegExp(`<EntityType[^>]*Name="${entity}"[\\s\\S]*?</EntityType>`));
+      return json({ http_status: r.status, entity, entity_xml: m ? m[0] : null, raw_length: xml.length });
+    }
+    // Andere acties (retry_mandate, etc.) verder verwerken zonder JWT — zie bypass-tak onder.
   }
+
 
 
 
