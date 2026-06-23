@@ -254,10 +254,17 @@ export default function ExactKoppeling() {
             </CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <p className="text-muted-foreground">Divisie</p>
-              <div className="flex items-center gap-2">
-                <p className="font-medium">{config?.divisie_code ?? "—"}</p>
+            <div className="col-span-2">
+              <p className="text-muted-foreground mb-1">Actieve administratie</p>
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="font-medium">
+                  {config?.divisie_code ?? "—"}
+                  {config?.divisie_code && (
+                    <span className="text-muted-foreground font-normal">
+                      {" "}— {KNOWN_DIVISIONS.find((d) => d.code === config.divisie_code)?.name ?? "onbekend"}
+                    </span>
+                  )}
+                </p>
                 {isGreen && (
                   <Button
                     size="sm"
@@ -267,10 +274,30 @@ export default function ExactKoppeling() {
                     disabled={switchingDiv}
                   >
                     {switchingDiv ? <Loader2 className="h-3 w-3 animate-spin" /> : <Repeat className="h-3 w-3" />}
-                    Wissel administratie
+                    Sync met /Me
                   </Button>
                 )}
               </div>
+              {isGreen && (
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <Label className="text-xs text-muted-foreground">Wissel naar:</Label>
+                  <select
+                    className="h-8 rounded-md border bg-background px-2 text-xs"
+                    value={config?.divisie_code ?? ""}
+                    onChange={(e) => setDivisionLocal(e.target.value)}
+                    disabled={changingDiv}
+                  >
+                    {KNOWN_DIVISIONS.map((d) => (
+                      <option key={d.code} value={d.code}>
+                        {d.code} — {d.name}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-[11px] text-muted-foreground">
+                    Per administratie wordt aparte sync-data opgehaald (relaties + facturen).
+                  </p>
+                </div>
+              )}
             </div>
             <div>
               <p className="text-muted-foreground">Laatste sync</p>
