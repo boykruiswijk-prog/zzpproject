@@ -91,6 +91,7 @@ Deno.serve(async (req) => {
   let body: any = {};
   try { body = await req.json(); } catch (_) {}
   const leadId = body?.lead_id;
+  const action = body?.action || "activate";
   if (!leadId || typeof leadId !== "string") {
     return json({ success: false, error: "lead_id_required" }, 400);
   }
@@ -100,6 +101,81 @@ Deno.serve(async (req) => {
     .from("leads").select("*").eq("id", leadId).maybeSingle();
   if (leadErr || !lead) return json({ success: false, error: "lead_not_found" }, 404);
 
+  // ── Exact config (gedeeld door beide acties) ──
+  const { data: config } = await supabase.from("exact_config").select("*").maybeSingle();
+  if (!config?.is_actief) return json({ success: false, error: "exact_niet_actief" }, 400);
+  if (!config.divisie_code) return json({ success: false, error: "divisie_code_ontbreekt" }, 400);
+  const baseUrl = config.base_url || "https://start.exactonline.nl";
+  const div = config.divisie_code;
+  const accessToken = await ensureValidToken(supabase, config);
+  const headers = {
+    Authorization: `Bearer ${accessToken}`,
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    Prefer: "return=representation",
+  };
+
+  // ── Actie: alleen SEPA-mandaat (re)try voor reeds-geactiveerde lead ──
+  if (action === "retry_mandate") {
+    if (!lead.exact_account_id) {
+      return json({ success: false, error: "lead_heeft_geen_exact_account" }, 400);
+    }
+    // Zoek bankrekening in Exact bij dit account
+    const baRes = await fetch(
+      `${baseUrl}/api/v1/${div}/crm/BankAccounts?$select=ID,BankAccount&$filter=Account eq guid'${lead.exact_account_id}'&$top=1`,
+      { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } },
+    );
+    const baJson = await baRes.json().catch(() => ({}));
+    const baArr = Array.isArray(baJson?.d?.results) ? baJson.d.results : Array.isArray(baJson?.d) ? baJson.d : [];
+    const bankId = baArr[0]?.ID;
+    if (!bankId) {
+      return json({ success: false, error: "geen_bankrekening_in_exact" }, 400);
+    }
+    const signatureDate = lead.sepa_akkoord_datum
+      ? new Date(lead.sepa_akkoord_datum).toISOString()
+      : new Date().toISOString();
+    const mRes = await fetch(`${baseUrl}/api/v1/${div}/cashflow/DirectDebitMandates`, {
+      method: "POST", headers,
+      body: JSON.stringify({
+        Account: lead.exact_account_id,
+        BankAccount: bankId,
+        MandateReference: `MNDT-${leadId.slice(0, 8)}`,
+        SignatureDate: signatureDate,
+        Type: 1, // 0=Core, 1=B2B, 2=Bottomline
+      }),
+    });
+    const mJson = await mRes.json().catch(() => ({}));
+    if (!mRes.ok) {
+      await logSync(supabase, {
+        trigger_type: "lead_activation", status: "error",
+        lead_id: leadId, admin_user_id: user.id,
+        http_status: mRes.status,
+        error_message: `SEPA-mandaat retry mislukt: ${JSON.stringify(mJson).slice(0, 800)}`,
+      });
+      return json({ success: false, error: "mandate_create_failed", detail: mJson, http_status: mRes.status }, 500);
+    }
+    const mandateId = mJson?.d?.ID || mJson?.ID || null;
+    const entry = {
+      timestamp: new Date().toISOString(),
+      action: "SEPA-mandaat aangemaakt (retry)",
+      admin_user_id: user.id,
+      admin_email: user.email,
+      exact_account_id: lead.exact_account_id,
+      exact_bankaccount_id: bankId,
+      exact_mandate_id: mandateId,
+    };
+    const newLog = Array.isArray(lead.activatie_log) ? [...lead.activatie_log, entry] : [entry];
+    await supabase.from("leads").update({ activatie_log: newLog }).eq("id", leadId);
+    await logSync(supabase, {
+      trigger_type: "lead_activation", status: "success",
+      lead_id: leadId, admin_user_id: user.id,
+      exact_account_id: lead.exact_account_id, http_status: 201,
+      payload: { retry: "mandate", exact_mandate_id: mandateId, exact_bankaccount_id: bankId },
+    });
+    return json({ success: true, exact_mandate_id: mandateId, exact_bankaccount_id: bankId, message: "SEPA-mandaat aangemaakt" });
+  }
+
+  // ── Actie: volledige activatie (default) ──
   if (lead.exact_account_id) {
     return json({
       success: false,
@@ -110,6 +186,7 @@ Deno.serve(async (req) => {
   if (lead.status === "afgewezen") {
     return json({ success: false, error: "Afgewezen leads kunnen niet worden geactiveerd" }, 400);
   }
+
 
   const missing: string[] = [];
   if (!lead.voornaam) missing.push("voornaam");
