@@ -25,6 +25,7 @@ export const branches: DocumentBranche[] = [
       { id: 'brochure-ict', titel: 'Brochure beroepsaansprakelijkheid', type: 'brochure', path: '/documenten/Brochure-beroepsaansprakelijkheid.pdf' },
       { id: 'polis-ict', titel: 'Polisvoorwaarden beroepsaansprakelijkheid', type: 'polisvoorwaarden', path: '/documenten/Polisvoorwaarden-beroepsaansprakelijkheid-TPH-2020.pdf', productCode: 'TPH-2020' },
       { id: 'kaart-ict', titel: 'Verzekeringskaart beroepsaansprakelijkheid', type: 'verzekeringskaart', path: '/documenten/Verzekeringskaart-beroepsaansprakelijkheid-TPH-2020.pdf', productCode: 'TPH-2020' },
+      { id: 'voorwaarden-kantoorrisico-ict', titel: 'Aanvullende voorwaarden kantoorrisico', type: 'aanvullend', path: '/documenten/Beroepsaansprakelijkheid_voorwaarden_kantoorrisico.pdf' },
     ],
   },
   {
@@ -73,9 +74,7 @@ export const algemeneBavDocumenten: Document[] = [
   { id: 'kaart-bav', titel: 'Verzekeringskaart bedrijfsaansprakelijkheid', type: 'verzekeringskaart', path: '/documenten/Verzekeringskaart-bedrijfsaansprakelijkheid-HAVB-08B.pdf', productCode: 'HAVB-08B' },
 ];
 
-export const aanvullendeDocumenten: Document[] = [
-  { id: 'voorwaarden-kantoorrisico', titel: 'Aanvullende voorwaarden kantoorrisico', type: 'aanvullend', path: '/documenten/Beroepsaansprakelijkheid_voorwaarden_kantoorrisico.pdf' },
-];
+export const aanvullendeDocumenten: Document[] = [];
 
 export const zpZakenEigenDocumenten: Document[] = [
   { id: 'slotverklaring', titel: 'Slotverklaring 2026', type: 'eigen', path: '/documenten/slotverklaring', isHtmlPage: true },
