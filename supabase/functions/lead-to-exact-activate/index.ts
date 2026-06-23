@@ -95,47 +95,18 @@ Deno.serve(async (req) => {
 
   const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
-  // ── Tijdelijke diagnostische bypass: schema-introspectie + admin-acties zonder JWT ──
-  // Te verwijderen zodra retry_mandate via UI werkt.
-  const debugBypass = req.headers.get("x-introspect") === "schema-debug-2026";
-  if (debugBypass) {
-    // deno-lint-ignore no-explicit-any
-    let b: any = {}; try { b = await req.clone().json(); } catch (_) {}
-    if ((b.action || "metadata") === "metadata") {
-      const { data: cfg } = await supabase.from("exact_config").select("*").maybeSingle();
-      if (!cfg) return json({ error: "no_config" }, 500);
-      const tok = await ensureValidToken(supabase, cfg);
-      const url = `${cfg.base_url}/api/v1/${cfg.divisie_code}/${b.section || "cashflow"}/$metadata`;
-      const r = await fetch(url, { headers: { Authorization: `Bearer ${tok}`, Accept: "application/xml" } });
-      const xml = await r.text();
-      const entity = b.entity || "DirectDebitMandate";
-      const m = xml.match(new RegExp(`<EntityType[^>]*Name="${entity}"[\\s\\S]*?</EntityType>`));
-      return json({ http_status: r.status, entity, entity_xml: m ? m[0] : null, raw_length: xml.length });
-    }
-    // Andere acties (retry_mandate, etc.) verder verwerken zonder JWT — zie bypass-tak onder.
+  // ── Auth: admin only ──
+  const authHeader = req.headers.get("Authorization") ?? "";
+  if (!authHeader.toLowerCase().startsWith("bearer ")) {
+    return json({ success: false, error: "unauthorized" }, 401);
   }
-
-
-
-
-  // ── Auth: admin only (skipped voor debugBypass) ──
-  let user: { id: string; email?: string };
-  if (debugBypass) {
-    user = { id: "00000000-0000-0000-0000-000000000000", email: "debug-bypass@zpzaken.nl" };
-  } else {
-    const authHeader = req.headers.get("Authorization") ?? "";
-    if (!authHeader.toLowerCase().startsWith("bearer ")) {
-      return json({ success: false, error: "unauthorized" }, 401);
-    }
-    const userClient = createClient(SUPABASE_URL, ANON_KEY, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const { data: { user: u }, error: userErr } = await userClient.auth.getUser();
-    if (userErr || !u) return json({ success: false, error: "unauthorized" }, 401);
-    const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: u.id, _role: "admin" });
-    if (!isAdmin) return json({ success: false, error: "forbidden" }, 403);
-    user = { id: u.id, email: u.email };
-  }
+  const userClient = createClient(SUPABASE_URL, ANON_KEY, {
+    global: { headers: { Authorization: authHeader } },
+  });
+  const { data: { user }, error: userErr } = await userClient.auth.getUser();
+  if (userErr || !user) return json({ success: false, error: "unauthorized" }, 401);
+  const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: user.id, _role: "admin" });
+  if (!isAdmin) return json({ success: false, error: "forbidden" }, 403);
 
   // deno-lint-ignore no-explicit-any
   let body: any = {};
