@@ -126,17 +126,37 @@ Deno.serve(async (req) => {
     const expiresAt = new Date(Date.now() + tokenData.expires_in * 1000).toISOString();
     const now = new Date().toISOString();
 
+    // Bootstrap CurrentDivision via /Me direct na token-uitwisseling
+    let divisionCode: string | null = null;
+    try {
+      const meRes = await fetch(
+        `${baseUrl}/api/v1/current/Me?$select=CurrentDivision,UserName`,
+        {
+          headers: {
+            Authorization: `Bearer ${tokenData.access_token}`,
+            Accept: "application/json",
+          },
+        },
+      );
+      const meJson = await meRes.json();
+      const cd = meJson?.d?.results?.[0]?.CurrentDivision ?? meJson?.d?.CurrentDivision;
+      if (cd != null) divisionCode = String(cd);
+    } catch (_) { /* niet fataal */ }
+
+    const updatePayload: Record<string, unknown> = {
+      access_token: tokenData.access_token,
+      refresh_token: tokenData.refresh_token,
+      access_token_expires_at: expiresAt,
+      token_expires_at: expiresAt,
+      refresh_token_obtained_at: now,
+      is_actief: true,
+      last_error: null,
+    };
+    if (divisionCode) updatePayload.divisie_code = divisionCode;
+
     await supabase
       .from("exact_config")
-      .update({
-        access_token: tokenData.access_token,
-        refresh_token: tokenData.refresh_token,
-        access_token_expires_at: expiresAt,
-        token_expires_at: expiresAt,
-        refresh_token_obtained_at: now,
-        is_actief: true,
-        last_error: null,
-      })
+      .update(updatePayload)
       .eq("id", config.id);
 
     return htmlResponse(
