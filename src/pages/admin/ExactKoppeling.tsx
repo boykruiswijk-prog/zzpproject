@@ -44,6 +44,13 @@ type SyncLog = {
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const RECOMMENDED_REDIRECT = `${SUPABASE_URL}/functions/v1/exact-oauth-callback`;
 
+const KNOWN_DIVISIONS: { code: string; name: string }[] = [
+  { code: "4401707", name: "ZP Zaken B.V." },
+  { code: "3752614", name: "ZP Werkt B.V." },
+  { code: "4401895", name: "Business @Ventures B.V." },
+  { code: "2932076", name: "Onefellow B.V." },
+];
+
 export default function ExactKoppeling() {
   const { user, isAdmin, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -159,7 +166,23 @@ export default function ExactKoppeling() {
 
   const [syncing, setSyncing] = useState(false);
   const [switchingDiv, setSwitchingDiv] = useState(false);
+  const [changingDiv, setChangingDiv] = useState(false);
   const [selectedLog, setSelectedLog] = useState<SyncLog | null>(null);
+
+  const setDivisionLocal = async (newCode: string) => {
+    if (!config || newCode === config.divisie_code) return;
+    const target = KNOWN_DIVISIONS.find((d) => d.code === newCode);
+    if (!confirm(`Actieve administratie wisselen naar ${newCode}${target ? ` (${target.name})` : ""}? Toekomstige syncs halen data uit deze administratie.`)) return;
+    setChangingDiv(true);
+    const { error } = await supabase
+      .from("exact_config")
+      .update({ divisie_code: newCode, last_error: null })
+      .eq("id", config.id);
+    setChangingDiv(false);
+    if (error) return toast.error(`Wisselen mislukt: ${error.message}`);
+    toast.success(`Administratie gewisseld naar ${newCode}${target ? ` — ${target.name}` : ""}`);
+    loadAll();
+  };
 
   const syncNow = async () => {
     setSyncing(true);
@@ -254,10 +277,17 @@ export default function ExactKoppeling() {
             </CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <p className="text-muted-foreground">Divisie</p>
-              <div className="flex items-center gap-2">
-                <p className="font-medium">{config?.divisie_code ?? "—"}</p>
+            <div className="col-span-2">
+              <p className="text-muted-foreground mb-1">Actieve administratie</p>
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="font-medium">
+                  {config?.divisie_code ?? "—"}
+                  {config?.divisie_code && (
+                    <span className="text-muted-foreground font-normal">
+                      {" "}— {KNOWN_DIVISIONS.find((d) => d.code === config.divisie_code)?.name ?? "onbekend"}
+                    </span>
+                  )}
+                </p>
                 {isGreen && (
                   <Button
                     size="sm"
@@ -267,10 +297,30 @@ export default function ExactKoppeling() {
                     disabled={switchingDiv}
                   >
                     {switchingDiv ? <Loader2 className="h-3 w-3 animate-spin" /> : <Repeat className="h-3 w-3" />}
-                    Wissel administratie
+                    Sync met /Me
                   </Button>
                 )}
               </div>
+              {isGreen && (
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <Label className="text-xs text-muted-foreground">Wissel naar:</Label>
+                  <select
+                    className="h-8 rounded-md border bg-background px-2 text-xs"
+                    value={config?.divisie_code ?? ""}
+                    onChange={(e) => setDivisionLocal(e.target.value)}
+                    disabled={changingDiv}
+                  >
+                    {KNOWN_DIVISIONS.map((d) => (
+                      <option key={d.code} value={d.code}>
+                        {d.code} — {d.name}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-[11px] text-muted-foreground">
+                    Per administratie wordt aparte sync-data opgehaald (relaties + facturen).
+                  </p>
+                </div>
+              )}
             </div>
             <div>
               <p className="text-muted-foreground">Laatste sync</p>
