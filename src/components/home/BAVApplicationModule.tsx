@@ -63,6 +63,7 @@ export function BAVApplicationModule() {
     opdrachtgever: "", bemiddelaarNaam: "",
     iban: "",
     branche: "zakelijke-dienstverlening",
+    adresStraat: "", adresHuisnummer: "", adresPostcode: "", adresPlaats: "",
   });
 
   const BRANCHES = [
@@ -133,6 +134,11 @@ export function BAVApplicationModule() {
       if (!formData.functie.trim()) newErrors.functie = t("bavApp.valFunction");
       if (!formData.aantalMedewerkers.trim()) newErrors.aantalMedewerkers = t("bavApp.valEmployees");
       else if (parseInt(formData.aantalMedewerkers) < 0) newErrors.aantalMedewerkers = t("bavApp.valEmployeesInvalid");
+      if (!formData.adresStraat.trim()) newErrors.adresStraat = "Vul de straatnaam in";
+      if (!formData.adresHuisnummer.trim()) newErrors.adresHuisnummer = "Vul het huisnummer in";
+      if (!formData.adresPostcode.trim()) newErrors.adresPostcode = "Vul de postcode in";
+      else if (!/^[1-9][0-9]{3}\s?[A-Za-z]{2}$/.test(formData.adresPostcode.trim())) newErrors.adresPostcode = "Postcode moet formaat 1234 AB hebben";
+      if (!formData.adresPlaats.trim()) newErrors.adresPlaats = "Vul de plaats in";
       // >3 medewerkers blokkeert niet: gebruiker mag door, aanvraag wordt gemarkeerd voor handmatige beoordeling.
     }
 
