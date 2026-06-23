@@ -351,13 +351,12 @@ Deno.serve(async (req) => {
     }
 
     // 2) Aanmaken
+    // NB: GLSales bestaat niet op Item; GL gaat via factuurregel.
     const itemPayload = {
       Code: "BAV-AVB",
       Description: "Beroeps- en bedrijfsaansprakelijkheidsverzekering",
       SalesVatCode: INV_VAT_CODE,
-      GLSales: INV_GL_ACCOUNT,
       IsSalesItem: true,
-      IsMakeItem: false,
       IsStockItem: false,
     };
     const itemRes = await fetch(`${baseUrl}/api/v1/${div}/logistics/Items`, {
