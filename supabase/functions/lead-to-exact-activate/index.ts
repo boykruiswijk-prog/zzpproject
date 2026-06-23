@@ -413,23 +413,14 @@ Deno.serve(async (req) => {
     exactBankAccountId = bJson?.d?.ID || bJson?.ID || null;
   }
 
-    await deleteAccount();
-    const msg = e instanceof Error ? e.message : String(e);
-    await logSync(supabase, {
-      trigger_type: "lead_activation", status: "error",
-      lead_id: leadId, admin_user_id: user.id,
-      error_message: `BankAccount creatie mislukt (rollback): ${msg}`,
-    });
-    return json({ success: false, error: "bankaccount_create_failed", detail: msg }, 500);
-  }
-
   // ── Stap G: SEPA-mandaat (DirectDebitMandate) — niet-fataal ──
-  // Schema (Exact):
+  // Schema (Exact $metadata DirectDebitMandate):
   //   - Account (Guid, required)
   //   - BankAccount (Guid, required)
-  //   - MandateReference (string, unique)
-  //   - SignatureDate (DateTime) ← NIET 'MandateDate'
+  //   - Reference (string)              ← officiële veldnaam (NIET 'MandateReference')
+  //   - SignatureDate (DateTime)        ← NIET 'MandateDate'
   //   - Type (Int16): 0=Core, 1=B2B, 2=Bottomline (UK)
+
   let exactMandateId: string | null = null;
   let mandateWarning: string | null = null;
   try {
