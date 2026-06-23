@@ -194,14 +194,18 @@ Deno.serve(async (req) => {
           .update({ last_error: `Accounts ${accRes.status}` }).eq("id", config.id);
         throw new Error(`Accounts ophalen mislukt (${accRes.status})`);
       }
-      const accounts = accJson?.d?.results ?? [];
+      const accounts = Array.isArray(accJson?.d?.results)
+        ? accJson.d.results
+        : Array.isArray(accJson?.d) ? accJson.d : [];
 
       const invRes = await fetch(
         `${baseUrl}/api/v1/${divisionCode}/salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,InvoiceDate,AmountDC,Status&$top=10&$orderby=InvoiceDate desc`,
         { headers },
       );
       const invJson = await invRes.json();
-      const invoices = invRes.ok ? (invJson?.d?.results ?? []) : [];
+      const invoices = invRes.ok
+        ? (Array.isArray(invJson?.d?.results) ? invJson.d.results : Array.isArray(invJson?.d) ? invJson.d : [])
+        : [];
 
       const accountsSample = accounts.slice(0, 3).map((a: { Name?: string }) => a?.Name ?? "—");
       await logSync(supabase, {
