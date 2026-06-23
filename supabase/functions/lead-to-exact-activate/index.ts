@@ -356,7 +356,7 @@ Deno.serve(async (req) => {
 
   // ── Stap E: Contact ──
   let exactContactId: string | null = null;
-  try {
+  {
     const cRes = await fetch(`${baseUrl}/api/v1/${div}/crm/Contacts`, {
       method: "POST", headers,
       body: JSON.stringify({
@@ -368,23 +368,25 @@ Deno.serve(async (req) => {
         IsMainContact: true,
       }),
     });
+    if (!cRes.ok) {
+      const { summary, detail } = await captureExactError("Contacts POST", cRes);
+      await deleteAccount();
+      await logSync(supabase, {
+        trigger_type: "lead_activation", status: "error",
+        lead_id: leadId, admin_user_id: user.id,
+        http_status: cRes.status,
+        error_message: `Contact creatie mislukt (rollback uitgevoerd): ${summary}`,
+        payload: detail,
+      });
+      return json({ success: false, error: "contact_create_failed", detail }, 500);
+    }
     const cJson = await cRes.json().catch(() => ({}));
-    if (!cRes.ok) throw new Error(`Contact ${cRes.status}: ${JSON.stringify(cJson).slice(0, 500)}`);
     exactContactId = cJson?.d?.ID || cJson?.ID || null;
-  } catch (e) {
-    await deleteAccount();
-    const msg = e instanceof Error ? e.message : String(e);
-    await logSync(supabase, {
-      trigger_type: "lead_activation", status: "error",
-      lead_id: leadId, admin_user_id: user.id,
-      error_message: `Contact creatie mislukt (rollback uitgevoerd): ${msg}`,
-    });
-    return json({ success: false, error: "contact_create_failed", detail: msg }, 500);
   }
 
   // ── Stap F: BankAccount ──
   let exactBankAccountId: string | null = null;
-  try {
+  {
     const ibanClean = String(lead.iban).replace(/\s+/g, "").toUpperCase();
     const bRes = await fetch(`${baseUrl}/api/v1/${div}/crm/BankAccounts`, {
       method: "POST", headers,
@@ -395,10 +397,22 @@ Deno.serve(async (req) => {
         Type: 10,
       }),
     });
+    if (!bRes.ok) {
+      const { summary, detail } = await captureExactError("BankAccounts POST", bRes);
+      await deleteAccount();
+      await logSync(supabase, {
+        trigger_type: "lead_activation", status: "error",
+        lead_id: leadId, admin_user_id: user.id,
+        http_status: bRes.status,
+        error_message: `BankAccount creatie mislukt (rollback): ${summary}`,
+        payload: detail,
+      });
+      return json({ success: false, error: "bankaccount_create_failed", detail }, 500);
+    }
     const bJson = await bRes.json().catch(() => ({}));
-    if (!bRes.ok) throw new Error(`BankAccount ${bRes.status}: ${JSON.stringify(bJson).slice(0, 500)}`);
     exactBankAccountId = bJson?.d?.ID || bJson?.ID || null;
-  } catch (e) {
+  }
+
     await deleteAccount();
     const msg = e instanceof Error ? e.message : String(e);
     await logSync(supabase, {
