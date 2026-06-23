@@ -126,19 +126,43 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
       </CardHeader>
       <CardContent className="space-y-5">
         {alreadyActivated ? (
-          <div className="rounded-lg border border-green-300 bg-green-50 p-4 flex items-start gap-3">
-            <CheckCircle2 className="h-5 w-5 text-green-700 mt-0.5" />
-            <div className="text-sm">
-              <p className="font-medium text-green-900">Polis is geactiveerd in Exact.</p>
-              <p className="text-green-800 mt-1">Exact relatie-ID: <code className="bg-white px-1.5 py-0.5 rounded">{lead.exact_account_id}</code></p>
-              {lead.geactiveerd_op && (
-                <p className="text-green-700 text-xs mt-1">
-                  Op {formatDateTimeNL(lead.geactiveerd_op)}
-                </p>
-              )}
+          <>
+            <div className="rounded-lg border border-green-300 bg-green-50 p-4 flex items-start gap-3">
+              <CheckCircle2 className="h-5 w-5 text-green-700 mt-0.5" />
+              <div className="text-sm">
+                <p className="font-medium text-green-900">Polis is geactiveerd in Exact.</p>
+                <p className="text-green-800 mt-1">Exact relatie-ID: <code className="bg-white px-1.5 py-0.5 rounded">{lead.exact_account_id}</code></p>
+                {lead.geactiveerd_op && (
+                  <p className="text-green-700 text-xs mt-1">
+                    Op {formatDateTimeNL(lead.geactiveerd_op)}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
+            {hasMandateWarning && (
+              <div className="rounded-md border border-amber-300 bg-amber-50 p-3 space-y-2">
+                <p className="text-xs text-amber-900 flex items-start gap-2">
+                  <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <span>SEPA-mandaat is nog niet aangemaakt in Exact. Account en bankrekening staan wel klaar.</span>
+                </p>
+                <Button
+                  onClick={retryMandate}
+                  disabled={isRetryingMandate}
+                  size="sm"
+                  variant="outline"
+                  className="w-full border-amber-400 text-amber-900 hover:bg-amber-100"
+                >
+                  {isRetryingMandate ? (
+                    <><Loader2 className="h-3 w-3 mr-2 animate-spin" /> Bezig…</>
+                  ) : (
+                    <>SEPA-mandaat opnieuw aanmaken</>
+                  )}
+                </Button>
+              </div>
+            )}
+          </>
         ) : (
+
           <>
             <div>
               <h4 className="text-sm font-medium mb-2">Activatie-checklist</h4>
