@@ -326,21 +326,23 @@ Deno.serve(async (req) => {
   const accRes = await fetch(`${baseUrl}/api/v1/${div}/crm/Accounts`, {
     method: "POST", headers, body: JSON.stringify(accountPayload),
   });
-  const accData = await accRes.json().catch(() => ({}));
   if (!accRes.ok) {
+    const { summary, detail } = await captureExactError("Accounts POST", accRes);
     await logSync(supabase, {
       trigger_type: "lead_activation", status: "error",
       lead_id: leadId, admin_user_id: user.id,
       http_status: accRes.status,
-      error_message: `Account-creatie mislukt: ${JSON.stringify(accData).slice(0, 1000)}`,
-      payload: accountPayload,
+      error_message: summary,
+      payload: { request: accountPayload, response: detail },
     });
-    return json({ success: false, error: "exact_account_create_failed", detail: accData, http_status: accRes.status }, 500);
+    return json({ success: false, error: "exact_account_create_failed", detail, http_status: accRes.status }, 500);
   }
+  const accData = await accRes.json().catch(() => ({}));
   const exactAccountId: string = accData?.d?.ID || accData?.ID;
   if (!exactAccountId) {
     return json({ success: false, error: "no_account_id_returned", raw: accData }, 500);
   }
+
 
   // ── Helper voor rollback ──
   const deleteAccount = async () => {
