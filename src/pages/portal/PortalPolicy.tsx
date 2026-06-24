@@ -1,6 +1,7 @@
 import { PortalLayout } from "@/components/portal/PortalLayout";
 import { formatDateNL } from "@/lib/dateFormat";
 import { usePortalPolicies } from "@/hooks/usePortalData";
+import { PolicyLifecycleActions } from "@/components/portal/PolicyLifecycleActions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, Download, FileText } from "lucide-react";
@@ -23,6 +24,9 @@ export default function PortalPolicy() {
   return (
     <PortalLayout>
       <h1 className="text-3xl font-bold mb-6">Mijn polis</h1>
+      <div className="mb-6">
+        <PolicyLifecycleActions />
+      </div>
       {isLoading && <Loader2 className="h-6 w-6 animate-spin text-accent" />}
       {!isLoading && (!policies || policies.length === 0) && (
         <Card>
