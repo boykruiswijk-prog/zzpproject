@@ -404,18 +404,26 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 2) Aanmaken
-    // NB: GLSales bestaat niet op Item; GL gaat via factuurregel.
+    // 2) Aanmaken — eerst ItemGroup garanderen (verplicht veld).
+    const groupRes = await ensureItemGroup({
+      supabase, config, baseUrl, div, headers, accessToken,
+      logCtx: { admin_user_id: user.id, lead_id: null },
+    });
+    if (!groupRes.ok) {
+      return json({ success: false, error: "itemgroup_create_failed", detail: groupRes.detail, http_status: groupRes.httpStatus }, 500);
+    }
     const itemPayload = {
       Code: "BAV-AVB",
       Description: "Beroeps- en bedrijfsaansprakelijkheidsverzekering",
       SalesVatCode: INV_VAT_CODE,
       IsSalesItem: true,
       IsStockItem: false,
+      ItemGroup: groupRes.groupId,
     };
     const itemRes = await fetch(`${baseUrl}/api/v1/${div}/logistics/Items`, {
       method: "POST", headers, body: JSON.stringify(itemPayload),
     });
+
     if (!itemRes.ok) {
       const { summary, detail } = await captureExactError("Items POST", itemRes);
       await logSync(supabase, {
