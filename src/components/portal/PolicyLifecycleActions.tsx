@@ -58,6 +58,9 @@ export function PolicyLifecycleActions() {
   const eur = (n: number | undefined) =>
     typeof n === "number" ? `€ ${n.toFixed(2).replace(".", ",")}` : "—";
 
+  if (isLoading || !lead) return null;
+  const status = lead.status;
+
   const handlePauze = async () => {
     if (pauzeBlocked) return;
     try {
