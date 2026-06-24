@@ -101,9 +101,34 @@ Deno.serve(async (req) => {
       );
     }
 
+    // ── DUPLICATE GUARD: bestaande klant met polis kan geen tweede aanvraag doen ──
+    {
+      const cleanEmail = submission.email.trim().toLowerCase();
+      const cleanKvk = (submission.kvk_nummer ?? "").trim();
+      const orParts: string[] = [`email.ilike.${cleanEmail}`];
+      if (cleanKvk) orParts.push(`kvk_nummer.eq.${cleanKvk}`);
+      const { data: existing } = await supabase
+        .from("leads")
+        .select("id")
+        .or(orParts.join(","))
+        .not("exact_account_id", "is", null)
+        .in("status", ["actief", "klant"])
+        .limit(1);
+      if (existing && existing.length > 0) {
+        return new Response(
+          JSON.stringify({
+            success: false,
+            error: "Bestaande klant gedetecteerd. Gebruik klantportaal of neem contact op.",
+          }),
+          { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+
     const pakket = PAKKET_CONFIG[submission.gekozen_pakket];
     const premium = pakket.prijs;
     const volledigeNaam = `${submission.voornaam} ${submission.achternaam}`;
+
 
     // ── 1. INSERT IN LEADS ──
     const { data: lead, error: leadError } = await supabase
