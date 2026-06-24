@@ -69,7 +69,7 @@ export function PolicyLifecycleActions() {
         reden: pauzeReden, pauze_toelichting: pauzeToelichting.trim() || undefined,
       });
       toast({ title: "Polis gepauzeerd", description: "Je ontvangt een bevestigingsmail." });
-      setPauzeOpen(false); setPauzeReden(""); setPauzeToelichting("");
+      setPauzeOpen(false); setPauzeReden(""); setPauzeToelichting(""); setPauzeAkkoord(false);
     } catch (e: any) {
       toast({ title: "Fout", description: e.message, variant: "destructive" });
     }
@@ -77,13 +77,9 @@ export function PolicyLifecycleActions() {
 
   const handleHervatten = async () => {
     try {
-      const res = await lifecycle.mutateAsync({ action: "hervatten", lead_id: lead.id });
-      toast({
-        title: "Polis weer actief",
-        description: res?.pauze_dagen > 0
-          ? `Creditnota voor ${res.pauze_dagen} dagen wordt verwerkt.`
-          : "Je bent direct weer gedekt.",
-      });
+      await lifecycle.mutateAsync({ action: "hervatten", lead_id: lead.id });
+      toast({ title: "Polis weer actief", description: "Je bent direct weer gedekt." });
+      setHervatOpen(false);
     } catch (e: any) {
       toast({ title: "Fout", description: e.message, variant: "destructive" });
     }
