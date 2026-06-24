@@ -20,6 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import ellenAvatar from "@/assets/ellen-baars-avatar.jpg";
 import { TrustSignalsStrip } from "@/components/social-proof/TrustSignalsStrip";
 import { bavPakketten, getPakket, type BavPakketId } from "@/data/bavPakketten";
+import { checkAcceptance } from "@/data/acceptanceCriteria";
 
 const formatBedrag = (n: number) => `€${n.toLocaleString("nl-NL")}`;
 
@@ -141,6 +142,11 @@ export function BAVApplicationModule() {
       if (!formData.adresPostcode.trim()) newErrors.adresPostcode = "Vul de postcode in";
       else if (!/^[1-9][0-9]{3}\s?[A-Za-z]{2}$/.test(formData.adresPostcode.trim())) newErrors.adresPostcode = "Postcode moet formaat 1234 AB hebben";
       if (!formData.adresPlaats.trim()) newErrors.adresPlaats = "Vul de plaats in";
+      // Acceptatie-criteria check: functie/branche tegen afgewezen lijst
+      if (formData.functie.trim()) {
+        const acc = checkAcceptance(formData.functie, formData.branche);
+        if (!acc.accepted) newErrors.functie = acc.reason!;
+      }
       // >3 medewerkers blokkeert niet: gebruiker mag door, aanvraag wordt gemarkeerd voor handmatige beoordeling.
     }
 
