@@ -11,6 +11,7 @@ export interface LifecyclePayload {
   lead_id: string;
   reden?: string;
   toelichting?: string;
+  pauze_toelichting?: string;
   nieuwe_functie?: string;
 }
 

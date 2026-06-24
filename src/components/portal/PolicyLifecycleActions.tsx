@@ -38,18 +38,29 @@ export function PolicyLifecycleActions() {
   const [pauzeOpen, setPauzeOpen] = useState(false);
   const [opzegOpen, setOpzegOpen] = useState(false);
   const [pauzeReden, setPauzeReden] = useState("");
+  const [pauzeToelichting, setPauzeToelichting] = useState("");
   const [opzegReden, setOpzegReden] = useState("");
   const [opzegToelichting, setOpzegToelichting] = useState("");
 
   if (isLoading || !lead) return null;
   const status = lead.status;
 
+  const pauzeToelichtingRequired = pauzeReden === "andere_reden";
+  const opzegToelichtingRequired = opzegReden === "andere_reden";
+  const pauzeBlocked =
+    !pauzeReden || (pauzeToelichtingRequired && !pauzeToelichting.trim());
+  const opzegBlocked =
+    !opzegReden || (opzegToelichtingRequired && !opzegToelichting.trim());
+
   const handlePauze = async () => {
-    if (!pauzeReden) return;
+    if (pauzeBlocked) return;
     try {
-      await lifecycle.mutateAsync({ action: "pauzeren", lead_id: lead.id, reden: pauzeReden });
+      await lifecycle.mutateAsync({
+        action: "pauzeren", lead_id: lead.id,
+        reden: pauzeReden, pauze_toelichting: pauzeToelichting.trim() || undefined,
+      });
       toast({ title: "Polis gepauzeerd", description: "Je ontvangt een bevestigingsmail." });
-      setPauzeOpen(false); setPauzeReden("");
+      setPauzeOpen(false); setPauzeReden(""); setPauzeToelichting("");
     } catch (e: any) {
       toast({ title: "Fout", description: e.message, variant: "destructive" });
     }
@@ -70,11 +81,11 @@ export function PolicyLifecycleActions() {
   };
 
   const handleOpzeg = async () => {
-    if (!opzegReden) return;
+    if (opzegBlocked) return;
     try {
       await lifecycle.mutateAsync({
         action: "opzeggen", lead_id: lead.id,
-        reden: opzegReden, toelichting: opzegToelichting,
+        reden: opzegReden, toelichting: opzegToelichting.trim() || undefined,
       });
       toast({ title: "Polis opgezegd", description: "Je ontvangt een bevestigingsmail." });
       setOpzegOpen(false); setOpzegReden(""); setOpzegToelichting("");
@@ -145,20 +156,33 @@ export function PolicyLifecycleActions() {
               Bij hervatten ontvang je een creditnota voor de pauze-dagen.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-2">
-            <Label>Reden</Label>
-            <RadioGroup value={pauzeReden} onValueChange={setPauzeReden}>
-              {PAUZE_REDENEN.map((r) => (
-                <div key={r.value} className="flex items-center gap-2">
-                  <RadioGroupItem value={r.value} id={`p-${r.value}`} />
-                  <Label htmlFor={`p-${r.value}`} className="font-normal cursor-pointer">{r.label}</Label>
-                </div>
-              ))}
-            </RadioGroup>
+          <div className="space-y-3">
+            <div className="space-y-2">
+              <Label>Reden</Label>
+              <RadioGroup value={pauzeReden} onValueChange={setPauzeReden}>
+                {PAUZE_REDENEN.map((r) => (
+                  <div key={r.value} className="flex items-center gap-2">
+                    <RadioGroupItem value={r.value} id={`p-${r.value}`} />
+                    <Label htmlFor={`p-${r.value}`} className="font-normal cursor-pointer">{r.label}</Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="p-toel">
+                Toelichting {pauzeToelichtingRequired ? "(verplicht)" : "(optioneel)"}
+              </Label>
+              <Textarea
+                id="p-toel" rows={3}
+                placeholder="Vertel kort wat de reden is..."
+                value={pauzeToelichting}
+                onChange={(e) => setPauzeToelichting(e.target.value)}
+              />
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setPauzeOpen(false)}>Annuleren</Button>
-            <Button onClick={handlePauze} disabled={!pauzeReden || lifecycle.isPending}>
+            <Button onClick={handlePauze} disabled={pauzeBlocked || lifecycle.isPending}>
               {lifecycle.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               Bevestig pauze
             </Button>
@@ -188,13 +212,20 @@ export function PolicyLifecycleActions() {
               </RadioGroup>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="toel">Toelichting (optioneel)</Label>
-              <Textarea id="toel" value={opzegToelichting} onChange={(e) => setOpzegToelichting(e.target.value)} rows={3} />
+              <Label htmlFor="o-toel">
+                Toelichting {opzegToelichtingRequired ? "(verplicht)" : "(optioneel)"}
+              </Label>
+              <Textarea
+                id="o-toel" rows={3}
+                placeholder="Vertel kort wat de reden is..."
+                value={opzegToelichting}
+                onChange={(e) => setOpzegToelichting(e.target.value)}
+              />
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpzegOpen(false)}>Annuleren</Button>
-            <Button variant="destructive" onClick={handleOpzeg} disabled={!opzegReden || lifecycle.isPending}>
+            <Button variant="destructive" onClick={handleOpzeg} disabled={opzegBlocked || lifecycle.isPending}>
               {lifecycle.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               Bevestig opzegging
             </Button>
