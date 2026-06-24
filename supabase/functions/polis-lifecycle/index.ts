@@ -105,6 +105,12 @@ async function ensureValidToken(supabase: any, config: any): Promise<string> {
   const baseUrl = config.base_url || "https://start.exactonline.nl";
   const expiresAt = config.access_token_expires_at ? new Date(config.access_token_expires_at) : new Date(0);
   if (expiresAt.getTime() - Date.now() > 60_000 && config.access_token) return config.access_token;
+  return await refreshAccessToken(supabase, config, /*reloadOn401*/ true);
+}
+
+// deno-lint-ignore no-explicit-any
+async function refreshAccessToken(supabase: any, config: any, reloadOn401: boolean): Promise<string> {
+  const baseUrl = config.base_url || "https://start.exactonline.nl";
   if (!config.refresh_token) throw new Error("Geen refresh_token in exact_config");
   const r = await fetch(`${baseUrl}/api/oauth2/token`, {
     method: "POST",
@@ -115,7 +121,22 @@ async function ensureValidToken(supabase: any, config: any): Promise<string> {
     }).toString(),
   });
   const td = await r.json();
-  if (!r.ok || !td.access_token) throw new Error(`Refresh mislukt (${r.status}): ${JSON.stringify(td)}`);
+  if (!r.ok || !td.access_token) {
+    // Race-recovery: een parallelle call kan net een nieuwere refresh_token hebben opgeslagen.
+    // Herlaad config één keer en probeer met de verse waarde.
+    if (reloadOn401 && r.status === 401) {
+      const { data: fresh } = await supabase.from("exact_config").select("*").eq("id", config.id).single();
+      if (fresh && fresh.refresh_token && fresh.refresh_token !== config.refresh_token) {
+        return await refreshAccessToken(supabase, fresh, /*reloadOn401*/ false);
+      }
+      // Geen nieuwere token in DB → admin moet opnieuw verbinden via /admin/exact-koppeling.
+      throw new Error(
+        `Refresh mislukt (401) — Exact heeft het refresh_token ongeldig verklaard. ` +
+        `Verbind Exact opnieuw via /admin/exact-koppeling. Detail: ${JSON.stringify(td)}`
+      );
+    }
+    throw new Error(`Refresh mislukt (${r.status}): ${JSON.stringify(td)}`);
+  }
   const newExpiresAt = new Date(Date.now() + td.expires_in * 1000).toISOString();
   await supabase.from("exact_config").update({
     access_token: td.access_token, refresh_token: td.refresh_token,
