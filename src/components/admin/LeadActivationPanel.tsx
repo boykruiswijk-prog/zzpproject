@@ -320,37 +320,110 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
           <div>
             <h4 className="text-sm font-medium mb-2">Activatie-historie</h4>
             <ul className="space-y-2">
-              {auditLog.map((entry, i) => (
-                <li key={i} className="text-xs border-l-2 border-accent pl-3 py-1">
-                  <div className="font-medium">{entry.action || "Actie"}</div>
-                  <div className="text-muted-foreground">
-                    {entry.timestamp ? formatDateTimeNL(entry.timestamp) : ""}{" "}
-                    {entry.admin_email ? `· ${entry.admin_email}` : ""}
-                  </div>
-                  {entry.exact_account_id && (
+              {auditLog.map((entry, i) => {
+                const techDetails = entry.mandate_warning || entry.invoice_warning || entry.exact_account_id;
+                return (
+                  <li key={i} className="text-xs border-l-2 border-accent pl-3 py-1">
+                    <div className="font-medium">{entry.action || "Actie"}</div>
                     <div className="text-muted-foreground">
-                      Exact-ID: <code>{entry.exact_account_id}</code>
+                      {entry.timestamp ? formatDateTimeLongNL(entry.timestamp) : ""}
+                      {entry.admin_email ? ` · ${displayActor(entry.admin_email)}` : ""}
                     </div>
-                  )}
-                  {entry.mandate_warning && (
-                    <div className="text-amber-700">⚠ {entry.mandate_warning}</div>
-                  )}
-                  {entry.invoice_warning && (
-                    <div className="text-amber-700">⚠ {entry.invoice_warning}</div>
-                  )}
-                  {entry.exact_invoice_number && (
-                    <div className="text-muted-foreground">
-                      Factuur: <code>{entry.exact_invoice_number}</code>
-                      {typeof entry.exact_invoice_amount === "number" && (
-                        <> — {formatEuro(entry.exact_invoice_amount)}</>
-                      )}
-                    </div>
-                  )}
-                </li>
-              ))}
+                    {entry.exact_invoice_number && (
+                      <div className="text-muted-foreground">
+                        Factuur: <code>{entry.exact_invoice_number}</code>
+                        {typeof entry.exact_invoice_amount === "number" && (
+                          <> — {formatEuro(entry.exact_invoice_amount)}</>
+                        )}
+                      </div>
+                    )}
+                    {techDetails && (
+                      <Collapsible className="mt-1">
+                        <CollapsibleTrigger className="text-[11px] text-muted-foreground hover:text-foreground underline">
+                          Technische details ▾
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="mt-1 space-y-1">
+                          {entry.exact_account_id && (
+                            <div className="text-muted-foreground break-all">
+                              Exact-ID: <code>{entry.exact_account_id}</code>
+                            </div>
+                          )}
+                          {entry.mandate_warning && (
+                            <div className="text-amber-700 break-all">⚠ {entry.mandate_warning}</div>
+                          )}
+                          {entry.invoice_warning && (
+                            <div className="text-amber-700 break-all">⚠ {entry.invoice_warning}</div>
+                          )}
+                        </CollapsibleContent>
+                      </Collapsible>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         )}
+
+        {alreadyActivated && (lead.exact_account_id || lead.exact_invoice_id) && (
+          <Collapsible>
+            <CollapsibleTrigger className="text-xs text-muted-foreground hover:text-foreground underline">
+              Technische details ▾
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-2 space-y-1.5 text-xs">
+              {lead.exact_account_id && (
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground">Exact relatie-ID:</span>
+                  <code className="bg-muted px-1.5 py-0.5 rounded break-all">{lead.exact_account_id}</code>
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(lead.exact_account_id)}
+                    className="text-muted-foreground hover:text-foreground"
+                    aria-label="Kopieer Exact relatie-ID"
+                  >
+                    <Copy className="h-3 w-3" />
+                  </button>
+                </div>
+              )}
+              {lead.exact_invoice_id && (
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground">Exact factuur-ID:</span>
+                  <code className="bg-muted px-1.5 py-0.5 rounded break-all">{lead.exact_invoice_id}</code>
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(lead.exact_invoice_id)}
+                    className="text-muted-foreground hover:text-foreground"
+                    aria-label="Kopieer Exact factuur-ID"
+                  >
+                    <Copy className="h-3 w-3" />
+                  </button>
+                </div>
+              )}
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground">Lead-ID:</span>
+                <code className="bg-muted px-1.5 py-0.5 rounded break-all">{lead.id}</code>
+                <button
+                  type="button"
+                  onClick={() => copyToClipboard(lead.id)}
+                  className="text-muted-foreground hover:text-foreground"
+                  aria-label="Kopieer Lead-ID"
+                >
+                  <Copy className="h-3 w-3" />
+                </button>
+              </div>
+              {lead.geactiveerd_op && (
+                <div className="text-muted-foreground">
+                  Geactiveerd (ISO): <code className="bg-muted px-1.5 py-0.5 rounded">{lead.geactiveerd_op}</code>
+                </div>
+              )}
+              {lead.exact_invoice_created_at && (
+                <div className="text-muted-foreground">
+                  Factuur aangemaakt (ISO): <code className="bg-muted px-1.5 py-0.5 rounded">{lead.exact_invoice_created_at}</code>
+                </div>
+              )}
+            </CollapsibleContent>
+          </Collapsible>
+        )}
+
       </CardContent>
 
       <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
