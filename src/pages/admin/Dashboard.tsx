@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function AdminDashboard() {
   const [isExporting, setIsExporting] = useState(false);
-  const [isExportingUBL, setIsExportingUBL] = useState(false);
+
   const { toast } = useToast();
 
   const handleExport = async () => {
