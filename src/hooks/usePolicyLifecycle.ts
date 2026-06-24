@@ -65,8 +65,8 @@ export function usePolicyAuditLog(leadId: string | undefined) {
   });
 }
 
-// Live pro-rata preview voor pauze/hervat-modal (geen Exact-mutatie).
-export function usePauzePreview(leadId: string | undefined, action: "pauze" | "hervat" = "pauze", enabled = true) {
+// Live pro-rata preview voor pauze/hervat/opzeg-modal (geen Exact-mutatie).
+export function usePauzePreview(leadId: string | undefined, action: "pauze" | "hervat" | "opzeg" = "pauze", enabled = true) {
   return useQuery({
     queryKey: ["pauze-preview", leadId, action],
     enabled: !!leadId && enabled,
@@ -77,7 +77,7 @@ export function usePauzePreview(leadId: string | undefined, action: "pauze" | "h
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       return data as {
-        ok: boolean; action: "pauze" | "hervat";
+        ok: boolean; action: "pauze" | "hervat" | "opzeg";
         credit_bedrag?: number; factuur_bedrag?: number;
         resterende_dagen: number; dagprijs: number;
         polis_einddatum: string; jaarprijs: number;
@@ -85,3 +85,4 @@ export function usePauzePreview(leadId: string | undefined, action: "pauze" | "h
     },
   });
 }
+

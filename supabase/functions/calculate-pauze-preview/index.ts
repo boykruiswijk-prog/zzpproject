@@ -1,5 +1,5 @@
-// Read-only preview voor pauze/hervat-modals. Geen Exact-calls.
-// Body: { lead_id, action?: "pauze" | "hervat" }   (default: "pauze")
+// Read-only preview voor pauze/hervat/opzeg-modals. Geen Exact-calls.
+// Body: { lead_id, action?: "pauze" | "hervat" | "opzeg" }   (default: "pauze")
 // Returns: { credit_bedrag/factuur_bedrag, resterende_dagen, dagprijs, polis_einddatum, jaarprijs }
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import {
@@ -33,7 +33,9 @@ Deno.serve(async (req) => {
   let body: any = {};
   try { body = await req.json(); } catch { /* */ }
   const leadId = body?.lead_id;
-  const action: "pauze" | "hervat" = body?.action === "hervat" ? "hervat" : "pauze";
+  const rawAction = body?.action;
+  const action: "pauze" | "hervat" | "opzeg" =
+    rawAction === "hervat" ? "hervat" : rawAction === "opzeg" ? "opzeg" : "pauze";
   if (!leadId) return json({ error: "lead_id_required" }, 400);
 
   // Authz: admin OR eigenaar van de polis
@@ -59,13 +61,14 @@ Deno.serve(async (req) => {
     year: "numeric", month: "2-digit", day: "2-digit",
   }).format(new Date());
 
-  if (action === "pauze") {
+  if (action === "pauze" || action === "opzeg") {
     const calc = calculatePauzeCredit({
       ingangsdatum: lead.ingangsdatum, polis_einddatum: eind,
       jaarprijs, pauze_datum: today,
     });
+    const dateKey = action === "opzeg" ? "opzeg_datum" : "pauze_datum";
     return json({
-      ok: true, action, jaarprijs, polis_einddatum: eind, pauze_datum: today, ...calc,
+      ok: true, action, jaarprijs, polis_einddatum: eind, [dateKey]: today, ...calc,
     });
   }
   // hervat

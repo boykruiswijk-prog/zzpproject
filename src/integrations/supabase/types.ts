@@ -967,7 +967,10 @@ export type Database = {
           exact_abonnement_id: string | null
           exact_account_id: string | null
           exact_credit_invoice_aangemaakt_op: string | null
+          exact_credit_invoice_aangemaakt_op_opzeg: string | null
           exact_credit_invoice_bedrag: number | null
+          exact_credit_invoice_bedrag_opzeg: number | null
+          exact_credit_invoice_id_opzeg: string | null
           exact_credit_invoice_id_pauze: string | null
           exact_creditnota_amount: number | null
           exact_creditnota_created_at: string | null
@@ -1039,7 +1042,10 @@ export type Database = {
           exact_abonnement_id?: string | null
           exact_account_id?: string | null
           exact_credit_invoice_aangemaakt_op?: string | null
+          exact_credit_invoice_aangemaakt_op_opzeg?: string | null
           exact_credit_invoice_bedrag?: number | null
+          exact_credit_invoice_bedrag_opzeg?: number | null
+          exact_credit_invoice_id_opzeg?: string | null
           exact_credit_invoice_id_pauze?: string | null
           exact_creditnota_amount?: number | null
           exact_creditnota_created_at?: string | null
@@ -1111,7 +1117,10 @@ export type Database = {
           exact_abonnement_id?: string | null
           exact_account_id?: string | null
           exact_credit_invoice_aangemaakt_op?: string | null
+          exact_credit_invoice_aangemaakt_op_opzeg?: string | null
           exact_credit_invoice_bedrag?: number | null
+          exact_credit_invoice_bedrag_opzeg?: number | null
+          exact_credit_invoice_id_opzeg?: string | null
           exact_credit_invoice_id_pauze?: string | null
           exact_creditnota_amount?: number | null
           exact_creditnota_created_at?: string | null
