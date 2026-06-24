@@ -1,9 +1,9 @@
 // Polis-lifecycle: pauzeren / hervatten / opzeggen / heractiveren
-// Financiële afhandeling B1:
-//   - pauzeren  → creditnota Type 21 voor resterende dagen polisjaar
-//   - hervatten → nieuwe factuur Type 20 voor resterende dagen
-//   - opzeggen vanuit gepauzeerd → GEEN financiële actie (al gedaan)
-//   - opzeggen vanuit actief     → GEEN creditnota (klant heeft polisjaar uitgediend)
+// Financiële afhandeling:
+//   - pauzeren                   → creditnota Type 8021 voor resterende dagen polisjaar
+//   - hervatten                  → nieuwe factuur Type 8020 voor resterende dagen
+//   - opzeggen vanuit actief     → creditnota Type 8021 voor resterende dagen (geen jaarcontract-lock-in, USP)
+//   - opzeggen vanuit gepauzeerd → GEEN tweede creditnota (klant heeft al gekregen via pauze-creditnota)
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { checkAcceptance } from "../_shared/acceptanceCriteria.ts";
 import {
