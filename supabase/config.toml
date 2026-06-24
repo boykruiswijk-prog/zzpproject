@@ -31,3 +31,9 @@ project_id = "eugkavokktjwpqaqlwsj"
 
  [functions.exact-refresh-token]
  verify_jwt = false
+
+ [functions.polis-lifecycle]
+ verify_jwt = false
+
+ [functions.polis-reminder-cron]
+ verify_jwt = false

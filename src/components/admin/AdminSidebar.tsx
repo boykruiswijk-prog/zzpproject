@@ -1,6 +1,8 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useAdminTakenCount } from "@/hooks/useAdminTaken";
 import {
   LayoutDashboard,
   Users,
@@ -20,7 +22,7 @@ const ADMIN_EMAIL = "boy.kruiswijk@zpzaken.nl";
 
 const navItems = [
   { to: "/admin", icon: LayoutDashboard, label: "Dashboard", end: true },
-  { to: "/admin/leads", icon: Users, label: "Leads" },
+  { to: "/admin/leads", icon: Users, label: "Leads", showTakenBadge: true },
   { to: "/admin/dba-checks", icon: ShieldCheck, label: "Wet DBA" },
   { to: "/admin/wachtwoord-wijzigen", icon: KeyRound, label: "Wachtwoord wijzigen" },
   { to: "/admin/screening-aanvragen", icon: UserCheck, label: "Screening aanvragen" },
@@ -29,10 +31,11 @@ const navItems = [
   { to: "/admin/integraties", icon: Plug, label: "Integraties", superAdminOnly: true },
   { to: "/admin/exact-koppeling", icon: Plug, label: "Exact koppeling", superAdminOnly: true },
   { to: "/admin/team", icon: UserCog, label: "Team", adminOnly: true },
-];
+] as Array<{ to: string; icon: any; label: string; end?: boolean; adminOnly?: boolean; superAdminOnly?: boolean; showTakenBadge?: boolean }>;
 
 export function AdminSidebar() {
   const { user, signOut, isAdmin } = useAuth();
+  const { data: takenCount } = useAdminTakenCount();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -68,7 +71,10 @@ export function AdminSidebar() {
               }
             >
               <item.icon className="h-5 w-5" />
-              {item.label}
+              <span className="flex-1">{item.label}</span>
+              {item.showTakenBadge && takenCount && takenCount > 0 ? (
+                <Badge variant="destructive" className="ml-auto h-5 px-2 text-xs">{takenCount}</Badge>
+              ) : null}
             </NavLink>
           );
         })}
