@@ -52,6 +52,18 @@ Deno.serve(async (req) => {
     const division = config.division_code || "4401707";
     const headers = { Authorization: `Bearer ${token}`, Accept: "application/json" };
 
+    // Optioneel: $metadata voor ItemGroup
+    const url = new URL(req.url);
+    if (url.searchParams.get("meta") === "1") {
+      const mUrl = `${baseUrl}/api/v1/${division}/logistics/$metadata`;
+      const mRes = await fetch(mUrl, { headers: { Authorization: `Bearer ${token}`, Accept: "application/xml" } });
+      const xml = await mRes.text();
+      const m = xml.match(/<EntityType[^>]*Name="ItemGroup"[\s\S]*?<\/EntityType>/);
+      return json({ success: mRes.ok, http_status: mRes.status, entity_xml: m ? m[0] : null, raw_length: xml.length });
+    }
+
+
+
     // STAP 1: lijst ItemGroups
     const groupsUrl = `${baseUrl}/api/v1/${division}/logistics/ItemGroups?$select=ID,Code,Description,Notes&$orderby=Code`;
     const gRes = await fetch(groupsUrl, { headers });
