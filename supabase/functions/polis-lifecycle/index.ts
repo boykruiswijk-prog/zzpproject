@@ -307,6 +307,13 @@ Deno.serve(async (req) => {
             unitPrice: -calc.credit_bedrag,
           });
           if (!res.ok) {
+            // Logging-gat dichten: ook naar exact_sync_log naast polis_audit_log
+            await supabase.from("exact_sync_log").insert({
+              lead_id, admin_user_id: uid, trigger_type: "creditnota_pauze",
+              status: "error", http_status: res.httpStatus,
+              error_message: res.summary,
+              payload: { request: res.request, response: res.detail, berekening: calc },
+            }).then(() => {}, (e: unknown) => console.error("sync_log insert failed", e));
             // ROLLBACK: status niet wijzigen, audit log met fout, klant ziet error
             await logAudit(supabase, {
               lead_id, actie: "creditnota_aangemaakt", uitgevoerd_door: uid, rol,
@@ -322,6 +329,11 @@ Deno.serve(async (req) => {
             exact_credit_invoice_bedrag: calc.credit_bedrag,
             exact_credit_invoice_aangemaakt_op: new Date().toISOString(),
           }).eq("id", lead_id);
+          await supabase.from("exact_sync_log").insert({
+            lead_id, admin_user_id: uid, trigger_type: "creditnota_pauze",
+            status: "success", http_status: 201,
+            payload: { request: res.request, exact_invoice_id: res.invoiceId, berekening: calc },
+          }).then(() => {}, (e: unknown) => console.error("sync_log insert failed", e));
           await logAudit(supabase, {
             lead_id, actie: "creditnota_aangemaakt", uitgevoerd_door: uid, rol,
             details: { context: "pauze", berekening: calc, exact_invoice_id: res.invoiceId },
