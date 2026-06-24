@@ -34,6 +34,7 @@ export function calcPolisEinddatum(ingangsdatum: string | Date): string {
 }
 
 // Pro-rata teruggave bij pauze: credit = dagprijs × dagen vanaf pauze t/m polis-einddatum (inclusief).
+// Gecapped op de totale jaarprijs als pauze vóór polis-ingangsdatum valt.
 export function calculatePauzeCredit(opts: {
   ingangsdatum: string;
   polis_einddatum: string;
@@ -42,7 +43,8 @@ export function calculatePauzeCredit(opts: {
 }): { credit_bedrag: number; resterende_dagen: number; dagprijs: number; totaal_polis_dagen: number } {
   const totaalDagen = daysBetween(opts.ingangsdatum, opts.polis_einddatum) + 1; // inclusief start en eind
   const dagprijs = opts.jaarprijs / totaalDagen;
-  const resterende = Math.max(0, daysBetween(opts.pauze_datum, opts.polis_einddatum) + 1);
+  const rawResterende = daysBetween(opts.pauze_datum, opts.polis_einddatum) + 1;
+  const resterende = Math.max(0, Math.min(rawResterende, totaalDagen));
   const credit = Math.round(dagprijs * resterende * 100) / 100;
   return {
     credit_bedrag: credit,
