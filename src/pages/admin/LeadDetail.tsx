@@ -537,10 +537,8 @@ export default function AdminLeadDetail() {
                 {lead.exact_account_id && lead.exact_invoice_id && (
                   <div className="space-y-2 p-3 bg-secondary/50 rounded-lg">
                     <div>
-                      <span className="text-muted-foreground">Nummer:</span>{" "}
-                      <span className="font-medium">
-                        {lead.exact_invoice_number || "Concept in Exact (status: Open, nog te verwerken)"}
-                      </span>
+                      <span className="text-muted-foreground">Status:</span>{" "}
+                      <span className="font-medium">klaar voor controle</span>
                     </div>
                     {lead.exact_invoice_amount != null && (
                       <div>
@@ -550,8 +548,8 @@ export default function AdminLeadDetail() {
                     )}
                     {lead.exact_invoice_created_at && (
                       <div>
-                        <span className="text-muted-foreground">Aangemaakt:</span>{" "}
-                        <span className="font-medium">{formatDateNL(lead.exact_invoice_created_at)}</span>
+                        <span className="text-muted-foreground">Datum:</span>{" "}
+                        <span className="font-medium">{formatDateLongNL(lead.exact_invoice_created_at)}</span>
                       </div>
                     )}
                     <a
@@ -564,6 +562,7 @@ export default function AdminLeadDetail() {
                     </a>
                   </div>
                 )}
+
               </CardContent>
             </Card>
             )}
