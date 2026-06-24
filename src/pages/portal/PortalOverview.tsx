@@ -1,6 +1,7 @@
 import { PortalLayout } from "@/components/portal/PortalLayout";
 import { usePortalAuth } from "@/contexts/PortalAuthContext";
-import { usePortalPolicies, usePortalInvoices } from "@/hooks/usePortalData";
+import { usePortalPolicies } from "@/hooks/usePortalData";
+import { useCustomerInvoices } from "@/hooks/useCustomerInvoices";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -9,10 +10,20 @@ import { FileText, Receipt, Briefcase, ArrowRight } from "lucide-react";
 export default function PortalOverview() {
   const { user } = usePortalAuth();
   const { data: policies } = usePortalPolicies();
-  const { data: invoices } = usePortalInvoices();
+  const { data: invoices } = useCustomerInvoices();
 
   const activePolicy = policies?.[0];
-  const openInvoices = invoices?.filter((i) => i.status !== "betaald").length || 0;
+  const totalInvoices = invoices?.length || 0;
+  const openCount = invoices?.filter((i) => i.status === "open").length || 0;
+  const paidCount = invoices?.filter((i) => i.status === "betaald").length || 0;
+  const overdueCount = invoices?.filter((i) => i.status === "vervallen").length || 0;
+
+  const invoicesLabel =
+    totalInvoices === 0
+      ? "Je hebt nog geen facturen ontvangen."
+      : totalInvoices === 1
+      ? "Je hebt 1 factuur."
+      : `Je hebt ${totalInvoices} facturen.`;
 
   return (
     <PortalLayout>
@@ -44,19 +55,30 @@ export default function PortalOverview() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Openstaande facturen</CardTitle>
+              <CardTitle className="text-sm font-medium">Facturen</CardTitle>
               <Receipt className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{openInvoices}</div>
+              <div className="text-2xl font-bold">{totalInvoices}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                {invoices && invoices.length > 0
-                  ? `${invoices.length} facturen totaal`
-                  : "Zodra je polis is geactiveerd verschijnt hier je eerste factuur."}
+                <Link to="/portal/facturen" className="hover:underline">{invoicesLabel}</Link>
               </p>
+              {totalInvoices > 0 && (
+                <div className="flex flex-wrap gap-2 mt-3 text-xs">
+                  {openCount > 0 && (
+                    <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">{openCount} open</span>
+                  )}
+                  {paidCount > 0 && (
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">{paidCount} betaald</span>
+                  )}
+                  {overdueCount > 0 && (
+                    <span className="px-2 py-0.5 rounded-full bg-red-100 text-red-800">{overdueCount} vervallen</span>
+                  )}
+                </div>
+              )}
             </CardContent>
-
           </Card>
+
         </div>
 
         {/* Onefellow — geherformuleerd: ZP Zaken stelt je gratis voor aan opdrachtgevers */}
