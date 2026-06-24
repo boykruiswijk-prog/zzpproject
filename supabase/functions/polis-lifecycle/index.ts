@@ -248,7 +248,7 @@ Deno.serve(async (req) => {
     if (!pol || pol.user_id !== uid) return json({ error: "forbidden" }, 403);
   }
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayAmsterdam();
   const recipientKlant = lead.email;
 
   // Helper: laad Exact-config + headers (lazy, alleen als nodig)
