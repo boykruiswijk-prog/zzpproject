@@ -10,9 +10,10 @@ import {
   Dialog, DialogContent, DialogDescription, DialogFooter,
   DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
-import { Loader2, Pause, Play, X, RefreshCcw } from "lucide-react";
+import { Loader2, Pause, Play, X, RefreshCcw, AlertTriangle } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { usePolicyLifecycle, usePortalLead } from "@/hooks/usePolicyLifecycle";
+import { usePolicyLifecycle, usePortalLead, usePauzePreview } from "@/hooks/usePolicyLifecycle";
 import { formatDateLongNL } from "@/lib/dateFormat";
 
 const PAUZE_REDENEN = [
