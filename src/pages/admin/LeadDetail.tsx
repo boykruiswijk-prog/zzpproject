@@ -166,74 +166,8 @@ export default function AdminLeadDetail() {
     }
   };
 
-  const handleGenerateInvoice = async () => {
-    if (!id) return;
-    setIsGeneratingInvoice(true);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-invoice`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.access_token}`,
-            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          },
-          body: JSON.stringify({ lead_id: id }),
-        }
-      );
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Fout bij genereren");
 
-      toast({ title: "Factuur aangemaakt!", description: `Nummer: ${result.invoice.invoice_number}` });
-      refetchInvoices();
 
-      if (result.invoice.pdf_url) {
-        try {
-          const pdfResponse = await fetch(result.invoice.pdf_url);
-          const blob = await pdfResponse.blob();
-          const blobUrl = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = blobUrl;
-          a.download = `${result.invoice.invoice_number}.pdf`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(blobUrl);
-        } catch (e) {
-          console.error("Download error:", e);
-        }
-      }
-    } catch (error: any) {
-      console.error("Invoice generation error:", error);
-      toast({ title: "Fout", description: error.message, variant: "destructive" });
-    } finally {
-      setIsGeneratingInvoice(false);
-    }
-  };
-
-  const handleDownloadInvoice = async (pdfPath: string) => {
-    const { data } = await supabase.storage
-      .from("certificates")
-      .createSignedUrl(pdfPath, 3600);
-    if (data?.signedUrl) {
-      try {
-        const pdfResponse = await fetch(data.signedUrl);
-        const blob = await pdfResponse.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = blobUrl;
-        a.download = pdfPath.split("/").pop() || "factuur.pdf";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(blobUrl);
-      } catch (e) {
-        console.error("Download error:", e);
-      }
-    }
-  };
 
   const handleStatusChange = (newStatus: LeadStatus) => {
     if (!id) return;
