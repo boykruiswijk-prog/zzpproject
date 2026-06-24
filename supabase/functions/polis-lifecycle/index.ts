@@ -36,6 +36,15 @@ function fmtNL(iso: string): string {
   return `${String(d.getUTCDate()).padStart(2, "0")}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${d.getUTCFullYear()}`;
 }
 
+// Datum-only helper: gebruikt Europe/Amsterdam zodat een actie kort na middernacht
+// NL-tijd niet op de "vorige" UTC-dag terechtkomt. Returnt "YYYY-MM-DD".
+function todayAmsterdam(): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Amsterdam",
+    year: "numeric", month: "2-digit", day: "2-digit",
+  }).format(new Date());
+}
+
 function checkFunctieAcceptabel(functie: string): { acceptabel: boolean; reden?: string } {
   const res = checkAcceptance(functie);
   return { acceptabel: res.accepted, reden: res.reason };
