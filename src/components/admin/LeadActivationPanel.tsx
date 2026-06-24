@@ -211,39 +211,30 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
               </div>
             )}
             {hasInvoice && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="rounded-lg border border-green-300 bg-green-50 p-4 flex items-start gap-3 cursor-help">
-                      <CheckCircle2 className="h-5 w-5 text-green-700 mt-0.5" />
-                      <div className="text-sm">
-                        <p className="font-medium text-green-900">
-                          Factuur aangemaakt in Exact (concept).
-                        </p>
-                        <p className="text-green-800 mt-1">
-                          Factuurnummer:{" "}
-                          <code className="bg-white px-1.5 py-0.5 rounded">
-                            {lead.exact_invoice_number ?? "Concept in Exact (status: Open, nog te verwerken)"}
-                          </code>{" "}
-                          — {formatEuro(Number(lead.exact_invoice_amount))}
-                        </p>
-                        <p className="text-green-700 text-xs mt-1">
-                          Exact factuur-ID: <code>{lead.exact_invoice_id}</code>
-                        </p>
-                        {lead.exact_invoice_created_at && (
-                          <p className="text-green-700 text-xs">
-                            Aangemaakt op {formatDateTimeNL(lead.exact_invoice_created_at)}. Status: concept — controleer en verstuur via Exact.
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs">
-                    <p>Een concept-factuur heeft nog geen factuurnummer. Sandra verwerkt hem in Exact (Status wordt dan 50, factuurnummer wordt toegekend).</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <div className="rounded-lg border border-green-300 bg-green-50 p-4 flex items-start gap-3">
+                <CheckCircle2 className="h-5 w-5 text-green-700 mt-0.5" />
+                <div className="text-sm flex-1">
+                  <p className="font-medium text-green-900">Factuur klaar voor controle in Exact</p>
+                  <p className="text-green-800 mt-1">
+                    {formatEuro(Number(lead.exact_invoice_amount))}
+                    {lead.exact_invoice_created_at && (
+                      <> — aangemaakt op {formatDateLongNL(lead.exact_invoice_created_at)}</>
+                    )}
+                  </p>
+                  {lead.exact_invoice_id && (
+                    <a
+                      href={`https://start.exactonline.nl/docs/SalesInvoice.aspx?ID=${lead.exact_invoice_id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-green-900 hover:underline text-xs mt-2 font-medium"
+                    >
+                      Open in Exact <ExternalLink className="h-3 w-3" />
+                    </a>
+                  )}
+                </div>
+              </div>
             )}
+
             {hasInvoiceWarning && (
               <div className="rounded-md border border-amber-300 bg-amber-50 p-3 space-y-2">
                 <p className="text-xs text-amber-900 flex items-start gap-2">
