@@ -405,6 +405,9 @@ Deno.serve(async (req) => {
           return json({ error: "al_opgezegd", current: lead.status }, 409);
         }
         if (!reden) return json({ error: "reden_verplicht" }, 400);
+        if (reden === "andere_reden" && !(toelichting ?? "").trim()) {
+          return json({ error: "toelichting_verplicht" }, 400);
+        }
 
         const wasGepauzeerd = lead.status === "gepauzeerd";
         const pauzeStart = lead.pauze_start_datum as string | null;
