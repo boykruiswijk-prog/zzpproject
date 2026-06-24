@@ -45,15 +45,19 @@ export function PolicyLifecycleActions() {
   const [opzegReden, setOpzegReden] = useState("");
   const [opzegToelichting, setOpzegToelichting] = useState("");
 
+  const [opzegAkkoord, setOpzegAkkoord] = useState(false);
+
   const pauzePreview = usePauzePreview(lead?.id, "pauze", pauzeOpen);
   const hervatPreview = usePauzePreview(lead?.id, "hervat", hervatOpen);
+  const opzegVanuitActief = lead?.status === "actief" || lead?.status === "klant";
+  const opzegPreview = usePauzePreview(lead?.id, "opzeg", opzegOpen && opzegVanuitActief);
 
   const pauzeToelichtingRequired = pauzeReden === "andere_reden";
   const opzegToelichtingRequired = opzegReden === "andere_reden";
   const pauzeBlocked =
     !pauzeReden || (pauzeToelichtingRequired && !pauzeToelichting.trim()) || !pauzeAkkoord;
   const opzegBlocked =
-    !opzegReden || (opzegToelichtingRequired && !opzegToelichting.trim());
+    !opzegReden || (opzegToelichtingRequired && !opzegToelichting.trim()) || (opzegVanuitActief && !opzegAkkoord);
   const sepaBannerNeeded = lead?.exact_invoice_status === 50;
   const eur = (n: number | undefined) =>
     typeof n === "number" ? `€ ${n.toFixed(2).replace(".", ",")}` : "—";
