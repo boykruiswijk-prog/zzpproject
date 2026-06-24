@@ -28,8 +28,11 @@ const INV_PAYMENT_COND = "IN";
 const INV_VAT_CODE = "0";
 const INV_GL_ACCOUNT = "d40fbb95-43b0-4503-9fe8-287f14d59120"; // 81000 Premie-omzet
 const INV_STATUS_CONCEPT = 20;
-const TYPE_SALES_INVOICE = 20;
-const TYPE_SALES_CREDIT = 21;
+// Exact API vereist 8020 (SalesInvoice) en 8021 (SalesCreditNote).
+// Eerdere waarden 20/21 werden door Exact alleen via tolerantie geaccepteerd
+// voor het factuur-pad en leidden bij creditnota's tot "Ongeldig: Type".
+const TYPE_SALES_INVOICE = 8020;
+const TYPE_SALES_CREDIT = 8021;
 
 function fmtNL(iso: string): string {
   const d = new Date(iso);
@@ -162,7 +165,7 @@ async function postSalesInvoice(opts: {
   baseUrl: string; div: string; headers: Record<string, string>;
   // deno-lint-ignore no-explicit-any
   lead: any; itemId: string | null;
-  type: 20 | 21;
+  type: typeof TYPE_SALES_INVOICE | typeof TYPE_SALES_CREDIT;
   description: string;
   lineDescription: string;
   unitPrice: number; // positief voor factuur, negatief voor creditnota
@@ -304,6 +307,13 @@ Deno.serve(async (req) => {
             unitPrice: -calc.credit_bedrag,
           });
           if (!res.ok) {
+            // Logging-gat dichten: ook naar exact_sync_log naast polis_audit_log
+            await supabase.from("exact_sync_log").insert({
+              lead_id, admin_user_id: uid, trigger_type: "creditnota_pauze",
+              status: "error", http_status: res.httpStatus,
+              error_message: res.summary,
+              payload: { request: res.request, response: res.detail, berekening: calc },
+            }).then(() => {}, (e: unknown) => console.error("sync_log insert failed", e));
             // ROLLBACK: status niet wijzigen, audit log met fout, klant ziet error
             await logAudit(supabase, {
               lead_id, actie: "creditnota_aangemaakt", uitgevoerd_door: uid, rol,
@@ -319,6 +329,11 @@ Deno.serve(async (req) => {
             exact_credit_invoice_bedrag: calc.credit_bedrag,
             exact_credit_invoice_aangemaakt_op: new Date().toISOString(),
           }).eq("id", lead_id);
+          await supabase.from("exact_sync_log").insert({
+            lead_id, admin_user_id: uid, trigger_type: "creditnota_pauze",
+            status: "success", http_status: 201,
+            payload: { request: res.request, exact_invoice_id: res.invoiceId, berekening: calc },
+          }).then(() => {}, (e: unknown) => console.error("sync_log insert failed", e));
           await logAudit(supabase, {
             lead_id, actie: "creditnota_aangemaakt", uitgevoerd_door: uid, rol,
             details: { context: "pauze", berekening: calc, exact_invoice_id: res.invoiceId },
@@ -413,6 +428,12 @@ Deno.serve(async (req) => {
             unitPrice: calc.factuur_bedrag,
           });
           if (!res.ok) {
+            await supabase.from("exact_sync_log").insert({
+              lead_id, admin_user_id: uid, trigger_type: "factuur_hervat",
+              status: "error", http_status: res.httpStatus,
+              error_message: res.summary,
+              payload: { request: res.request, response: res.detail, berekening: calc },
+            }).then(() => {}, (e: unknown) => console.error("sync_log insert failed", e));
             await logAudit(supabase, {
               lead_id, actie: "hervat_factuur", uitgevoerd_door: uid, rol,
               succes: false, fout_melding: res.summary,
@@ -427,6 +448,11 @@ Deno.serve(async (req) => {
             exact_factuur_bedrag_hervat: calc.factuur_bedrag,
             exact_factuur_aangemaakt_op_hervat: new Date().toISOString(),
           }).eq("id", lead_id);
+          await supabase.from("exact_sync_log").insert({
+            lead_id, admin_user_id: uid, trigger_type: "factuur_hervat",
+            status: "success", http_status: 201,
+            payload: { request: res.request, exact_invoice_id: res.invoiceId, exact_invoice_number: res.invoiceNumber, berekening: calc },
+          }).then(() => {}, (e: unknown) => console.error("sync_log insert failed", e));
           await logAudit(supabase, {
             lead_id, actie: "hervat_factuur", uitgevoerd_door: uid, rol,
             details: { berekening: calc, exact_invoice_id: res.invoiceId, exact_invoice_number: res.invoiceNumber },
