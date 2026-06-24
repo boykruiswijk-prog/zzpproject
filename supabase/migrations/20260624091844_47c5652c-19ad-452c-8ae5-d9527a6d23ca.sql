@@ -1,0 +1,1 @@
+UPDATE public.invoices SET status = 'legacy_void' WHERE invoice_number = 'ZPF-2026-1026';
