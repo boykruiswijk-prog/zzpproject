@@ -2,6 +2,7 @@
 // Eén endpoint, dispatch op `action`. Logt elke actie in polis_audit_log.
 // Stuurt email naar klant + info@zpzaken.nl en (bij relevante acties) info@onefellow.nl.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { checkAcceptance } from "../_shared/acceptanceCriteria.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,6 +18,8 @@ const json = (data: unknown, status = 200) =>
 const ADMIN_EMAIL = "info@zpzaken.nl";
 const ONEFELLOW_EMAIL = "info@onefellow.nl";
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
+// Fallback naar onboarding@resend.dev zolang zpzaken.nl-DNS niet geverifieerd is.
+const FROM_ADDRESS = Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <onboarding@resend.dev>";
 
 // Pakket → jaarprijs (voor pro-rata creditnota)
 const PAKKET_JAARPRIJS: Record<string, number> = {
@@ -26,24 +29,15 @@ const PAKKET_JAARPRIJS: Record<string, number> = {
   "jaarlijks_cyber": 750,
 };
 
-// Functies die handmatige beoordeling vereisen (voor heractivering-functiewijziging)
-const HOOG_RISICO_KEYWORDS = [
-  "advoca", "notaris", "accountant", "arts", "medisch", "chirurg",
-  "tandarts", "psycholoog", "psychiater", "beveilig", "wapen",
-  "taxi", "koerier", "bouw", "dakdekk", "elektric",
-];
-
 function checkFunctieAcceptabel(functie: string): { acceptabel: boolean; reden?: string } {
-  const lower = functie.toLowerCase().trim();
-  if (!lower) return { acceptabel: false, reden: "Functie mag niet leeg zijn" };
-  const hit = HOOG_RISICO_KEYWORDS.find((k) => lower.includes(k));
-  if (hit) return { acceptabel: false, reden: `Functie '${functie}' valt buiten het standaard acceptatiekader (sleutelterm: ${hit})` };
-  return { acceptabel: true };
+  const res = checkAcceptance(functie);
+  return { acceptabel: res.accepted, reden: res.reason };
 }
 
 function normalizeFunctie(s: string | null | undefined): string {
   return (s ?? "").trim().toLowerCase();
 }
+
 
 // deno-lint-ignore no-explicit-any
 async function logAudit(supabase: any, params: {
@@ -72,10 +66,11 @@ async function logAudit(supabase: any, params: {
   }
 }
 
-async function sendMail(to: string | string[], subject: string, html: string) {
+async function sendMail(to: string | string[], subject: string, html: string): Promise<{ ok: boolean; status?: number; message_id?: string; error?: string; to: string[] }> {
+  const recipients = Array.isArray(to) ? to : [to];
   if (!RESEND_API_KEY) {
-    console.warn("RESEND_API_KEY ontbreekt — mail overgeslagen", { to, subject });
-    return;
+    console.warn("RESEND_API_KEY ontbreekt — mail overgeslagen", { to: recipients, subject });
+    return { ok: false, error: "missing_resend_key", to: recipients };
   }
   try {
     const r = await fetch("https://api.resend.com/emails", {
@@ -84,19 +79,20 @@ async function sendMail(to: string | string[], subject: string, html: string) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
-      body: JSON.stringify({
-        from: "ZP Zaken <info@zpzaken.nl>",
-        to: Array.isArray(to) ? to : [to],
-        subject,
-        html,
-      }),
+      body: JSON.stringify({ from: FROM_ADDRESS, to: recipients, subject, html }),
     });
+    const txt = await r.text();
+    let parsed: any = null;
+    try { parsed = JSON.parse(txt); } catch (_) { /* */ }
     if (!r.ok) {
-      const txt = await r.text();
       console.error("Resend error", r.status, txt);
+      return { ok: false, status: r.status, error: txt.slice(0, 400), to: recipients };
     }
-  } catch (e) {
+    console.log("Resend ok", { to: recipients, subject, id: parsed?.id, from: FROM_ADDRESS });
+    return { ok: true, status: r.status, message_id: parsed?.id, to: recipients };
+  } catch (e: any) {
     console.error("sendMail exception", e);
+    return { ok: false, error: e?.message ?? String(e), to: recipients };
   }
 }
 
