@@ -429,23 +429,24 @@ export default function AdminLeadDetail() {
                 <div>
                   <span className="text-muted-foreground">Aangemaakt:</span>
                   <p className="font-medium">
-                    {new Date(lead.created_at).toLocaleString("nl-NL")}
+                    {formatDateTimeLongNL(lead.created_at)}
                   </p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Laatst bijgewerkt:</span>
                   <p className="font-medium">
-                    {new Date(lead.updated_at).toLocaleString("nl-NL")}
+                    {formatDateTimeLongNL(lead.updated_at)}
                   </p>
                 </div>
                 {lead.converted_at && (
                   <div>
                     <span className="text-muted-foreground">Geconverteerd:</span>
                     <p className="font-medium text-green-600">
-                      {new Date(lead.converted_at).toLocaleString("nl-NL")}
+                      {formatDateTimeLongNL(lead.converted_at)}
                     </p>
                   </div>
                 )}
+
                 <div>
                   <span className="text-muted-foreground">Bron:</span>
                   <p className="font-medium capitalize">{lead.bron}</p>
