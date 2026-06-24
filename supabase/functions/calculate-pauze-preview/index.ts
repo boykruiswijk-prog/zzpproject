@@ -33,7 +33,9 @@ Deno.serve(async (req) => {
   let body: any = {};
   try { body = await req.json(); } catch { /* */ }
   const leadId = body?.lead_id;
-  const action: "pauze" | "hervat" = body?.action === "hervat" ? "hervat" : "pauze";
+  const rawAction = body?.action;
+  const action: "pauze" | "hervat" | "opzeg" =
+    rawAction === "hervat" ? "hervat" : rawAction === "opzeg" ? "opzeg" : "pauze";
   if (!leadId) return json({ error: "lead_id_required" }, 400);
 
   // Authz: admin OR eigenaar van de polis
