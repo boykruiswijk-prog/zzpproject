@@ -35,6 +35,7 @@ const isValidIban = (i: any) => {
 export function LeadActivationPanel({ lead, isAdmin }: Props) {
   const { toast } = useToast();
   const qc = useQueryClient();
+  const { data: profiles } = useProfiles();
   const [isActivating, setIsActivating] = useState(false);
   const [isRetryingMandate, setIsRetryingMandate] = useState(false);
   const [isRetryingInvoice, setIsRetryingInvoice] = useState(false);
@@ -42,6 +43,22 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
 
   const formatEuro = (n: number | null | undefined) =>
     typeof n === "number" ? `€ ${n.toFixed(2).replace(".", ",")}` : "—";
+
+  const displayActor = (email?: string | null): string => {
+    if (!email) return "";
+    const match = profiles?.find((p: any) => p?.email?.toLowerCase() === email.toLowerCase());
+    if (match?.full_name) return match.full_name;
+    return email.split("@")[0];
+  };
+
+  const copyToClipboard = (value: string) => {
+    navigator.clipboard?.writeText(value).then(
+      () => toast({ title: "Gekopieerd", description: value }),
+      () => toast({ title: "Kopiëren mislukt", variant: "destructive" }),
+    );
+  };
+
+
 
 
   const checks = useMemo(() => [
