@@ -966,14 +966,21 @@ export type Database = {
           email: string
           exact_abonnement_id: string | null
           exact_account_id: string | null
+          exact_credit_invoice_aangemaakt_op: string | null
+          exact_credit_invoice_bedrag: number | null
+          exact_credit_invoice_id_pauze: string | null
           exact_creditnota_amount: number | null
           exact_creditnota_created_at: string | null
           exact_creditnota_id: string | null
+          exact_factuur_aangemaakt_op_hervat: string | null
+          exact_factuur_bedrag_hervat: number | null
+          exact_factuur_id_hervat: string | null
           exact_fout: string | null
           exact_invoice_amount: number | null
           exact_invoice_created_at: string | null
           exact_invoice_id: string | null
           exact_invoice_number: string | null
+          exact_invoice_status: number | null
           exact_relatie_id: string | null
           exact_status: string | null
           exact_sync_op: string | null
@@ -1001,6 +1008,7 @@ export type Database = {
           pauze_reminder_verzonden_op: string | null
           pauze_start_datum: string | null
           pauze_toelichting: string | null
+          polis_einddatum: string | null
           sepa_akkoord: boolean
           sepa_akkoord_datum: string | null
           status: Database["public"]["Enums"]["lead_status"]
@@ -1030,14 +1038,21 @@ export type Database = {
           email: string
           exact_abonnement_id?: string | null
           exact_account_id?: string | null
+          exact_credit_invoice_aangemaakt_op?: string | null
+          exact_credit_invoice_bedrag?: number | null
+          exact_credit_invoice_id_pauze?: string | null
           exact_creditnota_amount?: number | null
           exact_creditnota_created_at?: string | null
           exact_creditnota_id?: string | null
+          exact_factuur_aangemaakt_op_hervat?: string | null
+          exact_factuur_bedrag_hervat?: number | null
+          exact_factuur_id_hervat?: string | null
           exact_fout?: string | null
           exact_invoice_amount?: number | null
           exact_invoice_created_at?: string | null
           exact_invoice_id?: string | null
           exact_invoice_number?: string | null
+          exact_invoice_status?: number | null
           exact_relatie_id?: string | null
           exact_status?: string | null
           exact_sync_op?: string | null
@@ -1065,6 +1080,7 @@ export type Database = {
           pauze_reminder_verzonden_op?: string | null
           pauze_start_datum?: string | null
           pauze_toelichting?: string | null
+          polis_einddatum?: string | null
           sepa_akkoord?: boolean
           sepa_akkoord_datum?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
@@ -1094,14 +1110,21 @@ export type Database = {
           email?: string
           exact_abonnement_id?: string | null
           exact_account_id?: string | null
+          exact_credit_invoice_aangemaakt_op?: string | null
+          exact_credit_invoice_bedrag?: number | null
+          exact_credit_invoice_id_pauze?: string | null
           exact_creditnota_amount?: number | null
           exact_creditnota_created_at?: string | null
           exact_creditnota_id?: string | null
+          exact_factuur_aangemaakt_op_hervat?: string | null
+          exact_factuur_bedrag_hervat?: number | null
+          exact_factuur_id_hervat?: string | null
           exact_fout?: string | null
           exact_invoice_amount?: number | null
           exact_invoice_created_at?: string | null
           exact_invoice_id?: string | null
           exact_invoice_number?: string | null
+          exact_invoice_status?: number | null
           exact_relatie_id?: string | null
           exact_status?: string | null
           exact_sync_op?: string | null
@@ -1129,6 +1152,7 @@ export type Database = {
           pauze_reminder_verzonden_op?: string | null
           pauze_start_datum?: string | null
           pauze_toelichting?: string | null
+          polis_einddatum?: string | null
           sepa_akkoord?: boolean
           sepa_akkoord_datum?: string | null
           status?: Database["public"]["Enums"]["lead_status"]

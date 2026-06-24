@@ -37,3 +37,6 @@ project_id = "eugkavokktjwpqaqlwsj"
 
  [functions.polis-reminder-cron]
  verify_jwt = false
+
+ [functions.calculate-pauze-preview]
+ verify_jwt = true

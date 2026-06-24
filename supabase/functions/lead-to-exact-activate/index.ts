@@ -276,6 +276,7 @@ async function createExactInvoice(opts: {
     Status: INV_STATUS_CONCEPT,
     InvoiceDate: invoiceDate,
     OrderDate: invoiceDate,
+    YourRef: String(lead.id), // wordt door Exact getrunceerd tot ±30 chars; eerste 30 van een UUID is uniek
     Description: headerDescription,
     SalesInvoiceLines: [line],
   };

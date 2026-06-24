@@ -93,6 +93,13 @@ export function LeadLifecyclePanel({ lead }: Props) {
               Sinds {lead.pauze_start_datum ? formatDateLongNL(lead.pauze_start_datum) : "-"} · reden: {lead.pauze_reden ?? "-"}
             </div>
           )}
+          {status === "gepauzeerd" && lead.exact_invoice_status === 50 && (
+            <div className="rounded-md border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900">
+              <strong>⚠️ SEPA-incasso controle nodig:</strong> deze polis had een definitieve factuur (Status 50).
+              Controleer in Exact (Cashflow → Incasso) of de eerstvolgende batch nog deze klant bevat en verwijder
+              indien nodig. Zie <code>docs/exact-sepa.md</code> voor de procedure.
+            </div>
+          )}
           {status === "opgezegd" && (
             <div className="text-xs text-muted-foreground">
               Op {lead.opzeg_datum ? formatDateLongNL(lead.opzeg_datum) : "-"} · reden: {lead.opzeg_reden ?? "-"}
