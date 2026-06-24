@@ -118,6 +118,56 @@ function resolvePakketInvoice(pakket: string | null | undefined) {
   return PAKKET_INVOICE[pakket] ?? null;
 }
 
+// Zorgt dat de ItemGroup 'DIENSTEN' bestaat in Exact en geeft de Guid terug.
+// Schrijft naar exact_config.exact_item_group_id zodra bekend.
+// deno-lint-ignore no-explicit-any
+async function ensureItemGroup(opts: {
+  supabase: any; config: any; baseUrl: string; div: string;
+  headers: Record<string, string>; accessToken: string; logCtx: any;
+}): Promise<{ ok: true; groupId: string; created: boolean; foundExisting: boolean } | { ok: false; summary: string; detail: Record<string, unknown>; httpStatus: number }> {
+  const { supabase, config, baseUrl, div, headers, accessToken, logCtx } = opts;
+  if (config.exact_item_group_id) {
+    return { ok: true, groupId: config.exact_item_group_id, created: false, foundExisting: false };
+  }
+  // 1) Lookup op Code
+  const lookupRes = await fetch(
+    `${baseUrl}/api/v1/${div}/logistics/ItemGroups?$select=ID,Code&$filter=Code eq 'DIENSTEN'&$top=1`,
+    { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } },
+  );
+  if (lookupRes.ok) {
+    const lj = await lookupRes.json().catch(() => ({}));
+    const arr = Array.isArray(lj?.d?.results) ? lj.d.results : Array.isArray(lj?.d) ? lj.d : [];
+    if (arr[0]?.ID) {
+      await supabase.from("exact_config").update({ exact_item_group_id: arr[0].ID }).eq("id", config.id);
+      config.exact_item_group_id = arr[0].ID;
+      return { ok: true, groupId: arr[0].ID, created: false, foundExisting: true };
+    }
+  }
+  // 2) Aanmaken — minimale payload. Exact ItemGroup vereist alleen Code + Description.
+  const groupPayload = { Code: "DIENSTEN", Description: "Verzekeringsdiensten" };
+  const gRes = await fetch(`${baseUrl}/api/v1/${div}/logistics/ItemGroups`, {
+    method: "POST", headers, body: JSON.stringify(groupPayload),
+  });
+  if (!gRes.ok) {
+    const { summary, detail } = await captureExactError("ItemGroups POST", gRes);
+    await supabase.from("exact_sync_log").insert({
+      ...logCtx, trigger_type: "itemgroup_bootstrap", status: "error",
+      http_status: gRes.status, error_message: summary,
+      payload: { request: groupPayload, response: detail },
+    });
+    return { ok: false, summary, detail, httpStatus: gRes.status };
+  }
+  const gJson = await gRes.json().catch(() => ({}));
+  const groupId: string = gJson?.d?.ID || gJson?.ID || "";
+  await supabase.from("exact_config").update({ exact_item_group_id: groupId }).eq("id", config.id);
+  config.exact_item_group_id = groupId;
+  await supabase.from("exact_sync_log").insert({
+    ...logCtx, trigger_type: "itemgroup_bootstrap", status: "success",
+    http_status: gRes.status, payload: { request: groupPayload, exact_item_group_id: groupId },
+  });
+  return { ok: true, groupId, created: true, foundExisting: false };
+}
+
 // Zorgt dat het BAV-AVB artikel in Exact bestaat en geeft de Guid terug.
 // Schrijft de Guid naar exact_config.exact_item_id_bav_avb zodra bekend.
 // deno-lint-ignore no-explicit-any
@@ -131,6 +181,10 @@ async function ensureBavAvbItem(opts: {
   if (config.exact_item_id_bav_avb) {
     return { ok: true, itemId: config.exact_item_id_bav_avb, created: false, foundExisting: false };
   }
+  // 0) Zorg eerst dat ItemGroup bestaat (vereist in administratie 4401707)
+  const groupRes = await ensureItemGroup({ supabase, config, baseUrl, div, headers, accessToken, logCtx });
+  if (!groupRes.ok) return groupRes;
+
   // 1) Lookup op Code
   const lookupRes = await fetch(
     `${baseUrl}/api/v1/${div}/logistics/Items?$select=ID,Code&$filter=Code eq 'BAV-AVB'&$top=1`,
@@ -145,15 +199,14 @@ async function ensureBavAvbItem(opts: {
       return { ok: true, itemId: arr[0].ID, created: false, foundExisting: true };
     }
   }
-  // 2) Aanmaken
-  // NB: 'GLSales' bestaat NIET op Exact's Item entity (400: property name not valid).
-  // GL-rekening wordt per factuurregel meegegeven via GLAccount in createExactInvoice().
+  // 2) Aanmaken — ItemGroup is verplicht in deze administratie.
   const itemPayload = {
     Code: "BAV-AVB",
     Description: "Beroeps- en bedrijfsaansprakelijkheidsverzekering",
     SalesVatCode: INV_VAT_CODE,
     IsSalesItem: true,
     IsStockItem: false,
+    ItemGroup: groupRes.groupId,
   };
   const itemRes = await fetch(`${baseUrl}/api/v1/${div}/logistics/Items`, {
     method: "POST", headers, body: JSON.stringify(itemPayload),
@@ -177,6 +230,7 @@ async function ensureBavAvbItem(opts: {
   });
   return { ok: true, itemId, created: true, foundExisting: false };
 }
+
 
 // deno-lint-ignore no-explicit-any
 async function createExactInvoice(opts: {
@@ -350,18 +404,26 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 2) Aanmaken
-    // NB: GLSales bestaat niet op Item; GL gaat via factuurregel.
+    // 2) Aanmaken — eerst ItemGroup garanderen (verplicht veld).
+    const groupRes = await ensureItemGroup({
+      supabase, config, baseUrl, div, headers, accessToken,
+      logCtx: { admin_user_id: user.id, lead_id: null },
+    });
+    if (!groupRes.ok) {
+      return json({ success: false, error: "itemgroup_create_failed", detail: groupRes.detail, http_status: groupRes.httpStatus }, 500);
+    }
     const itemPayload = {
       Code: "BAV-AVB",
       Description: "Beroeps- en bedrijfsaansprakelijkheidsverzekering",
       SalesVatCode: INV_VAT_CODE,
       IsSalesItem: true,
       IsStockItem: false,
+      ItemGroup: groupRes.groupId,
     };
     const itemRes = await fetch(`${baseUrl}/api/v1/${div}/logistics/Items`, {
       method: "POST", headers, body: JSON.stringify(itemPayload),
     });
+
     if (!itemRes.ok) {
       const { summary, detail } = await captureExactError("Items POST", itemRes);
       await logSync(supabase, {
