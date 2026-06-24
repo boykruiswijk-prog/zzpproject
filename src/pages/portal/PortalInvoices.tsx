@@ -31,9 +31,10 @@ export default function PortalInvoices() {
         <Card>
           <CardContent className="py-12 text-center text-muted-foreground">
             <Receipt className="h-12 w-12 mx-auto mb-3 opacity-40" />
-            <p>Er zijn nog geen facturen.</p>
+            <p>Je hebt nog geen facturen ontvangen. Zodra je polis is geactiveerd verschijnt hier je eerste factuur.</p>
           </CardContent>
         </Card>
+
       )}
       <div className="space-y-3">
         {invoices?.map((inv) => (

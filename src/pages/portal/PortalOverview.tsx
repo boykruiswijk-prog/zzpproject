@@ -50,9 +50,12 @@ export default function PortalOverview() {
             <CardContent>
               <div className="text-2xl font-bold">{openInvoices}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                {invoices?.length || 0} facturen totaal
+                {invoices && invoices.length > 0
+                  ? `${invoices.length} facturen totaal`
+                  : "Zodra je polis is geactiveerd verschijnt hier je eerste factuur."}
               </p>
             </CardContent>
+
           </Card>
         </div>
 

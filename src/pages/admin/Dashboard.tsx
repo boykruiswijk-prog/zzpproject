@@ -1,17 +1,18 @@
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { DashboardStats } from "@/components/admin/DashboardStats";
 import { DashboardCharts } from "@/components/admin/DashboardCharts";
-import { BillingNotifications } from "@/components/admin/BillingNotifications";
 import { MFAManagement } from "@/components/admin/MFAManagement";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Download, FileCode, Loader2 } from "lucide-react";
+import { Download, Info, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+
 export default function AdminDashboard() {
   const [isExporting, setIsExporting] = useState(false);
-  const [isExportingUBL, setIsExportingUBL] = useState(false);
+
   const { toast } = useToast();
 
   const handleExport = async () => {
@@ -56,48 +57,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleExportUBL = async () => {
-    setIsExportingUBL(true);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast({ title: "Niet ingelogd", description: "Log opnieuw in.", variant: "destructive" });
-        return;
-      }
-
-      const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/export-ubl`,
-        {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        }
-      );
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "UBL export mislukt");
-      }
-
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `zpzaken-ubl-${new Date().toISOString().slice(0, 10)}.xml`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      toast({ title: "UBL export succesvol", description: "Het XML-bestand is gedownload." });
-    } catch (error: any) {
-      console.error("UBL export error:", error);
-      toast({ title: "UBL export mislukt", description: error.message, variant: "destructive" });
-    } finally {
-      setIsExportingUBL(false);
-    }
-  };
-
   return (
     <AdminLayout>
       <div className="space-y-8">
@@ -109,10 +68,6 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={handleExportUBL} disabled={isExportingUBL}>
-              {isExportingUBL ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileCode className="h-4 w-4" />}
-              UBL Export
-            </Button>
             <Button variant="outline" onClick={handleExport} disabled={isExporting}>
               {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
               Excel
@@ -120,11 +75,18 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <BillingNotifications />
+        <Alert>
+          <Info className="h-4 w-4" />
+          <AlertDescription>
+            Auto-facturatie is uitgeschakeld. Maandelijkse termijnen worden via SEPA-incassoschema in Exact afgehandeld.
+          </AlertDescription>
+        </Alert>
+
         <MFAManagement />
         <DashboardStats />
         <DashboardCharts />
       </div>
     </AdminLayout>
   );
+
 }
