@@ -69,12 +69,12 @@ async function logSync(supabase: any, params: any) {
   try { await supabase.from("exact_sync_log").insert(params); } catch (e) { console.error("logSync failed", e); }
 }
 
-function mapStatus(paymentStatus: string | null, dueDate: string | null): "betaald" | "vervallen" | "open" {
-  // Exact PaymentStatus: P = Paid, B = Partially paid, O = Outstanding, '' / null = niet van toepassing
-  if (paymentStatus === "P") return "betaald";
+function mapStatus(dueDate: string | null): "vervallen" | "open" {
+  // Geen PaymentStatus op SalesInvoice. Betaald-status volgt later via ReceivablesList (backlog v1.1).
   if (dueDate && new Date(dueDate).getTime() < Date.now()) return "vervallen";
   return "open";
 }
+
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -126,8 +126,9 @@ Deno.serve(async (req) => {
     const select = [
       "InvoiceID", "InvoiceNumber", "InvoiceDate", "DueDate",
       "AmountFC", "Description", "Status", "PaymentReference",
-      "YourRef", "PaymentStatus", "InvoiceTo",
+      "YourRef", "InvoiceTo",
     ].join(",");
+
 
     const url = `${baseUrl}/api/v1/${divisie}/salesinvoice/SalesInvoices`
       + `?$filter=${encodeURIComponent(filter)}`
@@ -141,7 +142,7 @@ Deno.serve(async (req) => {
     if (!res.ok) {
       const err = await captureExactError("GET SalesInvoices", res);
       await logSync(admin, {
-        trigger_type: "customer_invoices_fetch",
+        trigger_type: "portal_invoices_fetch",
         status: "error",
         http_status: res.status,
         error_message: err.summary,
@@ -160,29 +161,29 @@ Deno.serve(async (req) => {
       datum: r.InvoiceDate ?? null,
       vervaldatum: r.DueDate ?? null,
       bedrag: Number(r.AmountFC ?? 0),
-      status: mapStatus(r.PaymentStatus ?? null, r.DueDate ?? null),
+      status: mapStatus(r.DueDate ?? null),
       omschrijving: r.Description ?? "",
       payment_reference: r.PaymentReference ?? null,
     }));
 
     await logSync(admin, {
-      trigger_type: "customer_invoices_fetch",
+      trigger_type: "portal_invoices_fetch",
       status: "ok",
       http_status: 200,
       payload: {
         user_id: user.id,
         account_ids: accountIds,
         count: invoices.length,
-        payment_statuses: Array.from(new Set(rows.map((r) => r.PaymentStatus ?? null))),
       },
     });
+
 
     return json({ invoices });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error("get-customer-invoices error:", msg);
     await logSync(admin, {
-      trigger_type: "customer_invoices_fetch",
+      trigger_type: "portal_invoices_fetch",
       status: "error",
       error_message: msg,
       payload: { error: msg },
