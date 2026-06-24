@@ -77,12 +77,13 @@ export default function PortalInvoices() {
           <CardContent className="py-12 text-center text-muted-foreground">
             <Receipt className="h-12 w-12 mx-auto mb-3 opacity-40" />
             <p>
-              Je hebt nog geen facturen ontvangen. Zodra je polis is geactiveerd en de eerste
-              factuur is verstuurd, verschijnt deze hier.
+              Je hebt nog geen verwerkte facturen. Concepten en facturen in behandeling
+              verschijnen hier zodra ze definitief zijn.
             </p>
           </CardContent>
         </Card>
       )}
+
 
       <div className="space-y-3">
         {invoices?.map((inv) => (
