@@ -1000,6 +1000,7 @@ export type Database = {
           pauze_reden: string | null
           pauze_reminder_verzonden_op: string | null
           pauze_start_datum: string | null
+          pauze_toelichting: string | null
           sepa_akkoord: boolean
           sepa_akkoord_datum: string | null
           status: Database["public"]["Enums"]["lead_status"]
@@ -1063,6 +1064,7 @@ export type Database = {
           pauze_reden?: string | null
           pauze_reminder_verzonden_op?: string | null
           pauze_start_datum?: string | null
+          pauze_toelichting?: string | null
           sepa_akkoord?: boolean
           sepa_akkoord_datum?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
@@ -1126,6 +1128,7 @@ export type Database = {
           pauze_reden?: string | null
           pauze_reminder_verzonden_op?: string | null
           pauze_start_datum?: string | null
+          pauze_toelichting?: string | null
           sepa_akkoord?: boolean
           sepa_akkoord_datum?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
