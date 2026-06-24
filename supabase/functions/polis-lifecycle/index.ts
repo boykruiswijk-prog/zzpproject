@@ -428,6 +428,12 @@ Deno.serve(async (req) => {
             unitPrice: calc.factuur_bedrag,
           });
           if (!res.ok) {
+            await supabase.from("exact_sync_log").insert({
+              lead_id, admin_user_id: uid, trigger_type: "factuur_hervat",
+              status: "error", http_status: res.httpStatus,
+              error_message: res.summary,
+              payload: { request: res.request, response: res.detail, berekening: calc },
+            }).then(() => {}, (e: unknown) => console.error("sync_log insert failed", e));
             await logAudit(supabase, {
               lead_id, actie: "hervat_factuur", uitgevoerd_door: uid, rol,
               succes: false, fout_melding: res.summary,
@@ -442,6 +448,11 @@ Deno.serve(async (req) => {
             exact_factuur_bedrag_hervat: calc.factuur_bedrag,
             exact_factuur_aangemaakt_op_hervat: new Date().toISOString(),
           }).eq("id", lead_id);
+          await supabase.from("exact_sync_log").insert({
+            lead_id, admin_user_id: uid, trigger_type: "factuur_hervat",
+            status: "success", http_status: 201,
+            payload: { request: res.request, exact_invoice_id: res.invoiceId, exact_invoice_number: res.invoiceNumber, berekening: calc },
+          }).then(() => {}, (e: unknown) => console.error("sync_log insert failed", e));
           await logAudit(supabase, {
             lead_id, actie: "hervat_factuur", uitgevoerd_door: uid, rol,
             details: { berekening: calc, exact_invoice_id: res.invoiceId, exact_invoice_number: res.invoiceNumber },
