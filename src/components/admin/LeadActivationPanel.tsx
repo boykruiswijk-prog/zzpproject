@@ -125,7 +125,7 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
       if (!data?.success) throw new Error(data?.error || "Onbekende fout");
       toast({
         title: "Factuur aangemaakt",
-        description: `Exact factuur ${data.exact_invoice_number ?? "(concept)"} — ${formatEuro(data.amount)}`,
+        description: `Exact factuur ${data.exact_invoice_number ?? "Concept in Exact (status: Open, nog te verwerken)"} — ${formatEuro(data.amount)}`,
       });
       qc.invalidateQueries({ queryKey: ["lead", lead.id] });
     } catch (e: any) {
@@ -192,29 +192,38 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
               </div>
             )}
             {hasInvoice && (
-              <div className="rounded-lg border border-green-300 bg-green-50 p-4 flex items-start gap-3">
-                <CheckCircle2 className="h-5 w-5 text-green-700 mt-0.5" />
-                <div className="text-sm">
-                  <p className="font-medium text-green-900">
-                    Factuur aangemaakt in Exact (concept).
-                  </p>
-                  <p className="text-green-800 mt-1">
-                    Factuurnummer:{" "}
-                    <code className="bg-white px-1.5 py-0.5 rounded">
-                      {lead.exact_invoice_number ?? "(concept)"}
-                    </code>{" "}
-                    — {formatEuro(Number(lead.exact_invoice_amount))}
-                  </p>
-                  <p className="text-green-700 text-xs mt-1">
-                    Exact factuur-ID: <code>{lead.exact_invoice_id}</code>
-                  </p>
-                  {lead.exact_invoice_created_at && (
-                    <p className="text-green-700 text-xs">
-                      Aangemaakt op {formatDateTimeNL(lead.exact_invoice_created_at)}. Status: concept — controleer en verstuur via Exact.
-                    </p>
-                  )}
-                </div>
-              </div>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="rounded-lg border border-green-300 bg-green-50 p-4 flex items-start gap-3 cursor-help">
+                      <CheckCircle2 className="h-5 w-5 text-green-700 mt-0.5" />
+                      <div className="text-sm">
+                        <p className="font-medium text-green-900">
+                          Factuur aangemaakt in Exact (concept).
+                        </p>
+                        <p className="text-green-800 mt-1">
+                          Factuurnummer:{" "}
+                          <code className="bg-white px-1.5 py-0.5 rounded">
+                            {lead.exact_invoice_number ?? "Concept in Exact (status: Open, nog te verwerken)"}
+                          </code>{" "}
+                          — {formatEuro(Number(lead.exact_invoice_amount))}
+                        </p>
+                        <p className="text-green-700 text-xs mt-1">
+                          Exact factuur-ID: <code>{lead.exact_invoice_id}</code>
+                        </p>
+                        {lead.exact_invoice_created_at && (
+                          <p className="text-green-700 text-xs">
+                            Aangemaakt op {formatDateTimeNL(lead.exact_invoice_created_at)}. Status: concept — controleer en verstuur via Exact.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p>Een concept-factuur heeft nog geen factuurnummer. Sandra verwerkt hem in Exact (Status wordt dan 50, factuurnummer wordt toegekend).</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             )}
             {hasInvoiceWarning && (
               <div className="rounded-md border border-amber-300 bg-amber-50 p-3 space-y-2">
