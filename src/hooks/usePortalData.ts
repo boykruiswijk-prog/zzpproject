@@ -29,9 +29,11 @@ export function usePortalInvoices() {
         .from("invoices")
         .select("*")
         .eq("user_id", user!.id)
+        .neq("status", "legacy_void")
         .order("invoice_date", { ascending: false });
       if (error) throw error;
       return data || [];
     },
+
   });
 }
