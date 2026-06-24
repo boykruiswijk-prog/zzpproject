@@ -498,8 +498,8 @@ Deno.serve(async (req) => {
       }
 
       // ────────── OPZEGGEN ──────────
-      // - vanuit ACTIEF/klant: status → opgezegd, GEEN financiële actie (klant betaalt polisjaar uit)
-      // - vanuit GEPAUZEERD: status → opgezegd, GEEN financiële actie (creditnota was al gedaan bij pauze)
+      // - vanuit ACTIEF/klant: creditnota Type 8021 voor resterende dagen → status='opgezegd'
+      // - vanuit GEPAUZEERD:   status='opgezegd', GEEN tweede creditnota (al gedaan bij pauze)
       case "opzeggen": {
         if (["opgezegd", "afgewezen"].includes(lead.status)) {
           return json({ error: "al_opgezegd", current: lead.status }, 409);
@@ -509,6 +509,72 @@ Deno.serve(async (req) => {
           return json({ error: "toelichting_verplicht" }, 400);
         }
         const wasGepauzeerd = lead.status === "gepauzeerd";
+        const vanuitActief = lead.status === "actief" || lead.status === "klant";
+
+        // ─ Creditnota bij opzegging vanuit actief ─
+        let creditResult: any = wasGepauzeerd
+          ? { skipped: true, reden: "Al gecrediteerd bij pauze" }
+          : { skipped: true, reden: "Geen Exact-account gekoppeld" };
+        let calc: ReturnType<typeof calculatePauzeCredit> | null = null;
+        let eindForMail: string | null = null;
+
+        if (vanuitActief && lead.exact_account_id) {
+          if (!lead.ingangsdatum) return json({ error: "geen_ingangsdatum_op_lead" }, 400);
+          const jaarprijs = getJaarprijs(lead.gekozen_pakket);
+          const eind = lead.polis_einddatum ?? calcPolisEinddatum(lead.ingangsdatum);
+          eindForMail = eind;
+          calc = calculatePauzeCredit({
+            ingangsdatum: lead.ingangsdatum, polis_einddatum: eind,
+            jaarprijs, pauze_datum: today,
+          });
+
+          if (calc.credit_bedrag > 0) {
+            const ctx = await exactCtx();
+            if (!ctx) return json({ error: "exact_niet_beschikbaar" }, 500);
+            const res = await postSalesInvoice({
+              baseUrl: ctx.baseUrl, div: ctx.div, headers: ctx.headers,
+              lead, itemId: ctx.itemId,
+              type: TYPE_SALES_CREDIT,
+              description: `Creditnota opzegging polis BAV-AVB per ${fmtNL(today)}`,
+              lineDescription: `Restitutie opzegging ${fmtNL(today)} t/m ${fmtNL(eind)} (${calc.resterende_dagen} dagen × € ${calc.dagprijs.toFixed(4)})`,
+              unitPrice: calc.credit_bedrag,
+            });
+            if (!res.ok) {
+              await supabase.from("exact_sync_log").insert({
+                lead_id, admin_user_id: uid, trigger_type: "creditnota_opzeg",
+                status: "error", http_status: res.httpStatus,
+                error_message: res.summary,
+                payload: { request: res.request, response: res.detail, berekening: calc },
+              }).then(() => {}, (e: unknown) => console.error("sync_log insert failed", e));
+              await logAudit(supabase, {
+                lead_id, actie: "creditnota_aangemaakt", uitgevoerd_door: uid, rol,
+                succes: false, fout_melding: res.summary,
+                details: { context: "opzeg", berekening: calc, request: res.request },
+                exact_response: res.detail,
+              });
+              // ROLLBACK: status blijft ongewijzigd, klant ziet error.
+              return json({ error: "creditnota_failed", summary: res.summary, detail: res.detail }, 502);
+            }
+            creditResult = { ok: true, invoiceId: res.invoiceId, bedrag: calc.credit_bedrag };
+            await supabase.from("leads").update({
+              exact_credit_invoice_id_opzeg: res.invoiceId,
+              exact_credit_invoice_bedrag_opzeg: calc.credit_bedrag,
+              exact_credit_invoice_aangemaakt_op_opzeg: new Date().toISOString(),
+            }).eq("id", lead_id);
+            await supabase.from("exact_sync_log").insert({
+              lead_id, admin_user_id: uid, trigger_type: "creditnota_opzeg",
+              status: "success", http_status: 201,
+              payload: { request: res.request, exact_invoice_id: res.invoiceId, berekening: calc },
+            }).then(() => {}, (e: unknown) => console.error("sync_log insert failed", e));
+            await logAudit(supabase, {
+              lead_id, actie: "creditnota_aangemaakt", uitgevoerd_door: uid, rol,
+              details: { context: "opzeg", berekening: calc, exact_invoice_id: res.invoiceId },
+              exact_response: res.raw,
+            });
+          } else {
+            creditResult = { skipped: true, reden: "Berekend bedrag is 0" };
+          }
+        }
 
         await supabase.from("leads").update({
           status: "opgezegd",
@@ -522,11 +588,16 @@ Deno.serve(async (req) => {
           lead_id, actie: "opzeggen", uitgevoerd_door: uid, rol,
           details: {
             reden, toelichting, was_gepauzeerd: wasGepauzeerd,
-            financiele_actie: wasGepauzeerd
-              ? "geen — creditnota al gedaan bij pauze"
-              : "geen — klant betaalt polisjaar uit",
+            creditnota: creditResult,
           },
         });
+
+        const creditBlokKlant = creditResult?.ok && calc
+          ? `<p>Je ontvangt een creditnota van <strong>€ ${calc.credit_bedrag.toFixed(2).replace(".", ",")}</strong> voor ${calc.resterende_dagen} dagen restdekking tot ${fmtNL(eindForMail!)}.</p>`
+          : "";
+        const creditBlokAdmin = creditResult?.ok && calc
+          ? `<strong>Creditnota:</strong> € ${calc.credit_bedrag.toFixed(2)} (${calc.resterende_dagen} dagen, Exact ID ${creditResult.invoiceId})<br/>`
+          : `<strong>Creditnota:</strong> ${creditResult?.reden ?? "geen"}<br/>`;
 
         await sendMail(recipientKlant, "Je polis is opgezegd",
           mailShell("Polis opgezegd", `
@@ -534,6 +605,7 @@ Deno.serve(async (req) => {
             <p>Je polis is per <strong>${fmtNL(today)}</strong> opgezegd. Schade van vóór deze datum blijft gedekt volgens de polisvoorwaarden.</p>
             <p><strong>Reden:</strong> ${reden.replace(/_/g, " ")}</p>
             ${toelichting ? `<p><strong>Toelichting:</strong> ${toelichting}</p>` : ""}
+            ${creditBlokKlant}
             <p>Mocht je in de toekomst weer een polis willen, dan zijn we er voor je.</p>
           `));
         await sendMail(ADMIN_EMAIL, `[Opzegging] ${lead.voornaam} ${lead.achternaam}`,
@@ -542,11 +614,15 @@ Deno.serve(async (req) => {
             <p><strong>Reden:</strong> ${reden}<br/>
             ${toelichting ? `<strong>Toelichting:</strong> ${toelichting}<br/>` : ""}
             <strong>Was gepauzeerd:</strong> ${wasGepauzeerd ? "ja" : "nee"}<br/>
-            <strong>Financiële actie:</strong> geen (B1-flow)</p>
+            ${creditBlokAdmin}</p>
           `));
 
-        return json({ ok: true, status: "opgezegd", was_gepauzeerd: wasGepauzeerd });
+        return json({
+          ok: true, status: "opgezegd", was_gepauzeerd: wasGepauzeerd,
+          credit: creditResult, berekening: calc,
+        });
       }
+
 
       // ────────── HERACTIVEREN — CHECK ──────────
       case "heractiveren_check": {
