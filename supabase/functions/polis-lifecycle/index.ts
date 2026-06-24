@@ -214,7 +214,7 @@ Deno.serve(async (req) => {
   let body: any;
   try { body = await req.json(); } catch { return json({ error: "invalid_json" }, 400); }
 
-  const { action, lead_id, reden, toelichting, nieuwe_functie, rol_hint } = body ?? {};
+  const { action, lead_id, reden, toelichting, pauze_toelichting, nieuwe_functie, rol_hint } = body ?? {};
   if (!action || !lead_id) return json({ error: "missing_params" }, 400);
 
   // Auth: identify caller via JWT
