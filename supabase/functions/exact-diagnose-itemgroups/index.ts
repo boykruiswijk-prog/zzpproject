@@ -62,6 +62,83 @@ Deno.serve(async (req) => {
       return json({ success: mRes.ok, http_status: mRes.status, entity_xml: m ? m[0] : null, raw_length: xml.length });
     }
 
+    // Optioneel: bootstrap ItemGroup DIENSTEN + Item BAV-AVB (idempotent).
+    if (url.searchParams.get("bootstrap") === "1") {
+      const writeHeaders = {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Prefer: "return=representation",
+      };
+      const report: any = { steps: [] };
+
+      // 1) Ensure ItemGroup
+      let groupId = config.exact_item_group_id;
+      if (!groupId) {
+        // lookup
+        const lr = await fetch(`${baseUrl}/api/v1/${division}/logistics/ItemGroups?$select=ID,Code&$filter=Code eq 'DIENSTEN'&$top=1`, { headers });
+        if (lr.ok) {
+          const lj: any = await lr.json().catch(() => ({}));
+          const arr = lj?.d?.results ?? lj?.d ?? [];
+          if (arr[0]?.ID) groupId = arr[0].ID;
+        }
+        if (!groupId) {
+          const payload = { Code: "DIENSTEN", Description: "Verzekeringsdiensten" };
+          const cr = await fetch(`${baseUrl}/api/v1/${division}/logistics/ItemGroups`, {
+            method: "POST", headers: writeHeaders, body: JSON.stringify(payload),
+          });
+          const ct = await cr.text();
+          let cj: any = null; try { cj = JSON.parse(ct); } catch { /* ignore */ }
+          report.steps.push({ step: "ItemGroup POST", status: cr.status, request: payload, response: cj ?? ct });
+          if (!cr.ok) return json({ success: false, ...report }, 500);
+          groupId = cj?.d?.ID || cj?.ID;
+        } else {
+          report.steps.push({ step: "ItemGroup lookup", found: groupId });
+        }
+        await supabase.from("exact_config").update({ exact_item_group_id: groupId }).eq("id", config.id);
+      } else {
+        report.steps.push({ step: "ItemGroup already in config", id: groupId });
+      }
+
+      // 2) Ensure Item
+      let itemId = config.exact_item_id_bav_avb;
+      if (!itemId) {
+        const lr = await fetch(`${baseUrl}/api/v1/${division}/logistics/Items?$select=ID,Code&$filter=Code eq 'BAV-AVB'&$top=1`, { headers });
+        if (lr.ok) {
+          const lj: any = await lr.json().catch(() => ({}));
+          const arr = lj?.d?.results ?? lj?.d ?? [];
+          if (arr[0]?.ID) itemId = arr[0].ID;
+        }
+        if (!itemId) {
+          const payload = {
+            Code: "BAV-AVB",
+            Description: "Beroeps- en bedrijfsaansprakelijkheidsverzekering",
+            SalesVatCode: "0",
+            IsSalesItem: true,
+            IsStockItem: false,
+            ItemGroup: groupId,
+          };
+          const cr = await fetch(`${baseUrl}/api/v1/${division}/logistics/Items`, {
+            method: "POST", headers: writeHeaders, body: JSON.stringify(payload),
+          });
+          const ct = await cr.text();
+          let cj: any = null; try { cj = JSON.parse(ct); } catch { /* ignore */ }
+          report.steps.push({ step: "Item POST", status: cr.status, request: payload, response: cj ?? ct });
+          if (!cr.ok) return json({ success: false, ...report }, 500);
+          itemId = cj?.d?.ID || cj?.ID;
+        } else {
+          report.steps.push({ step: "Item lookup", found: itemId });
+        }
+        await supabase.from("exact_config").update({ exact_item_id_bav_avb: itemId }).eq("id", config.id);
+      } else {
+        report.steps.push({ step: "Item already in config", id: itemId });
+      }
+
+      return json({ success: true, exact_item_group_id: groupId, exact_item_id_bav_avb: itemId, ...report });
+    }
+
+
+
 
 
     // STAP 1: lijst ItemGroups
