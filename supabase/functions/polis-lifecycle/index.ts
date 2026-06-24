@@ -28,8 +28,11 @@ const INV_PAYMENT_COND = "IN";
 const INV_VAT_CODE = "0";
 const INV_GL_ACCOUNT = "d40fbb95-43b0-4503-9fe8-287f14d59120"; // 81000 Premie-omzet
 const INV_STATUS_CONCEPT = 20;
-const TYPE_SALES_INVOICE = 20;
-const TYPE_SALES_CREDIT = 21;
+// Exact API vereist 8020 (SalesInvoice) en 8021 (SalesCreditNote).
+// Eerdere waarden 20/21 werden door Exact alleen via tolerantie geaccepteerd
+// voor het factuur-pad en leidden bij creditnota's tot "Ongeldig: Type".
+const TYPE_SALES_INVOICE = 8020;
+const TYPE_SALES_CREDIT = 8021;
 
 function fmtNL(iso: string): string {
   const d = new Date(iso);
