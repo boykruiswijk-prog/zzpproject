@@ -38,20 +38,25 @@ export function PolicyLifecycleActions() {
 
   const [pauzeOpen, setPauzeOpen] = useState(false);
   const [opzegOpen, setOpzegOpen] = useState(false);
+  const [hervatOpen, setHervatOpen] = useState(false);
   const [pauzeReden, setPauzeReden] = useState("");
   const [pauzeToelichting, setPauzeToelichting] = useState("");
+  const [pauzeAkkoord, setPauzeAkkoord] = useState(false);
   const [opzegReden, setOpzegReden] = useState("");
   const [opzegToelichting, setOpzegToelichting] = useState("");
 
-  if (isLoading || !lead) return null;
-  const status = lead.status;
+  const pauzePreview = usePauzePreview(lead?.id, "pauze", pauzeOpen);
+  const hervatPreview = usePauzePreview(lead?.id, "hervat", hervatOpen);
 
   const pauzeToelichtingRequired = pauzeReden === "andere_reden";
   const opzegToelichtingRequired = opzegReden === "andere_reden";
   const pauzeBlocked =
-    !pauzeReden || (pauzeToelichtingRequired && !pauzeToelichting.trim());
+    !pauzeReden || (pauzeToelichtingRequired && !pauzeToelichting.trim()) || !pauzeAkkoord;
   const opzegBlocked =
     !opzegReden || (opzegToelichtingRequired && !opzegToelichting.trim());
+  const sepaBannerNeeded = lead?.exact_invoice_status === 50;
+  const eur = (n: number | undefined) =>
+    typeof n === "number" ? `€ ${n.toFixed(2).replace(".", ",")}` : "—";
 
   const handlePauze = async () => {
     if (pauzeBlocked) return;
