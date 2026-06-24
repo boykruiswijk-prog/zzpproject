@@ -2,6 +2,7 @@
 // Eén endpoint, dispatch op `action`. Logt elke actie in polis_audit_log.
 // Stuurt email naar klant + info@zpzaken.nl en (bij relevante acties) info@onefellow.nl.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { checkAcceptance } from "../_shared/acceptanceCriteria.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,6 +18,8 @@ const json = (data: unknown, status = 200) =>
 const ADMIN_EMAIL = "info@zpzaken.nl";
 const ONEFELLOW_EMAIL = "info@onefellow.nl";
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
+// Fallback naar onboarding@resend.dev zolang zpzaken.nl-DNS niet geverifieerd is.
+const FROM_ADDRESS = Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <onboarding@resend.dev>";
 
 // Pakket → jaarprijs (voor pro-rata creditnota)
 const PAKKET_JAARPRIJS: Record<string, number> = {
@@ -26,24 +29,15 @@ const PAKKET_JAARPRIJS: Record<string, number> = {
   "jaarlijks_cyber": 750,
 };
 
-// Functies die handmatige beoordeling vereisen (voor heractivering-functiewijziging)
-const HOOG_RISICO_KEYWORDS = [
-  "advoca", "notaris", "accountant", "arts", "medisch", "chirurg",
-  "tandarts", "psycholoog", "psychiater", "beveilig", "wapen",
-  "taxi", "koerier", "bouw", "dakdekk", "elektric",
-];
-
 function checkFunctieAcceptabel(functie: string): { acceptabel: boolean; reden?: string } {
-  const lower = functie.toLowerCase().trim();
-  if (!lower) return { acceptabel: false, reden: "Functie mag niet leeg zijn" };
-  const hit = HOOG_RISICO_KEYWORDS.find((k) => lower.includes(k));
-  if (hit) return { acceptabel: false, reden: `Functie '${functie}' valt buiten het standaard acceptatiekader (sleutelterm: ${hit})` };
-  return { acceptabel: true };
+  const res = checkAcceptance(functie);
+  return { acceptabel: res.accepted, reden: res.reason };
 }
 
 function normalizeFunctie(s: string | null | undefined): string {
   return (s ?? "").trim().toLowerCase();
 }
+
 
 // deno-lint-ignore no-explicit-any
 async function logAudit(supabase: any, params: {
@@ -72,10 +66,11 @@ async function logAudit(supabase: any, params: {
   }
 }
 
-async function sendMail(to: string | string[], subject: string, html: string) {
+async function sendMail(to: string | string[], subject: string, html: string): Promise<{ ok: boolean; status?: number; message_id?: string; error?: string; to: string[] }> {
+  const recipients = Array.isArray(to) ? to : [to];
   if (!RESEND_API_KEY) {
-    console.warn("RESEND_API_KEY ontbreekt — mail overgeslagen", { to, subject });
-    return;
+    console.warn("RESEND_API_KEY ontbreekt — mail overgeslagen", { to: recipients, subject });
+    return { ok: false, error: "missing_resend_key", to: recipients };
   }
   try {
     const r = await fetch("https://api.resend.com/emails", {
@@ -84,19 +79,20 @@ async function sendMail(to: string | string[], subject: string, html: string) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
-      body: JSON.stringify({
-        from: "ZP Zaken <info@zpzaken.nl>",
-        to: Array.isArray(to) ? to : [to],
-        subject,
-        html,
-      }),
+      body: JSON.stringify({ from: FROM_ADDRESS, to: recipients, subject, html }),
     });
+    const txt = await r.text();
+    let parsed: any = null;
+    try { parsed = JSON.parse(txt); } catch (_) { /* */ }
     if (!r.ok) {
-      const txt = await r.text();
       console.error("Resend error", r.status, txt);
+      return { ok: false, status: r.status, error: txt.slice(0, 400), to: recipients };
     }
-  } catch (e) {
+    console.log("Resend ok", { to: recipients, subject, id: parsed?.id, from: FROM_ADDRESS });
+    return { ok: true, status: r.status, message_id: parsed?.id, to: recipients };
+  } catch (e: any) {
     console.error("sendMail exception", e);
+    return { ok: false, error: e?.message ?? String(e), to: recipients };
   }
 }
 
@@ -218,7 +214,7 @@ Deno.serve(async (req) => {
   let body: any;
   try { body = await req.json(); } catch { return json({ error: "invalid_json" }, 400); }
 
-  const { action, lead_id, reden, toelichting, nieuwe_functie, rol_hint } = body ?? {};
+  const { action, lead_id, reden, toelichting, pauze_toelichting, nieuwe_functie, rol_hint } = body ?? {};
   if (!action || !lead_id) return json({ error: "missing_params" }, 400);
 
   // Auth: identify caller via JWT
@@ -261,38 +257,44 @@ Deno.serve(async (req) => {
           return json({ error: "ongeldige_status", current: lead.status }, 409);
         }
         if (!reden) return json({ error: "reden_verplicht" }, 400);
+        if (reden === "andere_reden" && !(pauze_toelichting ?? "").trim()) {
+          return json({ error: "toelichting_verplicht" }, 400);
+        }
 
         await supabase.from("leads").update({
           status: "gepauzeerd",
           pauze_start_datum: today,
           pauze_reden: reden,
+          pauze_toelichting: pauze_toelichting ?? null,
           pauze_door: uid,
           pauze_reminder_verzonden_op: null,
         }).eq("id", lead_id);
 
         await logAudit(supabase, {
           lead_id, actie: "pauzeren", uitgevoerd_door: uid, rol,
-          details: { reden, pauze_start_datum: today, vorige_status: lead.status },
+          details: { reden, toelichting: pauze_toelichting ?? null, pauze_start_datum: today, vorige_status: lead.status },
         });
 
-        await sendMail(recipientKlant, "Je polis is gepauzeerd",
+        const mailResults: any[] = [];
+        mailResults.push(await sendMail(recipientKlant, "Je polis is gepauzeerd",
           mailShell("Polis gepauzeerd", `
             <p>Hoi ${lead.voornaam},</p>
             <p>Je polis is per <strong>${today}</strong> gepauzeerd. Tijdens de pauze ben je niet meer gedekt voor nieuwe schade. Schade die vóór de pauze ontstond blijft gedekt.</p>
             <p><strong>Reden:</strong> ${reden}</p>
+            ${pauze_toelichting ? `<p><strong>Toelichting:</strong> ${pauze_toelichting}</p>` : ""}
             <p>Klaar om weer te starten? Log in op je portaal en klik op 'Hervatten'. Bij hervatting krijg je een creditnota voor de pauze-periode.</p>
             <p><a href="https://zzpproject.lovable.app/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
-          `));
+          `)));
 
-        await sendMail(ADMIN_EMAIL, `[Pauze] ${lead.voornaam} ${lead.achternaam} (${lead.bedrijfsnaam ?? "-"})`,
+        mailResults.push(await sendMail(ADMIN_EMAIL, `[Pauze] ${lead.voornaam} ${lead.achternaam} (${lead.bedrijfsnaam ?? "-"})`,
           mailShell("Polis gepauzeerd", `
             <p><strong>${lead.voornaam} ${lead.achternaam}</strong> (${lead.email}) heeft de polis gepauzeerd.</p>
             <p><strong>Reden:</strong> ${reden}<br/><strong>Datum:</strong> ${today}</p>
-          `));
+            ${pauze_toelichting ? `<p><strong>Toelichting:</strong> ${pauze_toelichting}</p>` : ""}
+          `)));
 
-        // Cross-sell signal naar Onefellow bij reden 'geen_opdrachten'
         if (reden === "geen_opdrachten") {
-          await sendMail(ONEFELLOW_EMAIL, `[ZP Zaken cross-sell] Klant zoekt opdrachten: ${lead.voornaam} ${lead.achternaam}`,
+          mailResults.push(await sendMail(ONEFELLOW_EMAIL, `[ZP Zaken cross-sell] Klant zoekt opdrachten: ${lead.voornaam} ${lead.achternaam}`,
             mailShell("Cross-sell signal", `
               <p>Een klant van ZP Zaken heeft de polis gepauzeerd omdat hij/zij geen opdrachten heeft.</p>
               <p><strong>Naam:</strong> ${lead.voornaam} ${lead.achternaam}<br/>
@@ -301,10 +303,10 @@ Deno.serve(async (req) => {
               <strong>Functie:</strong> ${lead.functie_bij_aanvraag ?? lead.beroep ?? "-"}<br/>
               <strong>Bedrijf:</strong> ${lead.bedrijfsnaam ?? "-"}</p>
               <p>Mogelijk een match voor jullie recruitment-pool.</p>
-            `));
+            `)));
         }
 
-        return json({ ok: true, status: "gepauzeerd", pauze_start_datum: today });
+        return json({ ok: true, status: "gepauzeerd", pauze_start_datum: today, mails: mailResults });
       }
 
       // ────────── HERVATTEN ──────────
@@ -403,6 +405,9 @@ Deno.serve(async (req) => {
           return json({ error: "al_opgezegd", current: lead.status }, 409);
         }
         if (!reden) return json({ error: "reden_verplicht" }, 400);
+        if (reden === "andere_reden" && !(toelichting ?? "").trim()) {
+          return json({ error: "toelichting_verplicht" }, 400);
+        }
 
         const wasGepauzeerd = lead.status === "gepauzeerd";
         const pauzeStart = lead.pauze_start_datum as string | null;
