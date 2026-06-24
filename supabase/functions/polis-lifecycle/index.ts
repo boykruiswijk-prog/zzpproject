@@ -168,7 +168,7 @@ async function postSalesInvoice(opts: {
   type: typeof TYPE_SALES_INVOICE | typeof TYPE_SALES_CREDIT;
   description: string;
   lineDescription: string;
-  unitPrice: number; // positief voor factuur, negatief voor creditnota
+  unitPrice: number; // positief voor beide types; Exact 8021 draait zelf het teken om
 }): Promise<
   | { ok: true; invoiceId: string; invoiceNumber: string | null; amount: number; raw: unknown; request: unknown }
   | { ok: false; summary: string; detail: Record<string, unknown>; request: unknown; httpStatus: number }
