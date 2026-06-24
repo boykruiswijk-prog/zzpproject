@@ -13,6 +13,21 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // DEPRECATED 2026-06-24: klant-facturen lopen voortaan via Exact (lead-to-exact-activate, action: retry_invoice).
+  return new Response(
+    JSON.stringify({
+      error: "DEPRECATED",
+      message:
+        "Deze functie is uitgefaseerd op 24-06-2026. Klant-facturen worden vanaf nu automatisch via Exact aangemaakt via lead-to-exact-activate (action: retry_invoice). Zie LeadActivationPanel in admin.",
+      sunset_date: "2026-06-24",
+    }),
+    {
+      status: 403,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    },
+  );
+
+
   try {
     // Auth check
     const authHeader = req.headers.get("Authorization");
