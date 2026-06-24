@@ -1,6 +1,7 @@
 import { PortalLayout } from "@/components/portal/PortalLayout";
 import { usePortalAuth } from "@/contexts/PortalAuthContext";
-import { usePortalPolicies, usePortalInvoices } from "@/hooks/usePortalData";
+import { usePortalPolicies } from "@/hooks/usePortalData";
+import { useCustomerInvoices } from "@/hooks/useCustomerInvoices";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -9,10 +10,20 @@ import { FileText, Receipt, Briefcase, ArrowRight } from "lucide-react";
 export default function PortalOverview() {
   const { user } = usePortalAuth();
   const { data: policies } = usePortalPolicies();
-  const { data: invoices } = usePortalInvoices();
+  const { data: invoices } = useCustomerInvoices();
 
   const activePolicy = policies?.[0];
-  const openInvoices = invoices?.filter((i) => i.status !== "betaald").length || 0;
+  const totalInvoices = invoices?.length || 0;
+  const openCount = invoices?.filter((i) => i.status === "open").length || 0;
+  const paidCount = invoices?.filter((i) => i.status === "betaald").length || 0;
+  const overdueCount = invoices?.filter((i) => i.status === "vervallen").length || 0;
+
+  const invoicesLabel =
+    totalInvoices === 0
+      ? "Je hebt nog geen facturen ontvangen."
+      : totalInvoices === 1
+      ? "Je hebt 1 factuur."
+      : `Je hebt ${totalInvoices} facturen.`;
 
   return (
     <PortalLayout>
