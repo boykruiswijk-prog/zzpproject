@@ -1,5 +1,5 @@
-// Read-only preview voor pauze/hervat-modals. Geen Exact-calls.
-// Body: { lead_id, action?: "pauze" | "hervat" }   (default: "pauze")
+// Read-only preview voor pauze/hervat/opzeg-modals. Geen Exact-calls.
+// Body: { lead_id, action?: "pauze" | "hervat" | "opzeg" }   (default: "pauze")
 // Returns: { credit_bedrag/factuur_bedrag, resterende_dagen, dagprijs, polis_einddatum, jaarprijs }
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import {
