@@ -151,16 +151,41 @@ export function PolicyLifecycleActions() {
       </CardContent>
 
       {/* Pauze modal */}
-      <Dialog open={pauzeOpen} onOpenChange={setPauzeOpen}>
-        <DialogContent>
+      <Dialog open={pauzeOpen} onOpenChange={(o) => { setPauzeOpen(o); if (!o) setPauzeAkkoord(false); }}>
+        <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Polis pauzeren</DialogTitle>
             <DialogDescription>
               Tijdens de pauze ben je niet gedekt voor nieuwe schade. Schade van vóór de pauze blijft gedekt.
-              Bij hervatten ontvang je een creditnota voor de pauze-dagen.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-3">
+          <div className="space-y-4">
+            <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm space-y-2">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="h-4 w-4 mt-0.5 text-amber-600 shrink-0" />
+                <div>
+                  <p className="font-medium text-amber-900">Financiële afhandeling</p>
+                  <p className="text-amber-800">
+                    Je ontvangt een creditnota voor de resterende dagen van je polisjaar
+                    {pauzePreview.data?.polis_einddatum ? ` tot ${formatDateLongNL(pauzePreview.data.polis_einddatum)}` : ""}.
+                    Bij hervatten ontvang je een nieuwe factuur voor de dagen vanaf hervat-datum.
+                  </p>
+                  {pauzePreview.isLoading && <p className="text-amber-700 mt-1">Bedrag berekenen…</p>}
+                  {pauzePreview.data && (
+                    <p className="mt-2 text-amber-900">
+                      <strong>Verwachte creditnota: {eur(pauzePreview.data.credit_bedrag)}</strong>
+                      <span className="text-amber-700"> ({pauzePreview.data.resterende_dagen} dagen × {eur(pauzePreview.data.dagprijs)})</span>
+                    </p>
+                  )}
+                  {sepaBannerNeeded && (
+                    <p className="mt-2 text-amber-900">
+                      Onze administratie zet de SEPA-incasso stop. Mocht je een eerstvolgende incasso binnenkort verwachten,
+                      neem dan contact op via <a className="underline" href="tel:0204573077">020-4573077</a>.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
             <div className="space-y-2">
               <Label>Reden</Label>
               <RadioGroup value={pauzeReden} onValueChange={setPauzeReden}>
@@ -183,6 +208,10 @@ export function PolicyLifecycleActions() {
                 onChange={(e) => setPauzeToelichting(e.target.value)}
               />
             </div>
+            <label className="flex items-start gap-2 text-sm cursor-pointer">
+              <Checkbox checked={pauzeAkkoord} onCheckedChange={(v) => setPauzeAkkoord(v === true)} className="mt-0.5" />
+              <span>Ik begrijp dat ik tijdens de pauze geen dekking heb voor nieuwe schade en dat er een creditnota wordt aangemaakt voor de resterende dagen.</span>
+            </label>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setPauzeOpen(false)}>Annuleren</Button>
@@ -193,6 +222,35 @@ export function PolicyLifecycleActions() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Hervat modal */}
+      <Dialog open={hervatOpen} onOpenChange={setHervatOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Polis hervatten</DialogTitle>
+            <DialogDescription>
+              Vanaf vandaag ben je weer volledig gedekt. Je ontvangt een nieuwe factuur voor de resterende dagen van je polisjaar.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="rounded-md border bg-muted/40 p-3 text-sm">
+            {hervatPreview.isLoading && <p>Bedrag berekenen…</p>}
+            {hervatPreview.data && (
+              <p>
+                <strong>Nieuwe factuur: {eur(hervatPreview.data.factuur_bedrag)}</strong>
+                <span className="text-muted-foreground"> ({hervatPreview.data.resterende_dagen} dagen tot {formatDateLongNL(hervatPreview.data.polis_einddatum)})</span>
+              </p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setHervatOpen(false)}>Annuleren</Button>
+            <Button onClick={handleHervatten} disabled={lifecycle.isPending}>
+              {lifecycle.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Bevestig hervatten
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
 
       {/* Opzeg modal */}
       <Dialog open={opzegOpen} onOpenChange={setOpzegOpen}>
