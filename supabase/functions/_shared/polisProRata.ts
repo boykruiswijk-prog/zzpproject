@@ -63,7 +63,8 @@ export function calculateHervatFactuur(opts: {
 }): { factuur_bedrag: number; resterende_dagen: number; dagprijs: number } {
   const totaalDagen = daysBetween(opts.ingangsdatum, opts.polis_einddatum) + 1;
   const dagprijs = opts.jaarprijs / totaalDagen;
-  const resterende = Math.max(0, daysBetween(opts.hervat_datum, opts.polis_einddatum) + 1);
+  const rawResterende = daysBetween(opts.hervat_datum, opts.polis_einddatum) + 1;
+  const resterende = Math.max(0, Math.min(rawResterende, totaalDagen));
   const bedrag = Math.round(dagprijs * resterende * 100) / 100;
   return {
     factuur_bedrag: bedrag,
