@@ -130,9 +130,8 @@ export function PolicyLifecycleActions() {
             )}
             {status === "gepauzeerd" && (
               <>
-                <Button onClick={handleHervatten} disabled={lifecycle.isPending}>
-                  {lifecycle.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Play className="h-4 w-4 mr-2" />}
-                  Hervatten
+                <Button onClick={() => setHervatOpen(true)}>
+                  <Play className="h-4 w-4 mr-2" /> Hervatten
                 </Button>
                 <Button variant="outline" onClick={() => setOpzegOpen(true)}>
                   <X className="h-4 w-4 mr-2" /> Opzeggen
