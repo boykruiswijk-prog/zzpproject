@@ -513,56 +513,60 @@ export default function AdminLeadDetail() {
               </Card>
             )}
 
-            {/* Invoice - only for BAV leads */}
+            {/* Invoice (Exact) - only for BAV leads, read-only */}
             {lead.type === "verzekering_aanvraag" && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Receipt className="h-5 w-5" />
-                  Factuur
+                  Factuur (Exact)
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                {lead.status !== "klant" && (
-                  <p className="text-sm text-muted-foreground bg-secondary/50 p-3 rounded-lg">
-                    Facturen kunnen alleen worden aangemaakt als de lead de status <strong>Klant</strong> heeft.
+              <CardContent className="space-y-3 text-sm">
+                {!lead.exact_account_id && (
+                  <p className="text-muted-foreground bg-secondary/50 p-3 rounded-lg">
+                    Factureren is pas mogelijk nadat de polis in Exact is geactiveerd.
                   </p>
                 )}
-                {invoices && invoices.length > 0 && invoices.map((inv) => (
-                  <div key={inv.id} className="flex items-center justify-between p-2 bg-secondary rounded-lg">
+                {lead.exact_account_id && !lead.exact_invoice_id && (
+                  <p className="text-muted-foreground bg-secondary/50 p-3 rounded-lg">
+                    Factuur nog niet aangemaakt. Gebruik de knop in het <strong>Polis-activatie</strong> blok hierboven.
+                  </p>
+                )}
+                {lead.exact_account_id && lead.exact_invoice_id && (
+                  <div className="space-y-2 p-3 bg-secondary/50 rounded-lg">
                     <div>
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium text-sm">{inv.invoice_number}</p>
-                        {inv.ubl_exported_at ? (
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-green-50 text-green-700 border-green-200">UBL</Badge>
-                        ) : (
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-muted-foreground">Niet geëxporteerd</Badge>
-                        )}
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        {formatDateNL(inv.created_at)} — {`€ ${Number(inv.amount_incl_btw).toFixed(2).replace('.', ',')}`}
-                      </p>
+                      <span className="text-muted-foreground">Nummer:</span>{" "}
+                      <span className="font-medium">
+                        {lead.exact_invoice_number || "Concept in Exact (status: Open, nog te verwerken)"}
+                      </span>
                     </div>
-                    {inv.pdf_url && (
-                      <Button size="sm" variant="outline" onClick={() => handleDownloadInvoice(inv.pdf_url!)}>
-                        <Download className="h-3 w-3 mr-1" />
-                        PDF
-                      </Button>
+                    {lead.exact_invoice_amount != null && (
+                      <div>
+                        <span className="text-muted-foreground">Bedrag:</span>{" "}
+                        <span className="font-medium">€ {Number(lead.exact_invoice_amount).toFixed(2).replace('.', ',')}</span>
+                      </div>
                     )}
+                    {lead.exact_invoice_created_at && (
+                      <div>
+                        <span className="text-muted-foreground">Aangemaakt:</span>{" "}
+                        <span className="font-medium">{formatDateNL(lead.exact_invoice_created_at)}</span>
+                      </div>
+                    )}
+                    <a
+                      href={`https://start.exactonline.nl/docs/SalesInvoice.aspx?ID=${lead.exact_invoice_id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-primary hover:underline text-xs mt-1"
+                    >
+                      Open in Exact →
+                    </a>
                   </div>
-                ))}
-                <Button
-                  variant={invoices && invoices.length > 0 ? "outline" : "accent"}
-                  className="w-full"
-                  onClick={handleGenerateInvoice}
-                  disabled={isGeneratingInvoice || lead.status !== "klant"}
-                >
-                  {isGeneratingInvoice ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Receipt className="h-4 w-4 mr-2" />}
-                  {invoices && invoices.length > 0 ? "Nieuwe factuur" : "Factuur genereren"}
-                </Button>
+                )}
               </CardContent>
             </Card>
             )}
+
           </div>
         </div>
       </div>
