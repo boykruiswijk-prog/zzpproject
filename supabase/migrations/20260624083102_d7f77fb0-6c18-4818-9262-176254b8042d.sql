@@ -1,0 +1,1 @@
+ALTER TABLE public.exact_config ADD COLUMN IF NOT EXISTS exact_item_group_id text;
