@@ -97,7 +97,7 @@ export function PolicyLifecycleActions() {
         reden: opzegReden, toelichting: opzegToelichting.trim() || undefined,
       });
       toast({ title: "Polis opgezegd", description: "Je ontvangt een bevestigingsmail." });
-      setOpzegOpen(false); setOpzegReden(""); setOpzegToelichting("");
+      setOpzegOpen(false); setOpzegReden(""); setOpzegToelichting(""); setOpzegAkkoord(false);
     } catch (e: any) {
       toast({ title: "Fout", description: e.message, variant: "destructive" });
     }
