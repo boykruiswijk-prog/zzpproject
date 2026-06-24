@@ -257,15 +257,42 @@ export function PolicyLifecycleActions() {
 
 
       {/* Opzeg modal */}
-      <Dialog open={opzegOpen} onOpenChange={setOpzegOpen}>
-        <DialogContent>
+      <Dialog open={opzegOpen} onOpenChange={(o) => { setOpzegOpen(o); if (!o) setOpzegAkkoord(false); }}>
+        <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Polis opzeggen</DialogTitle>
             <DialogDescription>
               Je polis kan dagelijks worden opgezegd. Schade die vóór de opzegdatum ontstond blijft gedekt.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-3">
+          <div className="space-y-4">
+            {opzegVanuitActief && (
+              <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm space-y-2">
+                <div className="flex items-start gap-2">
+                  <AlertTriangle className="h-4 w-4 mt-0.5 text-amber-600 shrink-0" />
+                  <div>
+                    <p className="font-medium text-amber-900">Financiële afhandeling</p>
+                    <p className="text-amber-800">
+                      Geen jaarcontract-lock-in: je ontvangt een creditnota voor de resterende dagen van je polisjaar
+                      {opzegPreview.data?.polis_einddatum ? ` tot ${formatDateLongNL(opzegPreview.data.polis_einddatum)}` : ""}.
+                    </p>
+                    {opzegPreview.isLoading && <p className="text-amber-700 mt-1">Bedrag berekenen…</p>}
+                    {opzegPreview.data && (
+                      <p className="mt-2 text-amber-900">
+                        <strong>Verwachte creditnota: {eur(opzegPreview.data.credit_bedrag)}</strong>
+                        <span className="text-amber-700"> ({opzegPreview.data.resterende_dagen} dagen × {eur(opzegPreview.data.dagprijs)})</span>
+                      </p>
+                    )}
+                    {sepaBannerNeeded && (
+                      <p className="mt-2 text-amber-900">
+                        Onze administratie zet de SEPA-incasso stop. Mocht je een eerstvolgende incasso binnenkort verwachten,
+                        neem dan contact op via <a className="underline" href="tel:0204573077">020-4573077</a>.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="space-y-2">
               <Label>Reden</Label>
               <RadioGroup value={opzegReden} onValueChange={setOpzegReden}>
@@ -288,6 +315,12 @@ export function PolicyLifecycleActions() {
                 onChange={(e) => setOpzegToelichting(e.target.value)}
               />
             </div>
+            {opzegVanuitActief && (
+              <label className="flex items-start gap-2 text-sm cursor-pointer">
+                <Checkbox checked={opzegAkkoord} onCheckedChange={(v) => setOpzegAkkoord(v === true)} className="mt-0.5" />
+                <span>Ik begrijp dat mijn polis per vandaag eindigt en dat er een creditnota wordt aangemaakt voor de resterende dagen van mijn polisjaar.</span>
+              </label>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpzegOpen(false)}>Annuleren</Button>
@@ -298,6 +331,7 @@ export function PolicyLifecycleActions() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
     </Card>
   );
 }
