@@ -62,6 +62,20 @@ Deno.serve(async (req) => {
       return json({ success: mRes.ok, http_status: mRes.status, entity_xml: m ? m[0] : null, raw_length: xml.length });
     }
 
+    // Diagnose: GET SalesInvoice by ID or by InvoiceTo
+    const invId = url.searchParams.get("invoice_id");
+    const invTo = url.searchParams.get("invoice_to");
+    if (invId || invTo) {
+      const filter = invId
+        ? `InvoiceID eq guid'${invId}'`
+        : `InvoiceTo eq guid'${invTo}'`;
+      const u = `${baseUrl}/api/v1/${division}/salesinvoice/SalesInvoices?$filter=${encodeURIComponent(filter)}&$select=InvoiceID,InvoiceNumber,Status,StatusDescription,Description,AmountDC,InvoiceDate,Journal,PaymentCondition`;
+      const r = await fetch(u, { headers });
+      const t = await r.text();
+      let j: any = null; try { j = JSON.parse(t); } catch { /* ignore */ }
+      return json({ success: r.ok, http_status: r.status, results: j?.d?.results ?? j?.d ?? j, url: u });
+    }
+
     // Optioneel: bootstrap ItemGroup DIENSTEN + Item BAV-AVB (idempotent).
     if (url.searchParams.get("bootstrap") === "1") {
       const writeHeaders = {
