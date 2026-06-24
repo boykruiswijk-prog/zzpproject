@@ -966,6 +966,9 @@ export type Database = {
           email: string
           exact_abonnement_id: string | null
           exact_account_id: string | null
+          exact_creditnota_amount: number | null
+          exact_creditnota_created_at: string | null
+          exact_creditnota_id: string | null
           exact_fout: string | null
           exact_invoice_amount: number | null
           exact_invoice_created_at: string | null
@@ -975,16 +978,28 @@ export type Database = {
           exact_status: string | null
           exact_sync_op: string | null
           extra_data: Json
+          functie_bij_aanvraag: string | null
+          functie_bij_heractivering: string | null
           geactiveerd_door: string | null
           geactiveerd_op: string | null
           geboortedatum: string | null
           gekozen_pakket: string | null
+          heractivering_datum: string | null
+          heractivering_door: string | null
           iban: string | null
           id: string
           ingangsdatum: string | null
           kvk_nummer: string | null
           omzet: string | null
           opmerkingen: string | null
+          opzeg_datum: string | null
+          opzeg_door: string | null
+          opzeg_reden: string | null
+          opzeg_toelichting: string | null
+          pauze_door: string | null
+          pauze_reden: string | null
+          pauze_reminder_verzonden_op: string | null
+          pauze_start_datum: string | null
           sepa_akkoord: boolean
           sepa_akkoord_datum: string | null
           status: Database["public"]["Enums"]["lead_status"]
@@ -1014,6 +1029,9 @@ export type Database = {
           email: string
           exact_abonnement_id?: string | null
           exact_account_id?: string | null
+          exact_creditnota_amount?: number | null
+          exact_creditnota_created_at?: string | null
+          exact_creditnota_id?: string | null
           exact_fout?: string | null
           exact_invoice_amount?: number | null
           exact_invoice_created_at?: string | null
@@ -1023,16 +1041,28 @@ export type Database = {
           exact_status?: string | null
           exact_sync_op?: string | null
           extra_data?: Json
+          functie_bij_aanvraag?: string | null
+          functie_bij_heractivering?: string | null
           geactiveerd_door?: string | null
           geactiveerd_op?: string | null
           geboortedatum?: string | null
           gekozen_pakket?: string | null
+          heractivering_datum?: string | null
+          heractivering_door?: string | null
           iban?: string | null
           id?: string
           ingangsdatum?: string | null
           kvk_nummer?: string | null
           omzet?: string | null
           opmerkingen?: string | null
+          opzeg_datum?: string | null
+          opzeg_door?: string | null
+          opzeg_reden?: string | null
+          opzeg_toelichting?: string | null
+          pauze_door?: string | null
+          pauze_reden?: string | null
+          pauze_reminder_verzonden_op?: string | null
+          pauze_start_datum?: string | null
           sepa_akkoord?: boolean
           sepa_akkoord_datum?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
@@ -1062,6 +1092,9 @@ export type Database = {
           email?: string
           exact_abonnement_id?: string | null
           exact_account_id?: string | null
+          exact_creditnota_amount?: number | null
+          exact_creditnota_created_at?: string | null
+          exact_creditnota_id?: string | null
           exact_fout?: string | null
           exact_invoice_amount?: number | null
           exact_invoice_created_at?: string | null
@@ -1071,16 +1104,28 @@ export type Database = {
           exact_status?: string | null
           exact_sync_op?: string | null
           extra_data?: Json
+          functie_bij_aanvraag?: string | null
+          functie_bij_heractivering?: string | null
           geactiveerd_door?: string | null
           geactiveerd_op?: string | null
           geboortedatum?: string | null
           gekozen_pakket?: string | null
+          heractivering_datum?: string | null
+          heractivering_door?: string | null
           iban?: string | null
           id?: string
           ingangsdatum?: string | null
           kvk_nummer?: string | null
           omzet?: string | null
           opmerkingen?: string | null
+          opzeg_datum?: string | null
+          opzeg_door?: string | null
+          opzeg_reden?: string | null
+          opzeg_toelichting?: string | null
+          pauze_door?: string | null
+          pauze_reden?: string | null
+          pauze_reminder_verzonden_op?: string | null
+          pauze_start_datum?: string | null
           sepa_akkoord?: boolean
           sepa_akkoord_datum?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
@@ -1167,6 +1212,53 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "policies_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      polis_audit_log: {
+        Row: {
+          actie: string
+          created_at: string
+          details: Json
+          exact_response: Json | null
+          fout_melding: string | null
+          id: string
+          lead_id: string
+          rol: string | null
+          succes: boolean
+          uitgevoerd_door: string | null
+        }
+        Insert: {
+          actie: string
+          created_at?: string
+          details?: Json
+          exact_response?: Json | null
+          fout_melding?: string | null
+          id?: string
+          lead_id: string
+          rol?: string | null
+          succes?: boolean
+          uitgevoerd_door?: string | null
+        }
+        Update: {
+          actie?: string
+          created_at?: string
+          details?: Json
+          exact_response?: Json | null
+          fout_melding?: string | null
+          id?: string
+          lead_id?: string
+          rol?: string | null
+          succes?: boolean
+          uitgevoerd_door?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "polis_audit_log_lead_id_fkey"
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
