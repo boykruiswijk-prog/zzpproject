@@ -257,38 +257,44 @@ Deno.serve(async (req) => {
           return json({ error: "ongeldige_status", current: lead.status }, 409);
         }
         if (!reden) return json({ error: "reden_verplicht" }, 400);
+        if (reden === "andere_reden" && !(pauze_toelichting ?? "").trim()) {
+          return json({ error: "toelichting_verplicht" }, 400);
+        }
 
         await supabase.from("leads").update({
           status: "gepauzeerd",
           pauze_start_datum: today,
           pauze_reden: reden,
+          pauze_toelichting: pauze_toelichting ?? null,
           pauze_door: uid,
           pauze_reminder_verzonden_op: null,
         }).eq("id", lead_id);
 
         await logAudit(supabase, {
           lead_id, actie: "pauzeren", uitgevoerd_door: uid, rol,
-          details: { reden, pauze_start_datum: today, vorige_status: lead.status },
+          details: { reden, toelichting: pauze_toelichting ?? null, pauze_start_datum: today, vorige_status: lead.status },
         });
 
-        await sendMail(recipientKlant, "Je polis is gepauzeerd",
+        const mailResults: any[] = [];
+        mailResults.push(await sendMail(recipientKlant, "Je polis is gepauzeerd",
           mailShell("Polis gepauzeerd", `
             <p>Hoi ${lead.voornaam},</p>
             <p>Je polis is per <strong>${today}</strong> gepauzeerd. Tijdens de pauze ben je niet meer gedekt voor nieuwe schade. Schade die vóór de pauze ontstond blijft gedekt.</p>
             <p><strong>Reden:</strong> ${reden}</p>
+            ${pauze_toelichting ? `<p><strong>Toelichting:</strong> ${pauze_toelichting}</p>` : ""}
             <p>Klaar om weer te starten? Log in op je portaal en klik op 'Hervatten'. Bij hervatting krijg je een creditnota voor de pauze-periode.</p>
             <p><a href="https://zzpproject.lovable.app/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
-          `));
+          `)));
 
-        await sendMail(ADMIN_EMAIL, `[Pauze] ${lead.voornaam} ${lead.achternaam} (${lead.bedrijfsnaam ?? "-"})`,
+        mailResults.push(await sendMail(ADMIN_EMAIL, `[Pauze] ${lead.voornaam} ${lead.achternaam} (${lead.bedrijfsnaam ?? "-"})`,
           mailShell("Polis gepauzeerd", `
             <p><strong>${lead.voornaam} ${lead.achternaam}</strong> (${lead.email}) heeft de polis gepauzeerd.</p>
             <p><strong>Reden:</strong> ${reden}<br/><strong>Datum:</strong> ${today}</p>
-          `));
+            ${pauze_toelichting ? `<p><strong>Toelichting:</strong> ${pauze_toelichting}</p>` : ""}
+          `)));
 
-        // Cross-sell signal naar Onefellow bij reden 'geen_opdrachten'
         if (reden === "geen_opdrachten") {
-          await sendMail(ONEFELLOW_EMAIL, `[ZP Zaken cross-sell] Klant zoekt opdrachten: ${lead.voornaam} ${lead.achternaam}`,
+          mailResults.push(await sendMail(ONEFELLOW_EMAIL, `[ZP Zaken cross-sell] Klant zoekt opdrachten: ${lead.voornaam} ${lead.achternaam}`,
             mailShell("Cross-sell signal", `
               <p>Een klant van ZP Zaken heeft de polis gepauzeerd omdat hij/zij geen opdrachten heeft.</p>
               <p><strong>Naam:</strong> ${lead.voornaam} ${lead.achternaam}<br/>
@@ -297,10 +303,10 @@ Deno.serve(async (req) => {
               <strong>Functie:</strong> ${lead.functie_bij_aanvraag ?? lead.beroep ?? "-"}<br/>
               <strong>Bedrijf:</strong> ${lead.bedrijfsnaam ?? "-"}</p>
               <p>Mogelijk een match voor jullie recruitment-pool.</p>
-            `));
+            `)));
         }
 
-        return json({ ok: true, status: "gepauzeerd", pauze_start_datum: today });
+        return json({ ok: true, status: "gepauzeerd", pauze_start_datum: today, mails: mailResults });
       }
 
       // ────────── HERVATTEN ──────────
