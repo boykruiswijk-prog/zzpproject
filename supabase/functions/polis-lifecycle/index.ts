@@ -168,7 +168,7 @@ async function postSalesInvoice(opts: {
   type: typeof TYPE_SALES_INVOICE | typeof TYPE_SALES_CREDIT;
   description: string;
   lineDescription: string;
-  unitPrice: number; // positief voor factuur, negatief voor creditnota
+  unitPrice: number; // positief voor beide types; Exact 8021 draait zelf het teken om
 }): Promise<
   | { ok: true; invoiceId: string; invoiceNumber: string | null; amount: number; raw: unknown; request: unknown }
   | { ok: false; summary: string; detail: Record<string, unknown>; request: unknown; httpStatus: number }
@@ -304,7 +304,7 @@ Deno.serve(async (req) => {
             type: TYPE_SALES_CREDIT,
             description: `Creditnota pauze polis BAV-AVB per ${fmtNL(today)}`,
             lineDescription: `Restitutie pauze ${fmtNL(today)} t/m ${fmtNL(eind)} (${calc.resterende_dagen} dagen × € ${calc.dagprijs.toFixed(4)})`,
-            unitPrice: -calc.credit_bedrag,
+            unitPrice: calc.credit_bedrag,
           });
           if (!res.ok) {
             // Logging-gat dichten: ook naar exact_sync_log naast polis_audit_log
