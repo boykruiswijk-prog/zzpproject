@@ -273,6 +273,9 @@ async function createExactInvoice(opts: {
     OrderedBy: accountId,
     Journal: INV_JOURNAL,
     PaymentCondition: INV_PAYMENT_COND,
+    // Exact API vereist expliciet 8020 (SalesInvoice). Werkte tot nu toe via
+    // tolerantie zonder Type-veld, maar explicieter is veiliger bij API-updates.
+    Type: 8020,
     Status: INV_STATUS_CONCEPT,
     InvoiceDate: invoiceDate,
     OrderDate: invoiceDate,
