@@ -73,7 +73,6 @@ export default function AdminLeadDetail() {
   const updateLead = useUpdateLead();
   const deleteLead = useDeleteLead();
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
 
   // Fetch existing policies for this lead
   const { data: policies, refetch: refetchPolicies } = useQuery({
@@ -91,21 +90,6 @@ export default function AdminLeadDetail() {
     enabled: !!id,
   });
 
-  // Fetch existing invoices for this lead
-  const { data: invoices, refetch: refetchInvoices } = useQuery({
-    queryKey: ["invoices", id],
-    queryFn: async () => {
-      if (!id) return [];
-      const { data, error } = await supabase
-        .from("invoices")
-        .select("*")
-        .eq("lead_id", id)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!id,
-  });
 
   const handleGenerateCertificate = async () => {
     if (!id) return;
