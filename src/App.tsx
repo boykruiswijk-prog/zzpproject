@@ -75,6 +75,7 @@ import PortalOverview from "./pages/portal/PortalOverview";
 import PortalPolicy from "./pages/portal/PortalPolicy";
 import PortalDocuments from "./pages/portal/PortalDocuments";
 import PortalInvoices from "./pages/portal/PortalInvoices";
+import PortalHeractiveer from "./pages/portal/PortalHeractiveer";
 
 /** Old WordPress URLs indexed by Google → redirect to new routes */
 const wpRedirects: Array<[string, string]> = [
@@ -245,6 +246,7 @@ const App = () => (
             <Route path="/portal/polis" element={<RequirePortalAuth><PortalPolicy /></RequirePortalAuth>} />
             <Route path="/portal/documenten" element={<RequirePortalAuth><PortalDocuments /></RequirePortalAuth>} />
             <Route path="/portal/facturen" element={<RequirePortalAuth><PortalInvoices /></RequirePortalAuth>} />
+            <Route path="/portal/heractiveer/:leadId" element={<RequirePortalAuth><PortalHeractiveer /></RequirePortalAuth>} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
