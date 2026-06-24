@@ -125,7 +125,7 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
       if (!data?.success) throw new Error(data?.error || "Onbekende fout");
       toast({
         title: "Factuur aangemaakt",
-        description: `Exact factuur ${data.exact_invoice_number ?? "(concept)"} — ${formatEuro(data.amount)}`,
+        description: `Exact factuur ${data.exact_invoice_number ?? "Concept in Exact (status: Open, nog te verwerken)"} — ${formatEuro(data.amount)}`,
       });
       qc.invalidateQueries({ queryKey: ["lead", lead.id] });
     } catch (e: any) {
