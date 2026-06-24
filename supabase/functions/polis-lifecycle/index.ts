@@ -165,7 +165,7 @@ async function postSalesInvoice(opts: {
   baseUrl: string; div: string; headers: Record<string, string>;
   // deno-lint-ignore no-explicit-any
   lead: any; itemId: string | null;
-  type: 20 | 21;
+  type: typeof TYPE_SALES_INVOICE | typeof TYPE_SALES_CREDIT;
   description: string;
   lineDescription: string;
   unitPrice: number; // positief voor factuur, negatief voor creditnota
