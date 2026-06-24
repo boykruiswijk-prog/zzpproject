@@ -54,7 +54,10 @@ Deno.serve(async (req) => {
 
   const jaarprijs = getJaarprijs(lead.gekozen_pakket);
   const eind = lead.polis_einddatum ?? calcPolisEinddatum(lead.ingangsdatum);
-  const today = new Date().toISOString().slice(0, 10);
+  const today = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Amsterdam",
+    year: "numeric", month: "2-digit", day: "2-digit",
+  }).format(new Date());
 
   if (action === "pauze") {
     const calc = calculatePauzeCredit({
