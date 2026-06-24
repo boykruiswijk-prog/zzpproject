@@ -61,13 +61,14 @@ Deno.serve(async (req) => {
     year: "numeric", month: "2-digit", day: "2-digit",
   }).format(new Date());
 
-  if (action === "pauze") {
+  if (action === "pauze" || action === "opzeg") {
     const calc = calculatePauzeCredit({
       ingangsdatum: lead.ingangsdatum, polis_einddatum: eind,
       jaarprijs, pauze_datum: today,
     });
+    const dateKey = action === "opzeg" ? "opzeg_datum" : "pauze_datum";
     return json({
-      ok: true, action, jaarprijs, polis_einddatum: eind, pauze_datum: today, ...calc,
+      ok: true, action, jaarprijs, polis_einddatum: eind, [dateKey]: today, ...calc,
     });
   }
   // hervat
