@@ -186,8 +186,8 @@ async function postSalesInvoice(opts: {
     Description: lineDescription,
   };
   if (itemId) line.Item = itemId;
-  if (periodStart) line.StartDate = `${periodStart}T00:00:00`;
-  if (periodEnd) line.EndDate = `${periodEnd}T00:00:00`;
+  if (periodStart) line.StartTime = `${periodStart}T00:00:00`;
+  if (periodEnd) line.EndTime = `${periodEnd}T00:00:00`;
   const payload = {
     InvoiceTo: lead.exact_account_id,
     OrderedBy: lead.exact_account_id,
