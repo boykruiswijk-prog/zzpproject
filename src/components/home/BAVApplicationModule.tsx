@@ -125,9 +125,9 @@ export function BAVApplicationModule() {
       if (!formData.adresPostcode.trim()) newErrors.adresPostcode = "Vul de postcode in";
       else if (!/^[1-9][0-9]{3}\s?[A-Za-z]{2}$/.test(formData.adresPostcode.trim())) newErrors.adresPostcode = "Postcode moet formaat 1234 AB hebben";
       if (!formData.adresPlaats.trim()) newErrors.adresPlaats = "Vul de plaats in";
-      // Acceptatie-criteria check: functie/branche tegen afgewezen lijst
+      // Acceptatie-criteria check op functie tegen afgewezen lijst
       if (formData.functie.trim()) {
-        const acc = checkAcceptance(formData.functie, formData.branche);
+        const acc = checkAcceptance(formData.functie);
         if (!acc.accepted) newErrors.functie = acc.reason!;
       }
       // >3 medewerkers blokkeert niet: gebruiker mag door, aanvraag wordt gemarkeerd voor handmatige beoordeling.
