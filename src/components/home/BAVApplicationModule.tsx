@@ -706,7 +706,7 @@ export function BAVApplicationModule() {
                           {[
                             { href: "/documenten/slotverklaring-2026.pdf", title: "Slotverklaring 2026" },
                             { href: "/documenten/dienstverleningsdocument.pdf", title: "Dienstverleningsdocument" },
-                            { href: verzekeringskaartPaden[formData.branche] || "/documenten/verzekeringskaart-zakelijke-dienstverlening.pdf", title: "Verzekeringskaart Beroepsaansprakelijkheid" },
+                            { href: VERZEKERINGSKAART_DEFAULT, title: "Verzekeringskaart Beroepsaansprakelijkheid" },
                             { href: "/documenten/verzekeringskaart-bedrijfsaansprakelijkheid.pdf", title: "Verzekeringskaart Bedrijfsaansprakelijkheid" },
                           ].map((doc) => (
                             <a
