@@ -38,25 +38,22 @@ export default function PortalLogin() {
     if (loading || cooldown > 0) return;
     setLoading(true);
 
-    const emailRedirectTo = `${window.location.origin}${redirect}`;
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: {
-        // Cruciaal: nooit automatisch een nieuw account aanmaken.
-        shouldCreateUser: false,
-        emailRedirectTo,
-      },
-    });
+    try {
+      const { error } = await supabase.functions.invoke("send-portal-magiclink", {
+        body: { email: email.trim(), redirect },
+      });
+      if (error) {
+        // eslint-disable-next-line no-console
+        console.debug("[portal-login] send-portal-magiclink:", error.message);
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.debug("[portal-login] invoke failed:", err);
+    }
 
     setLoading(false);
     setSent(true);
     setCooldown(THROTTLE_MS / 1000);
-
-    if (error) {
-      // Bewust geen foutmelding tonen die het bestaan van een account verklapt.
-      // eslint-disable-next-line no-console
-      console.debug("[portal-login] signInWithOtp:", error.message);
-    }
   };
 
   return (
