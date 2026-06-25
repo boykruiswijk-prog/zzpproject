@@ -125,7 +125,9 @@ export function OnlineAanvraagDialog({
   };
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
     setIsSubmitting(true);
+    
     
     try {
        // Save to database for admin dashboard

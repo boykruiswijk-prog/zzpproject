@@ -104,6 +104,47 @@ function renderText(label: string, fields: Record<string, unknown>): string {
   return `Nieuwe ${label} via zpzaken.nl\n\n${lines}\n`;
 }
 
+const CUSTOMER_INTRO: Record<string, string> = {
+  bav: "We hebben je BAV-aanvraag in goede orde ontvangen. Onze acceptant beoordeelt je aanvraag en neemt binnen één werkdag contact met je op.",
+  "verzekering-aanvraag": "We hebben je verzekeringsaanvraag in goede orde ontvangen. Een van onze adviseurs neemt binnen één werkdag contact met je op om de aanvraag af te ronden.",
+  "offerte-aanvraag": "We hebben je offerteaanvraag in goede orde ontvangen. Je ontvangt binnen één werkdag een persoonlijke offerte van ons.",
+  contact: "Bedankt voor je bericht. We nemen zo spoedig mogelijk, uiterlijk binnen één werkdag, contact met je op.",
+};
+
+function renderCustomerHtml(type: string, label: string, fields: Record<string, unknown>): string {
+  const intro = CUSTOMER_INTRO[type] || "We hebben je aanvraag in goede orde ontvangen en nemen binnen één werkdag contact met je op.";
+  const SHOW_KEYS = new Set([
+    "naam", "contact_naam", "bedrijfsnaam", "kvk_nummer", "pakket", "gekozen_pakket",
+    "dekking", "betaalwijze", "ingangsdatum", "verzekering", "premie",
+  ]);
+  const visible = Object.entries(fields).filter(([k, v]) => SHOW_KEYS.has(k) && v != null && String(v).trim() !== "" && String(v).trim() !== "-");
+  const rows = visible
+    .map(([k, v]) => `<tr><td style="padding:10px 14px;font-weight:600;color:#333;background:#fafafa;border:1px solid #e5e5e5;width:200px">${esc(prettyLabel(k))}</td><td style="padding:10px 14px;border:1px solid #e5e5e5;color:#222">${esc(Array.isArray(v) ? v.join(", ") : v)}</td></tr>`)
+    .join("");
+  return `
+    <div style="font-family:Arial,sans-serif;max-width:640px;color:#222;line-height:1.6">
+      <h2 style="color:#222;font-size:18px;font-weight:600;margin:0 0 16px 0">Bevestiging van je aanvraag</h2>
+      <p style="margin:0 0 14px 0">Beste relatie,</p>
+      <p style="margin:0 0 18px 0">${esc(intro)}</p>
+      ${rows ? `<p style="margin:0 0 8px 0;font-weight:600;color:#333">Samenvatting van je gegevens</p><table style="border-collapse:collapse;width:100%;margin:0 0 18px 0">${rows}</table>` : ""}
+      <p style="margin:0 0 14px 0">Heb je tussentijds een vraag? Bel ons gerust op <a href="tel:+31204573077" style="color:#E53E2F;text-decoration:none">020 - 457 3077</a> of mail naar <a href="mailto:info@zpzaken.nl" style="color:#E53E2F;text-decoration:none">info@zpzaken.nl</a>.</p>
+      <p style="margin:0 0 24px 0">Met vriendelijke groet,<br/>Team ZP Zaken</p>
+      <hr style="border:none;border-top:1px solid #e5e5e5;margin:8px 0 12px 0" />
+      <p style="margin:0;color:#888;font-size:12px"><strong style="color:#555">ZP Zaken</strong><br/>Dit is een automatisch verzonden bevestiging. Reageren op deze mail kan rechtstreeks naar info@zpzaken.nl.</p>
+    </div>
+  `;
+}
+
+function renderCustomerText(type: string, fields: Record<string, unknown>): string {
+  const intro = CUSTOMER_INTRO[type] || "We hebben je aanvraag in goede orde ontvangen en nemen binnen één werkdag contact met je op.";
+  const SHOW_KEYS = new Set(["naam","contact_naam","bedrijfsnaam","kvk_nummer","pakket","gekozen_pakket","dekking","betaalwijze","ingangsdatum","verzekering","premie"]);
+  const lines = Object.entries(fields)
+    .filter(([k, v]) => SHOW_KEYS.has(k) && v != null && String(v).trim() !== "" && String(v).trim() !== "-")
+    .map(([k, v]) => `- ${prettyLabel(k)}: ${Array.isArray(v) ? v.join(", ") : v}`)
+    .join("\n");
+  return `Bevestiging van je aanvraag\n\n${intro}\n\n${lines ? `Samenvatting:\n${lines}\n\n` : ""}Met vriendelijke groet,\nTeam ZP Zaken\n020 - 457 3077\ninfo@zpzaken.nl\n`;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") {
@@ -130,7 +171,6 @@ Deno.serve(async (req) => {
     const isProd = appEnv === "production";
     const recipient = isProd ? baseRecipient : "boy.kruiswijk@zpzaken.nl";
     const bccList = isProd ? BCC_DEFAULT : [];
-    const ccList = isProd && userEmail ? [userEmail] : undefined;
 
     const label = LEAD_LABELS[type] || type;
     const subjBase = (SUBJECTS[type] || ((r: string) => `Nieuwe lead (${type}) via zpzaken.nl - ${r}`))(reference || leadId || "");
@@ -156,7 +196,6 @@ Deno.serve(async (req) => {
       const sendRes: any = await resend.emails.send({
         from: Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <onboarding@resend.dev>",
         to: [recipient],
-        cc: ccList,
         bcc: bccList.length ? bccList : undefined,
         reply_to: isProd ? ((fields.email as string) || undefined) : undefined,
         subject, html, text,
@@ -165,7 +204,7 @@ Deno.serve(async (req) => {
       if (sendRes?.error) {
         const msg = `${sendRes.error.name ?? "resend"}: ${sendRes.error.message ?? JSON.stringify(sendRes.error)}`;
         await supabase.from("lead_notification_log").insert({
-          lead_type: type, lead_id: leadId ?? null, recipient, cc: userEmail ?? null,
+          lead_type: type, lead_id: leadId ?? null, recipient, cc: null,
           subject, status: "failed", error_message: msg, metadata: fields,
         });
         return new Response(JSON.stringify({ success: false, error: msg }), {
@@ -174,11 +213,45 @@ Deno.serve(async (req) => {
       }
 
       await supabase.from("lead_notification_log").insert({
-        lead_type: type, lead_id: leadId ?? null, recipient, cc: userEmail ?? null,
+        lead_type: type, lead_id: leadId ?? null, recipient, cc: null,
         subject, status: "sent",
         resend_message_id: sendRes?.data?.id ?? null,
         metadata: fields,
       });
+
+      // Klantbevestigingsmail (alleen als userEmail aanwezig)
+      const customerEmailRaw = (userEmail || (fields.email as string | undefined) || "").trim();
+      if (customerEmailRaw) {
+        const customerRecipient = isProd ? customerEmailRaw : "boy.kruiswijk@zpzaken.nl";
+        const customerSubjBase = `Bevestiging van je aanvraag bij ZP Zaken`;
+        const customerSubject = isProd ? customerSubjBase : `[PREVIEW] ${customerSubjBase} (origineel naar ${customerEmailRaw})`;
+        try {
+          const custRes: any = await resend.emails.send({
+            from: Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <onboarding@resend.dev>",
+            to: [customerRecipient],
+            reply_to: "info@zpzaken.nl",
+            subject: customerSubject,
+            html: renderCustomerHtml(type, label, fields),
+            text: renderCustomerText(type, fields),
+          });
+          await supabase.from("lead_notification_log").insert({
+            lead_type: type, lead_id: leadId ?? null, recipient: customerRecipient, cc: null,
+            subject: customerSubject,
+            status: custRes?.error ? "failed" : "sent",
+            error_message: custRes?.error ? `${custRes.error.name ?? "resend"}: ${custRes.error.message ?? ""}` : null,
+            resend_message_id: custRes?.data?.id ?? null,
+            metadata: { ...fields, customer_confirmation: true },
+          });
+        } catch (custErr) {
+          const cmsg = custErr instanceof Error ? custErr.message : String(custErr);
+          console.error("Customer confirmation send error", cmsg);
+          await supabase.from("lead_notification_log").insert({
+            lead_type: type, lead_id: leadId ?? null, recipient: customerRecipient, cc: null,
+            subject: customerSubject, status: "failed", error_message: cmsg,
+            metadata: { ...fields, customer_confirmation: true },
+          });
+        }
+      }
 
       return new Response(JSON.stringify({ success: true }), {
         status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },

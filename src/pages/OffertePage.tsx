@@ -114,6 +114,7 @@ export default function OffertePage() {
 
   const handleSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
+    if (submitting) return;
     if (!validate()) {
       toast({
         title: "Vul de verplichte velden in",
