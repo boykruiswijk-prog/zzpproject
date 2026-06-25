@@ -2,6 +2,9 @@
 // aan in Exact divisie 4401707 (ZP Zaken B.V.) op basis van een lead.
 // Doet GEEN factuur — fase 2.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import {
+  isMaandPolis, getMaandprijs, lastOfMonth, calcMaandProrata, calcPolisEinddatum,
+} from "../_shared/polisProRata.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
