@@ -49,7 +49,6 @@ interface BavSubmission {
   kvk_nummer?: string;
   beroep?: string;
   sector?: string;
-  branche?: string;
   adres_straat?: string;
   adres_huisnummer?: string;
   adres_postcode?: string;
