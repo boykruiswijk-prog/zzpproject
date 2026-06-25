@@ -65,27 +65,10 @@ export function BAVApplicationModule() {
     voornaam: "", achternaam: "", email: "", telefoon: "",
     opdrachtgever: "", bemiddelaarNaam: "",
     iban: "",
-    branche: "zakelijke-dienstverlening",
     adresStraat: "", adresHuisnummer: "", adresPostcode: "", adresPlaats: "",
   });
 
-  const BRANCHES = [
-    { value: "ict", label: "IT & ICT", desc: "Voor IT-professionals, developers, scrum masters" },
-    { value: "hr-finance", label: "HR & Finance consultancy", desc: "HR-, finance- en compliance-specialisten" },
-    { value: "pr-marketing", label: "PR & Marketing", desc: "Communicatie, content en marketing" },
-    { value: "management-consultancy", label: "Management consultancy", desc: "Strategie- en organisatieadvies" },
-    { value: "coaches", label: "Coaches", desc: "Loopbaan-, life- en business coaches" },
-    { value: "zakelijke-dienstverlening", label: "Zakelijke dienstverlening", desc: "Overige zakelijke dienstverlening" },
-  ];
-
-  const verzekeringskaartPaden: Record<string, string> = {
-    "ict": "/documenten/verzekeringskaart-ict.pdf",
-    "hr-finance": "/documenten/verzekeringskaart-management-consultancy.pdf",
-    "pr-marketing": "/documenten/verzekeringskaart-pr-marketing.pdf",
-    "management-consultancy": "/documenten/verzekeringskaart-management-consultancy.pdf",
-    "coaches": "/documenten/verzekeringskaart-coaches.pdf",
-    "zakelijke-dienstverlening": "/documenten/verzekeringskaart-zakelijke-dienstverlening.pdf",
-  };
+  const VERZEKERINGSKAART_DEFAULT = "/documenten/verzekeringskaart-zakelijke-dienstverlening.pdf";
 
   const steps = [
     { id: 1, name: t("home.bavStep1"), icon: Shield },
@@ -142,9 +125,9 @@ export function BAVApplicationModule() {
       if (!formData.adresPostcode.trim()) newErrors.adresPostcode = "Vul de postcode in";
       else if (!/^[1-9][0-9]{3}\s?[A-Za-z]{2}$/.test(formData.adresPostcode.trim())) newErrors.adresPostcode = "Postcode moet formaat 1234 AB hebben";
       if (!formData.adresPlaats.trim()) newErrors.adresPlaats = "Vul de plaats in";
-      // Acceptatie-criteria check: functie/branche tegen afgewezen lijst
+      // Acceptatie-criteria check op functie tegen afgewezen lijst
       if (formData.functie.trim()) {
-        const acc = checkAcceptance(formData.functie, formData.branche);
+        const acc = checkAcceptance(formData.functie);
         if (!acc.accepted) newErrors.functie = acc.reason!;
       }
       // >3 medewerkers blokkeert niet: gebruiker mag door, aanvraag wordt gemarkeerd voor handmatige beoordeling.
@@ -219,7 +202,6 @@ export function BAVApplicationModule() {
              bedrijfsnaam: formData.bedrijfsnaam,
              kvk_nummer: formData.kvkNummer || null,
              beroep: formData.beroep || null,
-             branche: formData.branche || null,
              adres_straat: formData.adresStraat || null,
              adres_huisnummer: formData.adresHuisnummer || null,
              adres_postcode: formData.adresPostcode || null,
@@ -539,27 +521,6 @@ export function BAVApplicationModule() {
                         <FieldError message={errors.beroep} />
                       </div>
                       <div>
-                        <Label className="mb-2 block">Branche *</Label>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                          {BRANCHES.map((b) => (
-                            <button
-                              type="button"
-                              key={b.value}
-                              onClick={() => setFormData((prev) => ({ ...prev, branche: b.value }))}
-                              className={cn(
-                                "text-left p-3 rounded-lg border-2 transition-all text-xs",
-                                formData.branche === b.value
-                                  ? "border-accent bg-accent/5"
-                                  : "border-border hover:border-accent/50"
-                              )}
-                            >
-                              <div className="font-medium">{b.label}</div>
-                              <div className="text-muted-foreground text-[11px] mt-0.5">{b.desc}</div>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                      <div>
                         <Label htmlFor="functie">{t("home.bavFunction")} *</Label>
                         <Input id="functie" name="functie" value={formData.functie} onChange={handleInputChange} placeholder={t("bavApp.functionPlaceholder")} className={cn(errors.functie && "border-destructive")} />
                         <FieldError message={errors.functie} />
@@ -745,7 +706,7 @@ export function BAVApplicationModule() {
                           {[
                             { href: "/documenten/slotverklaring-2026.pdf", title: "Slotverklaring 2026" },
                             { href: "/documenten/dienstverleningsdocument.pdf", title: "Dienstverleningsdocument" },
-                            { href: verzekeringskaartPaden[formData.branche] || "/documenten/verzekeringskaart-zakelijke-dienstverlening.pdf", title: "Verzekeringskaart Beroepsaansprakelijkheid" },
+                            { href: VERZEKERINGSKAART_DEFAULT, title: "Verzekeringskaart Beroepsaansprakelijkheid" },
                             { href: "/documenten/verzekeringskaart-bedrijfsaansprakelijkheid.pdf", title: "Verzekeringskaart Bedrijfsaansprakelijkheid" },
                           ].map((doc) => (
                             <a

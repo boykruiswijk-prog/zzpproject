@@ -49,7 +49,6 @@ interface BavSubmission {
   kvk_nummer?: string;
   beroep?: string;
   sector?: string;
-  branche?: string;
   adres_straat?: string;
   adres_huisnummer?: string;
   adres_postcode?: string;
@@ -143,7 +142,6 @@ Deno.serve(async (req) => {
         bedrijfsnaam: submission.bedrijfsnaam,
         kvk_nummer: submission.kvk_nummer || null,
         beroep: submission.beroep || null,
-        branche: submission.branche || null,
         adres_straat: submission.adres_straat || null,
         adres_huisnummer: submission.adres_huisnummer || null,
         adres_postcode: submission.adres_postcode || null,
