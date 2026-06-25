@@ -202,7 +202,6 @@ export function BAVApplicationModule() {
              bedrijfsnaam: formData.bedrijfsnaam,
              kvk_nummer: formData.kvkNummer || null,
              beroep: formData.beroep || null,
-             branche: formData.branche || null,
              adres_straat: formData.adresStraat || null,
              adres_huisnummer: formData.adresHuisnummer || null,
              adres_postcode: formData.adresPostcode || null,
