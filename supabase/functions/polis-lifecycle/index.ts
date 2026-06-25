@@ -296,8 +296,11 @@ Deno.serve(async (req) => {
         });
 
         // Creditnota in Exact (alleen als account + factuur reeds bestaan)
+        // Maandpolis: GEEN creditnota (toekomstige maandfacturen worden simpelweg gestopt).
         let creditResult: any = { skipped: true, reden: "Geen Exact-account gekoppeld" };
-        if (lead.exact_account_id && calc.credit_bedrag > 0) {
+        if (isMaandPolis(lead.gekozen_pakket)) {
+          creditResult = { skipped: true, reden: "Maandpolis — geen creditnota, maandcron stopt vanzelf" };
+        } else if (lead.exact_account_id && calc.credit_bedrag > 0) {
           const ctx = await exactCtx();
           if (!ctx) {
             return json({ error: "exact_niet_beschikbaar" }, 500);
@@ -307,8 +310,9 @@ Deno.serve(async (req) => {
             lead, itemId: ctx.itemId,
             type: TYPE_SALES_CREDIT,
             description: `Creditnota pauze polis BAV-AVB per ${fmtNL(today)}`,
-            lineDescription: `Restitutie pauze ${fmtNL(today)} t/m ${fmtNL(eind)} (${calc.resterende_dagen} dagen × € ${calc.dagprijs.toFixed(4)})`,
+            lineDescription: `Restitutie pauze - Periode ${fmtNL(today)} t/m ${fmtNL(eind)} (${calc.resterende_dagen} dagen × € ${calc.dagprijs.toFixed(4)})`,
             unitPrice: calc.credit_bedrag,
+            periodStart: today, periodEnd: eind,
           });
           if (!res.ok) {
             // Logging-gat dichten: ook naar exact_sync_log naast polis_audit_log
