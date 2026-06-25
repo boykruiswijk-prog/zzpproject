@@ -1175,6 +1175,68 @@ export type Database = {
         }
         Relationships: []
       }
+      monthly_invoices_log: {
+        Row: {
+          bedrag: number
+          created_at: string
+          error_message: string | null
+          exact_invoice_id: string | null
+          exact_invoice_number: string | null
+          factuur_jaar: number
+          factuur_maand: number
+          id: string
+          lead_id: string
+          payload: Json | null
+          periode_eind: string
+          periode_start: string
+          polis_einddatum: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          bedrag: number
+          created_at?: string
+          error_message?: string | null
+          exact_invoice_id?: string | null
+          exact_invoice_number?: string | null
+          factuur_jaar: number
+          factuur_maand: number
+          id?: string
+          lead_id: string
+          payload?: Json | null
+          periode_eind: string
+          periode_start: string
+          polis_einddatum?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          bedrag?: number
+          created_at?: string
+          error_message?: string | null
+          exact_invoice_id?: string | null
+          exact_invoice_number?: string | null
+          factuur_jaar?: number
+          factuur_maand?: number
+          id?: string
+          lead_id?: string
+          payload?: Json | null
+          periode_eind?: string
+          periode_start?: string
+          polis_einddatum?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "monthly_invoices_log_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       policies: {
         Row: {
           avb_per_event: string
