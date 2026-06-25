@@ -129,7 +129,11 @@ export function OnlineAanvraagDialog({
     
     try {
        // Save to database for admin dashboard
-      const { data: lead, error } = await supabase.from("leads").insert({
+       // Note: anon-rol heeft geen SELECT op leads. We genereren het id client-side
+       // zodat we het kunnen meegeven aan de notificatie zonder terug te lezen.
+      const leadId = (globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`);
+      const { error } = await supabase.from("leads").insert({
+        id: leadId,
         type: "verzekering_aanvraag",
         voornaam: formData.voornaam,
         achternaam: formData.achternaam,
@@ -146,7 +150,7 @@ export function OnlineAanvraagDialog({
         ingangsdatum: formData.ingangsdatum || null,
         opmerkingen: formData.opmerkingen || null,
         bron: "website",
-      }).select().single();
+      });
 
        if (error) {
          console.error("Database error:", error);
@@ -158,8 +162,8 @@ export function OnlineAanvraagDialog({
         .invoke("send-lead-notification", {
           body: {
             type: "verzekering-aanvraag",
-            leadId: lead?.id,
-            reference: lead?.id ? String(lead.id).slice(0, 8) : "",
+            leadId: leadId,
+            reference: String(leadId).slice(0, 8),
             userEmail: formData.email,
             fields: {
               naam: `${formData.voornaam} ${formData.achternaam}`,
