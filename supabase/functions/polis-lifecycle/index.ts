@@ -424,7 +424,9 @@ Deno.serve(async (req) => {
         });
 
         let factuurResult: any = { skipped: true, reden: "Geen Exact-account of bedrag = 0" };
-        if (lead.exact_account_id && calc.factuur_bedrag > 0) {
+        if (isMaandPolis(lead.gekozen_pakket)) {
+          factuurResult = { skipped: true, reden: "Maandpolis — geen pro-rata factuur, maandcron hervat vanaf 1e van komende maand" };
+        } else if (lead.exact_account_id && calc.factuur_bedrag > 0) {
           const ctx = await exactCtx();
           if (!ctx) return json({ error: "exact_niet_beschikbaar" }, 500);
           const res = await postSalesInvoice({
@@ -432,8 +434,9 @@ Deno.serve(async (req) => {
             lead, itemId: ctx.itemId,
             type: TYPE_SALES_INVOICE,
             description: `Premie BAV-AVB vanaf ${fmtNL(today)} t/m ${fmtNL(eind)}`,
-            lineDescription: `Premie pro-rata ${fmtNL(today)} t/m ${fmtNL(eind)} (${calc.resterende_dagen} dagen × € ${calc.dagprijs.toFixed(4)})`,
+            lineDescription: `BAV-AVB premie hervat - Periode ${fmtNL(today)} t/m ${fmtNL(eind)} (${calc.resterende_dagen} dagen × € ${calc.dagprijs.toFixed(4)})`,
             unitPrice: calc.factuur_bedrag,
+            periodStart: today, periodEnd: eind,
           });
           if (!res.ok) {
             await supabase.from("exact_sync_log").insert({
