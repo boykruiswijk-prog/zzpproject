@@ -43,3 +43,6 @@ project_id = "eugkavokktjwpqaqlwsj"
 
  [functions.monthly-invoices-cron]
  verify_jwt = false
+
+ [functions.send-portal-magiclink]
+ verify_jwt = false
