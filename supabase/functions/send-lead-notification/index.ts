@@ -98,9 +98,23 @@ Deno.serve(async (req) => {
       });
     }
     const { type, leadId, reference, recipientEmail, userEmail, fields } = parsed.data;
-    const recipient = recipientEmail || "info@zpzaken.nl";
+    const TO_DEFAULT = "info@zpzaken.nl";
+    const BCC_DEFAULT = ["boy.kruiswijk@zpzaken.nl", "ellen.baars@zpzaken.nl"];
+    const baseRecipient = recipientEmail || TO_DEFAULT;
+
+    // Env-guard: in preview/local gaan alle mails naar 1 test-adres met [PREVIEW] prefix.
+    const appEnv = (Deno.env.get("APP_ENV") || "production").toLowerCase();
+    const isProd = appEnv === "production";
+    const recipient = isProd ? baseRecipient : "boy.kruiswijk+test@zpzaken.nl";
+    const bccList = isProd ? BCC_DEFAULT : [];
+    const ccList = isProd && userEmail ? [userEmail] : undefined;
+
     const label = LEAD_LABELS[type] || type;
-    const subject = (SUBJECTS[type] || ((r: string) => `Nieuwe lead (${type}) via zpzaken.nl - ${r}`))(reference || leadId || "");
+    const subjBase = (SUBJECTS[type] || ((r: string) => `Nieuwe lead (${type}) via zpzaken.nl - ${r}`))(reference || leadId || "");
+    const subject = isProd ? subjBase : `[PREVIEW/${appEnv}] ${subjBase}`;
+
+    const adminBase = (Deno.env.get("ADMIN_BASE_URL") || "https://zpzaken.nl").replace(/\/$/, "");
+    const deeplink = leadId ? `${adminBase}/admin/leads/${leadId}` : null;
 
     if (!resend) {
       await supabase.from("lead_notification_log").insert({
@@ -112,15 +126,16 @@ Deno.serve(async (req) => {
       });
     }
 
-    const html = renderHtml(label, fields, leadId);
-    const text = renderText(label, fields);
+    const html = renderHtml(label, fields, leadId, deeplink);
+    const text = renderText(label, fields) + (deeplink ? `\nOpen in admin: ${deeplink}\n` : "");
 
     try {
       const sendRes: any = await resend.emails.send({
         from: Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <onboarding@resend.dev>",
         to: [recipient],
-        cc: userEmail ? [userEmail] : undefined,
-        reply_to: (fields.email as string) || undefined,
+        cc: ccList,
+        bcc: bccList.length ? bccList : undefined,
+        reply_to: isProd ? ((fields.email as string) || undefined) : undefined,
         subject, html, text,
       });
 
