@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { usePortalAuth } from "@/contexts/PortalAuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Download, Upload, FolderOpen } from "lucide-react";
+import { Loader2, Download } from "lucide-react";
 
 interface FileRow {
   name: string;
@@ -18,7 +18,6 @@ export default function PortalDocuments() {
   const { toast } = useToast();
   const [files, setFiles] = useState<FileRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false);
 
   const load = async () => {
     if (!user) return;
@@ -39,22 +38,6 @@ export default function PortalDocuments() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
-    setUploading(true);
-    const path = `${user.id}/${Date.now()}-${file.name}`;
-    const { error } = await supabase.storage.from("klant-documenten").upload(path, file);
-    setUploading(false);
-    e.target.value = "";
-    if (error) {
-      toast({ title: "Upload mislukt", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Geüpload" });
-      load();
-    }
-  };
-
   const handleDownload = async (name: string) => {
     if (!user) return;
     const { data, error } = await supabase.storage
@@ -69,16 +52,7 @@ export default function PortalDocuments() {
 
   return (
     <PortalLayout>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Documenten</h1>
-        <Button variant="accent" asChild disabled={uploading}>
-          <label className="cursor-pointer">
-            {uploading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Upload className="h-4 w-4 mr-2" />}
-            Upload bestand
-            <input type="file" className="hidden" onChange={handleUpload} />
-          </label>
-        </Button>
-      </div>
+      <h1 className="text-3xl font-bold mb-6">Documenten</h1>
 
       <Card>
         <CardHeader>
@@ -87,10 +61,9 @@ export default function PortalDocuments() {
         <CardContent>
           {loading && <Loader2 className="h-6 w-6 animate-spin text-accent" />}
           {!loading && files.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground">
-              <FolderOpen className="h-12 w-12 mx-auto mb-3 opacity-40" />
-              <p>Nog geen documenten geüpload.</p>
-            </div>
+            <p className="text-sm text-muted-foreground py-4">
+              Er zijn op dit moment geen documenten beschikbaar.
+            </p>
           )}
           <ul className="divide-y">
             {files.map((f) => (
