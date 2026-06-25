@@ -1,5 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { resolveEnvironment } from "../_shared/environment.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -65,8 +66,19 @@ Deno.serve(async (req) => {
       });
     }
 
-    const origin = req.headers.get("origin") || "https://zpzaken.nl";
-    const redirectTo = `${origin}${redirect}`;
+    // Centrale, fail-safe omgevingsdetectie (host-based, APP_ENV is secundair).
+    const env = resolveEnvironment(req);
+    console.log("[send-portal-magiclink] env:", JSON.stringify(env));
+
+    // Bepaal de basis-URL voor de magic-link redirect dynamisch op basis van
+    // de host waarop de app draait. Geen hardcoded productiedomein.
+    const originHeader = req.headers.get("origin");
+    const baseUrl = originHeader
+      ? originHeader.replace(/\/$/, "")
+      : env.isProduction
+        ? "https://zpzaken.nl"
+        : "https://zzpproject.lovable.app";
+    const redirectTo = `${baseUrl}${redirect}`;
 
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
@@ -142,6 +154,16 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Preview-redirect: in non-prod gaat de magic-link mail naar het testadres
+    // met [PREVIEW] prefix, nooit naar de echte klant. Productie: rechtstreeks
+    // naar de klant. Volgt dezelfde centrale helper als send-lead-notification.
+    const realRecipient = email;
+    const mailRecipient = env.isProduction ? realRecipient : "boy.kruiswijk@zpzaken.nl";
+    const subjectBase = "Je inloglink voor het ZP Zaken klantportaal";
+    const subject = env.isProduction
+      ? subjectBase
+      : `[PREVIEW] ${subjectBase} (origineel naar ${realRecipient})`;
+
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -150,11 +172,19 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         from: FROM,
-        to: [email],
-        subject: "Je inloglink voor het ZP Zaken klantportaal",
+        to: [mailRecipient],
+        subject,
         html: buildHtml(actionUrl),
       }),
     });
+
+    if (!resendRes.ok) {
+      const t = await resendRes.text();
+      console.error("[send-portal-magiclink] Resend error", resendRes.status, t);
+    } else {
+      const j = await resendRes.json().catch(() => ({}));
+      console.log(`[send-portal-magiclink] sent to ${mailRecipient} (real=${realRecipient})`, j?.id);
+    }
 
     if (!resendRes.ok) {
       const t = await resendRes.text();
