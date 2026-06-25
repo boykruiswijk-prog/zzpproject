@@ -95,7 +95,7 @@ Deno.serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "ZP Zaken <info@zpzaken.nl>",
+          from: Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <info@zpzaken.nl>",
           to: [email],
           subject: "Uitnodiging voor het ZP Zaken klantportaal",
           html,
