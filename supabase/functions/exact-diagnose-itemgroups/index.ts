@@ -130,6 +130,8 @@ Deno.serve(async (req) => {
       const target = url.searchParams.get("target") || "line";
       const field = url.searchParams.get("field") || "";
       const value = url.searchParams.get("value") || "2026-06-25T00:00:00";
+      const field2 = url.searchParams.get("field2") || "";
+      const value2 = url.searchParams.get("value2") || "2027-06-22T00:00:00";
       const bogusAccount = "00000000-0000-0000-0000-000000000001";
       const writeHeaders = {
         Authorization: `Bearer ${token}`,
@@ -161,6 +163,10 @@ Deno.serve(async (req) => {
       if (field) {
         if (target === "header") payload[field] = value;
         else line[field] = value;
+      }
+      if (field2) {
+        if (target === "header") payload[field2] = value2;
+        else line[field2] = value2;
       }
       const r = await fetch(`${baseUrl}/api/v1/${division}/salesinvoice/SalesInvoices`, {
         method: "POST", headers: writeHeaders, body: JSON.stringify(payload),
