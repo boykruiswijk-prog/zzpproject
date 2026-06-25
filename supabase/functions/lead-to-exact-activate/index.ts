@@ -566,9 +566,26 @@ Deno.serve(async (req) => {
     if (!itemEnsure.ok) {
       return json({ success: false, error: "item_bootstrap_failed", detail: itemEnsure.detail, http_status: itemEnsure.httpStatus }, 500);
     }
+    // Maandpolis-instap pro-rata override (zelfde regel als initiele activatie)
+    let retryOverride: Parameters<typeof createExactInvoice>[0]["override"] = undefined;
+    if (isMaandPolis(lead.gekozen_pakket) && lead.ingangsdatum) {
+      const startStr = String(lead.ingangsdatum).slice(0, 10);
+      const endStr = lastOfMonth(startStr);
+      const calc = calcMaandProrata({
+        maandprijs: getMaandprijs(lead.gekozen_pakket),
+        vanaf_datum: startStr, tot_datum: endStr,
+      });
+      const fmt = (iso: string) => { const d = new Date(iso); return `${String(d.getUTCDate()).padStart(2, "0")}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${d.getUTCFullYear()}`; };
+      retryOverride = {
+        amount: calc.bedrag,
+        headerDescription: `BAV-AVB premie pro-rata instap ${fmt(startStr)} t/m ${fmt(endStr)}`,
+        lineDescription: `BAV-AVB premie pro-rata - Periode ${fmt(startStr)} t/m ${fmt(endStr)} (${calc.dagen} dagen × € ${calc.dagprijs.toFixed(4)})`,
+        periodStart: startStr, periodEnd: endStr,
+      };
+    }
     const invRes = await createExactInvoice({
       baseUrl, div, headers, accountId: lead.exact_account_id, lead, pakketSpec: spec,
-      itemId: itemEnsure.itemId,
+      itemId: itemEnsure.itemId, override: retryOverride,
     });
 
 
