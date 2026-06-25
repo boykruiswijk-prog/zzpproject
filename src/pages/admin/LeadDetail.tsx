@@ -12,6 +12,7 @@ import { formatDateNL, formatDateLongNL, formatDateTimeLongNL } from "@/lib/date
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -368,6 +369,19 @@ export default function AdminLeadDetail() {
                           ))}
                         </SelectContent>
                       </Select>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="text-muted-foreground text-sm block mb-1">
+                        IBAN {lead.iban ? "" : "(nog niet ingevuld)"}
+                      </label>
+                      <Input
+                        className="max-w-xs"
+                        placeholder="NLxxXXXXxxxxxxxxx"
+                        value={lead.iban ?? ""}
+                        onChange={(e) =>
+                          updateLead.mutate({ id, updates: { iban: e.target.value } as any })
+                        }
+                      />
                     </div>
                   </div>
                 </div>
