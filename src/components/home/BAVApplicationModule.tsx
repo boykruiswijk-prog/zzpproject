@@ -57,6 +57,7 @@ export function BAVApplicationModule() {
    const [slotverklaringAkkoord, setSlotverklaringAkkoord] = useState(false);
    const [errors, setErrors] = useState<ValidationErrors>({});
    const [isSubmitted, setIsSubmitted] = useState(false);
+   const [isSubmitting, setIsSubmitting] = useState(false);
    const [existingCustomerOpen, setExistingCustomerOpen] = useState(false);
    const [isCheckingExisting, setIsCheckingExisting] = useState(false);
    useEffect(() => { trackBeginWizard(); }, []);
@@ -188,52 +189,55 @@ export function BAVApplicationModule() {
   };
   const prevStep = () => { if (currentStep > 1) { setErrors({}); setCurrentStep(currentStep - 1); } };
    const handleSubmit = async () => {
-     if (validateStep(currentStep)) {
-       try {
-         const { data, error } = await supabase.functions.invoke("process-bav-wizard", {
-           body: {
-             gekozen_pakket: gekozenPakketId,
-             betaalwijze,
-             ingangsdatum: startDate,
-             voornaam: formData.voornaam,
-             achternaam: formData.achternaam,
-             email: formData.email,
-             telefoon: formData.telefoon || null,
-             bedrijfsnaam: formData.bedrijfsnaam,
-             kvk_nummer: formData.kvkNummer || null,
-             beroep: formData.beroep || null,
-             adres_straat: formData.adresStraat || null,
-             adres_huisnummer: formData.adresHuisnummer || null,
-             adres_postcode: formData.adresPostcode || null,
-             adres_plaats: formData.adresPlaats || null,
-             iban: formData.iban || null,
-             sepa_akkoord: incassoAkkoord,
-             rekeninghouder: `${formData.voornaam} ${formData.achternaam}`.trim(),
-             vereist_handmatige_beoordeling: parseInt(formData.aantalMedewerkers || "0") > 3,
-             opmerkingen: [
-               formData.opdrachtgever ? `Opdrachtgever: ${formData.opdrachtgever}` : null,
-               formData.bemiddelaarNaam ? `Bemiddelaar: ${formData.bemiddelaarNaam}` : null,
-               formData.aantalMedewerkers ? `Aantal medewerkers: ${formData.aantalMedewerkers}` : null,
-               formData.functie ? `Functie: ${formData.functie}` : null,
-             ]
-               .filter(Boolean)
-               .join("\n") || null,
-           },
-         });
+     if (isSubmitting) return;
+     if (!validateStep(currentStep)) return;
+     setIsSubmitting(true);
+     try {
+       const { data, error } = await supabase.functions.invoke("process-bav-wizard", {
+         body: {
+           gekozen_pakket: gekozenPakketId,
+           betaalwijze,
+           ingangsdatum: startDate,
+           voornaam: formData.voornaam,
+           achternaam: formData.achternaam,
+           email: formData.email,
+           telefoon: formData.telefoon || null,
+           bedrijfsnaam: formData.bedrijfsnaam,
+           kvk_nummer: formData.kvkNummer || null,
+           beroep: formData.beroep || null,
+           adres_straat: formData.adresStraat || null,
+           adres_huisnummer: formData.adresHuisnummer || null,
+           adres_postcode: formData.adresPostcode || null,
+           adres_plaats: formData.adresPlaats || null,
+           iban: formData.iban || null,
+           sepa_akkoord: incassoAkkoord,
+           rekeninghouder: `${formData.voornaam} ${formData.achternaam}`.trim(),
+           vereist_handmatige_beoordeling: parseInt(formData.aantalMedewerkers || "0") > 3,
+           opmerkingen: [
+             formData.opdrachtgever ? `Opdrachtgever: ${formData.opdrachtgever}` : null,
+             formData.bemiddelaarNaam ? `Bemiddelaar: ${formData.bemiddelaarNaam}` : null,
+             formData.aantalMedewerkers ? `Aantal medewerkers: ${formData.aantalMedewerkers}` : null,
+             formData.functie ? `Functie: ${formData.functie}` : null,
+           ]
+             .filter(Boolean)
+             .join("\n") || null,
+         },
+       });
 
-         if (error) throw error;
-         if (!data?.success) throw new Error(data?.error || "Onbekende fout");
+       if (error) throw error;
+       if (!data?.success) throw new Error(data?.error || "Onbekende fout");
 
-         trackWizardComplete(selectedBavPakket.name, selectedBavPakket.prijs);
-         setIsSubmitted(true);
-       } catch (error) {
-         console.error("Error submitting application:", error);
-         toast({
-           title: "Er ging iets mis",
-           description: "Probeer het opnieuw of neem telefonisch contact op: 020 - 457 3077",
-           variant: "destructive",
-         });
-       }
+       trackWizardComplete(selectedBavPakket.name, selectedBavPakket.prijs);
+       setIsSubmitted(true);
+     } catch (error) {
+       console.error("Error submitting application:", error);
+       toast({
+         title: "Er ging iets mis",
+         description: "Probeer het opnieuw of neem telefonisch contact op: 020 - 457 3077",
+         variant: "destructive",
+       });
+     } finally {
+       setIsSubmitting(false);
      }
    };
 
@@ -759,9 +763,19 @@ export function BAVApplicationModule() {
                     <Button
                       onClick={handleSubmit}
                       size="lg"
+                      disabled={isSubmitting}
                       className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold"
                     >
-                      <Shield className="h-5 w-5" />{t("home.bavSubmit")}<ArrowRight className="h-5 w-5" />
+                      {isSubmitting ? (
+                        <>
+                          <span className="h-5 w-5 inline-block animate-spin rounded-full border-2 border-current border-t-transparent" />
+                          Bezig met verzenden...
+                        </>
+                      ) : (
+                        <>
+                          <Shield className="h-5 w-5" />{t("home.bavSubmit")}<ArrowRight className="h-5 w-5" />
+                        </>
+                      )}
                     </Button>
                   )}
                 </div>
