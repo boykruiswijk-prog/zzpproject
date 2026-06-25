@@ -40,3 +40,6 @@ project_id = "eugkavokktjwpqaqlwsj"
 
  [functions.calculate-pauze-preview]
  verify_jwt = true
+
+ [functions.monthly-invoices-cron]
+ verify_jwt = false
