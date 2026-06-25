@@ -174,8 +174,8 @@ Deno.serve(async (req) => {
     const line: any = {
       GLAccount: INV_GL_ACCOUNT, VATCode: INV_VAT_CODE,
       Quantity: 1, UnitPrice: calc.bedrag, Description: lineDesc,
-      StartDate: `${effStart}T00:00:00`,
-      EndDate: `${effEnd}T00:00:00`,
+      StartTime: `${effStart}T00:00:00`,
+      EndTime: `${effEnd}T00:00:00`,
     };
     if (itemId) line.Item = itemId;
 
