@@ -1,65 +1,61 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { usePortalAuth } from "@/contexts/PortalAuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Mail } from "lucide-react";
+
+const THROTTLE_MS = 30_000;
 
 export default function PortalLogin() {
-  const { user, signInWithPassword, signUpWithPassword, signInWithGoogle } = usePortalAuth();
+  const { user } = usePortalAuth();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const { toast } = useToast();
   const redirect = params.get("redirect") || "/portal";
 
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
 
   useEffect(() => {
     if (user) navigate(redirect, { replace: true });
   }, [user, redirect, navigate]);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    const { error } = await signInWithPassword(email, password);
-    setLoading(false);
-    if (error) {
-      toast({ title: "Inloggen mislukt", description: error.message, variant: "destructive" });
-    }
-  };
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setInterval(() => setCooldown((c) => Math.max(0, c - 1)), 1000);
+    return () => clearInterval(t);
+  }, [cooldown]);
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password.length < 8) {
-      toast({ title: "Wachtwoord te kort", description: "Minimaal 8 tekens.", variant: "destructive" });
-      return;
-    }
+    if (loading || cooldown > 0) return;
     setLoading(true);
-    const { error } = await signUpWithPassword(email, password, fullName);
-    setLoading(false);
-    if (error) {
-      toast({ title: "Registreren mislukt", description: error.message, variant: "destructive" });
-    } else {
-      toast({
-        title: "Bevestig je e-mail",
-        description: "Check je inbox om je account te activeren.",
-      });
-    }
-  };
 
-  const handleGoogle = async () => {
-    setLoading(true);
-    const { error } = await signInWithGoogle(`${window.location.origin}${redirect}`);
+    const emailRedirectTo = `${window.location.origin}${redirect}`;
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email.trim(),
+      options: {
+        // Cruciaal: nooit automatisch een nieuw account aanmaken.
+        shouldCreateUser: false,
+        emailRedirectTo,
+      },
+    });
+
+    setLoading(false);
+    setSent(true);
+    setCooldown(THROTTLE_MS / 1000);
+
     if (error) {
-      setLoading(false);
-      toast({ title: "Google login mislukt", description: error.message, variant: "destructive" });
+      // Bewust geen foutmelding tonen die het bestaan van een account verklapt.
+      // eslint-disable-next-line no-console
+      console.debug("[portal-login] signInWithOtp:", error.message);
     }
   };
 
@@ -68,64 +64,63 @@ export default function PortalLogin() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle>Klantportaal</CardTitle>
-          <CardDescription>Log in om je polis, documenten en facturen te bekijken.</CardDescription>
+          <CardDescription>
+            Vraag een inloglink aan om je polis, facturen en documenten te bekijken.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="login">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Inloggen</TabsTrigger>
-              <TabsTrigger value="signup">Account aanmaken</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-4 mt-4">
-                <div>
-                  <Label htmlFor="login-email">E-mail</Label>
-                  <Input id="login-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                </div>
-                <div>
-                  <Label htmlFor="login-password">Wachtwoord</Label>
-                  <Input id="login-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                </div>
-                <Button type="submit" variant="accent" className="w-full" disabled={loading}>
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Inloggen"}
-                </Button>
-              </form>
-            </TabsContent>
-
-            <TabsContent value="signup">
-              <form onSubmit={handleSignUp} className="space-y-4 mt-4">
-                <div>
-                  <Label htmlFor="signup-name">Naam</Label>
-                  <Input id="signup-name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
-                </div>
-                <div>
-                  <Label htmlFor="signup-email">E-mail</Label>
-                  <Input id="signup-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                </div>
-                <div>
-                  <Label htmlFor="signup-password">Wachtwoord (min. 8 tekens)</Label>
-                  <Input id="signup-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
-                </div>
-                <Button type="submit" variant="accent" className="w-full" disabled={loading}>
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Account aanmaken"}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
-
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
+          {sent ? (
+            <div className="space-y-4 text-center">
+              <div className="mx-auto h-12 w-12 rounded-full bg-accent/10 flex items-center justify-center">
+                <Mail className="h-6 w-6 text-accent" />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Als dit e-mailadres bij ons bekend is, ontvang je binnen enkele minuten een
+                inloglink in je inbox.
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                disabled={cooldown > 0}
+                onClick={() => {
+                  setSent(false);
+                }}
+              >
+                {cooldown > 0 ? `Opnieuw aanvragen (${cooldown}s)` : "Ander e-mailadres gebruiken"}
+              </Button>
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">of</span>
-            </div>
-          </div>
-
-          <Button type="button" variant="outline" className="w-full" onClick={handleGoogle} disabled={loading}>
-            Doorgaan met Google
-          </Button>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="login-email">E-mailadres</Label>
+                <Input
+                  id="login-email"
+                  type="email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  placeholder="jij@bedrijf.nl"
+                />
+              </div>
+              <Button
+                type="submit"
+                variant="accent"
+                className="w-full"
+                disabled={loading || cooldown > 0}
+              >
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  "Stuur mij een inloglink"
+                )}
+              </Button>
+              <p className="text-xs text-muted-foreground text-center">
+                Je ontvangt een eenmalige, tijdgebonden link per e-mail. Geen wachtwoord nodig.
+              </p>
+            </form>
+          )}
 
           <p className="text-xs text-muted-foreground text-center mt-6">
             <Link to="/" className="hover:underline">← Terug naar de website</Link>
