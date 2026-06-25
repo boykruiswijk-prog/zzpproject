@@ -244,45 +244,65 @@ async function createExactInvoice(opts: {
   lead: any;
   pakketSpec: { naam: string; bedrag: number; betalingsregel: string };
   itemId: string | null;
+  // Pro-rata override voor maandpolis-instap
+  override?: {
+    amount: number;
+    headerDescription: string;
+    lineDescription: string;
+    periodStart: string; // YYYY-MM-DD
+    periodEnd: string;   // YYYY-MM-DD
+  };
 }): Promise<
   | { ok: true; invoiceId: string; invoiceNumber: string | null; amount: number; raw: unknown }
   | { ok: false; httpStatus: number; summary: string; detail: Record<string, unknown>; request: unknown }
 > {
-  const { baseUrl, div, headers, accountId, lead, pakketSpec, itemId } = opts;
+  const { baseUrl, div, headers, accountId, lead, pakketSpec, itemId, override } = opts;
   const today = new Date();
-  const yyyy = today.getFullYear();
   const invoiceDate = today.toISOString();
 
-  const lineDescription =
-    `${pakketSpec.naam} — jaarpremie ${yyyy}\n` +
-    `${pakketSpec.betalingsregel}\n` +
-    `Polisnummer volgt op het certificaat`;
-  const headerDescription =
-    `Beroepsaansprakelijkheidsverzekering ${pakketSpec.naam} voor ${lead.bedrijfsnaam}`;
+  // Dekkingsperiode op regelniveau:
+  // - Jaarpolis: ingangsdatum → polis_einddatum
+  // - Maandpolis-instap: override.periodStart → override.periodEnd
+  const ingang = lead.ingangsdatum ? String(lead.ingangsdatum).slice(0, 10) : null;
+  const eind = (lead.polis_einddatum ?? (ingang ? calcPolisEinddatum(ingang) : null));
+  const periodStart = override?.periodStart ?? ingang;
+  const periodEnd = override?.periodEnd ?? eind;
+
+  const fmtNL = (iso: string) => {
+    const d = new Date(iso);
+    return `${String(d.getUTCDate()).padStart(2, "0")}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${d.getUTCFullYear()}`;
+  };
+
+  const lineDescription = override?.lineDescription
+    ?? (periodStart && periodEnd
+      ? `BAV-AVB premie - Dekking ${fmtNL(periodStart)} t/m ${fmtNL(periodEnd)}\n${pakketSpec.betalingsregel}`
+      : `${pakketSpec.naam}\n${pakketSpec.betalingsregel}`);
+  const headerDescription = override?.headerDescription
+    ?? `${pakketSpec.naam} voor ${lead.bedrijfsnaam}${periodStart && periodEnd ? ` — dekking ${fmtNL(periodStart)} t/m ${fmtNL(periodEnd)}` : ""}`;
+  const unitPrice = override?.amount ?? pakketSpec.bedrag;
 
   // deno-lint-ignore no-explicit-any
   const line: any = {
     GLAccount: INV_GL_ACCOUNT,
     VATCode: INV_VAT_CODE,
     Quantity: 1,
-    UnitPrice: pakketSpec.bedrag,
+    UnitPrice: unitPrice,
     Description: lineDescription,
   };
-  // Exact divisie 4401707 vereist 'Artikel' op regelniveau (administratie-instelling).
   if (itemId) line.Item = itemId;
+  if (periodStart) line.StartDate = `${periodStart}T00:00:00`;
+  if (periodEnd) line.EndDate = `${periodEnd}T00:00:00`;
 
   const payload = {
     InvoiceTo: accountId,
     OrderedBy: accountId,
     Journal: INV_JOURNAL,
     PaymentCondition: INV_PAYMENT_COND,
-    // Exact API vereist expliciet 8020 (SalesInvoice). Werkte tot nu toe via
-    // tolerantie zonder Type-veld, maar explicieter is veiliger bij API-updates.
     Type: 8020,
     Status: INV_STATUS_CONCEPT,
     InvoiceDate: invoiceDate,
     OrderDate: invoiceDate,
-    YourRef: String(lead.id), // wordt door Exact getrunceerd tot ±30 chars; eerste 30 van een UUID is uniek
+    YourRef: String(lead.id),
     Description: headerDescription,
     SalesInvoiceLines: [line],
   };
@@ -303,7 +323,7 @@ async function createExactInvoice(opts: {
   const invoiceId: string = d?.InvoiceID || d?.ID || "";
   const invoiceNumber: string | null =
     d?.InvoiceNumber != null ? String(d.InvoiceNumber) : null;
-  return { ok: true, invoiceId, invoiceNumber, amount: pakketSpec.bedrag, raw: d };
+  return { ok: true, invoiceId, invoiceNumber, amount: unitPrice, raw: d };
 }
 
 
