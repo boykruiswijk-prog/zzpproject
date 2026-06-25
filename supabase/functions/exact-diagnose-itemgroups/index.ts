@@ -1,5 +1,5 @@
-// Read-only diagnose: lijst ItemGroups + aantal Items per groep in Exact divisie.
-// Geen mutaties. Admin-only.
+// Diagnose-helper voor Exact: metadata, ItemGroups en gecontroleerde invalid-account probes.
+// Geen business-fix; probes gebruiken een niet-bestaande relatie zodat geen factuur wordt aangemaakt.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -8,6 +8,40 @@ const corsHeaders = {
 };
 const json = (d: unknown, s = 200) =>
   new Response(JSON.stringify(d), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+
+function extractEntityXml(xml: string, entity: string): string | null {
+  const re = new RegExp(`<EntityType[^>]*Name="${entity}"[\\s\\S]*?<\\/EntityType>`);
+  return xml.match(re)?.[0] ?? null;
+}
+
+function extractProperties(entityXml: string | null) {
+  if (!entityXml) return [];
+  return [...entityXml.matchAll(/<Property\s+([^>]*?)\/>/g)].map((m) => {
+    const attrs = m[1];
+    const get = (name: string) => attrs.match(new RegExp(`${name}="([^"]*)"`))?.[1] ?? null;
+    return {
+      name: get("Name"),
+      type: get("Type"),
+      nullable: get("Nullable"),
+      sap_label: get("sap:label"),
+    };
+  }).filter((p) => p.name);
+}
+
+function pickDateish(properties: Array<{ name: string | null; type: string | null }>) {
+  return properties.filter((p) => {
+    const n = (p.name ?? "").toLowerCase();
+    const t = (p.type ?? "").toLowerCase();
+    return t.includes("datetime") || /date|period|deferred|from|to|term|paymentreference/.test(n);
+  });
+}
+
+async function readExactBody(res: Response) {
+  const text = await res.text().catch(() => "");
+  let jsonBody: unknown = null;
+  try { jsonBody = JSON.parse(text); } catch { /* non-json */ }
+  return { raw: text, json: jsonBody };
+}
 
 // deno-lint-ignore no-explicit-any
 async function ensureValidToken(supabase: any, config: any): Promise<string> {
@@ -49,11 +83,102 @@ Deno.serve(async (req) => {
 
     const token = await ensureValidToken(supabase, config);
     const baseUrl = config.base_url || "https://start.exactonline.nl";
-    const division = config.division_code || "4401707";
+    const division = config.divisie_code || "4401707";
     const headers = { Authorization: `Bearer ${token}`, Accept: "application/json" };
 
-    // Optioneel: $metadata voor ItemGroup
+    // Exact $metadata diagnose voor SalesInvoice / SalesInvoiceLine.
     const url = new URL(req.url);
+    if (url.searchParams.get("sales_meta") === "1") {
+      const mUrl = `${baseUrl}/api/v1/${division}/salesinvoice/$metadata`;
+      const mRes = await fetch(mUrl, { headers: { Authorization: `Bearer ${token}`, Accept: "application/xml" } });
+      const xml = await mRes.text();
+      const invoiceXml = extractEntityXml(xml, "SalesInvoice");
+      const lineXml = extractEntityXml(xml, "SalesInvoiceLine");
+      const invoiceProperties = extractProperties(invoiceXml);
+      const lineProperties = extractProperties(lineXml);
+      const probeNames = [
+        "StartDate", "EndDate", "DateFrom", "DateTo", "FromDate", "ToDate",
+        "PaymentReference", "DeferredCostFromDate", "DeferredCostToDate",
+        "DeferredRevenueFromDate", "DeferredRevenueToDate", "DeferredRevenueFrom", "DeferredRevenueTo",
+        "CostCenterFrom", "CostCenterTo", "AppliedCost", "Period",
+      ];
+      const has = (props: Array<{ name: string | null }>, name: string) => props.some((p) => p.name === name);
+      return json({
+        success: mRes.ok,
+        http_status: mRes.status,
+        division,
+        raw_length: xml.length,
+        sales_invoice: {
+          all_fields: invoiceProperties,
+          date_related_fields: pickDateish(invoiceProperties),
+          candidate_presence: Object.fromEntries(probeNames.map((n) => [n, has(invoiceProperties, n)])),
+          entity_xml: invoiceXml,
+        },
+        sales_invoice_line: {
+          all_fields: lineProperties,
+          date_related_fields: pickDateish(lineProperties),
+          candidate_presence: Object.fromEntries(probeNames.map((n) => [n, has(lineProperties, n)])),
+          entity_xml: lineXml,
+        },
+      });
+    }
+
+    // Gecontroleerde POST-probe: gebruikt een niet-bestaande account-GUID.
+    // Als het veld ongeldig is, meldt Exact dat vóór business-validatie. Als het veld geldig is,
+    // verwachten we een account/relatie-validatiefout en is er niets aangemaakt.
+    if (url.searchParams.get("sales_probe") === "1") {
+      const target = url.searchParams.get("target") || "line";
+      const field = url.searchParams.get("field") || "";
+      const value = url.searchParams.get("value") || "2026-06-25T00:00:00";
+      const bogusAccount = "00000000-0000-0000-0000-000000000001";
+      const writeHeaders = {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Prefer: "return=representation",
+      };
+      const line: any = {
+        GLAccount: "d40fbb95-43b0-4503-9fe8-287f14d59120",
+        VATCode: "0",
+        Quantity: 1,
+        UnitPrice: 0.01,
+        Description: `Metadata probe${field ? ` ${field}` : ""}`,
+      };
+      if (config.exact_item_id_bav_avb) line.Item = config.exact_item_id_bav_avb;
+      const payload: any = {
+        InvoiceTo: bogusAccount,
+        OrderedBy: bogusAccount,
+        Journal: "70",
+        PaymentCondition: "IN",
+        Type: 8021,
+        Status: 20,
+        InvoiceDate: "2026-06-25T00:00:00",
+        OrderDate: "2026-06-25T00:00:00",
+        YourRef: "metadata-probe",
+        Description: "Metadata probe - should fail on bogus account",
+        SalesInvoiceLines: [line],
+      };
+      if (field) {
+        if (target === "header") payload[field] = value;
+        else line[field] = value;
+      }
+      const r = await fetch(`${baseUrl}/api/v1/${division}/salesinvoice/SalesInvoices`, {
+        method: "POST", headers: writeHeaders, body: JSON.stringify(payload),
+      });
+      const body = await readExactBody(r);
+      return json({
+        success: false,
+        note: "Expected failure: bogus InvoiceTo/OrderedBy prevents creation; use response to distinguish unknown property vs accepted field.",
+        target,
+        field: field || null,
+        http_status: r.status,
+        request_payload: payload,
+        response_raw: body.raw,
+        response_json: body.json,
+      });
+    }
+
+    // Optioneel: $metadata voor ItemGroup
     if (url.searchParams.get("meta") === "1") {
       const mUrl = `${baseUrl}/api/v1/${division}/logistics/$metadata`;
       const mRes = await fetch(mUrl, { headers: { Authorization: `Bearer ${token}`, Accept: "application/xml" } });
