@@ -169,11 +169,13 @@ async function postSalesInvoice(opts: {
   description: string;
   lineDescription: string;
   unitPrice: number; // positief voor beide types; Exact 8021 draait zelf het teken om
+  periodStart?: string; // YYYY-MM-DD — dekkingsperiode regelniveau
+  periodEnd?: string;   // YYYY-MM-DD
 }): Promise<
   | { ok: true; invoiceId: string; invoiceNumber: string | null; amount: number; raw: unknown; request: unknown }
   | { ok: false; summary: string; detail: Record<string, unknown>; request: unknown; httpStatus: number }
 > {
-  const { baseUrl, div, headers, lead, itemId, type, description, lineDescription, unitPrice } = opts;
+  const { baseUrl, div, headers, lead, itemId, type, description, lineDescription, unitPrice, periodStart, periodEnd } = opts;
   const nowIso = new Date().toISOString();
   // deno-lint-ignore no-explicit-any
   const line: any = {
@@ -184,6 +186,8 @@ async function postSalesInvoice(opts: {
     Description: lineDescription,
   };
   if (itemId) line.Item = itemId;
+  if (periodStart) line.StartDate = `${periodStart}T00:00:00`;
+  if (periodEnd) line.EndDate = `${periodEnd}T00:00:00`;
   const payload = {
     InvoiceTo: lead.exact_account_id,
     OrderedBy: lead.exact_account_id,
@@ -193,7 +197,7 @@ async function postSalesInvoice(opts: {
     Status: INV_STATUS_CONCEPT,
     InvoiceDate: nowIso,
     OrderDate: nowIso,
-    YourRef: String(lead.id), // wordt door Exact getrunceerd op ±30 chars
+    YourRef: String(lead.id),
     Description: description,
     SalesInvoiceLines: [line],
   };
