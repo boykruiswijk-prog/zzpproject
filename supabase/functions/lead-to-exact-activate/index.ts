@@ -853,10 +853,33 @@ Deno.serve(async (req) => {
       supabase, config, baseUrl, div, headers, accessToken,
       logCtx: { lead_id: leadId, admin_user_id: user.id },
     });
+
+    // Maandpolis-instap: pro-rata factuur voor periode vandaag → laatste van die maand.
+    // De volle maandfacturen vanaf 1ste volgende maand komen via monthly-invoices-cron.
+    let override: Parameters<typeof createExactInvoice>[0]["override"] = undefined;
+    if (isMaandPolis(lead.gekozen_pakket)) {
+      const startStr = String(lead.ingangsdatum).slice(0, 10);
+      const endStr = lastOfMonth(startStr);
+      const calc = calcMaandProrata({
+        maandprijs: getMaandprijs(lead.gekozen_pakket),
+        vanaf_datum: startStr, tot_datum: endStr,
+      });
+      const fmt = (iso: string) => {
+        const d = new Date(iso);
+        return `${String(d.getUTCDate()).padStart(2, "0")}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${d.getUTCFullYear()}`;
+      };
+      override = {
+        amount: calc.bedrag,
+        headerDescription: `BAV-AVB premie pro-rata instap ${fmt(startStr)} t/m ${fmt(endStr)}`,
+        lineDescription: `BAV-AVB premie pro-rata - Periode ${fmt(startStr)} t/m ${fmt(endStr)} (${calc.dagen} dagen × € ${calc.dagprijs.toFixed(4)})`,
+        periodStart: startStr, periodEnd: endStr,
+      };
+    }
+
     const invRes = itemEnsure.ok
       ? await createExactInvoice({
           baseUrl, div, headers, accountId: exactAccountId, lead, pakketSpec,
-          itemId: itemEnsure.itemId,
+          itemId: itemEnsure.itemId, override,
         })
       : { ok: false as const, httpStatus: itemEnsure.httpStatus, summary: `Item bootstrap mislukt: ${itemEnsure.summary}`, detail: itemEnsure.detail, request: null };
 
@@ -885,8 +908,23 @@ Deno.serve(async (req) => {
           exact_invoice_id: exactInvoiceId,
           exact_invoice_number: exactInvoiceNumber,
           amount: exactInvoiceAmount,
+          override,
         },
       });
+
+      // Bij maandpolis: log instap-maand in monthly_invoices_log zodat cron deze overslaat.
+      if (isMaandPolis(lead.gekozen_pakket) && override) {
+        const jaar = parseInt(override.periodStart.slice(0, 4), 10);
+        const maand = parseInt(override.periodStart.slice(5, 7), 10);
+        await supabase.from("monthly_invoices_log").upsert({
+          lead_id: leadId, factuur_jaar: jaar, factuur_maand: maand,
+          periode_start: override.periodStart, periode_eind: override.periodEnd,
+          polis_einddatum: lead.polis_einddatum ?? null,
+          bedrag: override.amount, status: "success",
+          exact_invoice_id: exactInvoiceId, exact_invoice_number: exactInvoiceNumber,
+          payload: { source: "lead_activation_instap" },
+        }, { onConflict: "lead_id,factuur_jaar,factuur_maand" });
+      }
     }
   }
 
