@@ -529,7 +529,7 @@ Deno.serve(async (req) => {
         let calc: ReturnType<typeof calculatePauzeCredit> | null = null;
         let eindForMail: string | null = null;
 
-        if (vanuitActief && lead.exact_account_id) {
+        if (vanuitActief && lead.exact_account_id && !isMaandPolis(lead.gekozen_pakket)) {
           if (!lead.ingangsdatum) return json({ error: "geen_ingangsdatum_op_lead" }, 400);
           const jaarprijs = getJaarprijs(lead.gekozen_pakket);
           const eind = lead.polis_einddatum ?? calcPolisEinddatum(lead.ingangsdatum);
@@ -547,8 +547,9 @@ Deno.serve(async (req) => {
               lead, itemId: ctx.itemId,
               type: TYPE_SALES_CREDIT,
               description: `Creditnota opzegging polis BAV-AVB per ${fmtNL(today)}`,
-              lineDescription: `Restitutie opzegging ${fmtNL(today)} t/m ${fmtNL(eind)} (${calc.resterende_dagen} dagen × € ${calc.dagprijs.toFixed(4)})`,
+              lineDescription: `Restitutie opzegging - Periode ${fmtNL(today)} t/m ${fmtNL(eind)} (${calc.resterende_dagen} dagen × € ${calc.dagprijs.toFixed(4)})`,
               unitPrice: calc.credit_bedrag,
+              periodStart: today, periodEnd: eind,
             });
             if (!res.ok) {
               await supabase.from("exact_sync_log").insert({
