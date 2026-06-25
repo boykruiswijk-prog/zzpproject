@@ -67,10 +67,11 @@ function useNavItems() {
       ]
     },
     {
-      href: "/mijn-zp/polis",
+      href: "/portal/login",
       label: "Mijn ZP",
       isService: true,
       children: [
+        { href: "/portal/login", label: "Inloggen klantportaal", icon: LogIn },
         { href: "/mijn-zp/polis", label: "Polis opvragen", icon: FileText },
         { href: "/mijn-zp/pauzeren", label: "Verzekering pauzeren", icon: Pause },
         { href: "/mijn-zp/documenten", label: "Documenten opvragen", icon: FolderDown },
