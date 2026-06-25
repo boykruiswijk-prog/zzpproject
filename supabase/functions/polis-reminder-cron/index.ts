@@ -14,7 +14,7 @@ async function sendMail(to: string, subject: string, html: string) {
   await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${RESEND_API_KEY}` },
-    body: JSON.stringify({ from: "ZP Zaken <info@zpzaken.nl>", to: [to], subject, html }),
+    body: JSON.stringify({ from: Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <info@zpzaken.nl>", to: [to], subject, html }),
   });
 }
 
