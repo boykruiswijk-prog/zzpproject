@@ -134,7 +134,7 @@ Deno.serve(async (req) => {
 
     const label = LEAD_LABELS[type] || type;
     const subjBase = (SUBJECTS[type] || ((r: string) => `Nieuwe lead (${type}) via zpzaken.nl - ${r}`))(reference || leadId || "");
-    const subject = isProd ? subjBase : `[PREVIEW/${appEnv}] ${subjBase}`;
+    const subject = isProd ? subjBase : `[PREVIEW] ${subjBase}`;
 
     const adminBase = (Deno.env.get("ADMIN_BASE_URL") || "https://zpzaken.nl").replace(/\/$/, "");
     const deeplink = leadId ? `${adminBase}/admin/leads/${leadId}` : null;
