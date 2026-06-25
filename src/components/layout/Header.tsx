@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Phone, ChevronDown, FileText, Pause, FolderDown, Shield, XCircle } from "lucide-react";
+import { Menu, X, Phone, ChevronDown, FileText, Pause, FolderDown, Shield, XCircle, LogIn } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import logoZp from "@/assets/logo-zp.webp";
 import { LanguageSwitcher } from "./LanguageSwitcher";
