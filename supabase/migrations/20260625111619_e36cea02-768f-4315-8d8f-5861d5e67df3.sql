@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Anonymous can read just-inserted lead" ON public.leads;
