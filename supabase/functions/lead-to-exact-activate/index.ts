@@ -2,6 +2,9 @@
 // aan in Exact divisie 4401707 (ZP Zaken B.V.) op basis van een lead.
 // Doet GEEN factuur — fase 2.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import {
+  isMaandPolis, getMaandprijs, lastOfMonth, calcMaandProrata, calcPolisEinddatum,
+} from "../_shared/polisProRata.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -241,45 +244,65 @@ async function createExactInvoice(opts: {
   lead: any;
   pakketSpec: { naam: string; bedrag: number; betalingsregel: string };
   itemId: string | null;
+  // Pro-rata override voor maandpolis-instap
+  override?: {
+    amount: number;
+    headerDescription: string;
+    lineDescription: string;
+    periodStart: string; // YYYY-MM-DD
+    periodEnd: string;   // YYYY-MM-DD
+  };
 }): Promise<
   | { ok: true; invoiceId: string; invoiceNumber: string | null; amount: number; raw: unknown }
   | { ok: false; httpStatus: number; summary: string; detail: Record<string, unknown>; request: unknown }
 > {
-  const { baseUrl, div, headers, accountId, lead, pakketSpec, itemId } = opts;
+  const { baseUrl, div, headers, accountId, lead, pakketSpec, itemId, override } = opts;
   const today = new Date();
-  const yyyy = today.getFullYear();
   const invoiceDate = today.toISOString();
 
-  const lineDescription =
-    `${pakketSpec.naam} — jaarpremie ${yyyy}\n` +
-    `${pakketSpec.betalingsregel}\n` +
-    `Polisnummer volgt op het certificaat`;
-  const headerDescription =
-    `Beroepsaansprakelijkheidsverzekering ${pakketSpec.naam} voor ${lead.bedrijfsnaam}`;
+  // Dekkingsperiode op regelniveau:
+  // - Jaarpolis: ingangsdatum → polis_einddatum
+  // - Maandpolis-instap: override.periodStart → override.periodEnd
+  const ingang = lead.ingangsdatum ? String(lead.ingangsdatum).slice(0, 10) : null;
+  const eind = (lead.polis_einddatum ?? (ingang ? calcPolisEinddatum(ingang) : null));
+  const periodStart = override?.periodStart ?? ingang;
+  const periodEnd = override?.periodEnd ?? eind;
+
+  const fmtNL = (iso: string) => {
+    const d = new Date(iso);
+    return `${String(d.getUTCDate()).padStart(2, "0")}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${d.getUTCFullYear()}`;
+  };
+
+  const lineDescription = override?.lineDescription
+    ?? (periodStart && periodEnd
+      ? `BAV-AVB premie - Dekking ${fmtNL(periodStart)} t/m ${fmtNL(periodEnd)}\n${pakketSpec.betalingsregel}`
+      : `${pakketSpec.naam}\n${pakketSpec.betalingsregel}`);
+  const headerDescription = override?.headerDescription
+    ?? `${pakketSpec.naam} voor ${lead.bedrijfsnaam}${periodStart && periodEnd ? ` — dekking ${fmtNL(periodStart)} t/m ${fmtNL(periodEnd)}` : ""}`;
+  const unitPrice = override?.amount ?? pakketSpec.bedrag;
 
   // deno-lint-ignore no-explicit-any
   const line: any = {
     GLAccount: INV_GL_ACCOUNT,
     VATCode: INV_VAT_CODE,
     Quantity: 1,
-    UnitPrice: pakketSpec.bedrag,
+    UnitPrice: unitPrice,
     Description: lineDescription,
   };
-  // Exact divisie 4401707 vereist 'Artikel' op regelniveau (administratie-instelling).
   if (itemId) line.Item = itemId;
+  if (periodStart) line.StartDate = `${periodStart}T00:00:00`;
+  if (periodEnd) line.EndDate = `${periodEnd}T00:00:00`;
 
   const payload = {
     InvoiceTo: accountId,
     OrderedBy: accountId,
     Journal: INV_JOURNAL,
     PaymentCondition: INV_PAYMENT_COND,
-    // Exact API vereist expliciet 8020 (SalesInvoice). Werkte tot nu toe via
-    // tolerantie zonder Type-veld, maar explicieter is veiliger bij API-updates.
     Type: 8020,
     Status: INV_STATUS_CONCEPT,
     InvoiceDate: invoiceDate,
     OrderDate: invoiceDate,
-    YourRef: String(lead.id), // wordt door Exact getrunceerd tot ±30 chars; eerste 30 van een UUID is uniek
+    YourRef: String(lead.id),
     Description: headerDescription,
     SalesInvoiceLines: [line],
   };
@@ -300,7 +323,7 @@ async function createExactInvoice(opts: {
   const invoiceId: string = d?.InvoiceID || d?.ID || "";
   const invoiceNumber: string | null =
     d?.InvoiceNumber != null ? String(d.InvoiceNumber) : null;
-  return { ok: true, invoiceId, invoiceNumber, amount: pakketSpec.bedrag, raw: d };
+  return { ok: true, invoiceId, invoiceNumber, amount: unitPrice, raw: d };
 }
 
 
@@ -543,9 +566,26 @@ Deno.serve(async (req) => {
     if (!itemEnsure.ok) {
       return json({ success: false, error: "item_bootstrap_failed", detail: itemEnsure.detail, http_status: itemEnsure.httpStatus }, 500);
     }
+    // Maandpolis-instap pro-rata override (zelfde regel als initiele activatie)
+    let retryOverride: Parameters<typeof createExactInvoice>[0]["override"] = undefined;
+    if (isMaandPolis(lead.gekozen_pakket) && lead.ingangsdatum) {
+      const startStr = String(lead.ingangsdatum).slice(0, 10);
+      const endStr = lastOfMonth(startStr);
+      const calc = calcMaandProrata({
+        maandprijs: getMaandprijs(lead.gekozen_pakket),
+        vanaf_datum: startStr, tot_datum: endStr,
+      });
+      const fmt = (iso: string) => { const d = new Date(iso); return `${String(d.getUTCDate()).padStart(2, "0")}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${d.getUTCFullYear()}`; };
+      retryOverride = {
+        amount: calc.bedrag,
+        headerDescription: `BAV-AVB premie pro-rata instap ${fmt(startStr)} t/m ${fmt(endStr)}`,
+        lineDescription: `BAV-AVB premie pro-rata - Periode ${fmt(startStr)} t/m ${fmt(endStr)} (${calc.dagen} dagen × € ${calc.dagprijs.toFixed(4)})`,
+        periodStart: startStr, periodEnd: endStr,
+      };
+    }
     const invRes = await createExactInvoice({
       baseUrl, div, headers, accountId: lead.exact_account_id, lead, pakketSpec: spec,
-      itemId: itemEnsure.itemId,
+      itemId: itemEnsure.itemId, override: retryOverride,
     });
 
 
@@ -830,10 +870,33 @@ Deno.serve(async (req) => {
       supabase, config, baseUrl, div, headers, accessToken,
       logCtx: { lead_id: leadId, admin_user_id: user.id },
     });
+
+    // Maandpolis-instap: pro-rata factuur voor periode vandaag → laatste van die maand.
+    // De volle maandfacturen vanaf 1ste volgende maand komen via monthly-invoices-cron.
+    let override: Parameters<typeof createExactInvoice>[0]["override"] = undefined;
+    if (isMaandPolis(lead.gekozen_pakket)) {
+      const startStr = String(lead.ingangsdatum).slice(0, 10);
+      const endStr = lastOfMonth(startStr);
+      const calc = calcMaandProrata({
+        maandprijs: getMaandprijs(lead.gekozen_pakket),
+        vanaf_datum: startStr, tot_datum: endStr,
+      });
+      const fmt = (iso: string) => {
+        const d = new Date(iso);
+        return `${String(d.getUTCDate()).padStart(2, "0")}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${d.getUTCFullYear()}`;
+      };
+      override = {
+        amount: calc.bedrag,
+        headerDescription: `BAV-AVB premie pro-rata instap ${fmt(startStr)} t/m ${fmt(endStr)}`,
+        lineDescription: `BAV-AVB premie pro-rata - Periode ${fmt(startStr)} t/m ${fmt(endStr)} (${calc.dagen} dagen × € ${calc.dagprijs.toFixed(4)})`,
+        periodStart: startStr, periodEnd: endStr,
+      };
+    }
+
     const invRes = itemEnsure.ok
       ? await createExactInvoice({
           baseUrl, div, headers, accountId: exactAccountId, lead, pakketSpec,
-          itemId: itemEnsure.itemId,
+          itemId: itemEnsure.itemId, override,
         })
       : { ok: false as const, httpStatus: itemEnsure.httpStatus, summary: `Item bootstrap mislukt: ${itemEnsure.summary}`, detail: itemEnsure.detail, request: null };
 
@@ -862,8 +925,23 @@ Deno.serve(async (req) => {
           exact_invoice_id: exactInvoiceId,
           exact_invoice_number: exactInvoiceNumber,
           amount: exactInvoiceAmount,
+          override,
         },
       });
+
+      // Bij maandpolis: log instap-maand in monthly_invoices_log zodat cron deze overslaat.
+      if (isMaandPolis(lead.gekozen_pakket) && override) {
+        const jaar = parseInt(override.periodStart.slice(0, 4), 10);
+        const maand = parseInt(override.periodStart.slice(5, 7), 10);
+        await supabase.from("monthly_invoices_log").upsert({
+          lead_id: leadId, factuur_jaar: jaar, factuur_maand: maand,
+          periode_start: override.periodStart, periode_eind: override.periodEnd,
+          polis_einddatum: lead.polis_einddatum ?? null,
+          bedrag: override.amount, status: "success",
+          exact_invoice_id: exactInvoiceId, exact_invoice_number: exactInvoiceNumber,
+          payload: { source: "lead_activation_instap" },
+        }, { onConflict: "lead_id,factuur_jaar,factuur_maand" });
+      }
     }
   }
 

@@ -7,7 +7,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { checkAcceptance } from "../_shared/acceptanceCriteria.ts";
 import {
-  getJaarprijs, calculatePauzeCredit, calculateHervatFactuur, calcPolisEinddatum,
+  getJaarprijs, calculatePauzeCredit, calculateHervatFactuur, calcPolisEinddatum, isMaandPolis,
 } from "../_shared/polisProRata.ts";
 
 const corsHeaders = {
@@ -169,11 +169,13 @@ async function postSalesInvoice(opts: {
   description: string;
   lineDescription: string;
   unitPrice: number; // positief voor beide types; Exact 8021 draait zelf het teken om
+  periodStart?: string; // YYYY-MM-DD — dekkingsperiode regelniveau
+  periodEnd?: string;   // YYYY-MM-DD
 }): Promise<
   | { ok: true; invoiceId: string; invoiceNumber: string | null; amount: number; raw: unknown; request: unknown }
   | { ok: false; summary: string; detail: Record<string, unknown>; request: unknown; httpStatus: number }
 > {
-  const { baseUrl, div, headers, lead, itemId, type, description, lineDescription, unitPrice } = opts;
+  const { baseUrl, div, headers, lead, itemId, type, description, lineDescription, unitPrice, periodStart, periodEnd } = opts;
   const nowIso = new Date().toISOString();
   // deno-lint-ignore no-explicit-any
   const line: any = {
@@ -184,6 +186,8 @@ async function postSalesInvoice(opts: {
     Description: lineDescription,
   };
   if (itemId) line.Item = itemId;
+  if (periodStart) line.StartDate = `${periodStart}T00:00:00`;
+  if (periodEnd) line.EndDate = `${periodEnd}T00:00:00`;
   const payload = {
     InvoiceTo: lead.exact_account_id,
     OrderedBy: lead.exact_account_id,
@@ -193,7 +197,7 @@ async function postSalesInvoice(opts: {
     Status: INV_STATUS_CONCEPT,
     InvoiceDate: nowIso,
     OrderDate: nowIso,
-    YourRef: String(lead.id), // wordt door Exact getrunceerd op ±30 chars
+    YourRef: String(lead.id),
     Description: description,
     SalesInvoiceLines: [line],
   };
@@ -292,8 +296,11 @@ Deno.serve(async (req) => {
         });
 
         // Creditnota in Exact (alleen als account + factuur reeds bestaan)
+        // Maandpolis: GEEN creditnota (toekomstige maandfacturen worden simpelweg gestopt).
         let creditResult: any = { skipped: true, reden: "Geen Exact-account gekoppeld" };
-        if (lead.exact_account_id && calc.credit_bedrag > 0) {
+        if (isMaandPolis(lead.gekozen_pakket)) {
+          creditResult = { skipped: true, reden: "Maandpolis — geen creditnota, maandcron stopt vanzelf" };
+        } else if (lead.exact_account_id && calc.credit_bedrag > 0) {
           const ctx = await exactCtx();
           if (!ctx) {
             return json({ error: "exact_niet_beschikbaar" }, 500);
@@ -303,8 +310,9 @@ Deno.serve(async (req) => {
             lead, itemId: ctx.itemId,
             type: TYPE_SALES_CREDIT,
             description: `Creditnota pauze polis BAV-AVB per ${fmtNL(today)}`,
-            lineDescription: `Restitutie pauze ${fmtNL(today)} t/m ${fmtNL(eind)} (${calc.resterende_dagen} dagen × € ${calc.dagprijs.toFixed(4)})`,
+            lineDescription: `Restitutie pauze - Periode ${fmtNL(today)} t/m ${fmtNL(eind)} (${calc.resterende_dagen} dagen × € ${calc.dagprijs.toFixed(4)})`,
             unitPrice: calc.credit_bedrag,
+            periodStart: today, periodEnd: eind,
           });
           if (!res.ok) {
             // Logging-gat dichten: ook naar exact_sync_log naast polis_audit_log
@@ -416,7 +424,9 @@ Deno.serve(async (req) => {
         });
 
         let factuurResult: any = { skipped: true, reden: "Geen Exact-account of bedrag = 0" };
-        if (lead.exact_account_id && calc.factuur_bedrag > 0) {
+        if (isMaandPolis(lead.gekozen_pakket)) {
+          factuurResult = { skipped: true, reden: "Maandpolis — geen pro-rata factuur, maandcron hervat vanaf 1e van komende maand" };
+        } else if (lead.exact_account_id && calc.factuur_bedrag > 0) {
           const ctx = await exactCtx();
           if (!ctx) return json({ error: "exact_niet_beschikbaar" }, 500);
           const res = await postSalesInvoice({
@@ -424,8 +434,9 @@ Deno.serve(async (req) => {
             lead, itemId: ctx.itemId,
             type: TYPE_SALES_INVOICE,
             description: `Premie BAV-AVB vanaf ${fmtNL(today)} t/m ${fmtNL(eind)}`,
-            lineDescription: `Premie pro-rata ${fmtNL(today)} t/m ${fmtNL(eind)} (${calc.resterende_dagen} dagen × € ${calc.dagprijs.toFixed(4)})`,
+            lineDescription: `BAV-AVB premie hervat - Periode ${fmtNL(today)} t/m ${fmtNL(eind)} (${calc.resterende_dagen} dagen × € ${calc.dagprijs.toFixed(4)})`,
             unitPrice: calc.factuur_bedrag,
+            periodStart: today, periodEnd: eind,
           });
           if (!res.ok) {
             await supabase.from("exact_sync_log").insert({
@@ -518,7 +529,7 @@ Deno.serve(async (req) => {
         let calc: ReturnType<typeof calculatePauzeCredit> | null = null;
         let eindForMail: string | null = null;
 
-        if (vanuitActief && lead.exact_account_id) {
+        if (vanuitActief && lead.exact_account_id && !isMaandPolis(lead.gekozen_pakket)) {
           if (!lead.ingangsdatum) return json({ error: "geen_ingangsdatum_op_lead" }, 400);
           const jaarprijs = getJaarprijs(lead.gekozen_pakket);
           const eind = lead.polis_einddatum ?? calcPolisEinddatum(lead.ingangsdatum);
@@ -536,8 +547,9 @@ Deno.serve(async (req) => {
               lead, itemId: ctx.itemId,
               type: TYPE_SALES_CREDIT,
               description: `Creditnota opzegging polis BAV-AVB per ${fmtNL(today)}`,
-              lineDescription: `Restitutie opzegging ${fmtNL(today)} t/m ${fmtNL(eind)} (${calc.resterende_dagen} dagen × € ${calc.dagprijs.toFixed(4)})`,
+              lineDescription: `Restitutie opzegging - Periode ${fmtNL(today)} t/m ${fmtNL(eind)} (${calc.resterende_dagen} dagen × € ${calc.dagprijs.toFixed(4)})`,
               unitPrice: calc.credit_bedrag,
+              periodStart: today, periodEnd: eind,
             });
             if (!res.ok) {
               await supabase.from("exact_sync_log").insert({
