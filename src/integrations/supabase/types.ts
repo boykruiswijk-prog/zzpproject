@@ -834,6 +834,7 @@ export type Database = {
           telefoon: string
           type: string
           updated_at: string
+          user_id: string | null
           voornaam: string
         }
         Insert: {
@@ -850,6 +851,7 @@ export type Database = {
           telefoon: string
           type: string
           updated_at?: string
+          user_id?: string | null
           voornaam: string
         }
         Update: {
@@ -866,6 +868,7 @@ export type Database = {
           telefoon?: string
           type?: string
           updated_at?: string
+          user_id?: string | null
           voornaam?: string
         }
         Relationships: []
