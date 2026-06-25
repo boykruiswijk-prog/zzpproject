@@ -171,7 +171,6 @@ Deno.serve(async (req) => {
     const isProd = appEnv === "production";
     const recipient = isProd ? baseRecipient : "boy.kruiswijk@zpzaken.nl";
     const bccList = isProd ? BCC_DEFAULT : [];
-    const ccList = isProd && userEmail ? [userEmail] : undefined;
 
     const label = LEAD_LABELS[type] || type;
     const subjBase = (SUBJECTS[type] || ((r: string) => `Nieuwe lead (${type}) via zpzaken.nl - ${r}`))(reference || leadId || "");
@@ -197,7 +196,6 @@ Deno.serve(async (req) => {
       const sendRes: any = await resend.emails.send({
         from: Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <onboarding@resend.dev>",
         to: [recipient],
-        cc: ccList,
         bcc: bccList.length ? bccList : undefined,
         reply_to: isProd ? ((fields.email as string) || undefined) : undefined,
         subject, html, text,
@@ -206,7 +204,7 @@ Deno.serve(async (req) => {
       if (sendRes?.error) {
         const msg = `${sendRes.error.name ?? "resend"}: ${sendRes.error.message ?? JSON.stringify(sendRes.error)}`;
         await supabase.from("lead_notification_log").insert({
-          lead_type: type, lead_id: leadId ?? null, recipient, cc: userEmail ?? null,
+          lead_type: type, lead_id: leadId ?? null, recipient, cc: null,
           subject, status: "failed", error_message: msg, metadata: fields,
         });
         return new Response(JSON.stringify({ success: false, error: msg }), {
@@ -215,11 +213,45 @@ Deno.serve(async (req) => {
       }
 
       await supabase.from("lead_notification_log").insert({
-        lead_type: type, lead_id: leadId ?? null, recipient, cc: userEmail ?? null,
+        lead_type: type, lead_id: leadId ?? null, recipient, cc: null,
         subject, status: "sent",
         resend_message_id: sendRes?.data?.id ?? null,
         metadata: fields,
       });
+
+      // Klantbevestigingsmail (alleen als userEmail aanwezig)
+      const customerEmailRaw = (userEmail || (fields.email as string | undefined) || "").trim();
+      if (customerEmailRaw) {
+        const customerRecipient = isProd ? customerEmailRaw : "boy.kruiswijk@zpzaken.nl";
+        const customerSubjBase = `Bevestiging van je aanvraag bij ZP Zaken`;
+        const customerSubject = isProd ? customerSubjBase : `[PREVIEW] ${customerSubjBase} (origineel naar ${customerEmailRaw})`;
+        try {
+          const custRes: any = await resend.emails.send({
+            from: Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <onboarding@resend.dev>",
+            to: [customerRecipient],
+            reply_to: "info@zpzaken.nl",
+            subject: customerSubject,
+            html: renderCustomerHtml(type, label, fields),
+            text: renderCustomerText(type, fields),
+          });
+          await supabase.from("lead_notification_log").insert({
+            lead_type: type, lead_id: leadId ?? null, recipient: customerRecipient, cc: null,
+            subject: customerSubject,
+            status: custRes?.error ? "failed" : "sent",
+            error_message: custRes?.error ? `${custRes.error.name ?? "resend"}: ${custRes.error.message ?? ""}` : null,
+            resend_message_id: custRes?.data?.id ?? null,
+            metadata: { ...fields, customer_confirmation: true },
+          });
+        } catch (custErr) {
+          const cmsg = custErr instanceof Error ? custErr.message : String(custErr);
+          console.error("Customer confirmation send error", cmsg);
+          await supabase.from("lead_notification_log").insert({
+            lead_type: type, lead_id: leadId ?? null, recipient: customerRecipient, cc: null,
+            subject: customerSubject, status: "failed", error_message: cmsg,
+            metadata: { ...fields, customer_confirmation: true },
+          });
+        }
+      }
 
       return new Response(JSON.stringify({ success: true }), {
         status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
