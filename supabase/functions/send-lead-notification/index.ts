@@ -60,7 +60,7 @@ function esc(s: unknown): string {
     .replace(/"/g, "&quot;");
 }
 
-function renderHtml(label: string, fields: Record<string, unknown>, leadId?: string | null): string {
+function renderHtml(label: string, fields: Record<string, unknown>, leadId?: string | null, deeplink?: string | null): string {
   const rows = Object.entries(fields)
     .map(([k, v]) => `<tr><td style="padding:6px 12px;font-weight:bold;background:#f7f7f7;border:1px solid #eee">${esc(k)}</td><td style="padding:6px 12px;border:1px solid #eee">${esc(Array.isArray(v) ? v.join(", ") : v)}</td></tr>`)
     .join("");
@@ -70,7 +70,8 @@ function renderHtml(label: string, fields: Record<string, unknown>, leadId?: str
       <p>Hallo team,</p>
       <p>Er is een nieuwe <strong>${esc(label.toLowerCase())}</strong> binnengekomen via zpzaken.nl. Hieronder de gegevens:</p>
       <table style="border-collapse:collapse;width:100%;margin-top:12px">${rows}</table>
-      ${leadId ? `<p style="margin-top:24px;color:#666;font-size:12px">Aanvraag-ID: ${esc(leadId)}<br/>Bekijk en behandel deze aanvraag in het admin-dashboard.</p>` : ""}
+      ${deeplink ? `<p style="margin-top:24px"><a href="${esc(deeplink)}" style="display:inline-block;padding:10px 18px;background:#E53E2F;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold">Open in admin</a></p>` : ""}
+      ${leadId ? `<p style="margin-top:16px;color:#666;font-size:12px">Aanvraag-ID: ${esc(leadId)}</p>` : ""}
     </div>
   `;
 }
