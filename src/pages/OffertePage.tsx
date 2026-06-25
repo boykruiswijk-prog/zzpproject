@@ -140,9 +140,12 @@ export default function OffertePage() {
         gewenste_startdatum: form.gewenste_startdatum || null,
       };
 
-      const { data: lead, error: insertErr } = await supabase
+      // Anon-rol heeft geen SELECT op leads — id client-side genereren.
+      const leadId = (globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`);
+      const { error: insertErr } = await supabase
         .from("leads")
         .insert({
+          id: leadId,
           type: "offerte-aanvraag" as never,
           voornaam: form.voornaam.trim(),
           achternaam: form.achternaam.trim(),
@@ -156,20 +159,18 @@ export default function OffertePage() {
           vereist_handmatige_beoordeling:
             form.branche === "anders" || form.aantal_medewerkers === "Meer dan 3",
           extra_data: extra as never,
-        })
-        .select()
-        .single();
+        });
 
       if (insertErr) throw insertErr;
 
-      const ref = (lead?.id as string | undefined)?.slice(0, 8) ?? "";
+      const ref = String(leadId).slice(0, 8);
       const subjectRef = `${form.naam_organisatie.trim()} - ${form.voornaam.trim()} ${form.achternaam.trim()}`;
 
       try {
         await supabase.functions.invoke("send-lead-notification", {
           body: {
             type: "offerte-aanvraag",
-            leadId: lead?.id,
+            leadId: leadId,
             reference: subjectRef || ref,
             userEmail: form.email.trim().toLowerCase(),
             fields: {
