@@ -3,6 +3,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import { Resend } from "npm:resend@4.0.0";
 import { z } from "npm:zod@3.23.8";
+import { resolveEnvironment } from "../_shared/environment.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -166,9 +167,11 @@ Deno.serve(async (req) => {
     const BCC_DEFAULT = ["boy.kruiswijk@zpzaken.nl", "ellen.baars@zpzaken.nl"];
     const baseRecipient = recipientEmail || TO_DEFAULT;
 
-    // Env-guard: in preview/local gaan alle mails naar 1 test-adres met [PREVIEW] prefix.
-    const appEnv = (Deno.env.get("APP_ENV") || "production").toLowerCase();
-    const isProd = appEnv === "production";
+    // Centrale, fail-safe omgevingsdetectie (host-based, APP_ENV is secundair).
+    // Zie supabase/functions/_shared/environment.ts.
+    const env = resolveEnvironment(req);
+    const isProd = env.isProduction;
+    console.log("send-lead-notification env:", JSON.stringify(env));
     const recipient = isProd ? baseRecipient : "boy.kruiswijk@zpzaken.nl";
     const bccList = isProd ? BCC_DEFAULT : [];
 
