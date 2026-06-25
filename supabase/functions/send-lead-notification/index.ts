@@ -60,18 +60,41 @@ function esc(s: unknown): string {
     .replace(/"/g, "&quot;");
 }
 
+const LABEL_MAP: Record<string, string> = {
+  naam: "Naam",
+  contact_naam: "Naam",
+  email: "E-mail",
+  telefoon: "Telefoon",
+  bedrijfsnaam: "Bedrijfsnaam",
+  kvk: "KvK-nummer",
+  kvk_nummer: "KvK-nummer",
+  pakket: "Pakket",
+  gekozen_pakket: "Pakket",
+  dekking: "Dekking",
+  betaalwijze: "Betaalwijze",
+  ingangsdatum: "Ingangsdatum",
+};
+
+function prettyLabel(key: string): string {
+  if (LABEL_MAP[key]) return LABEL_MAP[key];
+  const spaced = key.replace(/[_-]+/g, " ").trim();
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+}
+
 function renderHtml(label: string, fields: Record<string, unknown>, leadId?: string | null, deeplink?: string | null): string {
   const rows = Object.entries(fields)
-    .map(([k, v]) => `<tr><td style="padding:6px 12px;font-weight:bold;background:#f7f7f7;border:1px solid #eee">${esc(k)}</td><td style="padding:6px 12px;border:1px solid #eee">${esc(Array.isArray(v) ? v.join(", ") : v)}</td></tr>`)
+    .map(([k, v]) => `<tr><td style="padding:10px 14px;font-weight:600;color:#333;background:#fafafa;border:1px solid #e5e5e5;width:200px">${esc(prettyLabel(k))}</td><td style="padding:10px 14px;border:1px solid #e5e5e5;color:#222">${esc(Array.isArray(v) ? v.join(", ") : v)}</td></tr>`)
     .join("");
   return `
-    <div style="font-family:Arial,sans-serif;max-width:640px;color:#222">
-      <h2 style="color:#E53E2F;border-bottom:2px solid #E53E2F;padding-bottom:8px">${esc(label)}</h2>
-      <p>Hallo team,</p>
-      <p>Er is een nieuwe <strong>${esc(label.toLowerCase())}</strong> binnengekomen via zpzaken.nl. Hieronder de gegevens:</p>
-      <table style="border-collapse:collapse;width:100%;margin-top:12px">${rows}</table>
-      ${deeplink ? `<p style="margin-top:24px"><a href="${esc(deeplink)}" style="display:inline-block;padding:10px 18px;background:#E53E2F;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold">Open in admin</a></p>` : ""}
-      ${leadId ? `<p style="margin-top:16px;color:#666;font-size:12px">Aanvraag-ID: ${esc(leadId)}</p>` : ""}
+    <div style="font-family:Arial,sans-serif;max-width:640px;color:#222;line-height:1.5">
+      <h2 style="color:#222;font-size:18px;font-weight:600;margin:0 0 16px 0">${esc(label)}</h2>
+      <p style="margin:0 0 8px 0">Beste collega,</p>
+      <p style="margin:0 0 16px 0">Hieronder de gegevens van een nieuwe aanvraag via zpzaken.nl.</p>
+      <table style="border-collapse:collapse;width:100%;margin-top:8px">${rows}</table>
+      ${deeplink ? `<p style="margin-top:24px"><a href="${esc(deeplink)}" style="display:inline-block;padding:10px 18px;background:#E53E2F;color:#fff;text-decoration:none;border-radius:6px;font-weight:600">Open in admin</a></p>` : ""}
+      ${leadId ? `<p style="margin-top:16px;color:#888;font-size:12px">Aanvraag-ID: ${esc(leadId)}</p>` : ""}
+      <hr style="border:none;border-top:1px solid #e5e5e5;margin:28px 0 12px 0" />
+      <p style="margin:0;color:#888;font-size:12px"><strong style="color:#555">ZP Zaken</strong><br/>Dit is een automatische notificatie vanuit het zpzaken.nl platform.</p>
     </div>
   `;
 }
