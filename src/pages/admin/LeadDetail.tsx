@@ -315,37 +315,62 @@ export default function AdminLeadDetail() {
                 </div>
 
                 {/* Company info */}
-                {(lead.bedrijfsnaam || lead.kvk_nummer || lead.beroep) && (
-                  <div>
-                    <h4 className="font-medium mb-3">Bedrijfsgegevens</h4>
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      {lead.bedrijfsnaam && (
-                        <div className="flex items-center gap-3">
-                          <Building className="h-4 w-4 text-muted-foreground" />
-                          <span>{lead.bedrijfsnaam}</span>
-                        </div>
-                      )}
-                      {lead.kvk_nummer && (
-                        <div>
-                          <span className="text-muted-foreground text-sm">KvK:</span>{" "}
-                          {lead.kvk_nummer}
-                        </div>
-                      )}
-                      {lead.beroep && (
-                        <div>
-                          <span className="text-muted-foreground text-sm">Beroep:</span>{" "}
-                          {lead.beroep}
-                        </div>
-                      )}
-                      {lead.omzet && (
-                        <div>
-                          <span className="text-muted-foreground text-sm">Betaalfrequentie:</span>{" "}
-                          {lead.omzet === "1" ? "Jaarlijks" : lead.omzet === "2" ? "Maandelijks" : lead.omzet === "maandelijks" ? "Maandelijks" : lead.omzet === "jaarlijks" ? "Jaarlijks" : lead.omzet}
-                        </div>
-                      )}
+                <div>
+                  <h4 className="font-medium mb-3">Bedrijfsgegevens</h4>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {lead.bedrijfsnaam && (
+                      <div className="flex items-center gap-3">
+                        <Building className="h-4 w-4 text-muted-foreground" />
+                        <span>{lead.bedrijfsnaam}</span>
+                      </div>
+                    )}
+                    {lead.kvk_nummer && (
+                      <div>
+                        <span className="text-muted-foreground text-sm">KvK:</span>{" "}
+                        {lead.kvk_nummer}
+                      </div>
+                    )}
+                    {lead.beroep && (
+                      <div>
+                        <span className="text-muted-foreground text-sm">Beroep:</span>{" "}
+                        {lead.beroep}
+                      </div>
+                    )}
+                    {lead.omzet && (
+                      <div>
+                        <span className="text-muted-foreground text-sm">Betaalfrequentie:</span>{" "}
+                        {lead.omzet === "1" ? "Jaarlijks" : lead.omzet === "2" ? "Maandelijks" : lead.omzet === "maandelijks" ? "Maandelijks" : lead.omzet === "jaarlijks" ? "Jaarlijks" : lead.omzet}
+                      </div>
+                    )}
+                    <div className="sm:col-span-2">
+                      <label className="text-muted-foreground text-sm block mb-1">
+                        Branche {lead.branche ? "" : "(nog niet ingevuld)"}
+                      </label>
+                      <Select
+                        value={lead.branche ?? ""}
+                        onValueChange={(value) =>
+                          updateLead.mutate({ id, updates: { branche: value } as any })
+                        }
+                      >
+                        <SelectTrigger className="max-w-xs">
+                          <SelectValue placeholder="Kies branche…" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[
+                            "IT & ICT",
+                            "HR & Finance consultancy",
+                            "PR & Marketing",
+                            "Management consultancy",
+                            "Coaches",
+                            "Zakelijke dienstverlening",
+                          ].map((b) => (
+                            <SelectItem key={b} value={b}>{b}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
-                )}
+                </div>
 
                 {/* Insurance info */}
                 {lead.verzekering_type && (
