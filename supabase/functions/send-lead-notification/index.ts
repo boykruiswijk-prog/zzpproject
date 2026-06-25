@@ -105,7 +105,7 @@ Deno.serve(async (req) => {
     // Env-guard: in preview/local gaan alle mails naar 1 test-adres met [PREVIEW] prefix.
     const appEnv = (Deno.env.get("APP_ENV") || "production").toLowerCase();
     const isProd = appEnv === "production";
-    const recipient = isProd ? baseRecipient : "boy.kruiswijk+test@zpzaken.nl";
+    const recipient = isProd ? baseRecipient : "boy.kruiswijk@zpzaken.nl";
     const bccList = isProd ? BCC_DEFAULT : [];
     const ccList = isProd && userEmail ? [userEmail] : undefined;
 
