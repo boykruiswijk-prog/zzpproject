@@ -186,13 +186,7 @@ Deno.serve(async (req) => {
       console.log(`[send-portal-magiclink] sent to ${mailRecipient} (real=${realRecipient})`, j?.id);
     }
 
-    if (!resendRes.ok) {
-      const t = await resendRes.text();
-      console.error("[send-portal-magiclink] Resend error", resendRes.status, t);
-    } else {
-      const j = await resendRes.json().catch(() => ({}));
-      console.log(`[send-portal-magiclink] sent to ${email}`, j?.id);
-    }
+
 
     return new Response(JSON.stringify(NEUTRAL_OK), {
       status: 200,
