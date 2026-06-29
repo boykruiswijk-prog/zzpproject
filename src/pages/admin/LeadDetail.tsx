@@ -243,7 +243,7 @@ export default function AdminLeadDetail() {
             </div>
           </div>
           <div className="flex gap-2">
-            {lead.status !== "klant" && (
+            {lead.type !== "verzekering_aanvraag" && lead.status !== "klant" && (
               <Button variant="accent" onClick={handleMarkAsCustomer}>
                 <UserCheck className="h-4 w-4 mr-2" />
                 Markeer als klant
