@@ -69,7 +69,7 @@ const statusColors: Record<LeadStatus, string> = {
 export default function AdminLeadDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isAdmin, isSupervisorOrAdmin } = useAuth();
+  const { isAdmin, isSupervisorOrAdmin, isTeamMember } = useAuth();
   const { toast } = useToast();
   const { data: lead, isLoading } = useLead(id);
   const updateLead = useUpdateLead();
