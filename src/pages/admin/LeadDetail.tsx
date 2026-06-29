@@ -69,7 +69,7 @@ const statusColors: Record<LeadStatus, string> = {
 export default function AdminLeadDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isSupervisorOrAdmin, isTeamMember } = useAuth();
   const { toast } = useToast();
   const { data: lead, isLoading } = useLead(id);
   const updateLead = useUpdateLead();
@@ -248,8 +248,9 @@ export default function AdminLeadDetail() {
                 Markeer als klant
               </Button>
             )}
-            {isAdmin && (
-              <Button variant="destructive" size="icon" onClick={handleDelete}>
+            {isSupervisorOrAdmin && (
+              <Button variant="destructive" size="icon" onClick={handleDelete}
+                      title="Lead verwijderen (supervisor/admin)">
                 <Trash2 className="h-4 w-4" />
               </Button>
             )}
@@ -375,19 +376,30 @@ export default function AdminLeadDetail() {
                   </div>
 
                   {/* IBAN - always visible, full width, directly under Branche */}
-                  <div className="mt-4">
-                    <label className="text-muted-foreground text-sm block mb-1">
-                      IBAN {lead.iban ? "" : "(nog niet ingevuld)"}
-                    </label>
-                    <Input
-                      className="max-w-xs"
-                      placeholder="NL00BANK0000000000"
-                      value={lead.iban ?? ""}
-                      onChange={(e) =>
-                        updateLead.mutate({ id, updates: { iban: e.target.value } as any })
-                      }
-                    />
-                  </div>
+                  {(() => {
+                    const ibanLocked = !!lead.geactiveerd_op && !isSupervisorOrAdmin;
+                    return (
+                      <div className="mt-4">
+                        <label className="text-muted-foreground text-sm block mb-1">
+                          IBAN {lead.iban ? "" : "(nog niet ingevuld)"}
+                          {ibanLocked && (
+                            <span className="ml-2 text-xs text-amber-600">
+                              (vergrendeld na activatie — supervisor/admin)
+                            </span>
+                          )}
+                        </label>
+                        <Input
+                          className="max-w-xs"
+                          placeholder="NL00BANK0000000000"
+                          value={lead.iban ?? ""}
+                          disabled={ibanLocked}
+                          onChange={(e) =>
+                            updateLead.mutate({ id, updates: { iban: e.target.value } as any })
+                          }
+                        />
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Insurance info */}
@@ -463,7 +475,7 @@ export default function AdminLeadDetail() {
           {/* Sidebar */}
           <div className="space-y-6">
             {lead.type === "verzekering_aanvraag" && (
-              <LeadActivationPanel lead={lead} isAdmin={isAdmin} />
+              <LeadActivationPanel lead={lead} isAdmin={isTeamMember} />
             )}
             {lead.type === "verzekering_aanvraag" && lead.exact_account_id && (
               <LeadLifecyclePanel lead={lead} />

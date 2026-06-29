@@ -83,8 +83,9 @@ export function LeadTable() {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
-  const { user } = useAuth();
-  const canDelete = user?.email === AUTHORIZED_DELETE_EMAIL;
+  const { user, isSupervisorOrAdmin } = useAuth();
+  // Verwijderen blijft beperkt tot de gemarkeerde admin-mailbox, EN moet supervisor/admin-rol hebben.
+  const canDelete = user?.email === AUTHORIZED_DELETE_EMAIL && isSupervisorOrAdmin;
 
   const { data: leads, isLoading, isFetching } = useLeads({
     search: search || undefined,

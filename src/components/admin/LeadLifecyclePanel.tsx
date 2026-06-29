@@ -12,6 +12,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Loader2, Pause, Play, X, RefreshCcw, ChevronRight, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { usePolicyLifecycle, usePolicyAuditLog } from "@/hooks/usePolicyLifecycle";
+import { useAuth } from "@/contexts/AuthContext";
 import { formatDateTimeLongNL, formatDateLongNL } from "@/lib/dateFormat";
 
 const ACTIE_LABELS: Record<string, string> = {
@@ -31,6 +32,7 @@ export function LeadLifecyclePanel({ lead }: Props) {
   const { toast } = useToast();
   const lifecycle = usePolicyLifecycle();
   const { data: auditLog } = usePolicyAuditLog(lead.id);
+  const { isSupervisorOrAdmin } = useAuth();
 
   const [pauzeOpen, setPauzeOpen] = useState(false);
   const [opzegOpen, setOpzegOpen] = useState(false);
@@ -51,6 +53,8 @@ export function LeadLifecyclePanel({ lead }: Props) {
     }
   };
 
+  const gatedTooltip = "Voorbehouden aan supervisor/admin";
+
   return (
     <>
       <Card>
@@ -64,7 +68,9 @@ export function LeadLifecyclePanel({ lead }: Props) {
                 <Button size="sm" variant="outline" onClick={() => setPauzeOpen(true)}>
                   <Pause className="h-3 w-3 mr-1" /> Pauzeren
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => setOpzegOpen(true)}>
+                <Button size="sm" variant="outline" onClick={() => setOpzegOpen(true)}
+                        disabled={!isSupervisorOrAdmin}
+                        title={!isSupervisorOrAdmin ? gatedTooltip : undefined}>
                   <X className="h-3 w-3 mr-1" /> Opzeggen
                 </Button>
               </>
@@ -76,17 +82,26 @@ export function LeadLifecyclePanel({ lead }: Props) {
                   {lifecycle.isPending ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Play className="h-3 w-3 mr-1" />}
                   Hervatten
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => setOpzegOpen(true)}>
+                <Button size="sm" variant="outline" onClick={() => setOpzegOpen(true)}
+                        disabled={!isSupervisorOrAdmin}
+                        title={!isSupervisorOrAdmin ? gatedTooltip : undefined}>
                   <X className="h-3 w-3 mr-1" /> Opzeggen
                 </Button>
               </>
             )}
             {status === "opgezegd" && (
-              <Button size="sm" onClick={() => setHeractOpen(true)}>
+              <Button size="sm" onClick={() => setHeractOpen(true)}
+                      disabled={!isSupervisorOrAdmin}
+                      title={!isSupervisorOrAdmin ? gatedTooltip : undefined}>
                 <RefreshCcw className="h-3 w-3 mr-1" /> Heractiveren
               </Button>
             )}
           </div>
+          {!isSupervisorOrAdmin && (status === "actief" || status === "klant" || status === "gepauzeerd" || status === "opgezegd") && (
+            <p className="text-xs text-muted-foreground">
+              Opzeggen of een activatie terugdraaien is voorbehouden aan een supervisor of admin.
+            </p>
+          )}
 
           {status === "gepauzeerd" && (
             <div className="text-xs text-muted-foreground">

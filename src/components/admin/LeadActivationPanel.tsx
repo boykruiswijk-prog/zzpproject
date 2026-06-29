@@ -21,6 +21,8 @@ type Lead = Record<string, any>;
 
 interface Props {
   lead: Lead;
+  // Backwards-compatibel; betekent "mag activeren". Wordt vanuit LeadDetail
+  // gevuld met isTeamMember (medewerker/supervisor/admin).
   isAdmin: boolean;
 }
 
@@ -280,7 +282,7 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
               <div className="rounded-md border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900 flex items-start gap-2">
                 <AlertTriangle className="h-4 w-4 mt-0.5" />
                 <span>
-                  {!isAdmin && "Alleen admins kunnen activeren."}
+                  {!isAdmin && "Alleen teamleden kunnen activeren."}
                   {isAdmin && isAfgewezen && "Afgewezen leads kunnen niet worden geactiveerd."}
                 </span>
               </div>

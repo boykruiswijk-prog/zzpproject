@@ -230,7 +230,7 @@ Deno.serve(async (req) => {
   const { action, lead_id, reden, toelichting, pauze_toelichting, nieuwe_functie, rol_hint } = body ?? {};
   if (!action || !lead_id) return json({ error: "missing_params" }, 400);
 
-  // Auth
+  // Auth: bepaal exacte rol (admin / supervisor / medewerker / klant / system)
   let uid: string | null = null;
   let rol = "klant";
   const authHeader = req.headers.get("authorization") || "";
@@ -238,9 +238,12 @@ Deno.serve(async (req) => {
     const { data: { user } } = await supabase.auth.getUser(authHeader.slice(7));
     uid = user?.id ?? null;
     if (uid) {
-      const { data: roleRow } = await supabase
-        .from("user_roles").select("role").eq("user_id", uid).limit(1).maybeSingle();
-      if (roleRow) rol = "admin";
+      const { data: roleRows } = await supabase
+        .from("user_roles").select("role").eq("user_id", uid);
+      const roles = (roleRows ?? []).map((r: any) => r.role);
+      if (roles.includes("admin")) rol = "admin";
+      else if (roles.includes("supervisor")) rol = "supervisor";
+      else if (roles.includes("medewerker")) rol = "medewerker";
     }
   }
   if (rol_hint === "system") rol = "system";
@@ -253,6 +256,18 @@ Deno.serve(async (req) => {
     const { data: pol } = await supabase
       .from("policies").select("user_id").eq("lead_id", lead_id).limit(1).maybeSingle();
     if (!pol || pol.user_id !== uid) return json({ error: "forbidden" }, 403);
+  }
+
+  // Server-side rolafscherming: medewerker (intern) mag NIET opzeggen of activatie terugdraaien.
+  // Klanten (portal) en system-cron behouden hun bestaande paden.
+  const GATED_INTERNAL_ACTIONS = new Set(["opzeggen", "heractiveren_check", "heractiveren_confirm"]);
+  if (rol === "medewerker" && GATED_INTERNAL_ACTIONS.has(action)) {
+    await logAudit(supabase, {
+      lead_id, actie: `${action}_geweigerd_rolafscherming`,
+      uitgevoerd_door: uid, rol,
+      succes: false, fout_melding: "medewerker zonder supervisor/admin-rechten",
+    });
+    return json({ error: "forbidden", message: "Deze actie is voorbehouden aan supervisor/admin." }, 403);
   }
 
   const today = todayAmsterdam();

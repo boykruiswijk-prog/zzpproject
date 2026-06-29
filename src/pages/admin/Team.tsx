@@ -38,7 +38,7 @@ import type { Database } from "@/integrations/supabase/types";
 type AppRole = Database["public"]["Enums"]["app_role"];
 
 export default function AdminTeam() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, isSupervisorOrAdmin } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -133,8 +133,8 @@ export default function AdminTeam() {
     return userId.substring(0, 8) + "...";
   };
 
-  // Redirect if not admin (after all hooks)
-  if (!isAdmin) {
+  // Redirect if not supervisor/admin (after all hooks)
+  if (!isSupervisorOrAdmin) {
     return <Navigate to="/admin" replace />;
   }
 
@@ -203,6 +203,7 @@ export default function AdminTeam() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="medewerker">Medewerker</SelectItem>
+                      <SelectItem value="supervisor">Supervisor</SelectItem>
                       <SelectItem value="admin">Admin</SelectItem>
                     </SelectContent>
                   </Select>
@@ -257,10 +258,18 @@ export default function AdminTeam() {
                         <TableCell>
                           <Badge
                             variant={
-                              userRole.role === "admin" ? "default" : "secondary"
+                              userRole.role === "admin"
+                                ? "default"
+                                : userRole.role === "supervisor"
+                                ? "outline"
+                                : "secondary"
                             }
                           >
-                            {userRole.role === "admin" ? "Admin" : "Medewerker"}
+                            {userRole.role === "admin"
+                              ? "Admin"
+                              : userRole.role === "supervisor"
+                              ? "Supervisor"
+                              : "Medewerker"}
                           </Badge>
                         </TableCell>
                         <TableCell>
