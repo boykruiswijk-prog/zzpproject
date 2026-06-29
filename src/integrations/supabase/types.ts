@@ -14,24 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      __verify_results: {
-        Row: {
-          created_at: string | null
-          id: number
-          payload: Json | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: number
-          payload?: Json | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: number
-          payload?: Json | null
-        }
-        Relationships: []
-      }
       articles: {
         Row: {
           category: string
@@ -1629,8 +1611,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      __delete_guard_verification: { Args: never; Returns: Json }
-      __role_guard_verification: { Args: never; Returns: Json }
       accept_portal_invitation: { Args: { _token: string }; Returns: Json }
       cleanup_expired_oauth_states: { Args: never; Returns: undefined }
       get_pilot_signup_count: { Args: { pilot: string }; Returns: number }
