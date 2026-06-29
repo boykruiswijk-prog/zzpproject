@@ -1501,6 +1501,51 @@ export type Database = {
         }
         Relationships: []
       }
+      sensitive_audit_log: {
+        Row: {
+          actie: string
+          created_at: string
+          details: Json
+          id: string
+          nieuwe_waarde: string | null
+          oude_waarde: string | null
+          target_id: string | null
+          target_table: string
+          uitgevoerd_door: string | null
+          uitgevoerd_door_email: string | null
+          uitgevoerd_door_rol: string | null
+          veld: string | null
+        }
+        Insert: {
+          actie: string
+          created_at?: string
+          details?: Json
+          id?: string
+          nieuwe_waarde?: string | null
+          oude_waarde?: string | null
+          target_id?: string | null
+          target_table: string
+          uitgevoerd_door?: string | null
+          uitgevoerd_door_email?: string | null
+          uitgevoerd_door_rol?: string | null
+          veld?: string | null
+        }
+        Update: {
+          actie?: string
+          created_at?: string
+          details?: Json
+          id?: string
+          nieuwe_waarde?: string | null
+          oude_waarde?: string | null
+          target_id?: string | null
+          target_table?: string
+          uitgevoerd_door?: string | null
+          uitgevoerd_door_email?: string | null
+          uitgevoerd_door_rol?: string | null
+          veld?: string | null
+        }
+        Relationships: []
+      }
       social_media_features: {
         Row: {
           active: boolean
@@ -1569,6 +1614,7 @@ export type Database = {
       accept_portal_invitation: { Args: { _token: string }; Returns: Json }
       cleanup_expired_oauth_states: { Args: never; Returns: undefined }
       get_pilot_signup_count: { Args: { pilot: string }; Returns: number }
+      get_user_role_label: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1576,6 +1622,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_supervisor_or_admin: { Args: { _user_id: string }; Returns: boolean }
       is_team_member: { Args: { _user_id: string }; Returns: boolean }
       nextval_text: { Args: { seq_name: string }; Returns: string }
       verify_dba_certificate: {
@@ -1589,7 +1636,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "medewerker"
+      app_role: "admin" | "medewerker" | "supervisor"
       lead_bron: "website" | "telefoon" | "email"
       lead_status:
         | "nieuw"
@@ -1731,7 +1778,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "medewerker"],
+      app_role: ["admin", "medewerker", "supervisor"],
       lead_bron: ["website", "telefoon", "email"],
       lead_status: [
         "nieuw",

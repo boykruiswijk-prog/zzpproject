@@ -12,6 +12,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Loader2, Pause, Play, X, RefreshCcw, ChevronRight, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { usePolicyLifecycle, usePolicyAuditLog } from "@/hooks/usePolicyLifecycle";
+import { useAuth } from "@/contexts/AuthContext";
 import { formatDateTimeLongNL, formatDateLongNL } from "@/lib/dateFormat";
 
 const ACTIE_LABELS: Record<string, string> = {
