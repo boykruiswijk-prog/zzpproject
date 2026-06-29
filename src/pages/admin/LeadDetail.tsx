@@ -248,8 +248,9 @@ export default function AdminLeadDetail() {
                 Markeer als klant
               </Button>
             )}
-            {isAdmin && (
-              <Button variant="destructive" size="icon" onClick={handleDelete}>
+            {isSupervisorOrAdmin && (
+              <Button variant="destructive" size="icon" onClick={handleDelete}
+                      title="Lead verwijderen (supervisor/admin)">
                 <Trash2 className="h-4 w-4" />
               </Button>
             )}
