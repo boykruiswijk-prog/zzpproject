@@ -187,7 +187,10 @@ export function LeadOnboardingStepper({ lead }: Props) {
               variant="destructive"
               disabled={!rejectReden.trim() || isPending}
               onClick={() => {
-                setStatus("afgewezen", { afwijzing_reden: rejectReden.trim() }, "Aanvraag afgewezen");
+                const stamp = new Date().toLocaleString("nl-NL");
+                const note = `[Afgewezen ${stamp}] ${rejectReden.trim()}`;
+                const merged = lead.opmerkingen ? `${note}\n\n${lead.opmerkingen}` : note;
+                setStatus("afgewezen", { opmerkingen: merged }, "Aanvraag afgewezen");
                 setRejectOpen(false);
                 setRejectReden("");
               }}
