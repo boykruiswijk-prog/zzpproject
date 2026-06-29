@@ -258,6 +258,11 @@ export default function AdminLeadDetail() {
           </div>
         </div>
 
+        {/* Onboarding-stepper bovenaan */}
+        {lead.type === "verzekering_aanvraag" && (
+          <LeadOnboardingStepper lead={lead} />
+        )}
+
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Lead info */}
           <div className="lg:col-span-2 space-y-6">
@@ -265,20 +270,33 @@ export default function AdminLeadDetail() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>Lead informatie</CardTitle>
-                  <Select value={lead.status} onValueChange={handleStatusChange}>
-                    <SelectTrigger className="w-48">
-                      <Badge className={statusColors[lead.status]} variant="secondary">
-                        {statusLabels[lead.status]}
-                      </Badge>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(statusLabels).map(([value, label]) => (
-                        <SelectItem key={value} value={value}>
-                          {label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {isSupervisorOrAdmin ? (
+                    <details className="text-xs">
+                      <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
+                        Geavanceerd: status handmatig wijzigen
+                      </summary>
+                      <div className="mt-2">
+                        <Select value={lead.status} onValueChange={handleStatusChange}>
+                          <SelectTrigger className="w-48">
+                            <Badge className={statusColors[lead.status]} variant="secondary">
+                              {statusLabels[lead.status]}
+                            </Badge>
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Object.entries(statusLabels).map(([value, label]) => (
+                              <SelectItem key={value} value={value}>
+                                {label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </details>
+                  ) : (
+                    <Badge className={statusColors[lead.status]} variant="secondary">
+                      {statusLabels[lead.status]}
+                    </Badge>
+                  )}
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
