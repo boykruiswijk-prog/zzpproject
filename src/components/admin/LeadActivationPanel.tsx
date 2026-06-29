@@ -21,6 +21,8 @@ type Lead = Record<string, any>;
 
 interface Props {
   lead: Lead;
+  // Backwards-compatibel; betekent "mag activeren". Wordt vanuit LeadDetail
+  // gevuld met isTeamMember (medewerker/supervisor/admin).
   isAdmin: boolean;
 }
 
