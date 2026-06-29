@@ -70,9 +70,9 @@ export function LeadOnboardingStepper({ lead }: Props) {
             <AlertTriangle className="h-5 w-5 text-red-600" />
             <div>
               <p className="font-medium">Aanvraag afgewezen</p>
-              {lead.afwijzing_reden && (
-                <p className="text-muted-foreground text-xs">Reden: {lead.afwijzing_reden}</p>
-              )}
+              <p className="text-muted-foreground text-xs">
+                Reden staat genoteerd in het veld Opmerkingen.
+              </p>
             </div>
           </div>
         ) : (
