@@ -343,46 +343,50 @@ export default function AdminLeadDetail() {
                         {lead.omzet === "1" ? "Jaarlijks" : lead.omzet === "2" ? "Maandelijks" : lead.omzet === "maandelijks" ? "Maandelijks" : lead.omzet === "jaarlijks" ? "Jaarlijks" : lead.omzet}
                       </div>
                     )}
-                    <div className="sm:col-span-2">
-                      <label className="text-muted-foreground text-sm block mb-1">
-                        Branche {lead.branche ? "" : "(nog niet ingevuld)"}
-                      </label>
-                      <Select
-                        value={lead.branche ?? ""}
-                        onValueChange={(value) =>
-                          updateLead.mutate({ id, updates: { branche: value } as any })
-                        }
-                      >
-                        <SelectTrigger className="max-w-xs">
-                          <SelectValue placeholder="Kies branche…" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {[
-                            "IT & ICT",
-                            "HR & Finance consultancy",
-                            "PR & Marketing",
-                            "Management consultancy",
-                            "Coaches",
-                            "Zakelijke dienstverlening",
-                          ].map((b) => (
-                            <SelectItem key={b} value={b}>{b}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label className="text-muted-foreground text-sm block mb-1">
-                        IBAN {lead.iban ? "" : "(nog niet ingevuld)"}
-                      </label>
-                      <Input
-                        className="max-w-xs"
-                        placeholder="NLxxXXXXxxxxxxxxx"
-                        value={lead.iban ?? ""}
-                        onChange={(e) =>
-                          updateLead.mutate({ id, updates: { iban: e.target.value } as any })
-                        }
-                      />
-                    </div>
+                  </div>
+
+                  {/* Branche - always visible, full width */}
+                  <div className="mt-4">
+                    <label className="text-muted-foreground text-sm block mb-1">
+                      Branche {lead.branche ? "" : "(nog niet ingevuld)"}
+                    </label>
+                    <Select
+                      value={lead.branche ?? ""}
+                      onValueChange={(value) =>
+                        updateLead.mutate({ id, updates: { branche: value } as any })
+                      }
+                    >
+                      <SelectTrigger className="max-w-xs">
+                        <SelectValue placeholder="Kies branche…" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[
+                          "IT & ICT",
+                          "HR & Finance consultancy",
+                          "PR & Marketing",
+                          "Management consultancy",
+                          "Coaches",
+                          "Zakelijke dienstverlening",
+                        ].map((b) => (
+                          <SelectItem key={b} value={b}>{b}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* IBAN - always visible, full width, directly under Branche */}
+                  <div className="mt-4">
+                    <label className="text-muted-foreground text-sm block mb-1">
+                      IBAN {lead.iban ? "" : "(nog niet ingevuld)"}
+                    </label>
+                    <Input
+                      className="max-w-xs"
+                      placeholder="NL00BANK0000000000"
+                      value={lead.iban ?? ""}
+                      onChange={(e) =>
+                        updateLead.mutate({ id, updates: { iban: e.target.value } as any })
+                      }
+                    />
                   </div>
                 </div>
 
