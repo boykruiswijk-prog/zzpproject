@@ -258,10 +258,18 @@ export default function AdminTeam() {
                         <TableCell>
                           <Badge
                             variant={
-                              userRole.role === "admin" ? "default" : "secondary"
+                              userRole.role === "admin"
+                                ? "default"
+                                : userRole.role === "supervisor"
+                                ? "outline"
+                                : "secondary"
                             }
                           >
-                            {userRole.role === "admin" ? "Admin" : "Medewerker"}
+                            {userRole.role === "admin"
+                              ? "Admin"
+                              : userRole.role === "supervisor"
+                              ? "Supervisor"
+                              : "Medewerker"}
                           </Badge>
                         </TableCell>
                         <TableCell>
