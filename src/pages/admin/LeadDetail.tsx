@@ -493,9 +493,11 @@ export default function AdminLeadDetail() {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {lead.type === "verzekering_aanvraag" && (
-              <LeadActivationPanel lead={lead} isAdmin={isTeamMember} />
-            )}
+            {lead.type === "verzekering_aanvraag" && (() => {
+              const phase = derivePhase(lead);
+              const canActivate = isTeamMember && (phase === "activeren" || phase === "actief");
+              return <LeadActivationPanel lead={lead} isAdmin={canActivate} />;
+            })()}
             {lead.type === "verzekering_aanvraag" && lead.exact_account_id && (
               <LeadLifecyclePanel lead={lead} />
             )}
