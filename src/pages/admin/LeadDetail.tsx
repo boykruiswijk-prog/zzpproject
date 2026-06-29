@@ -5,6 +5,7 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { LeadNotes } from "@/components/admin/LeadNotes";
 import { LeadActivationPanel } from "@/components/admin/LeadActivationPanel";
 import { LeadLifecyclePanel } from "@/components/admin/LeadLifecyclePanel";
+import { LeadOnboardingStepper, derivePhase } from "@/components/admin/LeadOnboardingStepper";
 import { useLead, useUpdateLead, useDeleteLead } from "@/hooks/useLeads";
 import { useAuth } from "@/contexts/AuthContext";
 import { PortalInviteButton } from "@/components/admin/PortalInviteButton";
@@ -242,7 +243,7 @@ export default function AdminLeadDetail() {
             </div>
           </div>
           <div className="flex gap-2">
-            {lead.status !== "klant" && (
+            {lead.type !== "verzekering_aanvraag" && lead.status !== "klant" && (
               <Button variant="accent" onClick={handleMarkAsCustomer}>
                 <UserCheck className="h-4 w-4 mr-2" />
                 Markeer als klant
@@ -257,6 +258,11 @@ export default function AdminLeadDetail() {
           </div>
         </div>
 
+        {/* Onboarding-stepper bovenaan */}
+        {lead.type === "verzekering_aanvraag" && (
+          <LeadOnboardingStepper lead={lead} />
+        )}
+
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Lead info */}
           <div className="lg:col-span-2 space-y-6">
@@ -264,20 +270,33 @@ export default function AdminLeadDetail() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>Lead informatie</CardTitle>
-                  <Select value={lead.status} onValueChange={handleStatusChange}>
-                    <SelectTrigger className="w-48">
-                      <Badge className={statusColors[lead.status]} variant="secondary">
-                        {statusLabels[lead.status]}
-                      </Badge>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(statusLabels).map(([value, label]) => (
-                        <SelectItem key={value} value={value}>
-                          {label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {isSupervisorOrAdmin ? (
+                    <details className="text-xs">
+                      <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
+                        Geavanceerd: status handmatig wijzigen
+                      </summary>
+                      <div className="mt-2">
+                        <Select value={lead.status} onValueChange={handleStatusChange}>
+                          <SelectTrigger className="w-48">
+                            <Badge className={statusColors[lead.status]} variant="secondary">
+                              {statusLabels[lead.status]}
+                            </Badge>
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Object.entries(statusLabels).map(([value, label]) => (
+                              <SelectItem key={value} value={value}>
+                                {label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </details>
+                  ) : (
+                    <Badge className={statusColors[lead.status]} variant="secondary">
+                      {statusLabels[lead.status]}
+                    </Badge>
+                  )}
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -474,9 +493,11 @@ export default function AdminLeadDetail() {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {lead.type === "verzekering_aanvraag" && (
-              <LeadActivationPanel lead={lead} isAdmin={isTeamMember} />
-            )}
+            {lead.type === "verzekering_aanvraag" && (() => {
+              const phase = derivePhase(lead);
+              const canActivate = isTeamMember && (phase === "activeren" || phase === "actief");
+              return <LeadActivationPanel lead={lead} isAdmin={canActivate} />;
+            })()}
             {lead.type === "verzekering_aanvraag" && lead.exact_account_id && (
               <LeadLifecyclePanel lead={lead} />
             )}
