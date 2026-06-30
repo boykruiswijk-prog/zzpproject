@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   ShieldCheck,
   UserCheck,
+  Inbox,
   Plug,
   KeyRound,
   ConciergeBell,
@@ -22,6 +23,7 @@ const ADMIN_EMAIL = "boy.kruiswijk@zpzaken.nl";
 
 const navItems = [
   { to: "/admin", icon: LayoutDashboard, label: "Dashboard", end: true },
+  { to: "/admin/werkbak", icon: Inbox, label: "Werkbak" },
   { to: "/admin/leads", icon: Users, label: "Leads", showTakenBadge: true },
   { to: "/admin/dba-checks", icon: ShieldCheck, label: "Wet DBA" },
   { to: "/admin/wachtwoord-wijzigen", icon: KeyRound, label: "Wachtwoord wijzigen" },

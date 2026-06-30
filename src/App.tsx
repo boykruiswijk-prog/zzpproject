@@ -36,6 +36,7 @@ import CreditControl from "./pages/CreditControl";
 import Screening from "./pages/Screening";
 import AdminScreeningAanvragen from "./pages/admin/ScreeningAanvragen";
 import AdminServiceAanvragen from "./pages/admin/ServiceAanvragen";
+import AdminWerkbak from "./pages/admin/Werkbak";
 import AdminSocialMediaFeatures from "./pages/admin/SocialMediaFeatures";
 import AdminIntegraties from "./pages/admin/Integraties";
 import AdminExactKoppeling from "./pages/admin/ExactKoppeling";
@@ -220,6 +221,7 @@ const App = () => (
             <Route path="/admin/reset-password" element={<ResetPassword />} />
             <Route path="/admin/wachtwoord-wijzigen" element={<ChangePasswordPage />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/werkbak" element={<AdminWerkbak />} />
             <Route path="/admin/leads" element={<AdminLeads />} />
             <Route path="/admin/leads/:id" element={<AdminLeadDetail />} />
             <Route path="/admin/team" element={<AdminTeam />} />
