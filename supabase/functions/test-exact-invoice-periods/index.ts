@@ -214,6 +214,9 @@ Deno.serve(async (req) => {
     line_end_time: "2027-09-30T00:00:00",
     amount: 660,
   };
+  } // end !verifyOnlyIds
+
+
 
   // ── Verificatie: regels ophalen om StartTime/EndTime zichtbaar te bevestigen
   const verifyOne = async (invoiceId: string) => {
