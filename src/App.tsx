@@ -221,6 +221,7 @@ const App = () => (
             <Route path="/admin/reset-password" element={<ResetPassword />} />
             <Route path="/admin/wachtwoord-wijzigen" element={<ChangePasswordPage />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/werkbak" element={<AdminWerkbak />} />
             <Route path="/admin/leads" element={<AdminLeads />} />
             <Route path="/admin/leads/:id" element={<AdminLeadDetail />} />
             <Route path="/admin/team" element={<AdminTeam />} />
