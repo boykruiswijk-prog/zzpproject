@@ -155,8 +155,11 @@ Deno.serve(async (req) => {
     Accept: "application/json",
     Prefer: "return=representation",
   };
+  const itemId = config.exact_item_id_bav_avb;
+  if (!itemId) return json({ success: false, error: "exact_item_id_bav_avb_ontbreekt" }, 400);
 
   const results: Record<string, unknown> = {};
+
 
   // ── Test 1: Maandbetaler ──
   const acc1 = await createTestAccount({ baseUrl, div, headers, name: "TEST Maandbetaler" });
