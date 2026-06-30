@@ -240,8 +240,16 @@ Deno.serve(async (req) => {
     };
   };
   // Skip-her-verify als invoice_id leeg is
-  results.maand_verify = inv1.invoiceId ? await verifyOne(inv1.invoiceId) : { ok: false, error: "no_invoice_id" };
-  results.jaar_verify = inv2.invoiceId ? await verifyOne(inv2.invoiceId) : { ok: false, error: "no_invoice_id" };
+  if (verifyOnlyIds) {
+    for (let i = 0; i < verifyOnlyIds.length; i++) {
+      results[`verify_${i}`] = { invoice_id: verifyOnlyIds[i], ...(await verifyOne(verifyOnlyIds[i])) };
+    }
+  } else {
+    // deno-lint-ignore no-explicit-any
+    const m: any = results.maand; const y: any = results.jaar;
+    results.maand_verify = m?.invoice_id ? await verifyOne(m.invoice_id) : { ok: false, error: "no_invoice_id" };
+    results.jaar_verify = y?.invoice_id ? await verifyOne(y.invoice_id) : { ok: false, error: "no_invoice_id" };
+  }
 
   return json({ success: true, results });
 });
