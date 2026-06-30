@@ -544,9 +544,9 @@ export default function AdminLeadDetail() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {lead.status !== "klant" && (
+                {lead.status !== "actief" && (
                   <p className="text-sm text-muted-foreground bg-secondary/50 p-3 rounded-lg">
-                    Certificaten kunnen alleen worden aangemaakt als de lead de status <strong>Klant</strong> heeft.
+                    Certificaten kunnen pas worden aangemaakt zodra de polis is geactiveerd (status <strong>Actief</strong>).
                   </p>
                 )}
                 {policies && policies.length > 0 && policies.map((p) => (
@@ -567,7 +567,7 @@ export default function AdminLeadDetail() {
                   variant={policies && policies.length > 0 ? "outline" : "accent"}
                   className="w-full"
                   onClick={handleGenerateCertificate}
-                  disabled={isGenerating || lead.status !== "klant"}
+                  disabled={isGenerating || lead.status !== "actief"}
                 >
                   {isGenerating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <FileText className="h-4 w-4 mr-2" />}
                   {policies && policies.length > 0 ? "Nieuw certificaat" : "Certificaat genereren"}
