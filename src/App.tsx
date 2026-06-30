@@ -36,6 +36,7 @@ import CreditControl from "./pages/CreditControl";
 import Screening from "./pages/Screening";
 import AdminScreeningAanvragen from "./pages/admin/ScreeningAanvragen";
 import AdminServiceAanvragen from "./pages/admin/ServiceAanvragen";
+import AdminWerkbak from "./pages/admin/Werkbak";
 import AdminSocialMediaFeatures from "./pages/admin/SocialMediaFeatures";
 import AdminIntegraties from "./pages/admin/Integraties";
 import AdminExactKoppeling from "./pages/admin/ExactKoppeling";
