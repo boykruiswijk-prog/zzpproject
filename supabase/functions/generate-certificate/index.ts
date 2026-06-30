@@ -266,6 +266,13 @@ serve(async (req) => {
     let y = 590;
     drawRow("Certificaathouder:", policy.certificate_holder, y);
 
+    // KvK (alleen tonen als ingevuld op de lead)
+    const kvkNummer = typeof data?.kvk === "string" ? data.kvk.trim() : "";
+    if (kvkNummer) {
+      y -= 16;
+      drawRow("KvK:", kvkNummer, y);
+    }
+
     // Verzekeringsnemer:
     y -= 16;
     drawRow("Verzekeringsnemer:", policy.insured_name, y);
