@@ -102,7 +102,7 @@ export default function Werkbak() {
       email: s.email ?? "",
       status: s.status ?? "",
       omschrijving: [SERVICE_SUBTYPE_LABEL[s.type] ?? s.type, s.polisnummer].filter(Boolean).join(" · "),
-      detailHref: `/admin/service-aanvragen`,
+      detailHref: `/admin/service-aanvragen/${s.id}`,
     }));
 
     const screeningRows: Row[] = (screeningRes.data ?? []).map((s: any) => ({
@@ -113,7 +113,7 @@ export default function Werkbak() {
       email: s.email ?? "",
       status: s.status ?? "",
       omschrijving: [s.screening_type, s.bedrijfsnaam].filter(Boolean).join(" · ") || "Screeningaanvraag",
-      detailHref: `/admin/screening-aanvragen`,
+      detailHref: `/admin/screening-aanvragen/${s.id}`,
     }));
 
     const all = [...leadRows, ...serviceRows, ...screeningRows].sort(

@@ -8,10 +8,13 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { ConciergeBell, RotateCw, Mail } from "lucide-react";
+import { ConciergeBell, RotateCw } from "lucide-react";
 import { formatDateNL } from "@/lib/dateFormat";
+import {
+  ServiceAanvraagDetail,
+  ServiceAanvraagDetailHeader,
+} from "@/components/admin/ServiceAanvraagDetail";
 
 type Aanvraag = {
   id: string;
@@ -222,46 +225,16 @@ export default function ServiceAanvragen() {
           {selected && (
             <>
               <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <Badge className={TYPE_COLOR[selected.type]}>{TYPE_LABEL[selected.type] ?? selected.type}</Badge>
-                  {selected.voornaam} {selected.achternaam}
+                <DialogTitle>
+                  <ServiceAanvraagDetailHeader aanvraag={selected} />
                 </DialogTitle>
               </DialogHeader>
-              <div className="space-y-4 text-sm">
-                <div className="grid grid-cols-2 gap-3">
-                  <div><div className="text-muted-foreground">Datum</div><div>{formatDate(selected.created_at)}</div></div>
-                  <div><div className="text-muted-foreground">Status</div><div><Badge className={STATUS_COLOR[selected.status]}>{selected.status}</Badge></div></div>
-                  <div><div className="text-muted-foreground">Email</div><div>{selected.email}</div></div>
-                  <div><div className="text-muted-foreground">Telefoon</div><div>{selected.telefoon}</div></div>
-                  <div className="col-span-2"><div className="text-muted-foreground">Polisnummer</div><div className="font-mono">{selected.polisnummer}</div></div>
-                </div>
-                {selected.details && Object.keys(selected.details).length > 0 && (
-                  <div>
-                    <div className="text-muted-foreground mb-1">Details</div>
-                    <ul className="bg-muted/50 rounded p-3 space-y-1">
-                      {Object.entries(selected.details).map(([k, v]) => (
-                        <li key={k}><span className="font-medium">{k}:</span> {Array.isArray(v) ? v.join(", ") : String(v ?? "-")}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                <div>
-                  <div className="text-muted-foreground mb-1">Notities</div>
-                  <Textarea
-                    defaultValue={selected.notities ?? ""}
-                    rows={3}
-                    onBlur={(e) => saveNotes(selected.id, e.target.value)}
-                  />
-                </div>
-                <div className="flex gap-2 pt-2">
-                  <Button onClick={() => resendNotification(selected)} variant="outline">
-                    <Mail className="h-4 w-4 mr-2" />Stuur notificatie opnieuw
-                  </Button>
-                  <Button onClick={() => updateStatus(selected.id, "afgerond")} variant="default">
-                    Markeer als afgerond
-                  </Button>
-                </div>
-              </div>
+              <ServiceAanvraagDetail
+                aanvraag={selected}
+                onSaveNotes={saveNotes}
+                onMarkAfgerond={(id) => updateStatus(id, "afgerond")}
+                onResend={resendNotification}
+              />
             </>
           )}
         </DialogContent>

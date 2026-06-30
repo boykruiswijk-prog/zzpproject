@@ -35,7 +35,9 @@ import SocialMedia from "./pages/SocialMedia";
 import CreditControl from "./pages/CreditControl";
 import Screening from "./pages/Screening";
 import AdminScreeningAanvragen from "./pages/admin/ScreeningAanvragen";
+import AdminScreeningAanvraagDetail from "./pages/admin/ScreeningAanvraagDetailPage";
 import AdminServiceAanvragen from "./pages/admin/ServiceAanvragen";
+import AdminServiceAanvraagDetail from "./pages/admin/ServiceAanvraagDetailPage";
 import AdminWerkbak from "./pages/admin/Werkbak";
 import AdminSocialMediaFeatures from "./pages/admin/SocialMediaFeatures";
 import AdminIntegraties from "./pages/admin/Integraties";
@@ -231,7 +233,9 @@ const App = () => (
             <Route path="/admin/dba-checks/bulk/:id" element={<DbaCheckBatchDetail />} />
             <Route path="/admin/dba-checks/:id" element={<DbaCheckDetail />} />
             <Route path="/admin/screening-aanvragen" element={<AdminScreeningAanvragen />} />
+            <Route path="/admin/screening-aanvragen/:id" element={<AdminScreeningAanvraagDetail />} />
             <Route path="/admin/service-aanvragen" element={<AdminServiceAanvragen />} />
+            <Route path="/admin/service-aanvragen/:id" element={<AdminServiceAanvraagDetail />} />
             <Route path="/admin/social-media" element={<AdminSocialMediaFeatures />} />
             <Route path="/admin/integraties" element={<AdminIntegraties />} />
             <Route path="/admin/exact-koppeling" element={<AdminExactKoppeling />} />
