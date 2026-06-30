@@ -218,18 +218,25 @@ Deno.serve(async (req) => {
 
 
 
-  // ── Verificatie: regels ophalen om StartTime/EndTime zichtbaar te bevestigen
+  // ── Verificatie: regels + factuurnummer ophalen
   const verifyOne = async (invoiceId: string) => {
-    const url = `${baseUrl}/api/v1/${div}/salesinvoice/SalesInvoiceLines?$filter=InvoiceID eq guid'${invoiceId}'&$select=Description,UnitPrice,Quantity,StartTime,EndTime`;
-    const r = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } });
-    if (!r.ok) return { ok: false, error: await captureError("verify GET", r) };
-    const j = await r.json().catch(() => ({}));
+    const linesUrl = `${baseUrl}/api/v1/${div}/salesinvoice/SalesInvoiceLines?$filter=InvoiceID eq guid'${invoiceId}'&$select=Description,UnitPrice,Quantity,StartTime,EndTime`;
+    const headUrl = `${baseUrl}/api/v1/${div}/salesinvoice/SalesInvoices?$filter=InvoiceID eq guid'${invoiceId}'&$select=InvoiceNumber,Status,AmountDC`;
+    const r1 = await fetch(linesUrl, { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } });
+    if (!r1.ok) return { ok: false, error: await captureError("verify lines GET", r1) };
+    const r2 = await fetch(headUrl, { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } });
+    if (!r2.ok) return { ok: false, error: await captureError("verify header GET", r2) };
+    const j1 = await r1.json().catch(() => ({}));
+    const j2 = await r2.json().catch(() => ({}));
     // deno-lint-ignore no-explicit-any
-    const d: any = (j as any)?.d ?? j;
-    const linesRaw = d?.results ?? (Array.isArray(d) ? d : []);
+    const linesRaw: any[] = (j1 as any)?.d?.results ?? (j1 as any)?.d ?? [];
+    // deno-lint-ignore no-explicit-any
+    const headRaw: any[] = (j2 as any)?.d?.results ?? (j2 as any)?.d ?? [];
     return {
       ok: true,
-      line_count: linesRaw.length,
+      invoice_number: headRaw[0]?.InvoiceNumber ?? null,
+      status: headRaw[0]?.Status ?? null,
+      amount: headRaw[0]?.AmountDC ?? null,
       // deno-lint-ignore no-explicit-any
       lines: linesRaw.map((l: any) => ({
         description: l.Description,
