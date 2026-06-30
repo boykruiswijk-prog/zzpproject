@@ -220,7 +220,7 @@ Deno.serve(async (req) => {
 
   // ── Verificatie: regels ophalen om StartTime/EndTime zichtbaar te bevestigen
   const verifyOne = async (invoiceId: string) => {
-    const url = `${baseUrl}/api/v1/${div}/salesinvoice/SalesInvoiceLines?$filter=InvoiceID eq guid'${invoiceId}'&$select=Description,UnitPrice,Quantity,StartTime,EndTime,InvoiceNumber`;
+    const url = `${baseUrl}/api/v1/${div}/salesinvoice/SalesInvoiceLines?$filter=InvoiceID eq guid'${invoiceId}'&$select=Description,UnitPrice,Quantity,StartTime,EndTime`;
     const r = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } });
     if (!r.ok) return { ok: false, error: await captureError("verify GET", r) };
     const j = await r.json().catch(() => ({}));
