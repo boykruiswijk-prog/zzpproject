@@ -8,10 +8,13 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { ConciergeBell, RotateCw, Mail } from "lucide-react";
+import { ConciergeBell, RotateCw } from "lucide-react";
 import { formatDateNL } from "@/lib/dateFormat";
+import {
+  ServiceAanvraagDetail,
+  ServiceAanvraagDetailHeader,
+} from "@/components/admin/ServiceAanvraagDetail";
 
 type Aanvraag = {
   id: string;
