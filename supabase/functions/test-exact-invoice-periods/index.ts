@@ -215,12 +215,10 @@ Deno.serve(async (req) => {
     const j = await r.json().catch(() => ({}));
     // deno-lint-ignore no-explicit-any
     const d: any = (j as any)?.d ?? j;
-    const linesRaw = d?.SalesInvoiceLines?.results ?? d?.SalesInvoiceLines ?? [];
+    const linesRaw = d?.results ?? (Array.isArray(d) ? d : []);
     return {
       ok: true,
-      invoice_number: d?.InvoiceNumber,
-      status: d?.Status,
-      amount: d?.AmountDC,
+      invoice_number: linesRaw[0]?.InvoiceNumber,
       // deno-lint-ignore no-explicit-any
       lines: linesRaw.map((l: any) => ({
         description: l.Description,
@@ -230,8 +228,9 @@ Deno.serve(async (req) => {
       })),
     };
   };
-  results.maand_verify = await verifyOne(inv1.invoiceId);
-  results.jaar_verify = await verifyOne(inv2.invoiceId);
+  // Skip-her-verify als invoice_id leeg is
+  results.maand_verify = inv1.invoiceId ? await verifyOne(inv1.invoiceId) : { ok: false, error: "no_invoice_id" };
+  results.jaar_verify = inv2.invoiceId ? await verifyOne(inv2.invoiceId) : { ok: false, error: "no_invoice_id" };
 
   return json({ success: true, results });
 });
