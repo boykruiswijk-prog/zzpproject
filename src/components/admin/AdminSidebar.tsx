@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   ShieldCheck,
   UserCheck,
+  Inbox,
   Plug,
   KeyRound,
   ConciergeBell,
