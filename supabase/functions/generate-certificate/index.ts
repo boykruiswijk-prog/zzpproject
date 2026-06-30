@@ -85,6 +85,7 @@ serve(async (req) => {
           lead.ingangsdatum || new Date().toISOString().split("T")[0],
         profession: lead.beroep || "Onbekend",
         package_type: lead.verzekering_type || "BAV & AVB Jaarlijks",
+        kvk: lead.kvk_nummer || null,
       };
     }
 
