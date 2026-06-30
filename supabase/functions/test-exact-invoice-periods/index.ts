@@ -83,9 +83,11 @@ async function createConceptInvoice(opts: {
   accountId: string; description: string;
   unitPrice: number; lineDescription: string;
   startISO: string; endISO: string;
+  itemId: string;
 }): Promise<{ ok: true; invoiceId: string; invoiceNumber: string | null; raw: unknown } | { ok: false; error: unknown; payload: unknown }> {
   const today = new Date().toISOString();
   const line = {
+    Item: opts.itemId,
     GLAccount: INV_GL_ACCOUNT,
     VATCode: INV_VAT_CODE,
     Quantity: 1,
