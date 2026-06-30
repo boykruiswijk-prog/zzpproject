@@ -158,7 +158,14 @@ Deno.serve(async (req) => {
   const itemId = config.exact_item_id_bav_avb;
   if (!itemId) return json({ success: false, error: "exact_item_id_bav_avb_ontbreekt" }, 400);
 
+  // Parse body — verify_invoice_ids → alleen verificatie, geen nieuwe inserts.
+  // deno-lint-ignore no-explicit-any
+  let body: any = {};
+  try { body = await req.json(); } catch (_) { /* */ }
+  const verifyOnlyIds: string[] | null = Array.isArray(body?.verify_invoice_ids) ? body.verify_invoice_ids : null;
+
   const results: Record<string, unknown> = {};
+
 
 
   // ── Test 1: Maandbetaler ──
