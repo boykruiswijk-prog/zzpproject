@@ -172,6 +172,7 @@ Deno.serve(async (req) => {
     lineDescription: "BAV-AVB premie - Dekking 01-10-2026 t/m 31-10-2026",
     startISO: "2026-10-01T00:00:00",
     endISO: "2026-10-31T00:00:00",
+    itemId,
   });
   if (!inv1.ok) return json({ success: false, step: "invoice_maand", account_id: acc1.accountId, error: inv1.error, payload: inv1.payload }, 500);
   results.maand = {
