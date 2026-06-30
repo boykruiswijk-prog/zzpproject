@@ -168,6 +168,7 @@ Deno.serve(async (req) => {
 
 
 
+  if (!verifyOnlyIds) {
   // ── Test 1: Maandbetaler ──
   const acc1 = await createTestAccount({ baseUrl, div, headers, name: "TEST Maandbetaler" });
   if (!acc1.ok) return json({ success: false, step: "account_maand", error: acc1.error }, 500);
