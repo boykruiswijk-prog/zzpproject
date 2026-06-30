@@ -85,6 +85,7 @@ serve(async (req) => {
           lead.ingangsdatum || new Date().toISOString().split("T")[0],
         profession: lead.beroep || "Onbekend",
         package_type: lead.verzekering_type || "BAV & AVB Jaarlijks",
+        kvk: lead.kvk_nummer || null,
       };
     }
 
@@ -264,6 +265,13 @@ serve(async (req) => {
     // Certificaathouder: lowered to avoid overlapping with template header
     let y = 590;
     drawRow("Certificaathouder:", policy.certificate_holder, y);
+
+    // KvK (alleen tonen als ingevuld op de lead)
+    const kvkNummer = typeof data?.kvk === "string" ? data.kvk.trim() : "";
+    if (kvkNummer) {
+      y -= 16;
+      drawRow("KvK:", kvkNummer, y);
+    }
 
     // Verzekeringsnemer:
     y -= 16;
