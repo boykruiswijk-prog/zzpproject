@@ -229,7 +229,7 @@ Deno.serve(async (req) => {
     const linesRaw = d?.results ?? (Array.isArray(d) ? d : []);
     return {
       ok: true,
-      invoice_number: linesRaw[0]?.InvoiceNumber,
+      line_count: linesRaw.length,
       // deno-lint-ignore no-explicit-any
       lines: linesRaw.map((l: any) => ({
         description: l.Description,
