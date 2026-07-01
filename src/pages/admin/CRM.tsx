@@ -65,6 +65,10 @@ function normalizeNaam(n: string) {
   return n.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
+function normalizeEmail(email: string) {
+  return email.trim().toLowerCase();
+}
+
 export default function CRM() {
   const { toast } = useToast();
   const [events, setEvents] = useState<Event[]>([]);
@@ -73,6 +77,7 @@ export default function CRM() {
   const [statusFilter, setStatusFilter] = useState<string>("alle");
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [checkFilter, setCheckFilter] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -106,7 +111,7 @@ export default function CRM() {
       datum: l.created_at,
       status: l.status ?? "",
       naam: naamOf(l.voornaam, l.achternaam),
-      email: (l.email ?? "").trim(),
+      email: l.email ?? "",
       bedrijfsnaam: l.bedrijfsnaam ?? "",
       kvk: l.kvk_nummer ?? "",
       omschrijving: [l.verzekering_type, l.bedrijfsnaam].filter(Boolean).join(" · ") || "Nieuwe lead",
@@ -119,7 +124,7 @@ export default function CRM() {
       datum: s.created_at,
       status: s.status ?? "",
       naam: naamOf(s.voornaam, s.achternaam),
-      email: (s.email ?? "").trim(),
+      email: s.email ?? "",
       bedrijfsnaam: "",
       kvk: "",
       omschrijving: [SERVICE_SUBTYPE_LABEL[s.type] ?? s.type, s.polisnummer].filter(Boolean).join(" · "),
@@ -132,7 +137,7 @@ export default function CRM() {
       datum: s.aangemeld_op,
       status: s.status ?? "",
       naam: naamOf(s.voornaam, s.achternaam),
-      email: (s.email ?? "").trim(),
+      email: s.email ?? "",
       bedrijfsnaam: s.bedrijfsnaam ?? "",
       kvk: s.kvk_nummer ?? "",
       omschrijving: [s.screening_type, s.bedrijfsnaam].filter(Boolean).join(" · ") || "Screeningaanvraag",
@@ -149,9 +154,10 @@ export default function CRM() {
   const personen: Person[] = useMemo(() => {
     const map = new Map<string, Person>();
     for (const ev of events) {
-      const hasEmail = !!ev.email;
+      const keyEmail = normalizeEmail(ev.email);
+      const hasEmail = !!keyEmail;
       const key = hasEmail
-        ? ev.email.toLowerCase()
+        ? keyEmail
         : `__no-email__:${ev.type}:${ev.id}`;
       let p = map.get(key);
       if (!p) {
