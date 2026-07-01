@@ -265,6 +265,39 @@ export type Database = {
         }
         Relationships: []
       }
+      crm_identiteit_beslissingen: {
+        Row: {
+          bekende_namen: string[]
+          beslissing: string
+          beslist_door: string | null
+          beslist_op: string
+          created_at: string
+          genormaliseerd_email: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          bekende_namen?: string[]
+          beslissing: string
+          beslist_door?: string | null
+          beslist_op?: string
+          created_at?: string
+          genormaliseerd_email: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          bekende_namen?: string[]
+          beslissing?: string
+          beslist_door?: string | null
+          beslist_op?: string
+          created_at?: string
+          genormaliseerd_email?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       dba_batches: {
         Row: {
           certified_count: number
