@@ -295,9 +295,8 @@ export default function CRM() {
                 const isOpen = !!expanded[p.key];
                 const eerste = p.bedrijven[0];
                 return (
-                  <>
+                  <Fragment key={p.key}>
                     <tr
-                      key={p.key}
                       className="border-t border-border hover:bg-muted/30 cursor-pointer"
                       onClick={() => toggle(p.key)}
                     >
