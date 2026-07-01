@@ -38,7 +38,7 @@ import AdminScreeningAanvragen from "./pages/admin/ScreeningAanvragen";
 import AdminScreeningAanvraagDetail from "./pages/admin/ScreeningAanvraagDetailPage";
 import AdminServiceAanvragen from "./pages/admin/ServiceAanvragen";
 import AdminServiceAanvraagDetail from "./pages/admin/ServiceAanvraagDetailPage";
-import AdminWerkbak from "./pages/admin/Werkbak";
+import AdminCRM from "./pages/admin/CRM";
 import AdminSocialMediaFeatures from "./pages/admin/SocialMediaFeatures";
 import AdminIntegraties from "./pages/admin/Integraties";
 import AdminExactKoppeling from "./pages/admin/ExactKoppeling";
