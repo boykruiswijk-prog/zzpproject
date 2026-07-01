@@ -271,6 +271,29 @@ export default function CRM() {
     setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
   }
 
+  async function beslis(person: Person, beslissing: "akkoord" | "splitsen") {
+    const email = normalizeEmail(person.email);
+    if (!email) return;
+    const bekende_namen = Array.from(
+      new Set(person.events.map((e) => e.naam).filter(Boolean)),
+    );
+    const { error } = await supabase
+      .from("crm_identiteit_beslissingen" as any)
+      .upsert(
+        { genormaliseerd_email: email, beslissing, bekende_namen, beslist_door: (await supabase.auth.getUser()).data.user?.id, beslist_op: new Date().toISOString() },
+        { onConflict: "genormaliseerd_email" },
+      );
+    if (error) {
+      toast({ title: "Kon beslissing niet opslaan", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: beslissing === "akkoord" ? "Samengevoegd" : "Gesplitst" });
+    setBeslissingen((prev) => ({
+      ...prev,
+      [email]: { genormaliseerd_email: email, beslissing, bekende_namen },
+    }));
+  }
+
   return (
     <AdminLayout>
       <div className="space-y-6">
