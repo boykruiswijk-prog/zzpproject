@@ -10,11 +10,8 @@ import {
   LogOut,
   ChevronLeft,
   ShieldCheck,
-  UserCheck,
-  Inbox,
   Plug,
   KeyRound,
-  ConciergeBell,
   Share2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -23,12 +20,9 @@ const ADMIN_EMAIL = "boy.kruiswijk@zpzaken.nl";
 
 const navItems = [
   { to: "/admin", icon: LayoutDashboard, label: "Dashboard", end: true },
-  { to: "/admin/werkbak", icon: Inbox, label: "Werkbak" },
-  { to: "/admin/leads", icon: Users, label: "Leads", showTakenBadge: true },
+  { to: "/admin/crm", icon: Users, label: "CRM", showTakenBadge: true },
   { to: "/admin/dba-checks", icon: ShieldCheck, label: "Wet DBA" },
   { to: "/admin/wachtwoord-wijzigen", icon: KeyRound, label: "Wachtwoord wijzigen" },
-  { to: "/admin/screening-aanvragen", icon: UserCheck, label: "Screening aanvragen" },
-  { to: "/admin/service-aanvragen", icon: ConciergeBell, label: "Service-aanvragen" },
   { to: "/admin/social-media", icon: Share2, label: "Social media" },
   { to: "/admin/integraties", icon: Plug, label: "Integraties", superAdminOnly: true },
   { to: "/admin/exact-koppeling", icon: Plug, label: "Exact koppeling", superAdminOnly: true },
