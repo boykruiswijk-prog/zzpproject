@@ -366,7 +366,7 @@ export default function CRM() {
                         </td>
                       </tr>
                     )}
-                  </>
+                  </Fragment>
                 );
               })}
             </tbody>
