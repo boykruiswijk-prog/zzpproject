@@ -376,12 +376,32 @@ export default function CRM() {
                         {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                       </td>
                       <td className="p-3 font-medium">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           {p.naam}
                           {p.namenGedeeld && (
                             <span className="inline-flex items-center gap-1 text-xs text-amber-700 bg-amber-100 px-2 py-0.5 rounded">
                               <AlertTriangle className="h-3 w-3" /> Gedeeld adres, controleren
                             </span>
+                          )}
+                          {p.namenGedeeld && isSupervisorOrAdmin && (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-6 text-xs px-2"
+                                onClick={(e) => { e.stopPropagation(); beslis(p, "akkoord"); }}
+                              >
+                                <Check className="h-3 w-3 mr-1" /> Akkoord, zelfde persoon
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-6 text-xs px-2"
+                                onClick={(e) => { e.stopPropagation(); beslis(p, "splitsen"); }}
+                              >
+                                <Split className="h-3 w-3 mr-1" /> Splitsen
+                              </Button>
+                            </>
                           )}
                         </div>
                       </td>
