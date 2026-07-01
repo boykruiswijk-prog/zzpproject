@@ -98,9 +98,12 @@ export default function CRM() {
         .from("screening_aanvragen" as any)
         .select("id,aangemeld_op,voornaam,achternaam,email,status,screening_type,bedrijfsnaam,kvk_nummer")
         .order("aangemeld_op", { ascending: false }),
+      supabase
+        .from("crm_identiteit_beslissingen" as any)
+        .select("genormaliseerd_email,beslissing,bekende_namen"),
     ]);
 
-    const errors = [leadsRes.error, serviceRes.error, screeningRes.error].filter(Boolean);
+    const errors = [leadsRes.error, serviceRes.error, screeningRes.error, beslissingRes.error].filter(Boolean);
     if (errors.length) {
       toast({
         title: "Fout bij laden",
@@ -108,6 +111,16 @@ export default function CRM() {
         variant: "destructive",
       });
     }
+
+    const bmap: Record<string, Beslissing> = {};
+    for (const b of (beslissingRes.data ?? []) as any[]) {
+      bmap[b.genormaliseerd_email] = {
+        genormaliseerd_email: b.genormaliseerd_email,
+        beslissing: b.beslissing,
+        bekende_namen: b.bekende_namen ?? [],
+      };
+    }
+    setBeslissingen(bmap);
 
     const leadEvents: Event[] = (leadsRes.data ?? []).map((l: any) => ({
       id: l.id,
