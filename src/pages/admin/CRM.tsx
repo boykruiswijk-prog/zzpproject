@@ -167,15 +167,23 @@ export default function CRM() {
 
   useEffect(() => { load(); }, []);
 
-  // Group by email; records without email stay as separate rows.
+  // Group by email, respecting saved identity decisions.
   const personen: Person[] = useMemo(() => {
     const map = new Map<string, Person>();
     for (const ev of events) {
       const keyEmail = normalizeEmail(ev.email);
       const hasEmail = !!keyEmail;
-      const key = hasEmail
-        ? keyEmail
-        : `__no-email__:${ev.type}:${ev.id}`;
+      const beslissing = hasEmail ? beslissingen[keyEmail] : undefined;
+      let key: string;
+      if (!hasEmail) {
+        key = `__no-email__:${ev.type}:${ev.id}`;
+      } else if (beslissing?.beslissing === "splitsen") {
+        // Split view: group by email + normalized name (fallback to event id if no name)
+        const naamKey = normalizeNaam(ev.naam) || `__geen-naam__:${ev.type}:${ev.id}`;
+        key = `${keyEmail}|${naamKey}`;
+      } else {
+        key = keyEmail;
+      }
       let p = map.get(key);
       if (!p) {
         p = {
@@ -204,17 +212,27 @@ export default function CRM() {
       p.events.sort((a, b) => new Date(b.datum).getTime() - new Date(a.datum).getTime());
       p.laatsteDatum = p.events[0]?.datum ?? p.laatsteDatum;
 
-      // Person name: pick most recent non-empty
       const naamEv = p.events.find((e) => e.naam);
       if (naamEv) p.naam = naamEv.naam;
 
-      // Shared address check: multiple distinct normalized names for same email
-      if (p.email) {
-        const namen = new Set(p.events.map((e) => normalizeNaam(e.naam)).filter(Boolean));
-        p.namenGedeeld = namen.size > 1;
+      // Marker logic: only if grouped by email (not split, not no-email).
+      const emailKey = normalizeEmail(p.email);
+      const beslissing = emailKey ? beslissingen[emailKey] : undefined;
+      if (emailKey && beslissing?.beslissing !== "splitsen") {
+        const huidigeNamen = Array.from(
+          new Set(p.events.map((e) => normalizeNaam(e.naam)).filter(Boolean)),
+        );
+        if (beslissing?.beslissing === "akkoord") {
+          const bekend = new Set((beslissing.bekende_namen ?? []).map(normalizeNaam));
+          // Re-trigger only if a NEW name appeared since decision
+          p.namenGedeeld = huidigeNamen.some((n) => !bekend.has(n));
+        } else {
+          p.namenGedeeld = huidigeNamen.length > 1;
+        }
+      } else {
+        p.namenGedeeld = false;
       }
 
-      // Person status: Actief if any lead status === 'actief', else status of most recent event
       const heeftActief = p.events.some(
         (e) => e.type === "lead" && e.status === "actief",
       );
@@ -225,7 +243,7 @@ export default function CRM() {
       (a, b) => new Date(b.laatsteDatum).getTime() - new Date(a.laatsteDatum).getTime(),
     );
     return persons;
-  }, [events]);
+  }, [events, beslissingen]);
 
   const statusOptions = useMemo(() => {
     const set = new Set<string>();
