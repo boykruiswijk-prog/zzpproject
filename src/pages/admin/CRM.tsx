@@ -9,10 +9,12 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Users, RotateCw, ChevronDown, ChevronRight, AlertTriangle } from "lucide-react";
+import { Users, RotateCw, ChevronDown, ChevronRight, AlertTriangle, Check, Split } from "lucide-react";
 import { formatDateNL } from "@/lib/dateFormat";
+import { useAuth } from "@/contexts/AuthContext";
 
 type EventType = "lead" | "service" | "screening";
+type Beslissing = { genormaliseerd_email: string; beslissing: "akkoord" | "splitsen"; bekende_namen: string[] };
 
 type Event = {
   id: string;
@@ -71,7 +73,9 @@ function normalizeEmail(email: string) {
 
 export default function CRM() {
   const { toast } = useToast();
+  const { isSupervisorOrAdmin } = useAuth();
   const [events, setEvents] = useState<Event[]>([]);
+  const [beslissingen, setBeslissingen] = useState<Record<string, Beslissing>>({});
   const [loading, setLoading] = useState(true);
   const [typeFilter, setTypeFilter] = useState<string>("alle");
   const [statusFilter, setStatusFilter] = useState<string>("alle");
@@ -81,7 +85,7 @@ export default function CRM() {
 
   async function load() {
     setLoading(true);
-    const [leadsRes, serviceRes, screeningRes] = await Promise.all([
+    const [leadsRes, serviceRes, screeningRes, beslissingRes] = await Promise.all([
       supabase
         .from("leads")
         .select("id,created_at,voornaam,achternaam,email,status,verzekering_type,bedrijfsnaam,kvk_nummer")
@@ -94,9 +98,12 @@ export default function CRM() {
         .from("screening_aanvragen" as any)
         .select("id,aangemeld_op,voornaam,achternaam,email,status,screening_type,bedrijfsnaam,kvk_nummer")
         .order("aangemeld_op", { ascending: false }),
+      supabase
+        .from("crm_identiteit_beslissingen" as any)
+        .select("genormaliseerd_email,beslissing,bekende_namen"),
     ]);
 
-    const errors = [leadsRes.error, serviceRes.error, screeningRes.error].filter(Boolean);
+    const errors = [leadsRes.error, serviceRes.error, screeningRes.error, beslissingRes.error].filter(Boolean);
     if (errors.length) {
       toast({
         title: "Fout bij laden",
@@ -104,6 +111,16 @@ export default function CRM() {
         variant: "destructive",
       });
     }
+
+    const bmap: Record<string, Beslissing> = {};
+    for (const b of (beslissingRes.data ?? []) as any[]) {
+      bmap[b.genormaliseerd_email] = {
+        genormaliseerd_email: b.genormaliseerd_email,
+        beslissing: b.beslissing,
+        bekende_namen: b.bekende_namen ?? [],
+      };
+    }
+    setBeslissingen(bmap);
 
     const leadEvents: Event[] = (leadsRes.data ?? []).map((l: any) => ({
       id: l.id,
@@ -150,15 +167,23 @@ export default function CRM() {
 
   useEffect(() => { load(); }, []);
 
-  // Group by email; records without email stay as separate rows.
+  // Group by email, respecting saved identity decisions.
   const personen: Person[] = useMemo(() => {
     const map = new Map<string, Person>();
     for (const ev of events) {
       const keyEmail = normalizeEmail(ev.email);
       const hasEmail = !!keyEmail;
-      const key = hasEmail
-        ? keyEmail
-        : `__no-email__:${ev.type}:${ev.id}`;
+      const beslissing = hasEmail ? beslissingen[keyEmail] : undefined;
+      let key: string;
+      if (!hasEmail) {
+        key = `__no-email__:${ev.type}:${ev.id}`;
+      } else if (beslissing?.beslissing === "splitsen") {
+        // Split view: group by email + normalized name (fallback to event id if no name)
+        const naamKey = normalizeNaam(ev.naam) || `__geen-naam__:${ev.type}:${ev.id}`;
+        key = `${keyEmail}|${naamKey}`;
+      } else {
+        key = keyEmail;
+      }
       let p = map.get(key);
       if (!p) {
         p = {
@@ -187,17 +212,27 @@ export default function CRM() {
       p.events.sort((a, b) => new Date(b.datum).getTime() - new Date(a.datum).getTime());
       p.laatsteDatum = p.events[0]?.datum ?? p.laatsteDatum;
 
-      // Person name: pick most recent non-empty
       const naamEv = p.events.find((e) => e.naam);
       if (naamEv) p.naam = naamEv.naam;
 
-      // Shared address check: multiple distinct normalized names for same email
-      if (p.email) {
-        const namen = new Set(p.events.map((e) => normalizeNaam(e.naam)).filter(Boolean));
-        p.namenGedeeld = namen.size > 1;
+      // Marker logic: only if grouped by email (not split, not no-email).
+      const emailKey = normalizeEmail(p.email);
+      const beslissing = emailKey ? beslissingen[emailKey] : undefined;
+      if (emailKey && beslissing?.beslissing !== "splitsen") {
+        const huidigeNamen = Array.from(
+          new Set(p.events.map((e) => normalizeNaam(e.naam)).filter(Boolean)),
+        );
+        if (beslissing?.beslissing === "akkoord") {
+          const bekend = new Set((beslissing.bekende_namen ?? []).map(normalizeNaam));
+          // Re-trigger only if a NEW name appeared since decision
+          p.namenGedeeld = huidigeNamen.some((n) => !bekend.has(n));
+        } else {
+          p.namenGedeeld = huidigeNamen.length > 1;
+        }
+      } else {
+        p.namenGedeeld = false;
       }
 
-      // Person status: Actief if any lead status === 'actief', else status of most recent event
       const heeftActief = p.events.some(
         (e) => e.type === "lead" && e.status === "actief",
       );
@@ -208,7 +243,7 @@ export default function CRM() {
       (a, b) => new Date(b.laatsteDatum).getTime() - new Date(a.laatsteDatum).getTime(),
     );
     return persons;
-  }, [events]);
+  }, [events, beslissingen]);
 
   const statusOptions = useMemo(() => {
     const set = new Set<string>();
@@ -234,6 +269,29 @@ export default function CRM() {
 
   function toggle(key: string) {
     setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
+  }
+
+  async function beslis(person: Person, beslissing: "akkoord" | "splitsen") {
+    const email = normalizeEmail(person.email);
+    if (!email) return;
+    const bekende_namen = Array.from(
+      new Set(person.events.map((e) => e.naam).filter(Boolean)),
+    );
+    const { error } = await supabase
+      .from("crm_identiteit_beslissingen" as any)
+      .upsert(
+        { genormaliseerd_email: email, beslissing, bekende_namen, beslist_door: (await supabase.auth.getUser()).data.user?.id, beslist_op: new Date().toISOString() },
+        { onConflict: "genormaliseerd_email" },
+      );
+    if (error) {
+      toast({ title: "Kon beslissing niet opslaan", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: beslissing === "akkoord" ? "Samengevoegd" : "Gesplitst" });
+    setBeslissingen((prev) => ({
+      ...prev,
+      [email]: { genormaliseerd_email: email, beslissing, bekende_namen },
+    }));
   }
 
   return (
@@ -318,12 +376,32 @@ export default function CRM() {
                         {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                       </td>
                       <td className="p-3 font-medium">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           {p.naam}
                           {p.namenGedeeld && (
                             <span className="inline-flex items-center gap-1 text-xs text-amber-700 bg-amber-100 px-2 py-0.5 rounded">
                               <AlertTriangle className="h-3 w-3" /> Gedeeld adres, controleren
                             </span>
+                          )}
+                          {p.namenGedeeld && isSupervisorOrAdmin && (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-6 text-xs px-2"
+                                onClick={(e) => { e.stopPropagation(); beslis(p, "akkoord"); }}
+                              >
+                                <Check className="h-3 w-3 mr-1" /> Akkoord, zelfde persoon
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-6 text-xs px-2"
+                                onClick={(e) => { e.stopPropagation(); beslis(p, "splitsen"); }}
+                              >
+                                <Split className="h-3 w-3 mr-1" /> Splitsen
+                              </Button>
+                            </>
                           )}
                         </div>
                       </td>
