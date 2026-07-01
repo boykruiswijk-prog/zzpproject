@@ -217,6 +217,7 @@ export default function CRM() {
   }, [personen]);
 
   const filtered = personen.filter((p) => {
+    if (checkFilter && !(p.namenGedeeld || !p.email)) return false;
     if (typeFilter !== "alle" && !p.events.some((e) => e.type === typeFilter)) return false;
     if (statusFilter !== "alle" && p.persoonStatus !== statusFilter) return false;
     if (query) {
@@ -277,6 +278,13 @@ export default function CRM() {
             onChange={(e) => setQuery(e.target.value)}
             className="flex-1 min-w-[200px]"
           />
+          <Button
+            variant={checkFilter ? "default" : "outline"}
+            onClick={() => setCheckFilter((v) => !v)}
+          >
+            <AlertTriangle className="h-4 w-4 mr-2" />
+            Te controleren
+          </Button>
         </div>
 
         <div className="bg-card border border-border rounded-lg overflow-hidden">
@@ -319,7 +327,11 @@ export default function CRM() {
                           )}
                         </div>
                       </td>
-                      <td className="p-3 text-muted-foreground">{p.email || "—"}</td>
+                      <td className="p-3 text-muted-foreground">
+                        {p.email || (
+                          <span className="text-amber-600 font-medium text-xs">Geen emailadres</span>
+                        )}
+                      </td>
                       <td className="p-3">
                         {eerste ? (
                           <div>
