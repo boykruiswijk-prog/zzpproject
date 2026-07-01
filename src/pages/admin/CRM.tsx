@@ -9,10 +9,12 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Users, RotateCw, ChevronDown, ChevronRight, AlertTriangle } from "lucide-react";
+import { Users, RotateCw, ChevronDown, ChevronRight, AlertTriangle, Check, Split } from "lucide-react";
 import { formatDateNL } from "@/lib/dateFormat";
+import { useAuth } from "@/contexts/AuthContext";
 
 type EventType = "lead" | "service" | "screening";
+type Beslissing = { genormaliseerd_email: string; beslissing: "akkoord" | "splitsen"; bekende_namen: string[] };
 
 type Event = {
   id: string;
