@@ -73,7 +73,9 @@ function normalizeEmail(email: string) {
 
 export default function CRM() {
   const { toast } = useToast();
+  const { isSupervisorOrAdmin } = useAuth();
   const [events, setEvents] = useState<Event[]>([]);
+  const [beslissingen, setBeslissingen] = useState<Record<string, Beslissing>>({});
   const [loading, setLoading] = useState(true);
   const [typeFilter, setTypeFilter] = useState<string>("alle");
   const [statusFilter, setStatusFilter] = useState<string>("alle");
@@ -83,7 +85,7 @@ export default function CRM() {
 
   async function load() {
     setLoading(true);
-    const [leadsRes, serviceRes, screeningRes] = await Promise.all([
+    const [leadsRes, serviceRes, screeningRes, beslissingRes] = await Promise.all([
       supabase
         .from("leads")
         .select("id,created_at,voornaam,achternaam,email,status,verzekering_type,bedrijfsnaam,kvk_nummer")
