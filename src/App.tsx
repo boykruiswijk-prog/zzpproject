@@ -44,6 +44,9 @@ import AdminSocialMediaFeatures from "./pages/admin/SocialMediaFeatures";
 import AdminIntegraties from "./pages/admin/Integraties";
 import AdminExactKoppeling from "./pages/admin/ExactKoppeling";
 import AdminMarketing from "./pages/admin/MarketingPlaceholder";
+import AdminKennisbank from "./pages/admin/KennisbankArtikelen";
+import AdminKennisbankEditor from "./pages/admin/KennisbankArtikelEditor";
+
 import { RoleGuard } from "./components/admin/RoleGuard";
 import ExactCallback from "./pages/ExactCallback";
 import AdminLogin from "./pages/admin/LoginPage";
@@ -242,6 +245,10 @@ const App = () => (
             <Route path="/admin/service-aanvragen/:id" element={<AdminServiceAanvraagDetail />} />
             <Route path="/admin/social-media" element={<RoleGuard allow={["marketing"]}><AdminSocialMediaFeatures /></RoleGuard>} />
             <Route path="/admin/marketing" element={<RoleGuard allow={["marketing"]}><AdminMarketing /></RoleGuard>} />
+            <Route path="/admin/kennisbank" element={<RoleGuard allow={["marketing"]}><AdminKennisbank /></RoleGuard>} />
+            <Route path="/admin/kennisbank/nieuw" element={<RoleGuard allow={["marketing"]}><AdminKennisbankEditor /></RoleGuard>} />
+            <Route path="/admin/kennisbank/:id" element={<RoleGuard allow={["marketing"]}><AdminKennisbankEditor /></RoleGuard>} />
+
             <Route path="/admin/integraties" element={<RoleGuard allow={[]}><AdminIntegraties /></RoleGuard>} />
             <Route path="/admin/exact-koppeling" element={<RoleGuard allow={[]}><AdminExactKoppeling /></RoleGuard>} />
             <Route path="/api/exact/callback" element={<ExactCallback />} />

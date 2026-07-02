@@ -14,6 +14,8 @@ import {
   KeyRound,
   Share2,
   Activity,
+  BookOpen,
+
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -34,6 +36,8 @@ const navItems: NavItem[] = [
   { to: "/admin/activiteiten", icon: Activity, label: "Activiteiten", roles: ["supervisor"] },
   { to: "/admin/dba-checks", icon: ShieldCheck, label: "Wet DBA", roles: ["supervisor", "verzekering"] },
   { to: "/admin/marketing", icon: Share2, label: "Website & Blog", roles: ["supervisor", "marketing"] },
+  { to: "/admin/kennisbank", icon: BookOpen, label: "Kennisbank", roles: ["supervisor", "marketing"] },
+
   { to: "/admin/social-media", icon: Share2, label: "Social media", roles: ["supervisor", "marketing"] },
   { to: "/admin/wachtwoord-wijzigen", icon: KeyRound, label: "Wachtwoord wijzigen", roles: ["supervisor", "verzekering", "marketing"] },
   { to: "/admin/integraties", icon: Plug, label: "Integraties", roles: ["supervisor"] },
