@@ -1099,6 +1099,11 @@ Deno.serve(async (req) => {
       exact_invoice_number: exactInvoiceNumber,
       exact_invoice_amount: exactInvoiceAmount,
       invoice_warning: invoiceWarning,
+      reused_account: !!reusedAccountId,
+      reused_account_name: reusedAccountName,
+      reused_bankaccount: bankAccountReused,
+      reused_mandate: mandateReused,
+      activation_status: activationSucceeded ? "actief" : lead.status,
     },
   });
 
@@ -1113,6 +1118,13 @@ Deno.serve(async (req) => {
     exact_invoice_number: exactInvoiceNumber,
     exact_invoice_amount: exactInvoiceAmount,
     invoice_warning: invoiceWarning,
-    message: "Klant succesvol geactiveerd in Exact",
+    reused_account: !!reusedAccountId,
+    reused_account_name: reusedAccountName,
+    reused_bankaccount: bankAccountReused,
+    reused_mandate: mandateReused,
+    activation_status: activationSucceeded ? "actief" : lead.status,
+    message: reusedAccountId
+      ? "Klant geactiveerd op bestaande Exact-relatie (hergebruik)"
+      : "Klant succesvol geactiveerd in Exact",
   });
 });
