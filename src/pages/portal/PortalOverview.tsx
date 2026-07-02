@@ -34,7 +34,7 @@ export default function PortalOverview() {
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold">
-            Welkom{user?.user_metadata?.full_name ? `, ${user.user_metadata.full_name}` : ""}
+            {firstName ? `Welkom terug, ${firstName}` : "Welkom terug"}
           </h1>
           <p className="text-muted-foreground mt-1">
             Hier vind je een overzicht van je polis, documenten en facturen.
