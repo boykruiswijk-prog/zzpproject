@@ -677,8 +677,10 @@ Deno.serve(async (req) => {
 
 
 
-  // ── Duplicate check op KvK in Exact ──
+  // ── Duplicate check op KvK in Exact — reuse bij match ──
   const kvk = String(lead.kvk_nummer);
+  let reusedAccountId: string | null = null;
+  let reusedAccountName: string | null = null;
   try {
     const dupRes = await fetch(
       `${baseUrl}/api/v1/${div}/crm/Accounts?$select=ID,Name,ChamberOfCommerce&$filter=ChamberOfCommerce eq '${kvk}'&$top=1`,
@@ -686,13 +688,18 @@ Deno.serve(async (req) => {
     );
     const dupJson = await dupRes.json().catch(() => ({}));
     const dupArr = Array.isArray(dupJson?.d?.results) ? dupJson.d.results : Array.isArray(dupJson?.d) ? dupJson.d : [];
-    if (dupArr.length > 0) {
-      return json({
-        success: false,
-        error: "duplicate_kvk_in_exact",
-        exact_account_id: dupArr[0]?.ID,
-        exact_account_name: dupArr[0]?.Name,
-      }, 409);
+    if (dupArr.length > 0 && dupArr[0]?.ID) {
+      reusedAccountId = dupArr[0].ID;
+      reusedAccountName = dupArr[0]?.Name ?? null;
+      await logSync(supabase, {
+        trigger_type: "lead_activation", status: "success",
+        lead_id: leadId, admin_user_id: user.id,
+        exact_account_id: reusedAccountId, http_status: 200,
+        payload: {
+          reuse: "existing_account_by_kvk",
+          kvk, exact_account_id: reusedAccountId, exact_account_name: reusedAccountName,
+        },
+      });
     }
   } catch (e) {
     console.warn("Duplicate check failed (continuing):", e);
@@ -723,30 +730,34 @@ Deno.serve(async (req) => {
       `Ingangsdatum: ${ingangFmt}`,
   };
 
-  // ── Stap D: Account aanmaken ──
-  const accRes = await fetch(`${baseUrl}/api/v1/${div}/crm/Accounts`, {
-    method: "POST", headers, body: JSON.stringify(accountPayload),
-  });
-  if (!accRes.ok) {
-    const { summary, detail } = await captureExactError("Accounts POST", accRes);
-    await logSync(supabase, {
-      trigger_type: "lead_activation", status: "error",
-      lead_id: leadId, admin_user_id: user.id,
-      http_status: accRes.status,
-      error_message: summary,
-      payload: { request: accountPayload, response: detail },
+  // ── Stap D: Account aanmaken (skip bij reuse van bestaande relatie) ──
+  let exactAccountId: string = reusedAccountId ?? "";
+  if (!reusedAccountId) {
+    const accRes = await fetch(`${baseUrl}/api/v1/${div}/crm/Accounts`, {
+      method: "POST", headers, body: JSON.stringify(accountPayload),
     });
-    return json({ success: false, error: "exact_account_create_failed", detail, http_status: accRes.status }, 500);
-  }
-  const accData = await accRes.json().catch(() => ({}));
-  const exactAccountId: string = accData?.d?.ID || accData?.ID;
-  if (!exactAccountId) {
-    return json({ success: false, error: "no_account_id_returned", raw: accData }, 500);
+    if (!accRes.ok) {
+      const { summary, detail } = await captureExactError("Accounts POST", accRes);
+      await logSync(supabase, {
+        trigger_type: "lead_activation", status: "error",
+        lead_id: leadId, admin_user_id: user.id,
+        http_status: accRes.status,
+        error_message: summary,
+        payload: { request: accountPayload, response: detail },
+      });
+      return json({ success: false, error: "exact_account_create_failed", detail, http_status: accRes.status }, 500);
+    }
+    const accData = await accRes.json().catch(() => ({}));
+    exactAccountId = accData?.d?.ID || accData?.ID;
+    if (!exactAccountId) {
+      return json({ success: false, error: "no_account_id_returned", raw: accData }, 500);
+    }
   }
 
 
-  // ── Helper voor rollback ──
+  // ── Helper voor rollback (alleen bij nieuw aangemaakte account) ──
   const deleteAccount = async () => {
+    if (reusedAccountId) return; // nooit een hergebruikte relatie verwijderen
     try {
       await fetch(`${baseUrl}/api/v1/${div}/crm/Accounts(guid'${exactAccountId}')`, {
         method: "DELETE",
@@ -755,9 +766,9 @@ Deno.serve(async (req) => {
     } catch (e) { console.error("Rollback delete account failed:", e); }
   };
 
-  // ── Stap E: Contact ──
+  // ── Stap E: Contact (skip bij reuse) ──
   let exactContactId: string | null = null;
-  {
+  if (!reusedAccountId) {
     const cRes = await fetch(`${baseUrl}/api/v1/${div}/crm/Contacts`, {
       method: "POST", headers,
       body: JSON.stringify({
@@ -785,33 +796,63 @@ Deno.serve(async (req) => {
     exactContactId = cJson?.d?.ID || cJson?.ID || null;
   }
 
-  // ── Stap F: BankAccount ──
+  // ── Stap F: BankAccount (idempotent bij reuse) ──
   let exactBankAccountId: string | null = null;
+  let bankAccountReused = false;
   {
     const ibanClean = String(lead.iban).replace(/\s+/g, "").toUpperCase();
-    const bRes = await fetch(`${baseUrl}/api/v1/${div}/crm/BankAccounts`, {
-      method: "POST", headers,
-      body: JSON.stringify({
-        Account: exactAccountId,
-        BankAccount: ibanClean,
-        BankAccountHolderName: lead.bedrijfsnaam,
-        Type: 10,
-      }),
-    });
-    if (!bRes.ok) {
-      const { summary, detail } = await captureExactError("BankAccounts POST", bRes);
-      await deleteAccount();
-      await logSync(supabase, {
-        trigger_type: "lead_activation", status: "error",
-        lead_id: leadId, admin_user_id: user.id,
-        http_status: bRes.status,
-        error_message: `BankAccount creatie mislukt (rollback): ${summary}`,
-        payload: detail,
-      });
-      return json({ success: false, error: "bankaccount_create_failed", detail }, 500);
+    if (reusedAccountId) {
+      // Zoek bestaande bankrekening op relatie met zelfde IBAN.
+      try {
+        const listRes = await fetch(
+          `${baseUrl}/api/v1/${div}/crm/BankAccounts?$select=ID,BankAccount&$filter=Account eq guid'${exactAccountId}'`,
+          { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } },
+        );
+        if (listRes.ok) {
+          const lj = await listRes.json().catch(() => ({}));
+          const arr = Array.isArray(lj?.d?.results) ? lj.d.results : Array.isArray(lj?.d) ? lj.d : [];
+          const match = arr.find((x: any) =>
+            String(x?.BankAccount ?? "").replace(/\s+/g, "").toUpperCase() === ibanClean);
+          if (match?.ID) {
+            exactBankAccountId = match.ID;
+            bankAccountReused = true;
+            await logSync(supabase, {
+              trigger_type: "lead_activation", status: "success",
+              lead_id: leadId, admin_user_id: user.id,
+              exact_account_id: exactAccountId, http_status: 200,
+              payload: { reuse: "existing_bankaccount", exact_bankaccount_id: exactBankAccountId, iban: ibanClean },
+            });
+          }
+        }
+      } catch (e) {
+        console.warn("BankAccount lookup failed (continuing):", e);
+      }
     }
-    const bJson = await bRes.json().catch(() => ({}));
-    exactBankAccountId = bJson?.d?.ID || bJson?.ID || null;
+    if (!exactBankAccountId) {
+      const bRes = await fetch(`${baseUrl}/api/v1/${div}/crm/BankAccounts`, {
+        method: "POST", headers,
+        body: JSON.stringify({
+          Account: exactAccountId,
+          BankAccount: ibanClean,
+          BankAccountHolderName: lead.bedrijfsnaam,
+          Type: 10,
+        }),
+      });
+      if (!bRes.ok) {
+        const { summary, detail } = await captureExactError("BankAccounts POST", bRes);
+        await deleteAccount();
+        await logSync(supabase, {
+          trigger_type: "lead_activation", status: "error",
+          lead_id: leadId, admin_user_id: user.id,
+          http_status: bRes.status,
+          error_message: `BankAccount creatie mislukt (rollback): ${summary}`,
+          payload: detail,
+        });
+        return json({ success: false, error: "bankaccount_create_failed", detail }, 500);
+      }
+      const bJson = await bRes.json().catch(() => ({}));
+      exactBankAccountId = bJson?.d?.ID || bJson?.ID || null;
+    }
   }
 
   // ── Stap G: SEPA-mandaat (DirectDebitMandate) — niet-fataal ──
@@ -824,34 +865,63 @@ Deno.serve(async (req) => {
 
   let exactMandateId: string | null = null;
   let mandateWarning: string | null = null;
+  let mandateReused = false;
   try {
-    const signatureDate = lead.sepa_akkoord_datum
-      ? new Date(lead.sepa_akkoord_datum).toISOString()
-      : new Date().toISOString();
-    const mRes = await fetch(`${baseUrl}/api/v1/${div}/cashflow/DirectDebitMandates`, {
-      method: "POST", headers,
-      body: JSON.stringify({
-        Account: exactAccountId,
-        BankAccount: exactBankAccountId,
-        Reference: `MNDT-${leadId.slice(0, 8)}`,
-        SignatureDate: signatureDate,
-        Type: 1, // 1 = B2B
-      }),
-    });
-    if (!mRes.ok) {
-      const { summary, detail } = await captureExactError("DirectDebitMandates POST", mRes);
-      mandateWarning = `${summary}. Account + bankrekening staan wel klaar.`;
-      await logSync(supabase, {
-        trigger_type: "lead_activation", status: "error",
-        lead_id: leadId, admin_user_id: user.id,
-        http_status: mRes.status,
-        error_message: summary,
-        payload: detail,
+    // Bij hergebruikte bankrekening: kijk of er al een geldig mandaat is.
+    if (bankAccountReused && exactBankAccountId) {
+      try {
+        const listRes = await fetch(
+          `${baseUrl}/api/v1/${div}/cashflow/DirectDebitMandates?$select=ID,IsActive,BankAccount&$filter=BankAccount eq guid'${exactBankAccountId}'&$top=5`,
+          { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } },
+        );
+        if (listRes.ok) {
+          const lj = await listRes.json().catch(() => ({}));
+          const arr = Array.isArray(lj?.d?.results) ? lj.d.results : Array.isArray(lj?.d) ? lj.d : [];
+          const active = arr.find((x: any) => x?.IsActive === true) ?? arr[0];
+          if (active?.ID) {
+            exactMandateId = active.ID;
+            mandateReused = true;
+            await logSync(supabase, {
+              trigger_type: "lead_activation", status: "success",
+              lead_id: leadId, admin_user_id: user.id,
+              exact_account_id: exactAccountId, http_status: 200,
+              payload: { reuse: "existing_mandate", exact_mandate_id: exactMandateId, exact_bankaccount_id: exactBankAccountId },
+            });
+          }
+        }
+      } catch (e) {
+        console.warn("Mandate lookup failed (continuing):", e);
+      }
+    }
+    if (!exactMandateId) {
+      const signatureDate = lead.sepa_akkoord_datum
+        ? new Date(lead.sepa_akkoord_datum).toISOString()
+        : new Date().toISOString();
+      const mRes = await fetch(`${baseUrl}/api/v1/${div}/cashflow/DirectDebitMandates`, {
+        method: "POST", headers,
+        body: JSON.stringify({
+          Account: exactAccountId,
+          BankAccount: exactBankAccountId,
+          Reference: `MNDT-${leadId.slice(0, 8)}`,
+          SignatureDate: signatureDate,
+          Type: 1, // 1 = B2B
+        }),
       });
-      console.warn(mandateWarning);
-    } else {
-      const mJson = await mRes.json().catch(() => ({}));
-      exactMandateId = mJson?.d?.ID || mJson?.ID || null;
+      if (!mRes.ok) {
+        const { summary, detail } = await captureExactError("DirectDebitMandates POST", mRes);
+        mandateWarning = `${summary}. Account + bankrekening staan wel klaar.`;
+        await logSync(supabase, {
+          trigger_type: "lead_activation", status: "error",
+          lead_id: leadId, admin_user_id: user.id,
+          http_status: mRes.status,
+          error_message: summary,
+          payload: detail,
+        });
+        console.warn(mandateWarning);
+      } else {
+        const mJson = await mRes.json().catch(() => ({}));
+        exactMandateId = mJson?.d?.ID || mJson?.ID || null;
+      }
     }
   } catch (e) {
     mandateWarning = `SEPA-mandaat exception: ${e instanceof Error ? e.message : e}`;
@@ -951,7 +1021,9 @@ Deno.serve(async (req) => {
   // ── Stap I: lead updaten ──
   const auditEntry = {
     timestamp: new Date().toISOString(),
-    action: "Polis geactiveerd in Exact",
+    action: reusedAccountId
+      ? "Polis geactiveerd in Exact (bestaande relatie hergebruikt)"
+      : "Polis geactiveerd in Exact",
     admin_user_id: user.id,
     admin_email: user.email,
     exact_account_id: exactAccountId,
@@ -959,6 +1031,10 @@ Deno.serve(async (req) => {
     exact_bankaccount_id: exactBankAccountId,
     exact_mandate_id: exactMandateId,
     mandate_warning: mandateWarning,
+    reused_account: !!reusedAccountId,
+    reused_account_name: reusedAccountName,
+    reused_bankaccount: bankAccountReused,
+    reused_mandate: mandateReused,
   };
   const log1 = Array.isArray(lead.activatie_log)
     ? [...lead.activatie_log, auditEntry]
@@ -984,21 +1060,26 @@ Deno.serve(async (req) => {
       }]
     : log2;
 
-  await supabase.from("leads").update({
+  // Status pas op 'actief' als de factuur daadwerkelijk is aangemaakt.
+  const activationSucceeded = !!exactInvoiceId;
+  const leadUpdate: Record<string, unknown> = {
     exact_account_id: exactAccountId,
     exact_relatie_id: exactAccountId,
-    status: "actief",
-    geactiveerd_door: user.id,
-    geactiveerd_op: new Date().toISOString(),
     activatie_log: newLog,
-    exact_status: "gesynchroniseerd",
+    exact_status: activationSucceeded ? "gesynchroniseerd" : "deels_gesynchroniseerd",
     exact_sync_op: new Date().toISOString(),
-    exact_fout: null,
+    exact_fout: activationSucceeded ? null : (invoiceWarning ?? mandateWarning ?? null),
     exact_invoice_id: exactInvoiceId,
     exact_invoice_number: exactInvoiceNumber,
     exact_invoice_amount: exactInvoiceAmount,
     exact_invoice_created_at: exactInvoiceCreatedAt,
-  }).eq("id", leadId);
+  };
+  if (activationSucceeded) {
+    leadUpdate.status = "actief";
+    leadUpdate.geactiveerd_door = user.id;
+    leadUpdate.geactiveerd_op = new Date().toISOString();
+  }
+  await supabase.from("leads").update(leadUpdate).eq("id", leadId);
 
   await logSync(supabase, {
     trigger_type: "lead_activation",
@@ -1018,6 +1099,11 @@ Deno.serve(async (req) => {
       exact_invoice_number: exactInvoiceNumber,
       exact_invoice_amount: exactInvoiceAmount,
       invoice_warning: invoiceWarning,
+      reused_account: !!reusedAccountId,
+      reused_account_name: reusedAccountName,
+      reused_bankaccount: bankAccountReused,
+      reused_mandate: mandateReused,
+      activation_status: activationSucceeded ? "actief" : lead.status,
     },
   });
 
@@ -1032,6 +1118,13 @@ Deno.serve(async (req) => {
     exact_invoice_number: exactInvoiceNumber,
     exact_invoice_amount: exactInvoiceAmount,
     invoice_warning: invoiceWarning,
-    message: "Klant succesvol geactiveerd in Exact",
+    reused_account: !!reusedAccountId,
+    reused_account_name: reusedAccountName,
+    reused_bankaccount: bankAccountReused,
+    reused_mandate: mandateReused,
+    activation_status: activationSucceeded ? "actief" : lead.status,
+    message: reusedAccountId
+      ? "Klant geactiveerd op bestaande Exact-relatie (hergebruik)"
+      : "Klant succesvol geactiveerd in Exact",
   });
 });
