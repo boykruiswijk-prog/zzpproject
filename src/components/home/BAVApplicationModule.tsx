@@ -60,6 +60,8 @@ export function BAVApplicationModule() {
    const [isSubmitting, setIsSubmitting] = useState(false);
    const [existingCustomerOpen, setExistingCustomerOpen] = useState(false);
    const [isCheckingExisting, setIsCheckingExisting] = useState(false);
+   const [magicLinkSending, setMagicLinkSending] = useState(false);
+   const [magicLinkSent, setMagicLinkSent] = useState(false);
    useEffect(() => { trackBeginWizard(); }, []);
   const [formData, setFormData] = useState({
     bedrijfsnaam: "", kvkNummer: "", beroep: "", functie: "", aantalMedewerkers: "",
