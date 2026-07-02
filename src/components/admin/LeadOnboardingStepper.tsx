@@ -91,8 +91,6 @@ export function LeadOnboardingStepper({ lead }: Props) {
               </p>
             </div>
           </div>
-            </div>
-          </div>
         ) : (
           <>
             {/* Stepper */}
