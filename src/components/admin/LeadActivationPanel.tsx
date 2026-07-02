@@ -13,6 +13,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { formatDateLongNL, formatDateTimeLongNL } from "@/lib/dateFormat";
+import { logActiviteit } from "@/lib/activiteitenLog";
 
 
 
@@ -99,6 +100,12 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
       toast({
         title: "Polis geactiveerd",
         description: `Klant is aangemaakt in Exact. Relatie-ID: ${data.exact_account_id}${data.mandate_warning ? " — let op: " + data.mandate_warning : ""}`,
+      });
+      void logActiviteit({
+        actie_type: "lead_geactiveerd",
+        omschrijving: `Polis geactiveerd voor ${lead.email ?? "lead"}. Klant aangemaakt in Exact.`,
+        lead_id: lead.id,
+        klant_email: lead.email ?? null,
       });
       qc.invalidateQueries({ queryKey: ["lead", lead.id] });
       qc.invalidateQueries({ queryKey: ["leads"] });
