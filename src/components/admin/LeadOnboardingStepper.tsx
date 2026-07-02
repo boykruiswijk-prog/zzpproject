@@ -87,8 +87,10 @@ export function LeadOnboardingStepper({ lead }: Props) {
             <div>
               <p className="font-medium">Aanvraag afgewezen</p>
               <p className="text-muted-foreground text-xs">
-                Reden staat genoteerd in het veld Opmerkingen.
+                De reden is vastgelegd in de activiteitentijdlijn hieronder.
               </p>
+            </div>
+          </div>
             </div>
           </div>
         ) : (
