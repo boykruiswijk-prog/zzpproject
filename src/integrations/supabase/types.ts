@@ -55,8 +55,37 @@ export type Database = {
           },
         ]
       }
+      article_categories: {
+        Row: {
+          created_at: string
+          hub_slug: string | null
+          label: string
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          hub_slug?: string | null
+          label: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          hub_slug?: string | null
+          label?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       articles: {
         Row: {
+          author_id: string | null
+          author_name: string | null
           category: string
           content: string | null
           created_at: string
@@ -75,6 +104,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          author_id?: string | null
+          author_name?: string | null
           category?: string
           content?: string | null
           created_at?: string
@@ -93,6 +124,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          author_id?: string | null
+          author_name?: string | null
           category?: string
           content?: string | null
           created_at?: string
@@ -110,7 +143,15 @@ export type Database = {
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "articles_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       bav_aanmeldingen: {
         Row: {
