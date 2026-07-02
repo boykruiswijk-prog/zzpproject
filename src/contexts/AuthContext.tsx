@@ -170,9 +170,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signIn,
     signOut,
     isTeamMember: role !== null,
-    isAdmin: role === "admin",
-    isSupervisor: role === "supervisor",
-    isSupervisorOrAdmin: role === "admin" || role === "supervisor",
+    isAdmin: role === "supervisor" || role === "admin",
+    isSupervisor: role === "supervisor" || role === "admin",
+    isSupervisorOrAdmin: role === "supervisor" || role === "admin",
+    isVerzekering: role === "verzekering" || role === "medewerker",
+    isMarketing: role === "marketing",
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
