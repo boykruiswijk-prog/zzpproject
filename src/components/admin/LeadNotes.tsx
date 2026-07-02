@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { useLeadNotes, useCreateLeadNote, useDeleteLeadNote } from "@/hooks/useLeadNotes";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -12,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MessageSquare, Phone, Calendar, Trash2, Loader2 } from "lucide-react";
+import { MessageSquare, Phone, Calendar, Trash2, Loader2, Activity } from "lucide-react";
 import { formatDateTimeNL } from "@/lib/dateFormat";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -37,6 +39,19 @@ interface LeadNotesProps {
 export function LeadNotes({ leadId }: LeadNotesProps) {
   const { user } = useAuth();
   const { data: notes, isLoading } = useLeadNotes(leadId);
+  const { data: activiteiten, isLoading: activiteitenLoading } = useQuery({
+    queryKey: ["lead-activiteiten", leadId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("activiteiten_log")
+        .select("id, actie_type, omschrijving, uitgevoerd_door_naam, aangemaakt_op")
+        .eq("lead_id", leadId)
+        .order("aangemaakt_op", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: !!leadId,
+  });
   const createNote = useCreateLeadNote();
   const deleteNote = useDeleteLeadNote();
 
@@ -98,56 +113,102 @@ export function LeadNotes({ leadId }: LeadNotesProps) {
           </div>
         </form>
 
-        {/* Notes list */}
+        {/* Timeline: notes + activities */}
         <div className="border-t pt-6">
-          {isLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-            </div>
-          ) : notes?.length === 0 ? (
-            <p className="text-center py-8 text-muted-foreground">
-              Nog geen notities toegevoegd
-            </p>
-          ) : (
-            <div className="space-y-4">
-              {notes?.map((note) => {
-                const Icon = noteTypeIcons[note.type];
-                return (
-                  <div
-                    key={note.id}
-                    className="flex gap-4 p-4 rounded-lg bg-secondary/50"
-                  >
-                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <Icon className="h-4 w-4 text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Badge variant="outline" className="text-xs">
-                          {noteTypeLabels[note.type]}
-                        </Badge>
-                        <span className="text-xs text-muted-foreground">
-                          {formatDateTimeNL(note.created_at)}
-                        </span>
-                      </div>
-                      <p className="text-sm whitespace-pre-wrap">{note.content}</p>
-                    </div>
-                    {note.user_id === user?.id && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="flex-shrink-0 h-8 w-8"
-                        onClick={() => handleDelete(note.id)}
-                      >
-                        <Trash2 className="h-4 w-4 text-muted-foreground" />
-                      </Button>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          <TimelineList
+            notes={notes ?? []}
+            activiteiten={activiteiten ?? []}
+            isLoading={isLoading || activiteitenLoading}
+            currentUserId={user?.id}
+            onDelete={handleDelete}
+          />
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+interface TimelineListProps {
+  notes: Array<{ id: string; type: NoteType; content: string; created_at: string; user_id: string }>;
+  activiteiten: Array<{ id: string; actie_type: string; omschrijving: string; uitgevoerd_door_naam: string | null; aangemaakt_op: string }>;
+  isLoading: boolean;
+  currentUserId: string | undefined;
+  onDelete: (id: string) => void;
+}
+
+function TimelineList({ notes, activiteiten, isLoading, currentUserId, onDelete }: TimelineListProps) {
+  const items = useMemo(() => {
+    const noteItems = notes.map((n) => ({
+      kind: "note" as const,
+      id: `note-${n.id}`,
+      ts: n.created_at,
+      note: n,
+    }));
+    const actItems = activiteiten.map((a) => ({
+      kind: "activiteit" as const,
+      id: `act-${a.id}`,
+      ts: a.aangemaakt_op,
+      act: a,
+    }));
+    return [...noteItems, ...actItems].sort((a, b) => (a.ts < b.ts ? 1 : -1));
+  }, [notes, activiteiten]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+  if (items.length === 0) {
+    return <p className="text-center py-8 text-muted-foreground">Nog geen notities of activiteiten</p>;
+  }
+
+  return (
+    <div className="space-y-4">
+      {items.map((item) => {
+        if (item.kind === "note") {
+          const note = item.note;
+          const Icon = noteTypeIcons[note.type];
+          return (
+            <div key={item.id} className="flex gap-4 p-4 rounded-lg bg-secondary/50">
+              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <Icon className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <Badge variant="outline" className="text-xs">Notitie · {noteTypeLabels[note.type]}</Badge>
+                  <span className="text-xs text-muted-foreground">{formatDateTimeNL(note.created_at)}</span>
+                </div>
+                <p className="text-sm whitespace-pre-wrap">{note.content}</p>
+              </div>
+              {note.user_id === currentUserId && (
+                <Button variant="ghost" size="icon" className="flex-shrink-0 h-8 w-8" onClick={() => onDelete(note.id)}>
+                  <Trash2 className="h-4 w-4 text-muted-foreground" />
+                </Button>
+              )}
+            </div>
+          );
+        }
+        const act = item.act;
+        return (
+          <div key={item.id} className="flex gap-4 p-4 rounded-lg border border-dashed bg-muted/30">
+            <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+              <Activity className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <Badge variant="secondary" className="text-xs">Activiteit · {act.actie_type}</Badge>
+                <span className="text-xs text-muted-foreground">{formatDateTimeNL(act.aangemaakt_op)}</span>
+                {act.uitgevoerd_door_naam && (
+                  <span className="text-xs text-muted-foreground">· {act.uitgevoerd_door_naam}</span>
+                )}
+              </div>
+              <p className="text-sm whitespace-pre-wrap">{act.omschrijving}</p>
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }
