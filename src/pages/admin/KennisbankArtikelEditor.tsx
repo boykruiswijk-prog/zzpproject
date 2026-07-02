@@ -18,7 +18,8 @@ import { useArticleCategoryList } from "@/hooks/useArticleCategoriesAdmin";
 import { MarkdownEditor } from "@/components/admin/kennisbank/MarkdownEditor";
 import { toast } from "@/hooks/use-toast";
 import { logActiviteit } from "@/lib/activiteitenLog";
-import { ArrowLeft, Save, Upload, ExternalLink } from "lucide-react";
+import { ArrowLeft, Save, Upload, ExternalLink, Sparkles, Loader2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 
 function slugify(s: string) {
   return s
@@ -69,6 +70,10 @@ export default function KennisbankArtikelEditor() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [claudeOpen, setClaudeOpen] = useState(false);
+  const [claudeOnderwerp, setClaudeOnderwerp] = useState("");
+  const [claudeRubriek, setClaudeRubriek] = useState<string>("");
+  const [claudeBusy, setClaudeBusy] = useState(false);
 
   // Bestaand artikel laden
   const { data: existing, isLoading } = useQuery({
@@ -140,6 +145,45 @@ export default function KennisbankArtikelEditor() {
     const { data } = isNew ? await q : await q.neq("id", id!);
     return !data || data.length === 0;
   }
+
+  async function generateWithClaude() {
+    const onderwerp = claudeOnderwerp.trim();
+    if (!onderwerp) {
+      toast({ title: "Geef een onderwerp of steekwoorden op", variant: "destructive" });
+      return;
+    }
+    setClaudeBusy(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("genereer-artikel", {
+        body: { onderwerp, rubriek: claudeRubriek || undefined },
+      });
+      if (error) throw error;
+      if (!data?.success || !data?.article) throw new Error("no_result");
+      const a = data.article;
+      setForm((f) => ({
+        ...f,
+        title: a.title || f.title,
+        content: a.content || f.content,
+        excerpt: a.excerpt || f.excerpt,
+        seo_title: a.seo_title || f.seo_title,
+        seo_description: a.seo_description || f.seo_description,
+        category: a.category || f.category,
+      }));
+      toast({ title: "Concept gegenereerd", description: "Controleer en pas naar wens aan voor je publiceert." });
+      setClaudeOpen(false);
+      setClaudeOnderwerp("");
+      setClaudeRubriek("");
+    } catch (_e) {
+      toast({
+        title: "Genereren mislukt",
+        description: "De schrijfhulp is nu niet beschikbaar. Probeer het later opnieuw of schrijf handmatig verder.",
+        variant: "destructive",
+      });
+    } finally {
+      setClaudeBusy(false);
+    }
+  }
+
 
   async function save(publish?: boolean) {
     const nextPublished = publish ?? form.is_published;
@@ -233,6 +277,9 @@ export default function KennisbankArtikelEditor() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="secondary" onClick={() => setClaudeOpen(true)} disabled={saving || claudeBusy}>
+              <Sparkles className="h-4 w-4 mr-1" /> Schrijf met Claude
+            </Button>
             <Button variant="outline" onClick={() => save(false)} disabled={saving}>
               <Save className="h-4 w-4 mr-1" /> Opslaan als concept
             </Button>
@@ -241,6 +288,47 @@ export default function KennisbankArtikelEditor() {
             </Button>
           </div>
         </div>
+
+        <Dialog open={claudeOpen} onOpenChange={(o) => !claudeBusy && setClaudeOpen(o)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Schrijf een concept met Claude</DialogTitle>
+              <DialogDescription>
+                Claude schrijft een concept in de stijl van ZP Zaken. Je vult daarna zelf aan en publiceert pas als het klopt.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>Onderwerp of steekwoorden *</Label>
+                <Textarea
+                  rows={3}
+                  value={claudeOnderwerp}
+                  onChange={(e) => setClaudeOnderwerp(e.target.value)}
+                  placeholder="Bijv.: de nieuwe Wet DBA en wat het betekent voor zzp'ers"
+                  disabled={claudeBusy}
+                />
+              </div>
+              <div>
+                <Label>Rubriek (optioneel)</Label>
+                <Select value={claudeRubriek} onValueChange={setClaudeRubriek} disabled={claudeBusy}>
+                  <SelectTrigger><SelectValue placeholder="Laat Claude kiezen" /></SelectTrigger>
+                  <SelectContent>
+                    {(categories ?? []).map((c) => (
+                      <SelectItem key={c.slug} value={c.label}>{c.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setClaudeOpen(false)} disabled={claudeBusy}>Annuleren</Button>
+              <Button onClick={generateWithClaude} disabled={claudeBusy}>
+                {claudeBusy ? (<><Loader2 className="h-4 w-4 mr-1 animate-spin" /> Genereren…</>) : (<><Sparkles className="h-4 w-4 mr-1" /> Genereer concept</>)}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
 
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
