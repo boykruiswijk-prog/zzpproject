@@ -1273,6 +1273,134 @@ export type Database = {
           },
         ]
       }
+      ondernemingen: {
+        Row: {
+          created_at: string
+          iban: string | null
+          id: string
+          kvk: string | null
+          naam: string | null
+          rechtsvorm: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          iban?: string | null
+          id?: string
+          kvk?: string | null
+          naam?: string | null
+          rechtsvorm?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          iban?: string | null
+          id?: string
+          kvk?: string | null
+          naam?: string | null
+          rechtsvorm?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      personen: {
+        Row: {
+          achternaam: string | null
+          created_at: string
+          email_weergave: string | null
+          genormaliseerd_email: string | null
+          id: string
+          updated_at: string
+          voornaam: string | null
+        }
+        Insert: {
+          achternaam?: string | null
+          created_at?: string
+          email_weergave?: string | null
+          genormaliseerd_email?: string | null
+          id?: string
+          updated_at?: string
+          voornaam?: string | null
+        }
+        Update: {
+          achternaam?: string | null
+          created_at?: string
+          email_weergave?: string | null
+          genormaliseerd_email?: string | null
+          id?: string
+          updated_at?: string
+          voornaam?: string | null
+        }
+        Relationships: []
+      }
+      persoon_bron_koppeling: {
+        Row: {
+          bron_id: string
+          bron_tabel: string
+          created_at: string
+          id: string
+          persoon_id: string
+        }
+        Insert: {
+          bron_id: string
+          bron_tabel: string
+          created_at?: string
+          id?: string
+          persoon_id: string
+        }
+        Update: {
+          bron_id?: string
+          bron_tabel?: string
+          created_at?: string
+          id?: string
+          persoon_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "persoon_bron_koppeling_persoon_id_fkey"
+            columns: ["persoon_id"]
+            isOneToOne: false
+            referencedRelation: "personen"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      persoon_onderneming: {
+        Row: {
+          created_at: string
+          id: string
+          onderneming_id: string
+          persoon_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          onderneming_id: string
+          persoon_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          onderneming_id?: string
+          persoon_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "persoon_onderneming_onderneming_id_fkey"
+            columns: ["onderneming_id"]
+            isOneToOne: false
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "persoon_onderneming_persoon_id_fkey"
+            columns: ["persoon_id"]
+            isOneToOne: false
+            referencedRelation: "personen"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       policies: {
         Row: {
           avb_per_event: string
