@@ -264,6 +264,9 @@ export default function AdminLeadDetail() {
           <LeadOnboardingStepper lead={lead} />
         )}
 
+        <LeadDoorlooptijd lead={lead} />
+
+
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Lead info */}
           <div className="lg:col-span-2 space-y-6">
