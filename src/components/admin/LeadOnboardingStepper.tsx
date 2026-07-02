@@ -76,7 +76,8 @@ export function LeadOnboardingStepper({ lead }: Props) {
   const updateLead = useUpdateLead();
   const { toast } = useToast();
   const [rejectOpen, setRejectOpen] = useState(false);
-  const [rejectReden, setRejectReden] = useState("");
+  const [rejectKey, setRejectKey] = useState<RejectReasonKey | "">("");
+  const [rejectAnders, setRejectAnders] = useState("");
 
   const phaseIndex = PHASES.findIndex(p => p.key === phase);
 
