@@ -39,6 +39,7 @@ import AdminScreeningAanvraagDetail from "./pages/admin/ScreeningAanvraagDetailP
 import AdminServiceAanvragen from "./pages/admin/ServiceAanvragen";
 import AdminServiceAanvraagDetail from "./pages/admin/ServiceAanvraagDetailPage";
 import AdminCRM from "./pages/admin/CRM";
+import AdminActiviteiten from "./pages/admin/Activiteiten";
 import AdminSocialMediaFeatures from "./pages/admin/SocialMediaFeatures";
 import AdminIntegraties from "./pages/admin/Integraties";
 import AdminExactKoppeling from "./pages/admin/ExactKoppeling";
@@ -224,6 +225,7 @@ const App = () => (
             <Route path="/admin/wachtwoord-wijzigen" element={<ChangePasswordPage />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/crm" element={<AdminCRM />} />
+            <Route path="/admin/activiteiten" element={<AdminActiviteiten />} />
             <Route path="/admin/leads" element={<AdminLeads />} />
             <Route path="/admin/leads/:id" element={<AdminLeadDetail />} />
             <Route path="/admin/team" element={<AdminTeam />} />
