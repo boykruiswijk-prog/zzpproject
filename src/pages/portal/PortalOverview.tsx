@@ -2,6 +2,7 @@ import { PortalLayout } from "@/components/portal/PortalLayout";
 import { usePortalAuth } from "@/contexts/PortalAuthContext";
 import { usePortalPolicies } from "@/hooks/usePortalData";
 import { useCustomerInvoices } from "@/hooks/useCustomerInvoices";
+import { useProfile } from "@/hooks/useProfiles";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -9,8 +10,11 @@ import { FileText, Receipt, Briefcase, ArrowRight } from "lucide-react";
 
 export default function PortalOverview() {
   const { user } = usePortalAuth();
+  const { data: profile } = useProfile(user?.id);
   const { data: policies } = usePortalPolicies();
   const { data: invoices } = useCustomerInvoices();
+
+  const firstName = profile?.full_name?.trim().split(/\s+/)[0] || "";
 
   const activePolicy = policies?.[0];
   const totalInvoices = invoices?.length || 0;
@@ -30,7 +34,7 @@ export default function PortalOverview() {
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold">
-            Welkom{user?.user_metadata?.full_name ? `, ${user.user_metadata.full_name}` : ""}
+            {firstName ? `Welkom terug, ${firstName}` : "Welkom terug"}
           </h1>
           <p className="text-muted-foreground mt-1">
             Hier vind je een overzicht van je polis, documenten en facturen.
