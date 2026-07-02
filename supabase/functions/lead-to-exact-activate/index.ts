@@ -677,8 +677,10 @@ Deno.serve(async (req) => {
 
 
 
-  // ── Duplicate check op KvK in Exact ──
+  // ── Duplicate check op KvK in Exact — reuse bij match ──
   const kvk = String(lead.kvk_nummer);
+  let reusedAccountId: string | null = null;
+  let reusedAccountName: string | null = null;
   try {
     const dupRes = await fetch(
       `${baseUrl}/api/v1/${div}/crm/Accounts?$select=ID,Name,ChamberOfCommerce&$filter=ChamberOfCommerce eq '${kvk}'&$top=1`,
@@ -686,13 +688,18 @@ Deno.serve(async (req) => {
     );
     const dupJson = await dupRes.json().catch(() => ({}));
     const dupArr = Array.isArray(dupJson?.d?.results) ? dupJson.d.results : Array.isArray(dupJson?.d) ? dupJson.d : [];
-    if (dupArr.length > 0) {
-      return json({
-        success: false,
-        error: "duplicate_kvk_in_exact",
-        exact_account_id: dupArr[0]?.ID,
-        exact_account_name: dupArr[0]?.Name,
-      }, 409);
+    if (dupArr.length > 0 && dupArr[0]?.ID) {
+      reusedAccountId = dupArr[0].ID;
+      reusedAccountName = dupArr[0]?.Name ?? null;
+      await logSync(supabase, {
+        trigger_type: "lead_activation", status: "success",
+        lead_id: leadId, admin_user_id: user.id,
+        exact_account_id: reusedAccountId, http_status: 200,
+        payload: {
+          reuse: "existing_account_by_kvk",
+          kvk, exact_account_id: reusedAccountId, exact_account_name: reusedAccountName,
+        },
+      });
     }
   } catch (e) {
     console.warn("Duplicate check failed (continuing):", e);
