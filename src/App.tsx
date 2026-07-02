@@ -43,6 +43,8 @@ import AdminActiviteiten from "./pages/admin/Activiteiten";
 import AdminSocialMediaFeatures from "./pages/admin/SocialMediaFeatures";
 import AdminIntegraties from "./pages/admin/Integraties";
 import AdminExactKoppeling from "./pages/admin/ExactKoppeling";
+import AdminMarketing from "./pages/admin/MarketingPlaceholder";
+import { RoleGuard } from "./components/admin/RoleGuard";
 import ExactCallback from "./pages/ExactCallback";
 import AdminLogin from "./pages/admin/LoginPage";
 import ChangePasswordPage from "./pages/admin/ChangePasswordPage";
