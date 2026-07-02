@@ -2,6 +2,7 @@ import { PortalLayout } from "@/components/portal/PortalLayout";
 import { usePortalAuth } from "@/contexts/PortalAuthContext";
 import { usePortalPolicies } from "@/hooks/usePortalData";
 import { useCustomerInvoices } from "@/hooks/useCustomerInvoices";
+import { useProfile } from "@/hooks/useProfiles";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
