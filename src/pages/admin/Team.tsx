@@ -89,7 +89,7 @@ export default function AdminTeam() {
       setEmail("");
       setPassword("");
       setFullName("");
-      setRole("medewerker");
+      setRole("verzekering");
     },
     onError: (error) => {
       toast({
