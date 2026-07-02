@@ -277,6 +277,9 @@ export default function KennisbankArtikelEditor() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="secondary" onClick={() => setClaudeOpen(true)} disabled={saving || claudeBusy}>
+              <Sparkles className="h-4 w-4 mr-1" /> Schrijf met Claude
+            </Button>
             <Button variant="outline" onClick={() => save(false)} disabled={saving}>
               <Save className="h-4 w-4 mr-1" /> Opslaan als concept
             </Button>
@@ -285,6 +288,47 @@ export default function KennisbankArtikelEditor() {
             </Button>
           </div>
         </div>
+
+        <Dialog open={claudeOpen} onOpenChange={(o) => !claudeBusy && setClaudeOpen(o)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Schrijf een concept met Claude</DialogTitle>
+              <DialogDescription>
+                Claude schrijft een concept in de stijl van ZP Zaken. Je vult daarna zelf aan en publiceert pas als het klopt.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>Onderwerp of steekwoorden *</Label>
+                <Textarea
+                  rows={3}
+                  value={claudeOnderwerp}
+                  onChange={(e) => setClaudeOnderwerp(e.target.value)}
+                  placeholder="Bijv.: de nieuwe Wet DBA en wat het betekent voor zzp'ers"
+                  disabled={claudeBusy}
+                />
+              </div>
+              <div>
+                <Label>Rubriek (optioneel)</Label>
+                <Select value={claudeRubriek} onValueChange={setClaudeRubriek} disabled={claudeBusy}>
+                  <SelectTrigger><SelectValue placeholder="Laat Claude kiezen" /></SelectTrigger>
+                  <SelectContent>
+                    {(categories ?? []).map((c) => (
+                      <SelectItem key={c.slug} value={c.label}>{c.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setClaudeOpen(false)} disabled={claudeBusy}>Annuleren</Button>
+              <Button onClick={generateWithClaude} disabled={claudeBusy}>
+                {claudeBusy ? (<><Loader2 className="h-4 w-4 mr-1 animate-spin" /> Genereren…</>) : (<><Sparkles className="h-4 w-4 mr-1" /> Genereer concept</>)}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
 
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
