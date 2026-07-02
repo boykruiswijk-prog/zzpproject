@@ -18,7 +18,7 @@ import { useArticleCategoryList } from "@/hooks/useArticleCategoriesAdmin";
 import { MarkdownEditor } from "@/components/admin/kennisbank/MarkdownEditor";
 import { toast } from "@/hooks/use-toast";
 import { logActiviteit } from "@/lib/activiteitenLog";
-import { ArrowLeft, Save, Upload, ExternalLink, Sparkles, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, Upload, ExternalLink, Sparkles, Loader2, ShieldCheck, AlertTriangle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 
 function slugify(s: string) {
