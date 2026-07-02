@@ -45,7 +45,7 @@ export default function AdminTeam() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [role, setRole] = useState<AppRole>("medewerker");
+  const [role, setRole] = useState<AppRole>("verzekering");
   const [isCreating, setIsCreating] = useState(false);
 
   // Get all user roles
