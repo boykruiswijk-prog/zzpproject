@@ -175,6 +175,9 @@ export default function KennisbankArtikelEditor() {
         seo_title: a.seo_title || f.seo_title,
         seo_description: a.seo_description || f.seo_description,
         category: a.category || f.category,
+        generated_by_ai: true,
+        reviewed_by: null,
+        reviewed_at: null,
       }));
       toast({ title: "Concept gegenereerd", description: "Controleer en pas naar wens aan voor je publiceert." });
       setClaudeOpen(false);
