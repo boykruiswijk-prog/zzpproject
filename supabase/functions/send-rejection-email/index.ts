@@ -35,7 +35,8 @@ function renderHtml(): string {
       </p>
       <p style="margin:0 0 14px 0">
         Na zorgvuldige beoordeling moeten we je helaas laten weten dat we je aanvraag op dit moment niet in behandeling
-        kunnen nemen. We beseffen dat dit een teleurstellend bericht is en willen benadrukken dat deze uitkomst niets
+        kunnen nemen. De reden hiervoor is dat je aanvraag niet aansluit bij onze huidige verzekeringsportefeuille.
+        We beseffen dat dit een teleurstellend bericht is en willen benadrukken dat deze uitkomst niets
         afdoet aan je onderneming of je professionaliteit.
       </p>
       <p style="margin:0 0 14px 0">
@@ -61,7 +62,7 @@ function renderText(): string {
     "",
     "Hartelijk dank dat je je aanvraag bij ZP Zaken hebt ingediend. We waarderen het vertrouwen dat je in ons stelt.",
     "",
-    "Na zorgvuldige beoordeling moeten we je helaas laten weten dat we je aanvraag op dit moment niet in behandeling kunnen nemen. We beseffen dat dit een teleurstellend bericht is en willen benadrukken dat deze uitkomst niets afdoet aan je onderneming of je professionaliteit.",
+    "Na zorgvuldige beoordeling moeten we je helaas laten weten dat we je aanvraag op dit moment niet in behandeling kunnen nemen. De reden hiervoor is dat je aanvraag niet aansluit bij onze huidige verzekeringsportefeuille. We beseffen dat dit een teleurstellend bericht is en willen benadrukken dat deze uitkomst niets afdoet aan je onderneming of je professionaliteit.",
     "",
     "Heb je vragen naar aanleiding van dit bericht of wil je later opnieuw een aanvraag doen? Neem dan gerust contact met ons op via info@zpzaken.nl. We denken graag met je mee.",
     "",
