@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ArticleCard } from "@/components/kennisbank/ArticleCard";
 import { useArticles } from "@/hooks/useArticles";
+import { useArticleCategoryList } from "@/hooks/useArticleCategoriesAdmin";
 import { Skeleton } from "@/components/ui/skeleton";
 import officeFlowers from "@/assets/zp-boy-laptop.jpg";
 
@@ -13,9 +14,11 @@ interface Props {
   slug: string;
   title: string;
   intro: string;
-  // Category-tag(s) zoals in articles.category in DB. Eerste match wint.
-  // Indien artikelen nog niet bestaan toont de pagina een lege state.
-  categoryTags: string[];
+  /**
+   * Optionele fallback voor legacy-code. Wanneer niet opgegeven wordt de mapping
+   * uit de database (article_categories.hub_slug = slug) gebruikt.
+   */
+  categoryTags?: string[];
   metaTitle: string;
   metaDescription: string;
 }
@@ -29,11 +32,19 @@ export function KennisbankCategoryPage({
   metaDescription,
 }: Props) {
   const url = `https://zpzaken.nl/kennisbank/${slug}`;
-  // Fetch all and filter client-side, since useArticles accepts single category.
   const { data: articles, isLoading } = useArticles("Alle");
+  const { data: allCategories } = useArticleCategoryList();
+
+  // Data-driven: pak alle labels waarvan hub_slug matcht met de huidige pagina.
+  // Valt terug op de meegegeven categoryTags als de tabel (nog) leeg is.
+  const effectiveTags =
+    (allCategories ?? []).filter((c) => c.hub_slug === slug).map((c) => c.label);
+  const tags = effectiveTags.length > 0 ? effectiveTags : (categoryTags ?? []);
+
   const filtered = (articles || []).filter((a) =>
-    categoryTags.some((t) => a.category?.toLowerCase() === t.toLowerCase()),
+    tags.some((t) => a.category?.toLowerCase() === t.toLowerCase()),
   );
+
 
   const collectionSchema = {
     "@context": "https://schema.org",
