@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, useCallback, useRef, Re
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
-type AppRole = "admin" | "supervisor" | "medewerker";
+type AppRole = "admin" | "supervisor" | "medewerker" | "verzekering" | "marketing";
 
 const INACTIVITY_TIMEOUT = 60 * 60 * 1000; // 1 hour
 const ABSOLUTE_TIMEOUT = 8 * 60 * 60 * 1000; // 8 hours
