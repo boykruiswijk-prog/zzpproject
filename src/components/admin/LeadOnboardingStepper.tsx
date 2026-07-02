@@ -5,6 +5,7 @@ import { Check, Loader2, AlertTriangle } from "lucide-react";
 import { useUpdateLead } from "@/hooks/useLeads";
 import { useToast } from "@/hooks/use-toast";
 import { logActiviteit } from "@/lib/activiteitenLog";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from "@/components/ui/dialog";
