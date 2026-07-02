@@ -3,6 +3,9 @@ project_id = "eugkavokktjwpqaqlwsj"
  [functions.scrape-articles]
  verify_jwt = false
 
+ [functions.genereer-artikel]
+ verify_jwt = false
+
  [functions.export-excel]
  verify_jwt = false
 
