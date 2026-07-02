@@ -6,6 +6,7 @@ import { LeadNotes } from "@/components/admin/LeadNotes";
 import { LeadActivationPanel } from "@/components/admin/LeadActivationPanel";
 import { LeadLifecyclePanel } from "@/components/admin/LeadLifecyclePanel";
 import { LeadOnboardingStepper, derivePhase } from "@/components/admin/LeadOnboardingStepper";
+import { LeadDoorlooptijd } from "@/components/admin/LeadDoorlooptijd";
 import { useLead, useUpdateLead, useDeleteLead } from "@/hooks/useLeads";
 import { useAuth } from "@/contexts/AuthContext";
 import { PortalInviteButton } from "@/components/admin/PortalInviteButton";
@@ -262,6 +263,9 @@ export default function AdminLeadDetail() {
         {lead.type === "verzekering_aanvraag" && (
           <LeadOnboardingStepper lead={lead} />
         )}
+
+        <LeadDoorlooptijd lead={lead} />
+
 
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Lead info */}
