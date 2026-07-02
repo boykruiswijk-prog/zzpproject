@@ -18,14 +18,27 @@ const supabase = createClient(
 const resendKey = Deno.env.get("RESEND_API_KEY");
 const resend = resendKey ? new Resend(resendKey) : null;
 
+const DEFAULT_REASON =
+  "De reden hiervoor is dat je aanvraag niet aansluit bij onze huidige verzekeringsportefeuille.";
+
 const schema = z.object({
   leadId: z.string().uuid(),
   email: z.string().email(),
+  reasonSentence: z.string().trim().min(1).max(1000).optional(),
 });
 
 const LEAD_TYPE = "afwijzing";
 
-function renderHtml(): string {
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function renderHtml(reasonSentence: string): string {
   return `
     <div style="font-family:Arial,sans-serif;max-width:560px;color:#222;line-height:1.6">
       <h2 style="color:#E53E2F;font-size:18px;font-weight:600;margin:0 0 16px 0">Bericht over je aanvraag</h2>
@@ -35,7 +48,7 @@ function renderHtml(): string {
       </p>
       <p style="margin:0 0 14px 0">
         Na zorgvuldige beoordeling moeten we je helaas laten weten dat we je aanvraag op dit moment niet in behandeling
-        kunnen nemen. De reden hiervoor is dat je aanvraag niet aansluit bij onze huidige verzekeringsportefeuille.
+        kunnen nemen. ${escapeHtml(reasonSentence)}
         We beseffen dat dit een teleurstellend bericht is en willen benadrukken dat deze uitkomst niets
         afdoet aan je onderneming of je professionaliteit.
       </p>
@@ -56,13 +69,13 @@ function renderHtml(): string {
   `;
 }
 
-function renderText(): string {
+function renderText(reasonSentence: string): string {
   return [
     "Beste relatie,",
     "",
     "Hartelijk dank dat je je aanvraag bij ZP Zaken hebt ingediend. We waarderen het vertrouwen dat je in ons stelt.",
     "",
-    "Na zorgvuldige beoordeling moeten we je helaas laten weten dat we je aanvraag op dit moment niet in behandeling kunnen nemen. De reden hiervoor is dat je aanvraag niet aansluit bij onze huidige verzekeringsportefeuille. We beseffen dat dit een teleurstellend bericht is en willen benadrukken dat deze uitkomst niets afdoet aan je onderneming of je professionaliteit.",
+    `Na zorgvuldige beoordeling moeten we je helaas laten weten dat we je aanvraag op dit moment niet in behandeling kunnen nemen. ${reasonSentence} We beseffen dat dit een teleurstellend bericht is en willen benadrukken dat deze uitkomst niets afdoet aan je onderneming of je professionaliteit.`,
     "",
     "Heb je vragen naar aanleiding van dit bericht of wil je later opnieuw een aanvraag doen? Neem dan gerust contact met ons op via info@zpzaken.nl. We denken graag met je mee.",
     "",
@@ -90,7 +103,10 @@ Deno.serve(async (req) => {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const { leadId, email } = parsed.data;
+    const { leadId, email, reasonSentence } = parsed.data;
+    const finalReason = (reasonSentence && reasonSentence.trim().length > 0)
+      ? reasonSentence.trim()
+      : DEFAULT_REASON;
 
     // Server-side dubbelzendbescherming: al eerder een succesvolle afwijsmail voor deze lead?
     const { data: existing } = await supabase
@@ -132,8 +148,8 @@ Deno.serve(async (req) => {
         to: [recipient],
         reply_to: "info@zpzaken.nl",
         subject,
-        html: renderHtml(),
-        text: renderText(),
+        html: renderHtml(finalReason),
+        text: renderText(finalReason),
       });
 
       if (sendRes?.error) {
