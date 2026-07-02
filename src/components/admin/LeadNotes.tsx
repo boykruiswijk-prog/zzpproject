@@ -39,6 +39,19 @@ interface LeadNotesProps {
 export function LeadNotes({ leadId }: LeadNotesProps) {
   const { user } = useAuth();
   const { data: notes, isLoading } = useLeadNotes(leadId);
+  const { data: activiteiten, isLoading: activiteitenLoading } = useQuery({
+    queryKey: ["lead-activiteiten", leadId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("activiteiten_log")
+        .select("id, actie_type, omschrijving, uitgevoerd_door_naam, aangemaakt_op")
+        .eq("lead_id", leadId)
+        .order("aangemaakt_op", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: !!leadId,
+  });
   const createNote = useCreateLeadNote();
   const deleteNote = useDeleteLeadNote();
 
