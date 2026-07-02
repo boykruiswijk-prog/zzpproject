@@ -49,12 +49,16 @@ interface FormState {
   seo_title: string;
   seo_description: string;
   author_name: string;
+  generated_by_ai: boolean;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
 }
 
 const emptyForm: FormState = {
   title: "", slug: "", excerpt: "", category: "", image_url: "",
   content: "", published_at: "", is_published: false,
   seo_title: "", seo_description: "", author_name: "",
+  generated_by_ai: false, reviewed_by: null, reviewed_at: null,
 };
 
 export default function KennisbankArtikelEditor() {
