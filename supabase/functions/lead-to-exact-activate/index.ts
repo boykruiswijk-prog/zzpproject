@@ -865,34 +865,63 @@ Deno.serve(async (req) => {
 
   let exactMandateId: string | null = null;
   let mandateWarning: string | null = null;
+  let mandateReused = false;
   try {
-    const signatureDate = lead.sepa_akkoord_datum
-      ? new Date(lead.sepa_akkoord_datum).toISOString()
-      : new Date().toISOString();
-    const mRes = await fetch(`${baseUrl}/api/v1/${div}/cashflow/DirectDebitMandates`, {
-      method: "POST", headers,
-      body: JSON.stringify({
-        Account: exactAccountId,
-        BankAccount: exactBankAccountId,
-        Reference: `MNDT-${leadId.slice(0, 8)}`,
-        SignatureDate: signatureDate,
-        Type: 1, // 1 = B2B
-      }),
-    });
-    if (!mRes.ok) {
-      const { summary, detail } = await captureExactError("DirectDebitMandates POST", mRes);
-      mandateWarning = `${summary}. Account + bankrekening staan wel klaar.`;
-      await logSync(supabase, {
-        trigger_type: "lead_activation", status: "error",
-        lead_id: leadId, admin_user_id: user.id,
-        http_status: mRes.status,
-        error_message: summary,
-        payload: detail,
+    // Bij hergebruikte bankrekening: kijk of er al een geldig mandaat is.
+    if (bankAccountReused && exactBankAccountId) {
+      try {
+        const listRes = await fetch(
+          `${baseUrl}/api/v1/${div}/cashflow/DirectDebitMandates?$select=ID,IsActive,BankAccount&$filter=BankAccount eq guid'${exactBankAccountId}'&$top=5`,
+          { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } },
+        );
+        if (listRes.ok) {
+          const lj = await listRes.json().catch(() => ({}));
+          const arr = Array.isArray(lj?.d?.results) ? lj.d.results : Array.isArray(lj?.d) ? lj.d : [];
+          const active = arr.find((x: any) => x?.IsActive === true) ?? arr[0];
+          if (active?.ID) {
+            exactMandateId = active.ID;
+            mandateReused = true;
+            await logSync(supabase, {
+              trigger_type: "lead_activation", status: "success",
+              lead_id: leadId, admin_user_id: user.id,
+              exact_account_id: exactAccountId, http_status: 200,
+              payload: { reuse: "existing_mandate", exact_mandate_id: exactMandateId, exact_bankaccount_id: exactBankAccountId },
+            });
+          }
+        }
+      } catch (e) {
+        console.warn("Mandate lookup failed (continuing):", e);
+      }
+    }
+    if (!exactMandateId) {
+      const signatureDate = lead.sepa_akkoord_datum
+        ? new Date(lead.sepa_akkoord_datum).toISOString()
+        : new Date().toISOString();
+      const mRes = await fetch(`${baseUrl}/api/v1/${div}/cashflow/DirectDebitMandates`, {
+        method: "POST", headers,
+        body: JSON.stringify({
+          Account: exactAccountId,
+          BankAccount: exactBankAccountId,
+          Reference: `MNDT-${leadId.slice(0, 8)}`,
+          SignatureDate: signatureDate,
+          Type: 1, // 1 = B2B
+        }),
       });
-      console.warn(mandateWarning);
-    } else {
-      const mJson = await mRes.json().catch(() => ({}));
-      exactMandateId = mJson?.d?.ID || mJson?.ID || null;
+      if (!mRes.ok) {
+        const { summary, detail } = await captureExactError("DirectDebitMandates POST", mRes);
+        mandateWarning = `${summary}. Account + bankrekening staan wel klaar.`;
+        await logSync(supabase, {
+          trigger_type: "lead_activation", status: "error",
+          lead_id: leadId, admin_user_id: user.id,
+          http_status: mRes.status,
+          error_message: summary,
+          payload: detail,
+        });
+        console.warn(mandateWarning);
+      } else {
+        const mJson = await mRes.json().catch(() => ({}));
+        exactMandateId = mJson?.d?.ID || mJson?.ID || null;
+      }
     }
   } catch (e) {
     mandateWarning = `SEPA-mandaat exception: ${e instanceof Error ? e.message : e}`;
