@@ -148,8 +148,8 @@ Deno.serve(async (req) => {
         to: [recipient],
         reply_to: "info@zpzaken.nl",
         subject,
-        html: renderHtml(),
-        text: renderText(),
+        html: renderHtml(finalReason),
+        text: renderText(finalReason),
       });
 
       if (sendRes?.error) {
