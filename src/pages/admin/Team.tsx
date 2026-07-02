@@ -45,7 +45,7 @@ export default function AdminTeam() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [role, setRole] = useState<AppRole>("medewerker");
+  const [role, setRole] = useState<AppRole>("verzekering");
   const [isCreating, setIsCreating] = useState(false);
 
   // Get all user roles
@@ -89,7 +89,7 @@ export default function AdminTeam() {
       setEmail("");
       setPassword("");
       setFullName("");
-      setRole("medewerker");
+      setRole("verzekering");
     },
     onError: (error) => {
       toast({
@@ -202,9 +202,9 @@ export default function AdminTeam() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="medewerker">Medewerker</SelectItem>
+                      <SelectItem value="verzekering">Verzekering</SelectItem>
+                      <SelectItem value="marketing">Marketing</SelectItem>
                       <SelectItem value="supervisor">Supervisor</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -258,18 +258,18 @@ export default function AdminTeam() {
                         <TableCell>
                           <Badge
                             variant={
-                              userRole.role === "admin"
+                              userRole.role === "supervisor" || userRole.role === "admin"
                                 ? "default"
-                                : userRole.role === "supervisor"
+                                : userRole.role === "marketing"
                                 ? "outline"
                                 : "secondary"
                             }
                           >
-                            {userRole.role === "admin"
-                              ? "Admin"
-                              : userRole.role === "supervisor"
+                            {userRole.role === "supervisor" || userRole.role === "admin"
                               ? "Supervisor"
-                              : "Medewerker"}
+                              : userRole.role === "marketing"
+                              ? "Marketing"
+                              : "Verzekering"}
                           </Badge>
                         </TableCell>
                         <TableCell>

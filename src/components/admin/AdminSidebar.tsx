@@ -17,28 +17,45 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const ADMIN_EMAIL = "boy.kruiswijk@zpzaken.nl";
+type NavRole = "supervisor" | "verzekering" | "marketing";
 
-const navItems = [
-  { to: "/admin", icon: LayoutDashboard, label: "Dashboard", end: true },
-  { to: "/admin/crm", icon: Users, label: "CRM", showTakenBadge: true },
-  { to: "/admin/activiteiten", icon: Activity, label: "Activiteiten" },
-  { to: "/admin/dba-checks", icon: ShieldCheck, label: "Wet DBA" },
-  { to: "/admin/wachtwoord-wijzigen", icon: KeyRound, label: "Wachtwoord wijzigen" },
-  { to: "/admin/social-media", icon: Share2, label: "Social media" },
-  { to: "/admin/integraties", icon: Plug, label: "Integraties", superAdminOnly: true },
-  { to: "/admin/exact-koppeling", icon: Plug, label: "Exact koppeling", superAdminOnly: true },
-  { to: "/admin/team", icon: UserCog, label: "Team", adminOnly: true },
-] as Array<{ to: string; icon: any; label: string; end?: boolean; adminOnly?: boolean; superAdminOnly?: boolean; showTakenBadge?: boolean }>;
+type NavItem = {
+  to: string;
+  icon: any;
+  label: string;
+  end?: boolean;
+  showTakenBadge?: boolean;
+  roles: NavRole[];
+};
+
+const navItems: NavItem[] = [
+  { to: "/admin", icon: LayoutDashboard, label: "Dashboard", end: true, roles: ["supervisor", "verzekering"] },
+  { to: "/admin/crm", icon: Users, label: "CRM", showTakenBadge: true, roles: ["supervisor", "verzekering"] },
+  { to: "/admin/activiteiten", icon: Activity, label: "Activiteiten", roles: ["supervisor"] },
+  { to: "/admin/dba-checks", icon: ShieldCheck, label: "Wet DBA", roles: ["supervisor", "verzekering"] },
+  { to: "/admin/marketing", icon: Share2, label: "Website & Blog", roles: ["supervisor", "marketing"] },
+  { to: "/admin/social-media", icon: Share2, label: "Social media", roles: ["supervisor", "marketing"] },
+  { to: "/admin/wachtwoord-wijzigen", icon: KeyRound, label: "Wachtwoord wijzigen", roles: ["supervisor", "verzekering", "marketing"] },
+  { to: "/admin/integraties", icon: Plug, label: "Integraties", roles: ["supervisor"] },
+  { to: "/admin/exact-koppeling", icon: Plug, label: "Exact koppeling", roles: ["supervisor"] },
+  { to: "/admin/team", icon: UserCog, label: "Team", roles: ["supervisor"] },
+];
 
 export function AdminSidebar() {
-  const { user, signOut, isAdmin } = useAuth();
+  const { user, signOut, isSupervisor, isVerzekering, isMarketing } = useAuth();
   const { data: takenCount } = useAdminTakenCount();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
     await signOut();
     navigate("/admin/login");
+  };
+
+  const roleAllows = (roles: NavRole[]) => {
+    if (isSupervisor) return true;
+    if (isVerzekering && roles.includes("verzekering")) return true;
+    if (isMarketing && roles.includes("marketing")) return true;
+    return false;
   };
 
   return (
@@ -52,8 +69,7 @@ export function AdminSidebar() {
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-1">
         {navItems.map((item) => {
-          if (item.adminOnly && !isAdmin) return null;
-          if (item.superAdminOnly && user?.email?.toLowerCase() !== ADMIN_EMAIL) return null;
+          if (!roleAllows(item.roles)) return null;
           return (
             <NavLink
               key={item.to}
@@ -87,11 +103,11 @@ export function AdminSidebar() {
           <ChevronLeft className="h-5 w-5" />
           Terug naar website
         </NavLink>
-        
+
         <div className="px-3 py-2">
           <p className="text-sm font-medium truncate">{user?.email}</p>
         </div>
-        
+
         <Button
           variant="outline"
           size="sm"

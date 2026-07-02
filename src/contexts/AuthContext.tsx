@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, useCallback, useRef, Re
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
-type AppRole = "admin" | "supervisor" | "medewerker";
+type AppRole = "admin" | "supervisor" | "medewerker" | "verzekering" | "marketing";
 
 const INACTIVITY_TIMEOUT = 60 * 60 * 1000; // 1 hour
 const ABSOLUTE_TIMEOUT = 8 * 60 * 60 * 1000; // 8 hours
@@ -19,6 +19,8 @@ interface AuthContextType {
   isAdmin: boolean;
   isSupervisor: boolean;
   isSupervisorOrAdmin: boolean;
+  isVerzekering: boolean;
+  isMarketing: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -168,9 +170,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signIn,
     signOut,
     isTeamMember: role !== null,
-    isAdmin: role === "admin",
-    isSupervisor: role === "supervisor",
-    isSupervisorOrAdmin: role === "admin" || role === "supervisor",
+    isAdmin: role === "supervisor" || role === "admin",
+    isSupervisor: role === "supervisor" || role === "admin",
+    isSupervisorOrAdmin: role === "supervisor" || role === "admin",
+    isVerzekering: role === "verzekering" || role === "medewerker",
+    isMarketing: role === "marketing",
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

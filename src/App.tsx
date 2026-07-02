@@ -43,6 +43,8 @@ import AdminActiviteiten from "./pages/admin/Activiteiten";
 import AdminSocialMediaFeatures from "./pages/admin/SocialMediaFeatures";
 import AdminIntegraties from "./pages/admin/Integraties";
 import AdminExactKoppeling from "./pages/admin/ExactKoppeling";
+import AdminMarketing from "./pages/admin/MarketingPlaceholder";
+import { RoleGuard } from "./components/admin/RoleGuard";
 import ExactCallback from "./pages/ExactCallback";
 import AdminLogin from "./pages/admin/LoginPage";
 import ChangePasswordPage from "./pages/admin/ChangePasswordPage";
@@ -225,10 +227,10 @@ const App = () => (
             <Route path="/admin/wachtwoord-wijzigen" element={<ChangePasswordPage />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/crm" element={<AdminCRM />} />
-            <Route path="/admin/activiteiten" element={<AdminActiviteiten />} />
+            <Route path="/admin/activiteiten" element={<RoleGuard allow={[]}><AdminActiviteiten /></RoleGuard>} />
             <Route path="/admin/leads" element={<AdminLeads />} />
             <Route path="/admin/leads/:id" element={<AdminLeadDetail />} />
-            <Route path="/admin/team" element={<AdminTeam />} />
+            <Route path="/admin/team" element={<RoleGuard allow={[]}><AdminTeam /></RoleGuard>} />
             <Route path="/admin/dba-checks" element={<AdminDbaChecks />} />
             <Route path="/admin/dba-checks/nieuw" element={<DbaCheckNew />} />
             <Route path="/admin/dba-checks/bulk" element={<DbaCheckBulk />} />
@@ -238,10 +240,12 @@ const App = () => (
             <Route path="/admin/screening-aanvragen/:id" element={<AdminScreeningAanvraagDetail />} />
             <Route path="/admin/service-aanvragen" element={<AdminServiceAanvragen />} />
             <Route path="/admin/service-aanvragen/:id" element={<AdminServiceAanvraagDetail />} />
-            <Route path="/admin/social-media" element={<AdminSocialMediaFeatures />} />
-            <Route path="/admin/integraties" element={<AdminIntegraties />} />
-            <Route path="/admin/exact-koppeling" element={<AdminExactKoppeling />} />
+            <Route path="/admin/social-media" element={<RoleGuard allow={["marketing"]}><AdminSocialMediaFeatures /></RoleGuard>} />
+            <Route path="/admin/marketing" element={<RoleGuard allow={["marketing"]}><AdminMarketing /></RoleGuard>} />
+            <Route path="/admin/integraties" element={<RoleGuard allow={[]}><AdminIntegraties /></RoleGuard>} />
+            <Route path="/admin/exact-koppeling" element={<RoleGuard allow={[]}><AdminExactKoppeling /></RoleGuard>} />
             <Route path="/api/exact/callback" element={<ExactCallback />} />
+
             
             {/* Public verification */}
             <Route path="/verificatie/dba/:token" element={<DbaVerificatie />} />
