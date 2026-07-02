@@ -146,6 +146,45 @@ export default function KennisbankArtikelEditor() {
     return !data || data.length === 0;
   }
 
+  async function generateWithClaude() {
+    const onderwerp = claudeOnderwerp.trim();
+    if (!onderwerp) {
+      toast({ title: "Geef een onderwerp of steekwoorden op", variant: "destructive" });
+      return;
+    }
+    setClaudeBusy(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("genereer-artikel", {
+        body: { onderwerp, rubriek: claudeRubriek || undefined },
+      });
+      if (error) throw error;
+      if (!data?.success || !data?.article) throw new Error("no_result");
+      const a = data.article;
+      setForm((f) => ({
+        ...f,
+        title: a.title || f.title,
+        content: a.content || f.content,
+        excerpt: a.excerpt || f.excerpt,
+        seo_title: a.seo_title || f.seo_title,
+        seo_description: a.seo_description || f.seo_description,
+        category: a.category || f.category,
+      }));
+      toast({ title: "Concept gegenereerd", description: "Controleer en pas naar wens aan voor je publiceert." });
+      setClaudeOpen(false);
+      setClaudeOnderwerp("");
+      setClaudeRubriek("");
+    } catch (_e) {
+      toast({
+        title: "Genereren mislukt",
+        description: "De schrijfhulp is nu niet beschikbaar. Probeer het later opnieuw of schrijf handmatig verder.",
+        variant: "destructive",
+      });
+    } finally {
+      setClaudeBusy(false);
+    }
+  }
+
+
   async function save(publish?: boolean) {
     const nextPublished = publish ?? form.is_published;
 
