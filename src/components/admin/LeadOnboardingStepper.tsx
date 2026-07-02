@@ -228,24 +228,56 @@ export function LeadOnboardingStepper({ lead }: Props) {
               Geef kort aan waarom deze aanvraag wordt afgewezen. Deze reden is intern zichtbaar.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-2">
-            <Label htmlFor="afwreden">Reden</Label>
-            <Textarea
-              id="afwreden"
-              value={rejectReden}
-              onChange={(e) => setRejectReden(e.target.value)}
-              rows={3}
-            />
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="afwreden">Reden</Label>
+              <Select value={rejectKey} onValueChange={(v) => setRejectKey(v as RejectReasonKey)}>
+                <SelectTrigger id="afwreden">
+                  <SelectValue placeholder="Kies een reden" />
+                </SelectTrigger>
+                <SelectContent>
+                  {REJECT_REASONS.map(r => (
+                    <SelectItem key={r.key} value={r.key}>{r.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {rejectKey === "anders" && (
+              <div className="space-y-2">
+                <Label htmlFor="afwreden-anders">Eigen reden</Label>
+                <p className="text-xs text-muted-foreground">
+                  Let op: deze tekst wordt letterlijk in de mail naar de klant getoond.
+                  Formuleer een nette, klantgerichte zin.
+                </p>
+                <Textarea
+                  id="afwreden-anders"
+                  value={rejectAnders}
+                  onChange={(e) => setRejectAnders(e.target.value)}
+                  rows={3}
+                />
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setRejectOpen(false)}>Annuleren</Button>
             <Button
               variant="destructive"
-              disabled={!rejectReden.trim() || isPending}
+              disabled={
+                !rejectKey ||
+                (rejectKey === "anders" && !rejectAnders.trim()) ||
+                isPending
+              }
               onClick={async () => {
+                const chosen = REJECT_REASONS.find(r => r.key === rejectKey);
+                if (!chosen) return;
+                const isAnders = chosen.key === "anders";
+                const klantzin = isAnders ? rejectAnders.trim() : chosen.klantzin;
+                const internLabel = isAnders
+                  ? `Anders: ${rejectAnders.trim()}`
+                  : chosen.label;
+
                 const stamp = new Date().toLocaleString("nl-NL");
-                const reden = rejectReden.trim();
-                const note = `[Afgewezen ${stamp}] ${reden}`;
+                const note = `[Afgewezen ${stamp}] ${internLabel}`;
                 const merged = lead.opmerkingen ? `${note}\n\n${lead.opmerkingen}` : note;
                 const alreadyRejected = lead.status === "afgewezen";
                 const leadEmail = (lead.email ?? "").trim();
@@ -263,15 +295,15 @@ export function LeadOnboardingStepper({ lead }: Props) {
                 toast({ title: "Aanvraag afgewezen" });
                 await logActiviteit({
                   actie_type: "lead_afgewezen",
-                  omschrijving: `Aanvraag van ${lead.email ?? "lead"} afgewezen. Reden: ${reden}`,
+                  omschrijving: `Aanvraag van ${lead.email ?? "lead"} afgewezen. Reden: ${internLabel}`,
                   lead_id: lead.id,
                   klant_email: lead.email ?? null,
                 });
 
                 setRejectOpen(false);
-                setRejectReden("");
+                setRejectKey("");
+                setRejectAnders("");
 
-                // Idempotency: was al eerder afgewezen → geen tweede mail.
                 if (alreadyRejected) return;
 
                 const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(leadEmail);
@@ -291,7 +323,7 @@ export function LeadOnboardingStepper({ lead }: Props) {
                 }
 
                 const { data, error } = await supabase.functions.invoke("send-rejection-email", {
-                  body: { leadId: lead.id, email: leadEmail },
+                  body: { leadId: lead.id, email: leadEmail, reasonSentence: klantzin },
                 });
                 const ok = !error && (data?.success === true);
                 if (!ok) {
