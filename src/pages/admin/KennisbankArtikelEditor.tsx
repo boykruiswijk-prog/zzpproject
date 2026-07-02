@@ -271,6 +271,32 @@ export default function KennisbankArtikelEditor() {
     }
   }
 
+  async function markReviewed() {
+    if (!user || isNew || !id) return;
+    const nowIso = new Date().toISOString();
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from("articles")
+        .update({ reviewed_by: user.id, reviewed_at: nowIso })
+        .eq("id", id);
+      if (error) throw error;
+      setForm((f) => ({ ...f, reviewed_by: user.id, reviewed_at: nowIso }));
+      await logActiviteit({
+        actie_type: "artikel_gecontroleerd",
+        omschrijving: `AI-artikel gecontroleerd en akkoord bevonden: "${form.title}"`,
+      });
+      toast({ title: "Controle vastgelegd", description: "Je kunt het artikel nu publiceren." });
+    } catch (e: any) {
+      toast({ title: "Controle vastleggen mislukt", description: e.message, variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const needsReview = form.generated_by_ai && !form.reviewed_at;
+  const publishDisabled = saving || needsReview;
+
   if (!isNew && isLoading) return <AdminLayout><div className="p-8">Laden…</div></AdminLayout>;
 
   return (
