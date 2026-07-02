@@ -35,7 +35,8 @@ function renderHtml(): string {
       </p>
       <p style="margin:0 0 14px 0">
         Na zorgvuldige beoordeling moeten we je helaas laten weten dat we je aanvraag op dit moment niet in behandeling
-        kunnen nemen. We beseffen dat dit een teleurstellend bericht is en willen benadrukken dat deze uitkomst niets
+        kunnen nemen. De reden hiervoor is dat je aanvraag niet aansluit bij onze huidige verzekeringsportefeuille.
+        We beseffen dat dit een teleurstellend bericht is en willen benadrukken dat deze uitkomst niets
         afdoet aan je onderneming of je professionaliteit.
       </p>
       <p style="margin:0 0 14px 0">
