@@ -60,6 +60,8 @@ export function BAVApplicationModule() {
    const [isSubmitting, setIsSubmitting] = useState(false);
    const [existingCustomerOpen, setExistingCustomerOpen] = useState(false);
    const [isCheckingExisting, setIsCheckingExisting] = useState(false);
+   const [magicLinkSending, setMagicLinkSending] = useState(false);
+   const [magicLinkSent, setMagicLinkSent] = useState(false);
    useEffect(() => { trackBeginWizard(); }, []);
   const [formData, setFormData] = useState({
     bedrijfsnaam: "", kvkNummer: "", beroep: "", functie: "", aantalMedewerkers: "",
@@ -278,32 +280,55 @@ export function BAVApplicationModule() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={existingCustomerOpen} onOpenChange={setExistingCustomerOpen}>
+      <Dialog open={existingCustomerOpen} onOpenChange={(open) => {
+        setExistingCustomerOpen(open);
+        if (!open) { setMagicLinkSent(false); setMagicLinkSending(false); }
+      }}>
         <DialogContent className="max-w-md p-0 overflow-hidden">
           <div className="flex flex-col items-center text-center px-6 py-8 sm:px-8 sm:py-10">
             <div className="h-16 w-16 rounded-full bg-accent/10 flex items-center justify-center mb-5">
               <Shield className="h-8 w-8 text-accent" />
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold mb-3">We zien dat je al een polis bij ons hebt</h2>
-            <p className="text-muted-foreground text-sm sm:text-base mb-6">
-              Voor een tweede polis nemen we graag persoonlijk contact met je op. Of log in op je klantportaal om je bestaande polis te bekijken.
-            </p>
+            <h2 className="text-xl sm:text-2xl font-bold mb-3">Even inloggen op je klantportaal?</h2>
+            {magicLinkSent ? (
+              <p className="text-muted-foreground text-sm sm:text-base mb-6">
+                Als dit e-mailadres bij ons bekend is, ontvang je zo een veilige inloglink in je mailbox.
+              </p>
+            ) : (
+              <p className="text-muted-foreground text-sm sm:text-base mb-6">
+                Het lijkt erop dat er bij dit e-mailadres al een polis bij ons loopt. Wil je inloggen op je klantportaal? We sturen je een veilige inloglink.
+              </p>
+            )}
             <div className="flex flex-col gap-3 w-full">
-              <Button variant="accent" size="default" asChild className="w-full">
-                <Link to="/portal/login">Naar klantportaal</Link>
+              <Button
+                variant="accent"
+                size="default"
+                className="w-full"
+                disabled={magicLinkSending || magicLinkSent}
+                onClick={async () => {
+                  if (magicLinkSending || magicLinkSent) return;
+                  setMagicLinkSending(true);
+                  try {
+                    await supabase.functions.invoke("send-portal-magiclink", {
+                      body: { email: formData.email.trim(), redirect: "/portal" },
+                    });
+                  } catch (err) {
+                    console.debug("[bav-existing] magiclink invoke failed:", err);
+                  }
+                  setMagicLinkSending(false);
+                  setMagicLinkSent(true);
+                }}
+              >
+                {magicLinkSending ? "Bezig..." : magicLinkSent ? "Inloglink verstuurd" : "Stuur mij een inloglink"}
               </Button>
               <Button variant="outline" size="default" asChild className="w-full">
-                <a href="https://wa.me/31204573077" target="_blank" rel="noopener noreferrer">
-                  WhatsApp ons
-                </a>
-              </Button>
-              <Button variant="ghost" size="sm" asChild className="w-full">
-                <a href="tel:+31204573077">Of bel 020 - 457 3077</a>
+                <Link to="/portal/login">Naar klantportaal-login</Link>
               </Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
+
 
     <section className="section-padding bg-secondary" id="combinatiepolis">
       <div className="container-wide">
