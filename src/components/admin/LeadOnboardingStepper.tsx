@@ -11,7 +11,35 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
 import type { Database } from "@/integrations/supabase/types";
+
+type RejectReasonKey = "portefeuille" | "onvolledig" | "verleden" | "anders";
+
+const REJECT_REASONS: { key: RejectReasonKey; label: string; klantzin: string }[] = [
+  {
+    key: "portefeuille",
+    label: "Past niet in de portefeuille",
+    klantzin: "De reden hiervoor is dat je aanvraag niet aansluit bij onze huidige verzekeringsportefeuille.",
+  },
+  {
+    key: "onvolledig",
+    label: "Geen volledige aanvraag",
+    klantzin: "De reden hiervoor is dat je aanvraag niet volledig was. Je bent van harte welkom om een nieuwe, volledige aanvraag in te dienen.",
+  },
+  {
+    key: "verleden",
+    label: "Er is in het verleden iets gebeurd, neem contact op",
+    klantzin: "Op basis van eerdere informatie kunnen we je aanvraag helaas niet in behandeling nemen. Neem voor meer uitleg gerust contact met ons op via info@zpzaken.nl.",
+  },
+  {
+    key: "anders",
+    label: "Anders (eigen reden opgeven)",
+    klantzin: "",
+  },
+];
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
 
