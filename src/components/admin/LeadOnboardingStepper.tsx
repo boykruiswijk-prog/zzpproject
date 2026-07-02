@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Check, Loader2, AlertTriangle } from "lucide-react";
 import { useUpdateLead } from "@/hooks/useLeads";
 import { useToast } from "@/hooks/use-toast";
+import { logActiviteit } from "@/lib/activiteitenLog";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from "@/components/ui/dialog";
@@ -50,11 +51,26 @@ export function LeadOnboardingStepper({ lead }: Props) {
 
   const phaseIndex = PHASES.findIndex(p => p.key === phase);
 
-  const setStatus = (status: LeadStatus, extra: Record<string, any> = {}, successMsg?: string) => {
+  const setStatus = (
+    status: LeadStatus,
+    extra: Record<string, any> = {},
+    successMsg?: string,
+    logEntry?: { actie_type: string; omschrijving: string },
+  ) => {
     updateLead.mutate(
       { id: lead.id, updates: { status, ...extra } },
       {
-        onSuccess: () => successMsg && toast({ title: successMsg }),
+        onSuccess: () => {
+          if (successMsg) toast({ title: successMsg });
+          if (logEntry) {
+            void logActiviteit({
+              actie_type: logEntry.actie_type,
+              omschrijving: logEntry.omschrijving,
+              lead_id: lead.id,
+              klant_email: lead.email ?? null,
+            });
+          }
+        },
         onError: (e: any) => toast({ title: "Fout", description: e.message, variant: "destructive" }),
       },
     );
@@ -119,7 +135,12 @@ export function LeadOnboardingStepper({ lead }: Props) {
                     Begin met het beoordelen van deze aanvraag.
                   </p>
                   <Button
-                    onClick={() => setStatus("in_behandeling", {}, "Beoordeling gestart")}
+                    onClick={() => setStatus(
+                      "in_behandeling",
+                      {},
+                      "Beoordeling gestart",
+                      { actie_type: "lead_in_behandeling", omschrijving: `Aanvraag van ${lead.email ?? "lead"} in behandeling genomen` },
+                    )}
                     disabled={isPending}
                   >
                     {isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
@@ -137,7 +158,12 @@ export function LeadOnboardingStepper({ lead }: Props) {
                     Afwijzen
                   </Button>
                   <Button
-                    onClick={() => setStatus("offerte_verstuurd", {}, "Aanvraag goedgekeurd")}
+                    onClick={() => setStatus(
+                      "offerte_verstuurd",
+                      {},
+                      "Aanvraag goedgekeurd",
+                      { actie_type: "lead_goedgekeurd", omschrijving: `Aanvraag van ${lead.email ?? "lead"} goedgekeurd` },
+                    )}
                     disabled={isPending}
                   >
                     {isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
