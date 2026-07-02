@@ -10,8 +10,11 @@ import { FileText, Receipt, Briefcase, ArrowRight } from "lucide-react";
 
 export default function PortalOverview() {
   const { user } = usePortalAuth();
+  const { data: profile } = useProfile(user?.id);
   const { data: policies } = usePortalPolicies();
   const { data: invoices } = useCustomerInvoices();
+
+  const firstName = profile?.full_name?.trim().split(/\s+/)[0] || "";
 
   const activePolicy = policies?.[0];
   const totalInvoices = invoices?.length || 0;
