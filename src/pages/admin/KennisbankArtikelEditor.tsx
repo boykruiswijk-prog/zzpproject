@@ -18,7 +18,7 @@ import { useArticleCategoryList } from "@/hooks/useArticleCategoriesAdmin";
 import { MarkdownEditor } from "@/components/admin/kennisbank/MarkdownEditor";
 import { toast } from "@/hooks/use-toast";
 import { logActiviteit } from "@/lib/activiteitenLog";
-import { ArrowLeft, Save, Upload, ExternalLink, Sparkles, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, Upload, ExternalLink, Sparkles, Loader2, ShieldCheck, AlertTriangle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 
 function slugify(s: string) {
@@ -49,12 +49,16 @@ interface FormState {
   seo_title: string;
   seo_description: string;
   author_name: string;
+  generated_by_ai: boolean;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
 }
 
 const emptyForm: FormState = {
   title: "", slug: "", excerpt: "", category: "", image_url: "",
   content: "", published_at: "", is_published: false,
   seo_title: "", seo_description: "", author_name: "",
+  generated_by_ai: false, reviewed_by: null, reviewed_at: null,
 };
 
 export default function KennisbankArtikelEditor() {
@@ -100,6 +104,9 @@ export default function KennisbankArtikelEditor() {
         seo_title: existing.seo_title ?? "",
         seo_description: existing.seo_description ?? "",
         author_name: existing.author_name ?? "",
+        generated_by_ai: !!(existing as any).generated_by_ai,
+        reviewed_by: (existing as any).reviewed_by ?? null,
+        reviewed_at: (existing as any).reviewed_at ?? null,
       });
       setSlugTouched(true);
     }
@@ -168,6 +175,9 @@ export default function KennisbankArtikelEditor() {
         seo_title: a.seo_title || f.seo_title,
         seo_description: a.seo_description || f.seo_description,
         category: a.category || f.category,
+        generated_by_ai: true,
+        reviewed_by: null,
+        reviewed_at: null,
       }));
       toast({ title: "Concept gegenereerd", description: "Controleer en pas naar wens aan voor je publiceert." });
       setClaudeOpen(false);
@@ -191,6 +201,14 @@ export default function KennisbankArtikelEditor() {
     if (!form.title.trim()) { toast({ title: "Titel is verplicht", variant: "destructive" }); return; }
     if (!form.slug.trim()) { toast({ title: "Slug is verplicht", variant: "destructive" }); return; }
     if (nextPublished && !form.category) { toast({ title: "Kies een rubriek voor publicatie", variant: "destructive" }); return; }
+    if (nextPublished && form.generated_by_ai && !form.reviewed_at) {
+      toast({
+        title: "Publicatie geblokkeerd",
+        description: "Dit artikel is met AI gegenereerd. Bevestig eerst 'Gecontroleerd en akkoord' voordat je publiceert.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     const unique = await checkSlugUnique(form.slug);
     if (!unique) { toast({ title: "Slug bestaat al", description: "Kies een andere slug.", variant: "destructive" }); return; }
@@ -211,6 +229,9 @@ export default function KennisbankArtikelEditor() {
         seo_description: form.seo_description || null,
         author_name: form.author_name || null,
         author_id: user?.id ?? null,
+        generated_by_ai: form.generated_by_ai,
+        reviewed_by: form.reviewed_by,
+        reviewed_at: form.reviewed_at,
       };
 
       const wasPublished = !!existing?.is_published;
@@ -250,6 +271,32 @@ export default function KennisbankArtikelEditor() {
     }
   }
 
+  async function markReviewed() {
+    if (!user || isNew || !id) return;
+    const nowIso = new Date().toISOString();
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from("articles")
+        .update({ reviewed_by: user.id, reviewed_at: nowIso })
+        .eq("id", id);
+      if (error) throw error;
+      setForm((f) => ({ ...f, reviewed_by: user.id, reviewed_at: nowIso }));
+      await logActiviteit({
+        actie_type: "artikel_gecontroleerd",
+        omschrijving: `AI-artikel gecontroleerd en akkoord bevonden: "${form.title}"`,
+      });
+      toast({ title: "Controle vastgelegd", description: "Je kunt het artikel nu publiceren." });
+    } catch (e: any) {
+      toast({ title: "Controle vastleggen mislukt", description: e.message, variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const needsReview = form.generated_by_ai && !form.reviewed_at;
+  const publishDisabled = saving || needsReview;
+
   if (!isNew && isLoading) return <AdminLayout><div className="p-8">Laden…</div></AdminLayout>;
 
   return (
@@ -283,11 +330,43 @@ export default function KennisbankArtikelEditor() {
             <Button variant="outline" onClick={() => save(false)} disabled={saving}>
               <Save className="h-4 w-4 mr-1" /> Opslaan als concept
             </Button>
-            <Button onClick={() => save(true)} disabled={saving}>
+            <Button onClick={() => save(true)} disabled={publishDisabled} title={needsReview ? "Eerst controleren en akkoord bevestigen" : undefined}>
               {form.is_published ? "Bijwerken (gepubliceerd)" : "Publiceren"}
             </Button>
           </div>
         </div>
+
+        {form.generated_by_ai && (
+          <div className={`rounded-md border p-4 flex items-start gap-3 ${form.reviewed_at ? "bg-green-50 border-green-200" : "bg-amber-50 border-amber-300"}`}>
+            {form.reviewed_at ? (
+              <ShieldCheck className="h-5 w-5 text-green-700 mt-0.5 shrink-0" />
+            ) : (
+              <AlertTriangle className="h-5 w-5 text-amber-700 mt-0.5 shrink-0" />
+            )}
+            <div className="flex-1 text-sm">
+              {form.reviewed_at ? (
+                <>
+                  <div className="font-medium text-green-900">Gecontroleerd en akkoord</div>
+                  <div className="text-green-800">
+                    Vastgelegd op {new Date(form.reviewed_at).toLocaleString("nl-NL")}. Het artikel mag gepubliceerd worden.
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="font-medium text-amber-900">Dit artikel is met AI gegenereerd en moet vóór publicatie gecontroleerd worden.</div>
+                  <div className="text-amber-800">
+                    Loop de tekst na op compliance (geen bedragen, geen stellige dekkingsclaims, geen persoonlijk advies, disclaimer aanwezig). Bevestig daarna hieronder de controle. Publiceren is geblokkeerd tot dat gebeurd is.
+                  </div>
+                </>
+              )}
+            </div>
+            {!form.reviewed_at && !isNew && (
+              <Button size="sm" onClick={markReviewed} disabled={saving}>
+                <ShieldCheck className="h-4 w-4 mr-1" /> Gecontroleerd en akkoord
+              </Button>
+            )}
+          </div>
+        )}
 
         <Dialog open={claudeOpen} onOpenChange={(o) => !claudeBusy && setClaudeOpen(o)}>
           <DialogContent>
