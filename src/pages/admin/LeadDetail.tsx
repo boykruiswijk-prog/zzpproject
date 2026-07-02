@@ -6,6 +6,7 @@ import { LeadNotes } from "@/components/admin/LeadNotes";
 import { LeadActivationPanel } from "@/components/admin/LeadActivationPanel";
 import { LeadLifecyclePanel } from "@/components/admin/LeadLifecyclePanel";
 import { LeadOnboardingStepper, derivePhase } from "@/components/admin/LeadOnboardingStepper";
+import { LeadDoorlooptijd } from "@/components/admin/LeadDoorlooptijd";
 import { useLead, useUpdateLead, useDeleteLead } from "@/hooks/useLeads";
 import { useAuth } from "@/contexts/AuthContext";
 import { PortalInviteButton } from "@/components/admin/PortalInviteButton";
