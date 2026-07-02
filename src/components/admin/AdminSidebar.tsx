@@ -13,6 +13,7 @@ import {
   Plug,
   KeyRound,
   Share2,
+  Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +22,7 @@ const ADMIN_EMAIL = "boy.kruiswijk@zpzaken.nl";
 const navItems = [
   { to: "/admin", icon: LayoutDashboard, label: "Dashboard", end: true },
   { to: "/admin/crm", icon: Users, label: "CRM", showTakenBadge: true },
+  { to: "/admin/activiteiten", icon: Activity, label: "Activiteiten" },
   { to: "/admin/dba-checks", icon: ShieldCheck, label: "Wet DBA" },
   { to: "/admin/wachtwoord-wijzigen", icon: KeyRound, label: "Wachtwoord wijzigen" },
   { to: "/admin/social-media", icon: Share2, label: "Social media" },

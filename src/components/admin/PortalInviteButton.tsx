@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Send } from "lucide-react";
+import { logActiviteit } from "@/lib/activiteitenLog";
 
 interface Props {
   leadId: string;
@@ -34,6 +35,12 @@ export function PortalInviteButton({ leadId, email }: Props) {
       toast({
         title: "Uitnodiging verstuurd",
         description: `Naar ${email}`,
+      });
+      await logActiviteit({
+        actie_type: "portaal_invite_verstuurd",
+        omschrijving: `Portaaluitnodiging verstuurd naar ${email}`,
+        lead_id: leadId,
+        klant_email: email,
       });
     } catch (e: any) {
       toast({ title: "Fout", description: e.message, variant: "destructive" });

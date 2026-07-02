@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      activiteiten_log: {
+        Row: {
+          aangemaakt_op: string
+          actie_type: string
+          id: string
+          klant_email: string | null
+          lead_id: string | null
+          omschrijving: string
+          uitgevoerd_door: string | null
+          uitgevoerd_door_naam: string | null
+        }
+        Insert: {
+          aangemaakt_op?: string
+          actie_type: string
+          id?: string
+          klant_email?: string | null
+          lead_id?: string | null
+          omschrijving: string
+          uitgevoerd_door?: string | null
+          uitgevoerd_door_naam?: string | null
+        }
+        Update: {
+          aangemaakt_op?: string
+          actie_type?: string
+          id?: string
+          klant_email?: string | null
+          lead_id?: string | null
+          omschrijving?: string
+          uitgevoerd_door?: string | null
+          uitgevoerd_door_naam?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activiteiten_log_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       articles: {
         Row: {
           category: string
