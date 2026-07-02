@@ -51,10 +51,10 @@ export function LeadDoorlooptijd({ lead }: Props) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("activiteiten_log")
-        .select("actie_type, uitgevoerd_op")
+        .select("actie_type, aangemaakt_op")
         .eq("lead_id", lead.id)
         .in("actie_type", RELEVANT)
-        .order("uitgevoerd_op", { ascending: true });
+        .order("aangemaakt_op", { ascending: true });
       if (error) throw error;
       return data ?? [];
     },
@@ -65,7 +65,7 @@ export function LeadDoorlooptijd({ lead }: Props) {
     const first = new Map<ActieType, Date>();
     for (const r of logs ?? []) {
       const t = r.actie_type as ActieType;
-      if (!first.has(t)) first.set(t, new Date(r.uitgevoerd_op));
+      if (!first.has(t)) first.set(t, new Date(r.aangemaakt_op));
     }
     const start = lead.created_at ? new Date(lead.created_at) : null;
     const inBeh = first.get("lead_in_behandeling") ?? null;
