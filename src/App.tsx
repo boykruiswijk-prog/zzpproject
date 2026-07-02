@@ -240,10 +240,12 @@ const App = () => (
             <Route path="/admin/screening-aanvragen/:id" element={<AdminScreeningAanvraagDetail />} />
             <Route path="/admin/service-aanvragen" element={<AdminServiceAanvragen />} />
             <Route path="/admin/service-aanvragen/:id" element={<AdminServiceAanvraagDetail />} />
-            <Route path="/admin/social-media" element={<AdminSocialMediaFeatures />} />
-            <Route path="/admin/integraties" element={<AdminIntegraties />} />
-            <Route path="/admin/exact-koppeling" element={<AdminExactKoppeling />} />
+            <Route path="/admin/social-media" element={<RoleGuard allow={["marketing"]}><AdminSocialMediaFeatures /></RoleGuard>} />
+            <Route path="/admin/marketing" element={<RoleGuard allow={["marketing"]}><AdminMarketing /></RoleGuard>} />
+            <Route path="/admin/integraties" element={<RoleGuard allow={[]}><AdminIntegraties /></RoleGuard>} />
+            <Route path="/admin/exact-koppeling" element={<RoleGuard allow={[]}><AdminExactKoppeling /></RoleGuard>} />
             <Route path="/api/exact/callback" element={<ExactCallback />} />
+
             
             {/* Public verification */}
             <Route path="/verificatie/dba/:token" element={<DbaVerificatie />} />
