@@ -576,8 +576,8 @@ export default function AdminLeadDetail() {
             </Card>
             )}
 
-            {/* Klantportaal uitnodiging — alleen voor klanten */}
-            {lead.status === "klant" && (
+            {/* Klantportaal uitnodiging — zichtbaar zodra polis actief is */}
+            {lead.status === "actief" && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
