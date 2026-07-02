@@ -19,6 +19,8 @@ interface AuthContextType {
   isAdmin: boolean;
   isSupervisor: boolean;
   isSupervisorOrAdmin: boolean;
+  isVerzekering: boolean;
+  isMarketing: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
