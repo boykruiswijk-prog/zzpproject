@@ -29,11 +29,11 @@ export function useLeadStats() {
         .select("*", { count: "exact", head: true })
         .gte("created_at", startOfMonth.toISOString());
 
-      // Converted leads (status = 'klant')
+      // Converted leads (status = 'actief' or 'klant')
       const { count: convertedLeads } = await supabase
         .from("leads")
         .select("*", { count: "exact", head: true })
-        .eq("status", "klant");
+        .in("status", ["actief", "klant"]);
 
       // Leads by status
       const { data: allLeads } = await supabase.from("leads").select("status, verzekering_type, created_at");
