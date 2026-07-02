@@ -141,7 +141,11 @@ Deno.serve(async (req) => {
     const rubriekenLijst = beschikbaar.length ? beschikbaar.join(", ") : "Algemeen";
 
     const userMessage = [
-      `Schrijf een Kennisbank-artikel voor ZP Zaken over: ${onderwerp}`,
+      `Schrijf een koopgericht Kennisbank-artikel voor ZP Zaken over: ${onderwerp}`,
+      `Focus op de BAV (beroepsaansprakelijkheidsverzekering) voor zzp'ers. De lezer overweegt al een BAV af te sluiten en zoekt de juiste partij. Neem twijfels weg (prijs, dekking, snelheid, waarom ZP Zaken) in plaats van een brede uitlegtekst te schrijven.`,
+      `Als het onderwerp een specifiek vakgebied noemt (IT/ICT, HR of finance consultancy, PR of marketing, management consultancy, coaches, zakelijke dienstverlening), spits het artikel dan toe op dat vakgebied met passende voorbeelden en risico's.`,
+      `Kies één helder hoofdzoekwoord met koopintentie en verwerk dat in de titel, de eerste alinea, minimaal één H2 en de seo_title. Schrijf de hele tekst in de je/jij-vorm.`,
+      `Sluit af met een uitnodigende, niet-pusherige call-to-action om via ZP Zaken een BAV aan te vragen of vrijblijvend contact op te nemen.`,
       gewensteRubriek ? `Gewenste rubriek: ${gewensteRubriek}` : "",
       `Kies de "category" exact uit deze lijst: ${rubriekenLijst}.`,
       `Antwoord ALLEEN met geldige JSON volgens het schema uit de systeeminstructie. Geen omliggende tekst, geen code fences.`,
