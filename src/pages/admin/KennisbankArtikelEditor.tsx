@@ -330,11 +330,43 @@ export default function KennisbankArtikelEditor() {
             <Button variant="outline" onClick={() => save(false)} disabled={saving}>
               <Save className="h-4 w-4 mr-1" /> Opslaan als concept
             </Button>
-            <Button onClick={() => save(true)} disabled={saving}>
+            <Button onClick={() => save(true)} disabled={publishDisabled} title={needsReview ? "Eerst controleren en akkoord bevestigen" : undefined}>
               {form.is_published ? "Bijwerken (gepubliceerd)" : "Publiceren"}
             </Button>
           </div>
         </div>
+
+        {form.generated_by_ai && (
+          <div className={`rounded-md border p-4 flex items-start gap-3 ${form.reviewed_at ? "bg-green-50 border-green-200" : "bg-amber-50 border-amber-300"}`}>
+            {form.reviewed_at ? (
+              <ShieldCheck className="h-5 w-5 text-green-700 mt-0.5 shrink-0" />
+            ) : (
+              <AlertTriangle className="h-5 w-5 text-amber-700 mt-0.5 shrink-0" />
+            )}
+            <div className="flex-1 text-sm">
+              {form.reviewed_at ? (
+                <>
+                  <div className="font-medium text-green-900">Gecontroleerd en akkoord</div>
+                  <div className="text-green-800">
+                    Vastgelegd op {new Date(form.reviewed_at).toLocaleString("nl-NL")}. Het artikel mag gepubliceerd worden.
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="font-medium text-amber-900">Dit artikel is met AI gegenereerd en moet vóór publicatie gecontroleerd worden.</div>
+                  <div className="text-amber-800">
+                    Loop de tekst na op compliance (geen bedragen, geen stellige dekkingsclaims, geen persoonlijk advies, disclaimer aanwezig). Bevestig daarna hieronder de controle. Publiceren is geblokkeerd tot dat gebeurd is.
+                  </div>
+                </>
+              )}
+            </div>
+            {!form.reviewed_at && !isNew && (
+              <Button size="sm" onClick={markReviewed} disabled={saving}>
+                <ShieldCheck className="h-4 w-4 mr-1" /> Gecontroleerd en akkoord
+              </Button>
+            )}
+          </div>
+        )}
 
         <Dialog open={claudeOpen} onOpenChange={(o) => !claudeBusy && setClaudeOpen(o)}>
           <DialogContent>
