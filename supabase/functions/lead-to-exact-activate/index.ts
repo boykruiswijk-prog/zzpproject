@@ -796,33 +796,63 @@ Deno.serve(async (req) => {
     exactContactId = cJson?.d?.ID || cJson?.ID || null;
   }
 
-  // ── Stap F: BankAccount ──
+  // ── Stap F: BankAccount (idempotent bij reuse) ──
   let exactBankAccountId: string | null = null;
+  let bankAccountReused = false;
   {
     const ibanClean = String(lead.iban).replace(/\s+/g, "").toUpperCase();
-    const bRes = await fetch(`${baseUrl}/api/v1/${div}/crm/BankAccounts`, {
-      method: "POST", headers,
-      body: JSON.stringify({
-        Account: exactAccountId,
-        BankAccount: ibanClean,
-        BankAccountHolderName: lead.bedrijfsnaam,
-        Type: 10,
-      }),
-    });
-    if (!bRes.ok) {
-      const { summary, detail } = await captureExactError("BankAccounts POST", bRes);
-      await deleteAccount();
-      await logSync(supabase, {
-        trigger_type: "lead_activation", status: "error",
-        lead_id: leadId, admin_user_id: user.id,
-        http_status: bRes.status,
-        error_message: `BankAccount creatie mislukt (rollback): ${summary}`,
-        payload: detail,
-      });
-      return json({ success: false, error: "bankaccount_create_failed", detail }, 500);
+    if (reusedAccountId) {
+      // Zoek bestaande bankrekening op relatie met zelfde IBAN.
+      try {
+        const listRes = await fetch(
+          `${baseUrl}/api/v1/${div}/crm/BankAccounts?$select=ID,BankAccount&$filter=Account eq guid'${exactAccountId}'`,
+          { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } },
+        );
+        if (listRes.ok) {
+          const lj = await listRes.json().catch(() => ({}));
+          const arr = Array.isArray(lj?.d?.results) ? lj.d.results : Array.isArray(lj?.d) ? lj.d : [];
+          const match = arr.find((x: any) =>
+            String(x?.BankAccount ?? "").replace(/\s+/g, "").toUpperCase() === ibanClean);
+          if (match?.ID) {
+            exactBankAccountId = match.ID;
+            bankAccountReused = true;
+            await logSync(supabase, {
+              trigger_type: "lead_activation", status: "success",
+              lead_id: leadId, admin_user_id: user.id,
+              exact_account_id: exactAccountId, http_status: 200,
+              payload: { reuse: "existing_bankaccount", exact_bankaccount_id: exactBankAccountId, iban: ibanClean },
+            });
+          }
+        }
+      } catch (e) {
+        console.warn("BankAccount lookup failed (continuing):", e);
+      }
     }
-    const bJson = await bRes.json().catch(() => ({}));
-    exactBankAccountId = bJson?.d?.ID || bJson?.ID || null;
+    if (!exactBankAccountId) {
+      const bRes = await fetch(`${baseUrl}/api/v1/${div}/crm/BankAccounts`, {
+        method: "POST", headers,
+        body: JSON.stringify({
+          Account: exactAccountId,
+          BankAccount: ibanClean,
+          BankAccountHolderName: lead.bedrijfsnaam,
+          Type: 10,
+        }),
+      });
+      if (!bRes.ok) {
+        const { summary, detail } = await captureExactError("BankAccounts POST", bRes);
+        await deleteAccount();
+        await logSync(supabase, {
+          trigger_type: "lead_activation", status: "error",
+          lead_id: leadId, admin_user_id: user.id,
+          http_status: bRes.status,
+          error_message: `BankAccount creatie mislukt (rollback): ${summary}`,
+          payload: detail,
+        });
+        return json({ success: false, error: "bankaccount_create_failed", detail }, 500);
+      }
+      const bJson = await bRes.json().catch(() => ({}));
+      exactBankAccountId = bJson?.d?.ID || bJson?.ID || null;
+    }
   }
 
   // ── Stap G: SEPA-mandaat (DirectDebitMandate) — niet-fataal ──
