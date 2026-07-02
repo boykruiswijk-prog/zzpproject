@@ -201,6 +201,14 @@ export default function KennisbankArtikelEditor() {
     if (!form.title.trim()) { toast({ title: "Titel is verplicht", variant: "destructive" }); return; }
     if (!form.slug.trim()) { toast({ title: "Slug is verplicht", variant: "destructive" }); return; }
     if (nextPublished && !form.category) { toast({ title: "Kies een rubriek voor publicatie", variant: "destructive" }); return; }
+    if (nextPublished && form.generated_by_ai && !form.reviewed_at) {
+      toast({
+        title: "Publicatie geblokkeerd",
+        description: "Dit artikel is met AI gegenereerd. Bevestig eerst 'Gecontroleerd en akkoord' voordat je publiceert.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     const unique = await checkSlugUnique(form.slug);
     if (!unique) { toast({ title: "Slug bestaat al", description: "Kies een andere slug.", variant: "destructive" }); return; }
@@ -221,6 +229,9 @@ export default function KennisbankArtikelEditor() {
         seo_description: form.seo_description || null,
         author_name: form.author_name || null,
         author_id: user?.id ?? null,
+        generated_by_ai: form.generated_by_ai,
+        reviewed_by: form.reviewed_by,
+        reviewed_at: form.reviewed_at,
       };
 
       const wasPublished = !!existing?.is_published;
