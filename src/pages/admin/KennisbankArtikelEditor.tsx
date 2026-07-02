@@ -70,6 +70,10 @@ export default function KennisbankArtikelEditor() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [claudeOpen, setClaudeOpen] = useState(false);
+  const [claudeOnderwerp, setClaudeOnderwerp] = useState("");
+  const [claudeRubriek, setClaudeRubriek] = useState<string>("");
+  const [claudeBusy, setClaudeBusy] = useState(false);
 
   // Bestaand artikel laden
   const { data: existing, isLoading } = useQuery({
