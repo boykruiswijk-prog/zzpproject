@@ -22,18 +22,18 @@ type Event = {
   datum: string;
   status: string;
   naam: string;
-  email: string;
-  bedrijfsnaam: string;
-  kvk: string;
   omschrijving: string;
   detailHref: string;
 };
 
+type Bedrijf = { bedrijfsnaam: string; kvk: string };
+
 type Person = {
-  key: string; // email lowercase, or `__no-email__:${type}:${id}` for missing email
+  id: string;
   naam: string;
   email: string;
-  bedrijven: Array<{ bedrijfsnaam: string; kvk: string }>;
+  genormaliseerd_email: string | null;
+  bedrijven: Bedrijf[];
   persoonStatus: string;
   events: Event[];
   laatsteDatum: string;
@@ -67,14 +67,10 @@ function normalizeNaam(n: string) {
   return n.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
-function normalizeEmail(email: string) {
-  return email.trim().toLowerCase();
-}
-
 export default function CRM() {
   const { toast } = useToast();
   const { isSupervisorOrAdmin } = useAuth();
-  const [events, setEvents] = useState<Event[]>([]);
+  const [personen, setPersonen] = useState<Person[]>([]);
   const [beslissingen, setBeslissingen] = useState<Record<string, Beslissing>>({});
   const [loading, setLoading] = useState(true);
   const [typeFilter, setTypeFilter] = useState<string>("alle");
@@ -82,28 +78,26 @@ export default function CRM() {
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [checkFilter, setCheckFilter] = useState(false);
+  const [unlinkedCount, setUnlinkedCount] = useState(0);
 
   async function load() {
     setLoading(true);
-    const [leadsRes, serviceRes, screeningRes, beslissingRes] = await Promise.all([
-      supabase
-        .from("leads")
-        .select("id,created_at,voornaam,achternaam,email,status,verzekering_type,bedrijfsnaam,kvk_nummer")
-        .order("created_at", { ascending: false }),
-      supabase
-        .from("klant_service_aanvragen" as any)
-        .select("id,created_at,voornaam,achternaam,email,status,type,polisnummer")
-        .order("created_at", { ascending: false }),
-      supabase
-        .from("screening_aanvragen" as any)
-        .select("id,aangemeld_op,voornaam,achternaam,email,status,screening_type,bedrijfsnaam,kvk_nummer")
-        .order("aangemeld_op", { ascending: false }),
-      supabase
-        .from("crm_identiteit_beslissingen" as any)
-        .select("genormaliseerd_email,beslissing,bekende_namen"),
+
+    const [personenRes, poRes, ondRes, kopRes, leadsRes, serviceRes, screeningRes, beslissingRes] = await Promise.all([
+      supabase.from("personen" as any).select("id,genormaliseerd_email,email_weergave,voornaam,achternaam"),
+      supabase.from("persoon_onderneming" as any).select("persoon_id,onderneming_id"),
+      supabase.from("ondernemingen" as any).select("id,kvk,naam"),
+      supabase.from("persoon_bron_koppeling" as any).select("persoon_id,bron_tabel,bron_id"),
+      supabase.from("leads").select("id,created_at,voornaam,achternaam,status,verzekering_type,bedrijfsnaam"),
+      supabase.from("klant_service_aanvragen" as any).select("id,created_at,voornaam,achternaam,status,type,polisnummer"),
+      supabase.from("screening_aanvragen" as any).select("id,aangemeld_op,voornaam,achternaam,status,screening_type,bedrijfsnaam"),
+      supabase.from("crm_identiteit_beslissingen" as any).select("genormaliseerd_email,beslissing,bekende_namen"),
     ]);
 
-    const errors = [leadsRes.error, serviceRes.error, screeningRes.error, beslissingRes.error].filter(Boolean);
+    const errors = [
+      personenRes.error, poRes.error, ondRes.error, kopRes.error,
+      leadsRes.error, serviceRes.error, screeningRes.error, beslissingRes.error,
+    ].filter(Boolean);
     if (errors.length) {
       toast({
         title: "Fout bij laden",
@@ -112,6 +106,7 @@ export default function CRM() {
       });
     }
 
+    // Beslissingen map
     const bmap: Record<string, Beslissing> = {};
     for (const b of (beslissingRes.data ?? []) as any[]) {
       bmap[b.genormaliseerd_email] = {
@@ -122,128 +117,143 @@ export default function CRM() {
     }
     setBeslissingen(bmap);
 
-    const leadEvents: Event[] = (leadsRes.data ?? []).map((l: any) => ({
-      id: l.id,
-      type: "lead",
-      datum: l.created_at,
-      status: l.status ?? "",
-      naam: naamOf(l.voornaam, l.achternaam),
-      email: l.email ?? "",
-      bedrijfsnaam: l.bedrijfsnaam ?? "",
-      kvk: l.kvk_nummer ?? "",
-      omschrijving: [l.verzekering_type, l.bedrijfsnaam].filter(Boolean).join(" · ") || "Nieuwe lead",
-      detailHref: `/admin/leads/${l.id}`,
-    }));
+    // Ondernemingen lookup
+    const ondMap = new Map<string, { kvk: string; naam: string }>();
+    for (const o of (ondRes.data ?? []) as any[]) {
+      ondMap.set(o.id, { kvk: o.kvk ?? "", naam: o.naam ?? "" });
+    }
 
-    const serviceEvents: Event[] = (serviceRes.data ?? []).map((s: any) => ({
-      id: s.id,
-      type: "service",
-      datum: s.created_at,
-      status: s.status ?? "",
-      naam: naamOf(s.voornaam, s.achternaam),
-      email: s.email ?? "",
-      bedrijfsnaam: "",
-      kvk: "",
-      omschrijving: [SERVICE_SUBTYPE_LABEL[s.type] ?? s.type, s.polisnummer].filter(Boolean).join(" · "),
-      detailHref: `/admin/service-aanvragen/${s.id}`,
-    }));
+    // Bedrijven per persoon
+    const bedrijvenPerPersoon = new Map<string, Bedrijf[]>();
+    for (const po of (poRes.data ?? []) as any[]) {
+      const o = ondMap.get(po.onderneming_id);
+      if (!o) continue;
+      const arr = bedrijvenPerPersoon.get(po.persoon_id) ?? [];
+      if (!arr.some((b) => b.bedrijfsnaam === o.naam && b.kvk === o.kvk)) {
+        arr.push({ bedrijfsnaam: o.naam, kvk: o.kvk });
+      }
+      bedrijvenPerPersoon.set(po.persoon_id, arr);
+    }
 
-    const screeningEvents: Event[] = (screeningRes.data ?? []).map((s: any) => ({
-      id: s.id,
-      type: "screening",
-      datum: s.aangemeld_op,
-      status: s.status ?? "",
-      naam: naamOf(s.voornaam, s.achternaam),
-      email: s.email ?? "",
-      bedrijfsnaam: s.bedrijfsnaam ?? "",
-      kvk: s.kvk_nummer ?? "",
-      omschrijving: [s.screening_type, s.bedrijfsnaam].filter(Boolean).join(" · ") || "Screeningaanvraag",
-      detailHref: `/admin/screening-aanvragen/${s.id}`,
-    }));
+    // Bronrecord lookups
+    const leadsMap = new Map<string, any>();
+    for (const l of (leadsRes.data ?? []) as any[]) leadsMap.set(l.id, l);
+    const serviceMap = new Map<string, any>();
+    for (const s of (serviceRes.data ?? []) as any[]) serviceMap.set(s.id, s);
+    const screeningMap = new Map<string, any>();
+    for (const s of (screeningRes.data ?? []) as any[]) screeningMap.set(s.id, s);
 
-    setEvents([...leadEvents, ...serviceEvents, ...screeningEvents]);
+    // Events per persoon via persoon_bron_koppeling
+    const eventsPerPersoon = new Map<string, Event[]>();
+    let unlinked = 0;
+    const gekoppeldeIds = { leads: new Set<string>(), service: new Set<string>(), screening: new Set<string>() };
+
+    for (const k of (kopRes.data ?? []) as any[]) {
+      const bron = k.bron_tabel as "leads" | "service" | "screening";
+      const bronId = k.bron_id as string;
+      gekoppeldeIds[bron].add(bronId);
+      let ev: Event | null = null;
+      if (bron === "leads") {
+        const l = leadsMap.get(bronId);
+        if (l) {
+          ev = {
+            id: l.id,
+            type: "lead",
+            datum: l.created_at,
+            status: l.status ?? "",
+            naam: naamOf(l.voornaam, l.achternaam),
+            omschrijving: [l.verzekering_type, l.bedrijfsnaam].filter(Boolean).join(" · ") || "Nieuwe lead",
+            detailHref: `/admin/leads/${l.id}`,
+          };
+        }
+      } else if (bron === "service") {
+        const s = serviceMap.get(bronId);
+        if (s) {
+          ev = {
+            id: s.id,
+            type: "service",
+            datum: s.created_at,
+            status: s.status ?? "",
+            naam: naamOf(s.voornaam, s.achternaam),
+            omschrijving: [SERVICE_SUBTYPE_LABEL[s.type] ?? s.type, s.polisnummer].filter(Boolean).join(" · "),
+            detailHref: `/admin/service-aanvragen/${s.id}`,
+          };
+        }
+      } else if (bron === "screening") {
+        const s = screeningMap.get(bronId);
+        if (s) {
+          ev = {
+            id: s.id,
+            type: "screening",
+            datum: s.aangemeld_op,
+            status: s.status ?? "",
+            naam: naamOf(s.voornaam, s.achternaam),
+            omschrijving: [s.screening_type, s.bedrijfsnaam].filter(Boolean).join(" · ") || "Screeningaanvraag",
+            detailHref: `/admin/screening-aanvragen/${s.id}`,
+          };
+        }
+      }
+      if (ev) {
+        const arr = eventsPerPersoon.get(k.persoon_id) ?? [];
+        arr.push(ev);
+        eventsPerPersoon.set(k.persoon_id, arr);
+      }
+    }
+
+    // Detect unlinked source records (arrived after backfill or never linked)
+    for (const id of leadsMap.keys()) if (!gekoppeldeIds.leads.has(id)) unlinked++;
+    for (const id of serviceMap.keys()) if (!gekoppeldeIds.service.has(id)) unlinked++;
+    for (const id of screeningMap.keys()) if (!gekoppeldeIds.screening.has(id)) unlinked++;
+    setUnlinkedCount(unlinked);
+
+    // Build persons
+    const persons: Person[] = ((personenRes.data ?? []) as any[]).map((p) => {
+      const events = (eventsPerPersoon.get(p.id) ?? []).sort(
+        (a, b) => new Date(b.datum).getTime() - new Date(a.datum).getTime(),
+      );
+      const laatsteDatum = events[0]?.datum ?? "";
+      const heeftActief = events.some((e) => e.type === "lead" && e.status === "actief");
+      const persoonStatus = heeftActief ? "actief" : events[0]?.status ?? "";
+
+      const naamUitPersoon = naamOf(p.voornaam, p.achternaam);
+      const naamUitEvent = events.find((e) => e.naam)?.naam ?? "";
+      const naam = naamUitPersoon || naamUitEvent || "—";
+
+      // Namen-gedeeld marker: alleen zinvol wanneer beslissing niet 'splitsen' is
+      const emailKey = p.genormaliseerd_email as string | null;
+      const beslissing = emailKey ? bmap[emailKey] : undefined;
+      let namenGedeeld = false;
+      if (emailKey && beslissing?.beslissing !== "splitsen") {
+        const huidigeNamen = Array.from(
+          new Set(events.map((e) => normalizeNaam(e.naam)).filter(Boolean)),
+        );
+        if (beslissing?.beslissing === "akkoord") {
+          const bekend = new Set((beslissing.bekende_namen ?? []).map(normalizeNaam));
+          namenGedeeld = huidigeNamen.some((n) => !bekend.has(n));
+        } else {
+          namenGedeeld = huidigeNamen.length > 1;
+        }
+      }
+
+      return {
+        id: p.id,
+        naam,
+        email: p.email_weergave ?? "",
+        genormaliseerd_email: emailKey,
+        bedrijven: bedrijvenPerPersoon.get(p.id) ?? [],
+        persoonStatus,
+        events,
+        laatsteDatum,
+        namenGedeeld,
+      };
+    });
+
+    persons.sort((a, b) => new Date(b.laatsteDatum || 0).getTime() - new Date(a.laatsteDatum || 0).getTime());
+    setPersonen(persons);
     setLoading(false);
   }
 
   useEffect(() => { load(); }, []);
-
-  // Group by email, respecting saved identity decisions.
-  const personen: Person[] = useMemo(() => {
-    const map = new Map<string, Person>();
-    for (const ev of events) {
-      const keyEmail = normalizeEmail(ev.email);
-      const hasEmail = !!keyEmail;
-      const beslissing = hasEmail ? beslissingen[keyEmail] : undefined;
-      let key: string;
-      if (!hasEmail) {
-        key = `__no-email__:${ev.type}:${ev.id}`;
-      } else if (beslissing?.beslissing === "splitsen") {
-        // Split view: group by email + normalized name (fallback to event id if no name)
-        const naamKey = normalizeNaam(ev.naam) || `__geen-naam__:${ev.type}:${ev.id}`;
-        key = `${keyEmail}|${naamKey}`;
-      } else {
-        key = keyEmail;
-      }
-      let p = map.get(key);
-      if (!p) {
-        p = {
-          key,
-          naam: ev.naam || "—",
-          email: ev.email,
-          bedrijven: [],
-          persoonStatus: ev.status,
-          events: [],
-          laatsteDatum: ev.datum,
-          namenGedeeld: false,
-        };
-        map.set(key, p);
-      }
-      p.events.push(ev);
-      if (ev.bedrijfsnaam || ev.kvk) {
-        const exists = p.bedrijven.some(
-          (b) => b.bedrijfsnaam === ev.bedrijfsnaam && b.kvk === ev.kvk,
-        );
-        if (!exists) p.bedrijven.push({ bedrijfsnaam: ev.bedrijfsnaam, kvk: ev.kvk });
-      }
-    }
-
-    const persons = Array.from(map.values());
-    for (const p of persons) {
-      p.events.sort((a, b) => new Date(b.datum).getTime() - new Date(a.datum).getTime());
-      p.laatsteDatum = p.events[0]?.datum ?? p.laatsteDatum;
-
-      const naamEv = p.events.find((e) => e.naam);
-      if (naamEv) p.naam = naamEv.naam;
-
-      // Marker logic: only if grouped by email (not split, not no-email).
-      const emailKey = normalizeEmail(p.email);
-      const beslissing = emailKey ? beslissingen[emailKey] : undefined;
-      if (emailKey && beslissing?.beslissing !== "splitsen") {
-        const huidigeNamen = Array.from(
-          new Set(p.events.map((e) => normalizeNaam(e.naam)).filter(Boolean)),
-        );
-        if (beslissing?.beslissing === "akkoord") {
-          const bekend = new Set((beslissing.bekende_namen ?? []).map(normalizeNaam));
-          // Re-trigger only if a NEW name appeared since decision
-          p.namenGedeeld = huidigeNamen.some((n) => !bekend.has(n));
-        } else {
-          p.namenGedeeld = huidigeNamen.length > 1;
-        }
-      } else {
-        p.namenGedeeld = false;
-      }
-
-      const heeftActief = p.events.some(
-        (e) => e.type === "lead" && e.status === "actief",
-      );
-      p.persoonStatus = heeftActief ? "actief" : p.events[0]?.status ?? "";
-    }
-
-    persons.sort(
-      (a, b) => new Date(b.laatsteDatum).getTime() - new Date(a.laatsteDatum).getTime(),
-    );
-    return persons;
-  }, [events, beslissingen]);
 
   const statusOptions = useMemo(() => {
     const set = new Set<string>();
@@ -272,7 +282,7 @@ export default function CRM() {
   }
 
   async function beslis(person: Person, beslissing: "akkoord" | "splitsen") {
-    const email = normalizeEmail(person.email);
+    const email = person.genormaliseerd_email;
     if (!email) return;
     const bekende_namen = Array.from(
       new Set(person.events.map((e) => e.naam).filter(Boolean)),
@@ -292,6 +302,17 @@ export default function CRM() {
       ...prev,
       [email]: { genormaliseerd_email: email, beslissing, bekende_namen },
     }));
+    // Refresh markers on-screen without reloading everything
+    setPersonen((prev) => prev.map((p) => {
+      if (p.genormaliseerd_email !== email) return p;
+      let namenGedeeld = false;
+      if (beslissing !== "splitsen") {
+        const huidigeNamen = Array.from(new Set(p.events.map((e) => normalizeNaam(e.naam)).filter(Boolean)));
+        const bekend = new Set(bekende_namen.map(normalizeNaam));
+        namenGedeeld = huidigeNamen.some((n) => !bekend.has(n));
+      }
+      return { ...p, namenGedeeld };
+    }));
   }
 
   return (
@@ -310,6 +331,16 @@ export default function CRM() {
             <RotateCw className="h-4 w-4 mr-2" />Herladen
           </Button>
         </div>
+
+        {unlinkedCount > 0 && (
+          <div className="rounded-lg border border-amber-300 bg-amber-50 text-amber-900 p-3 text-sm flex items-start gap-2">
+            <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+            <div>
+              <strong>{unlinkedCount}</strong> bronrecord(s) zijn nog niet gekoppeld aan een persoon in de nieuwe persoonslaag.
+              Deze verschijnen daarom (nog) niet in dit overzicht.
+            </div>
+          </div>
+        )}
 
         <div className="bg-card border border-border rounded-lg p-4 flex flex-wrap gap-3">
           <Select value={typeFilter} onValueChange={setTypeFilter}>
@@ -364,13 +395,13 @@ export default function CRM() {
               ) : filtered.length === 0 ? (
                 <tr><td colSpan={7} className="p-8 text-center text-muted-foreground">Geen contacten</td></tr>
               ) : filtered.map((p) => {
-                const isOpen = !!expanded[p.key];
+                const isOpen = !!expanded[p.id];
                 const eerste = p.bedrijven[0];
                 return (
-                  <Fragment key={p.key}>
+                  <Fragment key={p.id}>
                     <tr
                       className="border-t border-border hover:bg-muted/30 cursor-pointer"
-                      onClick={() => toggle(p.key)}
+                      onClick={() => toggle(p.id)}
                     >
                       <td className="p-3">
                         {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
@@ -423,10 +454,10 @@ export default function CRM() {
                       </td>
                       <td className="p-3"><Badge variant="secondary">{p.persoonStatus || "—"}</Badge></td>
                       <td className="p-3">{p.events.length}</td>
-                      <td className="p-3 whitespace-nowrap text-muted-foreground">{formatDateNL(p.laatsteDatum)}</td>
+                      <td className="p-3 whitespace-nowrap text-muted-foreground">{p.laatsteDatum ? formatDateNL(p.laatsteDatum) : "—"}</td>
                     </tr>
                     {isOpen && (
-                      <tr key={p.key + "-detail"} className="bg-muted/20 border-t border-border">
+                      <tr key={p.id + "-detail"} className="bg-muted/20 border-t border-border">
                         <td></td>
                         <td colSpan={6} className="p-4 space-y-4">
                           {p.bedrijven.length > 0 && (
