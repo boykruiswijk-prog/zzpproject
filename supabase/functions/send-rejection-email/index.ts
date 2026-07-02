@@ -103,7 +103,10 @@ Deno.serve(async (req) => {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const { leadId, email } = parsed.data;
+    const { leadId, email, reasonSentence } = parsed.data;
+    const finalReason = (reasonSentence && reasonSentence.trim().length > 0)
+      ? reasonSentence.trim()
+      : DEFAULT_REASON;
 
     // Server-side dubbelzendbescherming: al eerder een succesvolle afwijsmail voor deze lead?
     const { data: existing } = await supabase
