@@ -104,6 +104,9 @@ export default function KennisbankArtikelEditor() {
         seo_title: existing.seo_title ?? "",
         seo_description: existing.seo_description ?? "",
         author_name: existing.author_name ?? "",
+        generated_by_ai: !!(existing as any).generated_by_ai,
+        reviewed_by: (existing as any).reviewed_by ?? null,
+        reviewed_at: (existing as any).reviewed_at ?? null,
       });
       setSlugTouched(true);
     }
