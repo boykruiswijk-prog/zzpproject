@@ -1021,7 +1021,9 @@ Deno.serve(async (req) => {
   // ── Stap I: lead updaten ──
   const auditEntry = {
     timestamp: new Date().toISOString(),
-    action: "Polis geactiveerd in Exact",
+    action: reusedAccountId
+      ? "Polis geactiveerd in Exact (bestaande relatie hergebruikt)"
+      : "Polis geactiveerd in Exact",
     admin_user_id: user.id,
     admin_email: user.email,
     exact_account_id: exactAccountId,
@@ -1029,6 +1031,10 @@ Deno.serve(async (req) => {
     exact_bankaccount_id: exactBankAccountId,
     exact_mandate_id: exactMandateId,
     mandate_warning: mandateWarning,
+    reused_account: !!reusedAccountId,
+    reused_account_name: reusedAccountName,
+    reused_bankaccount: bankAccountReused,
+    reused_mandate: mandateReused,
   };
   const log1 = Array.isArray(lead.activatie_log)
     ? [...lead.activatie_log, auditEntry]
@@ -1054,21 +1060,26 @@ Deno.serve(async (req) => {
       }]
     : log2;
 
-  await supabase.from("leads").update({
+  // Status pas op 'actief' als de factuur daadwerkelijk is aangemaakt.
+  const activationSucceeded = !!exactInvoiceId;
+  const leadUpdate: Record<string, unknown> = {
     exact_account_id: exactAccountId,
     exact_relatie_id: exactAccountId,
-    status: "actief",
-    geactiveerd_door: user.id,
-    geactiveerd_op: new Date().toISOString(),
     activatie_log: newLog,
-    exact_status: "gesynchroniseerd",
+    exact_status: activationSucceeded ? "gesynchroniseerd" : "deels_gesynchroniseerd",
     exact_sync_op: new Date().toISOString(),
-    exact_fout: null,
+    exact_fout: activationSucceeded ? null : (invoiceWarning ?? mandateWarning ?? null),
     exact_invoice_id: exactInvoiceId,
     exact_invoice_number: exactInvoiceNumber,
     exact_invoice_amount: exactInvoiceAmount,
     exact_invoice_created_at: exactInvoiceCreatedAt,
-  }).eq("id", leadId);
+  };
+  if (activationSucceeded) {
+    leadUpdate.status = "actief";
+    leadUpdate.geactiveerd_door = user.id;
+    leadUpdate.geactiveerd_op = new Date().toISOString();
+  }
+  await supabase.from("leads").update(leadUpdate).eq("id", leadId);
 
   await logSync(supabase, {
     trigger_type: "lead_activation",
