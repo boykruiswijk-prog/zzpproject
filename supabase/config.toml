@@ -53,5 +53,3 @@ project_id = "eugkavokktjwpqaqlwsj"
  [functions.sitemap]
  verify_jwt = false
 
- [functions.suggereer-onderwerpen]
- verify_jwt = true
