@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useArticleCategoryList } from "@/hooks/useArticleCategoriesAdmin";
 import { formatDateNL } from "@/lib/dateFormat";
 import { Plus, Search, FileText } from "lucide-react";
+import { SeoOnderwerpenDialog } from "@/components/admin/kennisbank/SeoOnderwerpenDialog";
 
 interface Row {
   id: string;
