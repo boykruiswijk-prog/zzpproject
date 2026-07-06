@@ -1081,6 +1081,20 @@ Deno.serve(async (req) => {
   }
   await supabase.from("leads").update(leadUpdate).eq("id", leadId);
 
+  // Log activatie in activiteiten_log (best-effort, mag activatie nooit blokkeren)
+  if (activationSucceeded) {
+    try {
+      await supabase.from("activiteiten_log").insert({
+        actie_type: "lead_geactiveerd",
+        omschrijving: `Lead geactiveerd: ${[lead.voornaam, lead.achternaam].filter(Boolean).join(" ") || lead.email || leadId}`,
+        uitgevoerd_door: user.id,
+        uitgevoerd_door_naam: user.email ?? null,
+        lead_id: leadId,
+        klant_email: (lead.email ?? "").toLowerCase().trim() || null,
+      });
+    } catch (_e) { /* logfout mag activatie niet laten falen */ }
+  }
+
   await logSync(supabase, {
     trigger_type: "lead_activation",
     status: "success",

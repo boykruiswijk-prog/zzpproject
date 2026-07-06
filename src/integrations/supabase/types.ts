@@ -50,6 +50,13 @@ export type Database = {
             foreignKeyName: "activiteiten_log_lead_id_fkey"
             columns: ["lead_id"]
             isOneToOne: false
+            referencedRelation: "kpi_actieve_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activiteiten_log_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
             referencedRelation: "leads"
             referencedColumns: ["id"]
           },
@@ -263,6 +270,13 @@ export type Database = {
           voornaam?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "bav_aanmeldingen_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "kpi_actieve_leads"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "bav_aanmeldingen_lead_id_fkey"
             columns: ["lead_id"]
@@ -609,6 +623,13 @@ export type Database = {
             foreignKeyName: "dba_checks_lead_id_fkey"
             columns: ["lead_id"]
             isOneToOne: false
+            referencedRelation: "kpi_actieve_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dba_checks_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
             referencedRelation: "leads"
             referencedColumns: ["id"]
           },
@@ -763,6 +784,13 @@ export type Database = {
           trigger_type?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "exact_sync_log_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "kpi_actieve_leads"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "exact_sync_log_lead_id_fkey"
             columns: ["lead_id"]
@@ -931,6 +959,13 @@ export type Database = {
             foreignKeyName: "invoices_lead_id_fkey"
             columns: ["lead_id"]
             isOneToOne: false
+            referencedRelation: "kpi_actieve_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
             referencedRelation: "leads"
             referencedColumns: ["id"]
           },
@@ -1023,6 +1058,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "lead_notes_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "kpi_actieve_leads"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "lead_notes_lead_id_fkey"
             columns: ["lead_id"]
@@ -1126,6 +1168,7 @@ export type Database = {
           iban: string | null
           id: string
           ingangsdatum: string | null
+          is_test: boolean
           kvk_nummer: string | null
           omzet: string | null
           opmerkingen: string | null
@@ -1201,6 +1244,7 @@ export type Database = {
           iban?: string | null
           id?: string
           ingangsdatum?: string | null
+          is_test?: boolean
           kvk_nummer?: string | null
           omzet?: string | null
           opmerkingen?: string | null
@@ -1276,6 +1320,7 @@ export type Database = {
           iban?: string | null
           id?: string
           ingangsdatum?: string | null
+          is_test?: boolean
           kvk_nummer?: string | null
           omzet?: string | null
           opmerkingen?: string | null
@@ -1355,6 +1400,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "monthly_invoices_log_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "kpi_actieve_leads"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "monthly_invoices_log_lead_id_fkey"
             columns: ["lead_id"]
@@ -1505,6 +1557,7 @@ export type Database = {
           created_at: string
           id: string
           insured_name: string
+          is_test: boolean
           issued_by: string
           issued_date: string
           lead_id: string | null
@@ -1528,6 +1581,7 @@ export type Database = {
           created_at?: string
           id?: string
           insured_name: string
+          is_test?: boolean
           issued_by?: string
           issued_date?: string
           lead_id?: string | null
@@ -1551,6 +1605,7 @@ export type Database = {
           created_at?: string
           id?: string
           insured_name?: string
+          is_test?: boolean
           issued_by?: string
           issued_date?: string
           lead_id?: string | null
@@ -1563,6 +1618,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "policies_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "kpi_actieve_leads"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "policies_lead_id_fkey"
             columns: ["lead_id"]
@@ -1614,6 +1676,13 @@ export type Database = {
             foreignKeyName: "polis_audit_log_lead_id_fkey"
             columns: ["lead_id"]
             isOneToOne: false
+            referencedRelation: "kpi_actieve_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "polis_audit_log_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
             referencedRelation: "leads"
             referencedColumns: ["id"]
           },
@@ -1657,6 +1726,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "portal_invitations_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "kpi_actieve_leads"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "portal_invitations_lead_id_fkey"
             columns: ["lead_id"]
@@ -1860,7 +1936,54 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      kpi_actieve_leads: {
+        Row: {
+          achternaam: string | null
+          bedrijfsnaam: string | null
+          betaalritme: string | null
+          created_at: string | null
+          email: string | null
+          exact_invoice_amount: number | null
+          geactiveerd_op: string | null
+          gekozen_pakket: string | null
+          id: string | null
+          is_test: boolean | null
+          omzet: string | null
+          status: Database["public"]["Enums"]["lead_status"] | null
+          voornaam: string | null
+        }
+        Insert: {
+          achternaam?: string | null
+          bedrijfsnaam?: string | null
+          betaalritme?: never
+          created_at?: string | null
+          email?: string | null
+          exact_invoice_amount?: number | null
+          geactiveerd_op?: string | null
+          gekozen_pakket?: string | null
+          id?: string | null
+          is_test?: boolean | null
+          omzet?: string | null
+          status?: Database["public"]["Enums"]["lead_status"] | null
+          voornaam?: string | null
+        }
+        Update: {
+          achternaam?: string | null
+          bedrijfsnaam?: string | null
+          betaalritme?: never
+          created_at?: string | null
+          email?: string | null
+          exact_invoice_amount?: number | null
+          geactiveerd_op?: string | null
+          gekozen_pakket?: string | null
+          id?: string | null
+          is_test?: boolean | null
+          omzet?: string | null
+          status?: Database["public"]["Enums"]["lead_status"] | null
+          voornaam?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       accept_portal_invitation: { Args: { _token: string }; Returns: Json }
