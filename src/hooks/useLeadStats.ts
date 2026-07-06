@@ -15,28 +15,35 @@ export function useLeadStats() {
       // Total leads
       const { count: totalLeads } = await supabase
         .from("leads")
-        .select("*", { count: "exact", head: true });
+        .select("*", { count: "exact", head: true })
+        .eq("is_test", false);
 
       // New leads this week
       const { count: newLeadsWeek } = await supabase
         .from("leads")
         .select("*", { count: "exact", head: true })
+        .eq("is_test", false)
         .gte("created_at", startOfWeek.toISOString());
 
       // New leads this month
       const { count: newLeadsMonth } = await supabase
         .from("leads")
         .select("*", { count: "exact", head: true })
+        .eq("is_test", false)
         .gte("created_at", startOfMonth.toISOString());
 
       // Converted leads (status = 'actief' or 'klant')
       const { count: convertedLeads } = await supabase
         .from("leads")
         .select("*", { count: "exact", head: true })
+        .eq("is_test", false)
         .in("status", ["actief", "klant"]);
 
       // Leads by status
-      const { data: allLeads } = await supabase.from("leads").select("status, verzekering_type, created_at");
+      const { data: allLeads } = await supabase
+        .from("leads")
+        .select("status, verzekering_type, created_at")
+        .eq("is_test", false);
 
       const statusCounts: Record<string, number> = {};
       const verzekeringCounts: Record<string, number> = {};
