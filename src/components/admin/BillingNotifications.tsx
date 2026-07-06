@@ -36,6 +36,7 @@ export function BillingNotifications() {
       const { data: leads, error: leadsError } = await supabase
         .from("leads")
         .select("id, voornaam, achternaam, bedrijfsnaam, verzekering_type, omzet, ingangsdatum, converted_at")
+        .eq("is_test", false)
         .in("status", ["actief", "klant"]);
 
       if (leadsError) throw leadsError;
