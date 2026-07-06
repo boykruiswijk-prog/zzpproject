@@ -31,9 +31,9 @@
               "default": 10,
               "description": "Maximum number of articles to return."
             },
-            "category_slug": {
+            "category": {
               "type": "string",
-              "description": "Optional category slug to filter by."
+              "description": "Optional category slug/name to filter by (matches articles.category)."
             }
           },
           "additionalProperties": false,

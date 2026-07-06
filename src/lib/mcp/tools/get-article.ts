@@ -20,8 +20,8 @@ export default defineTool({
     const supabase = createClient(url, key, { auth: { persistSession: false } });
     const { data, error } = await supabase
       .from("articles")
-      .select("title, slug, excerpt, content, seo_title, seo_description, published_at, article_categories(slug, name)")
-      .eq("status", "published")
+      .select("title, slug, excerpt, content, category, seo_title, seo_description, published_at")
+      .eq("is_published", true)
       .eq("slug", slug)
       .maybeSingle();
     if (error) {
