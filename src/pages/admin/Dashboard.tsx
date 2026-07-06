@@ -14,7 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdminDashboard() {
   const [isExporting, setIsExporting] = useState(false);
-
+  const { isSupervisor } = useAuth();
   const { toast } = useToast();
 
   const handleExport = async () => {
