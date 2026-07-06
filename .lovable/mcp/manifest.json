@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "sdk_version": "0.20.0",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "zpzaken-mcp",
+      "version": "0.1.0",
+      "title": "ZP Zaken"
+    },
+    "tools": [
+      {
+        "name": "list_published_articles",
+        "title": "List published Kennisbank articles",
+        "description": "List published articles from the ZP Zaken Kennisbank (title, slug, category, published_at, excerpt). Read-only, no authentication required.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "description": "Maximum number of articles to return."
+            },
+            "category_slug": {
+              "type": "string",
+              "description": "Optional category slug to filter by."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_article",
+        "title": "Get Kennisbank article by slug",
+        "description": "Fetch a single published Kennisbank article (including full Markdown content) by its slug. Read-only.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "slug": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The article slug, e.g. 'bav-voor-it-zzp'."
+            }
+          },
+          "required": [
+            "slug"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_services",
+        "title": "List ZP Zaken services",
+        "description": "Return the public list of ZP Zaken services (name, short description, URL). No authentication required.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
