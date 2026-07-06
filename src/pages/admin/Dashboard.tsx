@@ -85,6 +85,7 @@ export default function AdminDashboard() {
         </Alert>
 
         <MFAManagement />
+        {isSupervisor && <SupervisorKpiPanel />}
         <DashboardStats />
         <DashboardCharts />
       </div>
