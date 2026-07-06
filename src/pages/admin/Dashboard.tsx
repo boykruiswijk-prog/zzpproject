@@ -2,17 +2,19 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { DashboardStats } from "@/components/admin/DashboardStats";
 import { DashboardCharts } from "@/components/admin/DashboardCharts";
 import { MFAManagement } from "@/components/admin/MFAManagement";
+import { SupervisorKpiPanel } from "@/components/admin/SupervisorKpiPanel";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Download, Info, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 
 export default function AdminDashboard() {
   const [isExporting, setIsExporting] = useState(false);
-
+  const { isSupervisor } = useAuth();
   const { toast } = useToast();
 
   const handleExport = async () => {
@@ -83,6 +85,7 @@ export default function AdminDashboard() {
         </Alert>
 
         <MFAManagement />
+        {isSupervisor && <SupervisorKpiPanel />}
         <DashboardStats />
         <DashboardCharts />
       </div>
