@@ -9,4 +9,4 @@ Disallow: /verificatie/
 Disallow: /creditcontrol
 Disallow: /collectief-ledenorganisaties
 
-Sitemap: https://www.zpzaken.nl/sitemap.xml
+Sitemap: https://eugkavokktjwpqaqlwsj.supabase.co/functions/v1/sitemap

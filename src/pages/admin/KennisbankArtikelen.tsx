@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useArticleCategoryList } from "@/hooks/useArticleCategoriesAdmin";
 import { formatDateNL } from "@/lib/dateFormat";
 import { Plus, Search, FileText } from "lucide-react";
+import { SeoOnderwerpenDialog } from "@/components/admin/kennisbank/SeoOnderwerpenDialog";
 
 interface Row {
   id: string;
@@ -61,9 +62,12 @@ export default function KennisbankArtikelen() {
             <h1 className="text-3xl font-bold flex items-center gap-2"><FileText className="h-7 w-7" /> Kennisbank</h1>
             <p className="text-muted-foreground">Artikelen, blogs en nieuwsitems voor de website.</p>
           </div>
-          <Button onClick={() => navigate("/admin/kennisbank/nieuw")}>
-            <Plus className="h-4 w-4 mr-1" /> Nieuw artikel
-          </Button>
+          <div className="flex gap-2">
+            <SeoOnderwerpenDialog />
+            <Button onClick={() => navigate("/admin/kennisbank/nieuw")}>
+              <Plus className="h-4 w-4 mr-1" /> Nieuw artikel
+            </Button>
+          </div>
         </div>
 
         <Card>
