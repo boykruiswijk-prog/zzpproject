@@ -243,11 +243,41 @@ export default function AdminLeadDetail() {
               )}
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             {lead.type !== "verzekering_aanvraag" && lead.status !== "klant" && (
               <Button variant="accent" onClick={handleMarkAsCustomer}>
                 <UserCheck className="h-4 w-4 mr-2" />
                 Markeer als klant
+              </Button>
+            )}
+            {isSupervisorOrAdmin && (
+              <Button
+                variant={lead.is_test ? "secondary" : "outline"}
+                size="sm"
+                onClick={async () => {
+                  const nieuw = !lead.is_test;
+                  const { error } = await supabase
+                    .from("leads")
+                    .update({ is_test: nieuw })
+                    .eq("id", lead.id);
+                  if (error) {
+                    toast({ title: "Fout", description: error.message, variant: "destructive" });
+                    return;
+                  }
+                  try {
+                    await supabase.from("activiteiten_log").insert({
+                      actie_type: "lead_test_markering_gewijzigd",
+                      omschrijving: `Testrecord-markering ${nieuw ? "aangezet" : "uitgezet"} voor ${lead.voornaam ?? ""} ${lead.achternaam ?? ""}`.trim(),
+                      lead_id: lead.id,
+                      klant_email: (lead.email ?? "").toLowerCase().trim() || null,
+                    });
+                  } catch { /* log-fout mag toggle niet blokkeren */ }
+                  toast({ title: nieuw ? "Als testrecord gemarkeerd" : "Testmarkering verwijderd" });
+                  window.location.reload();
+                }}
+                title="Alleen zichtbaar voor supervisor/admin"
+              >
+                {lead.is_test ? "✓ Testrecord" : "Markeer als test"}
               </Button>
             )}
             {isSupervisorOrAdmin && (
