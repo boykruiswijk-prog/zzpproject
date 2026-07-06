@@ -619,6 +619,18 @@ Deno.serve(async (req) => {
           },
         });
 
+        // Log opzegging in activiteiten_log (best-effort)
+        try {
+          await supabase.from("activiteiten_log").insert({
+            actie_type: "lead_opgezegd",
+            omschrijving: `Polis opgezegd per ${today} (reden: ${reden}${wasGepauzeerd ? ", vanuit gepauzeerd" : ""})`,
+            uitgevoerd_door: uid,
+            uitgevoerd_door_naam: rol ?? null,
+            lead_id,
+            klant_email: (lead.email ?? "").toLowerCase().trim() || null,
+          });
+        } catch (_e) { /* logfout mag opzegging niet laten falen */ }
+
         const creditBlokKlant = creditResult?.ok && calc
           ? `<p>Je ontvangt een creditnota van <strong>€ ${calc.credit_bedrag.toFixed(2).replace(".", ",")}</strong> voor ${calc.resterende_dagen} dagen restdekking tot ${fmtNL(eindForMail!)}.</p>`
           : "";
