@@ -78,6 +78,21 @@ export default function KennisbankArtikelEditor() {
   const [claudeOnderwerp, setClaudeOnderwerp] = useState("");
   const [claudeRubriek, setClaudeRubriek] = useState<string>("");
   const [claudeBusy, setClaudeBusy] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Voorvullen vanuit SEO-onderwerpen (?onderwerp=...): opent dialog met veld ingevuld.
+  useEffect(() => {
+    if (!isNew) return;
+    const o = searchParams.get("onderwerp");
+    if (o && o.trim()) {
+      setClaudeOnderwerp(o);
+      setClaudeOpen(true);
+      const next = new URLSearchParams(searchParams);
+      next.delete("onderwerp");
+      setSearchParams(next, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Bestaand artikel laden
   const { data: existing, isLoading } = useQuery({
