@@ -19,6 +19,7 @@ export function useAdminTakenCount() {
         supabase.from("polis_audit_log").select("id", { count: "exact", head: true })
           .eq("succes", false).gte("created_at", sevenDaysAgo),
         supabase.from("leads").select("id", { count: "exact", head: true })
+          .eq("is_test", false)
           .eq("status", "gepauzeerd").lte("pauze_start_datum", ninetyDaysAgo)
           .is("pauze_reminder_verzonden_op", null),
       ]);
