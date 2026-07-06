@@ -49,3 +49,9 @@ project_id = "eugkavokktjwpqaqlwsj"
 
  [functions.send-portal-magiclink]
  verify_jwt = false
+
+ [functions.sitemap]
+ verify_jwt = false
+
+ [functions.suggereer-onderwerpen]
+ verify_jwt = true
