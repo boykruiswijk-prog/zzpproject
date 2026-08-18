@@ -156,7 +156,7 @@ Deno.serve(async (req) => {
             to: plan.to,
             subject: plan.subject,
             html: plan.html,
-            reply_to: gate.isProduction ? v.email : undefined,
+            replyTo: gate.isProduction ? v.email : undefined,
           });
           if (res?.error) {
             await logEntry({ recipient: plan.to[0], subject: plan.subject, status: "failed", error_message: `${res.error.name ?? "resend"}: ${res.error.message ?? JSON.stringify(res.error)}` });

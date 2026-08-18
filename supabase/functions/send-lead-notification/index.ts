@@ -173,9 +173,9 @@ Deno.serve(async (req) => {
     const env = resolveEnvironment(req);
     const isProd = env.isProduction;
     console.log("send-lead-notification env:", JSON.stringify(env));
-    console.log(`[mail] ${JSON.stringify({ function: "send-lead-notification", from: getFromAddress(), environment: isProd ? "production" : "preview", env_reason: env.reason, host_source: env.hostSource, app_env: env.appEnv, to: [recipient], bcc: bccList, original_to: [baseRecipient], redirected: !isProd })}`);
     const recipient = isProd ? baseRecipient : "boy.kruiswijk@zpzaken.nl";
     const bccList = isProd ? BCC_DEFAULT : [];
+    console.log(`[mail] ${JSON.stringify({ function: "send-lead-notification", from: getFromAddress(), environment: isProd ? "production" : "preview", env_reason: env.reason, host_source: env.hostSource, app_env: env.appEnv, to: [recipient], bcc: bccList, original_to: [baseRecipient], redirected: !isProd })}`);
 
     const label = LEAD_LABELS[type] || type;
     const subjBase = (SUBJECTS[type] || ((r: string) => `Nieuwe lead (${type}) via zpzaken.nl - ${r}`))(reference || leadId || "");
@@ -202,7 +202,7 @@ Deno.serve(async (req) => {
         from: getFromAddress(),
         to: [recipient],
         bcc: bccList.length ? bccList : undefined,
-        reply_to: isProd ? ((fields.email as string) || undefined) : undefined,
+        replyTo: isProd ? ((fields.email as string) || undefined) : undefined,
         subject, html, text,
       });
 
@@ -234,7 +234,7 @@ Deno.serve(async (req) => {
           const custRes: any = await resend.emails.send({
             from: getFromAddress(),
             to: [customerRecipient],
-            reply_to: "info@zpzaken.nl",
+            replyTo: "info@zpzaken.nl",
             subject: customerSubject,
             html: renderCustomerHtml(type, label, fields),
             text: renderCustomerText(type, fields),

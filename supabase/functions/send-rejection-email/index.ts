@@ -147,7 +147,7 @@ Deno.serve(async (req) => {
       const sendRes: any = await resend.emails.send({
         from: getFromAddress(),
         to: [recipient],
-        reply_to: "info@zpzaken.nl",
+        replyTo: "info@zpzaken.nl",
         subject,
         html: renderHtml(finalReason),
         text: renderText(finalReason),
