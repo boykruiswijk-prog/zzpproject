@@ -34,6 +34,23 @@ export function SiteSchemaMarkup() {
       },
     ],
     sameAs: [SITE_CONFIG.social.linkedin, SITE_CONFIG.social.instagram],
+    identifier: [
+      {
+        "@type": "PropertyValue",
+        name: "AFM vergunningsnummer",
+        value: SITE_CONFIG.registrations.afm,
+      },
+      {
+        "@type": "PropertyValue",
+        name: "KvK-nummer",
+        value: SITE_CONFIG.registrations.kvk,
+      },
+      {
+        "@type": "PropertyValue",
+        name: "Kifid-aansluitnummer",
+        value: SITE_CONFIG.registrations.kifid,
+      },
+    ],
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: googleReviewsData.averageRating.toFixed(1),
