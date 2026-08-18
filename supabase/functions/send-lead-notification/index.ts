@@ -4,6 +4,7 @@ import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import { Resend } from "npm:resend@4.0.0";
 import { z } from "npm:zod@3.23.8";
 import { resolveEnvironment } from "../_shared/environment.ts";
+import { getFromAddress } from "../_shared/mail.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -172,6 +173,7 @@ Deno.serve(async (req) => {
     const env = resolveEnvironment(req);
     const isProd = env.isProduction;
     console.log("send-lead-notification env:", JSON.stringify(env));
+    console.log(`[mail] ${JSON.stringify({ function: "send-lead-notification", from: getFromAddress(), environment: isProd ? "production" : "preview", env_reason: env.reason, host_source: env.hostSource, app_env: env.appEnv, to: [recipient], bcc: bccList, original_to: [baseRecipient], redirected: !isProd })}`);
     const recipient = isProd ? baseRecipient : "boy.kruiswijk@zpzaken.nl";
     const bccList = isProd ? BCC_DEFAULT : [];
 
@@ -197,7 +199,7 @@ Deno.serve(async (req) => {
 
     try {
       const sendRes: any = await resend.emails.send({
-        from: Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <onboarding@resend.dev>",
+        from: getFromAddress(),
         to: [recipient],
         bcc: bccList.length ? bccList : undefined,
         reply_to: isProd ? ((fields.email as string) || undefined) : undefined,
@@ -230,7 +232,7 @@ Deno.serve(async (req) => {
         const customerSubject = isProd ? customerSubjBase : `[PREVIEW] ${customerSubjBase} (origineel naar ${customerEmailRaw})`;
         try {
           const custRes: any = await resend.emails.send({
-            from: Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <onboarding@resend.dev>",
+            from: getFromAddress(),
             to: [customerRecipient],
             reply_to: "info@zpzaken.nl",
             subject: customerSubject,

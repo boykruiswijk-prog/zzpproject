@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
+import { createMailGate, getFromAddress } from "../_shared/mail.ts";
 
 const supabaseLog = createClient(
   Deno.env.get("SUPABASE_URL") ?? "",
@@ -72,7 +73,9 @@ serve(async (req) => {
     const payload: EmailPayload = await req.json();
     const emails: Array<{ from: string; to: string[]; subject: string; html: string }> = [];
 
-    const from = Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <onboarding@resend.dev>";
+    // Omgevingsbepaling + preview-redirect (max. één mail per verzendactie).
+    const gate = createMailGate("send-notification", req);
+    const from = getFromAddress();
 
     if (payload.type === "bav") {
       // 1. Notification to info@zpzaken.nl
@@ -133,10 +136,17 @@ serve(async (req) => {
       });
     }
 
+    // Definitieve ontvangers/onderwerp via de mailgate (productie = ongewijzigd,
+    // preview = alles naar boy.kruiswijk@zpzaken.nl, hoogstens één mail).
+    const plannedEmails = emails
+      .map((email) => gate.plan({ to: email.to, subject: email.subject, html: email.html }))
+      .filter((plan) => plan.send)
+      .map((plan) => ({ from: plan.from, to: plan.to, subject: plan.subject, html: plan.html }));
+
     // Send all emails via Resend (per-email logging into lead_notification_log)
     const leadType = payload.type === "bav" ? "bav" : "contact";
     const results = await Promise.allSettled(
-      emails.map((email) =>
+      plannedEmails.map((email) =>
         fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: {
