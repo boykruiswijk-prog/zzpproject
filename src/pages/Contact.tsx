@@ -158,7 +158,15 @@ export default function Contact() {
                     <div><p className="font-medium text-foreground">{ADDRESS_ONE_LINE}</p><p className="text-sm">Nederland</p></div>
                   </div>
                 </div>
+                <div className="mt-6 pt-6 border-t border-border/50 text-sm text-muted-foreground space-y-1">
+                  <p className="font-medium text-foreground">{SITE_CONFIG.legalName}</p>
+                  <p>AFM: {SITE_CONFIG.registrations.afm}</p>
+                  <p>KIFID: {SITE_CONFIG.registrations.kifid}</p>
+                  <p>KvK: {SITE_CONFIG.registrations.kvk}</p>
+                  <p>BTW: {SITE_CONFIG.registrations.btw}</p>
+                </div>
               </div>
+
 
               <div className="bg-card rounded-2xl overflow-hidden shadow-card border border-border/50">
                 <img
