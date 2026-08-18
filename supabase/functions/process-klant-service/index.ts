@@ -2,6 +2,7 @@ import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import { Resend } from "npm:resend@4.0.0";
 import { z } from "npm:zod@3.23.8";
 import { maybeFormatDate } from "../_shared/dateFormat.ts";
+import { createMailGate } from "../_shared/mail.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -141,20 +142,30 @@ Deno.serve(async (req) => {
         console.error("log insert failed:", e);
       }
     };
-    const FROM_ADDRESS = Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <onboarding@resend.dev>";
+
+    // Omgevingsbepaling + preview-redirect (max. één mail per verzendactie).
+    const gate = createMailGate("process-klant-service", req);
 
     if (resend) {
       const sendAndLog = async (to: string, sub: string, html: string) => {
+        const plan = gate.plan({ to, subject: sub, html });
+        if (!plan.send) return;
         try {
-          const res: any = await resend.emails.send({ from: FROM_ADDRESS, to: [to], subject: sub, html, reply_to: v.email });
+          const res: any = await resend.emails.send({
+            from: plan.from,
+            to: plan.to,
+            subject: plan.subject,
+            html: plan.html,
+            reply_to: gate.isProduction ? v.email : undefined,
+          });
           if (res?.error) {
-            await logEntry({ recipient: to, subject: sub, status: "failed", error_message: `${res.error.name ?? "resend"}: ${res.error.message ?? JSON.stringify(res.error)}` });
+            await logEntry({ recipient: plan.to[0], subject: plan.subject, status: "failed", error_message: `${res.error.name ?? "resend"}: ${res.error.message ?? JSON.stringify(res.error)}` });
           } else {
-            await logEntry({ recipient: to, subject: sub, status: "sent", resend_message_id: res?.data?.id ?? null });
+            await logEntry({ recipient: plan.to[0], subject: plan.subject, status: "sent", resend_message_id: res?.data?.id ?? null });
           }
         } catch (mailErr) {
           const msg = mailErr instanceof Error ? mailErr.message : String(mailErr);
-          await logEntry({ recipient: to, subject: sub, status: "failed", error_message: msg });
+          await logEntry({ recipient: plan.to[0], subject: plan.subject, status: "failed", error_message: msg });
         }
       };
 
@@ -172,6 +183,7 @@ Deno.serve(async (req) => {
         `,
       );
     }
+
 
 
     return new Response(JSON.stringify({ success: true, id: data.id }), {

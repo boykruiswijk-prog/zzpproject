@@ -4,6 +4,7 @@ import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import { Resend } from "npm:resend@4.0.0";
 import { z } from "npm:zod@3.23.8";
 import { resolveEnvironment } from "../_shared/environment.ts";
+import { getFromAddress } from "../_shared/mail.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -144,7 +145,7 @@ Deno.serve(async (req) => {
 
     try {
       const sendRes: any = await resend.emails.send({
-        from: Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <onboarding@resend.dev>",
+        from: getFromAddress(),
         to: [recipient],
         reply_to: "info@zpzaken.nl",
         subject,

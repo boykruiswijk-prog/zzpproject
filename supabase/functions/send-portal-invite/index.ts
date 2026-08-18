@@ -1,5 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { getFromAddress } from "../_shared/mail.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -88,6 +89,7 @@ Deno.serve(async (req) => {
           <p style="font-size:12px;color:#888">ZP Zaken B.V. | Zorgeloos ZZP'en</p>
         </div>`;
 
+      console.log(`[mail] ${JSON.stringify({ function: "send-portal-invite", from: getFromAddress(), to: [email], bcc: [], redirected: false, note: "invite gaat altijd naar de uitgenodigde ontvanger" })}`);
       const emailRes = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
@@ -95,7 +97,7 @@ Deno.serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <info@zpzaken.nl>",
+          from: getFromAddress(),
           to: [email],
           subject: "Uitnodiging voor het ZP Zaken klantportaal",
           html,

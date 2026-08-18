@@ -6,6 +6,7 @@
 //   - opzeggen vanuit gepauzeerd → GEEN tweede creditnota (klant heeft al gekregen via pauze-creditnota)
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { checkAcceptance } from "../_shared/acceptanceCriteria.ts";
+import { createMailGate, type MailGate } from "../_shared/mail.ts";
 import {
   getJaarprijs, calculatePauzeCredit, calculateHervatFactuur, calcPolisEinddatum, isMaandPolis,
 } from "../_shared/polisProRata.ts";
@@ -20,7 +21,8 @@ const json = (data: unknown, status = 200) =>
 const ADMIN_EMAIL = "info@zpzaken.nl";
 const ONEFELLOW_EMAIL = "info@onefellow.nl";
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
-const FROM_ADDRESS = Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <onboarding@resend.dev>";
+// Afzender komt uit de gedeelde helper (_shared/mail.ts): RESEND_FROM_ADDRESS,
+// anders "ZP Zaken <info@zpzaken.nl>".
 
 // Exact master-data
 const INV_JOURNAL = "70";
@@ -72,23 +74,24 @@ async function logAudit(supabase: any, params: {
   } catch (e) { console.error("logAudit failed", e); }
 }
 
-async function sendMail(to: string | string[], subject: string, html: string) {
-  const recipients = Array.isArray(to) ? to : [to];
-  if (!RESEND_API_KEY) return { ok: false, error: "missing_resend_key", to: recipients };
+async function sendMail(gate: MailGate, to: string | string[], subject: string, html: string) {
+  const plan = gate.plan({ to, subject, html });
+  if (!plan.send) return { ok: false, error: plan.reason ?? "not_sent", to: plan.to, redirected: plan.redirected };
+  if (!RESEND_API_KEY) return { ok: false, error: "missing_resend_key", to: plan.to };
   try {
     const r = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${RESEND_API_KEY}` },
-      body: JSON.stringify({ from: FROM_ADDRESS, to: recipients, subject, html }),
+      body: JSON.stringify({ from: plan.from, to: plan.to, subject: plan.subject, html: plan.html }),
     });
     const txt = await r.text();
     let parsed: any = null; try { parsed = JSON.parse(txt); } catch { /* */ }
-    if (!r.ok) { console.error("Resend error", r.status, txt); return { ok: false, status: r.status, error: txt.slice(0, 400), to: recipients }; }
-    console.log("Resend ok", { to: recipients, subject, id: parsed?.id, from: FROM_ADDRESS });
-    return { ok: true, status: r.status, message_id: parsed?.id, to: recipients };
+    if (!r.ok) { console.error("Resend error", r.status, txt); return { ok: false, status: r.status, error: txt.slice(0, 400), to: plan.to }; }
+    console.log("Resend ok", { to: plan.to, subject: plan.subject, id: parsed?.id, from: plan.from, redirected: plan.redirected });
+    return { ok: true, status: r.status, message_id: parsed?.id, to: plan.to, redirected: plan.redirected };
   } catch (e: any) {
     console.error("sendMail exception", e);
-    return { ok: false, error: e?.message ?? String(e), to: recipients };
+    return { ok: false, error: e?.message ?? String(e), to: plan.to };
   }
 }
 
@@ -272,6 +275,8 @@ Deno.serve(async (req) => {
 
   const today = todayAmsterdam();
   const recipientKlant = lead.email;
+  // Omgevingsbepaling + preview-redirect (max. één mail per actie in preview).
+  const gate = createMailGate("polis-lifecycle", req);
 
   // Helper: laad Exact-config + headers (lazy, alleen als nodig)
   async function exactCtx() {
@@ -386,7 +391,7 @@ Deno.serve(async (req) => {
           ? `<p>Je ontvangt binnenkort een creditnota van <strong>€ ${calc.credit_bedrag.toFixed(2).replace(".", ",")}</strong> voor de resterende ${calc.resterende_dagen} dagen tot ${fmtNL(eind)}.</p>`
           : `<p>Je polis is gepauzeerd. Onze administratie verwerkt de financiële afhandeling.</p>`;
         const mailResults: any[] = [];
-        mailResults.push(await sendMail(recipientKlant, "Je polis is gepauzeerd",
+        mailResults.push(await sendMail(gate, recipientKlant, "Je polis is gepauzeerd",
           mailShell("Polis gepauzeerd", `
             <p>Hoi ${lead.voornaam},</p>
             <p>Je polis is per <strong>${fmtNL(today)}</strong> gepauzeerd. Tijdens de pauze ben je niet meer gedekt voor nieuwe schade. Schade van vóór de pauze blijft gedekt.</p>
@@ -397,7 +402,7 @@ Deno.serve(async (req) => {
             <p><a href="https://zzpproject.lovable.app/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
           `)));
 
-        mailResults.push(await sendMail(ADMIN_EMAIL, `[Pauze] ${lead.voornaam} ${lead.achternaam}`,
+        mailResults.push(await sendMail(gate, ADMIN_EMAIL, `[Pauze] ${lead.voornaam} ${lead.achternaam}`,
           mailShell("Polis gepauzeerd", `
             <p><strong>${lead.voornaam} ${lead.achternaam}</strong> (${lead.email}) heeft de polis gepauzeerd.</p>
             <p><strong>Reden:</strong> ${reden}<br/><strong>Datum:</strong> ${fmtNL(today)}</p>
@@ -407,7 +412,7 @@ Deno.serve(async (req) => {
           `)));
 
         if (reden === "geen_opdrachten") {
-          mailResults.push(await sendMail(ONEFELLOW_EMAIL, `[ZP Zaken cross-sell] Klant zoekt opdrachten: ${lead.voornaam} ${lead.achternaam}`,
+          mailResults.push(await sendMail(gate, ONEFELLOW_EMAIL, `[ZP Zaken cross-sell] Klant zoekt opdrachten: ${lead.voornaam} ${lead.achternaam}`,
             mailShell("Cross-sell signal", `
               <p>Een klant van ZP Zaken heeft de polis gepauzeerd wegens geen opdrachten.</p>
               <p><strong>Naam:</strong> ${lead.voornaam} ${lead.achternaam}<br/>
@@ -503,14 +508,14 @@ Deno.serve(async (req) => {
         const factuurZin = ("ok" in factuurResult && factuurResult.ok)
           ? `<p>Je ontvangt een nieuwe factuur van <strong>€ ${calc.factuur_bedrag.toFixed(2).replace(".", ",")}</strong> voor de resterende ${calc.resterende_dagen} dagen tot ${fmtNL(eind)}.</p>`
           : `<p>Je polis is weer actief. Onze administratie verwerkt de financiële afhandeling.</p>`;
-        await sendMail(recipientKlant, "Je polis is weer actief",
+        await sendMail(gate, recipientKlant, "Je polis is weer actief",
           mailShell("Polis weer actief", `
             <p>Hoi ${lead.voornaam},</p>
             <p>Je polis is per <strong>${fmtNL(today)}</strong> weer actief. Je bent weer volledig gedekt.</p>
             ${factuurZin}
             <p><a href="https://zzpproject.lovable.app/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
           `));
-        await sendMail(ADMIN_EMAIL, `[Hervat] ${lead.voornaam} ${lead.achternaam}`,
+        await sendMail(gate, ADMIN_EMAIL, `[Hervat] ${lead.voornaam} ${lead.achternaam}`,
           mailShell("Polis hervat", `
             <p><strong>${lead.voornaam} ${lead.achternaam}</strong> heeft de polis hervat.</p>
             <p><strong>Datum:</strong> ${fmtNL(today)}<br/>
@@ -638,7 +643,7 @@ Deno.serve(async (req) => {
           ? `<strong>Creditnota:</strong> € ${calc.credit_bedrag.toFixed(2)} (${calc.resterende_dagen} dagen, Exact ID ${creditResult.invoiceId})<br/>`
           : `<strong>Creditnota:</strong> ${creditResult?.reden ?? "geen"}<br/>`;
 
-        await sendMail(recipientKlant, "Je polis is opgezegd",
+        await sendMail(gate, recipientKlant, "Je polis is opgezegd",
           mailShell("Polis opgezegd", `
             <p>Hoi ${lead.voornaam},</p>
             <p>Je polis is per <strong>${fmtNL(today)}</strong> opgezegd. Schade van vóór deze datum blijft gedekt volgens de polisvoorwaarden.</p>
@@ -647,7 +652,7 @@ Deno.serve(async (req) => {
             ${creditBlokKlant}
             <p>Mocht je in de toekomst weer een polis willen, dan zijn we er voor je.</p>
           `));
-        await sendMail(ADMIN_EMAIL, `[Opzegging] ${lead.voornaam} ${lead.achternaam}`,
+        await sendMail(gate, ADMIN_EMAIL, `[Opzegging] ${lead.voornaam} ${lead.achternaam}`,
           mailShell("Polis opgezegd", `
             <p><strong>${lead.voornaam} ${lead.achternaam}</strong> heeft de polis opgezegd.</p>
             <p><strong>Reden:</strong> ${reden}<br/>
@@ -723,14 +728,14 @@ Deno.serve(async (req) => {
           });
         } catch (_e) { /* logfout mag heractivering niet laten falen */ }
 
-        await sendMail(recipientKlant, "Je polis is weer actief",
+        await sendMail(gate, recipientKlant, "Je polis is weer actief",
           mailShell("Welkom terug — polis geheractiveerd", `
             <p>Hoi ${lead.voornaam},</p>
             <p>Je polis is per <strong>${fmtNL(today)}</strong> weer actief.</p>
             ${functieGewijzigd ? `<p>We hebben je nieuwe functie geregistreerd: <strong>${nieuwe_functie}</strong></p>` : ""}
             <p><a href="https://zzpproject.lovable.app/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
           `));
-        await sendMail(ADMIN_EMAIL, `[Heractivering] ${lead.voornaam} ${lead.achternaam}`,
+        await sendMail(gate, ADMIN_EMAIL, `[Heractivering] ${lead.voornaam} ${lead.achternaam}`,
           mailShell("Polis geheractiveerd", `
             <p><strong>${lead.voornaam} ${lead.achternaam}</strong> heeft de polis geheractiveerd.</p>
             <p><strong>Functie:</strong> ${nieuwe_functie} ${functieGewijzigd ? "(gewijzigd t.o.v. aanvraag: " + (lead.functie_bij_aanvraag ?? "onbekend") + ")" : "(ongewijzigd)"}</p>

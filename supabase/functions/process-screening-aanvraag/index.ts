@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2.39.0";
+import { createMailGate } from "../_shared/mail.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -129,8 +130,13 @@ Deno.serve(async (req) => {
       }
     };
 
+    // Omgevingsbepaling + preview-redirect (max. één mail per verzendactie).
+    const gate = createMailGate("process-screening-aanvraag", req);
+
     if (RESEND_API_KEY) {
       const sendMail = async (to: string, subject: string, html: string) => {
+        const plan = gate.plan({ to, subject, html });
+        if (!plan.send) return;
         try {
           const res = await fetch("https://api.resend.com/emails", {
             method: "POST",
@@ -139,10 +145,10 @@ Deno.serve(async (req) => {
               Authorization: `Bearer ${RESEND_API_KEY}`,
             },
             body: JSON.stringify({
-              from: Deno.env.get("RESEND_FROM_ADDRESS") || "ZP Zaken <onboarding@resend.dev>",
-              to: [to],
-              subject,
-              html,
+              from: plan.from,
+              to: plan.to,
+              subject: plan.subject,
+              html: plan.html,
             }),
           });
           const body = await res.json().catch(() => ({}));
