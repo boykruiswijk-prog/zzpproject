@@ -6,6 +6,7 @@
 //   - opzeggen vanuit gepauzeerd → GEEN tweede creditnota (klant heeft al gekregen via pauze-creditnota)
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { checkAcceptance } from "../_shared/acceptanceCriteria.ts";
+import { COMPANY } from "../_shared/company.ts";
 import { createMailGate, type MailGate } from "../_shared/mail.ts";
 import {
   getJaarprijs, calculatePauzeCredit, calculateHervatFactuur, calcPolisEinddatum, isMaandPolis,
@@ -101,7 +102,7 @@ function mailShell(title: string, body: string): string {
       <h2 style="color:#E53E2F;margin:0 0 16px">${title}</h2>
       ${body}
       <hr style="border:none;border-top:1px solid #eee;margin:24px 0"/>
-      <p style="font-size:12px;color:#888;margin:0">ZP Zaken B.V. · AFM 12050636 · info@zpzaken.nl · 020-4573077</p>
+      <p style="font-size:12px;color:#888;margin:0">${COMPANY.legalName} · AFM ${COMPANY.registrations.afm} · ${COMPANY.email} · ${COMPANY.phoneCompact}</p>
     </div></body></html>`;
 }
 
