@@ -2,6 +2,7 @@ import { Layout } from "@/components/layout/Layout";
 import { SEOHead } from "@/components/SEOHead";
 import { PageHero } from "@/components/layout/PageHero";
 import { FileText } from "lucide-react";
+import { SITE_CONFIG, ADDRESS_ONE_LINE, ADDRESS_CITY_LINE } from "@/config/site";
 
 const tocItems = [
   { id: "artikel-1", label: "1. Definities" },
@@ -58,7 +59,7 @@ export default function AlgemeneVoorwaarden() {
       />
       <PageHero
         title="Algemene Voorwaarden ZP Zaken B.V."
-        subtitle="Van toepassing op alle diensten van ZP Zaken B.V., Tupolevlaan 41, 1119 NW Schiphol-Rijk"
+        subtitle={`Van toepassing op alle diensten van ${SITE_CONFIG.legalName}, ${ADDRESS_ONE_LINE}`}
         badge={{
           icon: <FileText className="h-4 w-4" />,
           text: "Versie: april 2026",
@@ -211,13 +212,13 @@ export default function AlgemeneVoorwaarden() {
             <Article id="artikel-16" title="Artikel 16: Informatie">
               <Clause nr="16.1">Bij vragen, opmerkingen of klachten over onze Dienst of deze Algemene Voorwaarden kunt u contact opnemen via:</Clause>
               <div className="bg-secondary rounded-xl p-6 mt-4 text-sm space-y-1">
-                <p className="font-semibold text-foreground">ZP Zaken B.V.</p>
-                <p>Tupolevlaan 41</p>
-                <p>1119 NW Schiphol-Rijk</p>
+                <p className="font-semibold text-foreground">{SITE_CONFIG.legalName}</p>
+                <p>{SITE_CONFIG.address.streetAddress}</p>
+                <p>{ADDRESS_CITY_LINE}</p>
                 <p>E-mail: <a href="mailto:info@zpzaken.nl" className="text-accent hover:underline">info@zpzaken.nl</a></p>
                 <p>Telefoon: <a href="tel:0204573077" className="text-accent hover:underline">020 - 457 3077</a></p>
-                <p>KvK: 62117092</p>
-                <p>AFM vergunningsnummer: 12050636</p>
+                <p>KvK: {SITE_CONFIG.registrations.kvk}</p>
+                <p>AFM vergunningsnummer: {SITE_CONFIG.registrations.afm}</p>
               </div>
               <p className="text-xs text-muted-foreground pt-4">Versie: april 2026</p>
             </Article>
