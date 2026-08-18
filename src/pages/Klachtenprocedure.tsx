@@ -2,6 +2,7 @@ import { Layout } from "@/components/layout/Layout";
 import { SEOHead } from "@/components/SEOHead";
 import { PageHero } from "@/components/layout/PageHero";
 import { MessageSquare, Phone, Mail, Scale, Shield, CheckCircle2 } from "lucide-react";
+import { SITE_CONFIG, ADDRESS_CITY_LINE } from "@/config/site";
 
 const tocItems = [
   { id: "stap-1", label: "Stap 1: Neem contact met ons op" },
@@ -40,7 +41,7 @@ export default function Klachtenprocedure() {
         <div className="container-wide">
           <div className="max-w-3xl mx-auto">
             <p className="text-lg text-muted-foreground leading-relaxed">
-              ZP Zaken B.V. vindt het belangrijk de tevredenheid van haar klanten. Ben je niet tevreden over onze dienstverlening? Dan horen we dat graag. Wij behandelen je klacht serieus, vertrouwelijk en zo snel mogelijk. ZP Zaken is geregistreerd bij de Autoriteit Financiële Markten (AFM) onder vergunningsnummer <strong>12050636</strong> en aangesloten bij het Klachteninstituut Financiële Dienstverlening (Kifid).
+              ZP Zaken B.V. vindt het belangrijk de tevredenheid van haar klanten. Ben je niet tevreden over onze dienstverlening? Dan horen we dat graag. Wij behandelen je klacht serieus, vertrouwelijk en zo snel mogelijk. ZP Zaken is geregistreerd bij de Autoriteit Financiële Markten (AFM) onder vergunningsnummer <strong>{SITE_CONFIG.registrations.afm}</strong> en aangesloten bij het Klachteninstituut Financiële Dienstverlening (Kifid).
             </p>
           </div>
         </div>
@@ -81,12 +82,12 @@ export default function Klachtenprocedure() {
                 <div className="bg-card rounded-xl border border-border/50 p-4 shadow-card">
                   <Phone className="h-5 w-5 text-accent mb-2" />
                   <p className="text-xs text-muted-foreground mb-1">Telefonisch</p>
-                  <a href="tel:0204573077" className="text-sm font-semibold text-foreground hover:text-accent transition-colors">020 - 457 3077</a>
+                  <a href={`tel:${SITE_CONFIG.phoneTel}`} className="text-sm font-semibold text-foreground hover:text-accent transition-colors">{SITE_CONFIG.phoneDisplay}</a>
                 </div>
                 <div className="bg-card rounded-xl border border-border/50 p-4 shadow-card">
                   <MessageSquare className="h-5 w-5 text-accent mb-2" />
                   <p className="text-xs text-muted-foreground mb-1">Per post</p>
-                  <p className="text-sm font-semibold text-foreground">ZP Zaken B.V.<br />Tupolevlaan 41<br />1119 NW Schiphol-Rijk</p>
+                  <p className="text-sm font-semibold text-foreground">{SITE_CONFIG.legalName}<br />{SITE_CONFIG.address.streetAddress}<br />{ADDRESS_CITY_LINE}</p>
                 </div>
               </div>
               <p className="pt-2">Vermeld bij je klacht:</p>
@@ -168,14 +169,14 @@ export default function Klachtenprocedure() {
 
             <Section id="contact" title="Contactgegevens">
               <div className="bg-secondary rounded-xl p-6 text-sm space-y-1">
-                <p className="font-semibold text-foreground">ZP Zaken B.V.</p>
-                <p>Tupolevlaan 41</p>
-                <p>1119 NW Schiphol-Rijk</p>
+                <p className="font-semibold text-foreground">{SITE_CONFIG.legalName}</p>
+                <p>{SITE_CONFIG.address.streetAddress}</p>
+                <p>{ADDRESS_CITY_LINE}</p>
                 <p>E-mail: <a href="mailto:info@zpzaken.nl" className="text-accent hover:underline">info@zpzaken.nl</a></p>
                 <p>Telefoon: <a href="tel:0204573077" className="text-accent hover:underline">020 - 457 3077</a></p>
-                <p>KvK: 62117092</p>
-                <p>AFM vergunningsnummer: 12050636</p>
-                <p>Kifid-aansluitnummer: 300.019283</p>
+                <p>KvK: {SITE_CONFIG.registrations.kvk}</p>
+                <p>AFM vergunningsnummer: {SITE_CONFIG.registrations.afm}</p>
+                <p>Kifid-aansluitnummer: {SITE_CONFIG.registrations.kifid}</p>
                 <p className="flex items-center gap-2 pt-2">
                   <Shield className="h-4 w-4 text-accent" />
                   <span>Kifid aangesloten</span>

@@ -3,6 +3,7 @@ import { SEOHead } from "@/components/SEOHead";
 import { PageHero } from "@/components/layout/PageHero";
 import { Cookie, Shield, BarChart3, Megaphone, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SITE_CONFIG, ADDRESS_SHORT } from "@/config/site";
 
 const COOKIE_CONSENT_KEY = "zpzaken_cookie_consent";
 
@@ -259,10 +260,10 @@ export default function Cookies() {
               Heb je vragen over ons cookiebeleid of over hoe we met je gegevens omgaan? Neem dan contact met ons op.
             </p>
             <div className="text-sm text-muted-foreground space-y-1">
-              <p><strong>ZP Zaken B.V.</strong></p>
-              <p>Tupolevlaan 41, Schiphol-Rijk</p>
-              <p>E-mail: <a href="mailto:privacy@zpzaken.nl" className="text-accent hover:underline">privacy@zpzaken.nl</a></p>
-              <p>AFM vergunningsnummer: 12050636</p>
+              <p><strong>{SITE_CONFIG.legalName}</strong></p>
+              <p>{ADDRESS_SHORT}</p>
+              <p>E-mail: <a href={`mailto:${SITE_CONFIG.emailPrivacy}`} className="text-accent hover:underline">{SITE_CONFIG.emailPrivacy}</a></p>
+              <p>AFM vergunningsnummer: {SITE_CONFIG.registrations.afm}</p>
             </div>
           </div>
         </div>

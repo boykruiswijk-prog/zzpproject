@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { PDFDocument, rgb, StandardFonts } from "https://esm.sh/pdf-lib@1.17.1";
+import { COMPANY } from "../_shared/company.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -242,16 +243,16 @@ serve(async (req) => {
     }
 
     const companyLines = [
-      "ZP Zaken B.V.",
-      "Tupolevlaan 41",
-      "1119 NW",
-      "Schiphol-Rijk",
-      "NL25 ABNA 0477 3302 23",
-      "KVK: 62117092",
-      "BTW: NL854862431B01",
-      "Telefoon: 020-4573077",
-      "administratie@zpzaken.nl",
-      "www.zpzaken.nl",
+      COMPANY.legalName,
+      COMPANY.address.streetAddress,
+      COMPANY.address.postalCode,
+      COMPANY.address.addressLocality,
+      COMPANY.registrations.iban,
+      `KVK: ${COMPANY.registrations.kvk}`,
+      `BTW: ${COMPANY.registrations.btw}`,
+      `Telefoon: ${COMPANY.phoneCompact}`,
+      COMPANY.emailAdministratie,
+      COMPANY.website,
     ];
 
     companyLines.forEach((line) => {

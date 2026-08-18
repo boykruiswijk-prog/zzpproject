@@ -2,6 +2,7 @@ import { Phone, Mail, MapPin, MessageCircle, Linkedin, Instagram } from "lucide-
 import { useTranslation } from "react-i18next";
 import logoZp from "@/assets/logo-zp.webp";
 import { LocalizedLink } from "@/components/LocalizedLink";
+import { SITE_CONFIG, ADDRESS_ONE_LINE } from "@/config/site";
 
 export function Footer() {
   const { t } = useTranslation();
@@ -44,19 +45,19 @@ export function Footer() {
               <img src={logoZp} alt="ZP Zaken logo" className="h-8 w-auto object-contain" />
             </LocalizedLink>
             <p className="text-background/70 mb-5 max-w-sm text-sm">
-              <span className="font-semibold text-background">ZP Zaken B.V.</span>, {t("footer.description")}
+              <span className="font-semibold text-background">{SITE_CONFIG.legalName}</span>, {t("footer.description")}
             </p>
             <div className="space-y-2">
-              <a href="tel:+31204573077" className="flex items-center gap-2 text-sm text-background/70 hover:text-background transition-colors">
+              <a href={`tel:${SITE_CONFIG.phone}`} className="flex items-center gap-2 text-sm text-background/70 hover:text-background transition-colors">
                 <Phone className="h-4 w-4" />
-                020 - 457 3077
+                {SITE_CONFIG.phoneDisplay}
               </a>
-              <a href="mailto:info@zpzaken.nl" className="flex items-center gap-2 text-sm text-background/70 hover:text-background transition-colors">
+              <a href={`mailto:${SITE_CONFIG.email}`} className="flex items-center gap-2 text-sm text-background/70 hover:text-background transition-colors">
                 <Mail className="h-4 w-4" />
-                info@zpzaken.nl
+                {SITE_CONFIG.email}
               </a>
               <a
-                href="https://wa.me/31652064589"
+                href={SITE_CONFIG.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-sm text-background/70 hover:text-background transition-colors"
@@ -66,7 +67,7 @@ export function Footer() {
               </a>
               <div className="flex items-start gap-2 text-sm text-background/70">
                 <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                <span>Tupolevlaan 41, 1119 NW Schiphol-Rijk</span>
+                <span>{ADDRESS_ONE_LINE}</span>
               </div>
             </div>
 
@@ -140,9 +141,9 @@ export function Footer() {
               {t("footer.copyright")}
             </p>
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-background/50">
-              <span>AFM nr. 12050636</span>
-              <span>KvK 62117092</span>
-              <span>Kifid nr. 300.019283</span>
+              <span>AFM nr. {SITE_CONFIG.registrations.afm}</span>
+              <span>KvK {SITE_CONFIG.registrations.kvk}</span>
+              <span>Kifid nr. {SITE_CONFIG.registrations.kifid}</span>
               <a
                 href="/documenten/gedragscode.pdf"
                 target="_blank"

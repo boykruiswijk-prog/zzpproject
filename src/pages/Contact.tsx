@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { trackContactFormSubmit } from "@/lib/tracking";
 import teamRoxy from "@/assets/team-roxy.jpg";
 import ellenPortrait from "@/assets/ellen-baars-avatar.jpg";
+import { SITE_CONFIG, ADDRESS_ONE_LINE } from "@/config/site";
 
 export default function Contact() {
   const { t } = useTranslation();
@@ -140,24 +141,32 @@ export default function Contact() {
               <div className="bg-card rounded-2xl p-8 shadow-card border border-border/50">
                 <h3 className="text-lg font-semibold mb-6">{t("contact.directContact")}</h3>
                 <div className="space-y-4">
-                  <a href="tel:0204573077" className="flex items-center gap-4 text-muted-foreground hover:text-foreground transition-colors">
+                  <a href={`tel:${SITE_CONFIG.phoneTel}`} className="flex items-center gap-4 text-muted-foreground hover:text-foreground transition-colors">
                     <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center"><Phone className="h-5 w-5 text-accent" /></div>
-                    <div><p className="font-medium text-foreground">020 - 457 3077</p><p className="text-sm">{t("contact.callUs")}</p></div>
+                    <div><p className="font-medium text-foreground">{SITE_CONFIG.phoneDisplay}</p><p className="text-sm">{t("contact.callUs")}</p></div>
                   </a>
-                  <a href="mailto:info@zpzaken.nl" className="flex items-center gap-4 text-muted-foreground hover:text-foreground transition-colors">
+                  <a href={`mailto:${SITE_CONFIG.email}`} className="flex items-center gap-4 text-muted-foreground hover:text-foreground transition-colors">
                     <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center"><Mail className="h-5 w-5 text-accent" /></div>
-                    <div><p className="font-medium text-foreground">info@zpzaken.nl</p><p className="text-sm">{t("contact.mailUs")}</p></div>
+                    <div><p className="font-medium text-foreground">{SITE_CONFIG.email}</p><p className="text-sm">{t("contact.mailUs")}</p></div>
                   </a>
-                  <a href="https://wa.me/31652064589" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-muted-foreground hover:text-foreground transition-colors">
+                  <a href={SITE_CONFIG.whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-muted-foreground hover:text-foreground transition-colors">
                     <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center"><MessageCircle className="h-5 w-5 text-accent" /></div>
-                    <div><p className="font-medium text-foreground">06 - 5206 4589</p><p className="text-sm">WhatsApp</p></div>
+                    <div><p className="font-medium text-foreground">{SITE_CONFIG.whatsappDisplay}</p><p className="text-sm">WhatsApp</p></div>
                   </a>
                   <div className="flex items-center gap-4 text-muted-foreground">
                     <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center"><MapPin className="h-5 w-5 text-accent" /></div>
-                    <div><p className="font-medium text-foreground">Tupolevlaan 41, 1119 NW Schiphol-Rijk</p><p className="text-sm">Nederland</p></div>
+                    <div><p className="font-medium text-foreground">{ADDRESS_ONE_LINE}</p><p className="text-sm">Nederland</p></div>
                   </div>
                 </div>
+                <div className="mt-6 pt-6 border-t border-border/50 text-sm text-muted-foreground space-y-1">
+                  <p className="font-medium text-foreground">{SITE_CONFIG.legalName}</p>
+                  <p>AFM: {SITE_CONFIG.registrations.afm}</p>
+                  <p>KIFID: {SITE_CONFIG.registrations.kifid}</p>
+                  <p>KvK: {SITE_CONFIG.registrations.kvk}</p>
+                  <p>BTW: {SITE_CONFIG.registrations.btw}</p>
+                </div>
               </div>
+
 
               <div className="bg-card rounded-2xl overflow-hidden shadow-card border border-border/50">
                 <img

@@ -4,6 +4,7 @@ import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Printer } from "lucide-react";
 import { formatDateNL } from "@/lib/dateFormat";
+import { SITE_CONFIG, ADDRESS_ONE_LINE } from "@/config/site";
 
 interface DocumentPageProps {
   title: string;
@@ -93,14 +94,14 @@ export function DocumentPage({
       <section className="bg-muted/40 border-t border-border/60">
         <div className="container-wide py-10">
           <div className="max-w-3xl mx-auto text-sm text-muted-foreground space-y-2">
-            <p className="font-semibold text-foreground">ZP Zaken B.V.</p>
+            <p className="font-semibold text-foreground">{SITE_CONFIG.legalName}</p>
             <p>
-              Tupolevlaan 41-61, 1119 NW Schiphol-Rijk · 020 - 457 3077 ·{" "}
-              <a href="mailto:info@zpzaken.nl" className="text-accent hover:underline">
-                info@zpzaken.nl
+              {ADDRESS_ONE_LINE} · {SITE_CONFIG.phoneDisplay} ·{" "}
+              <a href={`mailto:${SITE_CONFIG.email}`} className="text-accent hover:underline">
+                {SITE_CONFIG.email}
               </a>
             </p>
-            <p>AFM 12050636 · KvK 62117092 · Kifid 300.019283</p>
+            <p>AFM {SITE_CONFIG.registrations.afm} · KvK {SITE_CONFIG.registrations.kvk} · Kifid {SITE_CONFIG.registrations.kifid}</p>
             <p className="pt-2 italic">Document gegenereerd op {today}</p>
           </div>
         </div>
