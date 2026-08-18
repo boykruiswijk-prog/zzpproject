@@ -76,7 +76,7 @@ export default function Klachtenprocedure() {
                 <div className="bg-card rounded-xl border border-border/50 p-4 shadow-card">
                   <Mail className="h-5 w-5 text-accent mb-2" />
                   <p className="text-xs text-muted-foreground mb-1">Per e-mail</p>
-                  <a href="mailto:klachten@zpzaken.nl" className="text-sm font-semibold text-foreground hover:text-accent transition-colors">klachten@zpzaken.nl</a>
+                  <a href="mailto:info@zpzaken.nl" className="text-sm font-semibold text-foreground hover:text-accent transition-colors">info@zpzaken.nl</a>
                 </div>
                 <div className="bg-card rounded-xl border border-border/50 p-4 shadow-card">
                   <Phone className="h-5 w-5 text-accent mb-2" />
@@ -128,6 +128,7 @@ export default function Klachtenprocedure() {
               <p>Kifid is een onafhankelijke instantie die geschillen behandelt tussen consumenten en financiële dienstverleners.</p>
               <div className="bg-secondary rounded-xl p-6 mt-2 text-sm space-y-1">
                 <p className="font-semibold text-foreground">Kifid</p>
+                <p>Kifid-aansluitnummer 300.019283</p>
                 <p>Postbus 93257</p>
                 <p>2509 AG Den Haag</p>
                 <p>Telefoon: <a href="tel:09003552248" className="text-accent hover:underline">0900 - 355 22 48</a></p>
@@ -170,10 +171,11 @@ export default function Klachtenprocedure() {
                 <p className="font-semibold text-foreground">ZP Zaken B.V.</p>
                 <p>Tupolevlaan 41</p>
                 <p>1119 NW Schiphol-Rijk</p>
-                <p>E-mail: <a href="mailto:klachten@zpzaken.nl" className="text-accent hover:underline">klachten@zpzaken.nl</a></p>
+                <p>E-mail: <a href="mailto:info@zpzaken.nl" className="text-accent hover:underline">info@zpzaken.nl</a></p>
                 <p>Telefoon: <a href="tel:0204573077" className="text-accent hover:underline">020 - 457 3077</a></p>
                 <p>KvK: 62117092</p>
                 <p>AFM vergunningsnummer: 12050636</p>
+                <p>Kifid-aansluitnummer: 300.019283</p>
                 <p className="flex items-center gap-2 pt-2">
                   <Shield className="h-4 w-4 text-accent" />
                   <span>Kifid aangesloten</span>
