@@ -1,4 +1,4 @@
-// Eén bron van waarheid voor afzender + preview-redirect van uitgaande mail.
+// Eén bron van waarheid voor afzender + preview-redirect van uitgaande mail (v2).
 //
 // - getFromAddress(): RESEND_FROM_ADDRESS, anders "ZP Zaken <info@zpzaken.nl>".
 //   Er is GEEN terugval meer op een Resend-sandboxafzender.
