@@ -41,7 +41,7 @@ export default function Klachtenprocedure() {
         <div className="container-wide">
           <div className="max-w-3xl mx-auto">
             <p className="text-lg text-muted-foreground leading-relaxed">
-              ZP Zaken B.V. vindt het belangrijk de tevredenheid van haar klanten. Ben je niet tevreden over onze dienstverlening? Dan horen we dat graag. Wij behandelen je klacht serieus, vertrouwelijk en zo snel mogelijk. ZP Zaken is geregistreerd bij de Autoriteit Financiële Markten (AFM) onder vergunningsnummer <strong>12050636</strong> en aangesloten bij het Klachteninstituut Financiële Dienstverlening (Kifid).
+              ZP Zaken B.V. vindt het belangrijk de tevredenheid van haar klanten. Ben je niet tevreden over onze dienstverlening? Dan horen we dat graag. Wij behandelen je klacht serieus, vertrouwelijk en zo snel mogelijk. ZP Zaken is geregistreerd bij de Autoriteit Financiële Markten (AFM) onder vergunningsnummer <strong>{SITE_CONFIG.registrations.afm}</strong> en aangesloten bij het Klachteninstituut Financiële Dienstverlening (Kifid).
             </p>
           </div>
         </div>
