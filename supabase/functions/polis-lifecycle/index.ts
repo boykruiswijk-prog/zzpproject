@@ -101,7 +101,7 @@ function mailShell(title: string, body: string): string {
       <h2 style="color:#E53E2F;margin:0 0 16px">${title}</h2>
       ${body}
       <hr style="border:none;border-top:1px solid #eee;margin:24px 0"/>
-      <p style="font-size:12px;color:#888;margin:0">ZP Zaken B.V. · AFM 12050363 · info@zpzaken.nl · 020-4573077</p>
+      <p style="font-size:12px;color:#888;margin:0">ZP Zaken B.V. · AFM 12050636 · info@zpzaken.nl · 020-4573077</p>
     </div></body></html>`;
 }
 
