@@ -173,9 +173,9 @@ Deno.serve(async (req) => {
     const env = resolveEnvironment(req);
     const isProd = env.isProduction;
     console.log("send-lead-notification env:", JSON.stringify(env));
-    console.log(`[mail] ${JSON.stringify({ function: "send-lead-notification", from: getFromAddress(), environment: isProd ? "production" : "preview", env_reason: env.reason, host_source: env.hostSource, app_env: env.appEnv, to: [recipient], bcc: bccList, original_to: [baseRecipient], redirected: !isProd })}`);
     const recipient = isProd ? baseRecipient : "boy.kruiswijk@zpzaken.nl";
     const bccList = isProd ? BCC_DEFAULT : [];
+    console.log(`[mail] ${JSON.stringify({ function: "send-lead-notification", from: getFromAddress(), environment: isProd ? "production" : "preview", env_reason: env.reason, host_source: env.hostSource, app_env: env.appEnv, to: [recipient], bcc: bccList, original_to: [baseRecipient], redirected: !isProd })}`);
 
     const label = LEAD_LABELS[type] || type;
     const subjBase = (SUBJECTS[type] || ((r: string) => `Nieuwe lead (${type}) via zpzaken.nl - ${r}`))(reference || leadId || "");
