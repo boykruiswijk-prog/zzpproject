@@ -202,7 +202,7 @@ Deno.serve(async (req) => {
         from: getFromAddress(),
         to: [recipient],
         bcc: bccList.length ? bccList : undefined,
-        reply_to: isProd ? ((fields.email as string) || undefined) : undefined,
+        replyTo: isProd ? ((fields.email as string) || undefined) : undefined,
         subject, html, text,
       });
 
@@ -234,7 +234,7 @@ Deno.serve(async (req) => {
           const custRes: any = await resend.emails.send({
             from: getFromAddress(),
             to: [customerRecipient],
-            reply_to: "info@zpzaken.nl",
+            replyTo: "info@zpzaken.nl",
             subject: customerSubject,
             html: renderCustomerHtml(type, label, fields),
             text: renderCustomerText(type, fields),
