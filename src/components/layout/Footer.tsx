@@ -73,7 +73,7 @@ export function Footer() {
 
             <div className="flex items-center gap-3 mt-5">
               <a
-                href="https://www.linkedin.com/company/zp-zaken"
+                href={SITE_CONFIG.social.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
@@ -82,7 +82,7 @@ export function Footer() {
                 <Linkedin className="h-4 w-4" />
               </a>
               <a
-                href="https://www.instagram.com/zpzaken/"
+                href={SITE_CONFIG.social.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"

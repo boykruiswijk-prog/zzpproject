@@ -33,7 +33,7 @@ export function SiteSchemaMarkup() {
         closes: "18:00",
       },
     ],
-    sameAs: [SITE_CONFIG.social.linkedin, SITE_CONFIG.social.instagram],
+    sameAs: Object.values(SITE_CONFIG.social),
     identifier: [
       {
         "@type": "PropertyValue",
