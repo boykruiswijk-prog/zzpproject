@@ -30,10 +30,11 @@ export const SITE_CONFIG = {
     btw: "NL854662431B01",
     iban: "NL25 ABNA 0477 3302 23",
   },
-  // TODO: verifieer onderstaande social URLs voor ZP Zaken
   social: {
     linkedin: "https://www.linkedin.com/company/zp-zaken",
     instagram: "https://www.instagram.com/zp_zaken",
+    facebook: "https://www.facebook.com/ZPZaken",
+    x: "https://x.com/ZP_Zaken",
   },
 } as const;
 
