@@ -8,8 +8,10 @@ import { ArrowRight, Target, Eye, Users, Award, Heart, Shield, CheckCircle, User
 import teamMember1 from "@/assets/team-member-1.jpg";
 import teamMember2 from "@/assets/team-member-2.jpg";
 import teamMember3 from "@/assets/team-member-3.jpg";
+import gertjanPortrait from "@/assets/team-gert-jan.jpg";
+import noahPortrait from "@/assets/team-noah.jpg";
+import sandraPortrait from "@/assets/team-sandra.jpg";
 
-import teamMemberMystery from "@/assets/team-member-mystery.jpg";
 import teamWalking from "@/assets/team-walking.jpg";
 import teamCheers from "@/assets/team-cheers.jpg";
 import ellenPortrait from "@/assets/ellen-baars-portrait.jpg";
@@ -35,8 +37,9 @@ const team = [
   { name: "Boy Kruiswijk", role: "Oprichter", image: teamMember1, description: "Ruim 13 jaar geleden bedenker van de unieke polis voor zzp'ers in Nederland. Zijn visie: ondernemers goed en zorgeloos verzekerd." },
   { name: "Roxy Taskin", role: "Backoffice", image: teamMember2, description: "Zorgt ervoor dat alles op de achtergrond soepel verloopt. Van administratie tot klantondersteuning." },
   { name: "Ellen Baars", role: "Senior Adviseur", image: teamMember3, description: "Met jarenlange ervaring in verzekeringen helpt zij ondernemers met passende bemiddeling voor hun situatie." },
-  { name: "Sandra Jonker - van Nobelen", role: "Financieel & Administratief", image: teamMemberMystery, description: "Sandra is onze financiële steunpilaar. Met meer dan 30 jaar ervaring in financiële administratie en salarisverwerking weet zij als geen ander hoe de backoffice van een dienstverlener in elkaar steekt. Na een loopbaan van 24 jaar bij HeadFirst Group brengt Sandra precisie en persoonlijk contact samen.", email: "sandra@zpzaken.nl" },
-  { name: "Gert-Jan Schellingerhout", role: "Backoffice medewerker", image: null, photoPending: true, description: "Versterkt ons team met gedegen kennis en persoonlijk gesprek voor zelfstandig ondernemers." },
+  { name: "Gert-Jan Schellingerhout", role: "Backoffice medewerker", image: gertjanPortrait, description: "Versterkt ons team met gedegen kennis en persoonlijk gesprek voor zelfstandig ondernemers." },
+  { name: "Noah", role: "Backoffice medewerker", image: noahPortrait, description: "Versterkt ons team met gedegen kennis en persoonlijk gesprek voor zelfstandig ondernemers." },
+  { name: "Sandra Jonker - van Nobelen", role: "Financieel & Administratief", image: sandraPortrait, description: "Sandra is onze financiële steunpilaar. Met meer dan 30 jaar ervaring in financiële administratie en salarisverwerking weet zij als geen ander hoe de backoffice van een dienstverlener in elkaar steekt. Na een loopbaan van 24 jaar bij HeadFirst Group brengt Sandra precisie en persoonlijk contact samen.", email: "sandra@zpzaken.nl" },
   { name: "We groeien!", role: "Nieuw teamlid", image: null, description: "ZP Zaken is op zoek naar versterking. Wil jij onderdeel worden van ons team?" },
   { name: "Online Sales Adviseur", role: "Sales", image: null, vacancy: true, description: "Wij zijn op zoek naar een gedreven online sales adviseur die zzp'ers helpt de juiste verzekering te vinden. Jij bent het eerste aanspreekpunt voor nieuwe klanten via de website, chat en telefoon. Je werkt vanuit huis of kantoor en combineert commercieel inzicht met oprechte aandacht voor de klant." },
   { name: "Sales Adviseur Buitendienst", role: "Sales", image: null, vacancy: true, description: "Wij zoeken een energieke buitendienstadviseur die actief op pad gaat om zzp'ers persoonlijk te begeleiden. Jij bouwt relaties op bij netwerkevenementen, bij opdrachtgevers en in het veld. Je combineert zelfstandigheid met de kracht van een sterk merk achter je." },
