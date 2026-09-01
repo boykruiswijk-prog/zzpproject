@@ -8,9 +8,9 @@ import { ArrowRight, Target, Eye, Users, Award, Heart, Shield, CheckCircle, User
 import teamMember1 from "@/assets/team-member-1.jpg";
 import teamMember2 from "@/assets/team-member-2.jpg";
 import teamMember3 from "@/assets/team-member-3.jpg";
-import gertjanPortrait from "@/assets/team-gert-jan.jpg";
-import noahPortrait from "@/assets/team-noah.jpg";
-import sandraPortrait from "@/assets/team-sandra.jpg";
+import gertjanPortrait from "@/assets/team-member-4.jpg";
+import noahPortrait from "@/assets/team-member-mystery.jpg";
+import sandraPortrait from "@/assets/team-member-mystery.jpg";
 
 import teamWalking from "@/assets/team-walking.jpg";
 import teamCheers from "@/assets/team-cheers.jpg";
