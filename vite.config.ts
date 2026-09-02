@@ -71,7 +71,12 @@ export default defineConfig(({ mode }) => {
       output: {
         // Grote libraries in eigen chunks, zodat ze niet in de entry landen.
         manualChunks(id: string) {
+          // Vite's preload-helper en de kleine gedeelde utils horen bij de
+          // entry; anders trekt de entry een zware vendorchunk mee.
+          if (id.includes("vite/preload-helper") || id.includes("vite/modulepreload")) return "vendor-react";
           if (!id.includes("node_modules")) return;
+          if (/[\\/]node_modules[\\/](clsx|tailwind-merge|class-variance-authority|react-is|use-sync-external-store|object-assign|tslib)[\\/]/.test(id))
+            return "vendor-react";
           if (/[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/.test(id)) return "vendor-react";
           if (id.includes("react-router")) return "vendor-router";
           if (id.includes("@tanstack")) return "vendor-query";
