@@ -34,7 +34,7 @@ const definitions: Array<{ term: string; description: string }> = [
   { term: "Privacy Statement", description: "de privacyverklaring zoals opgenomen op de Website." },
   { term: "Profiel", description: "het profiel van Gebruiker zoals opgenomen in de Database, bestaande uit de aan ZP Zaken verstrekte Gegevens bij Registratie." },
   { term: "Registratie", description: "het door de Gebruiker aan ZP Zaken verstrekken van zijn gegevens opdat deze als Profiel in de Database worden opgenomen en de Dienst kan worden verricht." },
-  { term: "Website", description: "de website www.zpzaken.nl die wordt beheerd door ZP Zaken." },
+  { term: "Website", description: "de website zpzaken.nl die wordt beheerd door ZP Zaken." },
 ];
 
 const Article = ({ id, title, children }: { id: string; title: string; children: React.ReactNode }) => (

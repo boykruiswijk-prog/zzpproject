@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { Helmet } from "react-helmet-async";
+import { articleSchema, breadcrumbSchema } from "@/lib/schema";
 import { Layout } from "@/components/layout/Layout";
 import { useArticle, useArticles } from "@/hooks/useArticles";
 import {
@@ -44,7 +45,7 @@ const CATEGORY_SLUGS: Record<string, string> = {
   "Nieuws": "wet-en-regelgeving",
 };
 
-const FALLBACK_OG_IMAGE = "https://www.zpzaken.nl/og-image.jpg";
+const FALLBACK_OG_IMAGE = "https://zpzaken.nl/og-image.jpg";
 
 function stripMarkdown(s: string) {
   return s
@@ -187,43 +188,30 @@ export default function ArtikelDetail() {
   const readTime = article.read_time || estimateReadTime(article.content);
   const categoryStyle = CATEGORY_STYLES[article.category] || defaultCategoryStyle;
   const categorySlug = CATEGORY_SLUGS[article.category];
-  const articleUrl = `https://www.zpzaken.nl/kennisbank/${article.slug}`;
+  const articleUrl = `https://zpzaken.nl/kennisbank/${article.slug}`;
   const wordCount = countWords(article.content);
   const ogImage = article.image_url || FALLBACK_OG_IMAGE;
   const metaDescription = article.seo_description || makeFallbackDescription(article.content, article.excerpt);
   const seoTitle = article.seo_title || article.title;
   const publishedAt = article.published_at || new Date().toISOString();
 
-  const articleSchema = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: seoTitle,
+  const jsonLdArticle = articleSchema({
+    title: seoTitle,
     description: metaDescription,
-    image: [ogImage],
+    slug: article.slug,
     datePublished: publishedAt,
-    dateModified: publishedAt,
-    author: { "@type": "Organization", name: "ZP Zaken", url: "https://www.zpzaken.nl" },
-    publisher: {
-      "@type": "Organization",
-      name: "ZP Zaken",
-      logo: { "@type": "ImageObject", url: "https://www.zpzaken.nl/favicon.png" },
-    },
-    mainEntityOfPage: { "@type": "WebPage", "@id": articleUrl },
-    articleSection: article.category,
+    dateModified: (article as any).updated_at || publishedAt,
+    image: ogImage,
+    category: article.category,
     wordCount,
-    inLanguage: "nl-NL",
-  };
+  });
 
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.zpzaken.nl/" },
-      { "@type": "ListItem", position: 2, name: "Kennisbank", item: "https://www.zpzaken.nl/kennisbank" },
-      { "@type": "ListItem", position: 3, name: article.category, item: categorySlug ? `https://www.zpzaken.nl/kennisbank/${categorySlug}` : "https://www.zpzaken.nl/kennisbank" },
-      { "@type": "ListItem", position: 4, name: article.title, item: articleUrl },
-    ],
-  };
+  const jsonLdBreadcrumb = breadcrumbSchema([
+    { name: "Home", url: "/" },
+    { name: "Kennisbank", url: "/kennisbank" },
+    { name: article.category, url: categorySlug ? `/kennisbank/${categorySlug}` : "/kennisbank" },
+    { name: article.title, url: `/kennisbank/${article.slug}` },
+  ]);
 
   const isBavAvb = article.slug === BAV_AVB_SLUG;
   const commercialCategories = ["Verzekeringen", "Belastingen", "Fiscaal", "Financiën"];
@@ -256,8 +244,8 @@ export default function ArtikelDetail() {
 
         {article.image_url && <link rel="preload" as="image" href={article.image_url} />}
 
-        <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
-        <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(jsonLdArticle)}</script>
+        <script type="application/ld+json">{JSON.stringify(jsonLdBreadcrumb)}</script>
       </Helmet>
 
 

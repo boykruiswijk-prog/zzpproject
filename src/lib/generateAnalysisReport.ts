@@ -291,7 +291,7 @@ export async function generateAnalysisReport(check: DbaCheck) {
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(150);
-    doc.text("ZP Approved - Analyserapport | www.zpzaken.nl", pageWidth / 2, h - 10, { align: "center" });
+    doc.text("ZP Approved - Analyserapport | zpzaken.nl", pageWidth / 2, h - 10, { align: "center" });
     doc.text(`Pagina ${i} van ${pageCount}`, pageWidth - 14, h - 10, { align: "right" });
     doc.setTextColor(0);
   }

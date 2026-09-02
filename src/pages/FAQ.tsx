@@ -1,4 +1,5 @@
-import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
+import { breadcrumbSchema, faqSchema } from "@/lib/schema";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -69,29 +70,25 @@ const faqItems = [
   },
 ];
 
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": faqItems.flatMap(category => 
-    category.questions.map(item => ({
-      "@type": "Question",
-      "name": item.question,
-      "acceptedAnswer": { "@type": "Answer", "text": item.answer }
-    }))
-  )
-};
+const faqJsonLd = faqSchema(faqItems.flatMap((c) => c.questions));
+
+const breadcrumbJsonLd = breadcrumbSchema([
+  { name: "Home", url: "/" },
+  { name: "Veelgestelde vragen", url: "/faq" },
+]);
 
 export default function FAQ() {
   const { t } = useTranslation();
 
   return (
     <Layout>
-      <Helmet>
-        <title>Veelgestelde Vragen over ZZP Verzekeringen | ZP Zaken</title>
-        <meta name="description" content="Antwoorden op de meest gestelde vragen over BAV, AVB, AOV en ondernemen als zzp'er. Antwoorden van ZP Zaken." />
-        <link rel="canonical" href="https://zpzaken.nl/faq" />
-      </Helmet>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <SEOHead
+        title="Veelgestelde Vragen over ZZP Verzekeringen | ZP Zaken"
+        description="Antwoorden op de meest gestelde vragen over BAV, AVB, AOV en ondernemen als zzp'er. Antwoorden van ZP Zaken."
+      >
+        <script type="application/ld+json">{JSON.stringify(faqJsonLd)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
+      </SEOHead>
 
       <PageHero
         title={t("faq.title")}

@@ -1,4 +1,6 @@
 import { SEOHead } from "@/components/SEOHead";
+import { bavPakketten } from "@/data/bavPakketten";
+import { breadcrumbSchema, productSchema } from "@/lib/schema";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { BAVApplicationModule } from "@/components/home/BAVApplicationModule";
 import { useTranslation } from "react-i18next";
@@ -26,30 +28,13 @@ export default function Verzekeringen() {
   ];
   
 
-  const insuranceSchema = {
-    "@context": "https://schema.org",
-    "@type": "Service",
-    "name": "BAV & AVB Verzekering voor ZZP'ers",
-    "provider": {
-      "@type": "Organization",
-      "name": "ZP Zaken",
-      "url": "https://zpzaken.nl"
-    },
-    "description": "Sluit direct online je beroeps- en bedrijfsaansprakelijkheidsverzekering af. De goedkoopste BAV + AVB combinatiepolis voor zzp'ers. Geen eigen risico.",
-    "areaServed": "NL",
-    "offers": {
-      "@type": "Offer",
-      "priceCurrency": "EUR",
-      "price": "22",
-      "priceSpecification": {
-        "@type": "UnitPriceSpecification",
-        "price": "22",
-        "priceCurrency": "EUR",
-        "unitText": "maand",
-        "description": "Vanaf-prijs per maand"
-      }
-    }
-  };
+  // Product + Offer per pakket, uitsluitend uit bavPakketten.ts.
+  const productJsonLd = bavPakketten.map((pakket) => productSchema(pakket));
+
+  const breadcrumbJsonLd = breadcrumbSchema([
+    { name: "Home", url: "/" },
+    { name: "Verzekeringen", url: "/verzekeringen" },
+  ]);
 
   return (
     <Layout>
@@ -57,7 +42,10 @@ export default function Verzekeringen() {
         title="BAV + AVB Combinatieverzekering voor ZZP'ers | Direct Online Afsluiten | ZP Zaken"
         description="De enige gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering in Nederland. Vanaf €55 per maand, geen eigen risico. Direct online afsluiten in 5 stappen."
       >
-        <script type="application/ld+json">{JSON.stringify(insuranceSchema)}</script>
+        {productJsonLd.map((schema, i) => (
+          <script key={i} type="application/ld+json">{JSON.stringify(schema)}</script>
+        ))}
+        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
       </SEOHead>
 
       <PageHero

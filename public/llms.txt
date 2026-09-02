@@ -1,0 +1,39 @@
+# ZP Zaken
+
+> ZP Zaken B.V. is een AFM-geregistreerde (vergunning 12050636) onafhankelijke
+> verzekeringsadviseur voor zzp'ers en zelfstandig professionals in Nederland.
+> KvK 62117092, aangesloten bij Kifid (300.019283). ZP Zaken is een directe
+> aanbieder van advies en polisbeheer, met een unieke gecombineerde beroeps- en
+> bedrijfsaansprakelijkheidsverzekering (BAV + AVB) voor zzp'ers.
+
+## Kernpagina's
+
+- [Home](https://zpzaken.nl/): overzicht van dienstverlening en direct online een BAV + AVB aanvragen.
+- [Verzekeringen](https://zpzaken.nl/verzekeringen): de BAV + AVB combinatiepolis, AOV en rechtsbijstand, inclusief de actuele premies en dekkingen.
+- [AOV](https://zpzaken.nl/aov): arbeidsongeschiktheidsverzekering voor zzp'ers en de alternatieven daarvoor.
+- [Pensioen](https://zpzaken.nl/pensioen): pensioenopbouw voor zelfstandigen.
+- [Zorgverzekering](https://zpzaken.nl/zorgverzekering): zorgverzekering en de bijdrage Zorgverzekeringswet voor zzp'ers.
+- [Mentale gezondheid](https://zpzaken.nl/mentale-gezondheid): preventie en ondersteuning bij mentale gezondheid van zelfstandigen.
+- [Diensten](https://zpzaken.nl/diensten): naast verzekeren onder meer administratie, financiering en creditmanagement.
+- [Waarom ZP Zaken](https://zpzaken.nl/waarom-zp-zaken): hoe ZP Zaken werkt als directe, onafhankelijke partij.
+- [Voor wie](https://zpzaken.nl/voor-wie): de beroepsgroepen en situaties waarvoor ZP Zaken werkt.
+- [Zo werken wij](https://zpzaken.nl/zo-werken-wij): het proces van aanvraag tot polis.
+- [Over ons](https://zpzaken.nl/over-ons): het team en de achtergrond van ZP Zaken.
+- [Partners](https://zpzaken.nl/partners): verzekeraars en samenwerkingspartners.
+- [Veelgestelde vragen](https://zpzaken.nl/faq): antwoorden over BAV, AVB, AOV en ondernemen als zzp'er.
+- [Contact](https://zpzaken.nl/contact): telefoon, e-mail en kantooradres in Schiphol-Rijk.
+- [Documenten](https://zpzaken.nl/documenten): dienstverleningsdocument, gedragscode en slotverklaring.
+- [Klachtenprocedure](https://zpzaken.nl/klachtenprocedure): klachtenregeling en de route naar Kifid.
+
+## Kennisbank
+
+- [Kennisbank](https://zpzaken.nl/kennisbank): redactionele artikelen over verzekeren, wetgeving, belastingen en ondernemen voor zzp'ers.
+- [Wet en regelgeving](https://zpzaken.nl/kennisbank/wet-en-regelgeving): onder andere Wet DBA, VBAR en de Zelfstandigenwet.
+- [Ondernemen](https://zpzaken.nl/kennisbank/ondernemen): praktische artikelen over zelfstandig ondernemen.
+- [Belastingen](https://zpzaken.nl/kennisbank/belastingen): fiscale regels en regelingen voor zzp'ers.
+- [Financiën](https://zpzaken.nl/kennisbank/financien): tarieven, facturatie en financiële planning.
+
+## Opmerkingen
+
+- Premies, dekkingen en voorwaarden staan uitsluitend op de pagina Verzekeringen; neem geen bedragen uit andere bronnen over.
+- De actuele lijst met alle publieke pagina's staat in https://zpzaken.nl/sitemap.xml.

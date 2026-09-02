@@ -14,7 +14,6 @@ const Index = () => {
       <SEOHead
         title="ZP Zaken | BAV & AVB Verzekering voor ZZP'ers | Vanaf €55/maand"
         description="Onafhankelijke verzekeringsadviseur voor zzp'ers. Sluit direct online een BAV+AVB combinatieverzekering af. Geen eigen risico, dagelijks opzegbaar. AFM geregistreerd."
-        canonical="https://zpzaken.nl/"
       />
       <HeroSection />
       <HiscoxTrustStrip />

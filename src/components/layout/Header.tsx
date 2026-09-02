@@ -50,7 +50,6 @@ function useNavItems() {
         { href: "/kennisbank/belastingen", label: "Belastingen" },
         { href: "/kennisbank/financien", label: "Financiën" },
         { href: "/faq", label: t("nav.faq") },
-        { href: "/kennis", label: t("nav.kennisAdvies") },
       ]
     },
     { 
