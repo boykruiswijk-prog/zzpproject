@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { LocalizedLink } from "@/components/LocalizedLink";
-import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -27,11 +27,10 @@ export default function Kennisbank() {
 
   return (
     <Layout>
-      <Helmet>
-        <title>Kennisbank ZZP Verzekeringen | Artikelen & Nieuws | ZP Zaken</title>
-        <meta name="description" content="Blijf op de hoogte van wet DBA, verzekeringen en regelgeving voor zzp'ers. Praktische artikelen door specialisten met 13 jaar ervaring." />
-        <link rel="canonical" href="https://zpzaken.nl/kennisbank" />
-      </Helmet>
+      <SEOHead
+        title="Kennisbank ZZP Verzekeringen | Artikelen & Nieuws | ZP Zaken"
+        description="Blijf op de hoogte van wet DBA, verzekeringen en regelgeving voor zzp'ers. Praktische artikelen door specialisten met 13 jaar ervaring."
+      />
 
       <PageHero
         title={t("kennisbank.title")}

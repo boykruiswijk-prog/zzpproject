@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -358,11 +358,10 @@ export default function CollectieveInkoop() {
 
   return (
     <Layout>
-      <Helmet>
-        <title>Collectieve Inkoop voor ZZP'ers | Samen Sterker | ZP Zaken</title>
-        <meta name="description" content="Profiteer van collectieve inkoopkracht als zzp'er. ZP Zaken bundelt ondernemers voor betere deals op energie, software, telefonie en meer." />
-        <link rel="canonical" href="https://zzpproject.lovable.app/collectieve-inkoop" />
-      </Helmet>
+      <SEOHead
+        title="Collectieve Inkoop voor ZZP'ers | Samen Sterker | ZP Zaken"
+        description="Profiteer van collectieve inkoopkracht als zzp'er. ZP Zaken bundelt ondernemers voor betere deals op energie, software, telefonie en meer."
+      />
 
       <PageHero
         title={<>{t("collectieveInkoop.heroTitle")} <span className="text-accent">{t("collectieveInkoop.heroTitleAccent")}</span></>}

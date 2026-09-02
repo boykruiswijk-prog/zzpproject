@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
@@ -65,20 +65,10 @@ function DocList({ docs }: { docs: Document[] }) {
 export default function Documenten() {
   return (
     <Layout>
-      <Helmet>
-        <title>Documenten en downloads | ZP Zaken</title>
-        <meta
-          name="description"
-          content="Bekijk en download polisvoorwaarden, verzekeringskaarten en brochures van ZP Zaken per branche."
-        />
-        <link rel="canonical" href="https://zpzaken.nl/documenten" />
-        <meta property="og:title" content="Documenten en downloads | ZP Zaken" />
-        <meta
-          property="og:description"
-          content="Bekijk en download polisvoorwaarden, verzekeringskaarten en brochures van ZP Zaken per branche."
-        />
-        <meta property="og:url" content="https://zpzaken.nl/documenten" />
-      </Helmet>
+      <SEOHead
+        title="Documenten en downloads | ZP Zaken"
+        description="Bekijk en download polisvoorwaarden, verzekeringskaarten en brochures van ZP Zaken per branche."
+      />
 
       <PageHero
         title="Documenten en downloads"

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -66,11 +66,10 @@ export default function Contact() {
 
   return (
     <Layout>
-      <Helmet>
-        <title>Contact | Vrijblijvend Gesprek Aanvragen | ZP Zaken</title>
-        <meta name="description" content="Neem contact op met ZP Zaken. Bel 020 - 457 3077, mail info@zpzaken.nl of plan een vrijblijvend gesprek." />
-        <link rel="canonical" href="https://zpzaken.nl/contact" />
-      </Helmet>
+      <SEOHead
+        title="Contact | Vrijblijvend Gesprek Aanvragen | ZP Zaken"
+        description="Neem contact op met ZP Zaken. Bel 020 - 457 3077, mail info@zpzaken.nl of plan een vrijblijvend gesprek."
+      />
       <PageHero
         title={t("contact.title")}
         subtitle={t("contact.subtitle")}

@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -23,11 +23,10 @@ export default function Historie() {
 
   return (
     <Layout>
-      <Helmet>
-        <title>{t("historie.title")} | ZP Zaken</title>
-        <meta name="description" content={t("historie.subtitle")} />
-        <link rel="canonical" href="https://zpzaken.nl/historie" />
-      </Helmet>
+      <SEOHead
+        title={`${t("historie.title")} | ZP Zaken`}
+        description={t("historie.subtitle")}
+      />
 
       <PageHero
         title={t("historie.title")}

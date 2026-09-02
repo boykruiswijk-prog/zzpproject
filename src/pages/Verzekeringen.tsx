@@ -1,6 +1,6 @@
 import { SEOHead } from "@/components/SEOHead";
 import { bavPakketten } from "@/data/bavPakketten";
-import { breadcrumbSchema, productSchema } from "@/lib/schema";
+import { productSchema } from "@/lib/schema";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { BAVApplicationModule } from "@/components/home/BAVApplicationModule";
 import { useTranslation } from "react-i18next";
@@ -31,11 +31,6 @@ export default function Verzekeringen() {
   // Product + Offer per pakket, uitsluitend uit bavPakketten.ts.
   const productJsonLd = bavPakketten.map((pakket) => productSchema(pakket));
 
-  const breadcrumbJsonLd = breadcrumbSchema([
-    { name: "Home", url: "/" },
-    { name: "Verzekeringen", url: "/verzekeringen" },
-  ]);
-
   return (
     <Layout>
       <SEOHead
@@ -45,7 +40,6 @@ export default function Verzekeringen() {
         {productJsonLd.map((schema, i) => (
           <script key={i} type="application/ld+json">{JSON.stringify(schema)}</script>
         ))}
-        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
       </SEOHead>
 
       <PageHero

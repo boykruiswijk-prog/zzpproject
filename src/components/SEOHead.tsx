@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 import { SITE_CONFIG } from "@/config/site";
+import { breadcrumbForPath } from "@/lib/schema";
 
 interface SEOHeadProps {
   title: string;
@@ -32,6 +33,8 @@ export function SEOHead({
   const selfPath = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
   const canonicalUrl = canonical || `${BASE_URL}${selfPath}`;
   const nlPath = cleanPath === "/" ? "/" : cleanPath.replace(/\/$/, "");
+  // BreadcrumbList automatisch per subpagina (nooit op de homepage).
+  const breadcrumb = noindex ? null : breadcrumbForPath(nlPath);
 
   return (
     <Helmet>
@@ -67,6 +70,10 @@ export function SEOHead({
         />
       ))}
       <link rel="alternate" hrefLang="x-default" href={`${BASE_URL}${nlPath}`} />
+
+      {breadcrumb && (
+        <script type="application/ld+json">{JSON.stringify(breadcrumb)}</script>
+      )}
 
       {children}
     </Helmet>
