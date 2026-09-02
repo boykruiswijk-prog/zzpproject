@@ -40,7 +40,9 @@ export function SEOHead({
     <Helmet>
       <title>{title}</title>
       <meta name="description" content={description} />
-      <link rel="canonical" href={canonicalUrl} />
+      {/* Geen canonical op noindex-pagina's: dat geeft tegenstrijdige signalen. */}
+      {!noindex && <link rel="canonical" href={canonicalUrl} />}
+
 
       {noindex && <meta name="robots" content="noindex, nofollow" />}
 
