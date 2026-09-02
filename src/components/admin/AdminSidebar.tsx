@@ -15,6 +15,7 @@ import {
   Share2,
   Activity,
   BookOpen,
+  Download,
 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -37,6 +38,7 @@ const navItems: NavItem[] = [
   { to: "/admin/dba-checks", icon: ShieldCheck, label: "Wet DBA", roles: ["supervisor", "verzekering"] },
   { to: "/admin/marketing", icon: Share2, label: "Website & Blog", roles: ["supervisor", "marketing"] },
   { to: "/admin/kennisbank", icon: BookOpen, label: "Kennisbank", roles: ["supervisor", "marketing"] },
+  { to: "/admin/wp-import", icon: Download, label: "WordPress-import", roles: ["supervisor", "marketing"] },
 
   { to: "/admin/social-media", icon: Share2, label: "Social media", roles: ["supervisor", "marketing"] },
   { to: "/admin/wachtwoord-wijzigen", icon: KeyRound, label: "Wachtwoord wijzigen", roles: ["supervisor", "verzekering", "marketing"] },
