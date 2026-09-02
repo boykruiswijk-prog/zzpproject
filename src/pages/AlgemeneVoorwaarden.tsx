@@ -1,8 +1,11 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { Layout } from "@/components/layout/Layout";
 import { SEOHead } from "@/components/SEOHead";
 import { PageHero } from "@/components/layout/PageHero";
 import { FileText } from "lucide-react";
 import { SITE_CONFIG, ADDRESS_ONE_LINE, ADDRESS_CITY_LINE } from "@/config/site";
+
+const SEO = seoRoute("/algemene-voorwaarden");
 
 const tocItems = [
   { id: "artikel-1", label: "1. Definities" },
@@ -54,8 +57,8 @@ export default function AlgemeneVoorwaarden() {
   return (
     <Layout>
       <SEOHead
-        title="Algemene Voorwaarden | ZP Zaken"
-        description="Algemene Voorwaarden van ZP Zaken B.V. Van toepassing op alle diensten van ZP Zaken."
+        title={SEO.title}
+        description={SEO.description}
       />
       <PageHero
         title="Algemene Voorwaarden ZP Zaken B.V."

@@ -1,3 +1,4 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { SEOHead } from "@/components/SEOHead";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
@@ -10,6 +11,8 @@ import boyKruiswijk from "@/assets/team-member-1.jpg";
 import teamMeeting from "@/assets/team-meeting.jpg";
 import teamCheers from "@/assets/team-cheers.jpg";
 import officeFlowers from "@/assets/office-flowers.jpg";
+
+const SEO = seoRoute("/historie");
 
 export default function Historie() {
   const { t } = useTranslation();
@@ -24,8 +27,8 @@ export default function Historie() {
   return (
     <Layout>
       <SEOHead
-        title={`${t("historie.title")} | ZP Zaken`}
-        description={t("historie.subtitle")}
+        title={SEO.title}
+        description={SEO.description}
       />
 
       <PageHero

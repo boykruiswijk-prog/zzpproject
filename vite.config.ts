@@ -1,4 +1,4 @@
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import fs from "fs";
@@ -28,8 +28,25 @@ function redirectsPlugin(): Plugin {
   };
 }
 
+/**
+ * Schrijft na de build per publieke route een statische HTML met de juiste head
+ * en echte tekst, zodat crawlers zonder JavaScript geen lege shell zien.
+ */
+function prerenderPlugin(env: Record<string, string>): Plugin {
+  return {
+    name: "zp-prerender",
+    apply: "build",
+    async closeBundle() {
+      const { prerender } = await import("./scripts/prerender");
+      await prerender(path.resolve(__dirname, "dist"), env);
+    },
+  };
+}
+
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "");
+  return {
   server: {
     host: "::",
     port: 8080,
@@ -45,10 +62,38 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     mcpPlugin(),
     redirectsPlugin(),
+    prerenderPlugin(env),
   ].filter(Boolean),
+
+  build: {
+    chunkSizeWarningLimit: 900,
+    rollupOptions: {
+      output: {
+        // Grote libraries in eigen chunks, zodat ze niet in de entry landen.
+        manualChunks(id: string) {
+          if (!id.includes("node_modules")) return;
+          if (/[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/.test(id)) return "vendor-react";
+          if (id.includes("react-router")) return "vendor-router";
+          if (id.includes("@tanstack")) return "vendor-query";
+          if (id.includes("@supabase")) return "vendor-supabase";
+          if (id.includes("recharts") || id.includes("d3-")) return "vendor-charts";
+          if (id.includes("jspdf") || id.includes("html2canvas") || id.includes("pdfjs-dist")) return "vendor-pdf";
+          if (id.includes("mammoth") || id.includes("jszip") || id.includes("xlsx")) return "vendor-docs";
+          if (id.includes("@tiptap") || id.includes("prosemirror")) return "vendor-editor";
+          if (id.includes("framer-motion") || id.includes("motion")) return "vendor-motion";
+          if (id.includes("i18next")) return "vendor-i18n";
+          if (id.includes("@radix-ui") || id.includes("lucide-react") || id.includes("cmdk")) return "vendor-ui";
+          // Overige dependencies blijven bij de chunk die ze importeert, zodat
+          // ze de lazy-grens niet doorbreken en niet in de entry belanden.
+          return undefined;
+        },
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
-}));
+  };
+});

@@ -1,3 +1,4 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { SEOHead } from "@/components/SEOHead";
 import { useTranslation } from "react-i18next";
@@ -7,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, MessageCircle, FileSearch, CheckCircle, Clock, Heart, Shield, Users } from "lucide-react";
 import officeMeetingRoom from "@/assets/office-meeting-room.jpg";
 import teamBoyCalling from "@/assets/team-boy-calling.jpg";
+
+const SEO = seoRoute("/zo-werken-wij");
 
 export default function ZoWerkenWij() {
   const { t } = useTranslation();
@@ -27,8 +30,8 @@ export default function ZoWerkenWij() {
   return (
     <Layout>
       <SEOHead
-        title={`${t("zoWerkenWij.title")} | ZP Zaken`}
-        description={t("zoWerkenWij.subtitle")}
+        title={SEO.title}
+        description={SEO.description}
       />
 
       <PageHero

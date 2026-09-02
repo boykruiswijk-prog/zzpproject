@@ -1,3 +1,4 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { useState } from "react";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { SEOHead } from "@/components/SEOHead";
@@ -11,6 +12,8 @@ import { useArticles, useArticleCategories } from "@/hooks/useArticles";
 import { ArticleCard } from "@/components/kennisbank/ArticleCard";
 import { CategoryFilter } from "@/components/kennisbank/CategoryFilter";
 import officeFlowers from "@/assets/zp-boy-laptop.jpg";
+
+const SEO = seoRoute("/kennisbank");
 
 const categoryCards = [
   { icon: Scale, title: "Wet en regelgeving", desc: "Wet DBA, zelfstandigenregelingen en juridische zaken.", href: "/kennisbank/wet-en-regelgeving" },
@@ -28,8 +31,8 @@ export default function Kennisbank() {
   return (
     <Layout>
       <SEOHead
-        title="Kennisbank ZZP Verzekeringen | Artikelen & Nieuws | ZP Zaken"
-        description="Blijf op de hoogte van wet DBA, verzekeringen en regelgeving voor zzp'ers. Praktische artikelen door specialisten met 13 jaar ervaring."
+        title={SEO.title}
+        description={SEO.description}
       />
 
       <PageHero

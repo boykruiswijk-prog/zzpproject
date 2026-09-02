@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -5,85 +6,85 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useParams } from "react-router-dom";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { AuthProvider } from "@/contexts/AuthContext";
-import Index from "./pages/Index";
-import Diensten from "./pages/Diensten";
-import Verzekeringen from "./pages/Verzekeringen";
-import AOV from "./pages/AOV";
-import Pensioen from "./pages/Pensioen";
-import Zorgverzekering from "./pages/Zorgverzekering";
-import MentaleGezondheid from "./pages/MentaleGezondheid";
-import WaaromZpZaken from "./pages/WaaromZpZaken";
-import VoorWie from "./pages/VoorWie";
-import ZoWerkenWij from "./pages/ZoWerkenWij";
-import Kennisbank from "./pages/Kennisbank";
-import KennisbankWetEnRegelgeving from "./pages/kennisbank/WetEnRegelgeving";
-import KennisbankOndernemen from "./pages/kennisbank/Ondernemen";
-import KennisbankBelastingen from "./pages/kennisbank/Belastingen";
-import KennisbankFinancien from "./pages/kennisbank/Financien";
-import ArtikelDetail from "./pages/ArtikelDetail";
-import OverOns from "./pages/OverOns";
-import Partners from "./pages/Partners";
-import Historie from "./pages/Historie";
-import Contact from "./pages/Contact";
-import Cookies from "./pages/Cookies";
-import FAQ from "./pages/FAQ";
-import NotFound from "./pages/NotFound";
-import CollectieveInkoop from "./pages/CollectieveInkoop";
-import CollectiefLedenorganisaties from "./pages/CollectiefLedenorganisaties";
-import SocialMedia from "./pages/SocialMedia";
-import CreditControl from "./pages/CreditControl";
-import Screening from "./pages/Screening";
-import AdminScreeningAanvragen from "./pages/admin/ScreeningAanvragen";
-import AdminScreeningAanvraagDetail from "./pages/admin/ScreeningAanvraagDetailPage";
-import AdminServiceAanvragen from "./pages/admin/ServiceAanvragen";
-import AdminServiceAanvraagDetail from "./pages/admin/ServiceAanvraagDetailPage";
-import AdminCRM from "./pages/admin/CRM";
-import AdminActiviteiten from "./pages/admin/Activiteiten";
-import AdminSocialMediaFeatures from "./pages/admin/SocialMediaFeatures";
-import AdminIntegraties from "./pages/admin/Integraties";
-import AdminExactKoppeling from "./pages/admin/ExactKoppeling";
-import AdminMarketing from "./pages/admin/MarketingPlaceholder";
-import AdminKennisbank from "./pages/admin/KennisbankArtikelen";
-import AdminKennisbankEditor from "./pages/admin/KennisbankArtikelEditor";
+const Index = lazy(() => import("./pages/Index"));
+const Diensten = lazy(() => import("./pages/Diensten"));
+const Verzekeringen = lazy(() => import("./pages/Verzekeringen"));
+const AOV = lazy(() => import("./pages/AOV"));
+const Pensioen = lazy(() => import("./pages/Pensioen"));
+const Zorgverzekering = lazy(() => import("./pages/Zorgverzekering"));
+const MentaleGezondheid = lazy(() => import("./pages/MentaleGezondheid"));
+const WaaromZpZaken = lazy(() => import("./pages/WaaromZpZaken"));
+const VoorWie = lazy(() => import("./pages/VoorWie"));
+const ZoWerkenWij = lazy(() => import("./pages/ZoWerkenWij"));
+const Kennisbank = lazy(() => import("./pages/Kennisbank"));
+const KennisbankWetEnRegelgeving = lazy(() => import("./pages/kennisbank/WetEnRegelgeving"));
+const KennisbankOndernemen = lazy(() => import("./pages/kennisbank/Ondernemen"));
+const KennisbankBelastingen = lazy(() => import("./pages/kennisbank/Belastingen"));
+const KennisbankFinancien = lazy(() => import("./pages/kennisbank/Financien"));
+const ArtikelDetail = lazy(() => import("./pages/ArtikelDetail"));
+const OverOns = lazy(() => import("./pages/OverOns"));
+const Partners = lazy(() => import("./pages/Partners"));
+const Historie = lazy(() => import("./pages/Historie"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Cookies = lazy(() => import("./pages/Cookies"));
+const FAQ = lazy(() => import("./pages/FAQ"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const CollectieveInkoop = lazy(() => import("./pages/CollectieveInkoop"));
+const CollectiefLedenorganisaties = lazy(() => import("./pages/CollectiefLedenorganisaties"));
+const SocialMedia = lazy(() => import("./pages/SocialMedia"));
+const CreditControl = lazy(() => import("./pages/CreditControl"));
+const Screening = lazy(() => import("./pages/Screening"));
+const AdminScreeningAanvragen = lazy(() => import("./pages/admin/ScreeningAanvragen"));
+const AdminScreeningAanvraagDetail = lazy(() => import("./pages/admin/ScreeningAanvraagDetailPage"));
+const AdminServiceAanvragen = lazy(() => import("./pages/admin/ServiceAanvragen"));
+const AdminServiceAanvraagDetail = lazy(() => import("./pages/admin/ServiceAanvraagDetailPage"));
+const AdminCRM = lazy(() => import("./pages/admin/CRM"));
+const AdminActiviteiten = lazy(() => import("./pages/admin/Activiteiten"));
+const AdminSocialMediaFeatures = lazy(() => import("./pages/admin/SocialMediaFeatures"));
+const AdminIntegraties = lazy(() => import("./pages/admin/Integraties"));
+const AdminExactKoppeling = lazy(() => import("./pages/admin/ExactKoppeling"));
+const AdminMarketing = lazy(() => import("./pages/admin/MarketingPlaceholder"));
+const AdminKennisbank = lazy(() => import("./pages/admin/KennisbankArtikelen"));
+const AdminKennisbankEditor = lazy(() => import("./pages/admin/KennisbankArtikelEditor"));
+const ExactCallback = lazy(() => import("./pages/ExactCallback"));
+const AdminLogin = lazy(() => import("./pages/admin/LoginPage"));
+const ChangePasswordPage = lazy(() => import("./pages/admin/ChangePasswordPage"));
+const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
+const AdminLeads = lazy(() => import("./pages/admin/Leads"));
+const AdminLeadDetail = lazy(() => import("./pages/admin/LeadDetail"));
+const AdminTeam = lazy(() => import("./pages/admin/Team"));
+const AdminDbaChecks = lazy(() => import("./pages/admin/DbaChecks"));
+const DbaCheckNew = lazy(() => import("./pages/admin/DbaCheckNew"));
+const DbaCheckDetail = lazy(() => import("./pages/admin/DbaCheckDetail"));
+const DbaCheckBulk = lazy(() => import("./pages/admin/DbaCheckBulk"));
+const DbaCheckBatchDetail = lazy(() => import("./pages/admin/DbaCheckBatchDetail"));
+const DbaVerificatie = lazy(() => import("./pages/DbaVerificatie"));
+const ForgotPassword = lazy(() => import("./pages/admin/ForgotPasswordPage"));
+const ResetPassword = lazy(() => import("./pages/admin/ResetPasswordPage"));
+const ScreenshotHelper = lazy(() => import("./pages/ScreenshotHelper"));
+const AlgemeneVoorwaarden = lazy(() => import("./pages/AlgemeneVoorwaarden"));
+const Klachtenprocedure = lazy(() => import("./pages/Klachtenprocedure"));
+const Documenten = lazy(() => import("./pages/Documenten"));
+const SlotverklaringPage = lazy(() => import("./pages/documenten/SlotverklaringPage"));
+const DienstverleningsdocumentPage = lazy(() => import("./pages/documenten/DienstverleningsdocumentPage"));
+const GedragscodePage = lazy(() => import("./pages/documenten/GedragscodePage"));
+const OffertePage = lazy(() => import("./pages/OffertePage"));
+const OfferteBedankt = lazy(() => import("./pages/OfferteBedankt"));
+const MijnZpPolis = lazy(() => import("./pages/mijn-zp/Certificaat"));
+const MijnZpPauzeren = lazy(() => import("./pages/mijn-zp/Pauzeren"));
+const MijnZpDocumenten = lazy(() => import("./pages/mijn-zp/Documenten"));
+const MijnZpOpzeggen = lazy(() => import("./pages/mijn-zp/Opzeggen"));
+const PortalLogin = lazy(() => import("./pages/portal/PortalLogin"));
+const PortalInviteAccept = lazy(() => import("./pages/portal/PortalInviteAccept"));
+const PortalOverview = lazy(() => import("./pages/portal/PortalOverview"));
+const PortalPolicy = lazy(() => import("./pages/portal/PortalPolicy"));
+const PortalDocuments = lazy(() => import("./pages/portal/PortalDocuments"));
+const PortalInvoices = lazy(() => import("./pages/portal/PortalInvoices"));
+const PortalHeractiveer = lazy(() => import("./pages/portal/PortalHeractiveer"));
 
 import { RoleGuard } from "./components/admin/RoleGuard";
-import ExactCallback from "./pages/ExactCallback";
-import AdminLogin from "./pages/admin/LoginPage";
-import ChangePasswordPage from "./pages/admin/ChangePasswordPage";
-import AdminDashboard from "./pages/admin/Dashboard";
-import AdminLeads from "./pages/admin/Leads";
-import AdminLeadDetail from "./pages/admin/LeadDetail";
-import AdminTeam from "./pages/admin/Team";
-import AdminDbaChecks from "./pages/admin/DbaChecks";
-import DbaCheckNew from "./pages/admin/DbaCheckNew";
-import DbaCheckDetail from "./pages/admin/DbaCheckDetail";
-import DbaCheckBulk from "./pages/admin/DbaCheckBulk";
-import DbaCheckBatchDetail from "./pages/admin/DbaCheckBatchDetail";
-import DbaVerificatie from "./pages/DbaVerificatie";
-import ForgotPassword from "./pages/admin/ForgotPasswordPage";
-import ResetPassword from "./pages/admin/ResetPasswordPage";
-import ScreenshotHelper from "./pages/ScreenshotHelper";
-import AlgemeneVoorwaarden from "./pages/AlgemeneVoorwaarden";
-import Klachtenprocedure from "./pages/Klachtenprocedure";
-import Documenten from "./pages/Documenten";
-import SlotverklaringPage from "./pages/documenten/SlotverklaringPage";
-import DienstverleningsdocumentPage from "./pages/documenten/DienstverleningsdocumentPage";
-import GedragscodePage from "./pages/documenten/GedragscodePage";
-import OffertePage from "./pages/OffertePage";
-import OfferteBedankt from "./pages/OfferteBedankt";
-import MijnZpPolis from "./pages/mijn-zp/Certificaat";
-import MijnZpPauzeren from "./pages/mijn-zp/Pauzeren";
-import MijnZpDocumenten from "./pages/mijn-zp/Documenten";
-import MijnZpOpzeggen from "./pages/mijn-zp/Opzeggen";
 import { PortalAuthProvider } from "@/contexts/PortalAuthContext";
 import { RequirePortalAuth } from "@/components/portal/RequirePortalAuth";
-import PortalLogin from "./pages/portal/PortalLogin";
-import PortalInviteAccept from "./pages/portal/PortalInviteAccept";
-import PortalOverview from "./pages/portal/PortalOverview";
-import PortalPolicy from "./pages/portal/PortalPolicy";
-import PortalDocuments from "./pages/portal/PortalDocuments";
-import PortalInvoices from "./pages/portal/PortalInvoices";
-import PortalHeractiveer from "./pages/portal/PortalHeractiveer";
 
 import { legacyRedirects } from "@/config/legacyRedirects";
 
@@ -161,6 +162,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
+          <Suspense fallback={<div aria-busy="true" style={{ minHeight: "100vh" }} />}>
           <Routes>
             {/* Default (NL) routes */}
             <Route path="/">{publicRoutes}</Route>
@@ -221,6 +223,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </Suspense>
         </BrowserRouter>
       </TooltipProvider>
       </PortalAuthProvider>

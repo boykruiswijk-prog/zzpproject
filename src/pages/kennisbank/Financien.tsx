@@ -1,4 +1,7 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { KennisbankCategoryPage } from "@/components/kennisbank/KennisbankCategoryPage";
+
+const SEO = seoRoute("/kennisbank/financien");
 
 export default function KennisbankFinancien() {
   return (
@@ -7,8 +10,8 @@ export default function KennisbankFinancien() {
       title="Financiën"
       intro="Financieel beheer, pensioen opbouwen, sparen, beleggen en je financiële toekomst als zelfstandige."
       categoryTags={[]}
-      metaTitle="Financiën voor ZZP'ers | Kennisbank | ZP Zaken"
-      metaDescription="Financieel beheer, pensioen en sparen voor zzp'ers. Lees praktische artikelen voor je financiële toekomst als zelfstandige."
+      metaTitle={SEO.title}
+      metaDescription={SEO.description}
     />
   );
 }

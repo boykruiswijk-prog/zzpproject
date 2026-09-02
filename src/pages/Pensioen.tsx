@@ -1,3 +1,4 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { ServicePageTemplate } from "@/components/diensten/ServicePageTemplate";
 import { PiggyBank, TrendingUp, CalendarCheck } from "lucide-react";
 
@@ -5,6 +6,8 @@ import teamHero from "@/assets/team-hero.jpg";
 import officeMeetingRoom from "@/assets/office-meeting-room.jpg";
 import teamWalking from "@/assets/team-walking.jpg";
 import officeFlowers from "@/assets/office-flowers.jpg";
+
+const SEO = seoRoute("/pensioen");
 
 const schema = {
   "@context": "https://schema.org",
@@ -18,8 +21,8 @@ const schema = {
 export default function Pensioen() {
   return (
     <ServicePageTemplate
-      seoTitle="ZZP Pensioen opbouwen | Informatie & Oplossingen | ZP Zaken"
-      seoDescription="Als zzp'er zelf je pensioen regelen? ZP Zaken helpt je met de beste pensioenoplossing. Persoonlijk gesprek op maat."
+      seoTitle={SEO.title}
+      seoDescription={SEO.description}
       canonicalPath="/pensioen"
       heroImage={teamHero}
       badge="Investeer in je toekomst"

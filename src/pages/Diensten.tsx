@@ -1,3 +1,4 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { SEOHead } from "@/components/SEOHead";
 import { useTranslation } from "react-i18next";
@@ -17,6 +18,8 @@ import officeMeetingRoom from "@/assets/office-meeting-room.jpg";
 import teamBoyCalling from "@/assets/team-boy-calling.jpg";
 import zpLogoGlass from "@/assets/zp-logo-glass.jpg";
 import { Shield, Calculator, Scale, UserCheck, Banknote } from "lucide-react";
+
+const SEO = seoRoute("/diensten");
 
 // Services data stays in Dutch as it's domain content passed to ServiceCard
 const services = [
@@ -59,8 +62,8 @@ export default function Diensten() {
   return (
     <Layout>
       <SEOHead
-        title="Diensten voor ZZP'ers | Verzekeringen, Screening & Administratie | ZP Zaken"
-        description="Onze diensten voor zelfstandig professionals. Van verzekeringen en screening tot juridische hulp en factoring. Persoonlijk gesprek, geen callcenter."
+        title={SEO.title}
+        description={SEO.description}
       >
         <script type="application/ld+json">{JSON.stringify(dienstenSchema)}</script>
       </SEOHead>

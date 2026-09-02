@@ -1,3 +1,4 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -10,6 +11,8 @@ import {
   zpZakenEigenDocumenten,
   type Document,
 } from "@/data/documentenLijst";
+
+const SEO = seoRoute("/documenten");
 
 function DocLink({ doc }: { doc: Document }) {
   const Icon = doc.isHtmlPage ? BookOpen : FileText;
@@ -66,8 +69,8 @@ export default function Documenten() {
   return (
     <Layout>
       <SEOHead
-        title="Documenten en downloads | ZP Zaken"
-        description="Bekijk en download polisvoorwaarden, verzekeringskaarten en brochures van ZP Zaken per branche."
+        title={SEO.title}
+        description={SEO.description}
       />
 
       <PageHero

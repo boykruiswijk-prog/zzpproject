@@ -1,3 +1,4 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
 import { HeroSection } from "@/components/home/HeroSection";
@@ -8,12 +9,14 @@ import { GoogleReviewsSection } from "@/components/social-proof/GoogleReviewsSec
 import { EllenAdvisorSection } from "@/components/home/EllenAdvisorSection";
 import { CTASection } from "@/components/home/CTASection";
 
+const SEO = seoRoute("/");
+
 const Index = () => {
   return (
     <Layout>
       <SEOHead
-        title="ZP Zaken | BAV & AVB Verzekering voor ZZP'ers | Vanaf €55/maand"
-        description="Onafhankelijke verzekeringsadviseur voor zzp'ers. Sluit direct online een BAV+AVB combinatieverzekering af. Geen eigen risico, dagelijks opzegbaar. AFM geregistreerd."
+        title={SEO.title}
+        description={SEO.description}
       />
       <HeroSection />
       <HiscoxTrustStrip />

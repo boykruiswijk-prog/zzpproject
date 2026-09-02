@@ -1,4 +1,7 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { DocumentPage } from "@/components/documenten/DocumentPage";
+
+const SEO = seoRoute("/documenten/dienstverleningsdocument");
 
 export default function DienstverleningsdocumentPage() {
   return (
@@ -6,7 +9,7 @@ export default function DienstverleningsdocumentPage() {
       title="Dienstverleningsdocument"
       versie="Versie 2026"
       canonicalSlug="dienstverleningsdocument"
-      metaDescription="Het dienstverleningsdocument van ZP Zaken: wie wij zijn, hoe wij werken, kosten, klachten en toezicht."
+      metaDescription={SEO.description}
     >
       <h2>Wie zijn wij</h2>
       <p>

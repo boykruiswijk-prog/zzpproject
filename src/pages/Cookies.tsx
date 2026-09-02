@@ -1,9 +1,12 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { Layout } from "@/components/layout/Layout";
 import { SEOHead } from "@/components/SEOHead";
 import { PageHero } from "@/components/layout/PageHero";
 import { Cookie, Shield, BarChart3, Megaphone, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SITE_CONFIG, ADDRESS_SHORT } from "@/config/site";
+
+const SEO = seoRoute("/cookies");
 
 const COOKIE_CONSENT_KEY = "zpzaken_cookie_consent";
 
@@ -79,8 +82,8 @@ export default function Cookies() {
   return (
     <Layout>
       <SEOHead
-        title="Cookiebeleid | ZP Zaken"
-        description="Lees hoe ZP Zaken cookies gebruikt om jouw ervaring te verbeteren. Beheer je cookie-voorkeuren."
+        title={SEO.title}
+        description={SEO.description}
       />
       <PageHero
         title="Cookiebeleid"

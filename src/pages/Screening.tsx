@@ -1,3 +1,4 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -13,6 +14,8 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { Link } from "react-router-dom";
+
+const SEO = seoRoute("/screening");
 
 type ScreeningType = "basis" | "uitgebreid" | "compleet";
 
@@ -152,8 +155,8 @@ export default function Screening() {
   return (
     <Layout>
       <SEOHead
-        title="Start je screening | ZP Zaken"
-        description="Laat zien dat je betrouwbaar bent met een screening. Vraag binnen enkele minuten je screening aan via ZP Zaken."
+        title={SEO.title}
+        description={SEO.description}
       />
       <PageHero
         title={<>Start je <span className="text-accent">screening</span></>}
