@@ -227,7 +227,6 @@ export default function OffertePage() {
       <SEOHead
         title="Vrijblijvende offerte BAV en AVB | ZP Zaken"
         description="Vraag eenvoudig een vrijblijvende offerte aan voor je beroeps- en bedrijfsaansprakelijkheidsverzekering. Binnen 24 uur reactie."
-        canonical="https://www.zpzaken.nl/offerte"
       />
 
       {/* HERO */}

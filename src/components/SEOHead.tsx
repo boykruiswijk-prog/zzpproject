@@ -1,5 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
+import { SITE_CONFIG } from "@/config/site";
 
 interface SEOHeadProps {
   title: string;
@@ -11,23 +12,26 @@ interface SEOHeadProps {
   children?: React.ReactNode;
 }
 
-const BASE_URL = "https://www.zpzaken.nl";
-const SUPPORTED_LANGS = ["en", "de", "fr"];
+const BASE_URL = SITE_CONFIG.url;
+export const SUPPORTED_LANGS = ["en", "de", "fr"] as const;
 
 export function SEOHead({
   title,
   description,
   canonical,
   ogType = "website",
-  ogImage = `${BASE_URL}/og-image.jpg`,
+  ogImage = SITE_CONFIG.ogImage,
   noindex = false,
   children,
 }: SEOHeadProps) {
   const { pathname } = useLocation();
 
-  // Determine canonical URL - strip language prefix for default NL
+  // Pad zonder taalprefix, gebruikt voor de hreflang-set.
   const cleanPath = pathname.replace(/^\/(en|de|fr)(\/|$)/, "/");
-  const canonicalUrl = canonical || `${BASE_URL}${cleanPath === "/" ? "/" : cleanPath.replace(/\/$/, "")}`;
+  // Canonical is self-referencing: /en/verzekeringen → https://zpzaken.nl/en/verzekeringen
+  const selfPath = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
+  const canonicalUrl = canonical || `${BASE_URL}${selfPath}`;
+  const nlPath = cleanPath === "/" ? "/" : cleanPath.replace(/\/$/, "");
 
   return (
     <Helmet>
@@ -44,7 +48,7 @@ export function SEOHead({
       <meta property="og:type" content={ogType} />
       <meta property="og:image" content={ogImage} />
       <meta property="og:locale" content="nl_NL" />
-      <meta property="og:site_name" content="ZP Zaken" />
+      <meta property="og:site_name" content={SITE_CONFIG.name} />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -53,16 +57,16 @@ export function SEOHead({
       <meta name="twitter:image" content={ogImage} />
 
       {/* Hreflang alternates */}
-      <link rel="alternate" hrefLang="nl" href={`${BASE_URL}${cleanPath}`} />
+      <link rel="alternate" hrefLang="nl" href={`${BASE_URL}${nlPath}`} />
       {SUPPORTED_LANGS.map((lang) => (
         <link
           key={lang}
           rel="alternate"
           hrefLang={lang}
-          href={`${BASE_URL}/${lang}${cleanPath === "/" ? "/" : cleanPath}`}
+          href={`${BASE_URL}/${lang}${nlPath === "/" ? "" : nlPath}`}
         />
       ))}
-      <link rel="alternate" hrefLang="x-default" href={`${BASE_URL}${cleanPath}`} />
+      <link rel="alternate" hrefLang="x-default" href={`${BASE_URL}${nlPath}`} />
 
       {children}
     </Helmet>

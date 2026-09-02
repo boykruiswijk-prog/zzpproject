@@ -98,7 +98,7 @@ export default function DbaVerificatie() {
 
           <div className="text-center text-xs text-muted-foreground pt-4 border-t">
             <p>Dit certificaat is geverifieerd via ZP Zaken.</p>
-            <p className="mt-1">www.zpzaken.nl</p>
+            <p className="mt-1">zpzaken.nl</p>
           </div>
         </CardContent>
       </Card>

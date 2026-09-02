@@ -9,4 +9,95 @@ Disallow: /verificatie/
 Disallow: /creditcontrol
 Disallow: /collectief-ledenorganisaties
 
+User-agent: Bingbot
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /screenshot-helper
+Disallow: /verificatie/
+Disallow: /creditcontrol
+Disallow: /collectief-ledenorganisaties
+
+User-agent: GPTBot
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /screenshot-helper
+Disallow: /verificatie/
+Disallow: /creditcontrol
+Disallow: /collectief-ledenorganisaties
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /screenshot-helper
+Disallow: /verificatie/
+Disallow: /creditcontrol
+Disallow: /collectief-ledenorganisaties
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /screenshot-helper
+Disallow: /verificatie/
+Disallow: /creditcontrol
+Disallow: /collectief-ledenorganisaties
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /screenshot-helper
+Disallow: /verificatie/
+Disallow: /creditcontrol
+Disallow: /collectief-ledenorganisaties
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /screenshot-helper
+Disallow: /verificatie/
+Disallow: /creditcontrol
+Disallow: /collectief-ledenorganisaties
+
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /screenshot-helper
+Disallow: /verificatie/
+Disallow: /creditcontrol
+Disallow: /collectief-ledenorganisaties
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /screenshot-helper
+Disallow: /verificatie/
+Disallow: /creditcontrol
+Disallow: /collectief-ledenorganisaties
+
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /screenshot-helper
+Disallow: /verificatie/
+Disallow: /creditcontrol
+Disallow: /collectief-ledenorganisaties
+
+Sitemap: https://zpzaken.nl/sitemap.xml
 Sitemap: https://eugkavokktjwpqaqlwsj.supabase.co/functions/v1/sitemap

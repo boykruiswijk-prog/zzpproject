@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useParams } from "react-router-dom";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
@@ -15,7 +15,6 @@ import MentaleGezondheid from "./pages/MentaleGezondheid";
 import WaaromZpZaken from "./pages/WaaromZpZaken";
 import VoorWie from "./pages/VoorWie";
 import ZoWerkenWij from "./pages/ZoWerkenWij";
-import Kennis from "./pages/Kennis";
 import Kennisbank from "./pages/Kennisbank";
 import KennisbankWetEnRegelgeving from "./pages/kennisbank/WetEnRegelgeving";
 import KennisbankOndernemen from "./pages/kennisbank/Ondernemen";
@@ -86,72 +85,25 @@ import PortalDocuments from "./pages/portal/PortalDocuments";
 import PortalInvoices from "./pages/portal/PortalInvoices";
 import PortalHeractiveer from "./pages/portal/PortalHeractiveer";
 
-/** Old WordPress URLs indexed by Google → redirect to new routes */
-const wpRedirects: Array<[string, string]> = [
-  ["belastingen", "/kennisbank"],
-  ["ondernemen", "/kennisbank"],
-  ["financien", "/kennisbank"],
-  ["verzekeringen-info", "/kennisbank"],
-  ["movir", "/verzekeringen"],
-  ["wijzijnaov", "/verzekeringen"],
-  ["aov-via-centraalbeheer", "/verzekeringen"],
-  ["sharepeople", "/partners"],
-  ["eherkenning", "/kennisbank"],
-  ["verplichte-aov-voor-zzp", "/kennisbank/aov-arbeidsongeschiktheidsverzekering"],
-  ["nieuwe-regels-zzp", "/kennisbank/nieuwe-regels-zzp-2025"],
-  ["hoeveel-opdrachtgevers-zzp", "/kennisbank"],
-  ["alles-over-een-zzp-factuur", "/kennisbank"],
-  ["inschrijven-bij-de-kamer-van-koophandel", "/kennisbank"],
-  ["zzp-administratie-en-boekhouding", "/diensten"],
-  ["hoe-bereken-ik-bijtelling-als-zzper", "/kennisbank"],
-  ["is-eten-en-drinken-aftrekbaar-als-zzp-er", "/kennisbank"],
-  ["winkel", "/"],
-  ["shop", "/"],
-  ["product", "/"],
-  ["mijn-account", "/"],
-  ["my-account", "/"],
-  // Extra redirects van bestaande zpzaken.nl naar nieuwe routes
-  ["beroeps-en-bedrijfsaansprakelijkheidsverzekering-zzp-avb-bav", "/kennisbank/zp-zaken-zorgeloos-zzpen-goedkoopste-bav-avb"],
-  ["bijdrage-zorgverzekeringswet-zzp", "/zorgverzekering"],
-  ["hoe-zit-het-met-reiskosten-als-zzp-er", "/kennisbank"],
-  ["uurtarief-berekenen-zzper", "/kennisbank"],
-  ["hoeveel-kan-je-als-zzp-er-verdienen-zonder-belasting-te-moeten-betalen", "/kennisbank"],
-  ["zpzakenaov-movir", "/aov"],
-  ["arbeidsongeschiktheidsverzekering-aov-zzp", "/aov"],
-  ["alles-over-verzekeringen-voor-zzpers", "/verzekeringen"],
-  ["een-aov-bij-movir-aanvragen", "/aov"],
-  ["contact-zpzaken", "/contact"],
-  ["neem-gerust-contact-op", "/contact"],
-  // Gangbare WordPress URL patronen
-  ["bav-verzekering", "/verzekeringen"],
-  ["avb-verzekering", "/verzekeringen"],
-  ["bav-avb", "/verzekeringen"],
-  ["zzp-verzekering", "/verzekeringen"],
-  ["zzp-verzekeringen", "/verzekeringen"],
-  ["verzekering-zzp", "/verzekeringen"],
-  ["aov-zzp", "/aov"],
-  ["zzp-aov", "/aov"],
-  ["pensioen-zzp", "/pensioen"],
-  ["zzp-pensioen", "/pensioen"],
-  ["zorgverzekering-zzp", "/zorgverzekering"],
-  ["gratis-advies", "/contact"],
-  ["adviesgesprek", "/contact"],
-  ["offerte", "/contact"],
-  ["aanvragen", "/verzekeringen"],
-  ["afsluiten", "/verzekeringen"],
-  ["blog", "/kennisbank"],
-  ["nieuws", "/kennisbank"],
-  ["artikel", "/kennisbank"],
-  ["over", "/over-ons"],
-  ["team", "/over-ons"],
-  ["wie-zijn-wij", "/over-ons"],
-  ["privacy", "/cookies"],
-  ["privacyverklaring", "/cookies"],
-  ["voorwaarden", "/algemene-voorwaarden"],
-  ["disclaimer", "/faq"],
-];
+import { legacyRedirects } from "@/config/legacyRedirects";
+
+/** Alleen deze taalprefixen zijn geldig; al het andere is een 404. */
+const SUPPORTED_LANGS = ["en", "de", "fr"];
+
+/**
+ * Guard op /:lang — voorkomt dat een willekeurig eerste pad-segment de
+ * homepage rendert (onbeperkte duplicate content).
+ */
+const LangGuard = () => {
+  const { lang } = useParams();
+  if (!lang || !SUPPORTED_LANGS.includes(lang)) {
+    return <NotFound />;
+  }
+  return <Outlet />;
+};
 
 const queryClient = new QueryClient();
+
 
 const publicRoutes = (
   <>
@@ -165,7 +117,6 @@ const publicRoutes = (
     <Route path="waarom-zp-zaken" element={<WaaromZpZaken />} />
     <Route path="voor-wie" element={<VoorWie />} />
     <Route path="zo-werken-wij" element={<ZoWerkenWij />} />
-    <Route path="kennis" element={<Kennis />} />
     <Route path="kennisbank" element={<Kennisbank />} />
     <Route path="kennisbank/wet-en-regelgeving" element={<KennisbankWetEnRegelgeving />} />
     <Route path="kennisbank/ondernemen" element={<KennisbankOndernemen />} />
@@ -215,12 +166,12 @@ const App = () => (
             <Route path="/">{publicRoutes}</Route>
 
             {/* WordPress legacy redirects — MUST come before /:lang */}
-            {wpRedirects.map(([from, to]) => (
+            {legacyRedirects.map(({ from, to }) => (
               <Route key={from} path={`/${from}`} element={<Navigate to={to} replace />} />
             ))}
             
             {/* Language-prefixed routes */}
-            <Route path="/:lang">{publicRoutes}</Route>
+            <Route path="/:lang" element={<LangGuard />}>{publicRoutes}</Route>
 
             {/* Admin routes (no i18n) */}
             <Route path="/admin/login" element={<AdminLogin />} />

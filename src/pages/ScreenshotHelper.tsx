@@ -12,7 +12,6 @@ import MentaleGezondheid from "./MentaleGezondheid";
 import WaaromZpZaken from "./WaaromZpZaken";
 import VoorWie from "./VoorWie";
 import ZoWerkenWij from "./ZoWerkenWij";
-import Kennis from "./Kennis";
 import Kennisbank from "./Kennisbank";
 import OverOns from "./OverOns";
 import Partners from "./Partners";
@@ -32,7 +31,6 @@ const pages = [
   { name: "Waarom ZP Zaken", Component: WaaromZpZaken },
   { name: "Voor Wie", Component: VoorWie },
   { name: "Zo Werken Wij", Component: ZoWerkenWij },
-  { name: "Kennis", Component: Kennis },
   { name: "Kennisbank", Component: Kennisbank },
   { name: "Over Ons", Component: OverOns },
   { name: "Partners", Component: Partners },

@@ -2,7 +2,7 @@
 // verify_jwt = false (crawlers moeten er ongehinderd bij kunnen).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
-const HOST = "https://www.zpzaken.nl";
+const HOST = "https://zpzaken.nl";
 
 const STATIC_URLS: Array<{ path: string; changefreq?: string; priority?: string }> = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
@@ -22,7 +22,6 @@ const STATIC_URLS: Array<{ path: string; changefreq?: string; priority?: string 
   { path: "/kennisbank/ondernemen", changefreq: "monthly", priority: "0.7" },
   { path: "/kennisbank/belastingen", changefreq: "monthly", priority: "0.7" },
   { path: "/kennisbank/financien", changefreq: "monthly", priority: "0.7" },
-  { path: "/kennis", changefreq: "monthly", priority: "0.6" },
   { path: "/over-ons", changefreq: "monthly", priority: "0.7" },
   { path: "/partners", changefreq: "monthly", priority: "0.6" },
   { path: "/historie", changefreq: "monthly", priority: "0.5" },

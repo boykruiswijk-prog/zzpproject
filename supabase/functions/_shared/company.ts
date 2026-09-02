@@ -2,7 +2,7 @@
 // Edge Functions. Spiegel van src/config/site.ts — wijzig beide bij een update.
 export const COMPANY = {
   legalName: "ZP Zaken B.V.",
-  website: "www.zpzaken.nl",
+  website: "zpzaken.nl",
   email: "info@zpzaken.nl",
   emailAdministratie: "administratie@zpzaken.nl",
   phoneDisplay: "020 - 457 3077",
