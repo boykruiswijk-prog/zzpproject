@@ -1,3 +1,4 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
@@ -15,6 +16,8 @@ import {
 } from "@/components/ui/accordion";
 import teamWalking from "@/assets/team-walking.jpg";
 import teamCheers from "@/assets/team-cheers.jpg";
+
+const SEO = seoRoute("/social-media");
 
 const trustPoints = [
   { icon: Users, title: "Directe benadering", description: "Geen onnodige tussenpartijen:  je spreekt direct met een adviseur die jouw situatie begrijpt." },
@@ -61,8 +64,8 @@ export default function SocialMedia() {
   return (
     <Layout>
       <SEOHead
-        title="Social Media & Verzekeringen voor ZZP'ers | ZP Zaken"
-        description="Volg ons voor tips over aansprakelijkheid, beroeps- en bedrijfsaansprakelijkheidsverzekeringen voor zzp'ers. Zeker ondernemen begint hier."
+        title={SEO.title}
+        description={SEO.description}
       />
 
       {/* 1. Hero */}

@@ -1,3 +1,4 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { SEOHead } from "@/components/SEOHead";
 import { useTranslation } from "react-i18next";
@@ -7,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, HardHat, HeartPulse, Briefcase, Calculator, Scale, Megaphone, Monitor, Users, Shield } from "lucide-react";
 import teamWalking from "@/assets/team-walking.jpg";
 import teamCheers from "@/assets/team-cheers.jpg";
+
+const SEO = seoRoute("/voor-wie");
 
 const audiences = [
   {
@@ -59,8 +62,8 @@ export default function VoorWie() {
   return (
     <Layout>
       <SEOHead
-        title="Voor Wie is ZP Zaken? | Bouw, Zorg, ICT, Consultancy en meer"
-        description="ZP Zaken helpt zelfstandig professionals in bouw, zorg, consultancy, HR, finance, marketing en ICT. Persoonlijk verzekeringsbemiddeling op maat voor jouw beroep."
+        title={SEO.title}
+        description={SEO.description}
       />
 
       <PageHero

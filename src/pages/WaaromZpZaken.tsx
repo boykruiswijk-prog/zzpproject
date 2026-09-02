@@ -1,3 +1,4 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,8 @@ import { FAQSection, faqSchema } from "@/components/waarom/FAQSection";
 import { GoogleReviewsSection } from "@/components/social-proof/GoogleReviewsSection";
 import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
 import teamHero from "@/assets/team-hero.jpg";
+
+const SEO = seoRoute("/waarom-zp-zaken");
 
 const schema = {
   "@context": "https://schema.org",
@@ -63,8 +66,8 @@ export default function WaaromZpZaken() {
   return (
     <Layout>
       <SEOHead
-        title="Waarom ZP Zaken? | Onafhankelijk Verzekerd Zonder Tussenkomst"
-        description="ZP Zaken werkt direct voor jou als zzp'er, zonder platform of tussenpersoon. Vergelijk wat je betaalt via een intermediair versus direct bij ZP Zaken."
+        title={SEO.title}
+        description={SEO.description}
       >
         <script type="application/ld+json">{JSON.stringify(schema)}</script>
       </SEOHead>

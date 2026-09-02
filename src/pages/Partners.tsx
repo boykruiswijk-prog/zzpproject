@@ -1,3 +1,4 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { SEOHead } from "@/components/SEOHead";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
@@ -17,6 +18,8 @@ import brightPensioenLogo from "@/assets/partner-brightpensioen.webp";
 import movirLogo from "@/assets/partner-movir.webp";
 import centraalBeheerLogo from "@/assets/partner-centraal-beheer.webp";
 import sharePeopleLogo from "@/assets/partner-sharepeople.webp";
+
+const SEO = seoRoute("/partners");
 
 // Partner data stays as-is (domain content)
 const partners = [
@@ -49,8 +52,8 @@ export default function Partners() {
   return (
     <Layout>
       <SEOHead
-        title={`${t("partners.title")} | ZP Zaken`}
-        description={t("partners.subtitle")}
+        title={SEO.title}
+        description={SEO.description}
       />
 
       <PageHero

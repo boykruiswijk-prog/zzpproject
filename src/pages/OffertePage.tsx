@@ -1,3 +1,4 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
@@ -25,6 +26,8 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { LocalizedLink } from "@/components/LocalizedLink";
+
+const SEO = seoRoute("/offerte");
 
 type Errors = Record<string, string>;
 
@@ -225,8 +228,8 @@ export default function OffertePage() {
   return (
     <Layout>
       <SEOHead
-        title="Vrijblijvende offerte BAV en AVB | ZP Zaken"
-        description="Vraag eenvoudig een vrijblijvende offerte aan voor je beroeps- en bedrijfsaansprakelijkheidsverzekering. Binnen 24 uur reactie."
+        title={SEO.title}
+        description={SEO.description}
       />
 
       {/* HERO */}

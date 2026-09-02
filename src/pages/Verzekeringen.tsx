@@ -1,3 +1,4 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { SEOHead } from "@/components/SEOHead";
 import { bavPakketten } from "@/data/bavPakketten";
 import { productSchema } from "@/lib/schema";
@@ -18,6 +19,8 @@ import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
 import teamBoyCalling from "@/assets/team-boy-calling.jpg";
 import teamCheers from "@/assets/team-cheers.jpg";
 
+const SEO = seoRoute("/verzekeringen");
+
 export default function Verzekeringen() {
   const { t } = useTranslation();
 
@@ -34,8 +37,8 @@ export default function Verzekeringen() {
   return (
     <Layout>
       <SEOHead
-        title="BAV + AVB Combinatieverzekering voor ZZP'ers | Direct Online Afsluiten | ZP Zaken"
-        description="De enige gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering in Nederland. Vanaf €55 per maand, geen eigen risico. Direct online afsluiten in 5 stappen."
+        title={SEO.title}
+        description={SEO.description}
       >
         {productJsonLd.map((schema, i) => (
           <script key={i} type="application/ld+json">{JSON.stringify(schema)}</script>

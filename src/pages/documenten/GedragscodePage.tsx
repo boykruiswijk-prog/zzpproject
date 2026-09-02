@@ -1,4 +1,7 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { DocumentPage } from "@/components/documenten/DocumentPage";
+
+const SEO = seoRoute("/documenten/gedragscode");
 
 export default function GedragscodePage() {
   return (
@@ -6,7 +9,7 @@ export default function GedragscodePage() {
       title="Gedragscode"
       versie="Versie 2026"
       canonicalSlug="gedragscode"
-      metaDescription="De gedragscode van ZP Zaken: integriteit, klantbelang, vakbekwaamheid, duidelijkheid en zorgvuldigheid."
+      metaDescription={SEO.description}
     >
       <h2>Inleiding</h2>
       <p>

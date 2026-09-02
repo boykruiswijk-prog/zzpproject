@@ -1,3 +1,4 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { useState } from "react";
 import { SEOHead } from "@/components/SEOHead";
 import { useTranslation } from "react-i18next";
@@ -31,6 +32,8 @@ import pilotStroomImg from "@/assets/pilot-stroom.jpg";
 import pilotSoftwareImg from "@/assets/pilot-software.jpg";
 import pilotAiToolsImg from "@/assets/pilot-ai-tools.jpg";
 import pilotTelefonieImg from "@/assets/pilot-telefonie.jpg";
+
+const SEO = seoRoute("/collectieve-inkoop");
 
 function usePilotCount(slug: string) {
   return useQuery({
@@ -359,8 +362,8 @@ export default function CollectieveInkoop() {
   return (
     <Layout>
       <SEOHead
-        title="Collectieve Inkoop voor ZZP'ers | Samen Sterker | ZP Zaken"
-        description="Profiteer van collectieve inkoopkracht als zzp'er. ZP Zaken bundelt ondernemers voor betere deals op energie, software, telefonie en meer."
+        title={SEO.title}
+        description={SEO.description}
       />
 
       <PageHero

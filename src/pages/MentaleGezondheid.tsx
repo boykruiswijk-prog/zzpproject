@@ -1,3 +1,4 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { ServicePageTemplate } from "@/components/diensten/ServicePageTemplate";
 import { Brain, HeartHandshake, Sparkles } from "lucide-react";
 
@@ -5,6 +6,8 @@ import teamCheers from "@/assets/team-cheers.jpg";
 import officeFlowers from "@/assets/office-flowers.jpg";
 import teamWalking from "@/assets/team-walking.jpg";
 import officeCoffee from "@/assets/office-coffee.jpg";
+
+const SEO = seoRoute("/mentale-gezondheid");
 
 const schema = {
   "@context": "https://schema.org",
@@ -18,8 +21,8 @@ const schema = {
 export default function MentaleGezondheid() {
   return (
     <ServicePageTemplate
-      seoTitle="Mentale Gezondheid voor ZZP'ers | Mirro Test | ZP Zaken"
-      seoDescription="Als zzp'er is mentale fitheid cruciaal. Doe de gratis mentale gezondheidstest via Mirro en ontdek hoe fit jij bent."
+      seoTitle={SEO.title}
+      seoDescription={SEO.description}
       canonicalPath="/mentale-gezondheid"
       heroImage={teamCheers}
       badge="Zorg voor jezelf"

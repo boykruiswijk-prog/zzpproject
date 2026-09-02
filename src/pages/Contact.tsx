@@ -1,3 +1,4 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { useState } from "react";
 import { SEOHead } from "@/components/SEOHead";
 import { useTranslation } from "react-i18next";
@@ -14,6 +15,8 @@ import { trackContactFormSubmit } from "@/lib/tracking";
 import teamRoxy from "@/assets/team-roxy.jpg";
 import ellenPortrait from "@/assets/ellen-baars-avatar.jpg";
 import { SITE_CONFIG, ADDRESS_ONE_LINE } from "@/config/site";
+
+const SEO = seoRoute("/contact");
 
 export default function Contact() {
   const { t } = useTranslation();
@@ -67,8 +70,8 @@ export default function Contact() {
   return (
     <Layout>
       <SEOHead
-        title="Contact | Vrijblijvend Gesprek Aanvragen | ZP Zaken"
-        description="Neem contact op met ZP Zaken. Bel 020 - 457 3077, mail info@zpzaken.nl of plan een vrijblijvend gesprek."
+        title={SEO.title}
+        description={SEO.description}
       />
       <PageHero
         title={t("contact.title")}

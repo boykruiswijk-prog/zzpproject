@@ -1,3 +1,4 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,8 @@ import {
 } from "lucide-react";
 import creditcontrolHero from "@/assets/creditcontrol-hero.jpg";
 import teamBoyCalling from "@/assets/team-boy-calling.jpg";
+
+const SEO = seoRoute("/creditcontrol");
 
 export default function CreditControl() {
   const usps = [
@@ -148,8 +151,8 @@ export default function CreditControl() {
   return (
     <Layout>
       <SEOHead
-        title="CreditControl: eerder betaald, volledige zekerheid | ZP Zaken"
-        description="ZP Zaken CreditControl: eerder betaald worden als ZZP'er met volledige zekerheid. Bescherming tegen faillissement, transparante factoring en 100% regie."
+        title={SEO.title}
+        description={SEO.description}
       >
         <script type="application/ld+json">{JSON.stringify(schema)}</script>
       </SEOHead>

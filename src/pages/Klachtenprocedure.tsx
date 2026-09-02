@@ -1,8 +1,11 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { Layout } from "@/components/layout/Layout";
 import { SEOHead } from "@/components/SEOHead";
 import { PageHero } from "@/components/layout/PageHero";
 import { MessageSquare, Phone, Mail, Scale, Shield, CheckCircle2 } from "lucide-react";
 import { SITE_CONFIG, ADDRESS_CITY_LINE } from "@/config/site";
+
+const SEO = seoRoute("/klachtenprocedure");
 
 const tocItems = [
   { id: "stap-1", label: "Stap 1: Neem contact met ons op" },
@@ -24,8 +27,8 @@ export default function Klachtenprocedure() {
   return (
     <Layout>
       <SEOHead
-        title="Klachtenprocedure | ZP Zaken"
-        description="Hoe ZP Zaken omgaat met klachten over de dienstverlening. AFM geregistreerd en aangesloten bij Kifid."
+        title={SEO.title}
+        description={SEO.description}
       />
       <PageHero
         title="Klachtenprocedure"

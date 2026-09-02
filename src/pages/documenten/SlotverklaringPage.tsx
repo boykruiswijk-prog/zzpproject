@@ -1,4 +1,7 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { DocumentPage } from "@/components/documenten/DocumentPage";
+
+const SEO = seoRoute("/documenten/slotverklaring");
 
 export default function SlotverklaringPage() {
   return (
@@ -6,7 +9,7 @@ export default function SlotverklaringPage() {
       title="Slotverklaring"
       versie="Versie 2026"
       canonicalSlug="slotverklaring"
-      metaDescription="Slotverklaring bij de aanvraag van een beroeps- en bedrijfsaansprakelijkheidsverzekering via ZP Zaken."
+      metaDescription={SEO.description}
     >
       <p>
         Ondergetekende verklaart dat de gegevens zoals verstrekt in de aanvraag voor de

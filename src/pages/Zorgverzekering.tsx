@@ -1,3 +1,4 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { ServicePageTemplate } from "@/components/diensten/ServicePageTemplate";
 import { Heart, Users, Euro } from "lucide-react";
 
@@ -5,6 +6,8 @@ import teamRoxy from "@/assets/team-roxy.jpg";
 import officeCookies from "@/assets/zp-boy-laptop.jpg";
 import teamMeeting from "@/assets/team-meeting.jpg";
 import officeFlowers from "@/assets/office-flowers.jpg";
+
+const SEO = seoRoute("/zorgverzekering");
 
 const schema = {
   "@context": "https://schema.org",
@@ -18,8 +21,8 @@ const schema = {
 export default function Zorgverzekering() {
   return (
     <ServicePageTemplate
-      seoTitle="ZZP Zorgverzekering Collectief | ZP Zaken"
-      seoDescription="Profiteer van een collectieve zorgverzekering als zzp'er via ZP Zaken. Samen sterker, betere dekking voor een lagere premie."
+      seoTitle={SEO.title}
+      seoDescription={SEO.description}
       canonicalPath="/zorgverzekering"
       heroImage={teamRoxy}
       badge="Collectief voordeel"

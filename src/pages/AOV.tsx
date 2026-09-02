@@ -1,3 +1,4 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { ServicePageTemplate } from "@/components/diensten/ServicePageTemplate";
 import { Shield, Clock, Euro } from "lucide-react";
 
@@ -5,6 +6,8 @@ import serviceVerzekeringen from "@/assets/service-verzekeringen.jpg";
 import teamMeeting from "@/assets/team-meeting.jpg";
 import officeCoffee from "@/assets/office-coffee.jpg";
 import teamBoyCalling from "@/assets/team-boy-calling.jpg";
+
+const SEO = seoRoute("/aov");
 
 const schema = {
   "@context": "https://schema.org",
@@ -18,8 +21,8 @@ const schema = {
 export default function AOV() {
   return (
     <ServicePageTemplate
-      seoTitle="AOV Arbeidsongeschiktheidsverzekering ZZP | ZP Zaken"
-      seoDescription="Bescherm je inkomen als zzp'er bij ziekte. Vergelijk en sluit direct een AOV af via ZP Zaken. Persoonlijk gesprek, snel geregeld."
+      seoTitle={SEO.title}
+      seoDescription={SEO.description}
       canonicalPath="/aov"
       heroImage={teamBoyCalling}
       badge="Bescherm je inkomen"

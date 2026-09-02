@@ -1,3 +1,4 @@
+import { seoRoute } from "@/config/seoRoutes";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { SEOHead } from "@/components/SEOHead";
 import { useTranslation } from "react-i18next";
@@ -17,6 +18,8 @@ import teamCheers from "@/assets/team-cheers.jpg";
 import ellenPortrait from "@/assets/ellen-baars-portrait.jpg";
 import { GoogleReviewsSection } from "@/components/social-proof/GoogleReviewsSection";
 import { SocialFeaturesSection } from "@/components/over-ons/SocialFeaturesSection";
+
+const SEO = seoRoute("/over-ons");
 
 // Team and content data stays in Dutch as it's specific content
 const values = [
@@ -57,8 +60,8 @@ export default function OverOns() {
   return (
     <Layout>
       <SEOHead
-        title="Over ZP Zaken | Direct en onafhankelijk sinds 2014"
-        description="ZP Zaken is opgericht in 2014 door Boy Kruiswijk. Meer dan 2.500 tevreden zzp'ers, AFM geregistreerd, Kifid aangesloten. Persoonlijk gesprek zonder callcenter."
+        title={SEO.title}
+        description={SEO.description}
       />
 
       <PageHero

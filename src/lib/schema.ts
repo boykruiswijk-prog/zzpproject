@@ -2,8 +2,8 @@
 // Bedrijfsgegevens komen uit SITE_CONFIG, premies uit bavPakketten.ts.
 // Nooit bedrijfsgegevens of premies hardcoden in schema.
 
-import { SITE_CONFIG } from "@/config/site";
-import { bavPakketten } from "@/data/bavPakketten";
+import { SITE_CONFIG } from "../config/site";
+import { bavPakketten } from "../data/bavPakketten";
 
 export const ORGANIZATION_ID = `${SITE_CONFIG.url}/#organization`;
 
