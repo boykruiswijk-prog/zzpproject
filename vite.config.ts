@@ -81,11 +81,6 @@ export default defineConfig(({ mode }) => {
           if (id.includes("react-router")) return "vendor-router";
           if (id.includes("@tanstack")) return "vendor-query";
           if (id.includes("@supabase")) return "vendor-supabase";
-          if (id.includes("recharts") || id.includes("d3-")) return "vendor-charts";
-          if (id.includes("jspdf") || id.includes("html2canvas") || id.includes("pdfjs-dist")) return "vendor-pdf";
-          if (id.includes("mammoth") || id.includes("jszip") || id.includes("xlsx")) return "vendor-docs";
-          if (id.includes("@tiptap") || id.includes("prosemirror")) return "vendor-editor";
-          if (id.includes("framer-motion") || id.includes("motion")) return "vendor-motion";
           if (id.includes("i18next")) return "vendor-i18n";
           if (id.includes("@radix-ui") || id.includes("lucide-react") || id.includes("cmdk")) return "vendor-ui";
           // Overige dependencies blijven bij de chunk die ze importeert, zodat
