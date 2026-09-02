@@ -197,7 +197,8 @@ export function htmlToMarkdown(html: string, rewriteLink: LinkRewriter): Convert
 
   walk(root);
 
-  const markdown = blocks.join("\n\n").replace(/\n{3,}/g, "\n\n").trim();
+  let markdown = blocks.join("\n\n").replace(/\n{3,}/g, "\n\n").trim();
+  markdown = trimBoilerplate(markdown);
   const wordCount = markdown
     .replace(/[#>*`|_-]/g, " ")
     .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
@@ -205,6 +206,26 @@ export function htmlToMarkdown(html: string, rewriteLink: LinkRewriter): Convert
     .filter(Boolean).length;
 
   return { markdown, images: [...new Set(images)], wordCount };
+}
+
+// Site-brede CTA-/navigatieblokken die WordPress onder elke pagina rendert.
+const BOILERPLATE_HEADINGS = [
+  /^#{1,6}\s*De beste oplossing voor jou/i,
+  /^#{1,6}\s*Zorgeloos zzp['\u2019]?en/i,
+  /^#{1,6}\s*Blijf op de hoogte/i,
+  /^#{1,6}\s*Meer weten\?/i,
+  /^#{1,6}\s*Gerelateerde artikelen/i,
+  /^#{1,6}\s*Volg ons/i,
+];
+
+export function trimBoilerplate(markdown: string): string {
+  const lines = markdown.split("\n");
+  for (let i = 0; i < lines.length; i++) {
+    if (BOILERPLATE_HEADINGS.some((r) => r.test(lines[i].trim()))) {
+      return lines.slice(0, i).join("\n").replace(/\n{3,}/g, "\n\n").trim();
+    }
+  }
+  return markdown;
 }
 
 export function stripHtml(html: string): string {
