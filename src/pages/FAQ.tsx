@@ -1,5 +1,5 @@
 import { SEOHead } from "@/components/SEOHead";
-import { breadcrumbSchema, faqSchema } from "@/lib/schema";
+import { faqSchema } from "@/lib/schema";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -72,11 +72,6 @@ const faqItems = [
 
 const faqJsonLd = faqSchema(faqItems.flatMap((c) => c.questions));
 
-const breadcrumbJsonLd = breadcrumbSchema([
-  { name: "Home", url: "/" },
-  { name: "Veelgestelde vragen", url: "/faq" },
-]);
-
 export default function FAQ() {
   const { t } = useTranslation();
 
@@ -87,7 +82,6 @@ export default function FAQ() {
         description="Antwoorden op de meest gestelde vragen over BAV, AVB, AOV en ondernemen als zzp'er. Antwoorden van ZP Zaken."
       >
         <script type="application/ld+json">{JSON.stringify(faqJsonLd)}</script>
-        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
       </SEOHead>
 
       <PageHero
