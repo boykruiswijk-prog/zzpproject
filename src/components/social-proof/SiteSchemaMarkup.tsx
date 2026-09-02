@@ -1,10 +1,14 @@
 import { Helmet } from "react-helmet-async";
 import { googleReviewsData } from "@/data/googleReviews";
-import { organizationSchema } from "@/lib/schema";
+import { ORGANIZATION_ID } from "@/lib/schema";
 
 export function SiteSchemaMarkup() {
   // Alle bedrijfsgegevens en het prijsbereik komen uit src/lib/schema.ts (SITE_CONFIG + bavPakketten).
-  const schema = organizationSchema({
+  // De volledige InsuranceAgency-entiteit staat in index.html. Hier alleen een
+  // verrijking van diezelfde @id-node, zodat er één entiteit per pagina blijft.
+  const schema = {
+    "@context": "https://schema.org",
+    "@id": ORGANIZATION_ID,
     description:
       "ZP Zaken is al 10+ jaar dé onafhankelijke adviseur voor zzp'ers. BAV, AVB, AOV en meer. Persoonlijk gesprek, scherpe premies.",
     foundingDate: "2014",
@@ -36,7 +40,7 @@ export function SiteSchemaMarkup() {
       "ZZP verzekeringen",
       "Wet DBA",
     ],
-  });
+  };
 
   return (
     <Helmet>

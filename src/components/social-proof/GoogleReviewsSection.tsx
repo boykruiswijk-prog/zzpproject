@@ -1,4 +1,3 @@
-import { Helmet } from "react-helmet-async";
 import { Star, Quote, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -33,41 +32,8 @@ interface Props {
 export function GoogleReviewsSection({ className = "" }: Props) {
   const { averageRating, totalReviews, reviews, googleReviewsUrl } = googleReviewsData;
 
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "InsuranceAgency",
-    name: SITE_CONFIG.name,
-    url: SITE_CONFIG.url,
-    telephone: SITE_CONFIG.phone,
-    address: {
-      "@type": "PostalAddress",
-      ...googleReviewsData.address,
-    },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: averageRating.toFixed(1),
-      reviewCount: String(totalReviews),
-      bestRating: "5",
-      worstRating: "1",
-    },
-    review: reviews.map((r) => ({
-      "@type": "Review",
-      author: { "@type": "Person", name: r.name },
-      reviewRating: {
-        "@type": "Rating",
-        ratingValue: String(r.rating),
-        bestRating: "5",
-      },
-      reviewBody: r.text,
-    })),
-  };
-
   return (
     <section className={`section-padding bg-background ${className}`}>
-      <Helmet>
-        <script type="application/ld+json">{JSON.stringify(schema)}</script>
-      </Helmet>
-
       <div className="container-wide">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
