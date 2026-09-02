@@ -1,9 +1,9 @@
 // Enige bron van waarheid voor legacy (WordPress) URL-redirects.
 // Gebruikt door:
 //  - src/App.tsx        → client-side <Navigate> vangnet
-//  - scripts/generate-redirects.ts → public/_redirects (serverside 301)
-// Let op: dit bestand mag geen imports of aliassen gebruiken, het wordt ook
-// buiten Vite ingelezen door het buildscript.
+//  - src/pages/NotFound.tsx → client-side vangnet
+//  - vite.config.ts (redirectsPlugin) → public/_redirects (Netlify-formaat)
+// Let op: dit bestand mag geen imports of aliassen gebruiken.
 
 export interface LegacyRedirect {
   /** Pad zonder leading slash, zoals de oude WordPress-URL. */
