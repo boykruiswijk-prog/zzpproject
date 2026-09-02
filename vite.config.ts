@@ -73,7 +73,7 @@ export default defineConfig(({ mode }) => {
         manualChunks(id: string) {
           // Vite's preload-helper en de kleine gedeelde utils horen bij de
           // entry; anders trekt de entry een zware vendorchunk mee.
-          if (id.includes("vite/preload-helper") || id.includes("vite/modulepreload")) return "vendor-react";
+          if (id.includes("commonjsHelpers") || id.includes("commonjs-proxy") || id.includes("vite/preload-helper") || id.includes("vite/modulepreload")) return "vendor-react";
           if (!id.includes("node_modules")) return;
           if (/[\\/]node_modules[\\/](clsx|tailwind-merge|class-variance-authority|react-is|use-sync-external-store|object-assign|tslib)[\\/]/.test(id))
             return "vendor-react";
