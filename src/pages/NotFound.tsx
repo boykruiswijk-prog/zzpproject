@@ -1,6 +1,7 @@
 import { useLocation, Navigate, Link } from "react-router-dom";
 import { useEffect } from "react";
-import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
+import { legacyRedirects } from "@/config/legacyRedirects";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Shield, FileText, Phone, HelpCircle, ArrowRight } from "lucide-react";
@@ -12,32 +13,12 @@ declare global {
 }
 
 /**
- * Maps old WordPress URLs (indexed by Google) to new Lovable routes.
+ * Client-side vangnet voor oude WordPress-URL's. De serverside 301's staan in
+ * public/_redirects (gegenereerd uit src/config/legacyRedirects.ts).
  */
-const REDIRECT_MAP: Record<string, string> = {
-  "/belastingen": "/kennisbank",
-  "/ondernemen": "/kennisbank",
-  "/financien": "/kennisbank",
-  "/verzekeringen-info": "/kennisbank",
-  "/movir": "/verzekeringen",
-  "/wijzijnaov": "/verzekeringen",
-  "/aov-via-centraalbeheer": "/verzekeringen",
-  "/sharepeople": "/partners",
-  "/eherkenning": "/kennisbank",
-  "/verplichte-aov-voor-zzp": "/kennisbank/aov-arbeidsongeschiktheidsverzekering",
-  "/nieuwe-regels-zzp": "/kennisbank/nieuwe-regels-zzp-2025",
-  "/hoeveel-opdrachtgevers-zzp": "/kennisbank",
-  "/alles-over-een-zzp-factuur": "/kennisbank",
-  "/inschrijven-bij-de-kamer-van-koophandel": "/kennisbank",
-  "/zzp-administratie-en-boekhouding": "/diensten#administratie",
-  "/hoe-bereken-ik-bijtelling-als-zzper": "/kennisbank",
-  "/is-eten-en-drinken-aftrekbaar-als-zzp-er": "/kennisbank",
-  "/winkel": "/",
-  "/shop": "/",
-  "/product": "/",
-  "/mijn-account": "/",
-  "/my-account": "/",
-};
+const REDIRECT_MAP: Record<string, string> = Object.fromEntries(
+  legacyRedirects.map(({ from, to }) => [`/${from}`.toLowerCase(), to]),
+);
 
 const popularPages = [
   {
@@ -89,10 +70,11 @@ const NotFound = () => {
 
   return (
     <Layout>
-      <Helmet>
-        <meta name="robots" content="noindex, nofollow" />
-        <title>Pagina niet gevonden | ZP Zaken</title>
-      </Helmet>
+      <SEOHead
+        title="Pagina niet gevonden | ZP Zaken"
+        description="Deze pagina bestaat niet meer. Bekijk de populaire pagina's van ZP Zaken of neem contact op."
+        noindex
+      />
 
       {/* Hero */}
       <section className="relative overflow-hidden bg-background py-20 md:py-28">
