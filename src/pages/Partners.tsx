@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -48,11 +48,10 @@ export default function Partners() {
 
   return (
     <Layout>
-      <Helmet>
-        <title>{t("partners.title")} | ZP Zaken</title>
-        <meta name="description" content={t("partners.subtitle")} />
-        <link rel="canonical" href="https://zpzaken.nl/partners" />
-      </Helmet>
+      <SEOHead
+        title={`${t("partners.title")} | ZP Zaken`}
+        description={t("partners.subtitle")}
+      />
 
       <PageHero
         title={t("partners.title")}

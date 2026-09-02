@@ -1,5 +1,5 @@
 import { LocalizedLink } from "@/components/LocalizedLink";
-import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -56,11 +56,10 @@ export default function OverOns() {
 
   return (
     <Layout>
-      <Helmet>
-        <title>Over ZP Zaken | Onafhankelijke Bemiddeling Sinds 2014</title>
-        <meta name="description" content="ZP Zaken is opgericht in 2014 door Boy Kruiswijk. Meer dan 2.500 tevreden zzp'ers, AFM geregistreerd, Kifid aangesloten. Persoonlijk gesprek zonder callcenter." />
-        <link rel="canonical" href="https://zpzaken.nl/over-ons" />
-      </Helmet>
+      <SEOHead
+        title="Over ZP Zaken | Direct en onafhankelijk sinds 2014"
+        description="ZP Zaken is opgericht in 2014 door Boy Kruiswijk. Meer dan 2.500 tevreden zzp'ers, AFM geregistreerd, Kifid aangesloten. Persoonlijk gesprek zonder callcenter."
+      />
 
       <PageHero
         title={t("overOns.title")}

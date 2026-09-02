@@ -1,5 +1,5 @@
 import { LocalizedLink } from "@/components/LocalizedLink";
-import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -26,11 +26,10 @@ export default function ZoWerkenWij() {
 
   return (
     <Layout>
-      <Helmet>
-        <title>{t("zoWerkenWij.title")} | ZP Zaken</title>
-        <meta name="description" content={t("zoWerkenWij.subtitle")} />
-        <link rel="canonical" href="https://zpzaken.nl/zo-werken-wij" />
-      </Helmet>
+      <SEOHead
+        title={`${t("zoWerkenWij.title")} | ZP Zaken`}
+        description={t("zoWerkenWij.subtitle")}
+      />
 
       <PageHero
         title={t("zoWerkenWij.title")}
