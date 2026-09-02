@@ -53,3 +53,6 @@ project_id = "eugkavokktjwpqaqlwsj"
  [functions.sitemap]
  verify_jwt = false
 
+ [functions.wp-import]
+ verify_jwt = false
+

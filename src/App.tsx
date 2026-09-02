@@ -46,6 +46,7 @@ const AdminExactKoppeling = lazy(() => import("./pages/admin/ExactKoppeling"));
 const AdminMarketing = lazy(() => import("./pages/admin/MarketingPlaceholder"));
 const AdminKennisbank = lazy(() => import("./pages/admin/KennisbankArtikelen"));
 const AdminKennisbankEditor = lazy(() => import("./pages/admin/KennisbankArtikelEditor"));
+const AdminWpImport = lazy(() => import("./pages/admin/WpImport"));
 const ExactCallback = lazy(() => import("./pages/ExactCallback"));
 const AdminLogin = lazy(() => import("./pages/admin/LoginPage"));
 const ChangePasswordPage = lazy(() => import("./pages/admin/ChangePasswordPage"));
@@ -201,6 +202,7 @@ const App = () => (
             <Route path="/admin/kennisbank" element={<RoleGuard allow={["marketing"]}><AdminKennisbank /></RoleGuard>} />
             <Route path="/admin/kennisbank/nieuw" element={<RoleGuard allow={["marketing"]}><AdminKennisbankEditor /></RoleGuard>} />
             <Route path="/admin/kennisbank/:id" element={<RoleGuard allow={["marketing"]}><AdminKennisbankEditor /></RoleGuard>} />
+            <Route path="/admin/wp-import" element={<RoleGuard allow={["marketing"]}><AdminWpImport /></RoleGuard>} />
 
             <Route path="/admin/integraties" element={<RoleGuard allow={[]}><AdminIntegraties /></RoleGuard>} />
             <Route path="/admin/exact-koppeling" element={<RoleGuard allow={[]}><AdminExactKoppeling /></RoleGuard>} />
