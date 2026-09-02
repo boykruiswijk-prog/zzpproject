@@ -61,17 +61,18 @@ export function SEOHead({
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
 
-      {/* Hreflang alternates */}
-      <link rel="alternate" hrefLang="nl" href={`${BASE_URL}${nlPath}`} />
-      {SUPPORTED_LANGS.map((lang) => (
-        <link
-          key={lang}
-          rel="alternate"
-          hrefLang={lang}
-          href={`${BASE_URL}/${lang}${nlPath === "/" ? "" : nlPath}`}
-        />
-      ))}
-      <link rel="alternate" hrefLang="x-default" href={`${BASE_URL}${nlPath}`} />
+      {/* Hreflang alternates — niet op noindex-pagina's (die bestaan niet per taal) */}
+      {!noindex && <link rel="alternate" hrefLang="nl" href={`${BASE_URL}${nlPath}`} />}
+      {!noindex &&
+        SUPPORTED_LANGS.map((lang) => (
+          <link
+            key={lang}
+            rel="alternate"
+            hrefLang={lang}
+            href={`${BASE_URL}/${lang}${nlPath === "/" ? "" : nlPath}`}
+          />
+        ))}
+      {!noindex && <link rel="alternate" hrefLang="x-default" href={`${BASE_URL}${nlPath}`} />}
 
       {breadcrumb && (
         <script type="application/ld+json">{JSON.stringify(breadcrumb)}</script>
