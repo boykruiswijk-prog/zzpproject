@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Printer } from "lucide-react";
@@ -26,13 +26,7 @@ export function DocumentPage({
 
   return (
     <Layout>
-      <Helmet>
-        <title>{title} | ZP Zaken</title>
-        <meta name="description" content={metaDescription} />
-        <link rel="canonical" href={url} />
-        <meta property="og:title" content={`${title} | ZP Zaken`} />
-        <meta property="og:description" content={metaDescription} />
-        <meta property="og:url" content={url} />
+      <SEOHead title={`${title} | ZP Zaken`} description={metaDescription}>
         <style>{`
           @media print {
             header, footer, nav, .no-print { display: none !important; }
@@ -61,7 +55,7 @@ export function DocumentPage({
             .doc-prose h3 { font-size: 20px; margin-top: 24px; }
           }
         `}</style>
-      </Helmet>
+      </SEOHead>
 
       <section className="bg-muted/30 border-b border-border/60">
         <div className="container-wide py-10 md:py-14">

@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -147,15 +147,12 @@ export default function CreditControl() {
 
   return (
     <Layout>
-      <Helmet>
-        <title>CreditControl:  Eerder betaald, volledige zekerheid | ZP Zaken</title>
-        <meta
-          name="description"
-          content="ZP Zaken CreditControl: eerder betaald worden als ZZP'er met volledige zekerheid. Bescherming tegen faillissement, transparante factoring en 100% regie."
-        />
-        <link rel="canonical" href="https://zpzaken.nl/creditcontrol" />
+      <SEOHead
+        title="CreditControl: eerder betaald, volledige zekerheid | ZP Zaken"
+        description="ZP Zaken CreditControl: eerder betaald worden als ZZP'er met volledige zekerheid. Bescherming tegen faillissement, transparante factoring en 100% regie."
+      >
         <script type="application/ld+json">{JSON.stringify(schema)}</script>
-      </Helmet>
+      </SEOHead>
 
       {/* ─── 1. HERO ─── */}
       <section className="relative min-h-[70vh] flex items-center overflow-hidden">

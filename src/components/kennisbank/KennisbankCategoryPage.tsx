@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { LocalizedLink } from "@/components/LocalizedLink";
@@ -61,16 +61,9 @@ export function KennisbankCategoryPage({
 
   return (
     <Layout>
-      <Helmet>
-        <title>{metaTitle}</title>
-        <meta name="description" content={metaDescription} />
-        <link rel="canonical" href={url} />
-        <meta property="og:title" content={metaTitle} />
-        <meta property="og:description" content={metaDescription} />
-        <meta property="og:url" content={url} />
-        <meta property="og:type" content="website" />
+      <SEOHead title={metaTitle} description={metaDescription}>
         <script type="application/ld+json">{JSON.stringify(collectionSchema)}</script>
-      </Helmet>
+      </SEOHead>
 
       <PageHero
         title={title}

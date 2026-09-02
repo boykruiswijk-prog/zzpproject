@@ -1,5 +1,5 @@
 import { LocalizedLink } from "@/components/LocalizedLink";
-import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
@@ -60,31 +60,10 @@ const faqs = [
 export default function SocialMedia() {
   return (
     <Layout>
-      <Helmet>
-        <title>Social Media & Verzekeringen voor ZZP'ers | ZP Zaken</title>
-        <meta name="description" content="Volg ons voor tips over aansprakelijkheid, beroeps- en bedrijfsaansprakelijkheidsverzekeringen voor zzp'ers. Zeker ondernemen begint hier." />
-        <link rel="canonical" href="https://zpzaken.nl/social-media" />
-        <script type="application/ld+json">{JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          "name": "ZP Zaken",
-          "url": "https://zpzaken.nl",
-          "sameAs": [
-            "https://www.linkedin.com/company/zp-zaken/",
-            "https://www.instagram.com/zp_zaken/"
-          ],
-          "description": "Onafhankelijke bemiddeling over verzekeringen voor zzp'ers en zelfstandig ondernemers."
-        })}</script>
-        <script type="application/ld+json">{JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          "mainEntity": faqs.map(f => ({
-            "@type": "Question",
-            "name": f.q,
-            "acceptedAnswer": { "@type": "Answer", "text": f.a }
-          }))
-        })}</script>
-      </Helmet>
+      <SEOHead
+        title="Social Media & Verzekeringen voor ZZP'ers | ZP Zaken"
+        description="Volg ons voor tips over aansprakelijkheid, beroeps- en bedrijfsaansprakelijkheidsverzekeringen voor zzp'ers. Zeker ondernemen begint hier."
+      />
 
       {/* 1. Hero */}
       <PageHero
