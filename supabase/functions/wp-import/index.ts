@@ -91,6 +91,15 @@ const RULES: { hub: string; words: RegExp }[] = [
   { hub: "ondernemen", words: /(verzeker|aov|cyber|aansprakelijk|zorgverzekering)/i },
 ];
 
+// Hub-/dienstpagina's van de oude site: die bestaan al als route, niet importeren.
+const HUB_SLUGS = new Set([
+  "kennisbank","ondernemen","financien","belastingen","verzekeringen","wet-en-regelgeving",
+  "movir","wijzijnaov","aov-via-centraalbeheer","sharepeople","brightpensioen",
+  "zzp-zorgverzekering","zzp-pensioen","arbeidsongeschiktheidsverzekering-aov-zzp",
+  "mentale-gezondheidstest-mirro","pre-employment-screening-otentica",
+  "beroeps-en-bedrijfs-aansprakelijkheidsverzekering-zzp-avb-bav","zzp-administratie-en-boekhouding",
+]);
+
 const NIET_ARTIKEL =
   /(bedankt|dank|zoekresultaten|^test|test-\d|-test-|home|homepage|contact|privacy|cookie|algemene-voorwaarden|disclaimer|klacht|offerte|aanmeld|inloggen|inschrijven-nieuwsbrief|vacature|sitemap|over-ons|partners|team|demo|voorbeeld|checkout|winkel|shop|mijn-account)/i;
 
@@ -340,9 +349,13 @@ Deno.serve(async (req) => {
         row.status = "overgeslagen";
         row.reden = "slug bestaat al in articles";
         bestaatAl++;
-      } else if (!prioriteit && (NIET_ARTIKEL.test(item.slug) || wordCount < 150)) {
+      } else if (!prioriteit && (HUB_SLUGS.has(item.slug) || NIET_ARTIKEL.test(item.slug) || wordCount < 150)) {
         row.status = "overgeslagen";
-        row.reden = wordCount < 150 ? `te weinig inhoud (${wordCount} woorden)` : "lijkt geen kennisbankartikel";
+        row.reden = HUB_SLUGS.has(item.slug)
+          ? "hub-/dienstpagina, bestaat al als route"
+          : wordCount < 150
+            ? `te weinig inhoud (${wordCount} woorden)`
+            : "lijkt geen kennisbankartikel";
         overgeslagen++;
       } else if (!markdown) {
         row.status = "overgeslagen";
