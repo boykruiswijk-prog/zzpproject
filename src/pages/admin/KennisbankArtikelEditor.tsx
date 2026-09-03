@@ -52,6 +52,8 @@ interface FormState {
   generated_by_ai: boolean;
   reviewed_by: string | null;
   reviewed_at: string | null;
+  /** Datum laatste inhoudelijke controle (los van updated_at). */
+  content_reviewed_at: string;
 }
 
 const emptyForm: FormState = {
@@ -59,6 +61,7 @@ const emptyForm: FormState = {
   content: "", published_at: "", is_published: false,
   seo_title: "", seo_description: "", author_name: "",
   generated_by_ai: false, reviewed_by: null, reviewed_at: null,
+  content_reviewed_at: "",
 };
 
 export default function KennisbankArtikelEditor() {
@@ -122,6 +125,9 @@ export default function KennisbankArtikelEditor() {
         generated_by_ai: !!(existing as any).generated_by_ai,
         reviewed_by: (existing as any).reviewed_by ?? null,
         reviewed_at: (existing as any).reviewed_at ?? null,
+        content_reviewed_at: (existing as any).content_reviewed_at
+          ? String((existing as any).content_reviewed_at).slice(0, 10)
+          : "",
       });
       setSlugTouched(true);
     }
@@ -247,6 +253,9 @@ export default function KennisbankArtikelEditor() {
         generated_by_ai: form.generated_by_ai,
         reviewed_by: form.reviewed_by,
         reviewed_at: form.reviewed_at,
+        content_reviewed_at: form.content_reviewed_at
+          ? new Date(form.content_reviewed_at).toISOString()
+          : null,
       };
 
       const wasPublished = !!existing?.is_published;
@@ -475,6 +484,29 @@ export default function KennisbankArtikelEditor() {
                 <div>
                   <Label>Publicatiedatum</Label>
                   <Input type="date" value={form.published_at} onChange={(e) => setForm((f) => ({ ...f, published_at: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>Laatste inhoudelijke controle</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="date"
+                      value={form.content_reviewed_at}
+                      onChange={(e) => setForm((f) => ({ ...f, content_reviewed_at: e.target.value }))}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() =>
+                        setForm((f) => ({ ...f, content_reviewed_at: new Date().toISOString().slice(0, 10) }))
+                      }
+                    >
+                      Vandaag
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Wordt als dateModified aan Google gemeld. Alleen bijwerken bij een inhoudelijke
+                    actualisatie, niet bij een cosmetische wijziging.
+                  </p>
                 </div>
                 <div>
                   <Label>Rubriek {form.is_published && "*"}</Label>
