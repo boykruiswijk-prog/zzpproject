@@ -95,6 +95,7 @@ export type Database = {
           author_name: string | null
           category: string
           content: string | null
+          content_reviewed_at: string | null
           created_at: string
           excerpt: string | null
           generated_by_ai: boolean
@@ -118,6 +119,7 @@ export type Database = {
           author_name?: string | null
           category?: string
           content?: string | null
+          content_reviewed_at?: string | null
           created_at?: string
           excerpt?: string | null
           generated_by_ai?: boolean
@@ -141,6 +143,7 @@ export type Database = {
           author_name?: string | null
           category?: string
           content?: string | null
+          content_reviewed_at?: string | null
           created_at?: string
           excerpt?: string | null
           generated_by_ai?: boolean
