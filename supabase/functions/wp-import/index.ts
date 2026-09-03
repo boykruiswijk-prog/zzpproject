@@ -270,16 +270,27 @@ Deno.serve(async (req) => {
 
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) return json({ error: "unauthorized" }, 401);
-    const userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const { data: userData } = await userClient.auth.getUser();
-    const user = userData?.user;
-    if (!user) return json({ error: "unauthorized" }, 401);
 
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-    const { data: isTeam } = await admin.rpc("is_team_member", { _user_id: user.id });
-    if (!isTeam) return json({ error: "forbidden" }, 403);
+
+    // Servicepad voor de eenmalige migratie: een sterk geheim token uit
+    // WP_IMPORT_TOKEN. Alleen bruikbaar met exacte match; anders normale
+    // gebruikerscontrole met teamrol.
+    const serviceToken = Deno.env.get("WP_IMPORT_TOKEN") ?? "";
+    const bearer = authHeader.replace(/^Bearer\s+/i, "").trim();
+    const viaServiceToken = serviceToken.length >= 32 && bearer === serviceToken;
+
+    if (!viaServiceToken) {
+      const userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const { data: userData } = await userClient.auth.getUser();
+      const user = userData?.user;
+      if (!user) return json({ error: "unauthorized" }, 401);
+
+      const { data: isTeam } = await admin.rpc("is_team_member", { _user_id: user.id });
+      if (!isTeam) return json({ error: "forbidden" }, 403);
+    }
 
     const body = await req.json().catch(() => ({}));
     const mode = body?.mode === "import" ? "import" : "dryrun";
