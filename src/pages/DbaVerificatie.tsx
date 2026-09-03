@@ -34,7 +34,7 @@ export default function DbaVerificatie() {
   if (!check) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <SEOHead title="Certificaat niet gevonden | ZP Zaken" description="Dit Wet DBA certificaat bestaat niet of is niet meer geldig." />
+        <SEOHead title="Certificaat niet gevonden | ZP Zaken" description="Dit Wet DBA certificaat bestaat niet of is niet meer geldig." noindex={true} />
         <Card className="max-w-md w-full mx-4">
           <CardContent className="pt-8 text-center">
             <XCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
@@ -52,7 +52,7 @@ export default function DbaVerificatie() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 to-background p-4">
-      <SEOHead title={`Wet DBA Certificaat ${check.certificate_number} | ZP Zaken`} description={`Geverifieerd Wet DBA certificaat voor ${check.client_name}`} />
+      <SEOHead title={`Wet DBA Certificaat ${check.certificate_number} | ZP Zaken`} description={`Geverifieerd Wet DBA certificaat voor ${check.client_name}`} noindex={true} />
       <Card className="max-w-lg w-full border-emerald-200">
         <CardHeader className="text-center pb-2">
           <div className="mx-auto mb-4 h-20 w-20 rounded-full bg-emerald-100 flex items-center justify-center">

@@ -224,6 +224,11 @@ export default function ArtikelDetail() {
         <title>{seoTitle} | Kennisbank | ZP Zaken</title>
         <meta name="description" content={metaDescription} />
         <link rel="canonical" href={articleUrl} />
+        <link rel="alternate" hrefLang="nl" href={articleUrl} />
+        <link rel="alternate" hrefLang="en" href={articleUrl} />
+        <link rel="alternate" hrefLang="de" href={articleUrl} />
+        <link rel="alternate" hrefLang="fr" href={articleUrl} />
+        <link rel="alternate" hrefLang="x-default" href={articleUrl} />
 
         <meta property="og:type" content="article" />
         <meta property="og:site_name" content="ZP Zaken" />

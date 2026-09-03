@@ -12,6 +12,9 @@ const Verzekeringen = lazy(() => import("./pages/Verzekeringen"));
 const AOV = lazy(() => import("./pages/AOV"));
 const Pensioen = lazy(() => import("./pages/Pensioen"));
 const Zorgverzekering = lazy(() => import("./pages/Zorgverzekering"));
+const ZzpVerzekeringICT = lazy(() => import("./pages/ZzpVerzekeringICT"));
+const ZzpVerzekeringZorg = lazy(() => import("./pages/ZzpVerzekeringZorg"));
+const ZzpVerzekeringBouw = lazy(() => import("./pages/ZzpVerzekeringBouw"));
 const MentaleGezondheid = lazy(() => import("./pages/MentaleGezondheid"));
 const WaaromZpZaken = lazy(() => import("./pages/WaaromZpZaken"));
 const VoorWie = lazy(() => import("./pages/VoorWie"));
@@ -115,6 +118,9 @@ const publicRoutes = (
     <Route path="aov" element={<AOV />} />
     <Route path="pensioen" element={<Pensioen />} />
     <Route path="zorgverzekering" element={<Zorgverzekering />} />
+    <Route path="zzp-verzekering-ict" element={<ZzpVerzekeringICT />} />
+    <Route path="zzp-verzekering-zorg" element={<ZzpVerzekeringZorg />} />
+    <Route path="zzp-verzekering-bouw" element={<ZzpVerzekeringBouw />} />
     <Route path="mentale-gezondheid" element={<MentaleGezondheid />} />
     <Route path="waarom-zp-zaken" element={<WaaromZpZaken />} />
     <Route path="voor-wie" element={<VoorWie />} />
