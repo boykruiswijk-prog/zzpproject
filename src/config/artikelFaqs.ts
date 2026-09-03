@@ -95,6 +95,24 @@ export const ARTIKEL_FAQS: Record<string, ArtikelFaqItem[]> = {
         "Het gaat om {{fiscaal:mkbWinstvrijstelling:waarde}} van de winst, waar dan al wel de ondernemersaftrek afgehaald is.",
     },
   ],
+  "kleinschaligheidsinvesteringsaftrek-kia-voor-zzpers": [
+    {
+      question: "Wat is KIA?",
+      answer:
+        "De kleinschaligheidsinvesteringsaftrek is een aftrekpost op je winst. Het bedrag wat je kunt aftrekken is afhankelijk van de investeringen die je hebt gedaan.",
+    },
+    {
+      question: "Hoeveel moet je minimaal investeren voor de KIA?",
+      answer:
+        "Je totale investering in het jaar moet minimaal {{fiscaal:kiaOndergrens:waarde}} zijn. Per investering moet je boven {{fiscaal:kiaMinimumPerBedrijfsmiddel:waarde}} zitten.",
+    },
+    {
+      question: "Wanneer heb je geen KIA meer?",
+      answer:
+        "Investeer je meer dan {{fiscaal:kiaBovengrens:waarde}}, dan is er geen KIA. De bovengrens is gestegen van {{fiscaal:kiaBovengrens:2025}} naar {{fiscaal:kiaBovengrens:waarde}}.",
+    },
+  ],
+
   "wat-is-de-zelfstandigenaftrek": [
     {
       question: "Hoe hoog is de zelfstandigenaftrek?",

@@ -100,6 +100,11 @@ const VOORBEHOUD_UITVOERINGSTOETS =
   "Volgens de uitvoeringstoets van de Belastingdienst kunnen IB-ondernemers de verhoging pas toepassen bij de definitieve aangifte inkomstenbelasting over 2026.";
 
 
+const BRON_BELASTINGDIENST_KIA_2026: FiscaleBron = {
+  naam: "Belastingdienst — Kleinschaligheidsinvesteringsaftrek 2026",
+  url: "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/winst/inkomstenbelasting/inkomstenbelasting_voor_ondernemers/investeringsaftrek_en_desinvesteringsbijtelling/kleinschaligheidsinvesteringsaftrek/",
+};
+
 const BRON_BELASTINGDIENST_BIJTELLING_2026: FiscaleBron = {
   naam: "Belastingdienst — bijtelling privegebruik auto 2026",
   url: "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/auto_en_vervoer/",
@@ -274,6 +279,62 @@ export const fiscaleCijfers = {
     label: "Maximale algemene heffingskorting",
     bron: BRON_BELASTINGDIENST_BOX1_2026,
   },
+
+  /* --- KLEINSCHALIGHEIDSINVESTERINGSAFTREK (KIA) 2026 --------------------
+   * Bron onder- en bovengrens: Belastingdienst, pagina
+   * 'Kleinschaligheidsinvesteringsaftrek 2026'.
+   * LET OP: de twee schijfwaarden (percentage eerste schijf en vast bedrag
+   * tweede schijf, inclusief de in de toelichting genoemde schijfgrenzen)
+   * komen uit een SECUNDAIRE BRON en moeten nog tegen de officiele KIA-tabel
+   * van de Belastingdienst worden geverifieerd.
+   * Het afbouwpercentage boven de tweede schijf (2025: 7,56 procent) is voor
+   * 2026 NIET geverifieerd en staat daarom bewust niet in dit bestand.
+   * -------------------------------------------------------------------- */
+  kiaOndergrens: {
+    belastingjaar: 2026,
+    waarde: 2901,
+    eenheid: "euro",
+    label: "Ondergrens kleinschaligheidsinvesteringsaftrek",
+    toelichting:
+      "Minimaal totaal investeringsbedrag per jaar om in aanmerking te komen voor de KIA.",
+    bron: BRON_BELASTINGDIENST_KIA_2026,
+  },
+  kiaBovengrens: {
+    belastingjaar: 2026,
+    waarde: 398236,
+    eenheid: "euro",
+    label: "Bovengrens kleinschaligheidsinvesteringsaftrek",
+    toelichting: "Vanaf dit totale investeringsbedrag is er geen KIA meer.",
+    bron: BRON_BELASTINGDIENST_KIA_2026,
+    historie: { 2025: 392230 },
+  },
+  kiaMinimumPerBedrijfsmiddel: {
+    belastingjaar: 2026,
+    waarde: 450,
+    eenheid: "euro",
+    label: "Minimuminvestering per bedrijfsmiddel voor de KIA",
+    bron: BRON_BELASTINGDIENST_KIA_2026,
+  },
+  kiaPercentageEersteSchijf: {
+    belastingjaar: 2026,
+    waarde: 28,
+    eenheid: "procent",
+    label: "KIA-percentage eerste schijf",
+    toelichting:
+      "Geldt over een totale investering van € 2.901 tot en met € 71.683. In 2025 liep deze schijf tot € 70.602. Schijfgrens uit secundaire bron: nog te verifieren tegen de officiele KIA-tabel.",
+    bron: BRON_BELASTINGDIENST_KIA_2026,
+  },
+  kiaVastBedragTweedeSchijf: {
+    belastingjaar: 2026,
+    waarde: 20072,
+    eenheid: "euro",
+    label: "Vast KIA-bedrag tweede schijf",
+    toelichting:
+      "Geldt bij een totale investering van € 71.684 tot en met € 132.746. In 2025 was dit € 19.769 bij een schijf tot € 130.744. Bedrag en schijfgrenzen uit secundaire bron: nog te verifieren tegen de officiele KIA-tabel.",
+    bron: BRON_BELASTINGDIENST_KIA_2026,
+    historie: { 2025: 19769 },
+  },
+
 
   /* --- BIJTELLING PRIVEGEBRUIK AUTO 2026 --------------------------------
    * Bron: Belastingdienst, pagina 'Bijtelling privegebruik auto 2026'.
