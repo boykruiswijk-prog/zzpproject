@@ -19,11 +19,38 @@ import {
   getFiscaalCijfer,
   getFiscaleWaardeVoorJaar,
 } from "../data/fiscaleCijfers";
+import { berekenNulgrens } from "../data/nulgrensBerekening";
 
 /** Matcht {{fiscaal:sleutel}} en {{fiscaal:sleutel:variant}}. */
 export const FISCAAL_TOKEN_REGEX = /\{\{\s*fiscaal:([a-zA-Z0-9_]+)(?::([a-zA-Z0-9_]+))?\s*\}\}/g;
 
+/**
+ * AFGELEIDE TOKENS — uitkomsten die volledig uit fiscaleCijfers.ts volgen.
+ * Zo staat er ook voor een berekende uitkomst nooit een vast getal in een
+ * artikel. Zie src/data/nulgrensBerekening.ts voor de aannames.
+ */
+function afgeleideWaarden(): Record<string, number> {
+  const n = berekenNulgrens();
+  return {
+    nulgrensWinst: n.winst,
+    nulgrensOndernemersaftrek: n.ondernemersaftrek,
+    nulgrensWinstNaOndernemersaftrek: n.winstNaOndernemersaftrek,
+    nulgrensMkbVrijstelling: n.mkbVrijstellingBedrag,
+    nulgrensBelastbaarInkomen: n.belastbaarInkomen,
+    nulgrensBelastingSchijf1: n.belastingSchijf1,
+    nulgrensAlgemeneHeffingskorting: n.algemeneHeffingskorting,
+    nulgrensArbeidskorting: n.arbeidskorting,
+    nulgrensTeBetalen: n.teBetalen,
+  };
+}
+
 export function resolveFiscaalToken(sleutel: string, variant?: string): string | null {
+  const afgeleid = afgeleideWaarden()[sleutel];
+  if (afgeleid !== undefined) {
+    // Afgeleide tokens kennen alleen een bedrag; varianten zijn niet van toepassing.
+    return formatFiscaleWaarde(Math.round(afgeleid), "euro");
+  }
+
   const cijfer = getFiscaalCijfer(sleutel);
   if (!cijfer) return null;
 
