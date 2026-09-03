@@ -17,12 +17,14 @@ const audiences = [
     title: "Bouw en Techniek",
     description: "Voor zelfstandige professionals in de techniek en bouwsector. Niet voor uitvoerend werk met fysiek risico, maar voor adviserende, ontwerpende en coördinerende rollen.",
     examples: "architecten, bouwkundig adviseurs, projectleiders, technische coaches",
+    link: { to: "/zzp-verzekering-bouw", label: "ZZP verzekering voor bouwprofessionals" },
   },
   {
     icon: HeartPulse,
     title: "Zorg en Welzijn",
     description: "Voor adviserende, coachende en coördinerende rollen binnen zorg en welzijn. Niet voor uitvoerende zorgverlening (daarvoor verwijzen we naar gespecialiseerde verzekeraars).",
     examples: "zorgconsultants, beleidsadviseurs, coaches in welzijnssector",
+    link: { to: "/zzp-verzekering-zorg", label: "ZZP verzekering voor zorgprofessionals" },
   },
   {
     icon: Briefcase,
@@ -53,6 +55,7 @@ const audiences = [
     title: "ICT",
     description: "Voor IT-professionals die in adviserende, ontwerpende of projectmatige rol werken.",
     examples: "software-architecten, scrum masters, product owners, IT-consultants",
+    link: { to: "/zzp-verzekering-ict", label: "ZZP verzekering voor ICT-freelancers" },
   },
 ];
 
@@ -89,6 +92,14 @@ export default function VoorWie() {
                 <p className="text-sm text-foreground">
                   <span className="font-semibold">Voorbeelden:</span> {audience.examples}.
                 </p>
+                {"link" in audience && audience.link && (
+                  <LocalizedLink
+                    to={audience.link.to}
+                    className="inline-flex items-center gap-1 mt-3 text-sm font-medium text-accent hover:underline"
+                  >
+                    {audience.link.label} <ArrowRight className="h-4 w-4" />
+                  </LocalizedLink>
+                )}
               </div>
             ))}
           </div>
