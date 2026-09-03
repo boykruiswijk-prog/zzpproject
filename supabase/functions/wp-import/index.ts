@@ -131,14 +131,28 @@ function makeRewriter(importSlugs: Set<string>) {
   };
 }
 
+// Handmatige indeling door de opdrachtgever voor slugs waar de automatische
+// regels geen uitsluitsel geven. Deze indeling gaat vóór de fallback.
+const HANDMATIGE_CATEGORIE: Record<string, string> = {
+  "hoe-zit-het-met-reiskosten-als-zzp-er": "belastingen",
+  "zzp-of-eenmanszaak": "ondernemen",
+  "inschrijven-bij-de-kamer-van-koophandel": "ondernemen",
+  eherkenning: "ondernemen",
+  ondernemingsplan: "ondernemen",
+};
+
 function guessCategory(slug: string, title: string, keyword: string) {
+  const handmatig = HANDMATIGE_CATEGORIE[slug];
+  if (handmatig) {
+    return { ...HUB_CATEGORY[handmatig], onzeker: false, handmatig: true };
+  }
   const haystack = `${slug.replace(/-/g, " ")} ${title} ${keyword}`.toLowerCase();
   for (const r of RULES) {
     if (r.words.test(haystack)) {
-      return { ...HUB_CATEGORY[r.hub], onzeker: false };
+      return { ...HUB_CATEGORY[r.hub], onzeker: false, handmatig: false };
     }
   }
-  return { ...HUB_CATEGORY.ondernemen, onzeker: true };
+  return { ...HUB_CATEGORY.ondernemen, onzeker: true, handmatig: false };
 }
 
 async function fetchJson(url: string) {
@@ -256,16 +270,26 @@ Deno.serve(async (req) => {
 
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) return json({ error: "unauthorized" }, 401);
-    const userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const { data: userData } = await userClient.auth.getUser();
-    const user = userData?.user;
-    if (!user) return json({ error: "unauthorized" }, 401);
 
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-    const { data: isTeam } = await admin.rpc("is_team_member", { _user_id: user.id });
-    if (!isTeam) return json({ error: "forbidden" }, 403);
+
+    // Alleen ingelogde teamleden mogen importeren. Het tijdelijke servicepad
+    // voor de eenmalige WordPress-migratie is na afronding verwijderd.
+    const viaServiceToken = false;
+
+    let user: { id: string; email?: string | null } | null = null;
+
+    if (!viaServiceToken) {
+      const userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const { data: userData } = await userClient.auth.getUser();
+      user = userData?.user ?? null;
+      if (!user) return json({ error: "unauthorized" }, 401);
+
+      const { data: isTeam } = await admin.rpc("is_team_member", { _user_id: user.id });
+      if (!isTeam) return json({ error: "forbidden" }, 403);
+    }
 
     const body = await req.json().catch(() => ({}));
     const mode = body?.mode === "import" ? "import" : "dryrun";
@@ -335,6 +359,7 @@ Deno.serve(async (req) => {
         categorie: cat.label,
         categorie_hub: cat.hub,
         categorie_onzeker: cat.onzeker,
+        categorie_handmatig: cat.handmatig === true,
         prioriteit,
         afbeeldingen: images,
         aantal_afbeeldingen: images.length,
@@ -402,12 +427,15 @@ Deno.serve(async (req) => {
 
     if (mode === "import" && geimporteerd > 0) {
       try {
-        const { data: profile } = await admin.from("profiles").select("full_name").eq("id", user.id).maybeSingle();
+        const { data: profile } = user
+          ? await admin.from("profiles").select("full_name").eq("id", user.id).maybeSingle()
+          : { data: null };
         await admin.from("activiteiten_log").insert({
           actie_type: "wp_import",
           omschrijving: `WordPress-import uitgevoerd: ${geimporteerd} artikelen als concept toegevoegd (route ${collected.route})`,
-          uitgevoerd_door: user.id,
-          uitgevoerd_door_naam: (profile as any)?.full_name || user.email || "onbekend",
+          uitgevoerd_door: user?.id ?? null,
+          uitgevoerd_door_naam:
+            (profile as any)?.full_name || user?.email || "servicetoken (eenmalige migratie)",
         });
       } catch { /* logging mag flow niet blokkeren */ }
     }
