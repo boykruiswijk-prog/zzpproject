@@ -351,6 +351,36 @@ export const seoRoutes: SeoRoute[] = [
       "Vraag hier vrijblijvend een offerte aan voor je beroeps- en bedrijfsaansprakelijkheidsverzekering. " +
       "Je ontvangt binnen 24 uur een reactie van een adviseur.",
   },
+  {
+    path: "/zzp-verzekering-ict",
+    title: "ZZP Verzekering ICT | BAV & AVB voor IT-freelancers | ZP Zaken",
+    description:
+      "Als ICT-freelancer aansprakelijk voor een softwarefout of datalek? ZP Zaken regelt jouw beroepsaansprakelijkheidsverzekering. Binnen 24 uur verzekerd.",
+    h1: "ZZP Verzekering voor ICT-freelancers",
+    intro:
+      "Als ICT-freelancer schrijf je code, implementeer je systemen of geef je advies. Een fout in je werk kan grote financiele gevolgen hebben voor je opdrachtgever. " +
+      "Beroepsaansprakelijkheidsverzekering (BAV) is in de ICT-sector bij veel opdrachtgevers verplicht en beschermt jou en je klant.",
+  },
+  {
+    path: "/zzp-verzekering-zorg",
+    title: "ZZP Verzekering Zorg | BAV & AVB voor zorgprofessionals | ZP Zaken",
+    description:
+      "ZZP'er in de zorg? ZP Zaken regelt jouw beroepsaansprakelijkheidsverzekering. Beschermd tegen aansprakelijkheid bij medische fouten. Binnen 24 uur.",
+    h1: "ZZP Verzekering voor zorgprofessionals",
+    intro:
+      "Als zorgprofessional werk je met kwetsbare mensen. Een fout of misverstand kan leiden tot schadeclaims. " +
+      "Beroepsaansprakelijkheidsverzekering geeft jou de vrijheid om je werk te doen zonder financieel risico.",
+  },
+  {
+    path: "/zzp-verzekering-bouw",
+    title: "ZZP Verzekering Bouw | BAV & AVB voor bouwprofessionals | ZP Zaken",
+    description:
+      "Als ZZP'er in de bouw aansprakelijk voor constructiefouten of schade? ZP Zaken regelt jouw verzekering. Snel, persoonlijk en binnen 24 uur geregeld.",
+    h1: "ZZP Verzekering voor bouwprofessionals",
+    intro:
+      "Als zzp'er in de bouw draag je verantwoordelijkheid voor de kwaliteit van je werk. Een constructiefout of schade aan eigendom kan leiden tot forse schadeclaims. " +
+      "ZP Zaken zorgt voor de juiste dekking met een BAV en AVB.",
+  },
 ];
 
 const bySeoPath = new Map(seoRoutes.map((r) => [r.path, r]));
