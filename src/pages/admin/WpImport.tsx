@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { AdminLayout } from "@/components/admin/AdminLayout";
+import { ImageMigrateCard } from "@/components/admin/ImageMigrateCard";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -120,6 +121,8 @@ export default function WpImport() {
             </div>
           </CardContent>
         </Card>
+
+        <ImageMigrateCard />
 
         {result && (
           <>
