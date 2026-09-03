@@ -6,7 +6,6 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /verificatie/
-Disallow: /creditcontrol
 Disallow: /collectief-ledenorganisaties
 
 User-agent: Bingbot
@@ -16,7 +15,6 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /verificatie/
-Disallow: /creditcontrol
 Disallow: /collectief-ledenorganisaties
 
 User-agent: GPTBot
@@ -26,7 +24,6 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /verificatie/
-Disallow: /creditcontrol
 Disallow: /collectief-ledenorganisaties
 
 User-agent: OAI-SearchBot
@@ -36,7 +33,6 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /verificatie/
-Disallow: /creditcontrol
 Disallow: /collectief-ledenorganisaties
 
 User-agent: ChatGPT-User
@@ -46,7 +42,6 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /verificatie/
-Disallow: /creditcontrol
 Disallow: /collectief-ledenorganisaties
 
 User-agent: PerplexityBot
@@ -56,7 +51,6 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /verificatie/
-Disallow: /creditcontrol
 Disallow: /collectief-ledenorganisaties
 
 User-agent: ClaudeBot
@@ -66,7 +60,6 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /verificatie/
-Disallow: /creditcontrol
 Disallow: /collectief-ledenorganisaties
 
 User-agent: Claude-SearchBot
@@ -76,7 +69,6 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /verificatie/
-Disallow: /creditcontrol
 Disallow: /collectief-ledenorganisaties
 
 User-agent: Google-Extended
@@ -86,7 +78,6 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /verificatie/
-Disallow: /creditcontrol
 Disallow: /collectief-ledenorganisaties
 
 User-agent: Applebot-Extended
@@ -96,7 +87,6 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /verificatie/
-Disallow: /creditcontrol
 Disallow: /collectief-ledenorganisaties
 
 Sitemap: https://zpzaken.nl/sitemap.xml

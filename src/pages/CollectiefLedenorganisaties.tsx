@@ -191,7 +191,7 @@ export default function CollectiefLedenorganisaties() {
       <Helmet>
         <title>Collectieve BAV en verzekeringen voor ledenorganisaties | ZP Zaken</title>
         <meta name="description" content="Bied jouw leden collectieve korting op BAV, verzekeringen en factoring. Ontzorgd geregeld via zpzaken.nl. Vraag een voorstel aan." />
-        <link rel="canonical" href="https://zzpproject.lovable.app/collectief-ledenorganisaties" />
+        <link rel="canonical" href="https://zpzaken.nl/collectieve-ledenorganisaties" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "FAQPage",
