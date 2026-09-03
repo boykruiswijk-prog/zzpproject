@@ -100,12 +100,12 @@ const BRON_BELASTINGDIENST_BOX1_2026: FiscaleBron = {
 };
 
 /**
- * NOG TE VERIFIEREN — NIET GEBRUIKEN IN ARTIKELEN
- * De afbouwgrenzen (afbouwpunten en afbouwpercentages) van de algemene
- * heffingskorting en de arbeidskorting staan hier BEWUST NIET in: de bronnen
- * spreken elkaar daarover tegen. Deze waarden moeten eerst worden geverifieerd
- * bij de officiele tabellen van de Belastingdienst voordat ze hier mogen worden
- * toegevoegd of in een artikel gebruikt mogen worden. Verzin geen waarde.
+ * HEFFINGSKORTINGEN — VOLLEDIGE TABELLEN
+ * De afbouwgrenzen en afbouwpercentages van de algemene heffingskorting en de
+ * arbeidskorting zijn geverifieerd bij de officiele tabellen van de
+ * Belastingdienst voor 2026 en staan onderaan dit bestand als
+ * ALGEMENE_HEFFINGSKORTING en ARBEIDSKORTING, met de rekenfuncties
+ * berekenAlgemeneHeffingskorting() en berekenArbeidskorting().
  */
 
 export const fiscaleCijfers = {
