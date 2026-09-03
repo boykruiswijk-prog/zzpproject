@@ -32,7 +32,13 @@
  * verouderingscheck in de admin en niet stil verkeerd wordt weergegeven.
  */
 
-export type FiscaalEenheid = "euro" | "procent" | "uren";
+export type FiscaalEenheid =
+  | "euro"
+  | "procent"
+  | "uren"
+  | "jaren"
+  | "maanden"
+  | "kilometers";
 
 export interface FiscaleBron {
   naam: string;
@@ -93,6 +99,11 @@ const VOORBEHOUD_TIJDELIJK_BELEIDSBESLUIT =
 const VOORBEHOUD_UITVOERINGSTOETS =
   "Volgens de uitvoeringstoets van de Belastingdienst kunnen IB-ondernemers de verhoging pas toepassen bij de definitieve aangifte inkomstenbelasting over 2026.";
 
+
+const BRON_BELASTINGDIENST_BIJTELLING_2026: FiscaleBron = {
+  naam: "Belastingdienst — bijtelling privegebruik auto 2026",
+  url: "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/auto_en_vervoer/",
+};
 
 const BRON_BELASTINGDIENST_BOX1_2026: FiscaleBron = {
   naam: "Belastingdienst — tarieven en heffingskortingen box 1 2026",
@@ -263,6 +274,75 @@ export const fiscaleCijfers = {
     label: "Maximale algemene heffingskorting",
     bron: BRON_BELASTINGDIENST_BOX1_2026,
   },
+
+  /* --- BIJTELLING PRIVEGEBRUIK AUTO 2026 --------------------------------
+   * Bron: Belastingdienst, pagina 'Bijtelling privegebruik auto 2026'.
+   * In 2026 zijn er twee bijtellingstarieven, afhankelijk van de CO2-uitstoot.
+   * -------------------------------------------------------------------- */
+  bijtellingVerlaagdTarief: {
+    belastingjaar: 2026,
+    waarde: 18,
+    eenheid: "procent",
+    label: "Verlaagd bijtellingstarief",
+    toelichting:
+      "Geldt volledig alleen voor auto's op waterstof en voor auto's die volledig worden aangedreven door geintegreerde zonnecellen, met een vermogen van ten minste 1 kilowattpiek en een accu zonder lood. Voor andere nulemissie-auto's geldt dit tarief tot en met de drempel in de cataloguswaarde; over het deel daarboven geldt het standaardtarief.",
+    bron: BRON_BELASTINGDIENST_BIJTELLING_2026,
+    historie: { 2025: 17 },
+  },
+  bijtellingStandaardtarief: {
+    belastingjaar: 2026,
+    waarde: 22,
+    eenheid: "procent",
+    label: "Standaard bijtellingstarief",
+    toelichting:
+      "Geldt over de volledige cataloguswaarde voor auto's met CO2-uitstoot, en voor het deel van de cataloguswaarde van een nulemissie-auto boven de drempel.",
+    bron: BRON_BELASTINGDIENST_BIJTELLING_2026,
+  },
+  bijtellingDrempelCataloguswaarde: {
+    belastingjaar: 2026,
+    waarde: 30000,
+    eenheid: "euro",
+    label: "Drempel cataloguswaarde verlaagd bijtellingstarief",
+    toelichting:
+      "Voor nulemissie-auto's geldt het verlaagde tarief tot en met deze cataloguswaarde; over het deel daarboven geldt het standaardtarief.",
+    bron: BRON_BELASTINGDIENST_BIJTELLING_2026,
+  },
+  bijtellingYoungtimerTarief: {
+    belastingjaar: 2026,
+    waarde: 35,
+    eenheid: "procent",
+    label: "Bijtelling youngtimer",
+    toelichting:
+      "Percentage van de waarde in het economisch verkeer in plaats van de cataloguswaarde.",
+    bron: BRON_BELASTINGDIENST_BIJTELLING_2026,
+  },
+  bijtellingYoungtimerLeeftijd: {
+    belastingjaar: 2026,
+    waarde: 16,
+    eenheid: "jaren",
+    label: "Minimumleeftijd youngtimer",
+    toelichting:
+      "Sinds 2026 geldt de youngtimerbijtelling voor auto's ouder dan 16 jaar; tot en met 2025 was dat ouder dan 15 jaar. Gebruikte iemand de auto in 2025 en was die op 31 december 2025 ouder dan 15 jaar, dan valt die auto in 2026 ook onder de youngtimerbijtelling.",
+    bron: BRON_BELASTINGDIENST_BIJTELLING_2026,
+    historie: { 2025: 15 },
+  },
+  bijtellingVastePeriode: {
+    belastingjaar: 2026,
+    waarde: 60,
+    eenheid: "maanden",
+    label: "Periode waarin het bijtellingspercentage vaststaat",
+    toelichting: "Gerekend vanaf de eerste tenaamstelling van de auto.",
+    bron: BRON_BELASTINGDIENST_BIJTELLING_2026,
+  },
+  bijtellingPriveKilometergrens: {
+    belastingjaar: 2026,
+    waarde: 500,
+    eenheid: "kilometers",
+    label: "Grens privegebruik zonder bijtelling",
+    toelichting:
+      "Geen bijtelling bij aantoonbaar minder dan dit aantal privekilometers per jaar, met een sluitende rittenregistratie.",
+    bron: BRON_BELASTINGDIENST_BIJTELLING_2026,
+  },
 } as const satisfies Record<string, FiscaalCijfer>;
 
 
@@ -281,7 +361,11 @@ export function formatFiscaleWaarde(waarde: number, eenheid: FiscaalEenheid): st
   if (eenheid === "procent") {
     return `${waarde.toLocaleString("nl-NL", { maximumFractionDigits: 2 })}%`;
   }
-  return `${waarde.toLocaleString("nl-NL")} uur`;
+  const getal = waarde.toLocaleString("nl-NL");
+  if (eenheid === "jaren") return `${getal} jaar`;
+  if (eenheid === "maanden") return `${getal} maanden`;
+  if (eenheid === "kilometers") return `${getal} kilometer`;
+  return `${getal} uur`;
 }
 
 export function getFiscaalCijfer(sleutel: string): FiscaalCijfer | undefined {
