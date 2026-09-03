@@ -108,6 +108,7 @@ const BRON_BELASTINGDIENST_BOX1_2026: FiscaleBron = {
  * toegevoegd of in een artikel gebruikt mogen worden. Verzin geen waarde.
  */
 
+export const fiscaleCijfers = {
 
   zelfstandigenaftrek: {
     belastingjaar: 2026,
