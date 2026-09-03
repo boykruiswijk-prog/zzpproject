@@ -47,6 +47,8 @@ export interface FiscaalCijfer {
   label: string;
   /** Korte toelichting op de toepassing; optioneel. */
   toelichting?: string;
+  /** Voorbehouden: tijdelijke besluiten, nog te bekrachtigen wetgeving, uitvoeringsbeperkingen. */
+  voorbehoud?: readonly string[];
   bron: FiscaleBron;
   /** Waarden van andere jaren, voor context in artikelen. */
   historie?: Record<number, number>;
