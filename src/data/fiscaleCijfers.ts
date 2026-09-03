@@ -47,6 +47,8 @@ export interface FiscaalCijfer {
   label: string;
   /** Korte toelichting op de toepassing; optioneel. */
   toelichting?: string;
+  /** Voorbehouden: tijdelijke besluiten, nog te bekrachtigen wetgeving, uitvoeringsbeperkingen. */
+  voorbehoud?: readonly string[];
   bron: FiscaleBron;
   /** Waarden van andere jaren, voor context in artikelen. */
   historie?: Record<number, number>;
@@ -71,6 +73,26 @@ const BRON_STAATSCOURANT_BIJDRAGE_INKOMEN: FiscaleBron = {
   naam: "Regeling van 3 november 2025, Staatscourant 2025, nr. 38055 (ministerie van VWS)",
   url: "https://zoek.officielebekendmakingen.nl/stcrt-2025-38055.html",
 };
+
+const BRON_BELEIDSBESLUIT_KILOMETERS_2026: FiscaleBron = {
+  naam:
+    "Beleidsbesluit van de staatssecretaris van Financien, Staatscourant mei 2026, vooruitlopend op het Belastingplan 2027",
+  url: "https://www.officielebekendmakingen.nl/staatscourant",
+};
+
+const BRON_BELASTINGDIENST_KILOMETERVERGOEDING: FiscaleBron = {
+  naam:
+    "Belastingdienst — nieuwsbericht 25 juni 2026 over de verhoging van de onbelaste kilometervergoeding, en tabel 13 van 'Tarieven, bedragen en percentages loonheffingen vanaf 1 januari 2026' (vierde uitgave)",
+  url: "https://www.belastingdienst.nl/wps/wcm/connect/nl/loonheffingen/",
+};
+
+/** Voorbehoud dat geldt voor beide kilometerbedragen 2026. */
+const VOORBEHOUD_TIJDELIJK_BELEIDSBESLUIT =
+  "Het beleidsbesluit is tijdelijk en vervalt per 1 januari 2027; de structurele verankering moet nog via het Belastingplan 2027 door de Tweede en Eerste Kamer.";
+
+const VOORBEHOUD_UITVOERINGSTOETS =
+  "Volgens de uitvoeringstoets van de Belastingdienst kunnen IB-ondernemers de verhoging pas toepassen bij de definitieve aangifte inkomstenbelasting over 2026.";
+
 
 export const fiscaleCijfers = {
   zelfstandigenaftrek: {
@@ -153,7 +175,29 @@ export const fiscaleCijfers = {
       "Afgeleid: maximum bijdrage-inkomen maal het bijdragepercentage voor ondernemers. Afgerond bedrag.",
     bron: BRON_STAATSCOURANT_BIJDRAGE_INKOMEN,
   },
+  kilometeraftrekOndernemer: {
+    belastingjaar: 2026,
+    waarde: 0.25,
+    eenheid: "euro",
+    label: "Kilometeraftrek ondernemer (per zakelijke kilometer)",
+    toelichting:
+      "Geldt voor IB-ondernemers, zzp'ers, vennoten in een VOF en maten in een maatschap, voor zakelijke ritten met een privevervoermiddel. Met terugwerkende kracht vanaf 1 januari 2026.",
+    voorbehoud: [VOORBEHOUD_TIJDELIJK_BELEIDSBESLUIT, VOORBEHOUD_UITVOERINGSTOETS],
+    bron: BRON_BELEIDSBESLUIT_KILOMETERS_2026,
+    historie: { 2025: 0.23 },
+  },
+  onbelasteKilometervergoedingWerknemer: {
+    belastingjaar: 2026,
+    waarde: 0.25,
+    eenheid: "euro",
+    label: "Onbelaste kilometervergoeding werknemer (per kilometer)",
+    toelichting: "Met terugwerkende kracht vanaf 1 januari 2026.",
+    voorbehoud: [VOORBEHOUD_TIJDELIJK_BELEIDSBESLUIT],
+    bron: BRON_BELASTINGDIENST_KILOMETERVERGOEDING,
+    historie: { 2025: 0.23 },
+  },
 } as const satisfies Record<string, FiscaalCijfer>;
+
 
 export type FiscaalCijferSleutel = keyof typeof fiscaleCijfers;
 
