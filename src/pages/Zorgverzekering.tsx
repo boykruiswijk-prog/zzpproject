@@ -2,10 +2,10 @@ import { seoRoute } from "@/config/seoRoutes";
 import { ServicePageTemplate } from "@/components/diensten/ServicePageTemplate";
 import { Heart, Users, Euro } from "lucide-react";
 
-import teamRoxy from "@/assets/team-roxy.jpg";
-import officeCookies from "@/assets/zp-boy-laptop.jpg";
-import teamMeeting from "@/assets/team-meeting.jpg";
-import officeFlowers from "@/assets/office-flowers.jpg";
+import teamRoxy from "@/assets/team-roxy.webp";
+import officeCookies from "@/assets/zp-boy-laptop.webp";
+import teamMeeting from "@/assets/team-meeting.webp";
+import officeFlowers from "@/assets/office-flowers.webp";
 
 const SEO = seoRoute("/zorgverzekering");
 

@@ -6,16 +6,16 @@ import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Target, Eye, Users, Award, Heart, Shield, CheckCircle, UserPlus, Mail, Phone, User, Camera } from "lucide-react";
-import teamMember1 from "@/assets/team-member-1.jpg";
-import teamMember2 from "@/assets/team-member-2.jpg";
-import teamMember3 from "@/assets/team-member-3.jpg";
+import teamMember1 from "@/assets/team-member-1.webp";
+import teamMember2 from "@/assets/team-member-2.webp";
+import teamMember3 from "@/assets/team-member-3.webp";
 import gertjanPortrait from "@/assets/team-member-4.jpg";
 import noahPortrait from "@/assets/team-member-mystery.jpg";
 import sandraPortrait from "@/assets/team-member-mystery.jpg";
 
-import teamWalking from "@/assets/team-walking.jpg";
-import teamCheers from "@/assets/team-cheers.jpg";
-import ellenPortrait from "@/assets/ellen-baars-portrait.jpg";
+import teamWalking from "@/assets/team-walking.webp";
+import teamCheers from "@/assets/team-cheers.webp";
+import ellenPortrait from "@/assets/ellen-baars-portrait.webp";
 import { GoogleReviewsSection } from "@/components/social-proof/GoogleReviewsSection";
 import { SocialFeaturesSection } from "@/components/over-ons/SocialFeaturesSection";
 
@@ -98,7 +98,7 @@ export default function OverOns() {
             <div className="relative">
               <div className="bg-card rounded-2xl overflow-hidden shadow-card border border-border/50">
                 <div className="aspect-[4/3] overflow-hidden">
-                  <img src={teamMember1} alt="Boy Kruiswijk - Oprichter ZP Zaken" className="w-full h-full object-cover" />
+                  <img loading="lazy" decoding="async" src={teamMember1} alt="Boy Kruiswijk - Oprichter ZP Zaken" className="w-full h-full object-cover" />
                 </div>
                 <div className="p-6">
                   <blockquote className="text-lg font-medium mb-2 text-foreground italic">
@@ -129,7 +129,7 @@ export default function OverOns() {
               </div>
             </div>
             <div className="relative rounded-2xl p-8 lg:p-12 overflow-hidden">
-              <img src={ellenPortrait} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />
+              <img loading="lazy" decoding="async" src={ellenPortrait} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />
               <div className="absolute inset-0" style={{ backgroundColor: "rgba(0,0,0,0.45)" }} aria-hidden="true" />
               <div className="relative z-10">
                 <blockquote className="text-xl lg:text-2xl font-medium mb-6 text-primary-foreground">{t("overOns.quote")}</blockquote>
@@ -151,7 +151,7 @@ export default function OverOns() {
               <div key={member.name} className="bg-card rounded-2xl overflow-hidden shadow-card border border-border/50">
                 <div className="aspect-[4/3] overflow-hidden">
                   {member.image ? (
-                    <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                    <img loading="lazy" decoding="async" src={member.image} alt={member.name} className="w-full h-full object-cover" />
                   ): "photoPending" in member && member.photoPending ? (
                     <div
                       className="w-full h-full flex flex-col items-center justify-center text-white"
@@ -262,7 +262,7 @@ export default function OverOns() {
 
       <section className="section-padding text-primary-foreground relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={teamCheers} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
+          <img loading="lazy" decoding="async" src={teamCheers} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
         </div>
         <div className="container-wide relative z-10">

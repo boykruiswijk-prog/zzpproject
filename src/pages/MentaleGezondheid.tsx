@@ -2,10 +2,10 @@ import { seoRoute } from "@/config/seoRoutes";
 import { ServicePageTemplate } from "@/components/diensten/ServicePageTemplate";
 import { Brain, HeartHandshake, Sparkles } from "lucide-react";
 
-import teamCheers from "@/assets/team-cheers.jpg";
-import officeFlowers from "@/assets/office-flowers.jpg";
-import teamWalking from "@/assets/team-walking.jpg";
-import officeCoffee from "@/assets/office-coffee.jpg";
+import teamCheers from "@/assets/team-cheers.webp";
+import officeFlowers from "@/assets/office-flowers.webp";
+import teamWalking from "@/assets/team-walking.webp";
+import officeCoffee from "@/assets/office-coffee.webp";
 
 const SEO = seoRoute("/mentale-gezondheid");
 

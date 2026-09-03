@@ -32,7 +32,7 @@ import {
   Phone,
 } from "lucide-react";
 import creditcontrolHero from "@/assets/creditcontrol-hero.jpg";
-import teamBoyCalling from "@/assets/team-boy-calling.jpg";
+import teamBoyCalling from "@/assets/team-boy-calling.webp";
 
 const SEO = seoRoute("/creditcontrol");
 
@@ -160,7 +160,7 @@ export default function CreditControl() {
       {/* ─── 1. HERO ─── */}
       <section className="relative min-h-[70vh] flex items-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={creditcontrolHero} alt="" className="w-full h-full object-cover" aria-hidden="true" />
+          <img decoding="async" fetchPriority="high" src={creditcontrolHero} alt="" className="w-full h-full object-cover" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-foreground/95 via-foreground/90 to-foreground/75" />
         </div>
         <div className="container-wide relative z-10 py-20 md:py-32">
@@ -552,7 +552,7 @@ export default function CreditControl() {
       {/* ─── 11. FINAL CTA ─── */}
       <section className="relative section-padding overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={teamBoyCalling} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
+          <img loading="lazy" decoding="async" src={teamBoyCalling} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
         </div>
         <div className="container-wide relative z-10">

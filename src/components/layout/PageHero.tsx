@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
-import teamMeeting from "@/assets/team-meeting.jpg";
+import teamMeeting from "@/assets/team-meeting.webp";
 
 interface PageHeroProps {
   title: ReactNode;
@@ -29,7 +29,7 @@ export function PageHero({
       {/* Background Image */}
       {showBackgroundImage && (
         <div className="absolute inset-0 z-0">
-          <img
+          <img decoding="async" fetchPriority="high"
             src={bgImage}
             alt=""
             className="w-full h-full object-cover"

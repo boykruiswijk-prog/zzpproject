@@ -6,8 +6,8 @@ import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, HardHat, HeartPulse, Briefcase, Calculator, Scale, Megaphone, Monitor, Users, Shield } from "lucide-react";
-import teamWalking from "@/assets/team-walking.jpg";
-import teamCheers from "@/assets/team-cheers.jpg";
+import teamWalking from "@/assets/team-walking.webp";
+import teamCheers from "@/assets/team-cheers.webp";
 
 const SEO = seoRoute("/voor-wie");
 
@@ -120,7 +120,7 @@ export default function VoorWie() {
 
       <section className="section-padding text-primary-foreground relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={teamCheers} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
+          <img loading="lazy" decoding="async" src={teamCheers} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
         </div>
         <div className="container-wide relative z-10">

@@ -12,10 +12,10 @@ import {
   Heart,
   Star
 } from "lucide-react";
-import officelogo from "@/assets/office-logo.jpg";
-import teamRoxy from "@/assets/team-roxy.jpg";
-import officeCookies from "@/assets/zp-logo-glass.jpg";
-import officeCoffee from "@/assets/office-coffee.jpg";
+import officelogo from "@/assets/office-logo.webp";
+import teamRoxy from "@/assets/team-roxy.webp";
+import officeCookies from "@/assets/zp-logo-glass.webp";
+import officeCoffee from "@/assets/office-coffee.webp";
 
 const timelineEvents = [
   {
@@ -120,7 +120,7 @@ function TimelineItem({ event, index, isVisible }: TimelineItemProps) {
           {/* Background Image if available */}
           {event.image && (
             <div className="relative h-48 overflow-hidden">
-              <img
+              <img loading="lazy" decoding="async"
                 src={event.image}
                 alt=""
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

@@ -55,7 +55,7 @@ function PilotCard({ pilot, t }: { pilot: { slug: string; titleKey: string; desc
     <>
       <AnimatedSection className="rounded-2xl border border-border shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] transition-shadow h-full flex flex-col overflow-hidden">
         <div className="relative h-36 w-full overflow-hidden">
-          <img src={pilot.image} alt="" className="w-full h-full object-cover" />
+          <img loading="lazy" decoding="async" src={pilot.image} alt="" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/60" />
           <div className="absolute bottom-4 left-4 flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white flex-shrink-0">

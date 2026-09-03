@@ -11,7 +11,7 @@ export function HiscoxTrustStrip() {
       <div className="container-wide py-10">
         <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10 max-w-4xl mx-auto">
           <div className="flex-shrink-0 flex items-center justify-center bg-white rounded-lg py-6 px-10 shadow-sm">
-            <img
+            <img loading="lazy" decoding="async"
               src={hiscoxLogo}
               alt="Hiscox - onze verzekeringspartner"
               style={{

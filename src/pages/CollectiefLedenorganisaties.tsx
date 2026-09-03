@@ -21,7 +21,7 @@ import {
   Banknote, Zap, TrendingUp, UserCheck, Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import teamWalking from "@/assets/team-walking.jpg";
+import teamWalking from "@/assets/team-walking.webp";
 
 /* ─── Validation ─── */
 const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -206,7 +206,7 @@ export default function CollectiefLedenorganisaties() {
       <section ref={heroRef} className="relative min-h-screen flex items-center overflow-hidden">
         {/* Parallax background */}
         <motion.div className="absolute inset-0" style={{ y: heroY }}>
-          <img src={teamWalking} alt="" className="w-full h-full object-cover" style={{ objectPosition: "center 20%" }} />
+          <img loading="lazy" decoding="async" src={teamWalking} alt="" className="w-full h-full object-cover" style={{ objectPosition: "center 20%" }} />
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
         </motion.div>
 

@@ -11,7 +11,7 @@ import { ArrowRight, BookOpen, Scale, Briefcase, Calculator, Wallet, Shield } fr
 import { useArticles, useArticleCategories } from "@/hooks/useArticles";
 import { ArticleCard } from "@/components/kennisbank/ArticleCard";
 import { CategoryFilter } from "@/components/kennisbank/CategoryFilter";
-import officeFlowers from "@/assets/zp-boy-laptop.jpg";
+import officeFlowers from "@/assets/zp-boy-laptop.webp";
 
 const SEO = seoRoute("/kennisbank");
 

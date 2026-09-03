@@ -2,7 +2,7 @@ import { CheckCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { AnimatedSection } from "@/components/ui/animated-section";
-import ellenPortrait from "@/assets/ellen-baars-portrait.jpg";
+import ellenPortrait from "@/assets/ellen-baars-portrait.webp";
 
 export function EllenAdvisorSection() {
   return (
@@ -14,7 +14,7 @@ export function EllenAdvisorSection() {
             style={{ padding: "40px", borderRadius: "16px" }}
           >
             <div>
-              <img
+              <img loading="lazy" decoding="async"
                 src={ellenPortrait}
                 alt="Ellen Baars - Senior Adviseur ZP Zaken"
                 style={{ width: "100%", height: "auto", display: "block", borderRadius: "12px" }}

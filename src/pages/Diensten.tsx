@@ -10,13 +10,13 @@ import { motion } from "framer-motion";
 import { ServiceCard } from "@/components/diensten/ServiceCard";
 import { AnimatedSection, StaggerContainer, StaggerItem } from "@/components/ui/animated-section";
 
-import officeCoffee from "@/assets/office-coffee.jpg";
-import teamWalking from "@/assets/team-walking.jpg";
-import teamCheers from "@/assets/team-cheers.jpg";
-import officeFlowers from "@/assets/office-flowers.jpg";
-import officeMeetingRoom from "@/assets/office-meeting-room.jpg";
-import teamBoyCalling from "@/assets/team-boy-calling.jpg";
-import zpLogoGlass from "@/assets/zp-logo-glass.jpg";
+import officeCoffee from "@/assets/office-coffee.webp";
+import teamWalking from "@/assets/team-walking.webp";
+import teamCheers from "@/assets/team-cheers.webp";
+import officeFlowers from "@/assets/office-flowers.webp";
+import officeMeetingRoom from "@/assets/office-meeting-room.webp";
+import teamBoyCalling from "@/assets/team-boy-calling.webp";
+import zpLogoGlass from "@/assets/zp-logo-glass.webp";
 import { Shield, Calculator, Scale, UserCheck, Banknote } from "lucide-react";
 
 const SEO = seoRoute("/diensten");
@@ -177,7 +177,7 @@ export default function Diensten() {
 
       <motion.section initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="section-padding relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={teamCheers} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
+          <img loading="lazy" decoding="async" src={teamCheers} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-foreground/95 via-foreground/90 to-foreground/85" />
         </div>
         <div className="container-wide relative z-10">

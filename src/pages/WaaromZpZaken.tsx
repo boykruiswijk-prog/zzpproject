@@ -13,7 +13,7 @@ import { BemiddelingSection } from "@/components/waarom/BemiddelingSection";
 import { FAQSection, faqSchema } from "@/components/waarom/FAQSection";
 import { GoogleReviewsSection } from "@/components/social-proof/GoogleReviewsSection";
 import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
-import teamHero from "@/assets/team-hero.jpg";
+import teamHero from "@/assets/team-hero.webp";
 
 const SEO = seoRoute("/waarom-zp-zaken");
 
@@ -75,7 +75,7 @@ export default function WaaromZpZaken() {
       {/* ── HERO ── */}
       <section className="relative min-h-[50vh] flex items-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={teamHero} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
+          <img decoding="async" fetchPriority="high" src={teamHero} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-foreground/95 via-foreground/90 to-foreground/80" />
         </div>
         <div className="container-wide relative z-10 py-20 md:py-28">

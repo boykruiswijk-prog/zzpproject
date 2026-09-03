@@ -42,7 +42,7 @@ export function Footer() {
               className="inline-flex items-center mb-5 rounded-lg bg-background p-2"
               aria-label="Ga naar de homepage"
             >
-              <img src={logoZp} alt="ZP Zaken logo" className="h-8 w-auto object-contain" />
+              <img loading="lazy" decoding="async" src={logoZp} alt="ZP Zaken logo" width={161} height={90} className="h-8 w-auto object-contain" />
             </LocalizedLink>
             <p className="text-background/70 mb-5 max-w-sm text-sm">
               <span className="font-semibold text-background">{SITE_CONFIG.legalName}</span>, {t("footer.description")}

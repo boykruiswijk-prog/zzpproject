@@ -1,6 +1,6 @@
 import { Star } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import ellenAvatar from "@/assets/ellen-baars-avatar.jpg";
+import ellenAvatar from "@/assets/ellen-baars-avatar.webp";
 
 interface MiniSocialProofProps {
   variant?: "light" | "dark";
@@ -19,7 +19,7 @@ export function MiniSocialProof({ variant = "light", className = "" }: MiniSocia
           const isEllen = label === "EB";
           if (isEllen) {
             return (
-              <img
+              <img loading="lazy" decoding="async"
                 key={label}
                 src={ellenAvatar}
                 alt="Ellen Baars"

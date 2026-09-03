@@ -317,7 +317,7 @@ export default function ArtikelDetail() {
         {article.image_url && (
           <div className="container-wide max-w-4xl mx-auto px-4 sm:px-6 -mt-2 mb-8">
             <figure>
-              <img
+              <img decoding="async"
                 src={article.image_url}
                 alt={article.title}
                 width={1600}
@@ -409,7 +409,7 @@ export default function ArtikelDetail() {
                       className="group bg-background border border-border/50 rounded-xl overflow-hidden hover:shadow-lg transition-shadow"
                     >
                       {r.image_url ? (
-                        <img src={r.image_url} alt={r.title} className="w-full aspect-[16/9] object-cover" />
+                        <img loading="lazy" decoding="async" src={r.image_url} alt={r.title} className="w-full aspect-[16/9] object-cover" />
                       ) : (
                         <div className="w-full aspect-[16/9] bg-gradient-to-br from-secondary to-muted" />
                       )}
