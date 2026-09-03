@@ -18,7 +18,7 @@ import {
   formatFiscaleWaarde,
   getFiscaalCijfer,
   getFiscaleWaardeVoorJaar,
-} from "@/data/fiscaleCijfers";
+} from "../data/fiscaleCijfers";
 
 /** Matcht {{fiscaal:sleutel}} en {{fiscaal:sleutel:variant}}. */
 export const FISCAAL_TOKEN_REGEX = /\{\{\s*fiscaal:([a-zA-Z0-9_]+)(?::([a-zA-Z0-9_]+))?\s*\}\}/g;
