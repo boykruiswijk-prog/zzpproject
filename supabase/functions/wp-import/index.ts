@@ -131,14 +131,28 @@ function makeRewriter(importSlugs: Set<string>) {
   };
 }
 
+// Handmatige indeling door de opdrachtgever voor slugs waar de automatische
+// regels geen uitsluitsel geven. Deze indeling gaat vóór de fallback.
+const HANDMATIGE_CATEGORIE: Record<string, string> = {
+  "hoe-zit-het-met-reiskosten-als-zzp-er": "belastingen",
+  "zzp-of-eenmanszaak": "ondernemen",
+  "inschrijven-bij-de-kamer-van-koophandel": "ondernemen",
+  eherkenning: "ondernemen",
+  ondernemingsplan: "ondernemen",
+};
+
 function guessCategory(slug: string, title: string, keyword: string) {
+  const handmatig = HANDMATIGE_CATEGORIE[slug];
+  if (handmatig) {
+    return { ...HUB_CATEGORY[handmatig], onzeker: false, handmatig: true };
+  }
   const haystack = `${slug.replace(/-/g, " ")} ${title} ${keyword}`.toLowerCase();
   for (const r of RULES) {
     if (r.words.test(haystack)) {
-      return { ...HUB_CATEGORY[r.hub], onzeker: false };
+      return { ...HUB_CATEGORY[r.hub], onzeker: false, handmatig: false };
     }
   }
-  return { ...HUB_CATEGORY.ondernemen, onzeker: true };
+  return { ...HUB_CATEGORY.ondernemen, onzeker: true, handmatig: false };
 }
 
 async function fetchJson(url: string) {
