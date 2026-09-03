@@ -175,7 +175,29 @@ export const fiscaleCijfers = {
       "Afgeleid: maximum bijdrage-inkomen maal het bijdragepercentage voor ondernemers. Afgerond bedrag.",
     bron: BRON_STAATSCOURANT_BIJDRAGE_INKOMEN,
   },
+  kilometeraftrekOndernemer: {
+    belastingjaar: 2026,
+    waarde: 0.25,
+    eenheid: "euro",
+    label: "Kilometeraftrek ondernemer (per zakelijke kilometer)",
+    toelichting:
+      "Geldt voor IB-ondernemers, zzp'ers, vennoten in een VOF en maten in een maatschap, voor zakelijke ritten met een privevervoermiddel. Met terugwerkende kracht vanaf 1 januari 2026.",
+    voorbehoud: [VOORBEHOUD_TIJDELIJK_BELEIDSBESLUIT, VOORBEHOUD_UITVOERINGSTOETS],
+    bron: BRON_BELEIDSBESLUIT_KILOMETERS_2026,
+    historie: { 2025: 0.23 },
+  },
+  onbelasteKilometervergoedingWerknemer: {
+    belastingjaar: 2026,
+    waarde: 0.25,
+    eenheid: "euro",
+    label: "Onbelaste kilometervergoeding werknemer (per kilometer)",
+    toelichting: "Met terugwerkende kracht vanaf 1 januari 2026.",
+    voorbehoud: [VOORBEHOUD_TIJDELIJK_BELEIDSBESLUIT],
+    bron: BRON_BELASTINGDIENST_KILOMETERVERGOEDING,
+    historie: { 2025: 0.23 },
+  },
 } as const satisfies Record<string, FiscaalCijfer>;
+
 
 export type FiscaalCijferSleutel = keyof typeof fiscaleCijfers;
 
