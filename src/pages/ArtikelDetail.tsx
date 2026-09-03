@@ -219,6 +219,18 @@ export default function ArtikelDetail() {
     { name: article.title, url: `/kennisbank/${article.slug}` },
   ]);
 
+  // FAQPage-schema: alleen vragen die zichtbaar in het artikel beantwoord worden.
+  // Antwoorden komen uit dezelfde fiscale tokens als de artikeltekst.
+  const faqItems = ARTIKEL_FAQS[article.slug];
+  const jsonLdFaq = faqItems
+    ? faqSchema(
+        faqItems.map((f) => ({
+          question: f.question,
+          answer: resolveFiscaleTokens(f.answer),
+        })),
+      )
+    : null;
+
   const isBavAvb = article.slug === BAV_AVB_SLUG;
   const commercialCategories = ["Verzekeringen", "Belastingen", "Fiscaal", "Financiën"];
   const showCommercialCTA = commercialCategories.includes(article.category);
