@@ -2,7 +2,7 @@ import { seoRoute } from "@/config/seoRoutes";
 import { ServicePageTemplate } from "@/components/diensten/ServicePageTemplate";
 import { Shield, Clock, Euro } from "lucide-react";
 
-import serviceVerzekeringen from "@/assets/service-verzekeringen.jpg";
+import serviceVerzekeringen from "@/assets/service-verzekeringen.webp";
 import teamMeeting from "@/assets/team-meeting.webp";
 import officeCoffee from "@/assets/office-coffee.webp";
 import teamBoyCalling from "@/assets/team-boy-calling.webp";

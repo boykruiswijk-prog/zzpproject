@@ -31,7 +31,7 @@ import {
   Sparkles,
   Phone,
 } from "lucide-react";
-import creditcontrolHero from "@/assets/creditcontrol-hero.jpg";
+import creditcontrolHero from "@/assets/creditcontrol-hero.webp";
 import teamBoyCalling from "@/assets/team-boy-calling.webp";
 
 const SEO = seoRoute("/creditcontrol");

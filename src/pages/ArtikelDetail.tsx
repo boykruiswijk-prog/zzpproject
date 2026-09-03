@@ -4,6 +4,7 @@ import { LocalizedLink } from "@/components/LocalizedLink";
 import { Helmet } from "react-helmet-async";
 import { articleSchema, breadcrumbSchema, faqSchema } from "@/lib/schema";
 import { ARTIKEL_FAQS } from "@/config/artikelFaqs";
+import { formatPageTitle } from "@/lib/seoTitle";
 import { Layout } from "@/components/layout/Layout";
 import { useArticle, useArticles } from "@/hooks/useArticles";
 import {
@@ -198,6 +199,8 @@ export default function ArtikelDetail() {
   const ogImage = article.image_url || FALLBACK_OG_IMAGE;
   const metaDescription = article.seo_description || makeFallbackDescription(article.content, article.excerpt);
   const seoTitle = article.seo_title || article.title;
+  // Eén merknaam achteraan, max 60 tekens; zie formatPageTitle.
+  const pageTitle = formatPageTitle(seoTitle);
   const publishedAt = article.published_at || new Date().toISOString();
 
   const jsonLdArticle = articleSchema({
@@ -240,7 +243,7 @@ export default function ArtikelDetail() {
     <Layout>
       <ReadingProgress />
       <Helmet>
-        <title>{seoTitle} | Kennisbank | ZP Zaken</title>
+        <title>{pageTitle}</title>
         <meta name="description" content={metaDescription} />
         <link rel="canonical" href={articleUrl} />
         <link rel="alternate" hrefLang="nl" href={articleUrl} />
