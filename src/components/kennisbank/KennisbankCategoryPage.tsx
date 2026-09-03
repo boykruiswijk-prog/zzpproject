@@ -8,7 +8,7 @@ import { ArticleCard } from "@/components/kennisbank/ArticleCard";
 import { useArticles } from "@/hooks/useArticles";
 import { useArticleCategoryList } from "@/hooks/useArticleCategoriesAdmin";
 import { Skeleton } from "@/components/ui/skeleton";
-import officeFlowers from "@/assets/zp-boy-laptop.jpg";
+import officeFlowers from "@/assets/zp-boy-laptop.webp";
 
 interface Props {
   slug: string;

@@ -12,8 +12,8 @@ import { Phone, Mail, MapPin, Clock, CheckCircle, MessageCircle } from "lucide-r
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { trackContactFormSubmit } from "@/lib/tracking";
-import teamRoxy from "@/assets/team-roxy.jpg";
-import ellenPortrait from "@/assets/ellen-baars-avatar.jpg";
+import teamRoxy from "@/assets/team-roxy.webp";
+import ellenPortrait from "@/assets/ellen-baars-avatar.webp";
 import { SITE_CONFIG, ADDRESS_ONE_LINE } from "@/config/site";
 
 const SEO = seoRoute("/contact");
@@ -171,10 +171,18 @@ export default function Contact() {
 
 
               <div className="bg-card rounded-2xl overflow-hidden shadow-card border border-border/50">
-                <img
+                <img loading="lazy" decoding="async"
                   src={ellenPortrait}
                   alt="Ellen Baars - Senior Adviseur ZP Zaken"
-                  style={{ width: "100%", height: "auto", display: "block", borderRadius: "12px 12px 0 0" }}
+                  width={800}
+                  height={1201}
+                  style={{
+                    width: "100%",
+                    height: "auto",
+                    aspectRatio: "800 / 1201",
+                    display: "block",
+                    borderRadius: "12px 12px 0 0",
+                  }}
                 />
                 <div className="p-6">
                   <p className="font-semibold text-foreground">Ellen Baars</p>

@@ -2,10 +2,10 @@ import { seoRoute } from "@/config/seoRoutes";
 import { ServicePageTemplate } from "@/components/diensten/ServicePageTemplate";
 import { PiggyBank, TrendingUp, CalendarCheck } from "lucide-react";
 
-import teamHero from "@/assets/team-hero.jpg";
-import officeMeetingRoom from "@/assets/office-meeting-room.jpg";
-import teamWalking from "@/assets/team-walking.jpg";
-import officeFlowers from "@/assets/office-flowers.jpg";
+import teamHero from "@/assets/team-hero.webp";
+import officeMeetingRoom from "@/assets/office-meeting-room.webp";
+import teamWalking from "@/assets/team-walking.webp";
+import officeFlowers from "@/assets/office-flowers.webp";
 
 const SEO = seoRoute("/pensioen");
 

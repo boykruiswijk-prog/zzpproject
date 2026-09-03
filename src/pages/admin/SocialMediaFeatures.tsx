@@ -130,7 +130,7 @@ export default function AdminSocialMediaFeatures() {
         {filtered.map((item) => (
           <Card key={item.id} className="p-4 flex gap-4 items-center">
             {item.preview_image_url ? (
-              <img src={item.preview_image_url} alt="" className="h-20 w-20 rounded-lg object-cover flex-shrink-0" />
+              <img loading="lazy" decoding="async" src={item.preview_image_url} alt="" className="h-20 w-20 rounded-lg object-cover flex-shrink-0" />
             ) : (
               <div className="h-20 w-20 rounded-lg bg-muted flex-shrink-0" />
             )}

@@ -6,8 +6,8 @@ import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MessageCircle, FileSearch, CheckCircle, Clock, Heart, Shield, Users } from "lucide-react";
-import officeMeetingRoom from "@/assets/office-meeting-room.jpg";
-import teamBoyCalling from "@/assets/team-boy-calling.jpg";
+import officeMeetingRoom from "@/assets/office-meeting-room.webp";
+import teamBoyCalling from "@/assets/team-boy-calling.webp";
 
 const SEO = seoRoute("/zo-werken-wij");
 
@@ -96,7 +96,7 @@ export default function ZoWerkenWij() {
 
       <section className="section-padding text-primary-foreground relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={teamBoyCalling} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
+          <img loading="lazy" decoding="async" src={teamBoyCalling} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
         </div>
         <div className="container-wide relative z-10">

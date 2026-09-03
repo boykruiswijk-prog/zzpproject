@@ -48,7 +48,7 @@ function PostCard({ feature, platform }: { feature: SocialFeature | null; platfo
         )}
       </div>
       {feature.preview_image_url && (
-        <img src={feature.preview_image_url} alt="" className="w-full aspect-square object-cover" />
+        <img loading="lazy" decoding="async" src={feature.preview_image_url} alt="" className="w-full aspect-square object-cover" />
       )}
       <div className="p-5 flex-1 flex flex-col gap-3">
         {feature.preview_text && (

@@ -10,8 +10,8 @@ import {
 import { HeartPulse, BadgeCheck, Users } from "lucide-react";
 
 import serviceVerzekeringen from "@/assets/service-verzekeringen.jpg";
-import teamMeeting from "@/assets/team-meeting.jpg";
-import officeCoffee from "@/assets/office-coffee.jpg";
+import teamMeeting from "@/assets/team-meeting.webp";
+import officeCoffee from "@/assets/office-coffee.webp";
 
 const SEO = seoRoute("/zzp-verzekering-zorg");
 

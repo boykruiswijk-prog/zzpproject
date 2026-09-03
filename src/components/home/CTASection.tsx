@@ -6,7 +6,7 @@ import { LocalizedLink } from "@/components/LocalizedLink";
 import { StepsProcess } from "@/components/shared/StepsProcess";
 import { MiniSocialProof } from "@/components/shared/MiniSocialProof";
 import { trackCTA, trackPhone } from "@/lib/tracking";
-import teamBoyCalling from "@/assets/team-boy-calling.jpg";
+import teamBoyCalling from "@/assets/team-boy-calling.webp";
 
 export function CTASection() {
   const { t } = useTranslation();
@@ -14,7 +14,7 @@ export function CTASection() {
   return (
     <section className="relative section-padding overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <img src={teamBoyCalling} alt="" className="w-full h-full object-cover bg-person" />
+        <img loading="lazy" decoding="async" src={teamBoyCalling} alt="" className="w-full h-full object-cover bg-person" />
         <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
       </div>
 

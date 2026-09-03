@@ -17,7 +17,7 @@ import { AnimatedSection } from "@/components/ui/animated-section";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import ellenAvatar from "@/assets/ellen-baars-avatar.jpg";
+import ellenAvatar from "@/assets/ellen-baars-avatar.webp";
 import { TrustSignalsStrip } from "@/components/social-proof/TrustSignalsStrip";
 import { bavPakketten, getPakket, type BavPakketId } from "@/data/bavPakketten";
 import { checkAcceptance } from "@/data/acceptanceCriteria";
@@ -355,7 +355,7 @@ export function BAVApplicationModule() {
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2">
                 {["BK", "RT", "EB", "GJ"].map((label) => label === "EB" ? (
-                  <img key={label} src={ellenAvatar} alt="Ellen Baars" className="h-7 w-7 rounded-full border-2 border-background object-cover" />
+                  <img loading="lazy" decoding="async" key={label} src={ellenAvatar} alt="Ellen Baars" className="h-7 w-7 rounded-full border-2 border-background object-cover" />
                 ) : (
                   <div key={label} className="h-7 w-7 rounded-full border-2 border-background bg-accent/20 text-accent flex items-center justify-center text-[10px] font-bold">
                     {label}

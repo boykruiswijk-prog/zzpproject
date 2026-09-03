@@ -37,12 +37,11 @@ import { formatDateNL } from "@/lib/dateFormat";
        <LocalizedLink to={`/kennisbank/${article.slug}`} className="flex flex-col flex-1">
          {/* Article Image */}
          <div className="relative h-48 overflow-hidden">
-           <img
+           <img loading="lazy" decoding="async"
              src={imageUrl}
              alt={article.title}
              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-             loading="lazy"
-           />
+            />
            <div className="absolute inset-0 bg-gradient-to-t from-card/80 via-transparent to-transparent" />
            <div className="absolute bottom-3 left-3 inline-flex items-center gap-2 bg-accent/90 backdrop-blur-sm text-primary-foreground px-3 py-1.5 rounded-lg text-sm font-medium">
              <Shield className="h-3.5 w-3.5" />

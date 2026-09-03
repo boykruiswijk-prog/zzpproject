@@ -41,7 +41,7 @@ export function ServiceCard({
     <section id={id} className="relative min-h-[550px] lg:min-h-[480px] scroll-mt-24 overflow-hidden">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       <div className="absolute inset-0 z-0">
-        <img src={backgroundImage} alt="" className="w-full h-full object-cover" aria-hidden="true" />
+        <img loading="lazy" decoding="async" src={backgroundImage} alt="" className="w-full h-full object-cover" aria-hidden="true" />
         <div className="absolute inset-0 bg-gradient-to-r from-foreground/95 via-foreground/85 to-foreground/70" />
       </div>
       <div className="container-wide relative z-10 py-16 lg:py-20">

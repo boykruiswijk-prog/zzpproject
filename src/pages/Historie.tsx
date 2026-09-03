@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Timeline } from "@/components/historie/Timeline";
 import { History, Heart, Shield, Users, Sparkles, ArrowRight, Quote } from "lucide-react";
 import { LocalizedLink } from "@/components/LocalizedLink";
-import boyKruiswijk from "@/assets/team-member-1.jpg";
-import teamMeeting from "@/assets/team-meeting.jpg";
-import teamCheers from "@/assets/team-cheers.jpg";
-import officeFlowers from "@/assets/office-flowers.jpg";
+import boyKruiswijk from "@/assets/team-member-1.webp";
+import teamMeeting from "@/assets/team-meeting.webp";
+import teamCheers from "@/assets/team-cheers.webp";
+import officeFlowers from "@/assets/office-flowers.webp";
 
 const SEO = seoRoute("/historie");
 
@@ -40,7 +40,7 @@ export default function Historie() {
 
       <section className="py-16 md:py-24 text-primary-foreground relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={teamCheers} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
+          <img loading="lazy" decoding="async" src={teamCheers} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
         </div>
         <div className="container-wide relative z-10">
@@ -49,7 +49,7 @@ export default function Historie() {
             <p className="text-2xl md:text-4xl font-bold leading-relaxed mb-6">{t("historie.quoteText")}</p>
             <div className="flex items-center justify-center gap-4">
               <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-primary-foreground/30 shadow-lg">
-                <img src={boyKruiswijk} alt="Boy Kruiswijk" className="w-full h-full object-cover" />
+                <img loading="lazy" decoding="async" src={boyKruiswijk} alt="Boy Kruiswijk" className="w-full h-full object-cover" />
               </div>
               <div className="text-left">
                 <p className="font-semibold">Boy Kruiswijk</p>
@@ -99,7 +99,7 @@ export default function Historie() {
 
       <section className="section-padding relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={teamMeeting} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
+          <img loading="lazy" decoding="async" src={teamMeeting} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-foreground/90 via-foreground/85 to-foreground/80" />
         </div>
         <div className="container-wide relative z-10">

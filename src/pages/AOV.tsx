@@ -3,9 +3,9 @@ import { ServicePageTemplate } from "@/components/diensten/ServicePageTemplate";
 import { Shield, Clock, Euro } from "lucide-react";
 
 import serviceVerzekeringen from "@/assets/service-verzekeringen.jpg";
-import teamMeeting from "@/assets/team-meeting.jpg";
-import officeCoffee from "@/assets/office-coffee.jpg";
-import teamBoyCalling from "@/assets/team-boy-calling.jpg";
+import teamMeeting from "@/assets/team-meeting.webp";
+import officeCoffee from "@/assets/office-coffee.webp";
+import teamBoyCalling from "@/assets/team-boy-calling.webp";
 
 const SEO = seoRoute("/aov");
 

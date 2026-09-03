@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Phone, UserPlus } from "lucide-react";
 import { LocalizedLink } from "@/components/LocalizedLink";
-import teamMember1 from "@/assets/team-member-1.jpg";
-import teamMember2 from "@/assets/team-member-2.jpg";
-import teamMember3 from "@/assets/team-member-3.jpg";
+import teamMember1 from "@/assets/team-member-1.webp";
+import teamMember2 from "@/assets/team-member-2.webp";
+import teamMember3 from "@/assets/team-member-3.webp";
 import teamMember4 from "@/assets/team-member-4.jpg";
 import teamMemberMystery from "@/assets/team-member-mystery.jpg";
 
@@ -75,7 +75,7 @@ export function TeamSection() {
             >
               {/* Photo */}
               <div className="aspect-[4/5] overflow-hidden">
-                <img
+                <img loading="lazy" decoding="async"
                   src={member.image}
                   alt={member.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

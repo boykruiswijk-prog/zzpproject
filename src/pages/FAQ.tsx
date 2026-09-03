@@ -7,7 +7,7 @@ import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { HelpCircle } from "lucide-react";
 import { LocalizedLink } from "@/components/LocalizedLink";
-import officeFlowers from "@/assets/office-flowers.jpg";
+import officeFlowers from "@/assets/office-flowers.webp";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,

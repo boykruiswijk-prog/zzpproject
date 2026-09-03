@@ -500,7 +500,7 @@ export default function KennisbankArtikelEditor() {
               <CardHeader><CardTitle>Cover-afbeelding</CardTitle></CardHeader>
               <CardContent className="space-y-3">
                 {form.image_url && (
-                  <img src={form.image_url} alt="cover" className="w-full h-40 object-cover rounded-md border" />
+                  <img loading="lazy" decoding="async" src={form.image_url} alt="cover" className="w-full h-40 object-cover rounded-md border" />
                 )}
                 <Input value={form.image_url} onChange={(e) => setForm((f) => ({ ...f, image_url: e.target.value }))} placeholder="https://…" />
                 <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0])} />

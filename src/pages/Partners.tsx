@@ -3,7 +3,7 @@ import { SEOHead } from "@/components/SEOHead";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
-import partnerHeroBg from "@/assets/zp-logo-glass.jpg";
+import partnerHeroBg from "@/assets/zp-logo-glass.webp";
 import { Button } from "@/components/ui/button";
 import { Handshake, ExternalLink, Shield, Heart, PiggyBank, Umbrella, Users, Calculator, Scale, UserCheck, CheckCircle, Banknote, Briefcase, Crown } from "lucide-react";
 import { LocalizedLink } from "@/components/LocalizedLink";
@@ -83,7 +83,7 @@ export default function Partners() {
             {partners.map((partner) => (
               <div key={partner.name} className="bg-card rounded-2xl shadow-card border border-border/50 overflow-hidden hover:shadow-lg hover:border-accent/30 transition-all">
                 <div className={`p-6 flex items-center justify-center h-32 ${partner.name === "Onefellow" ? "bg-foreground": "bg-secondary/50"}`}>
-                  <img src={partner.logo} alt={`${partner.name} logo`} className="max-h-16 max-w-[160px] object-contain" />
+                  <img loading="lazy" decoding="async" src={partner.logo} alt={`${partner.name} logo`} className="max-h-16 max-w-[160px] object-contain" />
                 </div>
                 <div className="p-6">
                   <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 px-3 py-1.5 rounded-lg mb-4">
@@ -122,7 +122,7 @@ export default function Partners() {
           <div className="max-w-lg mx-auto">
             <div className="bg-card rounded-2xl shadow-card border border-border overflow-hidden">
               <div className="p-6 flex items-center justify-center h-32 bg-secondary/50">
-                <img src={afmPartner.logo} alt="AFM logo" className="max-h-16 max-w-[160px] object-contain" />
+                <img loading="lazy" decoding="async" src={afmPartner.logo} alt="AFM logo" className="max-h-16 max-w-[160px] object-contain" />
               </div>
               <div className="p-6">
                 <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 px-3 py-1.5 rounded-lg mb-4">

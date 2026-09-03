@@ -133,23 +133,23 @@ function buildHtml(
   html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(opts.title)}</title>`);
   html = html.replace(
     /<meta name="description" content="[\s\S]*?" \/>/,
-    `<meta name="description" content="${esc(opts.description)}" />`,
+    `<meta name="description" content="${esc(opts.description)}" data-rh="true" />`,
   );
   html = html.replace(
     /<meta property="og:title" content="[\s\S]*?" \/>/,
-    `<meta property="og:title" content="${esc(opts.title)}" />`,
+    `<meta property="og:title" content="${esc(opts.title)}" data-rh="true" />`,
   );
   html = html.replace(
     /<meta property="og:description" content="[\s\S]*?" \/>/,
-    `<meta property="og:description" content="${esc(opts.description)}" />`,
+    `<meta property="og:description" content="${esc(opts.description)}" data-rh="true" />`,
   );
   html = html.replace(
     /<meta property="og:url" content="[\s\S]*?" \/>/,
-    `<meta property="og:url" content="${url}" />`,
+    `<meta property="og:url" content="${url}" data-rh="true" />`,
   );
   html = html.replace(
     /<meta property="og:type" content="[\s\S]*?" \/>/,
-    `<meta property="og:type" content="${ogType}" />`,
+    `<meta property="og:type" content="${ogType}" data-rh="true" />`,
   );
   const jsonLd = opts.schemas
     .map((s) => `<script type="application/ld+json">${JSON.stringify(s)}</script>`)

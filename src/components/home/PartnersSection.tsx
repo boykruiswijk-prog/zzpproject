@@ -64,7 +64,7 @@ export function PartnersSection() {
               className="bg-card rounded-xl p-6 shadow-card border border-border/50 flex flex-col items-center text-center hover:shadow-lg transition-shadow"
             >
               <div className="h-20 flex items-center justify-center mb-4">
-                <img 
+                <img loading="lazy" decoding="async" 
                   src={partner.logo} 
                   alt={`${partner.name} logo`} 
                   className="max-h-16 max-w-[140px] object-contain"

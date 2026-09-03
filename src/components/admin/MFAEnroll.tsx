@@ -129,7 +129,7 @@ export function MFAEnroll({ onEnrolled }: MFAEnrollProps) {
       <CardContent className="space-y-6">
         <div className="flex justify-center">
           <div className="rounded-lg border bg-white p-3">
-            <img src={qrCode} alt="QR Code voor 2FA" className="h-48 w-48" />
+            <img loading="lazy" decoding="async" src={qrCode} alt="QR Code voor 2FA" className="h-48 w-48" />
           </div>
         </div>
 

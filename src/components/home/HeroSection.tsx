@@ -5,8 +5,8 @@ import { motion } from "framer-motion";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { TrustBar } from "@/components/shared/TrustBar";
 import { trackCTA, trackPhone } from "@/lib/tracking";
-import teamWalking from "@/assets/team-walking.jpg";
-import ellenAvatar from "@/assets/ellen-baars-avatar.jpg";
+import teamWalking from "@/assets/team-walking.webp";
+import ellenAvatar from "@/assets/ellen-baars-avatar.webp";
 import { ResponseTimePromise } from "@/components/common/ResponseTimePromise";
 import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
 
@@ -22,7 +22,7 @@ export function HeroSection() {
   return (
     <section className="relative min-h-[85vh] flex items-center overflow-hidden pb-14">
       <div className="absolute inset-0 z-0">
-        <img src={teamWalking} alt="ZP Zaken" className="w-full h-full object-cover" />
+        <img decoding="async" fetchPriority="high" src={teamWalking} alt="ZP Zaken" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-foreground/95 via-foreground/85 to-foreground/70" />
       </div>
 
@@ -144,7 +144,7 @@ export function HeroSection() {
                 <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border">
                   <div className="flex -space-x-2">
                     {["BK", "RT", "EB", "GJ"].map((label) => label === "EB" ? (
-                      <img key={label} src={ellenAvatar} alt="Ellen Baars" className="h-7 w-7 rounded-full border-2 border-background object-cover" />
+                      <img loading="lazy" decoding="async" key={label} src={ellenAvatar} alt="Ellen Baars" className="h-7 w-7 rounded-full border-2 border-background object-cover" />
                     ) : (
                       <div key={label} className="h-7 w-7 rounded-full border-2 border-background bg-accent/20 text-accent flex items-center justify-center text-[10px] font-bold">
                         {label}

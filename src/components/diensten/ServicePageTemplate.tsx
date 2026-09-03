@@ -8,7 +8,7 @@ import { ArrowRight, Sparkles, CheckCircle, LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { MiniSocialProof } from "@/components/shared/MiniSocialProof";
 import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
-import teamCheers from "@/assets/team-cheers.jpg";
+import teamCheers from "@/assets/team-cheers.webp";
 
 interface Benefit {
   icon: LucideIcon;
@@ -136,7 +136,7 @@ export function ServicePageTemplate({
                   className={!imageLeft ? "lg:col-start-2" : ""}
                 >
                   <div className="rounded-2xl overflow-hidden shadow-lg">
-                    <img
+                    <img loading="lazy" decoding="async"
                       src={block.image}
                       alt={block.title}
                       className="w-full h-72 lg:h-96 object-cover"
@@ -175,7 +175,7 @@ export function ServicePageTemplate({
       {/* CTA */}
       <section className="section-padding relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={teamCheers} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
+          <img loading="lazy" decoding="async" src={teamCheers} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-accent/95 via-accent/90 to-accent/85" />
         </div>
         <div className="container-wide relative z-10">

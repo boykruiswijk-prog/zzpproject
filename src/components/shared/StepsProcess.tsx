@@ -1,7 +1,7 @@
 import { MessageCircle, FileSearch, CheckCircle } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/animated-section";
 import { useTranslation } from "react-i18next";
-import ellenAvatar from "@/assets/ellen-baars-avatar.jpg";
+import ellenAvatar from "@/assets/ellen-baars-avatar.webp";
 
 interface StepsProcessProps {
   variant?: "light" | "dark";
@@ -23,7 +23,7 @@ export function StepsProcess({ variant = "light", showAdvisor = true }: StepsPro
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
         {showAdvisor && (
           <div className="flex flex-col items-center sm:items-end sm:mr-2 mb-2 sm:mb-0">
-            <img
+            <img loading="lazy" decoding="async"
               src={ellenAvatar}
               alt="Ellen Baars"
               className={`h-14 w-14 rounded-full object-cover border-2 ${isDark ? "border-primary-foreground/40" : "border-background shadow-sm"}`}
