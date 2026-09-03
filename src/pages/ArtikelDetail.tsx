@@ -2,7 +2,8 @@ import { useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { Helmet } from "react-helmet-async";
-import { articleSchema, breadcrumbSchema } from "@/lib/schema";
+import { articleSchema, breadcrumbSchema, faqSchema } from "@/lib/schema";
+import { ARTIKEL_FAQS } from "@/config/artikelFaqs";
 import { Layout } from "@/components/layout/Layout";
 import { useArticle, useArticles } from "@/hooks/useArticles";
 import {
