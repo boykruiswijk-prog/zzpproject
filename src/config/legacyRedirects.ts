@@ -60,6 +60,12 @@ export const legacyRedirects: LegacyRedirect[] = [
   // "aansprakelijkheidsverzekering"; beide varianten opgenomen.
   { from: "beroeps-en-bedrijfs-aansprakelijkheidsverzekering-zzp-avb-bav", to: "/verzekeringen" },
   { from: "beroeps-en-bedrijfsaansprakelijkheidsverzekering-zzp-avb-bav", to: "/verzekeringen" },
+  // LET OP — wijziging staat klaar, mag pas actief worden bij publicatie van het
+  // kennisbankartikel "bijdrage-zorgverzekeringswet-zzp" (staat nu op concept).
+  // Zodra het artikel gepubliceerd is: onderstaande regel vervangen door
+  //   { from: "bijdrage-zorgverzekeringswet-zzp", to: "/kennisbank/bijdrage-zorgverzekeringswet-zzp" },
+  // Nu bewust nog naar /zorgverzekering, omdat dit bestand ook het statische
+  // public/_redirects genereert en een redirect naar een concept een 404 zou geven.
   { from: "bijdrage-zorgverzekeringswet-zzp", to: "/zorgverzekering" },
   { from: "zzp-zorgverzekering", to: "/zorgverzekering" },
   { from: "mentale-gezondheidstest-mirro", to: "/mentale-gezondheid" },
