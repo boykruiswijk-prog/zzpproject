@@ -139,6 +139,13 @@ const HANDMATIGE_CATEGORIE: Record<string, string> = {
   "inschrijven-bij-de-kamer-van-koophandel": "ondernemen",
   eherkenning: "ondernemen",
   ondernemingsplan: "ondernemen",
+  "zzp-er-met-een-bv-wat-zijn-de-voor-en-nadelen": "ondernemen",
+  "voordelen-van-zzp": "ondernemen",
+  "hoe-combineer-je-loondienst-en-zzp": "belastingen",
+  "starten-met-ondernemen-als-zzper": "ondernemen",
+  "algemene-verordening-gegevensbeschermin-avg": "wet-en-regelgeving",
+  "sbi-codes": "ondernemen",
+  "waarom-als-zzp-er-wel-of-niet-kiezen-voor-payrolling": "wet-en-regelgeving",
 };
 
 function guessCategory(slug: string, title: string, keyword: string) {
