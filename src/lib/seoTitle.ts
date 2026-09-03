@@ -10,8 +10,16 @@ const BRANDING = new Set(["zp zaken", "zpzaken", "zpzaken.nl", "kennisbank"]);
 function shorten(subject: string, budget: number): string {
   if (subject.length <= budget) return subject;
   const cut = subject.slice(0, budget);
+  // Liefst afbreken op een leestekengrens, zodat er geen halve zin overblijft.
+  const boundary = Math.max(
+    cut.lastIndexOf(":"),
+    cut.lastIndexOf(" – "),
+    cut.lastIndexOf(" - "),
+    cut.lastIndexOf(","),
+  );
+  if (boundary >= 20) return cut.slice(0, boundary).replace(/[\s,:–-]+$/, "");
   const lastSpace = cut.lastIndexOf(" ");
-  return (lastSpace > 20 ? cut.slice(0, lastSpace) : cut).replace(/[\s,–-]+$/, "");
+  return (lastSpace > 20 ? cut.slice(0, lastSpace) : cut).replace(/[\s,:–-]+$/, "");
 }
 
 /**
