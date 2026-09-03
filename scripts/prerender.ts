@@ -52,6 +52,9 @@ function buildAssetLookup(distDir: string): Map<string, string> {
   const dir = path.join(distDir, "assets");
   if (!fs.existsSync(dir)) return map;
   for (const file of fs.readdirSync(dir)) {
+    // Alleen afbeeldingen: gelijknamige JS-chunks mogen nooit als og-image
+    // gekozen worden.
+    if (!/\.(webp|jpg|jpeg|png)$/i.test(file)) continue;
     const base = file.replace(/-[A-Za-z0-9_]{8,}\.[a-z0-9]+$/, "");
     if (base && !map.has(base)) map.set(base, `/assets/${file}`);
   }
