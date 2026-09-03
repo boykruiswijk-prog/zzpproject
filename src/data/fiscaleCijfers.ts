@@ -94,7 +94,22 @@ const VOORBEHOUD_UITVOERINGSTOETS =
   "Volgens de uitvoeringstoets van de Belastingdienst kunnen IB-ondernemers de verhoging pas toepassen bij de definitieve aangifte inkomstenbelasting over 2026.";
 
 
+const BRON_BELASTINGDIENST_BOX1_2026: FiscaleBron = {
+  naam: "Belastingdienst — tarieven en heffingskortingen box 1 2026",
+  url: "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/prive/inkomstenbelasting/heffingskortingen_boxen_tarieven/",
+};
+
+/**
+ * NOG TE VERIFIEREN — NIET GEBRUIKEN IN ARTIKELEN
+ * De afbouwgrenzen (afbouwpunten en afbouwpercentages) van de algemene
+ * heffingskorting en de arbeidskorting staan hier BEWUST NIET in: de bronnen
+ * spreken elkaar daarover tegen. Deze waarden moeten eerst worden geverifieerd
+ * bij de officiele tabellen van de Belastingdienst voordat ze hier mogen worden
+ * toegevoegd of in een artikel gebruikt mogen worden. Verzin geen waarde.
+ */
+
 export const fiscaleCijfers = {
+
   zelfstandigenaftrek: {
     belastingjaar: 2026,
     waarde: 1200,
@@ -195,6 +210,58 @@ export const fiscaleCijfers = {
     voorbehoud: [VOORBEHOUD_TIJDELIJK_BELEIDSBESLUIT],
     bron: BRON_BELASTINGDIENST_KILOMETERVERGOEDING,
     historie: { 2025: 0.23 },
+  },
+  schijf1Grens: {
+    belastingjaar: 2026,
+    waarde: 38883,
+    eenheid: "euro",
+    label: "Grens eerste schijf box 1",
+    bron: BRON_BELASTINGDIENST_BOX1_2026,
+    historie: { 2025: 38441 },
+  },
+  schijf1Tarief: {
+    belastingjaar: 2026,
+    waarde: 35.75,
+    eenheid: "procent",
+    label: "Tarief eerste schijf box 1",
+    bron: BRON_BELASTINGDIENST_BOX1_2026,
+    historie: { 2025: 36.97 },
+  },
+  schijf2Grens: {
+    belastingjaar: 2026,
+    waarde: 78426,
+    eenheid: "euro",
+    label: "Grens tweede schijf box 1",
+    bron: BRON_BELASTINGDIENST_BOX1_2026,
+  },
+  schijf2Tarief: {
+    belastingjaar: 2026,
+    waarde: 37.56,
+    eenheid: "procent",
+    label: "Tarief tweede schijf box 1",
+    bron: BRON_BELASTINGDIENST_BOX1_2026,
+  },
+  schijf3Tarief: {
+    belastingjaar: 2026,
+    waarde: 49.5,
+    eenheid: "procent",
+    label: "Tarief derde schijf box 1",
+    toelichting: "Geldt over het inkomen boven € 78.426.",
+    bron: BRON_BELASTINGDIENST_BOX1_2026,
+  },
+  maximaleArbeidskorting: {
+    belastingjaar: 2026,
+    waarde: 5685,
+    eenheid: "euro",
+    label: "Maximale arbeidskorting",
+    bron: BRON_BELASTINGDIENST_BOX1_2026,
+  },
+  maximaleAlgemeneHeffingskorting: {
+    belastingjaar: 2026,
+    waarde: 3115,
+    eenheid: "euro",
+    label: "Maximale algemene heffingskorting",
+    bron: BRON_BELASTINGDIENST_BOX1_2026,
   },
 } as const satisfies Record<string, FiscaalCijfer>;
 
