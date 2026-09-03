@@ -280,12 +280,14 @@ Deno.serve(async (req) => {
     const bearer = authHeader.replace(/^Bearer\s+/i, "").trim();
     const viaServiceToken = serviceToken.length >= 32 && bearer === serviceToken;
 
+    let user: { id: string; email?: string | null } | null = null;
+
     if (!viaServiceToken) {
       const userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         global: { headers: { Authorization: authHeader } },
       });
       const { data: userData } = await userClient.auth.getUser();
-      const user = userData?.user;
+      user = userData?.user ?? null;
       if (!user) return json({ error: "unauthorized" }, 401);
 
       const { data: isTeam } = await admin.rpc("is_team_member", { _user_id: user.id });
@@ -428,12 +430,15 @@ Deno.serve(async (req) => {
 
     if (mode === "import" && geimporteerd > 0) {
       try {
-        const { data: profile } = await admin.from("profiles").select("full_name").eq("id", user.id).maybeSingle();
+        const { data: profile } = user
+          ? await admin.from("profiles").select("full_name").eq("id", user.id).maybeSingle()
+          : { data: null };
         await admin.from("activiteiten_log").insert({
           actie_type: "wp_import",
           omschrijving: `WordPress-import uitgevoerd: ${geimporteerd} artikelen als concept toegevoegd (route ${collected.route})`,
-          uitgevoerd_door: user.id,
-          uitgevoerd_door_naam: (profile as any)?.full_name || user.email || "onbekend",
+          uitgevoerd_door: user?.id ?? null,
+          uitgevoerd_door_naam:
+            (profile as any)?.full_name || user?.email || "servicetoken (eenmalige migratie)",
         });
       } catch { /* logging mag flow niet blokkeren */ }
     }
