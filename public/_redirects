@@ -3,6 +3,9 @@
 
 /sitemap.xml    https://eugkavokktjwpqaqlwsj.supabase.co/functions/v1/sitemap    200
 
+# Oude WordPress-media staan onder hetzelfde pad in de storage-bucket.
+/wp-content/uploads/*    https://eugkavokktjwpqaqlwsj.supabase.co/storage/v1/object/public/article-images/wp-content/uploads/:splat    301
+
 /belastingen    /kennisbank    301
 /ondernemen    /kennisbank    301
 /financien    /kennisbank    301
@@ -15,18 +18,18 @@
 /eherkenning    /kennisbank    301
 /verplichte-aov-voor-zzp    /kennisbank/aov-arbeidsongeschiktheidsverzekering    301
 /nieuwe-regels-zzp    /kennisbank/nieuwe-regels-zzp-2025    301
-/zelfstandigenwet-voor-zzp-ers    /kennisbank/zelfstandigenwet-voor-zzp-ers    301
+/zelfstandigenwet-voor-zzp-ers    /kennisbank/zelfstandigenwet-voor-zzp-ers    301  # gepubliceerd artikel
 /vbar-wet-verduidelijking-beoordeling-arbeidsrelaties-en-rechtsvermoeden    /kennisbank/vbar-wet-verduidelijking-arbeidsrelaties    301
 /kleineondernemersregeling-kor    /kennisbank/wijziging-kleineondernemersregeling-kor-2025    301
 /wet-deregulering-beoordeling-arbeidsrelaties-dba    /kennisbank/wet-dba-alles-wat-je-moet-weten    301
-/hoeveel-opdrachtgevers-zzp    /kennisbank    301
-/alles-over-een-zzp-factuur    /kennisbank    301
+/hoeveel-opdrachtgevers-zzp    /kennisbank/wet-en-regelgeving    301
+/alles-over-een-zzp-factuur    /kennisbank/financien    301
 /inschrijven-bij-de-kamer-van-koophandel    /kennisbank    301
-/zzp-administratie-en-boekhouding    /diensten    301
-/hoe-bereken-ik-bijtelling-als-zzper    /kennisbank    301
-/is-eten-en-drinken-aftrekbaar-als-zzp-er    /kennisbank    301
-/hoe-zit-het-met-reiskosten-als-zzp-er    /kennisbank    301
-/uurtarief-berekenen-zzper    /kennisbank    301
+/zzp-administratie-en-boekhouding    /kennisbank/financien    301
+/hoe-bereken-ik-bijtelling-als-zzper    /kennisbank/belastingen    301
+/is-eten-en-drinken-aftrekbaar-als-zzp-er    /kennisbank/belastingen    301
+/hoe-zit-het-met-reiskosten-als-zzp-er    /kennisbank/belastingen    301
+/uurtarief-berekenen-zzper    /kennisbank/financien    301
 /hoeveel-kan-je-als-zzp-er-verdienen-zonder-belasting-te-moeten-betalen    /kennisbank    301
 /winkel    /    301
 /shop    /    301
@@ -73,3 +76,40 @@
 /voorwaarden    /algemene-voorwaarden    301
 /disclaimer    /faq    301
 /kennis    /kennisbank    301
+/auto-van-de-zaak-of-prive    /kennisbank/belastingen    301
+/zzp-of-eenmanszaak    /kennisbank    301
+/zzp-aftrekposten    /kennisbank/belastingen    301
+/zzp-er-met-een-bv-wat-zijn-de-voor-en-nadelen    /kennisbank    301
+/wet-toekomst-pensioenen-wtp-voor-zzp-ers    /pensioen    301
+/welke-verzekeringen-zzp    /verzekeringen    301
+/wat-kosten-verzekeringen-voor-zzp-ers    /verzekeringen    301
+/rijd-je-als-zzp-er-fiscaal-voordelig-met-een-youngtimer    /kennisbank/belastingen    301
+/voordelen-van-zzp    /kennisbank    301
+/hoe-combineer-je-loondienst-en-zzp    /kennisbank/belastingen    301
+/hoe-bereken-ik-mijn-inkomen-als-zzp-er-naast-loondienst    /kennisbank/financien    301
+/wat-is-de-zelfstandigenaftrek    /kennisbank/belastingen    301
+/cyberverzekering-zzp    /verzekeringen    301
+/zzp-en-belasting    /kennisbank/belastingen    301
+/starten-met-ondernemen-als-zzper    /kennisbank    301
+/wanneer-zelfstandig-ondernemer-voor-de-belastingdienst    /kennisbank/belastingen    301
+/ondernemingsplan    /kennisbank    301
+/wat-is-startersaftrek    /kennisbank/belastingen    301
+/wat-is-het-urencriterium    /kennisbank/wet-en-regelgeving    301
+/voor-en-nadelen-broodfonds-of-schenkkring    /kennisbank/financien    301
+/kleinschaligheidsinvesteringsaftrek-kia-voor-zzpers    /kennisbank/belastingen    301
+/schijnzelfstandigheid-als-zzp-er    /kennisbank/wet-en-regelgeving    301
+/btw-aangifte-zzp    /kennisbank/belastingen    301
+/hypotheek-berekenen-en-afsluiten-als-zzp-er    /kennisbank/financien    301
+/moneysure-aov-alternatief    /aov    301
+/brightpensioen    /pensioen    301
+/hoe-was-jouw-ervaring-met-zp-zaken    /contact    301
+/merk/otentica    /screening    301
+/vacature-administrateur    /over-ons    301
+/verheij-groep-bv    /over-ons    301
+/test-2    /    301
+
+# Pad met afsluitende slash → zelfde pad zonder slash (homepage uitgezonderd).
+/:path/    /:path    301!
+
+# SPA-fallback: moet als laatste staan, na alle 301-regels.
+/*    /index.html    200

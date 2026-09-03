@@ -7,6 +7,10 @@ Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /verificatie/
 Disallow: /collectief-ledenorganisaties
+Disallow: /portal
+Disallow: /portal/
+Disallow: /mijn-zp
+Disallow: /mijn-zp/
 
 User-agent: Bingbot
 Allow: /
@@ -16,6 +20,10 @@ Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /verificatie/
 Disallow: /collectief-ledenorganisaties
+Disallow: /portal
+Disallow: /portal/
+Disallow: /mijn-zp
+Disallow: /mijn-zp/
 
 User-agent: GPTBot
 Allow: /
@@ -25,6 +33,10 @@ Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /verificatie/
 Disallow: /collectief-ledenorganisaties
+Disallow: /portal
+Disallow: /portal/
+Disallow: /mijn-zp
+Disallow: /mijn-zp/
 
 User-agent: OAI-SearchBot
 Allow: /
@@ -34,6 +46,10 @@ Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /verificatie/
 Disallow: /collectief-ledenorganisaties
+Disallow: /portal
+Disallow: /portal/
+Disallow: /mijn-zp
+Disallow: /mijn-zp/
 
 User-agent: ChatGPT-User
 Allow: /
@@ -43,6 +59,10 @@ Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /verificatie/
 Disallow: /collectief-ledenorganisaties
+Disallow: /portal
+Disallow: /portal/
+Disallow: /mijn-zp
+Disallow: /mijn-zp/
 
 User-agent: PerplexityBot
 Allow: /
@@ -52,6 +72,10 @@ Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /verificatie/
 Disallow: /collectief-ledenorganisaties
+Disallow: /portal
+Disallow: /portal/
+Disallow: /mijn-zp
+Disallow: /mijn-zp/
 
 User-agent: ClaudeBot
 Allow: /
@@ -61,6 +85,10 @@ Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /verificatie/
 Disallow: /collectief-ledenorganisaties
+Disallow: /portal
+Disallow: /portal/
+Disallow: /mijn-zp
+Disallow: /mijn-zp/
 
 User-agent: Claude-SearchBot
 Allow: /
@@ -70,6 +98,10 @@ Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /verificatie/
 Disallow: /collectief-ledenorganisaties
+Disallow: /portal
+Disallow: /portal/
+Disallow: /mijn-zp
+Disallow: /mijn-zp/
 
 User-agent: Google-Extended
 Allow: /
@@ -79,6 +111,10 @@ Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /verificatie/
 Disallow: /collectief-ledenorganisaties
+Disallow: /portal
+Disallow: /portal/
+Disallow: /mijn-zp
+Disallow: /mijn-zp/
 
 User-agent: Applebot-Extended
 Allow: /
@@ -88,6 +124,10 @@ Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /verificatie/
 Disallow: /collectief-ledenorganisaties
+Disallow: /portal
+Disallow: /portal/
+Disallow: /mijn-zp
+Disallow: /mijn-zp/
 
 Sitemap: https://zpzaken.nl/sitemap.xml
 Sitemap: https://eugkavokktjwpqaqlwsj.supabase.co/functions/v1/sitemap

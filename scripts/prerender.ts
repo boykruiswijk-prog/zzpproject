@@ -14,6 +14,9 @@ import { seoRoutes, PRERENDER_EXCLUDE_PREFIXES, type SeoRoute } from "../src/con
 import { SITE_CONFIG } from "../src/config/site";
 import { bavPakketten } from "../src/data/bavPakketten";
 import { faqItems } from "../src/data/faqItems";
+import { ARTIKEL_FAQS } from "../src/config/artikelFaqs";
+import { waaromFaqs } from "../src/config/waaromFaqs";
+import { formatPageTitle } from "../src/lib/seoTitle";
 import { resolveFiscaleTokens } from "../src/lib/fiscaleTokens";
 import {
   articleSchema,
@@ -24,6 +27,39 @@ import {
 } from "../src/lib/schema";
 
 const LANGS = ["en", "de", "fr"] as const;
+
+/**
+ * Pagina-specifieke deelafbeelding per route, op basis van de bronbestandsnaam
+ * in src/assets. De gehashte bestandsnaam in dist/assets wordt bij de build
+ * opgezocht; is die er niet, dan valt de route terug op SITE_CONFIG.ogImage.
+ */
+const ROUTE_OG_IMAGES: Record<string, string> = {
+  "/": "hero-corporate",
+  "/verzekeringen": "service-verzekeringen",
+  "/aov": "service-verzekeringen",
+  "/creditcontrol": "creditcontrol-hero",
+  "/over-ons": "team-cheers",
+  "/historie": "zp-logo-glass",
+  "/partners": "office-logo",
+  "/contact": "team-boy-calling",
+  "/zo-werken-wij": "zp-boy-laptop",
+  "/waarom-zp-zaken": "office-coffee",
+};
+
+/** Gehashte assetnaam in dist/assets voor een bronbestandsnaam zonder extensie. */
+function buildAssetLookup(distDir: string): Map<string, string> {
+  const map = new Map<string, string>();
+  const dir = path.join(distDir, "assets");
+  if (!fs.existsSync(dir)) return map;
+  for (const file of fs.readdirSync(dir)) {
+    // Alleen afbeeldingen: gelijknamige JS-chunks mogen nooit als og-image
+    // gekozen worden.
+    if (!/\.(webp|jpg|jpeg|png)$/i.test(file)) continue;
+    const base = file.replace(/-[A-Za-z0-9_]{8,}\.[a-z0-9]+$/, "");
+    if (base && !map.has(base)) map.set(base, `/assets/${file}`);
+  }
+  return map;
+}
 
 /** Belangrijkste pagina's in het statische fallback-blok. */
 const FALLBACK_LINKS: Array<{ href: string; label: string }> = [
@@ -84,6 +120,10 @@ function schemasFor(routePath: string): JsonLd[] {
   if (routePath === "/faq") {
     schemas.push(faqSchema(faqItems.flatMap((c) => c.questions)));
   }
+  if (routePath === "/waarom-zp-zaken") {
+    // FAQSection rendert exact deze vragen en antwoorden op de pagina.
+    schemas.push(faqSchema(waaromFaqs.map((f) => ({ question: f.q, answer: f.a }))));
+  }
   if (routePath === "/verzekeringen") {
     for (const pakket of bavPakketten) schemas.push(productSchema(pakket));
   }
@@ -113,6 +153,16 @@ function renderFallback(h1: string, intro: string, extra = "") {
     .join("\n      ");
 }
 
+/** Zichtbaar vraag-en-antwoordblok, zodat het schema gedekt is door de tekst. */
+function renderFaqBlock(items: Array<{ question: string; answer: string }>): string {
+  if (!items.length) return "";
+  return [
+    `<section aria-label="Veelgestelde vragen"><h2>Veelgestelde vragen</h2><dl>`,
+    ...items.map((i) => `<dt>${esc(i.question)}</dt><dd>${esc(i.answer)}</dd>`),
+    `</dl></section>`,
+  ].join("");
+}
+
 function buildHtml(
   template: string,
   opts: {
@@ -122,6 +172,8 @@ function buildHtml(
     ogType: string;
     schemas: JsonLd[];
     fallback: string;
+    /** Absolute URL van de deelafbeelding; leeg = algemene og-image. */
+    image?: string;
   },
 ) {
   const { url, tags, ogType } = headFor(
@@ -152,6 +204,16 @@ function buildHtml(
     /<meta property="og:type" content="[\s\S]*?" \/>/,
     `<meta property="og:type" content="${ogType}" data-rh="true" />`,
   );
+  if (opts.image) {
+    html = html.replace(
+      /<meta property="og:image" content="[\s\S]*?" \/>/,
+      `<meta property="og:image" content="${esc(opts.image)}" data-rh="true" />`,
+    );
+    html = html.replace(
+      /<meta name="twitter:image" content="[\s\S]*?" \/>/,
+      `<meta name="twitter:image" content="${esc(opts.image)}" data-rh="true" />`,
+    );
+  }
   const jsonLd = opts.schemas
     .map((s) => `<script type="application/ld+json">${JSON.stringify(s)}</script>`)
     .join("\n    ");
@@ -216,7 +278,15 @@ export async function prerender(distDir: string, env: Record<string, string> = {
     return;
   }
   const template = fs.readFileSync(templatePath, "utf8");
+  const assets = buildAssetLookup(distDir);
   const written: string[] = [];
+
+  /** Absolute URL van de route-specifieke deelafbeelding, of undefined. */
+  const ogImageFor = (routePath: string): string | undefined => {
+    const base = ROUTE_OG_IMAGES[routePath];
+    const asset = base ? assets.get(base) : undefined;
+    return asset ? `${SITE_CONFIG.url}${asset}` : undefined;
+  };
 
   const write = (routePath: string, html: string) => {
     const dir = path.join(distDir, routePath === "/" ? "." : routePath.replace(/^\//, ""));
@@ -232,11 +302,18 @@ export async function prerender(distDir: string, env: Record<string, string> = {
       route.path,
       buildHtml(template, {
         routePath: route.path,
-        title: route.title,
+        title: formatPageTitle(route.title),
         description: route.description,
-        ogType: route.path === "/" ? "website" : "website",
+        ogType: "website",
+        image: ogImageFor(route.path),
         schemas: schemasFor(route.path),
-        fallback: renderFallback(route.h1, route.intro),
+        fallback: renderFallback(
+          route.h1,
+          route.intro,
+          route.path === "/waarom-zp-zaken"
+            ? renderFaqBlock(waaromFaqs.map((f) => ({ question: f.q, answer: f.a })))
+            : "",
+        ),
       }),
     );
   }
@@ -252,13 +329,20 @@ export async function prerender(distDir: string, env: Record<string, string> = {
       const description = (article.seo_description || samenvatting || alinea).slice(0, 300);
       const titel = article.seo_title || article.title;
       const datePublished = article.published_at || new Date().toISOString();
+      // Alleen vragen uit ARTIKEL_FAQS: die worden zichtbaar op de pagina
+      // beantwoord (en hieronder ook in de statische HTML gezet).
+      const artikelFaqs = (ARTIKEL_FAQS[article.slug] || []).map((f) => ({
+        question: resolveFiscaleTokens(f.question),
+        answer: resolveFiscaleTokens(f.answer),
+      }));
       write(
         routePath,
         buildHtml(template, {
           routePath,
-          title: `${titel} | Kennisbank | ZP Zaken`,
+          title: formatPageTitle(titel),
           description,
           ogType: "article",
+          image: article.image_url || undefined,
           schemas: [
             breadcrumbForPath("/kennisbank") ?? {},
             articleSchema({
@@ -270,11 +354,15 @@ export async function prerender(distDir: string, env: Record<string, string> = {
               image: article.image_url || undefined,
               category: article.category || "Kennisbank",
             }),
+            ...(artikelFaqs.length ? [faqSchema(artikelFaqs)] : []),
           ].filter((s) => Object.keys(s).length > 0),
           fallback: renderFallback(
             article.title,
             samenvatting || alinea,
-            samenvatting && alinea ? `<p>${esc(alinea)}</p>` : "",
+            [
+              samenvatting && alinea ? `<p>${esc(alinea)}</p>` : "",
+              renderFaqBlock(artikelFaqs),
+            ].join(""),
           ),
         }),
       );

@@ -202,6 +202,9 @@ export const BREADCRUMB_LABELS: Record<string, string> = {
   "/creditcontrol": "CreditControl",
   "/screening": "Screening",
   "/offerte": "Offerte aanvragen",
+  "/zzp-verzekering-ict": "ZZP verzekering ICT",
+  "/zzp-verzekering-zorg": "ZZP verzekering zorg",
+  "/zzp-verzekering-bouw": "ZZP verzekering bouw",
 };
 
 /** BreadcrumbList voor een pad, of null als het pad geen breadcrumb heeft. */

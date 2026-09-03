@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/accordion";
 import { HardHat, Shield, FileCheck } from "lucide-react";
 
-import serviceVerzekeringen from "@/assets/service-verzekeringen.jpg";
+import serviceVerzekeringen from "@/assets/service-verzekeringen.webp";
 import teamMeeting from "@/assets/team-meeting.webp";
 import officeCoffee from "@/assets/office-coffee.webp";
 

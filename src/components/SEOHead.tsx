@@ -2,6 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 import { SITE_CONFIG } from "@/config/site";
 import { breadcrumbForPath } from "@/lib/schema";
+import { formatPageTitle } from "@/lib/seoTitle";
 
 interface SEOHeadProps {
   title: string;
@@ -26,6 +27,8 @@ export function SEOHead({
   children,
 }: SEOHeadProps) {
   const { pathname } = useLocation();
+  // Eén merknaam achteraan; zie formatPageTitle.
+  const pageTitle = formatPageTitle(title);
 
   // Pad zonder taalprefix, gebruikt voor de hreflang-set.
   const cleanPath = pathname.replace(/^\/(en|de|fr)(\/|$)/, "/");
@@ -38,7 +41,7 @@ export function SEOHead({
 
   return (
     <Helmet>
-      <title>{title}</title>
+      <title>{pageTitle}</title>
       <meta name="description" content={description} />
       {/* Geen canonical op noindex-pagina's: dat geeft tegenstrijdige signalen. */}
       {!noindex && <link rel="canonical" href={canonicalUrl} />}
@@ -47,7 +50,7 @@ export function SEOHead({
       {noindex && <meta name="robots" content="noindex, nofollow" />}
 
       {/* Open Graph */}
-      <meta property="og:title" content={title} />
+      <meta property="og:title" content={pageTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:type" content={ogType} />
@@ -57,7 +60,7 @@ export function SEOHead({
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={title} />
+      <meta name="twitter:title" content={pageTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
 
