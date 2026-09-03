@@ -140,7 +140,6 @@ export function ServicePageTemplate({
                       src={block.image}
                       alt={block.title}
                       className="w-full h-72 lg:h-96 object-cover"
-                      loading="lazy"
                     />
                   </div>
                 </motion.div>
