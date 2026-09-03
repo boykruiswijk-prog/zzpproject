@@ -2,7 +2,8 @@ import { useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { Helmet } from "react-helmet-async";
-import { articleSchema, breadcrumbSchema } from "@/lib/schema";
+import { articleSchema, breadcrumbSchema, faqSchema } from "@/lib/schema";
+import { ARTIKEL_FAQS } from "@/config/artikelFaqs";
 import { Layout } from "@/components/layout/Layout";
 import { useArticle, useArticles } from "@/hooks/useArticles";
 import {
@@ -219,6 +220,18 @@ export default function ArtikelDetail() {
     { name: article.title, url: `/kennisbank/${article.slug}` },
   ]);
 
+  // FAQPage-schema: alleen vragen die zichtbaar in het artikel beantwoord worden.
+  // Antwoorden komen uit dezelfde fiscale tokens als de artikeltekst.
+  const faqItems = ARTIKEL_FAQS[article.slug];
+  const jsonLdFaq = faqItems
+    ? faqSchema(
+        faqItems.map((f) => ({
+          question: f.question,
+          answer: resolveFiscaleTokens(f.answer),
+        })),
+      )
+    : null;
+
   const isBavAvb = article.slug === BAV_AVB_SLUG;
   const commercialCategories = ["Verzekeringen", "Belastingen", "Fiscaal", "Financiën"];
   const showCommercialCTA = commercialCategories.includes(article.category);
@@ -257,6 +270,7 @@ export default function ArtikelDetail() {
 
         <script type="application/ld+json">{JSON.stringify(jsonLdArticle)}</script>
         <script type="application/ld+json">{JSON.stringify(jsonLdBreadcrumb)}</script>
+        {jsonLdFaq && <script type="application/ld+json">{JSON.stringify(jsonLdFaq)}</script>}
       </Helmet>
 
 
