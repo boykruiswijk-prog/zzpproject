@@ -14,6 +14,7 @@ import { seoRoutes, PRERENDER_EXCLUDE_PREFIXES, type SeoRoute } from "../src/con
 import { SITE_CONFIG } from "../src/config/site";
 import { bavPakketten } from "../src/data/bavPakketten";
 import { faqItems } from "../src/data/faqItems";
+import { resolveFiscaleTokens } from "../src/lib/fiscaleTokens";
 import {
   articleSchema,
   breadcrumbForPath,
@@ -169,12 +170,13 @@ interface PublishedArticle {
   image_url: string | null;
   seo_title: string | null;
   seo_description: string | null;
+  content_reviewed_at: string | null;
 }
 
 /** Eerste alinea uit markdown-content, zonder opmaaktekens. */
 function firstParagraph(content: string | null | undefined): string {
   if (!content) return "";
-  const plain = content
+  const plain = resolveFiscaleTokens(content)
     .replace(/```[\s\S]*?```/g, " ")
     .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
     .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
@@ -264,7 +266,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
               description,
               slug: article.slug,
               datePublished,
-              dateModified: datePublished,
+              dateModified: article.content_reviewed_at || datePublished,
               image: article.image_url || undefined,
               category: article.category || "Kennisbank",
             }),

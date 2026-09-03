@@ -160,7 +160,7 @@ export default function CreditControl() {
       {/* ─── 1. HERO ─── */}
       <section className="relative min-h-[70vh] flex items-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img decoding="async" fetchPriority="high" src={creditcontrolHero} alt="" className="w-full h-full object-cover" aria-hidden="true" />
+          <img decoding="async" fetchpriority="high" src={creditcontrolHero} alt="" className="w-full h-full object-cover" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-foreground/95 via-foreground/90 to-foreground/75" />
         </div>
         <div className="container-wide relative z-10 py-20 md:py-32">

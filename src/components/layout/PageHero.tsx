@@ -29,7 +29,7 @@ export function PageHero({
       {/* Background Image */}
       {showBackgroundImage && (
         <div className="absolute inset-0 z-0">
-          <img decoding="async" fetchPriority="high"
+          <img decoding="async" fetchpriority="high"
             src={bgImage}
             alt=""
             className="w-full h-full object-cover"

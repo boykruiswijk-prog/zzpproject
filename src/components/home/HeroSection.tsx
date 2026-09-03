@@ -22,7 +22,7 @@ export function HeroSection() {
   return (
     <section className="relative min-h-[85vh] flex items-center overflow-hidden pb-14">
       <div className="absolute inset-0 z-0">
-        <img decoding="async" fetchPriority="high" src={teamWalking} alt="ZP Zaken" className="w-full h-full object-cover" />
+        <img decoding="async" fetchpriority="high" src={teamWalking} alt="ZP Zaken" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-foreground/95 via-foreground/85 to-foreground/70" />
       </div>
 

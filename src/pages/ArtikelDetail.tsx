@@ -18,6 +18,7 @@ import { toast } from "@/hooks/use-toast";
 import { ReadingProgress } from "@/components/kennisbank/ReadingProgress";
 import { TableOfContents } from "@/components/kennisbank/TableOfContents";
 import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
+import { resolveFiscaleTokens } from "@/lib/fiscaleTokens";
 
 const BAV_AVB_SLUG = "zp-zaken-zorgeloos-zzpen-goedkoopste-bav-avb";
 
@@ -98,7 +99,10 @@ const InlineCTA = () => (
   </div>
 );
 
-const renderContentWithCTA = (content: string) => {
+const renderContentWithCTA = (rawContent: string) => {
+  // Fiscale tokens ({{fiscaal:...}}) worden vervangen door de actuele waarden
+  // uit src/data/fiscaleCijfers.ts, zodat bedragen nooit verouderen.
+  const content = resolveFiscaleTokens(rawContent);
   const parts = content.split(/\n\n+/);
   if (parts.length < 3) {
     return <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>;
@@ -200,7 +204,9 @@ export default function ArtikelDetail() {
     description: metaDescription,
     slug: article.slug,
     datePublished: publishedAt,
-    dateModified: (article as any).updated_at || publishedAt,
+    // Inhoudelijke controledatum; een cosmetische wijziging (updated_at) mag
+    // niet als inhoudelijke update aan Google worden gemeld.
+    dateModified: (article as any).content_reviewed_at || publishedAt,
     image: ogImage,
     category: article.category,
     wordCount,
@@ -238,7 +244,7 @@ export default function ArtikelDetail() {
         <meta property="og:image" content={ogImage} />
         <meta property="og:locale" content="nl_NL" />
         <meta property="article:published_time" content={publishedAt} />
-        <meta property="article:modified_time" content={publishedAt} />
+        <meta property="article:modified_time" content={(article as any).content_reviewed_at || publishedAt} />
         <meta property="article:section" content={article.category} />
         <meta property="article:author" content="ZP Zaken" />
 
@@ -323,7 +329,7 @@ export default function ArtikelDetail() {
                 width={1600}
                 height={900}
                 loading="eager"
-                fetchPriority="high"
+                fetchpriority="high"
                 className="w-full aspect-[16/9] object-cover rounded-xl shadow-md"
               />
             </figure>
