@@ -74,6 +74,26 @@ const BRON_STAATSCOURANT_BIJDRAGE_INKOMEN: FiscaleBron = {
   url: "https://zoek.officielebekendmakingen.nl/stcrt-2025-38055.html",
 };
 
+const BRON_BELEIDSBESLUIT_KILOMETERS_2026: FiscaleBron = {
+  naam:
+    "Beleidsbesluit van de staatssecretaris van Financien, Staatscourant mei 2026, vooruitlopend op het Belastingplan 2027",
+  url: "https://www.officielebekendmakingen.nl/staatscourant",
+};
+
+const BRON_BELASTINGDIENST_KILOMETERVERGOEDING: FiscaleBron = {
+  naam:
+    "Belastingdienst — nieuwsbericht 25 juni 2026 over de verhoging van de onbelaste kilometervergoeding, en tabel 13 van 'Tarieven, bedragen en percentages loonheffingen vanaf 1 januari 2026' (vierde uitgave)",
+  url: "https://www.belastingdienst.nl/wps/wcm/connect/nl/loonheffingen/",
+};
+
+/** Voorbehoud dat geldt voor beide kilometerbedragen 2026. */
+const VOORBEHOUD_TIJDELIJK_BELEIDSBESLUIT =
+  "Het beleidsbesluit is tijdelijk en vervalt per 1 januari 2027; de structurele verankering moet nog via het Belastingplan 2027 door de Tweede en Eerste Kamer.";
+
+const VOORBEHOUD_UITVOERINGSTOETS =
+  "Volgens de uitvoeringstoets van de Belastingdienst kunnen IB-ondernemers de verhoging pas toepassen bij de definitieve aangifte inkomstenbelasting over 2026.";
+
+
 export const fiscaleCijfers = {
   zelfstandigenaftrek: {
     belastingjaar: 2026,
