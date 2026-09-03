@@ -52,7 +52,7 @@ function buildAssetLookup(distDir: string): Map<string, string> {
   const dir = path.join(distDir, "assets");
   if (!fs.existsSync(dir)) return map;
   for (const file of fs.readdirSync(dir)) {
-    const base = file.replace(/-[A-Za-z0-9_-]{6,}\.[a-z0-9]+$/, "");
+    const base = file.replace(/-[A-Za-z0-9_]{8,}\.[a-z0-9]+$/, "");
     if (base && !map.has(base)) map.set(base, `/assets/${file}`);
   }
   return map;
