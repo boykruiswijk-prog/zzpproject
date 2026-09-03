@@ -94,7 +94,21 @@ const VOORBEHOUD_UITVOERINGSTOETS =
   "Volgens de uitvoeringstoets van de Belastingdienst kunnen IB-ondernemers de verhoging pas toepassen bij de definitieve aangifte inkomstenbelasting over 2026.";
 
 
-export const fiscaleCijfers = {
+const BRON_BELASTINGDIENST_BOX1_2026: FiscaleBron = {
+  naam: "Belastingdienst — tarieven en heffingskortingen box 1 2026",
+  url: "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/prive/inkomstenbelasting/heffingskortingen_boxen_tarieven/",
+};
+
+/**
+ * NOG TE VERIFIEREN — NIET GEBRUIKEN IN ARTIKELEN
+ * De afbouwgrenzen (afbouwpunten en afbouwpercentages) van de algemene
+ * heffingskorting en de arbeidskorting staan hier BEWUST NIET in: de bronnen
+ * spreken elkaar daarover tegen. Deze waarden moeten eerst worden geverifieerd
+ * bij de officiele tabellen van de Belastingdienst voordat ze hier mogen worden
+ * toegevoegd of in een artikel gebruikt mogen worden. Verzin geen waarde.
+ */
+
+
   zelfstandigenaftrek: {
     belastingjaar: 2026,
     waarde: 1200,
