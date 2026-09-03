@@ -109,7 +109,7 @@ export function Header() {
     >
       <div className="container-wide flex h-16 items-center justify-between">
         <LocalizedLink to="/" className="flex items-center">
-          <img decoding="async" fetchPriority="high" src={logoZp} alt="ZP Zaken logo" width={161} height={90} className="h-10 w-auto" />
+          <img decoding="async" fetchpriority="high" src={logoZp} alt="ZP Zaken logo" width={161} height={90} className="h-10 w-auto" />
         </LocalizedLink>
 
         {/* Desktop Navigation */}

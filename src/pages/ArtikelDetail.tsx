@@ -329,7 +329,7 @@ export default function ArtikelDetail() {
                 width={1600}
                 height={900}
                 loading="eager"
-                fetchPriority="high"
+                fetchpriority="high"
                 className="w-full aspect-[16/9] object-cover rounded-xl shadow-md"
               />
             </figure>
