@@ -349,6 +349,7 @@ Deno.serve(async (req) => {
         categorie: cat.label,
         categorie_hub: cat.hub,
         categorie_onzeker: cat.onzeker,
+        categorie_handmatig: cat.handmatig === true,
         prioriteit,
         afbeeldingen: images,
         aantal_afbeeldingen: images.length,
