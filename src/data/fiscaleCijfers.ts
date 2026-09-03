@@ -303,3 +303,86 @@ export function getFiscaleWaardeVoorJaar(
   if (uitHistorie === undefined) return undefined;
   return { waarde: uitHistorie, eenheid: cijfer.eenheid };
 }
+
+/* ==========================================================================
+ * HEFFINGSKORTINGEN 2026 — VOLLEDIGE TABELLEN
+ * Bron: Belastingdienst, Tabel algemene heffingskorting 2026 en Tabel
+ * arbeidskorting 2026. Beide tabellen gelden voor wie de AOW-leeftijd nog niet
+ * heeft bereikt. Waarden uitsluitend wijzigen op basis van die tabellen.
+ * De rekenfuncties bevatten geen bedragen: zij lezen uitsluitend deze data.
+ * ========================================================================== */
+
+export interface KortingSchijf {
+  /** Ondergrens van de schijf in euro, inclusief. */
+  van: number;
+  /** Bovengrens in euro, inclusief. null = geen bovengrens. */
+  totEnMet: number | null;
+  /** Vast bedrag in euro binnen deze schijf. */
+  basis: number;
+  /** Percentage over (inkomen - percentageVanaf). Positief = opbouw, negatief = afbouw. */
+  percentage: number;
+  /** Inkomensdrempel waarover het percentage wordt gerekend. */
+  percentageVanaf: number;
+}
+
+export interface KortingTabel {
+  belastingjaar: number;
+  label: string;
+  toelichting: string;
+  bron: FiscaleBron;
+  schijven: readonly KortingSchijf[];
+}
+
+export const ALGEMENE_HEFFINGSKORTING: KortingTabel = {
+  belastingjaar: 2026,
+  label: "Algemene heffingskorting",
+  toelichting: "Voor wie de AOW-leeftijd nog niet heeft bereikt. Grondslag: verzamelinkomen.",
+  bron: {
+    naam: "Belastingdienst — Tabel algemene heffingskorting 2026",
+    url: "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/prive/inkomstenbelasting/heffingskortingen_boxen_tarieven/heffingskortingen/algemene_heffingskorting/",
+  },
+  schijven: [
+    { van: 0, totEnMet: 29736, basis: 3115, percentage: 0, percentageVanaf: 0 },
+    { van: 29737, totEnMet: 78426, basis: 3115, percentage: -6.398, percentageVanaf: 29736 },
+    { van: 78427, totEnMet: null, basis: 0, percentage: 0, percentageVanaf: 0 },
+  ],
+};
+
+export const ARBEIDSKORTING: KortingTabel = {
+  belastingjaar: 2026,
+  label: "Arbeidskorting",
+  toelichting: "Voor wie de AOW-leeftijd nog niet heeft bereikt. Grondslag: arbeidsinkomen.",
+  bron: {
+    naam: "Belastingdienst — Tabel arbeidskorting 2026",
+    url: "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/prive/inkomstenbelasting/heffingskortingen_boxen_tarieven/heffingskortingen/arbeidskorting/",
+  },
+  schijven: [
+    { van: 0, totEnMet: 11965, basis: 0, percentage: 8.324, percentageVanaf: 0 },
+    { van: 11966, totEnMet: 25845, basis: 996, percentage: 31.009, percentageVanaf: 11965 },
+    { van: 25846, totEnMet: 45592, basis: 5300, percentage: 1.95, percentageVanaf: 25845 },
+    { van: 45593, totEnMet: 132920, basis: 5685, percentage: -6.51, percentageVanaf: 45592 },
+    { van: 132921, totEnMet: null, basis: 0, percentage: 0, percentageVanaf: 0 },
+  ],
+};
+
+/** Berekent een heffingskorting op basis van de schijven in de tabel. Afgerond op hele euro's. */
+export function berekenKorting(tabel: KortingTabel, inkomen: number): number {
+  const inkomenAfgerond = Math.max(0, Math.round(inkomen));
+  const schijf =
+    tabel.schijven.find(
+      (s) => inkomenAfgerond >= s.van && (s.totEnMet === null || inkomenAfgerond <= s.totEnMet),
+    ) ?? tabel.schijven[tabel.schijven.length - 1];
+  const bedrag =
+    schijf.basis + (schijf.percentage / 100) * (inkomenAfgerond - schijf.percentageVanaf);
+  return Math.max(0, Math.round(bedrag));
+}
+
+/** Algemene heffingskorting bij een gegeven verzamelinkomen. */
+export function berekenAlgemeneHeffingskorting(verzamelinkomen: number): number {
+  return berekenKorting(ALGEMENE_HEFFINGSKORTING, verzamelinkomen);
+}
+
+/** Arbeidskorting bij een gegeven arbeidsinkomen. */
+export function berekenArbeidskorting(arbeidsinkomen: number): number {
+  return berekenKorting(ARBEIDSKORTING, arbeidsinkomen);
+}
