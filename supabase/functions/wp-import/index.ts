@@ -273,12 +273,9 @@ Deno.serve(async (req) => {
 
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Servicepad voor de eenmalige migratie: een sterk geheim token uit
-    // WP_IMPORT_TOKEN. Alleen bruikbaar met exacte match; anders normale
-    // gebruikerscontrole met teamrol.
-    const serviceToken = Deno.env.get("WP_IMPORT_TOKEN") ?? "";
-    const bearer = authHeader.replace(/^Bearer\s+/i, "").trim();
-    const viaServiceToken = serviceToken.length >= 32 && bearer === serviceToken;
+    // Alleen ingelogde teamleden mogen importeren. Het tijdelijke servicepad
+    // voor de eenmalige WordPress-migratie is na afronding verwijderd.
+    const viaServiceToken = false;
 
     let user: { id: string; email?: string | null } | null = null;
 
