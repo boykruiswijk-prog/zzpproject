@@ -109,6 +109,7 @@ export default function Contact() {
                   </div>
                 ): (
                   <form onSubmit={handleSubmit} className="space-y-6">
+                    <HoneypotField guard={guard} />
                     <div className="grid sm:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="name">{t("contact.name")} *</Label>
