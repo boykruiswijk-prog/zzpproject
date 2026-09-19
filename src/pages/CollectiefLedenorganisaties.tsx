@@ -127,6 +127,7 @@ const faqs = [
 export default function CollectiefLedenorganisaties() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const guard = useFormGuard();
   const [errors, setErrors] = useState<FormErrors>({});
   const [activeStep, setActiveStep] = useState<number | null>(null);
   const [formData, setFormData] = useState({
