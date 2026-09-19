@@ -176,6 +176,8 @@ export function BAVApplicationModule() {
      try {
        const { data, error } = await supabase.functions.invoke("process-bav-wizard", {
          body: {
+           hp: guard.honeypot,
+           ms: guard.elapsedMs(),
            gekozen_pakket: gekozenPakketId,
            betaalwijze,
            ingangsdatum: startDate,

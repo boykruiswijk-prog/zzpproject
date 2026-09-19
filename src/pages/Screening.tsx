@@ -137,6 +137,8 @@ export default function Screening() {
           ...form,
           telefoon: form.telefoon || undefined,
           screening_type: screeningType,
+          hp: guard.honeypot,
+          ms: guard.elapsedMs(),
         },
       });
       if (error || !data?.success) {
