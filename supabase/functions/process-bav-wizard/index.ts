@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2.39.0";
+import { guardPublicSubmission } from "../_shared/antiSpam.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
