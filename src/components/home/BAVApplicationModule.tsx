@@ -162,31 +162,11 @@ export function BAVApplicationModule() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const checkExistingCustomer = async (): Promise<boolean> => {
-    try {
-      setIsCheckingExisting(true);
-      const { data } = await supabase.functions.invoke("check-existing-customer", {
-        body: { email: formData.email, kvk: formData.kvkNummer },
-      });
-      return data?.exists === true;
-    } catch (err) {
-      console.error("check-existing-customer failed:", err);
-      return false; // fail-open: blokkeer aanvraag niet bij lookup-fout
-    } finally {
-      setIsCheckingExisting(false);
-    }
-  };
-
+  // De losse "bent u al klant?"-check is verwijderd: die maakte het van buitenaf
+  // mogelijk om e-mailadressen en KvK-nummers af te tasten. De dubbelcheck
+  // gebeurt nu server-side bij het versturen van de aanvraag.
   const nextStep = async () => {
     if (!validateStep(currentStep) || currentStep >= TOTAL_STEPS) return;
-    // Na stap 3 (email + telefoon ingevuld; KvK kwam in stap 2): duplicate-check.
-    if (currentStep === 3) {
-      const exists = await checkExistingCustomer();
-      if (exists) {
-        setExistingCustomerOpen(true);
-        return;
-      }
-    }
     setCurrentStep(currentStep + 1);
   };
   const prevStep = () => { if (currentStep > 1) { setErrors({}); setCurrentStep(currentStep - 1); } };
