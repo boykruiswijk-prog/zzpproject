@@ -263,6 +263,7 @@ export default function OffertePage() {
       <section className="section-padding bg-secondary">
         <div className="container-wide max-w-3xl">
           <form onSubmit={handleSubmit} className="bg-card rounded-2xl border border-border shadow-sm p-6 md:p-10 space-y-10">
+            <HoneypotField guard={guard} />
             {/* GROEP 1 */}
             <fieldset className="space-y-5">
               <h3 className="border-b border-border pb-2 mb-2">Algemene gegevens</h3>
