@@ -524,6 +524,35 @@ export async function prerender(distDir: string, env: Record<string, string> = {
     }
   }
 
+  // 6. Statische sitemap.xml, generated uit dezelfde bron als de pagina's. De
+  //    dynamische Edge Function blijft leidend via robots.txt, maar deze versie
+  //    werkt ook zonder hosting-rewrites en loopt nooit achter op de build.
+  const today = new Date().toISOString().slice(0, 10);
+  const sitemapEntries = [
+    ...(seoRoutes as SeoRoute[])
+      .filter((r) => !isExcluded(r.path))
+      .map((r) => ({ loc: `${SITE_CONFIG.url}${r.path === "/" ? "/" : r.path}`, prio: "0.8" })),
+    ...articles.map((a) => ({
+      loc: `${SITE_CONFIG.url}/kennisbank/${a.slug}`,
+      prio: "0.7",
+    })),
+  ];
+  const seen = new Set<string>();
+  const sitemapXml = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...sitemapEntries
+      .filter((e) => (seen.has(e.loc) ? false : (seen.add(e.loc), true)))
+      .map(
+        (e) =>
+          `  <url><loc>${esc(e.loc)}</loc><lastmod>${today}</lastmod><priority>${e.prio}</priority></url>`,
+      ),
+    "</urlset>",
+    "",
+  ].join("\n");
+  fs.writeFileSync(path.join(distDir, "sitemap.xml"), sitemapXml);
+  console.log(`[prerender] sitemap.xml geschreven met ${seen.size} URL's.`);
+
   console.log(`[prerender] ${written.length} HTML-bestanden gegenereerd.`);
   console.log(`[prerender] voorbeeld: ${written.slice(0, 2).join(", ")}`);
 }

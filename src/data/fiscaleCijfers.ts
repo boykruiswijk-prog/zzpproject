@@ -105,6 +105,35 @@ const BRON_BELASTINGDIENST_KIA_2026: FiscaleBron = {
   url: "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/winst/inkomstenbelasting/inkomstenbelasting_voor_ondernemers/investeringsaftrek_en_desinvesteringsbijtelling/kleinschaligheidsinvesteringsaftrek/",
 };
 
+const BRON_BELASTINGDIENST_DREMPEL_GEMENGDE_KOSTEN_2026: FiscaleBron = {
+  naam: "Belastingdienst — Drempel beperkt aftrekbare kosten 2026",
+  url: "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/winst/inkomstenbelasting/inkomstenbelasting_voor_ondernemers/zakelijke_kosten/beperkt_aftrekbare_kosten/",
+};
+
+const BRON_KVK_KOR: FiscaleBron = {
+  naam: "Ondernemersplein/KVK — kleineondernemersregeling (KOR)",
+  url: "https://ondernemersplein.kvk.nl/kleineondernemersregeling-kor/",
+};
+
+const BRON_KVK_TARIEVEN_2026: FiscaleBron = {
+  naam:
+    "KVK — tarievenoverzicht 2026 (via secundaire bron; het tarief wordt jaarlijks vastgesteld door de minister van Economische Zaken, controleer kvk.nl/tarieven)",
+  url: "https://www.kvk.nl/tarieven/",
+};
+
+const BRON_CAP_PENSIOEN_2026: FiscaleBron = {
+  naam:
+    "Belastingdienst, Centraal Aanspreekpunt Pensioenen — Vraag & Antwoord 25-008 (voorlopige bedragen 2026)",
+  url: "https://www.belastingdienst.nl/wps/wcm/connect/nl/pensioen/",
+};
+
+/** Voorbehoud bij de pensioenbedragen 2026 uit V&A 25-008. */
+const VOORBEHOUD_VOORLOPIGE_PENSIOENBEDRAGEN =
+  "Voorlopige cijfers voor 2026; de definitieve vaststelling volgt nog. De Belastingdienst publiceert deze bedragen zelf ook uitdrukkelijk als voorlopig.";
+
+const VOORBEHOUD_KVK_TARIEF =
+  "Het inschrijftarief wordt jaarlijks vastgesteld door de minister van Economische Zaken en komt hier uit een secundaire bron die het KVK-tarievenoverzicht 2026 citeert. Controleer het actuele tarief op kvk.nl/tarieven.";
+
 const BRON_BELASTINGDIENST_BIJTELLING_2026: FiscaleBron = {
   naam: "Belastingdienst — bijtelling privegebruik auto 2026",
   url: "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/auto_en_vervoer/",
@@ -281,14 +310,12 @@ export const fiscaleCijfers = {
   },
 
   /* --- KLEINSCHALIGHEIDSINVESTERINGSAFTREK (KIA) 2026 --------------------
-   * Bron onder- en bovengrens: Belastingdienst, pagina
-   * 'Kleinschaligheidsinvesteringsaftrek 2026'.
-   * LET OP: de twee schijfwaarden (percentage eerste schijf en vast bedrag
-   * tweede schijf, inclusief de in de toelichting genoemde schijfgrenzen)
-   * komen uit een SECUNDAIRE BRON en moeten nog tegen de officiele KIA-tabel
-   * van de Belastingdienst worden geverifieerd.
-   * Het afbouwpercentage boven de tweede schijf (2025: 7,56 procent) is voor
-   * 2026 NIET geverifieerd en staat daarom bewust niet in dit bestand.
+   * Bron: Belastingdienst, pagina 'Kleinschaligheidsinvesteringsaftrek 2026'.
+   * Volledige tabel 2026, geverifieerd bij de Belastingdienst:
+   *   € 2.901 t/m € 71.683    -> 28% van het investeringsbedrag
+   *   € 71.684 t/m € 132.746  -> vast € 20.072
+   *   € 132.747 t/m € 398.236 -> € 20.072 min 7,56% van het deel boven € 132.746
+   *   boven € 398.236 of onder € 2.901 -> geen KIA
    * -------------------------------------------------------------------- */
   kiaOndergrens: {
     belastingjaar: 2026,
@@ -321,8 +348,17 @@ export const fiscaleCijfers = {
     eenheid: "procent",
     label: "KIA-percentage eerste schijf",
     toelichting:
-      "Geldt over een totale investering van € 2.901 tot en met € 71.683. In 2025 liep deze schijf tot € 70.602. Schijfgrens uit secundaire bron: nog te verifieren tegen de officiele KIA-tabel.",
+      "Geldt over een totale investering van € 2.901 tot en met € 71.683. In 2025 liep deze schijf tot € 70.602.",
     bron: BRON_BELASTINGDIENST_KIA_2026,
+  },
+  kiaGrensEersteSchijf: {
+    belastingjaar: 2026,
+    waarde: 71683,
+    eenheid: "euro",
+    label: "Bovengrens eerste KIA-schijf",
+    toelichting: "Tot en met dit investeringsbedrag geldt het percentage van de eerste schijf.",
+    bron: BRON_BELASTINGDIENST_KIA_2026,
+    historie: { 2025: 70602 },
   },
   kiaVastBedragTweedeSchijf: {
     belastingjaar: 2026,
@@ -330,10 +366,113 @@ export const fiscaleCijfers = {
     eenheid: "euro",
     label: "Vast KIA-bedrag tweede schijf",
     toelichting:
-      "Geldt bij een totale investering van € 71.684 tot en met € 132.746. In 2025 was dit € 19.769 bij een schijf tot € 130.744. Bedrag en schijfgrenzen uit secundaire bron: nog te verifieren tegen de officiele KIA-tabel.",
+      "Geldt bij een totale investering van € 71.684 tot en met € 132.746. In 2025 was dit € 19.769 bij een schijf tot € 130.744.",
     bron: BRON_BELASTINGDIENST_KIA_2026,
     historie: { 2025: 19769 },
   },
+  kiaGrensTweedeSchijf: {
+    belastingjaar: 2026,
+    waarde: 132746,
+    eenheid: "euro",
+    label: "Bovengrens tweede KIA-schijf",
+    toelichting:
+      "Boven dit investeringsbedrag wordt het vaste KIA-bedrag afgebouwd met het afbouwpercentage.",
+    bron: BRON_BELASTINGDIENST_KIA_2026,
+    historie: { 2025: 130744 },
+  },
+  kiaAfbouwpercentage: {
+    belastingjaar: 2026,
+    waarde: 7.56,
+    eenheid: "procent",
+    label: "KIA-afbouwpercentage derde schijf",
+    toelichting:
+      "Het vaste KIA-bedrag van de tweede schijf wordt verminderd met dit percentage van het investeringsbedrag boven € 132.746.",
+    bron: BRON_BELASTINGDIENST_KIA_2026,
+    historie: { 2025: 7.56 },
+  },
+
+  /* --- BEPERKT AFTREKBARE (GEMENGDE) KOSTEN 2026 ------------------------
+   * Bron: Belastingdienst, pagina 'Drempel beperkt aftrekbare kosten 2026'.
+   * Keuze: drempelbedrag niet aftrekken, of 80 procent van de kosten
+   * aftrekken zonder drempel.
+   * -------------------------------------------------------------------- */
+  drempelGemengdeKosten: {
+    belastingjaar: 2026,
+    waarde: 5700,
+    eenheid: "euro",
+    label: "Drempel beperkt aftrekbare kosten",
+    toelichting:
+      "Kosten van eten, drinken, representatie, congressen en dergelijke zijn aftrekbaar voor zover ze boven dit drempelbedrag uitkomen.",
+    bron: BRON_BELASTINGDIENST_DREMPEL_GEMENGDE_KOSTEN_2026,
+    historie: { 2024: 5600, 2025: 5700 },
+  },
+  aftrekpercentageGemengdeKosten: {
+    belastingjaar: 2026,
+    waarde: 80,
+    eenheid: "procent",
+    label: "Aftrekpercentage gemengde kosten zonder drempel",
+    toelichting:
+      "In plaats van de drempel mag een IB-ondernemer kiezen om dit percentage van de gemengde kosten af te trekken.",
+    bron: BRON_BELASTINGDIENST_DREMPEL_GEMENGDE_KOSTEN_2026,
+  },
+
+  /* --- KLEINEONDERNEMERSREGELING ---------------------------------------- */
+  korOmzetgrens: {
+    belastingjaar: 2026,
+    waarde: 20000,
+    eenheid: "euro",
+    label: "Omzetgrens kleineondernemersregeling (KOR)",
+    toelichting: "Maximale omzet per kalenderjaar om de KOR te mogen toepassen.",
+    bron: BRON_KVK_KOR,
+    historie: { 2025: 20000 },
+  },
+
+  /* --- KVK-INSCHRIJFKOSTEN --------------------------------------------- */
+  kvkInschrijfkosten: {
+    belastingjaar: 2026,
+    waarde: 85.15,
+    eenheid: "euro",
+    label: "Eenmalige KVK-inschrijfkosten",
+    voorbehoud: [VOORBEHOUD_KVK_TARIEF],
+    bron: BRON_KVK_TARIEVEN_2026,
+    historie: { 2025: 82.25 },
+  },
+
+  /* --- PENSIOEN 2026 (VOORLOPIGE BEDRAGEN) ------------------------------
+   * Bron: Belastingdienst, Centraal Aanspreekpunt Pensioenen, V&A 25-008.
+   * Nadrukkelijk voorlopige bedragen; definitieve vaststelling volgt.
+   * -------------------------------------------------------------------- */
+  aowFranchise: {
+    belastingjaar: 2026,
+    waarde: 20541,
+    eenheid: "euro",
+    label: "AOW-franchise (standaard, 100/70)",
+    toelichting:
+      "Het deel van het inkomen waarover je geen pensioen opbouwt, omdat de AOW daarin voorziet. Wordt afgetrokken van het pensioengevend loon bij het berekenen van de jaarruimte.",
+    voorbehoud: [VOORBEHOUD_VOORLOPIGE_PENSIOENBEDRAGEN],
+    bron: BRON_CAP_PENSIOEN_2026,
+  },
+  maximumPensioengevendLoon: {
+    belastingjaar: 2026,
+    waarde: 137800,
+    eenheid: "euro",
+    label: "Maximum pensioengevend loon",
+    toelichting: "Over het inkomen boven dit bedrag kun je fiscaal geen pensioen meer opbouwen.",
+    voorbehoud: [VOORBEHOUD_VOORLOPIGE_PENSIOENBEDRAGEN],
+    bron: BRON_CAP_PENSIOEN_2026,
+  },
+  jaarruimtePercentage: {
+    belastingjaar: 2026,
+    waarde: 30,
+    eenheid: "procent",
+    label: "Opbouwpercentage jaarruimte",
+    toelichting:
+      "Percentage van de premiegrondslag (pensioengevend inkomen min AOW-franchise) dat je fiscaal voordelig voor je pensioen mag inleggen. Verhoogd door de Wet toekomst pensioenen.",
+    bron: BRON_CAP_PENSIOEN_2026,
+    historie: { 2022: 13.3 },
+  },
+
+
 
 
   /* --- BIJTELLING PRIVEGEBRUIK AUTO 2026 --------------------------------
