@@ -20,6 +20,8 @@ project_id = "eugkavokktjwpqaqlwsj"
  [functions.analyze-dba]
  verify_jwt = false
 
+ # Publieke aanroep alleen met { type, lead_id }; inhoud komt uit de database,
+ # eenmalig per lead. Interne aanroep via x-internal-secret.
  [functions.send-notification]
  verify_jwt = false
 
@@ -29,15 +31,13 @@ project_id = "eugkavokktjwpqaqlwsj"
  [functions.exact-oauth-callback]
  verify_jwt = false
 
- [functions.exact-oauth-init]
- verify_jwt = false
-
  [functions.exact-refresh-token]
  verify_jwt = false
 
  [functions.polis-lifecycle]
  verify_jwt = false
 
+ # Cron-aanroep met CRON_SECRET (header x-cron-secret of ?secret=).
  [functions.polis-reminder-cron]
  verify_jwt = false
 
@@ -50,9 +50,12 @@ project_id = "eugkavokktjwpqaqlwsj"
  [functions.send-portal-magiclink]
  verify_jwt = false
 
+ # Externe webhook: verificatie via OTENTICA_WEBHOOK_SECRET in de functie zelf.
+ [functions.otentica-webhook]
+ verify_jwt = false
+
  [functions.sitemap]
  verify_jwt = false
 
  [functions.wp-import]
  verify_jwt = false
-

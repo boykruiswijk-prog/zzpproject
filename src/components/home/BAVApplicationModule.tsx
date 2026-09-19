@@ -205,7 +205,15 @@ export function BAVApplicationModule() {
          },
        });
 
-       if (error) throw error;
+       if (error) {
+         // 409 = server-side dubbelcheck: bestaande klant met actieve polis.
+         const ctx = (error as { context?: Response }).context;
+         if (ctx?.status === 409) {
+           setExistingCustomerOpen(true);
+           return;
+         }
+         throw error;
+       }
        if (!data?.success) throw new Error(data?.error || "Onbekende fout");
 
        trackWizardComplete(selectedBavPakket.name, selectedBavPakket.prijs);
