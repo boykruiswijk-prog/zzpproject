@@ -155,7 +155,7 @@ Deno.serve(async (req) => {
         ingangsdatum: submission.ingangsdatum,
         gekozen_pakket: submission.gekozen_pakket,
         opmerkingen: [
-          submission.iban ? `IBAN: ${submission.iban}` : null,
+          // IBAN wordt bewust NIET in het vrije opmerkingenveld herhaald (alleen in de iban-kolom).
           submission.rekeninghouder ? `Rekeninghouder: ${submission.rekeninghouder}` : null,
           submission.sector ? `Sector: ${submission.sector}` : null,
           submission.opmerkingen ? submission.opmerkingen : null,
