@@ -15,21 +15,21 @@
 /wijzijnaov    /verzekeringen    301
 /aov-via-centraalbeheer    /verzekeringen    301
 /sharepeople    /partners    301
-/eherkenning    /kennisbank    301
-/verplichte-aov-voor-zzp    /kennisbank/aov-arbeidsongeschiktheidsverzekering    301
+/eherkenning    /kennisbank/eherkenning    301  # gepubliceerd artikel
+/verplichte-aov-voor-zzp    /kennisbank/verplichte-aov-voor-zzp    301  # gepubliceerd artikel
 /nieuwe-regels-zzp    /kennisbank/nieuwe-regels-zzp-2025    301
 /zelfstandigenwet-voor-zzp-ers    /kennisbank/zelfstandigenwet-voor-zzp-ers    301  # gepubliceerd artikel
 /vbar-wet-verduidelijking-beoordeling-arbeidsrelaties-en-rechtsvermoeden    /kennisbank/vbar-wet-verduidelijking-arbeidsrelaties    301
 /kleineondernemersregeling-kor    /kennisbank/wijziging-kleineondernemersregeling-kor-2025    301
 /wet-deregulering-beoordeling-arbeidsrelaties-dba    /kennisbank/wet-dba-alles-wat-je-moet-weten    301
-/hoeveel-opdrachtgevers-zzp    /kennisbank/wet-en-regelgeving    301
-/alles-over-een-zzp-factuur    /kennisbank/financien    301
+/hoeveel-opdrachtgevers-zzp    /kennisbank/hoeveel-opdrachtgevers-zzp    301  # gepubliceerd artikel
+/alles-over-een-zzp-factuur    /kennisbank/alles-over-een-zzp-factuur    301  # gepubliceerd artikel
 /inschrijven-bij-de-kamer-van-koophandel    /kennisbank    301
-/zzp-administratie-en-boekhouding    /kennisbank/financien    301
-/hoe-bereken-ik-bijtelling-als-zzper    /kennisbank/belastingen    301
+/zzp-administratie-en-boekhouding    /kennisbank/zzp-administratie-en-boekhouding    301  # gepubliceerd artikel
+/hoe-bereken-ik-bijtelling-als-zzper    /kennisbank/hoe-bereken-ik-bijtelling-als-zzper    301  # gepubliceerd artikel
 /is-eten-en-drinken-aftrekbaar-als-zzp-er    /kennisbank/belastingen    301
-/hoe-zit-het-met-reiskosten-als-zzp-er    /kennisbank/belastingen    301
-/uurtarief-berekenen-zzper    /kennisbank/financien    301
+/hoe-zit-het-met-reiskosten-als-zzp-er    /kennisbank/hoe-zit-het-met-reiskosten-als-zzp-er    301  # gepubliceerd artikel
+/uurtarief-berekenen-zzper    /kennisbank/uurtarief-berekenen-zzper    301  # gepubliceerd artikel
 /hoeveel-kan-je-als-zzp-er-verdienen-zonder-belasting-te-moeten-betalen    /kennisbank    301
 /winkel    /    301
 /shop    /    301
@@ -38,7 +38,7 @@
 /my-account    /    301
 /beroeps-en-bedrijfs-aansprakelijkheidsverzekering-zzp-avb-bav    /verzekeringen    301
 /beroeps-en-bedrijfsaansprakelijkheidsverzekering-zzp-avb-bav    /verzekeringen    301
-/bijdrage-zorgverzekeringswet-zzp    /zorgverzekering    301
+/bijdrage-zorgverzekeringswet-zzp    /kennisbank/bijdrage-zorgverzekeringswet-zzp    301  # gepubliceerd artikel
 /zzp-zorgverzekering    /zorgverzekering    301
 /mentale-gezondheidstest-mirro    /mentale-gezondheid    301
 /help-andere-zzpers    /contact    301
@@ -76,30 +76,30 @@
 /voorwaarden    /algemene-voorwaarden    301
 /disclaimer    /faq    301
 /kennis    /kennisbank    301
-/auto-van-de-zaak-of-prive    /kennisbank/belastingen    301
-/zzp-of-eenmanszaak    /kennisbank    301
+/auto-van-de-zaak-of-prive    /kennisbank/auto-van-de-zaak-of-prive    301  # gepubliceerd artikel
+/zzp-of-eenmanszaak    /kennisbank/zzp-of-eenmanszaak    301  # gepubliceerd artikel
 /zzp-aftrekposten    /kennisbank/belastingen    301
-/zzp-er-met-een-bv-wat-zijn-de-voor-en-nadelen    /kennisbank    301
+/zzp-er-met-een-bv-wat-zijn-de-voor-en-nadelen    /kennisbank/zzp-er-met-een-bv-wat-zijn-de-voor-en-nadelen    301  # gepubliceerd artikel
 /wet-toekomst-pensioenen-wtp-voor-zzp-ers    /pensioen    301
-/welke-verzekeringen-zzp    /verzekeringen    301
-/wat-kosten-verzekeringen-voor-zzp-ers    /verzekeringen    301
-/rijd-je-als-zzp-er-fiscaal-voordelig-met-een-youngtimer    /kennisbank/belastingen    301
-/voordelen-van-zzp    /kennisbank    301
-/hoe-combineer-je-loondienst-en-zzp    /kennisbank/belastingen    301
-/hoe-bereken-ik-mijn-inkomen-als-zzp-er-naast-loondienst    /kennisbank/financien    301
-/wat-is-de-zelfstandigenaftrek    /kennisbank/belastingen    301
-/cyberverzekering-zzp    /verzekeringen    301
-/zzp-en-belasting    /kennisbank/belastingen    301
-/starten-met-ondernemen-als-zzper    /kennisbank    301
-/wanneer-zelfstandig-ondernemer-voor-de-belastingdienst    /kennisbank/belastingen    301
-/ondernemingsplan    /kennisbank    301
-/wat-is-startersaftrek    /kennisbank/belastingen    301
-/wat-is-het-urencriterium    /kennisbank/wet-en-regelgeving    301
-/voor-en-nadelen-broodfonds-of-schenkkring    /kennisbank/financien    301
+/welke-verzekeringen-zzp    /kennisbank/welke-verzekeringen-zzp    301  # gepubliceerd artikel
+/wat-kosten-verzekeringen-voor-zzp-ers    /kennisbank/wat-kosten-verzekeringen-voor-zzp-ers    301  # gepubliceerd artikel
+/rijd-je-als-zzp-er-fiscaal-voordelig-met-een-youngtimer    /kennisbank/rijd-je-als-zzp-er-fiscaal-voordelig-met-een-youngtimer    301  # gepubliceerd artikel
+/voordelen-van-zzp    /kennisbank/voordelen-van-zzp    301  # gepubliceerd artikel
+/hoe-combineer-je-loondienst-en-zzp    /kennisbank/hoe-combineer-je-loondienst-en-zzp    301  # gepubliceerd artikel
+/hoe-bereken-ik-mijn-inkomen-als-zzp-er-naast-loondienst    /kennisbank/hoe-bereken-ik-mijn-inkomen-als-zzp-er-naast-loondienst    301  # gepubliceerd artikel
+/wat-is-de-zelfstandigenaftrek    /kennisbank/wat-is-de-zelfstandigenaftrek    301  # gepubliceerd artikel
+/cyberverzekering-zzp    /kennisbank/cyberverzekering-zzp    301  # gepubliceerd artikel
+/zzp-en-belasting    /kennisbank/zzp-en-belasting    301  # gepubliceerd artikel
+/starten-met-ondernemen-als-zzper    /kennisbank/starten-met-ondernemen-als-zzper    301  # gepubliceerd artikel
+/wanneer-zelfstandig-ondernemer-voor-de-belastingdienst    /kennisbank/wanneer-zelfstandig-ondernemer-voor-de-belastingdienst    301  # gepubliceerd artikel
+/ondernemingsplan    /kennisbank/ondernemingsplan    301  # gepubliceerd artikel
+/wat-is-startersaftrek    /kennisbank/wat-is-startersaftrek    301  # gepubliceerd artikel
+/wat-is-het-urencriterium    /kennisbank/wat-is-het-urencriterium    301  # gepubliceerd artikel
+/voor-en-nadelen-broodfonds-of-schenkkring    /kennisbank/voor-en-nadelen-broodfonds-of-schenkkring    301  # gepubliceerd artikel
 /kleinschaligheidsinvesteringsaftrek-kia-voor-zzpers    /kennisbank/belastingen    301
-/schijnzelfstandigheid-als-zzp-er    /kennisbank/wet-en-regelgeving    301
-/btw-aangifte-zzp    /kennisbank/belastingen    301
-/hypotheek-berekenen-en-afsluiten-als-zzp-er    /kennisbank/financien    301
+/schijnzelfstandigheid-als-zzp-er    /kennisbank/schijnzelfstandigheid-als-zzp-er    301  # gepubliceerd artikel
+/btw-aangifte-zzp    /kennisbank/btw-aangifte-zzp    301  # gepubliceerd artikel
+/hypotheek-berekenen-en-afsluiten-als-zzp-er    /kennisbank/hypotheek-berekenen-en-afsluiten-als-zzp-er    301  # gepubliceerd artikel
 /moneysure-aov-alternatief    /aov    301
 /brightpensioen    /pensioen    301
 /hoe-was-jouw-ervaring-met-zp-zaken    /contact    301
