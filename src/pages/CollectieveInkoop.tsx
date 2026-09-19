@@ -28,6 +28,8 @@ import { useQuery } from "@tanstack/react-query";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { Check, Users, Zap, Monitor, Shield, ArrowRight, Mail, Cpu, Phone, Lightbulb } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/animated-section";
+import { useFormGuard, submitPublicForm, PublicFormError } from "@/lib/antiSpam";
+import { HoneypotField } from "@/components/shared/HoneypotField";
 import pilotStroomImg from "@/assets/pilot-stroom.jpg";
 import pilotSoftwareImg from "@/assets/pilot-software.jpg";
 import pilotAiToolsImg from "@/assets/pilot-ai-tools.jpg";
@@ -110,24 +112,28 @@ function PilotSignupDialog({ pilot, open, onOpenChange, t }: {
     naam: "", email: "", telefoon: "", postcode: "", type: "",
     huidige_leverancier: "", interesse_gebieden: [] as string[],
   });
+  const guard = useFormGuard();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.naam.trim() || !form.email.trim()) return;
     setLoading(true);
     try {
-      const { error } = await supabase.from("collective_signups").insert({
+      await submitPublicForm("collective_signups", {
         pilot_slug: pilot.slug, naam: form.naam.trim(), email: form.email.trim(),
         telefoon: form.telefoon.trim() || null, postcode: form.postcode.trim() || null,
         type: form.type || null, huidige_leverancier: form.huidige_leverancier.trim() || null,
         interesse_gebieden: form.interesse_gebieden.length > 0 ? form.interesse_gebieden: null,
-      });
-      if (error) throw error;
+      }, guard);
       toast({ title: t("collectieveInkoop.signUpSuccess"), description: t("collectieveInkoop.signUpSuccessDesc") });
       onOpenChange(false);
       setForm({ naam: "", email: "", telefoon: "", postcode: "", type: "", huidige_leverancier: "", interesse_gebieden: [] });
-    } catch {
-      toast({ title: t("collectieveInkoop.signUpError"), description: t("collectieveInkoop.signUpErrorDesc"), variant: "destructive" });
+    } catch (err) {
+      toast({
+        title: t("collectieveInkoop.signUpError"),
+        description: err instanceof PublicFormError ? err.message : t("collectieveInkoop.signUpErrorDesc"),
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
