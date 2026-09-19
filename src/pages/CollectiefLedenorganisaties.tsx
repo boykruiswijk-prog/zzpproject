@@ -162,7 +162,7 @@ export default function CollectiefLedenorganisaties() {
     if (!validate()) return;
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from("leads").insert({
+      await submitPublicForm("leads", {
         type: "contact" as const,
         voornaam: formData.contactpersoon.split(" ")[0] || formData.contactpersoon,
         achternaam: formData.contactpersoon.split(" ").slice(1).join(" ") || "-",
@@ -171,13 +171,15 @@ export default function CollectiefLedenorganisaties() {
         bedrijfsnaam: formData.organisatienaam,
         beroep: formData.branche,
         opmerkingen: `Aantal leden: ${formData.aantalLeden}. ${formData.opmerking}`,
-        bron: "website" as const,
-      });
-      if (error) throw error;
+      }, guard);
       toast({ title: "Aanvraag verzonden!", description: "We nemen binnen 24 uur contact met je op." });
       setFormData({ organisatienaam: "", aantalLeden: "", branche: "", contactpersoon: "", telefoon: "", email: "", opmerking: "" });
-    } catch {
-      toast({ title: "Er ging iets mis", description: "Probeer het later opnieuw.", variant: "destructive" });
+    } catch (err) {
+      toast({
+        title: "Er ging iets mis",
+        description: err instanceof PublicFormError ? err.message : "Probeer het later opnieuw.",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -712,6 +714,7 @@ export default function CollectiefLedenorganisaties() {
             >
               <form onSubmit={handleSubmit} className="rounded-3xl p-6 md:p-8 space-y-4 border border-white/10 backdrop-blur-xl shadow-2xl"
                 style={{ background: "hsl(0 0% 100% / 0.06)" }}>
+                <HoneypotField guard={guard} />
                 <h3 className="text-xl font-bold text-white mb-4">Ontvang collectief voorstel</h3>
                 <div>
                   <Label htmlFor="organisatienaam" className="text-white/70">Organisatienaam *</Label>
