@@ -33,6 +33,19 @@ async function sendMail(req: Request | null, to: string, subject: string, html: 
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+
+  // SECURITY: alleen de cron mag deze functie draaien (zelfde patroon als
+  // monthly-invoices-cron): CRON_SECRET via ?secret= of header x-cron-secret.
+  const cronSecret = Deno.env.get("CRON_SECRET") ?? "";
+  const reqUrl = new URL(req.url);
+  const providedSecret = reqUrl.searchParams.get("secret") ?? req.headers.get("x-cron-secret") ?? "";
+  if (!cronSecret || providedSecret !== cronSecret) {
+    return new Response(JSON.stringify({ error: "unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",

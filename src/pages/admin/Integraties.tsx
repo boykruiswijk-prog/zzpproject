@@ -106,13 +106,15 @@ export default function Integraties() {
     );
   }
 
-  const handleConnect = () => {
-    // Client_id wordt via env wel niet exposed — gebruik een edge function init zou netter zijn,
-    // maar Exact's auth endpoint heeft de client_id in de URL nodig. We hebben deze niet client-side.
-    // Daarom: redirect via een kleine init-edge-function route is niet nodig; we vragen admin
-    // de autorisatie URL eenmalig handmatig op via Exact docs OF we maken een init function.
-    // Eenvoudigste: open de Exact OAuth URL via edge function door client_id daar te lezen.
-    window.location.href = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/exact-oauth-init`;
+  const handleConnect = async () => {
+    // exact-oauth-start controleert de ingelogde admin en genereert een state-token
+    // dat de callback valideert. Nooit direct naar Exact redirecten zonder state.
+    const { data, error } = await supabase.functions.invoke("exact-oauth-start");
+    if (error || !data?.authorization_url) {
+      toast.error(`Koppeling starten mislukt: ${error?.message ?? data?.error ?? "onbekende fout"}`);
+      return;
+    }
+    window.location.href = data.authorization_url as string;
   };
 
   const fetchExactTypes = async () => {

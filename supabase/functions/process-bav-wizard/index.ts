@@ -345,8 +345,10 @@ Deno.serve(async (req) => {
         .eq("id", lead.id);
 
       supabase.functions.invoke("send-notification", {
+        headers: { "x-internal-secret": Deno.env.get("INTERNAL_FUNCTION_SECRET") ?? "" },
         body: {
           type: "exact_error",
+          lead_id: lead.id,
           naam: volledigeNaam,
           email: submission.email,
           telefoon: submission.telefoon || "-",

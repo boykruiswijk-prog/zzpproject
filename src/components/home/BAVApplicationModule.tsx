@@ -59,7 +59,6 @@ export function BAVApplicationModule() {
    const [isSubmitted, setIsSubmitted] = useState(false);
    const [isSubmitting, setIsSubmitting] = useState(false);
    const [existingCustomerOpen, setExistingCustomerOpen] = useState(false);
-   const [isCheckingExisting, setIsCheckingExisting] = useState(false);
    const [magicLinkSending, setMagicLinkSending] = useState(false);
    const [magicLinkSent, setMagicLinkSent] = useState(false);
    useEffect(() => { trackBeginWizard(); }, []);
@@ -162,31 +161,11 @@ export function BAVApplicationModule() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const checkExistingCustomer = async (): Promise<boolean> => {
-    try {
-      setIsCheckingExisting(true);
-      const { data } = await supabase.functions.invoke("check-existing-customer", {
-        body: { email: formData.email, kvk: formData.kvkNummer },
-      });
-      return data?.exists === true;
-    } catch (err) {
-      console.error("check-existing-customer failed:", err);
-      return false; // fail-open: blokkeer aanvraag niet bij lookup-fout
-    } finally {
-      setIsCheckingExisting(false);
-    }
-  };
-
+  // De losse "bent u al klant?"-check is verwijderd: die maakte het van buitenaf
+  // mogelijk om e-mailadressen en KvK-nummers af te tasten. De dubbelcheck
+  // gebeurt nu server-side bij het versturen van de aanvraag.
   const nextStep = async () => {
     if (!validateStep(currentStep) || currentStep >= TOTAL_STEPS) return;
-    // Na stap 3 (email + telefoon ingevuld; KvK kwam in stap 2): duplicate-check.
-    if (currentStep === 3) {
-      const exists = await checkExistingCustomer();
-      if (exists) {
-        setExistingCustomerOpen(true);
-        return;
-      }
-    }
     setCurrentStep(currentStep + 1);
   };
   const prevStep = () => { if (currentStep > 1) { setErrors({}); setCurrentStep(currentStep - 1); } };
@@ -226,7 +205,15 @@ export function BAVApplicationModule() {
          },
        });
 
-       if (error) throw error;
+       if (error) {
+         // 409 = server-side dubbelcheck: bestaande klant met actieve polis.
+         const ctx = (error as { context?: Response }).context;
+         if (ctx?.status === 409) {
+           setExistingCustomerOpen(true);
+           return;
+         }
+         throw error;
+       }
        if (!data?.success) throw new Error(data?.error || "Onbekende fout");
 
        trackWizardComplete(selectedBavPakket.name, selectedBavPakket.prijs);
