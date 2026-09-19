@@ -26,6 +26,8 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { LocalizedLink } from "@/components/LocalizedLink";
+import { useFormGuard, submitPublicForm, PublicFormError } from "@/lib/antiSpam";
+import { HoneypotField } from "@/components/shared/HoneypotField";
 
 const SEO = seoRoute("/offerte");
 
@@ -161,9 +163,8 @@ export default function OffertePage() {
           vereist_handmatige_beoordeling:
             form.branche === "anders" || form.aantal_medewerkers === "Meer dan 3",
           extra_data: extra as never,
-        });
+        }, guard);
 
-      if (insertErr) throw insertErr;
 
       const ref = String(leadId).slice(0, 8);
       const subjectRef = `${form.naam_organisatie.trim()} - ${form.voornaam.trim()} ${form.achternaam.trim()}`;
