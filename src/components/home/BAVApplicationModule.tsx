@@ -21,6 +21,8 @@ import ellenAvatar from "@/assets/ellen-baars-avatar.webp";
 import { TrustSignalsStrip } from "@/components/social-proof/TrustSignalsStrip";
 import { bavPakketten, getPakket, type BavPakketId } from "@/data/bavPakketten";
 import { checkAcceptance } from "@/data/acceptanceCriteria";
+import { useFormGuard } from "@/lib/antiSpam";
+import { HoneypotField } from "@/components/shared/HoneypotField";
 
 const formatBedrag = (n: number) => `€${n.toLocaleString("nl-NL")}`;
 
@@ -58,6 +60,7 @@ export function BAVApplicationModule() {
    const [errors, setErrors] = useState<ValidationErrors>({});
    const [isSubmitted, setIsSubmitted] = useState(false);
    const [isSubmitting, setIsSubmitting] = useState(false);
+   const guard = useFormGuard();
    const [existingCustomerOpen, setExistingCustomerOpen] = useState(false);
    const [magicLinkSending, setMagicLinkSending] = useState(false);
    const [magicLinkSent, setMagicLinkSent] = useState(false);
