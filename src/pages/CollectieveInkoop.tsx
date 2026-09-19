@@ -156,6 +156,7 @@ function PilotSignupDialog({ pilot, open, onOpenChange, t }: {
           <DialogDescription>{t("collectieveInkoop.signUpDesc")}</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <HoneypotField guard={guard} />
           <div>
             <Label htmlFor="naam">{t("collectieveInkoop.name")} *</Label>
             <Input id="naam" value={form.naam} onChange={(e) => setForm({ ...form, naam: e.target.value })} required maxLength={100} />
@@ -223,19 +224,23 @@ function NewsletterSection() {
   const [email, setEmail] = useState("");
   const [privacy, setPrivacy] = useState(false);
   const [loading, setLoading] = useState(false);
+  const guard = useFormGuard();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !privacy) return;
     setLoading(true);
     try {
-      const { error } = await supabase.from("collective_newsletter").insert({ email: email.trim() });
-      if (error) throw error;
+      await submitPublicForm("collective_newsletter", { email: email.trim() }, guard);
       toast({ title: t("collectieveInkoop.newsletterSuccess"), description: t("collectieveInkoop.newsletterSuccessDesc") });
       setEmail("");
       setPrivacy(false);
-    } catch {
-      toast({ title: t("collectieveInkoop.signUpError"), description: t("collectieveInkoop.signUpErrorDesc"), variant: "destructive" });
+    } catch (err) {
+      toast({
+        title: t("collectieveInkoop.signUpError"),
+        description: err instanceof PublicFormError ? err.message : t("collectieveInkoop.signUpErrorDesc"),
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -248,6 +253,7 @@ function NewsletterSection() {
           <h2 className="text-3xl font-bold mb-4">{t("collectieveInkoop.newsletterTitle")}</h2>
           <p className="text-background/70 mb-8">{t("collectieveInkoop.newsletterDesc")}</p>
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 mb-4">
+            <HoneypotField guard={guard} />
             <Input type="email" placeholder={t("collectieveInkoop.emailPlaceholder")} value={email} onChange={(e) => setEmail(e.target.value)} required maxLength={255}
               className="bg-background/10 border-background/20 text-background placeholder:text-background/50 flex-1" />
             <Button type="submit" variant="accent" disabled={loading || !privacy}>
@@ -270,22 +276,26 @@ function SuggestionBox() {
   const { toast } = useToast();
   const [form, setForm] = useState({ suggestie: "", naam: "", email: "" });
   const [loading, setLoading] = useState(false);
+  const guard = useFormGuard();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.suggestie.trim()) return;
     setLoading(true);
     try {
-      const { error } = await supabase.from("collective_suggestions" as any).insert({
+      await submitPublicForm("collective_suggestions", {
         suggestie: form.suggestie.trim(),
         naam: form.naam.trim() || null,
         email: form.email.trim() || null,
-      });
-      if (error) throw error;
+      }, guard);
       toast({ title: t("collectieveInkoop.suggestionSuccess"), description: t("collectieveInkoop.suggestionSuccessDesc") });
       setForm({ suggestie: "", naam: "", email: "" });
-    } catch {
-      toast({ title: t("collectieveInkoop.signUpError"), description: t("collectieveInkoop.signUpErrorDesc"), variant: "destructive" });
+    } catch (err) {
+      toast({
+        title: t("collectieveInkoop.signUpError"),
+        description: err instanceof PublicFormError ? err.message : t("collectieveInkoop.signUpErrorDesc"),
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
