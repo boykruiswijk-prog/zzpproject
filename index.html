@@ -5,6 +5,25 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- Content Security Policy (meta-variant; frame-ancestors werkt hier niet, daarom ook de frame-buster onderaan) -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self';
+               base-uri 'self';
+               object-src 'none';
+               form-action 'self';
+               script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://*.lovable.app https://*.lovable.dev;
+               style-src 'self' 'unsafe-inline';
+               font-src 'self' data:;
+               img-src 'self' data: blob: https://eugkavokktjwpqaqlwsj.supabase.co https://www.googletagmanager.com https://www.google-analytics.com https://zpzaken.nl;
+               media-src 'self' blob: https://eugkavokktjwpqaqlwsj.supabase.co;
+               connect-src 'self' https://eugkavokktjwpqaqlwsj.supabase.co wss://eugkavokktjwpqaqlwsj.supabase.co https://www.googletagmanager.com https://www.google-analytics.com https://region1.google-analytics.com ws: wss:;
+               worker-src 'self' blob:;
+               frame-src 'self';
+               upgrade-insecure-requests"
+    />
+
+
     <!-- Vroege verbinding met de backend; scheelt een RTT op de eerste data-call -->
     <link rel="preconnect" href="https://eugkavokktjwpqaqlwsj.supabase.co" crossorigin />
     <link rel="dns-prefetch" href="https://eugkavokktjwpqaqlwsj.supabase.co" />
@@ -113,6 +132,21 @@
 
   <body>
     <div id="root"></div>
+    <!-- Clickjacking-bescherming zolang er geen X-Frame-Options-header mogelijk is -->
+    <script>
+      (function () {
+        try {
+          if (window.top === window.self) return;
+          var host = "";
+          try { host = window.top.location.hostname; } catch (e) { host = ""; }
+          var allowed = ["lovable.app", "lovable.dev", "localhost", "zpzaken.nl"];
+          var ok = allowed.some(function (d) { return host === d || host.endsWith("." + d); });
+          if (!ok) window.top.location = window.self.location.href;
+        } catch (e) {
+          document.documentElement.style.display = "none";
+        }
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
