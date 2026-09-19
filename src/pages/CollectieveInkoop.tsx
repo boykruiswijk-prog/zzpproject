@@ -313,6 +313,7 @@ function SuggestionBox() {
           </div>
           <p className="text-muted-foreground mb-6">{t("collectieveInkoop.suggestionDesc")}</p>
           <form onSubmit={handleSubmit} className="space-y-4">
+            <HoneypotField guard={guard} />
             <div>
               <Label htmlFor="suggestie">{t("collectieveInkoop.suggestionPlaceholder")}</Label>
               <textarea
