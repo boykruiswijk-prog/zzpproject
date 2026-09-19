@@ -146,9 +146,7 @@ export default function OffertePage() {
 
       // Anon-rol heeft geen SELECT op leads — id client-side genereren.
       const leadId = (globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`);
-      const { error: insertErr } = await supabase
-        .from("leads")
-        .insert({
+      await submitPublicForm("leads", {
           id: leadId,
           type: "offerte-aanvraag" as never,
           voornaam: form.voornaam.trim(),
