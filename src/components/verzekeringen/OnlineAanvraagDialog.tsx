@@ -21,6 +21,8 @@ import { CheckCircle, ArrowRight, ArrowLeft, Loader2, AlertCircle } from "lucide
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { trackFormStart, trackFormComplete } from "@/lib/tracking";
+import { useFormGuard, submitPublicForm, PublicFormError } from "@/lib/antiSpam";
+import { HoneypotField } from "@/components/shared/HoneypotField";
 
 interface OnlineAanvraagDialogProps {
   open: boolean;
@@ -134,7 +136,7 @@ export function OnlineAanvraagDialog({
        // Note: anon-rol heeft geen SELECT op leads. We genereren het id client-side
        // zodat we het kunnen meegeven aan de notificatie zonder terug te lezen.
       const leadId = (globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`);
-      const { error } = await supabase.from("leads").insert({
+      await submitPublicForm("leads", {
         id: leadId,
         type: "verzekering_aanvraag",
         voornaam: formData.voornaam,
@@ -151,13 +153,7 @@ export function OnlineAanvraagDialog({
         eigen_risico: formData.eigenRisico || null,
         ingangsdatum: formData.ingangsdatum || null,
         opmerkingen: formData.opmerkingen || null,
-        bron: "website",
-      });
-
-       if (error) {
-         console.error("Database error:", error);
-         throw error;
-       }
+      }, guard);
 
       // Mail-notificatie (logt zelf in lead_notification_log)
       supabase.functions
