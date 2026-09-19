@@ -26,6 +26,8 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { LocalizedLink } from "@/components/LocalizedLink";
+import { useFormGuard, submitPublicForm, PublicFormError } from "@/lib/antiSpam";
+import { HoneypotField } from "@/components/shared/HoneypotField";
 
 const SEO = seoRoute("/offerte");
 
@@ -71,6 +73,7 @@ export default function OffertePage() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
+  const guard = useFormGuard();
   const [errors, setErrors] = useState<Errors>({});
 
   const [form, setForm] = useState({
@@ -146,9 +149,7 @@ export default function OffertePage() {
 
       // Anon-rol heeft geen SELECT op leads — id client-side genereren.
       const leadId = (globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`);
-      const { error: insertErr } = await supabase
-        .from("leads")
-        .insert({
+      await submitPublicForm("leads", {
           id: leadId,
           type: "offerte-aanvraag" as never,
           voornaam: form.voornaam.trim(),
@@ -163,9 +164,8 @@ export default function OffertePage() {
           vereist_handmatige_beoordeling:
             form.branche === "anders" || form.aantal_medewerkers === "Meer dan 3",
           extra_data: extra as never,
-        });
+        }, guard);
 
-      if (insertErr) throw insertErr;
 
       const ref = String(leadId).slice(0, 8);
       const subjectRef = `${form.naam_organisatie.trim()} - ${form.voornaam.trim()} ${form.achternaam.trim()}`;
@@ -263,6 +263,7 @@ export default function OffertePage() {
       <section className="section-padding bg-secondary">
         <div className="container-wide max-w-3xl">
           <form onSubmit={handleSubmit} className="bg-card rounded-2xl border border-border shadow-sm p-6 md:p-10 space-y-10">
+            <HoneypotField guard={guard} />
             {/* GROEP 1 */}
             <fieldset className="space-y-5">
               <h3 className="border-b border-border pb-2 mb-2">Algemene gegevens</h3>

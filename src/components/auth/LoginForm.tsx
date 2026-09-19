@@ -12,6 +12,32 @@ import { MFAEnroll } from '@/components/admin/MFAEnroll'
 
 type Step = 'credentials' | 'mfa_verify' | 'mfa_enroll'
 
+interface GuardStatus {
+  locked: boolean
+  minutesLeft: number
+  attemptsLeft: number
+}
+
+const OPEN_GUARD: GuardStatus = { locked: false, minutesLeft: 0, attemptsLeft: 5 }
+
+async function callLoginGuard(body: Record<string, unknown>): Promise<GuardStatus> {
+  try {
+    const { data, error } = await supabase.functions.invoke('login-guard', { body })
+    if (error || !data) return OPEN_GUARD
+    return {
+      locked: data.locked === true,
+      minutesLeft: Number(data.minutesLeft ?? 0),
+      attemptsLeft: Number(data.attemptsLeft ?? 0),
+    }
+  } catch {
+    return OPEN_GUARD
+  }
+}
+
+const checkLoginGuard = (email: string) => callLoginGuard({ action: 'check', email })
+const recordLoginAttempt = (email: string, success: boolean) =>
+  callLoginGuard({ action: 'record', email, success })
+
 export function LoginForm() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
@@ -31,16 +57,40 @@ export function LoginForm() {
     }
 
     setLoading(true)
+    const normalizedEmail = email.trim().toLowerCase()
     try {
+      // Bescherming tegen wachtwoord-raden: na 5 mislukte pogingen een afkoelperiode.
+      const guard = await checkLoginGuard(normalizedEmail)
+      if (guard.locked) {
+        setError(
+          `Te veel mislukte inlogpogingen. Probeer het over ${guard.minutesLeft} ${
+            guard.minutesLeft === 1 ? 'minuut' : 'minuten'
+          } opnieuw.`,
+        )
+        return
+      }
+
       const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email: email.trim().toLowerCase(),
+        email: normalizedEmail,
         password,
       })
 
       if (authError) {
-        setError(getAuthErrorMessage(authError))
+        const after = await recordLoginAttempt(normalizedEmail, false)
+        let msg = getAuthErrorMessage(authError)
+        if (after.locked) {
+          msg = `Te veel mislukte inlogpogingen. Probeer het over ${after.minutesLeft} ${
+            after.minutesLeft === 1 ? 'minuut' : 'minuten'
+          } opnieuw.`
+        } else if (after.attemptsLeft > 0 && after.attemptsLeft <= 2) {
+          msg += ` Nog ${after.attemptsLeft} ${
+            after.attemptsLeft === 1 ? 'poging' : 'pogingen'
+          } voordat het account tijdelijk wordt geblokkeerd.`
+        }
+        setError(msg)
         return
       }
+      void recordLoginAttempt(normalizedEmail, true)
       if (!data.session) {
         setError('Login geslaagd maar geen sessie ontvangen. Probeer opnieuw.')
         return

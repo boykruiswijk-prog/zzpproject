@@ -28,6 +28,8 @@ import { useQuery } from "@tanstack/react-query";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { Check, Users, Zap, Monitor, Shield, ArrowRight, Mail, Cpu, Phone, Lightbulb } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/animated-section";
+import { useFormGuard, submitPublicForm, PublicFormError } from "@/lib/antiSpam";
+import { HoneypotField } from "@/components/shared/HoneypotField";
 import pilotStroomImg from "@/assets/pilot-stroom.jpg";
 import pilotSoftwareImg from "@/assets/pilot-software.jpg";
 import pilotAiToolsImg from "@/assets/pilot-ai-tools.jpg";
@@ -110,24 +112,28 @@ function PilotSignupDialog({ pilot, open, onOpenChange, t }: {
     naam: "", email: "", telefoon: "", postcode: "", type: "",
     huidige_leverancier: "", interesse_gebieden: [] as string[],
   });
+  const guard = useFormGuard();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.naam.trim() || !form.email.trim()) return;
     setLoading(true);
     try {
-      const { error } = await supabase.from("collective_signups").insert({
+      await submitPublicForm("collective_signups", {
         pilot_slug: pilot.slug, naam: form.naam.trim(), email: form.email.trim(),
         telefoon: form.telefoon.trim() || null, postcode: form.postcode.trim() || null,
         type: form.type || null, huidige_leverancier: form.huidige_leverancier.trim() || null,
         interesse_gebieden: form.interesse_gebieden.length > 0 ? form.interesse_gebieden: null,
-      });
-      if (error) throw error;
+      }, guard);
       toast({ title: t("collectieveInkoop.signUpSuccess"), description: t("collectieveInkoop.signUpSuccessDesc") });
       onOpenChange(false);
       setForm({ naam: "", email: "", telefoon: "", postcode: "", type: "", huidige_leverancier: "", interesse_gebieden: [] });
-    } catch {
-      toast({ title: t("collectieveInkoop.signUpError"), description: t("collectieveInkoop.signUpErrorDesc"), variant: "destructive" });
+    } catch (err) {
+      toast({
+        title: t("collectieveInkoop.signUpError"),
+        description: err instanceof PublicFormError ? err.message : t("collectieveInkoop.signUpErrorDesc"),
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -150,6 +156,7 @@ function PilotSignupDialog({ pilot, open, onOpenChange, t }: {
           <DialogDescription>{t("collectieveInkoop.signUpDesc")}</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <HoneypotField guard={guard} />
           <div>
             <Label htmlFor="naam">{t("collectieveInkoop.name")} *</Label>
             <Input id="naam" value={form.naam} onChange={(e) => setForm({ ...form, naam: e.target.value })} required maxLength={100} />
@@ -217,19 +224,23 @@ function NewsletterSection() {
   const [email, setEmail] = useState("");
   const [privacy, setPrivacy] = useState(false);
   const [loading, setLoading] = useState(false);
+  const guard = useFormGuard();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !privacy) return;
     setLoading(true);
     try {
-      const { error } = await supabase.from("collective_newsletter").insert({ email: email.trim() });
-      if (error) throw error;
+      await submitPublicForm("collective_newsletter", { email: email.trim() }, guard);
       toast({ title: t("collectieveInkoop.newsletterSuccess"), description: t("collectieveInkoop.newsletterSuccessDesc") });
       setEmail("");
       setPrivacy(false);
-    } catch {
-      toast({ title: t("collectieveInkoop.signUpError"), description: t("collectieveInkoop.signUpErrorDesc"), variant: "destructive" });
+    } catch (err) {
+      toast({
+        title: t("collectieveInkoop.signUpError"),
+        description: err instanceof PublicFormError ? err.message : t("collectieveInkoop.signUpErrorDesc"),
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -242,6 +253,7 @@ function NewsletterSection() {
           <h2 className="text-3xl font-bold mb-4">{t("collectieveInkoop.newsletterTitle")}</h2>
           <p className="text-background/70 mb-8">{t("collectieveInkoop.newsletterDesc")}</p>
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 mb-4">
+            <HoneypotField guard={guard} />
             <Input type="email" placeholder={t("collectieveInkoop.emailPlaceholder")} value={email} onChange={(e) => setEmail(e.target.value)} required maxLength={255}
               className="bg-background/10 border-background/20 text-background placeholder:text-background/50 flex-1" />
             <Button type="submit" variant="accent" disabled={loading || !privacy}>
@@ -264,22 +276,26 @@ function SuggestionBox() {
   const { toast } = useToast();
   const [form, setForm] = useState({ suggestie: "", naam: "", email: "" });
   const [loading, setLoading] = useState(false);
+  const guard = useFormGuard();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.suggestie.trim()) return;
     setLoading(true);
     try {
-      const { error } = await supabase.from("collective_suggestions" as any).insert({
+      await submitPublicForm("collective_suggestions", {
         suggestie: form.suggestie.trim(),
         naam: form.naam.trim() || null,
         email: form.email.trim() || null,
-      });
-      if (error) throw error;
+      }, guard);
       toast({ title: t("collectieveInkoop.suggestionSuccess"), description: t("collectieveInkoop.suggestionSuccessDesc") });
       setForm({ suggestie: "", naam: "", email: "" });
-    } catch {
-      toast({ title: t("collectieveInkoop.signUpError"), description: t("collectieveInkoop.signUpErrorDesc"), variant: "destructive" });
+    } catch (err) {
+      toast({
+        title: t("collectieveInkoop.signUpError"),
+        description: err instanceof PublicFormError ? err.message : t("collectieveInkoop.signUpErrorDesc"),
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -297,6 +313,7 @@ function SuggestionBox() {
           </div>
           <p className="text-muted-foreground mb-6">{t("collectieveInkoop.suggestionDesc")}</p>
           <form onSubmit={handleSubmit} className="space-y-4">
+            <HoneypotField guard={guard} />
             <div>
               <Label htmlFor="suggestie">{t("collectieveInkoop.suggestionPlaceholder")}</Label>
               <textarea

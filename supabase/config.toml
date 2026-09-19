@@ -59,3 +59,11 @@ project_id = "eugkavokktjwpqaqlwsj"
 
  [functions.wp-import]
  verify_jwt = false
+
+ # Publieke formulieren: eigen bescherming (honeypot, invultijd, IP-limiet).
+ [functions.submit-public-form]
+ verify_jwt = false
+
+ # Inlogbescherming: houdt mislukte pogingen bij, moet vóór login bereikbaar zijn.
+ [functions.login-guard]
+ verify_jwt = false

@@ -14,6 +14,8 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { Link } from "react-router-dom";
+import { useFormGuard } from "@/lib/antiSpam";
+import { HoneypotField } from "@/components/shared/HoneypotField";
 
 const SEO = seoRoute("/screening");
 
@@ -86,6 +88,7 @@ export default function Screening() {
   const [stap, setStap] = useState(1);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const guard = useFormGuard();
   const [success, setSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [akkoord, setAkkoord] = useState(false);
@@ -137,6 +140,8 @@ export default function Screening() {
           ...form,
           telefoon: form.telefoon || undefined,
           screening_type: screeningType,
+          hp: guard.honeypot,
+          ms: guard.elapsedMs(),
         },
       });
       if (error || !data?.success) {
@@ -154,6 +159,7 @@ export default function Screening() {
 
   return (
     <Layout>
+      <HoneypotField guard={guard} />
       <SEOHead
         title={SEO.title}
         description={SEO.description}

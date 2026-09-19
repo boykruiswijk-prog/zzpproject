@@ -21,6 +21,8 @@ import ellenAvatar from "@/assets/ellen-baars-avatar.webp";
 import { TrustSignalsStrip } from "@/components/social-proof/TrustSignalsStrip";
 import { bavPakketten, getPakket, type BavPakketId } from "@/data/bavPakketten";
 import { checkAcceptance } from "@/data/acceptanceCriteria";
+import { useFormGuard } from "@/lib/antiSpam";
+import { HoneypotField } from "@/components/shared/HoneypotField";
 
 const formatBedrag = (n: number) => `€${n.toLocaleString("nl-NL")}`;
 
@@ -58,6 +60,7 @@ export function BAVApplicationModule() {
    const [errors, setErrors] = useState<ValidationErrors>({});
    const [isSubmitted, setIsSubmitted] = useState(false);
    const [isSubmitting, setIsSubmitting] = useState(false);
+   const guard = useFormGuard();
    const [existingCustomerOpen, setExistingCustomerOpen] = useState(false);
    const [magicLinkSending, setMagicLinkSending] = useState(false);
    const [magicLinkSent, setMagicLinkSent] = useState(false);
@@ -176,6 +179,8 @@ export function BAVApplicationModule() {
      try {
        const { data, error } = await supabase.functions.invoke("process-bav-wizard", {
          body: {
+           hp: guard.honeypot,
+           ms: guard.elapsedMs(),
            gekozen_pakket: gekozenPakketId,
            betaalwijze,
            ingangsdatum: startDate,
@@ -233,6 +238,7 @@ export function BAVApplicationModule() {
 
   return (
     <>
+      <HoneypotField guard={guard} />
       <Dialog open={isSubmitted} onOpenChange={(open) => { if (!open) setIsSubmitted(false); }}>
         <DialogContent className="max-w-md p-0 overflow-hidden">
           <div className="flex flex-col items-center text-center px-6 py-8 sm:px-8 sm:py-10">

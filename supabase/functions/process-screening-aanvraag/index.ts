@@ -1,5 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2.39.0";
 import { createMailGate } from "../_shared/mail.ts";
+import { guardPublicSubmission } from "../_shared/antiSpam.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -77,6 +78,20 @@ Deno.serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    // Anti-spam: honeypot, invultijd en IP-limiet.
+    const guard = await guardPublicSubmission(req, supabase, {
+      hp: (data as Record<string, unknown>).hp,
+      ms: (data as Record<string, unknown>).ms,
+      kind: "screening",
+    });
+    if (!guard.ok) {
+      return new Response(
+        JSON.stringify({ success: false, error: guard.error, reason: guard.reason }),
+        { status: guard.status ?? 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
 
     const pakketLabel = PAKKET_LABELS[data.screening_type];
     const volledigeNaam = `${data.voornaam} ${data.achternaam}`.trim();

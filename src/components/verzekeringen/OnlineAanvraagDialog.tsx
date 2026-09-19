@@ -21,6 +21,8 @@ import { CheckCircle, ArrowRight, ArrowLeft, Loader2, AlertCircle } from "lucide
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { trackFormStart, trackFormComplete } from "@/lib/tracking";
+import { useFormGuard, submitPublicForm, PublicFormError } from "@/lib/antiSpam";
+import { HoneypotField } from "@/components/shared/HoneypotField";
 
 interface OnlineAanvraagDialogProps {
   open: boolean;
@@ -42,6 +44,7 @@ export function OnlineAanvraagDialog({
 }: OnlineAanvraagDialogProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const guard = useFormGuard();
   const [isCompleted, setIsCompleted] = useState(false);
   const { toast } = useToast();
 
@@ -134,7 +137,7 @@ export function OnlineAanvraagDialog({
        // Note: anon-rol heeft geen SELECT op leads. We genereren het id client-side
        // zodat we het kunnen meegeven aan de notificatie zonder terug te lezen.
       const leadId = (globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`);
-      const { error } = await supabase.from("leads").insert({
+      await submitPublicForm("leads", {
         id: leadId,
         type: "verzekering_aanvraag",
         voornaam: formData.voornaam,
@@ -151,13 +154,7 @@ export function OnlineAanvraagDialog({
         eigen_risico: formData.eigenRisico || null,
         ingangsdatum: formData.ingangsdatum || null,
         opmerkingen: formData.opmerkingen || null,
-        bron: "website",
-      });
-
-       if (error) {
-         console.error("Database error:", error);
-         throw error;
-       }
+      }, guard);
 
       // Mail-notificatie (logt zelf in lead_notification_log)
       supabase.functions
@@ -196,7 +193,7 @@ export function OnlineAanvraagDialog({
       console.error("Error submitting lead:", error);
       toast({
         title: "Er ging iets mis",
-        description: "Probeer het later opnieuw of neem telefonisch contact op.",
+        description: error instanceof PublicFormError ? error.message : "Probeer het later opnieuw of neem telefonisch contact op.",
         variant: "destructive",
       });
     } finally {
@@ -278,6 +275,8 @@ export function OnlineAanvraagDialog({
             Sluit je verzekering direct online af. Vul onderstaande gegevens in en ontvang binnen 1 werkdag je polis.
           </DialogDescription>
         </DialogHeader>
+
+        <HoneypotField guard={guard} />
 
         {/* Progress steps */}
         <div className="flex items-center justify-between mb-6 mt-2">

@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2.39.0";
+import { guardPublicSubmission } from "../_shared/antiSpam.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -89,6 +90,19 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Anti-spam: honeypot, invultijd en IP-limiet.
+    const guard = await guardPublicSubmission(req, supabase, {
+      hp: (submission as Record<string, unknown>).hp,
+      ms: (submission as Record<string, unknown>).ms,
+      kind: "bav",
+    });
+    if (!guard.ok) {
+      return new Response(
+        JSON.stringify({ success: false, error: guard.error, reason: guard.reason }),
+        { status: guard.status ?? 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const todayStr = new Date().toISOString().split("T")[0];
     if (submission.ingangsdatum < todayStr) {
       return new Response(
@@ -155,7 +169,7 @@ Deno.serve(async (req) => {
         ingangsdatum: submission.ingangsdatum,
         gekozen_pakket: submission.gekozen_pakket,
         opmerkingen: [
-          submission.iban ? `IBAN: ${submission.iban}` : null,
+          // IBAN wordt bewust NIET in het vrije opmerkingenveld herhaald (alleen in de iban-kolom).
           submission.rekeninghouder ? `Rekeninghouder: ${submission.rekeninghouder}` : null,
           submission.sector ? `Sector: ${submission.sector}` : null,
           submission.opmerkingen ? submission.opmerkingen : null,
