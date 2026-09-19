@@ -41,20 +41,21 @@ export default function Contact() {
     const bericht = (formDataRaw.get("message") as string) || "";
 
     try {
-       const { error } = await supabase.from("leads").insert({
+      // Eigen id meegeven: de notificatiefunctie bouwt de mail uit deze databaseregel
+      // op en accepteert geen vrije inhoud meer.
+      const leadId = crypto.randomUUID();
+      const { error } = await supabase.from("leads").insert({
+        id: leadId,
         type: "contact", voornaam: voornaam || naam, achternaam: achternaam || "-", email, telefoon: telefoon || null, beroep: beroep || null, opmerkingen: `Onderwerp: ${onderwerp}\n\n${bericht}`, bron: "website",
       });
       if (error) console.error("Database error:", error);
 
       // Send email notification (fire-and-forget)
-      supabase.functions.invoke("send-notification", {
-        body: {
-          type: "contact",
-          naam: naam,
-          email: email,
-          bericht: `Onderwerp: ${onderwerp}\n\n${bericht}`,
-        },
-      }).catch((err) => console.error("Email notification failed:", err));
+      if (!error) {
+        supabase.functions.invoke("send-notification", {
+          body: { type: "contact", lead_id: leadId },
+        }).catch((err) => console.error("Email notification failed:", err));
+      }
 
       trackContactFormSubmit();
       setIsSubmitted(true);
