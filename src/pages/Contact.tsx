@@ -15,6 +15,8 @@ import { trackContactFormSubmit } from "@/lib/tracking";
 import teamRoxy from "@/assets/team-roxy.webp";
 import ellenPortrait from "@/assets/ellen-baars-avatar.webp";
 import { SITE_CONFIG, ADDRESS_ONE_LINE } from "@/config/site";
+import { useFormGuard, submitPublicForm, PublicFormError } from "@/lib/antiSpam";
+import { HoneypotField } from "@/components/shared/HoneypotField";
 
 const SEO = seoRoute("/contact");
 
@@ -23,6 +25,7 @@ export default function Contact() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const guard = useFormGuard();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -42,27 +45,33 @@ export default function Contact() {
 
     try {
       // Eigen id meegeven: de notificatiefunctie bouwt de mail uit deze databaseregel
-      // op en accepteert geen vrije inhoud meer.
+      // op en accepteert geen vrije inhoud meer. Opslaan gaat via de beveiligde
+      // functie (honeypot, invultijd en IP-limiet).
       const leadId = crypto.randomUUID();
-      const { error } = await supabase.from("leads").insert({
-        id: leadId,
-        type: "contact", voornaam: voornaam || naam, achternaam: achternaam || "-", email, telefoon: telefoon || null, beroep: beroep || null, opmerkingen: `Onderwerp: ${onderwerp}\n\n${bericht}`, bron: "website",
-      });
-      if (error) console.error("Database error:", error);
+      await submitPublicForm(
+        "leads",
+        {
+          id: leadId,
+          type: "contact", voornaam: voornaam || naam, achternaam: achternaam || "-", email, telefoon: telefoon || null, beroep: beroep || null, opmerkingen: `Onderwerp: ${onderwerp}\n\n${bericht}`,
+        },
+        guard,
+      );
 
       // Send email notification (fire-and-forget)
-      if (!error) {
-        supabase.functions.invoke("send-notification", {
-          body: { type: "contact", lead_id: leadId },
-        }).catch((err) => console.error("Email notification failed:", err));
-      }
+      supabase.functions.invoke("send-notification", {
+        body: { type: "contact", lead_id: leadId },
+      }).catch((err) => console.error("Email notification failed:", err));
 
       trackContactFormSubmit();
       setIsSubmitted(true);
       toast({ title: t("contact.toastSuccess"), description: t("contact.toastSuccessDesc") });
     } catch (error) {
       console.error("Error submitting contact form:", error);
-      toast({ title: t("contact.toastError"), description: t("contact.toastErrorDesc"), variant: "destructive" });
+      toast({
+        title: t("contact.toastError"),
+        description: error instanceof PublicFormError ? error.message : t("contact.toastErrorDesc"),
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
