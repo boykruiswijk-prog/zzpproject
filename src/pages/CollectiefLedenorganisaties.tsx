@@ -21,6 +21,8 @@ import {
   Banknote, Zap, TrendingUp, UserCheck, Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useFormGuard, submitPublicForm, PublicFormError } from "@/lib/antiSpam";
+import { HoneypotField } from "@/components/shared/HoneypotField";
 import teamWalking from "@/assets/team-walking.webp";
 
 /* ─── Validation ─── */
