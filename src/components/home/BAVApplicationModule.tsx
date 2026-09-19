@@ -238,6 +238,7 @@ export function BAVApplicationModule() {
 
   return (
     <>
+      <HoneypotField guard={guard} />
       <Dialog open={isSubmitted} onOpenChange={(open) => { if (!open) setIsSubmitted(false); }}>
         <DialogContent className="max-w-md p-0 overflow-hidden">
           <div className="flex flex-col items-center text-center px-6 py-8 sm:px-8 sm:py-10">

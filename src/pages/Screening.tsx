@@ -159,6 +159,7 @@ export default function Screening() {
 
   return (
     <Layout>
+      <HoneypotField guard={guard} />
       <SEOHead
         title={SEO.title}
         description={SEO.description}
