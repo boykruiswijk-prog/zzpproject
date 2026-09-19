@@ -229,7 +229,7 @@ export default function ArtikelDetail() {
   const jsonLdFaq = faqItems
     ? faqSchema(
         faqItems.map((f) => ({
-          question: f.question,
+          question: resolveFiscaleTokens(f.question),
           answer: resolveFiscaleTokens(f.answer),
         })),
       )
@@ -387,6 +387,28 @@ export default function ArtikelDetail() {
                   ? renderContentWithCTA(article.content || "")
                   : <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.content || ""}</ReactMarkdown>}
               </div>
+
+              {/* Zichtbare FAQ: dekt het FAQPage-schema hierboven, zodat schema
+                  en zichtbare tekst altijd overeenkomen. */}
+              {faqItems && faqItems.length > 0 && (
+                <section aria-labelledby="artikel-faq" className="mt-14 border-t border-border/40 pt-10">
+                  <h2 id="artikel-faq" className="text-2xl md:text-[28px] font-bold mb-6">
+                    Veelgestelde vragen
+                  </h2>
+                  <dl className="space-y-5">
+                    {faqItems.map((f) => (
+                      <div key={f.question} className="rounded-xl border border-border/50 bg-secondary/30 p-5">
+                        <dt className="font-semibold text-foreground mb-2">
+                          {resolveFiscaleTokens(f.question)}
+                        </dt>
+                        <dd className="text-slate-700 leading-relaxed">
+                          {resolveFiscaleTokens(f.answer)}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </section>
+              )}
 
               {showCommercialCTA ? (
                 <div className="mt-12">
