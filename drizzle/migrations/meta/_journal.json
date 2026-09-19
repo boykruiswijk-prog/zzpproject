@@ -8,6 +8,13 @@
       "when": 1789816957238,
       "tag": "0000_strict_certificate_storage_policy",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789817477477,
+      "tag": "0001_form_rate_limit_and_guarded_public_inserts",
+      "breakpoints": true
     }
   ]
 }

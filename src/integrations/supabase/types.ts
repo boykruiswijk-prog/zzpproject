@@ -836,6 +836,27 @@ export type Database = {
         }
         Relationships: []
       }
+      form_rate_limit: {
+        Row: {
+          created_at: string
+          id: string
+          ip: string
+          kind: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip: string
+          kind: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip?: string
+          kind?: string
+        }
+        Relationships: []
+      }
       integratie_config: {
         Row: {
           aangemaakt_op: string
@@ -1347,6 +1368,30 @@ export type Database = {
           verzekerd_bedrag?: string | null
           verzekering_type?: string | null
           voornaam?: string
+        }
+        Relationships: []
+      }
+      login_attempts: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          ip: string | null
+          succes: boolean
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          ip?: string | null
+          succes?: boolean
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          ip?: string | null
+          succes?: boolean
         }
         Relationships: []
       }
