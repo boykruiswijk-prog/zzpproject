@@ -44,6 +44,7 @@ export function OnlineAanvraagDialog({
 }: OnlineAanvraagDialogProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const guard = useFormGuard();
   const [isCompleted, setIsCompleted] = useState(false);
   const { toast } = useToast();
 
@@ -192,7 +193,7 @@ export function OnlineAanvraagDialog({
       console.error("Error submitting lead:", error);
       toast({
         title: "Er ging iets mis",
-        description: "Probeer het later opnieuw of neem telefonisch contact op.",
+        description: error instanceof PublicFormError ? error.message : "Probeer het later opnieuw of neem telefonisch contact op.",
         variant: "destructive",
       });
     } finally {
@@ -274,6 +275,8 @@ export function OnlineAanvraagDialog({
             Sluit je verzekering direct online af. Vul onderstaande gegevens in en ontvang binnen 1 werkdag je polis.
           </DialogDescription>
         </DialogHeader>
+
+        <HoneypotField guard={guard} />
 
         {/* Progress steps */}
         <div className="flex items-center justify-between mb-6 mt-2">
