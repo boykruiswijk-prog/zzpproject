@@ -167,7 +167,8 @@ async function syncScreeningNaarExact(supabase: any, aanvraag: any, bedrag: numb
     }),
   });
   if (!invoiceRes.ok) throw new Error(`SalesInvoice ${invoiceRes.status}: ${await invoiceRes.text()}`);
-  const invoiceId = (await invoiceRes.json()).d.InvoiceID ?? (await Promise.resolve(null));
+  const invoiceJson = await invoiceRes.json();
+  const invoiceId = invoiceJson?.d?.InvoiceID ?? invoiceJson?.d?.ID ?? null;
 
   await supabase
     .from("screening_aanvragen")
