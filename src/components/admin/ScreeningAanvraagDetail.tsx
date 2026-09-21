@@ -20,7 +20,21 @@ export interface ScreeningAanvraagFull {
   notities: string | null;
   aangemeld_op: string;
   bijgewerkt_op: string;
+  iban: string | null;
+  rekeninghouder: string | null;
+  incasso_akkoord: boolean;
+  incasso_akkoord_op: string | null;
+  bedrag: number | null;
+  incasso_status: string;
+  exact_status: string;
+  exact_fout: string | null;
 }
+
+const INCASSO_STATUS_LABELS: Record<string, string> = {
+  handmatig_te_verwerken: "Handmatig te verwerken",
+  in_behandeling: "In behandeling bij Exact",
+  verwerkt: "Verwerkt",
+};
 
 export const SCREENING_STATUS_COLOR: Record<string, string> = {
   nieuw: "bg-muted text-muted-foreground",
