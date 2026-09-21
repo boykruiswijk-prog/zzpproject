@@ -712,6 +712,16 @@ Deno.serve(async (req) => {
     } catch { return String(lead.ingangsdatum); }
   })();
 
+  // dd-mm-jjjj, zelfde notatie als ingangFmt — defensief: alleen tonen als akkoord waar is.
+  const sepaAkkoordFmt = (() => {
+    if (!lead.sepa_akkoord || !lead.sepa_akkoord_datum) return null;
+    try {
+      const d = new Date(lead.sepa_akkoord_datum);
+      if (Number.isNaN(d.getTime())) return null;
+      return `${String(d.getDate()).padStart(2, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${d.getFullYear()}`;
+    } catch { return null; }
+  })();
+
   const accountPayload = {
     Name: String(lead.bedrijfsnaam),
     ChamberOfCommerce: kvk,
@@ -727,7 +737,8 @@ Deno.serve(async (req) => {
       `Online aanvraag via zpzaken.nl op ${new Date().toLocaleDateString("nl-NL")}\n` +
       `Gekozen pakket: ${lead.gekozen_pakket}\n` +
       `Branche: ${lead.branche}\n` +
-      `Ingangsdatum: ${ingangFmt}`,
+      `Ingangsdatum: ${ingangFmt}` +
+      (sepaAkkoordFmt ? `\nSEPA-incasso akkoord: Ja, op ${sepaAkkoordFmt}` : ""),
   };
 
   // ── Stap D: Account aanmaken (skip bij reuse van bestaande relatie) ──
