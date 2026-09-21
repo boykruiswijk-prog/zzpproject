@@ -20,7 +20,21 @@ export interface ScreeningAanvraagFull {
   notities: string | null;
   aangemeld_op: string;
   bijgewerkt_op: string;
+  iban: string | null;
+  rekeninghouder: string | null;
+  incasso_akkoord: boolean;
+  incasso_akkoord_op: string | null;
+  bedrag: number | null;
+  incasso_status: string;
+  exact_status: string;
+  exact_fout: string | null;
 }
+
+const INCASSO_STATUS_LABELS: Record<string, string> = {
+  handmatig_te_verwerken: "Handmatig te verwerken",
+  in_behandeling: "In behandeling bij Exact",
+  verwerkt: "Verwerkt",
+};
 
 export const SCREENING_STATUS_COLOR: Record<string, string> = {
   nieuw: "bg-muted text-muted-foreground",
@@ -110,6 +124,27 @@ export function ScreeningAanvraagDetail({ aanvraag }: { aanvraag: ScreeningAanvr
             />
           </>
         )}
+      </div>
+      <div>
+        <div className="text-muted-foreground text-xs mb-2 font-medium">Incasso-akkoord</div>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Bedrag" value={aanvraag.bedrag != null ? `€ ${aanvraag.bedrag},-` : "—"} />
+          <Field
+            label="Akkoord gegeven"
+            value={
+              aanvraag.incasso_akkoord
+                ? `Ja${aanvraag.incasso_akkoord_op ? ` — ${formatDateNL(aanvraag.incasso_akkoord_op)}` : ""}`
+                : "Nee"
+            }
+          />
+          <Field label="Rekeninghouder" value={aanvraag.rekeninghouder} />
+          <Field label="IBAN" value={aanvraag.iban ? <span className="uppercase tracking-wider">{aanvraag.iban}</span> : "—"} />
+          <Field
+            label="Incassostatus"
+            value={INCASSO_STATUS_LABELS[aanvraag.incasso_status] ?? aanvraag.incasso_status}
+          />
+          {aanvraag.exact_fout && <Field label="Exact-foutmelding" value={aanvraag.exact_fout} />}
+        </div>
       </div>
       {aanvraag.notities && (
         <div>

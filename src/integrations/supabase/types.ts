@@ -1818,17 +1818,28 @@ export type Database = {
         Row: {
           aangemeld_op: string
           achternaam: string
+          bedrag: number | null
           bedrijfsnaam: string | null
           beroep: string | null
           bijgewerkt_op: string
           email: string
+          exact_fout: string | null
+          exact_relatie_id: string | null
+          exact_status: string
+          exact_sync_op: string | null
+          exact_transactie_id: string | null
+          iban: string | null
           id: string
+          incasso_akkoord: boolean
+          incasso_akkoord_op: string | null
+          incasso_status: string
           kvk_nummer: string | null
           notities: string | null
           otentica_flow_id: string | null
           otentica_rapport_url: string | null
           otentica_status: string
           otentica_webhook_data: Json | null
+          rekeninghouder: string | null
           screening_type: string | null
           sector: string | null
           status: string
@@ -1838,17 +1849,28 @@ export type Database = {
         Insert: {
           aangemeld_op?: string
           achternaam: string
+          bedrag?: number | null
           bedrijfsnaam?: string | null
           beroep?: string | null
           bijgewerkt_op?: string
           email: string
+          exact_fout?: string | null
+          exact_relatie_id?: string | null
+          exact_status?: string
+          exact_sync_op?: string | null
+          exact_transactie_id?: string | null
+          iban?: string | null
           id?: string
+          incasso_akkoord?: boolean
+          incasso_akkoord_op?: string | null
+          incasso_status?: string
           kvk_nummer?: string | null
           notities?: string | null
           otentica_flow_id?: string | null
           otentica_rapport_url?: string | null
           otentica_status?: string
           otentica_webhook_data?: Json | null
+          rekeninghouder?: string | null
           screening_type?: string | null
           sector?: string | null
           status?: string
@@ -1858,17 +1880,28 @@ export type Database = {
         Update: {
           aangemeld_op?: string
           achternaam?: string
+          bedrag?: number | null
           bedrijfsnaam?: string | null
           beroep?: string | null
           bijgewerkt_op?: string
           email?: string
+          exact_fout?: string | null
+          exact_relatie_id?: string | null
+          exact_status?: string
+          exact_sync_op?: string | null
+          exact_transactie_id?: string | null
+          iban?: string | null
           id?: string
+          incasso_akkoord?: boolean
+          incasso_akkoord_op?: string | null
+          incasso_status?: string
           kvk_nummer?: string | null
           notities?: string | null
           otentica_flow_id?: string | null
           otentica_rapport_url?: string | null
           otentica_status?: string
           otentica_webhook_data?: Json | null
+          rekeninghouder?: string | null
           screening_type?: string | null
           sector?: string | null
           status?: string
