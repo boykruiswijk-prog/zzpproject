@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { formatDateNL } from "@/lib/dateFormat";
+import { useIntegratie } from "@/hooks/useIntegratie";
 
 export interface ScreeningAanvraagFull {
   id: string;
@@ -56,6 +57,8 @@ export function ScreeningAanvraagDetailHeader({ aanvraag }: { aanvraag: Screenin
 }
 
 export function ScreeningAanvraagDetail({ aanvraag }: { aanvraag: ScreeningAanvraagFull }) {
+  // Otentica-velden alleen tonen zodra de koppeling bewust is aangezet.
+  const { enabled: otenticaAan } = useIntegratie("otentica");
   return (
     <div className="space-y-4 text-sm">
       <div className="grid grid-cols-2 gap-3">
@@ -84,25 +87,29 @@ export function ScreeningAanvraagDetail({ aanvraag }: { aanvraag: ScreeningAanvr
             </Badge>
           }
         />
-        <Field label="Otentica status" value={aanvraag.otentica_status?.replace("_", " ")} />
-        <Field label="Otentica flow ID" value={aanvraag.otentica_flow_id} />
-        <Field
-          label="Otentica rapport"
-          value={
-            aanvraag.otentica_rapport_url ? (
-              <a
-                href={aanvraag.otentica_rapport_url}
-                target="_blank"
-                rel="noreferrer"
-                className="text-primary underline"
-              >
-                Open rapport
-              </a>
-            ) : (
-              "—"
-            )
-          }
-        />
+        {otenticaAan && (
+          <>
+            <Field label="Otentica status" value={aanvraag.otentica_status?.replace("_", " ")} />
+            <Field label="Otentica flow ID" value={aanvraag.otentica_flow_id} />
+            <Field
+              label="Otentica rapport"
+              value={
+                aanvraag.otentica_rapport_url ? (
+                  <a
+                    href={aanvraag.otentica_rapport_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-primary underline"
+                  >
+                    Open rapport
+                  </a>
+                ) : (
+                  "—"
+                )
+              }
+            />
+          </>
+        )}
       </div>
       {aanvraag.notities && (
         <div>
