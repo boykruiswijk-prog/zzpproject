@@ -207,39 +207,46 @@ Deno.serve(async (req) => {
       await sendMail(data.email, "Aanvraag screening ontvangen | ZP Zaken", klantHtml);
     }
 
-    // 3. OTENTICA API — ACTIVEREN NA ONTVANGST API KEY
-    // const OTENTICA_API_KEY = Deno.env.get('OTENTICA_API_KEY')
-    // const OTENTICA_BASE_URL = 'https://api.otentica.nl/v1'
-    //
-    // if (OTENTICA_API_KEY) {
-    //   const response = await fetch(
-    //     `${OTENTICA_BASE_URL}/flows`,
-    //     {
-    //       method: 'POST',
-    //       headers: {
-    //         'Authorization': `Bearer ${OTENTICA_API_KEY}`,
-    //         'Content-Type': 'application/json'
-    //       },
-    //       body: JSON.stringify({
-    //         candidate: {
-    //           first_name: data.voornaam,
-    //           last_name: data.achternaam,
-    //           email: data.email,
-    //         },
-    //         checks: getChecksForType(data.screening_type),
-    //         webhook_url: 'https://zpzaken.nl/api/otentica-webhook'
-    //       })
-    //     }
-    //   )
-    //   const flow = await response.json()
-    //   await supabase
-    //     .from('screening_aanvragen')
-    //     .update({
-    //       otentica_flow_id: flow.id,
-    //       otentica_status: 'uitgenodigd'
-    //     })
-    //     .eq('id', aanvraag.id)
-    // }
+    // 3. OTENTICA — staat standaard UIT (integratie_config.otentica.enabled = false).
+    // Zolang de vlag uit staat wordt er niets naar Otentica gestuurd en blijft de
+    // aanvraag gewoon in de normale handmatige behandeling. Een fout in deze stap
+    // mag de aanvraag nooit laten mislukken.
+    const otenticaAan = await isIntegratieEnabled(supabase, "otentica");
+    const OTENTICA_API_KEY = Deno.env.get("OTENTICA_API_KEY");
+
+    if (otenticaAan && OTENTICA_API_KEY) {
+      try {
+        const res = await fetch("https://api.otentica.nl/v1/flows", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${OTENTICA_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            candidate: {
+              first_name: data.voornaam,
+              last_name: data.achternaam,
+              email: data.email,
+            },
+            checks: getChecksForType(data.screening_type),
+            webhook_url: `${Deno.env.get("SUPABASE_URL")}/functions/v1/otentica-webhook`,
+          }),
+        });
+        const flow = await res.json().catch(() => ({}));
+        if (res.ok && flow?.id) {
+          await supabase
+            .from("screening_aanvragen")
+            .update({ otentica_flow_id: flow.id, otentica_status: "uitgenodigd" })
+            .eq("id", aanvraag.id);
+        } else {
+          console.error("Otentica flow niet aangemaakt:", res.status, JSON.stringify(flow));
+        }
+      } catch (e) {
+        console.error("Otentica-aanroep mislukt (aanvraag blijft staan):", e);
+      }
+    } else if (!otenticaAan) {
+      console.log("Otentica-integratie staat uit — geen externe aanroep gedaan.");
+    }
 
     return new Response(
       JSON.stringify({ success: true, aanvraag_id: aanvraag.id }),
