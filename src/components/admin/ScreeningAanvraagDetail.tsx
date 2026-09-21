@@ -125,6 +125,27 @@ export function ScreeningAanvraagDetail({ aanvraag }: { aanvraag: ScreeningAanvr
           </>
         )}
       </div>
+      <div>
+        <div className="text-muted-foreground text-xs mb-2 font-medium">Incasso-akkoord</div>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Bedrag" value={aanvraag.bedrag != null ? `€ ${aanvraag.bedrag},-` : "—"} />
+          <Field
+            label="Akkoord gegeven"
+            value={
+              aanvraag.incasso_akkoord
+                ? `Ja${aanvraag.incasso_akkoord_op ? ` — ${formatDateNL(aanvraag.incasso_akkoord_op)}` : ""}`
+                : "Nee"
+            }
+          />
+          <Field label="Rekeninghouder" value={aanvraag.rekeninghouder} />
+          <Field label="IBAN" value={aanvraag.iban ? <span className="uppercase tracking-wider">{aanvraag.iban}</span> : "—"} />
+          <Field
+            label="Incassostatus"
+            value={INCASSO_STATUS_LABELS[aanvraag.incasso_status] ?? aanvraag.incasso_status}
+          />
+          {aanvraag.exact_fout && <Field label="Exact-foutmelding" value={aanvraag.exact_fout} />}
+        </div>
+      </div>
       {aanvraag.notities && (
         <div>
           <div className="text-muted-foreground text-xs mb-1">Notities</div>
