@@ -87,25 +87,29 @@ export function ScreeningAanvraagDetail({ aanvraag }: { aanvraag: ScreeningAanvr
             </Badge>
           }
         />
-        <Field label="Otentica status" value={aanvraag.otentica_status?.replace("_", " ")} />
-        <Field label="Otentica flow ID" value={aanvraag.otentica_flow_id} />
-        <Field
-          label="Otentica rapport"
-          value={
-            aanvraag.otentica_rapport_url ? (
-              <a
-                href={aanvraag.otentica_rapport_url}
-                target="_blank"
-                rel="noreferrer"
-                className="text-primary underline"
-              >
-                Open rapport
-              </a>
-            ) : (
-              "—"
-            )
-          }
-        />
+        {otenticaAan && (
+          <>
+            <Field label="Otentica status" value={aanvraag.otentica_status?.replace("_", " ")} />
+            <Field label="Otentica flow ID" value={aanvraag.otentica_flow_id} />
+            <Field
+              label="Otentica rapport"
+              value={
+                aanvraag.otentica_rapport_url ? (
+                  <a
+                    href={aanvraag.otentica_rapport_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-primary underline"
+                  >
+                    Open rapport
+                  </a>
+                ) : (
+                  "—"
+                )
+              }
+            />
+          </>
+        )}
       </div>
       {aanvraag.notities && (
         <div>
