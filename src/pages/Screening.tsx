@@ -82,7 +82,24 @@ const PAKKETTEN: Array<{
   },
 ];
 
-const STAPPEN = ["Jouw gegevens", "Screening kiezen", "Bevestiging"];
+const STAPPEN = ["Jouw gegevens", "Screening kiezen", "Incasso", "Bevestiging"];
+
+const PAKKET_BEDRAGEN: Record<ScreeningType, number> = {
+  basis: 49,
+  uitgebreid: 129,
+  compleet: 179,
+};
+
+// IBAN-validatie (lengte + mod-97), zelfde strengheid als de BAV-aanmelding.
+const isValidIban = (raw: string) => {
+  const iban = raw.replace(/\s/g, "").toUpperCase();
+  if (!/^[A-Z]{2}\d{2}[A-Z0-9]{10,30}$/.test(iban)) return false;
+  const herschikt = iban.slice(4) + iban.slice(0, 4);
+  const numeriek = herschikt.replace(/[A-Z]/g, (c) => String(c.charCodeAt(0) - 55));
+  let rest = 0;
+  for (const cijfer of numeriek) rest = (rest * 10 + Number(cijfer)) % 97;
+  return rest === 1;
+};
 
 export default function Screening() {
   const [stap, setStap] = useState(1);
@@ -92,6 +109,7 @@ export default function Screening() {
   const [success, setSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [akkoord, setAkkoord] = useState(false);
+  const [incassoAkkoord, setIncassoAkkoord] = useState(false);
 
   const [form, setForm] = useState({
     voornaam: "",
@@ -102,6 +120,8 @@ export default function Screening() {
     kvk_nummer: "",
     beroep: "",
     sector: "",
+    iban: "",
+    rekeninghouder: "",
   });
   const [screeningType, setScreeningType] = useState<ScreeningType>("basis");
 
@@ -124,14 +144,25 @@ export default function Screening() {
     return Object.keys(e).length === 0;
   };
 
+  const validateIncasso = (): boolean => {
+    const e: Record<string, string> = {};
+    if (!form.iban.trim()) e.iban = "IBAN is verplicht";
+    else if (!isValidIban(form.iban)) e.iban = "Dit lijkt geen geldig IBAN";
+    if (!form.rekeninghouder.trim()) e.rekeninghouder = "Naam rekeninghouder is verplicht";
+    if (!incassoAkkoord) e.incassoAkkoord = "Je moet akkoord geven voor de eenmalige incasso";
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
   const next = () => {
     if (stap === 1 && !validateStap1()) return;
-    setStap((s) => Math.min(3, s + 1));
+    if (stap === 3 && !validateIncasso()) return;
+    setStap((s) => Math.min(4, s + 1));
   };
   const prev = () => setStap((s) => Math.max(1, s - 1));
 
   const handleSubmit = async () => {
-    if (!akkoord) return;
+    if (!akkoord || !incassoAkkoord || !isValidIban(form.iban)) return;
     setSubmitting(true);
     setSubmitError(null);
     try {
@@ -140,6 +171,9 @@ export default function Screening() {
           ...form,
           telefoon: form.telefoon || undefined,
           screening_type: screeningType,
+          iban: form.iban,
+          rekeninghouder: form.rekeninghouder,
+          incasso_akkoord: incassoAkkoord,
           hp: guard.honeypot,
           ms: guard.elapsedMs(),
         },
@@ -347,8 +381,64 @@ export default function Screening() {
                   </div>
                 )}
 
-                {/* STAP 3 */}
+                {/* STAP 3 — incasso-akkoord per dienst */}
                 {stap === 3 && (
+                  <div className="space-y-6">
+                    <h2 className="text-xl md:text-2xl mb-1">Betaling via eenmalige incasso</h2>
+                    <p className="text-sm text-muted-foreground">
+                      Je betaalt de screening via een eenmalige automatische incasso van{" "}
+                      <strong>€ {PAKKET_BEDRAGEN[screeningType]},-</strong> voor het pakket {gekozenPakket.titel}.
+                      Dit akkoord geldt alleen voor deze aanvraag — er wordt niets doorlopend afgeschreven.
+                    </p>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="rekeninghouder">Naam rekeninghouder *</Label>
+                        <Input
+                          id="rekeninghouder"
+                          value={form.rekeninghouder}
+                          onChange={(e) => update("rekeninghouder", e.target.value)}
+                          className={cn(errors.rekeninghouder && "border-destructive")}
+                        />
+                        {errors.rekeninghouder && <p className="text-xs mt-1" style={{ color: "#E53E2F" }}>{errors.rekeninghouder}</p>}
+                      </div>
+                      <div>
+                        <Label htmlFor="iban">IBAN *</Label>
+                        <Input
+                          id="iban"
+                          value={form.iban}
+                          onChange={(e) => update("iban", e.target.value)}
+                          placeholder="NL00 BANK 0000 0000 00"
+                          className={cn("uppercase tracking-wider", errors.iban && "border-destructive")}
+                        />
+                        {errors.iban && <p className="text-xs mt-1" style={{ color: "#E53E2F" }}>{errors.iban}</p>}
+                      </div>
+                    </div>
+                    <div className={cn("flex items-start gap-3 p-4 rounded-lg border bg-secondary", errors.incassoAkkoord ? "border-destructive" : "border-border")}>
+                      <Checkbox
+                        id="incassoAkkoord"
+                        checked={incassoAkkoord}
+                        onCheckedChange={(c) => {
+                          setIncassoAkkoord(c === true);
+                          if (errors.incassoAkkoord) setErrors((p) => { const n = { ...p }; delete n.incassoAkkoord; return n; });
+                        }}
+                        className="mt-0.5"
+                      />
+                      <Label htmlFor="incassoAkkoord" className="text-sm leading-relaxed cursor-pointer">
+                        Ik geef ZP Zaken toestemming om éénmalig € {PAKKET_BEDRAGEN[screeningType]},- voor deze screening
+                        van bovenstaande rekening af te schrijven.
+                      </Label>
+                    </div>
+                    {errors.incassoAkkoord && <p className="text-xs" style={{ color: "#E53E2F" }}>{errors.incassoAkkoord}</p>}
+
+                    <div className="flex justify-between pt-2">
+                      <Button variant="outline" onClick={prev}><ArrowLeft className="h-4 w-4" />Terug</Button>
+                      <Button variant="accent" onClick={next}>Volgende <ArrowRight className="h-4 w-4" /></Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* STAP 4 */}
+                {stap === 4 && (
                   <div className="space-y-6">
                     <h2 className="text-xl md:text-2xl mb-2">Bevestiging</h2>
                     <Card className="p-5 bg-secondary/50">
@@ -358,7 +448,10 @@ export default function Screening() {
                         <div><dt className="text-muted-foreground">E-mail</dt><dd className="font-medium break-all">{form.email}</dd></div>
                         <div><dt className="text-muted-foreground">Bedrijfsnaam</dt><dd className="font-medium">{form.bedrijfsnaam}</dd></div>
                         <div><dt className="text-muted-foreground">KvK-nummer</dt><dd className="font-medium">{form.kvk_nummer}</dd></div>
-                        <div className="sm:col-span-2"><dt className="text-muted-foreground">Gekozen pakket</dt><dd className="font-medium">{gekozenPakket.titel}</dd></div>
+                        <div><dt className="text-muted-foreground">Gekozen pakket</dt><dd className="font-medium">{gekozenPakket.titel}</dd></div>
+                        <div><dt className="text-muted-foreground">Bedrag (eenmalige incasso)</dt><dd className="font-medium">€ {PAKKET_BEDRAGEN[screeningType]},-</dd></div>
+                        <div><dt className="text-muted-foreground">Rekeninghouder</dt><dd className="font-medium">{form.rekeninghouder}</dd></div>
+                        <div><dt className="text-muted-foreground">IBAN</dt><dd className="font-medium uppercase tracking-wider">{form.iban}</dd></div>
                       </dl>
                     </Card>
 
