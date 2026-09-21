@@ -12,6 +12,7 @@ import {
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatDateNL } from "@/lib/dateFormat";
+import { useIntegratie } from "@/hooks/useIntegratie";
 
 interface ScreeningAanvraag {
   id: string;
@@ -42,6 +43,8 @@ const PAKKET_LABELS: Record<string, string> = {
 export default function AdminScreeningAanvragen() {
   const [aanvragen, setAanvragen] = useState<ScreeningAanvraag[]>([]);
   const [loading, setLoading] = useState(true);
+  const { enabled: otenticaAan } = useIntegratie("otentica");
+  const kolommen = otenticaAan ? 7 : 6;
 
   useEffect(() => {
     const load = async () => {
