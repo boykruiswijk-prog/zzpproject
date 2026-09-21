@@ -75,7 +75,7 @@ export default function AdminScreeningAanvragen() {
                 <TableHead>Bedrijfsnaam</TableHead>
                 <TableHead>Pakket</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Otentica status</TableHead>
+                {otenticaAan && <TableHead>Otentica status</TableHead>}
                 <TableHead>Aangemeld op</TableHead>
               </TableRow>
             </TableHeader>
