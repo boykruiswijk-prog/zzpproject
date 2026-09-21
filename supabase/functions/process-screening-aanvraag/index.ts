@@ -1,6 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2.39.0";
 import { createMailGate } from "../_shared/mail.ts";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
+import { isIntegratieEnabled } from "../_shared/integraties.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -27,8 +28,7 @@ const PAKKET_LABELS: Record<string, string> = {
   compleet: "Complete screening",
 };
 
-// Helper voor latere Otentica-integratie — niet actief
-// deno-lint-ignore no-unused-vars
+// Checks per pakket; alleen gebruikt wanneer de Otentica-integratie AAN staat.
 function getChecksForType(type: string): string[] {
   switch (type) {
     case "basis":
