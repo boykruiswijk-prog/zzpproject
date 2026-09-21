@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { formatDateNL } from "@/lib/dateFormat";
+import { useIntegratie } from "@/hooks/useIntegratie";
 
 export interface ScreeningAanvraagFull {
   id: string;
@@ -56,6 +57,8 @@ export function ScreeningAanvraagDetailHeader({ aanvraag }: { aanvraag: Screenin
 }
 
 export function ScreeningAanvraagDetail({ aanvraag }: { aanvraag: ScreeningAanvraagFull }) {
+  // Otentica-velden alleen tonen zodra de koppeling bewust is aangezet.
+  const { enabled: otenticaAan } = useIntegratie("otentica");
   return (
     <div className="space-y-4 text-sm">
       <div className="grid grid-cols-2 gap-3">
