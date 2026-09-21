@@ -81,9 +81,9 @@ export default function AdminScreeningAanvragen() {
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Laden...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={kolommen} className="text-center py-8 text-muted-foreground">Laden...</TableCell></TableRow>
               ) : aanvragen.length === 0 ? (
-                <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Nog geen aanvragen</TableCell></TableRow>
+                <TableRow><TableCell colSpan={kolommen} className="text-center py-8 text-muted-foreground">Nog geen aanvragen</TableCell></TableRow>
               ) : (
                 aanvragen.map((a) => (
                   <TableRow key={a.id}>
@@ -96,7 +96,9 @@ export default function AdminScreeningAanvragen() {
                         {a.status.replace("_", " ")}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{a.otentica_status.replace("_", " ")}</TableCell>
+                    {otenticaAan && (
+                      <TableCell className="text-sm text-muted-foreground">{a.otentica_status.replace("_", " ")}</TableCell>
+                    )}
                     <TableCell className="text-sm text-muted-foreground">
                       {formatDateNL(a.aangemeld_op)}
                     </TableCell>
