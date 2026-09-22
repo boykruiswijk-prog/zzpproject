@@ -55,6 +55,10 @@ export function CookieConsent() {
         // Check if consent version is outdated
         if (parsed.version !== COOKIE_CONSENT_VERSION) {
           setIsVisible(true);
+        } else {
+          // Geldige, actuele consent: voorkeuren doorgeven aan Consent Mode,
+          // zodat een terugkerende bezoeker niet opnieuw hoeft te klikken.
+          updateGtagConsent(parsed.analytics, parsed.marketing);
         }
       } catch {
         setIsVisible(true);
@@ -71,6 +75,7 @@ export function CookieConsent() {
       timestamp: new Date().toISOString(),
     };
     localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(consentData));
+    updateGtagConsent(prefs.analytics, prefs.marketing);
     setIsVisible(false);
   };
 
