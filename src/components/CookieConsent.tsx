@@ -3,8 +3,30 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Cookie, X } from "lucide-react";
 
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+    dataLayer?: unknown[];
+  }
+}
+
 const COOKIE_CONSENT_KEY = "zpzaken_cookie_consent";
 const COOKIE_CONSENT_VERSION = "1.0";
+
+/**
+ * Geeft de gekozen cookievoorkeuren door aan Google Consent Mode.
+ * Defensief: als gtag (nog) niet geladen is, gebeurt er niets.
+ */
+const updateGtagConsent = (analytics: boolean, marketing: boolean) => {
+  if (typeof window !== "undefined" && typeof window.gtag === "function") {
+    window.gtag("consent", "update", {
+      analytics_storage: analytics ? "granted" : "denied",
+      ad_storage: marketing ? "granted" : "denied",
+      ad_user_data: marketing ? "granted" : "denied",
+      ad_personalization: marketing ? "granted" : "denied",
+    });
+  }
+};
 
 interface CookiePreferences {
   necessary: boolean;
