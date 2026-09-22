@@ -61,6 +61,18 @@
     <meta name="geo.placename" content="Schiphol-Rijk" />
 
     <!-- Google Analytics 4 -->
+    <!-- Consent Mode v2: standaard niets opslaan totdat de bezoeker expliciet toestemming geeft in de cookiebanner -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        analytics_storage: 'denied',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        wait_for_update: 500
+      });
+    </script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-YY7YJFFEZN"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
