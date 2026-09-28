@@ -77,31 +77,31 @@ var SERVICES = [
   {
     key: "bav",
     name: "Beroepsaansprakelijkheidsverzekering (BAV)",
-    url: "https://zzpproject.lovable.app/verzekeringen",
+    url: "https://zpzaken.nl/verzekeringen",
     description: "Beroepsaansprakelijkheid voor zzp'ers, met focus op IT, consultancy, HR, marketing en coaches."
   },
   {
     key: "avb",
     name: "Bedrijfsaansprakelijkheidsverzekering (AVB)",
-    url: "https://zzpproject.lovable.app/verzekeringen",
+    url: "https://zpzaken.nl/verzekeringen",
     description: "AVB voor zzp'ers, veelal gecombineerd met BAV."
   },
   {
     key: "aov",
     name: "Arbeidsongeschiktheidsverzekering (AOV)",
-    url: "https://zzpproject.lovable.app/aov",
+    url: "https://zpzaken.nl/aov",
     description: "Inkomensbescherming bij arbeidsongeschiktheid."
   },
   {
     key: "wet-dba",
     name: "Wet DBA screening",
-    url: "https://zzpproject.lovable.app/dba-verificatie",
+    url: "https://zpzaken.nl/dba-verificatie",
     description: "DBA-check en certificering voor opdrachten van zzp'ers."
   },
   {
     key: "credit-control",
     name: "Credit control & factoring",
-    url: "https://zzpproject.lovable.app/credit-control",
+    url: "https://zpzaken.nl/credit-control",
     description: "Uitbetaling binnen 24 uur en dekking van insolventierisico."
   }
 ];

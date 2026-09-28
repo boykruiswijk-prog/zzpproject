@@ -2,6 +2,7 @@
 // en nog geen reminder ontvingen. Markeert hen daarna in DB.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { createMailGate } from "../_shared/mail.ts";
+import { COMPANY } from "../_shared/company.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -35,11 +36,16 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   // SECURITY: alleen de cron mag deze functie draaien (zelfde patroon als
-  // monthly-invoices-cron): CRON_SECRET via ?secret= of header x-cron-secret.
-  const cronSecret = Deno.env.get("CRON_SECRET") ?? "";
-  const reqUrl = new URL(req.url);
-  const providedSecret = reqUrl.searchParams.get("secret") ?? req.headers.get("x-cron-secret") ?? "";
-  if (!cronSecret || providedSecret !== cronSecret) {
+  // monthly-invoices-cron): alleen header x-cron-secret, getoetst tegen Vault.
+  const providedSecret = req.headers.get("x-cron-secret") ?? "";
+  const authClient = createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+  );
+  const { data: secretOk } = providedSecret
+    ? await authClient.rpc("verify_cron_secret", { p_secret: providedSecret })
+    : { data: false };
+  if (secretOk !== true) {
     return new Response(JSON.stringify({ error: "unauthorized" }), {
       status: 401,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -62,7 +68,7 @@ Deno.serve(async (req) => {
   for (const l of leads ?? []) {
     await sendMail(req, l.email, "Je polis is al ruim 3 maanden gepauzeerd",
       `<p>Hoi ${l.voornaam},</p><p>Je polis staat sinds ${l.pauze_start_datum} op pauze. Klaar om weer te starten? Log in op je portaal en klik op 'Hervatten'.</p>
-       <p><a href="https://zzpproject.lovable.app/portal/polis">Naar mijn polis</a></p>`);
+       <p><a href="${COMPANY.url}/portal/polis">Naar mijn polis</a></p>`);
     await supabase.from("leads").update({ pauze_reminder_verzonden_op: new Date().toISOString() }).eq("id", l.id);
     await supabase.from("polis_audit_log").insert({
       lead_id: l.id, actie: "reminder_verzonden", rol: "system",
