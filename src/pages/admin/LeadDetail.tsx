@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SepaMachtigingBewijsBlok } from "@/components/admin/SepaMachtigingBewijsBlok";
 
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
@@ -535,6 +536,7 @@ export default function AdminLeadDetail() {
             {lead.type === "verzekering_aanvraag" && lead.exact_account_id && (
               <LeadLifecyclePanel lead={lead} />
             )}
+            {lead.type === "verzekering_aanvraag" && <SepaMachtigingBewijsBlok bronId={lead.id} />}
             <Card>
               <CardHeader>
                 <CardTitle>Tijdlijn</CardTitle>
