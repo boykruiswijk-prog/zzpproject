@@ -2,6 +2,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { resolveEnvironment } from "../_shared/environment.ts";
 import { getFromAddress } from "../_shared/mail.ts";
+import { safeAppOrigin } from "../_shared/company.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -73,12 +74,8 @@ Deno.serve(async (req) => {
 
     // Bepaal de basis-URL voor de magic-link redirect dynamisch op basis van
     // de host waarop de app draait. Geen hardcoded productiedomein.
-    const originHeader = req.headers.get("origin");
-    const baseUrl = originHeader
-      ? originHeader.replace(/\/$/, "")
-      : env.isProduction
-        ? "https://zpzaken.nl"
-        : "https://zzpproject.lovable.app";
+    // Alleen Origins uit de vaste allowlist; anders https://zpzaken.nl.
+    const baseUrl = safeAppOrigin(req.headers.get("origin"));
     const redirectTo = `${baseUrl}${redirect}`;
 
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);

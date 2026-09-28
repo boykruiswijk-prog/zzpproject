@@ -68,18 +68,16 @@ async function captureExactError(label: string, res: Response) {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
-  // Auth: CRON_SECRET via header of query, OF service-role JWT.
-  const cronSecret = Deno.env.get("CRON_SECRET") ?? "";
+  // Auth: alleen header x-cron-secret, getoetst tegen Vault via verify_cron_secret.
   const url = new URL(req.url);
-  const providedSecret = url.searchParams.get("secret") ?? req.headers.get("x-cron-secret") ?? "";
-  if (!cronSecret || providedSecret !== cronSecret) {
-    return json({ error: "unauthorized" }, 401);
-  }
-
+  const providedSecret = req.headers.get("x-cron-secret") ?? "";
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
   );
+  if (!providedSecret) return json({ error: "unauthorized" }, 401);
+  const { data: secretOk } = await supabase.rpc("verify_cron_secret", { p_secret: providedSecret });
+  if (secretOk !== true) return json({ error: "unauthorized" }, 401);
 
   // force_date voor test-runs: ?force_date=2026-07-01
   const forceDate = url.searchParams.get("force_date");

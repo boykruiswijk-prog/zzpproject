@@ -408,7 +408,7 @@ Deno.serve(async (req) => {
             ${pauze_toelichting ? `<p><strong>Toelichting:</strong> ${pauze_toelichting}</p>` : ""}
             ${creditZin}
             <p>Klaar om weer te starten? Log in op je portaal en klik op 'Hervatten'. Je krijgt dan een nieuwe factuur voor de resterende dagen tot ${fmtNL(eind)}.</p>
-            <p><a href="https://zzpproject.lovable.app/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
+            <p><a href="${COMPANY.url}/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
           `)));
 
         mailResults.push(await sendMail(gate, ADMIN_EMAIL, `[Pauze] ${lead.voornaam} ${lead.achternaam}`,
@@ -522,7 +522,7 @@ Deno.serve(async (req) => {
             <p>Hoi ${lead.voornaam},</p>
             <p>Je polis is per <strong>${fmtNL(today)}</strong> weer actief. Je bent weer volledig gedekt.</p>
             ${factuurZin}
-            <p><a href="https://zzpproject.lovable.app/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
+            <p><a href="${COMPANY.url}/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
           `));
         await sendMail(gate, ADMIN_EMAIL, `[Hervat] ${lead.voornaam} ${lead.achternaam}`,
           mailShell("Polis hervat", `
@@ -742,7 +742,7 @@ Deno.serve(async (req) => {
             <p>Hoi ${lead.voornaam},</p>
             <p>Je polis is per <strong>${fmtNL(today)}</strong> weer actief.</p>
             ${functieGewijzigd ? `<p>We hebben je nieuwe functie geregistreerd: <strong>${nieuwe_functie}</strong></p>` : ""}
-            <p><a href="https://zzpproject.lovable.app/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
+            <p><a href="${COMPANY.url}/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
           `));
         await sendMail(gate, ADMIN_EMAIL, `[Heractivering] ${lead.voornaam} ${lead.achternaam}`,
           mailShell("Polis geheractiveerd", `

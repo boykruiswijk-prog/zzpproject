@@ -1,6 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { getFromAddress } from "../_shared/mail.ts";
+import { safeAppOrigin } from "../_shared/company.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -68,7 +69,7 @@ Deno.serve(async (req) => {
 
     if (inviteErr) throw inviteErr;
 
-    const origin = req.headers.get("origin") || "https://zzpproject.lovable.app";
+    const origin = safeAppOrigin(req.headers.get("origin"));
     const acceptUrl = `${origin}/portal/invite/${invite.token}`;
 
     // Verstuur via Resend (indien beschikbaar) — anders return alleen URL
