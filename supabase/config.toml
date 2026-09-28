@@ -67,3 +67,6 @@ project_id = "eugkavokktjwpqaqlwsj"
  # Inlogbescherming: houdt mislukte pogingen bij, moet vóór login bereikbaar zijn.
  [functions.login-guard]
  verify_jwt = false
+
+[functions.exact-email-bulk]
+verify_jwt = false

@@ -29,6 +29,13 @@
       "when": 1790600824463,
       "tag": "0003_sepa_machtiging_bewijs",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790601618643,
+      "tag": "0004_create_exact_email_import",
+      "breakpoints": true
     }
   ]
 }
