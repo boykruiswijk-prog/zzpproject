@@ -2,6 +2,15 @@ import { createClient } from "npm:@supabase/supabase-js@2.39.0";
 import { createMailGate } from "../_shared/mail.ts";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
 import { isIntegratieEnabled } from "../_shared/integraties.ts";
+import {
+  KLANTMELDING_INCASSANT_ONTBREEKT,
+  bouwMachtigingData,
+  incassantIdOntbreekt,
+  legBewijsVast,
+  ontbrekendeAdresvelden,
+  verstuurMachtigingBevestiging,
+} from "../_shared/sepaBewijs.ts";
+import { isUuid, mandaatkenmerkVoor, redenScreening } from "../_shared/sepaMachtiging.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -24,6 +33,16 @@ interface ScreeningSubmission {
   iban?: string;
   rekeninghouder?: string;
   incasso_akkoord?: boolean;
+  // Adres rekeninghouder (verplicht voor de SEPA-machtiging).
+  adres_straat?: string;
+  adres_huisnummer?: string;
+  adres_postcode?: string;
+  adres_plaats?: string;
+  adres_land?: string;
+  // Vooraf (client-side) gegenereerde aanvraag-UUID; basis voor het mandaatkenmerk.
+  aanvraag_id?: string;
+  client_akkoord_op?: string;
+  pagina_url?: string;
 }
 
 const PAKKET_LABELS: Record<string, string> = {
@@ -148,6 +167,29 @@ async function syncScreeningNaarExact(supabase: any, aanvraag: any, bedrag: numb
       }),
     });
     if (!bankRes.ok) throw new Error(`BankAccount ${bankRes.status}: ${await bankRes.text()}`);
+    const bankId = (await bankRes.json().catch(() => ({})))?.d?.ID;
+
+    // Eenmalig Core-mandaat. Waarden geverifieerd in de Exact Online REST-documentatie:
+    // https://start.exactonline.nl/docs/HlpRestAPIResourcesDetails.aspx?name=CashflowDirectDebitMandates
+    //   Type: 0 = Core, 1 = B2B, 2 = bottomline (UK only)
+    //   PaymentType: 0 = One-off payment, 1 = Recurrent payment, 2 = AdHoc (UK only)
+    if (bankId) {
+      const { data: bewijs } = await supabase.from("sepa_machtiging_bewijs")
+        .select("mandaatkenmerk, akkoord_op").eq("bron_id", aanvraag.id).eq("dienst", "screening").maybeSingle();
+      const mRes = await fetch(`${BASE_URL}/api/v1/${divisionCode}/cashflow/DirectDebitMandates`, {
+        method: "POST",
+        headers: apiHeaders,
+        body: JSON.stringify({
+          Account: accountId,
+          BankAccount: bankId,
+          Reference: bewijs?.mandaatkenmerk ?? mandaatkenmerkVoor(aanvraag.id),
+          SignatureDate: new Date(bewijs?.akkoord_op ?? aanvraag.incasso_akkoord_op).toISOString(),
+          Type: 0,
+          PaymentType: 0,
+        }),
+      });
+      if (!mRes.ok) throw new Error(`DirectDebitMandate ${mRes.status}: ${await mRes.text()}`);
+    }
   }
 
   const itemId = Deno.env.get("EXACT_ITEM_ID_SCREENING");
@@ -226,6 +268,33 @@ Deno.serve(async (req) => {
       );
     }
 
+    // SEPA-machtiging: nooit vastleggen zonder incassant-ID.
+    if (incassantIdOntbreekt()) {
+      console.error("process-screening-aanvraag: COMPANY.incassantId is leeg — aanvraag geweigerd, geen machtiging vastgelegd.");
+      return new Response(
+        JSON.stringify({ success: false, error: KLANTMELDING_INCASSANT_ONTBREEKT, reason: "incassant_id_ontbreekt" }),
+        { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const adres = {
+      straat: data.adres_straat ?? "",
+      huisnummer: data.adres_huisnummer ?? "",
+      postcode: data.adres_postcode ?? "",
+      plaats: data.adres_plaats ?? "",
+      land: data.adres_land ?? "",
+    };
+    const machtigingFout =
+      !isUuid(data.aanvraag_id) ? "Ongeldig aanvraagkenmerk"
+      : !(data.rekeninghouder ?? "").trim() ? "Naam rekeninghouder is verplicht"
+      : ontbrekendeAdresvelden(adres).length ? `Adres rekeninghouder onvolledig: ${ontbrekendeAdresvelden(adres).join(", ")}`
+      : null;
+    if (machtigingFout) {
+      return new Response(
+        JSON.stringify({ success: false, error: machtigingFout }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Anti-spam: honeypot, invultijd en IP-limiet.
     const guard = await guardPublicSubmission(req, supabase, {
       hp: (data as Record<string, unknown>).hp,
@@ -243,12 +312,32 @@ Deno.serve(async (req) => {
     const pakketLabel = PAKKET_LABELS[data.screening_type];
     const bedrag = PAKKET_BEDRAGEN[data.screening_type];
     const volledigeNaam = `${data.voornaam} ${data.achternaam}`.trim();
-    const rekeninghouder = (data.rekeninghouder ?? "").trim() || volledigeNaam;
+    const rekeninghouder = (data.rekeninghouder ?? "").trim();
+    const aanvraagId = data.aanvraag_id as string;
+
+    // 0. Bewijsrecord SEPA-machtiging (eerst; faalt dit, dan faalt de aanvraag)
+    const machtiging = bouwMachtigingData({
+      type: "eenmalig",
+      bronId: aanvraagId,
+      reden: redenScreening(pakketLabel, bedrag),
+      debiteurNaam: rekeninghouder,
+      debiteurAdres: adres,
+      iban: ibanSchoon,
+    });
+    const bewijs = await legBewijsVast(supabase, req, {
+      dienst: "screening",
+      bronTabel: "screening_aanvragen",
+      bronId: aanvraagId,
+      data: machtiging,
+      clientAkkoordOp: data.client_akkoord_op,
+      paginaUrl: data.pagina_url,
+    });
 
     // 1. Insert in screening_aanvragen (IBAN alleen in de eigen kolom, nooit in vrije tekst)
     const { data: aanvraag, error: insertError } = await supabase
       .from("screening_aanvragen")
       .insert({
+        id: aanvraagId,
         voornaam: data.voornaam,
         achternaam: data.achternaam,
         email: data.email,
@@ -264,7 +353,7 @@ Deno.serve(async (req) => {
         iban: ibanSchoon,
         rekeninghouder,
         incasso_akkoord: true,
-        incasso_akkoord_op: new Date().toISOString(),
+        incasso_akkoord_op: bewijs.akkoord_op,
         bedrag,
         incasso_status: "handmatig_te_verwerken",
         exact_status: "wachtend",
@@ -365,6 +454,17 @@ Deno.serve(async (req) => {
       `;
       await sendMail(data.email, "Aanvraag screening ontvangen | ZP Zaken", klantHtml);
     }
+
+    // 2b. Bevestiging SEPA-machtiging (PDF + mail; faalt nooit hard)
+    await verstuurMachtigingBevestiging(supabase, req, {
+      fnName: "process-screening-aanvraag",
+      leadType: "screening-sepa-machtiging",
+      record: bewijs,
+      data: machtiging,
+      email: data.email,
+      aanhef: volledigeNaam,
+      bedragOfReden: machtiging.reden,
+    });
 
     // 3. INCASSO VIA EXACT ONLINE — staat standaard UIT
     // (integratie_config.exact_online.enabled = false). Zolang de vlag uit staat wordt
