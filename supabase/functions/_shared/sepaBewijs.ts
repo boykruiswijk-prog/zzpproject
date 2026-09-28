@@ -163,7 +163,7 @@ export async function verstuurMachtigingBevestiging(supabase: any, req: Request,
 
     const pad = `${record.mandaatkenmerk}.pdf`;
     const up = await supabase.storage.from("sepa-machtigingen")
-      .upload(pad, new Blob([pdfBytes], { type: "application/pdf" }), { contentType: "application/pdf", upsert: false });
+      .upload(pad, new Blob([pdfBytes as unknown as BlobPart], { type: "application/pdf" }), { contentType: "application/pdf", upsert: false });
     if (up.error) console.error("SEPA-PDF upload mislukt:", up.error.message);
 
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");

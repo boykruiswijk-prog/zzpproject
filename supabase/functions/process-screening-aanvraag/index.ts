@@ -297,8 +297,8 @@ Deno.serve(async (req) => {
 
     // Anti-spam: honeypot, invultijd en IP-limiet.
     const guard = await guardPublicSubmission(req, supabase, {
-      hp: (data as Record<string, unknown>).hp,
-      ms: (data as Record<string, unknown>).ms,
+      hp: (data as unknown as Record<string, unknown>).hp,
+      ms: (data as unknown as Record<string, unknown>).ms,
       kind: "screening",
     });
     if (!guard.ok) {
