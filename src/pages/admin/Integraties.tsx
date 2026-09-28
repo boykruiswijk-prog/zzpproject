@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Loader2, CheckCircle2, XCircle, RefreshCw, ExternalLink } from "lucide-react";
+import { ExactEmailImportBlock } from "@/components/admin/ExactEmailImportBlock";
 
 const ADMIN_EMAIL = "boy.kruiswijk@zpzaken.nl";
 
@@ -92,8 +93,24 @@ export default function Integraties() {
     if (isAdmin) loadAll();
   }, [isAdmin]);
 
+  const [isSup, setIsSup] = useState(false);
+  useEffect(() => {
+    if (!user) return;
+    supabase.rpc("is_supervisor_or_admin", { _user_id: user.id }).then(({ data }) => setIsSup(data === true));
+  }, [user]);
+
   if (!user) return null;
   if (!isAdmin) {
+    if (isSup) {
+      return (
+        <AdminLayout>
+          <div className="space-y-6 max-w-5xl">
+            <h1 className="text-3xl font-bold">Integraties</h1>
+            <ExactEmailImportBlock />
+          </div>
+        </AdminLayout>
+      );
+    }
     return (
       <AdminLayout>
         <div className="text-center py-12">
@@ -375,6 +392,7 @@ export default function Integraties() {
                 )}
               </CardContent>
             </Card>
+            <ExactEmailImportBlock />
           </>
         )}
       </div>
