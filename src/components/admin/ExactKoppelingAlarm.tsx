@@ -7,8 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 export function ExactKoppelingAlarm() {
   const [fout, setFout] = useState<string | null>(null);
   useEffect(() => {
-    // deno-lint-ignore no-explicit-any
-    (supabase.rpc as any)("get_exact_koppeling_fout").then(({ data }: { data: string | null }) => setFout(data ?? null));
+    supabase.rpc("get_exact_koppeling_fout").then(({ data }) => setFout((data as string | null) ?? null));
   }, []);
   if (!fout) return null;
   return (
