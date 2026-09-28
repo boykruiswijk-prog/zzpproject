@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { SepaMachtigingBlok, bouwFrontendMachtiging } from "@/components/shared/SepaMachtigingBlok";
+import { mandaatkenmerkVoor, redenBav } from "@/lib/sepaMachtiging";
 import { trackBeginWizard, trackWizardComplete } from "@/lib/tracking";
 import { formatDateNL } from "@/lib/dateFormat";
 import { Link } from "react-router-dom";
@@ -56,6 +58,9 @@ export function BAVApplicationModule() {
    const [startDate, setStartDate] = useState<string>("");
    const [viaBemiddelaar, setViaBemiddelaar] = useState<boolean | null>(null);
    const [incassoAkkoord, setIncassoAkkoord] = useState(false);
+   const [clientAkkoordOp, setClientAkkoordOp] = useState<string | null>(null);
+   // Lead-UUID vooraf bepalen: basis voor het mandaatkenmerk dat de klant te zien krijgt.
+   const [leadId] = useState<string>(() => crypto.randomUUID());
    const [slotverklaringAkkoord, setSlotverklaringAkkoord] = useState(false);
    const [errors, setErrors] = useState<ValidationErrors>({});
    const [isSubmitted, setIsSubmitted] = useState(false);
@@ -70,7 +75,8 @@ export function BAVApplicationModule() {
     voornaam: "", achternaam: "", email: "", telefoon: "",
     opdrachtgever: "", bemiddelaarNaam: "",
     iban: "",
-    adresStraat: "", adresHuisnummer: "", adresPostcode: "", adresPlaats: "",
+    adresStraat: "", adresHuisnummer: "", adresPostcode: "", adresPlaats: "", adresLand: "Nederland",
+    rekeninghouder: "",
   });
 
   const VERZEKERINGSKAART_DEFAULT = "/documenten/verzekeringskaart-zakelijke-dienstverlening.pdf";
@@ -153,7 +159,9 @@ export function BAVApplicationModule() {
      if (step === 4) {
        if (!formData.iban.trim()) newErrors.iban = t("bavApp.valIban");
        else if (!isValidIban(formData.iban)) newErrors.iban = t("bavApp.valIbanInvalid");
-       if (!incassoAkkoord) newErrors.incassoAkkoord = t("bavApp.valIncasso");
+       if (!formData.rekeninghouder.trim()) newErrors.rekeninghouder = "Vul de naam van de rekeninghouder in";
+       if (!formData.adresLand.trim()) newErrors.adresLand = "Vul het land in";
+       if (!incassoAkkoord) newErrors.incassoAkkoord = "Vink het vakje aan om de SEPA-machtiging te geven";
      }
 
     if (step === 5) {
@@ -195,9 +203,13 @@ export function BAVApplicationModule() {
            adres_huisnummer: formData.adresHuisnummer || null,
            adres_postcode: formData.adresPostcode || null,
            adres_plaats: formData.adresPlaats || null,
+           adres_land: formData.adresLand || null,
            iban: formData.iban || null,
            sepa_akkoord: incassoAkkoord,
-           rekeninghouder: `${formData.voornaam} ${formData.achternaam}`.trim(),
+           rekeninghouder: formData.rekeninghouder.trim(),
+           lead_id: leadId,
+           client_akkoord_op: clientAkkoordOp,
+           pagina_url: window.location.href,
            vereist_handmatige_beoordeling: parseInt(formData.aantalMedewerkers || "0") > 3,
            opmerkingen: [
              formData.opdrachtgever ? `Opdrachtgever: ${formData.opdrachtgever}` : null,
@@ -215,6 +227,10 @@ export function BAVApplicationModule() {
          const ctx = (error as { context?: Response }).context;
          if (ctx?.status === 409) {
            setExistingCustomerOpen(true);
+           return;
+         }
+         if (ctx?.status === 503) {
+           toast({ title: "Aanmelden tijdelijk niet mogelijk", description: "Aanmelden is tijdelijk niet mogelijk, bel 020 - 457 3077", variant: "destructive" });
            return;
          }
          throw error;
@@ -657,18 +673,30 @@ export function BAVApplicationModule() {
                         <Input id="iban" name="iban" value={formData.iban} onChange={handleInputChange} placeholder="NL00 BANK 0000 0000 00" className={cn("uppercase tracking-wider", errors.iban && "border-destructive")} />
                         <FieldError message={errors.iban} />
                       </div>
-                      <div className={cn("flex items-start gap-3 p-4 rounded-lg border bg-secondary", errors.incassoAkkoord ? "border-destructive" : "border-border")}>
-                        <Checkbox
-                          id="incassoAkkoord"
-                          checked={incassoAkkoord}
-                          onCheckedChange={(checked) => { setIncassoAkkoord(checked === true); if (errors.incassoAkkoord) setErrors(prev => { const n = { ...prev }; delete n.incassoAkkoord; return n; }); }}
-                          className="mt-0.5"
-                        />
-                        <Label htmlFor="incassoAkkoord" className="text-sm leading-relaxed cursor-pointer">
-                          {t("home.bavIncassoAgree")}
-                        </Label>
+                      <div>
+                        <Label htmlFor="rekeninghouder">Naam rekeninghouder *</Label>
+                        <Input id="rekeninghouder" name="rekeninghouder" value={formData.rekeninghouder} onChange={handleInputChange} placeholder={formData.bedrijfsnaam || "Naam zoals bij de bank bekend"} className={cn(errors.rekeninghouder && "border-destructive")} />
+                        <FieldError message={errors.rekeninghouder} />
                       </div>
-                      <FieldError message={errors.incassoAkkoord} />
+                      <div>
+                        <Label htmlFor="adresLand">Land *</Label>
+                        <Input id="adresLand" name="adresLand" value={formData.adresLand} onChange={handleInputChange} className={cn(errors.adresLand && "border-destructive")} />
+                        <FieldError message={errors.adresLand} />
+                        <p className="text-xs text-muted-foreground mt-1">Als adres van de rekeninghouder gebruiken we het bedrijfsadres uit stap 2.</p>
+                      </div>
+                      <SepaMachtigingBlok
+                        data={bouwFrontendMachtiging({
+                          type: "doorlopend",
+                          mandaatkenmerk: mandaatkenmerkVoor(leadId),
+                          reden: redenBav(),
+                          debiteurNaam: formData.rekeninghouder,
+                          debiteurAdres: { straat: formData.adresStraat, huisnummer: formData.adresHuisnummer, postcode: formData.adresPostcode, plaats: formData.adresPlaats, land: formData.adresLand },
+                          iban: formData.iban,
+                        })}
+                        checked={incassoAkkoord}
+                        onCheckedChange={(v) => { setIncassoAkkoord(v); setClientAkkoordOp(v ? new Date().toISOString() : null); if (errors.incassoAkkoord) setErrors(prev => { const n = { ...prev }; delete n.incassoAkkoord; return n; }); }}
+                        error={errors.incassoAkkoord}
+                      />
                     </div>
                   </motion.div>
                 )}
@@ -713,7 +741,7 @@ export function BAVApplicationModule() {
                         <h4 className="font-medium mb-3">{t("home.bavStep4")}</h4>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("home.bavIban")}</span><span className="uppercase tracking-wider">{formData.iban || "-"}</span></div>
-                          <div className="flex justify-between"><span className="text-muted-foreground">{t("home.bavIncassoAgree")}</span><span>{incassoAkkoord ? "✓" : "✗"}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">Doorlopende SEPA-machtiging</span><span>{incassoAkkoord ? `Gegeven (kenmerk ${mandaatkenmerkVoor(leadId)})` : "Niet gegeven"}</span></div>
                         </div>
                       </div>
 
