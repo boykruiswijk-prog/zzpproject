@@ -1955,6 +1955,84 @@ export type Database = {
         }
         Relationships: []
       }
+      sepa_machtiging_bewijs: {
+        Row: {
+          akkoord_op: string
+          bevestigingsmail_id: string | null
+          bevestigingsmail_verzonden_op: string | null
+          bron_id: string
+          bron_tabel: string
+          client_akkoord_op: string | null
+          created_at: string
+          debiteur_adres: Json
+          debiteur_naam: string
+          dienst: string
+          getoonde_tekst: string
+          iban: string
+          id: string
+          incassant_id: string
+          incassant_naam: string
+          ip_adres: string | null
+          mandaatkenmerk: string
+          pagina_url: string | null
+          reden: string
+          tekst_hash: string
+          tekst_versie: string
+          type: string
+          user_agent: string | null
+        }
+        Insert: {
+          akkoord_op?: string
+          bevestigingsmail_id?: string | null
+          bevestigingsmail_verzonden_op?: string | null
+          bron_id: string
+          bron_tabel: string
+          client_akkoord_op?: string | null
+          created_at?: string
+          debiteur_adres: Json
+          debiteur_naam: string
+          dienst: string
+          getoonde_tekst: string
+          iban: string
+          id?: string
+          incassant_id: string
+          incassant_naam: string
+          ip_adres?: string | null
+          mandaatkenmerk: string
+          pagina_url?: string | null
+          reden: string
+          tekst_hash: string
+          tekst_versie: string
+          type: string
+          user_agent?: string | null
+        }
+        Update: {
+          akkoord_op?: string
+          bevestigingsmail_id?: string | null
+          bevestigingsmail_verzonden_op?: string | null
+          bron_id?: string
+          bron_tabel?: string
+          client_akkoord_op?: string | null
+          created_at?: string
+          debiteur_adres?: Json
+          debiteur_naam?: string
+          dienst?: string
+          getoonde_tekst?: string
+          iban?: string
+          id?: string
+          incassant_id?: string
+          incassant_naam?: string
+          ip_adres?: string | null
+          mandaatkenmerk?: string
+          pagina_url?: string | null
+          reden?: string
+          tekst_hash?: string
+          tekst_versie?: string
+          type?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       social_media_features: {
         Row: {
           active: boolean
