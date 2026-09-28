@@ -350,6 +350,15 @@ async function createExactInvoice(opts: {
 
 
 
+// Machtigingsomschrijving = naam van de relatie in Exact (bestaand account: Exact-naam; nieuw: bedrijfsnaam,
+// anders voor- + achternaam). Description heeft geen gedocumenteerde maximale lengte; afgekapt op 60.
+// deno-lint-ignore no-explicit-any
+function mandaatOmschrijving(exactNaam: string | null, lead: any): string {
+  const naam = (exactNaam ?? "").trim() || String(lead?.bedrijfsnaam ?? "").trim()
+    || `${lead?.voornaam ?? ""} ${lead?.achternaam ?? ""}`.trim();
+  return naam.slice(0, 60);
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -529,6 +538,7 @@ Deno.serve(async (req) => {
         SignatureDate: mandaat.signatureDate,
         Type: EXACT_MANDAAT_TYPE_CORE,
         PaymentType: EXACT_MANDAAT_PAYMENT_DOORLOPEND,
+        Description: mandaatOmschrijving(null, lead),
       }),
     });
     if (!mRes.ok) {
@@ -938,6 +948,7 @@ Deno.serve(async (req) => {
           SignatureDate: mandaat.signatureDate,
           Type: EXACT_MANDAAT_TYPE_CORE,
           PaymentType: EXACT_MANDAAT_PAYMENT_DOORLOPEND,
+          Description: mandaatOmschrijving(reusedAccountName, lead),
         }),
       });
       if (!mRes.ok) {
