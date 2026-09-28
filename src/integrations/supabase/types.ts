@@ -2195,6 +2195,7 @@ export type Database = {
     Functions: {
       accept_portal_invitation: { Args: { _token: string }; Returns: Json }
       cleanup_expired_oauth_states: { Args: never; Returns: undefined }
+      get_exact_koppeling_fout: { Args: never; Returns: string }
       get_pilot_signup_count: { Args: { pilot: string }; Returns: number }
       get_user_role_label: { Args: { _user_id: string }; Returns: string }
       has_role: {

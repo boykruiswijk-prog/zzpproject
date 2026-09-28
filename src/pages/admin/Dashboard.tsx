@@ -10,11 +10,12 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { ExactKoppelingAlarm } from "@/components/admin/ExactKoppelingAlarm";
 
 
 export default function AdminDashboard() {
   const [isExporting, setIsExporting] = useState(false);
-  const { isSupervisor } = useAuth();
+  const { isSupervisor, isVerzekering } = useAuth();
   const { toast } = useToast();
 
   const handleExport = async () => {
@@ -62,6 +63,7 @@ export default function AdminDashboard() {
   return (
     <AdminLayout>
       <div className="space-y-8">
+        {(isSupervisor || isVerzekering) && <ExactKoppelingAlarm />}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold">Dashboard</h1>
