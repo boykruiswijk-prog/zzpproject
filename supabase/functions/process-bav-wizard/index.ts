@@ -1,5 +1,14 @@
 import { createClient } from "npm:@supabase/supabase-js@2.39.0";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
+import {
+  KLANTMELDING_INCASSANT_ONTBREEKT,
+  bouwMachtigingData,
+  incassantIdOntbreekt,
+  legBewijsVast,
+  ontbrekendeAdresvelden,
+  verstuurMachtigingBevestiging,
+} from "../_shared/sepaBewijs.ts";
+import { isUuid, isValidIban, redenBav } from "../_shared/sepaMachtiging.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -55,8 +64,13 @@ interface BavSubmission {
   adres_postcode?: string;
   adres_plaats?: string;
   iban?: string;
+  adres_land?: string;
   sepa_akkoord?: boolean;
   rekeninghouder?: string;
+  // Vooraf (client-side) gegenereerde lead-UUID; basis voor het mandaatkenmerk.
+  lead_id?: string;
+  client_akkoord_op?: string;
+  pagina_url?: string;
   opmerkingen?: string;
   vereist_handmatige_beoordeling?: boolean;
 }
@@ -86,6 +100,35 @@ Deno.serve(async (req) => {
     ) {
       return new Response(
         JSON.stringify({ success: false, error: "Ongeldige aanvraag" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // SEPA-machtiging: nooit vastleggen zonder incassant-ID.
+    if (incassantIdOntbreekt()) {
+      console.error("process-bav-wizard: COMPANY.incassantId is leeg — aanvraag geweigerd, geen machtiging vastgelegd.");
+      return new Response(
+        JSON.stringify({ success: false, error: KLANTMELDING_INCASSANT_ONTBREEKT, reason: "incassant_id_ontbreekt" }),
+        { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const adres = {
+      straat: submission.adres_straat ?? "",
+      huisnummer: submission.adres_huisnummer ?? "",
+      postcode: submission.adres_postcode ?? "",
+      plaats: submission.adres_plaats ?? "",
+      land: submission.adres_land ?? "",
+    };
+    const machtigingFout =
+      submission.sepa_akkoord !== true ? "SEPA-machtiging is verplicht"
+      : !isValidIban(submission.iban ?? "") ? "Ongeldig IBAN"
+      : !isUuid(submission.lead_id) ? "Ongeldig aanvraagkenmerk"
+      : !(submission.rekeninghouder ?? "").trim() ? "Naam rekeninghouder is verplicht"
+      : ontbrekendeAdresvelden(adres).length ? `Adres rekeninghouder onvolledig: ${ontbrekendeAdresvelden(adres).join(", ")}`
+      : null;
+    if (machtigingFout) {
+      return new Response(
+        JSON.stringify({ success: false, error: machtigingFout }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -143,10 +186,30 @@ Deno.serve(async (req) => {
     const volledigeNaam = `${submission.voornaam} ${submission.achternaam}`;
 
 
+    // ── 0. BEWIJSRECORD SEPA-MACHTIGING (eerst; faalt dit, dan faalt de aanvraag) ──
+    const leadId = submission.lead_id as string;
+    const machtiging = bouwMachtigingData({
+      type: "doorlopend",
+      bronId: leadId,
+      reden: redenBav(),
+      debiteurNaam: submission.rekeninghouder as string,
+      debiteurAdres: adres,
+      iban: submission.iban as string,
+    });
+    const bewijs = await legBewijsVast(supabase, req, {
+      dienst: "bav",
+      bronTabel: "leads",
+      bronId: leadId,
+      data: machtiging,
+      clientAkkoordOp: submission.client_akkoord_op,
+      paginaUrl: submission.pagina_url,
+    });
+
     // ── 1. INSERT IN LEADS ──
     const { data: lead, error: leadError } = await supabase
       .from("leads")
       .insert({
+        id: leadId,
         type: "verzekering_aanvraag",
         status: "nieuw_te_beoordelen",
         voornaam: submission.voornaam,
@@ -160,9 +223,9 @@ Deno.serve(async (req) => {
         adres_huisnummer: submission.adres_huisnummer || null,
         adres_postcode: submission.adres_postcode || null,
         adres_plaats: submission.adres_plaats || null,
-        iban: submission.iban || null,
-        sepa_akkoord: submission.sepa_akkoord === true,
-        sepa_akkoord_datum: submission.sepa_akkoord === true ? new Date().toISOString() : null,
+        iban: machtiging.iban,
+        sepa_akkoord: true,
+        sepa_akkoord_datum: bewijs.akkoord_op,
         omzet: submission.betaalwijze,
         verzekering_type: pakket.naam,
         verzekerd_bedrag: pakket.dekking,
@@ -205,8 +268,8 @@ Deno.serve(async (req) => {
         maandpremie: pakket.maandprijs,
         jaarpremie: pakket.jaarprijs,
         premiebedrag: premium,
-        iban: submission.iban || null,
-        rekeninghouder: submission.rekeninghouder || null,
+        iban: machtiging.iban,
+        rekeninghouder: machtiging.debiteurNaam,
         status: "nieuw",
         exact_status: "wachtend",
       })
@@ -214,6 +277,17 @@ Deno.serve(async (req) => {
       .single();
 
     if (dbError) throw new Error(`Aanmelding insert: ${dbError.message}`);
+
+    // ── 2b. BEVESTIGING SEPA-MACHTIGING (PDF + mail; faalt nooit hard) ──
+    await verstuurMachtigingBevestiging(supabase, req, {
+      fnName: "process-bav-wizard",
+      leadType: "bav-sepa-machtiging",
+      record: bewijs,
+      data: machtiging,
+      email: submission.email,
+      aanhef: volledigeNaam,
+      bedragOfReden: `${redenBav()} (${pakket.naam}, € ${premium} ${pakket.betaalwijze === "maandelijks" ? "per maand" : "per jaar"})`,
+    });
 
     // ── 3. E-MAIL VIA send-lead-notification ──
     supabase.functions
