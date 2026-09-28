@@ -84,8 +84,9 @@ Deno.serve(async (req) => {
   };
 
   const { data: rows, error: rowsErr } = await supabase.from("exact_mandaat_import")
-    .select("*").eq("status", beginStatus).match(mode === "omschrijving_herstellen" ? {} : {})
-    .not("id", "is", null).order("relatiecode", { ascending: true }).limit(mode === "omschrijving_herstellen" ? 1000 : limit);
+    .select("*").eq("status", beginStatus)
+    .not(mode === "omschrijving_herstellen" ? "exact_mandaat_id" : "id", "is", null)
+    .order("relatiecode", { ascending: true }).limit(mode === "omschrijving_herstellen" ? 1000 : limit);
   if (rowsErr) return json({ error: "db_fout" }, 500);
   if (!rows || rows.length === 0) {
     return json({ mode, verwerkt: 0, per_status: {}, open: await openCount(),
