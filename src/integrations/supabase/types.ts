@@ -752,6 +752,63 @@ export type Database = {
         }
         Relationships: []
       }
+      exact_mandaat_import: {
+        Row: {
+          bankrekening_actie: string | null
+          bestaande_mandaten: Json | null
+          created_at: string | null
+          exact_account_id: string | null
+          exact_bankrekening_id: string | null
+          exact_mandaat_id: string | null
+          exact_naam: string | null
+          iban: string
+          id: string
+          kenmerk: string
+          melding: string | null
+          naam: string
+          ondertekend_op: string
+          relatiecode: string
+          status: string
+          verwerkt_op: string | null
+        }
+        Insert: {
+          bankrekening_actie?: string | null
+          bestaande_mandaten?: Json | null
+          created_at?: string | null
+          exact_account_id?: string | null
+          exact_bankrekening_id?: string | null
+          exact_mandaat_id?: string | null
+          exact_naam?: string | null
+          iban: string
+          id?: string
+          kenmerk: string
+          melding?: string | null
+          naam: string
+          ondertekend_op: string
+          relatiecode: string
+          status?: string
+          verwerkt_op?: string | null
+        }
+        Update: {
+          bankrekening_actie?: string | null
+          bestaande_mandaten?: Json | null
+          created_at?: string | null
+          exact_account_id?: string | null
+          exact_bankrekening_id?: string | null
+          exact_mandaat_id?: string | null
+          exact_naam?: string | null
+          iban?: string
+          id?: string
+          kenmerk?: string
+          melding?: string | null
+          naam?: string
+          ondertekend_op?: string
+          relatiecode?: string
+          status?: string
+          verwerkt_op?: string | null
+        }
+        Relationships: []
+      }
       exact_oauth_state: {
         Row: {
           created_at: string
