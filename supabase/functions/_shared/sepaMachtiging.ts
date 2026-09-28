@@ -42,7 +42,7 @@ export function machtigingTitel(type: MachtigingType): string {
 }
 
 export function machtigingCheckboxLabel(type: MachtigingType, incassantNaam: string): string {
-  return `Ik geef ${incassantNaam} deze ${type} SEPA-machtiging`;
+  return `Ik geef ${incassantNaam} deze ${type === "doorlopend" ? "doorlopende" : "eenmalige"} SEPA-machtiging`;
 }
 
 /** Mandaatkenmerk: "ZPZ" + UUID zonder streepjes, hoofdletters (35 tekens). */
@@ -85,15 +85,20 @@ export function formatDebiteurAdres(a: DebiteurAdres): string {
   return `${a.straat.trim()} ${a.huisnummer.trim()}, ${a.postcode.trim().toUpperCase()} ${a.plaats.trim()}, ${a.land.trim()}`;
 }
 
+// "ZP Zaken B.V." eindigt al op een punt: geen dubbele punt aan het zinseinde.
+function metPunt(s: string): string {
+  return s.endsWith(".") ? s : `${s}.`;
+}
+
 export function standaardtekst(type: MachtigingType, incassantNaam: string): string {
   if (type === "doorlopend") {
     return (
-      `Door ondertekening van dit formulier geeft u toestemming aan ${incassantNaam} om doorlopende incasso-opdrachten te sturen naar uw bank om een bedrag van uw rekening af te schrijven en aan uw bank om doorlopend een bedrag van uw rekening af te schrijven overeenkomstig de opdracht van ${incassantNaam}. ` +
+      `Door ondertekening van dit formulier geeft u toestemming aan ${incassantNaam} om doorlopende incasso-opdrachten te sturen naar uw bank om een bedrag van uw rekening af te schrijven en aan uw bank om doorlopend een bedrag van uw rekening af te schrijven overeenkomstig de opdracht van ${metPunt(incassantNaam)} ` +
       "Als u het niet eens bent met deze afschrijving kunt u deze laten terugboeken. Neem hiervoor binnen 8 weken na afschrijving contact op met uw bank. Vraag uw bank naar de voorwaarden."
     );
   }
   return (
-    `Door ondertekening van dit formulier geeft u toestemming aan ${incassantNaam} om een eenmalige incasso-opdracht te sturen naar uw bank om een bedrag van uw rekening af te schrijven en aan uw bank om eenmalig een bedrag van uw rekening af te schrijven overeenkomstig de opdracht van ${incassantNaam}. ` +
+    `Door ondertekening van dit formulier geeft u toestemming aan ${incassantNaam} om een eenmalige incasso-opdracht te sturen naar uw bank om een bedrag van uw rekening af te schrijven en aan uw bank om eenmalig een bedrag van uw rekening af te schrijven overeenkomstig de opdracht van ${metPunt(incassantNaam)} ` +
     "Als u het niet eens bent met deze afschrijving kunt u deze laten terugboeken. Neem hiervoor binnen 8 weken na afschrijving contact op met uw bank. Vraag uw bank naar de voorwaarden."
   );
 }
@@ -131,6 +136,13 @@ export function renderMachtigingstekst(d: MachtigingData): string {
   regels.push(`Tekstversie: ${MACHTIGING_TEKST_VERSIE}`);
   return regels.join("\n");
 }
+
+/** Pakketnamen screening zoals in de machtiging (reden betaling). Server en frontend gelijk. */
+export const SCREENING_PAKKET_LABELS: Record<string, string> = {
+  basis: "Basis screening",
+  uitgebreid: "Uitgebreide screening",
+  compleet: "Complete screening",
+};
 
 export function redenBav(): string {
   return "Premie beroeps- en bedrijfsaansprakelijkheidsverzekering";
