@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils";
 import { SITE_CONFIG, ADDRESS_FULL_WITH_COUNTRY } from "@/config/site";
 import {
   ELEKTRONISCH_ONDERTEKENEN_ZIN,
-  formatDebiteurAdres,
   formatIban,
   machtigingCheckboxLabel,
   machtigingTitel,
@@ -46,7 +45,6 @@ export function SepaMachtigingBlok({ data, checked, onCheckedChange, error }: Pr
     if (l === "IBAN" && !formatIban(data.iban)) return [l, "-"];
     return [l, w || "-"];
   });
-  void formatDebiteurAdres;
   return (
     <section
       aria-labelledby="sepa-machtiging-titel"
