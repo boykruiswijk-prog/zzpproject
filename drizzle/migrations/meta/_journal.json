@@ -43,6 +43,13 @@
       "when": 1790603239402,
       "tag": "0005_exact_koppeling_status",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790605263135,
+      "tag": "0006_create_exact_mandaat_import",
+      "breakpoints": true
     }
   ]
 }
