@@ -40,6 +40,13 @@ const isActief = (m: { CancellationDate?: unknown }) => {
 
 class RateLimited extends Error {}
 
+// Description (Edm.String) — de REST-referentie (CashflowDirectDebitMandates) noemt GEEN maximale lengte
+// en is PUT-baar. Conservatieve afkapping op 60 tekens zodat lengte nooit een fout kan veroorzaken.
+const DESCRIPTION_MAX = 60;
+const OUDE_OMSCHRIJVING = "Overgenomen uit AFAS";
+const omschrijving = (exactNaam: string | null | undefined, naam: string) =>
+  ((exactNaam ?? "").trim() || (naam ?? "").trim()).slice(0, DESCRIPTION_MAX);
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
@@ -65,10 +72,10 @@ Deno.serve(async (req) => {
   let body: any = {};
   if (req.method === "POST") body = await req.json().catch(() => ({}));
   const mode = String(body.mode ?? url.searchParams.get("mode") ?? "droogrun");
-  if (mode !== "droogrun" && mode !== "uitvoeren") return json({ error: "ongeldige mode" }, 400);
+  if (mode !== "droogrun" && mode !== "uitvoeren" && mode !== "omschrijving_herstellen") return json({ error: "ongeldige mode" }, 400);
   const limitRaw = Number(body.limit ?? url.searchParams.get("limit") ?? 10);
   const limit = Math.max(1, Math.min(15, Number.isFinite(limitRaw) ? Math.floor(limitRaw) : 10));
-  const beginStatus = mode === "droogrun" ? "wachtend" : "droogrun_ok";
+  const beginStatus = mode === "droogrun" ? "wachtend" : mode === "uitvoeren" ? "droogrun_ok" : "bijgewerkt";
 
   const openCount = async () => {
     const { count } = await supabase.from("exact_mandaat_import").select("id", { count: "exact", head: true })
@@ -77,7 +84,8 @@ Deno.serve(async (req) => {
   };
 
   const { data: rows, error: rowsErr } = await supabase.from("exact_mandaat_import")
-    .select("*").eq("status", beginStatus).order("relatiecode", { ascending: true }).limit(limit);
+    .select("*").eq("status", beginStatus).match(mode === "omschrijving_herstellen" ? {} : {})
+    .not("id", "is", null).order("relatiecode", { ascending: true }).limit(mode === "omschrijving_herstellen" ? 1000 : limit);
   if (rowsErr) return json({ error: "db_fout" }, 500);
   if (!rows || rows.length === 0) {
     return json({ mode, verwerkt: 0, per_status: {}, open: await openCount(),
@@ -122,6 +130,29 @@ Deno.serve(async (req) => {
 
   let gestopt: string | null = null;
   for (const row of rows) {
+    if (mode === "omschrijving_herstellen") {
+      try {
+        const id = String(row.exact_mandaat_id ?? "");
+        if (!guidOk(id)) { await save(row.id, { status: row.status, melding: "Herstel: ongeldig mandaat-ID" }); continue; }
+        const gr = await exactFetch(`cashflow/DirectDebitMandates(guid'${id}')?$select=ID,Description`);
+        if (!gr.ok) { await save(row.id, { status: row.status, melding: `Herstel: ${await fout(gr, "GET machtiging")}` }); continue; }
+        const huidig = String((await gr.json())?.d?.Description ?? "");
+        if (huidig.trim() !== OUDE_OMSCHRIJVING) {
+          await save(row.id, { status: row.status, melding: `Herstel: niet nodig, omschrijving is "${huidig}"` }); continue;
+        }
+        const nieuw = omschrijving(row.exact_naam, row.naam);
+        const pr = await exactFetch(`cashflow/DirectDebitMandates(guid'${id}')`, { method: "PUT", body: JSON.stringify({ Description: nieuw }) });
+        if (!pr.ok) { await save(row.id, { status: row.status, melding: `Herstel: ${await fout(pr, "PUT machtiging")}` }); continue; }
+        await pr.text().catch(() => "");
+        await save(row.id, { status: row.status, melding: `Herstel: omschrijving gezet op "${nieuw}"` });
+      } catch (e) {
+        if (e instanceof RateLimited) { gestopt = "Exact rate limit (429) — later opnieuw aanroepen"; break; }
+        const msg = e instanceof Error ? e.message : String(e);
+        await logSync("fout", msg);
+        return json({ error: msg === "exact_niet_actief" ? "exact_niet_actief" : "exact_token_fout", melding: msg, mode }, 503);
+      }
+      continue;
+    }
     try {
       // 1. Account
       const ar = await exactFetch(`crm/Accounts?$filter=${encodeURIComponent(codeFilter(row.relatiecode))}&$select=ID,Code,Name`);
@@ -184,7 +215,7 @@ Deno.serve(async (req) => {
       }
       const mp = await exactFetch("cashflow/DirectDebitMandates", { method: "POST", body: JSON.stringify({
         Account: acc.ID, BankAccount: bankId, Reference: row.kenmerk,
-        SignatureDate: `${row.ondertekend_op}T00:00:00`, Type: 0, PaymentType: 1, Description: "Overgenomen uit AFAS",
+        SignatureDate: `${row.ondertekend_op}T00:00:00`, Type: 0, PaymentType: 1, Description: omschrijving(acc.Name, row.naam),
       }) });
       if (!mp.ok) {
         await save(row.id, { ...base, status: "fout", exact_bankrekening_id: bankId, bankrekening_actie: bankActie,
