@@ -704,6 +704,54 @@ export type Database = {
         }
         Relationships: []
       }
+      exact_email_import: {
+        Row: {
+          created_at: string | null
+          email: string
+          exact_account_id: string | null
+          exact_email_voor: string | null
+          exact_naam: string | null
+          excel_rij: number | null
+          id: string
+          melding: string | null
+          naam: string
+          niet_gevonden_volgens_excel: boolean
+          relatiecode: string
+          status: string
+          verwerkt_op: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          exact_account_id?: string | null
+          exact_email_voor?: string | null
+          exact_naam?: string | null
+          excel_rij?: number | null
+          id?: string
+          melding?: string | null
+          naam: string
+          niet_gevonden_volgens_excel?: boolean
+          relatiecode: string
+          status?: string
+          verwerkt_op?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          exact_account_id?: string | null
+          exact_email_voor?: string | null
+          exact_naam?: string | null
+          excel_rij?: number | null
+          id?: string
+          melding?: string | null
+          naam?: string
+          niet_gevonden_volgens_excel?: boolean
+          relatiecode?: string
+          status?: string
+          verwerkt_op?: string | null
+        }
+        Relationships: []
+      }
       exact_oauth_state: {
         Row: {
           created_at: string
