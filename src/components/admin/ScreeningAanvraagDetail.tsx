@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { SepaMachtigingBewijsBlok } from "@/components/admin/SepaMachtigingBewijsBlok";
 import { formatDateNL } from "@/lib/dateFormat";
 import { useIntegratie } from "@/hooks/useIntegratie";
 
@@ -125,6 +126,7 @@ export function ScreeningAanvraagDetail({ aanvraag }: { aanvraag: ScreeningAanvr
           </>
         )}
       </div>
+      <SepaMachtigingBewijsBlok bronId={aanvraag.id} />
       <div>
         <div className="text-muted-foreground text-xs mb-2 font-medium">Incasso-akkoord</div>
         <div className="grid grid-cols-2 gap-3">

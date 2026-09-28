@@ -5,6 +5,28 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import {
   isMaandPolis, getMaandprijs, lastOfMonth, calcMaandProrata, calcPolisEinddatum,
 } from "../_shared/polisProRata.ts";
+import { mandaatkenmerkVoor } from "../_shared/sepaMachtiging.ts";
+
+// SEPA-mandaat in Exact. Waarden geverifieerd in de Exact Online REST-documentatie:
+// https://start.exactonline.nl/docs/HlpRestAPIResourcesDetails.aspx?name=CashflowDirectDebitMandates
+//   Type: 0 = Core, 1 = B2B, 2 = bottomline (UK only)
+//   PaymentType: 0 = One-off payment, 1 = Recurrent payment, 2 = AdHoc (UK only)
+const EXACT_MANDAAT_TYPE_CORE = 0;
+const EXACT_MANDAAT_PAYMENT_DOORLOPEND = 1;
+
+/** Kenmerk ("ZPZ" + lead-UUID) en ondertekeningsdatum uit het bewijsrecord. */
+// deno-lint-ignore no-explicit-any
+async function mandaatGegevens(supabase: any, leadId: string, fallbackDatum: string | null) {
+  const { data: bewijs } = await supabase.from("sepa_machtiging_bewijs")
+    .select("mandaatkenmerk, akkoord_op")
+    .eq("bron_id", leadId).eq("dienst", "bav")
+    .order("created_at", { ascending: true }).limit(1).maybeSingle();
+  const datum = bewijs?.akkoord_op ?? fallbackDatum ?? new Date().toISOString();
+  return {
+    reference: bewijs?.mandaatkenmerk ?? mandaatkenmerkVoor(leadId),
+    signatureDate: new Date(datum).toISOString(),
+  };
+}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -497,17 +519,16 @@ Deno.serve(async (req) => {
     if (!bankId) {
       return json({ success: false, error: "geen_bankrekening_in_exact" }, 400);
     }
-    const signatureDate = lead.sepa_akkoord_datum
-      ? new Date(lead.sepa_akkoord_datum).toISOString()
-      : new Date().toISOString();
+    const mandaat = await mandaatGegevens(supabase, leadId, lead.sepa_akkoord_datum);
     const mRes = await fetch(`${baseUrl}/api/v1/${div}/cashflow/DirectDebitMandates`, {
       method: "POST", headers,
       body: JSON.stringify({
         Account: lead.exact_account_id,
         BankAccount: bankId,
-        Reference: `MNDT-${leadId.slice(0, 8)}`,
-        SignatureDate: signatureDate,
-        Type: 1, // 0=Core, 1=B2B, 2=Bottomline
+        Reference: mandaat.reference,
+        SignatureDate: mandaat.signatureDate,
+        Type: EXACT_MANDAAT_TYPE_CORE,
+        PaymentType: EXACT_MANDAAT_PAYMENT_DOORLOPEND,
       }),
     });
     if (!mRes.ok) {
@@ -873,6 +894,8 @@ Deno.serve(async (req) => {
   //   - Reference (string)              ← officiële veldnaam (NIET 'MandateReference')
   //   - SignatureDate (DateTime)        ← NIET 'MandateDate'
   //   - Type (Int16): 0=Core, 1=B2B, 2=Bottomline (UK)
+  //   - PaymentType (Int16): 0=One-off, 1=Recurrent, 2=AdHoc (UK)
+  //   Bron: https://start.exactonline.nl/docs/HlpRestAPIResourcesDetails.aspx?name=CashflowDirectDebitMandates
 
   let exactMandateId: string | null = null;
   let mandateWarning: string | null = null;
@@ -905,17 +928,16 @@ Deno.serve(async (req) => {
       }
     }
     if (!exactMandateId) {
-      const signatureDate = lead.sepa_akkoord_datum
-        ? new Date(lead.sepa_akkoord_datum).toISOString()
-        : new Date().toISOString();
+      const mandaat = await mandaatGegevens(supabase, leadId, lead.sepa_akkoord_datum);
       const mRes = await fetch(`${baseUrl}/api/v1/${div}/cashflow/DirectDebitMandates`, {
         method: "POST", headers,
         body: JSON.stringify({
           Account: exactAccountId,
           BankAccount: exactBankAccountId,
-          Reference: `MNDT-${leadId.slice(0, 8)}`,
-          SignatureDate: signatureDate,
-          Type: 1, // 1 = B2B
+          Reference: mandaat.reference,
+          SignatureDate: mandaat.signatureDate,
+          Type: EXACT_MANDAAT_TYPE_CORE,
+          PaymentType: EXACT_MANDAAT_PAYMENT_DOORLOPEND,
         }),
       });
       if (!mRes.ok) {

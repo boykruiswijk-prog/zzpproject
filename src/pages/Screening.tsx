@@ -16,6 +16,8 @@ import { LocalizedLink } from "@/components/LocalizedLink";
 import { Link } from "react-router-dom";
 import { useFormGuard } from "@/lib/antiSpam";
 import { HoneypotField } from "@/components/shared/HoneypotField";
+import { SepaMachtigingBlok, bouwFrontendMachtiging } from "@/components/shared/SepaMachtigingBlok";
+import { mandaatkenmerkVoor, redenScreening, SCREENING_PAKKET_LABELS } from "@/lib/sepaMachtiging";
 
 const SEO = seoRoute("/screening");
 
@@ -110,6 +112,9 @@ export default function Screening() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [akkoord, setAkkoord] = useState(false);
   const [incassoAkkoord, setIncassoAkkoord] = useState(false);
+  const [clientAkkoordOp, setClientAkkoordOp] = useState<string | null>(null);
+  // Aanvraag-UUID vooraf bepalen: basis voor het mandaatkenmerk dat de klant ziet.
+  const [aanvraagId] = useState<string>(() => crypto.randomUUID());
 
   const [form, setForm] = useState({
     voornaam: "",
@@ -122,6 +127,11 @@ export default function Screening() {
     sector: "",
     iban: "",
     rekeninghouder: "",
+    adres_straat: "",
+    adres_huisnummer: "",
+    adres_postcode: "",
+    adres_plaats: "",
+    adres_land: "Nederland",
   });
   const [screeningType, setScreeningType] = useState<ScreeningType>("basis");
 
@@ -149,7 +159,12 @@ export default function Screening() {
     if (!form.iban.trim()) e.iban = "IBAN is verplicht";
     else if (!isValidIban(form.iban)) e.iban = "Dit lijkt geen geldig IBAN";
     if (!form.rekeninghouder.trim()) e.rekeninghouder = "Naam rekeninghouder is verplicht";
-    if (!incassoAkkoord) e.incassoAkkoord = "Je moet akkoord geven voor de eenmalige incasso";
+    if (!form.adres_straat.trim()) e.adres_straat = "Straat is verplicht";
+    if (!form.adres_huisnummer.trim()) e.adres_huisnummer = "Huisnummer is verplicht";
+    if (!form.adres_postcode.trim()) e.adres_postcode = "Postcode is verplicht";
+    if (!form.adres_plaats.trim()) e.adres_plaats = "Plaats is verplicht";
+    if (!form.adres_land.trim()) e.adres_land = "Land is verplicht";
+    if (!incassoAkkoord) e.incassoAkkoord = "Vink het vakje aan om de SEPA-machtiging te geven";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -174,10 +189,18 @@ export default function Screening() {
           iban: form.iban,
           rekeninghouder: form.rekeninghouder,
           incasso_akkoord: incassoAkkoord,
+          aanvraag_id: aanvraagId,
+          client_akkoord_op: clientAkkoordOp,
+          pagina_url: window.location.href,
           hp: guard.honeypot,
           ms: guard.elapsedMs(),
         },
       });
+      const status = (error as { context?: Response } | null)?.context?.status;
+      if (status === 503) {
+        setSubmitError("Aanmelden is tijdelijk niet mogelijk, bel 020 - 457 3077");
+        return;
+      }
       if (error || !data?.success) {
         throw new Error(data?.error || error?.message || "Onbekende fout");
       }
@@ -413,22 +436,51 @@ export default function Screening() {
                         {errors.iban && <p className="text-xs mt-1" style={{ color: "#E53E2F" }}>{errors.iban}</p>}
                       </div>
                     </div>
-                    <div className={cn("flex items-start gap-3 p-4 rounded-lg border bg-secondary", errors.incassoAkkoord ? "border-destructive" : "border-border")}>
-                      <Checkbox
-                        id="incassoAkkoord"
-                        checked={incassoAkkoord}
-                        onCheckedChange={(c) => {
-                          setIncassoAkkoord(c === true);
-                          if (errors.incassoAkkoord) setErrors((p) => { const n = { ...p }; delete n.incassoAkkoord; return n; });
-                        }}
-                        className="mt-0.5"
-                      />
-                      <Label htmlFor="incassoAkkoord" className="text-sm leading-relaxed cursor-pointer">
-                        Ik geef ZP Zaken toestemming om éénmalig € {PAKKET_BEDRAGEN[screeningType]},- voor deze screening
-                        van bovenstaande rekening af te schrijven.
-                      </Label>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <p className="md:col-span-2 text-sm font-medium">Adres rekeninghouder</p>
+                      <div>
+                        <Label htmlFor="adres_straat">Straat *</Label>
+                        <Input id="adres_straat" value={form.adres_straat} onChange={(e) => update("adres_straat", e.target.value)} className={cn(errors.adres_straat && "border-destructive")} />
+                        {errors.adres_straat && <p className="text-xs mt-1" style={{ color: "#E53E2F" }}>{errors.adres_straat}</p>}
+                      </div>
+                      <div>
+                        <Label htmlFor="adres_huisnummer">Huisnummer *</Label>
+                        <Input id="adres_huisnummer" value={form.adres_huisnummer} onChange={(e) => update("adres_huisnummer", e.target.value)} className={cn(errors.adres_huisnummer && "border-destructive")} />
+                        {errors.adres_huisnummer && <p className="text-xs mt-1" style={{ color: "#E53E2F" }}>{errors.adres_huisnummer}</p>}
+                      </div>
+                      <div>
+                        <Label htmlFor="adres_postcode">Postcode *</Label>
+                        <Input id="adres_postcode" value={form.adres_postcode} onChange={(e) => update("adres_postcode", e.target.value)} className={cn(errors.adres_postcode && "border-destructive")} />
+                        {errors.adres_postcode && <p className="text-xs mt-1" style={{ color: "#E53E2F" }}>{errors.adres_postcode}</p>}
+                      </div>
+                      <div>
+                        <Label htmlFor="adres_plaats">Plaats *</Label>
+                        <Input id="adres_plaats" value={form.adres_plaats} onChange={(e) => update("adres_plaats", e.target.value)} className={cn(errors.adres_plaats && "border-destructive")} />
+                        {errors.adres_plaats && <p className="text-xs mt-1" style={{ color: "#E53E2F" }}>{errors.adres_plaats}</p>}
+                      </div>
+                      <div className="md:col-span-2">
+                        <Label htmlFor="adres_land">Land *</Label>
+                        <Input id="adres_land" value={form.adres_land} onChange={(e) => update("adres_land", e.target.value)} className={cn(errors.adres_land && "border-destructive")} />
+                        {errors.adres_land && <p className="text-xs mt-1" style={{ color: "#E53E2F" }}>{errors.adres_land}</p>}
+                      </div>
                     </div>
-                    {errors.incassoAkkoord && <p className="text-xs" style={{ color: "#E53E2F" }}>{errors.incassoAkkoord}</p>}
+                    <SepaMachtigingBlok
+                      data={bouwFrontendMachtiging({
+                        type: "eenmalig",
+                        mandaatkenmerk: mandaatkenmerkVoor(aanvraagId),
+                        reden: redenScreening(SCREENING_PAKKET_LABELS[screeningType], PAKKET_BEDRAGEN[screeningType]),
+                        debiteurNaam: form.rekeninghouder,
+                        debiteurAdres: { straat: form.adres_straat, huisnummer: form.adres_huisnummer, postcode: form.adres_postcode, plaats: form.adres_plaats, land: form.adres_land },
+                        iban: form.iban,
+                      })}
+                      checked={incassoAkkoord}
+                      onCheckedChange={(v) => {
+                        setIncassoAkkoord(v);
+                        setClientAkkoordOp(v ? new Date().toISOString() : null);
+                        if (errors.incassoAkkoord) setErrors((p) => { const n = { ...p }; delete n.incassoAkkoord; return n; });
+                      }}
+                      error={errors.incassoAkkoord}
+                    />
 
                     <div className="flex justify-between pt-2">
                       <Button variant="outline" onClick={prev}><ArrowLeft className="h-4 w-4" />Terug</Button>
@@ -452,6 +504,7 @@ export default function Screening() {
                         <div><dt className="text-muted-foreground">Bedrag (eenmalige incasso)</dt><dd className="font-medium">€ {PAKKET_BEDRAGEN[screeningType]},-</dd></div>
                         <div><dt className="text-muted-foreground">Rekeninghouder</dt><dd className="font-medium">{form.rekeninghouder}</dd></div>
                         <div><dt className="text-muted-foreground">IBAN</dt><dd className="font-medium uppercase tracking-wider">{form.iban}</dd></div>
+                        <div className="sm:col-span-2"><dt className="text-muted-foreground">Eenmalige SEPA-machtiging</dt><dd className="font-medium font-mono text-xs">Gegeven, kenmerk {mandaatkenmerkVoor(aanvraagId)}</dd></div>
                       </dl>
                     </Card>
 
@@ -464,7 +517,7 @@ export default function Screening() {
 
                     {submitError && (
                       <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm" style={{ color: "#E53E2F" }}>
-                        Er ging iets mis. Probeer het opnieuw of bel 020 - 457 3077.
+                        {submitError.startsWith("Aanmelden is tijdelijk") ? submitError : "Er ging iets mis. Probeer het opnieuw of bel 020 - 457 3077."}
                       </div>
                     )}
 
