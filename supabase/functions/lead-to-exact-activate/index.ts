@@ -3,6 +3,8 @@
 // Doet GEEN factuur — fase 2.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import {
+  isMaandPolis, getMaandprijs, lastOfMonth, calcMaandProrata, calcPolisEinddatum,
+} from "../_shared/polisProRata.ts";
 import { mandaatkenmerkVoor } from "../_shared/sepaMachtiging.ts";
 
 // SEPA-mandaat in Exact. Waarden geverifieerd in de Exact Online REST-documentatie:
@@ -25,8 +27,6 @@ async function mandaatGegevens(supabase: any, leadId: string, fallbackDatum: str
     signatureDate: new Date(datum).toISOString(),
   };
 }
-  isMaandPolis, getMaandprijs, lastOfMonth, calcMaandProrata, calcPolisEinddatum,
-} from "../_shared/polisProRata.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
