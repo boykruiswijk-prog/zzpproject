@@ -8,7 +8,7 @@ import { getFromAddress } from "../_shared/mail.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-internal-secret",
 };
 
 const supabase = createClient(
@@ -46,6 +46,55 @@ const SUBJECTS: Record<string, (ref: string) => string> = {
   "verzekering-aanvraag": (r) => `Nieuwe verzekeringsaanvraag via zpzaken.nl - ${r}`,
   "offerte-aanvraag": (r) => `Nieuwe offerteaanvraag via zpzaken.nl - ${r}`,
 };
+
+// ── Publieke aanroepen: type → brontabel + aanmaakkolom ──
+const PUBLIC_MAX_AGE_MS = 15 * 60 * 1000;
+type PublicSpec = { table: "leads" | "screening_aanvragen" | "klant_service_aanvragen"; createdCol: string };
+const PUBLIC_TYPE_TABLE: Record<string, PublicSpec> = {
+  contact: { table: "leads", createdCol: "created_at" },
+  bav: { table: "leads", createdCol: "created_at" }, // process-bav-wizard geeft leads.id mee
+  "verzekering-aanvraag": { table: "leads", createdCol: "created_at" },
+  "offerte-aanvraag": { table: "leads", createdCol: "created_at" },
+  "screening-basis": { table: "screening_aanvragen", createdCol: "aangemeld_op" },
+  "screening-uitgebreid": { table: "screening_aanvragen", createdCol: "aangemeld_op" },
+  "screening-compleet": { table: "screening_aanvragen", createdCol: "aangemeld_op" },
+  "mijn-zp-certificaat": { table: "klant_service_aanvragen", createdCol: "created_at" },
+  "mijn-zp-pauzeren": { table: "klant_service_aanvragen", createdCol: "created_at" },
+  "mijn-zp-documenten": { table: "klant_service_aanvragen", createdCol: "created_at" },
+  "mijn-zp-opzeggen": { table: "klant_service_aanvragen", createdCol: "created_at" },
+};
+
+function jsonRes(data: unknown, status: number): Response {
+  return new Response(JSON.stringify(data), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+}
+
+// Intern (x-internal-secret) of ingelogd teamlid → vertrouwd; al het andere is publiek.
+async function isTrustedCaller(req: Request): Promise<boolean> {
+  const secret = Deno.env.get("INTERNAL_FUNCTION_SECRET") ?? "";
+  if (secret.length > 0 && (req.headers.get("x-internal-secret") ?? "") === secret) return true;
+  const auth = req.headers.get("authorization") ?? "";
+  if (!auth.startsWith("Bearer ")) return false;
+  const { data } = await supabase.auth.getUser(auth.slice(7));
+  const uid = data?.user?.id;
+  if (!uid) return false;
+  const { data: isTeam } = await supabase.rpc("is_team_member", { _user_id: uid });
+  return isTeam === true;
+}
+
+// Klantsamenvatting uitsluitend uit het databaserecord (keys uit SHOW_KEYS).
+function customerFieldsFromRecord(table: string, r: Record<string, unknown>): Record<string, unknown> {
+  const naam = [r.voornaam, r.achternaam].filter(Boolean).join(" ");
+  const out: Record<string, unknown> = { naam, bedrijfsnaam: r.bedrijfsnaam, kvk_nummer: r.kvk_nummer };
+  if (table === "leads") {
+    out.verzekering = r.verzekering_type;
+    out.pakket = r.gekozen_pakket;
+    out.dekking = r.verzekerd_bedrag;
+    out.ingangsdatum = r.ingangsdatum;
+  } else if (table === "screening_aanvragen") {
+    out.pakket = r.screening_type;
+  }
+  return out;
+}
 
 const schema = z.object({
   type: z.string().min(1),
@@ -163,9 +212,36 @@ Deno.serve(async (req) => {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const { type, leadId, reference, recipientEmail, userEmail, fields } = parsed.data;
+    const { type, leadId, reference, fields } = parsed.data;
+    let { recipientEmail, userEmail } = parsed.data;
     const TO_DEFAULT = "info@zpzaken.nl";
     const BCC_DEFAULT = ["boy.kruiswijk@zpzaken.nl", "ellen.baars@zpzaken.nl"];
+
+    // ── Toegang: intern (x-internal-secret), ingelogd teamlid, of publiek (strikt) ──
+    const isTrusted = await isTrustedCaller(req);
+    // Klantsamenvatting + replyTo komen bij publiek uit de database.
+    let customerFields: Record<string, unknown> = fields;
+    let replyToEmail: string | undefined = (fields.email as string) || undefined;
+    if (!isTrusted) {
+      const spec = PUBLIC_TYPE_TABLE[type];
+      if (!spec) return jsonRes({ error: "unknown_type" }, 400);
+      if (!leadId) return jsonRes({ error: "lead_id_required" }, 400);
+      const { data: rec } = await supabase.from(spec.table).select("*").eq("id", leadId).maybeSingle();
+      if (!rec) return jsonRes({ error: "not_found" }, 404);
+      const createdAt = new Date((rec as any)[spec.createdCol]).getTime();
+      if (!Number.isFinite(createdAt) || Date.now() - createdAt > PUBLIC_MAX_AGE_MS) {
+        return jsonRes({ error: "too_old" }, 403);
+      }
+      const { data: already } = await supabase.from("lead_notification_log")
+        .select("id").eq("lead_type", type).eq("lead_id", leadId).eq("status", "sent")
+        .limit(1).maybeSingle();
+      if (already) return jsonRes({ success: true, skipped: "already_sent" }, 200);
+      recipientEmail = undefined; // altijd info@
+      const dbEmail = String((rec as any).email ?? "").trim();
+      userEmail = dbEmail || null;
+      replyToEmail = dbEmail || undefined;
+      customerFields = customerFieldsFromRecord(spec.table, rec as Record<string, unknown>);
+    }
     const baseRecipient = recipientEmail || TO_DEFAULT;
 
     // Centrale, fail-safe omgevingsdetectie (host-based, APP_ENV is secundair).
@@ -202,7 +278,7 @@ Deno.serve(async (req) => {
         from: getFromAddress(),
         to: [recipient],
         bcc: bccList.length ? bccList : undefined,
-        replyTo: isProd ? ((fields.email as string) || undefined) : undefined,
+        replyTo: isProd ? replyToEmail : undefined,
         subject, html, text,
       });
 
@@ -225,7 +301,7 @@ Deno.serve(async (req) => {
       });
 
       // Klantbevestigingsmail (alleen als userEmail aanwezig)
-      const customerEmailRaw = (userEmail || (fields.email as string | undefined) || "").trim();
+      const customerEmailRaw = (isTrusted ? (userEmail || (fields.email as string | undefined) || "") : (userEmail || "")).trim();
       if (customerEmailRaw) {
         const customerRecipient = isProd ? customerEmailRaw : "boy.kruiswijk@zpzaken.nl";
         const customerSubjBase = `Bevestiging van je aanvraag bij ZP Zaken`;
@@ -236,8 +312,8 @@ Deno.serve(async (req) => {
             to: [customerRecipient],
             replyTo: "info@zpzaken.nl",
             subject: customerSubject,
-            html: renderCustomerHtml(type, label, fields),
-            text: renderCustomerText(type, fields),
+            html: renderCustomerHtml(type, label, customerFields),
+            text: renderCustomerText(type, customerFields),
           });
           await supabase.from("lead_notification_log").insert({
             lead_type: type, lead_id: leadId ?? null, recipient: customerRecipient, cc: null,

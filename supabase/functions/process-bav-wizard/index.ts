@@ -218,6 +218,7 @@ Deno.serve(async (req) => {
     // ── 3. E-MAIL VIA send-lead-notification ──
     supabase.functions
       .invoke("send-lead-notification", {
+        headers: { "x-internal-secret": Deno.env.get("INTERNAL_FUNCTION_SECRET") ?? "" },
         body: {
           type: "bav",
           leadId: lead.id,
