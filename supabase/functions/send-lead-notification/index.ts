@@ -163,9 +163,36 @@ Deno.serve(async (req) => {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const { type, leadId, reference, recipientEmail, userEmail, fields } = parsed.data;
+    const { type, leadId, reference, fields } = parsed.data;
+    let { recipientEmail, userEmail } = parsed.data;
     const TO_DEFAULT = "info@zpzaken.nl";
     const BCC_DEFAULT = ["boy.kruiswijk@zpzaken.nl", "ellen.baars@zpzaken.nl"];
+
+    // ── Toegang: intern (x-internal-secret), ingelogd teamlid, of publiek (strikt) ──
+    const isTrusted = await isTrustedCaller(req);
+    // Klantsamenvatting + replyTo komen bij publiek uit de database.
+    let customerFields: Record<string, unknown> = fields;
+    let replyToEmail: string | undefined = (fields.email as string) || undefined;
+    if (!isTrusted) {
+      const spec = PUBLIC_TYPE_TABLE[type];
+      if (!spec) return jsonRes({ error: "unknown_type" }, 400);
+      if (!leadId) return jsonRes({ error: "lead_id_required" }, 400);
+      const { data: rec } = await supabase.from(spec.table).select("*").eq("id", leadId).maybeSingle();
+      if (!rec) return jsonRes({ error: "not_found" }, 404);
+      const createdAt = new Date((rec as any)[spec.createdCol]).getTime();
+      if (!Number.isFinite(createdAt) || Date.now() - createdAt > PUBLIC_MAX_AGE_MS) {
+        return jsonRes({ error: "too_old" }, 403);
+      }
+      const { data: already } = await supabase.from("lead_notification_log")
+        .select("id").eq("lead_type", type).eq("lead_id", leadId).eq("status", "sent")
+        .limit(1).maybeSingle();
+      if (already) return jsonRes({ success: true, skipped: "already_sent" }, 200);
+      recipientEmail = undefined; // altijd info@
+      const dbEmail = String((rec as any).email ?? "").trim();
+      userEmail = dbEmail || null;
+      replyToEmail = dbEmail || undefined;
+      customerFields = customerFieldsFromRecord(spec.table, rec as Record<string, unknown>);
+    }
     const baseRecipient = recipientEmail || TO_DEFAULT;
 
     // Centrale, fail-safe omgevingsdetectie (host-based, APP_ENV is secundair).
