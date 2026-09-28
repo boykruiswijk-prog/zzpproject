@@ -229,28 +229,36 @@ Deno.serve(async (req) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
   );
 
-  let body: any;
-  try { body = await req.json(); } catch { return json({ error: "invalid_json" }, 400); }
-  const { action, lead_id, reden, toelichting, pauze_toelichting, nieuwe_functie, rol_hint } = body ?? {};
-  if (!action || !lead_id) return json({ error: "missing_params" }, 400);
-
-  // Auth: bepaal exacte rol (admin / supervisor / medewerker / klant / system)
+  // Auth vóór alles: de body bepaalt nooit de rol.
+  //   - x-internal-secret === INTERNAL_FUNCTION_SECRET → rol "system", uid null
+  //   - anders verplicht een geldige gebruikers-JWT → 401 zonder audit-log
   let uid: string | null = null;
   let rol = "klant";
-  const authHeader = req.headers.get("authorization") || "";
-  if (authHeader.startsWith("Bearer ")) {
-    const { data: { user } } = await supabase.auth.getUser(authHeader.slice(7));
-    uid = user?.id ?? null;
-    if (uid) {
-      const { data: roleRows } = await supabase
-        .from("user_roles").select("role").eq("user_id", uid);
-      const roles = (roleRows ?? []).map((r: any) => r.role);
-      if (roles.includes("admin")) rol = "admin";
-      else if (roles.includes("supervisor")) rol = "supervisor";
-      else if (roles.includes("medewerker")) rol = "medewerker";
-    }
+  const internalSecret = Deno.env.get("INTERNAL_FUNCTION_SECRET") ?? "";
+  const providedSecret = req.headers.get("x-internal-secret") ?? "";
+  const isInternal = internalSecret.length > 0 && providedSecret === internalSecret;
+  if (isInternal) {
+    rol = "system";
+  } else {
+    const authHeader = req.headers.get("authorization") || "";
+    if (!authHeader.startsWith("Bearer ")) return json({ error: "unauthorized" }, 401);
+    const { data: userData } = await supabase.auth.getUser(authHeader.slice(7));
+    uid = userData?.user?.id ?? null;
+    if (!uid) return json({ error: "unauthorized" }, 401);
+    const { data: roleRows } = await supabase
+      .from("user_roles").select("role").eq("user_id", uid);
+    const roles = (roleRows ?? []).map((r: any) => r.role);
+    if (roles.includes("admin")) rol = "admin";
+    else if (roles.includes("supervisor")) rol = "supervisor";
+    // Functiegroep "verzekering" behandelt polissen → zelfde rechten als medewerker.
+    else if (roles.includes("medewerker") || roles.includes("verzekering")) rol = "medewerker";
+    // "marketing" of geen rol → klantpad met eigenaarscontrole.
   }
-  if (rol_hint === "system") rol = "system";
+
+  let body: any;
+  try { body = await req.json(); } catch { return json({ error: "invalid_json" }, 400); }
+  const { action, lead_id, reden, toelichting, pauze_toelichting, nieuwe_functie } = body ?? {};
+  if (!action || !lead_id) return json({ error: "missing_params" }, 400);
 
   const { data: lead, error: leadErr } = await supabase
     .from("leads").select("*").eq("id", lead_id).single();

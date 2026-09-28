@@ -24,7 +24,7 @@ const DEFAULT_REASON =
 
 const schema = z.object({
   leadId: z.string().uuid(),
-  email: z.string().email(),
+  email: z.string().optional(), // genegeerd: ontvanger komt uit leads.email
   reasonSentence: z.string().trim().min(1).max(1000).optional(),
 });
 
@@ -97,6 +97,16 @@ Deno.serve(async (req) => {
     });
   }
 
+  const jsonErr = (error: string, status: number) =>
+    new Response(JSON.stringify({ error }), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  const authHeader = req.headers.get("authorization") || "";
+  if (!authHeader.startsWith("Bearer ")) return jsonErr("unauthorized", 401);
+  const { data: userData } = await supabase.auth.getUser(authHeader.slice(7));
+  const uid = userData?.user?.id;
+  if (!uid) return jsonErr("unauthorized", 401);
+  const { data: isTeam } = await supabase.rpc("is_team_member", { _user_id: uid });
+  if (isTeam !== true) return jsonErr("forbidden", 403);
+
   try {
     const parsed = schema.safeParse(await req.json());
     if (!parsed.success) {
@@ -104,7 +114,11 @@ Deno.serve(async (req) => {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const { leadId, email, reasonSentence } = parsed.data;
+    const { leadId, reasonSentence } = parsed.data;
+    const { data: leadRow } = await supabase.from("leads").select("email").eq("id", leadId).maybeSingle();
+    if (!leadRow) return jsonErr("lead_not_found", 404);
+    const email = (leadRow.email ?? "").trim();
+    if (!z.string().email().safeParse(email).success) return jsonErr("lead_email_invalid", 422);
     const finalReason = (reasonSentence && reasonSentence.trim().length > 0)
       ? reasonSentence.trim()
       : DEFAULT_REASON;
