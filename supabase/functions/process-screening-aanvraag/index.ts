@@ -186,6 +186,8 @@ async function syncScreeningNaarExact(supabase: any, aanvraag: any, bedrag: numb
           SignatureDate: new Date(bewijs?.akkoord_op ?? aanvraag.incasso_akkoord_op).toISOString(),
           Type: 0,
           PaymentType: 0,
+          // Omschrijving = naam van de relatie zoals het account is aangemaakt (max. afgekapt op 60).
+          Description: relatieNaam.slice(0, 60),
         }),
       });
       if (!mRes.ok) throw new Error(`DirectDebitMandate ${mRes.status}: ${await mRes.text()}`);
