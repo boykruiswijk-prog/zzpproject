@@ -2081,6 +2081,7 @@ export type Database = {
       is_supervisor_or_admin: { Args: { _user_id: string }; Returns: boolean }
       is_team_member: { Args: { _user_id: string }; Returns: boolean }
       nextval_text: { Args: { seq_name: string }; Returns: string }
+      verify_cron_secret: { Args: { p_secret: string }; Returns: boolean }
       verify_dba_certificate: {
         Args: { _token: string }
         Returns: {
