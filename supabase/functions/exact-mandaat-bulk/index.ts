@@ -75,6 +75,8 @@ Deno.serve(async (req) => {
   if (mode !== "droogrun" && mode !== "uitvoeren" && mode !== "omschrijving_herstellen") return json({ error: "ongeldige mode" }, 400);
   const limitRaw = Number(body.limit ?? url.searchParams.get("limit") ?? 10);
   const limit = Math.max(1, Math.min(15, Number.isFinite(limitRaw) ? Math.floor(limitRaw) : 10));
+  // Alleen voor omschrijving_herstellen: lees de omschrijving, schrijf niets naar Exact.
+  const alleenLezen = body.alleen_lezen === true || url.searchParams.get("alleen_lezen") === "1";
   const beginStatus = mode === "droogrun" ? "wachtend" : mode === "uitvoeren" ? "droogrun_ok" : "bijgewerkt";
 
   const openCount = async () => {
@@ -138,6 +140,7 @@ Deno.serve(async (req) => {
         const gr = await exactFetch(`cashflow/DirectDebitMandates(guid'${id}')?$select=ID,Description`);
         if (!gr.ok) { await save(row.id, { status: row.status, melding: `Herstel: ${await fout(gr, "GET machtiging")}` }); continue; }
         const huidig = String((await gr.json())?.d?.Description ?? "");
+        if (alleenLezen) { await save(row.id, { status: row.status, melding: `Controle: omschrijving in Exact is "${huidig}"` }); continue; }
         if (huidig.trim() !== OUDE_OMSCHRIJVING) {
           await save(row.id, { status: row.status, melding: `Herstel: niet nodig, omschrijving is "${huidig}"` }); continue;
         }
