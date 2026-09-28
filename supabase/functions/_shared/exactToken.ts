@@ -1,5 +1,5 @@
 // Gedeelde Exact-tokenlogica (zelfde gedrag als polis-lifecycle, incl. 401-race-herstel).
-// Nog alleen gebruikt door exact-email-bulk; andere functies worden later omgezet (M4).
+// Gebruikt door exact-email-bulk, exact-keepalive en monthly-invoices-cron; overige functies volgen bij M4.
 
 // deno-lint-ignore no-explicit-any
 type Sb = any;

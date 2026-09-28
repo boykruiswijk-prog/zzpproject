@@ -10,11 +10,12 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { ExactKoppelingAlarm } from "@/components/admin/ExactKoppelingAlarm";
 
 
 export default function AdminDashboard() {
   const [isExporting, setIsExporting] = useState(false);
-  const { isSupervisor } = useAuth();
+  const { isSupervisor, isVerzekering } = useAuth();
   const { toast } = useToast();
 
   const handleExport = async () => {
