@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Loader2, CheckCircle2, XCircle, RefreshCw, ExternalLink } from "lucide-react";
 import { ExactEmailImportBlock } from "@/components/admin/ExactEmailImportBlock";
+import { ExactMandaatImportBlock } from "@/components/admin/ExactMandaatImportBlock";
 
 const ADMIN_EMAIL = "boy.kruiswijk@zpzaken.nl";
 
@@ -107,6 +108,7 @@ export default function Integraties() {
           <div className="space-y-6 max-w-5xl">
             <h1 className="text-3xl font-bold">Integraties</h1>
             <ExactEmailImportBlock />
+            <ExactMandaatImportBlock />
           </div>
         </AdminLayout>
       );
@@ -393,6 +395,7 @@ export default function Integraties() {
               </CardContent>
             </Card>
             <ExactEmailImportBlock />
+            <ExactMandaatImportBlock />
           </>
         )}
       </div>
