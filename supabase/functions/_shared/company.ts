@@ -3,6 +3,7 @@
 export const COMPANY = {
   legalName: "ZP Zaken B.V.",
   website: "zpzaken.nl",
+  url: "https://zpzaken.nl",
   email: "info@zpzaken.nl",
   emailAdministratie: "administratie@zpzaken.nl",
   phoneDisplay: "020 - 457 3077",
@@ -23,3 +24,15 @@ export const COMPANY = {
 
 /** "1119 NW Schiphol-Rijk" */
 export const COMPANY_CITY_LINE = `${COMPANY.address.postalCode} ${COMPANY.address.addressLocality}`;
+
+// Toegestane basis-URL's voor links/redirects in klantmails. Andere Origins → COMPANY.url.
+export const ALLOWED_APP_ORIGINS = [
+  "https://zpzaken.nl",
+  "https://www.zpzaken.nl",
+  "https://zzpproject.lovable.app",
+  "https://id-preview--2e030441-024b-4841-be4b-93d91e428fb6.lovable.app",
+];
+export function safeAppOrigin(origin: string | null | undefined): string {
+  const o = (origin ?? "").replace(/\/$/, "");
+  return ALLOWED_APP_ORIGINS.includes(o) ? o : COMPANY.url;
+}
