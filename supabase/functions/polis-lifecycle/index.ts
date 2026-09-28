@@ -14,7 +14,7 @@ import {
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-internal-secret",
 };
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -267,7 +267,7 @@ Deno.serve(async (req) => {
   if (rol === "klant") {
     const { data: pol } = await supabase
       .from("policies").select("user_id").eq("lead_id", lead_id).limit(1).maybeSingle();
-    if (!pol || pol.user_id !== uid) return json({ error: "forbidden" }, 403);
+    if (!uid || !pol || pol.user_id !== uid) return json({ error: "forbidden" }, 403);
   }
 
   // Server-side rolafscherming: medewerker (intern) mag NIET opzeggen of activatie terugdraaien.
