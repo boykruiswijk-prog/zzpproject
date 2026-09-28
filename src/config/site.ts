@@ -22,6 +22,9 @@ export const SITE_CONFIG = {
     addressLocality: "Schiphol-Rijk",
     addressCountry: "NL",
   },
+  // SEPA Incassant-ID (Creditor Identifier). NOG LEEG: komt van de administratie.
+  // Spiegel: supabase/functions/_shared/company.ts (incassantId).
+  incassantId: "",
   geo: { latitude: 52.2796022, longitude: 4.7514364 },
   registrations: {
     afm: "12050636",
@@ -46,3 +49,6 @@ export const ADDRESS_SHORT = `${SITE_CONFIG.address.streetAddress}, ${SITE_CONFI
 
 /** "1119 NW Schiphol-Rijk" */
 export const ADDRESS_CITY_LINE = `${SITE_CONFIG.address.postalCode} ${SITE_CONFIG.address.addressLocality}`;
+
+/** "Tupolevlaan 41, 1119 NW Schiphol-Rijk, Nederland" — voor de SEPA-machtiging. */
+export const ADDRESS_FULL_WITH_COUNTRY = `${SITE_CONFIG.address.streetAddress}, ${SITE_CONFIG.address.postalCode} ${SITE_CONFIG.address.addressLocality}, Nederland`;

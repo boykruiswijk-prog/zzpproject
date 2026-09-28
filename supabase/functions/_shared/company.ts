@@ -12,7 +12,13 @@ export const COMPANY = {
     streetAddress: "Tupolevlaan 41",
     postalCode: "1119 NW",
     addressLocality: "Schiphol-Rijk",
+    addressCountry: "Nederland",
   },
+  // SEPA Incassant-ID (Creditor Identifier). NOG LEEG: komt van de administratie.
+  // Zolang leeg weigeren process-bav-wizard en process-screening-aanvraag elke
+  // aanvraag met machtiging, zodat er nooit een machtiging zonder ID wordt vastgelegd.
+  // Spiegel: src/config/site.ts (incassantId).
+  incassantId: "",
   registrations: {
     afm: "12050636",
     kvk: "62117092",
@@ -36,3 +42,6 @@ export function safeAppOrigin(origin: string | null | undefined): string {
   const o = (origin ?? "").replace(/\/$/, "");
   return ALLOWED_APP_ORIGINS.includes(o) ? o : COMPANY.url;
 }
+
+/** "Tupolevlaan 41, 1119 NW Schiphol-Rijk, Nederland" */
+export const COMPANY_ADDRESS_FULL = `${COMPANY.address.streetAddress}, ${COMPANY.address.postalCode} ${COMPANY.address.addressLocality}, ${COMPANY.address.addressCountry}`;
