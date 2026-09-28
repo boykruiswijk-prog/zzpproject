@@ -84,6 +84,11 @@ Deno.serve(async (req) => {
   // force_date voor test-runs: ?force_date=2026-07-01
   const forceDate = url.searchParams.get("force_date");
   const dryRun = url.searchParams.get("dry_run") === "1";
+  // include_test=1 neemt testleads mee, maar uitsluitend bij een droogrun.
+  const includeTest = url.searchParams.get("include_test") === "1";
+  if (includeTest && !dryRun) {
+    return json({ error: "include_test_requires_dry_run" }, 400);
+  }
   const today = forceDate || todayAmsterdam();
   const todayDay = parseInt(today.slice(8, 10), 10);
 
@@ -100,12 +105,34 @@ Deno.serve(async (req) => {
 
   // Exact config (lazy)
   const { data: cfg } = await supabase.from("exact_config").select("*").limit(1).maybeSingle();
+  // Fouten vóór de factuurlus altijd loggen (geen stille 500). Nooit tokens loggen.
+  const logCronError = async (message: string) => {
+    try {
+      await supabase.from("exact_sync_log").insert({
+        trigger_type: "monthly_invoices_cron", status: "error",
+        error_message: message.replace(/(access_token|refresh_token)"?\s*[:=]\s*"?[^",\s}]+/gi, "$1=[redacted]").slice(0, 1000),
+        payload: { today, dry_run: dryRun, include_test: includeTest },
+      });
+    } catch (e) { console.error("exact_sync_log insert failed", e); }
+  };
   if (!cfg?.is_actief || !cfg.divisie_code) {
+    await logCronError("exact_niet_actief");
     return json({ error: "exact_niet_actief" }, 500);
   }
   const baseUrl = cfg.base_url || "https://start.exactonline.nl";
   const div = cfg.divisie_code;
-  const token = await ensureValidToken(supabase, cfg);
+  let token = "";
+  // Droogrun: geen Exact-aanroep, dus ook geen tokenverversing.
+  if (!dryRun) {
+    try {
+      token = await ensureValidToken(supabase, cfg);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error("monthly-invoices-cron: token error");
+      await logCronError(`token_error: ${msg}`);
+      return json({ error: "exact_token_error", message: "Exact-token kon niet worden vernieuwd; zie exact_sync_log." }, 502);
+    }
+  }
   const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
@@ -123,7 +150,9 @@ Deno.serve(async (req) => {
     .eq("status", "actief")
     .eq("gekozen_pakket", "maandelijks")
     .not("exact_account_id", "is", null)
-    .lte("ingangsdatum", periodeEind);
+    .lte("ingangsdatum", periodeEind)
+    // Testleads nooit echt factureren; alleen meenemen bij dry_run + include_test.
+    .or(includeTest ? "is_test.is.null,is_test.eq.false,is_test.eq.true" : "is_test.is.null,is_test.eq.false");
 
   if (leadsErr) return json({ error: "lead_query_failed", detail: leadsErr.message }, 500);
 
