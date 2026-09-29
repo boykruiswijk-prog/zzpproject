@@ -91,7 +91,7 @@ export function buildInviteHtml(actionUrl: string, voornaam: string | null | und
     <p style="margin:0 0 8px;line-height:1.5">Met de knop hieronder ben je in één klik ingelogd. Een wachtwoord is niet nodig.</p>
     ${button(actionUrl, "Inloggen bij Mijn ZP")}
     <p style="font-size:13px;color:#555;line-height:1.5;margin:0">
-      De link is 24 uur geldig en werkt één keer. Daarna vraag je eenvoudig een nieuwe inloglink aan via
+      De link werkt één keer en is beperkt geldig. Verlopen of al gebruikt? Vraag dan eenvoudig een nieuwe inloglink aan via
       <a href="https://${escapeHtml(loginUrl)}" style="color:#E53E2F">${escapeHtml(loginUrl)}</a>.
     </p>`);
 }
