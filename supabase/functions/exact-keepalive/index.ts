@@ -4,10 +4,14 @@
 // Testparameter ?test_alarm=1: bouwt alleen de alarmmail en draait de
 // 24-uurscheck; geen refresh, geen Exact-aanroep, geen mail.
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { refreshAccessToken } from "../_shared/exactToken.ts";
 import { alarmRecentlySent, buildAlarmMail, sanitizeError, sendExactAlarm } from "../_shared/exactAlarm.ts";
 import { readInvoiceStatuses } from "../_shared/exactInvoiceStatus.ts";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret",
+};
 
 const json = (b: unknown, s = 200) =>
   new Response(JSON.stringify(b), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } });
