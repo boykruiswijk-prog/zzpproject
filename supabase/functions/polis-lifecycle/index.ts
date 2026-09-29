@@ -239,12 +239,11 @@ Deno.serve(async (req) => {
   const yourRef = factuurReferentie(policyRef?.certificate_number, lead.exact_relatie_code);
 
   async function heeftGeslaagdeFactuur(): Promise<boolean> {
+    // Deze ID's worden uitsluitend na een geslaagde Exact-aanmaak opgeslagen en
+    // horen bij de huidige polis-/hervattingsperiode. Een willekeurige oude
+    // success-logregel is geen bewijs voor de te crediteren periode.
     if (lead.exact_invoice_id || lead.exact_factuur_id_hervat) return true;
-    const { data } = await supabase.from("exact_sync_log").select("id")
-      .eq("lead_id", lead_id).eq("status", "success")
-      .in("trigger_type", ["invoice_create", "invoice_retry", "factuur_hervat"])
-      .limit(1).maybeSingle();
-    return !!data;
+    return false;
   }
 
   async function verversLaatsteFactuurStatus(ctx: Awaited<ReturnType<typeof exactCtx>>) {
