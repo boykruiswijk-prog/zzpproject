@@ -27,7 +27,7 @@ export function PortalInviteButton({ leadId, email }: Props) {
             Authorization: `Bearer ${session?.access_token}`,
             apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
           },
-          body: JSON.stringify({ lead_id: leadId, email }),
+          body: JSON.stringify({ lead_id: leadId }),
         }
       );
       const result = await res.json();
