@@ -10,6 +10,7 @@ import {
 import { ensureValidToken } from "../_shared/exactToken.ts";
 import { cachedBavGlAccountId, getBavGlAccountId } from "../_shared/exactGl.ts";
 import { sendExactAlarm } from "../_shared/exactAlarm.ts";
+import { factuurReferentie, kopOmschrijving, maandIsAlGefactureerd, regelNotities, regelOmschrijving } from "../_shared/factuurTekst.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -141,7 +142,7 @@ Deno.serve(async (req) => {
   // ingangsdatum <= periode_eind, polis_einddatum (computed) >= periode_start.
   const { data: leads, error: leadsErr } = await supabase
     .from("leads")
-    .select("id,voornaam,achternaam,bedrijfsnaam,gekozen_pakket,status,ingangsdatum,polis_einddatum,exact_account_id")
+    .select("id,voornaam,achternaam,bedrijfsnaam,gekozen_pakket,status,ingangsdatum,polis_einddatum,exact_account_id,exact_relatie_code")
     .eq("status", "actief")
     .eq("gekozen_pakket", "maandelijks")
     .not("exact_account_id", "is", null)
@@ -169,7 +170,7 @@ Deno.serve(async (req) => {
       .select("id,status,exact_invoice_id")
       .eq("lead_id", lead.id).eq("factuur_jaar", jaar).eq("factuur_maand", maand)
       .maybeSingle();
-    if (existing && existing.status === "success") {
+    if (existing && maandIsAlGefactureerd(existing.status)) {
       results.push({ lead_id: lead.id, skipped: "already_invoiced", exact_invoice_id: existing.exact_invoice_id });
       skipped++; continue;
     }
@@ -187,17 +188,15 @@ Deno.serve(async (req) => {
       continue;
     }
 
-    const fmtNL = (iso: string) => {
-      const d = new Date(iso);
-      return `${String(d.getUTCDate()).padStart(2, "0")}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${d.getUTCFullYear()}`;
-    };
-    const header = `BAV-AVB premie ${maandNaam} ${jaar}`;
-    const lineDesc = `BAV-AVB premie ${maandNaam} ${jaar} - Periode ${fmtNL(effStart)} t/m ${fmtNL(effEnd)} (${calc.dagen} dagen)`;
+    const header = kopOmschrijving(`BAV-AVB premie ${maandNaam} ${jaar}`);
+    const lineDesc = regelOmschrijving("premie", effStart, effEnd);
+    const { data: policyRef } = await supabase.from("policies").select("certificate_number").eq("lead_id", lead.id).limit(1).maybeSingle();
 
     // deno-lint-ignore no-explicit-any
     const line: any = {
       GLAccount: INV_GL_ACCOUNT, VATCode: INV_VAT_CODE,
       Quantity: 1, UnitPrice: calc.bedrag, Description: lineDesc,
+      Notes: regelNotities(calc.dagen, calc.dagprijs, `${maandNaam} ${jaar}`),
       StartTime: `${effStart}T00:00:00`,
       EndTime: `${effEnd}T00:00:00`,
     };
@@ -208,7 +207,7 @@ Deno.serve(async (req) => {
       Journal: INV_JOURNAL, PaymentCondition: INV_PAYMENT_COND,
       Type: TYPE_SALES_INVOICE, Status: INV_STATUS_CONCEPT,
       InvoiceDate: new Date().toISOString(), OrderDate: new Date().toISOString(),
-      YourRef: String(lead.id), Description: header,
+      YourRef: factuurReferentie(policyRef?.certificate_number, lead.exact_relatie_code), Description: header,
       SalesInvoiceLines: [line],
     };
 

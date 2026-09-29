@@ -3,7 +3,7 @@
 // Returns: { credit_bedrag/factuur_bedrag, resterende_dagen, dagprijs, polis_einddatum, jaarprijs }
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import {
-  getJaarprijs, calculatePauzeCredit, calculateHervatFactuur, calcPolisEinddatum,
+  getJaarprijs, calculatePauzeCredit, calculateHervatFactuur, calcPolisEinddatum, isMaandPolis,
 } from "../_shared/polisProRata.ts";
 
 const corsHeaders = {
@@ -62,6 +62,14 @@ Deno.serve(async (req) => {
   }).format(new Date());
 
   if (action === "pauze" || action === "opzeg") {
+    if (isMaandPolis(lead.gekozen_pakket)) {
+      const dateKey = action === "opzeg" ? "opzeg_datum" : "pauze_datum";
+      return json({
+        ok: true, action, jaarprijs, polis_einddatum: eind, [dateKey]: today,
+        credit_bedrag: 0, resterende_dagen: 0, dagprijs: 0, is_maandpolis: true,
+        uitleg: "Bij een maandpolis wordt de lopende maand niet terugbetaald; vanaf de pauze worden geen nieuwe maandfacturen gemaakt.",
+      });
+    }
     const calc = calculatePauzeCredit({
       ingangsdatum: lead.ingangsdatum, polis_einddatum: eind,
       jaarprijs, pauze_datum: today,

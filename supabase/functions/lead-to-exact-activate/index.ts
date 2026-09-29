@@ -697,9 +697,10 @@ Deno.serve(async (req) => {
   const kvk = String(lead.kvk_nummer);
   let reusedAccountId: string | null = null;
   let reusedAccountName: string | null = null;
+  let exactRelatieCode: string | null = null;
   try {
     const dupRes = await fetch(
-      `${baseUrl}/api/v1/${div}/crm/Accounts?$select=ID,Name,ChamberOfCommerce&$filter=ChamberOfCommerce eq '${kvk}'&$top=1`,
+      `${baseUrl}/api/v1/${div}/crm/Accounts?$select=ID,Code,Name,ChamberOfCommerce&$filter=ChamberOfCommerce eq '${kvk}'&$top=1`,
       { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } },
     );
     const dupJson = await dupRes.json().catch(() => ({}));
@@ -707,6 +708,7 @@ Deno.serve(async (req) => {
     if (dupArr.length > 0 && dupArr[0]?.ID) {
       reusedAccountId = dupArr[0].ID;
       reusedAccountName = dupArr[0]?.Name ?? null;
+      exactRelatieCode = String(dupArr[0]?.Code ?? "").trim() || null;
       await logSync(supabase, {
         trigger_type: "lead_activation", status: "success",
         lead_id: leadId, admin_user_id: user.id,
@@ -785,7 +787,20 @@ Deno.serve(async (req) => {
     if (!exactAccountId) {
       return json({ success: false, error: "no_account_id_returned", raw: accData }, 500);
     }
+    exactRelatieCode = String(accData?.d?.Code ?? accData?.Code ?? "").trim() || null;
   }
+
+  // Exact geeft Code niet altijd terug op POST; lees dan de zojuist aangemaakte relatie terug.
+  if (!exactRelatieCode) {
+    const codeRes = await fetch(`${baseUrl}/api/v1/${div}/crm/Accounts(guid'${exactAccountId}')?$select=Code`, {
+      headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" },
+    });
+    if (codeRes.ok) {
+      const codeJson = await codeRes.json().catch(() => ({}));
+      exactRelatieCode = String(codeJson?.d?.Code ?? codeJson?.Code ?? "").trim() || null;
+    }
+  }
+  lead.exact_relatie_code = exactRelatieCode;
 
 
   // ── Helper voor rollback (alleen bij nieuw aangemaakte account) ──
@@ -974,6 +989,8 @@ Deno.serve(async (req) => {
   if (!pakketSpec) {
     invoiceWarning = `Onbekend pakket "${lead.gekozen_pakket}" — geen factuur aangemaakt.`;
   } else {
+    const { data: policyRef } = await supabase.from("policies").select("certificate_number").eq("lead_id", leadId).limit(1).maybeSingle();
+    lead.certificate_number = policyRef?.certificate_number ?? null;
     const itemEnsure = await ensureBavAvbItem({
       supabase, config, baseUrl, div, headers, accessToken,
       logCtx: { lead_id: leadId, admin_user_id: user.id },
@@ -1097,6 +1114,7 @@ Deno.serve(async (req) => {
   const leadUpdate: Record<string, unknown> = {
     exact_account_id: exactAccountId,
     exact_relatie_id: exactAccountId,
+    exact_relatie_code: exactRelatieCode,
     activatie_log: newLog,
     exact_status: activationSucceeded ? "gesynchroniseerd" : "deels_gesynchroniseerd",
     exact_sync_op: new Date().toISOString(),
