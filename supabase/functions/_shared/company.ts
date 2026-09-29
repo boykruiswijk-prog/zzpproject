@@ -18,7 +18,7 @@ export const COMPANY = {
   // Zolang leeg weigeren process-bav-wizard en process-screening-aanvraag elke
   // aanvraag met machtiging, zodat er nooit een machtiging zonder ID wordt vastgelegd.
   // Spiegel: src/config/site.ts (incassantId).
-  incassantId: "",
+  incassantId: "NL03ZZZ621170920000",
   registrations: {
     afm: "12050636",
     kvk: "62117092",
