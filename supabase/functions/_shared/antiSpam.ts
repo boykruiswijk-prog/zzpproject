@@ -3,7 +3,7 @@
 //  1. honeypot  — onzichtbaar veld dat alleen bots invullen
 //  2. tijdslot  — een mens doet er langer dan MIN_FILL_MS over
 //  3. throttle  — maximaal N inzendingen per IP per tijdvak (tabel form_rate_limit)
-import type { SupabaseClient } from "npm:@supabase/supabase-js@2.39.0";
+import type { SupabaseClient } from "npm:@supabase/supabase-js@2";
 
 export const MIN_FILL_MS = 2000;
 

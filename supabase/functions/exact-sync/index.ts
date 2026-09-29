@@ -3,6 +3,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { ensureValidToken } from "../_shared/exactToken.ts";
 import { requireSupervisor } from "../_shared/teamAuth.ts";
+import { checkConfiguredDivision } from "../_shared/exactDivision.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -76,54 +77,26 @@ Deno.serve(async (req) => {
     const accessToken = await ensureValidToken(supabase, config);
     const baseUrl = config.base_url || "https://start.exactonline.nl";
 
-    // Auto-bootstrap divisie_code als die nog ontbreekt
-    let divisionCode: string | null = config.divisie_code ?? null;
-    if (!divisionCode) {
-      const meRes = await fetch(
-        `${baseUrl}/api/v1/current/Me?$select=CurrentDivision,UserName`,
-        { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } },
-      );
-      const meJson = await meRes.json();
-      if (!meRes.ok) {
-        await logSync(supabase, {
-          trigger_type: triggerType,
-          status: "error",
-          error_message: `Me-call mislukt: ${JSON.stringify(meJson)}`,
-          http_status: meRes.status,
-        });
-        throw new Error(`Kon CurrentDivision niet ophalen (${meRes.status})`);
-      }
-      const cd = meJson?.d?.results?.[0]?.CurrentDivision ?? meJson?.d?.CurrentDivision;
-      if (!cd) throw new Error("CurrentDivision niet gevonden in /Me response");
-      divisionCode = String(cd);
-      await supabase
-        .from("exact_config")
-        .update({ divisie_code: divisionCode })
-        .eq("id", config.id);
-    }
+    const divisionCode = String(config.divisie_code ?? "");
+    if (!divisionCode) throw new Error("Geen geconfigureerde Exact-administratie.");
 
     if (testMode) {
-      const testRes = await fetch(
-        `${baseUrl}/api/v1/current/Me?$select=CurrentDivision,UserName`,
-        { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } },
-      );
-      const testData = await testRes.json();
-
-      if (!testRes.ok) {
+      const testData = await checkConfiguredDivision(baseUrl, divisionCode, accessToken);
+      if (!testData.ok) {
         await logSync(supabase, {
           trigger_type: triggerType,
           status: "error",
-          error_message: `Test API call mislukt: ${JSON.stringify(testData)}`,
-          http_status: testRes.status,
+          error_message: testData.error,
+          http_status: testData.status,
         });
-        throw new Error(`Test mislukt (${testRes.status})`);
+        throw new Error(`Test mislukt (${testData.status})`);
       }
 
       await logSync(supabase, {
         trigger_type: triggerType,
         status: "success",
         payload: testData,
-        http_status: testRes.status,
+        http_status: testData.status,
       });
 
       await supabase
@@ -196,44 +169,9 @@ Deno.serve(async (req) => {
     }
 
     if (switchDivision) {
-      const meRes = await fetch(
-        `${baseUrl}/api/v1/current/Me?$select=CurrentDivision,UserName,DivisionCustomerCode`,
-        { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } },
-      );
-      const meJson = await meRes.json();
-      if (!meRes.ok) {
-        await logSync(supabase, {
-          trigger_type: triggerType, status: "error",
-          error_message: `Switch divisie mislukt: ${JSON.stringify(meJson)}`,
-          http_status: meRes.status,
-        });
-        throw new Error(`Switch divisie mislukt (${meRes.status})`);
-      }
-      const meRow = meJson?.d?.results?.[0] ?? meJson?.d ?? {};
-      const newDivision = meRow?.CurrentDivision ? String(meRow.CurrentDivision) : null;
-      const changed = newDivision && newDivision !== config.divisie_code;
-      if (newDivision) {
-        await supabase.from("exact_config")
-          .update({ divisie_code: newDivision })
-          .eq("id", config.id);
-      }
-      await logSync(supabase, {
-        trigger_type: triggerType, status: "success",
-        payload: { switch_division: true, me: meRow, previous_division: config.divisie_code, new_division: newDivision, changed },
-        http_status: meRes.status,
-      });
       return new Response(
-        JSON.stringify({
-          success: true, switch_division: true,
-          previous_division: config.divisie_code,
-          new_division: newDivision,
-          changed,
-          me: meRow,
-          note: changed
-            ? "Divisie bijgewerkt op basis van /Me."
-            : "Exact /Me retourneert dezelfde CurrentDivision — om naar een andere administratie te wisselen is een nieuwe OAuth-autorisatie nodig waarbij je in Exact de juiste administratie selecteert.",
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        JSON.stringify({ error: "switch_division_uitgeschakeld" }),
+        { status: 410, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
