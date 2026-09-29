@@ -6,6 +6,8 @@ import {
   isMaandPolis, getMaandprijs, lastOfMonth, calcMaandProrata, calcPolisEinddatum,
 } from "../_shared/polisProRata.ts";
 import { mandaatkenmerkVoor } from "../_shared/sepaMachtiging.ts";
+import { autoInvitePortalLead } from "../_shared/portalAccess.ts";
+import { landcodeVoor } from "../_shared/landcode.ts";
 
 // SEPA-mandaat in Exact. Waarden geverifieerd in de Exact Online REST-documentatie:
 // https://start.exactonline.nl/docs/HlpRestAPIResourcesDetails.aspx?name=CashflowDirectDebitMandates
@@ -753,6 +755,12 @@ Deno.serve(async (req) => {
     } catch { return null; }
   })();
 
+  // Land uit het SEPA-bewijs (adres rekeninghouder zoals ingevuld); anders
+  // afgeleid uit het postcodeformaat; standaard NL.
+  const { data: bewijsLand } = await supabase.from("sepa_machtiging_bewijs")
+    .select("debiteur_adres").eq("bron_id", leadId).order("created_at", { ascending: false }).limit(1).maybeSingle();
+  const accountCountry = landcodeVoor((bewijsLand as any)?.debiteur_adres?.land, lead.adres_postcode);
+
   const accountPayload = {
     Name: String(lead.bedrijfsnaam),
     ChamberOfCommerce: kvk,
@@ -761,7 +769,7 @@ Deno.serve(async (req) => {
     AddressLine1: `${lead.adres_straat} ${lead.adres_huisnummer}`.trim(),
     Postcode: String(lead.adres_postcode).toUpperCase().replace(/\s+/g, " "),
     City: lead.adres_plaats,
-    Country: "NL",
+    Country: accountCountry,
     Status: "C",
     IsSales: true,
     Remarks:
@@ -1139,6 +1147,13 @@ Deno.serve(async (req) => {
     } catch (_e) { /* logfout mag activatie niet laten falen */ }
   }
 
+  // Automatische Mijn ZP-uitnodiging (alleen als er al een polis is en de lead
+  // nog nooit is uitgenodigd). Mag de activatie nooit laten mislukken.
+  const portaalUitnodiging = activationSucceeded
+    ? await autoInvitePortalLead(supabase, req, leadId, user.id, "lead-to-exact-activate")
+        .catch((e) => ({ verstuurd: false, error: String(e) }))
+    : null;
+
   await logSync(supabase, {
     trigger_type: "lead_activation",
     status: "success",
@@ -1181,6 +1196,7 @@ Deno.serve(async (req) => {
     reused_bankaccount: bankAccountReused,
     reused_mandate: mandateReused,
     activation_status: activationSucceeded ? "actief" : lead.status,
+    portaal_uitnodiging: portaalUitnodiging,
     message: reusedAccountId
       ? "Klant geactiveerd op bestaande Exact-relatie (hergebruik)"
       : "Klant succesvol geactiveerd in Exact",

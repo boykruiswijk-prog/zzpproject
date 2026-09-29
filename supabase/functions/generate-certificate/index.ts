@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { PDFDocument, rgb, StandardFonts } from "https://esm.sh/pdf-lib@1.17.1";
 import { COMPANY } from "../_shared/company.ts";
+import { autoInvitePortalLead } from "../_shared/portalAccess.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -558,6 +559,14 @@ serve(async (req) => {
       .update({ pdf_url: fileName })
       .eq("id", policy.id);
 
+    // Automatische Mijn ZP-uitnodiging (alleen als de lead ook al geactiveerd is
+    // en nog nooit is uitgenodigd). Mag het certificaat nooit laten mislukken.
+    let portaal_uitnodiging: unknown = null;
+    if (lead_id) {
+      portaal_uitnodiging = await autoInvitePortalLead(adminClient, req, lead_id, user.id, "generate-certificate")
+        .catch((e) => ({ verstuurd: false, error: String(e) }));
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
@@ -567,6 +576,7 @@ serve(async (req) => {
           pdf_url: signedUrlData?.signedUrl || null,
           pdf_path: fileName,
         },
+        portaal_uitnodiging,
       }),
       {
         status: 200,

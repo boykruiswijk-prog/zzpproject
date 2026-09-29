@@ -64,6 +64,13 @@
       "when": 1790682058672,
       "tag": "0008_archief_testdata_20260929",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1790682685873,
+      "tag": "0009_get_portal_status",
+      "breakpoints": true
     }
   ]
 }

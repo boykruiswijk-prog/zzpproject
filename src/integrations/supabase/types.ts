@@ -2266,6 +2266,7 @@ export type Database = {
         }[]
       }
       get_pilot_signup_count: { Args: { pilot: string }; Returns: number }
+      get_portal_status: { Args: { _lead_id: string }; Returns: Json }
       get_user_role_label: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {

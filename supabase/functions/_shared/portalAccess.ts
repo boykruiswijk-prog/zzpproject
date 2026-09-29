@@ -7,6 +7,8 @@
 import { createMailGate } from "./mail.ts";
 import { safeAppOrigin } from "./company.ts";
 
+import { beslisAutoUitnodiging } from "./portalAutoInvite.ts";
+
 export function escapeHtml(str: string): string {
   return String(str)
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
@@ -76,12 +78,13 @@ function button(url: string, label: string): string {
     <p style="font-size:12px;color:#666;word-break:break-all;margin:0 0 16px">${escapeHtml(url)}</p>`;
 }
 
-export function buildInviteHtml(actionUrl: string, voornaam: string | null | undefined, origin: string): string {
+export function buildInviteHtml(actionUrl: string, voornaam: string | null | undefined, origin: string, nieuweKlant = false): string {
   const aanhef = voornaam && voornaam.trim() ? `Beste ${escapeHtml(voornaam.trim())},` : "Beste klant,";
   const loginUrl = `${origin.replace(/^https?:\/\//, "")}/portal/login`;
   return shell(`
     <h2 style="color:#E53E2F;margin:0 0 16px;font-size:20px">Welkom bij Mijn ZP</h2>
-    <p style="margin:0 0 16px;line-height:1.5">${aanhef}</p>
+    <p style="margin:0 0 16px;line-height:1.5">${aanhef}</p>${nieuweKlant ? `
+    <p style="margin:0 0 16px;line-height:1.5">Je polis is actief. In Mijn ZP vind je je certificaat, je facturen, en kun je je polis pauzeren of opzeggen.</p>` : ""}
     <p style="margin:0 0 16px;line-height:1.5">Mijn ZP is jouw persoonlijke omgeving bij ZP Zaken. Je kunt er:</p>
     <ul style="margin:0 0 16px;padding-left:20px;line-height:1.6">
       <li>je verzekeringscertificaat downloaden;</li>
@@ -160,6 +163,7 @@ export interface InviteOutcome {
 /** Volledige uitnodiging voor één lead: gebruiker, koppeling, uitnodigingsrecord en mail. */
 export async function invitePortalLead(
   admin: any, req: Request, leadId: string, invitedBy: string | null, fnName = "send-portal-invite",
+  opts: { nieuweKlant?: boolean; automatisch?: boolean } = {},
 ): Promise<InviteOutcome> {
   const { data: lead, error } = await admin
     .from("leads").select("id, email, voornaam, achternaam").eq("id", leadId).maybeSingle();
@@ -188,11 +192,57 @@ export async function invitePortalLead(
   const mail = await sendPortalMail(admin, req, fnName, {
     to: email,
     subject: "Welkom bij Mijn ZP – je persoonlijke klantomgeving",
-    html: buildInviteHtml(link, lead.voornaam, origin),
+    html: buildInviteHtml(link, lead.voornaam, origin, !!opts.nieuweKlant),
     leadType: "portal_invite",
     leadId,
-    metadata: { user_created: created, policies_linked: linked, knop_pad: `/portal/invite/${inv.token.slice(0, 6)}…` },
+    metadata: { user_created: created, policies_linked: linked, knop_pad: `/portal/invite/${inv.token.slice(0, 6)}…`, automatisch: !!opts.automatisch },
   });
 
   return { lead_id: leadId, ok: mail.sent, user_created: created, policies_linked: linked, mail_sent: mail.sent, error: mail.error };
+}
+
+/**
+ * Automatische uitnodiging voor nieuwe klanten. Aanroepen na activatie én na
+ * certificaat; verstuurt alleen als het laatste van de twee net gebeurd is.
+ * Gooit nooit: fouten komen in lead_notification_log (lead_type portal_invite_auto).
+ */
+export async function autoInvitePortalLead(
+  admin: any, req: Request, leadId: string, invitedBy: string | null, fnName: string,
+): Promise<{ verstuurd: boolean; reden?: string; error?: string }> {
+  try {
+    const { data: lead } = await admin.from("leads")
+      .select("id, email, is_test, exact_account_id").eq("id", leadId).maybeSingle();
+    if (!lead) return { verstuurd: false, reden: "lead_niet_gevonden" };
+    const [{ count: pol }, { count: inv }] = await Promise.all([
+      admin.from("policies").select("id", { count: "exact", head: true }).eq("lead_id", leadId),
+      admin.from("portal_invitations").select("id", { count: "exact", head: true }).eq("lead_id", leadId),
+    ]);
+    const besluit = beslisAutoUitnodiging({
+      isTest: !!lead.is_test, email: lead.email, exactAccountId: lead.exact_account_id,
+      aantalPolissen: pol ?? 0, aantalUitnodigingen: inv ?? 0,
+    });
+    if (!besluit.versturen) return { verstuurd: false, reden: besluit.reden };
+    const out = await invitePortalLead(admin, req, leadId, invitedBy, fnName, { nieuweKlant: true, automatisch: true });
+    if (!out.ok && out.error && !out.mail_sent) {
+      // Mailfouten zijn al gelogd door sendPortalMail; overige fouten hier.
+      if (["geen_geldig_email", "geen_polis", "lead_niet_gevonden"].includes(out.error)) {
+        await logAutoInviteFout(admin, leadId, lead.email, out.error);
+      }
+    }
+    return { verstuurd: !!out.mail_sent, error: out.error };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    await logAutoInviteFout(admin, leadId, null, msg);
+    return { verstuurd: false, error: msg };
+  }
+}
+
+async function logAutoInviteFout(admin: any, leadId: string, email: string | null, msg: string) {
+  try {
+    await admin.from("lead_notification_log").insert({
+      lead_type: "portal_invite_auto", lead_id: leadId, recipient: email ?? "-",
+      subject: "Automatische Mijn ZP-uitnodiging", status: "failed", error_message: msg.slice(0, 500),
+      metadata: { automatisch: true },
+    });
+  } catch (_) { /* loggen mag nooit falen */ }
 }
