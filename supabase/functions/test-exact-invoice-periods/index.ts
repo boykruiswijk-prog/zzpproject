@@ -7,7 +7,7 @@
 import { getBavGlAccountId } from "../_shared/exactGl.ts";
 import { ensureValidToken } from "../_shared/exactToken.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-import { kopOmschrijving, regelOmschrijving } from "../_shared/factuurTekst.ts";
+import { kopOmschrijving, regelNotities, regelOmschrijving } from "../_shared/factuurTekst.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -59,6 +59,7 @@ async function createConceptInvoice(opts: {
   baseUrl: string; div: string; headers: Record<string, string>;
   accountId: string; description: string;
   unitPrice: number; lineDescription: string;
+  lineNotes: string;
   startISO: string; endISO: string;
   itemId: string;
 }): Promise<{ ok: true; invoiceId: string; invoiceNumber: string | null; raw: unknown } | { ok: false; error: unknown; payload: unknown }> {
@@ -70,6 +71,7 @@ async function createConceptInvoice(opts: {
     Quantity: 1,
     UnitPrice: opts.unitPrice,
     Description: opts.lineDescription,
+    Notes: opts.lineNotes,
     StartTime: opts.startISO,
     EndTime: opts.endISO,
   };
@@ -156,6 +158,7 @@ Deno.serve(async (req) => {
     description: kopOmschrijving("TEST Maandbetaler BAV-AVB premie"),
     unitPrice: 55,
     lineDescription: regelOmschrijving("premie", "2026-10-01", "2026-10-31"),
+    lineNotes: regelNotities(31, 55 / 31, "oktober 2026"),
     startISO: "2026-10-01T00:00:00",
     endISO: "2026-10-31T00:00:00",
     itemId,
@@ -179,6 +182,7 @@ Deno.serve(async (req) => {
     description: kopOmschrijving("TEST Jaarbetaler BAV-AVB premie"),
     unitPrice: 660,
     lineDescription: regelOmschrijving("premie", "2026-10-01", "2027-09-30"),
+    lineNotes: regelNotities(365, 660 / 365, "polisjaar 2026-2027"),
     startISO: "2026-10-01T00:00:00",
     endISO: "2027-09-30T00:00:00",
     itemId,

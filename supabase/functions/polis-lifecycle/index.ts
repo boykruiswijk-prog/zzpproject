@@ -126,7 +126,7 @@ async function captureExactError(label: string, res: Response) {
 }
 
 // Post een SalesInvoice (Type 20 = factuur, 21 = creditnota) in Exact.
-// YourRef = lead.id (Exact truncate naar 30 chars — eerste 30 van een UUID is uniek genoeg).
+// YourRef is het polisnummer; vóór certificaatuitgifte de Exact-relatiecode, nooit een UUID.
 async function postSalesInvoice(opts: {
   baseUrl: string; div: string; headers: Record<string, string>;
   // deno-lint-ignore no-explicit-any
@@ -239,6 +239,7 @@ Deno.serve(async (req) => {
   const yourRef = factuurReferentie(policyRef?.certificate_number, lead.exact_relatie_code);
 
   async function heeftGeslaagdeFactuur(): Promise<boolean> {
+    if (lead.exact_invoice_id || lead.exact_factuur_id_hervat) return true;
     const { data } = await supabase.from("exact_sync_log").select("id")
       .eq("lead_id", lead_id).eq("status", "success")
       .in("trigger_type", ["invoice_create", "invoice_retry", "factuur_hervat"])
