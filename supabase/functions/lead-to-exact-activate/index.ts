@@ -9,6 +9,7 @@ import {
 } from "../_shared/polisProRata.ts";
 import { mandaatkenmerkVoor } from "../_shared/sepaMachtiging.ts";
 import { autoInvitePortalLead } from "../_shared/portalAccess.ts";
+import { factuurReferentie, kopOmschrijving, regelNotities, regelOmschrijving } from "../_shared/factuurTekst.ts";
 import { landcodeVoor } from "../_shared/landcode.ts";
 
 // SEPA-mandaat in Exact. Waarden geverifieerd in de Exact Online REST-documentatie:
@@ -240,6 +241,7 @@ async function createExactInvoice(opts: {
     amount: number;
     headerDescription: string;
     lineDescription: string;
+    lineNotes?: string;
     periodStart: string; // YYYY-MM-DD
     periodEnd: string;   // YYYY-MM-DD
   };
@@ -265,11 +267,9 @@ async function createExactInvoice(opts: {
   };
 
   const lineDescription = override?.lineDescription
-    ?? (periodStart && periodEnd
-      ? `BAV-AVB premie - Dekking ${fmtNL(periodStart)} t/m ${fmtNL(periodEnd)}\n${pakketSpec.betalingsregel}`
-      : `${pakketSpec.naam}\n${pakketSpec.betalingsregel}`);
-  const headerDescription = override?.headerDescription
-    ?? `${pakketSpec.naam} voor ${lead.bedrijfsnaam}${periodStart && periodEnd ? ` — dekking ${fmtNL(periodStart)} t/m ${fmtNL(periodEnd)}` : ""}`;
+    ?? (periodStart && periodEnd ? regelOmschrijving("premie", periodStart, periodEnd) : kopOmschrijving(pakketSpec.naam));
+  const lineNotes = override?.lineNotes ?? pakketSpec.betalingsregel;
+  const headerDescription = kopOmschrijving(override?.headerDescription ?? `BAV-AVB premie ${lead.bedrijfsnaam ?? ""}`);
   const unitPrice = override?.amount ?? pakketSpec.bedrag;
 
   // deno-lint-ignore no-explicit-any
@@ -279,6 +279,7 @@ async function createExactInvoice(opts: {
     Quantity: 1,
     UnitPrice: unitPrice,
     Description: lineDescription,
+    Notes: lineNotes,
   };
   if (itemId) line.Item = itemId;
   if (periodStart) line.StartTime = `${periodStart}T00:00:00`;
@@ -293,7 +294,7 @@ async function createExactInvoice(opts: {
     Status: INV_STATUS_CONCEPT,
     InvoiceDate: invoiceDate,
     OrderDate: invoiceDate,
-    YourRef: String(lead.id),
+    YourRef: factuurReferentie(lead.certificate_number, lead.exact_relatie_code),
     Description: headerDescription,
     SalesInvoiceLines: [line],
   };
@@ -583,14 +584,16 @@ Deno.serve(async (req) => {
         maandprijs: getMaandprijs(lead.gekozen_pakket),
         vanaf_datum: startStr, tot_datum: endStr,
       });
-      const fmt = (iso: string) => { const d = new Date(iso); return `${String(d.getUTCDate()).padStart(2, "0")}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${d.getUTCFullYear()}`; };
       retryOverride = {
         amount: calc.bedrag,
-        headerDescription: `BAV-AVB premie pro-rata instap ${fmt(startStr)} t/m ${fmt(endStr)}`,
-        lineDescription: `BAV-AVB premie pro-rata - Periode ${fmt(startStr)} t/m ${fmt(endStr)} (${calc.dagen} dagen × € ${calc.dagprijs.toFixed(4)})`,
+        headerDescription: `BAV-AVB premie instap`,
+        lineDescription: regelOmschrijving("premie", startStr, endStr),
+        lineNotes: regelNotities(calc.dagen, calc.dagprijs),
         periodStart: startStr, periodEnd: endStr,
       };
     }
+    const { data: policyRef } = await supabase.from("policies").select("certificate_number").eq("lead_id", leadId).limit(1).maybeSingle();
+    lead.certificate_number = policyRef?.certificate_number ?? null;
     const invRes = await createExactInvoice({
       baseUrl, div, headers, accountId: lead.exact_account_id, lead, pakketSpec: spec,
       itemId: itemEnsure.itemId, override: retryOverride,
@@ -615,16 +618,24 @@ Deno.serve(async (req) => {
       admin_email: user.email,
       exact_invoice_id: invRes.invoiceId,
       exact_invoice_number: invRes.invoiceNumber,
-      exact_invoice_amount: spec.bedrag,
+      exact_invoice_amount: invRes.amount,
     };
     const newLog = Array.isArray(lead.activatie_log) ? [...lead.activatie_log, entry] : [entry];
     await supabase.from("leads").update({
       exact_invoice_id: invRes.invoiceId,
       exact_invoice_number: invRes.invoiceNumber,
-      exact_invoice_amount: spec.bedrag,
+      exact_invoice_amount: invRes.amount,
       exact_invoice_created_at: nowIso,
       activatie_log: newLog,
     }).eq("id", leadId);
+    if (isMaandPolis(lead.gekozen_pakket) && retryOverride) {
+      await supabase.from("monthly_invoices_log").upsert({
+        lead_id: leadId, factuur_jaar: Number(retryOverride.periodStart.slice(0, 4)), factuur_maand: Number(retryOverride.periodStart.slice(5, 7)),
+        periode_start: retryOverride.periodStart, periode_eind: retryOverride.periodEnd, polis_einddatum: lead.polis_einddatum ?? null,
+        bedrag: invRes.amount, status: "success", exact_invoice_id: invRes.invoiceId, exact_invoice_number: invRes.invoiceNumber,
+        payload: { source: "invoice_retry_instap" },
+      }, { onConflict: "lead_id,factuur_jaar,factuur_maand" });
+    }
     await logSync(supabase, {
       trigger_type: "invoice_retry", status: "success",
       lead_id: leadId, admin_user_id: user.id,
@@ -633,7 +644,7 @@ Deno.serve(async (req) => {
       payload: {
         exact_invoice_id: invRes.invoiceId,
         exact_invoice_number: invRes.invoiceNumber,
-        amount: spec.bedrag,
+        amount: invRes.amount,
       },
     });
     return json({
@@ -978,14 +989,11 @@ Deno.serve(async (req) => {
         maandprijs: getMaandprijs(lead.gekozen_pakket),
         vanaf_datum: startStr, tot_datum: endStr,
       });
-      const fmt = (iso: string) => {
-        const d = new Date(iso);
-        return `${String(d.getUTCDate()).padStart(2, "0")}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${d.getUTCFullYear()}`;
-      };
       override = {
         amount: calc.bedrag,
-        headerDescription: `BAV-AVB premie pro-rata instap ${fmt(startStr)} t/m ${fmt(endStr)}`,
-        lineDescription: `BAV-AVB premie pro-rata - Periode ${fmt(startStr)} t/m ${fmt(endStr)} (${calc.dagen} dagen × € ${calc.dagprijs.toFixed(4)})`,
+        headerDescription: "BAV-AVB premie instap",
+        lineDescription: regelOmschrijving("premie", startStr, endStr),
+        lineNotes: regelNotities(calc.dagen, calc.dagprijs),
         periodStart: startStr, periodEnd: endStr,
       };
     }
