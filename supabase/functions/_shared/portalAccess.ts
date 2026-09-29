@@ -191,7 +191,7 @@ export async function invitePortalLead(
     html: buildInviteHtml(link, lead.voornaam, origin),
     leadType: "portal_invite",
     leadId,
-    metadata: { user_created: created, policies_linked: linked },
+    metadata: { user_created: created, policies_linked: linked, knop_pad: `/portal/invite/${inv.token.slice(0, 6)}…` },
   });
 
   return { lead_id: leadId, ok: mail.sent, user_created: created, policies_linked: linked, mail_sent: mail.sent, error: mail.error };
