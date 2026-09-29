@@ -19,7 +19,8 @@ export const PREVIEW_RECIPIENT = "boy.kruiswijk@zpzaken.nl";
 export const DEFAULT_FROM_ADDRESS = "ZP Zaken <info@zpzaken.nl>";
 
 export function getFromAddress(): string {
-  const configured = (Deno.env.get("RESEND_FROM_ADDRESS") ?? "").trim();
+  const runtime = globalThis as typeof globalThis & { Deno?: { env: { get(name: string): string | undefined } } };
+  const configured = (runtime.Deno?.env.get("RESEND_FROM_ADDRESS") ?? "").trim();
   return configured.length > 0 ? configured : DEFAULT_FROM_ADDRESS;
 }
 

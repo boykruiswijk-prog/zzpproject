@@ -42,7 +42,8 @@ function hostIsProduction(host: string | null): boolean {
 }
 
 export function resolveEnvironment(req?: Request | null): Environment {
-  const appEnv = (Deno.env.get("APP_ENV") || "production").toLowerCase().trim();
+  const runtime = globalThis as typeof globalThis & { Deno?: { env: { get(name: string): string | undefined } } };
+  const appEnv = (runtime.Deno?.env.get("APP_ENV") || "production").toLowerCase().trim();
 
   let host: string | null = null;
   let hostSource: Environment["hostSource"] = "none";

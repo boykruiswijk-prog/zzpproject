@@ -62,7 +62,8 @@ export async function sendExactAlarm(
     const mail = buildAlarmMail(melding, bron);
     const gate = createMailGate(`exact-alarm:${bron}`, req);
     const plan = gate.plan(mail);
-    const key = Deno.env.get("RESEND_API_KEY") ?? "";
+    const runtime = globalThis as typeof globalThis & { Deno?: { env: { get(name: string): string | undefined } } };
+    const key = runtime.Deno?.env.get("RESEND_API_KEY") ?? "";
     let ok = false;
     if (plan.send && key) {
       const r = await fetch("https://api.resend.com/emails", {
