@@ -24,7 +24,7 @@ export const SITE_CONFIG = {
   },
   // SEPA Incassant-ID (Creditor Identifier). NOG LEEG: komt van de administratie.
   // Spiegel: supabase/functions/_shared/company.ts (incassantId).
-  incassantId: "",
+  incassantId: "NL03ZZZ621170920000",
   geo: { latitude: 52.2796022, longitude: 4.7514364 },
   registrations: {
     afm: "12050636",

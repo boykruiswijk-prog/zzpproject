@@ -88,10 +88,10 @@ export function buildInviteHtml(actionUrl: string, voornaam: string | null | und
       <li>je facturen bekijken;</li>
       <li>je polis pauzeren of opzeggen.</li>
     </ul>
-    <p style="margin:0 0 8px;line-height:1.5">Met de knop hieronder ben je in één klik ingelogd. Een wachtwoord is niet nodig.</p>
+    <p style="margin:0 0 8px;line-height:1.5">Een wachtwoord is niet nodig. Klik op de knop hieronder en je ontvangt direct een inloglink per mail.</p>
     ${button(actionUrl, "Inloggen bij Mijn ZP")}
     <p style="font-size:13px;color:#555;line-height:1.5;margin:0">
-      De link werkt één keer en is beperkt geldig. Verlopen of al gebruikt? Vraag dan eenvoudig een nieuwe inloglink aan via
+      De knop is 14 dagen geldig. Je ontvangt daarna direct een inloglink per mail. Lukt het niet? Vraag dan eenvoudig een nieuwe inloglink aan via
       <a href="https://${escapeHtml(loginUrl)}" style="color:#E53E2F">${escapeHtml(loginUrl)}</a>.
     </p>`);
 }
@@ -175,20 +175,23 @@ export async function invitePortalLead(
   const { userId, created } = await ensurePortalUser(admin, email, fullName);
   const linked = await linkLeadPolicies(admin, leadId, userId);
 
-  await admin.from("portal_invitations").insert({
+  // Knop in de mail = /portal/invite/:token (14 dagen geldig). Die pagina vraagt
+  // bij openen een verse magic link aan via portal-invite-login (magic link zelf: 1 uur).
+  const { data: inv, error: invErr } = await admin.from("portal_invitations").insert({
     email, lead_id: leadId, invited_by: invitedBy, user_id: userId, status: "pending",
-    expires_at: new Date(Date.now() + 24 * 3600_000).toISOString(),
-  });
+    expires_at: new Date(Date.now() + 14 * 24 * 3600_000).toISOString(),
+  }).select("token").single();
+  if (invErr || !inv?.token) throw new Error(`uitnodiging opslaan mislukt: ${invErr?.message ?? "geen token"}`);
 
   const origin = safeAppOrigin(req.headers.get("origin"));
-  const link = await generateMagicLink(admin, email, `${origin}/portal`);
+  const link = `${origin}/portal/invite/${inv.token}`;
   const mail = await sendPortalMail(admin, req, fnName, {
     to: email,
     subject: "Welkom bij Mijn ZP – je persoonlijke klantomgeving",
     html: buildInviteHtml(link, lead.voornaam, origin),
     leadType: "portal_invite",
     leadId,
-    metadata: { user_created: created, policies_linked: linked },
+    metadata: { user_created: created, policies_linked: linked, knop_pad: `/portal/invite/${inv.token.slice(0, 6)}…` },
   });
 
   return { lead_id: leadId, ok: mail.sent, user_created: created, policies_linked: linked, mail_sent: mail.sent, error: mail.error };
