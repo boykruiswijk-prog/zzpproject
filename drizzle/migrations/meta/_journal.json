@@ -71,6 +71,13 @@
       "when": 1790682685873,
       "tag": "0009_get_portal_status",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1790683160923,
+      "tag": "0010_gl_bav_en_portal_claim",
+      "breakpoints": true
     }
   ]
 }
