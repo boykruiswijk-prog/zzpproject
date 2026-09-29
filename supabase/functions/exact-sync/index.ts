@@ -2,6 +2,7 @@
 // een test-call doen of een nieuwe relatie aanmaken.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { ensureValidToken } from "../_shared/exactToken.ts";
+import { requireSupervisor } from "../_shared/teamAuth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -31,6 +32,8 @@ Deno.serve(async (req) => {
     Deno.env.get("SUPABASE_URL")!,
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
+  const auth = await requireSupervisor(req, supabase);
+  if (auth instanceof Response) return new Response(await auth.text(), { status: auth.status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
   // deno-lint-ignore no-explicit-any
   let body: any = {};

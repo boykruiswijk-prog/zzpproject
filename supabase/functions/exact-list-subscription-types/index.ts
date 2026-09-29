@@ -2,6 +2,7 @@
 // de juiste GUID's kan koppelen aan onze BAV pakketten.
 import { createClient } from "npm:@supabase/supabase-js@2.45.0";
 import { ensureValidToken } from "../_shared/exactToken.ts";
+import { requireSupervisor } from "../_shared/teamAuth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -14,37 +15,9 @@ Deno.serve(async (req) => {
   try {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const BASE_URL = Deno.env.get("EXACT_BASE_URL") ?? "https://start.exactonline.nl";
-    const TEST_MODE = Deno.env.get("EXACT_TEST_MODE") === "true";
-    const environment = TEST_MODE ? "test" : "production";
-
-    // Auth: alleen admin
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    const userClient = createClient(SUPABASE_URL, ANON_KEY, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const { data: userData } = await userClient.auth.getUser();
-    if (!userData.user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
     const admin = createClient(SUPABASE_URL, SERVICE_KEY);
-    const { data: isAdmin } = await admin.rpc("has_role", {
-      _user_id: userData.user.id, _role: "admin",
-    });
-    if (!isAdmin) {
-      return new Response(JSON.stringify({ error: "Forbidden" }), {
-        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    const auth = await requireSupervisor(req, admin);
+    if (auth instanceof Response) return new Response(await auth.text(), { status: auth.status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
     // M4: token uitsluitend via _shared/exactToken.ts (exact_config).
     const { data: cfg } = await admin.from("exact_config").select("*").limit(1).maybeSingle();
@@ -54,11 +27,11 @@ Deno.serve(async (req) => {
       });
     }
     const accessToken = await ensureValidToken(admin, cfg);
-    const tokenRow = { division_code: cfg.divisie_code, access_token: accessToken };
+    const baseUrl = cfg.base_url || "https://start.exactonline.nl";
 
     const res = await fetch(
-      `${BASE_URL}/api/v1/${tokenRow.division_code}/subscription/SubscriptionTypes?$select=ID,Code,Description`,
-      { headers: { Authorization: `Bearer ${tokenRow.access_token}`, Accept: "application/json" } }
+      `${baseUrl}/api/v1/${cfg.divisie_code}/subscription/SubscriptionTypes?$select=ID,Code,Description`,
+      { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } }
     );
     if (!res.ok) {
       const txt = await res.text();

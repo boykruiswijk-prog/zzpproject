@@ -3,6 +3,7 @@
 import { getBavGlAccountId } from "../_shared/exactGl.ts";
 import { ensureValidToken } from "../_shared/exactToken.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { requireSupervisor } from "../_shared/teamAuth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -53,6 +54,8 @@ Deno.serve(async (req) => {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
+    const auth = await requireSupervisor(req, supabase);
+    if (auth instanceof Response) return new Response(await auth.text(), { status: auth.status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     const { data: config, error: cErr } = await supabase.from("exact_config").select("*").limit(1).maybeSingle();
     if (cErr || !config) return json({ error: "exact_config niet gevonden", cErr }, 500);
 
