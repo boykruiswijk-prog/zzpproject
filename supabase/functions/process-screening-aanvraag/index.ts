@@ -1,4 +1,4 @@
-import { createClient } from "npm:@supabase/supabase-js@2.39.0";
+import { createClient } from "npm:@supabase/supabase-js@2.45.0";
 import { ensureValidToken } from "../_shared/exactToken.ts";
 import { getGlAccountIdByCode } from "../_shared/exactGl.ts";
 import { createMailGate } from "../_shared/mail.ts";
