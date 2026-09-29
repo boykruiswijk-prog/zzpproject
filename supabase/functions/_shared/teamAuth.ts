@@ -1,4 +1,4 @@
-import { createClient } from "npm:@supabase/supabase-js@2.45.0";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 // deno-lint-ignore no-explicit-any
 export async function requireSupervisor(req: Request, admin: any): Promise<{ userId: string } | Response> {

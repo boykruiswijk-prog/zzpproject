@@ -1,6 +1,6 @@
 // Haalt beschikbare SubscriptionTypes op uit Exact zodat de admin
 // de juiste GUID's kan koppelen aan onze BAV pakketten.
-import { createClient } from "npm:@supabase/supabase-js@2.45.0";
+import { createClient } from "npm:@supabase/supabase-js@2";
 import { ensureValidToken } from "../_shared/exactToken.ts";
 import { requireSupervisor } from "../_shared/teamAuth.ts";
 
