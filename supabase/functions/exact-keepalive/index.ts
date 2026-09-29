@@ -65,9 +65,9 @@ Deno.serve(async (req) => {
   let statusesUpdated = 0;
   const { data: leads } = await supabase.from("leads").select("id,exact_invoice_id").not("exact_invoice_id", "is", null).limit(500);
   try {
-    const rows = await readInvoiceStatuses(baseUrl, current, token, (leads ?? []).map((l) => l.exact_invoice_id));
+    const rows = await readInvoiceStatuses(baseUrl, current, token, (leads ?? []).map((l: { exact_invoice_id: string | null }) => l.exact_invoice_id ?? ""));
     const perId = new Map(rows.map((row) => [String(row.InvoiceID).toLowerCase(), Number(row.Status)]));
-    for (const lead of leads ?? []) {
+    for (const lead of (leads ?? []) as Array<{ id: string; exact_invoice_id: string }>) {
       const status = perId.get(String(lead.exact_invoice_id).toLowerCase());
       if (Number.isFinite(status)) {
         await supabase.from("leads").update({ exact_invoice_status: status }).eq("id", lead.id);
