@@ -78,6 +78,7 @@ export function usePauzePreview(leadId: string | undefined, action: "pauze" | "h
         credit_bedrag?: number; factuur_bedrag?: number;
         resterende_dagen: number; dagprijs: number;
         polis_einddatum: string; jaarprijs: number;
+        is_maandpolis?: boolean; uitleg?: string;
       };
     },
   });

@@ -185,15 +185,17 @@ export function PolicyLifecycleActions() {
                 <div>
                   <p className="font-medium text-amber-900">Financiële afhandeling</p>
                   <p className="text-amber-800">
+                    {pauzePreview.data?.is_maandpolis ? pauzePreview.data.uitleg : <>
                     Je ontvangt een creditnota voor de resterende dagen van je polisjaar
                     {pauzePreview.data?.polis_einddatum ? ` tot ${formatDateLongNL(pauzePreview.data.polis_einddatum)}` : ""}.
                     Bij hervatten ontvang je een nieuwe factuur voor de dagen vanaf hervat-datum.
+                    </>}
                   </p>
                   {pauzePreview.isLoading && <p className="text-amber-700 mt-1">Bedrag berekenen…</p>}
                   {pauzePreview.data && (
                     <p className="mt-2 text-amber-900">
                       <strong>Verwachte creditnota: {eur(pauzePreview.data.credit_bedrag)}</strong>
-                      <span className="text-amber-700"> ({pauzePreview.data.resterende_dagen} dagen × {eur(pauzePreview.data.dagprijs)})</span>
+                      {!pauzePreview.data.is_maandpolis && <span className="text-amber-700"> ({pauzePreview.data.resterende_dagen} dagen × {eur(pauzePreview.data.dagprijs)})</span>}
                     </p>
                   )}
                   {sepaBannerNeeded && (
@@ -288,14 +290,16 @@ export function PolicyLifecycleActions() {
                   <div>
                     <p className="font-medium text-amber-900">Financiële afhandeling</p>
                     <p className="text-amber-800">
+                      {opzegPreview.data?.is_maandpolis ? opzegPreview.data.uitleg : <>
                       Geen jaarcontract-lock-in: je ontvangt een creditnota voor de resterende dagen van je polisjaar
                       {opzegPreview.data?.polis_einddatum ? ` tot ${formatDateLongNL(opzegPreview.data.polis_einddatum)}` : ""}.
+                      </>}
                     </p>
                     {opzegPreview.isLoading && <p className="text-amber-700 mt-1">Bedrag berekenen…</p>}
                     {opzegPreview.data && (
                       <p className="mt-2 text-amber-900">
                         <strong>Verwachte creditnota: {eur(opzegPreview.data.credit_bedrag)}</strong>
-                        <span className="text-amber-700"> ({opzegPreview.data.resterende_dagen} dagen × {eur(opzegPreview.data.dagprijs)})</span>
+                        {!opzegPreview.data.is_maandpolis && <span className="text-amber-700"> ({opzegPreview.data.resterende_dagen} dagen × {eur(opzegPreview.data.dagprijs)})</span>}
                       </p>
                     )}
                     {sepaBannerNeeded && (

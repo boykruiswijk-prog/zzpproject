@@ -1,0 +1,2 @@
+ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS exact_relatie_code text;
+COMMENT ON COLUMN public.leads.exact_relatie_code IS 'Human-readable Exact Online account Code used as invoice YourRef when no certificate number exists.';

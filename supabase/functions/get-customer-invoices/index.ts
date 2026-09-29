@@ -79,6 +79,7 @@ Deno.serve(async (req) => {
 
     // Exact config
     const { data: config } = await admin.from("exact_config").select("*").maybeSingle();
+    if (!config?.is_actief) return json({ invoices: [], unavailable: true, message: "Facturen zijn tijdelijk niet beschikbaar" });
     if (!config?.divisie_code) throw new Error("exact_config niet gevonden of zonder divisie_code");
     const divisie = config.divisie_code;
     const baseUrl = config.base_url || "https://start.exactonline.nl";

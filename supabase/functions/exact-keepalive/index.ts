@@ -4,9 +4,14 @@
 // Testparameter ?test_alarm=1: bouwt alleen de alarmmail en draait de
 // 24-uurscheck; geen refresh, geen Exact-aanroep, geen mail.
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { refreshAccessToken } from "../_shared/exactToken.ts";
 import { alarmRecentlySent, buildAlarmMail, sanitizeError, sendExactAlarm } from "../_shared/exactAlarm.ts";
+import { readInvoiceStatuses } from "../_shared/exactInvoiceStatus.ts";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret",
+};
 
 const json = (b: unknown, s = 200) =>
   new Response(JSON.stringify(b), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -61,9 +66,24 @@ Deno.serve(async (req) => {
   }
 
   const now = new Date().toISOString();
+  let statusesUpdated = 0;
+  const { data: leads } = await supabase.from("leads").select("id,exact_invoice_id").not("exact_invoice_id", "is", null).limit(500);
+  try {
+    const rows = await readInvoiceStatuses(baseUrl, current, token, (leads ?? []).map((l: { exact_invoice_id: string | null }) => l.exact_invoice_id ?? ""));
+    const perId = new Map(rows.map((row) => [String(row.InvoiceID).toLowerCase(), Number(row.Status)]));
+    for (const lead of (leads ?? []) as Array<{ id: string; exact_invoice_id: string }>) {
+      const status = perId.get(String(lead.exact_invoice_id).toLowerCase());
+      if (Number.isFinite(status)) {
+        await supabase.from("leads").update({ exact_invoice_status: status }).eq("id", lead.id);
+        statusesUpdated += 1;
+      }
+    }
+  } catch (e) {
+    await supabase.from("exact_sync_log").insert({ trigger_type: "invoice_status_sync", status: "error", error_message: sanitizeError(e instanceof Error ? e.message : String(e)) });
+  }
   await supabase.from("exact_config").update({ last_error: null, last_sync_at: now }).eq("id", cfg.id);
   await supabase.from("exact_sync_log").insert({
-    trigger_type: "keepalive", status: "success", http_status: 200, payload: { division: current },
+    trigger_type: "keepalive", status: "success", http_status: 200, payload: { division: current, invoice_statuses_updated: statusesUpdated },
   });
-  return json({ ok: true, division: current, at: now });
+  return json({ ok: true, division: current, at: now, invoice_statuses_updated: statusesUpdated });
 });

@@ -24,7 +24,8 @@ function formatEuro(n: number) {
 }
 
 export default function PortalInvoices() {
-  const { data: invoices, isLoading, isError } = useCustomerInvoices();
+  const { data, isLoading, isError } = useCustomerInvoices();
+  const invoices = data?.invoices;
   const { toast } = useToast();
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
@@ -72,7 +73,11 @@ export default function PortalInvoices() {
         </Card>
       )}
 
-      {!isLoading && !isError && (!invoices || invoices.length === 0) && (
+      {!isLoading && !isError && data?.unavailable && (
+        <Card><CardContent className="py-12 text-center text-muted-foreground">Facturen zijn tijdelijk niet beschikbaar</CardContent></Card>
+      )}
+
+      {!isLoading && !isError && !data?.unavailable && (!invoices || invoices.length === 0) && (
         <Card>
           <CardContent className="py-12 text-center text-muted-foreground">
             <Receipt className="h-12 w-12 mx-auto mb-3 opacity-40" />
