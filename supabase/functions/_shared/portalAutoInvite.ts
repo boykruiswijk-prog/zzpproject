@@ -20,3 +20,25 @@ export function beslisAutoUitnodiging(i: AutoInviteInput): AutoInviteBesluit {
   if (i.isTest && !email.endsWith("@zpzaken.nl")) return { versturen: false, reden: "testlead" };
   return { versturen: true };
 }
+
+/**
+ * Claim-en-verstuur: alleen wie de claim-rij daadwerkelijk invoegt (insert … on
+ * conflict do nothing op portal_auto_invite_claim) mag versturen. Mislukt het
+ * versturen, dan wordt de claim weer vrijgegeven.
+ */
+export async function claimEnVerstuur<T extends { verzonden: boolean }>(deps: {
+  claim: () => Promise<boolean>;
+  release: () => Promise<void>;
+  send: () => Promise<T>;
+}): Promise<{ gewonnen: false } | ({ gewonnen: true } & { resultaat: T })> {
+  if (!(await deps.claim())) return { gewonnen: false };
+  let resultaat: T;
+  try {
+    resultaat = await deps.send();
+  } catch (e) {
+    await deps.release().catch(() => {});
+    throw e;
+  }
+  if (!resultaat.verzonden) await deps.release().catch(() => {});
+  return { gewonnen: true, resultaat };
+}
