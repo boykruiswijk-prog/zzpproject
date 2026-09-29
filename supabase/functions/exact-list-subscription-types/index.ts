@@ -1,6 +1,7 @@
 // Haalt beschikbare SubscriptionTypes op uit Exact zodat de admin
 // de juiste GUID's kan koppelen aan onze BAV pakketten.
 import { createClient } from "npm:@supabase/supabase-js@2.45.0";
+import { ensureValidToken } from "../_shared/exactToken.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -45,13 +46,15 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { data: tokenRow } = await admin
-      .from("exact_tokens").select("*").eq("environment", environment).maybeSingle();
-    if (!tokenRow) {
-      return new Response(JSON.stringify({ error: "no_token" }), {
+    // M4: token uitsluitend via _shared/exactToken.ts (exact_config).
+    const { data: cfg } = await admin.from("exact_config").select("*").limit(1).maybeSingle();
+    if (!cfg?.is_actief || !cfg.divisie_code) {
+      return new Response(JSON.stringify({ error: "exact_niet_actief" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    const accessToken = await ensureValidToken(admin, cfg);
+    const tokenRow = { division_code: cfg.divisie_code, access_token: accessToken };
 
     const res = await fetch(
       `${BASE_URL}/api/v1/${tokenRow.division_code}/subscription/SubscriptionTypes?$select=ID,Code,Description`,
