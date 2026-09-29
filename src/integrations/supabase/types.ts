@@ -650,17 +650,22 @@ export type Database = {
           exact_item_id_bav_avb: string | null
           gl_account_id_bav: string | null
           gl_account_id_bav_code: string | null
+          gl_account_id_screening: string | null
+          gl_account_id_screening_code: string | null
           gl_code_bav: string
+          gl_code_screening: string | null
           id: string
           is_actief: boolean
           laatste_sync: string | null
           last_error: string | null
           last_sync_at: string | null
           redirect_uri: string | null
+          refresh_lock_until: string | null
           refresh_token: string | null
           refresh_token_obtained_at: string | null
           token_expires_at: string | null
           updated_at: string
+          vat_code_screening: string | null
           webhook_secret: string | null
         }
         Insert: {
@@ -674,17 +679,22 @@ export type Database = {
           exact_item_id_bav_avb?: string | null
           gl_account_id_bav?: string | null
           gl_account_id_bav_code?: string | null
+          gl_account_id_screening?: string | null
+          gl_account_id_screening_code?: string | null
           gl_code_bav?: string
+          gl_code_screening?: string | null
           id?: string
           is_actief?: boolean
           laatste_sync?: string | null
           last_error?: string | null
           last_sync_at?: string | null
           redirect_uri?: string | null
+          refresh_lock_until?: string | null
           refresh_token?: string | null
           refresh_token_obtained_at?: string | null
           token_expires_at?: string | null
           updated_at?: string
+          vat_code_screening?: string | null
           webhook_secret?: string | null
         }
         Update: {
@@ -698,17 +708,22 @@ export type Database = {
           exact_item_id_bav_avb?: string | null
           gl_account_id_bav?: string | null
           gl_account_id_bav_code?: string | null
+          gl_account_id_screening?: string | null
+          gl_account_id_screening_code?: string | null
           gl_code_bav?: string
+          gl_code_screening?: string | null
           id?: string
           is_actief?: boolean
           laatste_sync?: string | null
           last_error?: string | null
           last_sync_at?: string | null
           redirect_uri?: string | null
+          refresh_lock_until?: string | null
           refresh_token?: string | null
           refresh_token_obtained_at?: string | null
           token_expires_at?: string | null
           updated_at?: string
+          vat_code_screening?: string | null
           webhook_secret?: string | null
         }
         Relationships: []

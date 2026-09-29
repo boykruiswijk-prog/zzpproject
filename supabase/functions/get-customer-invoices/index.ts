@@ -2,6 +2,7 @@
 // Lookup: auth.uid() → policies.user_id → policies.lead_id → leads.exact_account_id.
 // Geen lokale caching. Single source of truth = Exact.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { ensureValidToken } from "../_shared/exactToken.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -14,43 +15,7 @@ const json = (data: unknown, status = 200) =>
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 
-// deno-lint-ignore no-explicit-any
-async function ensureValidToken(supabase: any, config: any): Promise<string> {
-  const baseUrl = config.base_url || "https://start.exactonline.nl";
-  const expiresAt = config.access_token_expires_at
-    ? new Date(config.access_token_expires_at)
-    : new Date(0);
-  if (expiresAt.getTime() - Date.now() > 60_000 && config.access_token) {
-    return config.access_token;
-  }
-  if (!config.refresh_token) throw new Error("Geen refresh_token in exact_config");
-  const r = await fetch(`${baseUrl}/api/oauth2/token`, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      grant_type: "refresh_token",
-      refresh_token: config.refresh_token,
-      client_id: config.client_id,
-      client_secret: config.client_secret,
-    }).toString(),
-  });
-  const td = await r.json();
-  if (!r.ok || !td.access_token) {
-    throw new Error(`Refresh mislukt (${r.status}): ${JSON.stringify(td)}`);
-  }
-  const newExpiresAt = new Date(Date.now() + td.expires_in * 1000).toISOString();
-  await supabase
-    .from("exact_config")
-    .update({
-      access_token: td.access_token,
-      refresh_token: td.refresh_token,
-      access_token_expires_at: newExpiresAt,
-      token_expires_at: newExpiresAt,
-      refresh_token_obtained_at: new Date().toISOString(),
-    })
-    .eq("id", config.id);
-  return td.access_token;
-}
+
 
 async function captureExactError(label: string, res: Response) {
   const bodyText = await res.text().catch(() => "");
