@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { Loader2, CheckCircle2, XCircle, RefreshCw, ExternalLink } from "lucide-react";
 import { ExactEmailImportBlock } from "@/components/admin/ExactEmailImportBlock";
 import { ExactMandaatImportBlock } from "@/components/admin/ExactMandaatImportBlock";
+import { PortalBulkInviteBlock } from "@/components/admin/PortalBulkInviteBlock";
 
 const ADMIN_EMAIL = "boy.kruiswijk@zpzaken.nl";
 
@@ -109,6 +110,7 @@ export default function Integraties() {
             <h1 className="text-3xl font-bold">Integraties</h1>
             <ExactEmailImportBlock />
             <ExactMandaatImportBlock />
+            <PortalBulkInviteBlock />
           </div>
         </AdminLayout>
       );
@@ -396,6 +398,7 @@ export default function Integraties() {
             </Card>
             <ExactEmailImportBlock />
             <ExactMandaatImportBlock />
+            <PortalBulkInviteBlock />
           </>
         )}
       </div>
