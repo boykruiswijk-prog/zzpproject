@@ -52,6 +52,7 @@ Deno.serve(async (req) => {
     if (allowedAccountIds.size === 0) return json({ error: "forbidden" }, 403);
 
     const { data: config } = await admin.from("exact_config").select("*").maybeSingle();
+    if (!config?.is_actief) return json({ error: "exact_unavailable", message: "Facturen zijn tijdelijk niet beschikbaar" }, 503);
     if (!config?.divisie_code) throw new Error("exact_config niet gevonden");
     const divisie = config.divisie_code;
     const baseUrl = config.base_url || "https://start.exactonline.nl";

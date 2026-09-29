@@ -13,17 +13,20 @@ export type CustomerInvoice = {
   payment_reference: string | null;
 };
 
+export type CustomerInvoicesResult = { invoices: CustomerInvoice[]; unavailable: boolean };
+
 export function useCustomerInvoices() {
   const { user, session } = usePortalAuth();
   return useQuery({
     queryKey: ["customer-invoices", user?.id],
     enabled: !!user && !!session,
     staleTime: 60_000,
-    queryFn: async (): Promise<CustomerInvoice[]> => {
+    queryFn: async (): Promise<CustomerInvoicesResult> => {
       const { data, error } = await supabase.functions.invoke("get-customer-invoices");
       if (error) throw error;
       if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
-      return ((data as { invoices?: CustomerInvoice[] })?.invoices) ?? [];
+      const result = data as { invoices?: CustomerInvoice[]; unavailable?: boolean };
+      return { invoices: result.invoices ?? [], unavailable: result.unavailable === true };
     },
   });
 }

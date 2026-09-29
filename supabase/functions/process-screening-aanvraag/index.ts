@@ -167,7 +167,7 @@ async function syncScreeningNaarExact(supabase: any, aanvraag: any, bedrag: numb
       headers: apiHeaders,
       body: JSON.stringify({
         Account: accountId,
-        IBAN: String(aanvraag.iban).replace(/\s/g, "").toUpperCase(),
+        BankAccount: String(aanvraag.iban).replace(/\s/g, "").toUpperCase(),
         BankAccountHolderName: aanvraag.rekeninghouder || relatieNaam,
         Main: true,
       }),

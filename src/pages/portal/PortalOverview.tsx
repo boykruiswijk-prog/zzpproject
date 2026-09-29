@@ -12,7 +12,8 @@ export default function PortalOverview() {
   const { user } = usePortalAuth();
   const { data: profile } = useProfile(user?.id);
   const { data: policies } = usePortalPolicies();
-  const { data: invoices } = useCustomerInvoices();
+  const { data: invoiceResult } = useCustomerInvoices();
+  const invoices = invoiceResult?.invoices;
 
   const firstName = profile?.full_name?.trim().split(/\s+/)[0] || "";
 
@@ -24,7 +25,7 @@ export default function PortalOverview() {
 
   const invoicesLabel =
     totalInvoices === 0
-      ? "Je hebt nog geen facturen ontvangen."
+      ? (invoiceResult?.unavailable ? "Facturen zijn tijdelijk niet beschikbaar" : "Je hebt nog geen facturen ontvangen.")
       : totalInvoices === 1
       ? "Je hebt 1 factuur."
       : `Je hebt ${totalInvoices} facturen.`;
