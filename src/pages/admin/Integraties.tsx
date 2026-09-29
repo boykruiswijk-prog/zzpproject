@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -7,19 +7,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Loader2, CheckCircle2, XCircle, RefreshCw, ExternalLink } from "lucide-react";
 import { ExactEmailImportBlock } from "@/components/admin/ExactEmailImportBlock";
 import { ExactMandaatImportBlock } from "@/components/admin/ExactMandaatImportBlock";
 
-const ADMIN_EMAIL = "boy.kruiswijk@zpzaken.nl";
-
 type TokenRow = {
   id: string;
-  expires_at: string;
-  division_code: string;
-  environment: string;
+  access_token_expires_at: string | null;
+  divisie_code: string | null;
+  is_actief: boolean;
   updated_at: string;
 };
 
@@ -42,7 +39,7 @@ type FailedBav = {
 };
 
 export default function Integraties() {
-  const { user } = useAuth();
+  const { user, isSupervisor } = useAuth();
   const [params] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState<TokenRow | null>(null);
@@ -50,10 +47,9 @@ export default function Integraties() {
   const [failed, setFailed] = useState<FailedBav[]>([]);
   const [stats, setStats] = useState({ ok: 0, fail: 0 });
   const [exactTypes, setExactTypes] = useState<{ ID: string; Code: string; Description: string }[]>([]);
-  const [testMode, setTestMode] = useState(true);
-  const [testing, setTesting] = useState(false);
+  const [screeningEnabled, setScreeningEnabled] = useState(false);
 
-  const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL;
+  const isAdmin = isSupervisor;
 
   useEffect(() => {
     const status = params.get("status");
@@ -64,8 +60,9 @@ export default function Integraties() {
 
   const loadAll = async () => {
     setLoading(true);
-    const [{ data: t }, { data: m }, { data: f }, { data: today }] = await Promise.all([
-      supabase.from("exact_tokens").select("*").maybeSingle(),
+    const [{ data: t }, { data: screening }, { data: m }, { data: f }, { data: today }] = await Promise.all([
+      supabase.from("exact_config").select("id,access_token_expires_at,divisie_code,is_actief,updated_at").maybeSingle(),
+      supabase.from("integratie_config").select("enabled").eq("naam", "exact_online").maybeSingle(),
       supabase.from("exact_subscription_mapping").select("*").order("pakket_naam"),
       supabase
         .from("bav_aanmeldingen")
@@ -79,7 +76,7 @@ export default function Integraties() {
         .gte("aangemeld_op", new Date(new Date().setHours(0, 0, 0, 0)).toISOString()),
     ]);
     setToken((t as TokenRow) ?? null);
-    if (t) setTestMode((t as TokenRow).environment === "test");
+    setScreeningEnabled(screening?.enabled === true);
     setMapping((m as Mapping[]) ?? []);
     setFailed((f as FailedBav[]) ?? []);
     const all = (today as { exact_status: string }[]) ?? [];
@@ -94,31 +91,14 @@ export default function Integraties() {
     if (isAdmin) loadAll();
   }, [isAdmin]);
 
-  const [isSup, setIsSup] = useState(false);
-  useEffect(() => {
-    if (!user) return;
-    supabase.rpc("is_supervisor_or_admin", { _user_id: user.id }).then(({ data }) => setIsSup(data === true));
-  }, [user]);
-
   if (!user) return null;
   if (!isAdmin) {
-    if (isSup) {
-      return (
-        <AdminLayout>
-          <div className="space-y-6 max-w-5xl">
-            <h1 className="text-3xl font-bold">Integraties</h1>
-            <ExactEmailImportBlock />
-            <ExactMandaatImportBlock />
-          </div>
-        </AdminLayout>
-      );
-    }
     return (
       <AdminLayout>
         <div className="text-center py-12">
           <h1 className="text-2xl font-bold mb-2">Geen toegang</h1>
           <p className="text-muted-foreground">
-            Deze pagina is alleen toegankelijk voor de hoofdadmin.
+            Deze pagina is alleen toegankelijk voor admin en supervisor.
           </p>
         </div>
       </AdminLayout>
@@ -154,20 +134,6 @@ export default function Integraties() {
     loadAll();
   };
 
-  const testSync = async () => {
-    setTesting(true);
-    const { data, error } = await supabase.functions.invoke("exact-test-sync");
-    setTesting(false);
-    if (error) return toast.error(`Test mislukt: ${error.message}`);
-    const result = data as { success: boolean; result?: { success?: boolean; error?: string } };
-    if (result.success && result.result?.success) {
-      toast.success("Test aanmelding succesvol naar Exact verstuurd");
-    } else {
-      toast.error(`Test mislukt: ${result.result?.error ?? "onbekend"}`);
-    }
-    loadAll();
-  };
-
   const retrySync = async (id: string) => {
     const { error } = await supabase
       .from("bav_aanmeldingen")
@@ -189,8 +155,8 @@ export default function Integraties() {
   };
 
   const tokenStatus = (() => {
-    if (!token) return { label: "Niet verbonden", color: "bg-muted text-muted-foreground" };
-    const expired = new Date(token.expires_at).getTime() < Date.now();
+    if (!token?.is_actief) return { label: "Niet actief", color: "bg-muted text-muted-foreground" };
+    const expired = !token.access_token_expires_at || new Date(token.access_token_expires_at).getTime() < Date.now();
     if (expired) return { label: "Token verlopen", color: "bg-yellow-500 text-white" };
     return { label: "Actief", color: "bg-green-500 text-white" };
   })();
@@ -219,12 +185,12 @@ export default function Integraties() {
               </CardHeader>
               <CardContent className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-muted-foreground">Environment</p>
-                  <p className="font-medium">{token?.environment ?? "—"}</p>
+                  <p className="text-muted-foreground">BAV-koppeling</p>
+                  <p className="font-medium">{token?.is_actief ? "Actief" : "Uitgeschakeld"}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Divisie code</p>
-                  <p className="font-medium">{token?.division_code ?? "—"}</p>
+                  <p className="font-medium">{token?.divisie_code ?? "—"}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Laatste token refresh</p>
@@ -235,7 +201,7 @@ export default function Integraties() {
                 <div>
                   <p className="text-muted-foreground">Token verloopt</p>
                   <p className="font-medium">
-                    {token?.expires_at ? new Date(token.expires_at).toLocaleString("nl-NL") : "—"}
+                    {token?.access_token_expires_at ? new Date(token.access_token_expires_at).toLocaleString("nl-NL") : "—"}
                   </p>
                 </div>
                 <div>
@@ -250,6 +216,15 @@ export default function Integraties() {
                     <XCircle className="h-4 w-4 text-red-500" /> {stats.fail}
                   </p>
                 </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader><CardTitle>Dienstschakelaars</CardTitle></CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                <div className="flex items-center justify-between"><span>BAV-AVB via Exact</span><Badge variant={token?.is_actief ? "default" : "secondary"}>{token?.is_actief ? "Actief" : "Uit"}</Badge></div>
+                <div className="flex items-center justify-between"><span>Screening via Exact</span><Badge variant={screeningEnabled ? "default" : "secondary"}>{screeningEnabled ? "Actief" : "Uit"}</Badge></div>
+                <Button asChild variant="outline"><Link to="/admin/exact-koppeling">Exact-koppeling beheren</Link></Button>
               </CardContent>
             </Card>
 
@@ -268,23 +243,6 @@ export default function Integraties() {
                   <ExternalLink className="h-4 w-4" />
                   Verbind met Exact Online
                 </Button>
-              </CardContent>
-            </Card>
-
-            {/* SECTIE 6 — Test mode */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Test mode</CardTitle>
-              </CardHeader>
-              <CardContent className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Test mode {testMode ? "AAN" : "UIT"}</p>
-                  <p className="text-sm text-muted-foreground">
-                    Wanneer aan: alle bedrijfsnamen krijgen TEST_ prefix in Exact. Wijzigen van
-                    deze toggle gebeurt via de EXACT_TEST_MODE secret in Supabase.
-                  </p>
-                </div>
-                <Switch checked={testMode} disabled />
               </CardContent>
             </Card>
 
@@ -336,23 +294,6 @@ export default function Integraties() {
                     </div>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* SECTIE 4 — Test sync */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Test sync</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <p className="text-sm text-muted-foreground">
-                  Verstuurt een mock BAV aanmelding met bedrijfsnaam{" "}
-                  <code className="text-xs">TEST_Verbindingstest_[timestamp]</code> naar Exact.
-                </p>
-                <Button onClick={testSync} disabled={testing} className="gap-2">
-                  {testing && <Loader2 className="h-4 w-4 animate-spin" />}
-                  Verstuur test aanmelding naar Exact
-                </Button>
               </CardContent>
             </Card>
 
