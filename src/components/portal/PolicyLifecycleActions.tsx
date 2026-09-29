@@ -231,7 +231,9 @@ export function PolicyLifecycleActions() {
             </div>
             <label className="flex items-start gap-2 text-sm cursor-pointer">
               <Checkbox checked={pauzeAkkoord} onCheckedChange={(v) => setPauzeAkkoord(v === true)} className="mt-0.5" />
-              <span>Ik begrijp dat ik tijdens de pauze geen dekking heb voor nieuwe schade en dat er een creditnota wordt aangemaakt voor de resterende dagen.</span>
+              <span>{pauzePreview.data?.is_maandpolis
+                ? "Ik begrijp dat ik tijdens de pauze geen dekking heb voor nieuwe schade en dat er vanaf de pauze geen nieuwe maandfacturen worden gemaakt."
+                : "Ik begrijp dat ik tijdens de pauze geen dekking heb voor nieuwe schade en dat er een creditnota wordt aangemaakt voor de resterende dagen."}</span>
             </label>
           </div>
           <DialogFooter>
