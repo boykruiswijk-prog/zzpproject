@@ -1,125 +1,50 @@
 // deno-lint-ignore-file no-explicit-any
+// Uitnodiging voor Mijn ZP (K7). Alleen teamleden.
+// Maakt zo nodig een bevestigde auth-gebruiker (zonder wachtwoord) voor het
+// e-mailadres van de lead, koppelt alle polissen van de lead, en mailt één
+// magic link (redirect via safeAppOrigin naar /portal).
+// Ontvanger komt altijd uit leads.email; een e-mail in de body wordt genegeerd.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-import { getFromAddress } from "../_shared/mail.ts";
-import { safeAppOrigin } from "../_shared/company.ts";
+import { invitePortalLead } from "../_shared/portalAccess.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+const json = (b: unknown, status = 200) =>
+  new Response(JSON.stringify(b), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
-
   try {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+    const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
 
-    // Verify caller is a team member
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: { headers: { Authorization: authHeader } },
-    });
+    if (!authHeader) return json({ error: "Unauthorized" }, 401);
+    const userClient = createClient(SUPABASE_URL, ANON, { global: { headers: { Authorization: authHeader } } });
     const { data: userData } = await userClient.auth.getUser();
-    if (!userData.user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    if (!userData.user) return json({ error: "Unauthorized" }, 401);
 
-    const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const admin = createClient(SUPABASE_URL, SERVICE);
     const { data: isTeam } = await admin.rpc("is_team_member", { _user_id: userData.user.id });
-    if (!isTeam) {
-      return new Response(JSON.stringify({ error: "Forbidden" }), {
-        status: 403,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (!isTeam) return json({ error: "Forbidden" }, 403);
+
+    const body = await req.json().catch(() => ({}));
+    const leadId = String(body?.lead_id ?? "");
+    if (!UUID.test(leadId)) return json({ error: "lead_id vereist" }, 400);
+
+    const out = await invitePortalLead(admin, req, leadId, userData.user.id);
+    if (!out.ok) {
+      const status = out.error === "lead_niet_gevonden" ? 404
+        : ["geen_geldig_email", "geen_polis"].includes(out.error ?? "") ? 400 : 502;
+      return json({ error: out.error ?? "uitnodigen mislukt", ...out }, status);
     }
-
-    const body = await req.json();
-    const { lead_id, email } = body as { lead_id?: string; email?: string };
-    if (!email) {
-      return new Response(JSON.stringify({ error: "email vereist" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // Maak invitation aan
-    const { data: invite, error: inviteErr } = await admin
-      .from("portal_invitations")
-      .insert({
-        email: email.toLowerCase(),
-        lead_id: lead_id || null,
-        invited_by: userData.user.id,
-        status: "pending",
-      })
-      .select()
-      .single();
-
-    if (inviteErr) throw inviteErr;
-
-    const origin = safeAppOrigin(req.headers.get("origin"));
-    const acceptUrl = `${origin}/portal/invite/${invite.token}`;
-
-    // Verstuur via Resend (indien beschikbaar) — anders return alleen URL
-    if (RESEND_API_KEY) {
-      const html = `
-        <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#1a1a1a">
-          <h2 style="color:#E53E2F;margin:0 0 16px">Welkom bij het ZP Zaken klantportaal</h2>
-          <p>Hallo,</p>
-          <p>Je bent uitgenodigd voor het ZP Zaken klantportaal. Hier staan je polis, facturen en documenten overzichtelijk bij elkaar.</p>
-          <p style="margin:24px 0">
-            <a href="${acceptUrl}" style="background:#E53E2F;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;display:inline-block">
-              Account activeren
-            </a>
-          </p>
-          <p style="font-size:13px;color:#666">Of kopieer deze link:<br/><span style="word-break:break-all">${acceptUrl}</span></p>
-          <p style="font-size:13px;color:#666">Deze uitnodiging is 14 dagen geldig.</p>
-          <hr style="border:none;border-top:1px solid #eee;margin:24px 0"/>
-          <p style="font-size:12px;color:#888">ZP Zaken B.V. | Zorgeloos ZZP'en</p>
-        </div>`;
-
-      console.log(`[mail] ${JSON.stringify({ function: "send-portal-invite", from: getFromAddress(), to: [email], bcc: [], redirected: false, note: "invite gaat altijd naar de uitgenodigde ontvanger" })}`);
-      const emailRes = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${RESEND_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: getFromAddress(),
-          to: [email],
-          subject: "Uitnodiging voor het ZP Zaken klantportaal",
-          html,
-        }),
-      });
-
-      if (!emailRes.ok) {
-        const t = await emailRes.text();
-        console.error("Resend error", t);
-      }
-    }
-
-    return new Response(
-      JSON.stringify({ success: true, accept_url: acceptUrl, token: invite.token }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return json({ success: true, ...out });
   } catch (e: any) {
-    console.error("send-portal-invite error", e);
-    return new Response(JSON.stringify({ error: e.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    console.error("send-portal-invite error", e?.message);
+    return json({ error: e?.message ?? "onbekende fout" }, 500);
   }
 });
