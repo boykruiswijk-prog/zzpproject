@@ -1,5 +1,6 @@
 // Diagnose-helper voor Exact: metadata, ItemGroups en gecontroleerde invalid-account probes.
 // Geen business-fix; probes gebruiken een niet-bestaande relatie zodat geen factuur wordt aangemaakt.
+import { getBavGlAccountId } from "../_shared/exactGl.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -138,7 +139,7 @@ Deno.serve(async (req) => {
         Prefer: "return=representation",
       };
       const line: any = {
-        GLAccount: "d40fbb95-43b0-4503-9fe8-287f14d59120",
+        GLAccount: await getBavGlAccountId(supabase, config, token),
         VATCode: "0",
         Quantity: 1,
         UnitPrice: 0.01,

@@ -4,6 +4,7 @@
 // ze handmatig verwijderbaar zijn in Exact.
 //
 // Auth: alleen admin of supervisor.
+import { getBavGlAccountId } from "../_shared/exactGl.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -17,7 +18,8 @@ const json = (data: unknown, status = 200) =>
 const INV_JOURNAL = "70";
 const INV_PAYMENT_COND = "IN";
 const INV_VAT_CODE = "0";
-const INV_GL_ACCOUNT = "d40fbb95-43b0-4503-9fe8-287f14d59120";
+// Grootboekrekening BAV-AVB: via _shared/exactGl.ts.
+let INV_GL_ACCOUNT = "";
 const INV_STATUS_CONCEPT = 20;
 
 // deno-lint-ignore no-explicit-any
@@ -149,6 +151,7 @@ Deno.serve(async (req) => {
   const baseUrl = config.base_url || "https://start.exactonline.nl";
   const div = config.divisie_code;
   const accessToken = await ensureValidToken(supabase, config);
+  INV_GL_ACCOUNT = await getBavGlAccountId(supabase, config, accessToken);
   const headers = {
     Authorization: `Bearer ${accessToken}`,
     "Content-Type": "application/json",
