@@ -7,4 +7,6 @@
 - [ ] B4: Integraties-knoppen/toegang aanpassen en exact-status toevoegen
 - [ ] B5: Exact-factuurstatus synchroniseren en incassobatchtaak loggen
 - [ ] B6: screening BankAccount-veld gebruiken
+- [ ] Urgent: division-check op geconfigureerde administratie, CurrentDivision alleen informatief
+- [ ] Urgent: alarmthrottle per genormaliseerde foutboodschap en echte keepalive-bewijstest
 - [ ] Deploy, daarna rg, daarna veilige tests en typecheck
