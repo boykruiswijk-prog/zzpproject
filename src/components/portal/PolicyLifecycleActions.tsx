@@ -15,6 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { usePolicyLifecycle, usePortalLead, usePauzePreview } from "@/hooks/usePolicyLifecycle";
 import { formatDateLongNL } from "@/lib/dateFormat";
+import { SITE_CONFIG } from "@/config/site";
 
 const PAUZE_REDENEN = [
   { value: "geen_opdrachten", label: "Even geen opdrachten" },
@@ -31,7 +32,7 @@ const OPZEG_REDENEN = [
 ];
 
 export function PolicyLifecycleActions() {
-  const { data: lead, isLoading } = usePortalLead();
+  const { data: lead, isLoading, isError } = usePortalLead();
   const { toast } = useToast();
   const navigate = useNavigate();
   const lifecycle = usePolicyLifecycle();
@@ -62,7 +63,21 @@ export function PolicyLifecycleActions() {
   const eur = (n: number | undefined) =>
     typeof n === "number" ? `€ ${n.toFixed(2).replace(".", ",")}` : "—";
 
-  if (isLoading || !lead) return null;
+  if (isLoading) return null;
+  if (isError || !lead || !lead.status) {
+    return (
+      <Card>
+        <CardContent className="p-6 flex gap-3 items-start">
+          <AlertTriangle className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+          <p className="text-sm text-muted-foreground">
+            Pauzeren of opzeggen kan voor deze polis niet online. Neem contact op via{" "}
+            <a href={`tel:${SITE_CONFIG.phone}`} className="underline">{SITE_CONFIG.phoneDisplay}</a> of{" "}
+            <a href={`mailto:${SITE_CONFIG.email}`} className="underline">{SITE_CONFIG.email}</a>.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
   const status = lead.status;
 
   const handlePauze = async () => {
