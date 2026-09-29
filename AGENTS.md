@@ -5,3 +5,4 @@
 - Mijn ZP-toegang (gebruiker aanmaken, polissen koppelen, magic link, mail+log) staat in supabase/functions/_shared/portalAccess.ts; klanten lezen leadvelden alleen via RPC get_mijn_polissen. Waarom: één toegangsroute en geen klant-SELECT op leads.
 - Alle BAV-AVB-factuurteksten en YourRef-keuze lopen via supabase/functions/_shared/factuurTekst.ts; periode staat vooraan en Exact-teksten blijven maximaal 60 tekens. Waarom: consistente, testbare factuurregels zonder UUID-referenties.
 - Live Exact-factuurstatussen worden read-only opgehaald via supabase/functions/_shared/exactInvoiceStatus.ts. Waarom: één veilige bron voor keepalive en polis-lifecycle zonder Exact-wijzigingen.
+- Exact-administratietoegang wordt gecontroleerd op de geconfigureerde divisie via _shared/exactDivision.ts; CurrentDivision is alleen informatief. Waarom: de laatst geopende Exact-administratie mag geen vals alarm veroorzaken.
