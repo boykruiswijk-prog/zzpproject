@@ -33,13 +33,24 @@ export function buildAlarmMail(melding: string, bron: string, test = false) {
   return { to: ALARM_RECIPIENTS, subject, html };
 }
 
-/** true als er in het afgelopen etmaal al een alarm is verstuurd. */
-export async function alarmRecentlySent(supabase: Sb, now = Date.now()): Promise<boolean> {
+/** Normaliseert wisselende nummers/datums zodat dezelfde fout één throttle-sleutel houdt. */
+export function normalizeAlarmError(msg: string): string {
+  return sanitizeError(msg)
+    .toLowerCase()
+    .replace(/\b\d{4}-\d{2}-\d{2}(?:[t ]\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?z?)?\b/g, "[date]")
+    .replace(/\b\d+(?:[.,]\d+)?\b/g, "[number]")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** true als dezelfde genormaliseerde fout in het afgelopen etmaal al is verstuurd. */
+export async function alarmRecentlySent(supabase: Sb, melding: string, now = Date.now()): Promise<boolean> {
   const since = new Date(now - WINDOW_MS).toISOString();
-  const { count } = await supabase.from("exact_sync_log")
-    .select("id", { count: "exact", head: true })
+  const { data } = await supabase.from("exact_sync_log")
+    .select("error_message")
     .eq("trigger_type", "exact_alarm").eq("status", "sent").gte("created_at", since);
-  return (count ?? 0) > 0;
+  const key = normalizeAlarmError(melding);
+  return (data ?? []).some((row: { error_message?: string | null }) => normalizeAlarmError(row.error_message ?? "") === key);
 }
 
 /** Verstuurt de alarmmail (tenzij al verstuurd in 24 u). Gooit nooit. */
@@ -47,7 +58,7 @@ export async function sendExactAlarm(
   supabase: Sb, melding: string, bron: string, req: Request | null,
 ): Promise<"sent" | "throttled" | "failed"> {
   try {
-    if (await alarmRecentlySent(supabase)) return "throttled";
+    if (await alarmRecentlySent(supabase, melding)) return "throttled";
     const mail = buildAlarmMail(melding, bron);
     const gate = createMailGate(`exact-alarm:${bron}`, req);
     const plan = gate.plan(mail);
@@ -65,7 +76,7 @@ export async function sendExactAlarm(
     await supabase.from("exact_sync_log").insert({
       trigger_type: "exact_alarm", status: ok ? "sent" : "error",
       error_message: sanitizeError(melding),
-      payload: { bron, to: plan.to ?? [] },
+       payload: { bron, to: plan.to ?? [], alarm_key: normalizeAlarmError(melding) },
     });
     return ok ? "sent" : "failed";
   } catch (e) {

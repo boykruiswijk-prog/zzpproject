@@ -1,5 +1,5 @@
 // K5 — dagelijkse keepalive: forceert een token-refresh zodat het refresh token
-// nooit stil verloopt, en controleert daarna /current/Me + divisie.
+// nooit stil verloopt, en controleert daarna rechtstreeks de ingestelde divisie.
 // Toegang: alleen header x-cron-secret (verify_cron_secret).
 // Testparameter ?test_alarm=1: bouwt alleen de alarmmail en draait de
 // 24-uurscheck; geen refresh, geen Exact-aanroep, geen mail.
@@ -7,6 +7,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { refreshAccessToken } from "../_shared/exactToken.ts";
 import { alarmRecentlySent, buildAlarmMail, sanitizeError, sendExactAlarm } from "../_shared/exactAlarm.ts";
 import { readInvoiceStatuses } from "../_shared/exactInvoiceStatus.ts";
+import { checkConfiguredDivision } from "../_shared/exactDivision.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -27,7 +28,7 @@ Deno.serve(async (req) => {
   const url = new URL(req.url);
   if (url.searchParams.get("test_alarm") === "1") {
     const mail = buildAlarmMail("Testmelding: refresh mislukt (401)", "exact-keepalive", true);
-    return json({ test: true, sent: false, would_throttle: await alarmRecentlySent(supabase), mail });
+    return json({ test: true, sent: false, would_throttle: await alarmRecentlySent(supabase, "Testmelding: refresh mislukt (401)"), mail });
   }
 
   const { data: cfg } = await supabase.from("exact_config").select("*").limit(1).maybeSingle();
@@ -53,23 +54,21 @@ Deno.serve(async (req) => {
   }
 
   const baseUrl = cfg.base_url || "https://start.exactonline.nl";
-  const r = await fetch(`${baseUrl}/api/v1/current/Me?$select=CurrentDivision`, {
+  const meRes = await fetch(`${baseUrl}/api/v1/current/Me?$select=CurrentDivision`, {
     headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
   });
-  if (!r.ok) { await r.text().catch(() => ""); return await fail(`Controle-aanroep /Me mislukt (HTTP ${r.status}).`, r.status); }
-  // deno-lint-ignore no-explicit-any
-  const body: any = await r.json().catch(() => ({}));
-  const current = String(body?.d?.results?.[0]?.CurrentDivision ?? body?.d?.CurrentDivision ?? "");
-  const expected = String(cfg.divisie_code ?? "");
-  if (!current || current !== expected) {
-    return await fail(`Verkeerde administratie gekoppeld: Exact geeft divisie ${current || "onbekend"}, verwacht ${expected || "onbekend"}.`, r.status);
-  }
+  const meBody: any = meRes.ok ? await meRes.json().catch(() => ({})) : {};
+  const currentDivision = String(meBody?.d?.results?.[0]?.CurrentDivision ?? meBody?.d?.CurrentDivision ?? "") || null;
+  const configuredDivision = String(cfg.divisie_code ?? "");
+  if (!configuredDivision) return await fail("Geen geconfigureerde Exact-administratie.");
+  const divisionCheck = await checkConfiguredDivision(baseUrl, configuredDivision, token);
+  if (!divisionCheck.ok) return await fail(divisionCheck.error ?? `Geen toegang tot administratie ${configuredDivision}`, divisionCheck.status);
 
   const now = new Date().toISOString();
   let statusesUpdated = 0;
   const { data: leads } = await supabase.from("leads").select("id,exact_invoice_id").not("exact_invoice_id", "is", null).limit(500);
   try {
-    const rows = await readInvoiceStatuses(baseUrl, current, token, (leads ?? []).map((l: { exact_invoice_id: string | null }) => l.exact_invoice_id ?? ""));
+    const rows = await readInvoiceStatuses(baseUrl, configuredDivision, token, (leads ?? []).map((l: { exact_invoice_id: string | null }) => l.exact_invoice_id ?? ""));
     const perId = new Map(rows.map((row) => [String(row.InvoiceID).toLowerCase(), Number(row.Status)]));
     for (const lead of (leads ?? []) as Array<{ id: string; exact_invoice_id: string }>) {
       const status = perId.get(String(lead.exact_invoice_id).toLowerCase());
@@ -83,7 +82,8 @@ Deno.serve(async (req) => {
   }
   await supabase.from("exact_config").update({ last_error: null, last_sync_at: now }).eq("id", cfg.id);
   await supabase.from("exact_sync_log").insert({
-    trigger_type: "keepalive", status: "success", http_status: 200, payload: { division: current, invoice_statuses_updated: statusesUpdated },
+    trigger_type: "keepalive", status: "success", http_status: 200,
+    payload: { division: configuredDivision, administration: divisionCheck.administration, current_division_info: currentDivision, invoice_statuses_updated: statusesUpdated },
   });
-  return json({ ok: true, division: current, at: now, invoice_statuses_updated: statusesUpdated });
+  return json({ ok: true, division: configuredDivision, administration: divisionCheck.administration, current_division_info: currentDivision, at: now, invoice_statuses_updated: statusesUpdated });
 });
