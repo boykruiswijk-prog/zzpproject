@@ -10,15 +10,27 @@ export default function PortalInviteAccept() {
   const { token } = useParams<{ token: string }>();
   const { user, isLoading } = usePortalAuth();
   const navigate = useNavigate();
-  const [status, setStatus] = useState<"idle" | "accepting" | "success" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "accepting" | "success" | "error" | "mailed">("idle");
   const [message, setMessage] = useState<string>("");
 
   useEffect(() => {
     if (isLoading || !token) return;
 
     if (!user) {
-      // bewaar token zodat we na login terugkeren
-      navigate(`/portal/login?redirect=${encodeURIComponent(`/portal/invite/${token}`)}`, { replace: true });
+      // Niet ingelogd: laat de server een inloglink mailen naar het adres van de uitnodiging.
+      if (status !== "idle") return;
+      setStatus("accepting");
+      supabase.functions.invoke("portal-invite-login", { body: { token } }).then(({ data }) => {
+        const r = data as { success?: boolean; error?: string } | null;
+        if (r && r.success === false) {
+          setStatus("error");
+          setMessage(r.error === "expired"
+            ? "Deze uitnodiging is verlopen. Vraag een nieuwe inloglink aan via de inlogpagina."
+            : "Deze uitnodiging is niet geldig.");
+          return;
+        }
+        setStatus("mailed");
+      });
       return;
     }
 
