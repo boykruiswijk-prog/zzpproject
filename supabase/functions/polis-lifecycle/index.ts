@@ -4,6 +4,7 @@
 //   - hervatten                  → nieuwe factuur Type 8020 voor resterende dagen
 //   - opzeggen vanuit actief     → creditnota Type 8021 voor resterende dagen (geen jaarcontract-lock-in, USP)
 //   - opzeggen vanuit gepauzeerd → GEEN tweede creditnota (klant heeft al gekregen via pauze-creditnota)
+import { getBavGlAccountId } from "../_shared/exactGl.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { checkAcceptance } from "../_shared/acceptanceCriteria.ts";
 import { COMPANY } from "../_shared/company.ts";
@@ -29,7 +30,8 @@ const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
 const INV_JOURNAL = "70";
 const INV_PAYMENT_COND = "IN";
 const INV_VAT_CODE = "0";
-const INV_GL_ACCOUNT = "d40fbb95-43b0-4503-9fe8-287f14d59120"; // 81000 Premie-omzet
+// Grootboekrekening BAV-AVB: via _shared/exactGl.ts (exact_config.gl_code_bav, standaard 8003).
+let INV_GL_ACCOUNT = "";
 const INV_STATUS_CONCEPT = 20;
 // Exact API vereist 8020 (SalesInvoice) en 8021 (SalesCreditNote).
 // Eerdere waarden 20/21 werden door Exact alleen via tolerantie geaccepteerd
@@ -292,6 +294,7 @@ Deno.serve(async (req) => {
     const { data: cfg } = await supabase.from("exact_config").select("*").limit(1).maybeSingle();
     if (!cfg?.is_actief || !cfg.divisie_code) return null;
     const token = await ensureValidToken(supabase, cfg);
+    INV_GL_ACCOUNT = await getBavGlAccountId(supabase, cfg, token);
     return {
       cfg, baseUrl: cfg.base_url || "https://start.exactonline.nl", div: cfg.divisie_code,
       headers: {

@@ -7,7 +7,7 @@
 import { createMailGate } from "./mail.ts";
 import { safeAppOrigin } from "./company.ts";
 
-import { beslisAutoUitnodiging } from "./portalAutoInvite.ts";
+import { beslisAutoUitnodiging, claimEnVerstuur } from "./portalAutoInvite.ts";
 
 export function escapeHtml(str: string): string {
   return String(str)
@@ -222,7 +222,23 @@ export async function autoInvitePortalLead(
       aantalPolissen: pol ?? 0, aantalUitnodigingen: inv ?? 0,
     });
     if (!besluit.versturen) return { verstuurd: false, reden: besluit.reden };
-    const out = await invitePortalLead(admin, req, leadId, invitedBy, fnName, { nieuweKlant: true, automatisch: true });
+    // Race-bescherming: alleen de aanroep die de claim-rij echt invoegt, verstuurt.
+    const claimed = await claimEnVerstuur({
+      claim: async () => {
+        const { data, error } = await admin.from("portal_auto_invite_claim")
+          .upsert({ lead_id: leadId, bron: fnName }, { onConflict: "lead_id", ignoreDuplicates: true })
+          .select("lead_id");
+        if (error) throw new Error(`claim mislukt: ${error.message}`);
+        return Array.isArray(data) && data.length === 1;
+      },
+      release: async () => { await admin.from("portal_auto_invite_claim").delete().eq("lead_id", leadId); },
+      send: async () => {
+        const o = await invitePortalLead(admin, req, leadId, invitedBy, fnName, { nieuweKlant: true, automatisch: true });
+        return { ...o, verzonden: !!o.mail_sent };
+      },
+    });
+    if (!claimed.gewonnen) return { verstuurd: false, reden: "al_geclaimd" };
+    const out = claimed.resultaat;
     if (!out.ok && out.error && !out.mail_sent) {
       // Mailfouten zijn al gelogd door sendPortalMail; overige fouten hier.
       if (["geen_geldig_email", "geen_polis", "lead_niet_gevonden"].includes(out.error)) {

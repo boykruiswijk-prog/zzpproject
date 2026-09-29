@@ -1,6 +1,7 @@
 // Lead-to-Exact Fase 1: maakt Account + Contact + BankAccount + SEPA-mandaat
 // aan in Exact divisie 4401707 (ZP Zaken B.V.) op basis van een lead.
 // Doet GEEN factuur — fase 2.
+import { getBavGlAccountId } from "../_shared/exactGl.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import {
   isMaandPolis, getMaandprijs, lastOfMonth, calcMaandProrata, calcPolisEinddatum,
@@ -114,7 +115,8 @@ async function captureExactError(label: string, res: Response): Promise<{ summar
 const INV_JOURNAL = "70";              // Verkoopboek (Edm.String)
 const INV_PAYMENT_COND = "IN";         // Incasso, 7 dagen, Method=I (Edm.String)
 const INV_VAT_CODE = "0";              // BTW 0% (Edm.String)
-const INV_GL_ACCOUNT = "d40fbb95-43b0-4503-9fe8-287f14d59120"; // 81000 Premie-omzet (Guid)
+// Grootboekrekening BAV-AVB: via _shared/exactGl.ts (exact_config.gl_code_bav, standaard 8003).
+let INV_GL_ACCOUNT = "";
 const INV_STATUS_CONCEPT = 20;         // 20 = Concept, 50 = Open
 
 const PAKKET_INVOICE: Record<string, { naam: string; bedrag: number; betalingsregel: string }> = {
@@ -410,6 +412,11 @@ Deno.serve(async (req) => {
   const baseUrl = config.base_url || "https://start.exactonline.nl";
   const div = config.divisie_code;
   const accessToken = await ensureValidToken(supabase, config);
+  try {
+    INV_GL_ACCOUNT = await getBavGlAccountId(supabase, config, accessToken);
+  } catch (e) {
+    return json({ success: false, error: "grootboek_bav_niet_gevonden", detail: e instanceof Error ? e.message : String(e) }, 500);
+  }
   const headers = {
     Authorization: `Bearer ${accessToken}`,
     "Content-Type": "application/json",

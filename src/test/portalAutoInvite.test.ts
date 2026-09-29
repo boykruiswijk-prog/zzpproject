@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { beslisAutoUitnodiging } from "../../supabase/functions/_shared/portalAutoInvite";
+import { beslisAutoUitnodiging, claimEnVerstuur } from "../../supabase/functions/_shared/portalAutoInvite";
 import { landcodeVoor } from "../../supabase/functions/_shared/landcode";
 import { isValidIban } from "@/lib/sepaMachtiging";
 
@@ -50,5 +50,45 @@ describe("Landcode voor Exact", () => {
     expect(landcodeVoor("", "1234 AB")).toBe("NL");
     expect(landcodeVoor(null, "2000")).toBe("BE");
     expect(landcodeVoor("Duitsland", "10115")).toBe("DE");
+  });
+});
+
+describe("Claim tegen race: twee gelijktijdige aanroepen", () => {
+  const maakDb = () => {
+    const claims = new Set<string>();
+    return {
+      claims,
+      // Mock van insert … on conflict do nothing: true alleen als de rij echt is ingevoegd.
+      claim: async (id: string) => { await Promise.resolve(); if (claims.has(id)) return false; claims.add(id); return true; },
+      release: async (id: string) => { claims.delete(id); },
+    };
+  };
+  it("slechts één van twee gelijktijdige aanroepen verstuurt", async () => {
+    const db = maakDb(); let mails = 0;
+    const run = () => claimEnVerstuur({
+      claim: () => db.claim("lead-1"), release: () => db.release("lead-1"),
+      send: async () => { mails++; return { verzonden: true }; },
+    });
+    const [a, b] = await Promise.all([run(), run()]);
+    expect([a.gewonnen, b.gewonnen].filter(Boolean)).toHaveLength(1);
+    expect(mails).toBe(1);
+    expect(db.claims.has("lead-1")).toBe(true);
+  });
+  it("mislukte verzending geeft de claim weer vrij", async () => {
+    const db = maakDb();
+    const r = await claimEnVerstuur({
+      claim: () => db.claim("lead-2"), release: () => db.release("lead-2"),
+      send: async () => ({ verzonden: false }),
+    });
+    expect(r.gewonnen).toBe(true);
+    expect(db.claims.has("lead-2")).toBe(false);
+  });
+  it("exception bij verzenden geeft de claim vrij en gooit door", async () => {
+    const db = maakDb();
+    await expect(claimEnVerstuur({
+      claim: () => db.claim("lead-3"), release: () => db.release("lead-3"),
+      send: async () => { throw new Error("resend down"); },
+    })).rejects.toThrow("resend down");
+    expect(db.claims.has("lead-3")).toBe(false);
   });
 });

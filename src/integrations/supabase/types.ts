@@ -648,6 +648,9 @@ export type Database = {
           divisie_code: string | null
           exact_item_group_id: string | null
           exact_item_id_bav_avb: string | null
+          gl_account_id_bav: string | null
+          gl_account_id_bav_code: string | null
+          gl_code_bav: string
           id: string
           is_actief: boolean
           laatste_sync: string | null
@@ -669,6 +672,9 @@ export type Database = {
           divisie_code?: string | null
           exact_item_group_id?: string | null
           exact_item_id_bav_avb?: string | null
+          gl_account_id_bav?: string | null
+          gl_account_id_bav_code?: string | null
+          gl_code_bav?: string
           id?: string
           is_actief?: boolean
           laatste_sync?: string | null
@@ -690,6 +696,9 @@ export type Database = {
           divisie_code?: string | null
           exact_item_group_id?: string | null
           exact_item_id_bav_avb?: string | null
+          gl_account_id_bav?: string | null
+          gl_account_id_bav_code?: string | null
+          gl_code_bav?: string
           id?: string
           is_actief?: boolean
           laatste_sync?: string | null
@@ -1836,6 +1845,39 @@ export type Database = {
             foreignKeyName: "polis_audit_log_lead_id_fkey"
             columns: ["lead_id"]
             isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portal_auto_invite_claim: {
+        Row: {
+          bron: string | null
+          created_at: string | null
+          lead_id: string
+        }
+        Insert: {
+          bron?: string | null
+          created_at?: string | null
+          lead_id: string
+        }
+        Update: {
+          bron?: string | null
+          created_at?: string | null
+          lead_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_auto_invite_claim_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: true
+            referencedRelation: "kpi_actieve_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "portal_auto_invite_claim_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: true
             referencedRelation: "leads"
             referencedColumns: ["id"]
           },

@@ -8,6 +8,7 @@ import {
   calcMaandProrata, MAAND_NAMEN_NL,
 } from "../_shared/polisProRata.ts";
 import { ensureValidToken } from "../_shared/exactToken.ts";
+import { cachedBavGlAccountId, getBavGlAccountId } from "../_shared/exactGl.ts";
 import { sendExactAlarm } from "../_shared/exactAlarm.ts";
 
 const corsHeaders = {
@@ -21,7 +22,8 @@ const json = (d: unknown, s = 200) =>
 const INV_JOURNAL = "70";
 const INV_PAYMENT_COND = "IN";
 const INV_VAT_CODE = "0";
-const INV_GL_ACCOUNT = "d40fbb95-43b0-4503-9fe8-287f14d59120";
+// Grootboekrekening BAV-AVB: via _shared/exactGl.ts (exact_config.gl_code_bav, standaard 8003).
+let INV_GL_ACCOUNT = "";
 const INV_STATUS_CONCEPT = 20;
 const TYPE_SALES_INVOICE = 8020;
 
@@ -109,6 +111,22 @@ Deno.serve(async (req) => {
       await sendExactAlarm(supabase, `Token vernieuwen mislukt in maandcron: ${msg}`, "monthly-invoices-cron", null);
       return json({ error: "exact_token_error", message: "Exact-token kon niet worden vernieuwd; zie exact_sync_log." }, 502);
     }
+  }
+  // Grootboek BAV-AVB: echte run → opzoeken (of cache); droogrun → alleen cache.
+  let glInfo: string;
+  if (!dryRun) {
+    try {
+      INV_GL_ACCOUNT = await getBavGlAccountId(supabase, cfg, token);
+      glInfo = INV_GL_ACCOUNT;
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      await logCronError(`gl_error: ${msg}`);
+      return json({ error: "grootboek_bav_niet_gevonden", message: msg }, 502);
+    }
+  } else {
+    const c = cachedBavGlAccountId(cfg);
+    glInfo = c ?? "niet opgezocht (droogrun)";
+    if (c) INV_GL_ACCOUNT = c;
   }
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -243,6 +261,6 @@ Deno.serve(async (req) => {
   return json({
     ok: true, today, jaar, maand, periode_start: periodeStart, periode_eind: periodeEind,
     total_candidates: leads?.length ?? 0, created, skipped, errors,
-    dry_run: dryRun, force_date: forceDate, results,
+    dry_run: dryRun, force_date: forceDate, gl: glInfo, results,
   });
 });
