@@ -1,3 +1,4 @@
+import { isValidIban as isValidIbanMod97 } from "@/lib/sepaMachtiging";
 import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -29,11 +30,8 @@ interface Props {
 
 const isValidEmail = (e: any) => typeof e === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 const isValidKvk = (k: any) => typeof k === "string" && /^\d{8}$/.test(k.trim());
-const isValidIban = (i: any) => {
-  if (typeof i !== "string") return false;
-  const c = i.replace(/\s/g, "").toUpperCase();
-  return /^NL\d{2}[A-Z]{4}\d{10}$/.test(c);
-};
+// Zelfde mod-97-validatie als aanmeldformulier en server (elk geldig SEPA-IBAN).
+const isValidIban = (i: any) => typeof i === "string" && isValidIbanMod97(i);
 
 export function LeadActivationPanel({ lead, isAdmin }: Props) {
   const { toast } = useToast();
@@ -74,7 +72,7 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
     { label: "Postcode + plaats", ok: !!(lead.adres_postcode && lead.adres_plaats) },
     { label: "Branche", ok: !!lead.branche },
     { label: "Gekozen pakket", ok: !!lead.gekozen_pakket },
-    { label: "IBAN (NL-formaat)", ok: isValidIban(lead.iban) },
+    { label: "IBAN (geldig)", ok: isValidIban(lead.iban) },
     { label: "SEPA-akkoord", ok: lead.sepa_akkoord === true },
     { label: "Ingangsdatum", ok: !!lead.ingangsdatum },
   ], [lead]);
