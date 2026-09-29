@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { siteConfig } from "@/config/site";
+import { SITE_CONFIG } from "@/config/site";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import * as front from "@/lib/sepaMachtiging";
@@ -8,7 +8,7 @@ const ID = "NL03ZZZ621170920000";
 
 describe("Incassant-ID", () => {
   it("staat gelijk in frontend- en serverconfig", () => {
-    expect((siteConfig as any).incassantId ?? (siteConfig as any).company?.incassantId).toBe(ID);
+    expect(SITE_CONFIG.incassantId).toBe(ID);
     const server = readFileSync(resolve(__dirname, "../../supabase/functions/_shared/company.ts"), "utf8");
     expect(server).toContain(`incassantId: "${ID}"`);
   });
