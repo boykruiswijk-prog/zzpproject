@@ -70,3 +70,6 @@ project_id = "eugkavokktjwpqaqlwsj"
 
 [functions.exact-email-bulk]
 verify_jwt = false
+
+[functions.portal-invite-login]
+verify_jwt = false

@@ -40,13 +40,10 @@ export function usePortalLead() {
     queryKey: ["portal-lead", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data: pol } = await supabase
-        .from("policies").select("lead_id").eq("user_id", user!.id).limit(1).maybeSingle();
-      if (!pol?.lead_id) return null;
-      const { data: lead, error } = await supabase
-        .from("leads").select("*").eq("id", pol.lead_id).single();
+      // Beperkte velden via RPC; klanten hebben geen SELECT op leads.
+      const { data, error } = await supabase.rpc("get_mijn_polissen");
       if (error) throw error;
-      return lead;
+      return data?.[0] ?? null;
     },
   });
 }

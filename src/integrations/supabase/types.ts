@@ -2253,6 +2253,18 @@ export type Database = {
       accept_portal_invitation: { Args: { _token: string }; Returns: Json }
       cleanup_expired_oauth_states: { Args: never; Returns: undefined }
       get_exact_koppeling_fout: { Args: never; Returns: string }
+      get_mijn_polissen: {
+        Args: never
+        Returns: {
+          exact_invoice_status: number
+          functie_bij_aanvraag: string
+          id: string
+          opzeg_datum: string
+          pauze_reden: string
+          pauze_start_datum: string
+          status: Database["public"]["Enums"]["lead_status"]
+        }[]
+      }
       get_pilot_signup_count: { Args: { pilot: string }; Returns: number }
       get_user_role_label: { Args: { _user_id: string }; Returns: string }
       has_role: {
@@ -2265,6 +2277,7 @@ export type Database = {
       is_supervisor_or_admin: { Args: { _user_id: string }; Returns: boolean }
       is_team_member: { Args: { _user_id: string }; Returns: boolean }
       nextval_text: { Args: { seq_name: string }; Returns: string }
+      portal_user_id_by_email: { Args: { p_email: string }; Returns: string }
       verify_cron_secret: { Args: { p_secret: string }; Returns: boolean }
       verify_dba_certificate: {
         Args: { _token: string }

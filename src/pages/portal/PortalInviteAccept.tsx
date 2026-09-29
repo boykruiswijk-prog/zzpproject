@@ -10,15 +10,27 @@ export default function PortalInviteAccept() {
   const { token } = useParams<{ token: string }>();
   const { user, isLoading } = usePortalAuth();
   const navigate = useNavigate();
-  const [status, setStatus] = useState<"idle" | "accepting" | "success" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "accepting" | "success" | "error" | "mailed">("idle");
   const [message, setMessage] = useState<string>("");
 
   useEffect(() => {
     if (isLoading || !token) return;
 
     if (!user) {
-      // bewaar token zodat we na login terugkeren
-      navigate(`/portal/login?redirect=${encodeURIComponent(`/portal/invite/${token}`)}`, { replace: true });
+      // Niet ingelogd: laat de server een inloglink mailen naar het adres van de uitnodiging.
+      if (status !== "idle") return;
+      setStatus("accepting");
+      supabase.functions.invoke("portal-invite-login", { body: { token } }).then(({ data }) => {
+        const r = data as { success?: boolean; error?: string } | null;
+        if (r && r.success === false) {
+          setStatus("error");
+          setMessage(r.error === "expired"
+            ? "Deze uitnodiging is verlopen. Vraag een nieuwe inloglink aan via de inlogpagina."
+            : "Deze uitnodiging is niet geldig.");
+          return;
+        }
+        setStatus("mailed");
+      });
       return;
     }
 
@@ -60,6 +72,13 @@ export default function PortalInviteAccept() {
           {(status === "idle" || status === "accepting" || isLoading) && (
             <Loader2 className="h-10 w-10 animate-spin text-accent mx-auto" />
           )}
+          {status === "mailed" && (
+            <>
+              <CheckCircle2 className="h-12 w-12 text-green-600 mx-auto" />
+              <p className="font-medium">We hebben je een inloglink gestuurd</p>
+              <p className="text-sm text-muted-foreground">Open de mail en klik op de knop om direct in te loggen bij Mijn ZP.</p>
+            </>
+          )}
           {status === "success" && (
             <>
               <CheckCircle2 className="h-12 w-12 text-green-600 mx-auto" />
@@ -71,7 +90,7 @@ export default function PortalInviteAccept() {
               <AlertCircle className="h-12 w-12 text-destructive mx-auto" />
               <p className="text-sm">{message}</p>
               <Button asChild variant="outline">
-                <Link to="/portal">Naar portaal</Link>
+                <Link to="/portal/login">Nieuwe inloglink aanvragen</Link>
               </Button>
             </>
           )}
