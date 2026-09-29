@@ -1,4 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2.39.0";
+import { ensureValidToken } from "../_shared/exactToken.ts";
+import { getGlAccountIdByCode } from "../_shared/exactGl.ts";
 import { createMailGate } from "../_shared/mail.ts";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
 import { isIntegratieEnabled } from "../_shared/integraties.ts";
@@ -107,28 +109,32 @@ function getChecksForType(type: string): string[] {
 // deno-lint-ignore no-explicit-any
 async function syncScreeningNaarExact(supabase: any, aanvraag: any, bedrag: number, pakketLabel: string) {
   const TEST_MODE = Deno.env.get("EXACT_TEST_MODE") === "true";
-  const BASE_URL = Deno.env.get("EXACT_BASE_URL") ?? "https://start.exactonline.nl";
-  const environment = TEST_MODE ? "test" : "production";
 
-  let { data: tokenRow } = await supabase
-    .from("exact_tokens")
-    .select("*")
-    .eq("environment", environment)
-    .maybeSingle();
+  // H7: token uitsluitend via _shared/exactToken.ts (exact_config), niet exact_tokens.
+  const { data: cfg } = await supabase.from("exact_config").select("*").limit(1).maybeSingle();
+  if (!cfg?.is_actief || !cfg.divisie_code) throw new Error("Exact-koppeling niet actief (exact_config)");
 
-  if (!tokenRow) throw new Error("Geen Exact token aanwezig — autoriseer eerst via /admin/integraties");
-
-  if (new Date(tokenRow.expires_at).getTime() - Date.now() < 60_000) {
-    const refreshRes = await supabase.functions.invoke("exact-refresh-token");
-    if (refreshRes.error) throw new Error(`Token refresh: ${refreshRes.error.message}`);
-    const { data: fresh } = await supabase
-      .from("exact_tokens").select("*").eq("environment", environment).maybeSingle();
-    if (fresh) tokenRow = fresh;
+  // Grootboek en btw-code voor screening moeten expliciet zijn ingesteld; niet gokken.
+  // Ontbreekt er één, dan niets in Exact aanmaken (ook geen relatie) en wachten op config.
+  const glCode = String(cfg.gl_code_screening ?? "").trim();
+  const vatCode = String(cfg.vat_code_screening ?? "").trim();
+  if (!glCode || !vatCode) {
+    const melding = `Screening niet naar Exact: ${[!glCode && "gl_code_screening", !vatCode && "vat_code_screening"].filter(Boolean).join(" en ")} ontbreekt in exact_config.`;
+    await supabase.from("screening_aanvragen")
+      .update({ exact_status: "wachtend_config", exact_fout: melding }).eq("id", aanvraag.id);
+    await supabase.from("exact_sync_log").insert({
+      trigger_type: "screening_invoice", status: "wachtend_config", error_message: melding,
+      payload: { screening_aanvraag_id: aanvraag.id },
+    });
+    return;
   }
 
-  const divisionCode = tokenRow.division_code;
+  const accessToken = await ensureValidToken(supabase, cfg);
+  const glAccountId = await getGlAccountIdByCode(supabase, cfg, accessToken, "gl_code_screening", "gl_account_id_screening");
+  const BASE_URL = cfg.base_url || "https://start.exactonline.nl";
+  const divisionCode = cfg.divisie_code;
   const apiHeaders = {
-    Authorization: `Bearer ${tokenRow.access_token}`,
+    Authorization: `Bearer ${accessToken}`,
     "Content-Type": "application/json",
     Accept: "application/json",
   };
@@ -203,10 +209,11 @@ async function syncScreeningNaarExact(supabase: any, aanvraag: any, bedrag: numb
     body: JSON.stringify({
       OrderedBy: accountId,
       InvoiceTo: accountId,
+      Journal: "70",
       Description: `${pakketLabel} — ${relatieNaam}`,
       PaymentCondition: Deno.env.get("EXACT_PAYMENT_CONDITION_INCASSO") ?? undefined,
       SalesInvoiceLines: [
-        { Item: itemId, Quantity: 1, AmountFC: bedrag, Description: pakketLabel },
+        { Item: itemId, Quantity: 1, AmountFC: bedrag, Description: pakketLabel, GLAccount: glAccountId, VATCode: vatCode },
       ],
     }),
   });
