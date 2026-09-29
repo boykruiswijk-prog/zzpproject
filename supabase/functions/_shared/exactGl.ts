@@ -8,27 +8,37 @@ import { sendExactAlarm } from "./exactAlarm.ts";
 export class BavGlError extends Error {}
 
 /** Alleen de cache: voor droogruns zonder token. */
-export function cachedBavGlAccountId(cfg: any): string | null {
-  const code = String(cfg?.gl_code_bav ?? "8003").trim();
-  return cfg?.gl_account_id_bav && String(cfg?.gl_account_id_bav_code ?? "").trim() === code
-    ? String(cfg.gl_account_id_bav) : null;
+export function cachedGlAccountId(cfg: any, kolomCode: string, kolomCache: string, standaard = ""): string | null {
+  const code = String(cfg?.[kolomCode] ?? standaard).trim();
+  return code && cfg?.[kolomCache] && String(cfg?.[`${kolomCache}_code`] ?? "").trim() === code
+    ? String(cfg[kolomCache]) : null;
 }
 
-export async function getBavGlAccountId(supabase: any, cfg: any, token: string): Promise<string> {
-  const code = String(cfg?.gl_code_bav ?? "8003").trim();
-  const cached = cachedBavGlAccountId(cfg);
+export function cachedBavGlAccountId(cfg: any): string | null {
+  return cachedGlAccountId(cfg, "gl_code_bav", "gl_account_id_bav", "8003");
+}
+
+/**
+ * Generiek: zoekt de grootboekrekening op code (exact_config[kolomCode]) en cachet
+ * het ID in exact_config[kolomCache] + exact_config[kolomCache + "_code"].
+ */
+export async function getGlAccountIdByCode(
+  supabase: any, cfg: any, token: string, kolomCode: string, kolomCache: string, standaard = "",
+): Promise<string> {
+  const code = String(cfg?.[kolomCode] ?? standaard).trim();
+  const cached = cachedGlAccountId(cfg, kolomCode, kolomCache, standaard);
   if (cached) return cached;
 
   const fout = async (melding: string, http_status?: number): Promise<never> => {
     await supabase.from("exact_sync_log").insert({
       trigger_type: "gl_lookup", status: "error", error_message: melding, http_status: http_status ?? null,
-      payload: { gl_code_bav: code },
+      payload: { [kolomCode]: code },
     }).then(() => {}, () => {});
     await sendExactAlarm(supabase, melding, "exactGl", null).catch(() => "failed");
     throw new BavGlError(melding);
   };
 
-  if (!code) return await fout("Grootboekcode BAV-AVB (exact_config.gl_code_bav) is leeg.");
+  if (!code) return await fout(`Grootboekcode (exact_config.${kolomCode}) is leeg.`);
   const base = `${cfg.base_url || "https://start.exactonline.nl"}/api/v1/${cfg.divisie_code}`;
   const r = await fetch(
     `${base}/financial/GLAccounts?$select=ID,Code,IsBlocked&$filter=trim(Code) eq '${code.replace(/'/g, "''")}'`,
@@ -40,7 +50,12 @@ export async function getBavGlAccountId(supabase: any, cfg: any, token: string):
   if (rows.length !== 1) return await fout(`Grootboekrekening ${code} niet eenduidig gevonden in Exact (${rows.length} treffers).`);
   if (rows[0].IsBlocked) return await fout(`Grootboekrekening ${code} is geblokkeerd in Exact.`);
   const id = String(rows[0].ID);
-  await supabase.from("exact_config").update({ gl_account_id_bav: id, gl_account_id_bav_code: code }).eq("id", cfg.id);
-  cfg.gl_account_id_bav = id; cfg.gl_account_id_bav_code = code;
+  await supabase.from("exact_config").update({ [kolomCache]: id, [`${kolomCache}_code`]: code }).eq("id", cfg.id);
+  cfg[kolomCache] = id; cfg[`${kolomCache}_code`] = code;
   return id;
+}
+
+/** BAV-AVB (standaard 8003). */
+export async function getBavGlAccountId(supabase: any, cfg: any, token: string): Promise<string> {
+  return await getGlAccountIdByCode(supabase, cfg, token, "gl_code_bav", "gl_account_id_bav", "8003");
 }
