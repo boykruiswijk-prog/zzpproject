@@ -73,6 +73,8 @@ interface BavSubmission {
   pagina_url?: string;
   opmerkingen?: string;
   vereist_handmatige_beoordeling?: boolean;
+  /** Documenten (pad) die in stap 5 getoond zijn en waarvan de klant lezen bevestigt. */
+  getoonde_documenten?: unknown;
 }
 
 Deno.serve(async (req) => {
@@ -84,6 +86,15 @@ Deno.serve(async (req) => {
     Deno.env.get("SUPABASE_URL") ?? "",
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
   );
+
+  // Weigering altijd loggen (zonder persoonsgegevens), zodat een 4xx te herleiden is.
+  const weiger = (status: number, error: string, reason: string, extra: Record<string, unknown> = {}) => {
+    console.warn(`process-bav-wizard geweigerd: status=${status} reason=${reason} melding="${error}"`);
+    return new Response(
+      JSON.stringify({ success: false, error, reason, ...extra }),
+      { status, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
+  };
 
   try {
     const submission = (await req.json()) as BavSubmission;
@@ -98,10 +109,10 @@ Deno.serve(async (req) => {
       !submission.ingangsdatum ||
       !submission.betaalwijze
     ) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Ongeldige aanvraag" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      const ontbreekt = ["gekozen_pakket","voornaam","achternaam","email","bedrijfsnaam","ingangsdatum","betaalwijze"]
+        .filter((k) => !(submission as unknown as Record<string, unknown>)?.[k]);
+      if (submission?.gekozen_pakket && !PAKKET_CONFIG[submission.gekozen_pakket]) ontbreekt.push("gekozen_pakket(onbekend)");
+      return weiger(400, `Aanvraag onvolledig: ${ontbreekt.join(", ")}`, "validatie");
     }
 
     // SEPA-machtiging: nooit vastleggen zonder incassant-ID.
@@ -126,12 +137,7 @@ Deno.serve(async (req) => {
       : !(submission.rekeninghouder ?? "").trim() ? "Naam rekeninghouder is verplicht"
       : ontbrekendeAdresvelden(adres).length ? `Adres rekeninghouder onvolledig: ${ontbrekendeAdresvelden(adres).join(", ")}`
       : null;
-    if (machtigingFout) {
-      return new Response(
-        JSON.stringify({ success: false, error: machtigingFout }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    if (machtigingFout) return weiger(400, machtigingFout, "validatie_machtiging");
 
     // Anti-spam: honeypot, invultijd en IP-limiet.
     const guard = await guardPublicSubmission(req, supabase, {
@@ -139,22 +145,11 @@ Deno.serve(async (req) => {
       ms: (submission as unknown as Record<string, unknown>).ms,
       kind: "bav",
     });
-    if (!guard.ok) {
-      return new Response(
-        JSON.stringify({ success: false, error: guard.error, reason: guard.reason }),
-        { status: guard.status ?? 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    if (!guard.ok) return weiger(guard.status ?? 400, guard.error ?? "Aanvraag geweigerd.", guard.reason ?? "anti_spam");
 
     const todayStr = new Date().toISOString().split("T")[0];
     if (submission.ingangsdatum < todayStr) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Een verzekering kan niet met terugwerkende kracht worden afgesloten. De vroegste ingangsdatum is vandaag.",
-        }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return weiger(400, "Een verzekering kan niet met terugwerkende kracht worden afgesloten. De vroegste ingangsdatum is vandaag.", "ingangsdatum");
     }
 
     // ── DUPLICATE GUARD: bestaande klant met polis kan geen tweede aanvraag doen ──
@@ -242,6 +237,14 @@ Deno.serve(async (req) => {
         bron: "website",
         exact_status: "wachtend",
         vereist_handmatige_beoordeling: submission.vereist_handmatige_beoordeling === true,
+        extra_data: {
+          getoonde_documenten: Array.isArray(submission.getoonde_documenten)
+            ? submission.getoonde_documenten
+                .filter((d): d is string => typeof d === "string" && /^\/documenten\/[A-Za-z0-9._\/-]{1,150}$/.test(d))
+                .slice(0, 10)
+            : [],
+          documenten_bevestigd_op: bewijs.akkoord_op,
+        },
       })
       .select()
       .single();
