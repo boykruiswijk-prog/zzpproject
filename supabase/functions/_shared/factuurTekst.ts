@@ -39,3 +39,9 @@ export function factuurReferentie(certificaat?: string | null, relatieCode?: str
 export function maandIsAlGefactureerd(status?: string | null): boolean {
   return status === "success" || status === "pending";
 }
+// Exact-regelhoeveelheid/-prijs: UnitPrice altijd positief (Exact weigert negatieve
+// nettoprijs); een creditnota (Type 8021) krijgt Quantity -1 zodat het bedrag negatief wordt.
+export function exactRegelBedrag(type: number, bedrag: number): { Quantity: number; UnitPrice: number } {
+  const prijs = Math.round(Math.abs(bedrag) * 100) / 100;
+  return { Quantity: type === 8021 ? -1 : 1, UnitPrice: prijs };
+}

@@ -20,7 +20,8 @@ function StatusBadge({ status }: { status: CustomerInvoice["status"] }) {
 }
 
 function formatEuro(n: number) {
-  return `€ ${n.toFixed(2).replace(".", ",")}`;
+  const abs = `€ ${Math.abs(n).toFixed(2).replace(".", ",")}`;
+  return n < 0 ? `−${abs}` : abs;
 }
 
 export default function PortalInvoices() {
@@ -98,6 +99,7 @@ export default function PortalInvoices() {
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="font-medium">{inv.factuurnummer}</p>
                   <StatusBadge status={inv.status} />
+                  {inv.bedrag < 0 && <Badge variant="secondary">Creditnota</Badge>}
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">
                   {formatDateLongNL(inv.datum)} · <span className="font-medium text-foreground">{formatEuro(inv.bedrag)}</span>
