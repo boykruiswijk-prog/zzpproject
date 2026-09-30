@@ -40,6 +40,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import type { Database } from "@/integrations/supabase/types";
+import { ADMIN_BRANCHES } from "@/data/sectorBranche";
 
 type LeadStatus = Database["public"]["Enums"]["lead_status"];
 
@@ -415,14 +416,7 @@ export default function AdminLeadDetail() {
                         <SelectValue placeholder="Kies branche…" />
                       </SelectTrigger>
                       <SelectContent>
-                        {[
-                          "IT & ICT",
-                          "HR & Finance consultancy",
-                          "PR & Marketing",
-                          "Management consultancy",
-                          "Coaches",
-                          "Zakelijke dienstverlening",
-                        ].map((b) => (
+                        {ADMIN_BRANCHES.map((b) => (
                           <SelectItem key={b} value={b}>{b}</SelectItem>
                         ))}
                       </SelectContent>
@@ -527,17 +521,16 @@ export default function AdminLeadDetail() {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="min-w-0 space-y-6">
             {lead.type === "verzekering_aanvraag" && (() => {
               const phase = derivePhase(lead);
-              const canActivate = isTeamMember && (phase === "activeren" || phase === "actief");
-              return <LeadActivationPanel lead={lead} isAdmin={canActivate} />;
+              return <LeadActivationPanel lead={lead} magActiveren={isTeamMember} fase={phase} />;
             })()}
             {lead.type === "verzekering_aanvraag" && lead.exact_account_id && (
               <LeadLifecyclePanel lead={lead} />
             )}
             {lead.type === "verzekering_aanvraag" && <SepaMachtigingBewijsBlok bronId={lead.id} />}
-            <Card>
+            <Card className="min-w-0 overflow-hidden">
               <CardHeader>
                 <CardTitle>Tijdlijn</CardTitle>
               </CardHeader>
@@ -572,7 +565,7 @@ export default function AdminLeadDetail() {
 
             {/* Certificate - only for BAV leads */}
             {lead.type === "verzekering_aanvraag" && (
-            <Card>
+            <Card className="min-w-0 overflow-hidden">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <FileText className="h-5 w-5" />
@@ -614,7 +607,7 @@ export default function AdminLeadDetail() {
 
             {/* Klantportaal uitnodiging — zichtbaar zodra polis actief is */}
             {lead.status === "actief" && (
-              <Card>
+              <Card className="min-w-0 overflow-hidden">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <UserCheck className="h-5 w-5" />
@@ -632,7 +625,7 @@ export default function AdminLeadDetail() {
 
             {/* Invoice (Exact) - only for BAV leads, read-only */}
             {lead.type === "verzekering_aanvraag" && (
-            <Card>
+            <Card className="min-w-0 overflow-hidden">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Receipt className="h-5 w-5" />

@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 type AppRole = "admin" | "supervisor" | "medewerker" | "verzekering" | "marketing";
 
+const ROLE_PRIORITY: AppRole[] = ["admin", "supervisor", "medewerker", "verzekering", "marketing"];
+
 const INACTIVITY_TIMEOUT = 60 * 60 * 1000; // 1 hour
 const ABSOLUTE_TIMEOUT = 8 * 60 * 60 * 1000; // 8 hours
 const SESSION_START_KEY = "session_start_time";
@@ -37,15 +39,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data, error } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", userId)
-        .maybeSingle();
+        .eq("user_id", userId);
 
       if (error) {
         console.error("Error fetching user role:", error);
         return null;
       }
 
-      return data?.role as AppRole | null;
+      const roles = new Set((data ?? []).map(({ role }) => role as AppRole));
+      return ROLE_PRIORITY.find((candidate) => roles.has(candidate)) ?? null;
     } catch (error) {
       console.error("Error fetching user role:", error);
       return null;

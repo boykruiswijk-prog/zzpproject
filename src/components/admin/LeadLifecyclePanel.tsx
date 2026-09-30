@@ -57,7 +57,7 @@ export function LeadLifecyclePanel({ lead }: Props) {
 
   return (
     <>
-      <Card>
+      <Card className="min-w-0 overflow-hidden">
         <CardHeader>
           <CardTitle className="text-base">Polis-lifecycle</CardTitle>
         </CardHeader>

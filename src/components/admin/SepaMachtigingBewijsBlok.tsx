@@ -37,24 +37,24 @@ export function SepaMachtigingBewijsBlok({ bronId }: { bronId: string }) {
   };
 
   return (
-    <div className="rounded-lg border border-border p-4 space-y-3">
+    <div className="min-w-0 overflow-hidden rounded-lg border border-border p-4 space-y-3">
       <div className="text-muted-foreground text-xs font-medium">SEPA-machtiging</div>
       {rows === null ? (
         <p className="text-sm text-muted-foreground">Laden…</p>
       ) : rows.length === 0 ? (
         <p className="text-sm text-muted-foreground">Geen online vastgelegde machtiging (aanvraag van vóór het bewijsrecord).</p>
       ) : rows.map((r) => (
-        <dl key={r.id} className="grid grid-cols-[9rem_1fr] gap-x-3 gap-y-1 text-sm">
-          <dt className="text-muted-foreground">Kenmerk</dt><dd className="font-mono text-xs break-all">{r.mandaatkenmerk}</dd>
-          <dt className="text-muted-foreground">Type</dt><dd>{r.type === "doorlopend" ? "Doorlopend" : "Eenmalig"}</dd>
-          <dt className="text-muted-foreground">Akkoord op</dt><dd>{new Date(r.akkoord_op).toLocaleString("nl-NL")}</dd>
-          <dt className="text-muted-foreground">IP-adres</dt><dd>{r.ip_adres ?? "-"}</dd>
-          <dt className="text-muted-foreground">IBAN</dt><dd>{maskeerIban(r.iban)}</dd>
-          <dt className="text-muted-foreground">Tekstversie</dt><dd>{r.tekst_versie}</dd>
+        <dl key={r.id} className="grid min-w-0 grid-cols-[minmax(0,7rem)_minmax(0,1fr)] gap-x-3 gap-y-1 text-sm">
+          <dt className="text-muted-foreground">Kenmerk</dt><dd className="min-w-0 font-mono text-xs break-all">{r.mandaatkenmerk}</dd>
+          <dt className="text-muted-foreground">Type</dt><dd className="min-w-0">{r.type === "doorlopend" ? "Doorlopend" : "Eenmalig"}</dd>
+          <dt className="text-muted-foreground">Akkoord op</dt><dd className="min-w-0">{new Date(r.akkoord_op).toLocaleString("nl-NL")}</dd>
+          <dt className="text-muted-foreground">IP-adres</dt><dd className="min-w-0 break-all">{r.ip_adres ?? "-"}</dd>
+          <dt className="text-muted-foreground">IBAN</dt><dd className="min-w-0 break-all">{maskeerIban(r.iban)}</dd>
+          <dt className="text-muted-foreground">Tekstversie</dt><dd className="min-w-0 break-all">{r.tekst_versie}</dd>
           <dt className="text-muted-foreground">Bevestigingsmail</dt>
-          <dd>{r.bevestigingsmail_verzonden_op ? `Verzonden ${new Date(r.bevestigingsmail_verzonden_op).toLocaleString("nl-NL")}` : "Niet (bevestigd) verzonden"}</dd>
+          <dd className="min-w-0 break-words">{r.bevestigingsmail_verzonden_op ? `Verzonden ${new Date(r.bevestigingsmail_verzonden_op).toLocaleString("nl-NL")}` : "Niet (bevestigd) verzonden"}</dd>
           <dt className="text-muted-foreground">PDF</dt>
-          <dd><Button variant="outline" size="sm" onClick={() => openPdf(r.mandaatkenmerk)}><FileText className="h-4 w-4" />Machtiging openen</Button></dd>
+          <dd className="min-w-0"><Button className="w-full whitespace-normal" variant="outline" size="sm" onClick={() => openPdf(r.mandaatkenmerk)}><FileText className="h-4 w-4 shrink-0" />Machtiging openen</Button></dd>
         </dl>
       ))}
     </div>

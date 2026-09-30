@@ -23,9 +23,8 @@ type Lead = Record<string, any>;
 
 interface Props {
   lead: Lead;
-  // Backwards-compatibel; betekent "mag activeren". Wordt vanuit LeadDetail
-  // gevuld met isTeamMember (medewerker/supervisor/admin).
-  isAdmin: boolean;
+  magActiveren: boolean;
+  fase: string;
 }
 
 const isValidEmail = (e: any) => typeof e === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
@@ -33,7 +32,7 @@ const isValidKvk = (k: any) => typeof k === "string" && /^\d{8}$/.test(k.trim())
 // Zelfde mod-97-validatie als aanmeldformulier en server (elk geldig SEPA-IBAN).
 const isValidIban = (i: any) => typeof i === "string" && isValidIbanMod97(i);
 
-export function LeadActivationPanel({ lead, isAdmin }: Props) {
+export function LeadActivationPanel({ lead, magActiveren, fase }: Props) {
   const { toast } = useToast();
   const qc = useQueryClient();
   const { data: profiles } = useProfiles();
@@ -81,7 +80,8 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
   const missing = checks.filter(c => !c.ok).map(c => c.label);
   const alreadyActivated = !!lead.exact_account_id;
   const isAfgewezen = lead.status === "afgewezen";
-  const canShow = isAdmin && !alreadyActivated && !isAfgewezen;
+  const faseStaatActivatieToe = fase === "activeren" || fase === "actief";
+  const canShow = magActiveren && faseStaatActivatieToe && !alreadyActivated && !isAfgewezen;
 
   const activate = async () => {
     setIsActivating(true);
@@ -175,7 +175,7 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
 
 
   return (
-    <Card>
+    <Card className="min-w-0 overflow-hidden">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <ShieldCheck className="h-5 w-5 text-accent" />
@@ -287,8 +287,10 @@ export function LeadActivationPanel({ lead, isAdmin }: Props) {
               <div className="rounded-md border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900 flex items-start gap-2">
                 <AlertTriangle className="h-4 w-4 mt-0.5" />
                 <span>
-                  {!isAdmin && "Alleen teamleden kunnen activeren."}
-                  {isAdmin && isAfgewezen && "Afgewezen leads kunnen niet worden geactiveerd."}
+                  {!magActiveren && "Alleen teamleden kunnen activeren."}
+                  {magActiveren && isAfgewezen && "Afgewezen leads kunnen niet worden geactiveerd."}
+                  {magActiveren && !isAfgewezen && !faseStaatActivatieToe &&
+                    "Keur de aanvraag eerst goed (knop 'Goedkeuren' hierboven); daarna kun je activeren."}
                 </span>
               </div>
             ) : (
