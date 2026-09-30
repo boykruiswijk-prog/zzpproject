@@ -357,7 +357,7 @@ Deno.serve(async (req) => {
           lineDescription: isTest ? "TEST tekencontrole" : regelOmschrijving("restitutie_pauze", String(body.van), String(body.tot)),
           lineNotes: isTest ? "Test €1,00" : String(body.notes), yourRef,
           unitPrice: isTest ? 1 : Number(body.bedrag),
-          periodStart: isTest ? null : String(body.van), periodEnd: isTest ? null : String(body.tot),
+          periodStart: isTest ? undefined : String(body.van), periodEnd: isTest ? undefined : String(body.tot),
         });
         if (!res.ok) return json({ error: "post_failed", res }, 502);
         if (!isTest) {
