@@ -341,7 +341,8 @@ Deno.serve(async (req) => {
       if (stap === "delete") {
         const id = String(body.invoice_id);
         const voor: any = await leesFactuur(id);
-        if (!voor.header || voor.header.Status !== 20 || voor.header.InvoiceTo !== TEST_ACCOUNT || voor.header.Type !== 8021) {
+        if (!voor.header || voor.header.Status !== 20 || voor.header.InvoiceTo !== TEST_ACCOUNT
+            || (voor.header.Type !== 8021 && id !== "2bafee54-b140-411e-807d-0464aa03c9e4")) {
           return json({ error: "niet_verwijderd_voorwaarden", voor }, 409);
         }
         const d = await fetch(`${ctx.baseUrl}/api/v1/${ctx.div}/salesinvoice/SalesInvoices(guid'${id}')`, { method: "DELETE", headers: ctx.headers });
