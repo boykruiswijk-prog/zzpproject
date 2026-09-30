@@ -332,7 +332,12 @@ Deno.serve(async (req) => {
     // activatie via lead-to-exact-activate. exact_status blijft "wachtend" (zie insert hierboven).
 
     return new Response(
-      JSON.stringify({ success: true, aanmelding_id: aanmelding.id, lead_id: lead.id }),
+      JSON.stringify({
+        success: true,
+        aanmelding_id: aanmelding.id,
+        lead_id: lead.id,
+        mandaatkenmerk: machtiging.mandaatkenmerk,
+      }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {

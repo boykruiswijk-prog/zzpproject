@@ -3,7 +3,6 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import fs from "fs";
 import { componentTagger } from "lovable-tagger";
-import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/supabase/vite";
 import {
   legacyRedirects,
   resolveRedirectTarget,
@@ -139,7 +138,6 @@ export default defineConfig(({ mode }) => {
   plugins: [
     react(),
     mode === "development" && componentTagger(),
-    mcpPlugin(),
     redirectsPlugin(env),
     prerenderPlugin(env),
   ].filter(Boolean),

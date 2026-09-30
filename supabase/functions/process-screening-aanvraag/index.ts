@@ -1,6 +1,4 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { ensureValidToken } from "../_shared/exactToken.ts";
-import { getGlAccountIdByCode } from "../_shared/exactGl.ts";
 import { createMailGate } from "../_shared/mail.ts";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
 import { isIntegratieEnabled } from "../_shared/integraties.ts";
@@ -77,6 +75,12 @@ function maskIban(raw: string): string {
   return `${iban.slice(0, 4)}****${iban.slice(-2)}`;
 }
 
+function escapeHtml(value: unknown): string {
+  return String(value ?? "").replace(/[&<>'"]/g, (character) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;",
+  })[character] ?? character);
+}
+
 // Checks per pakket; alleen gebruikt wanneer de Otentica-integratie AAN staat.
 function getChecksForType(type: string): string[] {
   switch (type) {
@@ -99,139 +103,6 @@ function getChecksForType(type: string): string[] {
     default:
       return [];
   }
-}
-
-/**
- * Zet de eenmalige incasso van het screeningbedrag klaar in Exact Online.
- * Wordt uitsluitend aangeroepen wanneer integratie_config.exact_online.enabled = true.
- * Fouten hier mogen de aanvraag nooit laten mislukken; ze worden intern gelogd.
- */
-// deno-lint-ignore no-explicit-any
-async function syncScreeningNaarExact(supabase: any, aanvraag: any, bedrag: number, pakketLabel: string) {
-  const TEST_MODE = Deno.env.get("EXACT_TEST_MODE") === "true";
-
-  // H7: token uitsluitend via _shared/exactToken.ts (exact_config), niet exact_tokens.
-  const { data: cfg } = await supabase.from("exact_config").select("*").limit(1).maybeSingle();
-  if (!cfg?.is_actief || !cfg.divisie_code) throw new Error("Exact-koppeling niet actief (exact_config)");
-
-  // Grootboek en btw-code voor screening moeten expliciet zijn ingesteld; niet gokken.
-  // Ontbreekt er één, dan niets in Exact aanmaken (ook geen relatie) en wachten op config.
-  const glCode = String(cfg.gl_code_screening ?? "").trim();
-  const vatCode = String(cfg.vat_code_screening ?? "").trim();
-  if (!glCode || !vatCode) {
-    const melding = `Screening niet naar Exact: ${[!glCode && "gl_code_screening", !vatCode && "vat_code_screening"].filter(Boolean).join(" en ")} ontbreekt in exact_config.`;
-    await supabase.from("screening_aanvragen")
-      .update({ exact_status: "wachtend_config", exact_fout: melding }).eq("id", aanvraag.id);
-    await supabase.from("exact_sync_log").insert({
-      trigger_type: "screening_invoice", status: "wachtend_config", error_message: melding,
-      payload: { screening_aanvraag_id: aanvraag.id },
-    });
-    return;
-  }
-
-  const accessToken = await ensureValidToken(supabase, cfg);
-  const glAccountId = await getGlAccountIdByCode(supabase, cfg, accessToken, "gl_code_screening", "gl_account_id_screening");
-  const BASE_URL = cfg.base_url || "https://start.exactonline.nl";
-  const divisionCode = cfg.divisie_code;
-  const apiHeaders = {
-    Authorization: `Bearer ${accessToken}`,
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  };
-
-  const relatieNaam = TEST_MODE
-    ? `TEST_${aanvraag.bedrijfsnaam || `${aanvraag.voornaam} ${aanvraag.achternaam}`}`
-    : aanvraag.bedrijfsnaam || `${aanvraag.voornaam} ${aanvraag.achternaam}`;
-
-  const accountRes = await fetch(`${BASE_URL}/api/v1/${divisionCode}/crm/Accounts`, {
-    method: "POST",
-    headers: apiHeaders,
-    body: JSON.stringify({
-      Name: relatieNaam,
-      Email: aanvraag.email,
-      Phone: aanvraag.telefoon,
-      ChamberOfCommerce: aanvraag.kvk_nummer,
-      Country: "NL",
-      Status: "C",
-      IsSales: true,
-    }),
-  });
-  if (!accountRes.ok) throw new Error(`Account ${accountRes.status}: ${await accountRes.text()}`);
-  const accountId = (await accountRes.json()).d.ID;
-
-  // Bankrekening + eenmalig mandaat vastleggen bij de relatie, zodat Exact de
-  // incasso van dit screeningbedrag kan uitvoeren.
-  if (aanvraag.iban) {
-    const bankRes = await fetch(`${BASE_URL}/api/v1/${divisionCode}/crm/BankAccounts`, {
-      method: "POST",
-      headers: apiHeaders,
-      body: JSON.stringify({
-        Account: accountId,
-        BankAccount: String(aanvraag.iban).replace(/\s/g, "").toUpperCase(),
-        BankAccountHolderName: aanvraag.rekeninghouder || relatieNaam,
-        Main: true,
-      }),
-    });
-    if (!bankRes.ok) throw new Error(`BankAccount ${bankRes.status}: ${await bankRes.text()}`);
-    const bankId = (await bankRes.json().catch(() => ({})))?.d?.ID;
-
-    // Eenmalig Core-mandaat. Waarden geverifieerd in de Exact Online REST-documentatie:
-    // https://start.exactonline.nl/docs/HlpRestAPIResourcesDetails.aspx?name=CashflowDirectDebitMandates
-    //   Type: 0 = Core, 1 = B2B, 2 = bottomline (UK only)
-    //   PaymentType: 0 = One-off payment, 1 = Recurrent payment, 2 = AdHoc (UK only)
-    if (bankId) {
-      const { data: bewijs } = await supabase.from("sepa_machtiging_bewijs")
-        .select("mandaatkenmerk, akkoord_op").eq("bron_id", aanvraag.id).eq("dienst", "screening").maybeSingle();
-      const mRes = await fetch(`${BASE_URL}/api/v1/${divisionCode}/cashflow/DirectDebitMandates`, {
-        method: "POST",
-        headers: apiHeaders,
-        body: JSON.stringify({
-          Account: accountId,
-          BankAccount: bankId,
-          Reference: bewijs?.mandaatkenmerk ?? mandaatkenmerkVoor(aanvraag.id),
-          SignatureDate: new Date(bewijs?.akkoord_op ?? aanvraag.incasso_akkoord_op).toISOString(),
-          Type: 0,
-          PaymentType: 0,
-          // Omschrijving = naam van de relatie zoals het account is aangemaakt (max. afgekapt op 60).
-          Description: relatieNaam.slice(0, 60),
-        }),
-      });
-      if (!mRes.ok) throw new Error(`DirectDebitMandate ${mRes.status}: ${await mRes.text()}`);
-    }
-  }
-
-  const itemId = Deno.env.get("EXACT_ITEM_ID_SCREENING");
-  if (!itemId) throw new Error("EXACT_ITEM_ID_SCREENING ontbreekt — geen artikel gekoppeld voor screening");
-
-  const invoiceRes = await fetch(`${BASE_URL}/api/v1/${divisionCode}/salesinvoice/SalesInvoices`, {
-    method: "POST",
-    headers: apiHeaders,
-    body: JSON.stringify({
-      OrderedBy: accountId,
-      InvoiceTo: accountId,
-      Journal: "70",
-      Description: `${pakketLabel} — ${relatieNaam}`,
-      PaymentCondition: Deno.env.get("EXACT_PAYMENT_CONDITION_INCASSO") ?? undefined,
-      SalesInvoiceLines: [
-        { Item: itemId, Quantity: 1, AmountFC: bedrag, Description: pakketLabel, GLAccount: glAccountId, VATCode: vatCode },
-      ],
-    }),
-  });
-  if (!invoiceRes.ok) throw new Error(`SalesInvoice ${invoiceRes.status}: ${await invoiceRes.text()}`);
-  const invoiceJson = await invoiceRes.json();
-  const invoiceId = invoiceJson?.d?.InvoiceID ?? invoiceJson?.d?.ID ?? null;
-
-  await supabase
-    .from("screening_aanvragen")
-    .update({
-      exact_status: "gesynchroniseerd",
-      exact_relatie_id: accountId,
-      exact_transactie_id: invoiceId,
-      exact_sync_op: new Date().toISOString(),
-      exact_fout: null,
-      incasso_status: "in_behandeling",
-    })
-    .eq("id", aanvraag.id);
 }
 
 Deno.serve(async (req) => {
@@ -438,14 +309,14 @@ Deno.serve(async (req) => {
         <p><strong>Pakket:</strong> ${pakketLabel}</p>
         <p><strong>Bedrag:</strong> € ${bedrag},-</p>
         <hr/>
-        <p><strong>Naam:</strong> ${volledigeNaam}</p>
-        <p><strong>E-mail:</strong> ${data.email}</p>
-        <p><strong>Telefoon:</strong> ${data.telefoon || "-"}</p>
-        <p><strong>Bedrijfsnaam:</strong> ${data.bedrijfsnaam || "-"}</p>
-        <p><strong>KvK-nummer:</strong> ${data.kvk_nummer || "-"}</p>
-        <p><strong>Beroep:</strong> ${data.beroep || "-"}</p>
-        <p><strong>Sector:</strong> ${data.sector || "-"}</p>
-        <p><strong>Notities:</strong> ${data.notities || "-"}</p>
+        <p><strong>Naam:</strong> ${escapeHtml(volledigeNaam)}</p>
+        <p><strong>E-mail:</strong> ${escapeHtml(data.email)}</p>
+        <p><strong>Telefoon:</strong> ${escapeHtml(data.telefoon || "-")}</p>
+        <p><strong>Bedrijfsnaam:</strong> ${escapeHtml(data.bedrijfsnaam || "-")}</p>
+        <p><strong>KvK-nummer:</strong> ${escapeHtml(data.kvk_nummer || "-")}</p>
+        <p><strong>Beroep:</strong> ${escapeHtml(data.beroep || "-")}</p>
+        <p><strong>Sector:</strong> ${escapeHtml(data.sector || "-")}</p>
+        <p><strong>Notities:</strong> ${escapeHtml(data.notities || "-")}</p>
         <hr/>
         <p><strong>Incasso-akkoord:</strong> gegeven op ${new Date().toLocaleString("nl-NL")} (rekening ${maskIban(ibanSchoon)}, t.n.v. ${rekeninghouder})</p>
         <p>Aanvraag-ID: ${aanvraag.id}</p>
@@ -454,7 +325,7 @@ Deno.serve(async (req) => {
 
       // Bevestiging naar aanvrager
       const klantHtml = `
-        <h2>Bedankt voor je screeningsaanvraag, ${data.voornaam}!</h2>
+        <h2>Bedankt voor je screeningsaanvraag, ${escapeHtml(data.voornaam)}!</h2>
         <p>We hebben je aanvraag voor de <strong>${pakketLabel}</strong> ontvangen.</p>
         <p>Je hebt akkoord gegeven voor een eenmalige incasso van <strong>€ ${bedrag},-</strong> van rekening <strong>${maskIban(ibanSchoon)}</strong> voor deze screening. Dit akkoord geldt alleen voor deze aanvraag; er wordt niets doorlopend afgeschreven.</p>
         <p>We nemen binnen 24 uur contact met je op om de screening te starten.</p>
@@ -475,25 +346,9 @@ Deno.serve(async (req) => {
       bedragOfReden: machtiging.reden,
     });
 
-    // 3. INCASSO VIA EXACT ONLINE — staat standaard UIT
-    // (integratie_config.exact_online.enabled = false). Zolang de vlag uit staat wordt
-    // er niets naar Exact gestuurd: het akkoord en de gegevens zijn vastgelegd en de
-    // incasso blijft op 'handmatig_te_verwerken' staan. De klant merkt hier niets van.
-    const exactAan = await isIntegratieEnabled(supabase, "exact_online");
-    if (exactAan) {
-      try {
-        await syncScreeningNaarExact(supabase, aanvraag, bedrag, pakketLabel);
-      } catch (e) {
-        const fout = e instanceof Error ? e.message : "Onbekende fout";
-        console.error("Exact-incasso screening mislukt (aanvraag blijft staan):", fout);
-        await supabase
-          .from("screening_aanvragen")
-          .update({ exact_status: "gefaald", exact_fout: fout, incasso_status: "handmatig_te_verwerken" })
-          .eq("id", aanvraag.id);
-      }
-    } else {
-      console.log("Exact Online-integratie staat uit — incasso wordt handmatig verwerkt.");
-    }
+    // Exact-verwerking gebeurt nooit vanuit deze openbare formulierroute.
+    // De aanvraag blijft handmatig te verwerken voor een afzonderlijke, beveiligde teamactie.
+    console.log("Screeningsincasso is opgeslagen voor handmatige verwerking.");
 
     // 4. OTENTICA — staat standaard UIT (integratie_config.otentica.enabled = false).
     // Zolang de vlag uit staat wordt er niets naar Otentica gestuurd en blijft de

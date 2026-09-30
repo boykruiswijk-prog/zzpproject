@@ -75,6 +75,7 @@ export function BAVApplicationModule() {
    const [slotverklaringAkkoord, setSlotverklaringAkkoord] = useState(false);
    const [errors, setErrors] = useState<ValidationErrors>({});
    const [isSubmitted, setIsSubmitted] = useState(false);
+   const [submissionResult, setSubmissionResult] = useState<{ reference: string; mandaatkenmerk?: string } | null>(null);
    const [isSubmitting, setIsSubmitting] = useState(false);
    const guard = useFormGuard();
    const [existingCustomerOpen, setExistingCustomerOpen] = useState(false);
@@ -189,6 +190,8 @@ export function BAVApplicationModule() {
   // mogelijk om e-mailadressen en KvK-nummers af te tasten. De dubbelcheck
   // gebeurt nu server-side bij het versturen van de aanvraag.
   const wizardRef = useRef<HTMLDivElement>(null);
+  const successRef = useRef<HTMLDivElement>(null);
+  const successHeadingRef = useRef<HTMLHeadingElement>(null);
   const stapGewisseld = useRef(false);
   // Voorstel rekeninghouder: zichtbaar en wijzigbaar, alleen invullen zolang de klant het veld niet zelf heeft aangepast.
   const rekeninghouderAangepast = useRef(false);
@@ -208,6 +211,12 @@ export function BAVApplicationModule() {
     }, 350);
     return () => window.clearTimeout(t);
   }, [currentStep]);
+  useEffect(() => {
+    if (!isSubmitted) return;
+    successRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const timer = window.setTimeout(() => successHeadingRef.current?.focus({ preventScroll: true }), 350);
+    return () => window.clearTimeout(timer);
+  }, [isSubmitted]);
   const nextStep = async () => {
     if (!validateStep(currentStep) || currentStep >= TOTAL_STEPS) return;
     stapGewisseld.current = true;
@@ -273,8 +282,25 @@ export function BAVApplicationModule() {
        }
        if (!data?.success) throw new Error(data?.error || "Onbekende fout");
 
-       trackWizardComplete(selectedBavPakket.name, selectedBavPakket.prijs);
+        const returnedLeadId = typeof data.lead_id === "string" ? data.lead_id : leadId;
+        setSubmissionResult({
+          reference: returnedLeadId.slice(0, 8).toUpperCase(),
+          mandaatkenmerk: typeof data.mandaatkenmerk === "string" ? data.mandaatkenmerk : undefined,
+        });
+        trackWizardComplete(selectedBavPakket.name, selectedBavPakket.prijs);
        setIsSubmitted(true);
+        setFormData({
+          bedrijfsnaam: "", kvkNummer: "", sector: "", beroep: "", functie: "", aantalMedewerkers: "",
+          voornaam: "", achternaam: "", email: "", telefoon: "", opdrachtgever: "", bemiddelaarNaam: "",
+          iban: "", adresStraat: "", adresHuisnummer: "", adresPostcode: "", adresPlaats: "", adresLand: "Nederland",
+          rekeninghouder: "",
+        });
+        setStartDate("");
+        setViaBemiddelaar(null);
+        setIncassoAkkoord(false);
+        setClientAkkoordOp(null);
+        setSlotverklaringAkkoord(false);
+        setErrors({});
      } catch (error) {
        console.error("Error submitting application:", error);
        toast({
@@ -288,43 +314,48 @@ export function BAVApplicationModule() {
    };
 
 
-  return (
-    <>
-      <HoneypotField guard={guard} />
-      <Dialog open={isSubmitted} onOpenChange={(open) => { if (!open) setIsSubmitted(false); }}>
-        <DialogContent className="max-w-md p-0 overflow-hidden">
-          <div className="flex flex-col items-center text-center px-6 py-8 sm:px-8 sm:py-10">
+  if (isSubmitted && submissionResult) {
+    return (
+      <section className="section-padding bg-secondary" id="combinatiepolis">
+        <div className="container-wide">
+          <div ref={successRef} className="scroll-mt-24 mx-auto max-w-2xl bg-card border border-border rounded-lg px-6 py-10 sm:px-10 sm:py-14 text-center shadow-sm">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 200 }}
-              className="h-16 w-16 rounded-full bg-accent/10 flex items-center justify-center mb-5"
+              className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-accent/10"
             >
-              <CheckCircle className="h-8 w-8 text-accent" />
+              <CheckCircle className="h-8 w-8 text-accent" aria-hidden />
             </motion.div>
-            <h2 className="text-xl sm:text-2xl font-bold mb-2">{t("bavApp.thankYou")}</h2>
-            <p className="text-muted-foreground text-sm sm:text-base mb-1">
-              {t("bavApp.thankYouDesc")} <span className="font-semibold text-foreground">{selectedBavPakket.name}</span> {t("bavApp.thankYouReceived")}
+            <h2 ref={successHeadingRef} tabIndex={-1} className="outline-none text-2xl font-bold sm:text-3xl">
+              Je aanvraag is ontvangen
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+              We beoordelen je aanvraag en nemen binnen 1 werkdag contact met je op. Je ontvangt een bevestiging per e-mail, met je SEPA-machtiging als PDF. Na goedkeuring ontvang je je polis en een uitnodiging voor Mijn ZP.
             </p>
-            <p className="text-muted-foreground text-xs sm:text-sm mb-6">
-              {t("bavApp.thankYouFollowUp")}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-              <Button variant="accent" size="default" className="w-full sm:w-auto" onClick={() => { setIsSubmitted(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
-                  <ArrowLeft className="h-4 w-4" />
-                  {t("bavApp.backToHome")}
+            <div className="mt-6 space-y-1 text-sm">
+              <p><span className="font-semibold">Referentie:</span> {submissionResult.reference}</p>
+              {submissionResult.mandaatkenmerk && (
+                <p className="break-all"><span className="font-semibold">Mandaatkenmerk:</span> {submissionResult.mandaatkenmerk}</p>
+              )}
+            </div>
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+              <Button variant="accent" asChild>
+                <Link to="/">Naar de homepage</Link>
               </Button>
-              <Button variant="outline" size="default" asChild className="w-full sm:w-auto">
-                <Link to="/contact">
-                  {t("bavApp.contactUs")}
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
+              <Button variant="outline" asChild>
+                <a href="tel:+31204573077">Bel ons: 020 - 457 3077</a>
               </Button>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      </section>
+    );
+  }
 
+  return (
+    <>
+      <HoneypotField guard={guard} />
       <Dialog open={existingCustomerOpen} onOpenChange={(open) => {
         setExistingCustomerOpen(open);
         if (!open) { setMagicLinkSent(false); setMagicLinkSending(false); }

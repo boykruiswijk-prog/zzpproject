@@ -36,6 +36,12 @@ const labels: Record<string, string> = {
 
 const DATE_KEYS = new Set(["opzegdatum", "ingangsdatum", "pauzedatum", "geboortedatum", "datum"]);
 
+function escapeHtml(value: unknown): string {
+  return String(value ?? "").replace(/[&<>'"]/g, (character) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;",
+  })[character] ?? character);
+}
+
 function fmtValue(key: string, v: unknown): string {
   if (Array.isArray(v)) return v.join(", ");
   if (v == null) return "-";
@@ -45,7 +51,7 @@ function fmtValue(key: string, v: unknown): string {
 
 function renderDetails(details: Record<string, unknown>): string {
   return Object.entries(details)
-    .map(([k, v]) => `<li><strong>${k}:</strong> ${fmtValue(k, v)}</li>`)
+    .map(([k, v]) => `<li><strong>${escapeHtml(k)}:</strong> ${escapeHtml(fmtValue(k, v))}</li>`)
     .join("");
 }
 
@@ -108,10 +114,10 @@ Deno.serve(async (req) => {
     const subject = `Nieuwe ${labels[v.type]} via zpzaken.nl`;
     const baseHtml = `
       <h2>${labels[v.type]}</h2>
-      <p><strong>Naam:</strong> ${v.voornaam} ${v.achternaam}</p>
-      <p><strong>E-mail:</strong> ${v.email}</p>
-      <p><strong>Telefoon:</strong> ${v.telefoon}</p>
-      <p><strong>Polisnummer:</strong> ${v.polisnummer}</p>
+      <p><strong>Naam:</strong> ${escapeHtml(v.voornaam)} ${escapeHtml(v.achternaam)}</p>
+      <p><strong>E-mail:</strong> ${escapeHtml(v.email)}</p>
+      <p><strong>Telefoon:</strong> ${escapeHtml(v.telefoon)}</p>
+      <p><strong>Polisnummer:</strong> ${escapeHtml(v.polisnummer)}</p>
       <h3>Details</h3>
       <ul>${renderDetails(v.details)}</ul>
       <p style="color:#888;font-size:12px">Aanvraag-ID: ${data.id}</p>
@@ -174,7 +180,7 @@ Deno.serve(async (req) => {
         v.email,
         `Bevestiging: ${labels[v.type]}`,
         `
-          <p>Hoi ${v.voornaam},</p>
+          <p>Hoi ${escapeHtml(v.voornaam)},</p>
           <p>We hebben je aanvraag (<strong>${labels[v.type].toLowerCase()}</strong>) ontvangen.
           Een medewerker neemt binnen 24 uur contact met je op.</p>
           <h3>Wat je hebt doorgegeven</h3>
