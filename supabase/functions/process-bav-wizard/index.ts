@@ -97,6 +97,7 @@ Deno.serve(async (req) => {
   };
 
   try {
+    const t0 = Date.now();
     const submission = (await req.json()) as BavSubmission;
 
     if (
@@ -281,7 +282,10 @@ Deno.serve(async (req) => {
 
     if (dbError) throw new Error(`Aanmelding insert: ${dbError.message}`);
 
-    // ── 2b. BEVESTIGING SEPA-MACHTIGING (PDF + mail; faalt nooit hard) ──
+    // ── 2b/3. Na het antwoord: PDF + bevestigingsmail en teamnotificatie.
+    // Bewijs, lead en aanmelding staan hierboven al synchroon vast. Fouten worden
+    // gelogd in lead_notification_log (verstuurMachtigingBevestiging / send-lead-notification).
+    const achtergrond = (async () => {
     await verstuurMachtigingBevestiging(supabase, req, {
       fnName: "process-bav-wizard",
       leadType: "bav-sepa-machtiging",
@@ -293,7 +297,7 @@ Deno.serve(async (req) => {
     });
 
     // ── 3. E-MAIL VIA send-lead-notification ──
-    supabase.functions
+    await supabase.functions
       .invoke("send-lead-notification", {
         headers: { "x-internal-secret": Deno.env.get("INTERNAL_FUNCTION_SECRET") ?? "" },
         body: {
@@ -316,6 +320,12 @@ Deno.serve(async (req) => {
         },
       })
       .catch((err) => console.error("send-lead-notification failed:", err));
+    console.log(`[timing] achtergrond klaar na ${Date.now() - t0}ms`);
+    })().catch((e) => console.error("achtergrondtaken mislukt:", e));
+    // deno-lint-ignore no-explicit-any
+    const rt = (globalThis as any).EdgeRuntime;
+    if (rt?.waitUntil) rt.waitUntil(achtergrond); else await achtergrond;
+    console.log(`[timing] antwoord na ${Date.now() - t0}ms`);
 
     // ── 4. Geen Exact-stap bij aanmelding (H6) ──
     // Exact (relatie, bankrekening, machtiging, factuur) wordt pas ingericht bij
