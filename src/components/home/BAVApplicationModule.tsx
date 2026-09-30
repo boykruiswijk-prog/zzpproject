@@ -1,5 +1,5 @@
 import { isValidIban as isValidSepaIban } from "@/lib/sepaMachtiging";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { SepaMachtigingBlok, bouwFrontendMachtiging } from "@/components/shared/SepaMachtigingBlok";
 import { mandaatkenmerkVoor, redenBav } from "@/lib/sepaMachtiging";
 import { trackBeginWizard, trackWizardComplete } from "@/lib/tracking";
@@ -926,6 +926,7 @@ export function BAVApplicationModule() {
                 </div>
               </div>
             </div>
+          </div>
           </div>
         </AnimatedSection>
       </div>
