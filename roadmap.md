@@ -18,3 +18,7 @@
 - [x] T1: verzekering-rol in dagelijkse teamfuncties en AuthContext herstellen
 - [x] T1: activeringsreden, sector-naar-branche en SEPA-zijbalk herstellen
 - [x] T1: alleen lead db612f38 branche backfillen; tests en breedtecontrole uitvoeren
+
+- [ ] Integraties: Exact-statuskaart op echte gezondheid, juiste refreshdatum, Amsterdam-dagtelling, updated_at-trigger
+- [ ] Adressen: PDOK-suggestie (NL) in BAV/online-aanvraag/screening, postcode "1234 AB", CSP-check
+- [ ] Adressen: server-fallback hoofdletter straat/plaats vóór legBewijsVast; unit test + Playwright (gemockt PDOK)
