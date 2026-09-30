@@ -188,11 +188,32 @@ export function BAVApplicationModule() {
   // De losse "bent u al klant?"-check is verwijderd: die maakte het van buitenaf
   // mogelijk om e-mailadressen en KvK-nummers af te tasten. De dubbelcheck
   // gebeurt nu server-side bij het versturen van de aanvraag.
+  const wizardRef = useRef<HTMLDivElement>(null);
+  const stapGewisseld = useRef(false);
+  // Voorstel rekeninghouder: zichtbaar en wijzigbaar, alleen invullen zolang de klant het veld niet zelf heeft aangepast.
+  const rekeninghouderAangepast = useRef(false);
+  const rekeninghouderVoorstel = formData.bedrijfsnaam.trim() || `${formData.voornaam} ${formData.achternaam}`.trim();
+  useEffect(() => {
+    if (currentStep !== 4 || rekeninghouderAangepast.current) return;
+    setFormData(prev => prev.rekeninghouder === rekeninghouderVoorstel ? prev : { ...prev, rekeninghouder: rekeninghouderVoorstel });
+  }, [currentStep, rekeninghouderVoorstel]);
+  useEffect(() => {
+    if (!stapGewisseld.current) return;
+    const el = wizardRef.current;
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Wacht op de stap-animatie; dan focus op de kop van de nieuwe stap.
+    const t = window.setTimeout(() => {
+      el.querySelector<HTMLElement>("[data-step-heading]")?.focus({ preventScroll: true });
+    }, 350);
+    return () => window.clearTimeout(t);
+  }, [currentStep]);
   const nextStep = async () => {
     if (!validateStep(currentStep) || currentStep >= TOTAL_STEPS) return;
+    stapGewisseld.current = true;
     setCurrentStep(currentStep + 1);
   };
-  const prevStep = () => { if (currentStep > 1) { setErrors({}); setCurrentStep(currentStep - 1); } };
+  const prevStep = () => { if (currentStep > 1) { setErrors({}); stapGewisseld.current = true; setCurrentStep(currentStep - 1); } };
    const handleSubmit = async () => {
      if (isSubmitting) return;
      if (!validateStep(currentStep)) return;
@@ -403,6 +424,7 @@ export function BAVApplicationModule() {
         </AnimatedSection>
 
         <AnimatedSection delay={0.2} className="max-w-4xl mx-auto">
+          <div ref={wizardRef} className="scroll-mt-24">
           {/* Progress Steps */}
           <div className="flex justify-between mb-8 relative">
             <div className="absolute top-5 left-0 right-0 h-0.5 bg-border -z-10" />
@@ -428,7 +450,7 @@ export function BAVApplicationModule() {
                 {currentStep === 1 && (
                   <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="space-y-6">
                     <div>
-                      <h3 className="text-xl font-semibold mb-2">{t("home.bavChooseCoverage")}</h3>
+                      <h3 data-step-heading tabIndex={-1} className="text-xl font-semibold mb-2 outline-none">{t("home.bavChooseCoverage")}</h3>
                       <p className="text-muted-foreground text-sm">{t("home.bavChooseDesc")}</p>
                     </div>
                     <div className="grid sm:grid-cols-3 gap-4">
@@ -530,7 +552,7 @@ export function BAVApplicationModule() {
                 {currentStep === 2 && (
                   <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="space-y-6">
                     <div>
-                      <h3 className="text-xl font-semibold mb-2">{t("home.bavCompanyTitle")}</h3>
+                      <h3 data-step-heading tabIndex={-1} className="text-xl font-semibold mb-2 outline-none">{t("home.bavCompanyTitle")}</h3>
                       <p className="text-muted-foreground text-sm">{t("home.bavCompanyDesc")}</p>
                     </div>
                     <div className="space-y-4">
@@ -628,7 +650,7 @@ export function BAVApplicationModule() {
                 {currentStep === 3 && (
                   <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="space-y-6">
                     <div>
-                      <h3 className="text-xl font-semibold mb-2">{t("home.bavContactTitle")}</h3>
+                      <h3 data-step-heading tabIndex={-1} className="text-xl font-semibold mb-2 outline-none">{t("home.bavContactTitle")}</h3>
                       <p className="text-muted-foreground text-sm">{t("home.bavContactDesc")}</p>
                     </div>
                     <div className="space-y-4">
@@ -693,7 +715,7 @@ export function BAVApplicationModule() {
                 {currentStep === 4 && (
                   <motion.div key="step4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="space-y-6">
                     <div>
-                      <h3 className="text-xl font-semibold mb-2">{t("home.bavIncassoTitle")}</h3>
+                      <h3 data-step-heading tabIndex={-1} className="text-xl font-semibold mb-2 outline-none">{t("home.bavIncassoTitle")}</h3>
                       <p className="text-muted-foreground text-sm">{t("home.bavIncassoDesc")}</p>
                     </div>
                     <div className="space-y-4">
@@ -704,7 +726,8 @@ export function BAVApplicationModule() {
                       </div>
                       <div>
                         <Label htmlFor="rekeninghouder">Naam rekeninghouder *</Label>
-                        <Input id="rekeninghouder" name="rekeninghouder" value={formData.rekeninghouder} onChange={handleInputChange} placeholder={formData.bedrijfsnaam || "Naam zoals bij de bank bekend"} className={cn(errors.rekeninghouder && "border-destructive")} />
+                        <Input id="rekeninghouder" name="rekeninghouder" required aria-describedby="rekeninghouder-hulp" value={formData.rekeninghouder} onChange={(e) => { rekeninghouderAangepast.current = true; handleInputChange(e); }} placeholder="Naam zoals bij de bank bekend" className={cn(errors.rekeninghouder && "border-destructive")} />
+                        <p id="rekeninghouder-hulp" className="text-xs text-muted-foreground mt-1">Controleer: naam zoals die bij je bank bekend is</p>
                         <FieldError message={errors.rekeninghouder} />
                       </div>
                       <div>
@@ -733,7 +756,7 @@ export function BAVApplicationModule() {
                 {currentStep === 5 && (
                   <motion.div key="step5" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="space-y-6">
                     <div>
-                      <h3 className="text-xl font-semibold mb-2">{t("home.bavConfirmTitle")}</h3>
+                      <h3 data-step-heading tabIndex={-1} className="text-xl font-semibold mb-2 outline-none">{t("home.bavConfirmTitle")}</h3>
                       <p className="text-muted-foreground text-sm">{t("home.bavConfirmDesc")}</p>
                     </div>
                     <div className="space-y-4">
@@ -833,12 +856,13 @@ export function BAVApplicationModule() {
                       onClick={handleSubmit}
                       size="lg"
                       disabled={isSubmitting}
+                      aria-busy={isSubmitting}
                       className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold"
                     >
                       {isSubmitting ? (
                         <>
-                          <span className="h-5 w-5 inline-block animate-spin rounded-full border-2 border-current border-t-transparent" />
-                          Bezig met verzenden...
+                          <span aria-hidden className="h-5 w-5 inline-block animate-spin rounded-full border-2 border-current border-t-transparent" />
+                          Aanvraag wordt verstuurd…
                         </>
                       ) : (
                         <>
