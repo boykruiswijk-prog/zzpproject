@@ -15,6 +15,6 @@
 - [x] Part B: echte kritieke/hoge bevindingen herstellen zonder bestaande toegang te breken
 - [x] Part B: regressietests, herscan en typecheck uitvoeren
 
-- [ ] T1: verzekering-rol in dagelijkse teamfuncties en AuthContext herstellen
-- [ ] T1: activeringsreden, sector-naar-branche en SEPA-zijbalk herstellen
-- [ ] T1: alleen lead db612f38 branche backfillen; tests en breedtecontrole uitvoeren
+- [x] T1: verzekering-rol in dagelijkse teamfuncties en AuthContext herstellen
+- [x] T1: activeringsreden, sector-naar-branche en SEPA-zijbalk herstellen
+- [x] T1: alleen lead db612f38 branche backfillen; tests en breedtecontrole uitvoeren
