@@ -10,6 +10,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { checkAcceptance } from "../_shared/acceptanceCriteria.ts";
 import { COMPANY } from "../_shared/company.ts";
 import { createMailGate, type MailGate } from "../_shared/mail.ts";
+import { verstuurLifecycleMail, magOnefellowMailen, ONEFELLOW_SWITCH, type LifecycleActie, type Doelgroep } from "../_shared/lifecycleMail.ts";
+import { isIntegratieEnabled } from "../_shared/integraties.ts";
 import { factuurReferentie, kopOmschrijving, regelNotities, regelOmschrijving } from "../_shared/factuurTekst.ts";
 import { readLatestInvoiceStatus } from "../_shared/exactInvoiceStatus.ts";
 import {
@@ -286,6 +288,20 @@ Deno.serve(async (req) => {
   const recipientKlant = lead.email;
   // Omgevingsbepaling + preview-redirect (max. één mail per actie in preview).
   const gate = createMailGate("polis-lifecycle", req);
+  // Alle lifecycle-mails lopen via deze helper: versturen + regel in lead_notification_log.
+  const lcMail = (actie: LifecycleActie, doel: Doelgroep, to: string, subject: string, html: string) =>
+    verstuurLifecycleMail({
+      send: (t, su, h) => sendMail(gate, t, su, h),
+      insertLog: (row) => supabase.from("lead_notification_log").insert(row),
+    }, { actie, doel, leadId: lead_id, to, subject, html });
+  const logActiviteit = async (actie_type: string, omschrijving: string) => {
+    try {
+      await supabase.from("activiteiten_log").insert({
+        actie_type, omschrijving, uitgevoerd_door: uid, uitgevoerd_door_naam: rol ?? null, lead_id,
+        klant_email: (lead.email ?? "").toLowerCase().trim() || null,
+      });
+    } catch (_e) { /* logfout mag de actie niet laten falen */ }
+  };
 
   // Helper: laad Exact-config + headers (lazy, alleen als nodig)
   async function exactCtx() {
@@ -415,7 +431,7 @@ Deno.serve(async (req) => {
           ? `<p>Je ontvangt binnenkort een creditnota van <strong>€ ${calc.credit_bedrag.toFixed(2).replace(".", ",")}</strong> voor de resterende ${calc.resterende_dagen} dagen tot ${fmtNL(eind)}.</p>`
           : `<p>Je polis is gepauzeerd. Onze administratie verwerkt de financiële afhandeling.</p>`;
         const mailResults: any[] = [];
-        mailResults.push(await sendMail(gate, recipientKlant, "Je polis is gepauzeerd",
+        mailResults.push(await lcMail("pauzeren", "klant", recipientKlant, "Je polis is gepauzeerd",
           mailShell("Polis gepauzeerd", `
             <p>Hoi ${lead.voornaam},</p>
             <p>Je polis is per <strong>${fmtNL(today)}</strong> gepauzeerd. Tijdens de pauze ben je niet meer gedekt voor nieuwe schade. Schade van vóór de pauze blijft gedekt.</p>
@@ -426,7 +442,7 @@ Deno.serve(async (req) => {
             <p><a href="${COMPANY.url}/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
           `)));
 
-        mailResults.push(await sendMail(gate, ADMIN_EMAIL, `[Pauze] ${lead.voornaam} ${lead.achternaam}`,
+        mailResults.push(await lcMail("pauzeren", "intern", ADMIN_EMAIL, `[Pauze] ${lead.voornaam} ${lead.achternaam}`,
           mailShell("Polis gepauzeerd", `
             <p><strong>${lead.voornaam} ${lead.achternaam}</strong> (${lead.email}) heeft de polis gepauzeerd.</p>
             <p><strong>Reden:</strong> ${reden}<br/><strong>Datum:</strong> ${fmtNL(today)}</p>
@@ -435,8 +451,10 @@ Deno.serve(async (req) => {
             ${lead.exact_invoice_status === 50 ? `<p style="background:#fff7ed;border:1px solid #fed7aa;padding:10px;border-radius:6px"><strong>⚠️ Let op:</strong> originele factuur staat op Status 50 (definitief). Controleer of de eerstvolgende SEPA-incassobatch deze klant nog bevat en verwijder indien nodig handmatig in Exact → Cashflow → Incasso.</p>` : ""}
           `)));
 
-        if (reden === "geen_opdrachten") {
-          mailResults.push(await sendMail(gate, ONEFELLOW_EMAIL, `[ZP Zaken cross-sell] Klant zoekt opdrachten: ${lead.voornaam} ${lead.achternaam}`,
+        // B7 (privacy): Onefellow cross-sell staat standaard UIT via integratie_config.
+        const onefellowAan = await isIntegratieEnabled(supabase, ONEFELLOW_SWITCH);
+        if (magOnefellowMailen(onefellowAan, reden)) {
+          mailResults.push(await lcMail("pauzeren", "onefellow", ONEFELLOW_EMAIL, `[ZP Zaken cross-sell] Klant zoekt opdrachten: ${lead.voornaam} ${lead.achternaam}`,
             mailShell("Cross-sell signal", `
               <p>Een klant van ZP Zaken heeft de polis gepauzeerd wegens geen opdrachten.</p>
               <p><strong>Naam:</strong> ${lead.voornaam} ${lead.achternaam}<br/>
@@ -446,6 +464,8 @@ Deno.serve(async (req) => {
               <strong>Bedrijf:</strong> ${lead.bedrijfsnaam ?? "-"}</p>
             `)));
         }
+
+        await logActiviteit("polis_gepauzeerd", `Polis gepauzeerd per ${today} (reden: ${String(reden).trim()})`);
 
         return json({
           ok: true, status: "gepauzeerd", pauze_start_datum: today,
@@ -533,19 +553,21 @@ Deno.serve(async (req) => {
         const factuurZin = ("ok" in factuurResult && factuurResult.ok)
           ? `<p>Je ontvangt een nieuwe factuur van <strong>€ ${calc.factuur_bedrag.toFixed(2).replace(".", ",")}</strong> voor de resterende ${calc.resterende_dagen} dagen tot ${fmtNL(eind)}.</p>`
           : `<p>Je polis is weer actief. Onze administratie verwerkt de financiële afhandeling.</p>`;
-        await sendMail(gate, recipientKlant, "Je polis is weer actief",
+        await lcMail("hervatten", "klant", recipientKlant, "Je polis is weer actief",
           mailShell("Polis weer actief", `
             <p>Hoi ${lead.voornaam},</p>
             <p>Je polis is per <strong>${fmtNL(today)}</strong> weer actief. Je bent weer volledig gedekt.</p>
             ${factuurZin}
             <p><a href="${COMPANY.url}/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
           `));
-        await sendMail(gate, ADMIN_EMAIL, `[Hervat] ${lead.voornaam} ${lead.achternaam}`,
+        await lcMail("hervatten", "intern", ADMIN_EMAIL, `[Hervat] ${lead.voornaam} ${lead.achternaam}`,
           mailShell("Polis hervat", `
             <p><strong>${lead.voornaam} ${lead.achternaam}</strong> heeft de polis hervat.</p>
             <p><strong>Datum:</strong> ${fmtNL(today)}<br/>
             <strong>Nieuwe factuur:</strong> ${"ok" in factuurResult && factuurResult.ok ? `€ ${calc.factuur_bedrag.toFixed(2)} (Exact ID ${factuurResult.invoiceId})` : (factuurResult.reden ?? "n.v.t.")}</p>
           `));
+
+        await logActiviteit("polis_hervat", `Polis hervat per ${today}`);
 
         return json({
           ok: true, status: "actief", hervat_datum: today,
@@ -680,7 +702,7 @@ Deno.serve(async (req) => {
           ? `<strong>Creditnota:</strong> € ${calc.credit_bedrag.toFixed(2)} (${calc.resterende_dagen} dagen, Exact ID ${creditResult.invoiceId})<br/>`
           : `<strong>Creditnota:</strong> ${creditResult?.reden ?? "geen"}<br/>`;
 
-        await sendMail(gate, recipientKlant, "Je polis is opgezegd",
+        await lcMail("opzeggen", "klant", recipientKlant, "Je polis is opgezegd",
           mailShell("Polis opgezegd", `
             <p>Hoi ${lead.voornaam},</p>
             <p>Je polis is per <strong>${fmtNL(today)}</strong> opgezegd. Schade van vóór deze datum blijft gedekt volgens de polisvoorwaarden.</p>
@@ -689,7 +711,7 @@ Deno.serve(async (req) => {
             ${creditBlokKlant}
             <p>Mocht je in de toekomst weer een polis willen, dan zijn we er voor je.</p>
           `));
-        await sendMail(gate, ADMIN_EMAIL, `[Opzegging] ${lead.voornaam} ${lead.achternaam}`,
+        await lcMail("opzeggen", "intern", ADMIN_EMAIL, `[Opzegging] ${lead.voornaam} ${lead.achternaam}`,
           mailShell("Polis opgezegd", `
             <p><strong>${lead.voornaam} ${lead.achternaam}</strong> heeft de polis opgezegd.</p>
             <p><strong>Reden:</strong> ${reden}<br/>
@@ -765,14 +787,14 @@ Deno.serve(async (req) => {
           });
         } catch (_e) { /* logfout mag heractivering niet laten falen */ }
 
-        await sendMail(gate, recipientKlant, "Je polis is weer actief",
+        await lcMail("heractiveren", "klant", recipientKlant, "Je polis is weer actief",
           mailShell("Welkom terug — polis geheractiveerd", `
             <p>Hoi ${lead.voornaam},</p>
             <p>Je polis is per <strong>${fmtNL(today)}</strong> weer actief.</p>
             ${functieGewijzigd ? `<p>We hebben je nieuwe functie geregistreerd: <strong>${escapeHtml(nieuwe_functie)}</strong></p>` : ""}
             <p><a href="${COMPANY.url}/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
           `));
-        await sendMail(gate, ADMIN_EMAIL, `[Heractivering] ${lead.voornaam} ${lead.achternaam}`,
+        await lcMail("heractiveren", "intern", ADMIN_EMAIL, `[Heractivering] ${lead.voornaam} ${lead.achternaam}`,
           mailShell("Polis geheractiveerd", `
             <p><strong>${lead.voornaam} ${lead.achternaam}</strong> heeft de polis geheractiveerd.</p>
             <p><strong>Functie:</strong> ${escapeHtml(nieuwe_functie)} ${functieGewijzigd ? "(gewijzigd t.o.v. aanvraag: " + escapeHtml(lead.functie_bij_aanvraag ?? "onbekend") + ")" : "(ongewijzigd)"}</p>
