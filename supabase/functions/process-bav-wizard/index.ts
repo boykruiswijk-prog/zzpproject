@@ -1,3 +1,4 @@
+import { normaliseerAdres } from "../_shared/adresNormalisatie.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.39.0";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
 import {
@@ -125,13 +126,14 @@ Deno.serve(async (req) => {
         { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-    const adres = {
+    // Normaliseren vóór validatie en legBewijsVast: lead, bewijs, PDF en Exact krijgen hetzelfde adres.
+    const adres = normaliseerAdres({
       straat: submission.adres_straat ?? "",
       huisnummer: submission.adres_huisnummer ?? "",
       postcode: submission.adres_postcode ?? "",
       plaats: submission.adres_plaats ?? "",
       land: submission.adres_land ?? "",
-    };
+    });
     const machtigingFout =
       submission.sepa_akkoord !== true ? "SEPA-machtiging is verplicht"
       : !isValidIban(submission.iban ?? "") ? "Ongeldig IBAN"
@@ -219,10 +221,10 @@ Deno.serve(async (req) => {
         kvk_nummer: submission.kvk_nummer || null,
         beroep: submission.beroep || null,
         branche,
-        adres_straat: submission.adres_straat || null,
-        adres_huisnummer: submission.adres_huisnummer || null,
-        adres_postcode: submission.adres_postcode || null,
-        adres_plaats: submission.adres_plaats || null,
+        adres_straat: adres.straat || null,
+        adres_huisnummer: adres.huisnummer || null,
+        adres_postcode: adres.postcode || null,
+        adres_plaats: adres.plaats || null,
         iban: machtiging.iban,
         sepa_akkoord: true,
         sepa_akkoord_datum: bewijs.akkoord_op,

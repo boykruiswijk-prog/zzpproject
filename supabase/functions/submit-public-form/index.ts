@@ -3,6 +3,7 @@
 // tabellen niet meer direct beschrijven.
 import { createClient } from "npm:@supabase/supabase-js@2.39.0";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
+import { normaliseerAdres } from "../_shared/adresNormalisatie.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -104,6 +105,17 @@ Deno.serve(async (req) => {
       }
       // Bron en statusvelden zet de server, niet de browser.
       payload.bron = "website";
+      // Adresnormalisatie (hoofdletter straat/plaats, NL-postcode "1234 AB").
+      const extra = (payload.extra_data && typeof payload.extra_data === "object") ? payload.extra_data as Record<string, unknown> : null;
+      const land = typeof extra?.adres_land === "string" ? extra.adres_land : null;
+      const n = normaliseerAdres({
+        straat: payload.adres_straat as string | undefined, huisnummer: payload.adres_huisnummer as string | undefined,
+        postcode: payload.adres_postcode as string | undefined, plaats: payload.adres_plaats as string | undefined, land,
+      });
+      for (const [k, v] of [["adres_straat", n.straat], ["adres_huisnummer", n.huisnummer], ["adres_postcode", n.postcode], ["adres_plaats", n.plaats]] as const) {
+        if (payload[k] !== undefined && payload[k] !== null) payload[k] = v || null;
+      }
+      if (extra && typeof extra.adres_postcode === "string") extra.adres_postcode = n.postcode || normaliseerAdres({ postcode: extra.adres_postcode, land }).postcode;
     }
 
     if (table === "collective_signups" && !payload.naam) {
