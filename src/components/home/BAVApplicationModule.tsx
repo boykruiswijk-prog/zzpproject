@@ -1,3 +1,4 @@
+import { isValidIban as isValidSepaIban } from "@/lib/sepaMachtiging";
 import { useState, useEffect } from "react";
 import { SepaMachtigingBlok, bouwFrontendMachtiging } from "@/components/shared/SepaMachtigingBlok";
 import { mandaatkenmerkVoor, redenBav } from "@/lib/sepaMachtiging";
@@ -35,10 +36,17 @@ type ValidationErrors = Record<string, string>;
 const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 const isValidPhone = (phone: string) => /^[0-9]{10}$/.test(phone.replace(/[\s-]/g, ""));
 const isValidKvk = (kvk: string) => /^[0-9]{8}$/.test(kvk.trim());
-const isValidIban = (iban: string) => {
-  const cleaned = iban.replace(/\s/g, "").toUpperCase();
-  return /^[A-Z]{2}[0-9]{2}[A-Z0-9]{4,30}$/.test(cleaned) && cleaned.length >= 15 && cleaned.length <= 34;
-};
+// Zelfde mod-97-controle als de server (anders slaagt de stap hier en weigert de server).
+const isValidIban = isValidSepaIban;
+
+/** Documenten die in stap 5 getoond worden; ook meegestuurd als bewijs. */
+export const WIZARD_DOCUMENTEN = [
+  { href: "/documenten/slotverklaring-2026.pdf", title: "Slotverklaring 2026" },
+  { href: "/documenten/dienstverleningsdocument.pdf", title: "Dienstverleningsdocument" },
+  // Beroepsaansprakelijkheid: kaart verschilt per branche; tot Boy kiest verwijzen we naar het overzicht.
+  { href: "/documenten", title: "Verzekeringskaart Beroepsaansprakelijkheid (per branche)" },
+  { href: "/documenten/Verzekeringskaart-bedrijfsaansprakelijkheid-HAVB-08B.pdf", title: "Verzekeringskaart Bedrijfsaansprakelijkheid" },
+];
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
@@ -79,7 +87,6 @@ export function BAVApplicationModule() {
     rekeninghouder: "",
   });
 
-  const VERZEKERINGSKAART_DEFAULT = "/documenten/verzekeringskaart-zakelijke-dienstverlening.pdf";
 
   const steps = [
     { id: 1, name: t("home.bavStep1"), icon: Shield },
@@ -210,6 +217,7 @@ export function BAVApplicationModule() {
            lead_id: leadId,
            client_akkoord_op: clientAkkoordOp,
            pagina_url: window.location.href,
+           getoonde_documenten: WIZARD_DOCUMENTEN.map((d) => d.href),
            vereist_handmatige_beoordeling: parseInt(formData.aantalMedewerkers || "0") > 3,
            opmerkingen: [
              formData.opdrachtgever ? `Opdrachtgever: ${formData.opdrachtgever}` : null,
@@ -752,13 +760,7 @@ export function BAVApplicationModule() {
                           Door op 'Verstuur aanvraag' te klikken bevestig je dat je deze documenten hebt gelezen.
                         </p>
                         <div className="grid sm:grid-cols-2 gap-2">
-                          {/* TODO: Boy upload PDFs naar /public/documenten/ */}
-                          {[
-                            { href: "/documenten/slotverklaring-2026.pdf", title: "Slotverklaring 2026" },
-                            { href: "/documenten/dienstverleningsdocument.pdf", title: "Dienstverleningsdocument" },
-                            { href: VERZEKERINGSKAART_DEFAULT, title: "Verzekeringskaart Beroepsaansprakelijkheid" },
-                            { href: "/documenten/verzekeringskaart-bedrijfsaansprakelijkheid.pdf", title: "Verzekeringskaart Bedrijfsaansprakelijkheid" },
-                          ].map((doc) => (
+                          {WIZARD_DOCUMENTEN.map((doc) => (
                             <a
                               key={doc.href + doc.title}
                               href={doc.href}
