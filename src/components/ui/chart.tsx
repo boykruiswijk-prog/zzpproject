@@ -118,7 +118,8 @@ const ChartTooltipContent = React.forwardRef<
       color,
       nameKey,
       labelKey,
-    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    }: any,
     ref,
   ) => {
     const { config } = useChart();
