@@ -341,7 +341,7 @@ Deno.serve(async (req) => {
 
   const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
-  // ── Auth: team members (medewerker / supervisor / admin) ──
+  // ── Auth: alle teamleden, inclusief verzekering ──
   const authHeader = req.headers.get("Authorization") ?? "";
   if (!authHeader.toLowerCase().startsWith("bearer ")) {
     return json({ success: false, error: "unauthorized" }, 401);
@@ -351,10 +351,7 @@ Deno.serve(async (req) => {
   });
   const { data: { user }, error: userErr } = await userClient.auth.getUser();
   if (userErr || !user) return json({ success: false, error: "unauthorized" }, 401);
-  const { data: roleRows } = await supabase
-    .from("user_roles").select("role").eq("user_id", user.id);
-  const roles = (roleRows ?? []).map((r: any) => r.role);
-  const isTeamMember = roles.includes("admin") || roles.includes("supervisor") || roles.includes("medewerker");
+  const { data: isTeamMember } = await supabase.rpc("is_team_member", { _user_id: user.id });
   if (!isTeamMember) return json({ success: false, error: "forbidden" }, 403);
 
   // deno-lint-ignore no-explicit-any

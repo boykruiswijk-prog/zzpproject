@@ -9,6 +9,7 @@ import {
   verstuurMachtigingBevestiging,
 } from "../_shared/sepaBewijs.ts";
 import { isUuid, isValidIban, redenBav } from "../_shared/sepaMachtiging.ts";
+import { brancheVoorSector } from "../_shared/sectorBranche.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -180,6 +181,8 @@ Deno.serve(async (req) => {
     const pakket = PAKKET_CONFIG[submission.gekozen_pakket];
     const premium = pakket.prijs;
     const volledigeNaam = `${submission.voornaam} ${submission.achternaam}`;
+    const branche = brancheVoorSector(submission.sector);
+    if (!branche) return weiger(400, "Kies een geldige sector.", "sector");
 
 
     // ── 0. BEWIJSRECORD SEPA-MACHTIGING (eerst; faalt dit, dan faalt de aanvraag) ──
@@ -215,6 +218,7 @@ Deno.serve(async (req) => {
         bedrijfsnaam: submission.bedrijfsnaam,
         kvk_nummer: submission.kvk_nummer || null,
         beroep: submission.beroep || null,
+        branche,
         adres_straat: submission.adres_straat || null,
         adres_huisnummer: submission.adres_huisnummer || null,
         adres_postcode: submission.adres_postcode || null,
@@ -239,6 +243,7 @@ Deno.serve(async (req) => {
         exact_status: "wachtend",
         vereist_handmatige_beoordeling: submission.vereist_handmatige_beoordeling === true,
         extra_data: {
+          sector: submission.sector,
           getoonde_documenten: Array.isArray(submission.getoonde_documenten)
             ? submission.getoonde_documenten
                 .filter((d): d is string => typeof d === "string" && /^\/documenten\/[A-Za-z0-9._\/-]{1,150}$/.test(d))
