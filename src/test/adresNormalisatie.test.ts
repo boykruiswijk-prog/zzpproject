@@ -4,7 +4,7 @@ import { hoofdletterStraatOfPlaats, normaliseerAdres, normaliseerPostcode } from
 describe("hoofdletterStraatOfPlaats", () => {
   it.each([
     ["tupolevlaan", "Tupolevlaan"],
-    ["schiphol-rijk", "Schiphol-Rijk"],
+    ["schiphol-Rijk", "Schiphol-Rijk"], ["schiphol-rijk", "Schiphol-rijk"],
     ["'s-Gravenhage", "'s-Gravenhage"],
     ["'s-gravenhage", "'s-gravenhage"],
     ["van Goghstraat", "van Goghstraat"],
@@ -37,7 +37,7 @@ describe("normaliseerPostcode", () => {
 
 describe("normaliseerAdres", () => {
   it("T1-voorbeeld", () => {
-    expect(normaliseerAdres({ straat: "tupolevlaan", huisnummer: " 41 ", postcode: "1119nw", plaats: "schiphol-rijk", land: "Nederland" }))
+    expect(normaliseerAdres({ straat: "tupolevlaan", huisnummer: " 41 ", postcode: "1119nw", plaats: "schiphol-Rijk", land: "Nederland" }))
       .toEqual({ straat: "Tupolevlaan", huisnummer: "41", postcode: "1119 NW", plaats: "Schiphol-Rijk", land: "Nederland" });
   });
 });
