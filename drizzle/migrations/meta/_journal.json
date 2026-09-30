@@ -92,6 +92,13 @@
       "when": 1790702396914,
       "tag": "0012_add_exact_relation_code",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1790767455910,
+      "tag": "0013_harden_security_definer_execute_privileges",
+      "breakpoints": true
     }
   ]
 }
