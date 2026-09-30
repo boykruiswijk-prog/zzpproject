@@ -12,7 +12,7 @@ import { COMPANY } from "../_shared/company.ts";
 import { createMailGate, type MailGate } from "../_shared/mail.ts";
 import { verstuurLifecycleMail, magOnefellowMailen, ONEFELLOW_SWITCH, type LifecycleActie, type Doelgroep } from "../_shared/lifecycleMail.ts";
 import { isIntegratieEnabled } from "../_shared/integraties.ts";
-import { factuurReferentie, kopOmschrijving, regelNotities, regelOmschrijving } from "../_shared/factuurTekst.ts";
+import { exactRegelBedrag, factuurReferentie, kopOmschrijving, regelNotities, regelOmschrijving } from "../_shared/factuurTekst.ts";
 import { readLatestInvoiceStatus } from "../_shared/exactInvoiceStatus.ts";
 import {
   getJaarprijs, calculatePauzeCredit, calculateHervatFactuur, calcPolisEinddatum, isMaandPolis,
@@ -144,7 +144,7 @@ async function postSalesInvoice(opts: {
   lineDescription: string;
   lineNotes: string;
   yourRef: string;
-  unitPrice: number; // positief voor beide types; Exact 8021 draait zelf het teken om
+  unitPrice: number; // positief bedrag; exactRegelBedrag zet Quantity -1 voor 8021
   periodStart?: string; // YYYY-MM-DD — dekkingsperiode regelniveau
   periodEnd?: string;   // YYYY-MM-DD
 }): Promise<
@@ -157,8 +157,7 @@ async function postSalesInvoice(opts: {
   const line: any = {
     GLAccount: INV_GL_ACCOUNT,
     VATCode: INV_VAT_CODE,
-    Quantity: 1,
-    UnitPrice: unitPrice,
+    ...exactRegelBedrag(type, unitPrice),
     Description: lineDescription,
     Notes: lineNotes,
   };
