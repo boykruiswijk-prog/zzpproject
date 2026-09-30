@@ -1,5 +1,5 @@
 import { seoRoute } from "@/config/seoRoutes";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEOHead } from "@/components/SEOHead";
@@ -16,6 +16,9 @@ import { LocalizedLink } from "@/components/LocalizedLink";
 import { Link } from "react-router-dom";
 import { useFormGuard } from "@/lib/antiSpam";
 import { HoneypotField } from "@/components/shared/HoneypotField";
+import { usePdokAdres } from "@/hooks/usePdokAdres";
+import { AdresGevonden } from "@/components/AdresGevonden";
+import { normaliseerPostcode } from "@/lib/adresNormalisatie";
 import { SepaMachtigingBlok, bouwFrontendMachtiging } from "@/components/shared/SepaMachtigingBlok";
 import { mandaatkenmerkVoor, redenScreening, SCREENING_PAKKET_LABELS } from "@/lib/sepaMachtiging";
 
@@ -134,6 +137,11 @@ export default function Screening() {
     adres_land: "Nederland",
   });
   const [screeningType, setScreeningType] = useState<ScreeningType>("basis");
+  const pdokAdres = usePdokAdres(form.adres_postcode, form.adres_huisnummer, form.adres_land);
+  useEffect(() => {
+    if (!pdokAdres) return;
+    setForm((p) => ({ ...p, adres_straat: pdokAdres.straat, adres_plaats: pdokAdres.plaats, adres_postcode: pdokAdres.postcode }));
+  }, [pdokAdres]);
 
   const update = (k: keyof typeof form, v: string) => {
     setForm((p) => ({ ...p, [k]: v }));
@@ -450,7 +458,7 @@ export default function Screening() {
                       </div>
                       <div>
                         <Label htmlFor="adres_postcode">Postcode *</Label>
-                        <Input id="adres_postcode" value={form.adres_postcode} onChange={(e) => update("adres_postcode", e.target.value)} className={cn(errors.adres_postcode && "border-destructive")} />
+                        <Input id="adres_postcode" value={form.adres_postcode} onChange={(e) => update("adres_postcode", e.target.value)} onBlur={() => update("adres_postcode", normaliseerPostcode(form.adres_postcode, form.adres_land))} placeholder="1234 AB" className={cn(errors.adres_postcode && "border-destructive")} />
                         {errors.adres_postcode && <p className="text-xs mt-1" style={{ color: "#E53E2F" }}>{errors.adres_postcode}</p>}
                       </div>
                       <div>
@@ -458,6 +466,7 @@ export default function Screening() {
                         <Input id="adres_plaats" value={form.adres_plaats} onChange={(e) => update("adres_plaats", e.target.value)} className={cn(errors.adres_plaats && "border-destructive")} />
                         {errors.adres_plaats && <p className="text-xs mt-1" style={{ color: "#E53E2F" }}>{errors.adres_plaats}</p>}
                       </div>
+                      <div className="md:col-span-2"><AdresGevonden adres={pdokAdres} /></div>
                       <div className="md:col-span-2">
                         <Label htmlFor="adres_land">Land *</Label>
                         <Input id="adres_land" value={form.adres_land} onChange={(e) => update("adres_land", e.target.value)} className={cn(errors.adres_land && "border-destructive")} />
