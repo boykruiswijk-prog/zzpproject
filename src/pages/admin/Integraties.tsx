@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Loader2, CheckCircle2, XCircle, RefreshCw, ExternalLink } from "lucide-react";
 import { ExactEmailImportBlock } from "@/components/admin/ExactEmailImportBlock";
 import { ExactMandaatImportBlock } from "@/components/admin/ExactMandaatImportBlock";
+import { amsterdamDagGrenzen, bepaalExactHealth, herkoppelenVoor } from "@/lib/exactHealth";
 
 type TokenRow = {
   id: string;
@@ -18,6 +19,8 @@ type TokenRow = {
   divisie_code: string | null;
   is_actief: boolean;
   updated_at: string;
+  refresh_token_obtained_at: string | null;
+  last_error: string | null;
 };
 
 type Mapping = {
@@ -46,6 +49,7 @@ export default function Integraties() {
   const [mapping, setMapping] = useState<Mapping[]>([]);
   const [failed, setFailed] = useState<FailedBav[]>([]);
   const [stats, setStats] = useState({ ok: 0, fail: 0 });
+  const [lastKeepalive, setLastKeepalive] = useState<string | null>(null);
   const [exactTypes, setExactTypes] = useState<{ ID: string; Code: string; Description: string }[]>([]);
   const [screeningEnabled, setScreeningEnabled] = useState(false);
 
@@ -60,8 +64,9 @@ export default function Integraties() {
 
   const loadAll = async () => {
     setLoading(true);
-    const [{ data: t }, { data: screening }, { data: m }, { data: f }, { data: today }] = await Promise.all([
-      supabase.from("exact_config").select("id,access_token_expires_at,divisie_code,is_actief,updated_at").maybeSingle(),
+    const dag = amsterdamDagGrenzen();
+    const [{ data: t }, { data: screening }, { data: m }, { data: f }, { data: today }, { data: ka }] = await Promise.all([
+      supabase.from("exact_config").select("id,access_token_expires_at,divisie_code,is_actief,updated_at,refresh_token_obtained_at,last_error").maybeSingle(),
       supabase.from("integratie_config").select("enabled").eq("naam", "exact_online").maybeSingle(),
       supabase.from("exact_subscription_mapping").select("*").order("pakket_naam"),
       supabase
@@ -71,18 +76,29 @@ export default function Integraties() {
         .order("aangemeld_op", { ascending: false })
         .limit(50),
       supabase
-        .from("bav_aanmeldingen")
-        .select("exact_status")
-        .gte("aangemeld_op", new Date(new Date().setHours(0, 0, 0, 0)).toISOString()),
+        .from("exact_sync_log")
+        .select("status")
+        .gte("created_at", dag.start)
+        .lt("created_at", dag.eind)
+        .limit(1000),
+      supabase
+        .from("exact_sync_log")
+        .select("created_at")
+        .eq("trigger_type", "keepalive")
+        .eq("status", "success")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
     ]);
     setToken((t as TokenRow) ?? null);
+    setLastKeepalive((ka as { created_at: string } | null)?.created_at ?? null);
     setScreeningEnabled(screening?.enabled === true);
     setMapping((m as Mapping[]) ?? []);
     setFailed((f as FailedBav[]) ?? []);
-    const all = (today as { exact_status: string }[]) ?? [];
+    const all = (today as { status: string | null }[]) ?? [];
     setStats({
-      ok: all.filter((x) => x.exact_status === "gesynchroniseerd").length,
-      fail: all.filter((x) => x.exact_status === "fout").length,
+      ok: all.filter((x) => x.status === "success").length,
+      fail: all.filter((x) => x.status === "error").length,
     });
     setLoading(false);
   };
@@ -154,12 +170,18 @@ export default function Integraties() {
     loadAll();
   };
 
-  const tokenStatus = (() => {
-    if (!token?.is_actief) return { label: "Niet actief", color: "bg-muted text-muted-foreground" };
-    const expired = !token.access_token_expires_at || new Date(token.access_token_expires_at).getTime() < Date.now();
-    if (expired) return { label: "Token verlopen", color: "bg-yellow-500 text-white" };
-    return { label: "Actief", color: "bg-green-500 text-white" };
-  })();
+  const health = bepaalExactHealth({
+    isActief: !!token?.is_actief,
+    lastError: token?.last_error,
+    laatsteKeepaliveSucces: lastKeepalive,
+  });
+  const badgeVariant =
+    health.kind === "ok" ? "bg-green-600 text-white"
+    : health.kind === "verouderd" ? "bg-orange-500 text-white"
+    : health.kind === "fout" ? "bg-destructive text-destructive-foreground"
+    : "bg-muted text-muted-foreground";
+  const fmt = (v: string | Date | null | undefined) => (v ? new Date(v).toLocaleString("nl-NL", { timeZone: "Europe/Amsterdam" }) : "—");
+  const herkoppel = herkoppelenVoor(token?.refresh_token_obtained_at);
 
   return (
     <AdminLayout>
@@ -180,10 +202,15 @@ export default function Integraties() {
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   Exact Online — Status
-                  <Badge className={tokenStatus.color}>{tokenStatus.label}</Badge>
+                  <Badge className={badgeVariant}>{health.label}</Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-2 gap-4 text-sm">
+                {health.kind === "fout" && (
+                  <div className="col-span-2 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-destructive break-words">
+                    {health.melding}
+                  </div>
+                )}
                 <div>
                   <p className="text-muted-foreground">BAV-koppeling</p>
                   <p className="font-medium">{token?.is_actief ? "Actief" : "Uitgeschakeld"}</p>
@@ -194,16 +221,18 @@ export default function Integraties() {
                 </div>
                 <div>
                   <p className="text-muted-foreground">Laatste token refresh</p>
-                  <p className="font-medium">
-                    {token?.updated_at ? new Date(token.updated_at).toLocaleString("nl-NL") : "—"}
-                  </p>
+                  <p className="font-medium">{fmt(token?.refresh_token_obtained_at)}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Token verloopt</p>
-                  <p className="font-medium">
-                    {token?.access_token_expires_at ? new Date(token.access_token_expires_at).toLocaleString("nl-NL") : "—"}
-                  </p>
+                  <p className="text-muted-foreground">Laatste controle</p>
+                  <p className="font-medium">{fmt(lastKeepalive)}</p>
                 </div>
+                <div>
+                  <p className="text-muted-foreground">Opnieuw koppelen vóór</p>
+                  <p className="font-medium">{fmt(herkoppel)}</p>
+                  <p className="text-xs text-muted-foreground">Ter informatie; de dagelijkse controle verlengt dit automatisch.</p>
+                </div>
+                <div />
                 <div>
                   <p className="text-muted-foreground">Succesvolle syncs vandaag</p>
                   <p className="font-medium flex items-center gap-2">

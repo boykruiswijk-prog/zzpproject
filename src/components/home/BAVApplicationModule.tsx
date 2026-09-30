@@ -27,6 +27,9 @@ import { checkAcceptance } from "@/data/acceptanceCriteria";
 import { useFormGuard } from "@/lib/antiSpam";
 import { HoneypotField } from "@/components/shared/HoneypotField";
 import { WIZARD_SECTOREN, verzekeringskaartVoorSector } from "@/data/sectorVerzekeringskaart";
+import { usePdokAdres } from "@/hooks/usePdokAdres";
+import { AdresGevonden } from "@/components/AdresGevonden";
+import { normaliseerPostcode } from "@/lib/adresNormalisatie";
 
 const formatBedrag = (n: number) => `€${n.toLocaleString("nl-NL")}`;
 
@@ -90,6 +93,13 @@ export function BAVApplicationModule() {
     adresStraat: "", adresHuisnummer: "", adresPostcode: "", adresPlaats: "", adresLand: "Nederland",
     rekeninghouder: "",
   });
+  // PDOK-suggestie: vult straat/plaats zichtbaar in; klant kan daarna vrij wijzigen.
+  const pdokAdres = usePdokAdres(formData.adresPostcode, formData.adresHuisnummer, formData.adresLand);
+  useEffect(() => {
+    if (!pdokAdres) return;
+    setFormData(prev => ({ ...prev, adresStraat: pdokAdres.straat, adresPlaats: pdokAdres.plaats, adresPostcode: pdokAdres.postcode }));
+    setErrors(prev => { const next = { ...prev }; delete next.adresStraat; delete next.adresPlaats; delete next.adresPostcode; return next; });
+  }, [pdokAdres]);
 
 
   const steps = [
@@ -612,7 +622,7 @@ export function BAVApplicationModule() {
                       <div className="grid grid-cols-3 gap-3">
                         <div>
                           <Label htmlFor="adresPostcode">Postcode *</Label>
-                          <Input id="adresPostcode" name="adresPostcode" value={formData.adresPostcode} onChange={handleInputChange} placeholder="1234 AB" className={cn("uppercase", errors.adresPostcode && "border-destructive")} />
+                          <Input id="adresPostcode" name="adresPostcode" value={formData.adresPostcode} onChange={handleInputChange} onBlur={() => setFormData(prev => ({ ...prev, adresPostcode: normaliseerPostcode(prev.adresPostcode, prev.adresLand) }))} placeholder="1234 AB" className={cn("uppercase", errors.adresPostcode && "border-destructive")} />
                           <FieldError message={errors.adresPostcode} />
                         </div>
                         <div className="col-span-2">
@@ -621,6 +631,7 @@ export function BAVApplicationModule() {
                           <FieldError message={errors.adresPlaats} />
                         </div>
                       </div>
+                      <AdresGevonden adres={pdokAdres} />
                       <div>
                         <Label htmlFor="sector">Sector *</Label>
                         <select

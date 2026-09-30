@@ -1,3 +1,4 @@
+import { normaliseerAdres } from "../_shared/adresNormalisatie.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { createMailGate } from "../_shared/mail.ts";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
@@ -156,13 +157,14 @@ Deno.serve(async (req) => {
         { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-    const adres = {
+    // Normaliseren vóór validatie en legBewijsVast.
+    const adres = normaliseerAdres({
       straat: data.adres_straat ?? "",
       huisnummer: data.adres_huisnummer ?? "",
       postcode: data.adres_postcode ?? "",
       plaats: data.adres_plaats ?? "",
       land: data.adres_land ?? "",
-    };
+    });
     const machtigingFout =
       !isUuid(data.aanvraag_id) ? "Ongeldig aanvraagkenmerk"
       : !(data.rekeninghouder ?? "").trim() ? "Naam rekeninghouder is verplicht"

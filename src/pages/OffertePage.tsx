@@ -1,5 +1,9 @@
 import { seoRoute } from "@/config/seoRoutes";
 import { useState } from "react";
+import { usePdokAdres } from "@/hooks/usePdokAdres";
+import { AdresGevonden } from "@/components/AdresGevonden";
+import { normaliseerPostcode } from "@/lib/adresNormalisatie";
+
 import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { SEOHead } from "@/components/SEOHead";
@@ -93,6 +97,7 @@ export default function OffertePage() {
     gewenste_startdatum: "",
   });
 
+  const pdokAdres = usePdokAdres(form.adres_postcode, form.adres_huisnummer, form.adres_land);
   const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
     setForm((f) => ({ ...f, [key]: value }));
     if (errors[key as string]) setErrors((e) => ({ ...e, [key as string]: "" }));
@@ -367,6 +372,7 @@ export default function OffertePage() {
                       id="adres_postcode"
                       value={form.adres_postcode}
                       onChange={(e) => update("adres_postcode", e.target.value)}
+                      onBlur={() => update("adres_postcode", normaliseerPostcode(form.adres_postcode, form.adres_land))}
                       placeholder="1234 AB"
                     />
                   </div>
@@ -380,6 +386,7 @@ export default function OffertePage() {
                     />
                   </div>
                 </div>
+                <AdresGevonden adres={pdokAdres} />
               </div>
 
               <div>

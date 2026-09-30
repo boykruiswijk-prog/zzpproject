@@ -99,6 +99,13 @@
       "when": 1790767455910,
       "tag": "0013_harden_security_definer_execute_privileges",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1790770978003,
+      "tag": "0014_exact_config_updated_at_trigger",
+      "breakpoints": true
     }
   ]
 }
