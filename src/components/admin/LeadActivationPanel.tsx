@@ -24,7 +24,7 @@ type Lead = Record<string, any>;
 interface Props {
   lead: Lead;
   magActiveren: boolean;
-  fase: "beoordelen" | "activeren" | "actief";
+  fase: string;
 }
 
 const isValidEmail = (e: any) => typeof e === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
@@ -175,7 +175,7 @@ export function LeadActivationPanel({ lead, magActiveren, fase }: Props) {
 
 
   return (
-    <Card>
+    <Card className="min-w-0 overflow-hidden">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <ShieldCheck className="h-5 w-5 text-accent" />

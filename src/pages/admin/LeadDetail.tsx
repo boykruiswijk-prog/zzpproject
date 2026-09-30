@@ -521,7 +521,7 @@ export default function AdminLeadDetail() {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="min-w-0 space-y-6">
             {lead.type === "verzekering_aanvraag" && (() => {
               const phase = derivePhase(lead);
               return <LeadActivationPanel lead={lead} magActiveren={isTeamMember} fase={phase} />;
@@ -530,7 +530,7 @@ export default function AdminLeadDetail() {
               <LeadLifecyclePanel lead={lead} />
             )}
             {lead.type === "verzekering_aanvraag" && <SepaMachtigingBewijsBlok bronId={lead.id} />}
-            <Card>
+            <Card className="min-w-0 overflow-hidden">
               <CardHeader>
                 <CardTitle>Tijdlijn</CardTitle>
               </CardHeader>
@@ -565,7 +565,7 @@ export default function AdminLeadDetail() {
 
             {/* Certificate - only for BAV leads */}
             {lead.type === "verzekering_aanvraag" && (
-            <Card>
+            <Card className="min-w-0 overflow-hidden">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <FileText className="h-5 w-5" />
@@ -607,7 +607,7 @@ export default function AdminLeadDetail() {
 
             {/* Klantportaal uitnodiging — zichtbaar zodra polis actief is */}
             {lead.status === "actief" && (
-              <Card>
+              <Card className="min-w-0 overflow-hidden">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <UserCheck className="h-5 w-5" />
@@ -625,7 +625,7 @@ export default function AdminLeadDetail() {
 
             {/* Invoice (Exact) - only for BAV leads, read-only */}
             {lead.type === "verzekering_aanvraag" && (
-            <Card>
+            <Card className="min-w-0 overflow-hidden">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Receipt className="h-5 w-5" />
