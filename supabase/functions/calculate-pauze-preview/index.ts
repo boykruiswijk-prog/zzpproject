@@ -38,11 +38,9 @@ Deno.serve(async (req) => {
     rawAction === "hervat" ? "hervat" : rawAction === "opzeg" ? "opzeg" : "pauze";
   if (!leadId) return json({ error: "lead_id_required" }, 400);
 
-  // Authz: admin OR eigenaar van de polis
-  const { data: roleRow } = await supabase
-    .from("user_roles").select("role").eq("user_id", user.id).limit(1).maybeSingle();
-  const isAdmin = !!roleRow;
-  if (!isAdmin) {
+  // Authz: teamlid (bestaande teamrechten) OF eigenaar van de polis.
+  const { data: isTeamMember } = await userClient.rpc("is_team_member", { _user_id: user.id });
+  if (isTeamMember !== true) {
     const { data: pol } = await supabase
       .from("policies").select("user_id").eq("lead_id", leadId).limit(1).maybeSingle();
     if (!pol || pol.user_id !== user.id) return json({ error: "forbidden" }, 403);

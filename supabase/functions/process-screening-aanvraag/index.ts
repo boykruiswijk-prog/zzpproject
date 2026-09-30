@@ -1,6 +1,4 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { ensureValidToken } from "../_shared/exactToken.ts";
-import { getGlAccountIdByCode } from "../_shared/exactGl.ts";
 import { createMailGate } from "../_shared/mail.ts";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
 import { isIntegratieEnabled } from "../_shared/integraties.ts";
@@ -75,6 +73,12 @@ function isValidIban(raw: string): boolean {
 function maskIban(raw: string): string {
   const iban = raw.replace(/\s/g, "").toUpperCase();
   return `${iban.slice(0, 4)}****${iban.slice(-2)}`;
+}
+
+function escapeHtml(value: unknown): string {
+  return String(value ?? "").replace(/[&<>'"]/g, (character) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;",
+  })[character] ?? character);
 }
 
 // Checks per pakket; alleen gebruikt wanneer de Otentica-integratie AAN staat.
@@ -438,14 +442,14 @@ Deno.serve(async (req) => {
         <p><strong>Pakket:</strong> ${pakketLabel}</p>
         <p><strong>Bedrag:</strong> € ${bedrag},-</p>
         <hr/>
-        <p><strong>Naam:</strong> ${volledigeNaam}</p>
-        <p><strong>E-mail:</strong> ${data.email}</p>
-        <p><strong>Telefoon:</strong> ${data.telefoon || "-"}</p>
-        <p><strong>Bedrijfsnaam:</strong> ${data.bedrijfsnaam || "-"}</p>
-        <p><strong>KvK-nummer:</strong> ${data.kvk_nummer || "-"}</p>
-        <p><strong>Beroep:</strong> ${data.beroep || "-"}</p>
-        <p><strong>Sector:</strong> ${data.sector || "-"}</p>
-        <p><strong>Notities:</strong> ${data.notities || "-"}</p>
+        <p><strong>Naam:</strong> ${escapeHtml(volledigeNaam)}</p>
+        <p><strong>E-mail:</strong> ${escapeHtml(data.email)}</p>
+        <p><strong>Telefoon:</strong> ${escapeHtml(data.telefoon || "-")}</p>
+        <p><strong>Bedrijfsnaam:</strong> ${escapeHtml(data.bedrijfsnaam || "-")}</p>
+        <p><strong>KvK-nummer:</strong> ${escapeHtml(data.kvk_nummer || "-")}</p>
+        <p><strong>Beroep:</strong> ${escapeHtml(data.beroep || "-")}</p>
+        <p><strong>Sector:</strong> ${escapeHtml(data.sector || "-")}</p>
+        <p><strong>Notities:</strong> ${escapeHtml(data.notities || "-")}</p>
         <hr/>
         <p><strong>Incasso-akkoord:</strong> gegeven op ${new Date().toLocaleString("nl-NL")} (rekening ${maskIban(ibanSchoon)}, t.n.v. ${rekeninghouder})</p>
         <p>Aanvraag-ID: ${aanvraag.id}</p>
@@ -454,7 +458,7 @@ Deno.serve(async (req) => {
 
       // Bevestiging naar aanvrager
       const klantHtml = `
-        <h2>Bedankt voor je screeningsaanvraag, ${data.voornaam}!</h2>
+        <h2>Bedankt voor je screeningsaanvraag, ${escapeHtml(data.voornaam)}!</h2>
         <p>We hebben je aanvraag voor de <strong>${pakketLabel}</strong> ontvangen.</p>
         <p>Je hebt akkoord gegeven voor een eenmalige incasso van <strong>€ ${bedrag},-</strong> van rekening <strong>${maskIban(ibanSchoon)}</strong> voor deze screening. Dit akkoord geldt alleen voor deze aanvraag; er wordt niets doorlopend afgeschreven.</p>
         <p>We nemen binnen 24 uur contact met je op om de screening te starten.</p>
@@ -475,25 +479,9 @@ Deno.serve(async (req) => {
       bedragOfReden: machtiging.reden,
     });
 
-    // 3. INCASSO VIA EXACT ONLINE — staat standaard UIT
-    // (integratie_config.exact_online.enabled = false). Zolang de vlag uit staat wordt
-    // er niets naar Exact gestuurd: het akkoord en de gegevens zijn vastgelegd en de
-    // incasso blijft op 'handmatig_te_verwerken' staan. De klant merkt hier niets van.
-    const exactAan = await isIntegratieEnabled(supabase, "exact_online");
-    if (exactAan) {
-      try {
-        await syncScreeningNaarExact(supabase, aanvraag, bedrag, pakketLabel);
-      } catch (e) {
-        const fout = e instanceof Error ? e.message : "Onbekende fout";
-        console.error("Exact-incasso screening mislukt (aanvraag blijft staan):", fout);
-        await supabase
-          .from("screening_aanvragen")
-          .update({ exact_status: "gefaald", exact_fout: fout, incasso_status: "handmatig_te_verwerken" })
-          .eq("id", aanvraag.id);
-      }
-    } else {
-      console.log("Exact Online-integratie staat uit — incasso wordt handmatig verwerkt.");
-    }
+    // Exact-verwerking gebeurt nooit vanuit deze openbare formulierroute.
+    // De aanvraag blijft handmatig te verwerken voor een afzonderlijke, beveiligde teamactie.
+    console.log("Screeningsincasso is opgeslagen voor handmatige verwerking.");
 
     // 4. OTENTICA — staat standaard UIT (integratie_config.otentica.enabled = false).
     // Zolang de vlag uit staat wordt er niets naar Otentica gestuurd en blijft de

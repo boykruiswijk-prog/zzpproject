@@ -64,6 +64,12 @@ function normalizeFunctie(s: string | null | undefined): string {
   return (s ?? "").trim().toLowerCase();
 }
 
+function escapeHtml(value: unknown): string {
+  return String(value ?? "").replace(/[&<>'"]/g, (character) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;",
+  })[character] ?? character);
+}
+
 // deno-lint-ignore no-explicit-any
 async function logAudit(supabase: any, params: {
   lead_id: string; actie: string; uitgevoerd_door: string | null; rol: string;
@@ -414,7 +420,7 @@ Deno.serve(async (req) => {
             <p>Hoi ${lead.voornaam},</p>
             <p>Je polis is per <strong>${fmtNL(today)}</strong> gepauzeerd. Tijdens de pauze ben je niet meer gedekt voor nieuwe schade. Schade van vóór de pauze blijft gedekt.</p>
             <p><strong>Reden:</strong> ${reden.replace(/_/g, " ")}</p>
-            ${pauze_toelichting ? `<p><strong>Toelichting:</strong> ${pauze_toelichting}</p>` : ""}
+            ${pauze_toelichting ? `<p><strong>Toelichting:</strong> ${escapeHtml(pauze_toelichting)}</p>` : ""}
             ${creditZin}
             <p>Klaar om weer te starten? Log in op je portaal en klik op 'Hervatten'. Je krijgt dan een nieuwe factuur voor de resterende dagen tot ${fmtNL(eind)}.</p>
             <p><a href="${COMPANY.url}/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
@@ -424,7 +430,7 @@ Deno.serve(async (req) => {
           mailShell("Polis gepauzeerd", `
             <p><strong>${lead.voornaam} ${lead.achternaam}</strong> (${lead.email}) heeft de polis gepauzeerd.</p>
             <p><strong>Reden:</strong> ${reden}<br/><strong>Datum:</strong> ${fmtNL(today)}</p>
-            ${pauze_toelichting ? `<p><strong>Toelichting:</strong> ${pauze_toelichting}</p>` : ""}
+            ${pauze_toelichting ? `<p><strong>Toelichting:</strong> ${escapeHtml(pauze_toelichting)}</p>` : ""}
             <p><strong>Creditnota:</strong> ${"ok" in creditResult && creditResult.ok ? `€ ${calc.credit_bedrag.toFixed(2)} (Exact ID ${creditResult.invoiceId})` : (creditResult.reden ?? "n.v.t.")}</p>
             ${lead.exact_invoice_status === 50 ? `<p style="background:#fff7ed;border:1px solid #fed7aa;padding:10px;border-radius:6px"><strong>⚠️ Let op:</strong> originele factuur staat op Status 50 (definitief). Controleer of de eerstvolgende SEPA-incassobatch deze klant nog bevat en verwijder indien nodig handmatig in Exact → Cashflow → Incasso.</p>` : ""}
           `)));
@@ -679,7 +685,7 @@ Deno.serve(async (req) => {
             <p>Hoi ${lead.voornaam},</p>
             <p>Je polis is per <strong>${fmtNL(today)}</strong> opgezegd. Schade van vóór deze datum blijft gedekt volgens de polisvoorwaarden.</p>
             <p><strong>Reden:</strong> ${reden.replace(/_/g, " ")}</p>
-            ${toelichting ? `<p><strong>Toelichting:</strong> ${toelichting}</p>` : ""}
+            ${toelichting ? `<p><strong>Toelichting:</strong> ${escapeHtml(toelichting)}</p>` : ""}
             ${creditBlokKlant}
             <p>Mocht je in de toekomst weer een polis willen, dan zijn we er voor je.</p>
           `));
@@ -687,7 +693,7 @@ Deno.serve(async (req) => {
           mailShell("Polis opgezegd", `
             <p><strong>${lead.voornaam} ${lead.achternaam}</strong> heeft de polis opgezegd.</p>
             <p><strong>Reden:</strong> ${reden}<br/>
-            ${toelichting ? `<strong>Toelichting:</strong> ${toelichting}<br/>` : ""}
+            ${toelichting ? `<strong>Toelichting:</strong> ${escapeHtml(toelichting)}<br/>` : ""}
             <strong>Was gepauzeerd:</strong> ${wasGepauzeerd ? "ja" : "nee"}<br/>
             ${creditBlokAdmin}</p>
           `));
@@ -763,13 +769,13 @@ Deno.serve(async (req) => {
           mailShell("Welkom terug — polis geheractiveerd", `
             <p>Hoi ${lead.voornaam},</p>
             <p>Je polis is per <strong>${fmtNL(today)}</strong> weer actief.</p>
-            ${functieGewijzigd ? `<p>We hebben je nieuwe functie geregistreerd: <strong>${nieuwe_functie}</strong></p>` : ""}
+            ${functieGewijzigd ? `<p>We hebben je nieuwe functie geregistreerd: <strong>${escapeHtml(nieuwe_functie)}</strong></p>` : ""}
             <p><a href="${COMPANY.url}/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
           `));
         await sendMail(gate, ADMIN_EMAIL, `[Heractivering] ${lead.voornaam} ${lead.achternaam}`,
           mailShell("Polis geheractiveerd", `
             <p><strong>${lead.voornaam} ${lead.achternaam}</strong> heeft de polis geheractiveerd.</p>
-            <p><strong>Functie:</strong> ${nieuwe_functie} ${functieGewijzigd ? "(gewijzigd t.o.v. aanvraag: " + (lead.functie_bij_aanvraag ?? "onbekend") + ")" : "(ongewijzigd)"}</p>
+            <p><strong>Functie:</strong> ${escapeHtml(nieuwe_functie)} ${functieGewijzigd ? "(gewijzigd t.o.v. aanvraag: " + escapeHtml(lead.functie_bij_aanvraag ?? "onbekend") + ")" : "(ongewijzigd)"}</p>
           `));
 
         return json({ ok: true, status: "actief", functie_gewijzigd: functieGewijzigd });

@@ -43,10 +43,20 @@ Deno.serve(async (req) => {
 
     if (action === "record") {
       const success = body?.success === true;
-      await supabase.from("login_attempts").insert({ email, ip, succes: success });
-      // Na een geslaagde login vervallen eerdere mislukte pogingen.
       if (success) {
-        await supabase.from("login_attempts").delete().eq("email", email).eq("succes", false);
+        const authHeader = req.headers.get("authorization") ?? "";
+        const anon = createClient(
+          Deno.env.get("SUPABASE_URL")!,
+          Deno.env.get("SUPABASE_ANON_KEY")!,
+          { global: { headers: { Authorization: authHeader } } },
+        );
+        const { data: { user } } = await anon.auth.getUser();
+        if (!user?.email || user.email.trim().toLowerCase() !== email) {
+          return json({ error: "unauthorized" }, 401);
+        }
+      }
+      await supabase.from("login_attempts").insert({ email, ip, succes: success });
+      if (success) {
         return json({ locked: false, minutesLeft: 0, attemptsLeft: MAX_ATTEMPTS });
       }
     }
@@ -54,9 +64,8 @@ Deno.serve(async (req) => {
     const since = new Date(Date.now() - WINDOW_MINUTES * 60_000).toISOString();
     const { data, error } = await supabase
       .from("login_attempts")
-      .select("created_at")
+      .select("created_at, succes")
       .eq("email", email)
-      .eq("succes", false)
       .gte("created_at", since)
       .order("created_at", { ascending: false })
       .limit(50);
@@ -67,7 +76,10 @@ Deno.serve(async (req) => {
       return json({ locked: false, minutesLeft: 0, attemptsLeft: MAX_ATTEMPTS });
     }
 
-    const failures = data ?? [];
+    const attempts = data ?? [];
+    const latestSuccessIndex = attempts.findIndex((attempt) => attempt.succes === true);
+    const failures = (latestSuccessIndex < 0 ? attempts : attempts.slice(0, latestSuccessIndex))
+      .filter((attempt) => attempt.succes === false);
     if (failures.length < MAX_ATTEMPTS) {
       return json({
         locked: false,
