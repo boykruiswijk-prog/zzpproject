@@ -26,6 +26,7 @@ import { bavPakketten, getPakket, type BavPakketId } from "@/data/bavPakketten";
 import { checkAcceptance } from "@/data/acceptanceCriteria";
 import { useFormGuard } from "@/lib/antiSpam";
 import { HoneypotField } from "@/components/shared/HoneypotField";
+import { WIZARD_SECTOREN, verzekeringskaartVoorSector } from "@/data/sectorVerzekeringskaart";
 
 const formatBedrag = (n: number) => `€${n.toLocaleString("nl-NL")}`;
 
@@ -39,14 +40,16 @@ const isValidKvk = (kvk: string) => /^[0-9]{8}$/.test(kvk.trim());
 // Zelfde mod-97-controle als de server (anders slaagt de stap hier en weigert de server).
 const isValidIban = isValidSepaIban;
 
-/** Documenten die in stap 5 getoond worden; ook meegestuurd als bewijs. */
-const WIZARD_DOCUMENTEN = [
-  { href: "/documenten/slotverklaring-2026.pdf", title: "Slotverklaring 2026" },
-  { href: "/documenten/dienstverleningsdocument.pdf", title: "Dienstverleningsdocument" },
-  // Beroepsaansprakelijkheid: kaart verschilt per branche; tot Boy kiest verwijzen we naar het overzicht.
-  { href: "/documenten", title: "Verzekeringskaart Beroepsaansprakelijkheid (per branche)" },
-  { href: "/documenten/Verzekeringskaart-bedrijfsaansprakelijkheid-HAVB-08B.pdf", title: "Verzekeringskaart Bedrijfsaansprakelijkheid" },
-];
+/** Documenten die in stap 5 getoond worden; ook meegestuurd als bewijs. Kaart BAV hangt af van de sector. */
+function wizardDocumenten(sectorId: string) {
+  const kaart = verzekeringskaartVoorSector(sectorId);
+  return [
+    { href: "/documenten/slotverklaring-2026.pdf", title: "Slotverklaring 2026" },
+    { href: "/documenten/dienstverleningsdocument.pdf", title: "Dienstverleningsdocument" },
+    ...(kaart ? [{ href: kaart.path, title: `Verzekeringskaart Beroepsaansprakelijkheid – ${kaart.brancheNaam}` }] : []),
+    { href: "/documenten/Verzekeringskaart-bedrijfsaansprakelijkheid-HAVB-08B.pdf", title: "Verzekeringskaart Bedrijfsaansprakelijkheid" },
+  ];
+}
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
@@ -79,7 +82,7 @@ export function BAVApplicationModule() {
    const [magicLinkSent, setMagicLinkSent] = useState(false);
    useEffect(() => { trackBeginWizard(); }, []);
   const [formData, setFormData] = useState({
-    bedrijfsnaam: "", kvkNummer: "", beroep: "", functie: "", aantalMedewerkers: "",
+    bedrijfsnaam: "", kvkNummer: "", sector: "", beroep: "", functie: "", aantalMedewerkers: "",
     voornaam: "", achternaam: "", email: "", telefoon: "",
     opdrachtgever: "", bemiddelaarNaam: "",
     iban: "",
@@ -134,6 +137,7 @@ export function BAVApplicationModule() {
       if (!formData.bedrijfsnaam.trim()) newErrors.bedrijfsnaam = t("bavApp.valCompanyName");
       if (!formData.kvkNummer.trim()) newErrors.kvkNummer = t("bavApp.valKvk");
       else if (!isValidKvk(formData.kvkNummer)) newErrors.kvkNummer = t("bavApp.valKvkFormat");
+      if (!verzekeringskaartVoorSector(formData.sector)) newErrors.sector = "Kies je sector";
       if (!formData.beroep.trim()) newErrors.beroep = t("bavApp.valProfession");
       if (!formData.functie.trim()) newErrors.functie = t("bavApp.valFunction");
       if (!formData.aantalMedewerkers.trim()) newErrors.aantalMedewerkers = t("bavApp.valEmployees");
@@ -172,7 +176,9 @@ export function BAVApplicationModule() {
      }
 
     if (step === 5) {
-      if (!slotverklaringAkkoord) newErrors.slotverklaring = t("bavApp.valSlotverklaring");
+      // Akkoord nooit zonder de juiste kaart: sector moet een bestaande kaart opleveren.
+      if (!verzekeringskaartVoorSector(formData.sector)) newErrors.slotverklaring = "Kies eerst je sector in stap 2";
+      else if (!slotverklaringAkkoord) newErrors.slotverklaring = t("bavApp.valSlotverklaring");
     }
 
     setErrors(newErrors);
@@ -206,6 +212,7 @@ export function BAVApplicationModule() {
            bedrijfsnaam: formData.bedrijfsnaam,
            kvk_nummer: formData.kvkNummer || null,
            beroep: formData.beroep || null,
+           sector: verzekeringskaartVoorSector(formData.sector)?.sector.label ?? null,
            adres_straat: formData.adresStraat || null,
            adres_huisnummer: formData.adresHuisnummer || null,
            adres_postcode: formData.adresPostcode || null,
@@ -217,7 +224,7 @@ export function BAVApplicationModule() {
            lead_id: leadId,
            client_akkoord_op: clientAkkoordOp,
            pagina_url: window.location.href,
-           getoonde_documenten: WIZARD_DOCUMENTEN.map((d) => d.href),
+           getoonde_documenten: wizardDocumenten(formData.sector).map((d) => d.href),
            vereist_handmatige_beoordeling: parseInt(formData.aantalMedewerkers || "0") > 3,
            opmerkingen: [
              formData.opdrachtgever ? `Opdrachtgever: ${formData.opdrachtgever}` : null,
@@ -562,6 +569,20 @@ export function BAVApplicationModule() {
                         </div>
                       </div>
                       <div>
+                        <Label htmlFor="sector">Sector *</Label>
+                        <select
+                          id="sector"
+                          name="sector"
+                          value={formData.sector}
+                          onChange={(e) => { const v = e.target.value; setFormData(prev => ({ ...prev, sector: v })); if (errors.sector) setErrors(prev => { const n = { ...prev }; delete n.sector; return n; }); }}
+                          className={cn("flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm", errors.sector && "border-destructive")}
+                        >
+                          <option value="">Kies je sector</option>
+                          {WIZARD_SECTOREN.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+                        </select>
+                        <FieldError message={errors.sector} />
+                      </div>
+                      <div>
                         <Label htmlFor="beroep">{t("home.bavProfession")} *</Label>
                         <Input id="beroep" name="beroep" value={formData.beroep} onChange={handleInputChange} className={cn(errors.beroep && "border-destructive")} />
                         <FieldError message={errors.beroep} />
@@ -760,7 +781,7 @@ export function BAVApplicationModule() {
                           Door op 'Verstuur aanvraag' te klikken bevestig je dat je deze documenten hebt gelezen.
                         </p>
                         <div className="grid sm:grid-cols-2 gap-2">
-                          {WIZARD_DOCUMENTEN.map((doc) => (
+                          {wizardDocumenten(formData.sector).map((doc) => (
                             <a
                               key={doc.href + doc.title}
                               href={doc.href}
