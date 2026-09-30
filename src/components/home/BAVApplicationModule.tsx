@@ -40,7 +40,7 @@ const isValidKvk = (kvk: string) => /^[0-9]{8}$/.test(kvk.trim());
 const isValidIban = isValidSepaIban;
 
 /** Documenten die in stap 5 getoond worden; ook meegestuurd als bewijs. */
-export const WIZARD_DOCUMENTEN = [
+const WIZARD_DOCUMENTEN = [
   { href: "/documenten/slotverklaring-2026.pdf", title: "Slotverklaring 2026" },
   { href: "/documenten/dienstverleningsdocument.pdf", title: "Dienstverleningsdocument" },
   // Beroepsaansprakelijkheid: kaart verschilt per branche; tot Boy kiest verwijzen we naar het overzicht.
