@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { usePolicyLifecycle, usePortalLead, usePauzePreview } from "@/hooks/usePolicyLifecycle";
 import { formatDateLongNL } from "@/lib/dateFormat";
 import { SITE_CONFIG } from "@/config/site";
+import { OPZEG_TOELICHTING_MAX, valideerToelichting } from "@/lib/opzegValidatie";
 
 const PAUZE_REDENEN = [
   { value: "geen_opdrachten", label: "Even geen opdrachten" },
@@ -57,8 +58,9 @@ export function PolicyLifecycleActions() {
   const opzegToelichtingRequired = opzegReden === "andere_reden";
   const pauzeBlocked =
     !pauzeReden || (pauzeToelichtingRequired && !pauzeToelichting.trim()) || !pauzeAkkoord;
+  const opzegToelichtingFout = opzegReden ? valideerToelichting(opzegReden, opzegToelichting) : null;
   const opzegBlocked =
-    !opzegReden || (opzegToelichtingRequired && !opzegToelichting.trim()) || (opzegVanuitActief && !opzegAkkoord);
+    !opzegReden || !!opzegToelichtingFout || (opzegVanuitActief && !opzegAkkoord);
   const sepaBannerNeeded = lead?.exact_invoice_status === 50;
   const eur = (n: number | undefined) =>
     typeof n === "number" ? `€ ${n.toFixed(2).replace(".", ",")}` : "—";
@@ -330,11 +332,18 @@ export function PolicyLifecycleActions() {
                 Toelichting {opzegToelichtingRequired ? "(verplicht)" : "(optioneel)"}
               </Label>
               <Textarea
-                id="o-toel" rows={3}
+                id="o-toel" rows={3} maxLength={OPZEG_TOELICHTING_MAX}
+                aria-invalid={!!opzegToelichtingFout && opzegToelichting.length > 0}
+                aria-describedby="o-toel-hulp"
                 placeholder="Vertel kort wat de reden is..."
                 value={opzegToelichting}
                 onChange={(e) => setOpzegToelichting(e.target.value)}
               />
+              <p id="o-toel-hulp" className={`text-xs ${opzegToelichtingFout && opzegToelichting.length > 0 ? "text-destructive" : "text-muted-foreground"}`}>
+                {opzegToelichtingFout && (opzegToelichtingRequired || opzegToelichting.length > 0)
+                  ? opzegToelichtingFout
+                  : `${opzegToelichting.length}/${OPZEG_TOELICHTING_MAX} tekens`}
+              </p>
             </div>
             {opzegVanuitActief && (
               <label className="flex items-start gap-2 text-sm cursor-pointer">
