@@ -98,7 +98,7 @@ export default function OverOns() {
             <div className="relative">
               <div className="bg-card rounded-2xl overflow-hidden shadow-card border border-border/50">
                 <div className="aspect-[4/3] overflow-hidden">
-                   <img loading="lazy" decoding="async" src={boyPortrait} alt="Boy Kruiswijk - Oprichter ZP Zaken" className="w-full h-full object-cover object-center" />
+                   <img loading="lazy" decoding="async" src={boyPortrait} alt="Boy Kruiswijk - Oprichter ZP Zaken" className="w-full h-full object-cover object-top" />
                 </div>
                 <div className="p-6">
                   <blockquote className="text-lg font-medium mb-2 text-foreground italic">
@@ -129,7 +129,7 @@ export default function OverOns() {
               </div>
             </div>
             <div className="relative rounded-2xl p-8 lg:p-12 overflow-hidden">
-               <img loading="lazy" decoding="async" src={boyPortrait} alt="" className="absolute inset-0 w-full h-full object-cover object-center" aria-hidden="true" />
+               <img loading="lazy" decoding="async" src={boyPortrait} alt="" className="absolute inset-0 w-full h-full object-cover object-top" aria-hidden="true" />
               <div className="absolute inset-0" style={{ backgroundColor: "rgba(0,0,0,0.45)" }} aria-hidden="true" />
               <div className="relative z-10">
                 <blockquote className="text-xl lg:text-2xl font-medium mb-6 text-primary-foreground">{t("overOns.quote")}</blockquote>
