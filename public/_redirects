@@ -1,7 +1,7 @@
 # Automatisch gegenereerd door vite (zie src/config/legacyRedirects.ts).
 # Niet handmatig aanpassen.
 
-/sitemap.xml    https://eugkavokktjwpqaqlwsj.supabase.co/functions/v1/sitemap    200
+# /sitemap.xml is een statisch bestand uit de prerender (geen proxy).
 
 # Oude WordPress-media staan onder hetzelfde pad in de storage-bucket.
 /wp-content/uploads/*    https://eugkavokktjwpqaqlwsj.supabase.co/storage/v1/object/public/article-images/wp-content/uploads/:splat    301

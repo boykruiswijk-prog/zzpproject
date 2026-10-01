@@ -9,7 +9,6 @@ import {
   type ArticleRedirectInfo,
 } from "./src/config/legacyRedirects";
 
-const SITEMAP_FUNCTION_URL = "https://eugkavokktjwpqaqlwsj.supabase.co/functions/v1/sitemap";
 
 /** Storage-bucket waarin de gemigreerde WordPress-media staat. */
 const MEDIA_BUCKET = "article-images";
