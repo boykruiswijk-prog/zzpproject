@@ -80,7 +80,7 @@ function redirectsPlugin(env: Record<string, string>): Plugin {
         "# Automatisch gegenereerd door vite (zie src/config/legacyRedirects.ts).",
         "# Niet handmatig aanpassen.",
         "",
-        `/sitemap.xml    ${SITEMAP_FUNCTION_URL}    200`,
+        "# /sitemap.xml is een statisch bestand uit de prerender (geen proxy).",
         "",
         "# Oude WordPress-media staan onder hetzelfde pad in de storage-bucket.",
         ...(storageBase
