@@ -1888,6 +1888,84 @@ export type Database = {
           },
         ]
       }
+      klant_certificaten: {
+        Row: {
+          aanvraagdatum: string
+          beoordeeld_door: string | null
+          beoordeeld_op: string | null
+          bron: string
+          bron_contact: string | null
+          bron_naam: string | null
+          certificaatnummer: string
+          created_at: string
+          id: string
+          ingestuurd: string | null
+          is_test: boolean
+          koppeling_status: string
+          match_type: string | null
+          onderneming_id: string
+          pakket: string | null
+          persoon_id: string | null
+          updated_at: string
+          waarschuwing: string | null
+        }
+        Insert: {
+          aanvraagdatum: string
+          beoordeeld_door?: string | null
+          beoordeeld_op?: string | null
+          bron?: string
+          bron_contact?: string | null
+          bron_naam?: string | null
+          certificaatnummer: string
+          created_at?: string
+          id?: string
+          ingestuurd?: string | null
+          is_test?: boolean
+          koppeling_status?: string
+          match_type?: string | null
+          onderneming_id: string
+          pakket?: string | null
+          persoon_id?: string | null
+          updated_at?: string
+          waarschuwing?: string | null
+        }
+        Update: {
+          aanvraagdatum?: string
+          beoordeeld_door?: string | null
+          beoordeeld_op?: string | null
+          bron?: string
+          bron_contact?: string | null
+          bron_naam?: string | null
+          certificaatnummer?: string
+          created_at?: string
+          id?: string
+          ingestuurd?: string | null
+          is_test?: boolean
+          koppeling_status?: string
+          match_type?: string | null
+          onderneming_id?: string
+          pakket?: string | null
+          persoon_id?: string | null
+          updated_at?: string
+          waarschuwing?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "klant_certificaten_onderneming_id_fkey"
+            columns: ["onderneming_id"]
+            isOneToOne: false
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "klant_certificaten_persoon_id_fkey"
+            columns: ["persoon_id"]
+            isOneToOne: false
+            referencedRelation: "personen"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       klant_contracten: {
         Row: {
           aantal: number
@@ -3341,6 +3419,10 @@ export type Database = {
     }
     Functions: {
       accept_portal_invitation: { Args: { _token: string }; Returns: Json }
+      beoordeel_klant_certificaat: {
+        Args: { _bevestigen: boolean; _id: string }
+        Returns: Json
+      }
       bepaal_opzegging_koppeling: { Args: { _id: string }; Returns: Json }
       bevestig_artikel_mapping: {
         Args: { _bevestigd: boolean; _id: string }
@@ -3353,6 +3435,10 @@ export type Database = {
         Returns: boolean
       }
       doorrol_startstand: { Args: { _preview?: boolean }; Returns: Json }
+      eerste_vrije_certificaatnummer: {
+        Args: { _start: number }
+        Returns: number
+      }
       email_queue_dispatch: { Args: never; Returns: undefined }
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
@@ -3446,6 +3532,7 @@ export type Database = {
       }
       herbeoordeel_opzeg_credits: { Args: never; Returns: number }
       importeer_afas_20261001: { Args: never; Returns: Json }
+      importeer_certificaten_20261001: { Args: never; Returns: Json }
       is_supervisor_or_admin: { Args: { _user_id: string }; Returns: boolean }
       is_team_member: { Args: { _user_id: string }; Returns: boolean }
       koppel_opzegging: {
