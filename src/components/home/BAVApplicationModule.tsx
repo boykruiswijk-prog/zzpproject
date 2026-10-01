@@ -26,7 +26,8 @@ import { bavPakketten, getPakket, type BavPakketId } from "@/data/bavPakketten";
 import { checkAcceptance } from "@/data/acceptanceCriteria";
 import { useFormGuard } from "@/lib/antiSpam";
 import { HoneypotField } from "@/components/shared/HoneypotField";
-import { WIZARD_SECTOREN, verzekeringskaartVoorSector } from "@/data/sectorVerzekeringskaart";
+import { WIZARD_SECTOREN, verzekeringskaartVoorSector, isAlleenOfferteSector } from "@/data/sectorVerzekeringskaart";
+import { LocalizedLink } from "@/components/LocalizedLink";
 import { usePdokAdres } from "@/hooks/usePdokAdres";
 import { AdresGevonden } from "@/components/AdresGevonden";
 import { normaliseerPostcode } from "@/lib/adresNormalisatie";
@@ -149,6 +150,7 @@ export function BAVApplicationModule() {
       if (!formData.kvkNummer.trim()) newErrors.kvkNummer = t("bavApp.valKvk");
       else if (!isValidKvk(formData.kvkNummer)) newErrors.kvkNummer = t("bavApp.valKvkFormat");
       if (!verzekeringskaartVoorSector(formData.sector)) newErrors.sector = "Kies je sector";
+      else if (isAlleenOfferteSector(formData.sector)) newErrors.sector = "Voor deze sector is direct online afsluiten niet mogelijk";
       if (!formData.beroep.trim()) newErrors.beroep = t("bavApp.valProfession");
       if (!formData.functie.trim()) newErrors.functie = t("bavApp.valFunction");
       if (!formData.aantalMedewerkers.trim()) newErrors.aantalMedewerkers = t("bavApp.valEmployees");
@@ -189,6 +191,7 @@ export function BAVApplicationModule() {
     if (step === 5) {
       // Akkoord nooit zonder de juiste kaart: sector moet een bestaande kaart opleveren.
       if (!verzekeringskaartVoorSector(formData.sector)) newErrors.slotverklaring = "Kies eerst je sector in stap 2";
+      else if (isAlleenOfferteSector(formData.sector)) newErrors.slotverklaring = "Voor deze sector is direct online afsluiten niet mogelijk";
       else if (!slotverklaringAkkoord) newErrors.slotverklaring = t("bavApp.valSlotverklaring");
     }
 
@@ -227,6 +230,17 @@ export function BAVApplicationModule() {
     const timer = window.setTimeout(() => successHeadingRef.current?.focus({ preventScroll: true }), 350);
     return () => window.clearTimeout(timer);
   }, [isSubmitted]);
+  // Link naar offerte met sector + reeds ingevulde basisgegevens (nooit IBAN of adres).
+  const offerteLink = (() => {
+    const q = new URLSearchParams({ sector: formData.sector });
+    const basis: Record<string, string> = {
+      voornaam: formData.voornaam, achternaam: formData.achternaam, email: formData.email,
+      telefoon: formData.telefoon, bedrijfsnaam: formData.bedrijfsnaam, kvk: formData.kvkNummer,
+    };
+    for (const [k, v] of Object.entries(basis)) if (v.trim()) q.set(k, v.trim());
+    return `/offerte?${q.toString()}`;
+  })();
+
   const nextStep = async () => {
     if (!validateStep(currentStep) || currentStep >= TOTAL_STEPS) return;
     stapGewisseld.current = true;
@@ -234,6 +248,7 @@ export function BAVApplicationModule() {
   };
   const prevStep = () => { if (currentStep > 1) { setErrors({}); stapGewisseld.current = true; setCurrentStep(currentStep - 1); } };
    const handleSubmit = async () => {
+    if (isAlleenOfferteSector(formData.sector)) return;
      if (isSubmitting) return;
      if (!validateStep(currentStep)) return;
      setIsSubmitting(true);
@@ -644,7 +659,18 @@ export function BAVApplicationModule() {
                           <option value="">Kies je sector</option>
                           {WIZARD_SECTOREN.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
                         </select>
-                        <FieldError message={errors.sector} />
+                        {!isAlleenOfferteSector(formData.sector) && <FieldError message={errors.sector} />}
+                        {isAlleenOfferteSector(formData.sector) && (
+                          <div role="alert" className="mt-3 rounded-md border border-destructive/40 bg-destructive/5 p-4 text-sm">
+                            <p className="flex items-start gap-2 text-foreground">
+                              <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-destructive" />
+                              <span>Voor de sector {WIZARD_SECTOREN.find((s) => s.id === formData.sector)?.label} stellen we je verzekering graag persoonlijk samen. Direct online afsluiten is voor deze sector niet mogelijk. Vraag een vrijblijvende offerte aan, dan nemen we binnen 24 uur contact met je op.</span>
+                            </p>
+                            <Button asChild className="mt-3 bg-accent hover:bg-accent/90 text-accent-foreground">
+                              <LocalizedLink to={offerteLink}>Offerte aanvragen<ArrowRight className="h-4 w-4" /></LocalizedLink>
+                            </Button>
+                          </div>
+                        )}
                       </div>
                       <div>
                         <Label htmlFor="beroep">{t("home.bavProfession")} *</Label>
@@ -890,14 +916,14 @@ export function BAVApplicationModule() {
                   {currentStep < TOTAL_STEPS ? (
                     <Button
                       onClick={nextStep}
-                      disabled={currentStep === 1 && !!startDate && startDate < new Date().toISOString().split('T')[0]}
+                      disabled={(currentStep === 1 && !!startDate && startDate < new Date().toISOString().split('T')[0]) || (currentStep >= 2 && isAlleenOfferteSector(formData.sector))}
                       className="bg-accent hover:bg-accent/90 text-accent-foreground"
                     >{t("home.bavNext")}<ArrowRight className="h-4 w-4" /></Button>
                   ) : (
                     <Button
                       onClick={handleSubmit}
                       size="lg"
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || isAlleenOfferteSector(formData.sector)}
                       aria-busy={isSubmitting}
                       className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold"
                     >
