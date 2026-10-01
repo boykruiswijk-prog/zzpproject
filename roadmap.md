@@ -44,5 +44,5 @@
 - [x] Build, vitest, typecheck, deno check, security-scan, bundelgrootte
 
 - [x] AFAS-klantcontracten inlezen in CRM (klant_contracten, Klanten & contracten-schermen, reconciliatie); facturatie blijft uit
-- [ ] Fase 1 Exact: alleen-lezen spiegel-sync, accountkoppeling, reconciliatie, scherm, rapport (overnemen handmatig)
+- [ ] Fase 1 Exact: gebouwd; abonnementen lezen geblokkeerd door Exact-recht (403) — wacht op Exact-toegang
 - [ ] Fase 2 Exact-schrijfwachtrij: wacht op akkoord Boy
