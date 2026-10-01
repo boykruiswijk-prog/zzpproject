@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Users, RotateCw, ChevronDown, ChevronRight, AlertTriangle, Check, Split } from "lucide-react";
 import { formatDateNL } from "@/lib/dateFormat";
 import { useAuth } from "@/contexts/AuthContext";
+import { CERT_VELDEN, actueelCertificaat, groepeerPerOnderneming, type KlantCertificaat } from "@/lib/klantCertificaten";
 import { statusLabel } from "@/lib/statusLabels";
 import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 import { fetchAlle } from "@/lib/fetchAlle";
@@ -30,7 +31,7 @@ type Event = {
   detailHref: string;
 };
 
-type Bedrijf = { bedrijfsnaam: string; kvk: string; id?: string; relatiecode?: string | null };
+type Bedrijf = { bedrijfsnaam: string; kvk: string; id?: string; relatiecode?: string | null; cert?: string | null; certs?: string[] };
 
 type Person = {
   id: string;
@@ -89,7 +90,7 @@ export default function CRM() {
   async function load() {
     setLoading(true);
 
-    const [personenRes, poRes, ondRes, kopRes, leadsRes, serviceRes, screeningRes, beslissingRes] = await Promise.all([
+    const [personenRes, poRes, ondRes, kopRes, leadsRes, serviceRes, screeningRes, beslissingRes, certRes] = await Promise.all([
       fetchAlle((a, b) => supabase.from("personen" as any).select("id,genormaliseerd_email,email_weergave,voornaam,achternaam,is_test").range(a, b)),
       fetchAlle((a, b) => supabase.from("persoon_onderneming" as any).select("persoon_id,onderneming_id").range(a, b)),
       fetchAlle((a, b) => supabase.from("ondernemingen" as any).select("id,kvk,naam,is_test,exact_relatie_code").range(a, b)),
@@ -98,7 +99,9 @@ export default function CRM() {
       supabase.from("klant_service_aanvragen" as any).select("id,created_at,voornaam,achternaam,status,type,polisnummer,is_test"),
       supabase.from("screening_aanvragen" as any).select("id,aangemeld_op,voornaam,achternaam,status,screening_type,bedrijfsnaam,is_test"),
       supabase.from("crm_identiteit_beslissingen" as any).select("genormaliseerd_email,beslissing,bekende_namen"),
+      fetchAlle<KlantCertificaat>((a, b) => supabase.from("klant_certificaten" as any).select(CERT_VELDEN).range(a, b)),
     ]);
+    const certsPerOnd = groepeerPerOnderneming(certRes.data);
 
     const errors = [
       personenRes.error, poRes.error, ondRes.error, kopRes.error,
@@ -137,7 +140,10 @@ export default function CRM() {
       if (!o) continue;
       const arr = bedrijvenPerPersoon.get(po.persoon_id) ?? [];
       if (!arr.some((b) => b.bedrijfsnaam === o.naam && b.kvk === o.kvk)) {
-        arr.push({ bedrijfsnaam: o.naam, kvk: o.kvk, id: po.onderneming_id, relatiecode: o.relatiecode });
+        const cs = certsPerOnd.get(po.onderneming_id) ?? [];
+        arr.push({ bedrijfsnaam: o.naam, kvk: o.kvk, id: po.onderneming_id, relatiecode: o.relatiecode,
+          cert: actueelCertificaat(cs)?.certificaatnummer ?? null,
+          certs: cs.filter((c) => c.koppeling_status !== "afgewezen").map((c) => c.certificaatnummer) });
       }
       bedrijvenPerPersoon.set(po.persoon_id, arr);
     }
@@ -277,7 +283,7 @@ export default function CRM() {
       const hay = [
         p.naam,
         p.email,
-        ...p.bedrijven.flatMap((b) => [b.bedrijfsnaam, b.kvk]),
+        ...p.bedrijven.flatMap((b) => [b.bedrijfsnaam, b.kvk, ...(b.certs ?? [])]),
       ].join(" ").toLowerCase();
       if (!hay.includes(q)) return false;
     }
@@ -372,7 +378,7 @@ export default function CRM() {
             </SelectContent>
           </Select>
           <Input
-            placeholder="Zoek op naam, email of KvK"
+            placeholder="Zoek op naam, email, KvK of certificaat"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="flex-1 min-w-[200px]"
@@ -469,6 +475,7 @@ export default function CRM() {
                               <Link to={`/admin/klanten/${eerste.id}`} onClick={(e) => e.stopPropagation()} className="block truncate font-medium hover:text-primary" title={eerste.bedrijfsnaam}>{eerste.bedrijfsnaam || "—"}</Link>
                             ) : <div className="truncate" title={eerste.bedrijfsnaam}>{eerste.bedrijfsnaam || "—"}</div>}
                             {eerste.kvk && <div className="text-xs text-muted-foreground truncate">KvK {eerste.kvk}</div>}
+                            {eerste.cert && <div className="text-xs text-muted-foreground truncate tabular-nums" title="Actueel certificaat">Certificaat {eerste.cert}</div>}
                             {eerste.relatiecode && <Badge variant="outline" className="text-xs">Klant</Badge>}
                             {p.bedrijven.length > 1 && (
                               <div className="text-xs text-muted-foreground">+{p.bedrijven.length - 1} meer</div>

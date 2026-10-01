@@ -55,3 +55,5 @@
 - [ ] Fase 2: hervat-factuur in polis-lifecycle via planningstabel laten lopen — wacht op akkoord
 - [x] Boy-vervolg: AFAS uit UI, banner weg, dashboard één bron (dashboard_tellers), CRM-doorklik, opzegkoppeling + "Opzegging verwerken"
 - [x] Creditnota bij opzegging (concept, gekoppeld aan factuurnummer, onder hoofdschakelaar, Mijn ZP)
+- [x] Certificaatnummers koppelen aan klanten (klant_certificaten, klantdetail, zoeken/filter, opzegkoppeling, generator)
+- [ ] Tweede certificatenlijst partners (Circle8, De Staffing Groep, HeadFirst) — wacht op besluit Boy
