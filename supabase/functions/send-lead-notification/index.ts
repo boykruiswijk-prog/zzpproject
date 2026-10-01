@@ -31,6 +31,7 @@ const LEAD_LABELS: Record<string, string> = {
   "mijn-zp-opzeggen": "Opzegging",
   "verzekering-aanvraag": "Verzekeringsaanvraag",
   "offerte-aanvraag": "Offerteaanvraag",
+  "terugbelverzoek-chat": "Terugbelverzoek via chatassistent Zeker",
 };
 
 const SUBJECTS: Record<string, (ref: string) => string> = {
@@ -45,6 +46,7 @@ const SUBJECTS: Record<string, (ref: string) => string> = {
   "mijn-zp-opzeggen": (r) => `Nieuwe opzegging via zpzaken.nl - ${r}`,
   "verzekering-aanvraag": (r) => `Nieuwe verzekeringsaanvraag via zpzaken.nl - ${r}`,
   "offerte-aanvraag": (r) => `Nieuwe offerteaanvraag via zpzaken.nl - ${r}`,
+  "terugbelverzoek-chat": (r) => `Terugbelverzoek via chat Zeker - ${r}`,
 };
 
 // ── Publieke aanroepen: type → brontabel + aanmaakkolom ──
@@ -161,6 +163,7 @@ const CUSTOMER_INTRO: Record<string, string> = {
   bav: "We hebben je BAV-aanvraag in goede orde ontvangen. Onze acceptant beoordeelt je aanvraag en neemt binnen één werkdag contact met je op.",
   "verzekering-aanvraag": "We hebben je verzekeringsaanvraag in goede orde ontvangen. Een van onze adviseurs neemt binnen één werkdag contact met je op om de aanvraag af te ronden.",
   "offerte-aanvraag": "We hebben je offerteaanvraag in goede orde ontvangen. Je ontvangt binnen één werkdag een persoonlijke offerte van ons.",
+  "terugbelverzoek-chat": "Bedankt voor je terugbelverzoek via onze chat. Een collega belt je zo snel mogelijk, uiterlijk binnen één werkdag.",
   contact: "Bedankt voor je bericht. We nemen zo spoedig mogelijk, uiterlijk binnen één werkdag, contact met je op.",
 };
 
