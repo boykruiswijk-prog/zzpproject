@@ -4,7 +4,6 @@
 import { describe, expect, it } from "vitest";
 import { resolveFiscaleTokens, resolveFiscaalToken } from "@/lib/fiscaleTokens";
 import { getFiscaalCijfer } from "@/data/fiscaleCijfers";
-import { markdownToSafeHtml } from "../../scripts/markdownToSafeHtml";
 
 const env = (k: string) => process.env[k] || "";
 const base = env("VITE_SUPABASE_URL");
@@ -56,8 +55,7 @@ describe.skipIf(!base || !key)("gepubliceerde artikelen", () => {
       for (const veld of ["title", "excerpt", "seo_title", "seo_description"]) {
         if (resolveFiscaleTokens(a[veld]).includes("{{")) fout.push(`${a.slug}.${veld}`);
       }
-      const html = markdownToSafeHtml(resolveFiscaleTokens(a.content));
-      const m = html.match(/\{\{[^}]*\}?\}?/);
+      const m = resolveFiscaleTokens(a.content).match(/\{\{[^}]{0,60}/);
       if (m) fout.push(`${a.slug}: ${m[0]}`);
     }
     expect(fout).toEqual([]);
