@@ -1328,6 +1328,101 @@ export type Database = {
           },
         ]
       }
+      klant_contracten: {
+        Row: {
+          aantal: number
+          abonnement_nr: string | null
+          afw_prijs: number | null
+          afwijkingen: string[]
+          bedrag_per_periode: number
+          begin_datum: string | null
+          bron: string
+          bron_rij: number
+          created_at: string
+          cyclus: string
+          eind_datum: string | null
+          facturatie_status: string
+          factureren_vanaf: string | null
+          gefactureerd_tm: string | null
+          id: string
+          is_test: boolean
+          itemcode: string
+          laatst_gefactureerd_bedrag: number | null
+          maandwaarde: number | null
+          onderneming_id: string
+          org_prijs: number | null
+          product: string
+          status: string
+          type: string
+          updated_at: string
+          volgende_factuurdatum: string | null
+        }
+        Insert: {
+          aantal?: number
+          abonnement_nr?: string | null
+          afw_prijs?: number | null
+          afwijkingen?: string[]
+          bedrag_per_periode?: number
+          begin_datum?: string | null
+          bron: string
+          bron_rij: number
+          created_at?: string
+          cyclus: string
+          eind_datum?: string | null
+          facturatie_status?: string
+          factureren_vanaf?: string | null
+          gefactureerd_tm?: string | null
+          id?: string
+          is_test?: boolean
+          itemcode: string
+          laatst_gefactureerd_bedrag?: number | null
+          maandwaarde?: number | null
+          onderneming_id: string
+          org_prijs?: number | null
+          product: string
+          status?: string
+          type: string
+          updated_at?: string
+          volgende_factuurdatum?: string | null
+        }
+        Update: {
+          aantal?: number
+          abonnement_nr?: string | null
+          afw_prijs?: number | null
+          afwijkingen?: string[]
+          bedrag_per_periode?: number
+          begin_datum?: string | null
+          bron?: string
+          bron_rij?: number
+          created_at?: string
+          cyclus?: string
+          eind_datum?: string | null
+          facturatie_status?: string
+          factureren_vanaf?: string | null
+          gefactureerd_tm?: string | null
+          id?: string
+          is_test?: boolean
+          itemcode?: string
+          laatst_gefactureerd_bedrag?: number | null
+          maandwaarde?: number | null
+          onderneming_id?: string
+          org_prijs?: number | null
+          product?: string
+          status?: string
+          type?: string
+          updated_at?: string
+          volgende_factuurdatum?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "klant_contracten_onderneming_id_fkey"
+            columns: ["onderneming_id"]
+            isOneToOne: false
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       klant_service_aanvragen: {
         Row: {
           achternaam: string
@@ -1831,7 +1926,11 @@ export type Database = {
       }
       ondernemingen: {
         Row: {
+          afas_contactpersoon: string | null
+          afwijkingen: string[]
+          bron: string | null
           created_at: string
+          exact_relatie_code: string | null
           iban: string | null
           id: string
           is_test: boolean
@@ -1841,7 +1940,11 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          afas_contactpersoon?: string | null
+          afwijkingen?: string[]
+          bron?: string | null
           created_at?: string
+          exact_relatie_code?: string | null
           iban?: string | null
           id?: string
           is_test?: boolean
@@ -1851,7 +1954,11 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          afas_contactpersoon?: string | null
+          afwijkingen?: string[]
+          bron?: string | null
           created_at?: string
+          exact_relatie_code?: string | null
           iban?: string | null
           id?: string
           is_test?: boolean
@@ -2526,6 +2633,16 @@ export type Database = {
       }
     }
     Views: {
+      klant_mandaat_v: {
+        Row: {
+          iban: string | null
+          kenmerk: string | null
+          ondertekend_op: string | null
+          relatiecode: string | null
+          status: string | null
+        }
+        Relationships: []
+      }
       kpi_actieve_leads: {
         Row: {
           achternaam: string | null
@@ -2588,6 +2705,7 @@ export type Database = {
         Returns: number
       }
       get_exact_koppeling_fout: { Args: never; Returns: string }
+      get_klant_contracten_reconciliatie: { Args: never; Returns: Json }
       get_mijn_polissen: {
         Args: never
         Returns: {
@@ -2610,6 +2728,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      importeer_afas_20261001: { Args: never; Returns: Json }
       is_supervisor_or_admin: { Args: { _user_id: string }; Returns: boolean }
       is_team_member: { Args: { _user_id: string }; Returns: boolean }
       log_not_found: {

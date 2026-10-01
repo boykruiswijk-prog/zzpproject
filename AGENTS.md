@@ -20,3 +20,5 @@
 - Testdata wordt gemarkeerd met kolom is_test (nooit verwijderd); beheeroverzichten filteren is_test standaard weg, alleen admin/supervisor kan via useToonTestrecords tonen. Leadstatuslabels komen uit src/lib/statusLabels.ts. Waarom: herleidbare historie en één bron voor labels.
 - Collectieve aanmeldtellingen worden alleen in afgeschermd beheer opgevraagd; publieke pagina's tonen geen aantallen, doelen of voortgang. Waarom: eerlijke communicatie zonder gevoelige of misleidende sociale bewijslast.
 - Opzegregels (toelichting bij "Anders" 3-500 tekens, datum vandaag tot 180 dagen, NL-tijd) staan in src/lib/opzegValidatie.ts, byte-gelijk in _shared/opzegValidatie.ts. Waarom: formulier en server hanteren exact dezelfde regels.
+
+- Lopende klantcontracten staan in klant_contracten (per onderneming via exact_relatie_code), gevuld door de idempotente database-importfunctie importeer_afas_20261001 (alleen service_role); facturatie vanuit het CRM staat uit tot akkoord. Waarom: bestaande klanten blijven buiten leads/pipeline en import is herhaalbaar zonder bijwerkingen.

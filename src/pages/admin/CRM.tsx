@@ -14,6 +14,7 @@ import { formatDateNL } from "@/lib/dateFormat";
 import { useAuth } from "@/contexts/AuthContext";
 import { statusLabel } from "@/lib/statusLabels";
 import { useToonTestrecords } from "@/hooks/useToonTestrecords";
+import { fetchAlle } from "@/lib/fetchAlle";
 import { ToonTestrecordsSchakelaar } from "@/components/admin/ToonTestrecordsSchakelaar";
 
 type EventType = "lead" | "service" | "screening";
@@ -29,7 +30,7 @@ type Event = {
   detailHref: string;
 };
 
-type Bedrijf = { bedrijfsnaam: string; kvk: string };
+type Bedrijf = { bedrijfsnaam: string; kvk: string; id?: string; relatiecode?: string | null };
 
 type Person = {
   id: string;
@@ -88,9 +89,9 @@ export default function CRM() {
     setLoading(true);
 
     const [personenRes, poRes, ondRes, kopRes, leadsRes, serviceRes, screeningRes, beslissingRes] = await Promise.all([
-      supabase.from("personen" as any).select("id,genormaliseerd_email,email_weergave,voornaam,achternaam,is_test"),
-      supabase.from("persoon_onderneming" as any).select("persoon_id,onderneming_id"),
-      supabase.from("ondernemingen" as any).select("id,kvk,naam,is_test"),
+      fetchAlle((a, b) => supabase.from("personen" as any).select("id,genormaliseerd_email,email_weergave,voornaam,achternaam,is_test").range(a, b)),
+      fetchAlle((a, b) => supabase.from("persoon_onderneming" as any).select("persoon_id,onderneming_id").range(a, b)),
+      fetchAlle((a, b) => supabase.from("ondernemingen" as any).select("id,kvk,naam,is_test,exact_relatie_code").range(a, b)),
       supabase.from("persoon_bron_koppeling" as any).select("persoon_id,bron_tabel,bron_id"),
       supabase.from("leads").select("id,created_at,voornaam,achternaam,status,verzekering_type,bedrijfsnaam,is_test"),
       supabase.from("klant_service_aanvragen" as any).select("id,created_at,voornaam,achternaam,status,type,polisnummer,is_test"),
@@ -122,10 +123,10 @@ export default function CRM() {
     setBeslissingen(bmap);
 
     // Ondernemingen lookup
-    const ondMap = new Map<string, { kvk: string; naam: string }>();
+    const ondMap = new Map<string, { kvk: string; naam: string; relatiecode: string | null }>();
     for (const o of (ondRes.data ?? []) as any[]) {
       if (o.is_test && !toonTest) continue;
-      ondMap.set(o.id, { kvk: o.kvk ?? "", naam: o.naam ?? "" });
+      ondMap.set(o.id, { kvk: o.kvk ?? "", naam: o.naam ?? "", relatiecode: o.exact_relatie_code ?? null });
     }
 
     // Bedrijven per persoon
@@ -135,7 +136,7 @@ export default function CRM() {
       if (!o) continue;
       const arr = bedrijvenPerPersoon.get(po.persoon_id) ?? [];
       if (!arr.some((b) => b.bedrijfsnaam === o.naam && b.kvk === o.kvk)) {
-        arr.push({ bedrijfsnaam: o.naam, kvk: o.kvk });
+        arr.push({ bedrijfsnaam: o.naam, kvk: o.kvk, id: po.onderneming_id, relatiecode: o.relatiecode });
       }
       bedrijvenPerPersoon.set(po.persoon_id, arr);
     }
@@ -465,6 +466,11 @@ export default function CRM() {
                           <div className="min-w-0">
                             <div className="truncate" title={eerste.bedrijfsnaam}>{eerste.bedrijfsnaam || "—"}</div>
                             {eerste.kvk && <div className="text-xs text-muted-foreground truncate">KvK {eerste.kvk}</div>}
+                            {eerste.relatiecode && eerste.id && (
+                              <Link to={`/admin/klanten/${eerste.id}`} onClick={(e) => e.stopPropagation()} className="inline-block">
+                                <Badge variant="outline" className="text-xs">Klant (AFAS)</Badge>
+                              </Link>
+                            )}
                             {p.bedrijven.length > 1 && (
                               <div className="text-xs text-muted-foreground">+{p.bedrijven.length - 1} meer</div>
                             )}

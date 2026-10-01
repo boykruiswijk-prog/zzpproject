@@ -20,6 +20,7 @@ import {
 
   SearchX,
   MessageCircle,
+  Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -37,6 +38,7 @@ type NavItem = {
 const navItems: NavItem[] = [
   { to: "/admin", icon: LayoutDashboard, label: "Dashboard", end: true, roles: ["supervisor", "verzekering"] },
   { to: "/admin/crm", icon: Users, label: "CRM", showTakenBadge: true, roles: ["supervisor", "verzekering"] },
+  { to: "/admin/klanten", icon: Building2, label: "Klanten & contracten", roles: ["supervisor", "verzekering"] },
   { to: "/admin/activiteiten", icon: Activity, label: "Activiteiten", roles: ["supervisor"] },
   { to: "/admin/dba-checks", icon: ShieldCheck, label: "Wet DBA", roles: ["supervisor", "verzekering"] },
   { to: "/admin/marketing", icon: Share2, label: "Website & Blog", roles: ["supervisor", "marketing"] },
