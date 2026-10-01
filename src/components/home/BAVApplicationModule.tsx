@@ -343,7 +343,9 @@ export function BAVApplicationModule() {
               Je aanvraag is ontvangen
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-              We beoordelen je aanvraag en nemen binnen 1 werkdag contact met je op. Je ontvangt een bevestiging per e-mail, met je SEPA-machtiging als PDF. Na goedkeuring ontvang je je polis en een uitnodiging voor Mijn ZP.
+              {submissionResult.handmatig
+                ? "We hebben je aanvraag ontvangen. Een adviseur neemt binnen 1 werkdag contact met je op om alles met je af te ronden. Je ontvangt een bevestiging per e-mail, met je SEPA-machtiging als PDF."
+                : "We beoordelen je aanvraag en nemen binnen 1 werkdag contact met je op. Je ontvangt een bevestiging per e-mail, met je SEPA-machtiging als PDF. Na goedkeuring ontvang je je polis en een uitnodiging voor Mijn ZP."}
             </p>
             <div className="mt-6 space-y-1 text-sm">
               <p><span className="font-semibold">Referentie:</span> {submissionResult.reference}</p>
