@@ -367,13 +367,13 @@ function routeSourceFiles(root: string): Map<string, string[]> {
   for (const m of app.matchAll(/<Route (index|path="([^"]*)") element=\{<(\w+)/g)) {
     const routePath = m[1] === "index" ? "/" : `/${m[2]}`;
     const file = imports.get(m[3]);
-    if (file && !map.has(routePath)) map.set(routePath, [file, "src/config/seoRoutes.ts"]);
+    if (file && !map.has(routePath)) map.set(routePath, [file]);
   }
   return map;
 }
 
 /** Script dat op de terugval-HTML (homepage-bestand op een onbekend pad) noindex zet. */
-const SOFT_404_GUARD = `<script>(function(){var p=location.pathname.replace(/\\/+$/,"")||"/";if(p!=="/"){var c=document.querySelector('link[rel="canonical"]');if(c)c.remove();var m=document.createElement("meta");m.name="robots";m.content="noindex";document.head.appendChild(m);}})();</script>`;
+const SOFT_404_GUARD = `<script>(function(){var p=location.pathname.replace(/\\/+$/,"")||"/";if(p!=="/"){var c=document.querySelector('link[rel="canonical"]');if(c)c.remove();var m=document.querySelector('meta[name="robots"]');if(!m){m=document.createElement("meta");m.name="robots";document.head.appendChild(m);}m.content="noindex";}})();</script>`;
 
 interface PublishedArticle {
   slug: string;
