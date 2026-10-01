@@ -319,7 +319,6 @@ async function fetchPublishedArticles(env: Record<string, string>): Promise<Publ
     `&is_published=eq.true&order=published_at.desc&limit=1000`;
   // Altijd vers uit de database: geen HTTP-cache tussen builds.
   const res = await fetch(url, {
-    cache: "no-store",
     headers: { apikey: key, Authorization: `Bearer ${key}`, "Cache-Control": "no-cache" },
   });
   if (!res.ok) throw new Error(`REST ${res.status}: ${(await res.text()).slice(0, 200)}`);
