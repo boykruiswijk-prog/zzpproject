@@ -35,3 +35,10 @@
 - [x] Kopbalk met korte NIEUW-badge en éénregelige onderdelen op 1280–1920 px
 - [x] Screenshots op 390, 1280 en 1440 px controleren
 - [x] Build, tests en typecontrole uitvoeren; niet publiceren
+
+## Zeker (chatassistent)
+- [x] Eval 25+ vragen, prompt verbeteren tot alles slaagt
+- [x] Bypass alleen rate limit; tonen dat zonder secret normale limiet geldt
+- [x] Eindtest terugbelverzoek (is_test, preview-mail)
+- [x] Screenshots 390/1280/1440 (open, dicht, cookiebanner, formulier)
+- [x] Build, vitest, typecheck, deno check, security-scan, bundelgrootte

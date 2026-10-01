@@ -9,7 +9,7 @@ export function renderZekerKennis(): string {
     `export const ZEKER_KENNIS = ${JSON.stringify(bouwZekerKennis(), null, 2)} as const;\n`;
 }
 
-if (import.meta.main) {
+if ((import.meta as ImportMeta & { main?: boolean }).main) {
   writeFileSync("supabase/functions/_shared/zekerKennis.generated.ts", renderZekerKennis());
   console.log("zekerKennis.generated.ts bijgewerkt");
 }

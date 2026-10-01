@@ -25,7 +25,7 @@ export interface ZekerKennis {
 }
 
 export function bouwZekerKennis(): ZekerKennis {
-  const ci = (nl as Record<string, Record<string, string>>).collectieveInkoop;
+  const ci = (nl as unknown as Record<string, Record<string, string>>).collectieveInkoop;
   const docs = new Map<string, string>();
   for (const b of branches) for (const d of b.documenten) docs.set(d.path, `${d.titel} (${b.naam})`);
   for (const d of [...algemeneBavDocumenten, ...zpZakenEigenDocumenten]) docs.set(d.path, d.titel);
