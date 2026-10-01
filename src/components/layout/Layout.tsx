@@ -17,7 +17,7 @@ export function Layout({ children }: LayoutProps) {
     <div className="min-h-screen flex flex-col">
       <SiteSchemaMarkup />
       <Header />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 pb-[calc(56px+env(safe-area-inset-bottom))] md:pb-0">{children}</main>
       <section className="bg-secondary/40 border-t border-border/40 py-10">
         <div className="container-wide">
           <TrustSignalsStrip />
