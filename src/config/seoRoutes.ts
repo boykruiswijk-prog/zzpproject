@@ -182,7 +182,7 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/over-ons",
-    title: "Over ZP Zaken | Direct en onafhankelijk sinds 2014",
+    title: "Over ons | Direct en onafhankelijk sinds 2014",
     description:
       `ZP Zaken is opgericht in 2014 door Boy Kruiswijk. Meer dan ${SITE_CONFIG.klantenAantalTekst} tevreden zzp'ers, AFM geregistreerd, Kifid aangesloten. Persoonlijk gesprek zonder callcenter.`,
     h1: "Over ZP Zaken",
