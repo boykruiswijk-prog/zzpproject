@@ -52,6 +52,9 @@ Deno.serve(async (req) => {
     const { data: ok } = await admin.rpc("verify_cron_secret", { p_secret: cronSecret });
     if (!ok) return json({ error: "geen_toegang" }, 401);
     trigger = "cron";
+    // Cron draait om 04:00 en 05:00 UTC; alleen de run die om 06:00 Nederlandse tijd valt telt (zomer/winter).
+    const uurNL = Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Amsterdam", hour: "2-digit", hour12: false }).format(new Date()));
+    if (uurNL !== 6) return json({ overgeslagen: true, uur_nl: uurNL });
   } else {
     const intern = Deno.env.get("INTERNAL_FUNCTION_SECRET");
     const gegeven = req.headers.get("x-internal-secret");
