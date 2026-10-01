@@ -3,6 +3,7 @@ import { SITE_CONFIG } from "@/config/site";
 import { useEffect } from "react";
 import { SEOHead } from "@/components/SEOHead";
 import { legacyRedirects } from "@/config/legacyRedirects";
+import { supabase } from "@/integrations/supabase/client";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Shield, FileText, Phone, HelpCircle, ArrowRight } from "lucide-react";
@@ -56,6 +57,12 @@ const NotFound = () => {
   useEffect(() => {
     if (!redirect) {
       console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+      // 404-monitoring: gemiste oude URL's verschijnen in Beheer > Niet-gevonden pagina's.
+      void supabase.rpc("log_not_found", {
+        _pad: location.pathname,
+        _referrer: typeof document !== "undefined" ? document.referrer || null : null,
+        _user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+      });
       if (typeof window !== "undefined" && typeof window.gtag === "function") {
         window.gtag("event", "page_not_found", {
           event_category: "error",
