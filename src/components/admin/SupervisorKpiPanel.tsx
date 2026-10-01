@@ -110,7 +110,8 @@ export function SupervisorKpiPanel() {
   // MRR-indicatie
   const mrrMaand = actief
     .filter((l) => l.betaalritme === "maandelijks")
-    .reduce((sum, l) => sum + (Number(l.exact_invoice_amount) || 0), 0);
+    // Eerste maandfactuur is naar rato; MRR rekent met de premie per maand.
+    .reduce((sum, l) => sum + (l.exact_invoice_amount ? 55 : 0), 0);
   const mrrJaar = actief
     .filter((l) => l.betaalritme === "jaarlijks")
     .reduce((sum, l) => sum + (Number(l.exact_invoice_amount) || 0) / 12, 0);
