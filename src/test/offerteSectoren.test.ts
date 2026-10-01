@@ -110,7 +110,7 @@ describe("activatiecheck handmatige acceptatie", () => {
   it("markering zonder bevestiging → 409", () => {
     const r = controleerHandmatigeAcceptatie({ handmatige_acceptatie: { reden: "x", sector: "Zorg" } }, { lead_id: "a" });
     expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.status).toBe(409);
+    expect((r as { status?: number }).status).toBe(409);
     expect(controleerHandmatigeAcceptatie({ handmatige_acceptatie: {} }, { handmatige_acceptatie_bevestigd: "true" }).ok).toBe(false);
   });
   it("markering met bevestiging → ok", () => {
