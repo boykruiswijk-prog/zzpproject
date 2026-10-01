@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { WIZARD_SECTOREN, isAlleenOfferteSector } from "@/data/sectorVerzekeringskaart";
-import { ALLEEN_OFFERTE_SECTOREN, isAlleenOfferteSector as backendIsAlleenOfferte } from "../../supabase/functions/_shared/sectorRegels";
+import { ALLEEN_OFFERTE_SECTOREN, bodyIsAlleenOfferte, isAlleenOfferteSector as backendIsAlleenOfferte } from "../../supabase/functions/_shared/sectorRegels";
 import { ADMIN_BRANCHES, brancheVoorSector } from "@/data/sectorBranche";
 
 const bron = readFileSync(resolve(__dirname, "../pages/OffertePage.tsx"), "utf8");
@@ -62,5 +62,23 @@ describe("alleen-offerte sectoren", () => {
   it("frontend- en backendlijst zijn gelijk", () => {
     const fe = WIZARD_SECTOREN.filter((s) => s.alleenOfferte).map((s) => ({ id: s.id, label: s.label }));
     expect(fe).toEqual([...ALLEEN_OFFERTE_SECTOREN]);
+  });
+});
+
+describe("process-bav-wizard vangnet", () => {
+  const wizardBody = (sectorId: string) => ({
+    gekozen_pakket: "combi", betaalwijze: "jaarlijks", ingangsdatum: "2026-10-01",
+    voornaam: "Test", achternaam: "Klant", email: "test@zpzaken.nl", bedrijfsnaam: "Test BV",
+    beroep: "Verpleegkundige",
+    // Exact zoals BAVApplicationModule het opbouwt: het label.
+    sector: WIZARD_SECTOREN.find((s) => s.id === sectorId)?.label ?? null,
+  });
+  it("weigert Zorg en Bouw & techniek zoals de wizard ze verstuurt", () => {
+    expect(bodyIsAlleenOfferte(wizardBody("zorg"))).toBe(true);
+    expect(bodyIsAlleenOfferte(wizardBody("bouw"))).toBe(true);
+    expect(bodyIsAlleenOfferte({ extra_data: { sector: "zorg" } })).toBe(true);
+  });
+  it("laat de andere sectoren door", () => {
+    for (const s of WIZARD_SECTOREN.filter((s) => !s.alleenOfferte)) expect(bodyIsAlleenOfferte(wizardBody(s.id))).toBe(false);
   });
 });
