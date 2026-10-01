@@ -197,6 +197,20 @@
       "when": 1790866194837,
       "tag": "0027_opzegging_status_afgerond",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1790866644194,
+      "tag": "0028_opzegging_creditnota",
+      "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1790866685145,
+      "tag": "0029_opzegging_credit_resultaat_fix",
+      "breakpoints": true
     }
   ]
 }

@@ -11,6 +11,7 @@ export type CustomerInvoice = {
   periode_eind: string | null;
   bedrag: number;
   omschrijving: string;
+  soort?: "factuur" | "creditnota";
 };
 
 export type CustomerInvoicesResult = { invoices: CustomerInvoice[]; unavailable: boolean };

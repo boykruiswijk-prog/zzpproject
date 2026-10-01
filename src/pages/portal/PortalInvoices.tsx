@@ -88,7 +88,7 @@ export default function PortalInvoices() {
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="font-medium">{inv.factuurnummer}</p>
-                  {inv.bedrag < 0 && <Badge variant="secondary">Creditnota</Badge>}
+                  {(inv.soort === "creditnota" || inv.bedrag < 0) && <Badge variant="secondary">Creditnota</Badge>}
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">
                   {formatDateLongNL(inv.datum)}

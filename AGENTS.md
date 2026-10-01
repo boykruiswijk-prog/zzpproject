@@ -26,3 +26,4 @@
 - Mijn ZP-facturen: accounts via _shared/klantAccounts.ts, PDF via _shared/exactFactuurPdf.ts (Documents → bijlage). Waarom: XMLDownload werkt niet in deze administratie.
 - Dashboardtellers komen uitsluitend uit RPC dashboard_tellers (klanten/contracten uit klant_contracten, leads uit leads). Waarom: één definitie zonder dubbele bronnen.
 - Opzeggingen worden bij insert gekoppeld door bepaal_opzegging_koppeling (e-mail → contractnummer → KvK/bedrijfsnaam als voorstel); contracten wijzigen alleen via RPC verwerk_opzegging. Waarom: nooit automatisch een contract beëindigen.
+- Creditnota's bij opzegging: verwerk_opzegging plant per contractregel/opzegging één rij in factuur_credit_planning (sleutel ZPC-…); bedrag via _shared/creditOpzegging.ts (hergebruikt calculatePauzeCredit); factuur-planner maakt alleen met facturatie_actief een concept (Type 8021). Waarom: één naar-rato-regel en één factuurroute.

@@ -1,3 +1,4 @@
+import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { AdminLayout } from "@/components/admin/AdminLayout";
@@ -22,6 +23,12 @@ const PLANNING_LABEL: Record<string, string> = {
   verwijderd_in_exact: "Verwijderd in Exact", te_laat: "Na 5 werkdagen niet verwerkt", fout: "Fout", vervangen: "Vervangen",
 };
 
+const CREDIT_LABEL: Record<string, string> = {
+  te_maken: "Klaar om te maken", concept_niet_verwerkt: "Wacht: factuur nog concept", geen_planner_factuur: "Handmatig beoordelen",
+  geclaimd: "Bezig", concept_aangemaakt: "Concept in Exact", verwerkt: "Verwerkt", verwijderd_in_exact: "Verwijderd in Exact", te_laat: "Te laat verwerkt", fout: "Fout",
+};
+const vandaagIso = () => new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Amsterdam" }).format(new Date());
+
 export default function Facturatieplanning() {
   const { role } = useAuth();
   const isAdmin = role === "admin";
@@ -34,6 +41,8 @@ export default function Facturatieplanning() {
   const [mapping, setMapping] = useState<any[]>([]);
   const [meldingen, setMeldingen] = useState<any[]>([]);
   const [runs, setRuns] = useState<any[]>([]);
+  const [creditLijst, setCreditLijst] = useState<any[]>([]);
+  const { toonTest } = useToonTestrecords();
 
   async function laadVast() {
     const [c, m, p, r] = await Promise.all([
@@ -43,6 +52,8 @@ export default function Facturatieplanning() {
       supabase.from("factuur_planner_runs").select("*").order("gestart_op", { ascending: false }).limit(5),
     ]);
     setCfg(c.data as any); setMapping(m.data ?? []); setMeldingen(p.data ?? []); setRuns(r.data ?? []);
+    const { data: cr } = await supabase.from("factuur_credit_planning").select("*").order("aangemaakt_op", { ascending: false });
+    setCreditLijst(cr ?? []);
   }
   async function proefrun() {
     setLaden(true);
@@ -72,6 +83,11 @@ export default function Facturatieplanning() {
   async function schakel(aan: boolean) {
     const { error } = await supabase.rpc("zet_facturatie_actief", { _aan: aan });
     if (error) toast({ title: "Niet gewijzigd", description: error.message, variant: "destructive" });
+    laadVast();
+  }
+  async function herberekenCredits() {
+    const { error } = await supabase.functions.invoke("factuur-planner", { body: { actie: "proefrun", van: vandaagIso(), tot: vandaagIso() } });
+    if (error) toast({ title: "Herberekenen mislukt", description: error.message, variant: "destructive" });
     laadVast();
   }
   async function opnieuw(id: string) {
@@ -158,6 +174,28 @@ export default function Facturatieplanning() {
                   <td className="py-1">{["verwijderd_in_exact", "te_laat", "fout"].includes(p.status) && <Button size="sm" variant="outline" onClick={() => opnieuw(p.id)}>Opnieuw inplannen</Button>}</td>
                 </tr>))}</tbody></table></div>
             )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0">
+            <CardTitle className="text-base">Creditnota's bij opzegging</CardTitle>
+            <Button size="sm" variant="outline" onClick={herberekenCredits}>Herbereken (proef)</Button>
+          </CardHeader>
+          <CardContent className="overflow-x-auto text-sm">
+            {creditLijst.filter((c) => toonTest || !c.is_test).length === 0 ? <p className="text-muted-foreground">Geen creditnota's gepland.</p> : (
+              <table className="w-full min-w-[800px]"><thead><tr className="text-left text-muted-foreground"><th className="py-1 pr-2 font-normal">Sleutel</th><th className="py-1 pr-2 font-normal">Bij factuur</th><th className="py-1 pr-2 font-normal">Periode</th><th className="py-1 pr-2 text-right font-normal">Bedrag</th><th className="py-1 pr-2 font-normal">Status</th><th className="py-1 font-normal">Melding</th></tr></thead>
+                <tbody>{creditLijst.filter((c) => toonTest || !c.is_test).map((c) => (
+                  <tr key={c.id} className="border-t align-top">
+                    <td className="py-1 pr-2 whitespace-nowrap">{c.creditsleutel}{c.is_test && <Badge variant="outline" className="ml-1">Test</Badge>}</td>
+                    <td className="py-1 pr-2">{c.origineel_factuurnummer ?? "—"}</td>
+                    <td className="py-1 pr-2 whitespace-nowrap">{formatDateNL(c.credit_vanaf)} t/m {formatDateNL(c.credit_tm)}</td>
+                    <td className="py-1 pr-2 text-right whitespace-nowrap">{c.bedrag != null ? formatEuro(Number(c.bedrag)) : "—"}</td>
+                    <td className="py-1 pr-2">{CREDIT_LABEL[c.status] ?? c.status}</td>
+                    <td className="py-1 max-w-[320px]">{c.melding ?? c.foutmelding ?? ""}</td>
+                  </tr>))}</tbody></table>
+            )}
+            <p className="mt-2 text-xs text-muted-foreground">Naar rato per dag over de al gefactureerde periode na de einddatum. Met de hoofdschakelaar uit wordt niets naar Exact gestuurd.</p>
           </CardContent>
         </Card>
 

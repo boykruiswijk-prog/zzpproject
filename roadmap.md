@@ -54,3 +54,4 @@
 - [x] Fase 2: Mijn ZP Facturen (verwerkt, vanaf 17-10-2026, geen betaalstatus, PDF via Exact-documenten)
 - [ ] Fase 2: hervat-factuur in polis-lifecycle via planningstabel laten lopen — wacht op akkoord
 - [x] Boy-vervolg: AFAS uit UI, banner weg, dashboard één bron (dashboard_tellers), CRM-doorklik, opzegkoppeling + "Opzegging verwerken"
+- [x] Creditnota bij opzegging (concept, gekoppeld aan factuurnummer, onder hoofdschakelaar, Mijn ZP)
