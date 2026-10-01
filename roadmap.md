@@ -37,8 +37,8 @@
 - [x] Build, tests en typecontrole uitvoeren; niet publiceren
 
 ## Zeker (chatassistent)
-- [ ] Eval 25+ vragen, prompt verbeteren tot alles slaagt
-- [ ] Bypass alleen rate limit; tonen dat zonder secret normale limiet geldt
-- [ ] Eindtest terugbelverzoek (is_test, preview-mail)
-- [ ] Screenshots 390/1280/1440 (open, dicht, cookiebanner, formulier)
-- [ ] Build, vitest, typecheck, deno check, security-scan, bundelgrootte
+- [x] Eval 25+ vragen, prompt verbeteren tot alles slaagt
+- [x] Bypass alleen rate limit; tonen dat zonder secret normale limiet geldt
+- [x] Eindtest terugbelverzoek (is_test, preview-mail)
+- [x] Screenshots 390/1280/1440 (open, dicht, cookiebanner, formulier)
+- [x] Build, vitest, typecheck, deno check, security-scan, bundelgrootte
