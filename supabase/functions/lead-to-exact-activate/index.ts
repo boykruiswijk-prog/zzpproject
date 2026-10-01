@@ -1,6 +1,7 @@
 // Lead-to-Exact Fase 1: maakt Account + Contact + BankAccount + SEPA-mandaat
 // aan in Exact divisie 4401707 (ZP Zaken B.V.) op basis van een lead.
 // Doet GEEN factuur — fase 2.
+import { controleerHandmatigeAcceptatie } from "../_shared/sectorRegels.ts";
 import { getBavGlAccountId } from "../_shared/exactGl.ts";
 import { ensureValidToken } from "../_shared/exactToken.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -367,6 +368,29 @@ Deno.serve(async (req) => {
   const { data: lead, error: leadErr } = await supabase
     .from("leads").select("*").eq("id", leadId).maybeSingle();
   if (leadErr || !lead) return json({ success: false, error: "lead_not_found" }, 404);
+
+  // ── Handmatige acceptatie (zorg/bouw): alleen activeren na bewuste bevestiging ──
+  if (action === "activate" && !lead.exact_account_id) {
+    const check = controleerHandmatigeAcceptatie(lead.extra_data, body);
+    if (!check.ok) return json({ success: false, error: check.error, reason: "handmatige_acceptatie_niet_bevestigd" }, check.status);
+    if (check.gemarkeerd) {
+      const extra = (lead.extra_data ?? {}) as Record<string, unknown>;
+      const ha = (extra.handmatige_acceptatie ?? {}) as Record<string, unknown>;
+      const nieuw = { ...extra, handmatige_acceptatie: { ...ha, bevestigd_door: user.id, bevestigd_op: new Date().toISOString() } };
+      await supabase.from("leads").update({ extra_data: nieuw }).eq("id", leadId);
+      lead.extra_data = nieuw;
+      try {
+        await supabase.from("activiteiten_log").insert({
+          actie_type: "handmatige_acceptatie_bevestigd",
+          omschrijving: `Handmatige acceptatie bevestigd (sector ${String(ha.sector ?? "onbekend")}) vóór activatie`,
+          uitgevoerd_door: user.id,
+          uitgevoerd_door_naam: user.email ?? null,
+          lead_id: leadId,
+          klant_email: (lead.email ?? "").toLowerCase().trim() || null,
+        });
+      } catch (_e) { /* logfout blokkeert niet */ }
+    }
+  }
 
   // ── Exact config (gedeeld door beide acties) ──
   const { data: config } = await supabase.from("exact_config").select("*").maybeSingle();
