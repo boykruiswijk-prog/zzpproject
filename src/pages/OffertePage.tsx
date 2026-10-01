@@ -1,5 +1,6 @@
 import { seoRoute } from "@/config/seoRoutes";
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { usePdokAdres } from "@/hooks/usePdokAdres";
 import { AdresGevonden } from "@/components/AdresGevonden";
 import { normaliseerPostcode } from "@/lib/adresNormalisatie";
@@ -32,7 +33,7 @@ import { useToast } from "@/hooks/use-toast";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { useFormGuard, submitPublicForm, PublicFormError } from "@/lib/antiSpam";
 import { HoneypotField } from "@/components/shared/HoneypotField";
-import { WIZARD_SECTOREN } from "@/data/sectorVerzekeringskaart";
+import { WIZARD_SECTOREN, isAlleenOfferteSector } from "@/data/sectorVerzekeringskaart";
 import { brancheVoorSector } from "@/data/sectorBranche";
 
 const SEO = seoRoute("/offerte");
@@ -57,6 +58,9 @@ const isNlPhone = (v: string) => {
   return /^(\+31|0031|0)[1-9][0-9]{8}$/.test(clean);
 };
 
+/** Overig, zorg en bouw worden altijd handmatig beoordeeld. */
+const vereistHandmatig = (id: string) => id === "overig" || isAlleenOfferteSector(id);
+
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
   return (
@@ -76,17 +80,21 @@ export default function OffertePage() {
   const guard = useFormGuard();
   const [errors, setErrors] = useState<Errors>({});
 
+  // Voorinvullen vanuit de afsluitwizard (?sector=&voornaam=…); alleen basisgegevens, nooit IBAN.
+  const [searchParams] = useSearchParams();
+  const qp = (k: string, max = 120) => (searchParams.get(k) ?? "").trim().slice(0, max);
+  const qpSector = qp("sector");
   const [form, setForm] = useState({
-    voornaam: "",
-    achternaam: "",
-    email: "",
-    telefoon: "",
-    naam_organisatie: "",
+    voornaam: qp("voornaam"),
+    achternaam: qp("achternaam"),
+    email: qp("email", 254),
+    telefoon: qp("telefoon", 20),
+    naam_organisatie: qp("bedrijfsnaam"),
     adres_land: "NL",
     adres_postcode: "",
     adres_huisnummer: "",
-    kvk_nummer: "",
-    branche: "",
+    kvk_nummer: qp("kvk").replace(/\D/g, "").slice(0, 8),
+    branche: WIZARD_SECTOREN.some((s) => s.id === qpSector) ? qpSector : "",
     belangrijkste_opdrachtgever: "",
     omschrijving_werkzaamheden: "",
     aantal_medewerkers: "1",
@@ -168,7 +176,7 @@ export default function OffertePage() {
           ingangsdatum: form.gewenste_startdatum || null,
           opmerkingen: form.omschrijving_werkzaamheden.trim(),
           vereist_handmatige_beoordeling:
-            form.branche === "overig" || form.aantal_medewerkers === "Meer dan 3",
+            vereistHandmatig(form.branche) || form.aantal_medewerkers === "Meer dan 3",
           extra_data: extra as never,
         }, guard);
 
@@ -424,7 +432,7 @@ export default function OffertePage() {
                   </SelectContent>
                 </Select>
                 <FieldError message={errors.branche} />
-                {form.branche === "overig" && (
+                {vereistHandmatig(form.branche) && (
                   <p className="text-xs text-muted-foreground mt-2">
                     Voor branches buiten ons standaard aanbod beoordelen we je aanvraag handmatig.
                   </p>
