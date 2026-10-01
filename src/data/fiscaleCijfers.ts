@@ -92,6 +92,11 @@ const BRON_BELASTINGDIENST_KILOMETERVERGOEDING: FiscaleBron = {
   url: "https://www.belastingdienst.nl/wps/wcm/connect/nl/loonheffingen/",
 };
 
+const BRON_FISIN_2026: FiscaleBron = {
+  naam: "Belastingdienst — Fiscale informatie 2026 (fisin2026)",
+  url: "https://www.belastingdienst.nl/fisin2026",
+};
+
 /** Voorbehoud dat geldt voor beide kilometerbedragen 2026. */
 const VOORBEHOUD_TIJDELIJK_BELEIDSBESLUIT =
   "Het beleidsbesluit is tijdelijk en vervalt per 1 januari 2027; de structurele verankering moet nog via het Belastingplan 2027 door de Tweede en Eerste Kamer.";
@@ -165,6 +170,14 @@ export const fiscaleCijfers = {
     bron: BRON_BELASTINGDIENST_ONDERNEMERSAFTREK,
     historie: { 2024: 3750, 2025: 2470 },
     aangekondigd: { 2027: 900 },
+  },
+  zelfstandigenaftrekAowLeeftijd: {
+    belastingjaar: 2026,
+    waarde: 600,
+    eenheid: "euro",
+    label: "Zelfstandigenaftrek bij AOW-leeftijd",
+    toelichting: "Zelfstandigenaftrek voor ondernemers die aan het begin van het jaar de AOW-leeftijd hebben bereikt.",
+    bron: BRON_FISIN_2026,
   },
   startersaftrek: {
     belastingjaar: 2026,
@@ -470,6 +483,14 @@ export const fiscaleCijfers = {
       "Percentage van de premiegrondslag (pensioengevend inkomen min AOW-franchise) dat je fiscaal voordelig voor je pensioen mag inleggen. Verhoogd door de Wet toekomst pensioenen.",
     bron: BRON_CAP_PENSIOEN_2026,
     historie: { 2022: 13.3 },
+  },
+  maximaleReserveringsruimte: {
+    belastingjaar: 2026,
+    waarde: 42753,
+    eenheid: "euro",
+    label: "Maximale reserveringsruimte",
+    toelichting: "Maximaal bedrag aan niet-benutte jaarruimte uit voorgaande jaren dat je in een jaar mag inhalen.",
+    bron: BRON_FISIN_2026,
   },
 
 
