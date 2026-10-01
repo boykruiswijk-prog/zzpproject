@@ -260,7 +260,8 @@ Deno.serve(async (req) => {
     const subjBase = (SUBJECTS[type] || ((r: string) => `Nieuwe lead (${type}) via zpzaken.nl - ${r}`))(reference || leadId || "");
     const subject = isProd ? subjBase : `[PREVIEW] ${subjBase}`;
 
-    const adminBase = (Deno.env.get("ADMIN_BASE_URL") || "https://zpzaken.nl").replace(/\/$/, "");
+    // Deeplinks in teammails altijd naar het productiedomein (live sinds 1-10-2026).
+    const adminBase = isProd ? "https://zpzaken.nl" : (Deno.env.get("ADMIN_BASE_URL") || "https://zpzaken.nl").replace(/\/$/, "");
     const deeplink = leadId ? `${adminBase}/admin/leads/${leadId}` : null;
 
     if (!resend) {
