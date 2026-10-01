@@ -4,6 +4,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2.39.0";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
 import { normaliseerAdres } from "../_shared/adresNormalisatie.ts";
+import { samenvattingVoorTeam } from "../_shared/zeker.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -85,12 +86,32 @@ Deno.serve(async (req) => {
       if (row[col] !== undefined) payload[col] = clean(row[col]);
     }
 
-    // E-mail is voor elk formulier verplicht behalve de suggestiebox.
+    // Terugbelverzoek vanuit chatassistent Zeker: sessie moet bestaan; samenvatting en
+    // testmarkering bepaalt de server uit de opgeslagen chat, nooit de browser.
+    const extraIn = (payload.extra_data && typeof payload.extra_data === "object") ? payload.extra_data as Record<string, unknown> : null;
+    const chatSessieId = table === "leads" && extraIn?.bron === "chat-zeker" && typeof extraIn.chat_sessie_id === "string" &&
+      /^[0-9a-f-]{36}$/i.test(extraIn.chat_sessie_id) ? extraIn.chat_sessie_id : null;
+    let chatSessie: { id: string; is_test: boolean } | null = null;
+    if (table === "leads" && extraIn?.bron === "chat-zeker") {
+      if (!chatSessieId) return json({ success: false, error: "Ongeldige aanvraag." }, 400);
+      const { data: s } = await supabase.from("chat_sessions").select("id, is_test, lead_id").eq("id", chatSessieId).maybeSingle();
+      if (!s) return json({ success: false, error: "Ongeldige aanvraag." }, 400);
+      if (s.lead_id) return json({ success: true, id: s.lead_id, already: true });
+      chatSessie = s;
+      const tel = String(payload.telefoon ?? "").replace(/[^\d+]/g, "");
+      if (tel.replace(/\D/g, "").length < 10) return json({ success: false, error: "Vul een geldig telefoonnummer in." }, 400);
+      if (extraIn.toestemming !== true) return json({ success: false, error: "Toestemming is verplicht." }, 400);
+      payload.type = "contact";
+    }
+
+    // E-mail is voor elk formulier verplicht behalve de suggestiebox (en optioneel bij een chat-terugbelverzoek).
     const email = typeof payload.email === "string" ? payload.email.toLowerCase() : "";
     if (table === "collective_suggestions") {
       if (email && !EMAIL_RE.test(email)) return json({ success: false, error: "Ongeldig e-mailadres." }, 400);
       if (!payload.suggestie) return json({ success: false, error: "Vul een suggestie in." }, 400);
       if (email) payload.email = email;
+    } else if (chatSessie && !email) {
+      payload.email = "";
     } else {
       if (!EMAIL_RE.test(email)) return json({ success: false, error: "Ongeldig e-mailadres." }, 400);
       payload.email = email;
@@ -118,6 +139,17 @@ Deno.serve(async (req) => {
       if (extra && typeof extra.adres_postcode === "string") extra.adres_postcode = n.postcode || normaliseerAdres({ postcode: extra.adres_postcode, land }).postcode;
     }
 
+    let chatSamenvatting = "";
+    if (chatSessie) {
+      const { data: rijen } = await supabase.from("chat_messages").select("rol, tekst").eq("sessie_id", chatSessie.id).order("created_at").limit(80);
+      chatSamenvatting = samenvattingVoorTeam((rijen ?? []) as any);
+      const extra = payload.extra_data as Record<string, unknown>;
+      const moment = String(extra.voorkeursmoment ?? "").slice(0, 100);
+      payload.extra_data = { bron: "chat-zeker", chat_sessie_id: chatSessie.id, voorkeursmoment: moment, toestemming: true, toestemming_op: new Date().toISOString() };
+      payload.opmerkingen = `Terugbelverzoek via chatassistent Zeker.\nVoorkeursmoment: ${moment || "-"}\nVraag: ${String(payload.opmerkingen ?? "-").slice(0, 1000)}\n\nSamenvatting chat:\n${chatSamenvatting}`;
+      payload.is_test = chatSessie.is_test;
+    }
+
     if (table === "collective_signups" && !payload.naam) {
       return json({ success: false, error: "Naam is verplicht." }, 400);
     }
@@ -126,6 +158,33 @@ Deno.serve(async (req) => {
     if (error) {
       console.error(`submit-public-form: insert in ${table} mislukt:`, error.message);
       return json({ success: false, error: "Opslaan mislukt. Probeer het opnieuw." }, 500);
+    }
+
+    if (chatSessie && data?.id) {
+      await supabase.from("chat_sessions").update({ lead_id: data.id }).eq("id", chatSessie.id);
+      // Teammail via de bestaande notificatieroute (zelfde productie/preview-regels; Origin wordt doorgegeven).
+      try {
+        const secret = Deno.env.get("INTERNAL_FUNCTION_SECRET") ?? "";
+        await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-lead-notification`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json", "x-internal-secret": secret,
+            ...(req.headers.get("origin") ? { origin: req.headers.get("origin")! } : {}),
+            Authorization: `Bearer ${Deno.env.get("SUPABASE_ANON_KEY") ?? ""}`,
+          },
+          body: JSON.stringify({
+            type: "terugbelverzoek-chat", leadId: data.id, reference: `${payload.voornaam} ${payload.achternaam}`,
+            userEmail: payload.email || null,
+            fields: {
+              naam: `${payload.voornaam} ${payload.achternaam}`, telefoon: payload.telefoon, email: payload.email || "-",
+              voorkeursmoment: (payload.extra_data as any).voorkeursmoment || "-", bron: "chat-zeker",
+              samenvatting_chat: chatSamenvatting || "-",
+            },
+          }),
+        });
+      } catch (e) {
+        console.error("submit-public-form: teammail chat mislukt", e instanceof Error ? e.message : e);
+      }
     }
 
     return json({ success: true, id: data?.id ?? payload.id ?? null });
