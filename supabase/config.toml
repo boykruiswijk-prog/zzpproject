@@ -1,75 +1,51 @@
 project_id = "eugkavokktjwpqaqlwsj"
- 
- [functions.scrape-articles]
- verify_jwt = false
 
- [functions.genereer-artikel]
- verify_jwt = false
-
- [functions.export-excel]
- verify_jwt = false
-
- [functions.generate-certificate]
- verify_jwt = false
-
- [functions.generate-invoice]
- verify_jwt = false
-
-
-
- [functions.analyze-dba]
- verify_jwt = false
-
- # Publieke aanroep alleen met { type, lead_id }; inhoud komt uit de database,
- # eenmalig per lead. Interne aanroep via x-internal-secret.
- [functions.send-notification]
- verify_jwt = false
-
- [functions.process-bav-wizard]
- verify_jwt = false
-
- [functions.exact-oauth-callback]
- verify_jwt = false
-
- [functions.exact-refresh-token]
- verify_jwt = false
-
- [functions.polis-lifecycle]
- verify_jwt = false
-
- # Cron-aanroep met CRON_SECRET (header x-cron-secret of ?secret=).
- [functions.polis-reminder-cron]
- verify_jwt = false
-
- [functions.calculate-pauze-preview]
- verify_jwt = true
-
- [functions.monthly-invoices-cron]
- verify_jwt = false
-
- [functions.send-portal-magiclink]
- verify_jwt = false
-
- # Externe webhook: verificatie via OTENTICA_WEBHOOK_SECRET in de functie zelf.
- [functions.otentica-webhook]
- verify_jwt = false
-
- [functions.sitemap]
- verify_jwt = false
-
- [functions.wp-import]
- verify_jwt = false
-
- # Publieke formulieren: eigen bescherming (honeypot, invultijd, IP-limiet).
- [functions.submit-public-form]
- verify_jwt = false
-
- # Inlogbescherming: houdt mislukte pogingen bij, moet vóór login bereikbaar zijn.
- [functions.login-guard]
- verify_jwt = false
-
-[functions.exact-email-bulk]
-verify_jwt = false
-
-[functions.portal-invite-login]
-verify_jwt = false
+[functions]
+  [functions.analyze-dba]
+    verify_jwt = false
+  [functions.auth-email-hook]
+    verify_jwt = false
+  [functions.calculate-pauze-preview]
+    verify_jwt = true
+  [functions.exact-email-bulk]
+    verify_jwt = false
+  [functions.exact-oauth-callback]
+    verify_jwt = false
+  [functions.exact-refresh-token]
+    verify_jwt = false
+  [functions.export-excel]
+    verify_jwt = false
+  [functions.generate-certificate]
+    verify_jwt = false
+  [functions.generate-invoice]
+    verify_jwt = false
+  [functions.genereer-artikel]
+    verify_jwt = false
+  [functions.login-guard]
+    verify_jwt = false
+  [functions.monthly-invoices-cron]
+    verify_jwt = false
+  [functions.otentica-webhook]
+    verify_jwt = false
+  [functions.polis-lifecycle]
+    verify_jwt = false
+  [functions.polis-reminder-cron]
+    verify_jwt = false
+  [functions.portal-invite-login]
+    verify_jwt = false
+  [functions.process-bav-wizard]
+    verify_jwt = false
+  [functions.process-email-queue]
+    verify_jwt = true
+  [functions.scrape-articles]
+    verify_jwt = false
+  [functions.send-notification]
+    verify_jwt = false
+  [functions.send-portal-magiclink]
+    verify_jwt = false
+  [functions.sitemap]
+    verify_jwt = false
+  [functions.submit-public-form]
+    verify_jwt = false
+  [functions.wp-import]
+    verify_jwt = false
