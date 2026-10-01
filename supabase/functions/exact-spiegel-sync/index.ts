@@ -2,7 +2,7 @@
 // Doet uitsluitend GET-verzoeken naar Exact (afgedwongen in exactGet). Schrijft alleen in eigen spiegeltabellen,
 // ondernemingen.exact_* (via exact_koppel_accounts) en één regel per run in exact_sync_log. Geen mails.
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { ensureValidToken } from "../_shared/exactToken.ts";
+import { ensureValidToken, refreshAccessToken } from "../_shared/exactToken.ts";
 import { checkConfiguredDivision } from "../_shared/exactDivision.ts";
 import { requireSupervisor } from "../_shared/teamAuth.ts";
 import { exactCodeNorm, exactDatum } from "../_shared/exactCodeMatch.ts";
@@ -55,7 +55,7 @@ Deno.serve(async (req) => {
         await sleep(Math.min(65_000, Math.max(5_000, reset ? reset - Date.now() : 60_000)));
         continue;
       }
-      if (res.status === 401 && poging === 0) { token = await ensureValidToken(admin, { ...cfg, access_token_expires_at: new Date(0).toISOString() }); continue; }
+      if (res.status === 401 && poging === 0) { token = await refreshAccessToken(admin, cfg); continue; }
       if (!res.ok) throw new Error(`Exact GET ${res.status}: ${(await res.text()).slice(0, 300)}`);
       await sleep(PAUZE_MS);
       return res.json();
