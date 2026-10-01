@@ -97,7 +97,7 @@ Deno.serve(async (req) => {
     });
 
     const filename = `factuur-${invoice.InvoiceNumber || invoiceId}.pdf`;
-    return new Response(buf, {
+    return new Response(buf as unknown as BodyInit, {
       status: 200,
       headers: {
         ...corsHeaders,
