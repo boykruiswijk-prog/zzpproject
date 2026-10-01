@@ -4,6 +4,11 @@ import { resolve } from "node:path";
 import { WIZARD_SECTOREN, isHandmatigeAcceptatieSector as isAlleenOfferteSector } from "@/data/sectorVerzekeringskaart";
 import { HANDMATIGE_ACCEPTATIE_SECTOREN as ALLEEN_OFFERTE_SECTOREN, vereistHandmatigeAcceptatie as bodyIsAlleenOfferte, isHandmatigeAcceptatieSector as backendIsAlleenOfferte, controleerHandmatigeAcceptatie } from "../../supabase/functions/_shared/sectorRegels";
 import { ADMIN_BRANCHES, brancheVoorSector } from "@/data/sectorBranche";
+import { zichtbareBavUsps } from "@/components/home/BAVApplicationModule";
+import nl from "@/i18n/locales/nl.json";
+import en from "@/i18n/locales/en.json";
+import de from "@/i18n/locales/de.json";
+import fr from "@/i18n/locales/fr.json";
 
 const bron = readFileSync(resolve(__dirname, "../pages/OffertePage.tsx"), "utf8");
 
@@ -99,6 +104,21 @@ describe("afsluitwizard zonder blokkade", () => {
     const m = wizard.match(/submissionResult\.handmatig\s*\?\s*"([^"]+)"/);
     expect(m).not.toBeNull();
     expect(m![1]).not.toMatch(/offerte|handmatig|afgewezen|propositie/i);
+  });
+
+  it("toont directe dekking alleen buiten Zorg en Bouw & techniek", () => {
+    const vertalingen = [nl.home.bavUsps, en.home.bavUsps, de.home.bavUsps, fr.home.bavUsps];
+    const directeDekking = /direct gedekt|immediately covered|sofort versichert|couvert immédiatement/i;
+
+    for (const usps of vertalingen) {
+      expect(zichtbareBavUsps(usps, "ict").some((usp) => directeDekking.test(usp))).toBe(true);
+      expect(zichtbareBavUsps(usps, "").some((usp) => directeDekking.test(usp))).toBe(true);
+      for (const sector of ["zorg", "bouw", "Zorg", "Bouw & techniek"]) {
+        const zichtbaar = zichtbareBavUsps(usps, sector);
+        expect(zichtbaar.some((usp) => directeDekking.test(usp))).toBe(false);
+        expect(zichtbaar).toHaveLength(usps.length - 1);
+      }
+    }
   });
 });
 
