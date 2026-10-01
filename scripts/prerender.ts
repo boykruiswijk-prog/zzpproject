@@ -66,21 +66,21 @@ function isExcluded(routePath: string) {
 function headFor(routePath: string, title: string, description: string, ogType: string) {
   const url = `${SITE_CONFIG.url}${routePath === "/" ? "/" : routePath}`;
   const alternates = [
-    `<link rel="alternate" hreflang="nl" href="${SITE_CONFIG.url}${routePath === "/" ? "/" : routePath}">`,
+    `<link rel="alternate" data-rh="true" hreflang="nl" href="${SITE_CONFIG.url}${routePath === "/" ? "/" : routePath}">`,
     ...LANGS.map(
       (lang) =>
-        `<link rel="alternate" hreflang="${lang}" href="${SITE_CONFIG.url}/${lang}${
+        `<link rel="alternate" data-rh="true" hreflang="${lang}" href="${SITE_CONFIG.url}/${lang}${
           routePath === "/" ? "" : routePath
         }">`,
     ),
-    `<link rel="alternate" hreflang="x-default" href="${SITE_CONFIG.url}${
+    `<link rel="alternate" data-rh="true" hreflang="x-default" href="${SITE_CONFIG.url}${
       routePath === "/" ? "/" : routePath
     }">`,
   ];
   return {
     url,
     tags: [
-      `<link rel="canonical" href="${url}">`,
+      `<link rel="canonical" href="${url}" data-rh="true">`,
       ...alternates,
       `<meta name="twitter:title" content="${esc(title)}">`,
       `<meta name="twitter:description" content="${esc(description)}">`,
