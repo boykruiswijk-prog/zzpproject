@@ -17,7 +17,7 @@ export function Footer() {
     overOns: [
       { href: "/voor-wie", label: t("footer.voorWie") },
       { href: "/zo-werken-wij", label: t("footer.zoWerkenWij") },
-      { href: "/over-ons", label: t("footer.partners") },
+      { href: "/partners", label: t("footer.partners") },
       { href: "/kennisbank", label: t("footer.kennisbank") },
       { href: "/faq", label: t("footer.veelgesteldeVragen") },
       { href: "/over-ons", label: t("footer.overOns") },

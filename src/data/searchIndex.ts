@@ -52,13 +52,13 @@ export const searchIndex: SearchEntry[] = [
   },
   {
     title: "Pensioen",
-    path: "/kennisbank/jaarruimte-en-reserveringsruimte",
+    path: "/pensioen",
     keywords: "pensioen zzp oude dag",
     snippet: "Slim opbouwen voor later met een pensioenoplossing op maat.",
   },
   {
     title: "Zorgverzekering",
-    path: "/kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen",
+    path: "/zorgverzekering",
     keywords: "zorgverzekering ziektekosten zzp",
     snippet: "Vergelijk zorgverzekeringen voor zelfstandigen.",
   },
@@ -118,7 +118,7 @@ export const searchIndex: SearchEntry[] = [
   },
   {
     title: "Partners",
-    path: "/over-ons",
+    path: "/partners",
     keywords: "partners samenwerking verzekeraars",
     snippet: "Wij werken samen met betrouwbare partners en verzekeraars.",
   },

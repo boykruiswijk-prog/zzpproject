@@ -72,6 +72,36 @@ export const seoRoutes: SeoRoute[] = [
       "ZP Zaken bespreekt in een persoonlijk gesprek welke AOV bij je beroep, leeftijd en wachttijd past.",
   },
   {
+    path: "/pensioen",
+    title: "ZZP Pensioen opbouwen | Informatie & Oplossingen | ZP Zaken",
+    description:
+      "Als zzp'er zelf je pensioen regelen? ZP Zaken helpt je met de beste pensioenoplossing. Persoonlijk gesprek op maat.",
+    h1: "Pensioen voor zzp'ers: regel het nu, profiteer later",
+    intro:
+      "Als zelfstandige bouw je niet automatisch pensioen op. Er zijn wel fiscaal voordelige manieren om toch voor je oude dag te zorgen. " +
+      "ZP Zaken bespreekt in een persoonlijk gesprek welk pensioenplan bij je situatie past.",
+  },
+  {
+    path: "/zorgverzekering",
+    title: "ZZP Zorgverzekering Collectief | ZP Zaken",
+    description:
+      "Profiteer van een collectieve zorgverzekering als zzp'er via ZP Zaken. Samen sterker, betere dekking voor een lagere premie.",
+    h1: "Zorgverzekering voor zzp'ers: collectief voordeel",
+    intro:
+      "Als lid van het ZP Zaken collectief profiteer je van korting op je zorgverzekering: dezelfde dekking, een lagere premie. " +
+      "In een gesprek rekenen we voor wat de collectieve korting in jouw situatie oplevert.",
+  },
+  {
+    path: "/mentale-gezondheid",
+    title: "Mentale Gezondheid voor ZZP'ers | Mirro Test | ZP Zaken",
+    description:
+      "Als zzp'er is mentale fitheid cruciaal. Doe de gratis mentale gezondheidstest via Mirro en ontdek hoe fit jij bent.",
+    h1: "Mentale gezondheid als basis voor ondernemerschap",
+    intro:
+      "Ondernemen is geweldig, maar kan ook eenzaam en stressvol zijn. Investeren in je mentale gezondheid is daarom geen luxe. " +
+      "Via de gratis test van Mirro krijg je inzicht in je mentale fitheid; daarna kun je met ons in gesprek over ondersteuning.",
+  },
+  {
     path: "/waarom-zp-zaken",
     title: "Waarom ZP Zaken? | Direct en onafhankelijk",
     description:
@@ -172,6 +202,16 @@ export const seoRoutes: SeoRoute[] = [
       "ZP Zaken bedacht de gecombineerde BAV + AVB voor zzp'ers en is sinds de oprichting marktleider. " +
       `Het kantoor staat geregistreerd bij de AFM onder ${SITE_CONFIG.registrations.afm} en is aangesloten bij Kifid onder ${SITE_CONFIG.registrations.kifid}. ` +
       "Op deze pagina stelt het team zich voor.",
+  },
+  {
+    path: "/partners",
+    title: "Trots dat we met onze partners samenwerken! | ZP Zaken",
+    description:
+      "Bij ZP Zaken zorgen we ervoor dat jij zorgeloos kunt ondernemen. Dit doen we in samenwerking met onze partners.",
+    h1: "Onze partners",
+    intro:
+      "ZP Zaken werkt samen met verzekeraars en dienstverleners die passen bij zelfstandig professionals. " +
+      "Op deze pagina zie je met welke partners we samenwerken en waarvoor.",
   },
   {
     path: "/historie",
