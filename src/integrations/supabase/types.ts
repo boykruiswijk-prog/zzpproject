@@ -1453,6 +1453,99 @@ export type Database = {
         }
         Relationships: []
       }
+      factuur_credit_planning: {
+        Row: {
+          aangemaakt_op: string
+          aanvraag_id: string
+          bedrag: number | null
+          berekening: Json | null
+          concept_op: string | null
+          credit_tm: string
+          credit_vanaf: string
+          creditsleutel: string
+          einddatum: string
+          exact_account_id: string | null
+          exact_invoice_id: string | null
+          exact_invoice_number: string | null
+          exact_status: number | null
+          foutmelding: string | null
+          id: string
+          is_test: boolean
+          klant_contract_id: string
+          laatst_gecontroleerd_op: string | null
+          melding: string | null
+          origineel_factuurnummer: string | null
+          planning_ids: string[]
+          status: string
+          verwerkt_op: string | null
+        }
+        Insert: {
+          aangemaakt_op?: string
+          aanvraag_id: string
+          bedrag?: number | null
+          berekening?: Json | null
+          concept_op?: string | null
+          credit_tm: string
+          credit_vanaf: string
+          creditsleutel: string
+          einddatum: string
+          exact_account_id?: string | null
+          exact_invoice_id?: string | null
+          exact_invoice_number?: string | null
+          exact_status?: number | null
+          foutmelding?: string | null
+          id?: string
+          is_test?: boolean
+          klant_contract_id: string
+          laatst_gecontroleerd_op?: string | null
+          melding?: string | null
+          origineel_factuurnummer?: string | null
+          planning_ids?: string[]
+          status?: string
+          verwerkt_op?: string | null
+        }
+        Update: {
+          aangemaakt_op?: string
+          aanvraag_id?: string
+          bedrag?: number | null
+          berekening?: Json | null
+          concept_op?: string | null
+          credit_tm?: string
+          credit_vanaf?: string
+          creditsleutel?: string
+          einddatum?: string
+          exact_account_id?: string | null
+          exact_invoice_id?: string | null
+          exact_invoice_number?: string | null
+          exact_status?: number | null
+          foutmelding?: string | null
+          id?: string
+          is_test?: boolean
+          klant_contract_id?: string
+          laatst_gecontroleerd_op?: string | null
+          melding?: string | null
+          origineel_factuurnummer?: string | null
+          planning_ids?: string[]
+          status?: string
+          verwerkt_op?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "factuur_credit_planning_aanvraag_id_fkey"
+            columns: ["aanvraag_id"]
+            isOneToOne: false
+            referencedRelation: "klant_service_aanvragen"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "factuur_credit_planning_klant_contract_id_fkey"
+            columns: ["klant_contract_id"]
+            isOneToOne: false
+            referencedRelation: "klant_contracten"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       factuur_planner_runs: {
         Row: {
           aantal_aangemaakt: number
@@ -3351,6 +3444,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      herbeoordeel_opzeg_credits: { Args: never; Returns: number }
       importeer_afas_20261001: { Args: never; Returns: Json }
       is_supervisor_or_admin: { Args: { _user_id: string }; Returns: boolean }
       is_team_member: { Args: { _user_id: string }; Returns: boolean }
@@ -3376,6 +3470,10 @@ export type Database = {
         Returns: Json
       }
       nextval_text: { Args: { seq_name: string }; Returns: string }
+      plan_opzeg_credit: {
+        Args: { _aanvraag_id: string; _contract_id: string; _einddatum: string }
+        Returns: Json
+      }
       portal_user_id_by_email: { Args: { p_email: string }; Returns: string }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
