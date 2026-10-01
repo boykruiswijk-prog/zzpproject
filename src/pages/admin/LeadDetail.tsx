@@ -1,6 +1,7 @@
 import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS } from "@/lib/statusLabels";
 import { teamWaarschuwingHandmatig } from "../../../supabase/functions/_shared/sectorRegels";
 import { useState } from "react";
+import { KlantLinkVoorLead } from "@/components/admin/KlantLinkVoorLead";
 import { SepaMachtigingBewijsBlok } from "@/components/admin/SepaMachtigingBewijsBlok";
 
 import { useParams, useNavigate, Link } from "react-router-dom";
@@ -230,6 +231,7 @@ export default function AdminLeadDetail() {
               {lead.bedrijfsnaam && (
                 <p className="text-muted-foreground">{lead.bedrijfsnaam}</p>
               )}
+              <KlantLinkVoorLead leadId={lead.id} relatiecode={(lead as any).exact_relatie_code} />
             </div>
           </div>
           <div className="flex gap-2 items-center">
