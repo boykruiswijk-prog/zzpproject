@@ -40,6 +40,8 @@ export function LeadActivationPanel({ lead, magActiveren, fase }: Props) {
   const [isRetryingMandate, setIsRetryingMandate] = useState(false);
   const [isRetryingInvoice, setIsRetryingInvoice] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [acceptatieAfgestemd, setAcceptatieAfgestemd] = useState(false);
+  const vereistAcceptatie = !!lead.extra_data?.handmatige_acceptatie;
 
   const formatEuro = (n: number | null | undefined) =>
     typeof n === "number" ? `€ ${n.toFixed(2).replace(".", ",")}` : "—";
@@ -88,7 +90,7 @@ export function LeadActivationPanel({ lead, magActiveren, fase }: Props) {
     setDialogOpen(false);
     try {
       const { data, error } = await supabase.functions.invoke("lead-to-exact-activate", {
-        body: { lead_id: lead.id },
+        body: { lead_id: lead.id, ...(vereistAcceptatie ? { handmatige_acceptatie_bevestigd: acceptatieAfgestemd } : {}) },
       });
       if (error) throw error;
       if (!data?.success) {
@@ -446,9 +448,20 @@ export function LeadActivationPanel({ lead, magActiveren, fase }: Props) {
               Deze actie is niet ongedaan te maken.
             </AlertDialogDescription>
           </AlertDialogHeader>
+          {vereistAcceptatie && (
+            <label className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm">
+              <input
+                type="checkbox"
+                className="mt-0.5 h-4 w-4"
+                checked={acceptatieAfgestemd}
+                onChange={(e) => setAcceptatieAfgestemd(e.target.checked)}
+              />
+              <span>Acceptatie is afgestemd (verzekeraar/klant)</span>
+            </label>
+          )}
           <AlertDialogFooter>
             <AlertDialogCancel>Annuleer</AlertDialogCancel>
-            <AlertDialogAction onClick={activate} className="bg-green-600 hover:bg-green-700">
+            <AlertDialogAction onClick={activate} disabled={vereistAcceptatie && !acceptatieAfgestemd} className="bg-green-600 hover:bg-green-700">
               Bevestig activering
             </AlertDialogAction>
           </AlertDialogFooter>
