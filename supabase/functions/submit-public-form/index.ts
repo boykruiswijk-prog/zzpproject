@@ -1,7 +1,7 @@
 // Enige schrijfroute voor publieke formulieren (leads, pilots, nieuwsbrief, suggesties).
 // Beschermd met honeypot, invultijd-check en IP-throttle. De browser mag deze
 // tabellen niet meer direct beschrijven.
-import { createClient } from "npm:@supabase/supabase-js@2.39.0";
+import { createClient } from "npm:@supabase/supabase-js@2";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
 import { normaliseerAdres } from "../_shared/adresNormalisatie.ts";
 import { samenvattingVoorTeam } from "../_shared/zeker.ts";
