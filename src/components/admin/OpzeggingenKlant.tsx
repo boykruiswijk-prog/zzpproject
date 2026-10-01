@@ -72,7 +72,9 @@ export function OpzeggingenKlant({ ondernemingId, contracten, onGewijzigd }: { o
     const { data, error } = await supabase.rpc("verwerk_opzegging", { _aanvraag_id: a.id, _contract_ids: Array.from(gekozen) });
     setBezig(false);
     if (error) return toast({ title: "Verwerken mislukt", description: error.message, variant: "destructive" });
-    toast({ title: "Opzegging verwerkt", description: `${(data as any)?.regels} regel(s) lopen af per ${formatDateNL((data as any)?.einddatum)}.` });
+    const cr = ((data as any)?.credits ?? []) as any[];
+    const creditTekst = cr.filter((c) => c.status && c.status !== "niet_nodig").map((c) => `Rij ${c.bron_rij}: ${c.status === "te_maken" ? "creditnota gepland" : c.melding ?? c.status}`).join(" · ");
+    toast({ title: "Opzegging verwerkt", description: `${(data as any)?.regels} regel(s) lopen af per ${formatDateNL((data as any)?.einddatum)}.${creditTekst ? " " + creditTekst : ""}` });
     setOpen(null); setGekozen(new Set()); laad(); onGewijzigd();
   }
 
