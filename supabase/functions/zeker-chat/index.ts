@@ -7,7 +7,7 @@ import {
   bouwGeschiedenis, bouwSysteemPrompt, isFrustratie, isToegestaneOrigin, maskeerGevoelig,
   normaliseerActies, normaliseerTaal, rateLimitBeslissing, schoonAntwoord,
   ZEKER_MAX_BEURTEN, ZEKER_MAX_TEKENS, ZEKER_MAX_TOKENS, ZEKER_STANDAARD_GESPREKKEN_PER_DAG,
-  ZEKER_STANDAARD_MODEL, ZEKER_TEMPERATURE, ZEKER_TOOL, type ZekerActie,
+  ZEKER_STANDAARD_MODEL, ZEKER_TOOL, type ZekerActie,
 } from "../_shared/zeker.ts";
 
 const MODEL = Deno.env.get("ZEKER_MODEL") || ZEKER_STANDAARD_MODEL;
@@ -135,7 +135,7 @@ Deno.serve(async (req) => {
     const upstream = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model: MODEL, max_tokens: ZEKER_MAX_TOKENS, temperature: ZEKER_TEMPERATURE, system, messages, tools: [ZEKER_TOOL], stream: true }),
+      body: JSON.stringify({ model: MODEL, max_tokens: ZEKER_MAX_TOKENS, system, messages, tools: [ZEKER_TOOL], stream: true }),
     });
     if (!upstream.ok || !upstream.body) {
       console.error("zeker-chat upstream", upstream.status, (await upstream.text().catch(() => "")).slice(0, 300));

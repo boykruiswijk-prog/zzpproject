@@ -5,7 +5,7 @@ import { COMPANY, ALLOWED_APP_ORIGINS } from "./company.ts";
 
 export const ZEKER_STANDAARD_MODEL = "claude-sonnet-5";
 export const ZEKER_MAX_TOKENS = 600;
-export const ZEKER_TEMPERATURE = 0.2;
+// Geen temperature: claude-sonnet-5 weigert die parameter; consistentie komt uit de prompt.
 export const ZEKER_MAX_BEURTEN = 30;
 export const ZEKER_MAX_TEKENS = 2000;
 export const ZEKER_LIMIET_10_MIN = 20;
