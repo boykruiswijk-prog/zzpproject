@@ -54,10 +54,11 @@ export const seoRoutes: SeoRoute[] = [
     path: "/verzekeringen",
     title:
       "BAV + AVB voor ZZP'ers | Direct online afsluiten",
-    description: `Beroeps- en bedrijfsaansprakelijkheid in één polis voor zzp'ers. Vanaf €${goedkoopstePakket.prijs} per maand, geen eigen risico. Online afsluiten in 5 stappen.`,
+    description: `BAV + AVB in één polis, bedacht door ZP Zaken. Geen eigen risico, dagelijks opzegbaar, vanaf € ${goedkoopstePakket.prijs} per maand. Direct online afsluiten.`,
     h1: "BAV & AVB: de combinatiepolis voor zzp'ers",
     intro:
-      `De combinatiepolis van ZP Zaken bundelt beroepsaansprakelijkheid (BAV) en bedrijfsaansprakelijkheid (AVB) in één verzekering, vanaf ${goedkoopstePakket.prijsLabel.toLowerCase()}. ` +
+      "ZP Zaken is de bedenker van de BAV + AVB in één polis voor zzp'ers. " +
+      `De combinatiepolis bundelt beroepsaansprakelijkheid (BAV) en bedrijfsaansprakelijkheid (AVB) in één verzekering, vanaf ${goedkoopstePakket.prijsLabel.toLowerCase()}. ` +
       "Er is geen eigen risico en je kunt dagelijks opzeggen. Aanvragen doe je online in vijf stappen.",
   },
   {
@@ -198,6 +199,7 @@ export const seoRoutes: SeoRoute[] = [
     h1: "Over ZP Zaken",
     intro:
       `ZP Zaken B.V. is in 2014 opgericht door Boy Kruiswijk en werkt vanuit ${SITE_CONFIG.address.addressLocality} voor zelfstandig professionals. ` +
+      "ZP Zaken bedacht de gecombineerde BAV + AVB voor zzp'ers en is sinds de oprichting marktleider. " +
       `Het kantoor staat geregistreerd bij de AFM onder ${SITE_CONFIG.registrations.afm} en is aangesloten bij Kifid onder ${SITE_CONFIG.registrations.kifid}. ` +
       "Op deze pagina stelt het team zich voor.",
   },
@@ -219,6 +221,7 @@ export const seoRoutes: SeoRoute[] = [
     h1: "13+ jaar ZP Zaken",
     intro:
       `ZP Zaken bestaat sinds 2014 en groeide van startup tot marktleider voor meer dan ${SITE_CONFIG.klantenAantalTekst} zelfstandigen. ` +
+      "ZP Zaken bedacht de gecombineerde BAV + AVB voor zzp'ers en is sinds de oprichting marktleider. " +
       "De tijdlijn op deze pagina laat de belangrijkste stappen uit die periode zien.",
   },
   {
