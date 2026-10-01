@@ -3,6 +3,7 @@ import { Resend } from "npm:resend@4.0.0";
 import { z } from "npm:zod@3.23.8";
 import { maybeFormatDate } from "../_shared/dateFormat.ts";
 import { createMailGate } from "../_shared/mail.ts";
+import { valideerOpzegdatum, valideerToelichting } from "../_shared/opzegValidatie.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -75,19 +76,22 @@ Deno.serve(async (req) => {
     }
     const v = parsed.data;
 
-    // Server-side bescherming tegen API-manipulatie: opzegdatum mag niet in het verleden liggen.
+    // Server-side dezelfde regels als het formulier: reden verplicht, toelichting bij "Anders", datum vandaag of later.
     if (v.type === "opzeggen") {
-      const opzegdatum = v.details?.opzegdatum;
-      if (typeof opzegdatum === "string" && opzegdatum) {
-        const today = new Date().toISOString().split("T")[0];
-        if (opzegdatum < today) {
-          return new Response(
-            JSON.stringify({ error: "Opzegdatum kan niet in het verleden liggen." }),
-            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-          );
-        }
+      const d = v.details ?? {};
+      const fout = (!d.reden ? "Kies een reden." : null)
+        ?? valideerToelichting(d.reden, d.toelichting)
+        ?? valideerOpzegdatum(d.opzegdatum)
+        ?? (d.bevestigd === true ? null : "Bevestiging is verplicht.");
+      if (fout) {
+        return new Response(JSON.stringify({ error: "validation", melding: fout }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
     }
+
+    // Omgevingsbepaling + preview-redirect (max. één mail per verzendactie); preview-aanvragen zijn testdata.
+    const gate = createMailGate("process-klant-service", req);
 
     const { data, error } = await supabase
       .from("klant_service_aanvragen")
@@ -99,6 +103,7 @@ Deno.serve(async (req) => {
         telefoon: v.telefoon,
         polisnummer: v.polisnummer,
         details: v.details,
+        is_test: !gate.isProduction,
       })
       .select()
       .single();
@@ -149,8 +154,6 @@ Deno.serve(async (req) => {
       }
     };
 
-    // Omgevingsbepaling + preview-redirect (max. één mail per verzendactie).
-    const gate = createMailGate("process-klant-service", req);
 
     if (resend) {
       const sendAndLog = async (to: string, sub: string, html: string) => {

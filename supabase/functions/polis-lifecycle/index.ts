@@ -12,6 +12,7 @@ import { COMPANY } from "../_shared/company.ts";
 import { createMailGate, type MailGate } from "../_shared/mail.ts";
 import { verstuurLifecycleMail, magOnefellowMailen, ONEFELLOW_SWITCH, type LifecycleActie, type Doelgroep } from "../_shared/lifecycleMail.ts";
 import { isIntegratieEnabled } from "../_shared/integraties.ts";
+import { valideerToelichting } from "../_shared/opzegValidatie.ts";
 import { exactRegelBedrag, factuurReferentie, kopOmschrijving, regelNotities, regelOmschrijving } from "../_shared/factuurTekst.ts";
 import { readLatestInvoiceStatus } from "../_shared/exactInvoiceStatus.ts";
 import {
@@ -582,9 +583,8 @@ Deno.serve(async (req) => {
           return json({ error: "al_opgezegd", current: lead.status }, 409);
         }
         if (!reden) return json({ error: "reden_verplicht" }, 400);
-        if (reden === "andere_reden" && !(toelichting ?? "").trim()) {
-          return json({ error: "toelichting_verplicht" }, 400);
-        }
+        // Zelfde regel als het formulier: bij "andere reden" 3-500 tekens, altijd max 500. Vóór elke Exact-actie.
+        { const fout = valideerToelichting(reden, toelichting); if (fout) return json({ error: "toelichting_verplicht", melding: fout }, 400); }
         const wasGepauzeerd = lead.status === "gepauzeerd";
         const vanuitActief = lead.status === "actief" || lead.status === "klant";
 
