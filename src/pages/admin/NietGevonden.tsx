@@ -96,17 +96,19 @@ export default function NietGevonden() {
               <TableBody>
                 {zichtbaar.map((r) => (
                   <TableRow key={r.id} className={r.afgehandeld ? "opacity-50" : ""}>
-                    <TableCell className="max-w-xs break-all font-mono text-xs">
-                      {r.pad}
+                    <TableCell className="max-w-xs font-mono text-xs">
+                      <div className="line-clamp-2 break-all" title={r.pad}>{r.pad}</div>
                       {r.laatste_referrer && (
-                        <div className="text-muted-foreground">via {r.laatste_referrer}</div>
+                        <div className="truncate text-muted-foreground" title={r.laatste_referrer}>via {r.laatste_referrer}</div>
                       )}
                     </TableCell>
-                    <TableCell className="text-right">{r.aantal}</TableCell>
-                    <TableCell className="whitespace-nowrap text-xs">
-                      {new Date(r.laatste_op).toLocaleString("nl-NL")}
+                    <TableCell className="text-right tabular-nums">{r.aantal}</TableCell>
+                    <TableCell className="whitespace-nowrap text-xs tabular-nums">
+                      {formatDateTimeNL(r.laatste_op)}
                     </TableCell>
-                    <TableCell className="font-mono text-xs">{stelRedirectVoor(r.pad, slugs)}</TableCell>
+                    <TableCell className="max-w-xs font-mono text-xs">
+                      <div className="line-clamp-2 break-all" title={stelRedirectVoor(r.pad, slugs)}>{stelRedirectVoor(r.pad, slugs)}</div>
+                    </TableCell>
                     <TableCell className="whitespace-nowrap">
                       <Button size="sm" variant="outline" onClick={() => kopieer(r)}>
                         <Copy className="mr-1 h-3 w-3" /> Redirect voorstellen
