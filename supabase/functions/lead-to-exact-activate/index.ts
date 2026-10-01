@@ -12,7 +12,7 @@ import { mandaatkenmerkVoor } from "../_shared/sepaMachtiging.ts";
 import { autoInvitePortalLead } from "../_shared/portalAccess.ts";
 import { factuurReferentie, kopOmschrijving, regelNotities, regelOmschrijving } from "../_shared/factuurTekst.ts";
 import { landcodeVoor } from "../_shared/landcode.ts";
-import { zetInPlanner, type ContractSpec } from "../_shared/klantContractActivatie.ts";
+import { zetInPlanner, factuurLogTekst, type ContractSpec } from "../_shared/klantContractActivatie.ts";
 
 // SEPA-mandaat in Exact. Waarden geverifieerd in de Exact Online REST-documentatie:
 // https://start.exactonline.nl/docs/HlpRestAPIResourcesDetails.aspx?name=CashflowDirectDebitMandates
@@ -648,7 +648,7 @@ Deno.serve(async (req) => {
     const nowIso = new Date().toISOString();
     const entry = {
       timestamp: nowIso,
-      action: `Factuur ${invRes.invoiceNumber ?? "(concept)"} aangemaakt (€${spec.bedrag.toFixed(2).replace(".", ",")})`,
+      action: factuurLogTekst(invRes.invoiceNumber, invRes.amount ?? spec.bedrag, (() => { const ps = plannerSpec(lead, spec.bedrag, retryOverride); return ps ? { start: ps.periodeStart, eind: ps.periodeEind, naarRato: !!retryOverride } : undefined; })()),
       admin_user_id: user.id,
       admin_email: user.email,
       exact_invoice_id: invRes.invoiceId,
@@ -1017,6 +1017,7 @@ Deno.serve(async (req) => {
   let exactInvoiceId: string | null = null;
   let exactInvoiceNumber: string | null = null;
   let exactInvoiceAmount: number | null = null;
+  let factuurPeriode: { start: string; eind: string; naarRato?: boolean } | undefined;
   let exactInvoiceCreatedAt: string | null = null;
   let invoiceWarning: string | null = null;
   const pakketSpec = resolvePakketInvoice(lead.gekozen_pakket);
@@ -1087,6 +1088,7 @@ Deno.serve(async (req) => {
 
       // Klant meenemen in de factuurplanner vanaf de tweede periode.
       const ps = plannerSpec(lead, pakketSpec.bedrag, override);
+      if (ps) factuurPeriode = { start: ps.periodeStart, eind: ps.periodeEind, naarRato: !!override };
       if (ps) {
         const pr = await zetInPlanner(supabase, lead, exactAccountId, ps);
         if (!pr.ok) await logSync(supabase, { trigger_type: "planner_contract", status: "error", lead_id: leadId, admin_user_id: user.id, error_message: pr.fout });
@@ -1118,7 +1120,7 @@ Deno.serve(async (req) => {
   const log2 = exactInvoiceId && pakketSpec
     ? [...log1, {
         timestamp: exactInvoiceCreatedAt,
-        action: `Factuur ${exactInvoiceNumber ?? "(concept)"} aangemaakt (€${pakketSpec.bedrag.toFixed(2).replace(".", ",")})`,
+        action: factuurLogTekst(exactInvoiceNumber, exactInvoiceAmount ?? pakketSpec.bedrag, factuurPeriode),
         admin_user_id: user.id,
         admin_email: user.email,
         exact_invoice_id: exactInvoiceId,

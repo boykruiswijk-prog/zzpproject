@@ -32,7 +32,7 @@ export function contractRegelVoorActivatie(lead: any, ondernemingId: string, spe
     cyclus: spec.cyclus,
     aantal: 1,
     bedrag_per_periode: spec.bedrag_per_periode,
-    maandwaarde: spec.cyclus === "jaar" ? Math.round((spec.bedrag_per_periode / 12) * 100) / 100 : spec.bedrag_per_periode,
+    // maandwaarde is een gegenereerde kolom: nooit meesturen.
     begin_datum: spec.periodeStart,
     factureren_vanaf: spec.periodeStart,
     gefactureerd_tm: spec.periodeEind,
@@ -70,4 +70,13 @@ export async function zetInPlanner(supabase: any, lead: any, exactAccountId: str
     .upsert(rij, { onConflict: "bron,bron_rij", ignoreDuplicates: true });
   if (error) return { ok: false, fout: `contract: ${error.message}` };
   return { ok: true, onderneming_id: ond.id, bron_rij: rij.bron_rij };
+}
+
+const nlDatum = (d: string) => { const [y, m, dd] = d.slice(0, 10).split("-"); return `${dd}-${m}-${y}`; };
+export const euroNL = (n: number) => `€ ${Number(n).toFixed(2).replace(".", ",")}`;
+
+/** Logtekst met het werkelijke factuurbedrag (niet de jaarpremie). */
+export function factuurLogTekst(nummer: string | null | undefined, bedrag: number, periode?: { start: string; eind: string; naarRato?: boolean }): string {
+  const p = periode ? ` (${nlDatum(periode.start)} t/m ${nlDatum(periode.eind)}${periode.naarRato ? ", naar rato" : ""})` : "";
+  return `Factuur ${nummer ?? "(concept)"} aangemaakt: ${euroNL(bedrag)}${p}`;
 }
