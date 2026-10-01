@@ -136,8 +136,12 @@ export default function OffertePage() {
       const aantalNum =
         form.aantal_medewerkers === "Meer dan 3" ? null : Number(form.aantal_medewerkers);
 
+      const sectorLabel = BRANCHES.find((b) => b.value === form.branche)?.label ?? form.branche;
+      const adminBranche = brancheVoorSector(sectorLabel);
+
       const extra = {
-        branche: form.branche,
+        sector: form.branche,
+        branche: sectorLabel,
         belangrijkste_opdrachtgever: form.belangrijkste_opdrachtgever.trim(),
         omschrijving_werkzaamheden: form.omschrijving_werkzaamheden.trim(),
         adres_land: form.adres_land,
