@@ -186,15 +186,10 @@ export default function Contact() {
                   src={ellenPortrait}
                   alt="Ellen Baars - Senior Adviseur ZP Zaken"
                   width={800}
-                  height={1201}
-                  style={{
-                    width: "100%",
-                    height: "auto",
-                    aspectRatio: "800 / 1201",
-                    display: "block",
-                    borderRadius: "12px 12px 0 0",
-                  }}
+                  height={1000}
+                  className="block w-full aspect-[4/5] max-h-[420px] object-cover object-[center_20%]"
                 />
+
                 <div className="p-6">
                   <p className="font-semibold text-foreground">Ellen Baars</p>
                   <p className="text-sm text-accent mb-3">Senior Adviseur:  ZP Zaken</p>
