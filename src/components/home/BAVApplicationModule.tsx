@@ -228,16 +228,6 @@ export function BAVApplicationModule() {
     const timer = window.setTimeout(() => successHeadingRef.current?.focus({ preventScroll: true }), 350);
     return () => window.clearTimeout(timer);
   }, [isSubmitted]);
-  // Link naar offerte met sector + reeds ingevulde basisgegevens (nooit IBAN of adres).
-  const offerteLink = (() => {
-    const q = new URLSearchParams({ sector: formData.sector });
-    const basis: Record<string, string> = {
-      voornaam: formData.voornaam, achternaam: formData.achternaam, email: formData.email,
-      telefoon: formData.telefoon, bedrijfsnaam: formData.bedrijfsnaam, kvk: formData.kvkNummer,
-    };
-    for (const [k, v] of Object.entries(basis)) if (v.trim()) q.set(k, v.trim());
-    return `/offerte?${q.toString()}`;
-  })();
 
   const nextStep = async () => {
     if (!validateStep(currentStep) || currentStep >= TOTAL_STEPS) return;
@@ -657,17 +647,6 @@ export function BAVApplicationModule() {
                           {WIZARD_SECTOREN.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
                         </select>
                         <FieldError message={errors.sector} />
-                        {isAlleenOfferteSector(formData.sector) && (
-                          <div role="alert" className="mt-3 rounded-md border border-destructive/40 bg-destructive/5 p-4 text-sm">
-                            <p className="flex items-start gap-2 text-foreground">
-                              <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-destructive" />
-                              <span>Voor de sector {WIZARD_SECTOREN.find((s) => s.id === formData.sector)?.label} stellen we je verzekering graag persoonlijk samen. Direct online afsluiten is voor deze sector niet mogelijk. Vraag een vrijblijvende offerte aan, dan nemen we binnen 24 uur contact met je op.</span>
-                            </p>
-                            <Button asChild className="mt-3 bg-accent hover:bg-accent/90 text-accent-foreground">
-                              <LocalizedLink to={offerteLink}>Offerte aanvragen<ArrowRight className="h-4 w-4" /></LocalizedLink>
-                            </Button>
-                          </div>
-                        )}
                       </div>
                       <div>
                         <Label htmlFor="beroep">{t("home.bavProfession")} *</Label>
