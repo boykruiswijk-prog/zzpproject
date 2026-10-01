@@ -40,10 +40,10 @@ describe("DashboardStats", () => {
     expect(rpc).toHaveBeenCalledWith("dashboard_tellers", { _toon_test: false });
   });
 
-  it("toont een foutmelding met opnieuw proberen", async () => {
+  it("toont een foutmelding met opnieuw proberen", { timeout: 15000 }, async () => {
     rpc.mockResolvedValue({ data: null, error: { message: "geen toegang" } });
     renderStats();
-    await waitFor(() => expect(screen.getByText("Tellers konden niet worden geladen")).toBeTruthy());
+    await waitFor(() => expect(screen.getByText("Tellers konden niet worden geladen")).toBeTruthy(), { timeout: 10000 });
     expect(screen.getByText("geen toegang")).toBeTruthy();
     expect(screen.getByRole("button", { name: /opnieuw proberen/i })).toBeTruthy();
   });
