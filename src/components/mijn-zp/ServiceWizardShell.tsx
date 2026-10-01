@@ -160,7 +160,13 @@ export function ServiceWizardShell({
               <div>
                 <h2 ref={kopRef} tabIndex={-1} className="text-xl font-semibold mb-1 outline-none">{current.title}</h2>
               </div>
-              {current.render({ formData, setFormData, details, setDetails, errors })}
+              {current.render({
+                formData,
+                setFormData: (d) => { setErrors({}); setFormData(d); },
+                details,
+                setDetails: (d) => { setErrors({}); setDetails(d); },
+                errors,
+              })}
               <div className="flex justify-between pt-4 border-t border-border">
                 {step > 0 ? (
                   <Button variant="outline" onClick={() => { setErrors({}); setStep(step - 1); }}>
