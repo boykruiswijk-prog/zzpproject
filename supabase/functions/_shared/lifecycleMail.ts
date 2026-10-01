@@ -12,7 +12,7 @@ export interface MailResultaat {
 export interface LifecycleMailDeps {
   send: (to: string, subject: string, html: string) => Promise<MailResultaat>;
   // deno-lint-ignore no-explicit-any
-  insertLog: (row: Record<string, any>) => Promise<unknown>;
+  insertLog: (row: Record<string, any>) => PromiseLike<unknown>;
 }
 
 export const lifecycleLeadType = (actie: LifecycleActie, doel: Doelgroep) => `polis-${actie}-${doel}`;

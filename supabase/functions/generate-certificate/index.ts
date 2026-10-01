@@ -528,7 +528,7 @@ serve(async (req) => {
     const pdfBytes = await pdfDoc.save();
     const fileName = `${policy.certificate_number}.pdf`;
 
-    const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
+    const pdfBlob = new Blob([pdfBytes as BlobPart], { type: "application/pdf" });
     const { error: uploadError } = await adminClient.storage
       .from("certificates")
       .upload(fileName, pdfBlob, {
@@ -585,7 +585,7 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("Error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : String(error) }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

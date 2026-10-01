@@ -321,61 +321,6 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // ── Eenmalig herstel creditnota-teken (alleen intern/system, alleen TEST-relatie) ──
-    if (action === "creditnota_herstel") {
-      if (rol !== "system") return json({ error: "forbidden" }, 403);
-      const TEST_ACCOUNT = "f34886b9-3e3a-48e1-a008-888b76223d08";
-      if (lead.exact_account_id !== TEST_ACCOUNT) return json({ error: "alleen_test_relatie" }, 403);
-      const ctx = await exactCtx();
-      if (!ctx) return json({ error: "exact_niet_beschikbaar" }, 500);
-      const stap = body?.stap as string;
-      const leesFactuur = async (id: string) => {
-        if (!/^[0-9a-f-]{36}$/i.test(id)) return { error: "ongeldig_id" };
-        const base = `${ctx.baseUrl}/api/v1/${ctx.div}/salesinvoice`;
-        const h = await fetch(`${base}/SalesInvoices?$filter=InvoiceID eq guid'${id}'&$select=InvoiceID,Type,Status,InvoiceTo,AmountDC,AmountFC,YourRef,Description`, { headers: ctx.headers });
-        const l = await fetch(`${base}/SalesInvoiceLines?$filter=InvoiceID eq guid'${id}'&$select=Quantity,UnitPrice,AmountFC,AmountDC,Description,Notes`, { headers: ctx.headers });
-        const hj: any = await h.json().catch(() => ({})); const lj: any = await l.json().catch(() => ({}));
-        return { http: [h.status, l.status], header: hj?.d?.results?.[0] ?? null, lines: lj?.d?.results ?? [] };
-      };
-      if (stap === "get") return json(await leesFactuur(String(body.invoice_id)));
-      if (stap === "delete") {
-        const id = String(body.invoice_id);
-        const voor: any = await leesFactuur(id);
-        if (!voor.header || voor.header.Status !== 20 || voor.header.InvoiceTo !== TEST_ACCOUNT
-            || (voor.header.Type !== 8021 && id !== "2bafee54-b140-411e-807d-0464aa03c9e4")) {
-          return json({ error: "niet_verwijderd_voorwaarden", voor }, 409);
-        }
-        const d = await fetch(`${ctx.baseUrl}/api/v1/${ctx.div}/salesinvoice/SalesInvoices(guid'${id}')`, { method: "DELETE", headers: ctx.headers });
-        await supabase.from("exact_sync_log").insert({ lead_id, trigger_type: "creditnota_verwijderd_herstel", status: d.ok ? "success" : "error", http_status: d.status, payload: { invoice_id: id, voor: voor.header } });
-        return json({ voor, delete_status: d.status });
-      }
-      if (stap === "test_create" || stap === "herstel_pauze") {
-        const isTest = stap === "test_create";
-        const res = await postSalesInvoice({
-          baseUrl: ctx.baseUrl, div: ctx.div, headers: ctx.headers, lead, itemId: ctx.itemId,
-          type: TYPE_SALES_CREDIT,
-          description: isTest ? "TEST creditnota tekencontrole" : "BAV-AVB restitutie pauze",
-          lineDescription: isTest ? "TEST tekencontrole" : regelOmschrijving("restitutie_pauze", String(body.van), String(body.tot)),
-          lineNotes: isTest ? "Test €1,00" : String(body.notes), yourRef,
-          unitPrice: isTest ? 1 : Number(body.bedrag),
-          periodStart: isTest ? undefined : String(body.van), periodEnd: isTest ? undefined : String(body.tot),
-        });
-        if (!res.ok) return json({ error: "post_failed", res }, 502);
-        if (!isTest) {
-          await supabase.from("leads").update({
-            exact_credit_invoice_id_pauze: res.invoiceId, exact_credit_invoice_bedrag: Number(body.bedrag),
-            exact_credit_invoice_aangemaakt_op: new Date().toISOString(),
-          }).eq("id", lead_id);
-          await supabase.from("exact_sync_log").insert({ lead_id, trigger_type: "creditnota_pauze", status: "success", http_status: 201,
-            payload: { request: res.request, exact_invoice_id: res.invoiceId, herstel_van: "2bafee54-b140-411e-807d-0464aa03c9e4" } });
-          await logAudit(supabase, { lead_id, actie: "creditnota_aangemaakt", uitgevoerd_door: null, rol,
-            details: { context: "pauze_herstel_teken", exact_invoice_id: res.invoiceId, vervangt: "2bafee54-b140-411e-807d-0464aa03c9e4" }, exact_response: res.raw });
-        }
-        return json({ invoiceId: res.invoiceId, request: res.request, AmountDC: (res.raw as any)?.AmountDC, AmountFC: (res.raw as any)?.AmountFC, controle: await leesFactuur(res.invoiceId) });
-      }
-      return json({ error: "onbekende_stap" }, 400);
-    }
-
     switch (action) {
       // ────────── PAUZEREN (B1: creditnota direct) ──────────
       case "pauzeren": {
