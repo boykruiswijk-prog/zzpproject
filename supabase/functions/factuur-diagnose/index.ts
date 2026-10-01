@@ -63,10 +63,7 @@ Deno.serve(async (req) => {
       const vanaf = new Date(Date.now() - dagen * 86400000).toISOString().slice(0, 10);
       const f = `Created ge datetime'${vanaf}' or InvoiceDate ge datetime'${vanaf}'`;
       const facturen = await alles(`salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,InvoiceDate,Created,Status,InvoiceTo,InvoiceToName,AmountDC,YourRef,Description&$filter=${encodeURIComponent(f)}`);
-      const lf = `InvoiceID ne null`;
-      void lf;
-      // Regels per factuur ophalen (gebundeld via filter op datum van de kop is niet mogelijk; daarom regels op Created).
-      const regels = await alles(`salesinvoice/SalesInvoiceLines?$select=InvoiceID,Item,ItemCode,ItemDescription,GLAccount,GLAccountCode,Quantity,NetPrice,AmountDC,Description,VATCode&$filter=${encodeURIComponent(`Created ge datetime'${vanaf}'`)}`).catch((e) => [{ fout: String(e) }]);
+      const regels = await alles(`salesinvoice/SalesInvoiceLines?$select=InvoiceID,Item,ItemCode,ItemDescription,GLAccount,GLAccountCode,Quantity,NetPrice,AmountDC,Description,VATCode&$filter=${encodeURIComponent(facturen.slice(0, 40).map((x) => `InvoiceID eq guid'${x.InvoiceID}'`).join(" or ") || "1 eq 0")}`).catch((e) => [{ fout: String(e) }]);
       return json({ calls, vanaf, facturen, regels });
     }
     if (stap === "remarks") {
@@ -76,8 +73,16 @@ Deno.serve(async (req) => {
       const t2 = await r2.text();
       return json({ calls, remarks_filter: { status: r1.status, body: t1.slice(0, 300) }, yourref_filter: { status: r2.status, body: t2.slice(0, 300) } });
     }
+    if (stap === "boekingen") {
+      const dagen = Math.min(31, Number(body?.dagen ?? 7));
+      const vanaf = new Date(Date.now() - dagen * 86400000).toISOString().slice(0, 10);
+      const f = `Created ge datetime'${vanaf}' or EntryDate ge datetime'${vanaf}'`;
+      const kop = await alles(`salesentry/SalesEntries?$select=EntryID,EntryNumber,InvoiceNumber,EntryDate,Created,Customer,CustomerName,AmountDC,YourRef,Description,Journal,Status&$filter=${encodeURIComponent(f)}`).catch((e) => [{ fout: String(e).slice(0, 300) }]);
+      const regels = await alles(`salesentry/SalesEntryLines?$select=EntryID,GLAccountCode,AmountDC,Description,From,To&$filter=${encodeURIComponent(`Date ge datetime'${vanaf}'`)}`).catch((e) => [{ fout: String(e).slice(0, 300) }]);
+      return json({ calls, vanaf, kop, regels });
+    }
     if (stap === "pdf") {
-      const r = await get(`${baseUrl}/api/v1/${div}/salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,Status&$filter=${encodeURIComponent("Status eq 50")}&$orderby=InvoiceDate desc&$top=1`);
+      const r = await get(`${baseUrl}/api/v1/${div}/salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,Status&$filter=${encodeURIComponent(body?.invoice_id ? `InvoiceID eq guid'${String(body.invoice_id).replace(/[^0-9a-f-]/gi, "")}'` : "Status eq 50")}&$top=1`);
       const inv = (await r.json())?.d?.results?.[0];
       if (!inv) return json({ calls, fout: "geen verwerkte factuur gevonden" });
       const pdf = await get(`${baseUrl}/docs/XMLDownload.aspx?Topic=SalesInvoice&Format=Pdf&Params_InvoiceID=${inv.InvoiceID}&Division=${div}`, "application/pdf");
@@ -90,7 +95,7 @@ Deno.serve(async (req) => {
       }
       return json(res);
     }
-    return json({ error: "stap: artikelen | recent | remarks | pdf" }, 400);
+    return json({ error: "stap: artikelen | recent | boekingen | remarks | pdf" }, 400);
   } catch (e) {
     return json({ calls, fout: String(e).slice(0, 500) }, 500);
   }
