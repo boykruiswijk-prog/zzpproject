@@ -19,6 +19,9 @@ export const KOPPELING_LABEL: Record<string, string> = {
 export const METHODE_LABEL: Record<string, string> = {
   email: "op e-mail",
   contractnummer: "op contractnummer",
+  certificaatnummer: "op certificaatnummer",
+  certificaatnummer_gedeeld: "certificaatnummer bij meerdere klanten",
+  certificaatnummer_voorstel: "op certificaatnummer (koppeling nog voorstel)",
   email_meerdere: "e-mail bij meerdere klanten",
   kvk: "op KvK",
   bedrijfsnaam: "op bedrijfsnaam",
