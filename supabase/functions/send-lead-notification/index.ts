@@ -103,6 +103,7 @@ const schema = z.object({
   recipientEmail: z.string().email().optional(),
   userEmail: z.string().email().optional().nullable(),
   fields: z.record(z.any()).default({}),
+  waarschuwing: z.string().max(300).optional(),
 });
 
 function esc(s: unknown): string {
@@ -132,12 +133,13 @@ function prettyLabel(key: string): string {
   return spaced.charAt(0).toUpperCase() + spaced.slice(1);
 }
 
-function renderHtml(label: string, fields: Record<string, unknown>, leadId?: string | null, deeplink?: string | null): string {
+function renderHtml(label: string, fields: Record<string, unknown>, leadId?: string | null, deeplink?: string | null, waarschuwing?: string): string {
   const rows = Object.entries(fields)
     .map(([k, v]) => `<tr><td style="padding:10px 14px;font-weight:600;color:#333;background:#fafafa;border:1px solid #e5e5e5;width:200px">${esc(prettyLabel(k))}</td><td style="padding:10px 14px;border:1px solid #e5e5e5;color:#222">${esc(Array.isArray(v) ? v.join(", ") : v)}</td></tr>`)
     .join("");
   return `
     <div style="font-family:Arial,sans-serif;max-width:640px;color:#222;line-height:1.5">
+      ${waarschuwing ? `<p style="margin:0 0 16px 0;padding:12px 14px;background:#fdecea;border:2px solid #E53E2F;border-radius:6px;color:#8a1c12;font-weight:700">${esc(waarschuwing)}</p>` : ""}
       <h2 style="color:#222;font-size:18px;font-weight:600;margin:0 0 16px 0">${esc(label)}</h2>
       <p style="margin:0 0 8px 0">Beste collega,</p>
       <p style="margin:0 0 16px 0">Hieronder de gegevens van een nieuwe aanvraag via zpzaken.nl.</p>
@@ -213,6 +215,7 @@ Deno.serve(async (req) => {
       });
     }
     const { type, leadId, reference, fields } = parsed.data;
+    // Interne waarschuwing alleen van vertrouwde aanroepers (wordt hieronder gecontroleerd).
     let { recipientEmail, userEmail } = parsed.data;
     const TO_DEFAULT = "info@zpzaken.nl";
     const BCC_DEFAULT = ["boy.kruiswijk@zpzaken.nl", "ellen.baars@zpzaken.nl"];
@@ -270,8 +273,9 @@ Deno.serve(async (req) => {
       });
     }
 
-    const html = renderHtml(label, fields, leadId, deeplink);
-    const text = renderText(label, fields) + (deeplink ? `\nOpen in admin: ${deeplink}\n` : "");
+    const waarschuwing = isTrusted ? parsed.data.waarschuwing : undefined;
+    const html = renderHtml(label, fields, leadId, deeplink, waarschuwing);
+    const text = (waarschuwing ? `${waarschuwing}\n\n` : "") + renderText(label, fields) + (deeplink ? `\nOpen in admin: ${deeplink}\n` : "");
 
     try {
       const sendRes: any = await resend.emails.send({
