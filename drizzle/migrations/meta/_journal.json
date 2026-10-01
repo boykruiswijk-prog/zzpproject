@@ -190,6 +190,13 @@
       "when": 1790866148702,
       "tag": "0026_opzegging_koppeling_dashboard",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1790866194837,
+      "tag": "0027_opzegging_status_afgerond",
+      "breakpoints": true
     }
   ]
 }
