@@ -10,7 +10,6 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, RefreshCw } from "lucide-react";
 import { formatDateNL, formatDateTimeNL } from "@/lib/dateFormat";
 import { formatEuro } from "@/lib/klantContracten";
-import { FacturatieUitBanner } from "./KlantenContracten";
 import { useToast } from "@/hooks/use-toast";
 
 export const KLASSE_LABEL: Record<string, string> = {
@@ -76,7 +75,6 @@ export default function ExactReconciliatie() {
           <h1 className="text-2xl font-bold">Exact-reconciliatie</h1>
           <Button onClick={verversen} disabled={bezig} variant="outline">{bezig ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}Spiegel verversen (alleen lezen)</Button>
         </div>
-        <FacturatieUitBanner />
         <p className="text-sm text-muted-foreground">
           Exact wordt hier alleen gelezen. "Exact-stand overnemen" gebeurt pas na een besluit en nooit automatisch.
           {laatste && <> Laatste sync: {formatDateTimeNL(laatste.created_at)} ({laatste.status === "success" ? `stap ${laatste.payload?.stap}` : `fout bij stap ${laatste.payload?.stap}`}).</>}

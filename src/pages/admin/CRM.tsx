@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -79,7 +79,8 @@ export default function CRM() {
   const [loading, setLoading] = useState(true);
   const [typeFilter, setTypeFilter] = useState<string>("alle");
   const [statusFilter, setStatusFilter] = useState<string>("alle");
-  const [query, setQuery] = useState("");
+  const [searchParams] = useSearchParams();
+  const [query, setQuery] = useState(searchParams.get("q") ?? "");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [checkFilter, setCheckFilter] = useState(false);
   const [unlinkedCount, setUnlinkedCount] = useState(0);
@@ -464,13 +465,11 @@ export default function CRM() {
                       <td className="p-3 min-w-0">
                         {eerste ? (
                           <div className="min-w-0">
-                            <div className="truncate" title={eerste.bedrijfsnaam}>{eerste.bedrijfsnaam || "—"}</div>
+                            {eerste.id ? (
+                              <Link to={`/admin/klanten/${eerste.id}`} onClick={(e) => e.stopPropagation()} className="block truncate font-medium hover:text-primary" title={eerste.bedrijfsnaam}>{eerste.bedrijfsnaam || "—"}</Link>
+                            ) : <div className="truncate" title={eerste.bedrijfsnaam}>{eerste.bedrijfsnaam || "—"}</div>}
                             {eerste.kvk && <div className="text-xs text-muted-foreground truncate">KvK {eerste.kvk}</div>}
-                            {eerste.relatiecode && eerste.id && (
-                              <Link to={`/admin/klanten/${eerste.id}`} onClick={(e) => e.stopPropagation()} className="inline-block">
-                                <Badge variant="outline" className="text-xs">Klant (AFAS)</Badge>
-                              </Link>
-                            )}
+                            {eerste.relatiecode && <Badge variant="outline" className="text-xs">Klant</Badge>}
                             {p.bedrijven.length > 1 && (
                               <div className="text-xs text-muted-foreground">+{p.bedrijven.length - 1} meer</div>
                             )}
@@ -495,7 +494,7 @@ export default function CRM() {
                               <ul className="text-sm space-y-0.5">
                                 {p.bedrijven.map((b, i) => (
                                   <li key={i} className="truncate" title={[b.bedrijfsnaam, b.kvk && `KvK ${b.kvk}`].filter(Boolean).join(" · ")}>
-                                    {b.bedrijfsnaam || "—"}
+                                    {b.id ? <Link to={`/admin/klanten/${b.id}`} className="font-medium hover:text-primary">{b.bedrijfsnaam || "—"}</Link> : (b.bedrijfsnaam || "—")}
                                     {b.kvk && <span className="text-muted-foreground"> · KvK {b.kvk}</span>}
                                   </li>
                                 ))}

@@ -3,9 +3,8 @@ import { DashboardStats } from "@/components/admin/DashboardStats";
 import { DashboardCharts } from "@/components/admin/DashboardCharts";
 import { MFAManagement } from "@/components/admin/MFAManagement";
 import { SupervisorKpiPanel } from "@/components/admin/SupervisorKpiPanel";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Download, Info, Loader2 } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -13,6 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { ExactKoppelingAlarm } from "@/components/admin/ExactKoppelingAlarm";
 import { CollectiefAanmeldingenTeller } from "@/components/admin/CollectiefAanmeldingenTeller";
 import { ZekerChatKpi } from "@/components/admin/ZekerChatKpi";
+import { ToonTestrecordsSchakelaar } from "@/components/admin/ToonTestrecordsSchakelaar";
 
 
 export default function AdminDashboard() {
@@ -70,10 +70,11 @@ export default function AdminDashboard() {
           <div>
             <h1 className="text-3xl font-bold">Dashboard</h1>
             <p className="text-muted-foreground">
-              Overzicht van leads en conversies
+              Klanten, contracten en leads uit het CRM
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-4">
+            <ToonTestrecordsSchakelaar />
             <Button variant="outline" onClick={handleExport} disabled={isExporting}>
               {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
               Excel
@@ -81,18 +82,11 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <Alert>
-          <Info className="h-4 w-4" />
-          <AlertDescription>
-            Auto-facturatie is uitgeschakeld. Maandelijkse termijnen worden via SEPA-incassoschema in Exact afgehandeld.
-          </AlertDescription>
-        </Alert>
-
+        <DashboardStats />
         <MFAManagement />
         <ZekerChatKpi />
         {isSupervisor && <CollectiefAanmeldingenTeller />}
         {isSupervisor && <SupervisorKpiPanel />}
-        <DashboardStats />
         <DashboardCharts />
       </div>
     </AdminLayout>

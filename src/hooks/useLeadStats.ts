@@ -1,9 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 
 export function useLeadStats() {
+  const { toonTest } = useToonTestrecords();
   return useQuery({
-    queryKey: ["lead-stats"],
+    queryKey: ["lead-stats", toonTest],
     queryFn: async () => {
       const now = new Date();
       const startOfWeek = new Date(now);
@@ -16,34 +18,34 @@ export function useLeadStats() {
       const { count: totalLeads } = await supabase
         .from("leads")
         .select("*", { count: "exact", head: true })
-        .eq("is_test", false);
+        .in("is_test", toonTest ? [true, false] : [false]);
 
       // New leads this week
       const { count: newLeadsWeek } = await supabase
         .from("leads")
         .select("*", { count: "exact", head: true })
-        .eq("is_test", false)
+        .in("is_test", toonTest ? [true, false] : [false])
         .gte("created_at", startOfWeek.toISOString());
 
       // New leads this month
       const { count: newLeadsMonth } = await supabase
         .from("leads")
         .select("*", { count: "exact", head: true })
-        .eq("is_test", false)
+        .in("is_test", toonTest ? [true, false] : [false])
         .gte("created_at", startOfMonth.toISOString());
 
       // Converted leads (status = 'actief' or 'klant')
       const { count: convertedLeads } = await supabase
         .from("leads")
         .select("*", { count: "exact", head: true })
-        .eq("is_test", false)
+        .in("is_test", toonTest ? [true, false] : [false])
         .in("status", ["actief", "klant"]);
 
       // Leads by status
       const { data: allLeads } = await supabase
         .from("leads")
         .select("status, verzekering_type, created_at")
-        .eq("is_test", false);
+        .in("is_test", toonTest ? [true, false] : [false]);
 
       const statusCounts: Record<string, number> = {};
       const verzekeringCounts: Record<string, number> = {};

@@ -82,7 +82,8 @@ Deno.serve(async (req) => {
       const fout = (!d.reden ? "Kies een reden." : null)
         ?? valideerToelichting(d.reden, d.toelichting)
         ?? valideerOpzegdatum(d.opzegdatum)
-        ?? (d.bevestigd === true ? null : "Bevestiging is verplicht.");
+        ?? (d.bevestigd === true ? null : "Bevestiging is verplicht.")
+        ?? (d.bedrijfsnaam === undefined || (typeof d.bedrijfsnaam === "string" && d.bedrijfsnaam.length <= 200) ? null : "Bedrijfsnaam is te lang.");
       if (fout) {
         return new Response(JSON.stringify({ error: "validation", melding: fout }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },

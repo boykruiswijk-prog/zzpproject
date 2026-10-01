@@ -50,7 +50,7 @@ export function ExactMandaatImportBlock() {
 
   const csv = () => {
     const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-    const lines = [["Relatiecode", "Naam in AFAS", "Naam in Exact", "Kenmerk", "Status", "Melding", "Bankrekening", "Bestaande machtigingen"].map(esc).join(";"),
+    const lines = [["Relatiecode", "Naam in CRM", "Naam in Exact", "Kenmerk", "Status", "Melding", "Bankrekening", "Bestaande machtigingen"].map(esc).join(";"),
       ...aandacht.map((r) => [r.relatiecode, r.naam, r.exact_naam, r.kenmerk, r.status, r.melding, r.bankrekening_actie, fmtMandaten(r.bestaande_mandaten)].map(esc).join(";"))];
     const blob = new Blob(["\uFEFF" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
     const a = document.createElement("a");
@@ -90,7 +90,7 @@ export function ExactMandaatImportBlock() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead><tr className="text-left text-muted-foreground">
-                    <th className="p-2">Code</th><th className="p-2">Naam in AFAS</th><th className="p-2">Naam in Exact</th>
+                    <th className="p-2">Code</th><th className="p-2">Naam in CRM</th><th className="p-2">Naam in Exact</th>
                     <th className="p-2">Kenmerk</th><th className="p-2">Status</th><th className="p-2">Melding</th>
                     <th className="p-2">Bankrekening</th><th className="p-2">Bestaande machtigingen</th>
                   </tr></thead>

@@ -185,7 +185,7 @@ export function SupervisorKpiPanel() {
         <div>
           <h2 className="text-2xl font-semibold">Portefeuille & prestaties</h2>
           <p className="text-sm text-muted-foreground">
-            Alleen zichtbaar voor supervisor · testrecords uitgesloten
+            Alleen zichtbaar voor supervisor · testrecords uitgesloten · klanten- en leadtellers staan bovenaan het dashboard
           </p>
         </div>
         <Badge variant="outline">supervisor</Badge>
@@ -193,90 +193,6 @@ export function SupervisorKpiPanel() {
 
       {/* KPI-tegels */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {/* 1. Actieve portefeuille */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Users className="h-4 w-4" /> Actieve portefeuille
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{loadingActief ? "…" : actief.length}</div>
-            {actief.length > 0 ? (
-              <p className="text-xs text-muted-foreground mt-1">
-                {nMaandelijks} maandelijks · {nJaarlijks} jaarlijks
-                {nOnbekendRitme > 0 && ` · ${nOnbekendRitme} onbekend ritme`}
-              </p>
-            ) : (
-              <Empty text="Nog geen actieve polissen zonder testmarkering." />
-            )}
-          </CardContent>
-        </Card>
-
-        {/* 2. Maandelijkse premie (indicatie) */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Euro className="h-4 w-4" /> Maandelijkse premie <Badge variant="secondary" className="text-[10px]">indicatief</Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">
-              {mrrTotaal > 0 ? eur(mrrTotaal) : "—"}
-            </div>
-            {actief.length === 0 ? (
-              <Empty text="Nog geen actieve polissen." />
-            ) : zonderBedrag > 0 ? (
-              <p className="text-xs text-muted-foreground mt-1">
-                {zonderBedrag} van {actief.length} actieve polissen heeft nog geen premiebedrag in Exact. Cijfer is een ondergrens.
-              </p>
-            ) : (
-              <p className="text-xs text-muted-foreground mt-1">
-                Op basis van {actief.length} actieve polissen.
-              </p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* 3. Nieuwe leads deze maand */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <TrendingUp className="h-4 w-4" /> Nieuwe leads deze maand
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{nieuweDezeMaand}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Totaal in funnel: {funnelTotaal} leads (excl. test)
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* 4. Conversie */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Activity className="h-4 w-4" /> Conversie
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {funnelTotaal === 0 ? (
-              <>
-                <div className="text-3xl font-bold">—</div>
-                <Empty text="Geen leads zonder testmarkering." />
-              </>
-            ) : (
-              <>
-                <div className="text-3xl font-bold">{conversie}%</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {bereikte} van {funnelTotaal} leads bereikte status actief of klant
-                </p>
-              </>
-            )}
-          </CardContent>
-        </Card>
-
         {/* 5. Gem. verwerkingstijd */}
         <Card>
           <CardHeader className="pb-2">

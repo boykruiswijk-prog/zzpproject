@@ -11,7 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { AlertTriangle, Building2, Loader2 } from "lucide-react";
+import { Building2, Loader2 } from "lucide-react";
+import { OpzeggingenTeKoppelen } from "@/components/admin/OpzeggingenKlant";
 import { formatDateNL } from "@/lib/dateFormat";
 import {
   PRODUCT_LABEL, facturatieAgenda, formatEuro, maandwaarde, periodeBedrag,
@@ -22,15 +23,6 @@ type Ond = { id: string; naam: string | null; exact_relatie_code: string | null;
 type Rec = { regels: number; relaties: number; mrr: number; arr: number };
 type Reconciliatie = { bron: Rec; crm: Rec; actief: Rec; per_product: { product: Product; regels: number; mrr: number; arr: number }[] };
 type Contract = ContractRegel & { itemcode: string; afwijkingen: string[]; is_test: boolean };
-
-export function FacturatieUitBanner() {
-  return (
-    <div role="status" className="flex items-center gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm font-medium text-destructive">
-      <AlertTriangle className="h-4 w-4 shrink-0" />
-      Facturatie vanuit het CRM staat nog uit — wacht op akkoord.
-    </div>
-  );
-}
 
 const MAAND_KORT = ["jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
 const maandLabel = (k: string) => { const [y, m] = k.split("-"); return `${MAAND_KORT[Number(m) - 1]} ${y}`; };
@@ -133,19 +125,19 @@ export default function KlantenContracten() {
           <h1 className="flex items-center gap-2 text-2xl font-bold"><Building2 className="h-6 w-6" /> Klanten & contracten</h1>
           <ToonTestrecordsSchakelaar />
         </div>
-        <FacturatieUitBanner />
         {fout && <p className="text-sm text-destructive">{fout}</p>}
         {laden ? <div className="flex justify-center p-12"><Loader2 className="h-6 w-6 animate-spin" /></div> : (
           <>
+            <OpzeggingenTeKoppelen />
             <div className="grid gap-6 xl:grid-cols-2">
               <Card>
-                <CardHeader><CardTitle className="flex items-center gap-2 text-base">Reconciliatie AFAS-import
+                <CardHeader><CardTitle className="flex items-center gap-2 text-base">Reconciliatie startstand
                   <Badge variant={klopt ? "secondary" : "destructive"}>{klopt ? "Klopt met bron" : "Wijkt af"}</Badge></CardTitle></CardHeader>
                 <CardContent className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead><tr className="text-muted-foreground"><th className="p-2 text-left font-normal"></th><th className="p-2 text-right font-normal">Regels</th><th className="p-2 text-right font-normal">Relaties</th><th className="p-2 text-right font-normal">MRR</th><th className="p-2 text-right font-normal">ARR</th></tr></thead>
                     <tbody>
-                      <RecRij label="Bron (AFAS)" r={rec?.bron} />
+                      <RecRij label="Startstand" r={rec?.bron} />
                       <RecRij label="In CRM" r={rec?.crm} />
                       <RecRij label="Actief (zonder vervangen)" r={rec?.actief} />
                       {rec?.per_product.map((p) => (

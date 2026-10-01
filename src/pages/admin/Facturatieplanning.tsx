@@ -102,9 +102,7 @@ export default function Facturatieplanning() {
         <Card>
           <CardHeader><CardTitle className="text-base">Hoofdschakelaar</CardTitle></CardHeader>
           <CardContent className="flex flex-wrap items-center gap-3 text-sm">
-            <Badge variant={cfg?.facturatie_actief ? "destructive" : "secondary"}>
-              {cfg?.facturatie_actief ? "AAN: de planner maakt concepten in Exact" : "UIT: alleen proefrun, niets naar Exact"}
-            </Badge>
+            <span role="status">Status: {cfg?.facturatie_actief ? "aan, de planner maakt concepten in Exact" : "uit, alleen proefrun en niets naar Exact"}</span>
             <span className="text-muted-foreground">Sleutelveld in Exact: {cfg?.sleutel_veld ?? "—"}</span>
             {isAdmin && (
               <Button size="sm" variant="outline" onClick={() => schakel(!cfg?.facturatie_actief)}>

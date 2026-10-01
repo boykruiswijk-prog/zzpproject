@@ -53,3 +53,4 @@
 - [x] Fase 2: factuur-planner (schakelaar UIT), cron 06:00, beheerscherm, activatie → contractregel, maandcron weg
 - [x] Fase 2: Mijn ZP Facturen (verwerkt, vanaf 17-10-2026, geen betaalstatus, PDF via Exact-documenten)
 - [ ] Fase 2: hervat-factuur in polis-lifecycle via planningstabel laten lopen — wacht op akkoord
+- [x] Boy-vervolg: AFAS uit UI, banner weg, dashboard één bron (dashboard_tellers), CRM-doorklik, opzegkoppeling + "Opzegging verwerken"

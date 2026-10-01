@@ -1915,7 +1915,13 @@ export type Database = {
           email: string
           id: string
           is_test: boolean
+          koppeling_details: Json
+          koppeling_methode: string | null
+          koppeling_status: string | null
           notities: string | null
+          onderneming_id: string | null
+          opzegging_verwerkt_door: string | null
+          opzegging_verwerkt_op: string | null
           polisnummer: string
           status: string
           telefoon: string
@@ -1933,7 +1939,13 @@ export type Database = {
           email: string
           id?: string
           is_test?: boolean
+          koppeling_details?: Json
+          koppeling_methode?: string | null
+          koppeling_status?: string | null
           notities?: string | null
+          onderneming_id?: string | null
+          opzegging_verwerkt_door?: string | null
+          opzegging_verwerkt_op?: string | null
           polisnummer: string
           status?: string
           telefoon: string
@@ -1951,7 +1963,13 @@ export type Database = {
           email?: string
           id?: string
           is_test?: boolean
+          koppeling_details?: Json
+          koppeling_methode?: string | null
+          koppeling_status?: string | null
           notities?: string | null
+          onderneming_id?: string | null
+          opzegging_verwerkt_door?: string | null
+          opzegging_verwerkt_op?: string | null
           polisnummer?: string
           status?: string
           telefoon?: string
@@ -1960,7 +1978,15 @@ export type Database = {
           user_id?: string | null
           voornaam?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "klant_service_aanvragen_onderneming_id_fkey"
+            columns: ["onderneming_id"]
+            isOneToOne: false
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       lead_notes: {
         Row: {
@@ -3222,11 +3248,13 @@ export type Database = {
     }
     Functions: {
       accept_portal_invitation: { Args: { _token: string }; Returns: Json }
+      bepaal_opzegging_koppeling: { Args: { _id: string }; Returns: Json }
       bevestig_artikel_mapping: {
         Args: { _bevestigd: boolean; _id: string }
         Returns: boolean
       }
       cleanup_expired_oauth_states: { Args: never; Returns: undefined }
+      dashboard_tellers: { Args: { _toon_test?: boolean }; Returns: Json }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -3326,6 +3354,10 @@ export type Database = {
       importeer_afas_20261001: { Args: never; Returns: Json }
       is_supervisor_or_admin: { Args: { _user_id: string }; Returns: boolean }
       is_team_member: { Args: { _user_id: string }; Returns: boolean }
+      koppel_opzegging: {
+        Args: { _aanvraag_id: string; _onderneming_id: string }
+        Returns: Json
+      }
       log_not_found: {
         Args: { _pad: string; _referrer?: string; _user_agent?: string }
         Returns: undefined
@@ -3362,6 +3394,10 @@ export type Database = {
           client_name: string
           status: string
         }[]
+      }
+      verwerk_opzegging: {
+        Args: { _aanvraag_id: string; _contract_ids: string[] }
+        Returns: Json
       }
       zeker_opschonen: { Args: never; Returns: undefined }
       zeker_zoek_artikelen: {
