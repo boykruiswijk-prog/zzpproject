@@ -8,6 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Monitor, ShieldCheck, Clock } from "lucide-react";
+import { LeesMeer } from "@/components/kennisbank/LeesMeer";
 
 import serviceVerzekeringen from "@/assets/service-verzekeringen.webp";
 import teamMeeting from "@/assets/team-meeting.webp";
@@ -116,6 +117,7 @@ export default function ZzpVerzekeringICT() {
           </div>
         </div>
       </section>
+      <LeesMeer voorkeur={["cyberverzekering-zzp", "bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "zzp-verzekering-kosten-2026", "welke-verzekeringen-zzp", "bedrijfsaansprakelijkheidsverzekering-zzp"]} />
     </ServicePageTemplate>
   );
 }

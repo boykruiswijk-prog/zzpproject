@@ -9,7 +9,7 @@ export default function KennisbankFinancien() {
       slug="financien"
       title="Financiën"
       intro="Financieel beheer, pensioen opbouwen, sparen, beleggen en je financiële toekomst als zelfstandige."
-      categoryTags={[]}
+      categoryTags={["Financiën"]}
       metaTitle={SEO.title}
       metaDescription={SEO.description}
     />

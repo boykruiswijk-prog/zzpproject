@@ -1,5 +1,6 @@
 import { seoRoute } from "@/config/seoRoutes";
 import { ServicePageTemplate } from "@/components/diensten/ServicePageTemplate";
+import { LeesMeer } from "@/components/kennisbank/LeesMeer";
 import { Shield, Clock, Euro } from "lucide-react";
 
 import serviceVerzekeringen from "@/assets/service-verzekeringen.webp";
@@ -81,6 +82,8 @@ export default function AOV() {
       ctaTitle="Bescherm je inkomen als zelfstandige"
       ctaSubtitle="Plan een gesprek en zie welke AOV bij je past."
       ctaButton="AOV-informatie aanvragen"
-    />
+    >
+      <LeesMeer voorkeur={["aov-arbeidsongeschiktheidsverzekering", "verplichte-aov-voor-zzp", "wat-kosten-verzekeringen-voor-zzp-ers", "welke-verzekeringen-zzp", "voor-en-nadelen-broodfonds-of-schenkkring"]} />
+    </ServicePageTemplate>
   );
 }

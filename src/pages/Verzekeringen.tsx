@@ -16,6 +16,8 @@ import { StepsProcess } from "@/components/shared/StepsProcess";
 import { WhyAffordable } from "@/components/shared/WhyAffordable";
 import { MiniSocialProof } from "@/components/shared/MiniSocialProof";
 import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
+import { LeesMeer } from "@/components/kennisbank/LeesMeer";
+import { HiscoxTrustStrip } from "@/components/home/HiscoxTrustStrip";
 import teamBoyCalling from "@/assets/team-boy-calling.webp";
 import teamCheers from "@/assets/team-cheers.webp";
 
@@ -200,6 +202,8 @@ export default function Verzekeringen() {
         </div>
       </section>
 
+      <HiscoxTrustStrip />
+      <LeesMeer voorkeur={["bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "bedrijfsaansprakelijkheidsverzekering-zzp", "zzp-verzekering-kosten-2026", "welke-verzekeringen-zzp", "zp-zaken-zorgeloos-zzpen-goedkoopste-bav-avb", "cyberverzekering-zzp"]} />
     </Layout>
   );
 }

@@ -16,10 +16,11 @@ import officeFlowers from "@/assets/zp-boy-laptop.webp";
 const SEO = seoRoute("/kennisbank");
 
 const categoryCards = [
-  { icon: Scale, title: "Wet en regelgeving", desc: "Wet DBA, zelfstandigenregelingen en juridische zaken.", href: "/kennisbank/wet-en-regelgeving" },
+  { icon: Scale, title: "Wet- en regelgeving", desc: "Wet DBA, zelfstandigenregelingen en juridische zaken.", href: "/kennisbank/wet-en-regelgeving" },
   { icon: Briefcase, title: "Ondernemen", desc: "Groei, klantrelaties en risicomanagement voor zzp'ers.", href: "/kennisbank/ondernemen" },
   { icon: Calculator, title: "Belastingen", desc: "Belastingaangifte, BTW en fiscale aftrekposten.", href: "/kennisbank/belastingen" },
   { icon: Wallet, title: "Financiën", desc: "Financieel beheer, pensioen en sparen.", href: "/kennisbank/financien" },
+  { icon: Shield, title: "Verzekeringen", desc: "Aansprakelijkheid, AOV, cyber en kosten.", href: "/kennisbank/verzekeringen" },
 ];
 
 export default function Kennisbank() {
@@ -48,7 +49,7 @@ export default function Kennisbank() {
             <h2 className="text-2xl md:text-3xl font-bold mb-3">Categorieën</h2>
             <p className="text-muted-foreground">Bekijk de thema-pagina's.</p>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-5 max-w-7xl mx-auto">
             {categoryCards.map((c) => (
               <LocalizedLink key={c.href} to={c.href} className="bg-card border border-border/50 rounded-2xl p-6 hover:border-accent/40 hover:shadow-md transition-all group">
                 <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center mb-3 group-hover:bg-accent/20 transition-colors">

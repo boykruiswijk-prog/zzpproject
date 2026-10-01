@@ -9,7 +9,7 @@ export default function KennisbankOndernemen() {
       slug="ondernemen"
       title="Ondernemen"
       intro="Praktische tips en kennis voor groei, klantrelaties, professionalisering en risicomanagement als zelfstandige."
-      categoryTags={["Nieuws", "Verzekeringen"]}
+      categoryTags={["Ondernemen"]}
       metaTitle={SEO.title}
       metaDescription={SEO.description}
     />
