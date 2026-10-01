@@ -65,11 +65,11 @@ const timelineEvents = [
   },
   {
     year: "2024",
-    title: "Vaste partner in zzp-verzekeringen",
+    title: "Marktleider in zzp-verzekeringen",
     subtitle: `${SITE_CONFIG.klantenAantal} ondernemers geholpen`,
     description: "ZP Zaken is uitgegroeid tot dé specialist voor zzp'ers in Nederland. Persoonlijke aandacht maakt het verschil.",
     icon: Award,
-    highlight: "Vaste partner",
+    highlight: "Marktleider",
     stats: `${SITE_CONFIG.klantenAantal} klanten`,
     color: "from-purple-500 to-pink-500",
     image: officeCookies,
