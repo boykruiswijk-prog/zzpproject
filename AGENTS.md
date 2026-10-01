@@ -14,3 +14,4 @@
 - Openbare formulieren schrijven uitsluitend via gevalideerde Edge Functions; anon krijgt geen directe tabelrechten. Waarom: formulieren blijven bruikbaar zonder persoonsgegevens publiek leesbaar te maken.
 - Exact-verwerking voor screening wordt nooit vanuit de openbare formulierfunctie uitgevoerd. Waarom: boekhoudmutaties vereisen een afzonderlijke beveiligde teamactie.
 - Security-definerfuncties krijgen minimale EXECUTE-rechten; alleen expliciete publieke leesfuncties blijven voor anon beschikbaar. Waarom: privilege-escalatie via RPC voorkomen.
+- Policies die rolfuncties (is_team_member, has_role, is_supervisor_or_admin) aanroepen gelden alleen `TO authenticated`; publieke leespolicies `TO anon, authenticated` zonder rolfunctie. Controle: scripts/check-anon-kennisbank.mjs. Waarom: anon heeft geen EXECUTE op rolfuncties, anders faalt elke anonieme query.
