@@ -9,6 +9,7 @@ import {
 } from "@/components/mijn-zp/ServiceWizardShell";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -164,6 +165,17 @@ export default function OpzeggenWizard() {
                 onKies={(v) => setDetails({ ...details, opzegdatum: v })}
               />
               <Fout id="fout-opzegdatum" tekst={errors.opzegdatum} />
+              <div className="space-y-1 pt-2">
+                <Label htmlFor="bedrijfsnaam">Bedrijfsnaam (optioneel)</Label>
+                <Input
+                  id="bedrijfsnaam"
+                  maxLength={200}
+                  autoComplete="organization"
+                  value={details.bedrijfsnaam ?? ""}
+                  onChange={(e) => setDetails({ ...details, bedrijfsnaam: e.target.value })}
+                  className="w-full sm:w-[280px]"
+                />
+              </div>
               <p id="uitleg-opzegdatum" className="text-xs text-muted-foreground">
                 Per dag opzegbaar, ten vroegste vanaf vandaag. Wij verwerken je opzegging binnen 24 uur en sturen je een
                 bevestiging per mail.
@@ -181,6 +193,7 @@ export default function OpzeggenWizard() {
                 <div><span className="font-medium">E-mail:</span> {formData.email}</div>
                 <div><span className="font-medium">Telefoon:</span> {formData.telefoon}</div>
                 <div><span className="font-medium">Polisnummer:</span> {formData.polisnummer}</div>
+                {details.bedrijfsnaam?.trim() && <div><span className="font-medium">Bedrijfsnaam:</span> {details.bedrijfsnaam}</div>}
                 <div><span className="font-medium">Reden:</span> {details.reden}</div>
                 {details.reden === "Anders" && details.toelichting && (
                   <div><span className="font-medium">Toelichting:</span> {details.toelichting}</div>
