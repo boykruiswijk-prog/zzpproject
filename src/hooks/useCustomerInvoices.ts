@@ -2,15 +2,15 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { usePortalAuth } from "@/contexts/PortalAuthContext";
 
+// Alleen verwerkte facturen; bewust geen betaalstatus.
 export type CustomerInvoice = {
   id: string;
   factuurnummer: string;
   datum: string | null;
-  vervaldatum: string | null;
+  periode_start: string | null;
+  periode_eind: string | null;
   bedrag: number;
-  status: "open" | "betaald" | "vervallen";
   omschrijving: string;
-  payment_reference: string | null;
 };
 
 export type CustomerInvoicesResult = { invoices: CustomerInvoice[]; unavailable: boolean };
