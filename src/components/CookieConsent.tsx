@@ -77,6 +77,7 @@ export function CookieConsent() {
     localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(consentData));
     updateGtagConsent(prefs.analytics, prefs.marketing);
     setIsVisible(false);
+    window.dispatchEvent(new Event("zp-cookie-keuze"));
   };
 
   const acceptAll = () => {
