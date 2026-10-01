@@ -141,6 +141,13 @@
       "when": 1790856762503,
       "tag": "0019_beperk_collectief_teller_tot_beheer",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1790856812363,
+      "tag": "0020_controleer_beheerrol_bij_collectief_teller",
+      "breakpoints": true
     }
   ]
 }
