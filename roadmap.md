@@ -29,4 +29,4 @@
 - [x] Eerlijke commerciële collectieftekst in NL/EN/DE/FR toevoegen
 - [x] Collectieve aanmeldtellingen alleen voor admin/supervisor zichtbaar houden
 - [x] Collectiefpagina en menu visueel controleren op 1280 en 390 px
-- [ ] Build, tests en typecontrole uitvoeren
+- [x] Build, tests en typecontrole uitvoeren
