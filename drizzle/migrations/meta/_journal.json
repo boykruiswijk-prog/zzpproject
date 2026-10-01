@@ -127,6 +127,13 @@
       "when": 1790855363060,
       "tag": "0017_is_test_kolommen_crm_bronnen",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1790855556889,
+      "tag": "0018_activiteiten_is_test_van_lead",
+      "breakpoints": true
     }
   ]
 }
