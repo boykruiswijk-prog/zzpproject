@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { SITE_CONFIG } from "@/config/site";
 import { 
   Rocket, 
   Building2, 
@@ -65,11 +66,11 @@ const timelineEvents = [
   {
     year: "2024",
     title: "Marktleider in zzp-verzekeringen",
-    subtitle: "Duizenden ondernemers geholpen",
+    subtitle: `${SITE_CONFIG.klantenAantal} ondernemers geholpen`,
     description: "ZP Zaken is uitgegroeid tot dé specialist voor zzp'ers in Nederland. Persoonlijke aandacht maakt het verschil.",
     icon: Award,
     highlight: "Marktleider",
-    stats: "Duizenden klanten",
+    stats: `${SITE_CONFIG.klantenAantal} klanten`,
     color: "from-purple-500 to-pink-500",
     image: officeCookies,
   },

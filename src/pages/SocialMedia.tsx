@@ -1,4 +1,5 @@
 import { seoRoute } from "@/config/seoRoutes";
+import { SITE_CONFIG } from "@/config/site";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
@@ -27,7 +28,7 @@ const trustPoints = [
 ];
 
 const stats = [
-  { value: "5.000+", label: "Tevreden zzp'ers" },
+  { value: SITE_CONFIG.klantenAantal, label: "Tevreden zzp'ers" },
   { value: "5,0/5", label: "Google Reviews" },
   { value: "13+", label: "Jaar ervaring" },
   { value: "< 24u", label: "Reactietijd" },

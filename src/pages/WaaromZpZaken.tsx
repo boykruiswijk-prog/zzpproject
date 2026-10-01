@@ -1,4 +1,5 @@
 import { seoRoute } from "@/config/seoRoutes";
+import { SITE_CONFIG } from "@/config/site";
 import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -53,7 +54,7 @@ const diffBlocks = [
   {
     icon: Users,
     title: "5.000+ zzp'ers delen de premie:  jij profiteert",
-    text: "ZP Zaken werkt met een mantelovereenkomst. Dat betekent dat het verzekerde bedrag gedeeld wordt over duizenden zelfstandigen tegelijk. Daardoor kan de premie structureel laag blijven:  niet als tijdelijke aanbieding, maar als permanent voordeel. Een intermediair koopt individueel in en telt zijn marge bovenop. Dat verschil betaal jij.",
+    text: "ZP Zaken werkt met een mantelovereenkomst. Dat betekent dat het verzekerde bedrag gedeeld wordt over meer dan 5.000 zelfstandigen tegelijk. Daardoor kan de premie structureel laag blijven:  niet als tijdelijke aanbieding, maar als permanent voordeel. Een intermediair koopt individueel in en telt zijn marge bovenop. Dat verschil betaal jij.",
   },
   {
     icon: KeyRound,
@@ -222,7 +223,7 @@ export default function WaaromZpZaken() {
           <div className="grid grid-cols-3 gap-6 max-w-2xl mx-auto mb-12">
             {[
               { number: "13+", label: "jaar specialist in zzp-verzekeringen" },
-              { number: "5.000+", label: "tevreden zzp'ers" },
+              { number: SITE_CONFIG.klantenAantal, label: "tevreden zzp'ers" },
               { number: "€0", label: "eigen risico" },
             ].map((stat, i) => (
               <motion.div

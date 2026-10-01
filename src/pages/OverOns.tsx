@@ -1,4 +1,5 @@
 import { seoRoute } from "@/config/seoRoutes";
+import { SITE_CONFIG } from "@/config/site";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { SEOHead } from "@/components/SEOHead";
 import { useTranslation } from "react-i18next";
@@ -32,7 +33,7 @@ const values = [
 
 const facts = [
   { value: "2014", label: "Opgericht" },
-  { value: "5.000+", label: "Klanten" },
+  { value: SITE_CONFIG.klantenAantal, label: "Klanten" },
   { value: "13+", label: "Jaar ervaring" },
   { value: "5,0/5", label: "Beoordeling" },
 ];

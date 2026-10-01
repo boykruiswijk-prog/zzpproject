@@ -5,6 +5,9 @@ export const SITE_CONFIG = {
   name: "ZP Zaken",
   legalName: "ZP Zaken B.V.",
   url: "https://zpzaken.nl",
+  // Aantal klanten (bevestigd door Boy, 1-10-2026). Enige bron voor klantaantallen.
+  klantenAantal: "5.000+",
+  klantenAantalTekst: "5.000",
   logo: "https://zpzaken.nl/logo.png",
   ogImage: "https://zpzaken.nl/og-image.jpg",
   email: "info@zpzaken.nl",

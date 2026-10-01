@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { SITE_CONFIG } from "@/config/site";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, Phone, Shield, Star, Users } from "lucide-react";
 import { motion } from "framer-motion";
@@ -136,7 +137,7 @@ export function HeroSection() {
                     <Users className="h-7 w-7 text-primary" />
                   </div>
                   <div>
-                    <h3 className="text-3xl font-bold text-foreground">5.000+</h3>
+                    <h3 className="text-3xl font-bold text-foreground">{SITE_CONFIG.klantenAantal}</h3>
                     <p className="text-muted-foreground">{t("home.satisfied")}</p>
                   </div>
                 </div>
