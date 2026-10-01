@@ -49,3 +49,9 @@ project_id = "eugkavokktjwpqaqlwsj"
     verify_jwt = false
   [functions.wp-import]
     verify_jwt = false
+
+[functions.factuur-planner]
+  verify_jwt = false
+
+[functions.factuur-diagnose]
+  verify_jwt = false

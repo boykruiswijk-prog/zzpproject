@@ -9,7 +9,7 @@ import { requireSupervisor } from "../_shared/teamAuth.ts";
 import { sendExactAlarm } from "../_shared/exactAlarm.ts";
 import { periodeTekst, regelOmschrijving } from "../_shared/factuurTekst.ts";
 import { planningsSleutel, planningStatusUitExact } from "../_shared/factuurPeriode.ts";
-import { getGlAccountIdByCode } from "../_shared/exactGl.ts";
+import { getBavGlAccountId } from "../_shared/exactGl.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -156,7 +156,8 @@ Deno.serve(async (req) => {
       if (cErr) continue; // unieke sleutel: al geclaimd → overslaan
       try {
         if ((await zoekOpSleutel(sleutel, sleutelVeld)).length) throw new Error("sleutel bestaat al in Exact");
-        const gl = k.gl_code ? (glCache[k.gl_code] ??= await getGlAccountIdByCode(admin, { ...cfg, _gl: k.gl_code }, token, "_gl", "_gl_cache")) : null;
+        if (k.gl_code && String(k.gl_code) !== String(cfg.gl_code_bav ?? "8003")) throw new Error(`grootboek ${k.gl_code} niet ondersteund`);
+        const gl = k.gl_code ? (glCache[k.gl_code] ??= await getBavGlAccountId(admin, cfg, token)) : null;
         const regel: any = { Item: k.exact_item_id, Quantity: Number(k.aantal), UnitPrice: Number(k.bedrag_per_periode), VATCode: "0",
           Description: regelOmschrijving("premie", k.periode_start, k.periode_eind),
           StartTime: `${k.periode_start}T00:00:00`, EndTime: `${k.periode_eind}T00:00:00` };
