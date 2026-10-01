@@ -215,10 +215,10 @@ export const seoRoutes: SeoRoute[] = [
     path: "/historie",
     title: "13+ jaar ZP Zaken | ZP Zaken",
     description:
-      `Van startup tot vaste partner van zzp'ers. Ontdek onze reis en waarom ${SITE_CONFIG.klantenAantal} zzp'ers ons vertrouwen.`,
+      `Van startup tot marktleider. Ontdek onze reis en waarom ${SITE_CONFIG.klantenAantal} zzp'ers ons vertrouwen.`,
     h1: "13+ jaar ZP Zaken",
     intro:
-      `ZP Zaken bestaat sinds 2014 en groeide van startup tot vaste partner voor meer dan ${SITE_CONFIG.klantenAantalTekst} zelfstandigen. ` +
+      `ZP Zaken bestaat sinds 2014 en groeide van startup tot marktleider voor meer dan ${SITE_CONFIG.klantenAantalTekst} zelfstandigen. ` +
       "De tijdlijn op deze pagina laat de belangrijkste stappen uit die periode zien.",
   },
   {
