@@ -54,7 +54,7 @@ const diffBlocks = [
   {
     icon: Users,
     title: "5.000+ zzp'ers delen de premie:  jij profiteert",
-    text: "ZP Zaken werkt met een mantelovereenkomst. Dat betekent dat het verzekerde bedrag gedeeld wordt over duizenden zelfstandigen tegelijk. Daardoor kan de premie structureel laag blijven:  niet als tijdelijke aanbieding, maar als permanent voordeel. Een intermediair koopt individueel in en telt zijn marge bovenop. Dat verschil betaal jij.",
+    text: "ZP Zaken werkt met een mantelovereenkomst. Dat betekent dat het verzekerde bedrag gedeeld wordt over meer dan 5.000 zelfstandigen tegelijk. Daardoor kan de premie structureel laag blijven:  niet als tijdelijke aanbieding, maar als permanent voordeel. Een intermediair koopt individueel in en telt zijn marge bovenop. Dat verschil betaal jij.",
   },
   {
     icon: KeyRound,
