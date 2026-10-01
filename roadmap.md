@@ -22,3 +22,6 @@
 - [x] Integraties: Exact-statuskaart op echte gezondheid, juiste refreshdatum, Amsterdam-dagtelling, updated_at-trigger
 - [x] Adressen: PDOK-suggestie (NL) in BAV/online-aanvraag/screening, postcode "1234 AB", CSP-check
 - [x] Adressen: server-fallback hoofdletter straat/plaats vóór legBewijsVast; unit test + Playwright (gemockt PDOK)
+- [ ] Go-live: authentieke teamfoto's Gert-Jan/Roxy en Sandra/Noah of initialen; bronnen en rollabels rapporteren
+- [ ] Go-live: Boy-portret bij citaten en foutieve quote-attributies herstellen
+- [ ] Go-live: /voorwaarden en /polisvoorwaarden naar branchevoorwaarden; redirects en screenshots controleren
