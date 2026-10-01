@@ -32,6 +32,8 @@ import { useToast } from "@/hooks/use-toast";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { useFormGuard, submitPublicForm, PublicFormError } from "@/lib/antiSpam";
 import { HoneypotField } from "@/components/shared/HoneypotField";
+import { WIZARD_SECTOREN } from "@/data/sectorVerzekeringskaart";
+import { brancheVoorSector } from "@/data/sectorBranche";
 
 const SEO = seoRoute("/offerte");
 
@@ -43,14 +45,8 @@ const COUNTRIES = [
   { value: "DE", label: "Duitsland (DE)" },
 ];
 
-const BRANCHES = [
-  { value: "ict", label: "ICT (IT & ICT)" },
-  { value: "management-consultancy", label: "Management consultancy (HR & Finance consultancy)" },
-  { value: "pr-marketing", label: "Reclame en marketing (PR & Marketing)" },
-  { value: "coaches", label: "Coaches" },
-  { value: "zakelijke-dienstverlening", label: "Zakelijke dienstverlening (Niet-uitvoerende beroepen)" },
-  { value: "anders", label: "Anders" },
-];
+// Enige bron voor de sectorkeuze: dezelfde lijst als het afsluitformulier (BAV-wizard).
+const BRANCHES = WIZARD_SECTOREN.map((s) => ({ value: s.id, label: s.label }));
 
 const MEDEWERKERS = ["1", "2", "3", "Meer dan 3"];
 
@@ -140,8 +136,12 @@ export default function OffertePage() {
       const aantalNum =
         form.aantal_medewerkers === "Meer dan 3" ? null : Number(form.aantal_medewerkers);
 
+      const sectorLabel = BRANCHES.find((b) => b.value === form.branche)?.label ?? form.branche;
+      const adminBranche = brancheVoorSector(sectorLabel);
+
       const extra = {
-        branche: form.branche,
+        sector: form.branche,
+        branche: sectorLabel,
         belangrijkste_opdrachtgever: form.belangrijkste_opdrachtgever.trim(),
         omschrijving_werkzaamheden: form.omschrijving_werkzaamheden.trim(),
         adres_land: form.adres_land,
@@ -163,11 +163,12 @@ export default function OffertePage() {
           telefoon: form.telefoon.trim(),
           bedrijfsnaam: form.naam_organisatie.trim(),
           kvk_nummer: form.kvk_nummer.trim(),
-          beroep: form.branche,
+          beroep: sectorLabel,
+          ...(adminBranche ? { branche: adminBranche } : {}),
           ingangsdatum: form.gewenste_startdatum || null,
           opmerkingen: form.omschrijving_werkzaamheden.trim(),
           vereist_handmatige_beoordeling:
-            form.branche === "anders" || form.aantal_medewerkers === "Meer dan 3",
+            form.branche === "overig" || form.aantal_medewerkers === "Meer dan 3",
           extra_data: extra as never,
         }, guard);
 
@@ -189,7 +190,7 @@ export default function OffertePage() {
               "Bedrijf": form.naam_organisatie.trim(),
               "KvK-nummer": form.kvk_nummer.trim(),
               "Adres": `${form.adres_postcode || "-"} ${form.adres_huisnummer || ""}, ${form.adres_land}`.trim(),
-              "Branche": BRANCHES.find((b) => b.value === form.branche)?.label ?? form.branche,
+              "Branche": sectorLabel,
               "Belangrijkste opdrachtgever": form.belangrijkste_opdrachtgever.trim(),
               "Omschrijving werkzaamheden": form.omschrijving_werkzaamheden.trim(),
               "Aantal medewerkers": form.aantal_medewerkers,
@@ -423,7 +424,7 @@ export default function OffertePage() {
                   </SelectContent>
                 </Select>
                 <FieldError message={errors.branche} />
-                {form.branche === "anders" && (
+                {form.branche === "overig" && (
                   <p className="text-xs text-muted-foreground mt-2">
                     Voor branches buiten ons standaard aanbod beoordelen we je aanvraag handmatig.
                   </p>
