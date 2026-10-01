@@ -63,7 +63,7 @@ Deno.serve(async (req) => {
       const vanaf = new Date(Date.now() - dagen * 86400000).toISOString().slice(0, 10);
       const f = `Created ge datetime'${vanaf}' or InvoiceDate ge datetime'${vanaf}'`;
       const facturen = await alles(`salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,InvoiceDate,Created,Status,InvoiceTo,InvoiceToName,AmountDC,YourRef,Description&$filter=${encodeURIComponent(f)}`);
-      const regels = await alles(`salesinvoice/SalesInvoiceLines?$select=InvoiceID,Item,ItemCode,ItemDescription,GLAccount,GLAccountCode,Quantity,NetPrice,AmountDC,Description,VATCode&$filter=${encodeURIComponent(facturen.slice(0, 40).map((x) => `InvoiceID eq guid'${x.InvoiceID}'`).join(" or ") || "1 eq 0")}`).catch((e) => [{ fout: String(e) }]);
+      const regels = await alles(`salesinvoice/SalesInvoiceLines?$select=InvoiceID,Item,ItemCode,ItemDescription,GLAccount,Quantity,NetPrice,AmountDC,Description,VATCode&$filter=${encodeURIComponent(facturen.slice(0, 40).map((x) => `InvoiceID eq guid'${x.InvoiceID}'`).join(" or ") || "1 eq 0")}`).catch((e) => [{ fout: String(e) }]);
       return json({ calls, vanaf, facturen, regels });
     }
     if (stap === "remarks") {
@@ -78,12 +78,14 @@ Deno.serve(async (req) => {
       const vanaf = new Date(Date.now() - dagen * 86400000).toISOString().slice(0, 10);
       const f = `Created ge datetime'${vanaf}' or EntryDate ge datetime'${vanaf}'`;
       const kop = await alles(`salesentry/SalesEntries?$select=EntryID,EntryNumber,InvoiceNumber,EntryDate,Created,Customer,CustomerName,AmountDC,YourRef,Description,Journal,Status&$filter=${encodeURIComponent(f)}`).catch((e) => [{ fout: String(e).slice(0, 300) }]);
-      const regels = await alles(`salesentry/SalesEntryLines?$select=EntryID,GLAccountCode,AmountDC,Description,From,To&$filter=${encodeURIComponent(`Date ge datetime'${vanaf}'`)}`).catch((e) => [{ fout: String(e).slice(0, 300) }]);
+      const regels = await alles(`salesentry/SalesEntryLines?$select=EntryID,GLAccountCode,AmountDC,Description,From,To&$filter=${encodeURIComponent(kop.filter((x: any) => x.EntryID).slice(0, 40).map((x: any) => `EntryID eq guid'${x.EntryID}'`).join(" or ") || "1 eq 0")}`).catch((e) => [{ fout: String(e).slice(0, 300) }]);
       return json({ calls, vanaf, kop, regels });
     }
     if (stap === "pdf") {
-      const r = await get(`${baseUrl}/api/v1/${div}/salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,Status&$filter=${encodeURIComponent(body?.invoice_id ? `InvoiceID eq guid'${String(body.invoice_id).replace(/[^0-9a-f-]/gi, "")}'` : "Status eq 50")}&$top=1`);
-      const inv = (await r.json())?.d?.results?.[0];
+      const id = String(body?.invoice_id ?? "").replace(/[^0-9a-f-]/gi, "");
+      const r = await get(`${baseUrl}/api/v1/${div}/salesinvoice/SalesInvoices(guid'${id}')?$select=InvoiceID,InvoiceNumber,Status`);
+      const j = await r.json().catch(() => null);
+      const inv = j?.d?.results?.[0] ?? (j?.d?.InvoiceID ? j.d : null);
       if (!inv) return json({ calls, fout: "geen verwerkte factuur gevonden" });
       const pdf = await get(`${baseUrl}/docs/XMLDownload.aspx?Topic=SalesInvoice&Format=Pdf&Params_InvoiceID=${inv.InvoiceID}&Division=${div}`, "application/pdf");
       const buf = new Uint8Array(await pdf.arrayBuffer());
