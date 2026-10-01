@@ -100,7 +100,8 @@ export const legacyRedirects: LegacyRedirect[] = [
   { from: "wie-zijn-wij", to: "/over-ons" },
   { from: "privacy", to: "/cookies" },
   { from: "privacyverklaring", to: "/cookies" },
-  { from: "voorwaarden", to: "/algemene-voorwaarden" },
+   { from: "voorwaarden", to: "/documenten#verzekeringsvoorwaarden" },
+   { from: "polisvoorwaarden", to: "/documenten#verzekeringsvoorwaarden" },
   { from: "disclaimer", to: "/faq" },
 
   // Dubbele kennispagina: /kennis en /kennisbank deden hetzelfde

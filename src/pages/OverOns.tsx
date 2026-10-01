@@ -5,17 +5,17 @@ import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Target, Eye, Users, Award, Heart, Shield, CheckCircle, UserPlus, Mail, Phone, User, Camera } from "lucide-react";
+import { ArrowRight, Target, Eye, Users, Award, Heart, Shield, CheckCircle, UserPlus, Mail, Phone, User } from "lucide-react";
 import teamMember1 from "@/assets/team-member-1.webp";
 import teamMember2 from "@/assets/team-member-2.webp";
 import teamMember3 from "@/assets/team-member-3.webp";
-import gertjanPortrait from "@/assets/team-member-4.jpg";
-import noahPortrait from "@/assets/team-member-mystery.jpg";
-import sandraPortrait from "@/assets/team-member-mystery.jpg";
+import gertjanPortrait from "@/assets/team-gertjan.webp";
+import noahPortrait from "@/assets/team-noah.webp";
+import sandraPortrait from "@/assets/team-sandra.webp";
+import boyPortrait from "@/assets/zp-boy-laptop.webp";
 
 import teamWalking from "@/assets/team-walking.webp";
 import teamCheers from "@/assets/team-cheers.webp";
-import ellenPortrait from "@/assets/ellen-baars-portrait.webp";
 import { GoogleReviewsSection } from "@/components/social-proof/GoogleReviewsSection";
 import { SocialFeaturesSection } from "@/components/over-ons/SocialFeaturesSection";
 
@@ -98,13 +98,13 @@ export default function OverOns() {
             <div className="relative">
               <div className="bg-card rounded-2xl overflow-hidden shadow-card border border-border/50">
                 <div className="aspect-[4/3] overflow-hidden">
-                  <img loading="lazy" decoding="async" src={teamMember1} alt="Boy Kruiswijk - Oprichter ZP Zaken" className="w-full h-full object-cover" />
+                   <img loading="lazy" decoding="async" src={boyPortrait} alt="Boy Kruiswijk - Oprichter ZP Zaken" className="w-full h-full object-cover object-center" />
                 </div>
                 <div className="p-6">
                   <blockquote className="text-lg font-medium mb-2 text-foreground italic">
                     "Zzp'ers verdienen dezelfde zekerheid als werknemers, maar dan op een manier die past bij het ondernemersleven."
                   </blockquote>
-                  <p className="text-sm text-muted-foreground">Boy Kruiswijk, Oprichter ZP Zaken</p>
+                   <p className="text-sm text-muted-foreground">— Boy Kruiswijk, oprichter ZP Zaken</p>
                 </div>
               </div>
             </div>
@@ -129,7 +129,7 @@ export default function OverOns() {
               </div>
             </div>
             <div className="relative rounded-2xl p-8 lg:p-12 overflow-hidden">
-              <img loading="lazy" decoding="async" src={ellenPortrait} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />
+               <img loading="lazy" decoding="async" src={boyPortrait} alt="" className="absolute inset-0 w-full h-full object-cover object-center" aria-hidden="true" />
               <div className="absolute inset-0" style={{ backgroundColor: "rgba(0,0,0,0.45)" }} aria-hidden="true" />
               <div className="relative z-10">
                 <blockquote className="text-xl lg:text-2xl font-medium mb-6 text-primary-foreground">{t("overOns.quote")}</blockquote>
@@ -152,15 +152,7 @@ export default function OverOns() {
                 <div className="aspect-[4/3] overflow-hidden">
                   {member.image ? (
                     <img loading="lazy" decoding="async" src={member.image} alt={member.name} className="w-full h-full object-cover" />
-                  ): "photoPending" in member && member.photoPending ? (
-                    <div
-                      className="w-full h-full flex flex-col items-center justify-center text-white"
-                      style={{ background: "linear-gradient(135deg, #2f5d3a 0%, #3d7a4a 50%, #2f5d3a 100%)" }}
-                    >
-                      <Camera className="h-12 w-12 text-white/70 mb-2" />
-                      <span className="text-sm font-medium text-white/90">Foto volgt</span>
-                    </div>
-                  ): (
+                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
                       {"vacancy" in member && member.vacancy ? (
                         <User className="h-16 w-16 text-muted-foreground/40 mb-2" />
@@ -192,7 +184,7 @@ export default function OverOns() {
                         <LocalizedLink to="/contact">Direct solliciteren</LocalizedLink>
                       </Button>
                     </div>
-                  ): !member.image && !("photoPending" in member && member.photoPending) ? (
+                   ): !member.image ? (
                     <Button variant="outline" size="sm" className="mt-4" asChild>
                       <LocalizedLink to="/contact">Bekijk vacatures</LocalizedLink>
                     </Button>
