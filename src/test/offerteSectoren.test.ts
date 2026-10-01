@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { WIZARD_SECTOREN, isAlleenOfferteSector } from "@/data/sectorVerzekeringskaart";
-import { ALLEEN_OFFERTE_SECTOREN, bodyIsAlleenOfferte, isAlleenOfferteSector as backendIsAlleenOfferte } from "../../supabase/functions/_shared/sectorRegels";
+import { WIZARD_SECTOREN, isHandmatigeAcceptatieSector as isAlleenOfferteSector } from "@/data/sectorVerzekeringskaart";
+import { HANDMATIGE_ACCEPTATIE_SECTOREN as ALLEEN_OFFERTE_SECTOREN, vereistHandmatigeAcceptatie as bodyIsAlleenOfferte, isHandmatigeAcceptatieSector as backendIsAlleenOfferte, controleerHandmatigeAcceptatie } from "../../supabase/functions/_shared/sectorRegels";
 import { ADMIN_BRANCHES, brancheVoorSector } from "@/data/sectorBranche";
 
 const bron = readFileSync(resolve(__dirname, "../pages/OffertePage.tsx"), "utf8");
 
 describe("offerteformulier sectoren", () => {
   it("gebruikt WIZARD_SECTOREN als enige bron", () => {
-    expect(bron).toMatch(/import \{ WIZARD_SECTOREN, isAlleenOfferteSector \} from "@\/data\/sectorVerzekeringskaart"/);
+    expect(bron).toMatch(/import \{ WIZARD_SECTOREN, isHandmatigeAcceptatieSector \} from "@\/data\/sectorVerzekeringskaart"/);
     expect(bron).toMatch(
       /const BRANCHES = WIZARD_SECTOREN\.map\(\(s\) => \(\{ value: s\.id, label: s\.label \}\)\);/,
     );
@@ -41,11 +41,11 @@ describe("offerteformulier sectoren", () => {
 
   it("beoordeelt overig, zorg en bouw handmatig", () => {
     expect(bron).toMatch(/vereistHandmatig\(form\.branche\) \|\| form\.aantal_medewerkers === "Meer dan 3"/);
-    expect(bron).toMatch(/id === "overig" \|\| isAlleenOfferteSector\(id\)/);
+    expect(bron).toMatch(/id === "overig" \|\| isHandmatigeAcceptatieSector\(id\)/);
   });
 });
 
-describe("alleen-offerte sectoren", () => {
+describe("handmatige-acceptatie sectoren", () => {
   it("herkent zorg en bouw op id en label, niet de andere 6", () => {
     for (const v of ["zorg", "bouw", "Zorg", "Bouw & techniek"]) {
       expect(isAlleenOfferteSector(v), v).toBe(true);
@@ -56,16 +56,16 @@ describe("alleen-offerte sectoren", () => {
       expect(isAlleenOfferteSector(s.label)).toBe(false);
       expect(backendIsAlleenOfferte(s.label)).toBe(false);
     }
-    expect(WIZARD_SECTOREN.filter((s) => !s.alleenOfferte)).toHaveLength(6);
+    expect(WIZARD_SECTOREN.filter((s) => !s.handmatigeAcceptatie)).toHaveLength(6);
   });
 
   it("frontend- en backendlijst zijn gelijk", () => {
-    const fe = WIZARD_SECTOREN.filter((s) => s.alleenOfferte).map((s) => ({ id: s.id, label: s.label }));
+    const fe = WIZARD_SECTOREN.filter((s) => s.handmatigeAcceptatie).map((s) => ({ id: s.id, label: s.label }));
     expect(fe).toEqual([...ALLEEN_OFFERTE_SECTOREN]);
   });
 });
 
-describe("process-bav-wizard vangnet", () => {
+describe("process-bav-wizard markering", () => {
   const wizardBody = (sectorId: string) => ({
     gekozen_pakket: "combi", betaalwijze: "jaarlijks", ingangsdatum: "2026-10-01",
     voornaam: "Test", achternaam: "Klant", email: "test@zpzaken.nl", bedrijfsnaam: "Test BV",
@@ -73,12 +73,48 @@ describe("process-bav-wizard vangnet", () => {
     // Exact zoals BAVApplicationModule het opbouwt: het label.
     sector: WIZARD_SECTOREN.find((s) => s.id === sectorId)?.label ?? null,
   });
-  it("weigert Zorg en Bouw & techniek zoals de wizard ze verstuurt", () => {
+  it("markeert Zorg en Bouw & techniek zoals de wizard ze verstuurt", () => {
     expect(bodyIsAlleenOfferte(wizardBody("zorg"))).toBe(true);
     expect(bodyIsAlleenOfferte(wizardBody("bouw"))).toBe(true);
     expect(bodyIsAlleenOfferte({ extra_data: { sector: "zorg" } })).toBe(true);
   });
-  it("laat de andere sectoren door", () => {
-    for (const s of WIZARD_SECTOREN.filter((s) => !s.alleenOfferte)) expect(bodyIsAlleenOfferte(wizardBody(s.id))).toBe(false);
+  it("markeert de andere sectoren niet", () => {
+    for (const s of WIZARD_SECTOREN.filter((s) => !s.handmatigeAcceptatie)) expect(bodyIsAlleenOfferte(wizardBody(s.id))).toBe(false);
+  });
+});
+
+describe("afsluitwizard zonder blokkade", () => {
+  const wizard = readFileSync(resolve(__dirname, "../components/home/BAVApplicationModule.tsx"), "utf8");
+  it("heeft geen offerteknop, melding of blokkade meer", () => {
+    expect(wizard).not.toMatch(/offerteLink|Offerte aanvragen|direct online afsluiten/i);
+    expect(wizard).not.toMatch(/disabled=\{[^}]*isHandmatigeAcceptatieSector/);
+    expect(wizard).not.toMatch(/newErrors\.\w+ = [^;]*sector[^;]*niet mogelijk/);
+  });
+  it("process-bav-wizard weigert zorg/bouw niet meer", () => {
+    const fn = readFileSync(resolve(__dirname, "../../supabase/functions/process-bav-wizard/index.ts"), "utf8");
+    expect(fn).not.toMatch(/sector_alleen_offerte|KLANTMELDING_ALLEEN_OFFERTE/);
+    expect(fn).toMatch(/handmatige_acceptatie: \{ reden: HANDMATIGE_ACCEPTATIE_REDEN/);
+  });
+  it("klantteksten bevatten geen verboden woorden voor deze sectoren", () => {
+    const m = wizard.match(/submissionResult\.handmatig\s*\?\s*"([^"]+)"/);
+    expect(m).not.toBeNull();
+    expect(m![1]).not.toMatch(/offerte|handmatig|afgewezen|propositie/i);
+  });
+});
+
+describe("activatiecheck handmatige acceptatie", () => {
+  it("geen markering → ok", () => {
+    expect(controleerHandmatigeAcceptatie({ sector: "ICT" }, {})).toEqual({ ok: true, gemarkeerd: false });
+    expect(controleerHandmatigeAcceptatie(null, {})).toEqual({ ok: true, gemarkeerd: false });
+  });
+  it("markering zonder bevestiging → 409", () => {
+    const r = controleerHandmatigeAcceptatie({ handmatige_acceptatie: { reden: "x", sector: "Zorg" } }, { lead_id: "a" });
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.status).toBe(409);
+    expect(controleerHandmatigeAcceptatie({ handmatige_acceptatie: {} }, { handmatige_acceptatie_bevestigd: "true" }).ok).toBe(false);
+  });
+  it("markering met bevestiging → ok", () => {
+    expect(controleerHandmatigeAcceptatie({ handmatige_acceptatie: { sector: "Zorg" } }, { handmatige_acceptatie_bevestigd: true }))
+      .toEqual({ ok: true, gemarkeerd: true });
   });
 });
