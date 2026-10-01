@@ -162,6 +162,13 @@
       "when": 1790861949154,
       "tag": "0022_klant_contracten_afas_import",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1790863082092,
+      "tag": "0023_exact_spiegel_fase1",
+      "breakpoints": true
     }
   ]
 }

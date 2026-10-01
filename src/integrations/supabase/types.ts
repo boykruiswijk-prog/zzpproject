@@ -832,6 +832,225 @@ export type Database = {
         }
         Relationships: []
       }
+      exact_abonnementen_spiegel: {
+        Row: {
+          block_entry: boolean | null
+          cancellation_date: string | null
+          classification: string | null
+          end_date: string | null
+          entry_id: string
+          invoice_day: number | null
+          invoice_to: string | null
+          invoiced_to: string | null
+          invoiced_to_bron: string | null
+          invoicing_start_date: string | null
+          nummer: string | null
+          omschrijving: string | null
+          opgehaald_op: string
+          ordered_by: string | null
+          payment_condition: string | null
+          raw: Json | null
+          start_date: string | null
+          subscription_type: string | null
+          sync_run_id: string | null
+        }
+        Insert: {
+          block_entry?: boolean | null
+          cancellation_date?: string | null
+          classification?: string | null
+          end_date?: string | null
+          entry_id: string
+          invoice_day?: number | null
+          invoice_to?: string | null
+          invoiced_to?: string | null
+          invoiced_to_bron?: string | null
+          invoicing_start_date?: string | null
+          nummer?: string | null
+          omschrijving?: string | null
+          opgehaald_op?: string
+          ordered_by?: string | null
+          payment_condition?: string | null
+          raw?: Json | null
+          start_date?: string | null
+          subscription_type?: string | null
+          sync_run_id?: string | null
+        }
+        Update: {
+          block_entry?: boolean | null
+          cancellation_date?: string | null
+          classification?: string | null
+          end_date?: string | null
+          entry_id?: string
+          invoice_day?: number | null
+          invoice_to?: string | null
+          invoiced_to?: string | null
+          invoiced_to_bron?: string | null
+          invoicing_start_date?: string | null
+          nummer?: string | null
+          omschrijving?: string | null
+          opgehaald_op?: string
+          ordered_by?: string | null
+          payment_condition?: string | null
+          raw?: Json | null
+          start_date?: string | null
+          subscription_type?: string | null
+          sync_run_id?: string | null
+        }
+        Relationships: []
+      }
+      exact_abonnementsregels_spiegel: {
+        Row: {
+          amount_dc: number | null
+          entry_id: string | null
+          from_date: string | null
+          id: string
+          item: string | null
+          item_code: string | null
+          item_omschrijving: string | null
+          line_type: string | null
+          net_price: number | null
+          opgehaald_op: string
+          quantity: number | null
+          raw: Json | null
+          sync_run_id: string | null
+          to_date: string | null
+          unit_code: string | null
+          unit_price: number | null
+          vat_code: string | null
+        }
+        Insert: {
+          amount_dc?: number | null
+          entry_id?: string | null
+          from_date?: string | null
+          id: string
+          item?: string | null
+          item_code?: string | null
+          item_omschrijving?: string | null
+          line_type?: string | null
+          net_price?: number | null
+          opgehaald_op?: string
+          quantity?: number | null
+          raw?: Json | null
+          sync_run_id?: string | null
+          to_date?: string | null
+          unit_code?: string | null
+          unit_price?: number | null
+          vat_code?: string | null
+        }
+        Update: {
+          amount_dc?: number | null
+          entry_id?: string | null
+          from_date?: string | null
+          id?: string
+          item?: string | null
+          item_code?: string | null
+          item_omschrijving?: string | null
+          line_type?: string | null
+          net_price?: number | null
+          opgehaald_op?: string
+          quantity?: number | null
+          raw?: Json | null
+          sync_run_id?: string | null
+          to_date?: string | null
+          unit_code?: string | null
+          unit_price?: number | null
+          vat_code?: string | null
+        }
+        Relationships: []
+      }
+      exact_abonnementstypes_spiegel: {
+        Row: {
+          code: string | null
+          id: string
+          omschrijving: string | null
+          opgehaald_op: string
+          raw: Json | null
+          sync_run_id: string | null
+        }
+        Insert: {
+          code?: string | null
+          id: string
+          omschrijving?: string | null
+          opgehaald_op?: string
+          raw?: Json | null
+          sync_run_id?: string | null
+        }
+        Update: {
+          code?: string | null
+          id?: string
+          omschrijving?: string | null
+          opgehaald_op?: string
+          raw?: Json | null
+          sync_run_id?: string | null
+        }
+        Relationships: []
+      }
+      exact_accounts_spiegel: {
+        Row: {
+          blocked: boolean | null
+          code: string | null
+          code_norm: string | null
+          id: string
+          is_sales: boolean | null
+          kvk: string | null
+          naam: string | null
+          opgehaald_op: string
+          raw: Json | null
+          status: string | null
+          sync_run_id: string | null
+        }
+        Insert: {
+          blocked?: boolean | null
+          code?: string | null
+          code_norm?: string | null
+          id: string
+          is_sales?: boolean | null
+          kvk?: string | null
+          naam?: string | null
+          opgehaald_op?: string
+          raw?: Json | null
+          status?: string | null
+          sync_run_id?: string | null
+        }
+        Update: {
+          blocked?: boolean | null
+          code?: string | null
+          code_norm?: string | null
+          id?: string
+          is_sales?: boolean | null
+          kvk?: string | null
+          naam?: string | null
+          opgehaald_op?: string
+          raw?: Json | null
+          status?: string | null
+          sync_run_id?: string | null
+        }
+        Relationships: []
+      }
+      exact_artikelen_spiegel: {
+        Row: {
+          code: string | null
+          id: string
+          omschrijving: string | null
+          opgehaald_op: string
+          sync_run_id: string | null
+        }
+        Insert: {
+          code?: string | null
+          id: string
+          omschrijving?: string | null
+          opgehaald_op?: string
+          sync_run_id?: string | null
+        }
+        Update: {
+          code?: string | null
+          id?: string
+          omschrijving?: string | null
+          opgehaald_op?: string
+          sync_run_id?: string | null
+        }
+        Relationships: []
+      }
       exact_config: {
         Row: {
           access_token: string | null
@@ -1332,6 +1551,8 @@ export type Database = {
         Row: {
           aantal: number
           abonnement_nr: string | null
+          afas_gefactureerd_tm: string | null
+          afas_volgende_factuurdatum: string | null
           afw_prijs: number | null
           afwijkingen: string[]
           bedrag_per_periode: number
@@ -1341,9 +1562,12 @@ export type Database = {
           created_at: string
           cyclus: string
           eind_datum: string | null
+          exact_abonnement_id: string | null
+          exact_abonnementsregel_id: string | null
           facturatie_status: string
           factureren_vanaf: string | null
           gefactureerd_tm: string | null
+          gefactureerd_tm_bron: string
           id: string
           is_test: boolean
           itemcode: string
@@ -1360,6 +1584,8 @@ export type Database = {
         Insert: {
           aantal?: number
           abonnement_nr?: string | null
+          afas_gefactureerd_tm?: string | null
+          afas_volgende_factuurdatum?: string | null
           afw_prijs?: number | null
           afwijkingen?: string[]
           bedrag_per_periode?: number
@@ -1369,9 +1595,12 @@ export type Database = {
           created_at?: string
           cyclus: string
           eind_datum?: string | null
+          exact_abonnement_id?: string | null
+          exact_abonnementsregel_id?: string | null
           facturatie_status?: string
           factureren_vanaf?: string | null
           gefactureerd_tm?: string | null
+          gefactureerd_tm_bron?: string
           id?: string
           is_test?: boolean
           itemcode: string
@@ -1388,6 +1617,8 @@ export type Database = {
         Update: {
           aantal?: number
           abonnement_nr?: string | null
+          afas_gefactureerd_tm?: string | null
+          afas_volgende_factuurdatum?: string | null
           afw_prijs?: number | null
           afwijkingen?: string[]
           bedrag_per_periode?: number
@@ -1397,9 +1628,12 @@ export type Database = {
           created_at?: string
           cyclus?: string
           eind_datum?: string | null
+          exact_abonnement_id?: string | null
+          exact_abonnementsregel_id?: string | null
           facturatie_status?: string
           factureren_vanaf?: string | null
           gefactureerd_tm?: string | null
+          gefactureerd_tm_bron?: string
           id?: string
           is_test?: boolean
           itemcode?: string
@@ -1930,6 +2164,10 @@ export type Database = {
           afwijkingen: string[]
           bron: string | null
           created_at: string
+          exact_account_id: string | null
+          exact_account_naam: string | null
+          exact_koppeling_status: string | null
+          exact_naam_gelijkenis: number | null
           exact_relatie_code: string | null
           iban: string | null
           id: string
@@ -1944,6 +2182,10 @@ export type Database = {
           afwijkingen?: string[]
           bron?: string | null
           created_at?: string
+          exact_account_id?: string | null
+          exact_account_naam?: string | null
+          exact_koppeling_status?: string | null
+          exact_naam_gelijkenis?: number | null
           exact_relatie_code?: string | null
           iban?: string | null
           id?: string
@@ -1958,6 +2200,10 @@ export type Database = {
           afwijkingen?: string[]
           bron?: string | null
           created_at?: string
+          exact_account_id?: string | null
+          exact_account_naam?: string | null
+          exact_koppeling_status?: string | null
+          exact_naam_gelijkenis?: number | null
           exact_relatie_code?: string | null
           iban?: string | null
           id?: string
@@ -2633,6 +2879,34 @@ export type Database = {
       }
     }
     Views: {
+      exact_reconciliatie_v: {
+        Row: {
+          bron: string | null
+          bron_rij: number | null
+          contract_id: string | null
+          crm_bedrag: number | null
+          crm_eind: string | null
+          crm_gefactureerd_tm: string | null
+          crm_status: string | null
+          cyclus: string | null
+          entry_id: string | null
+          exact_bedrag: number | null
+          exact_cyclus: string | null
+          exact_eind: string | null
+          exact_invoiced_to: string | null
+          exact_nummer: string | null
+          exact_relatie_code: string | null
+          invoiced_to_bron: string | null
+          itemcode: string | null
+          klant_naam: string | null
+          klasse: string | null
+          onderneming_id: string | null
+          product: string | null
+          regel_id: string | null
+          verschillen: string[] | null
+        }
+        Relationships: []
+      }
       klant_mandaat_v: {
         Row: {
           iban: string | null
@@ -2704,6 +2978,8 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      exact_code_norm: { Args: { _c: string }; Returns: string }
+      exact_koppel_accounts: { Args: never; Returns: Json }
       get_exact_koppeling_fout: { Args: never; Returns: string }
       get_klant_contracten_reconciliatie: { Args: never; Returns: Json }
       get_mijn_polissen: {
@@ -2743,6 +3019,10 @@ export type Database = {
           source_queue: string
         }
         Returns: number
+      }
+      neem_exact_stand_over: {
+        Args: { _contract_ids: string[] }
+        Returns: Json
       }
       nextval_text: { Args: { seq_name: string }; Returns: string }
       portal_user_id_by_email: { Args: { p_email: string }; Returns: string }
