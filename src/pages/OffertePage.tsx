@@ -163,11 +163,12 @@ export default function OffertePage() {
           telefoon: form.telefoon.trim(),
           bedrijfsnaam: form.naam_organisatie.trim(),
           kvk_nummer: form.kvk_nummer.trim(),
-          beroep: form.branche,
+          beroep: sectorLabel,
+          ...(adminBranche ? { branche: adminBranche } : {}),
           ingangsdatum: form.gewenste_startdatum || null,
           opmerkingen: form.omschrijving_werkzaamheden.trim(),
           vereist_handmatige_beoordeling:
-            form.branche === "anders" || form.aantal_medewerkers === "Meer dan 3",
+            form.branche === "overig" || form.aantal_medewerkers === "Meer dan 3",
           extra_data: extra as never,
         }, guard);
 
@@ -189,7 +190,7 @@ export default function OffertePage() {
               "Bedrijf": form.naam_organisatie.trim(),
               "KvK-nummer": form.kvk_nummer.trim(),
               "Adres": `${form.adres_postcode || "-"} ${form.adres_huisnummer || ""}, ${form.adres_land}`.trim(),
-              "Branche": BRANCHES.find((b) => b.value === form.branche)?.label ?? form.branche,
+              "Branche": sectorLabel,
               "Belangrijkste opdrachtgever": form.belangrijkste_opdrachtgever.trim(),
               "Omschrijving werkzaamheden": form.omschrijving_werkzaamheden.trim(),
               "Aantal medewerkers": form.aantal_medewerkers,
