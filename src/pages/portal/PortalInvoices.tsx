@@ -9,16 +9,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Download, Receipt, Loader2, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-function StatusBadge({ status }: { status: CustomerInvoice["status"] }) {
-  if (status === "betaald") {
-    return <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 border-emerald-200">Betaald</Badge>;
-  }
-  if (status === "vervallen") {
-    return <Badge className="bg-red-100 text-red-800 hover:bg-red-100 border-red-200">Vervallen</Badge>;
-  }
-  return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 border-amber-200">Open</Badge>;
-}
-
 function formatEuro(n: number) {
   const abs = `€ ${Math.abs(n).toFixed(2).replace(".", ",")}`;
   return n < 0 ? `−${abs}` : abs;
@@ -98,11 +88,14 @@ export default function PortalInvoices() {
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="font-medium">{inv.factuurnummer}</p>
-                  <StatusBadge status={inv.status} />
                   {inv.bedrag < 0 && <Badge variant="secondary">Creditnota</Badge>}
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {formatDateLongNL(inv.datum)} · <span className="font-medium text-foreground">{formatEuro(inv.bedrag)}</span>
+                  {formatDateLongNL(inv.datum)}
+                  {inv.periode_start && inv.periode_eind && (
+                    <> · periode {formatDateLongNL(inv.periode_start)} t/m {formatDateLongNL(inv.periode_eind)}</>
+                  )}
+                  {" "}· <span className="font-medium text-foreground">{formatEuro(inv.bedrag)}</span>
                 </p>
                 {inv.omschrijving && (
                   <p className="text-xs text-muted-foreground mt-1 truncate">{inv.omschrijving}</p>

@@ -169,6 +169,20 @@
       "when": 1790863082092,
       "tag": "0023_exact_spiegel_fase1",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1790865251684,
+      "tag": "0024_facturatieplanner_fase2",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1790865556076,
+      "tag": "0025_facturatie_kandidaten_fix",
+      "breakpoints": true
     }
   ]
 }

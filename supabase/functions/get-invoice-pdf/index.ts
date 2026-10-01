@@ -1,7 +1,9 @@
 // Portal: streamt PDF van één Exact verkoopfactuur naar de ingelogde klant.
-// Validatie: factuur moet bij een lead horen waar de user via policies aan gekoppeld is.
+// Validatie: factuur hoort bij een account van de klant (polis of persoon), Status 50, vanaf 17-10-2026.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { ensureValidToken } from "../_shared/exactToken.ts";
+import { accountIdsVoorGebruiker, PORTAL_FACTUREN_VANAF } from "../_shared/klantAccounts.ts";
+import { haalFactuurPdf } from "../_shared/exactFactuurPdf.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -41,14 +43,7 @@ Deno.serve(async (req) => {
     const invoiceId = String(body?.invoice_id ?? "").trim();
     if (!invoiceId || !/^[0-9a-f-]{36}$/i.test(invoiceId)) return json({ error: "invalid_invoice_id" }, 400);
 
-    // Whitelist: account_ids die bij deze user horen
-    const { data: pols } = await admin
-      .from("policies").select("lead_id").eq("user_id", user.id).not("lead_id", "is", null);
-    const leadIds = Array.from(new Set((pols ?? []).map((p) => p.lead_id))) as string[];
-    if (leadIds.length === 0) return json({ error: "forbidden" }, 403);
-    const { data: leads } = await admin
-      .from("leads").select("exact_account_id").in("id", leadIds).not("exact_account_id", "is", null);
-    const allowedAccountIds = new Set((leads ?? []).map((l) => l.exact_account_id));
+    const allowedAccountIds = new Set(await accountIdsVoorGebruiker(admin, user.id, user.email));
     if (allowedAccountIds.size === 0) return json({ error: "forbidden" }, 403);
 
     const { data: config } = await admin.from("exact_config").select("*").maybeSingle();
@@ -59,7 +54,7 @@ Deno.serve(async (req) => {
     const token = await ensureValidToken(admin, config);
 
     // Stap 1: valideer eigenaarschap via Exact lookup
-    const checkUrl = `${baseUrl}/api/v1/${divisie}/salesinvoice/SalesInvoices(guid'${invoiceId}')?$select=InvoiceID,InvoiceTo,InvoiceNumber,Status`;
+    const checkUrl = `${baseUrl}/api/v1/${divisie}/salesinvoice/SalesInvoices(guid'${invoiceId}')?$select=InvoiceID,InvoiceTo,InvoiceNumber,Status,InvoiceDate`;
     const checkRes = await fetch(checkUrl, { headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } });
     if (!checkRes.ok) {
       const bodyText = await checkRes.text();
@@ -74,7 +69,9 @@ Deno.serve(async (req) => {
     }
     const checkData = await checkRes.json();
     const invoice = checkData?.d ?? null;
-    if (!invoice || !allowedAccountIds.has(invoice.InvoiceTo)) {
+    const datumMs = Number(String(invoice?.InvoiceDate ?? "").match(/\d+/)?.[0] ?? 0);
+    const datum = datumMs ? new Date(datumMs).toISOString().slice(0, 10) : "";
+    if (!invoice || !allowedAccountIds.has(invoice.InvoiceTo) || Number(invoice.Status) !== 50 || datum < PORTAL_FACTUREN_VANAF) {
       await logSync(admin, {
         trigger_type: "customer_invoice_pdf", status: "forbidden", http_status: 403,
         error_message: "ownership_mismatch",
@@ -83,41 +80,24 @@ Deno.serve(async (req) => {
       return json({ error: "forbidden" }, 403);
     }
 
-    // Stap 2: download PDF. Endpoint: docs/PrintDocument.aspx (Exact REST geeft geen native PDF terug,
-    // de officiele PDF-route is XMLDownload.aspx).
-    const pdfUrl = `${baseUrl}/docs/XMLDownload.aspx?Topic=SalesInvoice&Format=Pdf&Params_InvoiceID=${invoiceId}&Division=${divisie}`;
-    const pdfRes = await fetch(pdfUrl, {
-      headers: { Authorization: `Bearer ${token}`, Accept: "application/pdf" },
-    });
-    if (!pdfRes.ok) {
-      const bodyText = await pdfRes.text().catch(() => "");
+    // Stap 2: PDF via Exact-documenten (alleen lezen), zie _shared/exactFactuurPdf.ts.
+    const pdf = await haalFactuurPdf(baseUrl, divisie, token, invoice.InvoiceNumber);
+    if (!pdf.ok) {
       await logSync(admin, {
-        trigger_type: "customer_invoice_pdf", status: "error", http_status: pdfRes.status,
-        error_message: `pdf ${pdfRes.status}: ${bodyText.slice(0, 300)}`,
-        payload: { user_id: user.id, invoice_id: invoiceId, phase: "pdf", url: pdfUrl },
+        trigger_type: "customer_invoice_pdf", status: "error", http_status: pdf.http ?? null,
+        error_message: `pdf: ${pdf.reden}`, payload: { user_id: user.id, invoice_id: invoiceId, phase: "pdf" },
       });
-      return json({ error: "pdf_fetch_failed", detail: bodyText.slice(0, 300) }, 502);
+      return json({ error: "pdf_fetch_failed", reden: pdf.reden }, 502);
     }
-    const ctype = pdfRes.headers.get("content-type") || "";
-    const buf = await pdfRes.arrayBuffer();
-
-    if (!ctype.toLowerCase().includes("pdf")) {
-      // Exact gaf HTML terug (login-redirect of error-pagina). Log voor diagnose.
-      await logSync(admin, {
-        trigger_type: "customer_invoice_pdf", status: "error", http_status: pdfRes.status,
-        error_message: `unexpected_content_type: ${ctype}`,
-        payload: { user_id: user.id, invoice_id: invoiceId, content_type: ctype, byte_length: buf.byteLength },
-      });
-      return json({ error: "pdf_endpoint_invalid", content_type: ctype }, 502);
-    }
+    const buf = pdf.bytes;
 
     await logSync(admin, {
       trigger_type: "customer_invoice_pdf", status: "ok", http_status: 200,
-      payload: { user_id: user.id, invoice_id: invoiceId, byte_length: buf.byteLength, invoice_number: invoice.InvoiceNumber },
+      payload: { user_id: user.id, invoice_id: invoiceId, byte_length: buf.length, invoice_number: invoice.InvoiceNumber },
     });
 
     const filename = `factuur-${invoice.InvoiceNumber || invoiceId}.pdf`;
-    return new Response(buf, {
+    return new Response(buf as unknown as BodyInit, {
       status: 200,
       headers: {
         ...corsHeaders,

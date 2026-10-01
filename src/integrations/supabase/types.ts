@@ -1378,6 +1378,254 @@ export type Database = {
         }
         Relationships: []
       }
+      facturatie_config: {
+        Row: {
+          bijgewerkt_door: string | null
+          bijgewerkt_op: string
+          facturatie_actief: boolean
+          id: number
+          sleutel_veld: string
+          verwerk_termijn_werkdagen: number
+        }
+        Insert: {
+          bijgewerkt_door?: string | null
+          bijgewerkt_op?: string
+          facturatie_actief?: boolean
+          id?: number
+          sleutel_veld?: string
+          verwerk_termijn_werkdagen?: number
+        }
+        Update: {
+          bijgewerkt_door?: string | null
+          bijgewerkt_op?: string
+          facturatie_actief?: boolean
+          id?: number
+          sleutel_veld?: string
+          verwerk_termijn_werkdagen?: number
+        }
+        Relationships: []
+      }
+      factuur_artikel_mapping: {
+        Row: {
+          bevestigd: boolean
+          bevestigd_door: string | null
+          bevestigd_op: string | null
+          blokkade_reden: string | null
+          created_at: string
+          exact_item_code: string | null
+          exact_item_id: string | null
+          gl_code: string | null
+          id: string
+          itemcode_patroon: string
+          notitie: string | null
+          product: string
+          updated_at: string
+        }
+        Insert: {
+          bevestigd?: boolean
+          bevestigd_door?: string | null
+          bevestigd_op?: string | null
+          blokkade_reden?: string | null
+          created_at?: string
+          exact_item_code?: string | null
+          exact_item_id?: string | null
+          gl_code?: string | null
+          id?: string
+          itemcode_patroon: string
+          notitie?: string | null
+          product: string
+          updated_at?: string
+        }
+        Update: {
+          bevestigd?: boolean
+          bevestigd_door?: string | null
+          bevestigd_op?: string | null
+          blokkade_reden?: string | null
+          created_at?: string
+          exact_item_code?: string | null
+          exact_item_id?: string | null
+          gl_code?: string | null
+          id?: string
+          itemcode_patroon?: string
+          notitie?: string | null
+          product?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      factuur_planner_runs: {
+        Row: {
+          aantal_aangemaakt: number
+          aantal_geblokkeerd: number
+          aantal_kandidaten: number
+          bedrag: number
+          detail: Json
+          gestart_op: string
+          id: string
+          modus: string
+          status: string
+          trigger_type: string
+        }
+        Insert: {
+          aantal_aangemaakt?: number
+          aantal_geblokkeerd?: number
+          aantal_kandidaten?: number
+          bedrag?: number
+          detail?: Json
+          gestart_op?: string
+          id?: string
+          modus: string
+          status?: string
+          trigger_type: string
+        }
+        Update: {
+          aantal_aangemaakt?: number
+          aantal_geblokkeerd?: number
+          aantal_kandidaten?: number
+          bedrag?: number
+          detail?: Json
+          gestart_op?: string
+          id?: string
+          modus?: string
+          status?: string
+          trigger_type?: string
+        }
+        Relationships: []
+      }
+      factuur_planning: {
+        Row: {
+          aangemaakt_op: string
+          aantal: number
+          bedrag: number
+          bedrag_per_periode: number
+          concept_op: string | null
+          exact_account_id: string
+          exact_invoice_id: string | null
+          exact_invoice_number: string | null
+          exact_item_id: string
+          exact_status: number | null
+          foutmelding: string | null
+          gl_code: string | null
+          id: string
+          invoice_date: string | null
+          is_test: boolean
+          klant_contract_id: string
+          laatst_gecontroleerd_op: string | null
+          periode_eind: string
+          periode_start: string
+          planningssleutel: string
+          status: string
+          vervangen_door: string | null
+          verwerkt_op: string | null
+        }
+        Insert: {
+          aangemaakt_op?: string
+          aantal: number
+          bedrag: number
+          bedrag_per_periode: number
+          concept_op?: string | null
+          exact_account_id: string
+          exact_invoice_id?: string | null
+          exact_invoice_number?: string | null
+          exact_item_id: string
+          exact_status?: number | null
+          foutmelding?: string | null
+          gl_code?: string | null
+          id?: string
+          invoice_date?: string | null
+          is_test?: boolean
+          klant_contract_id: string
+          laatst_gecontroleerd_op?: string | null
+          periode_eind: string
+          periode_start: string
+          planningssleutel: string
+          status?: string
+          vervangen_door?: string | null
+          verwerkt_op?: string | null
+        }
+        Update: {
+          aangemaakt_op?: string
+          aantal?: number
+          bedrag?: number
+          bedrag_per_periode?: number
+          concept_op?: string | null
+          exact_account_id?: string
+          exact_invoice_id?: string | null
+          exact_invoice_number?: string | null
+          exact_item_id?: string
+          exact_status?: number | null
+          foutmelding?: string | null
+          gl_code?: string | null
+          id?: string
+          invoice_date?: string | null
+          is_test?: boolean
+          klant_contract_id?: string
+          laatst_gecontroleerd_op?: string | null
+          periode_eind?: string
+          periode_start?: string
+          planningssleutel?: string
+          status?: string
+          vervangen_door?: string | null
+          verwerkt_op?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "factuur_planning_klant_contract_id_fkey"
+            columns: ["klant_contract_id"]
+            isOneToOne: false
+            referencedRelation: "klant_contracten"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "factuur_planning_vervangen_door_fkey"
+            columns: ["vervangen_door"]
+            isOneToOne: false
+            referencedRelation: "factuur_planning"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      factuur_planning_log: {
+        Row: {
+          actie: string
+          created_at: string
+          id: string
+          klant_contract_id: string | null
+          nieuw: Json | null
+          oud: Json | null
+          planning_id: string | null
+          uitgevoerd_door: string | null
+        }
+        Insert: {
+          actie: string
+          created_at?: string
+          id?: string
+          klant_contract_id?: string | null
+          nieuw?: Json | null
+          oud?: Json | null
+          planning_id?: string | null
+          uitgevoerd_door?: string | null
+        }
+        Update: {
+          actie?: string
+          created_at?: string
+          id?: string
+          klant_contract_id?: string | null
+          nieuw?: Json | null
+          oud?: Json | null
+          planning_id?: string | null
+          uitgevoerd_door?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "factuur_planning_log_planning_id_fkey"
+            columns: ["planning_id"]
+            isOneToOne: false
+            referencedRelation: "factuur_planning"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       form_rate_limit: {
         Row: {
           created_at: string
@@ -2169,6 +2417,8 @@ export type Database = {
           exact_koppeling_status: string | null
           exact_naam_gelijkenis: number | null
           exact_relatie_code: string | null
+          facturatie_blokkade: string | null
+          facturatie_blokkade_reden: string | null
           iban: string | null
           id: string
           is_test: boolean
@@ -2187,6 +2437,8 @@ export type Database = {
           exact_koppeling_status?: string | null
           exact_naam_gelijkenis?: number | null
           exact_relatie_code?: string | null
+          facturatie_blokkade?: string | null
+          facturatie_blokkade_reden?: string | null
           iban?: string | null
           id?: string
           is_test?: boolean
@@ -2205,6 +2457,8 @@ export type Database = {
           exact_koppeling_status?: string | null
           exact_naam_gelijkenis?: number | null
           exact_relatie_code?: string | null
+          facturatie_blokkade?: string | null
+          facturatie_blokkade_reden?: string | null
           iban?: string | null
           id?: string
           is_test?: boolean
@@ -2968,11 +3222,16 @@ export type Database = {
     }
     Functions: {
       accept_portal_invitation: { Args: { _token: string }; Returns: Json }
+      bevestig_artikel_mapping: {
+        Args: { _bevestigd: boolean; _id: string }
+        Returns: boolean
+      }
       cleanup_expired_oauth_states: { Args: never; Returns: undefined }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
       }
+      doorrol_startstand: { Args: { _preview?: boolean }; Returns: Json }
       email_queue_dispatch: { Args: never; Returns: undefined }
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
@@ -2980,6 +3239,66 @@ export type Database = {
       }
       exact_code_norm: { Args: { _c: string }; Returns: string }
       exact_koppel_accounts: { Args: never; Returns: Json }
+      facturatie_kandidaten: {
+        Args: { _tot: string; _van: string }
+        Returns: {
+          aantal: number
+          achterstallig: boolean
+          bedrag: number
+          bedrag_per_periode: number
+          bestaande_planning_status: string
+          blokkade: string
+          blokkade_soort: string
+          cyclus: string
+          exact_account_id: string
+          exact_item_id: string
+          gl_code: string
+          itemcode: string
+          klant_contract_id: string
+          klantnaam: string
+          onderneming_id: string
+          periode_eind: string
+          periode_start: string
+          product: string
+          relatiecode: string
+        }[]
+      }
+      factuur_mapping_voor: {
+        Args: { _itemcode: string }
+        Returns: {
+          bevestigd: boolean
+          bevestigd_door: string | null
+          bevestigd_op: string | null
+          blokkade_reden: string | null
+          created_at: string
+          exact_item_code: string | null
+          exact_item_id: string | null
+          gl_code: string | null
+          id: string
+          itemcode_patroon: string
+          notitie: string | null
+          product: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "factuur_artikel_mapping"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      factuur_opnieuw_inplannen: {
+        Args: { _planning_id: string }
+        Returns: Json
+      }
+      factuur_periode_eind: {
+        Args: { _cyclus: string; _start: string }
+        Returns: string
+      }
+      factuur_periode_start: {
+        Args: { _anker: string; _cyclus: string; _n: number }
+        Returns: string
+      }
       get_exact_koppeling_fout: { Args: never; Returns: string }
       get_klant_contracten_reconciliatie: { Args: never; Returns: Json }
       get_mijn_polissen: {
@@ -3053,6 +3372,7 @@ export type Database = {
           title: string
         }[]
       }
+      zet_facturatie_actief: { Args: { _aan: boolean }; Returns: boolean }
     }
     Enums: {
       app_role:

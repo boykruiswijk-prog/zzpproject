@@ -1,0 +1,194 @@
+// Factuurplanner (vervangt monthly-invoices-cron). Dagelijks 06:00 NL via pg_cron.
+// - Hoofdschakelaar facturatie_config.facturatie_actief UIT → alleen proefrun, NUL Exact-writes.
+// - AAN → per kandidaat: claim (unieke rij) → Exact GET op sleutel → pas dan POST concept.
+// Geen mails naar klanten; maximaal één alarmmail per dag naar het team.
+// deno-lint-ignore-file no-explicit-any
+import { createClient } from "npm:@supabase/supabase-js@2";
+import { ensureValidToken, refreshAccessToken } from "../_shared/exactToken.ts";
+import { requireSupervisor } from "../_shared/teamAuth.ts";
+import { sendExactAlarm } from "../_shared/exactAlarm.ts";
+import { periodeTekst, regelOmschrijving } from "../_shared/factuurTekst.ts";
+import { planningsSleutel, planningStatusUitExact } from "../_shared/factuurPeriode.ts";
+import { getBavGlAccountId } from "../_shared/exactGl.ts";
+
+const cors = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret, x-internal-secret",
+};
+const json = (d: unknown, s = 200) => new Response(JSON.stringify(d), { status: s, headers: { ...cors, "Content-Type": "application/json" } });
+const ALARM = "Factuurplanner: dagelijkse run is mislukt";
+const vandaagNL = () => new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Amsterdam" }).format(new Date());
+
+function samenvatting(rijen: any[]) {
+  const per = (k: (r: any) => string) => {
+    const m: Record<string, { aantal: number; bedrag: number }> = {};
+    for (const r of rijen) { const key = k(r); m[key] ??= { aantal: 0, bedrag: 0 }; m[key].aantal++; m[key].bedrag = Math.round((m[key].bedrag + Number(r.bedrag)) * 100) / 100; }
+    return m;
+  };
+  const vrij = rijen.filter((r) => !r.blokkade);
+  const geblokkeerd = rijen.filter((r) => r.blokkade);
+  const som = (a: any[]) => Math.round(a.reduce((s, r) => s + Number(r.bedrag), 0) * 100) / 100;
+  return {
+    totaal: { aantal: rijen.length, bedrag: som(rijen) },
+    klaar: { aantal: vrij.length, bedrag: som(vrij) },
+    geblokkeerd: { aantal: geblokkeerd.length, bedrag: som(geblokkeerd) },
+    achterstallig: { aantal: rijen.filter((r) => r.achterstallig).length, bedrag: som(rijen.filter((r) => r.achterstallig)) },
+    per_reden: per((r) => r.blokkade ?? "klaar"),
+    per_soort: per((r) => r.blokkade_soort ?? "klaar"),
+    per_dag: per((r) => r.periode_start),
+    per_maand: per((r) => String(r.periode_start).slice(0, 7)),
+  };
+}
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
+  const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+  const body = await req.json().catch(() => ({}));
+
+  // Auth: cron via Vault-secret; anders intern secret of supervisor/admin.
+  let trigger = "handmatig";
+  const cronSecret = req.headers.get("x-cron-secret");
+  if (cronSecret) {
+    const { data: ok } = await admin.rpc("verify_cron_secret", { p_secret: cronSecret });
+    if (!ok) return json({ error: "geen_toegang" }, 401);
+    trigger = "cron";
+    // Cron draait om 04:00 en 05:00 UTC; alleen de run die om 06:00 Nederlandse tijd valt telt (zomer/winter).
+    const uurNL = Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Amsterdam", hour: "2-digit", hour12: false }).format(new Date()));
+    if (uurNL !== 6) return json({ overgeslagen: true, uur_nl: uurNL });
+  } else {
+    const intern = Deno.env.get("INTERNAL_FUNCTION_SECRET");
+    const gegeven = req.headers.get("x-internal-secret");
+    if (!(intern && gegeven && gegeven === intern)) {
+      const auth = await requireSupervisor(req, admin);
+      if (auth instanceof Response) return json({ error: "geen_toegang" }, auth.status);
+    }
+  }
+  const actie = trigger === "cron" ? "dagrun" : String(body?.actie ?? "proefrun");
+
+  if (actie === "doorrol_preview") {
+    const { data, error } = await admin.rpc("doorrol_startstand", { _preview: true });
+    if (error) return json({ error: error.message }, 500);
+    return json(data);
+  }
+
+  const vandaag = vandaagNL();
+  const van = actie === "proefrun" ? String(body?.van ?? vandaag) : vandaag;
+  const tot = actie === "proefrun" ? String(body?.tot ?? van) : vandaag;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(van) || !/^\d{4}-\d{2}-\d{2}$/.test(tot)) return json({ error: "ongeldige datum" }, 400);
+
+  const { data: kand, error: kErr } = await admin.rpc("facturatie_kandidaten", { _van: van, _tot: tot });
+  if (kErr) return json({ error: kErr.message }, 500);
+  const rijen = (kand ?? []) as any[];
+  const sam = samenvatting(rijen);
+
+  // Hoofdschakelaar: vers uit de database, in deze run.
+  const { data: fcfg } = await admin.from("facturatie_config").select("*").eq("id", 1).maybeSingle();
+  const live = actie === "dagrun" && fcfg?.facturatie_actief === true;
+
+  if (!live) {
+    await admin.from("factuur_planner_runs").insert({
+      modus: "proef", trigger_type: `${trigger}:${actie}`, aantal_kandidaten: rijen.length,
+      aantal_geblokkeerd: sam.geblokkeerd.aantal, bedrag: sam.totaal.bedrag, detail: { van, tot, samenvatting: sam },
+    });
+    return json({ modus: "proef", schrijft_naar_exact: false, van, tot, samenvatting: sam, regels: actie === "proefrun" ? rijen : undefined });
+  }
+
+  // ── LIVE (alleen dagrun met schakelaar AAN) ─────────────────────────
+  const { data: cfg } = await admin.from("exact_config").select("*").limit(1).maybeSingle();
+  const baseUrl = cfg?.base_url || "https://start.exactonline.nl";
+  const div = String(cfg?.divisie_code ?? "").trim();
+  let aangemaakt = 0;
+  const fouten: string[] = [];
+  try {
+    if (!cfg?.is_actief || !div) throw new Error("Exact niet actief");
+    let token = await ensureValidToken(admin, cfg);
+    const exact = async (pad: string, init: RequestInit = {}) => {
+      const method = (init.method ?? "GET").toUpperCase();
+      if (method !== "GET" && method !== "POST") throw new Error("methode niet toegestaan");
+      if (method === "POST") {
+        const { data: v } = await admin.from("facturatie_config").select("facturatie_actief").eq("id", 1).single();
+        if (v?.facturatie_actief !== true) throw new Error("hoofdschakelaar uit: POST geweigerd");
+      }
+      let r = await fetch(`${baseUrl}/api/v1/${div}/${pad}`, { ...init, headers: { Authorization: `Bearer ${token}`, Accept: "application/json", "Content-Type": "application/json" } });
+      if (r.status === 401) { token = await refreshAccessToken(admin, cfg); r = await fetch(`${baseUrl}/api/v1/${div}/${pad}`, { ...init, headers: { Authorization: `Bearer ${token}`, Accept: "application/json", "Content-Type": "application/json" } }); }
+      return r;
+    };
+    const zoekOpSleutel = async (sleutel: string, veld: string) => {
+      const r = await exact(`salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,Status&$filter=${encodeURIComponent(veld === "YourRef" ? `YourRef eq '${sleutel}'` : `substringof('${sleutel}',Remarks) eq true`)}&$top=2`);
+      if (!r.ok) throw new Error(`sleutelcontrole HTTP ${r.status}`);
+      const d = (await r.json())?.d; return (d?.results ?? d ?? []) as any[];
+    };
+    const sleutelVeld = fcfg?.sleutel_veld === "YourRef" ? "YourRef" : "Remarks";
+
+    // 1) Status open concepten bijwerken (alleen lezen).
+    const { data: open } = await admin.from("factuur_planning").select("*").in("status", ["concept_aangemaakt", "te_laat", "geclaimd"]);
+    for (const p of open ?? []) {
+      const gevonden = p.exact_invoice_id
+        ? await (async () => { const r = await exact(`salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,Status,InvoiceDate&$filter=${encodeURIComponent(`InvoiceID eq guid'${p.exact_invoice_id}'`)}`); const d = (await r.json())?.d; return (d?.results ?? d ?? [])[0] ?? null; })()
+        : (await zoekOpSleutel(p.planningssleutel, sleutelVeld))[0] ?? null;
+      if (p.status === "geclaimd" && !gevonden) continue; // onzeker: nooit opnieuw POST'en zonder sleutelbewijs; blijft staan voor handmatige beoordeling
+      const nieuw = planningStatusUitExact(gevonden?.Status, !!gevonden, String(p.concept_op ?? p.aangemaakt_op), vandaag, fcfg?.verwerk_termijn_werkdagen ?? 5);
+      const upd: any = { laatst_gecontroleerd_op: new Date().toISOString(), exact_status: gevonden?.Status ?? null };
+      if (gevonden) { upd.exact_invoice_id = gevonden.InvoiceID; upd.exact_invoice_number = gevonden.InvoiceNumber != null ? String(gevonden.InvoiceNumber) : null; }
+      if (nieuw !== p.status) {
+        upd.status = nieuw;
+        if (nieuw === "verwerkt") upd.verwerkt_op = new Date().toISOString();
+        await admin.from("factuur_planning_log").insert({ planning_id: p.id, klant_contract_id: p.klant_contract_id, actie: "status", oud: { status: p.status }, nieuw: { status: nieuw } });
+        if (nieuw === "verwerkt") {
+          const { data: k } = await admin.from("klant_contracten").select("gefactureerd_tm,volgende_factuurdatum").eq("id", p.klant_contract_id).single();
+          const volgende = new Date(new Date(`${p.periode_eind}T00:00:00Z`).getTime() + 86400000).toISOString().slice(0, 10);
+          if (!k?.gefactureerd_tm || k.gefactureerd_tm < p.periode_eind) {
+            await admin.from("klant_contracten").update({ gefactureerd_tm: p.periode_eind, volgende_factuurdatum: volgende, gefactureerd_tm_bron: "planner" }).eq("id", p.klant_contract_id);
+            await admin.from("sensitive_audit_log").insert({ target_table: "klant_contracten", target_id: p.klant_contract_id, actie: "planner_verwerkt", veld: "gefactureerd_tm", oude_waarde: k?.gefactureerd_tm ?? null, nieuwe_waarde: p.periode_eind, details: { planning_id: p.id } });
+          }
+        }
+      }
+      await admin.from("factuur_planning").update(upd).eq("id", p.id);
+    }
+
+    // 2) Nieuwe concepten voor niet-geblokkeerde kandidaten (incl. achterstallig).
+    const glCache: Record<string, string> = {};
+    for (const k of rijen.filter((r) => !r.blokkade && r.periode_start <= vandaag)) {
+      const sleutel = planningsSleutel(crypto.randomUUID().replace(/-/g, ""));
+      const { data: claim, error: cErr } = await admin.from("factuur_planning").insert({
+        klant_contract_id: k.klant_contract_id, periode_start: k.periode_start, periode_eind: k.periode_eind,
+        aantal: k.aantal, bedrag_per_periode: k.bedrag_per_periode, bedrag: k.bedrag,
+        exact_account_id: k.exact_account_id, exact_item_id: k.exact_item_id, gl_code: k.gl_code,
+        planningssleutel: sleutel, status: "geclaimd", invoice_date: k.periode_start,
+      }).select("id").single();
+      if (cErr) continue; // unieke sleutel: al geclaimd → overslaan
+      try {
+        if ((await zoekOpSleutel(sleutel, sleutelVeld)).length) throw new Error("sleutel bestaat al in Exact");
+        if (k.gl_code && String(k.gl_code) !== String(cfg.gl_code_bav ?? "8003")) throw new Error(`grootboek ${k.gl_code} niet ondersteund`);
+        const gl = k.gl_code ? (glCache[k.gl_code] ??= await getBavGlAccountId(admin, cfg, token)) : null;
+        const regel: any = { Item: k.exact_item_id, Quantity: Number(k.aantal), UnitPrice: Number(k.bedrag_per_periode), VATCode: "0",
+          Description: regelOmschrijving("premie", k.periode_start, k.periode_eind),
+          StartTime: `${k.periode_start}T00:00:00`, EndTime: `${k.periode_eind}T00:00:00` };
+        if (gl) regel.GLAccount = gl;
+        const payload: any = { InvoiceTo: k.exact_account_id, OrderedBy: k.exact_account_id, Journal: "70", PaymentCondition: "IN",
+          Type: 8020, Status: 20, InvoiceDate: `${k.periode_start}T00:00:00`, OrderDate: `${k.periode_start}T00:00:00`,
+          Description: `Premie ${periodeTekst(k.periode_start, k.periode_eind)}`.slice(0, 60), SalesInvoiceLines: [regel] };
+        if (sleutelVeld === "YourRef") payload.YourRef = sleutel; else payload.Remarks = sleutel;
+        const r = await exact("salesinvoice/SalesInvoices", { method: "POST", body: JSON.stringify(payload) });
+        if (!r.ok) {
+          // Onzeker na 5xx/timeout: rij blijft "geclaimd"; volgende run beslist via sleutelcontrole.
+          if (r.status >= 500) throw new Error(`POST onzeker HTTP ${r.status}`);
+          await admin.from("factuur_planning").update({ status: "fout", foutmelding: (await r.text()).slice(0, 300) }).eq("id", claim.id);
+          fouten.push(`HTTP ${r.status}`); continue;
+        }
+        const d = (await r.json())?.d ?? {};
+        await admin.from("factuur_planning").update({ status: "concept_aangemaakt", concept_op: new Date().toISOString(), exact_invoice_id: d.InvoiceID ?? null, exact_status: 20 }).eq("id", claim.id);
+        await admin.from("factuur_planning_log").insert({ planning_id: claim.id, klant_contract_id: k.klant_contract_id, actie: "concept_aangemaakt", nieuw: { invoice_id: d.InvoiceID, sleutel } });
+        aangemaakt++;
+      } catch (e) {
+        fouten.push(String(e).slice(0, 200));
+        break; // stop de run; niets half
+      }
+    }
+  } catch (e) { fouten.push(String(e).slice(0, 200)); }
+
+  await admin.from("factuur_planner_runs").insert({ modus: "live", trigger_type: `${trigger}:${actie}`, aantal_kandidaten: rijen.length,
+    aantal_geblokkeerd: sam.geblokkeerd.aantal, aantal_aangemaakt: aangemaakt, bedrag: sam.klaar.bedrag, status: fouten.length ? "fout" : "ok", detail: { fouten } });
+  if (fouten.length) await sendExactAlarm(admin, ALARM, "factuur-planner", null);
+  return json({ modus: "live", aangemaakt, fouten });
+});

@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   // SECURITY: alleen de cron mag deze functie draaien (zelfde patroon als
-  // monthly-invoices-cron): alleen header x-cron-secret, getoetst tegen Vault.
+  // factuur-planner): alleen header x-cron-secret, getoetst tegen Vault.
   const providedSecret = req.headers.get("x-cron-secret") ?? "";
   const authClient = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
