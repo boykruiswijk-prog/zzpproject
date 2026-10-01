@@ -35,7 +35,7 @@ export function HiscoxTrustStrip() {
               persoonlijke begeleiding door ZP Zaken.
             </p>
             <LocalizedLink
-              to="/over-ons"
+              to="/partners"
               className="inline-block mt-2 text-sm font-medium text-accent hover:underline"
             >
               Meer over onze partners →

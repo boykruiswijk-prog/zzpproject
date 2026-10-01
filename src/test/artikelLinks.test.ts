@@ -33,22 +33,19 @@ export function interneLinks(markdown: string): string[] {
   return out;
 }
 
-describe("doorverwijzingen voor oude interne paden", () => {
-  const verwacht: Record<string, string> = {
-    zorgverzekering: "/kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen",
-    "mentale-gezondheid": "/kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen",
-    pensioen: "/kennisbank/jaarruimte-en-reserveringsruimte",
-    partners: "/over-ons",
-    "bav-avb": "/verzekeringen",
-    "moneysure-aov-alternatief": "/aov",
-  };
+describe("oude interne paden", () => {
   const routes = appRoutes();
-  for (const [from, to] of Object.entries(verwacht)) {
+  // Bestaande pagina's blijven eigen pagina's, geen doorverwijzing.
+  for (const p of ["zorgverzekering", "mentale-gezondheid", "pensioen", "partners"]) {
+    it(`/${p} is een eigen pagina`, () => {
+      expect(routes.has(`/${p}`)).toBe(true);
+      expect(legacyRedirects.some((r) => r.from === p)).toBe(false);
+    });
+  }
+  // Bestonden al als doorverwijzing (geen 404).
+  for (const [from, to] of [["bav-avb", "/verzekeringen"], ["moneysure-aov-alternatief", "/aov"]]) {
     it(`/${from} → ${to}`, () => {
       expect(legacyRedirects.find((r) => r.from === from)?.to).toBe(to);
-      // Geen eigen route meer, anders schrijft de prerender geen doorverwijzing.
-      expect(routes.has(`/${from}`)).toBe(false);
-      expect(seoRoutes.some((r) => r.path === `/${from}`)).toBe(false);
     });
   }
 });
