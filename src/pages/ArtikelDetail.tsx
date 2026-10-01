@@ -458,7 +458,7 @@ export default function ArtikelDetail() {
               </div>
             </div>
 
-            <TableOfContents content={article.content || ""} />
+            <TableOfContents content={resolveFiscaleTokens(article.content || "")} />
           </div>
         </div>
 
