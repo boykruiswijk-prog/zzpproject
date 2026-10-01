@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      _audit_fixes: {
+        Row: {
+          n: number
+          new: string
+          old: string
+          slug: string
+          toegepast: number | null
+        }
+        Insert: {
+          n: number
+          new: string
+          old: string
+          slug: string
+          toegepast?: number | null
+        }
+        Update: {
+          n?: number
+          new?: string
+          old?: string
+          slug?: string
+          toegepast?: number | null
+        }
+        Relationships: []
+      }
       activiteiten_log: {
         Row: {
           aangemaakt_op: string
@@ -174,6 +198,81 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      articles_backup_20261001_audit: {
+        Row: {
+          author_id: string | null
+          author_name: string | null
+          category: string | null
+          content: string | null
+          content_reviewed_at: string | null
+          created_at: string | null
+          excerpt: string | null
+          generated_by_ai: boolean | null
+          id: string | null
+          image_url: string | null
+          is_published: boolean | null
+          published_at: string | null
+          read_time: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          seo_description: string | null
+          seo_title: string | null
+          slug: string | null
+          source_name: string | null
+          source_url: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          author_id?: string | null
+          author_name?: string | null
+          category?: string | null
+          content?: string | null
+          content_reviewed_at?: string | null
+          created_at?: string | null
+          excerpt?: string | null
+          generated_by_ai?: boolean | null
+          id?: string | null
+          image_url?: string | null
+          is_published?: boolean | null
+          published_at?: string | null
+          read_time?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string | null
+          source_name?: string | null
+          source_url?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string | null
+          author_name?: string | null
+          category?: string | null
+          content?: string | null
+          content_reviewed_at?: string | null
+          created_at?: string | null
+          excerpt?: string | null
+          generated_by_ai?: boolean | null
+          id?: string | null
+          image_url?: string | null
+          is_published?: boolean | null
+          published_at?: string | null
+          read_time?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string | null
+          source_name?: string | null
+          source_url?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       bav_aanmeldingen: {
         Row: {

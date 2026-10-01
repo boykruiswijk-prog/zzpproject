@@ -6,6 +6,10 @@
 # Oude WordPress-media staan onder hetzelfde pad in de storage-bucket.
 /wp-content/uploads/*    https://eugkavokktjwpqaqlwsj.supabase.co/storage/v1/object/public/article-images/wp-content/uploads/:splat    301
 
+/zorgverzekering    /kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen    301
+/mentale-gezondheid    /kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen    301
+/pensioen    /kennisbank/jaarruimte-en-reserveringsruimte    301
+/partners    /over-ons    301
 /belastingen    /kennisbank    301
 /ondernemen    /kennisbank    301
 /financien    /kennisbank    301
@@ -14,7 +18,7 @@
 /movir    /verzekeringen    301
 /wijzijnaov    /verzekeringen    301
 /aov-via-centraalbeheer    /verzekeringen    301
-/sharepeople    /partners    301
+/sharepeople    /over-ons    301
 /eherkenning    /kennisbank/eherkenning    301  # gepubliceerd artikel
 /verplichte-aov-voor-zzp    /kennisbank/verplichte-aov-voor-zzp    301  # gepubliceerd artikel
 /nieuwe-regels-zzp    /kennisbank/nieuwe-regels-zzp-2025    301
@@ -39,8 +43,8 @@
 /beroeps-en-bedrijfs-aansprakelijkheidsverzekering-zzp-avb-bav    /verzekeringen    301
 /beroeps-en-bedrijfsaansprakelijkheidsverzekering-zzp-avb-bav    /verzekeringen    301
 /bijdrage-zorgverzekeringswet-zzp    /kennisbank/bijdrage-zorgverzekeringswet-zzp    301  # gepubliceerd artikel
-/zzp-zorgverzekering    /zorgverzekering    301
-/mentale-gezondheidstest-mirro    /mentale-gezondheid    301
+/zzp-zorgverzekering    /kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen    301
+/mentale-gezondheidstest-mirro    /kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen    301
 /help-andere-zzpers    /contact    301
 /go/algemene-voorwaarden-zp    /algemene-voorwaarden    301
 /go/privacy-statement    /cookies    301
@@ -58,9 +62,9 @@
 /verzekering-zzp    /verzekeringen    301
 /aov-zzp    /aov    301
 /zzp-aov    /aov    301
-/pensioen-zzp    /pensioen    301
-/zzp-pensioen    /pensioen    301
-/zorgverzekering-zzp    /zorgverzekering    301
+/pensioen-zzp    /kennisbank/jaarruimte-en-reserveringsruimte    301
+/zzp-pensioen    /kennisbank/jaarruimte-en-reserveringsruimte    301
+/zorgverzekering-zzp    /kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen    301
 /gratis-advies    /contact    301
 /adviesgesprek    /contact    301
 /aanvragen    /verzekeringen    301
@@ -102,7 +106,7 @@
 /btw-aangifte-zzp    /kennisbank/btw-aangifte-zzp    301  # gepubliceerd artikel
 /hypotheek-berekenen-en-afsluiten-als-zzp-er    /kennisbank/hypotheek-berekenen-en-afsluiten-als-zzp-er    301  # gepubliceerd artikel
 /moneysure-aov-alternatief    /aov    301
-/brightpensioen    /pensioen    301
+/brightpensioen    /kennisbank/jaarruimte-en-reserveringsruimte    301
 /hoe-was-jouw-ervaring-met-zp-zaken    /contact    301
 /merk/otentica    /screening    301
 /vacature-administrateur    /over-ons    301
@@ -158,8 +162,8 @@
 /bedankt-nk-golf-voor-zpers-2018    /verzekeringen    301
 /beroeps-en-bedrijfsaansprakelijkheidsverzekering    /verzekeringen    301
 /beroeps-en-bedrijfsaansprakelijkheidsverzekering-nodig-of-niet    /verzekeringen    301
-/betweenstaffing    /partners    301
-/beweeg-je-stress-weg    /mentale-gezondheid    301
+/betweenstaffing    /over-ons    301
+/beweeg-je-stress-weg    /kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen    301
 /blog-tarief-hoogopgeleide-zzper-piekt-op-65-jarige-leeftijd    /kennisbank    301
 /brancheverklaring    /verzekeringen    301
 /btw-aangifte-waar-moet-je-aan-denken    /kennisbank/belastingen    301
@@ -171,7 +175,7 @@
 /category/juridisch    /kennisbank/wet-en-regelgeving    301
 /category/mobiliteit    /kennisbank/belastingen    301
 /category/ontwikkeling    /kennisbank/ondernemen    301
-/category/pensioen    /pensioen    301
+/category/pensioen    /kennisbank/jaarruimte-en-reserveringsruimte    301
 /category/uncategorized    /kennisbank    301
 /category/verzekeringen    /verzekeringen    301
 /category/zelfstandig-professional    /kennisbank/ondernemen    301
@@ -208,9 +212,9 @@
 /en/financien    /kennisbank    301
 /en/financien/factoring    /creditcontrol    301
 /en/financien/factoring/factorscan    /creditcontrol    301
-/en/financien/jaarruimte-berekenen    /pensioen    301
-/en/financien/pensioen-zzp    /pensioen    301
-/en/financien/pensioengat-reserveringsruimte-berekenen    /pensioen    301
+/en/financien/jaarruimte-berekenen    /kennisbank/jaarruimte-en-reserveringsruimte    301
+/en/financien/pensioen-zzp    /kennisbank/jaarruimte-en-reserveringsruimte    301
+/en/financien/pensioengat-reserveringsruimte-berekenen    /kennisbank/jaarruimte-en-reserveringsruimte    301
 /en/financien/subsidie-check    /kennisbank/financien    301
 /en/gevaar-voor-cybercriminelen-die-misbruik-maken-van-thuiswerken    /verzekeringen    301
 /en/hackers-maken-gebruik-van-de-pandemie-hoe-houd-jij-ze-tegen    /kennisbank    301
@@ -230,12 +234,12 @@
 /en/nk-golftoernooi-voor-zpers-2020-geannuleerd    /    301
 /en/nooit-meer-bonnetjes-bewaren    /kennisbank/financien    301
 /en/oeps    /en    301
-/en/partners/between-staffing    /partners    301
-/en/partners/headfirst    /partners    301
-/en/partners/staffing-ms    /partners    301
+/en/partners/between-staffing    /over-ons    301
+/en/partners/headfirst    /over-ons    301
+/en/partners/staffing-ms    /over-ons    301
 /en/prinsjesdag-2020-wat-betekent-dit-voor-jou-als-zper    /kennisbank/belastingen    301
 /en/product/beroeps-en-bedrijfsaansprakelijkheidsverzekering    /verzekeringen    301
-/en/slimme-manieren-om-je-pensioen-te-regelen-als-zzper    /pensioen    301
+/en/slimme-manieren-om-je-pensioen-te-regelen-als-zzper    /kennisbank/jaarruimte-en-reserveringsruimte    301
 /en/subsidie-voor-zpers    /kennisbank/financien    301
 /en/tegemoetkoming-vaste-lasten-mkb-tvl-vanaf-nu-aan-te-vragen    /kennisbank    301
 /en/tweede-voortgangsbrief-kabinet-vervanging-wet-dba-nogmaals-uitgesteld    /kennisbank/wet-en-regelgeving    301
@@ -249,7 +253,7 @@
 /en/verzekeringen/beroeps-en-bedrijfsaansprakelijkheidsverzekering/it-actie    /verzekeringen    301
 /en/verzekeringen/beroeps-en-bedrijfsaansprakelijkheidsverzekering/marketing-actie    /verzekeringen    301
 /en/verzekeringen/beroeps-en-bedrijfsaansprakelijkheidsverzekering/overall-actie    /verzekeringen    301
-/en/verzekeringen/collectieve-zorgverzekering    /zorgverzekering    301
+/en/verzekeringen/collectieve-zorgverzekering    /kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen    301
 /en/verzekeringen/cyber-clear-verzekering    /verzekeringen    301
 /en/verzekeringen/cyber-clear-verzekering/bedankt    /verzekeringen    301
 /en/woningmarkt-voor-zzpers-op-slot    /kennisbank    301
@@ -270,7 +274,7 @@
 /financieleanalyse    /kennisbank/financien    301
 /financien/factoring    /creditcontrol    301
 /financien/factoring/factorscan    /creditcontrol    301
-/financien/pensioen-zzp    /pensioen    301
+/financien/pensioen-zzp    /kennisbank/jaarruimte-en-reserveringsruimte    301
 /financien/subsidie-check    /kennisbank/financien    301
 /gevaar-voor-cybercriminelen-die-misbruik-maken-van-thuiswerken    /verzekeringen    301
 /gevolgrecht    /kennisbank/wet-en-regelgeving    301
@@ -280,10 +284,10 @@
 /golf    /    301
 /golf/nk    /    301
 /hackers-maken-gebruik-van-de-pandemie-hoe-houd-jij-ze-tegen    /kennisbank    301
-/headfirst    /partners    301
-/headfirst-bav    /partners    301
-/headfirst-bav-bedanktpage    /partners    301
-/headfirst-bav-inschrijfform    /partners    301
+/headfirst    /over-ons    301
+/headfirst-bav    /over-ons    301
+/headfirst-bav-bedanktpage    /over-ons    301
+/headfirst-bav-inschrijfform    /over-ons    301
 /het-nk-golftoernooi-voor-zpers-2019-burggolf-de-haverleij    /    301
 /home/nieuws    /kennisbank    301
 /ict-brochure-beroepsaansprakelijkheid    /documenten#verzekeringsvoorwaarden    301
@@ -298,7 +302,7 @@
 /juridisch/adviesdesk-zzp    /kennisbank/wet-en-regelgeving    301
 /juridisch/gevolgrecht-zzp    /kennisbank/wet-en-regelgeving    301
 /juridischadvies    /kennisbank/wet-en-regelgeving    301
-/kopie-van-financieel-pensioen    /pensioen    301
+/kopie-van-financieel-pensioen    /kennisbank/jaarruimte-en-reserveringsruimte    301
 /kopie-van-nk-golf-inschrijfformulie    /verzekeringen    301
 /kopie-van-nk-golf-inschrijfformulie-1    /verzekeringen    301
 /lidmaatschap    /collectieve-inkoop    301
@@ -307,8 +311,8 @@
 /management-consultancy-brochure-beroepsaansprakelijkheid    /documenten#verzekeringsvoorwaarden    301
 /management-consultancy-verzekeringskaart-beroepsaansprakelijkheid    /documenten#verzekeringsvoorwaarden    301
 /meerwerk-zo-voorkom-je-een-discussie    /kennisbank    301
-/mils-onderzoek    /mentale-gezondheid    301
-/milsonderzoek-inschrijven    /mentale-gezondheid    301
+/mils-onderzoek    /kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen    301
+/milsonderzoek-inschrijven    /kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen    301
 /mobiliteitskaart    /kennisbank/belastingen    301
 /mobiliteitskaart-zzp    /kennisbank/belastingen    301
 /movir-coming-soon    /aov    301
@@ -317,9 +321,9 @@
 /nieuws/categories/coronacrisis    /kennisbank    301
 /nieuws/categories/cybercrime    /verzekeringen    301
 /nieuws/categories/financieel    /kennisbank/financien    301
-/nieuws/categories/partner    /partners    301
-/nieuws/categories/pensioen    /pensioen    301
-/nieuws/categories/zorgverzekering    /zorgverzekering    301
+/nieuws/categories/partner    /over-ons    301
+/nieuws/categories/pensioen    /kennisbank/jaarruimte-en-reserveringsruimte    301
+/nieuws/categories/zorgverzekering    /kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen    301
 /nieuws/categories/zzp    /kennisbank/ondernemen    301
 /nieuws/page/2    /kennisbank    301
 /nieuws/page/3    /kennisbank    301
@@ -328,22 +332,22 @@
 /nieuws/page/6    /kennisbank    301
 /nieuws/tags/aov    /aov    301
 /nieuws/tags/ondernemen    /kennisbank/ondernemen    301
-/nieuws/tags/partner    /partners    301
+/nieuws/tags/partner    /over-ons    301
 /nieuws/tags/zzp    /kennisbank/ondernemen    301
 /nk-golf-inschrijfformulier    /verzekeringen    301
 /nk-golf-voor-zpers-2018-de-aftermovie    /    301
 /nk-golftoernooi-voor-zpers-2020-geannuleerd    /    301
 /nooit-meer-bonnetjes-bewaren    /kennisbank/financien    301
-/online-lifestyle-plan    /mentale-gezondheid    301
-/onlinelifestyleplan-inschrijven    /mentale-gezondheid    301
-/onvz    /zorgverzekering    301
+/online-lifestyle-plan    /kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen    301
+/onlinelifestyleplan-inschrijven    /kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen    301
+/onvz    /kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen    301
 /opleidingen-en-trainingen    /over-ons    301
 /over-zpzaken    /over-ons    301
 /overzp    /over-ons    301
 /paasactie    /verzekeringen    301
-/partners/between-staffing    /partners    301
-/partners/headfirst    /partners    301
-/partners/staffing-ms    /partners    301
+/partners/between-staffing    /over-ons    301
+/partners/headfirst    /over-ons    301
+/partners/staffing-ms    /over-ons    301
 /persoonlijke-ontwikkeling    /over-ons    301
 /post/10-tips-voor-een-digitaal-veilig-bedrijf    /kennisbank    301
 /post/2018-biedt-positief-vooruitzicht-voor-zelfstandig-professionals    /kennisbank    301
@@ -361,7 +365,7 @@
 /post/belastingdienst-meldt-dat-het-btw-nummer-wordt-ingetrokken-van-nihil-aangevers    /kennisbank/belastingen    301
 /post/beroeps-en-bedrijfsaansprakelijkheidsverzekering-nodig-of-niet    /verzekeringen    301
 /post/beter-leren-door-digitalisering    /kennisbank    301
-/post/beweeg-je-stress-weg    /mentale-gezondheid    301
+/post/beweeg-je-stress-weg    /kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen    301
 /post/bewust-werken-in-de-cloud-de-risico-s-in-kaart-gebracht-1    /kennisbank    301
 /post/blogupdates-forse-maatregelen-voor-bedrijven-en-zzp-werktijdverkorting-vervalt    /kennisbank    301
 /post/btw-aangifte-waar-moet-je-aan-denken    /kennisbank/belastingen    301
@@ -376,8 +380,8 @@
 /post/flexibele-arbeid-in-kaart-gebracht    /kennisbank    301
 /post/geld-verdienen-door-beter-debiteurenbeheer-fabel-of-niet    /kennisbank    301
 /post/gevaar-voor-cybercriminelen-die-misbruik-maken-van-thuiswerken    /verzekeringen    301
-/post/gratis-webinar-over-pensioen-en-financiële-analyse    /pensioen    301
-/post/gratis-webinar-wat-kun-je-zelf-doen-aan-je-pensioen-als-zp-er    /pensioen    301
+/post/gratis-webinar-over-pensioen-en-financiële-analyse    /kennisbank/jaarruimte-en-reserveringsruimte    301
+/post/gratis-webinar-wat-kun-je-zelf-doen-aan-je-pensioen-als-zp-er    /kennisbank/jaarruimte-en-reserveringsruimte    301
 /post/handhaving-wet-dba-opgeschort-tot-1-januari-2020    /kennisbank/wet-en-regelgeving    301
 /post/heb-ik-een-aansprakelijkheidsverzekering-nodig    /verzekeringen    301
 /post/het-nk-golftoernooi-voor-zp-ers-burggolf-de-haverleij    /    301
@@ -417,7 +421,7 @@
 /post/tips-voor-veilig-en-professioneel-thuiswerken    /kennisbank    301
 /post/tweede-voortgangsbrief-kabinet-vervanging-wet-dba-nogmaals-uitgesteld    /kennisbank/wet-en-regelgeving    301
 /post/uitstellen-is-kostbaar    /kennisbank    301
-/post/universiteit-van-tilburg-en-headfirst-introduceren-index-voor-zzp-markt    /partners    301
+/post/universiteit-van-tilburg-en-headfirst-introduceren-index-voor-zzp-markt    /over-ons    301
 /post/uurtarief-zelfstandig-professional-daalt-onder-druk-wet-dba    /kennisbank/wet-en-regelgeving    301
 /post/uurtarief-zelfstandig-professional-daalt-onder-druk-wet-dba-1    /kennisbank/wet-en-regelgeving    301
 /post/vacature-operations-communicatie    /kennisbank    301
@@ -426,9 +430,9 @@
 /post/veel-media-aandacht-voor-onderzoeksresultaten-wet-dba-opiniemonitor    /kennisbank/wet-en-regelgeving    301
 /post/verzekeren-tegen-cybercrime-is-een-must    /verzekeringen    301
 /post/vragen-en-antwoorden-over-de-verplichte-aov-voor-zp-ers    /aov    301
-/post/wat-betekent-het-pensioenakkoord-voor-zzp-ers-en-ondernemers    /pensioen    301
+/post/wat-betekent-het-pensioenakkoord-voor-zzp-ers-en-ondernemers    /kennisbank/jaarruimte-en-reserveringsruimte    301
 /post/wat-gebeurt-er-als-je-ziek-wordt    /kennisbank    301
-/post/webinar-pensioenoplossing    /pensioen    301
+/post/webinar-pensioenoplossing    /kennisbank/jaarruimte-en-reserveringsruimte    301
 /post/welke-verzekeringen-moet-ik-hebben    /kennisbank/welke-verzekeringen-zzp    301
 /post/werken-in-de-cloud    /kennisbank    301
 /post/wet-dba-op-de-schop-introductie-opdrachtgeversverklaring    /kennisbank/wet-en-regelgeving    301
@@ -451,7 +455,7 @@
 /product-category/uncategorized    /kennisbank    301
 /product-tag/bav    /verzekeringen    301
 /product/beroeps-en-bedrijfsaansprakelijkheidsverzekering    /verzekeringen    301
-/profiteer-mee-van-de-collectieve-zorgverzekering-van-zilveren-kruis    /zorgverzekering    301
+/profiteer-mee-van-de-collectieve-zorgverzekering-van-zilveren-kruis    /kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen    301
 /prosci-change-management    /kennisbank    301
 /radio    /    301
 /radio/show/de-gig-economy-volgens-leonard-millenaar    /    301
@@ -470,8 +474,8 @@
 /services/verzekeringen    /verzekeringen    301
 /shift-happens-trail    /kennisbank    301
 /shifthappenstrail-inschrijven    /kennisbank    301
-/slimme-manieren-om-je-pensioen-te-regelen-als-zzper    /pensioen    301
-/staffingms    /partners    301
+/slimme-manieren-om-je-pensioen-te-regelen-als-zzper    /kennisbank/jaarruimte-en-reserveringsruimte    301
+/staffingms    /over-ons    301
 /startup    /    301
 /startup-bedanktpage    /verzekeringen    301
 /subsidie-voor-zpers    /kennisbank/financien    301
@@ -480,7 +484,7 @@
 /tips-voor-veilig-en-professioneel-thuiswerken    /kennisbank    301
 /tweede-voortgangsbrief-kabinet-vervanging-wet-dba-nogmaals-uitgesteld    /kennisbank/wet-en-regelgeving    301
 /under-construction-zp-radio    /    301
-/universiteit-van-tilburg-en-headfirst-introduceren-index-voor-zzp-markt    /partners    301
+/universiteit-van-tilburg-en-headfirst-introduceren-index-voor-zzp-markt    /over-ons    301
 /vacatures    /    301
 /verzekering-myler-bav    /verzekeringen    301
 /verzekeringen/arbeidsongeschiktheid-zzp    /aov    301
@@ -493,7 +497,7 @@
 /verzekeringen/beroeps-en-bedrijfsaansprakelijkheidsverzekering/it-actie    /verzekeringen    301
 /verzekeringen/beroeps-en-bedrijfsaansprakelijkheidsverzekering/marketing-actie    /verzekeringen    301
 /verzekeringen/beroeps-en-bedrijfsaansprakelijkheidsverzekering/overall-actie    /verzekeringen    301
-/verzekeringen/collectieve-zorgverzekering    /zorgverzekering    301
+/verzekeringen/collectieve-zorgverzekering    /kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen    301
 /verzekeringen/cyber-clear-verzekering    /verzekeringen    301
 /verzekeringen/cyber-clear-verzekering/bedankt    /verzekeringen    301
 /verzekeringen/cyberclear-cyber-verzekering    /verzekeringen    301
@@ -501,8 +505,8 @@
 /verzekeringsgids    /verzekeringen    301
 /vraagbaak    /    301
 /vragen-en-antwoorden-over-de-verplichte-aov-voor-zpers    /aov    301
-/wat-betekent-het-pensioenakkoord-voor-zzpers-en-ondernemers    /pensioen    301
-/webinar-brightpensioen    /pensioen    301
+/wat-betekent-het-pensioenakkoord-voor-zzpers-en-ondernemers    /kennisbank/jaarruimte-en-reserveringsruimte    301
+/webinar-brightpensioen    /kennisbank/jaarruimte-en-reserveringsruimte    301
 /wijzigingsformulier    /    301
 /woningmarkt-voor-zzpers-op-slot    /kennisbank    301
 /zes-tips-voor-opstellen-ideale-factuur    /kennisbank/financien    301
