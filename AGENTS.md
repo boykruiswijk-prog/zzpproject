@@ -22,3 +22,5 @@
 - Opzegregels (toelichting bij "Anders" 3-500 tekens, datum vandaag tot 180 dagen, NL-tijd) staan in src/lib/opzegValidatie.ts, byte-gelijk in _shared/opzegValidatie.ts. Waarom: formulier en server hanteren exact dezelfde regels.
 
 - Lopende klantcontracten staan in klant_contracten (per onderneming via exact_relatie_code), gevuld door de idempotente database-importfunctie importeer_afas_20261001 (alleen service_role); facturatie vanuit het CRM staat uit tot akkoord. Waarom: bestaande klanten blijven buiten leads/pipeline en import is herhaalbaar zonder bijwerkingen.
+- Vervolgfacturen lopen uitsluitend via factuur-planner + factuur_planning (uniek per contractregel/periode, sleutel ZPF-xxxxxxxx in Remarks); hoofdschakelaar facturatie_config.facturatie_actief. Waarom: één factuurroute zonder dubbele facturen.
+- Mijn ZP-facturen: accounts via _shared/klantAccounts.ts, PDF via _shared/exactFactuurPdf.ts (Documents → bijlage). Waarom: XMLDownload werkt niet in deze administratie.

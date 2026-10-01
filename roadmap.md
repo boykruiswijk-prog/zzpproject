@@ -46,3 +46,10 @@
 - [x] AFAS-klantcontracten inlezen in CRM (klant_contracten, Klanten & contracten-schermen, reconciliatie); facturatie blijft uit
 - [ ] Fase 1 Exact: gebouwd; abonnementen lezen geblokkeerd door Exact-recht (403) — wacht op Exact-toegang
 - [ ] Fase 2 Exact-schrijfwachtrij: wacht op akkoord Boy
+
+- [x] Fase 2: datamodel planner, artikelmapping (onbevestigd), conflicten, doorrol-RPC met preview
+- [x] Fase 2: alleen-lezen controle Exact (artikelen, 7 dagen facturen, Remarks-filter, PDF-route)
+- [ ] Fase 2: doorrol_startstand(false) — geblokkeerd: controle vond geen facturen voor de 36 regels
+- [x] Fase 2: factuur-planner (schakelaar UIT), cron 06:00, beheerscherm, activatie → contractregel, maandcron weg
+- [x] Fase 2: Mijn ZP Facturen (verwerkt, vanaf 17-10-2026, geen betaalstatus, PDF via Exact-documenten)
+- [ ] Fase 2: hervat-factuur in polis-lifecycle via planningstabel laten lopen — wacht op akkoord
