@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { WIZARD_SECTOREN } from "@/data/sectorVerzekeringskaart";
+import { WIZARD_SECTOREN, isAlleenOfferteSector } from "@/data/sectorVerzekeringskaart";
+import { ALLEEN_OFFERTE_SECTOREN, isAlleenOfferteSector as backendIsAlleenOfferte } from "../../supabase/functions/_shared/sectorRegels";
 import { ADMIN_BRANCHES, brancheVoorSector } from "@/data/sectorBranche";
 
 const bron = readFileSync(resolve(__dirname, "../pages/OffertePage.tsx"), "utf8");
@@ -38,7 +39,28 @@ describe("offerteformulier sectoren", () => {
     }
   });
 
-  it("markeert alleen 'overig' als handmatige beoordeling", () => {
-    expect(bron).toMatch(/form\.branche === "overig" \|\| form\.aantal_medewerkers === "Meer dan 3"/);
+  it("beoordeelt overig, zorg en bouw handmatig", () => {
+    expect(bron).toMatch(/vereistHandmatig\(form\.branche\) \|\| form\.aantal_medewerkers === "Meer dan 3"/);
+    expect(bron).toMatch(/id === "overig" \|\| isAlleenOfferteSector\(id\)/);
+  });
+});
+
+describe("alleen-offerte sectoren", () => {
+  it("herkent zorg en bouw op id en label, niet de andere 6", () => {
+    for (const v of ["zorg", "bouw", "Zorg", "Bouw & techniek"]) {
+      expect(isAlleenOfferteSector(v), v).toBe(true);
+      expect(backendIsAlleenOfferte(v), v).toBe(true);
+    }
+    for (const s of WIZARD_SECTOREN.filter((s) => s.id !== "zorg" && s.id !== "bouw")) {
+      expect(isAlleenOfferteSector(s.id)).toBe(false);
+      expect(isAlleenOfferteSector(s.label)).toBe(false);
+      expect(backendIsAlleenOfferte(s.label)).toBe(false);
+    }
+    expect(WIZARD_SECTOREN.filter((s) => !s.alleenOfferte)).toHaveLength(6);
+  });
+
+  it("frontend- en backendlijst zijn gelijk", () => {
+    const fe = WIZARD_SECTOREN.filter((s) => s.alleenOfferte).map((s) => ({ id: s.id, label: s.label }));
+    expect(fe).toEqual([...ALLEEN_OFFERTE_SECTOREN]);
   });
 });
