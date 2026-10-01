@@ -9,7 +9,7 @@ const bron = readFileSync(resolve(__dirname, "../pages/OffertePage.tsx"), "utf8"
 
 describe("offerteformulier sectoren", () => {
   it("gebruikt WIZARD_SECTOREN als enige bron", () => {
-    expect(bron).toMatch(/import \{ WIZARD_SECTOREN \} from "@\/data\/sectorVerzekeringskaart"/);
+    expect(bron).toMatch(/import \{ WIZARD_SECTOREN, isAlleenOfferteSector \} from "@\/data\/sectorVerzekeringskaart"/);
     expect(bron).toMatch(
       /const BRANCHES = WIZARD_SECTOREN\.map\(\(s\) => \(\{ value: s\.id, label: s\.label \}\)\);/,
     );
