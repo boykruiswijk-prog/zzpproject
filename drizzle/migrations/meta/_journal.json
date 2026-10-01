@@ -134,6 +134,13 @@
       "when": 1790855556889,
       "tag": "0018_activiteiten_is_test_van_lead",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1790856762503,
+      "tag": "0019_beperk_collectief_teller_tot_beheer",
+      "breakpoints": true
     }
   ]
 }
