@@ -43,6 +43,7 @@ const PAKKET_LABELS: Record<string, string> = {
 };
 
 export default function AdminScreeningAanvragen() {
+  const { toonTest } = useToonTestrecords();
   const [aanvragen, setAanvragen] = useState<ScreeningAanvraag[]>([]);
   const [loading, setLoading] = useState(true);
   const { enabled: otenticaAan } = useIntegratie("otentica");
@@ -66,6 +67,8 @@ export default function AdminScreeningAanvragen() {
         <div>
           <h1 className="text-3xl font-bold">Screening aanvragen</h1>
           <p className="text-muted-foreground">Beheer en volg alle screeningsaanvragen</p>
+          <div className="mt-2"><ToonTestrecordsSchakelaar /></div>
+
         </div>
 
         <Card>

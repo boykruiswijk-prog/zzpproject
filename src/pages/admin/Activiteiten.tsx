@@ -33,6 +33,7 @@ interface ActiviteitRow {
 }
 
 export default function Activiteiten() {
+  const { toonTest } = useToonTestrecords();
   const [rows, setRows] = useState<ActiviteitRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [medewerker, setMedewerker] = useState<string>("alle");
@@ -86,6 +87,8 @@ export default function Activiteiten() {
           <p className="text-sm text-muted-foreground">
             Transparant log van alle betekenisvolle handelingen in het admin-paneel. Regels kunnen niet aangepast of verwijderd worden.
           </p>
+          <div className="mt-2"><ToonTestrecordsSchakelaar /></div>
+
         </div>
 
         <div className="flex flex-wrap gap-3">

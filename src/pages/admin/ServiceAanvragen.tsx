@@ -152,6 +152,8 @@ export default function ServiceAanvragen() {
             <h1 className="text-3xl font-bold flex items-center gap-2">
               <ConciergeBell className="h-7 w-7 text-primary" /> Service-aanvragen
             </h1>
+            <div className="mt-2"><ToonTestrecordsSchakelaar /></div>
+
             <p className="text-muted-foreground">
               Polis-, pauzeer-, document- en opzeg-aanvragen vanuit Mijn ZP
             </p>

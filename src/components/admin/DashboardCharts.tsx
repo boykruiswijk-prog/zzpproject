@@ -1,3 +1,4 @@
+import { statusLabel } from "@/lib/statusLabels";
 import { useLeadStats } from "@/hooks/useLeadStats";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -16,15 +17,6 @@ import {
 } from "recharts";
 
 const COLORS = ["#22c55e", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"];
-
-const statusLabels: Record<string, string> = {
-  nieuw: "Nieuw",
-  in_behandeling: "In behandeling",
-  afspraak_gepland: "Afspraak gepland",
-  offerte_verstuurd: "Offerte verstuurd",
-  klant: "Klant",
-  afgewezen: "Afgewezen",
-};
 
 export function DashboardCharts() {
   const { data: stats, isLoading } = useLeadStats();
@@ -48,7 +40,7 @@ export function DashboardCharts() {
 
   // Prepare status data
   const statusData = Object.entries(stats?.statusCounts || {}).map(([status, count]) => ({
-    name: statusLabels[status] || status,
+    name: statusLabel(status),
     value: count,
   }));
 
