@@ -1,138 +1,146 @@
-# Plan: het CRM stuurt Exact aan
+# Fase 2 — De site als factuurplanner (Exact-concepten)
 
-## Bevindingen bij punt 5: hoe nieuwe klanten nu worden gefactureerd
-- **`lead-to-exact-activate`** maakt in Exact een relatie (Account), contactpersoon, bankrekening en SEPA-mandaat aan. Daarna maakt hij direct één losse verkoopfactuur (`salesinvoice/SalesInvoices`, concept): de eerste periode, bij een maandpolis pro rata. Hij maakt **geen Exact-abonnement** aan.
-- **`exact_subscription_mapping`** bevat 3 regels, maar wordt alleen in het scherm Integraties getoond. Geen enkele functie gebruikt hem. Het veld `leads.exact_abonnement_id` is bij 0 leads gevuld.
-- **`monthly-invoices-cron`** maakt elke maand voor actieve maandpolissen (`gekozen_pakket = 'maandelijks'`) een losse factuur van 55 euro. Dubbel factureren binnen de site voorkomt hij via `monthly_invoices_log` (uniek per lead, jaar en maand). De cron staat **uit** (`monthly-invoices-cron-daily`, active = false) en het log is leeg.
-- **Jaarpolissen** krijgen alleen de eerste factuur bij activatie. Er is geen functie die het tweede jaar factureert.
-- `polis-lifecycle` maakt losse creditnota's en facturen bij pauzeren, hervatten en opzeggen.
+Vervangt het eerdere fase 2-ontwerp. Er komen geen Exact-abonnementen. Bouwen begint pas na akkoord. Zolang de hoofdschakelaar uit staat, schrijft niets iets naar Exact.
 
-Conclusie:
-- **Nu wordt een nieuwe klant niet dubbel gefactureerd.** Er is geen abonnement en de cron staat uit.
-- **Maar na de eerste factuur wordt hij helemaal niet meer gefactureerd.** Maandklanten krijgen vanaf maand 2 niets, jaarklanten vanaf jaar 2 niets. Dit geldt nu voor 0 echte actieve leads; alle actieve leads zijn test.
-- **Risico op dubbele facturatie ontstaat zodra twee dingen tegelijk gebeuren:** iemand zet de cron aan, én Sandra maakt in Exact handmatig een abonnement voor dezelfde klant. Dan factureren cron en abonnement allebei.
-- Gecontroleerd in het CRM: de 36 regels waarvan de volgende periode op of vóór 16-10-2026 begint, kloppen met jouw telling. Eén daarvan ligt al vóór oktober (rij 610).
+## Gecontroleerde startstand (gelezen voor dit plan)
+- 36 actieve regels hebben `volgende_factuurdatum` op of vóór 16-10-2026.
+- Er zijn 70 regels met een startdatum tussen 17 en 31-10-2026, samen € 9.738,00. Dat klopt met de verwachte ~70 regels en ~€ 9.700.
+- `monthly-invoices-cron-daily` bestaat en staat uit.
+- In `exact_config` staat `gl_code_bav` = 8003. BAV-AVB loopt via `_shared/exactGl.ts` en is daar al 8003 met een cache op code. Voor de laatste bevestiging vergelijkt `exact-gl-check` de grootboekrekening die op het artikel zelf staat (`GLRevenueCode`).
+- Er staat één artikel in de spiegel: BAV-AVB. Waarom het er maar één is, is nog niet zeker. Het kan aan rechten liggen, of aan een filter in de sync. Dat zoek ik eerst uit (stap 1).
+- Productcodes in het CRM: 100-varianten (BAV-AVB), 100HDI, 102/102J (Cyber Clear), 400 Start-up, 425 Light, 450 All-in, Nimble.
 
-## Fase 1: alleen lezen uit Exact (bouwen na akkoord)
+## Artikelen en grootboek (eerst onderzoeken, niets aanmaken)
+Een alleen-lezen diagnose haalt `logistics/Items` op (Code, Description, IsSalesItem, GLRevenue, GLRevenueCode, gepagineerd en zonder filter). Daarnaast leest hij `SalesInvoiceLines` van de laatste handmatige run, om te zien welke Item- en GLAccount-combinaties de administratie echt gebruikt.
 
-### 1. Relaties koppelen
-- Nieuwe functie **`exact-spiegel-sync`**:
-  - alleen voor supervisor/admin;
-  - gebruikt het bestaande token via `_shared/exactToken.ts` en de geconfigureerde divisie via `_shared/exactDivision.ts`;
-  - doet uitsluitend GET-verzoeken naar Exact; er staat geen POST/PUT/DELETE in de code;
-  - een test borgt dat er geen schrijfmethode in de functie voorkomt.
-- **Relaties ophalen** via `bulk/CRM/Accounts`, met de velden `ID, Code, Name, ChamberOfCommerce, Status, IsSales, Blocked`:
-  - de code wordt getrimd;
-  - bij een numerieke code wordt ook de waarde zonder voorloopnullen vergeleken; ZP00030 vergelijk ik als hoofdletter-tekst.
-- **Wat wordt opgeslagen**:
-  - `ondernemingen.exact_account_id` (nieuw);
-  - `exact_account_naam` en `exact_koppeling_status`: gekoppeld, niet gevonden of dubbel.
-- **Naamverschillen** komen uit een fuzzy vergelijking: Postgres `pg_trgm`, similarity onder 0,6. Dit is alleen ter info.
+Voorstel voor de mapping, te bevestigen met die gegevens:
 
-### 2. Abonnementen spiegelen
-Drie nieuwe tabellen, elk met `opgehaald_op` en `sync_run_id`. Bij een nieuwe sync gaat een upsert op het Exact-ID; er wordt niets verwijderd.
-- **`exact_abonnementen_spiegel`**, uit `subscription/Subscriptions`:
-  - EntryID, Number, Description, OrderedBy (account), InvoiceTo, SubscriptionType;
-  - StartDate, EndDate, CancellationDate, InvoicedTo, InvoicingStartDate, InvoiceDay;
-  - PaymentCondition, Classification, BlockEntry.
-- **`exact_abonnementsregels_spiegel`**, uit `subscription/SubscriptionLines`:
-  - ID, EntryID, Item, ItemCode, ItemDescription, Quantity, UnitPrice, NetPrice, AmountDC;
-  - FromDate, ToDate, LineType, UnitCode, VATCode.
-- **`exact_abonnementstypes_spiegel`**, uit `subscription/SubscriptionTypes`: ID, Code, Description.
-- **Artikelcodes** komen uit `logistics/Items` (ID, Code), zodat elk artikel een itemcode krijgt.
-- **Ophalen** met `$select` en de `__next`-paginering. Ik houd me aan de limieten: maximaal 50 verzoeken per minuut en een stop bij 4.000 per dag. Bij een 429-melding wacht de functie op `X-RateLimit-Reset`.
-- **Elke sync-run** komt in `exact_sync_log` met trigger_type `spiegel_sync` en de aantallen. Er gaan geen alarmmails uit, behalve de bestaande regel van maximaal 1 alarm per 24 uur bij een tokenfout.
+| Product | Artikel in Exact | Grootboek |
+|---|---|---|
+| BAV-AVB (100-varianten, 100HDI?) | BAV-AVB | 8003 |
+| Cyber Clear (102, 102J) | onbekend, opzoeken | uit artikel |
+| Lidmaatschap All-in / Start-up / Light (450/425/400) | onbekend, opzoeken | uit artikel |
+| Nimble | onbekend, opzoeken | uit artikel |
 
-### 3. Reconciliatie per contractregel
-- Een view `exact_reconciliatie_v`. Koppeling op account (via `exact_account_id`) plus itemcode. Waar het abonnementsnummer gelijk is aan `abonnement_nr`, krijgt dat voorrang.
-- Klassen, in deze volgorde. Een regel kan meerdere verschillen hebben; de eerste is de hoofdklasse en de rest gaat in een lijst:
-  - Exact opgezegd, CRM actief (of andersom): CancellationDate of EndDate verleden ↔ CRM-status;
-  - alleen in CRM;
-  - alleen in Exact;
-  - cyclusverschil: afgeleid uit het abonnementstype of de regelperiode, maand of jaar;
-  - prijsverschil: UnitPrice × Quantity ↔ bedrag × aantal, met een tolerantie van 0,01;
-  - datumverschil: begin- of einddatum, of InvoicedTo ↔ gefactureerd_tm;
-  - match.
+- De mapping komt in de tabel `factuur_artikel_mapping`.
+- Een product zonder bevestigd artikel blokkeert de facturatie, met de reden "artikel ontbreekt". Er wordt niets geraden.
+- Of 100HDI onder BAV-AVB valt, vraag ik na als Exact dat niet laat zien.
+- Hoort de factuurregel bij een artikel met een andere grootboekrekening dan die in de mapping, dan meldt het scherm dat.
 
-### 4. "Gefactureerd t/m" uit Exact overnemen
-- Nieuwe kolommen in `klant_contracten`:
-  - `afas_gefactureerd_tm` en `afas_volgende_factuurdatum`: eenmalig gevuld met de huidige waarden, voor de audit;
-  - `gefactureerd_tm_bron`: 'afas' of 'exact';
-  - `exact_abonnement_id` en `exact_abonnementsregel_id`.
-- **Overnemen** gebeurt met een aparte, expliciete knop "Exact-stand overnemen" (supervisor/admin):
-  - alleen bij een eenduidige match;
-  - werkt alleen `gefactureerd_tm`, `volgende_factuurdatum` en de bron-kolom bij;
-  - elke wijziging komt in `sensitive_audit_log` (oud en nieuw).
-  - Daarna verwacht ik dat de 36 achterlopende regels naar 17-10-2026 of later schuiven. Het verslag laat zien welke regels dat niet doen.
+## Datamodel (één migratie)
+- **`facturatie_config`** (één rij):
+  - `facturatie_actief` (standaard false), `cron_tijd` en `verwerk_termijn_werkdagen` (5);
+  - alleen admin mag bijwerken (has_role admin), team-supervisor mag lezen;
+  - elke wijziging gaat naar `sensitive_audit_log`.
+- **`factuur_artikel_mapping`**:
+  - `itemcode_patroon`, `product`, `exact_item_id`, `exact_item_code`, `gl_code`, `bevestigd` (boolean);
+  - alleen admin mag schrijven.
+- **`factuur_planning`**, één rij per te factureren periode:
+  - `klant_contract_id`, `periode_start`, `periode_eind`, `bedrag`, `aantal`, `exact_account_id`, `item_id`, `planningssleutel` (kort, bijvoorbeeld `ZPF-<8 tekens>`);
+  - `status`: proef | concept_aangemaakt | verwerkt | verwijderd_in_exact | te_laat | fout;
+  - `exact_invoice_id`, `exact_invoice_number`, `exact_status`, `invoice_date`, `aangemaakt_op`, `verwerkt_op`, `laatst_gecontroleerd_op`, `foutmelding`;
+  - `UNIQUE(klant_contract_id, periode_start)` en `UNIQUE(planningssleutel)`;
+  - een regel ontstaat alleen via `INSERT ... ON CONFLICT DO NOTHING`;
+  - de RLS geeft het team leesrecht, en alleen service_role mag schrijven.
+- **`factuur_planning_log`**: alleen toevoegen, voor elke statuswissel met oud en nieuw.
+- **`ondernemingen`**: nieuwe kolommen `facturatie_blokkade` (text, nullable) en `facturatie_blokkade_reden`. Startwaarden via een data-actie:
+  - 2009361 krijgt "conflict: Exact = TEST business@ventures, CRM = TSP Security";
+  - 2006408 krijgt "conflict: Pharmation / Conspectus".
+- **RPC's** (SECURITY DEFINER, vaste search_path, minimale EXECUTE):
+  - `facturatie_kandidaten(_van, _tot)`: rekent per dag en per regel uit wat er gemaakt zou worden, met een blokkadereden. Mogelijke redenen: geen Exact-code, conflict, artikel ontbreekt, regel loopt af of is vervangen, of al gepland.
+  - `doorrol_startstand(_preview boolean)`: alleen supervisor of admin.
+  - `factuur_opnieuw_inplannen(_planning_id)`: alleen supervisor of admin, en alleen bij de status verwijderd of te_laat. De oude rij wordt gearchiveerd met de status `vervangen`. De nieuwe rij krijgt een nieuwe sleutel voor dezelfde periode. Daarom geldt de unieke sleutel alleen voor actieve statussen, via een partial unique index.
+- De verwijderde maandcron laat `monthly_invoices_log` staan. Die tabel wordt niet meer gevuld en krijgt het commentaar DEPRECATED.
 
-### 5. Scherm "Exact-reconciliatie"
-- Pagina **/admin/exact-reconciliatie**, alleen voor supervisor/admin:
-  - tellingen voor het koppelen van relaties (gekoppeld, niet gevonden, dubbel, naamverschil);
-  - tellingen per klasse, met een filter per klasse;
-  - per regel CRM en Exact naast elkaar, met een link naar de klant;
-  - de knoppen "Spiegel verversen" en "Exact-stand overnemen";
-  - de banner dat facturatie vanuit het CRM nog uit staat.
-- Op "Klanten & contracten": lidmaatschappen tonen als "Lidmaatschap (uitlopend)", zonder verkoop- of upsellknoppen.
+## Periode en bedrag
+- `periode_start` = `volgende_factuurdatum`.
+- `periode_eind` = start + 1 maand (of 1 jaar) − 1 dag, volgens de kalender. Een start op 31-01 eindigt dus op 27-02 of 28-02.
+- Bedrag = `bedrag_per_periode × aantal`.
+- Na `verwerkt` worden `gefactureerd_tm` en `volgende_factuurdatum` op de contractregel doorgezet, met een vermelding in het audit-log.
+- Een periode die `concept_aangemaakt` is, telt al als bezet.
+- De pure helper `_shared/factuurPeriode.ts` staat ook byte-gelijk in `src/lib`, met unit-tests.
 
-### RLS
-Spiegeltabellen en nieuwe kolommen volgen deze rechten:
-- lezen: team, `TO authenticated`;
-- schrijven: alleen de functie (service_role); de enige uitzondering is de overneemknop, en die loopt via een RPC voor supervisor/admin;
-- anon: geen rechten.
+## Startstand
+1. **Doorrollen**: `doorrol_startstand(true)` geeft per regel de oude en nieuwe `gefactureerd_tm` en `volgende_factuurdatum` terug, plus het aantal cycli. Rij 610 komt uit op 17-10-2026. Ik lever eerst deze preview aan. Pas na jouw akkoord volgt `(false)`, met een regel in `sensitive_audit_log` per wijziging.
+2. **Controle (alleen lezen)**: een GET op `salesinvoice/SalesInvoices` met `$filter=Created ge datetime'<−7 dagen>' or InvoiceDate ge ...`. Daarna volgen de `SalesInvoiceLines` van die facturen. Elke doorgerolde regel wordt gekoppeld via `InvoiceTo` (account) en het artikel of bedrag. Het rapport bevat drie lijsten: met factuur, zonder factuur, en twijfel.
 
-## Fase 2: het CRM schrijft naar Exact (alleen plan)
+## Exact-endpoints en -velden
+- **Aanmaken**: `POST salesinvoice/SalesInvoices`, met dezelfde helpers als de activatie:
+  - kop: `OrderedBy` en `InvoiceTo` (account-ID), `Journal`, `PaymentCondition`, `InvoiceDate` = periode_start;
+  - `YourRef` = `factuurReferentie` + planningssleutel, en `Description` met de periode vooraan, beide via `_shared/factuurTekst.ts` en maximaal 60 tekens;
+  - `SalesInvoiceLines`: `Item`, `Quantity` = aantal, `NetPrice` = bedrag_per_periode, `GLAccount` uit de mapping, `VATCode` vrijgesteld zoals nu, en `Description` met de periode;
+  - een SalesInvoice die via de API wordt aangemaakt, krijgt in Exact standaard `Status` 20 (concept). Er wordt nooit `PrintedSalesInvoices` aangeroepen; boeken en versturen doet Roxy.
+- **Idempotentie**:
+  - eerst de planningsrij op `fout_pending` zetten (geclaimd);
+  - dan `GET SalesInvoices?$filter=substringof('<sleutel>',YourRef)`. Bestaat de factuur al, dan wordt die gekoppeld en wordt er niets aangemaakt;
+  - pas daarna de POST;
+  - bij een timeout of een onbekende uitkomst blijft de rij geclaimd en stopt de run. Dezelfde GET lost dat de volgende run op, zodat er nooit een dubbele factuur ontstaat.
+- **Status uitlezen**: `_shared/exactInvoiceStatus.ts` (`InvoiceID, InvoiceNumber, Status, YourRef, InvoiceDate`), in batches op ID:
+  - 20 = concept;
+  - 50 = verwerkt (geboekt);
+  - een ID dat niet meer bestaat = verwijderd in Exact.
+- **Verwerkt**: alleen bij `Status = 50`. Daarbij komen `InvoiceNumber` en `InvoiceDate` erbij.
+- **Te laat**: status 20 terwijl er meer dan 5 werkdagen (NL, zonder weekend) voorbij zijn sinds aanmaak. Dat geeft een melding; er komt geen nieuw concept.
+- **PDF**: het bestaande pad in `get-invoice-pdf`. De site controleert eerst `SalesInvoices(guid)` op eigenaar en `Status = 50`, en haalt daarna `/docs/XMLDownload.aspx?Topic=SalesInvoice&Format=Pdf&Params_InvoiceID=..&Division=4401707` op. Concepten worden geweigerd. Werkt dit pad niet voor een verwerkte factuur, dan valt het terug op `Documents` + `DocumentAttachments` (`Attachment`-URL) met `Type` = verkoopfactuur. Welke variant werkt, test ik read-only op één bestaande verwerkte factuur.
 
-### Wachtrij `exact_wijzigingen`
-- **Velden**:
-  - actie: abonnement_aanmaken, regel_toevoegen, prijs_wijzigen, einddatum_zetten, opzeggen;
-  - onderneming_id, klant_contract_id;
-  - payload (het voorstel) en exact_stand (snapshot uit de spiegel), plus de diff;
-  - status: concept → goedgekeurd → verstuurd → bevestigd of fout;
-  - aangemaakt_door, goedgekeurd_door, goedgekeurd_op;
-  - idempotentiesleutel (uniek): hash van actie, contractregel en payload;
-  - exact_response en foutmelding.
-- **Volledige log** in `exact_wijzigingen_log`: elke statusovergang wordt alleen toegevoegd.
-  - Een trigger blokkeert verwijderen. Bijwerken mag alleen langs de statusovergangen.
-- **Concepten**: een trigger op `klant_contracten` maakt een concept aan bij een nieuw contract, prijs, cyclus, einddatum of opzegging. Hij verstuurt niets.
-- **Goedkeuren** via een RPC, alleen voor supervisor/admin.
-  - Mijn voorstel: wie een wijziging heeft gemaakt, mag die niet zelf goedkeuren (vier-ogen). Graag je akkoord.
+## Planner (`factuur-planner`, cron dagelijks om 06:00 Europe/Amsterdam)
+- Authenticatie via `x-cron-secret` uit Vault.
+- Werkt eerst de status bij van open concepten. Daarna berekent hij de kandidaten voor vandaag, plus achterstallige kandidaten die niet geblokkeerd zijn.
+- **Staat `facturatie_actief` uit**: alleen proefrijen of een rapport. Er staat geen enkel POST-pad open. De Exact-client van de planner krijgt een guard die POST weigert als de vlag niet in de DB-read van dezelfde run waar is.
+- **Staat de schakelaar aan**: per regel claimen, controleren en aanmaken. Een fout geldt per regel: die regel krijgt `fout` en de rest loopt door. Er wordt niets half aangemaakt, want één factuur is één POST.
+- Alarm via de bestaande `sendExactAlarm`, met dedupe op maximaal één per dag (de 24-uursregel per genormaliseerde fout).
 
-### Versturen
-Functie `exact-wijziging-versturen`. Per goedgekeurde actie:
-1. Lees de actuele Exact-stand. Wijkt die af van de snapshot, dan wordt de status fout ("Exact is intussen gewijzigd") en verstuurt hij niets.
-2. Doe precies één POST of PUT, met de idempotentiesleutel in de omschrijving of notities, zodat een dubbele poging herkenbaar is.
-3. Lees terug ter controle → bevestigd. Wijkt het teruggelezen resultaat af, dan wordt de status fout. Er komt geen automatische nieuwe poging.
+## Activatie van nieuwe klanten
+`lead-to-exact-activate` blijft zoals hij is, met de eerste factuur. Pas na een geslaagde factuur maakt hij ook:
+- een onderneming, als die er nog niet is (op `exact_relatie_code` of account);
+- een regel in `klant_contracten` met:
+  - bron `site_activatie` en `bron_rij` = hash van de lead;
+  - `itemcode` en `product` uit het gekozen pakket, `cyclus` maand of jaar en `bedrag_per_periode`;
+  - `gefactureerd_tm` = einde van de eerste periode, en `volgende_factuurdatum` = de dag erna.
 
-Exact-endpoints per actie:
-- **Abonnement aanmaken**: POST `subscription/Subscriptions` (OrderedBy, InvoiceTo, SubscriptionType, StartDate, EndDate, PaymentCondition), met de regels in `SubscriptionLines`.
-- **Regel toevoegen**: POST `subscription/SubscriptionLines`.
-- **Prijs wijzigen**: zet ToDate op de oude regel met PUT `SubscriptionLines(guid)` en POST een nieuwe regel vanaf de nieuwe datum. Zo blijft de historie zichtbaar.
-- **Einddatum en opzeggen**: PUT `Subscriptions(guid)` met EndDate, CancellationDate en ReasonCancelled.
+Dit gaat idempotent, via unieke bron/rij. Testleads krijgen `is_test` en worden door de planner altijd overgeslagen.
 
-### Dubbele facturatie technisch uitsluiten (advies: maandcron ombouwen tot alleen controle)
-- Ik adviseer **de maandcron definitief uit te schakelen als factureerder** en hem om te bouwen tot een dagelijkse **alleen-lezen controle**. Exact factureert vanuit abonnementen; de cron meldt alleen nog afwijkingen, zoals een abonnement zonder factuur of een factuur zonder abonnement. Er is dan nog maar één systeem dat factureert.
-- Harde blokkades:
-  1. Het verzendgedeelte van `monthly-invoices-cron` wordt verwijderd. In de code komt een test die controleert dat er geen POST naar `SalesInvoices` in staat.
-  2. `lead-to-exact-activate` maakt geen eerste losse factuur meer. In plaats daarvan maakt hij een concept "abonnement aanmaken" dat Roxy of Sandra goedkeurt. Exact factureert de eerste periode dan zelf.
-  3. Een database-functie `mag_site_factureren(lead_id)` geeft false zodra er een gekoppeld Exact-abonnement is. Elke resterende losse-factuurroute (`polis-lifecycle`, creditnota's bij pauze of opzegging) controleert dat. Is er een abonnement, dan loopt pauze of opzegging via `einddatum_zetten`/`opzeggen` en niet via een losse creditnota.
-  4. Een unieke index: per contractregel mag maar één actief Exact-abonnement bestaan.
-- `polis-lifecycle` moet na fase 2 ook via de wachtrij lopen. Dat neem ik mee in fase 2.
+## Wat verdwijnt
+- `supabase/functions/monthly-invoices-cron` wordt verwijderd, samen met de cron-job `monthly-invoices-cron-daily`.
+- `test-exact-invoice-periods` wordt verwijderd als het alleen voor de maandcron bestond.
+- In `polis-lifecycle` controleer ik of daar losse vervolgfacturen worden gemaakt. Het hervat-pad dat een factuur maakt, gaat dan via de planningstabel (unieke periode), zodat er maar één factuurroute is. Creditnota's blijven ongewijzigd.
 
-## Technische details
-- Migraties fase 1:
-  - de kolommen op `ondernemingen` en `klant_contracten`;
-  - de 3 spiegeltabellen en de view `exact_reconciliatie_v`;
-  - de RPC `neem_exact_stand_over(contract_ids uuid[])`: SECURITY DEFINER, supervisor-check, logt naar het audit-log;
-  - de extensie `pg_trgm`.
-- Gedeelde helper `_shared/exactCodeMatch.ts` (trim, numeriek of tekst), met unit-tests.
-- Tests:
-  - code-matching;
-  - classificatie (pure functie, ook in de frontend-lib);
-  - de controle dat er geen schrijfmethode in `exact-spiegel-sync` staat;
-  - anon kan de spiegel niet lezen.
-- Vóór en na de sync tel ik `exact_sync_log`, de mail-logs en `leads`; alleen `exact_sync_log` mag stijgen. Daarna build, tests, typecontrole, deno check en de security-scan. Niet publiceren.
+## Beheer
+- **`/admin/facturatieplanning`** (admin en supervisor):
+  - de status van de hoofdschakelaar; alleen admin ziet de knop;
+  - een datumbereik, standaard 17 t/m 31-10-2026;
+  - per dag de regels, met totalen per maand en jaar;
+  - een blokkadereden per regel;
+  - een tab met open concepten, verwijderde concepten en te late concepten, met de knop "Opnieuw inplannen".
+- **Onder `/admin/klanten`**: de lijst "Blokkeert facturatie" (20 zonder code en 2 conflicten).
 
-## Vragen
-1. **Vier-ogen**: mag wie de wijziging maakt hem zelf goedkeuren? Mijn voorstel is nee.
-2. **Lege velden**: Exact heeft per abonnement een InvoicedTo. Als die leeg is, mag ik de laatste factuurperiode dan afleiden uit `SalesInvoiceLines`? Dat is ook alleen lezen.
-3. **Niet gevonden**: relaties die niet in Exact staan, markeer ik alleen. Ze krijgen pas in fase 2 een concept "relatie aanmaken". Akkoord?
+## Mijn ZP: Facturen
+- `get-customer-invoices` wordt gefilterd op:
+  - de accounts van de klant, via de RPC persoon → onderneming → `exact_account_id`;
+  - `Status = 50`;
+  - `InvoiceDate ≥ 2026-10-17`.
+- Per factuur toont het nummer, datum, periode (uit `factuur_planning`, anders uit de omschrijving) en bedrag. Er staat geen betaalstatus bij.
+- De PDF gaat via `get-invoice-pdf`, met dezelfde controles.
+- De site stuurt geen mail.
+
+## Testplan (geen Exact-write zolang de schakelaar uit staat)
+- **Unit**: periodes (maandeinde, schrikkeljaar, jaar), bedrag, sleutel en YourRef (≤ 60 tekens), werkdagen, statusovergangen en blokkaderedenen.
+- **Planner met de schakelaar uit**: een guard-test met een gemockte fetch die faalt bij elke niet-GET. De proefrun voor 17–31 okt moet ongeveer 70 regels en ongeveer € 9.738 geven, minus de geblokkeerde regels; dat verschil wordt verklaard.
+- **Database**: een dubbele insert met dezelfde (contract, periode_start) faalt. De RLS laat anon en klant niets lezen. Alleen admin kan de schakelaar zetten.
+- **Doorrol-preview**: 36 regels, en rij 610 komt uit op 17-10-2026.
+- **Exact alleen-lezen**: de artikeldiagnose, de controle van de afgelopen 7 dagen en een PDF-test op één verwerkte factuur.
+- **Activatie**: droogrun of mock die de contractregel maakt, voor een @zpzaken.nl-testlead met `is_test`.
+- **Afsluitend**: build, tests, typecheck, deno check en security-scan. Ik vergelijk het aantal regels in de mail-, uitnodigings-, factuur- en planningstabellen vóór en na.
+- Ik publiceer niets en verwijder geen logregels.
+
+## Volgorde na akkoord
+1. Migratie, helpers en tests; daarna de artikeldiagnose en de 7-dagencontrole (alleen lezen), met rapport.
+2. Doorrol-preview, met rapport. Ik wacht op jouw akkoord voordat ik doorrol.
+3. Planner (schakelaar uit), beheerscherm, proefrun 17–31 okt en het activatie-aanvulstuk; daarna de maandcron verwijderen.
+4. Mijn ZP: Facturen.
+5. Boy of een admin zet `facturatie_actief` pas zelf aan na akkoord op de proefrun en de mapping.
+
+## Open vragen
+- Valt 100HDI onder het artikel BAV-AVB?
+- Moet `InvoiceDate` van het concept periode_start zijn, of de aanmaakdag? (Voorstel: periode_start.)
+- Moet de planner achterstallige kandidaten automatisch meenemen nadat hij een dag heeft gemist? (Voorstel: ja, maar alleen als ze niet geblokkeerd zijn.)
