@@ -33,7 +33,7 @@ import { useToast } from "@/hooks/use-toast";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { useFormGuard, submitPublicForm, PublicFormError } from "@/lib/antiSpam";
 import { HoneypotField } from "@/components/shared/HoneypotField";
-import { WIZARD_SECTOREN, isAlleenOfferteSector } from "@/data/sectorVerzekeringskaart";
+import { WIZARD_SECTOREN, isHandmatigeAcceptatieSector } from "@/data/sectorVerzekeringskaart";
 import { brancheVoorSector } from "@/data/sectorBranche";
 
 const SEO = seoRoute("/offerte");
@@ -59,7 +59,7 @@ const isNlPhone = (v: string) => {
 };
 
 /** Overig, zorg en bouw worden altijd handmatig beoordeeld. */
-const vereistHandmatig = (id: string) => id === "overig" || isAlleenOfferteSector(id);
+const vereistHandmatig = (id: string) => id === "overig" || isHandmatigeAcceptatieSector(id);
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;

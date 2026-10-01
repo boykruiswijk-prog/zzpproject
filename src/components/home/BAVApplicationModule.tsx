@@ -26,7 +26,7 @@ import { bavPakketten, getPakket, type BavPakketId } from "@/data/bavPakketten";
 import { checkAcceptance } from "@/data/acceptanceCriteria";
 import { useFormGuard } from "@/lib/antiSpam";
 import { HoneypotField } from "@/components/shared/HoneypotField";
-import { WIZARD_SECTOREN, verzekeringskaartVoorSector, isAlleenOfferteSector } from "@/data/sectorVerzekeringskaart";
+import { WIZARD_SECTOREN, verzekeringskaartVoorSector, isHandmatigeAcceptatieSector } from "@/data/sectorVerzekeringskaart";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { usePdokAdres } from "@/hooks/usePdokAdres";
 import { AdresGevonden } from "@/components/AdresGevonden";
@@ -150,7 +150,6 @@ export function BAVApplicationModule() {
       if (!formData.kvkNummer.trim()) newErrors.kvkNummer = t("bavApp.valKvk");
       else if (!isValidKvk(formData.kvkNummer)) newErrors.kvkNummer = t("bavApp.valKvkFormat");
       if (!verzekeringskaartVoorSector(formData.sector)) newErrors.sector = "Kies je sector";
-      else if (isAlleenOfferteSector(formData.sector)) newErrors.sector = "Voor deze sector is direct online afsluiten niet mogelijk";
       if (!formData.beroep.trim()) newErrors.beroep = t("bavApp.valProfession");
       if (!formData.functie.trim()) newErrors.functie = t("bavApp.valFunction");
       if (!formData.aantalMedewerkers.trim()) newErrors.aantalMedewerkers = t("bavApp.valEmployees");
@@ -191,7 +190,6 @@ export function BAVApplicationModule() {
     if (step === 5) {
       // Akkoord nooit zonder de juiste kaart: sector moet een bestaande kaart opleveren.
       if (!verzekeringskaartVoorSector(formData.sector)) newErrors.slotverklaring = "Kies eerst je sector in stap 2";
-      else if (isAlleenOfferteSector(formData.sector)) newErrors.slotverklaring = "Voor deze sector is direct online afsluiten niet mogelijk";
       else if (!slotverklaringAkkoord) newErrors.slotverklaring = t("bavApp.valSlotverklaring");
     }
 
@@ -248,7 +246,6 @@ export function BAVApplicationModule() {
   };
   const prevStep = () => { if (currentStep > 1) { setErrors({}); stapGewisseld.current = true; setCurrentStep(currentStep - 1); } };
    const handleSubmit = async () => {
-    if (isAlleenOfferteSector(formData.sector)) return;
      if (isSubmitting) return;
      if (!validateStep(currentStep)) return;
      setIsSubmitting(true);
@@ -659,7 +656,7 @@ export function BAVApplicationModule() {
                           <option value="">Kies je sector</option>
                           {WIZARD_SECTOREN.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
                         </select>
-                        {!isAlleenOfferteSector(formData.sector) && <FieldError message={errors.sector} />}
+                        <FieldError message={errors.sector} />
                         {isAlleenOfferteSector(formData.sector) && (
                           <div role="alert" className="mt-3 rounded-md border border-destructive/40 bg-destructive/5 p-4 text-sm">
                             <p className="flex items-start gap-2 text-foreground">
@@ -916,14 +913,14 @@ export function BAVApplicationModule() {
                   {currentStep < TOTAL_STEPS ? (
                     <Button
                       onClick={nextStep}
-                      disabled={(currentStep === 1 && !!startDate && startDate < new Date().toISOString().split('T')[0]) || (currentStep >= 2 && isAlleenOfferteSector(formData.sector))}
+                      disabled={(currentStep === 1 && !!startDate && startDate < new Date().toISOString().split('T')[0])}
                       className="bg-accent hover:bg-accent/90 text-accent-foreground"
                     >{t("home.bavNext")}<ArrowRight className="h-4 w-4" /></Button>
                   ) : (
                     <Button
                       onClick={handleSubmit}
                       size="lg"
-                      disabled={isSubmitting || isAlleenOfferteSector(formData.sector)}
+                      disabled={isSubmitting}
                       aria-busy={isSubmitting}
                       className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold"
                     >
