@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { ExactKoppelingAlarm } from "@/components/admin/ExactKoppelingAlarm";
+import { CollectiefAanmeldingenTeller } from "@/components/admin/CollectiefAanmeldingenTeller";
 
 
 export default function AdminDashboard() {
@@ -87,6 +88,7 @@ export default function AdminDashboard() {
         </Alert>
 
         <MFAManagement />
+        {isSupervisor && <CollectiefAanmeldingenTeller />}
         {isSupervisor && <SupervisorKpiPanel />}
         <DashboardStats />
         <DashboardCharts />

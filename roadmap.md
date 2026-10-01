@@ -25,3 +25,8 @@
 - [x] Go-live: authentieke teamfoto's Gert-Jan/Roxy en Sandra/Noah of initialen; bronnen en rollabels rapporteren
 - [x] Go-live: Boy-portret bij citaten en foutieve quote-attributies herstellen
 - [x] Go-live: /voorwaarden en /polisvoorwaarden naar branchevoorwaarden; redirects en screenshots controleren
+- [x] Publieke deelnemersaantallen, doelen en voortgangsbalken bij Collectief verwijderen
+- [x] Eerlijke commerciële collectieftekst in NL/EN/DE/FR toevoegen
+- [x] Collectieve aanmeldtellingen alleen voor admin/supervisor zichtbaar houden
+- [x] Collectiefpagina en menu visueel controleren op 1280 en 390 px
+- [x] Build, tests en typecontrole uitvoeren

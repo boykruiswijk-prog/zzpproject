@@ -18,3 +18,4 @@
 - Oude WordPress-URL's staan alleen in src/config/legacyRedirects.ts (byte-gelijk gespiegeld in _shared); de prerender schrijft per regel een statische doorverwijspagina, behalve voor bestaande routes. Waarom: de hosting kent geen serverredirects, dus elke oude URL heeft een eigen pagina nodig.
 - 404's worden alleen via RPC log_not_found vastgelegd (alleen optellen, begrensd). Waarom: monitoring zonder anonieme tabelrechten.
 - Testdata wordt gemarkeerd met kolom is_test (nooit verwijderd); beheeroverzichten filteren is_test standaard weg, alleen admin/supervisor kan via useToonTestrecords tonen. Leadstatuslabels komen uit src/lib/statusLabels.ts. Waarom: herleidbare historie en één bron voor labels.
+- Collectieve aanmeldtellingen worden alleen in afgeschermd beheer opgevraagd; publieke pagina's tonen geen aantallen, doelen of voortgang. Waarom: eerlijke communicatie zonder gevoelige of misleidende sociale bewijslast.
