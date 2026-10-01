@@ -61,7 +61,7 @@ function useNavItems() {
         { href: "/waarom-zp-zaken", label: "Waarom ZP Zaken" },
         { href: "/voor-wie", label: t("nav.voorWie") },
         { href: "/zo-werken-wij", label: t("nav.zoWerkenWij") },
-        { href: "/partners", label: t("nav.partners") },
+        { href: "/over-ons", label: t("nav.partners") },
         { href: "/historie", label: t("nav.onzeHistorie") },
         { href: "/social-media", label: t("nav.socialMedia") },
       ]

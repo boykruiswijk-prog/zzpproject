@@ -9,8 +9,8 @@ function tokens(s: string): Set<string> {
 
 const ONDERWERPEN: Array<[RegExp, string]> = [
   [/aov|arbeidsongeschikt/, "/aov"],
-  [/pensioen/, "/pensioen"],
-  [/zorgverzekering/, "/zorgverzekering"],
+  [/pensioen/, "/kennisbank/jaarruimte-en-reserveringsruimte"],
+  [/zorgverzekering/, "/kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen"],
   [/bav|avb|aansprakelijk|verzekering/, "/verzekeringen"],
   [/belasting|btw|fiscaal|aftrek/, "/kennisbank/belastingen"],
   [/factuur|financ|hypotheek/, "/kennisbank/financien"],

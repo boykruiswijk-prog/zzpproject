@@ -10,12 +10,9 @@ const Index = lazy(() => import("./pages/Index"));
 const Diensten = lazy(() => import("./pages/Diensten"));
 const Verzekeringen = lazy(() => import("./pages/Verzekeringen"));
 const AOV = lazy(() => import("./pages/AOV"));
-const Pensioen = lazy(() => import("./pages/Pensioen"));
-const Zorgverzekering = lazy(() => import("./pages/Zorgverzekering"));
 const ZzpVerzekeringICT = lazy(() => import("./pages/ZzpVerzekeringICT"));
 const ZzpVerzekeringZorg = lazy(() => import("./pages/ZzpVerzekeringZorg"));
 const ZzpVerzekeringBouw = lazy(() => import("./pages/ZzpVerzekeringBouw"));
-const MentaleGezondheid = lazy(() => import("./pages/MentaleGezondheid"));
 const WaaromZpZaken = lazy(() => import("./pages/WaaromZpZaken"));
 const VoorWie = lazy(() => import("./pages/VoorWie"));
 const ZoWerkenWij = lazy(() => import("./pages/ZoWerkenWij"));
@@ -27,7 +24,6 @@ const KennisbankFinancien = lazy(() => import("./pages/kennisbank/Financien"));
 const KennisbankVerzekeringen = lazy(() => import("./pages/kennisbank/Verzekeringen"));
 const ArtikelDetail = lazy(() => import("./pages/ArtikelDetail"));
 const OverOns = lazy(() => import("./pages/OverOns"));
-const Partners = lazy(() => import("./pages/Partners"));
 const Historie = lazy(() => import("./pages/Historie"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Cookies = lazy(() => import("./pages/Cookies"));
@@ -124,12 +120,9 @@ const publicRoutes = (
     <Route path="diensten" element={<Diensten />} />
     <Route path="verzekeringen" element={<Verzekeringen />} />
     <Route path="aov" element={<AOV />} />
-    <Route path="pensioen" element={<Pensioen />} />
-    <Route path="zorgverzekering" element={<Zorgverzekering />} />
     <Route path="zzp-verzekering-ict" element={<ZzpVerzekeringICT />} />
     <Route path="zzp-verzekering-zorg" element={<ZzpVerzekeringZorg />} />
     <Route path="zzp-verzekering-bouw" element={<ZzpVerzekeringBouw />} />
-    <Route path="mentale-gezondheid" element={<MentaleGezondheid />} />
     <Route path="waarom-zp-zaken" element={<WaaromZpZaken />} />
     <Route path="voor-wie" element={<VoorWie />} />
     <Route path="zo-werken-wij" element={<ZoWerkenWij />} />
@@ -141,7 +134,6 @@ const publicRoutes = (
     <Route path="kennisbank/verzekeringen" element={<KennisbankVerzekeringen />} />
     <Route path="kennisbank/:slug" element={<ArtikelDetail />} />
     <Route path="over-ons" element={<OverOns />} />
-    <Route path="partners" element={<Partners />} />
     <Route path="historie" element={<Historie />} />
     <Route path="contact" element={<Contact />} />
     <Route path="cookies" element={<Cookies />} />
