@@ -28,5 +28,5 @@
 - [x] Publieke deelnemersaantallen, doelen en voortgangsbalken bij Collectief verwijderen
 - [x] Eerlijke commerciële collectieftekst in NL/EN/DE/FR toevoegen
 - [x] Collectieve aanmeldtellingen alleen voor admin/supervisor zichtbaar houden
-- [ ] Collectiefpagina en menu visueel controleren op 1280 en 390 px
+- [x] Collectiefpagina en menu visueel controleren op 1280 en 390 px
 - [ ] Build, tests en typecontrole uitvoeren
