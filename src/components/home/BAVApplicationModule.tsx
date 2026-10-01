@@ -26,7 +26,7 @@ import { bavPakketten, getPakket, type BavPakketId } from "@/data/bavPakketten";
 import { checkAcceptance } from "@/data/acceptanceCriteria";
 import { useFormGuard } from "@/lib/antiSpam";
 import { HoneypotField } from "@/components/shared/HoneypotField";
-import { WIZARD_SECTOREN, verzekeringskaartVoorSector, isAlleenOfferteSector } from "@/data/sectorVerzekeringskaart";
+import { WIZARD_SECTOREN, verzekeringskaartVoorSector, isHandmatigeAcceptatieSector } from "@/data/sectorVerzekeringskaart";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { usePdokAdres } from "@/hooks/usePdokAdres";
 import { AdresGevonden } from "@/components/AdresGevonden";
@@ -79,7 +79,7 @@ export function BAVApplicationModule() {
    const [slotverklaringAkkoord, setSlotverklaringAkkoord] = useState(false);
    const [errors, setErrors] = useState<ValidationErrors>({});
    const [isSubmitted, setIsSubmitted] = useState(false);
-   const [submissionResult, setSubmissionResult] = useState<{ reference: string; mandaatkenmerk?: string } | null>(null);
+   const [submissionResult, setSubmissionResult] = useState<{ reference: string; mandaatkenmerk?: string; handmatig?: boolean } | null>(null);
    const [isSubmitting, setIsSubmitting] = useState(false);
    const guard = useFormGuard();
    const [existingCustomerOpen, setExistingCustomerOpen] = useState(false);
@@ -150,7 +150,6 @@ export function BAVApplicationModule() {
       if (!formData.kvkNummer.trim()) newErrors.kvkNummer = t("bavApp.valKvk");
       else if (!isValidKvk(formData.kvkNummer)) newErrors.kvkNummer = t("bavApp.valKvkFormat");
       if (!verzekeringskaartVoorSector(formData.sector)) newErrors.sector = "Kies je sector";
-      else if (isAlleenOfferteSector(formData.sector)) newErrors.sector = "Voor deze sector is direct online afsluiten niet mogelijk";
       if (!formData.beroep.trim()) newErrors.beroep = t("bavApp.valProfession");
       if (!formData.functie.trim()) newErrors.functie = t("bavApp.valFunction");
       if (!formData.aantalMedewerkers.trim()) newErrors.aantalMedewerkers = t("bavApp.valEmployees");
@@ -191,7 +190,6 @@ export function BAVApplicationModule() {
     if (step === 5) {
       // Akkoord nooit zonder de juiste kaart: sector moet een bestaande kaart opleveren.
       if (!verzekeringskaartVoorSector(formData.sector)) newErrors.slotverklaring = "Kies eerst je sector in stap 2";
-      else if (isAlleenOfferteSector(formData.sector)) newErrors.slotverklaring = "Voor deze sector is direct online afsluiten niet mogelijk";
       else if (!slotverklaringAkkoord) newErrors.slotverklaring = t("bavApp.valSlotverklaring");
     }
 
@@ -230,16 +228,6 @@ export function BAVApplicationModule() {
     const timer = window.setTimeout(() => successHeadingRef.current?.focus({ preventScroll: true }), 350);
     return () => window.clearTimeout(timer);
   }, [isSubmitted]);
-  // Link naar offerte met sector + reeds ingevulde basisgegevens (nooit IBAN of adres).
-  const offerteLink = (() => {
-    const q = new URLSearchParams({ sector: formData.sector });
-    const basis: Record<string, string> = {
-      voornaam: formData.voornaam, achternaam: formData.achternaam, email: formData.email,
-      telefoon: formData.telefoon, bedrijfsnaam: formData.bedrijfsnaam, kvk: formData.kvkNummer,
-    };
-    for (const [k, v] of Object.entries(basis)) if (v.trim()) q.set(k, v.trim());
-    return `/offerte?${q.toString()}`;
-  })();
 
   const nextStep = async () => {
     if (!validateStep(currentStep) || currentStep >= TOTAL_STEPS) return;
@@ -248,7 +236,6 @@ export function BAVApplicationModule() {
   };
   const prevStep = () => { if (currentStep > 1) { setErrors({}); stapGewisseld.current = true; setCurrentStep(currentStep - 1); } };
    const handleSubmit = async () => {
-    if (isAlleenOfferteSector(formData.sector)) return;
      if (isSubmitting) return;
      if (!validateStep(currentStep)) return;
      setIsSubmitting(true);
@@ -311,6 +298,7 @@ export function BAVApplicationModule() {
         setSubmissionResult({
           reference: returnedLeadId.slice(0, 8).toUpperCase(),
           mandaatkenmerk: typeof data.mandaatkenmerk === "string" ? data.mandaatkenmerk : undefined,
+          handmatig: isHandmatigeAcceptatieSector(formData.sector),
         });
         trackWizardComplete(selectedBavPakket.name, selectedBavPakket.prijs);
        setIsSubmitted(true);
@@ -356,7 +344,9 @@ export function BAVApplicationModule() {
               Je aanvraag is ontvangen
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-              We beoordelen je aanvraag en nemen binnen 1 werkdag contact met je op. Je ontvangt een bevestiging per e-mail, met je SEPA-machtiging als PDF. Na goedkeuring ontvang je je polis en een uitnodiging voor Mijn ZP.
+              {submissionResult.handmatig
+                ? "We hebben je aanvraag ontvangen. Een adviseur neemt binnen 1 werkdag contact met je op om alles met je af te ronden. Je ontvangt een bevestiging per e-mail, met je SEPA-machtiging als PDF."
+                : "We beoordelen je aanvraag en nemen binnen 1 werkdag contact met je op. Je ontvangt een bevestiging per e-mail, met je SEPA-machtiging als PDF. Na goedkeuring ontvang je je polis en een uitnodiging voor Mijn ZP."}
             </p>
             <div className="mt-6 space-y-1 text-sm">
               <p><span className="font-semibold">Referentie:</span> {submissionResult.reference}</p>
@@ -659,18 +649,7 @@ export function BAVApplicationModule() {
                           <option value="">Kies je sector</option>
                           {WIZARD_SECTOREN.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
                         </select>
-                        {!isAlleenOfferteSector(formData.sector) && <FieldError message={errors.sector} />}
-                        {isAlleenOfferteSector(formData.sector) && (
-                          <div role="alert" className="mt-3 rounded-md border border-destructive/40 bg-destructive/5 p-4 text-sm">
-                            <p className="flex items-start gap-2 text-foreground">
-                              <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-destructive" />
-                              <span>Voor de sector {WIZARD_SECTOREN.find((s) => s.id === formData.sector)?.label} stellen we je verzekering graag persoonlijk samen. Direct online afsluiten is voor deze sector niet mogelijk. Vraag een vrijblijvende offerte aan, dan nemen we binnen 24 uur contact met je op.</span>
-                            </p>
-                            <Button asChild className="mt-3 bg-accent hover:bg-accent/90 text-accent-foreground">
-                              <LocalizedLink to={offerteLink}>Offerte aanvragen<ArrowRight className="h-4 w-4" /></LocalizedLink>
-                            </Button>
-                          </div>
-                        )}
+                        <FieldError message={errors.sector} />
                       </div>
                       <div>
                         <Label htmlFor="beroep">{t("home.bavProfession")} *</Label>
@@ -916,14 +895,14 @@ export function BAVApplicationModule() {
                   {currentStep < TOTAL_STEPS ? (
                     <Button
                       onClick={nextStep}
-                      disabled={(currentStep === 1 && !!startDate && startDate < new Date().toISOString().split('T')[0]) || (currentStep >= 2 && isAlleenOfferteSector(formData.sector))}
+                      disabled={(currentStep === 1 && !!startDate && startDate < new Date().toISOString().split('T')[0])}
                       className="bg-accent hover:bg-accent/90 text-accent-foreground"
                     >{t("home.bavNext")}<ArrowRight className="h-4 w-4" /></Button>
                   ) : (
                     <Button
                       onClick={handleSubmit}
                       size="lg"
-                      disabled={isSubmitting || isAlleenOfferteSector(formData.sector)}
+                      disabled={isSubmitting}
                       aria-busy={isSubmitting}
                       className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold"
                     >

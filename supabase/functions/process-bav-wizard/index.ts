@@ -11,7 +11,7 @@ import {
 } from "../_shared/sepaBewijs.ts";
 import { isUuid, isValidIban, redenBav } from "../_shared/sepaMachtiging.ts";
 import { brancheVoorSector } from "../_shared/sectorBranche.ts";
-import { bodyIsAlleenOfferte, KLANTMELDING_ALLEEN_OFFERTE } from "../_shared/sectorRegels.ts";
+import { HANDMATIGE_ACCEPTATIE_REDEN, teamWaarschuwingHandmatig, vereistHandmatigeAcceptatie } from "../_shared/sectorRegels.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -119,10 +119,8 @@ Deno.serve(async (req) => {
       return weiger(400, `Aanvraag onvolledig: ${ontbreekt.join(", ")}`, "validatie");
     }
 
-    // Vangnet: zorg/bouw alleen via offerte — vóór bewijs, lead, PDF of mail.
-    if (bodyIsAlleenOfferte(submission)) {
-      return weiger(422, KLANTMELDING_ALLEEN_OFFERTE, "sector_alleen_offerte");
-    }
+    // Zorg/bouw: normale flow, intern gemarkeerd voor handmatige acceptatie (klant merkt niets).
+    const handmatigeAcceptatie = vereistHandmatigeAcceptatie(submission);
 
     // SEPA-machtiging: nooit vastleggen zonder incassant-ID.
     if (incassantIdOntbreekt()) {
@@ -249,9 +247,12 @@ Deno.serve(async (req) => {
           .join("\n") || null,
         bron: "website",
         exact_status: "wachtend",
-        vereist_handmatige_beoordeling: submission.vereist_handmatige_beoordeling === true,
+        vereist_handmatige_beoordeling: handmatigeAcceptatie || submission.vereist_handmatige_beoordeling === true,
         extra_data: {
           sector: submission.sector,
+          ...(handmatigeAcceptatie
+            ? { handmatige_acceptatie: { reden: HANDMATIGE_ACCEPTATIE_REDEN, sector: submission.sector } }
+            : {}),
           getoonde_documenten: Array.isArray(submission.getoonde_documenten)
             ? submission.getoonde_documenten
                 .filter((d): d is string => typeof d === "string" && /^\/documenten\/[A-Za-z0-9._\/-]{1,150}$/.test(d))
@@ -318,6 +319,7 @@ Deno.serve(async (req) => {
           leadId: lead.id,
           reference: lead.id.slice(0, 8),
           userEmail: submission.email,
+          ...(handmatigeAcceptatie ? { waarschuwing: teamWaarschuwingHandmatig(submission.sector ?? "") } : {}),
           fields: {
             naam: volledigeNaam,
             email: submission.email,

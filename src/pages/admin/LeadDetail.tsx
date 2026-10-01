@@ -1,3 +1,4 @@
+import { teamWaarschuwingHandmatig } from "../../../supabase/functions/_shared/sectorRegels";
 import { useState } from "react";
 import { SepaMachtigingBewijsBlok } from "@/components/admin/SepaMachtigingBewijsBlok";
 
@@ -228,6 +229,14 @@ export default function AdminLeadDetail() {
   return (
     <AdminLayout>
       <div className="space-y-6">
+        {(lead as any)?.extra_data?.handmatige_acceptatie && (
+          <div role="alert" className="rounded-lg border-2 border-destructive bg-destructive/10 p-4 text-sm font-semibold text-destructive">
+            {teamWaarschuwingHandmatig(String((lead as any).extra_data.handmatige_acceptatie.sector ?? ""))}
+            {(lead as any).extra_data.handmatige_acceptatie.bevestigd_op && (
+              <span className="mt-1 block font-normal text-foreground">Acceptatie bevestigd op {new Date((lead as any).extra_data.handmatige_acceptatie.bevestigd_op).toLocaleString("nl-NL")}.</span>
+            )}
+          </div>
+        )}
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
