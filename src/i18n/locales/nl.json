@@ -177,8 +177,8 @@
   "verzekeringenPage": {
     "title": "Verzekeringen voor",
     "titleAccent": "zzp'ers",
-    "subtitle": "Als zelfstandig ondernemer ben je zelf verantwoordelijk voor je zakelijke zekerheid. Ontdek welke verzekeringen passen bij jouw situatie en beroep.",
-    "badge": "Exclusief: Unieke BAV + AVB combinatiepolis",
+    "subtitle": "ZP Zaken is de bedenker van de BAV + AVB in één polis voor zzp'ers. Ontdek welke verzekeringen passen bij jouw situatie en beroep.",
+    "badge": "Bedenker van de BAV + AVB in één polis",
     "ctaAdvies": "Plan een persoonlijk gesprek",
     "suitableFor": "Geschikt voor",
     "indication": "Indicatie",
@@ -254,7 +254,7 @@
   },
   "overOns": {
     "title": "Over ZP Zaken",
-    "subtitle": "Je hebt als zzp'er recht op eerlijk, persoonlijk gesprek. Geen verkooppraatjes, gewoon goed geregeld.",
+    "subtitle": "ZP Zaken bedacht de gecombineerde BAV + AVB voor zzp'ers en is sinds de oprichting marktleider. Je hebt als zzp'er recht op eerlijk, persoonlijk gesprek. Geen verkooppraatjes, gewoon goed geregeld.",
     "badge": "Met passie voor ondernemers",
     "missieTitle": "Onze missie",
     "missieP1": "Als zzp'er heb je genoeg aan je hoofd. Je focust op je vak, je klanten en het runnen van je onderneming. Verzekeringen en zakelijke zekerheid moeten geen hoofdpijndossier zijn.",
@@ -273,7 +273,7 @@
   },
   "historie": {
     "title": "13+ jaar ZP Zaken",
-    "subtitle": "Van startup tot marktleider. Ontdek onze reis en waarom meer dan 5.000 zzp'ers ons vertrouwen.",
+    "subtitle": "Van startup tot marktleider. ZP Zaken bedacht de gecombineerde BAV + AVB voor zzp'ers en is sinds de oprichting marktleider. Ontdek onze reis en waarom meer dan 5.000 zzp'ers ons vertrouwen.",
     "badge": "Onze Historie",
     "quoteText": "Voor ondernemers, door ondernemers. Dat is onze belofte sinds dag één.",
     "quoteRole": "Oprichter ZP Zaken",
@@ -457,6 +457,7 @@
     "close": "Sluiten"
   },
   "trustBar": {
+    "bedenker": "Bedenker van de BAV + AVB-combinatie",
     "afm": "AFM vergunning 12050636",
     "reviews": "5,0/5 Google Reviews",
     "kifid": "Kifid aangesloten",

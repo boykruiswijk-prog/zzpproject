@@ -1,4 +1,4 @@
-import { Shield, Star, MapPin } from "lucide-react";
+import { Shield, Star, MapPin, Lightbulb } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
@@ -12,6 +12,7 @@ export function TrustBar({ variant = "light", className = "" }: TrustBarProps) {
   const isDark = variant === "dark";
 
   const items = [
+    { icon: Lightbulb, label: t("trustBar.bedenker") },
     { icon: Shield, label: t("trustBar.afm") },
     { icon: Star, label: t("trustBar.reviews") },
     { icon: Shield, label: t("trustBar.kifid") },

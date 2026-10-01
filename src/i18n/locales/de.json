@@ -172,8 +172,8 @@
   "verzekeringenPage": {
     "title": "Versicherungen für",
     "titleAccent": "Freiberufler",
-    "subtitle": "Als selbstständiger Unternehmer sind Sie selbst für Ihre geschäftliche Sicherheit verantwortlich. Entdecken Sie, welche Versicherungen zu Ihrer Situation und Ihrem Beruf passen.",
-    "badge": "Exklusiv: Einzigartige kombinierte Berufs- & Betriebshaftpflicht",
+    "subtitle": "ZP Zaken hat die kombinierte Berufs- und Betriebshaftpflicht in einer Police für Selbstständige erfunden. Entdecken Sie, welche Versicherungen zu Ihrer Situation und Ihrem Beruf passen.",
+    "badge": "Erfinder der kombinierten BAV + AVB-Police",
     "ctaAdvies": "Persönliches Gespräch buchen",
     "suitableFor": "Geeignet für",
     "indication": "Richtwert",
@@ -452,6 +452,7 @@
     "close": "Schließen"
   },
   "trustBar": {
+    "bedenker": "Erfinder der BAV + AVB-Kombination",
     "afm": "AFM-Lizenz 12050636",
     "reviews": "5,0/5 Google Reviews",
     "kifid": "Kifid angeschlossen",

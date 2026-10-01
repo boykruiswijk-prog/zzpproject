@@ -172,8 +172,8 @@
   "verzekeringenPage": {
     "title": "Assurances pour",
     "titleAccent": "freelances",
-    "subtitle": "En tant qu'entrepreneur indépendant, vous êtes responsable de votre propre sécurité professionnelle. Découvrez quelles assurances correspondent à votre situation et votre profession.",
-    "badge": "Exclusif : Police combinée unique responsabilité professionnelle & civile",
+    "subtitle": "ZP Zaken a inventé la police combinée responsabilité professionnelle et civile pour les indépendants. Découvrez quelles assurances correspondent à votre situation et votre profession.",
+    "badge": "Inventeur de la police combinée BAV + AVB",
     "ctaAdvies": "Planifier un entretien personnel",
     "suitableFor": "Adapté pour",
     "indication": "Indication",
@@ -452,6 +452,7 @@
     "close": "Fermer"
   },
   "trustBar": {
+    "bedenker": "Inventeur de la combinaison BAV + AVB",
     "afm": "Licence AFM 12050636",
     "reviews": "5,0/5 Google Reviews",
     "kifid": "Affilié Kifid",

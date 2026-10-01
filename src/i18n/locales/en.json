@@ -172,8 +172,8 @@
   "verzekeringenPage": {
     "title": "Insurance for",
     "titleAccent": "freelancers",
-    "subtitle": "As an independent entrepreneur, you are responsible for your own business security. Discover which insurance fits your situation and profession.",
-    "badge": "Exclusive: Unique combined professional & business liability policy",
+    "subtitle": "ZP Zaken invented the combined professional & business liability policy for freelancers. Discover which insurance fits your situation and profession.",
+    "badge": "Inventor of the combined BAV + AVB policy",
     "ctaAdvies": "Book a personal consultation",
     "suitableFor": "Suitable for",
     "indication": "Indication",
@@ -452,6 +452,7 @@
     "close": "Close"
   },
   "trustBar": {
+    "bedenker": "Inventor of the BAV + AVB combination",
     "afm": "AFM license 12050636",
     "reviews": "5,0/5 Google Reviews",
     "kifid": "Kifid affiliated",
