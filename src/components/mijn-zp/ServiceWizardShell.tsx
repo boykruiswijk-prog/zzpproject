@@ -1,4 +1,4 @@
-import { useState, ReactNode } from "react";
+import { useEffect, useRef, useState, ReactNode } from "react";
 import { Helmet } from "react-helmet-async";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -28,6 +28,9 @@ interface WizardShellProps {
   pageDescription: string;
   introTitle: string;
   introText: string;
+  submitLabel?: string;
+  successTitle?: string;
+  successText?: (email: string) => string;
   steps: Array<{
     title: string;
     render: (props: {
@@ -47,6 +50,9 @@ export function ServiceWizardShell({
   pageDescription,
   introTitle,
   introText,
+  submitLabel = "Verstuur aanvraag",
+  successTitle = "Aanvraag ontvangen",
+  successText,
   steps,
 }: WizardShellProps) {
   const { toast } = useToast();
@@ -64,6 +70,15 @@ export function ServiceWizardShell({
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const total = steps.length;
+  const kopRef = useRef<HTMLHeadingElement>(null);
+  const eersteRender = useRef(true);
+
+  // Na elke stap (en na versturen) naar boven scrollen en focus op de kop zetten.
+  useEffect(() => {
+    if (eersteRender.current) { eersteRender.current = false; return; }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    kopRef.current?.focus({ preventScroll: true });
+  }, [step, submitted]);
   const current = steps[step];
 
   const next = () => {
@@ -72,6 +87,12 @@ export function ServiceWizardShell({
     if (Object.keys(errs).length === 0) {
       if (step < total - 1) setStep(step + 1);
       else submit();
+    } else {
+      // Focus naar het eerste veld met een fout.
+      requestAnimationFrame(() => {
+        const el = document.querySelector<HTMLElement>('[aria-invalid="true"], [role="alert"]');
+        el?.focus?.();
+      });
     }
   };
 
@@ -81,13 +102,17 @@ export function ServiceWizardShell({
       const { data, error } = await supabase.functions.invoke("process-klant-service", {
         body: { type, ...formData, details },
       });
-      if (error || !data?.success) throw error ?? new Error("Onbekende fout");
+      if (error || !data?.success) {
+        let melding: string | undefined;
+        try { melding = (await (error as any)?.context?.json?.())?.melding; } catch { /* geen detail */ }
+        throw new Error(melding ?? "onbekend");
+      }
       setSubmitted(true);
     } catch (err) {
-      console.error(err);
+      const melding = err instanceof Error && err.message !== "onbekend" ? err.message : undefined;
       toast({
         title: "Er ging iets mis",
-        description: "Probeer opnieuw of bel 020 - 457 3077",
+        description: melding ? `${melding} Pas dit aan of bel 020 - 457 3077.` : "Probeer opnieuw of bel 020 - 457 3077",
         variant: "destructive",
       });
     } finally {
@@ -114,29 +139,37 @@ export function ServiceWizardShell({
               <div className="h-16 w-16 mx-auto rounded-full bg-accent/10 flex items-center justify-center">
                 <CheckCircle className="h-8 w-8 text-accent" />
               </div>
-              <h2 className="text-2xl font-bold">Aanvraag ontvangen</h2>
-              <p className="text-muted-foreground">
+              <h2 ref={kopRef} tabIndex={-1} className="text-2xl font-bold outline-none">{successTitle}</h2>
+              <p className="text-muted-foreground" role="status">
+                {successText ? successText(formData.email) : <>
                 We hebben je aanvraag ontvangen. Een medewerker neemt binnen 24 uur contact met je op.
                 Je ontvangt ook een bevestigingsmail op {formData.email}.
+                </>}
               </p>
             </div>
           ) : (
             <div className="bg-card border border-border rounded-2xl p-6 md:p-8 space-y-6">
               <div className="flex items-center justify-between text-sm text-muted-foreground">
-                <span>Stap {step + 1} van {total}</span>
-                <div className="flex gap-1">
+                <span aria-live="polite">Stap {step + 1} van {total}</span>
+                <div className="flex gap-1" aria-hidden="true">
                   {steps.map((_, i) => (
                     <span key={i} className={`h-1.5 w-8 rounded-full ${i <= step ? "bg-accent" : "bg-border"}`} />
                   ))}
                 </div>
               </div>
               <div>
-                <h3 className="text-xl font-semibold mb-1">{current.title}</h3>
+                <h2 ref={kopRef} tabIndex={-1} className="text-xl font-semibold mb-1 outline-none">{current.title}</h2>
               </div>
-              {current.render({ formData, setFormData, details, setDetails, errors })}
+              {current.render({
+                formData,
+                setFormData: (d) => { setErrors({}); setFormData(d); },
+                details,
+                setDetails: (d) => { setErrors({}); setDetails(d); },
+                errors,
+              })}
               <div className="flex justify-between pt-4 border-t border-border">
                 {step > 0 ? (
-                  <Button variant="outline" onClick={() => setStep(step - 1)}>
+                  <Button variant="outline" onClick={() => { setErrors({}); setStep(step - 1); }}>
                     <ArrowLeft className="h-4 w-4" /> Vorige
                   </Button>
                 ) : <div />}
@@ -145,7 +178,7 @@ export function ServiceWizardShell({
                   disabled={submitting}
                   className="bg-accent hover:bg-accent/90 text-accent-foreground"
                 >
-                  {step < total - 1 ? "Volgende" : submitting ? "Versturen…" : "Verstuur aanvraag"}
+                  {step < total - 1 ? "Volgende" : submitting ? "Versturen…" : submitLabel}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </div>
