@@ -79,7 +79,7 @@ export function BAVApplicationModule() {
    const [slotverklaringAkkoord, setSlotverklaringAkkoord] = useState(false);
    const [errors, setErrors] = useState<ValidationErrors>({});
    const [isSubmitted, setIsSubmitted] = useState(false);
-   const [submissionResult, setSubmissionResult] = useState<{ reference: string; mandaatkenmerk?: string } | null>(null);
+   const [submissionResult, setSubmissionResult] = useState<{ reference: string; mandaatkenmerk?: string; handmatig?: boolean } | null>(null);
    const [isSubmitting, setIsSubmitting] = useState(false);
    const guard = useFormGuard();
    const [existingCustomerOpen, setExistingCustomerOpen] = useState(false);
@@ -298,6 +298,7 @@ export function BAVApplicationModule() {
         setSubmissionResult({
           reference: returnedLeadId.slice(0, 8).toUpperCase(),
           mandaatkenmerk: typeof data.mandaatkenmerk === "string" ? data.mandaatkenmerk : undefined,
+          handmatig: isHandmatigeAcceptatieSector(formData.sector),
         });
         trackWizardComplete(selectedBavPakket.name, selectedBavPakket.prijs);
        setIsSubmitted(true);
