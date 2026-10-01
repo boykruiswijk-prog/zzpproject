@@ -97,7 +97,9 @@ Deno.serve(async (req) => {
       supabase.from("chat_rate_limit").select("id", { count: "exact", head: true }).eq("ip_hash", ipHash).gte("created_at", new Date(nu - 10 * 60_000).toISOString()),
       supabase.from("chat_rate_limit").select("id", { count: "exact", head: true }).eq("ip_hash", ipHash).gte("created_at", new Date(nu - 24 * 3600_000).toISOString()),
     ]);
-    const rl = rateLimitBeslissing({ laatste10Min: c10 ?? 0, vandaag: cDag ?? 0 });
+    // Interne evaluatie (geheime header) slaat alleen de IP-limiet over; sessies blijven test bij preview.
+    const intern = (Deno.env.get("INTERNAL_FUNCTION_SECRET") ?? "").length > 0 && req.headers.get("x-internal-secret") === Deno.env.get("INTERNAL_FUNCTION_SECRET");
+    const rl = intern ? { ok: true } : rateLimitBeslissing({ laatste10Min: c10 ?? 0, vandaag: cDag ?? 0 });
     if (!rl.ok) return json({ fout: "limiet", tekst: DRUK[taal], acties: CONTACT_ACTIES }, 429);
     await supabase.from("chat_rate_limit").insert({ ip_hash: ipHash });
 
