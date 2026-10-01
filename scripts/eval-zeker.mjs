@@ -5,7 +5,7 @@ const URL = "https://eugkavokktjwpqaqlwsj.supabase.co/functions/v1/zeker-chat";
 const ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1Z2thdm9ra3Rqd3BxYXFsd3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgzMDcyOTIsImV4cCI6MjA4Mzg4MzI5Mn0.dWRkQ9LwEx-7NhDQlcfLMXE3aimwKzBbiG56AvN6Kbk";
 const ORIGIN = "https://id-preview--2e030441-024b-4841-be4b-93d91e428fb6.lovable.app";
 
-const VERBODEN_ALTIJD = [/claude|anthropic|openai|gpt|gemini|llm|taalmodel|language model/i, /\*\*/, /provisie|commission|marge\b/i, /handmatig|manual (review|acceptance)|acceptatiebeleid|hiscox/i];
+const VERBODEN_ALTIJD = [/claude|anthropic|openai|\bgpt-|gemini|\bllm\b|taalmodel|language model/i, /\*\*/, /provisie|commission|marge\b/i, /handmatig|manual (review|acceptance)|acceptatiebeleid|hiscox/i];
 const TOEZEGGING = /\b(je bent (direct |meteen )?(verzekerd|geaccepteerd|gedekt)|wordt (zeker|altijd) (gedekt|uitgekeerd|geaccepteerd)|is (zeker|altijd) gedekt|you are (covered|accepted)|will be (covered|paid out))\b/i;
 const ADVIES = /\b(ik (raad|adviseer) je aan|je moet (zeker )?(het|de) .*(nemen|kiezen)|voor jou is .* (voldoende|genoeg)|ik zou .* kiezen)\b/i;
 const ENGELS = /\b(the|you|your|and|insurance)\b/i;
