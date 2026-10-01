@@ -1,4 +1,5 @@
 import { isValidIban as isValidSepaIban } from "@/lib/sepaMachtiging";
+import { SITE_CONFIG } from "@/config/site";
 import { useState, useEffect, useRef } from "react";
 import { SepaMachtigingBlok, bouwFrontendMachtiging } from "@/components/shared/SepaMachtigingBlok";
 import { mandaatkenmerkVoor, redenBav } from "@/lib/sepaMachtiging";
@@ -468,7 +469,7 @@ export function BAVApplicationModule() {
             <span className="hidden sm:inline-block h-4 w-px bg-border" aria-hidden />
             <div className="flex items-center gap-2">
               <span aria-hidden>👥</span>
-              <span><span className="font-semibold">5.000+</span> tevreden zzp'ers</span>
+              <span><span className="font-semibold">{SITE_CONFIG.klantenAantal}</span> tevreden zzp'ers</span>
             </div>
             <span className="hidden sm:inline-block h-4 w-px bg-border" aria-hidden />
             <div className="flex items-center gap-2">

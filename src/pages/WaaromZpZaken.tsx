@@ -1,4 +1,5 @@
 import { seoRoute } from "@/config/seoRoutes";
+import { SITE_CONFIG } from "@/config/site";
 import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -222,7 +223,7 @@ export default function WaaromZpZaken() {
           <div className="grid grid-cols-3 gap-6 max-w-2xl mx-auto mb-12">
             {[
               { number: "13+", label: "jaar specialist in zzp-verzekeringen" },
-              { number: "5.000+", label: "tevreden zzp'ers" },
+              { number: SITE_CONFIG.klantenAantal, label: "tevreden zzp'ers" },
               { number: "€0", label: "eigen risico" },
             ].map((stat, i) => (
               <motion.div

@@ -1,4 +1,5 @@
 import { useLocation, Navigate, Link } from "react-router-dom";
+import { SITE_CONFIG } from "@/config/site";
 import { useEffect } from "react";
 import { SEOHead } from "@/components/SEOHead";
 import { legacyRedirects } from "@/config/legacyRedirects";
@@ -146,7 +147,7 @@ const NotFound = () => {
         <div className="container-wide">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
             <div>
-              <div className="text-3xl font-bold text-accent mb-1">5.000+</div>
+              <div className="text-3xl font-bold text-accent mb-1">{SITE_CONFIG.klantenAantal}</div>
               <div className="text-sm text-muted-foreground">tevreden zzp'ers</div>
             </div>
             <div>
