@@ -25,15 +25,15 @@ export function StickyContactBar() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="fixed bottom-20 right-4 md:bottom-4 z-50 flex items-center gap-2"
+          className="fixed bottom-4 right-24 z-50 hidden items-center gap-2 md:flex"
         >
           <a
             href="tel:0204573077"
             onClick={() => trackPhone()}
-            className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded-full shadow-lg hover:scale-105 transition-transform text-sm font-medium"
+            className="flex items-center gap-2 whitespace-nowrap bg-primary text-primary-foreground px-4 py-3 rounded-full shadow-lg hover:scale-105 transition-transform text-sm font-medium"
           >
             <Phone className="h-4 w-4" />
-            <span className="hidden sm:inline">020 - 457 3077</span>
+            <span>020 - 457 3077</span>
           </a>
           <button
             onClick={() => setDismissed(true)}

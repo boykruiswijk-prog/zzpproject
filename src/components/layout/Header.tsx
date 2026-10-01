@@ -113,11 +113,11 @@ export function Header() {
         </LocalizedLink>
 
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-1">
+        <nav className="hidden xl:flex items-center gap-1">
           {navItems.map((item) => (
             item.children ? (
               <DropdownMenu key={item.href}>
-              <DropdownMenuTrigger className={`flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+              <DropdownMenuTrigger className={`flex items-center gap-1 whitespace-nowrap px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                   'isService' in item && item.isService
                     ? "text-primary bg-primary/5 hover:bg-primary/10 border border-primary/20"
                     : (item.children || []).some(c => location.pathname === c.href) || location.pathname === item.href
@@ -127,7 +127,7 @@ export function Header() {
                   {'isService' in item && item.isService && <Shield className="h-3.5 w-3.5" />}
                   {item.label}
                   {'isNew' in item && item.isNew && (
-                    <span className="text-[10px] font-bold bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full leading-none whitespace-nowrap">{t("collectieveInkoop.limitedPlaces")}</span>
+                    <span className="whitespace-nowrap rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none text-accent-foreground">Nieuw</span>
                   )}
                   <ChevronDown className="h-4 w-4" />
                 </DropdownMenuTrigger>
@@ -154,7 +154,7 @@ export function Header() {
               <LocalizedLink
                 key={item.href}
                 to={item.href}
-                className={`px-3 py-2 text-sm font-medium rounded-md transition-colors flex items-center gap-1.5 ${
+                className={`px-3 py-2 text-sm font-medium rounded-md transition-colors flex items-center gap-1.5 whitespace-nowrap ${
                   location.pathname === item.href
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
@@ -169,10 +169,10 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="hidden lg:flex items-center gap-3">
+        <div className="hidden xl:flex items-center gap-3">
           <SiteSearch />
           <LanguageSwitcher />
-          <a href="tel:+31204573077" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <a href="tel:+31204573077" className="flex items-center gap-2 whitespace-nowrap text-sm text-muted-foreground hover:text-foreground transition-colors">
             <Phone className="h-4 w-4" />
             020 - 457 3077
           </a>
@@ -187,7 +187,7 @@ export function Header() {
 
         {/* Mobile menu button */}
         <button
-          className="lg:hidden p-2 text-foreground"
+            className="p-2 text-foreground xl:hidden"
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Toggle menu"
         >
@@ -203,7 +203,7 @@ export function Header() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="lg:hidden border-t border-border bg-background overflow-hidden"
+            className="overflow-hidden border-t border-border bg-background xl:hidden"
           >
             <nav className="container-wide py-4 flex flex-col gap-1">
             {navItems.map((item) => (
@@ -212,7 +212,7 @@ export function Header() {
                   <span className="px-4 py-2 text-sm font-medium text-muted-foreground flex items-center gap-2">
                     {item.label}
                     {'isNew' in item && item.isNew && (
-                      <span className="text-[10px] font-bold bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full leading-none whitespace-nowrap">{t("collectieveInkoop.limitedPlaces")}</span>
+                       <span className="whitespace-nowrap rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none text-accent-foreground">Nieuw</span>
                     )}
                   </span>
                   {item.children.map((child) => (

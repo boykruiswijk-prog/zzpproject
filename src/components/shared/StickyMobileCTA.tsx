@@ -15,22 +15,19 @@ export function StickyMobileCTA() {
 
   return (
     <div
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex text-white font-semibold"
-      style={{ height: "56px" }}
+      className="fixed bottom-0 left-0 right-0 z-40 flex h-[calc(56px+env(safe-area-inset-bottom))] pb-[env(safe-area-inset-bottom)] font-semibold text-primary-foreground md:hidden"
     >
       <a
         href="tel:0204573077"
         onClick={() => trackPhone()}
-        className="flex-1 flex items-center justify-center gap-2 text-center"
-        style={{ backgroundColor: "#1f1f1f" }}
+        className="flex flex-1 items-center justify-center gap-2 bg-foreground text-center text-background"
       >
         <Phone className="h-4 w-4" />
         020 - 457 3077
       </a>
       <Link
         to="/contact"
-        className="flex-1 flex items-center justify-center text-center"
-        style={{ backgroundColor: "#E53E2F" }}
+        className="flex flex-1 items-center justify-center bg-accent text-center text-accent-foreground"
       >
         Vrijblijvend gesprek →
       </Link>

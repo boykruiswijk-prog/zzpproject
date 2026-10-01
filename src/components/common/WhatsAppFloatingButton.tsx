@@ -8,7 +8,7 @@ export function WhatsAppFloatingButton() {
       rel="noopener noreferrer"
       aria-label="Chat met ons via WhatsApp"
       onClick={() => trackWhatsApp()}
-      className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] shadow-lg transition-all hover:scale-110 hover:shadow-xl md:h-16 md:w-16"
+      className="fixed right-3 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] shadow-lg transition-all hover:scale-110 hover:shadow-xl bottom-[calc(4.25rem+env(safe-area-inset-bottom))] md:bottom-4 md:right-4 md:h-16 md:w-16"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

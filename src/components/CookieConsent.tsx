@@ -106,7 +106,7 @@ export function CookieConsent() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6">
+    <div className="fixed bottom-0 left-0 right-0 z-[70] p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] md:p-6">
       <div className="container-wide">
         <div className="bg-card border border-border rounded-2xl shadow-2xl p-6 md:p-8 max-w-4xl mx-auto">
           <div className="flex items-start justify-between gap-4 mb-4">

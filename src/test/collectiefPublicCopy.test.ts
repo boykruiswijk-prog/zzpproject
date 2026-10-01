@@ -36,4 +36,10 @@ describe("publieke collectiefteksten", () => {
       expect(content).toContain(cta);
     }
   });
+
+  it("gebruikt alleen de korte NIEUW-badge in het hoofdmenu", () => {
+    const header = read("src/components/layout/Header.tsx");
+    expect(header).toContain(">Nieuw</span>");
+    expect(header).not.toContain('t("collectieveInkoop.limitedPlaces")');
+  });
 });
