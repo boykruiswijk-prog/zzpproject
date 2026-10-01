@@ -7,9 +7,9 @@ export type Product =
 export const PRODUCT_LABEL: Record<Product, string> = {
   bav_avb: "BAV-AVB",
   cyber_clear: "Cyber Clear",
-  lidmaatschap_allin: "Lidmaatschap All-in",
-  lidmaatschap_startup: "Lidmaatschap Start-up",
-  lidmaatschap_light: "Lidmaatschap Light",
+  lidmaatschap_allin: "Lidmaatschap All-in (uitlopend)",
+  lidmaatschap_startup: "Lidmaatschap Start-up (uitlopend)",
+  lidmaatschap_light: "Lidmaatschap Light (uitlopend)",
   nimble_bav: "Nimble BAV",
   onbekend: "Onbekende code",
 };
