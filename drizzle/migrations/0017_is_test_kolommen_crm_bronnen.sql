@@ -1,0 +1,9 @@
+ALTER TABLE public.klant_service_aanvragen ADD COLUMN IF NOT EXISTS is_test boolean NOT NULL DEFAULT false;
+ALTER TABLE public.screening_aanvragen ADD COLUMN IF NOT EXISTS is_test boolean NOT NULL DEFAULT false;
+ALTER TABLE public.dba_checks ADD COLUMN IF NOT EXISTS is_test boolean NOT NULL DEFAULT false;
+ALTER TABLE public.bav_aanmeldingen ADD COLUMN IF NOT EXISTS is_test boolean NOT NULL DEFAULT false;
+ALTER TABLE public.invoices ADD COLUMN IF NOT EXISTS is_test boolean NOT NULL DEFAULT false;
+ALTER TABLE public.personen ADD COLUMN IF NOT EXISTS is_test boolean NOT NULL DEFAULT false;
+ALTER TABLE public.ondernemingen ADD COLUMN IF NOT EXISTS is_test boolean NOT NULL DEFAULT false;
+ALTER TABLE public.activiteiten_log ADD COLUMN IF NOT EXISTS is_test boolean NOT NULL DEFAULT false;
+ALTER TABLE public.collective_suggestions ADD COLUMN IF NOT EXISTS is_test boolean NOT NULL DEFAULT false;

@@ -1,3 +1,4 @@
+import { ToonTestrecordsSchakelaar } from "@/components/admin/ToonTestrecordsSchakelaar";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { LeadTable } from "@/components/admin/LeadTable";
 
@@ -10,6 +11,8 @@ export default function AdminLeads() {
           <p className="text-muted-foreground">
             Beheer en volg alle leads
           </p>
+          <div className="mt-2"><ToonTestrecordsSchakelaar /></div>
+
         </div>
 
         <LeadTable />

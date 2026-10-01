@@ -94,6 +94,7 @@ export function SupervisorKpiPanel() {
       const { data, error } = await supabase
         .from("activiteiten_log")
         .select("id,actie_type,omschrijving,aangemaakt_op,uitgevoerd_door_naam")
+        .eq("is_test", false)
         .order("aangemaakt_op", { ascending: false })
         .limit(8);
       if (error) throw error;

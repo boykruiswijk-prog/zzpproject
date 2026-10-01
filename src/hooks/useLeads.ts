@@ -13,6 +13,7 @@ export function useLeads(filters?: {
   type?: string;
   assignedTo?: string;
   search?: string;
+  toonTest?: boolean;
 }) {
   return useQuery({
     queryKey: ["leads", filters],
@@ -23,6 +24,9 @@ export function useLeads(filters?: {
         .select("*")
         .order("created_at", { ascending: false });
 
+      if (!filters?.toonTest) {
+        query = query.eq("is_test", false);
+      }
       if (filters?.status) {
         query = query.eq("status", filters.status);
       }

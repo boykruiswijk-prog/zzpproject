@@ -442,7 +442,7 @@ export function LeadActivationPanel({ lead, magActiveren, fase }: Props) {
           <AlertDialogHeader>
             <AlertDialogTitle>Polis activeren?</AlertDialogTitle>
             <AlertDialogDescription>
-              Weet je zeker dat je <strong>{lead.bedrijfsnaam}</strong> wilt activeren?
+              Weet je zeker dat je <strong className="break-words [overflow-wrap:anywhere]">{lead.bedrijfsnaam}</strong> wilt activeren?
               Er wordt een relatie, contactpersoon, bankrekening en SEPA-mandaat
               aangemaakt in Exact (administratie ZP Zaken B.V., divisie 4401707).
               Deze actie is niet ongedaan te maken.

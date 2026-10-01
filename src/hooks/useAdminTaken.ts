@@ -16,7 +16,8 @@ export function useAdminTakenCount() {
       const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
       const [{ count: failed }, { count: oldPaused }] = await Promise.all([
-        supabase.from("polis_audit_log").select("id", { count: "exact", head: true })
+        supabase.from("polis_audit_log").select("id, leads!inner(is_test)", { count: "exact", head: true })
+          .eq("leads.is_test", false)
           .eq("succes", false).gte("created_at", sevenDaysAgo),
         supabase.from("leads").select("id", { count: "exact", head: true })
           .eq("is_test", false)

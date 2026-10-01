@@ -19,6 +19,7 @@ export type Database = {
           aangemaakt_op: string
           actie_type: string
           id: string
+          is_test: boolean
           klant_email: string | null
           lead_id: string | null
           omschrijving: string
@@ -29,6 +30,7 @@ export type Database = {
           aangemaakt_op?: string
           actie_type: string
           id?: string
+          is_test?: boolean
           klant_email?: string | null
           lead_id?: string | null
           omschrijving: string
@@ -39,6 +41,7 @@ export type Database = {
           aangemaakt_op?: string
           actie_type?: string
           id?: string
+          is_test?: boolean
           klant_email?: string | null
           lead_id?: string | null
           omschrijving?: string
@@ -193,6 +196,7 @@ export type Database = {
           iban: string | null
           id: string
           ingangsdatum: string
+          is_test: boolean
           jaarpremie: number | null
           kvk_nummer: string | null
           lead_id: string | null
@@ -226,6 +230,7 @@ export type Database = {
           iban?: string | null
           id?: string
           ingangsdatum: string
+          is_test?: boolean
           jaarpremie?: number | null
           kvk_nummer?: string | null
           lead_id?: string | null
@@ -259,6 +264,7 @@ export type Database = {
           iban?: string | null
           id?: string
           ingangsdatum?: string
+          is_test?: boolean
           jaarpremie?: number | null
           kvk_nummer?: string | null
           lead_id?: string | null
@@ -351,6 +357,7 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
+          is_test: boolean
           naam: string | null
           status: string
           suggestie: string
@@ -359,6 +366,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          is_test?: boolean
           naam?: string | null
           status?: string
           suggestie: string
@@ -367,6 +375,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          is_test?: boolean
           naam?: string | null
           status?: string
           suggestie?: string
@@ -495,6 +504,7 @@ export type Database = {
           functie: string | null
           id: string
           invoiced_at: string | null
+          is_test: boolean
           kvk_check_result: Json | null
           kvk_file_url: string | null
           kvk_filename: string | null
@@ -541,6 +551,7 @@ export type Database = {
           functie?: string | null
           id?: string
           invoiced_at?: string | null
+          is_test?: boolean
           kvk_check_result?: Json | null
           kvk_file_url?: string | null
           kvk_filename?: string | null
@@ -587,6 +598,7 @@ export type Database = {
           functie?: string | null
           id?: string
           invoiced_at?: string | null
+          is_test?: boolean
           kvk_check_result?: Json | null
           kvk_file_url?: string | null
           kvk_filename?: string | null
@@ -1122,6 +1134,7 @@ export type Database = {
           id: string
           invoice_date: string
           invoice_number: string
+          is_test: boolean
           kvk_nummer: string | null
           lead_id: string | null
           package_type: string
@@ -1152,6 +1165,7 @@ export type Database = {
           id?: string
           invoice_date?: string
           invoice_number?: string
+          is_test?: boolean
           kvk_nummer?: string | null
           lead_id?: string | null
           package_type?: string
@@ -1182,6 +1196,7 @@ export type Database = {
           id?: string
           invoice_date?: string
           invoice_number?: string
+          is_test?: boolean
           kvk_nummer?: string | null
           lead_id?: string | null
           package_type?: string
@@ -1227,6 +1242,7 @@ export type Database = {
           details: Json
           email: string
           id: string
+          is_test: boolean
           notities: string | null
           polisnummer: string
           status: string
@@ -1244,6 +1260,7 @@ export type Database = {
           details?: Json
           email: string
           id?: string
+          is_test?: boolean
           notities?: string | null
           polisnummer: string
           status?: string
@@ -1261,6 +1278,7 @@ export type Database = {
           details?: Json
           email?: string
           id?: string
+          is_test?: boolean
           notities?: string | null
           polisnummer?: string
           status?: string
@@ -1721,6 +1739,7 @@ export type Database = {
           created_at: string
           iban: string | null
           id: string
+          is_test: boolean
           kvk: string | null
           naam: string | null
           rechtsvorm: string | null
@@ -1730,6 +1749,7 @@ export type Database = {
           created_at?: string
           iban?: string | null
           id?: string
+          is_test?: boolean
           kvk?: string | null
           naam?: string | null
           rechtsvorm?: string | null
@@ -1739,6 +1759,7 @@ export type Database = {
           created_at?: string
           iban?: string | null
           id?: string
+          is_test?: boolean
           kvk?: string | null
           naam?: string | null
           rechtsvorm?: string | null
@@ -1753,6 +1774,7 @@ export type Database = {
           email_weergave: string | null
           genormaliseerd_email: string | null
           id: string
+          is_test: boolean
           updated_at: string
           voornaam: string | null
         }
@@ -1762,6 +1784,7 @@ export type Database = {
           email_weergave?: string | null
           genormaliseerd_email?: string | null
           id?: string
+          is_test?: boolean
           updated_at?: string
           voornaam?: string | null
         }
@@ -1771,6 +1794,7 @@ export type Database = {
           email_weergave?: string | null
           genormaliseerd_email?: string | null
           id?: string
+          is_test?: boolean
           updated_at?: string
           voornaam?: string | null
         }
@@ -2118,6 +2142,7 @@ export type Database = {
           incasso_akkoord: boolean
           incasso_akkoord_op: string | null
           incasso_status: string
+          is_test: boolean
           kvk_nummer: string | null
           notities: string | null
           otentica_flow_id: string | null
@@ -2149,6 +2174,7 @@ export type Database = {
           incasso_akkoord?: boolean
           incasso_akkoord_op?: string | null
           incasso_status?: string
+          is_test?: boolean
           kvk_nummer?: string | null
           notities?: string | null
           otentica_flow_id?: string | null
@@ -2180,6 +2206,7 @@ export type Database = {
           incasso_akkoord?: boolean
           incasso_akkoord_op?: string | null
           incasso_status?: string
+          is_test?: boolean
           kvk_nummer?: string | null
           notities?: string | null
           otentica_flow_id?: string | null

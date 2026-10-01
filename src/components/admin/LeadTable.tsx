@@ -1,3 +1,5 @@
+import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS } from "@/lib/statusLabels";
+import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useLeads, useUpdateLead, useDeleteLead } from "@/hooks/useLeads";
@@ -39,31 +41,8 @@ type LeadStatus = Database["public"]["Enums"]["lead_status"];
 
 const AUTHORIZED_DELETE_EMAIL = "boy.kruiswijk@zpzaken.nl";
 
-const statusLabels: Record<LeadStatus, string> = {
-  nieuw: "Nieuw",
-  nieuw_te_beoordelen: "Te beoordelen",
-  in_behandeling: "In behandeling",
-  afspraak_gepland: "Afspraak gepland",
-  offerte_verstuurd: "Offerte verstuurd",
-  klant: "Klant",
-  actief: "Actief",
-  gepauzeerd: "Gepauzeerd",
-  opgezegd: "Opgezegd",
-  afgewezen: "Afgewezen",
-};
-
-const statusColors: Record<LeadStatus, string> = {
-  nieuw: "bg-blue-100 text-blue-800",
-  nieuw_te_beoordelen: "bg-blue-100 text-blue-800",
-  in_behandeling: "bg-yellow-100 text-yellow-800",
-  afspraak_gepland: "bg-purple-100 text-purple-800",
-  offerte_verstuurd: "bg-orange-100 text-orange-800",
-  klant: "bg-green-100 text-green-800",
-  actief: "bg-green-100 text-green-800",
-  gepauzeerd: "bg-gray-100 text-gray-800",
-  opgezegd: "bg-gray-200 text-gray-700",
-  afgewezen: "bg-red-100 text-red-800",
-};
+const statusLabels = LEAD_STATUS_LABELS;
+const statusColors = LEAD_STATUS_COLORS;
 
 const pakketLabels: Record<string, string> = {
   "maandelijks": "Maandelijks",
@@ -84,6 +63,7 @@ export function LeadTable() {
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
   const { user, isSupervisorOrAdmin } = useAuth();
+  const { toonTest } = useToonTestrecords();
   // Verwijderen blijft beperkt tot de gemarkeerde admin-mailbox, EN moet supervisor/admin-rol hebben.
   const canDelete = user?.email === AUTHORIZED_DELETE_EMAIL && isSupervisorOrAdmin;
 
@@ -91,6 +71,7 @@ export function LeadTable() {
     search: search || undefined,
     status: statusFilter === "all" ? undefined : statusFilter,
     type: typeFilter === "all" ? undefined : typeFilter,
+    toonTest,
   });
 
   const updateLead = useUpdateLead();

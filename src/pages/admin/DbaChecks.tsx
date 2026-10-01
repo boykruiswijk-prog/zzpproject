@@ -1,3 +1,5 @@
+import { useToonTestrecords } from "@/hooks/useToonTestrecords";
+import { ToonTestrecordsSchakelaar } from "@/components/admin/ToonTestrecordsSchakelaar";
 import { Link } from "react-router-dom";
 import { formatDateNL } from "@/lib/dateFormat";
 import { AdminLayout } from "@/components/admin/AdminLayout";
@@ -32,7 +34,8 @@ const statusColors: Record<string, string> = {
 };
 
 export default function AdminDbaChecks() {
-  const { data: checks, isLoading } = useDbaChecks();
+  const { toonTest } = useToonTestrecords();
+  const { data: checks, isLoading } = useDbaChecks(toonTest);
   const { isAdmin } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -147,6 +150,8 @@ export default function AdminDbaChecks() {
               <ShieldCheck className="h-8 w-8 text-primary" />
               Wet DBA Checks
             </h1>
+            <div className="mt-2"><ToonTestrecordsSchakelaar /></div>
+
             <p className="text-muted-foreground">
               Upload overeenkomsten en controleer op Wet DBA compliance
             </p>

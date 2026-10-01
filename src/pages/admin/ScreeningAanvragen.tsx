@@ -1,3 +1,5 @@
+import { useToonTestrecords } from "@/hooks/useToonTestrecords";
+import { ToonTestrecordsSchakelaar } from "@/components/admin/ToonTestrecordsSchakelaar";
 import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,6 +43,7 @@ const PAKKET_LABELS: Record<string, string> = {
 };
 
 export default function AdminScreeningAanvragen() {
+  const { toonTest } = useToonTestrecords();
   const [aanvragen, setAanvragen] = useState<ScreeningAanvraag[]>([]);
   const [loading, setLoading] = useState(true);
   const { enabled: otenticaAan } = useIntegratie("otentica");
@@ -50,13 +53,13 @@ export default function AdminScreeningAanvragen() {
     const load = async () => {
       const { data, error } = await supabase
         .from("screening_aanvragen")
-        .select("id, voornaam, achternaam, email, bedrijfsnaam, screening_type, status, otentica_status, aangemeld_op")
+        .select("id, voornaam, achternaam, email, bedrijfsnaam, screening_type, status, otentica_status, aangemeld_op, is_test")
         .order("aangemeld_op", { ascending: false });
-      if (!error && data) setAanvragen(data as ScreeningAanvraag[]);
+      if (!error && data) setAanvragen((data as any[]).filter((r) => toonTest || !r.is_test) as ScreeningAanvraag[]);
       setLoading(false);
     };
     load();
-  }, []);
+  }, [toonTest]);
 
   return (
     <AdminLayout>
@@ -64,6 +67,8 @@ export default function AdminScreeningAanvragen() {
         <div>
           <h1 className="text-3xl font-bold">Screening aanvragen</h1>
           <p className="text-muted-foreground">Beheer en volg alle screeningsaanvragen</p>
+          <div className="mt-2"><ToonTestrecordsSchakelaar /></div>
+
         </div>
 
         <Card>

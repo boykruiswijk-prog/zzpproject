@@ -12,6 +12,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Users, RotateCw, ChevronDown, ChevronRight, AlertTriangle, Check, Split } from "lucide-react";
 import { formatDateNL } from "@/lib/dateFormat";
 import { useAuth } from "@/contexts/AuthContext";
+import { statusLabel } from "@/lib/statusLabels";
+import { useToonTestrecords } from "@/hooks/useToonTestrecords";
+import { ToonTestrecordsSchakelaar } from "@/components/admin/ToonTestrecordsSchakelaar";
 
 type EventType = "lead" | "service" | "screening";
 type Beslissing = { genormaliseerd_email: string; beslissing: "akkoord" | "splitsen"; bekende_namen: string[] };
@@ -79,18 +82,19 @@ export default function CRM() {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [checkFilter, setCheckFilter] = useState(false);
   const [unlinkedCount, setUnlinkedCount] = useState(0);
+  const { toonTest } = useToonTestrecords();
 
   async function load() {
     setLoading(true);
 
     const [personenRes, poRes, ondRes, kopRes, leadsRes, serviceRes, screeningRes, beslissingRes] = await Promise.all([
-      supabase.from("personen" as any).select("id,genormaliseerd_email,email_weergave,voornaam,achternaam"),
+      supabase.from("personen" as any).select("id,genormaliseerd_email,email_weergave,voornaam,achternaam,is_test"),
       supabase.from("persoon_onderneming" as any).select("persoon_id,onderneming_id"),
-      supabase.from("ondernemingen" as any).select("id,kvk,naam"),
+      supabase.from("ondernemingen" as any).select("id,kvk,naam,is_test"),
       supabase.from("persoon_bron_koppeling" as any).select("persoon_id,bron_tabel,bron_id"),
-      supabase.from("leads").select("id,created_at,voornaam,achternaam,status,verzekering_type,bedrijfsnaam"),
-      supabase.from("klant_service_aanvragen" as any).select("id,created_at,voornaam,achternaam,status,type,polisnummer"),
-      supabase.from("screening_aanvragen" as any).select("id,aangemeld_op,voornaam,achternaam,status,screening_type,bedrijfsnaam"),
+      supabase.from("leads").select("id,created_at,voornaam,achternaam,status,verzekering_type,bedrijfsnaam,is_test"),
+      supabase.from("klant_service_aanvragen" as any).select("id,created_at,voornaam,achternaam,status,type,polisnummer,is_test"),
+      supabase.from("screening_aanvragen" as any).select("id,aangemeld_op,voornaam,achternaam,status,screening_type,bedrijfsnaam,is_test"),
       supabase.from("crm_identiteit_beslissingen" as any).select("genormaliseerd_email,beslissing,bekende_namen"),
     ]);
 
@@ -120,6 +124,7 @@ export default function CRM() {
     // Ondernemingen lookup
     const ondMap = new Map<string, { kvk: string; naam: string }>();
     for (const o of (ondRes.data ?? []) as any[]) {
+      if (o.is_test && !toonTest) continue;
       ondMap.set(o.id, { kvk: o.kvk ?? "", naam: o.naam ?? "" });
     }
 
@@ -137,11 +142,11 @@ export default function CRM() {
 
     // Bronrecord lookups
     const leadsMap = new Map<string, any>();
-    for (const l of (leadsRes.data ?? []) as any[]) leadsMap.set(l.id, l);
+    for (const l of (leadsRes.data ?? []) as any[]) if (toonTest || !l.is_test) leadsMap.set(l.id, l);
     const serviceMap = new Map<string, any>();
-    for (const s of (serviceRes.data ?? []) as any[]) serviceMap.set(s.id, s);
+    for (const s of (serviceRes.data ?? []) as any[]) if (toonTest || !s.is_test) serviceMap.set(s.id, s);
     const screeningMap = new Map<string, any>();
-    for (const s of (screeningRes.data ?? []) as any[]) screeningMap.set(s.id, s);
+    for (const s of (screeningRes.data ?? []) as any[]) if (toonTest || !s.is_test) screeningMap.set(s.id, s);
 
     // Events per persoon via persoon_bron_koppeling
     const eventsPerPersoon = new Map<string, Event[]>();
@@ -207,7 +212,7 @@ export default function CRM() {
     setUnlinkedCount(unlinked);
 
     // Build persons
-    const persons: Person[] = ((personenRes.data ?? []) as any[]).map((p) => {
+    const persons: Person[] = ((personenRes.data ?? []) as any[]).filter((p) => toonTest || !p.is_test).map((p) => {
       const events = (eventsPerPersoon.get(p.id) ?? []).sort(
         (a, b) => new Date(b.datum).getTime() - new Date(a.datum).getTime(),
       );
@@ -253,7 +258,7 @@ export default function CRM() {
     setLoading(false);
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [toonTest]);
 
   const statusOptions = useMemo(() => {
     const set = new Set<string>();
@@ -327,9 +332,12 @@ export default function CRM() {
               Alle leads, service-aanvragen en screeningen gegroepeerd per persoon
             </p>
           </div>
+          <div className="flex items-center gap-4">
+          <ToonTestrecordsSchakelaar />
           <Button variant="outline" onClick={load}>
             <RotateCw className="h-4 w-4 mr-2" />Herladen
           </Button>
+          </div>
         </div>
 
         {unlinkedCount > 0 && (
@@ -357,7 +365,7 @@ export default function CRM() {
             <SelectContent>
               <SelectItem value="alle">Alle statussen</SelectItem>
               {statusOptions.map((s) => (
-                <SelectItem key={s} value={s}>{s}</SelectItem>
+                <SelectItem key={s} value={s}>{statusLabel(s)}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -376,16 +384,25 @@ export default function CRM() {
           </Button>
         </div>
 
-        <div className="bg-card border border-border rounded-lg overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="bg-card border border-border rounded-lg overflow-x-auto">
+          <table className="w-full min-w-[900px] table-fixed text-sm">
+            <colgroup>
+              <col className="w-10" />
+              <col className="w-[22%]" />
+              <col className="w-[24%]" />
+              <col className="w-[20%]" />
+              <col className="w-[132px]" />
+              <col className="w-[104px]" />
+              <col className="w-[112px]" />
+            </colgroup>
             <thead className="bg-muted/50">
               <tr>
-                <th className="w-8 p-3"></th>
+                <th className="p-3"></th>
                 <th className="text-left p-3">Naam</th>
                 <th className="text-left p-3">Email</th>
                 <th className="text-left p-3">Onderneming</th>
                 <th className="text-left p-3">Status</th>
-                <th className="text-left p-3">Gebeurtenissen</th>
+                <th className="text-left p-3 truncate" title="Gebeurtenissen">Gebeurt.</th>
                 <th className="text-left p-3">Laatste</th>
               </tr>
             </thead>
@@ -400,72 +417,78 @@ export default function CRM() {
                 return (
                   <Fragment key={p.id}>
                     <tr
-                      className="border-t border-border hover:bg-muted/30 cursor-pointer"
+                      className="border-t border-border hover:bg-muted/30 cursor-pointer align-top"
                       onClick={() => toggle(p.id)}
                     >
                       <td className="p-3">
                         {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                       </td>
-                      <td className="p-3 font-medium">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          {p.naam}
-                          {p.namenGedeeld && (
-                            <span className="inline-flex items-center gap-1 text-xs text-amber-700 bg-amber-100 px-2 py-0.5 rounded">
-                              <AlertTriangle className="h-3 w-3" /> Gedeeld adres, controleren
+                      <td className="p-3 font-medium min-w-0">
+                        <div className="truncate" title={p.naam}>{p.naam}</div>
+                        {p.namenGedeeld && (
+                          <div className="mt-1 flex flex-wrap items-center gap-1">
+                            <span className="inline-flex items-center gap-1 text-xs text-amber-700 bg-amber-100 px-2 py-0.5 rounded max-w-full">
+                              <AlertTriangle className="h-3 w-3 shrink-0" /> <span className="truncate">Gedeeld adres, controleren</span>
                             </span>
-                          )}
-                          {p.namenGedeeld && isSupervisorOrAdmin && (
-                            <>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-6 text-xs px-2"
-                                onClick={(e) => { e.stopPropagation(); beslis(p, "akkoord"); }}
-                              >
-                                <Check className="h-3 w-3 mr-1" /> Akkoord, zelfde persoon
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-6 text-xs px-2"
-                                onClick={(e) => { e.stopPropagation(); beslis(p, "splitsen"); }}
-                              >
-                                <Split className="h-3 w-3 mr-1" /> Splitsen
-                              </Button>
-                            </>
-                          )}
-                        </div>
+                            {isSupervisorOrAdmin && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 text-xs px-2"
+                                  onClick={(e) => { e.stopPropagation(); beslis(p, "akkoord"); }}
+                                >
+                                  <Check className="h-3 w-3 mr-1" /> Zelfde persoon
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 text-xs px-2"
+                                  onClick={(e) => { e.stopPropagation(); beslis(p, "splitsen"); }}
+                                >
+                                  <Split className="h-3 w-3 mr-1" /> Splitsen
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        )}
                       </td>
-                      <td className="p-3 text-muted-foreground">
-                        {p.email || (
+                      <td className="p-3 text-muted-foreground min-w-0">
+                        {p.email ? (
+                          <div className="truncate" title={p.email}>{p.email}</div>
+                        ) : (
                           <span className="text-amber-600 font-medium text-xs">Geen emailadres</span>
                         )}
                       </td>
-                      <td className="p-3">
+                      <td className="p-3 min-w-0">
                         {eerste ? (
-                          <div>
-                            <div>{eerste.bedrijfsnaam || "—"}</div>
-                            {eerste.kvk && <div className="text-xs text-muted-foreground">KvK {eerste.kvk}</div>}
+                          <div className="min-w-0">
+                            <div className="truncate" title={eerste.bedrijfsnaam}>{eerste.bedrijfsnaam || "—"}</div>
+                            {eerste.kvk && <div className="text-xs text-muted-foreground truncate">KvK {eerste.kvk}</div>}
                             {p.bedrijven.length > 1 && (
                               <div className="text-xs text-muted-foreground">+{p.bedrijven.length - 1} meer</div>
                             )}
                           </div>
                         ) : "—"}
                       </td>
-                      <td className="p-3"><Badge variant="secondary">{p.persoonStatus || "—"}</Badge></td>
-                      <td className="p-3">{p.events.length}</td>
-                      <td className="p-3 whitespace-nowrap text-muted-foreground">{p.laatsteDatum ? formatDateNL(p.laatsteDatum) : "—"}</td>
+                      <td className="p-3 min-w-0">
+                        <Badge variant="secondary" className="max-w-full" title={statusLabel(p.persoonStatus)}>
+                          <span className="truncate">{statusLabel(p.persoonStatus)}</span>
+                        </Badge>
+                      </td>
+                      <td className="p-3 tabular-nums">{p.events.length}</td>
+                      <td className="p-3 whitespace-nowrap tabular-nums text-muted-foreground">{p.laatsteDatum ? formatDateNL(p.laatsteDatum) : "—"}</td>
                     </tr>
                     {isOpen && (
                       <tr key={p.id + "-detail"} className="bg-muted/20 border-t border-border">
                         <td></td>
-                        <td colSpan={6} className="p-4 space-y-4">
+                        <td colSpan={6} className="p-4 space-y-4 min-w-0">
                           {p.bedrijven.length > 0 && (
                             <div>
                               <div className="text-xs uppercase text-muted-foreground mb-1">Ondernemingen</div>
                               <ul className="text-sm space-y-0.5">
                                 {p.bedrijven.map((b, i) => (
-                                  <li key={i}>
+                                  <li key={i} className="truncate" title={[b.bedrijfsnaam, b.kvk && `KvK ${b.kvk}`].filter(Boolean).join(" · ")}>
                                     {b.bedrijfsnaam || "—"}
                                     {b.kvk && <span className="text-muted-foreground"> · KvK {b.kvk}</span>}
                                   </li>
@@ -475,17 +498,19 @@ export default function CRM() {
                           )}
                           <div>
                             <div className="text-xs uppercase text-muted-foreground mb-2">Tijdlijn</div>
-                            <ul className="space-y-1">
+                            <ul className="space-y-1.5">
                               {p.events.map((ev) => (
-                                <li key={`${ev.type}-${ev.id}`} className="flex items-center gap-3 text-sm">
-                                  <span className="text-muted-foreground whitespace-nowrap w-24">
+                                <li key={`${ev.type}-${ev.id}`} className="flex items-center gap-3 text-sm min-w-0">
+                                  <span className="text-muted-foreground whitespace-nowrap tabular-nums w-24 shrink-0">
                                     {formatDateNL(ev.datum)}
                                   </span>
-                                  <Badge className={TYPE_COLOR[ev.type]}>{TYPE_LABEL[ev.type]}</Badge>
-                                  <Link to={ev.detailHref} className="flex-1 hover:underline">
+                                  <Badge className={`${TYPE_COLOR[ev.type]} shrink-0`}>{TYPE_LABEL[ev.type]}</Badge>
+                                  <Link to={ev.detailHref} className="flex-1 min-w-0 truncate hover:underline" title={ev.omschrijving}>
                                     {ev.omschrijving || "—"}
                                   </Link>
-                                  <Badge variant="secondary">{ev.status || "—"}</Badge>
+                                  <Badge variant="secondary" className="shrink-0 max-w-[160px]" title={statusLabel(ev.status)}>
+                                    <span className="truncate">{statusLabel(ev.status)}</span>
+                                  </Badge>
                                 </li>
                               ))}
                             </ul>
