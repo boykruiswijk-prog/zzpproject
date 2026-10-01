@@ -449,6 +449,9 @@ export async function prerender(distDir: string, env: Record<string, string> = {
   const written: string[] = [];
 
   const write = (routePath: string, html: string) => {
+    // Nooit een onopgeloste fiscale placeholder in de HTML laten belanden.
+    const ruw = html.match(/\{\{\s*fiscaal:[^}]{0,60}\}\}/);
+    if (ruw) throw new Error(`[prerender] onopgeloste placeholder op ${routePath}: ${ruw[0]}`);
     const dir = path.join(distDir, routePath === "/" ? "." : routePath.replace(/^\//, ""));
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(path.join(dir, "index.html"), html);

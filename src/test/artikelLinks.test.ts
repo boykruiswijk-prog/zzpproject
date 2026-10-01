@@ -33,6 +33,26 @@ export function interneLinks(markdown: string): string[] {
   return out;
 }
 
+describe("doorverwijzingen voor oude interne paden", () => {
+  const verwacht: Record<string, string> = {
+    zorgverzekering: "/kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen",
+    "mentale-gezondheid": "/kennisbank/zorgverzekering-2025-voor-zzpers-zorgeloos-zzpen",
+    pensioen: "/kennisbank/jaarruimte-en-reserveringsruimte",
+    partners: "/over-ons",
+    "bav-avb": "/verzekeringen",
+    "moneysure-aov-alternatief": "/aov",
+  };
+  const routes = appRoutes();
+  for (const [from, to] of Object.entries(verwacht)) {
+    it(`/${from} → ${to}`, () => {
+      expect(legacyRedirects.find((r) => r.from === from)?.to).toBe(to);
+      // Geen eigen route meer, anders schrijft de prerender geen doorverwijzing.
+      expect(routes.has(`/${from}`)).toBe(false);
+      expect(seoRoutes.some((r) => r.path === `/${from}`)).toBe(false);
+    });
+  }
+});
+
 describe.skipIf(!base || !key)("interne links in artikelinhoud", () => {
   it("verwijzen allemaal naar een bestaande pagina", async () => {
     const res = await fetch(`${base}/rest/v1/articles?select=slug,content&is_published=eq.true&limit=1000`, {
