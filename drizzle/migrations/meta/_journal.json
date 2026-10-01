@@ -155,6 +155,13 @@
       "when": 1790858027450,
       "tag": "0021_zeker_chat_assistent",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1790861949154,
+      "tag": "0022_klant_contracten_afas_import",
+      "breakpoints": true
     }
   ]
 }
