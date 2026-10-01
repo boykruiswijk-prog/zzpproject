@@ -11,6 +11,7 @@
 import fs from "fs";
 import path from "path";
 import { execFileSync } from "child_process";
+import { fileURLToPath } from "url";
 import { createServer, type ViteDevServer } from "vite";
 import { seoRoutes, PRERENDER_EXCLUDE_PREFIXES, type SeoRoute } from "../src/config/seoRoutes";
 import { SITE_CONFIG } from "../src/config/site";
@@ -469,7 +470,8 @@ export async function prerender(distDir: string, env: Record<string, string> = {
 
   // 1b. Volledige componentboom per route (SSR). Querydata wordt vooraf
   //     gevuld, zodat artikel- en categoriepagina's direct hun inhoud tonen.
-  const root = path.resolve(distDir, "..");
+  // Projectmap (waar src/ staat), onafhankelijk van de dist-map.
+  const root = fileURLToPath(new URL("..", import.meta.url));
   const ssr = await loadSsr(root);
   const categoryList = await fetchCategoryList(env).catch(() => []);
   const basePreload: Record<string, unknown> = {
