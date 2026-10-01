@@ -385,7 +385,7 @@ export default function CRM() {
         </div>
 
         <div className="bg-card border border-border rounded-lg overflow-x-auto">
-          <table className="w-full min-w-[960px] table-fixed text-sm">
+          <table className="w-full min-w-[900px] table-fixed text-sm">
             <colgroup>
               <col className="w-10" />
               <col className="w-[22%]" />
