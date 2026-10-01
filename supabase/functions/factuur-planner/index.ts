@@ -204,6 +204,7 @@ Deno.serve(async (req) => {
       }
     }
 
+    if (fouten.length) throw new Error("run gestopt na fout; geen creditnota's");
     // 3) Creditnota's: status bijwerken (lezen) en nieuwe concepten (Type 8021). Testrecords nooit naar Exact.
     for (const c of credits.filter((x) => ["concept_aangemaakt", "te_laat", "geclaimd"].includes(x.status) && !x.is_test)) {
       const gevonden = (await zoekOpSleutel(c.creditsleutel, "Remarks"))[0] ?? null;

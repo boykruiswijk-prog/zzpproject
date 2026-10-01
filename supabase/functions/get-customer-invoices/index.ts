@@ -71,7 +71,7 @@ Deno.serve(async (req) => {
     const select = [
       "InvoiceID", "InvoiceNumber", "InvoiceDate", "DueDate",
       "AmountFC", "Description", "Status", "PaymentReference",
-      "YourRef", "InvoiceTo",
+      "YourRef", "InvoiceTo", "Type",
     ].join(",");
 
 
@@ -104,7 +104,11 @@ Deno.serve(async (req) => {
     const { data: plan } = invIds.length
       ? await admin.from("factuur_planning").select("exact_invoice_id,periode_start,periode_eind").in("exact_invoice_id", invIds)
       : { data: [] };
-    const periode = new Map((plan ?? []).map((p) => [p.exact_invoice_id, p]));
+    const { data: cred } = invIds.length
+      ? await admin.from("factuur_credit_planning").select("exact_invoice_id,credit_vanaf,credit_tm").in("exact_invoice_id", invIds)
+      : { data: [] };
+    const periode = new Map<string, { periode_start: string; periode_eind: string }>((plan ?? []).map((p) => [p.exact_invoice_id, p]));
+    for (const c of cred ?? []) periode.set(c.exact_invoice_id, { periode_start: c.credit_vanaf, periode_eind: c.credit_tm });
     // Geen betaalstatus: alleen nummer, datum, periode en bedrag.
     const invoices = rows.map((r) => ({
       id: r.InvoiceID,
@@ -114,6 +118,7 @@ Deno.serve(async (req) => {
       periode_eind: periode.get(r.InvoiceID)?.periode_eind ?? null,
       bedrag: Number(r.AmountFC ?? 0),
       omschrijving: r.Description ?? "",
+      soort: Number(r.Type) === 8021 ? "creditnota" : "factuur",
     }));
 
     await logSync(admin, {
