@@ -424,7 +424,7 @@ export default function OffertePage() {
                   </SelectContent>
                 </Select>
                 <FieldError message={errors.branche} />
-                {form.branche === "anders" && (
+                {form.branche === "overig" && (
                   <p className="text-xs text-muted-foreground mt-2">
                     Voor branches buiten ons standaard aanbod beoordelen we je aanvraag handmatig.
                   </p>
