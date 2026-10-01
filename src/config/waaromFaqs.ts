@@ -1,4 +1,4 @@
-import { SITE_CONFIG } from "@/config/site";
+import { SITE_CONFIG } from "./site";
 // FAQ's van /waarom-zp-zaken. Losgekoppeld van de component zodat zowel de
 // pagina als de prerender-stap dezelfde bron gebruiken.
 //
