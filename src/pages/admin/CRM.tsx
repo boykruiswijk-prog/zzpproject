@@ -378,7 +378,7 @@ export default function CRM() {
             </SelectContent>
           </Select>
           <Input
-            placeholder="Zoek op naam, email of KvK"
+            placeholder="Zoek op naam, email, KvK of certificaat"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="flex-1 min-w-[200px]"
