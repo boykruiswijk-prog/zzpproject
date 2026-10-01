@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
-import { exactCodeNorm, exactDatum } from "./exactCodeMatch";
+import { exactCodeNorm, exactDatum } from "../../../supabase/functions/_shared/exactCodeMatch";
 
 describe("exactCodeNorm", () => {
   it("trimt rechts-uitgelijnde Exact-codes en vergelijkt numeriek", () => {
