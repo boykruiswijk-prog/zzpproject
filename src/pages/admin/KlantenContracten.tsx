@@ -1,3 +1,4 @@
+import { CERT_VELDEN, actueelCertificaat, groepeerPerOnderneming, type KlantCertificaat } from "@/lib/klantCertificaten";
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
@@ -43,19 +44,23 @@ export default function KlantenContracten() {
   const [binnen30, setBinnen30] = useState(false);
   const [looptAf, setLooptAf] = useState(false);
   const [metAfw, setMetAfw] = useState(false);
+  const [geenCert, setGeenCert] = useState(false);
+  const [certs, setCerts] = useState<Map<string, KlantCertificaat[]>>(new Map());
 
   useEffect(() => {
     (async () => {
       setLaden(true); setFout(null);
-      const [o, k, po, p, m, r] = await Promise.all([
+      const [o, k, po, p, m, r, kc] = await Promise.all([
         fetchAlle<Ond>((a, b) => supabase.from("ondernemingen").select("id,naam,exact_relatie_code,afas_contactpersoon,afwijkingen,is_test").not("exact_relatie_code", "is", null).order("naam").range(a, b)),
         fetchAlle<Contract>((a, b) => supabase.from("klant_contracten").select("id,onderneming_id,cyclus,aantal,bedrag_per_periode,volgende_factuurdatum,eind_datum,status,product,itemcode,afwijkingen,is_test").order("bron_rij").range(a, b)),
         fetchAlle<any>((a, b) => supabase.from("persoon_onderneming").select("persoon_id,onderneming_id").range(a, b)),
         fetchAlle<any>((a, b) => supabase.from("personen").select("id,email_weergave").range(a, b)),
         fetchAlle<any>((a, b) => supabase.from("klant_mandaat_v").select("relatiecode").range(a, b)),
         supabase.rpc("get_klant_contracten_reconciliatie"),
+        fetchAlle<KlantCertificaat>((a, b) => supabase.from("klant_certificaten" as any).select(CERT_VELDEN).range(a, b)),
       ]);
-      const err = o.error || k.error || po.error || p.error || m.error || r.error;
+      const err = o.error || k.error || po.error || p.error || m.error || r.error || kc.error;
+      setCerts(groepeerPerOnderneming(kc.data));
       if (err) setFout("Gegevens konden niet worden geladen.");
       const mailVan = new Map(p.data.map((x) => [x.id, x.email_weergave as string]));
       const em = new Map<string, string[]>();
@@ -88,18 +93,21 @@ export default function KlantenContracten() {
         afw: [...o.afwijkingen, ...cs.flatMap((c) => c.afwijkingen)],
         mandaat: !!o.exact_relatie_code && mandaten.has(o.exact_relatie_code),
         mails: emails.get(o.id) ?? [],
+        certNummers: (certs.get(o.id) ?? []).filter((c) => c.koppeling_status !== "afgewezen").map((c) => c.certificaatnummer),
+        cert: actueelCertificaat(certs.get(o.id) ?? []),
       };
     });
-  }, [onds, zichtbareContracten, emails, mandaten, toonTest]);
+  }, [onds, zichtbareContracten, emails, mandaten, toonTest, certs]);
 
   const gefilterd = rijen.filter((r) => {
     const q = zoek.trim().toLowerCase();
-    if (q && !`${r.o.naam ?? ""} ${r.o.exact_relatie_code ?? ""}`.toLowerCase().includes(q)) return false;
+    if (q && !`${r.o.naam ?? ""} ${r.o.exact_relatie_code ?? ""} ${r.certNummers.join(" ")}`.toLowerCase().includes(q)) return false;
     if (product !== "alle" && !r.producten.includes(product as Product)) return false;
     if (cyclus !== "alle" && !r.cs.some((c) => c.status !== "vervangen" && c.cyclus === cyclus)) return false;
     if (binnen30 && !r.binnen30) return false;
     if (looptAf && !r.looptAf) return false;
     if (metAfw && r.afw.length === 0) return false;
+    if (geenCert && r.cert) return false;
     return true;
   });
 
@@ -174,7 +182,7 @@ export default function KlantenContracten() {
             <Card>
               <CardContent className="space-y-4 pt-6">
                 <div className="flex flex-wrap items-center gap-3">
-                  <Input placeholder="Zoek op naam of relatiecode" value={zoek} onChange={(e) => setZoek(e.target.value)} className="w-64" aria-label="Zoeken" />
+                  <Input placeholder="Zoek op naam, relatiecode of certificaat" value={zoek} onChange={(e) => setZoek(e.target.value)} className="w-64" aria-label="Zoeken" />
                   <Select value={product} onValueChange={setProduct}>
                     <SelectTrigger className="w-52" aria-label="Product"><SelectValue /></SelectTrigger>
                     <SelectContent><SelectItem value="alle">Alle producten</SelectItem>
@@ -184,22 +192,23 @@ export default function KlantenContracten() {
                     <SelectTrigger className="w-40" aria-label="Cyclus"><SelectValue /></SelectTrigger>
                     <SelectContent><SelectItem value="alle">Maand en jaar</SelectItem><SelectItem value="maand">Maand</SelectItem><SelectItem value="jaar">Jaar</SelectItem></SelectContent>
                   </Select>
-                  {[["Volgende periode binnen 30 dagen", binnen30, setBinnen30], ["Loopt af", looptAf, setLooptAf], ["Met afwijkingen", metAfw, setMetAfw]].map(([l, v, s]: any) => (
+                  {[["Volgende periode binnen 30 dagen", binnen30, setBinnen30], ["Loopt af", looptAf, setLooptAf], ["Met afwijkingen", metAfw, setMetAfw], ["Geen certificaat bekend", geenCert, setGeenCert]].map(([l, v, s]: any) => (
                     <label key={l} className="flex items-center gap-2 text-sm whitespace-nowrap"><Checkbox checked={v} onCheckedChange={(x) => s(!!x)} />{l}</label>
                   ))}
                   <span className="ml-auto text-sm text-muted-foreground">{gefilterd.length} klanten</span>
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="w-full table-fixed text-sm min-w-[1100px]">
-                    <colgroup><col className="w-[20%]" /><col className="w-[8%]" /><col className="w-[18%]" /><col className="w-[16%]" /><col className="w-[8%]" /><col className="w-[8%]" /><col className="w-[9%]" /><col className="w-[6%]" /><col className="w-[7%]" /></colgroup>
+                  <table className="w-full table-fixed text-sm min-w-[1200px]">
+                    <colgroup><col className="w-[18%]" /><col className="w-[8%]" /><col className="w-[9%]" /><col className="w-[15%]" /><col className="w-[14%]" /><col className="w-[8%]" /><col className="w-[8%]" /><col className="w-[9%]" /><col className="w-[6%]" /><col className="w-[7%]" /></colgroup>
                     <thead><tr className="text-left text-muted-foreground">
-                      <th className="p-2 font-normal">Klant</th><th className="p-2 font-normal">Relatiecode</th><th className="p-2 font-normal">Contact</th><th className="p-2 font-normal">Contracten</th>
+                      <th className="p-2 font-normal">Klant</th><th className="p-2 font-normal">Relatiecode</th><th className="p-2 font-normal">Certificaat</th><th className="p-2 font-normal">Contact</th><th className="p-2 font-normal">Contracten</th>
                       <th className="p-2 text-right font-normal">Per maand</th><th className="p-2 text-right font-normal">Per jaar</th><th className="p-2 font-normal">Volgende periode vanaf</th><th className="p-2 font-normal">Mandaat</th><th className="p-2 font-normal">Afwijking</th>
                     </tr></thead>
                     <tbody>{gefilterd.map((r) => (
                       <tr key={r.o.id} className="border-t border-border hover:bg-muted/30">
                         <td className="p-2 min-w-0"><Link to={`/admin/klanten/${r.o.id}`} className="block truncate font-medium hover:text-primary" title={r.o.naam ?? ""}>{r.o.naam || "—"}</Link></td>
                         <td className="p-2 tabular-nums truncate">{r.o.exact_relatie_code}</td>
+                        <td className="p-2 tabular-nums truncate" title={r.cert ? `${r.cert.certificaatnummer} · ${r.cert.koppeling_status}` : "Geen certificaat bekend"}>{r.cert ? <>{r.cert.certificaatnummer}{r.cert.koppeling_status === "voorstel" && <span className="text-xs text-amber-700"> (voorstel)</span>}</> : "—"}</td>
                         <td className="p-2 min-w-0"><div className="truncate" title={r.o.afas_contactpersoon ?? ""}>{r.o.afas_contactpersoon || "—"}</div><div className="truncate text-xs text-muted-foreground" title={r.mails.join(", ")}>{r.mails[0] ?? "Geen e-mail"}</div></td>
                         <td className="p-2 min-w-0"><div className="truncate" title={r.producten.map((p) => PRODUCT_LABEL[p]).join(", ")}>{r.cs.length} · {r.producten.map((p) => PRODUCT_LABEL[p]).join(", ")}</div></td>
                         <td className="p-2 text-right tabular-nums">{r.maand ? formatEuro(r.maand) : "—"}</td>
