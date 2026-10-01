@@ -31,7 +31,7 @@ const goedkoopstePakket = bavPakketten.reduce((laagste, p) =>
 export const seoRoutes: SeoRoute[] = [
   {
     path: "/",
-    title: `ZP Zaken | BAV & AVB Verzekering voor ZZP'ers | Vanaf €${goedkoopstePakket.prijs}/maand`,
+    title: `BAV & AVB Verzekering ZZP'ers | Vanaf €${goedkoopstePakket.prijs}/maand`,
     description:
       "Onafhankelijke verzekeringsadviseur voor zzp'ers. Sluit direct online een BAV+AVB combinatieverzekering af. Geen eigen risico, dagelijks opzegbaar. AFM geregistreerd.",
     h1: "Verzekeringen voor zzp'ers, direct en onafhankelijk",
@@ -42,7 +42,7 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/diensten",
-    title: "Diensten voor ZZP'ers | Verzekeringen, Screening & Administratie | ZP Zaken",
+    title: "Diensten: verzekering, screening & administratie",
     description:
       "Onze diensten voor zelfstandig professionals. Van verzekeringen en screening tot juridische hulp en factoring. Persoonlijk gesprek, geen callcenter.",
     h1: "Onze diensten voor zzp'ers",
@@ -53,7 +53,7 @@ export const seoRoutes: SeoRoute[] = [
   {
     path: "/verzekeringen",
     title:
-      "BAV + AVB Combinatieverzekering voor ZZP'ers | Direct Online Afsluiten | ZP Zaken",
+      "BAV + AVB voor ZZP'ers | Direct online afsluiten",
     description: `De enige gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering in Nederland. Vanaf €${goedkoopstePakket.prijs} per maand, geen eigen risico. Direct online afsluiten in 5 stappen.`,
     h1: "BAV & AVB: de combinatiepolis voor zzp'ers",
     intro:
@@ -102,7 +102,7 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/waarom-zp-zaken",
-    title: "Waarom ZP Zaken? | Onafhankelijk Verzekerd Zonder Tussenkomst",
+    title: "Waarom ZP Zaken? | Direct en onafhankelijk",
     description:
       "ZP Zaken werkt direct voor jou als zzp'er, zonder platform of tussenpersoon. Vergelijk wat je betaalt via een intermediair versus direct bij ZP Zaken.",
     h1: "Waarom zzp'ers voor ZP Zaken kiezen",
@@ -112,7 +112,7 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/voor-wie",
-    title: "Voor Wie is ZP Zaken? | Bouw, Zorg, ICT, Consultancy en meer",
+    title: "Voor wie? | Bouw, Zorg, ICT, Consultancy en meer",
     description:
       "ZP Zaken helpt zelfstandig professionals in bouw, zorg, consultancy, HR, finance, marketing en ICT. Persoonlijk verzekeringsbemiddeling op maat voor jouw beroep.",
     h1: "Voor wie is ZP Zaken bedoeld?",
@@ -323,7 +323,7 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/creditcontrol",
-    title: "CreditControl: eerder betaald, volledige zekerheid | ZP Zaken",
+    title: "CreditControl: eerder betaald, volle zekerheid",
     description:
       "ZP Zaken CreditControl: eerder betaald worden als ZZP'er met volledige zekerheid. Bescherming tegen faillissement, transparante factoring en 100% regie.",
     h1: "CreditControl: eerder betaald, volledige zekerheid",
@@ -353,7 +353,7 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/zzp-verzekering-ict",
-    title: "ZZP Verzekering ICT | BAV & AVB voor IT-freelancers | ZP Zaken",
+    title: "ZZP Verzekering ICT | BAV & AVB voor IT'ers",
     description:
       "Als ICT-freelancer aansprakelijk voor een softwarefout of datalek? ZP Zaken regelt jouw beroepsaansprakelijkheidsverzekering. Binnen 24 uur verzekerd.",
     h1: "ZZP Verzekering voor ICT-freelancers",
@@ -363,7 +363,7 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/zzp-verzekering-zorg",
-    title: "ZZP Verzekering Zorg | BAV & AVB voor zorgprofessionals | ZP Zaken",
+    title: "ZZP Verzekering Zorg | BAV & AVB voor de zorg",
     description:
       "ZZP'er in de zorg? ZP Zaken regelt jouw beroepsaansprakelijkheidsverzekering. Beschermd tegen aansprakelijkheid bij medische fouten. Binnen 24 uur.",
     h1: "ZZP Verzekering voor zorgprofessionals",
@@ -373,7 +373,7 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/zzp-verzekering-bouw",
-    title: "ZZP Verzekering Bouw | BAV & AVB voor bouwprofessionals | ZP Zaken",
+    title: "ZZP Verzekering Bouw | BAV & AVB voor de bouw",
     description:
       "Als ZZP'er in de bouw aansprakelijk voor constructiefouten of schade? ZP Zaken regelt jouw verzekering. Snel, persoonlijk en binnen 24 uur geregeld.",
     h1: "ZZP Verzekering voor bouwprofessionals",
