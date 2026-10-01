@@ -203,7 +203,6 @@ function redirectStubHtml(from: string, to: string): string {
     <meta name="description" content="Deze pagina is verplaatst. Je wordt doorgestuurd naar ${esc(target)}." />
     <link rel="canonical" href="${esc(target)}" />
     <meta http-equiv="refresh" content="0;url=${esc(to)}" />
-    <meta name="robots" content="noindex, follow" />
     <script>window.location.replace(${JSON.stringify(to)});</script>
   </head>
   <body>
@@ -480,8 +479,10 @@ export async function prerender(distDir: string, env: Record<string, string> = {
   let stubs = 0;
   for (const redirect of legacyRedirects) {
     const routePath = `/${redirect.from}`;
-    // Nooit een bestaande route of geprerenderd artikel overschrijven.
-    if (routePaths.has(routePath) || articleIndex.has(redirect.from)) continue;
+    // Nooit een bestaande route overschrijven. Let op: een artikel met dezelfde
+    // slug staat op /kennisbank/<slug>, niet op /<slug>; de oude URL heeft dus
+    // juist wél een stub nodig.
+    if (routePaths.has(routePath)) continue;
     const to = resolveRedirectTarget(redirect, articleIndex);
     const dir = path.join(distDir, redirect.from);
     fs.mkdirSync(dir, { recursive: true });
@@ -489,6 +490,20 @@ export async function prerender(distDir: string, env: Record<string, string> = {
     stubs++;
   }
   console.log(`[prerender] ${stubs} redirect-stubs geschreven.`);
+
+  // 4b. Oude WordPress/Yoast-sitemaps → index die naar /sitemap.xml wijst.
+  //     Statische hosting kan geen 301 voor .xml geven; een sitemapindex is
+  //     voor Google het equivalent.
+  const sitemapIndexXml = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    `  <sitemap><loc>${SITE_CONFIG.url}/sitemap.xml</loc></sitemap>`,
+    "</sitemapindex>",
+    "",
+  ].join("\n");
+  for (const name of ["sitemap_index.xml", "post-sitemap.xml", "page-sitemap.xml", "category-sitemap.xml", "post_tag-sitemap.xml", "author-sitemap.xml", "wp-sitemap.xml"]) {
+    fs.writeFileSync(path.join(distDir, name), sitemapIndexXml);
+  }
 
   // 5. Gemigreerde WordPress-media onder hetzelfde pad meeleveren, zodat oude
   //    /wp-content/uploads/... URL's blijven werken zonder hosting-redirects.

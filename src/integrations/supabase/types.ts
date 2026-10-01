@@ -1683,6 +1683,39 @@ export type Database = {
           },
         ]
       }
+      not_found_log: {
+        Row: {
+          aantal: number
+          afgehandeld: boolean
+          eerste_op: string
+          id: string
+          laatste_op: string
+          laatste_referrer: string | null
+          laatste_user_agent: string | null
+          pad: string
+        }
+        Insert: {
+          aantal?: number
+          afgehandeld?: boolean
+          eerste_op?: string
+          id?: string
+          laatste_op?: string
+          laatste_referrer?: string | null
+          laatste_user_agent?: string | null
+          pad: string
+        }
+        Update: {
+          aantal?: number
+          afgehandeld?: boolean
+          eerste_op?: string
+          id?: string
+          laatste_op?: string
+          laatste_referrer?: string | null
+          laatste_user_agent?: string | null
+          pad?: string
+        }
+        Relationships: []
+      }
       ondernemingen: {
         Row: {
           created_at: string
@@ -2457,6 +2490,10 @@ export type Database = {
       }
       is_supervisor_or_admin: { Args: { _user_id: string }; Returns: boolean }
       is_team_member: { Args: { _user_id: string }; Returns: boolean }
+      log_not_found: {
+        Args: { _pad: string; _referrer?: string; _user_agent?: string }
+        Returns: undefined
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string

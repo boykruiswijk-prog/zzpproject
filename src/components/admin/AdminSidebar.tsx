@@ -18,6 +18,7 @@ import {
   Download,
   AlertTriangle,
 
+  SearchX,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -40,6 +41,7 @@ const navItems: NavItem[] = [
   { to: "/admin/marketing", icon: Share2, label: "Website & Blog", roles: ["supervisor", "marketing"] },
   { to: "/admin/kennisbank", icon: BookOpen, label: "Kennisbank", roles: ["supervisor", "marketing"] },
   { to: "/admin/kennisbank/actualiteit", icon: AlertTriangle, label: "Verouderingscheck", roles: ["supervisor", "marketing"] },
+  { to: "/admin/niet-gevonden", icon: SearchX, label: "Niet-gevonden pagina's", roles: ["supervisor", "marketing"] },
   { to: "/admin/wp-import", icon: Download, label: "WordPress-import", roles: ["supervisor", "marketing"] },
 
   { to: "/admin/social-media", icon: Share2, label: "Social media", roles: ["supervisor", "marketing"] },
