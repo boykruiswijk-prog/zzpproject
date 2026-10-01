@@ -32,6 +32,8 @@ import { useToast } from "@/hooks/use-toast";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { useFormGuard, submitPublicForm, PublicFormError } from "@/lib/antiSpam";
 import { HoneypotField } from "@/components/shared/HoneypotField";
+import { WIZARD_SECTOREN } from "@/data/sectorVerzekeringskaart";
+import { brancheVoorSector } from "@/data/sectorBranche";
 
 const SEO = seoRoute("/offerte");
 
@@ -43,14 +45,8 @@ const COUNTRIES = [
   { value: "DE", label: "Duitsland (DE)" },
 ];
 
-const BRANCHES = [
-  { value: "ict", label: "ICT (IT & ICT)" },
-  { value: "management-consultancy", label: "Management consultancy (HR & Finance consultancy)" },
-  { value: "pr-marketing", label: "Reclame en marketing (PR & Marketing)" },
-  { value: "coaches", label: "Coaches" },
-  { value: "zakelijke-dienstverlening", label: "Zakelijke dienstverlening (Niet-uitvoerende beroepen)" },
-  { value: "anders", label: "Anders" },
-];
+// Enige bron voor de sectorkeuze: dezelfde lijst als het afsluitformulier (BAV-wizard).
+const BRANCHES = WIZARD_SECTOREN.map((s) => ({ value: s.id, label: s.label }));
 
 const MEDEWERKERS = ["1", "2", "3", "Meer dan 3"];
 
