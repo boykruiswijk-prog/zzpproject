@@ -5,6 +5,7 @@ import { StickyContactBar } from "@/components/shared/StickyContactBar";
 import { StickyMobileCTA } from "@/components/shared/StickyMobileCTA";
 import { ExitIntentPopup } from "@/components/shared/ExitIntentPopup";
 import { WhatsAppFloatingButton } from "@/components/common/WhatsAppFloatingButton";
+import { ZekerLauncher } from "@/components/zeker/ZekerLauncher";
 import { SiteSchemaMarkup } from "@/components/social-proof/SiteSchemaMarkup";
 import { TrustSignalsStrip } from "@/components/social-proof/TrustSignalsStrip";
 
@@ -29,6 +30,7 @@ export function Layout({ children }: LayoutProps) {
       <StickyContactBar />
       <ExitIntentPopup />
       <WhatsAppFloatingButton />
+      <ZekerLauncher />
     </div>
   );
 }

@@ -52,6 +52,7 @@ const AdminKennisbankEditor = lazy(() => import("./pages/admin/KennisbankArtikel
 const AdminKennisbankActualiteit = lazy(() => import("./pages/admin/KennisbankActualiteit"));
 const AdminWpImport = lazy(() => import("./pages/admin/WpImport"));
 const AdminNietGevonden = lazy(() => import("./pages/admin/NietGevonden"));
+const AdminChatgesprekken = lazy(() => import("./pages/admin/Chatgesprekken"));
 const ExactCallback = lazy(() => import("./pages/ExactCallback"));
 const AdminLogin = lazy(() => import("./pages/admin/LoginPage"));
 const ChangePasswordPage = lazy(() => import("./pages/admin/ChangePasswordPage"));
@@ -211,6 +212,7 @@ const App = () => (
             <Route path="/admin/kennisbank/actualiteit" element={<RoleGuard allow={["marketing"]}><AdminKennisbankActualiteit /></RoleGuard>} />
             <Route path="/admin/kennisbank/nieuw" element={<RoleGuard allow={["marketing"]}><AdminKennisbankEditor /></RoleGuard>} />
             <Route path="/admin/kennisbank/:id" element={<RoleGuard allow={["marketing"]}><AdminKennisbankEditor /></RoleGuard>} />
+            <Route path="/admin/chatgesprekken" element={<AdminChatgesprekken />} />
             <Route path="/admin/niet-gevonden" element={<RoleGuard allow={["marketing"]}><AdminNietGevonden /></RoleGuard>} />
             <Route path="/admin/wp-import" element={<RoleGuard allow={["marketing"]}><AdminWpImport /></RoleGuard>} />
 

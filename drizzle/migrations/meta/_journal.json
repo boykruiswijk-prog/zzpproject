@@ -148,6 +148,13 @@
       "when": 1790856812363,
       "tag": "0020_controleer_beheerrol_bij_collectief_teller",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1790858027450,
+      "tag": "0021_zeker_chat_assistent",
+      "breakpoints": true
     }
   ]
 }

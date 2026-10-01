@@ -295,6 +295,101 @@ export type Database = {
           },
         ]
       }
+      chat_messages: {
+        Row: {
+          acties: Json | null
+          created_at: string
+          feedback: number | null
+          id: string
+          rol: string
+          sessie_id: string
+          tekst: string
+        }
+        Insert: {
+          acties?: Json | null
+          created_at?: string
+          feedback?: number | null
+          id?: string
+          rol: string
+          sessie_id: string
+          tekst: string
+        }
+        Update: {
+          acties?: Json | null
+          created_at?: string
+          feedback?: number | null
+          id?: string
+          rol?: string
+          sessie_id?: string
+          tekst?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_sessie_id_fkey"
+            columns: ["sessie_id"]
+            isOneToOne: false
+            referencedRelation: "chat_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_rate_limit: {
+        Row: {
+          created_at: string
+          id: number
+          ip_hash: string
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          ip_hash: string
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          ip_hash?: string
+        }
+        Relationships: []
+      }
+      chat_sessions: {
+        Row: {
+          aantal_berichten: number
+          created_at: string
+          id: string
+          ip_hash: string
+          is_test: boolean
+          laatste_bericht_op: string
+          lead_id: string | null
+          startpagina: string | null
+          taal: string
+          ua_hash: string | null
+        }
+        Insert: {
+          aantal_berichten?: number
+          created_at?: string
+          id?: string
+          ip_hash: string
+          is_test?: boolean
+          laatste_bericht_op?: string
+          lead_id?: string | null
+          startpagina?: string | null
+          taal?: string
+          ua_hash?: string | null
+        }
+        Update: {
+          aantal_berichten?: number
+          created_at?: string
+          id?: string
+          ip_hash?: string
+          is_test?: boolean
+          laatste_bericht_op?: string
+          lead_id?: string | null
+          startpagina?: string | null
+          taal?: string
+          ua_hash?: string | null
+        }
+        Relationships: []
+      }
       collective_newsletter: {
         Row: {
           created_at: string
@@ -2548,6 +2643,15 @@ export type Database = {
           certified_at: string
           client_name: string
           status: string
+        }[]
+      }
+      zeker_opschonen: { Args: never; Returns: undefined }
+      zeker_zoek_artikelen: {
+        Args: { _q: string }
+        Returns: {
+          excerpt: string
+          slug: string
+          title: string
         }[]
       }
     }

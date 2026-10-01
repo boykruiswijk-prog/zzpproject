@@ -198,6 +198,26 @@ export default function Cookies() {
         </div>
       </section>
 
+      {/* Chatassistent Zeker */}
+      <section id="chat-assistent" className="section-padding bg-secondary scroll-mt-24">
+        <div className="container-wide">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-bold mb-6">Chatassistent Zeker</h2>
+            <div className="space-y-4 text-muted-foreground">
+              <p>
+                Op onze website kun je chatten met Zeker, een digitale assistent die werkt met kunstmatige intelligentie (AI). Zeker geeft algemene informatie en geen persoonlijk advies. Je chat niet met een mens.
+              </p>
+              <p>
+                Je berichten worden verwerkt door Anthropic als verwerker, ook buiten de EU (VS), met passende waarborgen zoals de standaardcontractbepalingen van de Europese Commissie. We bewaren gesprekken 90 dagen om onze dienstverlening te verbeteren en verwijderen ze daarna automatisch. Je IP-adres slaan we niet op, alleen een onherleidbare code om misbruik te voorkomen.
+              </p>
+              <p>
+                Deel geen gevoelige gegevens in de chat, zoals je BSN, IBAN, wachtwoorden of medische informatie. Vraag je via de chat een terugbelverzoek aan, dan gebruiken we je naam, telefoonnummer en vraag alleen om contact met je op te nemen.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Your Rights */}
       <section className="section-padding bg-background">
         <div className="container-wide">
