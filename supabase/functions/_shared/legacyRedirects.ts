@@ -284,7 +284,7 @@ export const legacyRedirects: { from: string; to: string }[] = [
   { from: "en/woningmarkt-voor-zzpers-op-slot", to: "/kennisbank" },
   { from: "en/zp-academy", to: "/over-ons" },
   { from: "en/zp-golf", to: "/" },
-  { from: "en/zp-zaken", to: "/kennisbank/zp-zaken" },
+  { from: "en/zp-zaken", to: "/kennisbank/bedrijfsaansprakelijkheidsverzekering-zzp" },
   { from: "en/zzper-reist-drie-keer-zo-ver-als-gemiddelde-nederlander", to: "/kennisbank" },
   { from: "factorscan", to: "/creditcontrol" },
   { from: "facts", to: "/" },
@@ -540,11 +540,16 @@ export const legacyRedirects: { from: string; to: string }[] = [
   { from: "zp-academy", to: "/over-ons" },
   { from: "zp-academy-under-construction", to: "/over-ons" },
   { from: "zp-golf", to: "/" },
-  { from: "zp-zaken", to: "/kennisbank/zp-zaken" },
+  { from: "zp-zaken", to: "/kennisbank/bedrijfsaansprakelijkheidsverzekering-zzp" },
   { from: "zpradio", to: "/" },
   { from: "zpradio-podcast", to: "/" },
   { from: "zzper-reist-drie-keer-zo-ver-als-gemiddelde-nederlander", to: "/kennisbank" },
   { from: "zzpers-zien-gouden-kansen-in-nieuwe-technologieen", to: "/kennisbank" },
+  // SEO-sprint 1 (01-10-2026)
+  { from: "kennisbank/zp-zaken", to: "/kennisbank/bedrijfsaansprakelijkheidsverzekering-zzp" },
+  { from: "beroepsaansprakelijkheidsverzekering-zzp", to: "/verzekeringen" },
+  { from: "kennisbank/hoe-bereken-ik-bijtelling-als-zzp-er", to: "/kennisbank/hoe-bereken-ik-bijtelling-als-zzper" },
+  { from: "kennisbank/vbar-wet-verduidelijking-beoordeling-arbeidsrelaties", to: "/kennisbank/vbar-wet-verduidelijking-arbeidsrelaties" },
 ];
 
 export const legacyRedirectMap: Record<string, string> = Object.fromEntries(

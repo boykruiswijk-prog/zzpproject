@@ -22,8 +22,31 @@ import { Shield, Calculator, Scale, UserCheck, Banknote } from "lucide-react";
 const SEO = seoRoute("/diensten");
 
 // Services data stays in Dutch as it's domain content passed to ServiceCard
+
+/** Echte links naar elke dienst- en informatiepagina (ook pagina's buiten het menu). */
+const DIENST_LINKS = [
+  { href: "/verzekeringen", label: "BAV + AVB verzekering" },
+  { href: "/aov", label: "Arbeidsongeschiktheidsverzekering (AOV)" },
+  { href: "/pensioen", label: "Pensioen voor zzp'ers" },
+  { href: "/zorgverzekering", label: "Zorgverzekering" },
+  { href: "/mentale-gezondheid", label: "Mentale gezondheid" },
+  { href: "/zzp-verzekering-ict", label: "Verzekering voor ICT-zzp'ers" },
+  { href: "/zzp-verzekering-zorg", label: "Verzekering voor zzp'ers in de zorg" },
+  { href: "/zzp-verzekering-bouw", label: "Verzekering voor zzp'ers in de bouw" },
+  { href: "/screening", label: "Screening" },
+  { href: "/creditcontrol", label: "Creditcontrol" },
+  { href: "/collectieve-inkoop", label: "Collectieve inkoop" },
+  { href: "/waarom-zp-zaken", label: "Waarom ZP Zaken" },
+  { href: "/voor-wie", label: "Voor wie" },
+  { href: "/zo-werken-wij", label: "Zo werken wij" },
+  { href: "/partners", label: "Partners" },
+  { href: "/historie", label: "Onze historie" },
+  { href: "/social-media", label: "Social media" },
+  { href: "/kennisbank", label: "Kennisbank" },
+];
+
 const services = [
-  { id: "verzekeringen", icon: Shield, title: "Verzekeringen", subtitle: "Inclusief onze unieke combinatiepolis", description: "Als zelfstandig professional ben je zelf verantwoordelijk voor je zakelijke zekerheid. De unieke BAV + AVB combinatiepolis die beroeps- én bedrijfsaansprakelijkheid combineert in één verzekering:  exclusief via ZP Zaken.", features: ["⭐ Unieke BAV + AVB combinatiepolis (exclusief)", "Arbeidsongeschiktheidsverzekering (AOV)", "Rechtsbijstandverzekering", "Cyberverzekering", "Zorgverzekering met collectieve korting"], forWho: "Alle zelfstandig professionals die hun risico's willen afdekken", cta: "Direct online afsluiten", href: "/#combinatiepolis", partners: ["Hiscox", "Movir", "Centraal Beheer", "Zorg en Zekerheid"], backgroundImage: officeCoffee },
+  { id: "verzekeringen", icon: Shield, title: "Verzekeringen", subtitle: "Inclusief onze unieke combinatiepolis", description: "Als zelfstandig professional ben je zelf verantwoordelijk voor je zakelijke zekerheid. De unieke BAV + AVB combinatiepolis die beroeps- én bedrijfsaansprakelijkheid combineert in één verzekering:  exclusief via ZP Zaken.", features: ["⭐ Unieke BAV + AVB combinatiepolis (exclusief)", "Arbeidsongeschiktheidsverzekering (AOV)", "Rechtsbijstandverzekering", "Cyberverzekering", "Zorgverzekering met collectieve korting"], forWho: "Alle zelfstandig professionals die hun risico's willen afdekken", cta: "Direct online afsluiten", href: "/verzekeringen", partners: ["Hiscox", "Movir", "Centraal Beheer", "Zorg en Zekerheid"], backgroundImage: officeCoffee },
   { id: "administratie", icon: Calculator, title: "Administratie & Boekhouding", subtitle: "Focus op je werk, wij regelen de rest", description: "Administratie kost tijd en energie die je liever in je opdrachten steekt. Via onze partners kun je je boekhouding, facturatie en belastingzaken uitbesteden aan specialisten die ZZP'ers begrijpen.", features: ["Volledige boekhouding", "BTW-aangiftes", "Facturatie en debiteurenbeheer", "Jaarafsluiting en jaarrekening", "Belastingondersteuning", "Koppeling met je bankrekening"], forWho: "ZZP'ers die hun administratie willen uitbesteden of ondersteuning zoeken", cta: "Meer over administratie", href: "/contact", partners: ["Boekhoudpartners via ZP Zaken"], backgroundImage: officeFlowers },
   { id: "juridisch", icon: Scale, title: "Juridische Hulp", subtitle: "Bescherm jezelf met goede contracten", description: "Goede contracten en algemene voorwaarden zijn essentieel voor elke zelfstandige. Voorkom geschillen en bescherm jezelf juridisch met hulp van onze juridische partners.", features: ["Algemene voorwaarden opstellen", "Contracten voor opdrachtgevers", "Juridische review van overeenkomsten", "Hulp bij geschillen", "Incasso ondersteuning", "Modelcontracten en templates"], forWho: "ZZP'ers die professioneel willen werken met waterdichte afspraken", cta: "Juridische hulp aanvragen", href: "/contact", partners: ["Juridische partners via ZP Zaken"], backgroundImage: teamCheers },
   { id: "screening", icon: UserCheck, title: "Screening voor Ondernemers", subtitle: "Bewijs je betrouwbaarheid aan opdrachtgevers", description: "Steeds meer opdrachtgevers willen zekerheid over de ZZP'ers die ze inhuren. Met onze screening toon je aan dat je betrouwbaar, gekwalificeerd en compliant bent. Onderscheid jezelf van de massa.", features: ["Identiteitsverificatie", "KvK en BTW-nummer check", "Verificatie van diploma's en certificaten", "Referentiecheck bij eerdere opdrachtgevers", "VOG (Verklaring Omtrent Gedrag)", "Compliance check voor wet DBA"], forWho: "ZZP'ers die werken voor grotere opdrachtgevers of in gereguleerde sectoren", cta: "Start je screening", href: "/screening", partners: ["Screeningspartners via ZP Zaken"], backgroundImage: teamWalking },
@@ -174,6 +197,22 @@ export default function Diensten() {
           )}
         </div>
       ))}
+
+      <section className="section-padding bg-secondary/30" aria-labelledby="alle-diensten">
+        <div className="container-wide max-w-5xl">
+          <h2 id="alle-diensten" className="mb-6 text-center">Alle dienstpagina's</h2>
+          <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {DIENST_LINKS.map((l) => (
+              <li key={l.href}>
+                <LocalizedLink to={l.href} className="flex items-center justify-between gap-2 bg-card border border-border/50 rounded-lg px-4 py-3 hover:border-accent/40 hover:text-accent transition-colors">
+                  <span className="font-medium">{l.label}</span>
+                  <ArrowRight className="h-4 w-4 shrink-0" />
+                </LocalizedLink>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
 
       <motion.section initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="section-padding relative overflow-hidden">
         <div className="absolute inset-0 z-0">

@@ -22,6 +22,7 @@ import { TableOfContents } from "@/components/kennisbank/TableOfContents";
 import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
 import { resolveFiscaleTokens } from "@/lib/fiscaleTokens";
 import { SITE_CONFIG } from "@/config/site";
+import NotFound from "@/pages/NotFound";
 
 const BAV_AVB_SLUG = "zp-zaken-zorgeloos-zzpen-goedkoopste-bav-avb";
 
@@ -45,8 +46,8 @@ const CATEGORY_SLUGS: Record<string, string> = {
   "Fiscaal": "belastingen",
   "Ondernemen": "ondernemen",
   "Financiën": "financien",
-  "Verzekeringen": "wet-en-regelgeving",
-  "Nieuws": "wet-en-regelgeving",
+  "Verzekeringen": "verzekeringen",
+  "Nieuws": "ondernemen",
 };
 
 const FALLBACK_OG_IMAGE = SITE_CONFIG.ogImage;
@@ -80,11 +81,20 @@ function estimateReadTime(content?: string | null) {
   return `${Math.max(1, Math.round(words / 200))} min`;
 }
 
-const InlineCTA = () => (
-  <div
-    className="my-8 rounded-lg p-5"
-    style={{ background: "#FFF5F5", borderLeft: "4px solid #E53E2F" }}
-  >
+/** Categorieën met een commerciële afsluiter; hoofdletterongevoelig. */
+const COMMERCIAL_CATEGORIES = ["verzekeringen", "wet- en regelgeving", "belastingen", "financiën", "wetgeving", "regelgeving", "fiscaal"];
+
+const isVerzekeringen = (c?: string | null) => (c || "").trim().toLowerCase() === "verzekeringen";
+
+/** Stabiele hash, zodat prerender en browser dezelfde "Verder lezen" tonen. */
+function slugHash(s: string) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return h;
+}
+
+const InlineCTA = ({ aov = false }: { aov?: boolean }) => (
+  <div className="my-8 rounded-lg p-5 bg-accent/5 border-l-4 border-accent">
     <div className="text-xs font-semibold uppercase tracking-wide text-accent mb-1">
       Direct geregeld
     </div>
@@ -94,15 +104,25 @@ const InlineCTA = () => (
     <p className="text-sm text-muted-foreground mb-4">
       Geen eigen risico. Dagelijks opzegbaar. BAV + AVB gecombineerd.
     </p>
-    <Button variant="accent" asChild>
-      <LocalizedLink to="/verzekeringen">
-        Direct online afsluiten <ArrowRight className="h-4 w-4" />
-      </LocalizedLink>
-    </Button>
+    <div className="flex flex-wrap gap-3">
+      <Button variant="accent" asChild>
+        <LocalizedLink to="/verzekeringen">
+          BAV + AVB direct afsluiten <ArrowRight className="h-4 w-4" />
+        </LocalizedLink>
+      </Button>
+      <Button variant="outline" asChild>
+        <LocalizedLink to="/offerte">Vrijblijvende offerte</LocalizedLink>
+      </Button>
+      {aov && (
+        <Button variant="outline" asChild>
+          <LocalizedLink to="/aov">Meer over de AOV</LocalizedLink>
+        </Button>
+      )}
+    </div>
   </div>
 );
 
-const renderContentWithCTA = (rawContent: string) => {
+const renderContentWithCTA = (rawContent: string, aov = false) => {
   // Fiscale tokens ({{fiscaal:...}}) worden vervangen door de actuele waarden
   // uit src/data/fiscaleCijfers.ts, zodat bedragen nooit verouderen.
   const content = resolveFiscaleTokens(rawContent);
@@ -115,7 +135,7 @@ const renderContentWithCTA = (rawContent: string) => {
   return (
     <>
       <ReactMarkdown remarkPlugins={[remarkGfm]}>{before}</ReactMarkdown>
-      <InlineCTA />
+      <InlineCTA aov={aov} />
       <ReactMarkdown remarkPlugins={[remarkGfm]}>{after}</ReactMarkdown>
     </>
   );
@@ -151,8 +171,16 @@ export default function ArtikelDetail() {
 
   const related = useMemo(() => {
     if (!article || !allArticles) return [];
-    const same = allArticles.filter((a) => a.category === article.category && a.slug !== article.slug);
-    const others = allArticles.filter((a) => a.category !== article.category && a.slug !== article.slug);
+    // Eerst dezelfde categorie, per artikel een andere startpositie, zodat
+    // niet elk artikel naar dezelfde vaste artikelen linkt.
+    const rotate = <T,>(list: T[]) => {
+      if (!list.length) return list;
+      const off = slugHash(article.slug) % list.length;
+      return [...list.slice(off), ...list.slice(0, off)];
+    };
+    const cat = (article.category || "").toLowerCase();
+    const same = rotate(allArticles.filter((a) => (a.category || "").toLowerCase() === cat && a.slug !== article.slug));
+    const others = rotate(allArticles.filter((a) => (a.category || "").toLowerCase() !== cat && a.slug !== article.slug));
     return [...same, ...others].slice(0, 3);
   }, [article, allArticles]);
 
@@ -175,23 +203,12 @@ export default function ArtikelDetail() {
   }
 
   if (error || !article) {
-    return (
-      <Layout>
-        <div className="container-wide section-padding text-center">
-          <h1 className="text-2xl font-bold mb-4">Artikel niet gevonden</h1>
-          <p className="text-muted-foreground mb-6">Het artikel dat je zoekt bestaat niet of is verwijderd.</p>
-          <Button asChild>
-            <LocalizedLink to="/kennisbank">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Terug naar kennisbank
-            </LocalizedLink>
-          </Button>
-        </div>
-      </Layout>
-    );
+    // Onbekende slug: echte "niet gevonden"-pagina met noindex, geen canonical.
+    return <NotFound />;
   }
 
-  const formattedDate = article.published_at ? formatDateNL(article.published_at) : null;
+  const bijgewerktOp = (article as any).content_reviewed_at || article.published_at;
+  const formattedDate = bijgewerktOp ? formatDateNL(bijgewerktOp) : null;
   const readTime = article.read_time || estimateReadTime(article.content);
   const categoryStyle = CATEGORY_STYLES[article.category] || defaultCategoryStyle;
   const categorySlug = CATEGORY_SLUGS[article.category];
@@ -238,9 +255,9 @@ export default function ArtikelDetail() {
       )
     : null;
 
-  const isBavAvb = article.slug === BAV_AVB_SLUG;
-  const commercialCategories = ["Verzekeringen", "Belastingen", "Fiscaal", "Financiën", "Wetgeving"];
-  const showCommercialCTA = commercialCategories.includes(article.category);
+  const toonInlineCTA = article.slug === BAV_AVB_SLUG || isVerzekeringen(article.category);
+  const isAov = /aov|arbeidsongeschikt/i.test(article.slug);
+  const showCommercialCTA = COMMERCIAL_CATEGORIES.includes((article.category || "").trim().toLowerCase());
 
   return (
     <Layout>
@@ -326,7 +343,7 @@ export default function ArtikelDetail() {
               {formattedDate && (
                 <span className="inline-flex items-center gap-1.5">
                   <Calendar className="h-4 w-4" />
-                  {formattedDate}
+                  Laatst bijgewerkt: {formattedDate}
                 </span>
               )}
               <span className="inline-flex items-center gap-1.5">
@@ -390,9 +407,9 @@ export default function ArtikelDetail() {
                   prose-thead:bg-secondary prose-th:border prose-th:border-border/60 prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:font-semibold
                   prose-td:border prose-td:border-border/60 prose-td:px-4 prose-td:py-3
                   prose-hr:my-12 prose-hr:border-border/60">
-                {isBavAvb
-                  ? renderContentWithCTA(article.content || "")
-                  : <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.content || ""}</ReactMarkdown>}
+                {toonInlineCTA
+                  ? renderContentWithCTA(article.content || "", isAov)
+                  : <ReactMarkdown remarkPlugins={[remarkGfm]}>{resolveFiscaleTokens(article.content || "")}</ReactMarkdown>}
               </div>
 
               {/* Zichtbare FAQ: dekt het FAQPage-schema hierboven, zodat schema

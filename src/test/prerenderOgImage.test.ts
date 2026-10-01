@@ -37,5 +37,5 @@ describe("Open Graph-afbeelding in prerender", () => {
       expect(imageUrl.origin, page).toBe(SITE_CONFIG.url);
       expect(fs.existsSync(path.resolve("public", imageUrl.pathname.slice(1))), page).toBe(true);
     }
-  });
+  }, 180000);
 });

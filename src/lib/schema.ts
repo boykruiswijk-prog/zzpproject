@@ -185,6 +185,7 @@ export const BREADCRUMB_LABELS: Record<string, string> = {
   "/kennisbank/ondernemen": "Ondernemen",
   "/kennisbank/belastingen": "Belastingen",
   "/kennisbank/financien": "Financiën",
+  "/kennisbank/verzekeringen": "Verzekeringen",
   "/over-ons": "Over ons",
   "/partners": "Partners",
   "/historie": "Historie",

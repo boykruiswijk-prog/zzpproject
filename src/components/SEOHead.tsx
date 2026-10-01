@@ -47,7 +47,7 @@ export function SEOHead({
       {!noindex && <link rel="canonical" href={canonicalUrl} />}
 
 
-      {noindex && <meta name="robots" content="noindex, nofollow" />}
+      {noindex && <meta name="robots" content="noindex" />}
 
       {/* Open Graph */}
       <meta property="og:title" content={pageTitle} />

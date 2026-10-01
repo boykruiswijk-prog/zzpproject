@@ -97,10 +97,13 @@ const NotFound = () => {
           </div>
           <div className="relative text-center max-w-2xl mx-auto">
             <h1 className="text-3xl md:text-5xl font-bold mb-4">
-              Deze pagina bestaat niet meer
+              Pagina niet gevonden
             </h1>
             <p className="text-lg text-muted-foreground mb-8">
-              Geen zorgen, je bent wel op de juiste plek voor zorgeloos ondernemen.
+              Deze pagina bestaat niet (meer). Ga verder via de{" "}
+              <Link to="/" className="text-accent underline">homepage</Link>, onze{" "}
+              <Link to="/verzekeringen" className="text-accent underline">verzekeringen</Link> of de{" "}
+              <Link to="/kennisbank" className="text-accent underline">kennisbank</Link>.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button variant="accent" size="lg" asChild>

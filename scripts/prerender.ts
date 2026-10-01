@@ -10,6 +10,9 @@
 
 import fs from "fs";
 import path from "path";
+import { execFileSync } from "child_process";
+import { fileURLToPath } from "url";
+import { createServer, type ViteDevServer } from "vite";
 import { seoRoutes, PRERENDER_EXCLUDE_PREFIXES, type SeoRoute } from "../src/config/seoRoutes";
 import { SITE_CONFIG } from "../src/config/site";
 import { bavPakketten } from "../src/data/bavPakketten";
@@ -63,21 +66,21 @@ function isExcluded(routePath: string) {
 function headFor(routePath: string, title: string, description: string, ogType: string) {
   const url = `${SITE_CONFIG.url}${routePath === "/" ? "/" : routePath}`;
   const alternates = [
-    `<link rel="alternate" hreflang="nl" href="${SITE_CONFIG.url}${routePath === "/" ? "/" : routePath}">`,
+    `<link rel="alternate" data-rh="true" hreflang="nl" href="${SITE_CONFIG.url}${routePath === "/" ? "/" : routePath}">`,
     ...LANGS.map(
       (lang) =>
-        `<link rel="alternate" hreflang="${lang}" href="${SITE_CONFIG.url}/${lang}${
+        `<link rel="alternate" data-rh="true" hreflang="${lang}" href="${SITE_CONFIG.url}/${lang}${
           routePath === "/" ? "" : routePath
         }">`,
     ),
-    `<link rel="alternate" hreflang="x-default" href="${SITE_CONFIG.url}${
+    `<link rel="alternate" data-rh="true" hreflang="x-default" href="${SITE_CONFIG.url}${
       routePath === "/" ? "/" : routePath
     }">`,
   ];
   return {
     url,
     tags: [
-      `<link rel="canonical" href="${url}">`,
+      `<link rel="canonical" href="${url}" data-rh="true">`,
       ...alternates,
       `<meta name="twitter:title" content="${esc(title)}">`,
       `<meta name="twitter:description" content="${esc(description)}">`,
@@ -174,6 +177,7 @@ function redirectStubHtml(from: string, to: string): string {
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:alt" content="ZP Zaken – BAV &amp; AVB voor zzp'ers" />
     <meta name="twitter:image" content="${esc(SITE_CONFIG.ogImage)}" />
+    <meta name="robots" content="noindex, follow" />
     <link rel="canonical" href="${esc(target)}" />
     <meta http-equiv="refresh" content="0;url=${esc(to)}" />
     <script>window.location.replace(${JSON.stringify(to)});</script>
@@ -273,6 +277,105 @@ function buildHtml(
   return html;
 }
 
+type SsrRender = (
+  url: string,
+  preloaded?: Record<string, unknown>,
+) => Promise<{ html: string; helmet?: { script?: { toString(): string } } }>;
+
+/** In-memory Storage voor modules die bij import localStorage aanspreken. */
+function memoryStorage(): Storage {
+  const m = new Map<string, string>();
+  return {
+    getItem: (k) => m.get(k) ?? null,
+    setItem: (k, v) => void m.set(k, String(v)),
+    removeItem: (k) => void m.delete(k),
+    clear: () => m.clear(),
+    key: (i) => [...m.keys()][i] ?? null,
+    get length() {
+      return m.size;
+    },
+  } as Storage;
+}
+
+/**
+ * Start een Vite SSR-server en laadt src/entry-server.tsx. Mislukt dat, dan
+ * valt de prerender terug op het korte statische blok (de build gaat door).
+ */
+async function loadSsr(root: string): Promise<{ render: SsrRender; close: () => Promise<void> } | null> {
+  const g = globalThis as Record<string, unknown>;
+  if (!g.localStorage) g.localStorage = memoryStorage();
+  if (!g.sessionStorage) g.sessionStorage = memoryStorage();
+  let vite: ViteDevServer | undefined;
+  // De dev-server transformeert JSX naar de dev-runtime; React moet dan ook
+  // in development-modus laden, anders ontbreekt jsxDEV.
+  const prevEnv = process.env.NODE_ENV;
+  process.env.NODE_ENV = "development";
+  try {
+    vite = await createServer({
+      root,
+      configFile: path.join(root, "vite.config.ts"),
+      mode: "development",
+      logLevel: "error",
+      appType: "custom",
+      server: { middlewareMode: true, hmr: false, watch: null },
+      optimizeDeps: { noDiscovery: true, include: [] },
+      ssr: { noExternal: ["react-helmet-async"] },
+    });
+    const mod = (await vite.ssrLoadModule("/src/entry-server.tsx")) as { render: SsrRender };
+    const server = vite;
+    return {
+      render: mod.render,
+      close: async () => {
+        await server.close();
+        process.env.NODE_ENV = prevEnv;
+      },
+    };
+  } catch (error) {
+    console.warn(
+      `[prerender] WAARSCHUWING: SSR niet beschikbaar, korte fallback gebruikt: ${
+        error instanceof Error ? error.stack || error.message : String(error)
+      }`,
+    );
+    await vite?.close();
+    process.env.NODE_ENV = prevEnv;
+    return null;
+  }
+}
+
+/** Datum (jjjj-mm-dd) van de laatste commit die een bestand wijzigde; null zonder git. */
+function gitDate(root: string, files: string[]): string | null {
+  try {
+    const out = execFileSync("git", ["log", "-1", "--format=%cI", "--", ...files], {
+      cwd: root,
+      stdio: ["ignore", "pipe", "ignore"],
+    })
+      .toString()
+      .trim();
+    return out ? out.slice(0, 10) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Route → paginabestand(en), afgeleid uit src/App.tsx, voor de sitemap-lastmod. */
+function routeSourceFiles(root: string): Map<string, string[]> {
+  const app = fs.readFileSync(path.join(root, "src/App.tsx"), "utf8");
+  const imports = new Map<string, string>();
+  for (const m of app.matchAll(/const (\w+) = lazy\(\(\) => import\("\.\/([^"]+)"\)\)/g)) {
+    imports.set(m[1], `src/${m[2]}.tsx`);
+  }
+  const map = new Map<string, string[]>();
+  for (const m of app.matchAll(/<Route (index|path="([^"]*)") element=\{<(\w+)/g)) {
+    const routePath = m[1] === "index" ? "/" : `/${m[2]}`;
+    const file = imports.get(m[3]);
+    if (file && !map.has(routePath)) map.set(routePath, [file]);
+  }
+  return map;
+}
+
+/** Script dat op de terugval-HTML (homepage-bestand op een onbekend pad) noindex zet. */
+const SOFT_404_GUARD = `<script>(function(){var p=location.pathname.replace(/\\/+$/,"")||"/";if(p!=="/"){var c=document.querySelector('link[rel="canonical"]');if(c)c.remove();var m=document.querySelector('meta[name="robots"]');if(!m){m=document.createElement("meta");m.name="robots";document.head.appendChild(m);}m.content="noindex";}})();</script>`;
+
 interface PublishedArticle {
   slug: string;
   title: string;
@@ -315,7 +418,7 @@ async function fetchPublishedArticles(env: Record<string, string>): Promise<Publ
   }
   const url =
     `${base}/rest/v1/articles` +
-    `?select=slug,title,excerpt,content,category,published_at,image_url,seo_title,seo_description,content_reviewed_at` +
+    `?select=*` +
     `&is_published=eq.true&order=published_at.desc&limit=1000`;
   // Altijd vers uit de database: geen HTTP-cache tussen builds.
   const res = await fetch(url, {
@@ -323,6 +426,17 @@ async function fetchPublishedArticles(env: Record<string, string>): Promise<Publ
   });
   if (!res.ok) throw new Error(`REST ${res.status}: ${(await res.text()).slice(0, 200)}`);
   return (await res.json()) as PublishedArticle[];
+}
+
+async function fetchCategoryList(env: Record<string, string>): Promise<unknown[]> {
+  const base = env.VITE_SUPABASE_URL;
+  const key = env.VITE_SUPABASE_PUBLISHABLE_KEY || env.VITE_SUPABASE_ANON_KEY;
+  if (!base || !key) return [];
+  const res = await fetch(
+    `${base}/rest/v1/article_categories?select=slug,label,hub_slug,sort_order&order=sort_order.asc`,
+    { headers: { apikey: key, Authorization: `Bearer ${key}` } },
+  );
+  return res.ok ? ((await res.json()) as unknown[]) : [];
 }
 
 export async function prerender(distDir: string, env: Record<string, string> = {}) {
@@ -354,6 +468,36 @@ export async function prerender(distDir: string, env: Record<string, string> = {
     );
   }
 
+  // 1b. Volledige componentboom per route (SSR). Querydata wordt vooraf
+  //     gevuld, zodat artikel- en categoriepagina's direct hun inhoud tonen.
+  // Projectmap (waar src/ staat), onafhankelijk van de dist-map.
+  const root = fileURLToPath(new URL("..", import.meta.url));
+  const ssr = await loadSsr(root);
+  const categoryList = await fetchCategoryList(env).catch(() => []);
+  const basePreload: Record<string, unknown> = {
+    [JSON.stringify(["articles", "Alle"])]: articles,
+    [JSON.stringify(["articles", null])]: articles,
+    [JSON.stringify(["article-categories"])]: [
+      "Alle",
+      ...[...new Set(articles.map((a) => a.category).filter(Boolean))].sort(),
+    ],
+    [JSON.stringify(["article-category-list"])]: categoryList,
+  };
+  let ssrOk = 0;
+  let ssrFail = 0;
+  const ssrBody = async (url: string, extra: Record<string, unknown> = {}): Promise<string | null> => {
+    if (!ssr) return null;
+    try {
+      const { html } = await ssr.render(url, { ...basePreload, ...extra });
+      ssrOk++;
+      return html;
+    } catch (error) {
+      ssrFail++;
+      console.warn(`[prerender] SSR mislukt voor ${url}: ${error instanceof Error ? error.message : String(error)}`);
+      return null;
+    }
+  };
+
   /** Artikelen die bij een categoriepagina horen. */
   const articlesForHub = (hubPath: string) =>
     articles.filter((a) => categoryPageFor(a.category) === hubPath);
@@ -369,18 +513,19 @@ export async function prerender(distDir: string, env: Record<string, string> = {
     } else if (route.path.startsWith("/kennisbank/")) {
       extra = renderArticleLinks("Artikelen in deze categorie", articlesForHub(route.path));
     }
-    write(
-      route.path,
-      buildHtml(template, {
-        routePath: route.path,
-        title: formatPageTitle(route.title),
-        description: route.description,
-        ogType: "website",
-        image: SITE_CONFIG.ogImage,
-        schemas: schemasFor(route.path),
-        fallback: renderFallback(route.h1, route.intro, extra),
-      }),
-    );
+    const body = await ssrBody(route.path);
+    let html = buildHtml(template, {
+      routePath: route.path,
+      title: formatPageTitle(route.title),
+      description: route.description,
+      ogType: "website",
+      image: SITE_CONFIG.ogImage,
+      schemas: schemasFor(route.path),
+      fallback: body ?? renderFallback(route.h1, route.intro, extra),
+    });
+    // Het homepagebestand is ook de terugval voor onbekende paden: daar noindex.
+    if (route.path === "/") html = html.replace("</head>", `  ${SOFT_404_GUARD}\n  </head>`);
+    write(route.path, html);
   }
 
   // 3. Kennisbankartikelen, met de volledige body in de statische HTML.
@@ -400,6 +545,9 @@ export async function prerender(distDir: string, env: Record<string, string> = {
       question: resolveFiscaleTokens(f.question),
       answer: resolveFiscaleTokens(f.answer),
     }));
+    const articleBody = await ssrBody(routePath, {
+      [JSON.stringify(["article", article.slug])]: article,
+    });
     write(
       routePath,
       buildHtml(template, {
@@ -421,7 +569,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
           }),
           ...(artikelFaqs.length ? [faqSchema(artikelFaqs)] : []),
         ].filter((s) => Object.keys(s).length > 0),
-        fallback: renderFallback(
+        fallback: articleBody ?? renderFallback(
           article.title,
           samenvatting || alinea,
           [
@@ -437,6 +585,8 @@ export async function prerender(distDir: string, env: Record<string, string> = {
     );
   }
   console.log(`[prerender] ${articles.length} kennisbankartikelen geprerenderd (volledige body).`);
+  await ssr?.close();
+  console.log(`[prerender] SSR: ${ssrOk} pagina's volledig gerenderd, ${ssrFail} met fallback.`);
 
   // 4. Redirect-stubs voor legacy WordPress-URL's. De hosting voert _redirects
   //    niet uit; deze statische pagina's doen het werk met canonical + refresh.
@@ -445,7 +595,14 @@ export async function prerender(distDir: string, env: Record<string, string> = {
   );
   const routePaths = new Set((seoRoutes as SeoRoute[]).map((r) => r.path));
   let stubs = 0;
-  for (const redirect of legacyRedirects) {
+  // Oude WordPress-artikel-URL's /<slug>/ en /blog/<slug>/ → /kennisbank/<slug>.
+  const legacyFrom = new Set(legacyRedirects.map((r) => r.from));
+  const articleStubs = articles.flatMap((a) =>
+    [a.slug, `blog/${a.slug}`]
+      .filter((from) => !legacyFrom.has(from))
+      .map((from) => ({ from, to: `/kennisbank/${a.slug}` })),
+  );
+  for (const redirect of [...legacyRedirects, ...articleStubs]) {
     const routePath = `/${redirect.from}`;
     // Nooit een bestaande route overschrijven. Let op: een artikel met dezelfde
     // slug staat op /kennisbank/<slug>, niet op /<slug>; de oude URL heeft dus
@@ -510,17 +667,21 @@ export async function prerender(distDir: string, env: Record<string, string> = {
   // 6. Statische sitemap.xml, generated uit dezelfde bron als de pagina's. De
   //    dynamische Edge Function blijft leidend via robots.txt, maar deze versie
   //    werkt ook zonder hosting-rewrites en loopt nooit achter op de build.
-  const today = new Date().toISOString().slice(0, 10);
+  // lastmod: artikelen uit content_reviewed_at of published_at; pagina's uit de
+  // laatste commit van het paginabestand. Onbekend = geen lastmod (nooit "vandaag").
+  const sources = routeSourceFiles(root);
   const sitemapEntries = [
     ...(seoRoutes as SeoRoute[])
       .filter((r) => !isExcluded(r.path))
-      .map((r) => ({ loc: `${SITE_CONFIG.url}${r.path === "/" ? "/" : r.path}`, prio: "0.8" })),
+      .map((r) => ({
+        loc: `${SITE_CONFIG.url}${r.path === "/" ? "/" : r.path}`,
+        lastmod: gitDate(root, sources.get(r.path) ?? ["src/config/seoRoutes.ts"]),
+      })),
     ...articles.map((a) => {
-      const dates = [a.content_reviewed_at, a.published_at].filter(Boolean) as string[];
-      const lastmod = dates.length ? dates.sort().reverse()[0].slice(0, 10) : today;
-      return { loc: `${SITE_CONFIG.url}/kennisbank/${a.slug}`, prio: "0.7", lastmod };
+      const lastmod = (a.content_reviewed_at || a.published_at || "").slice(0, 10) || null;
+      return { loc: `${SITE_CONFIG.url}/kennisbank/${a.slug}`, lastmod };
     }),
-  ] as { loc: string; prio: string; lastmod?: string }[];
+  ] as { loc: string; lastmod: string | null }[];
   const seen = new Set<string>();
   const sitemapXml = [
     '<?xml version="1.0" encoding="UTF-8"?>',
@@ -529,7 +690,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
       .filter((e) => (seen.has(e.loc) ? false : (seen.add(e.loc), true)))
       .map(
         (e) =>
-          `  <url><loc>${esc(e.loc)}</loc><lastmod>${e.lastmod || today}</lastmod><priority>${e.prio}</priority></url>`,
+          `  <url><loc>${esc(e.loc)}</loc>${e.lastmod ? `<lastmod>${e.lastmod}</lastmod>` : ""}</url>`,
       ),
     "</urlset>",
     "",

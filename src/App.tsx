@@ -24,6 +24,7 @@ const KennisbankWetEnRegelgeving = lazy(() => import("./pages/kennisbank/WetEnRe
 const KennisbankOndernemen = lazy(() => import("./pages/kennisbank/Ondernemen"));
 const KennisbankBelastingen = lazy(() => import("./pages/kennisbank/Belastingen"));
 const KennisbankFinancien = lazy(() => import("./pages/kennisbank/Financien"));
+const KennisbankVerzekeringen = lazy(() => import("./pages/kennisbank/Verzekeringen"));
 const ArtikelDetail = lazy(() => import("./pages/ArtikelDetail"));
 const OverOns = lazy(() => import("./pages/OverOns"));
 const Partners = lazy(() => import("./pages/Partners"));
@@ -137,6 +138,7 @@ const publicRoutes = (
     <Route path="kennisbank/ondernemen" element={<KennisbankOndernemen />} />
     <Route path="kennisbank/belastingen" element={<KennisbankBelastingen />} />
     <Route path="kennisbank/financien" element={<KennisbankFinancien />} />
+    <Route path="kennisbank/verzekeringen" element={<KennisbankVerzekeringen />} />
     <Route path="kennisbank/:slug" element={<ArtikelDetail />} />
     <Route path="over-ons" element={<OverOns />} />
     <Route path="partners" element={<Partners />} />
@@ -167,15 +169,8 @@ const publicRoutes = (
   </>
 );
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <PortalAuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <ScrollToTop />
+/** Alle routes; gedeeld door de browser (App) en de prerender (entry-server). */
+export const AppRoutes = () => (
           <Suspense fallback={<div aria-busy="true" style={{ minHeight: "100vh" }} />}>
           <Routes>
             {/* Default (NL) routes */}
@@ -246,11 +241,30 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
           </Suspense>
-        </BrowserRouter>
+);
+
+/** Providers zonder router; de router verschilt tussen browser en prerender. */
+export const AppProviders = ({ client, children }: { client: QueryClient; children: React.ReactNode }) => (
+  <QueryClientProvider client={client}>
+    <AuthProvider>
+      <PortalAuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        {children}
       </TooltipProvider>
       </PortalAuthProvider>
     </AuthProvider>
   </QueryClientProvider>
+);
+
+const App = () => (
+  <AppProviders client={queryClient}>
+    <BrowserRouter>
+      <ScrollToTop />
+      <AppRoutes />
+    </BrowserRouter>
+  </AppProviders>
 );
 
 export default App;

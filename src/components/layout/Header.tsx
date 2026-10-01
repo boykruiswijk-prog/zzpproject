@@ -49,6 +49,7 @@ function useNavItems() {
         { href: "/kennisbank/ondernemen", label: "Ondernemen" },
         { href: "/kennisbank/belastingen", label: "Belastingen" },
         { href: "/kennisbank/financien", label: "Financiën" },
+        { href: "/kennisbank/verzekeringen", label: "Verzekeringen" },
         { href: "/faq", label: t("nav.faq") },
       ]
     },

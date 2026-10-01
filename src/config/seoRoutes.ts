@@ -33,7 +33,7 @@ export const seoRoutes: SeoRoute[] = [
     path: "/",
     title: `BAV & AVB Verzekering ZZP'ers | Vanaf €${goedkoopstePakket.prijs}/maand`,
     description:
-      "Onafhankelijke verzekeringsadviseur voor zzp'ers. Sluit direct online een BAV+AVB combinatieverzekering af. Geen eigen risico, dagelijks opzegbaar. AFM geregistreerd.",
+      "Sluit als zzp'er direct online BAV + AVB in één polis af. Geen eigen risico, dagelijks opzegbaar. Onafhankelijk adviseur met AFM-vergunning.",
     h1: "Verzekeringen voor zzp'ers, direct en onafhankelijk",
     intro:
       `ZP Zaken is een onafhankelijke verzekeringsadviseur voor zelfstandig professionals, met AFM-vergunning ${SITE_CONFIG.registrations.afm}. ` +
@@ -54,7 +54,7 @@ export const seoRoutes: SeoRoute[] = [
     path: "/verzekeringen",
     title:
       "BAV + AVB voor ZZP'ers | Direct online afsluiten",
-    description: `De enige gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering in Nederland. Vanaf €${goedkoopstePakket.prijs} per maand, geen eigen risico. Direct online afsluiten in 5 stappen.`,
+    description: `Beroeps- en bedrijfsaansprakelijkheid in één polis voor zzp'ers. Vanaf €${goedkoopstePakket.prijs} per maand, geen eigen risico. Online afsluiten in 5 stappen.`,
     h1: "BAV & AVB: de combinatiepolis voor zzp'ers",
     intro:
       `De combinatiepolis van ZP Zaken bundelt beroepsaansprakelijkheid (BAV) en bedrijfsaansprakelijkheid (AVB) in één verzekering, vanaf ${goedkoopstePakket.prijsLabel.toLowerCase()}. ` +
@@ -132,9 +132,9 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/kennisbank",
-    title: "Kennisbank ZZP Verzekeringen | Artikelen & Nieuws | ZP Zaken",
+    title: "Kennisbank voor zzp'ers: verzekeringen, belasting & wetgeving",
     description:
-      "Blijf op de hoogte van wet DBA, verzekeringen en regelgeving voor zzp'ers. Praktische artikelen door specialisten met 13 jaar ervaring.",
+      "Blijf op de hoogte van wet DBA, verzekeringen en regelgeving voor zzp'ers. Praktische artikelen door specialisten met 13+ jaar ervaring.",
     h1: "Kennisbank voor zzp'ers",
     intro:
       "In de kennisbank van ZP Zaken vind je artikelen over de Wet DBA, aansprakelijkheid, belastingen, financiën en ondernemen als zelfstandige. " +
@@ -181,6 +181,16 @@ export const seoRoutes: SeoRoute[] = [
       "Zo houd je zicht op je financiële toekomst.",
   },
   {
+    path: "/kennisbank/verzekeringen",
+    title: "Verzekeringen voor zzp'ers | Kennisbank | ZP Zaken",
+    description:
+      "Uitleg over BAV, AVB, AOV, cyber- en zorgverzekering voor zzp'ers: wat het dekt, wat het kost en wanneer je het nodig hebt.",
+    h1: "Verzekeringen voor zzp'ers",
+    intro:
+      "Uitleg over aansprakelijkheid, AOV, cyberrisico's, zorgverzekering en wat verzekeringen voor zzp'ers kosten. " +
+      "Zo weet je welke dekking bij jouw werk past.",
+  },
+  {
     path: "/over-ons",
     title: "Over ons | Direct en onafhankelijk sinds 2014",
     description:
@@ -203,10 +213,10 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/historie",
-    title: "12 Jaar ZP Zaken | ZP Zaken",
+    title: "13+ jaar ZP Zaken | ZP Zaken",
     description:
-      `Van startup tot marktleider. Ontdek onze reis en waarom ${SITE_CONFIG.klantenAantal} zzp'ers ons vertrouwen.`,
-    h1: "12 jaar ZP Zaken",
+      `Van startup tot vaste partner van zzp'ers. Ontdek onze reis en waarom ${SITE_CONFIG.klantenAantal} zzp'ers ons vertrouwen.`,
+    h1: "13+ jaar ZP Zaken",
     intro:
       `ZP Zaken bestaat sinds 2014 en groeide van startup tot vaste partner voor meer dan ${SITE_CONFIG.klantenAantalTekst} zelfstandigen. ` +
       "De tijdlijn op deze pagina laat de belangrijkste stappen uit die periode zien.",
@@ -345,7 +355,7 @@ export const seoRoutes: SeoRoute[] = [
     path: "/offerte",
     title: "Vrijblijvende offerte BAV en AVB | ZP Zaken",
     description:
-      "Vraag eenvoudig een vrijblijvende offerte aan voor je beroeps- en bedrijfsaansprakelijkheidsverzekering. Binnen 24 uur reactie.",
+      "Vraag een vrijblijvende offerte aan voor je beroeps- en bedrijfsaansprakelijkheidsverzekering (BAV + AVB). Binnen 24 uur reactie.",
     h1: "Vrijblijvende offerte BAV en AVB",
     intro:
       "Vraag hier vrijblijvend een offerte aan voor je beroeps- en bedrijfsaansprakelijkheidsverzekering. " +

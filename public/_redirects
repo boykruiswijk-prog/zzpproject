@@ -255,7 +255,7 @@
 /en/woningmarkt-voor-zzpers-op-slot    /kennisbank    301
 /en/zp-academy    /over-ons    301
 /en/zp-golf    /    301
-/en/zp-zaken    /kennisbank/zp-zaken    301
+/en/zp-zaken    /kennisbank/bedrijfsaansprakelijkheidsverzekering-zzp    301
 /en/zzper-reist-drie-keer-zo-ver-als-gemiddelde-nederlander    /kennisbank    301
 /factorscan    /creditcontrol    301
 /facts    /    301
@@ -511,11 +511,15 @@
 /zp-academy    /over-ons    301
 /zp-academy-under-construction    /over-ons    301
 /zp-golf    /    301
-/zp-zaken    /kennisbank/zp-zaken    301  # gepubliceerd artikel
+/zp-zaken    /kennisbank/bedrijfsaansprakelijkheidsverzekering-zzp    301
 /zpradio    /    301
 /zpradio-podcast    /    301
 /zzper-reist-drie-keer-zo-ver-als-gemiddelde-nederlander    /kennisbank    301
 /zzpers-zien-gouden-kansen-in-nieuwe-technologieen    /kennisbank    301
+/kennisbank/zp-zaken    /kennisbank/bedrijfsaansprakelijkheidsverzekering-zzp    301
+/beroepsaansprakelijkheidsverzekering-zzp    /verzekeringen    301
+/kennisbank/hoe-bereken-ik-bijtelling-als-zzp-er    /kennisbank/hoe-bereken-ik-bijtelling-als-zzper    301
+/kennisbank/vbar-wet-verduidelijking-beoordeling-arbeidsrelaties    /kennisbank/vbar-wet-verduidelijking-arbeidsrelaties    301
 
 # Pad met afsluitende slash → zelfde pad zonder slash (homepage uitgezonderd).
 /:path/    /:path    301!
