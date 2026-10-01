@@ -31,7 +31,7 @@
 - [x] Collectiefpagina en menu visueel controleren op 1280 en 390 px
 - [x] Build, tests en typecontrole uitvoeren
 
-- [ ] Zwevende telefoon- en WhatsApp-knoppen zonder overlap, inclusief mobiele veilige ondermarge
-- [ ] Kopbalk met korte NIEUW-badge en éénregelige onderdelen op 1280–1920 px
-- [ ] Screenshots op 390, 1280 en 1440 px controleren
-- [ ] Build, tests en typecontrole uitvoeren; niet publiceren
+- [x] Zwevende telefoon- en WhatsApp-knoppen zonder overlap, inclusief mobiele veilige ondermarge
+- [x] Kopbalk met korte NIEUW-badge en éénregelige onderdelen op 1280–1920 px
+- [x] Screenshots op 390, 1280 en 1440 px controleren
+- [x] Build, tests en typecontrole uitvoeren; niet publiceren
