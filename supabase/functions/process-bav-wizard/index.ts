@@ -11,6 +11,7 @@ import {
 } from "../_shared/sepaBewijs.ts";
 import { isUuid, isValidIban, redenBav } from "../_shared/sepaMachtiging.ts";
 import { brancheVoorSector } from "../_shared/sectorBranche.ts";
+import { isAlleenOfferteSector, KLANTMELDING_ALLEEN_OFFERTE } from "../_shared/sectorRegels.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -116,6 +117,16 @@ Deno.serve(async (req) => {
         .filter((k) => !(submission as unknown as Record<string, unknown>)?.[k]);
       if (submission?.gekozen_pakket && !PAKKET_CONFIG[submission.gekozen_pakket]) ontbreekt.push("gekozen_pakket(onbekend)");
       return weiger(400, `Aanvraag onvolledig: ${ontbreekt.join(", ")}`, "validatie");
+    }
+
+    // Vangnet: zorg/bouw alleen via offerte — vóór bewijs, lead, PDF of mail.
+    {
+      const ruw = submission as unknown as Record<string, unknown>;
+      const extra = (ruw.extra_data ?? {}) as Record<string, unknown>;
+      const kandidaten = [ruw.sector, ruw.sector_id, extra.sector, extra.sector_id];
+      if (kandidaten.some((k) => typeof k === "string" && isAlleenOfferteSector(k))) {
+        return weiger(422, KLANTMELDING_ALLEEN_OFFERTE, "sector_alleen_offerte");
+      }
     }
 
     // SEPA-machtiging: nooit vastleggen zonder incassant-ID.

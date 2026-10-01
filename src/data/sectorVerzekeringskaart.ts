@@ -12,6 +12,8 @@ export interface Sector {
   branche: BrancheId;
   /** true = geen eigen kaart, valt terug op Overige zakelijke dienstverlening (MPH-2013B). */
   fallback: boolean;
+  /** true = niet direct online af te sluiten; alleen via offerte-aanvraag. */
+  alleenOfferte?: boolean;
 }
 
 export const WIZARD_SECTOREN: Sector[] = [
@@ -21,10 +23,17 @@ export const WIZARD_SECTOREN: Sector[] = [
   { id: "coaches", label: "Coaches", branche: "coaches", fallback: false },
   { id: "zakelijke-dienstverlening", label: "Zakelijke dienstverlening", branche: "zakelijke-dienstverlening", fallback: false },
   // Geen eigen kaart aanwezig in public/documenten → fallback, bewust gemarkeerd.
-  { id: "zorg", label: "Zorg", branche: FALLBACK_BRANCHE, fallback: true },
-  { id: "bouw", label: "Bouw & techniek", branche: FALLBACK_BRANCHE, fallback: true },
+  { id: "zorg", label: "Zorg", branche: FALLBACK_BRANCHE, fallback: true, alleenOfferte: true },
+  { id: "bouw", label: "Bouw & techniek", branche: FALLBACK_BRANCHE, fallback: true, alleenOfferte: true },
   { id: "overig", label: "Overig", branche: FALLBACK_BRANCHE, fallback: true },
 ];
+
+/** Herkent id of label van een sector die alleen via offerte mag (zorg, bouw). */
+export function isAlleenOfferteSector(idOfLabel: string | null | undefined): boolean {
+  if (!idOfLabel) return false;
+  const v = idOfLabel.trim();
+  return WIZARD_SECTOREN.some((s) => s.alleenOfferte === true && (s.id === v || s.label === v));
+}
 
 export interface KaartKeuze {
   sector: Sector;
