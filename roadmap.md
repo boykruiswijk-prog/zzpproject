@@ -42,3 +42,5 @@
 - [x] Eindtest terugbelverzoek (is_test, preview-mail)
 - [x] Screenshots 390/1280/1440 (open, dicht, cookiebanner, formulier)
 - [x] Build, vitest, typecheck, deno check, security-scan, bundelgrootte
+
+- [x] AFAS-klantcontracten inlezen in CRM (klant_contracten, Klanten & contracten-schermen, reconciliatie); facturatie blijft uit
