@@ -57,3 +57,4 @@
 - [x] Creditnota bij opzegging (concept, gekoppeld aan factuurnummer, onder hoofdschakelaar, Mijn ZP)
 - [x] Certificaatnummers koppelen aan klanten (klant_certificaten, klantdetail, zoeken/filter, opzegkoppeling, generator)
 - [ ] Tweede certificatenlijst partners (Circle8, De Staffing Groep, HeadFirst) — wacht op besluit Boy
+- [x] Urgent: nieuwe 1200×630-deelafbeelding, cachebrekende metadata en prerender-controle

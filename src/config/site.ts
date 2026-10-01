@@ -9,7 +9,7 @@ export const SITE_CONFIG = {
   klantenAantal: "5.000+",
   klantenAantalTekst: "5.000",
   logo: "https://zpzaken.nl/logo.png",
-  ogImage: "https://zpzaken.nl/og-image.jpg",
+  ogImage: "https://zpzaken.nl/og/zpzaken-og-2026.jpg",
   email: "info@zpzaken.nl",
   emailPrivacy: "privacy@zpzaken.nl",
   emailAdministratie: "administratie@zpzaken.nl",
