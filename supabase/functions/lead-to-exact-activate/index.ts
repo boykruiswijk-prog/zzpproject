@@ -648,7 +648,7 @@ Deno.serve(async (req) => {
     const nowIso = new Date().toISOString();
     const entry = {
       timestamp: nowIso,
-      action: `Factuur ${invRes.invoiceNumber ?? "(concept)"} aangemaakt (€${spec.bedrag.toFixed(2).replace(".", ",")})`,
+      action: factuurLogTekst(invRes.invoiceNumber, invRes.amount ?? spec.bedrag, (() => { const ps = plannerSpec(lead, spec.bedrag, retryOverride); return ps ? { start: ps.periodeStart, eind: ps.periodeEind, naarRato: !!retryOverride } : undefined; })()),
       admin_user_id: user.id,
       admin_email: user.email,
       exact_invoice_id: invRes.invoiceId,
@@ -1118,7 +1118,7 @@ Deno.serve(async (req) => {
   const log2 = exactInvoiceId && pakketSpec
     ? [...log1, {
         timestamp: exactInvoiceCreatedAt,
-        action: `Factuur ${exactInvoiceNumber ?? "(concept)"} aangemaakt (€${pakketSpec.bedrag.toFixed(2).replace(".", ",")})`,
+        action: factuurLogTekst(exactInvoiceNumber, exactInvoiceAmount ?? pakketSpec.bedrag, (() => { const ps = plannerSpec(lead, pakketSpec.bedrag, override); return ps ? { start: ps.periodeStart, eind: ps.periodeEind, naarRato: !!override } : undefined; })()),
         admin_user_id: user.id,
         admin_email: user.email,
         exact_invoice_id: exactInvoiceId,
