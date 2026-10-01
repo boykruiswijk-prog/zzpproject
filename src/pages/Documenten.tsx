@@ -80,7 +80,7 @@ export default function Documenten() {
       />
 
       {/* Sectie 1: Per branche */}
-      <section className="section-padding bg-background">
+       <section id="verzekeringsvoorwaarden" className="section-padding bg-background scroll-mt-20">
         <div className="container-wide">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-2xl md:text-3xl font-bold mb-2">Documenten per branche</h2>

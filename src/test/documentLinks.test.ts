@@ -2,6 +2,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { legacyRedirects } from "../config/legacyRedirects";
 
 // Elke /documenten/*.pdf-link in src en in de edge functions moet bestaan in public/documenten.
 function walk(dir: string, out: string[] = []): string[] {
@@ -25,5 +26,16 @@ describe("documentlinks", () => {
       }
     }
     expect(broken).toEqual([]);
+  });
+
+  it("beide korte polisvoorwaardenlinks komen uit bij de branchekaarten", () => {
+    const target = "/documenten#verzekeringsvoorwaarden";
+    const rules = readFileSync("public/_redirects", "utf8");
+    const page = readFileSync("src/pages/Documenten.tsx", "utf8");
+    for (const from of ["voorwaarden", "polisvoorwaarden"]) {
+      expect(legacyRedirects.find((redirect) => redirect.from === from)?.to).toBe(target);
+      expect(rules).toContain(`/${from}    ${target}    301`);
+    }
+    expect(page).toContain('id="verzekeringsvoorwaarden"');
   });
 });

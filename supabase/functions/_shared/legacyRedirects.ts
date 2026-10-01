@@ -71,7 +71,8 @@ export const legacyRedirects: { from: string; to: string }[] = [
   { from: "wie-zijn-wij", to: "/over-ons" },
   { from: "privacy", to: "/cookies" },
   { from: "privacyverklaring", to: "/cookies" },
-  { from: "voorwaarden", to: "/algemene-voorwaarden" },
+   { from: "voorwaarden", to: "/documenten#verzekeringsvoorwaarden" },
+   { from: "polisvoorwaarden", to: "/documenten#verzekeringsvoorwaarden" },
   { from: "disclaimer", to: "/faq" },
   { from: "kennis", to: "/kennisbank" },
 ];
