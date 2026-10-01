@@ -10,6 +10,8 @@ import { sendExactAlarm } from "../_shared/exactAlarm.ts";
 import { periodeTekst, regelOmschrijving } from "../_shared/factuurTekst.ts";
 import { planningsSleutel, planningStatusUitExact } from "../_shared/factuurPeriode.ts";
 import { getBavGlAccountId } from "../_shared/exactGl.ts";
+import { exactRegelBedrag } from "../_shared/factuurTekst.ts";
+import { berekenOpzegCredit } from "../_shared/creditOpzegging.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -81,6 +83,22 @@ Deno.serve(async (req) => {
   const rijen = (kand ?? []) as any[];
   const sam = samenvatting(rijen);
 
+  // Creditnota's bij opzegging: herbeoordelen en bedrag berekenen (alleen database, nooit Exact).
+  await admin.rpc("herbeoordeel_opzeg_credits");
+  const { data: creditRijen } = await admin.from("factuur_credit_planning").select("*").order("aangemaakt_op");
+  const credits: any[] = [];
+  for (const c of creditRijen ?? []) {
+    if (c.status === "te_maken" && c.planning_ids?.length) {
+      const { data: pl } = await admin.from("factuur_planning").select("periode_start,periode_eind,bedrag,exact_item_id,gl_code").in("id", c.planning_ids);
+      const ber = berekenOpzegCredit(c.einddatum, (pl ?? []) as any[]);
+      if (Number(c.bedrag) !== ber.bedrag) await admin.from("factuur_credit_planning").update({ bedrag: ber.bedrag, berekening: ber }).eq("id", c.id);
+      c.bedrag = ber.bedrag; c.berekening = ber; c._item = pl?.[0]?.exact_item_id ?? null; c._gl = pl?.[0]?.gl_code ?? null;
+    }
+    credits.push(c);
+  }
+  const creditOverzicht = credits.map((c) => ({ id: c.id, sleutel: c.creditsleutel, status: c.status, melding: c.melding, bedrag: c.bedrag,
+    origineel_factuurnummer: c.origineel_factuurnummer, credit_vanaf: c.credit_vanaf, credit_tm: c.credit_tm, is_test: c.is_test, klant_contract_id: c.klant_contract_id }));
+
   // Hoofdschakelaar: vers uit de database, in deze run.
   const { data: fcfg } = await admin.from("facturatie_config").select("*").eq("id", 1).maybeSingle();
   const live = actie === "dagrun" && fcfg?.facturatie_actief === true;
@@ -90,7 +108,7 @@ Deno.serve(async (req) => {
       modus: "proef", trigger_type: `${trigger}:${actie}`, aantal_kandidaten: rijen.length,
       aantal_geblokkeerd: sam.geblokkeerd.aantal, bedrag: sam.totaal.bedrag, detail: { van, tot, samenvatting: sam },
     });
-    return json({ modus: "proef", schrijft_naar_exact: false, van, tot, samenvatting: sam, regels: actie === "proefrun" ? rijen : undefined });
+    return json({ modus: "proef", schrijft_naar_exact: false, van, tot, samenvatting: sam, regels: actie === "proefrun" ? rijen : undefined, creditnotas: creditOverzicht });
   }
 
   // ── LIVE (alleen dagrun met schakelaar AAN) ─────────────────────────
@@ -185,10 +203,50 @@ Deno.serve(async (req) => {
         break; // stop de run; niets half
       }
     }
+
+    // 3) Creditnota's: status bijwerken (lezen) en nieuwe concepten (Type 8021). Testrecords nooit naar Exact.
+    for (const c of credits.filter((x) => ["concept_aangemaakt", "te_laat", "geclaimd"].includes(x.status) && !x.is_test)) {
+      const gevonden = (await zoekOpSleutel(c.creditsleutel, "Remarks"))[0] ?? null;
+      if (c.status === "geclaimd" && !gevonden) continue;
+      const nieuw = planningStatusUitExact(gevonden?.Status, !!gevonden, String(c.concept_op ?? c.aangemaakt_op), vandaag, fcfg?.verwerk_termijn_werkdagen ?? 5);
+      const upd: any = { laatst_gecontroleerd_op: new Date().toISOString(), exact_status: gevonden?.Status ?? null };
+      if (gevonden) { upd.exact_invoice_id = gevonden.InvoiceID; upd.exact_invoice_number = gevonden.InvoiceNumber != null ? String(gevonden.InvoiceNumber) : null; }
+      if (nieuw !== c.status) {
+        upd.status = nieuw; if (nieuw === "verwerkt") upd.verwerkt_op = new Date().toISOString();
+        await admin.from("sensitive_audit_log").insert({ target_table: "klant_contracten", target_id: c.klant_contract_id, actie: "creditnota_status", veld: "factuur_credit_planning.status", oude_waarde: c.status, nieuwe_waarde: nieuw, details: { credit_id: c.id } });
+      }
+      await admin.from("factuur_credit_planning").update(upd).eq("id", c.id);
+    }
+    for (const c of credits.filter((x) => x.status === "te_maken" && !x.is_test && Number(x.bedrag) > 0)) {
+      const { data: claim } = await admin.from("factuur_credit_planning").update({ status: "geclaimd" }).eq("id", c.id).eq("status", "te_maken").select("id").maybeSingle();
+      if (!claim) continue;
+      try {
+        if ((await zoekOpSleutel(c.creditsleutel, "Remarks")).length) throw new Error("creditsleutel bestaat al in Exact");
+        if (!c.exact_account_id || !c._item || !c.origineel_factuurnummer) throw new Error("creditnota mist account, artikel of factuurnummer");
+        const gl = c._gl ? (glCache[c._gl] ??= await getBavGlAccountId(admin, cfg, token)) : null;
+        const regel: any = { Item: c._item, ...exactRegelBedrag(8021, Number(c.bedrag)), VATCode: "0",
+          Description: regelOmschrijving("restitutie_opzegging", c.credit_vanaf, c.credit_tm),
+          StartTime: `${c.credit_vanaf}T00:00:00`, EndTime: `${c.credit_tm}T00:00:00` };
+        if (gl) regel.GLAccount = gl;
+        const nu = `${vandaag}T00:00:00`;
+        const payload: any = { InvoiceTo: c.exact_account_id, OrderedBy: c.exact_account_id, Journal: "70", PaymentCondition: "IN",
+          Type: 8021, Status: 20, InvoiceDate: nu, OrderDate: nu, YourRef: c.origineel_factuurnummer, Remarks: c.creditsleutel,
+          Description: `Creditnota bij factuur ${c.origineel_factuurnummer}`.slice(0, 60), SalesInvoiceLines: [regel] };
+        const r = await exact("salesinvoice/SalesInvoices", { method: "POST", body: JSON.stringify(payload) });
+        if (!r.ok) {
+          if (r.status >= 500) throw new Error(`credit POST onzeker HTTP ${r.status}`);
+          await admin.from("factuur_credit_planning").update({ status: "fout", foutmelding: (await r.text()).slice(0, 300) }).eq("id", c.id);
+          fouten.push(`credit HTTP ${r.status}`); continue;
+        }
+        const d = (await r.json())?.d ?? {};
+        await admin.from("factuur_credit_planning").update({ status: "concept_aangemaakt", concept_op: new Date().toISOString(), exact_invoice_id: d.InvoiceID ?? null, exact_status: 20 }).eq("id", c.id);
+        await admin.from("sensitive_audit_log").insert({ target_table: "klant_contracten", target_id: c.klant_contract_id, actie: "creditnota_concept_aangemaakt", veld: "factuur_credit_planning", nieuwe_waarde: c.creditsleutel, details: { credit_id: c.id, bedrag: c.bedrag, origineel: c.origineel_factuurnummer, invoice_id: d.InvoiceID } });
+      } catch (e) { fouten.push(String(e).slice(0, 200)); break; }
+    }
   } catch (e) { fouten.push(String(e).slice(0, 200)); }
 
   await admin.from("factuur_planner_runs").insert({ modus: "live", trigger_type: `${trigger}:${actie}`, aantal_kandidaten: rijen.length,
     aantal_geblokkeerd: sam.geblokkeerd.aantal, aantal_aangemaakt: aangemaakt, bedrag: sam.klaar.bedrag, status: fouten.length ? "fout" : "ok", detail: { fouten } });
   if (fouten.length) await sendExactAlarm(admin, ALARM, "factuur-planner", null);
-  return json({ modus: "live", aangemaakt, fouten });
+  return json({ modus: "live", aangemaakt, fouten, creditnotas: creditOverzicht });
 });
