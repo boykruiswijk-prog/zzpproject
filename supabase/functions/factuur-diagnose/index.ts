@@ -93,7 +93,18 @@ Deno.serve(async (req) => {
       const res: any = { calls, factuurnummer: inv.InvoiceNumber, status: inv.Status, xmldownload: { http: pdf.status, type: pdf.headers.get("content-type"), bytes: buf.length, is_pdf: magic === "%PDF-" } };
       if (magic !== "%PDF-") {
         const d = await get(`${baseUrl}/api/v1/${div}/documents/Documents?$select=ID,Type,TypeDescription,Subject&$filter=${encodeURIComponent(`SalesInvoiceNumber eq ${inv.InvoiceNumber}`)}&$top=5`);
-        res.documents = { http: d.status, body: (await d.text()).slice(0, 500) };
+        const doc = (await d.json().catch(() => null))?.d?.results?.[0] ?? null;
+        res.documents = { http: d.status, gevonden: !!doc, type: doc?.Type };
+        if (doc?.ID) {
+          const a = await get(`${baseUrl}/api/v1/${div}/documents/DocumentAttachments?$select=ID,FileName,FileSize,Url&$filter=${encodeURIComponent(`Document eq guid'${doc.ID}'`)}`);
+          const att = (await a.json().catch(() => null))?.d?.results?.[0] ?? null;
+          res.attachment = { http: a.status, bestandsnaam: att?.FileName, grootte: att?.FileSize };
+          if (att?.Url) {
+            const f = await get(att.Url, "application/pdf");
+            const b = new Uint8Array(await f.arrayBuffer());
+            res.attachment_download = { http: f.status, type: f.headers.get("content-type"), bytes: b.length, is_pdf: new TextDecoder().decode(b.slice(0, 5)) === "%PDF-" };
+          }
+        }
       }
       return json(res);
     }
