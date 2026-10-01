@@ -99,7 +99,11 @@ Deno.serve(async (req) => {
           const a = await get(`${baseUrl}/api/v1/${div}/documents/DocumentAttachments?$select=ID,FileName,FileSize,Url&$filter=${encodeURIComponent(`Document eq guid'${doc.ID}'`)}`);
           const aj = (await a.json().catch(() => null))?.d; const att = aj?.results?.[0] ?? (Array.isArray(aj) ? aj[0] : null);
           res.attachment = { http: a.status, bestandsnaam: att?.FileName, grootte: att?.FileSize };
+          res.alle_bijlagen = (aj?.results ?? aj ?? []).map((x: any) => ({ naam: x.FileName, grootte: x.FileSize }));
           if (att?.Url) {
+            const f2 = await get(`${att.Url}&Download=1`, "*/*");
+            const b2 = new Uint8Array(await f2.arrayBuffer());
+            res.download1 = { http: f2.status, type: f2.headers.get("content-type"), bytes: b2.length, begin: new TextDecoder().decode(b2.slice(0, 5)) };
             const f = await get(att.Url, "application/pdf");
             const b = new Uint8Array(await f.arrayBuffer());
             res.attachment_download = { http: f.status, type: f.headers.get("content-type"), bytes: b.length, is_pdf: new TextDecoder().decode(b.slice(0, 5)) === "%PDF-" };
