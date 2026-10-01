@@ -21,6 +21,7 @@ import { ReadingProgress } from "@/components/kennisbank/ReadingProgress";
 import { TableOfContents } from "@/components/kennisbank/TableOfContents";
 import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
 import { resolveFiscaleTokens } from "@/lib/fiscaleTokens";
+import { SITE_CONFIG } from "@/config/site";
 
 const BAV_AVB_SLUG = "zp-zaken-zorgeloos-zzpen-goedkoopste-bav-avb";
 
@@ -48,7 +49,7 @@ const CATEGORY_SLUGS: Record<string, string> = {
   "Nieuws": "wet-en-regelgeving",
 };
 
-const FALLBACK_OG_IMAGE = "https://zpzaken.nl/og-image.jpg";
+const FALLBACK_OG_IMAGE = SITE_CONFIG.ogImage;
 
 function stripMarkdown(s: string) {
   return s
@@ -196,7 +197,9 @@ export default function ArtikelDetail() {
   const categorySlug = CATEGORY_SLUGS[article.category];
   const articleUrl = `https://zpzaken.nl/kennisbank/${article.slug}`;
   const wordCount = countWords(article.content);
-  const ogImage = article.image_url || FALLBACK_OG_IMAGE;
+  // Afmetingen van oudere artikelafbeeldingen zijn niet betrouwbaar vastgelegd.
+  // Gebruik daarom de gegarandeerde 1200×630-deelafbeelding voor previews.
+  const ogImage = FALLBACK_OG_IMAGE;
   const metaDescription = article.seo_description || makeFallbackDescription(article.content, article.excerpt);
   const seoTitle = article.seo_title || article.title;
   // Eén merknaam achteraan, max 60 tekens; zie formatPageTitle.
@@ -258,6 +261,10 @@ export default function ArtikelDetail() {
         <meta property="og:description" content={metaDescription} />
         <meta property="og:url" content={articleUrl} />
         <meta property="og:image" content={ogImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:alt" content="ZP Zaken – BAV & AVB voor zzp'ers" />
         <meta property="og:locale" content="nl_NL" />
         <meta property="article:published_time" content={publishedAt} />
         <meta property="article:modified_time" content={(article as any).content_reviewed_at || publishedAt} />

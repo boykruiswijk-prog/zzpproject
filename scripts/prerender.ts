@@ -35,39 +35,6 @@ import {
 
 const LANGS = ["en", "de", "fr"] as const;
 
-/**
- * Pagina-specifieke deelafbeelding per route, op basis van de bronbestandsnaam
- * in src/assets. De gehashte bestandsnaam in dist/assets wordt bij de build
- * opgezocht; is die er niet, dan valt de route terug op SITE_CONFIG.ogImage.
- */
-const ROUTE_OG_IMAGES: Record<string, string> = {
-  "/": "hero-corporate",
-  "/verzekeringen": "service-verzekeringen",
-  "/aov": "service-verzekeringen",
-  "/creditcontrol": "creditcontrol-hero",
-  "/over-ons": "team-cheers",
-  "/historie": "zp-logo-glass",
-  "/partners": "office-logo",
-  "/contact": "team-boy-calling",
-  "/zo-werken-wij": "zp-boy-laptop",
-  "/waarom-zp-zaken": "office-coffee",
-};
-
-/** Gehashte assetnaam in dist/assets voor een bronbestandsnaam zonder extensie. */
-function buildAssetLookup(distDir: string): Map<string, string> {
-  const map = new Map<string, string>();
-  const dir = path.join(distDir, "assets");
-  if (!fs.existsSync(dir)) return map;
-  for (const file of fs.readdirSync(dir)) {
-    // Alleen afbeeldingen: gelijknamige JS-chunks mogen nooit als og-image
-    // gekozen worden.
-    if (!/\.(webp|jpg|jpeg|png)$/i.test(file)) continue;
-    const base = file.replace(/-[A-Za-z0-9_]{8,}\.[a-z0-9]+$/, "");
-    if (base && !map.has(base)) map.set(base, `/assets/${file}`);
-  }
-  return map;
-}
-
 /** Belangrijkste pagina's in het statische fallback-blok. */
 const FALLBACK_LINKS: Array<{ href: string; label: string }> = [
   { href: "/", label: "Home" },
@@ -201,6 +168,12 @@ function redirectStubHtml(from: string, to: string): string {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Verplaatst naar ${esc(to)} | ${esc(SITE_CONFIG.name)}</title>
     <meta name="description" content="Deze pagina is verplaatst. Je wordt doorgestuurd naar ${esc(target)}." />
+    <meta property="og:image" content="${esc(SITE_CONFIG.ogImage)}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:alt" content="ZP Zaken – BAV &amp; AVB voor zzp'ers" />
+    <meta name="twitter:image" content="${esc(SITE_CONFIG.ogImage)}" />
     <link rel="canonical" href="${esc(target)}" />
     <meta http-equiv="refresh" content="0;url=${esc(to)}" />
     <script>window.location.replace(${JSON.stringify(to)});</script>
@@ -356,15 +329,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
     return;
   }
   const template = fs.readFileSync(templatePath, "utf8");
-  const assets = buildAssetLookup(distDir);
   const written: string[] = [];
-
-  /** Absolute URL van de route-specifieke deelafbeelding, of undefined. */
-  const ogImageFor = (routePath: string): string | undefined => {
-    const base = ROUTE_OG_IMAGES[routePath];
-    const asset = base ? assets.get(base) : undefined;
-    return asset ? `${SITE_CONFIG.url}${asset}` : undefined;
-  };
 
   const write = (routePath: string, html: string) => {
     const dir = path.join(distDir, routePath === "/" ? "." : routePath.replace(/^\//, ""));
@@ -408,7 +373,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
         title: formatPageTitle(route.title),
         description: route.description,
         ogType: "website",
-        image: ogImageFor(route.path),
+        image: SITE_CONFIG.ogImage,
         schemas: schemasFor(route.path),
         fallback: renderFallback(route.h1, route.intro, extra),
       }),
@@ -439,7 +404,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
         title: formatPageTitle(titel),
         description,
         ogType: "article",
-        image: article.image_url || undefined,
+        image: SITE_CONFIG.ogImage,
         schemas: [
           breadcrumbForPath("/kennisbank") ?? {},
           articleSchema({
@@ -448,7 +413,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
             slug: article.slug,
             datePublished,
             dateModified: article.content_reviewed_at || datePublished,
-            image: article.image_url || undefined,
+            image: SITE_CONFIG.ogImage,
             category: article.category || "Kennisbank",
           }),
           ...(artikelFaqs.length ? [faqSchema(artikelFaqs)] : []),
