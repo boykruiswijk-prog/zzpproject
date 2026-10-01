@@ -1,3 +1,6 @@
+import { useToonTestrecords } from "@/hooks/useToonTestrecords";
+import { ToonTestrecordsSchakelaar } from "@/components/admin/ToonTestrecordsSchakelaar";
+import { statusLabel } from "@/lib/statusLabels";
 import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
@@ -64,6 +67,7 @@ const formatDate = formatDateNL;
 
 export default function ServiceAanvragen() {
   const { toast } = useToast();
+  const { toonTest } = useToonTestrecords();
   const [items, setItems] = useState<Aanvraag[]>([]);
   const [loading, setLoading] = useState(true);
   const [typeFilter, setTypeFilter] = useState<string>("alle");
@@ -80,12 +84,12 @@ export default function ServiceAanvragen() {
     if (error) {
       toast({ title: "Fout bij laden", description: error.message, variant: "destructive" });
     } else {
-      setItems((data ?? []) as unknown as Aanvraag[]);
+      setItems(((data ?? []) as any[]).filter((r) => toonTest || !r.is_test) as unknown as Aanvraag[]);
     }
     setLoading(false);
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [toonTest]);
 
   const filtered = items.filter((it) => {
     if (typeFilter !== "alle" && it.type !== typeFilter) return false;
@@ -206,7 +210,7 @@ export default function ServiceAanvragen() {
                   <td className="p-3">{it.voornaam} {it.achternaam}</td>
                   <td className="p-3 font-mono text-xs">{it.polisnummer}</td>
                   <td className="p-3">{it.email}</td>
-                  <td className="p-3"><Badge className={STATUS_COLOR[it.status] || ""}>{it.status}</Badge></td>
+                  <td className="p-3"><Badge className={`${STATUS_COLOR[it.status] || ""} whitespace-nowrap`}>{STATUS.find((s) => s.value === it.status)?.label ?? statusLabel(it.status)}</Badge></td>
                   <td className="p-3 text-right" onClick={(e) => e.stopPropagation()}>
                     <Select value={it.status} onValueChange={(v) => updateStatus(it.id, v)}>
                       <SelectTrigger className="w-36 h-8 inline-flex"><SelectValue /></SelectTrigger>

@@ -1,3 +1,5 @@
+import { useToonTestrecords } from "@/hooks/useToonTestrecords";
+import { ToonTestrecordsSchakelaar } from "@/components/admin/ToonTestrecordsSchakelaar";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminLayout } from "@/components/admin/AdminLayout";
@@ -44,10 +46,10 @@ export default function Activiteiten() {
         .select("*")
         .order("aangemaakt_op", { ascending: false })
         .limit(500);
-      if (!error && data) setRows(data as ActiviteitRow[]);
+      if (!error && data) setRows((data as any[]).filter((r) => toonTest || !r.is_test) as ActiviteitRow[]);
       setLoading(false);
     })();
-  }, []);
+  }, [toonTest]);
 
   const medewerkers = useMemo(() => {
     const map = new Map<string, string>();

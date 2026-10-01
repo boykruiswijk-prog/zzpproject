@@ -76,16 +76,16 @@ export interface DbaCheckField {
   created_at: string;
 }
 
-export function useDbaChecks() {
+export function useDbaChecks(toonTest = false) {
   return useQuery({
-    queryKey: ["dba-checks"],
+    queryKey: ["dba-checks", { toonTest }],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("dba_checks")
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data as unknown as DbaCheck[];
+      return ((data ?? []) as any[]).filter((r) => toonTest || !r.is_test) as unknown as DbaCheck[];
     },
   });
 }

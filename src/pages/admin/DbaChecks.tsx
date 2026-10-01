@@ -1,3 +1,5 @@
+import { useToonTestrecords } from "@/hooks/useToonTestrecords";
+import { ToonTestrecordsSchakelaar } from "@/components/admin/ToonTestrecordsSchakelaar";
 import { Link } from "react-router-dom";
 import { formatDateNL } from "@/lib/dateFormat";
 import { AdminLayout } from "@/components/admin/AdminLayout";
@@ -32,7 +34,8 @@ const statusColors: Record<string, string> = {
 };
 
 export default function AdminDbaChecks() {
-  const { data: checks, isLoading } = useDbaChecks();
+  const { toonTest } = useToonTestrecords();
+  const { data: checks, isLoading } = useDbaChecks(toonTest);
   const { isAdmin } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();

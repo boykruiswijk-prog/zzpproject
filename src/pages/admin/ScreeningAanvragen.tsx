@@ -1,3 +1,5 @@
+import { useToonTestrecords } from "@/hooks/useToonTestrecords";
+import { ToonTestrecordsSchakelaar } from "@/components/admin/ToonTestrecordsSchakelaar";
 import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
@@ -50,13 +52,13 @@ export default function AdminScreeningAanvragen() {
     const load = async () => {
       const { data, error } = await supabase
         .from("screening_aanvragen")
-        .select("id, voornaam, achternaam, email, bedrijfsnaam, screening_type, status, otentica_status, aangemeld_op")
+        .select("id, voornaam, achternaam, email, bedrijfsnaam, screening_type, status, otentica_status, aangemeld_op, is_test")
         .order("aangemeld_op", { ascending: false });
-      if (!error && data) setAanvragen(data as ScreeningAanvraag[]);
+      if (!error && data) setAanvragen((data as any[]).filter((r) => toonTest || !r.is_test) as ScreeningAanvraag[]);
       setLoading(false);
     };
     load();
-  }, []);
+  }, [toonTest]);
 
   return (
     <AdminLayout>
