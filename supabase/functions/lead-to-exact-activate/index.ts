@@ -12,6 +12,7 @@ import { mandaatkenmerkVoor } from "../_shared/sepaMachtiging.ts";
 import { autoInvitePortalLead } from "../_shared/portalAccess.ts";
 import { factuurReferentie, kopOmschrijving, regelNotities, regelOmschrijving } from "../_shared/factuurTekst.ts";
 import { landcodeVoor } from "../_shared/landcode.ts";
+import { zetInPlanner, type ContractSpec } from "../_shared/klantContractActivatie.ts";
 
 // SEPA-mandaat in Exact. Waarden geverifieerd in de Exact Online REST-documentatie:
 // https://start.exactonline.nl/docs/HlpRestAPIResourcesDetails.aspx?name=CashflowDirectDebitMandates
@@ -75,6 +76,19 @@ async function captureExactError(label: string, res: Response): Promise<{ summar
   };
   const summary = `${label} ${res.status} ${res.statusText} — ${bodyText.slice(0, 600)}`;
   return { summary, detail };
+}
+
+// deno-lint-ignore no-explicit-any
+// Eerste periode → contractregel voor de factuurplanner (vervangt de oude maandcron-log).
+function plannerSpec(lead: any, bedragJaar: number, override?: { periodStart: string; periodEnd: string }): ContractSpec | null {
+  if (isMaandPolis(lead.gekozen_pakket)) {
+    if (!override) return null;
+    return { cyclus: "maand", itemcode: "100M", bedrag_per_periode: getMaandprijs(lead.gekozen_pakket), periodeStart: override.periodStart, periodeEind: override.periodEnd };
+  }
+  const ingang = lead.ingangsdatum ? String(lead.ingangsdatum).slice(0, 10) : null;
+  if (!ingang) return null;
+  const eind = String(lead.polis_einddatum ?? calcPolisEinddatum(ingang)).slice(0, 10);
+  return { cyclus: "jaar", itemcode: "100J", bedrag_per_periode: bedragJaar, periodeStart: ingang, periodeEind: eind };
 }
 
 // ── Fase 2: factuur-aanmaak helpers ────────────────────────────────────────
@@ -649,13 +663,12 @@ Deno.serve(async (req) => {
       exact_invoice_created_at: nowIso,
       activatie_log: newLog,
     }).eq("id", leadId);
-    if (isMaandPolis(lead.gekozen_pakket) && retryOverride) {
-      await supabase.from("monthly_invoices_log").upsert({
-        lead_id: leadId, factuur_jaar: Number(retryOverride.periodStart.slice(0, 4)), factuur_maand: Number(retryOverride.periodStart.slice(5, 7)),
-        periode_start: retryOverride.periodStart, periode_eind: retryOverride.periodEnd, polis_einddatum: lead.polis_einddatum ?? null,
-        bedrag: invRes.amount, status: "success", exact_invoice_id: invRes.invoiceId, exact_invoice_number: invRes.invoiceNumber,
-        payload: { source: "invoice_retry_instap" },
-      }, { onConflict: "lead_id,factuur_jaar,factuur_maand" });
+    {
+      const ps = plannerSpec(lead, spec.bedrag, retryOverride);
+      if (ps) {
+        const pr = await zetInPlanner(supabase, lead, lead.exact_account_id, ps);
+        if (!pr.ok) await logSync(supabase, { trigger_type: "planner_contract", status: "error", lead_id: leadId, admin_user_id: user.id, error_message: pr.fout });
+      }
     }
     await logSync(supabase, {
       trigger_type: "invoice_retry", status: "success",
@@ -1018,7 +1031,7 @@ Deno.serve(async (req) => {
     });
 
     // Maandpolis-instap: pro-rata factuur voor periode vandaag → laatste van die maand.
-    // De volle maandfacturen vanaf 1ste volgende maand komen via monthly-invoices-cron.
+    // Vervolgperioden komen via de factuurplanner (klant_contracten).
     let override: Parameters<typeof createExactInvoice>[0]["override"] = undefined;
     if (isMaandPolis(lead.gekozen_pakket)) {
       const startStr = String(lead.ingangsdatum).slice(0, 10);
@@ -1072,18 +1085,11 @@ Deno.serve(async (req) => {
         },
       });
 
-      // Bij maandpolis: log instap-maand in monthly_invoices_log zodat cron deze overslaat.
-      if (isMaandPolis(lead.gekozen_pakket) && override) {
-        const jaar = parseInt(override.periodStart.slice(0, 4), 10);
-        const maand = parseInt(override.periodStart.slice(5, 7), 10);
-        await supabase.from("monthly_invoices_log").upsert({
-          lead_id: leadId, factuur_jaar: jaar, factuur_maand: maand,
-          periode_start: override.periodStart, periode_eind: override.periodEnd,
-          polis_einddatum: lead.polis_einddatum ?? null,
-          bedrag: override.amount, status: "success",
-          exact_invoice_id: exactInvoiceId, exact_invoice_number: exactInvoiceNumber,
-          payload: { source: "lead_activation_instap" },
-        }, { onConflict: "lead_id,factuur_jaar,factuur_maand" });
+      // Klant meenemen in de factuurplanner vanaf de tweede periode.
+      const ps = plannerSpec(lead, pakketSpec.bedrag, override);
+      if (ps) {
+        const pr = await zetInPlanner(supabase, lead, exactAccountId, ps);
+        if (!pr.ok) await logSync(supabase, { trigger_type: "planner_contract", status: "error", lead_id: leadId, admin_user_id: user.id, error_message: pr.fout });
       }
     }
   }
