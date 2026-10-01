@@ -19,9 +19,6 @@ export default function PortalOverview() {
 
   const activePolicy = policies?.[0];
   const totalInvoices = invoices?.length || 0;
-  const openCount = invoices?.filter((i) => i.status === "open").length || 0;
-  const paidCount = invoices?.filter((i) => i.status === "betaald").length || 0;
-  const overdueCount = invoices?.filter((i) => i.status === "vervallen").length || 0;
 
   const invoicesLabel =
     totalInvoices === 0
@@ -68,19 +65,6 @@ export default function PortalOverview() {
               <p className="text-xs text-muted-foreground mt-1">
                 <Link to="/portal/facturen" className="hover:underline">{invoicesLabel}</Link>
               </p>
-              {totalInvoices > 0 && (
-                <div className="flex flex-wrap gap-2 mt-3 text-xs">
-                  {openCount > 0 && (
-                    <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">{openCount} open</span>
-                  )}
-                  {paidCount > 0 && (
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">{paidCount} betaald</span>
-                  )}
-                  {overdueCount > 0 && (
-                    <span className="px-2 py-0.5 rounded-full bg-red-100 text-red-800">{overdueCount} vervallen</span>
-                  )}
-                </div>
-              )}
             </CardContent>
           </Card>
 
