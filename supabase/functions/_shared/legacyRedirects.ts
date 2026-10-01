@@ -134,6 +134,20 @@ export const legacyRedirects: { from: string; to: string }[] = [
   { from: "verheij-groep-bv", to: "/over-ons" },
   { from: "test-2", to: "/" },
 
+  // Standaard WordPress-patronen
+  { from: "feed", to: "/kennisbank" },
+  { from: "comments/feed", to: "/kennisbank" },
+  { from: "kennisbank/feed", to: "/kennisbank" },
+  { from: "category/belastingen", to: "/kennisbank/belastingen" },
+  { from: "category/fiscaal", to: "/kennisbank/belastingen" },
+  { from: "category/financien", to: "/kennisbank/financien" },
+  { from: "category/ondernemen", to: "/kennisbank/ondernemen" },
+  { from: "category/wet-en-regelgeving", to: "/kennisbank/wet-en-regelgeving" },
+  { from: "category/regelgeving", to: "/kennisbank/wet-en-regelgeving" },
+  { from: "category/wetgeving", to: "/kennisbank/wet-en-regelgeving" },
+  { from: "tag/zzp", to: "/kennisbank" },
+  { from: "author/boy-kruiswijk", to: "/over-ons" },
+  { from: "author/admin", to: "/over-ons" },
   // --- Ronde 3 (SEO-audit 1-10-2026): alle oude URL's uit het internetarchief ---
   // Gegenereerd: artikel > onderwerp-pagina > kennisbankcategorie > /kennisbank.
   { from: "10-tips-voor-een-digitaal-veilig-bedrijf", to: "/kennisbank" },
