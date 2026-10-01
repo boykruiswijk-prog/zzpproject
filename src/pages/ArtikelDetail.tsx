@@ -239,7 +239,7 @@ export default function ArtikelDetail() {
     : null;
 
   const isBavAvb = article.slug === BAV_AVB_SLUG;
-  const commercialCategories = ["Verzekeringen", "Belastingen", "Fiscaal", "Financiën"];
+  const commercialCategories = ["Verzekeringen", "Belastingen", "Fiscaal", "Financiën", "Wetgeving"];
   const showCommercialCTA = commercialCategories.includes(article.category);
 
   return (

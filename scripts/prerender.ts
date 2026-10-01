@@ -315,9 +315,12 @@ async function fetchPublishedArticles(env: Record<string, string>): Promise<Publ
   }
   const url =
     `${base}/rest/v1/articles` +
-    `?select=slug,title,excerpt,content,category,published_at,image_url,seo_title,seo_description` +
+    `?select=slug,title,excerpt,content,category,published_at,image_url,seo_title,seo_description,content_reviewed_at` +
     `&is_published=eq.true&order=published_at.desc&limit=1000`;
-  const res = await fetch(url, { headers: { apikey: key, Authorization: `Bearer ${key}` } });
+  // Altijd vers uit de database: geen HTTP-cache tussen builds.
+  const res = await fetch(url, {
+    headers: { apikey: key, Authorization: `Bearer ${key}`, "Cache-Control": "no-cache" },
+  });
   if (!res.ok) throw new Error(`REST ${res.status}: ${(await res.text()).slice(0, 200)}`);
   return (await res.json()) as PublishedArticle[];
 }
@@ -512,11 +515,12 @@ export async function prerender(distDir: string, env: Record<string, string> = {
     ...(seoRoutes as SeoRoute[])
       .filter((r) => !isExcluded(r.path))
       .map((r) => ({ loc: `${SITE_CONFIG.url}${r.path === "/" ? "/" : r.path}`, prio: "0.8" })),
-    ...articles.map((a) => ({
-      loc: `${SITE_CONFIG.url}/kennisbank/${a.slug}`,
-      prio: "0.7",
-    })),
-  ];
+    ...articles.map((a) => {
+      const dates = [a.content_reviewed_at, a.published_at].filter(Boolean) as string[];
+      const lastmod = dates.length ? dates.sort().reverse()[0].slice(0, 10) : today;
+      return { loc: `${SITE_CONFIG.url}/kennisbank/${a.slug}`, prio: "0.7", lastmod };
+    }),
+  ] as { loc: string; prio: string; lastmod?: string }[];
   const seen = new Set<string>();
   const sitemapXml = [
     '<?xml version="1.0" encoding="UTF-8"?>',
@@ -525,7 +529,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
       .filter((e) => (seen.has(e.loc) ? false : (seen.add(e.loc), true)))
       .map(
         (e) =>
-          `  <url><loc>${esc(e.loc)}</loc><lastmod>${today}</lastmod><priority>${e.prio}</priority></url>`,
+          `  <url><loc>${esc(e.loc)}</loc><lastmod>${e.lastmod || today}</lastmod><priority>${e.prio}</priority></url>`,
       ),
     "</urlset>",
     "",
