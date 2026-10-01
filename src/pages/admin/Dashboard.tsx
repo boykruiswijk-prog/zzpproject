@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { ExactKoppelingAlarm } from "@/components/admin/ExactKoppelingAlarm";
 import { CollectiefAanmeldingenTeller } from "@/components/admin/CollectiefAanmeldingenTeller";
+import { ZekerChatKpi } from "@/components/admin/ZekerChatKpi";
 
 
 export default function AdminDashboard() {
@@ -88,6 +89,7 @@ export default function AdminDashboard() {
         </Alert>
 
         <MFAManagement />
+        <ZekerChatKpi />
         {isSupervisor && <CollectiefAanmeldingenTeller />}
         {isSupervisor && <SupervisorKpiPanel />}
         <DashboardStats />
