@@ -1,5 +1,6 @@
 import { useLocation, Link } from "react-router-dom";
-import { Phone } from "lucide-react";
+import { MessageCircle, Phone } from "lucide-react";
+import { zetZekerOpen } from "@/components/zeker/zekerStore";
 import { trackPhone } from "@/lib/tracking";
 
 const HIDDEN_PATHS = ["/contact", "/verzekeringen"];
@@ -25,11 +26,20 @@ export function StickyMobileCTA() {
         <Phone className="h-4 w-4" />
         020 - 457 3077
       </a>
+      <button
+        type="button"
+        onClick={() => zetZekerOpen(true)}
+        aria-label="Open chat met Zeker, de digitale assistent"
+        className="flex w-[72px] shrink-0 flex-col items-center justify-center gap-0.5 border-x border-background/20 bg-primary text-xs text-primary-foreground"
+      >
+        <MessageCircle className="h-4 w-4" aria-hidden="true" />
+        Chat
+      </button>
       <Link
         to="/contact"
         className="flex flex-1 items-center justify-center bg-accent text-center text-accent-foreground"
       >
-        Vrijblijvend gesprek →
+        Gratis gesprek →
       </Link>
     </div>
   );
