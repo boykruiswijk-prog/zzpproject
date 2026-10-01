@@ -58,3 +58,11 @@
 - [x] Certificaatnummers koppelen aan klanten (klant_certificaten, klantdetail, zoeken/filter, opzegkoppeling, generator)
 - [ ] Tweede certificatenlijst partners (Circle8, De Staffing Groep, HeadFirst) — wacht op besluit Boy
 - [x] Urgent: nieuwe 1200×630-deelafbeelding, cachebrekende metadata en prerender-controle
+
+## SEO-sprint 1 (01-10-2026)
+- [x] Volledige SSR-prerender, woordenscript (scripts/check-prerender-woorden.py)
+- [x] Soft-404 noindex, NotFound NL, stubs noindex + artikel-slug-stubs
+- [x] Artikelen: zp-zaken → nieuwe slug, links hersteld, linkcheck-test
+- [x] Categorieën (5), /kennisbank/verzekeringen, CTA's, Lees meer, /diensten-links
+- [x] E-E-A-T-datum, Hiscox, claims, meta, sitemap, taal, schema's
+- [ ] Wacht op Boy: foundingDate, persoon als auteur, slug "goedkoopste", claim "goedkoopste van Nederland" in welke-verzekeringen-zzp, tekst nieuw AVB-artikel
