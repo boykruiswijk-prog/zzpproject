@@ -35,8 +35,14 @@ import { normaliseerPostcode } from "@/lib/adresNormalisatie";
 const formatBedrag = (n: number) => `€${n.toLocaleString("nl-NL")}`;
 
 const TOTAL_STEPS = 5;
+const DIRECT_DEKKING_USP_INDEX = 2;
 
 type ValidationErrors = Record<string, string>;
+
+export function zichtbareBavUsps(usps: string[], sector: string): string[] {
+  if (!isHandmatigeAcceptatieSector(sector)) return usps;
+  return usps.filter((_, index) => index !== DIRECT_DEKKING_USP_INDEX);
+}
 
 const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 const isValidPhone = (phone: string) => /^[0-9]{10}$/.test(phone.replace(/[\s-]/g, ""));
@@ -111,7 +117,10 @@ export function BAVApplicationModule() {
     { id: 5, name: t("home.bavStep5"), icon: FileCheck },
   ];
 
-  const usps = t("home.bavUsps", { returnObjects: true }) as string[];
+  const usps = zichtbareBavUsps(
+    t("home.bavUsps", { returnObjects: true }) as string[],
+    formData.sector,
+  );
 
   const selectedBavPakket = getPakket(gekozenPakketId);
   const currentPrice = selectedBavPakket.prijs;
