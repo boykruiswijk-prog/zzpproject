@@ -218,6 +218,13 @@
       "when": 1790867091905,
       "tag": "0030_klant_certificaten",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1790875990128,
+      "tag": "0031_dashboard_tellers_planning",
+      "breakpoints": true
     }
   ]
 }
