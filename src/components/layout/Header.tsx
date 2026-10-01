@@ -127,7 +127,7 @@ export function Header() {
                   {'isService' in item && item.isService && <Shield className="h-3.5 w-3.5" />}
                   {item.label}
                   {'isNew' in item && item.isNew && (
-                    <span className="text-[10px] font-bold uppercase bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full leading-none">Nieuw</span>
+                    <span className="text-[10px] font-bold bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full leading-none whitespace-nowrap">{t("collectieveInkoop.limitedPlaces")}</span>
                   )}
                   <ChevronDown className="h-4 w-4" />
                 </DropdownMenuTrigger>
@@ -209,8 +209,11 @@ export function Header() {
             {navItems.map((item) => (
               item.children ? (
                 <div key={item.href}>
-                  <span className="px-4 py-2 text-sm font-medium text-muted-foreground block">
+                  <span className="px-4 py-2 text-sm font-medium text-muted-foreground flex items-center gap-2">
                     {item.label}
+                    {'isNew' in item && item.isNew && (
+                      <span className="text-[10px] font-bold bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full leading-none whitespace-nowrap">{t("collectieveInkoop.limitedPlaces")}</span>
+                    )}
                   </span>
                   {item.children.map((child) => (
                     <LocalizedLink
