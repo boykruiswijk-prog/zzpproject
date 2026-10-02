@@ -239,6 +239,13 @@
       "when": 1790933851422,
       "tag": "0033_policies_onderneming_id",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1790934080556,
+      "tag": "0034_ondernemingen_branche",
+      "breakpoints": true
     }
   ]
 }

@@ -2706,6 +2706,7 @@ export type Database = {
         Row: {
           afas_contactpersoon: string | null
           afwijkingen: string[]
+          branche: string | null
           bron: string | null
           created_at: string
           exact_account_id: string | null
@@ -2721,11 +2722,13 @@ export type Database = {
           kvk: string | null
           naam: string | null
           rechtsvorm: string | null
+          sector: string | null
           updated_at: string
         }
         Insert: {
           afas_contactpersoon?: string | null
           afwijkingen?: string[]
+          branche?: string | null
           bron?: string | null
           created_at?: string
           exact_account_id?: string | null
@@ -2741,11 +2744,13 @@ export type Database = {
           kvk?: string | null
           naam?: string | null
           rechtsvorm?: string | null
+          sector?: string | null
           updated_at?: string
         }
         Update: {
           afas_contactpersoon?: string | null
           afwijkingen?: string[]
+          branche?: string | null
           bron?: string | null
           created_at?: string
           exact_account_id?: string | null
@@ -2761,6 +2766,7 @@ export type Database = {
           kvk?: string | null
           naam?: string | null
           rechtsvorm?: string | null
+          sector?: string | null
           updated_at?: string
         }
         Relationships: []
