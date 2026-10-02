@@ -166,8 +166,6 @@ Deno.serve(async (req) => {
     const sleutelVeld = fcfg?.sleutel_veld === "YourRef" ? "YourRef" : "Remarks";
 
     // 1) Status open concepten bijwerken (alleen lezen).
-    const { data: open } = !live ? { data: [] as any[] } : await (async () => ({ data: null as any }))();
-    void open;
     const { data: openPl } = await admin.from("factuur_planning").select("*").in("status", ["concept_aangemaakt", "te_laat", "geclaimd"]);
     for (const p of (live ? openPl : []) ?? []) {
       const gevonden = p.exact_invoice_id
