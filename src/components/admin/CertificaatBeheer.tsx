@@ -17,7 +17,9 @@ import type { Database } from "@/integrations/supabase/types";
 type Policy = Database["public"]["Tables"]["policies"]["Row"];
 
 interface Props {
-  leadId: string;
+  leadId?: string;
+  /** Eigen genereer-actie (bijv. bestaande klant met voorinvuldialoog). */
+  onNieuw?: (bevestigNieuwNummer: boolean) => void;
   leadActief: boolean;
   policies: Policy[];
   isSupervisorOrAdmin: boolean;
@@ -36,7 +38,7 @@ async function roep(body: Record<string, unknown>) {
   return data;
 }
 
-export function CertificaatBeheer({ leadId, leadActief, policies, isSupervisorOrAdmin, onChanged, onDownload }: Props) {
+export function CertificaatBeheer({ leadId, onNieuw, leadActief, policies, isSupervisorOrAdmin, onChanged, onDownload }: Props) {
   const { toast } = useToast();
   const [bezig, setBezig] = useState<string | null>(null);
   const [aanpassen, setAanpassen] = useState<Policy | null>(null);
@@ -60,6 +62,7 @@ export function CertificaatBeheer({ leadId, leadActief, policies, isSupervisorOr
   const klaar = () => { onChanged(); refetchVersies(); };
 
   const nieuw = async (bevestig: boolean) => {
+    if (onNieuw) { setExtraNummer(false); onNieuw(bevestig); return; }
     setBezig("nieuw");
     try {
       const r = await roep({ lead_id: leadId, bevestig_nieuw_nummer: bevestig });
@@ -219,7 +222,7 @@ export function CertificaatBeheer({ leadId, leadActief, policies, isSupervisorOr
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-destructive" />Nieuw certificaatnummer uitgeven?</DialogTitle>
             <DialogDescription>
-              Deze lead heeft al een geldig certificaat ({geldig.map((g) => g.certificate_number).join(", ")}). Wil je alleen iets corrigeren, gebruik dan "Aanpassen". Geef alleen een nieuw nummer uit bij bijvoorbeeld een tweede polis.
+              Er is al een geldig certificaat ({geldig.map((g) => g.certificate_number).join(", ")}). Wil je alleen iets corrigeren, gebruik dan "Aanpassen". Geef alleen een nieuw nummer uit bij bijvoorbeeld een tweede polis.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
