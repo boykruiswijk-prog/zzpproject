@@ -243,7 +243,7 @@ Deno.serve(async (req) => {
     if (!uid || !pol || pol.user_id !== uid) return json({ error: "forbidden" }, 403);
   }
   const { data: policyRef } = await supabase.from("policies")
-    .select("certificate_number").eq("lead_id", lead_id).limit(1).maybeSingle();
+    .select("certificate_number").eq("lead_id", lead_id).eq("status", "geldig").limit(1).maybeSingle();
   const yourRef = factuurReferentie(policyRef?.certificate_number, lead.exact_relatie_code);
 
   async function heeftGeslaagdeFactuur(): Promise<boolean> {
