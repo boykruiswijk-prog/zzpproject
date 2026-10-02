@@ -29,12 +29,16 @@ export const METHODE_LABEL: Record<string, string> = {
 };
 
 type Aanvraag = {
-  id: string; created_at: string; voornaam: string; achternaam: string; email: string; polisnummer: string;
-  details: any; koppeling_status: string | null; koppeling_methode: string | null; koppeling_details: any;
-  onderneming_id: string | null; opzegging_verwerkt_op: string | null; is_test: boolean;
+  id: string; created_at: string; voornaam: string; achternaam: string; email: string; telefoon: string | null; polisnummer: string;
+  details: any; notities: string | null; koppeling_status: string | null; koppeling_methode: string | null; koppeling_details: any;
+  onderneming_id: string | null; opzegging_verwerkt_op: string | null; opzegging_verwerkt_door: string | null; is_test: boolean;
 };
 
-const KOLOMMEN = "id,created_at,voornaam,achternaam,email,polisnummer,details,koppeling_status,koppeling_methode,koppeling_details,onderneming_id,opzegging_verwerkt_op,is_test";
+export type { CreditInfo } from "@/lib/opzegCreditStatus";
+export { CREDIT_STATUS_LABEL, creditStatusTekst } from "@/lib/opzegCreditStatus";
+import { creditStatusTekst, type CreditInfo } from "@/lib/opzegCreditStatus";
+
+const KOLOMMEN = "id,created_at,voornaam,achternaam,email,telefoon,polisnummer,details,notities,koppeling_status,koppeling_methode,koppeling_details,onderneming_id,opzegging_verwerkt_op,opzegging_verwerkt_door,is_test";
 
 function KoppelBadge({ a }: { a: Aanvraag }) {
   const s = a.koppeling_status ?? "niet_gekoppeld";
@@ -50,13 +54,29 @@ export function OpzeggingenKlant({ ondernemingId, contracten, onGewijzigd }: { o
   const { toast } = useToast();
   const { toonTest } = useToonTestrecords();
   const [lijst, setLijst] = useState<Aanvraag[]>([]);
+  const [credits, setCredits] = useState<Map<string, CreditInfo[]>>(new Map());
+  const [verwerkers, setVerwerkers] = useState<Map<string, string>>(new Map());
   const [open, setOpen] = useState<string | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState<string | null>(null);
   const [gekozen, setGekozen] = useState<Set<string>>(new Set());
   const [bezig, setBezig] = useState(false);
 
   async function laad() {
     const { data } = await supabase.from("klant_service_aanvragen").select(KOLOMMEN).eq("type", "opzeggen").eq("onderneming_id", ondernemingId).order("created_at", { ascending: false });
-    setLijst(((data ?? []) as Aanvraag[]).filter((a) => toonTest || !a.is_test));
+    const l = ((data ?? []) as Aanvraag[]).filter((a) => toonTest || !a.is_test);
+    setLijst(l);
+    const ids = l.map((a) => a.id);
+    if (ids.length) {
+      const { data: cr } = await supabase.from("factuur_credit_planning").select("aanvraag_id,klant_contract_id,status,melding,bedrag,credit_vanaf,credit_tm,bron").in("aanvraag_id", ids);
+      const m = new Map<string, CreditInfo[]>();
+      for (const c of cr ?? []) { const k = (c as any).aanvraag_id as string; m.set(k, [...(m.get(k) ?? []), c as any]); }
+      setCredits(m);
+      const verwerkerIds = [...new Set(l.map((a) => a.opzegging_verwerkt_door).filter(Boolean))] as string[];
+      if (verwerkerIds.length) {
+        const { data: p } = await supabase.from("profiles").select("id,full_name").in("id", verwerkerIds);
+        setVerwerkers(new Map((p ?? []).map((x) => [x.id, x.full_name ?? "Onbekend"])));
+      }
+    }
   }
   useEffect(() => { laad(); }, [ondernemingId, toonTest]);
 
@@ -98,8 +118,45 @@ export function OpzeggingenKlant({ ondernemingId, contracten, onGewijzigd }: { o
               Ontvangen {formatDateNL(a.created_at)} · gewenste opzegdatum {formatDateNL(a.details?.opzegdatum)} · polis/contract {a.polisnummer || "—"}
               {a.details?.bedrijfsnaam && <> · bedrijf {a.details.bedrijfsnaam}</>}
             </div>
+            <div>
+              <Button size="sm" variant="ghost" className="h-7 px-2" onClick={() => setDetailsOpen(detailsOpen === a.id ? null : a.id)}>
+                {detailsOpen === a.id ? "Verberg details" : "Details"}
+              </Button>
+            </div>
+            {detailsOpen === a.id && (
+              <div className="rounded-md bg-muted/40 p-3 space-y-1.5">
+                <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5">
+                  <div><dt className="text-xs text-muted-foreground">Naam</dt><dd>{a.voornaam} {a.achternaam}</dd></div>
+                  {a.details?.bedrijfsnaam && <div><dt className="text-xs text-muted-foreground">Bedrijfsnaam</dt><dd>{a.details.bedrijfsnaam}</dd></div>}
+                  <div><dt className="text-xs text-muted-foreground">E-mail</dt><dd><a className="text-primary hover:underline" href={`mailto:${a.email}`}>{a.email}</a></dd></div>
+                  <div><dt className="text-xs text-muted-foreground">Telefoon</dt><dd>{a.telefoon ? <a className="text-primary hover:underline" href={`tel:${a.telefoon}`}>{a.telefoon}</a> : "—"}</dd></div>
+                  <div><dt className="text-xs text-muted-foreground">Polisnummer</dt><dd>{a.polisnummer || "—"}</dd></div>
+                  <div><dt className="text-xs text-muted-foreground">Opzegdatum</dt><dd>{formatDateNL(a.details?.opzegdatum)}</dd></div>
+                  <div><dt className="text-xs text-muted-foreground">Reden</dt><dd>{a.details?.reden || "—"}</dd></div>
+                  <div><dt className="text-xs text-muted-foreground">Ontvangen op</dt><dd>{formatDateNL(a.created_at)}</dd></div>
+                  <div><dt className="text-xs text-muted-foreground">Koppeling</dt><dd>{KOPPELING_LABEL[a.koppeling_status ?? "niet_gekoppeld"] ?? a.koppeling_status}{a.koppeling_methode ? ` (${METHODE_LABEL[a.koppeling_methode] ?? a.koppeling_methode})` : ""}</dd></div>
+                </dl>
+                {a.details?.toelichting && <div><p className="text-xs text-muted-foreground">Toelichting</p><p className="whitespace-pre-wrap">{a.details.toelichting}</p></div>}
+                {a.notities && <div><p className="text-xs text-muted-foreground">Notities</p><p className="whitespace-pre-wrap">{a.notities}</p></div>}
+                {a.opzegging_verwerkt_op && (
+                  <div className="border-t border-border pt-2 space-y-1.5">
+                    <p>Verwerkt op {formatDateNL(a.opzegging_verwerkt_op)}{a.opzegging_verwerkt_door ? ` door ${verwerkers.get(a.opzegging_verwerkt_door) ?? "—"}` : ""}.</p>
+                    {(credits.get(a.id) ?? []).length > 0 ? (
+                      <ul className="space-y-1">
+                        {(credits.get(a.id) ?? []).map((c, i) => (
+                          <li key={i}>Creditnota: <span className="font-medium">{creditStatusTekst(c)}</span></li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-muted-foreground">Geen creditnota gepland voor deze opzegging.</p>
+                    )}
+                  </div>
+                )}
+                <p><Link to={`/admin/service-aanvragen/${a.id}`} className="text-primary hover:underline">Bekijk de volledige aanvraag</Link></p>
+              </div>
+            )}
             {a.opzegging_verwerkt_op ? (
-              <p className="text-emerald-700">Verwerkt op {formatDateNL(a.opzegging_verwerkt_op)}.</p>
+              <p className="text-emerald-700">Verwerkt op {formatDateNL(a.opzegging_verwerkt_op)}{a.opzegging_verwerkt_door ? ` door ${verwerkers.get(a.opzegging_verwerkt_door) ?? "—"}` : ""}.</p>
             ) : a.koppeling_status !== "zeker" ? (
               <Button size="sm" variant="outline" disabled={bezig} onClick={() => bevestig(a)}>Koppeling met deze klant bevestigen</Button>
             ) : open !== a.id ? (
