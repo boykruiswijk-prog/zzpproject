@@ -3,6 +3,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { PDFDocument, rgb, StandardFonts } from "https://esm.sh/pdf-lib@1.17.1";
 import { COMPANY } from "../_shared/company.ts";
 import { autoInvitePortalLead } from "../_shared/portalAccess.ts";
+import { createMailGate } from "../_shared/mail.ts";
+import {
+  bepaalHoedanigheid, beslisNieuwCertificaat, schoonAanpassing,
+  FOOTER_REGISTER_TEKST, POLISBLAD_NOTITIE,
+} from "../_shared/certificaatRegels.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -319,7 +324,7 @@ serve(async (req) => {
     drawRow("Certificaathouder:", policy.certificate_holder, y);
 
     // KvK (alleen tonen als ingevuld op de lead)
-    const kvkNummer = typeof data?.kvk === "string" ? data.kvk.trim() : "";
+    const kvkNummer = typeof kvkNummerBron === "string" ? kvkNummerBron.trim() : "";
     if (kvkNummer) {
       y -= 16;
       drawRow("KvK:", kvkNummer, y);
@@ -413,7 +418,7 @@ serve(async (req) => {
     // Italicized note
     y -= lineHeight + 5;
     const maxValueWidth = pageWidth - valueX - 40; // right margin of 40pt
-    const noteText = 'Waar op het polis blad wordt vermeld "per jaar voor alle leden tezamen" wordt gerefereerd aan het verzekerd bedrag per jaar.';
+    const noteText = POLISBLAD_NOTITIE;
     const noteLines = wrapText(noteText, helveticaOblique, smallFontSize, maxValueWidth);
     noteLines.forEach((line: string, i: number) => {
       page.drawText(line, {
@@ -566,7 +571,7 @@ serve(async (req) => {
     // === Footer text ===
     const footerText1 = "De verzekeringsmantel van ZP Zaken zijn alleen toegankelijk voor klanten van ZP Zaken en treedt hierbij op geen enkele";
     const footerText2 = "wijze op als financiële dienstverlener of bemiddelaar zoals gesteld onder de Wft. De verstrekte gegevens zullen strikt";
-    const footerText3 = `vertrouwelijk worden behandeld. ZP Zaken in ingeschreven in het register Wft bij de AFM onder vergunningsnummer: ${COMPANY.registrations.afm}.`;
+    const footerText3 = `vertrouwelijk worden behandeld. ${FOOTER_REGISTER_TEKST} ${COMPANY.registrations.afm}.`;
     const footerFontSize = 6.5;
     const footerY = 38;
 
@@ -612,7 +617,7 @@ serve(async (req) => {
     // Automatische Mijn ZP-uitnodiging (alleen als de lead ook al geactiveerd is
     // en nog nooit is uitgenodigd). Mag het certificaat nooit laten mislukken.
     let portaal_uitnodiging: unknown = null;
-    if (lead_id) {
+    if (lead_id && actie === "nieuw") {
       portaal_uitnodiging = await autoInvitePortalLead(adminClient, req, lead_id, user.id, "generate-certificate")
         .catch((e) => ({ verstuurd: false, error: String(e) }));
     }
@@ -641,3 +646,41 @@ serve(async (req) => {
     });
   }
 });
+// Handmatig, op verzoek van het team: certificaat-PDF als bijlage naar de klant.
+// deno-lint-ignore no-explicit-any
+async function mailCertificaat(admin: any, req: Request, policy: any, user: { id: string }) {
+  if (!policy.pdf_url) return { ok: false as const, error: "Geen PDF beschikbaar" };
+  const { data: lead } = policy.lead_id
+    ? await admin.from("leads").select("email,voornaam").eq("id", policy.lead_id).maybeSingle()
+    : { data: null };
+  const email = lead?.email?.trim();
+  if (!email) return { ok: false as const, error: "Geen e-mailadres bij deze lead" };
+  const key = Deno.env.get("RESEND_API_KEY");
+  if (!key) return { ok: false as const, error: "Mailinstelling ontbreekt" };
+  const { data: file, error } = await admin.storage.from("certificates").download(policy.pdf_url);
+  if (error || !file) return { ok: false as const, error: "PDF niet gevonden" };
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  let b64 = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) b64 += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  b64 = btoa(b64);
+  const subject = `Je certificaat ${policy.certificate_number} – ZP Zaken`;
+  const html = `<p>Beste ${lead?.voornaam || "klant"},</p><p>In de bijlage vind je je certificaat ${policy.certificate_number} voor je beroeps- en bedrijfsaansprakelijkheidsverzekering.</p><p>Met vriendelijke groet,<br/>ZP Zaken<br/>${COMPANY.phoneDisplay} · ${COMPANY.email}</p>`;
+  const plan = createMailGate("generate-certificate", req).plan({ to: email, subject, html });
+  const log = (status: string, extra: Record<string, unknown>) => admin.from("lead_notification_log").insert({
+    lead_type: "certificaat", lead_id: policy.lead_id, recipient: email, subject, status,
+    metadata: { soort: "certificaat_handmatig", certificate_number: policy.certificate_number, door: user.id, preview: !plan.send ? undefined : plan.to?.join(",") !== email },
+    ...extra,
+  });
+  if (!plan.send) { await log("failed", { error_message: `niet verzonden: ${plan.reason}` }); return { ok: false as const, error: `Niet verzonden: ${plan.reason}` }; }
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+    body: JSON.stringify({ from: plan.from, to: plan.to, bcc: plan.bcc, subject: plan.subject, html: plan.html,
+      attachments: [{ filename: `${policy.certificate_number}.pdf`, content: b64 }] }),
+  });
+  const rb = await res.json().catch(() => ({}));
+  if (!res.ok) { await log("failed", { error_message: `Resend ${res.status}` }); return { ok: false as const, error: "Verzenden mislukt" }; }
+  await log("sent", { resend_message_id: rb?.id ?? null });
+  const naar = (plan.to || []).join(", ");
+  return { ok: true as const, to: naar, opmerking: naar !== email ? "Preview: alleen naar het team verstuurd" : null };
+}
