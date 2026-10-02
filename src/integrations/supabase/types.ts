@@ -2878,7 +2878,10 @@ export type Database = {
           coverage_area: string
           created_at: string
           id: string
+          ingetrokken_door: string | null
+          ingetrokken_op: string | null
           insured_name: string
+          intrek_reden: string | null
           is_test: boolean
           issued_by: string
           issued_date: string
@@ -2888,8 +2891,10 @@ export type Database = {
           pdf_url: string | null
           profession: string
           start_date: string
+          status: string
           updated_at: string
           user_id: string | null
+          versie: number
         }
         Insert: {
           avb_per_event?: string
@@ -2902,7 +2907,10 @@ export type Database = {
           coverage_area?: string
           created_at?: string
           id?: string
+          ingetrokken_door?: string | null
+          ingetrokken_op?: string | null
           insured_name: string
+          intrek_reden?: string | null
           is_test?: boolean
           issued_by?: string
           issued_date?: string
@@ -2912,8 +2920,10 @@ export type Database = {
           pdf_url?: string | null
           profession: string
           start_date: string
+          status?: string
           updated_at?: string
           user_id?: string | null
+          versie?: number
         }
         Update: {
           avb_per_event?: string
@@ -2926,7 +2936,10 @@ export type Database = {
           coverage_area?: string
           created_at?: string
           id?: string
+          ingetrokken_door?: string | null
+          ingetrokken_op?: string | null
           insured_name?: string
+          intrek_reden?: string | null
           is_test?: boolean
           issued_by?: string
           issued_date?: string
@@ -2936,8 +2949,10 @@ export type Database = {
           pdf_url?: string | null
           profession?: string
           start_date?: string
+          status?: string
           updated_at?: string
           user_id?: string | null
+          versie?: number
         }
         Relationships: [
           {
@@ -2952,6 +2967,59 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      policy_versies: {
+        Row: {
+          actie: string
+          certificate_number: string
+          created_at: string
+          id: string
+          nieuwe_waarden: Json | null
+          oude_pdf_pad: string | null
+          oude_waarden: Json
+          policy_id: string
+          reden: string | null
+          uitgevoerd_door: string | null
+          uitgevoerd_door_email: string | null
+          versie: number
+        }
+        Insert: {
+          actie: string
+          certificate_number: string
+          created_at?: string
+          id?: string
+          nieuwe_waarden?: Json | null
+          oude_pdf_pad?: string | null
+          oude_waarden: Json
+          policy_id: string
+          reden?: string | null
+          uitgevoerd_door?: string | null
+          uitgevoerd_door_email?: string | null
+          versie: number
+        }
+        Update: {
+          actie?: string
+          certificate_number?: string
+          created_at?: string
+          id?: string
+          nieuwe_waarden?: Json | null
+          oude_pdf_pad?: string | null
+          oude_waarden?: Json
+          policy_id?: string
+          reden?: string | null
+          uitgevoerd_door?: string | null
+          uitgevoerd_door_email?: string | null
+          versie?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policy_versies_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "policies"
             referencedColumns: ["id"]
           },
         ]

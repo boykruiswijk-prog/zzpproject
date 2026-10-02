@@ -225,6 +225,13 @@
       "when": 1790875990128,
       "tag": "0031_dashboard_tellers_planning",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1790926632160,
+      "tag": "0032_certificaat_versies_en_status",
+      "breakpoints": true
     }
   ]
 }
