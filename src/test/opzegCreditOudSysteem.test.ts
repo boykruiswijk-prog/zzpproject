@@ -25,6 +25,9 @@ describe("creditnota oud systeem", () => {
     const r = berekenOudSysteemCredit(jaar, "2026-10-02");
     const p = oudSysteemCreditPayload({ creditsleutel: "ZPC-ABCDEF12", exact_account_id: "a", exact_item_id: "i", einddatum: "2026-10-02", credit_vanaf: r.vanaf, credit_tm: "2027-10-04", vandaag: "2026-10-02", regels: r.regels });
     expect(p.Type).toBe(8021); expect(p.Status).toBe(20);
+    for (const l of p.SalesInvoiceLines as { Quantity: number; UnitPrice: number }[]) {
+      expect(l.Quantity).toBe(1); expect(l.UnitPrice).toBeGreaterThan(0);
+    }
     expect(p.YourRef).toBe("ZPC-ABCDEF12"); expect(p.Remarks).toContain("ZPC-ABCDEF12");
     expect(p.Description.length).toBeLessThanOrEqual(60);
   });

@@ -77,7 +77,7 @@ export function oudSysteemCreditPayload(c: {
   const nu = `${c.vandaag}T00:00:00`;
   const lijnen = c.regels.filter((r) => r.credit_bedrag > 0).map((r) => {
     const l: Record<string, unknown> = {
-      Item: c.exact_item_id, Quantity: -1, UnitPrice: Math.round(r.credit_bedrag * 100) / 100, VATCode: "0",
+      Item: c.exact_item_id, Quantity: 1, UnitPrice: Math.round(r.credit_bedrag * 100) / 100, VATCode: "0",
       Description: `Credit ${nl(r.credit_vanaf)} t/m ${nl(r.periode_eind)} opzegging`.slice(0, 60),
       StartTime: `${r.credit_vanaf}T00:00:00`, EndTime: `${r.periode_eind}T00:00:00`,
     };
