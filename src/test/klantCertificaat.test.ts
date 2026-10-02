@@ -23,3 +23,17 @@ describe("certificaat voor bestaande klant", () => {
     expect(src).toMatch(/if \(lead_id && actie === "nieuw"\)/);
   });
 });
+
+describe("branche bij bestaande klant", () => {
+  it("hoedanigheid volgt uit gekozen sector, zelfde mapping als leads; functie niet gebruikt", async () => {
+    const { brancheVoorSector } = await import("../../supabase/functions/_shared/sectorBranche");
+    expect(brancheVoorSector("ICT")).toBe("IT & ICT");
+    expect(brancheVoorSector("Zorg")).toBe("Zakelijke dienstverlening");
+    expect(brancheVoorSector("vrije tekst")).toBeNull();
+    const src = readFileSync("supabase/functions/generate-certificate/index.ts", "utf8");
+    const tak = src.slice(src.indexOf("else if (body.onderneming_id)"), src.indexOf("lead_id or policy_data required"));
+    expect(tak).toMatch(/brancheVoorSector\(sector\)/);
+    expect(tak).toMatch(/ondernemingen"\)\.update\(\{ branche: profession, sector \}\)/);
+    expect(tak).not.toMatch(/functie/);
+  });
+});
