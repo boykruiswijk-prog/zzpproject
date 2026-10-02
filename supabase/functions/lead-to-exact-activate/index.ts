@@ -627,7 +627,7 @@ Deno.serve(async (req) => {
         periodStart: startStr, periodEnd: endStr,
       };
     }
-    const { data: policyRef } = await supabase.from("policies").select("certificate_number").eq("lead_id", leadId).limit(1).maybeSingle();
+    const { data: policyRef } = await supabase.from("policies").select("certificate_number").eq("lead_id", leadId).eq("status", "geldig").limit(1).maybeSingle();
     lead.certificate_number = policyRef?.certificate_number ?? null;
     const invRes = await createExactInvoice({
       baseUrl, div, headers, accountId: lead.exact_account_id, lead, pakketSpec: spec,
@@ -1024,7 +1024,7 @@ Deno.serve(async (req) => {
   if (!pakketSpec) {
     invoiceWarning = `Onbekend pakket "${lead.gekozen_pakket}" — geen factuur aangemaakt.`;
   } else {
-    const { data: policyRef } = await supabase.from("policies").select("certificate_number").eq("lead_id", leadId).limit(1).maybeSingle();
+    const { data: policyRef } = await supabase.from("policies").select("certificate_number").eq("lead_id", leadId).eq("status", "geldig").limit(1).maybeSingle();
     lead.certificate_number = policyRef?.certificate_number ?? null;
     const itemEnsure = await ensureBavAvbItem({
       supabase, config, baseUrl, div, headers, accessToken,
