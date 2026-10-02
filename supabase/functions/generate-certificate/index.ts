@@ -132,6 +132,9 @@ serve(async (req) => {
       if (bestaand.lead_id) {
         const { data: l } = await adminClient.from("leads").select("kvk_nummer").eq("id", bestaand.lead_id).maybeSingle();
         kvkNummerBron = l?.kvk_nummer ?? null;
+      } else if (bestaand.onderneming_id) {
+        const { data: o } = await adminClient.from("ondernemingen").select("kvk").eq("id", bestaand.onderneming_id).maybeSingle();
+        kvkNummerBron = o?.kvk ?? null;
       }
     } else if (body.onderneming_id) {
       // Bestaande klant (geïmporteerd, zonder lead): eigen nummer hergebruiken.
@@ -696,8 +699,14 @@ async function mailCertificaat(admin: any, req: Request, policy: any, user: { id
   const { data: lead } = policy.lead_id
     ? await admin.from("leads").select("email,voornaam").eq("id", policy.lead_id).maybeSingle()
     : { data: null };
-  const email = lead?.email?.trim();
-  if (!email) return { ok: false as const, error: "Geen e-mailadres bij deze lead" };
+  let email = lead?.email?.trim();
+  let voornaam = lead?.voornaam;
+  if (!email && policy.onderneming_id) {
+    const { data: po } = await admin.from("persoon_onderneming").select("personen(voornaam,email_weergave)").eq("onderneming_id", policy.onderneming_id);
+    const p = (po || []).map((x: any) => x.personen).find((x: any) => x?.email_weergave);
+    email = p?.email_weergave?.trim(); voornaam = p?.voornaam;
+  }
+  if (!email) return { ok: false as const, error: "Geen e-mailadres bij deze lead/klant" };
   const key = Deno.env.get("RESEND_API_KEY");
   if (!key) return { ok: false as const, error: "Mailinstelling ontbreekt" };
   const { data: file, error } = await admin.storage.from("certificates").download(policy.pdf_url);
@@ -707,7 +716,7 @@ async function mailCertificaat(admin: any, req: Request, policy: any, user: { id
   for (let i = 0; i < bytes.length; i += 0x8000) b64 += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
   b64 = btoa(b64);
   const subject = `Je certificaat ${policy.certificate_number} – ZP Zaken`;
-  const html = `<p>Beste ${lead?.voornaam || "klant"},</p><p>In de bijlage vind je je certificaat ${policy.certificate_number} voor je beroeps- en bedrijfsaansprakelijkheidsverzekering.</p><p>Met vriendelijke groet,<br/>ZP Zaken<br/>${COMPANY.phoneDisplay} · ${COMPANY.email}</p>`;
+  const html = `<p>Beste ${voornaam || "klant"},</p><p>In de bijlage vind je je certificaat ${policy.certificate_number} voor je beroeps- en bedrijfsaansprakelijkheidsverzekering.</p><p>Met vriendelijke groet,<br/>ZP Zaken<br/>${COMPANY.phoneDisplay} · ${COMPANY.email}</p>`;
   const plan = createMailGate("generate-certificate", req).plan({ to: email, subject, html });
   const log = (status: string, extra: Record<string, unknown>) => admin.from("lead_notification_log").insert({
     lead_type: "certificaat", lead_id: policy.lead_id, recipient: email, subject, status,
