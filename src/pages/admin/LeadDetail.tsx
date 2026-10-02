@@ -3,6 +3,7 @@ import { teamWaarschuwingHandmatig } from "../../../supabase/functions/_shared/s
 import { useState } from "react";
 import { KlantLinkVoorLead } from "@/components/admin/KlantLinkVoorLead";
 import { SepaMachtigingBewijsBlok } from "@/components/admin/SepaMachtigingBewijsBlok";
+import { CertificaatBeheer } from "@/components/admin/CertificaatBeheer";
 
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
@@ -567,29 +568,14 @@ export default function AdminLeadDetail() {
                     Certificaten kunnen pas worden aangemaakt zodra de polis is geactiveerd (status <strong>Actief</strong>).
                   </p>
                 )}
-                {policies && policies.length > 0 && policies.map((p) => (
-                  <div key={p.id} className="flex items-center justify-between p-2 bg-secondary rounded-lg">
-                    <div>
-                      <p className="font-medium text-sm">{p.certificate_number}</p>
-                      <p className="text-xs text-muted-foreground">{formatDateNL(p.created_at)}</p>
-                    </div>
-                    {p.pdf_url && (
-                      <Button size="sm" variant="outline" onClick={() => handleDownloadCertificate(p.pdf_url!)}>
-                        <Download className="h-3 w-3 mr-1" />
-                        PDF
-                      </Button>
-                    )}
-                  </div>
-                ))}
-                <Button
-                  variant={policies && policies.length > 0 ? "outline" : "accent"}
-                  className="w-full"
-                  onClick={handleGenerateCertificate}
-                  disabled={isGenerating || lead.status !== "actief"}
-                >
-                  {isGenerating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <FileText className="h-4 w-4 mr-2" />}
-                  {policies && policies.length > 0 ? "Nieuw certificaat" : "Certificaat genereren"}
-                </Button>
+                <CertificaatBeheer
+                  leadId={lead.id}
+                  leadActief={lead.status === "actief"}
+                  policies={policies || []}
+                  isSupervisorOrAdmin={isSupervisorOrAdmin}
+                  onChanged={() => refetchPolicies()}
+                  onDownload={handleDownloadCertificate}
+                />
               </CardContent>
             </Card>
             )}
