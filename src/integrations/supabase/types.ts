@@ -1483,6 +1483,7 @@ export type Database = {
           bijgewerkt_op: string
           facturatie_actief: boolean
           id: number
+          opzeg_credits_actief: boolean
           sleutel_veld: string
           verwerk_termijn_werkdagen: number
         }
@@ -1491,6 +1492,7 @@ export type Database = {
           bijgewerkt_op?: string
           facturatie_actief?: boolean
           id?: number
+          opzeg_credits_actief?: boolean
           sleutel_veld?: string
           verwerk_termijn_werkdagen?: number
         }
@@ -1499,6 +1501,7 @@ export type Database = {
           bijgewerkt_op?: string
           facturatie_actief?: boolean
           id?: number
+          opzeg_credits_actief?: boolean
           sleutel_veld?: string
           verwerk_termijn_werkdagen?: number
         }
@@ -1558,6 +1561,7 @@ export type Database = {
           aanvraag_id: string
           bedrag: number | null
           berekening: Json | null
+          bron: string
           concept_op: string | null
           credit_tm: string
           credit_vanaf: string
@@ -1566,8 +1570,10 @@ export type Database = {
           exact_account_id: string | null
           exact_invoice_id: string | null
           exact_invoice_number: string | null
+          exact_item_id: string | null
           exact_status: number | null
           foutmelding: string | null
+          gl_code: string | null
           id: string
           is_test: boolean
           klant_contract_id: string
@@ -1583,6 +1589,7 @@ export type Database = {
           aanvraag_id: string
           bedrag?: number | null
           berekening?: Json | null
+          bron?: string
           concept_op?: string | null
           credit_tm: string
           credit_vanaf: string
@@ -1591,8 +1598,10 @@ export type Database = {
           exact_account_id?: string | null
           exact_invoice_id?: string | null
           exact_invoice_number?: string | null
+          exact_item_id?: string | null
           exact_status?: number | null
           foutmelding?: string | null
+          gl_code?: string | null
           id?: string
           is_test?: boolean
           klant_contract_id: string
@@ -1608,6 +1617,7 @@ export type Database = {
           aanvraag_id?: string
           bedrag?: number | null
           berekening?: Json | null
+          bron?: string
           concept_op?: string | null
           credit_tm?: string
           credit_vanaf?: string
@@ -1616,8 +1626,10 @@ export type Database = {
           exact_account_id?: string | null
           exact_invoice_id?: string | null
           exact_invoice_number?: string | null
+          exact_item_id?: string | null
           exact_status?: number | null
           foutmelding?: string | null
+          gl_code?: string | null
           id?: string
           is_test?: boolean
           klant_contract_id?: string

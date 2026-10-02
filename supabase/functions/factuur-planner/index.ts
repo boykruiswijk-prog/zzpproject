@@ -11,7 +11,7 @@ import { periodeTekst, regelOmschrijving } from "../_shared/factuurTekst.ts";
 import { planningsSleutel, planningStatusUitExact } from "../_shared/factuurPeriode.ts";
 import { getBavGlAccountId } from "../_shared/exactGl.ts";
 import { exactRegelBedrag } from "../_shared/factuurTekst.ts";
-import { berekenOpzegCredit } from "../_shared/creditOpzegging.ts";
+import { berekenOpzegCredit, berekenOudSysteemCredit, oudSysteemCreditPayload } from "../_shared/creditOpzegging.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -74,6 +74,25 @@ Deno.serve(async (req) => {
   }
 
   const vandaag = vandaagNL();
+
+  // Dry-run creditnota oud systeem: berekent bedrag en Exact-payload, schrijft niets (DB noch Exact).
+  if (actie === "credit_dryrun") {
+    const id = String(body?.klant_contract_id ?? ""); const eind = String(body?.einddatum ?? "");
+    if (!/^[0-9a-f-]{36}$/.test(id) || !/^\d{4}-\d{2}-\d{2}$/.test(eind)) return json({ error: "klant_contract_id en einddatum vereist" }, 400);
+    const { data: k } = await admin.from("klant_contracten").select("*").eq("id", id).maybeSingle();
+    if (!k) return json({ error: "contract niet gevonden" }, 404);
+    const { data: o } = await admin.from("ondernemingen").select("naam,exact_account_id").eq("id", k.onderneming_id).maybeSingle();
+    const { data: m } = await admin.rpc("factuur_mapping_voor", { _itemcode: k.itemcode });
+    const { data: ecfg } = await admin.from("exact_config").select("gl_account_id_bav").limit(1).maybeSingle();
+    const ber = berekenOudSysteemCredit(k as any, eind);
+    const blokkade = !m?.id || !m.bevestigd || !m.exact_item_id || m.blokkade_reden ? `geen bevestigde artikelmapping voor ${k.itemcode}` : !o?.exact_account_id ? "relatie niet gekoppeld aan Exact" : null;
+    const sleutel = "ZPC-DRYRUN0";
+    const payload = blokkade ? null : oudSysteemCreditPayload({ creditsleutel: sleutel, exact_account_id: o!.exact_account_id, exact_item_id: m.exact_item_id,
+      gl_account_id: (ecfg as any)?.gl_account_id_bav ?? `(GUID grootboek ${m.gl_code})`, einddatum: eind, credit_vanaf: ber.vanaf, credit_tm: k.gefactureerd_tm, vandaag, regels: ber.regels });
+    return json({ modus: "dry-run", schrijft_naar_exact: false, schrijft_naar_database: false, klant: o?.naam, contract: { bron_rij: k.bron_rij, itemcode: k.itemcode, cyclus: k.cyclus, bedrag_per_periode: k.bedrag_per_periode, aantal: k.aantal, begin_datum: k.begin_datum, gefactureerd_tm: k.gefactureerd_tm },
+      einddatum: eind, credit_vanaf: ber.vanaf, credit_tm: k.gefactureerd_tm, perioden: ber.regels, bedrag: ber.bedrag, blokkade, artikel: m?.exact_item_code, gl_code: m?.gl_code,
+      payload, opmerking: "Echte creditsleutel ZPC-xxxxxxxx ontstaat pas bij een opzegging (hash contract+aanvraag)." });
+  }
   const van = actie === "proefrun" ? String(body?.van ?? vandaag) : vandaag;
   const tot = actie === "proefrun" ? String(body?.tot ?? van) : vandaag;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(van) || !/^\d{4}-\d{2}-\d{2}$/.test(tot)) return json({ error: "ongeldige datum" }, 400);
@@ -88,7 +107,12 @@ Deno.serve(async (req) => {
   const { data: creditRijen } = await admin.from("factuur_credit_planning").select("*").order("aangemaakt_op");
   const credits: any[] = [];
   for (const c of creditRijen ?? []) {
-    if (c.status === "te_maken" && c.planning_ids?.length) {
+    if (c.bron === "oud_systeem" && c.status === "te_maken") {
+      const { data: k } = await admin.from("klant_contracten").select("cyclus,aantal,bedrag_per_periode,begin_datum,factureren_vanaf,gefactureerd_tm").eq("id", c.klant_contract_id).single();
+      const ber = berekenOudSysteemCredit(k as any, c.einddatum);
+      if (Number(c.bedrag) !== ber.bedrag) await admin.from("factuur_credit_planning").update({ bedrag: ber.bedrag, berekening: ber }).eq("id", c.id);
+      c.bedrag = ber.bedrag; c.berekening = ber; c._item = c.exact_item_id; c._gl = c.gl_code;
+    } else if (c.status === "te_maken" && c.planning_ids?.length) {
       const { data: pl } = await admin.from("factuur_planning").select("periode_start,periode_eind,bedrag,exact_item_id,gl_code").in("id", c.planning_ids);
       const ber = berekenOpzegCredit(c.einddatum, (pl ?? []) as any[]);
       if (Number(c.bedrag) !== ber.bedrag) await admin.from("factuur_credit_planning").update({ bedrag: ber.bedrag, berekening: ber }).eq("id", c.id);
@@ -102,8 +126,10 @@ Deno.serve(async (req) => {
   // Hoofdschakelaar: vers uit de database, in deze run.
   const { data: fcfg } = await admin.from("facturatie_config").select("*").eq("id", 1).maybeSingle();
   const live = actie === "dagrun" && fcfg?.facturatie_actief === true;
+  // Creditnota's bij opzegging hebben een eigen schakelaar (Boy: los van facturatie_actief).
+  const liveCredits = actie === "dagrun" && fcfg?.opzeg_credits_actief === true;
 
-  if (!live) {
+  if (!live && !liveCredits) {
     await admin.from("factuur_planner_runs").insert({
       modus: "proef", trigger_type: `${trigger}:${actie}`, aantal_kandidaten: rijen.length,
       aantal_geblokkeerd: sam.geblokkeerd.aantal, bedrag: sam.totaal.bedrag, detail: { van, tot, samenvatting: sam },
@@ -124,8 +150,9 @@ Deno.serve(async (req) => {
       const method = (init.method ?? "GET").toUpperCase();
       if (method !== "GET" && method !== "POST") throw new Error("methode niet toegestaan");
       if (method === "POST") {
-        const { data: v } = await admin.from("facturatie_config").select("facturatie_actief").eq("id", 1).single();
-        if (v?.facturatie_actief !== true) throw new Error("hoofdschakelaar uit: POST geweigerd");
+        const { data: v } = await admin.from("facturatie_config").select("facturatie_actief,opzeg_credits_actief").eq("id", 1).single();
+        const isCredit = String(init.body ?? "").includes('"Type":8021');
+        if (isCredit ? v?.opzeg_credits_actief !== true : v?.facturatie_actief !== true) throw new Error("schakelaar uit: POST geweigerd");
       }
       let r = await fetch(`${baseUrl}/api/v1/${div}/${pad}`, { ...init, headers: { Authorization: `Bearer ${token}`, Accept: "application/json", "Content-Type": "application/json" } });
       if (r.status === 401) { token = await refreshAccessToken(admin, cfg); r = await fetch(`${baseUrl}/api/v1/${div}/${pad}`, { ...init, headers: { Authorization: `Bearer ${token}`, Accept: "application/json", "Content-Type": "application/json" } }); }
@@ -139,8 +166,8 @@ Deno.serve(async (req) => {
     const sleutelVeld = fcfg?.sleutel_veld === "YourRef" ? "YourRef" : "Remarks";
 
     // 1) Status open concepten bijwerken (alleen lezen).
-    const { data: open } = await admin.from("factuur_planning").select("*").in("status", ["concept_aangemaakt", "te_laat", "geclaimd"]);
-    for (const p of open ?? []) {
+    const { data: openPl } = await admin.from("factuur_planning").select("*").in("status", ["concept_aangemaakt", "te_laat", "geclaimd"]);
+    for (const p of (live ? openPl : []) ?? []) {
       const gevonden = p.exact_invoice_id
         ? await (async () => { const r = await exact(`salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,Status,InvoiceDate&$filter=${encodeURIComponent(`InvoiceID eq guid'${p.exact_invoice_id}'`)}`); const d = (await r.json())?.d; return (d?.results ?? d ?? [])[0] ?? null; })()
         : (await zoekOpSleutel(p.planningssleutel, sleutelVeld))[0] ?? null;
@@ -166,7 +193,7 @@ Deno.serve(async (req) => {
 
     // 2) Nieuwe concepten voor niet-geblokkeerde kandidaten (incl. achterstallig).
     const glCache: Record<string, string> = {};
-    for (const k of rijen.filter((r) => !r.blokkade && r.periode_start <= vandaag)) {
+    for (const k of live ? rijen.filter((r) => !r.blokkade && r.periode_start <= vandaag) : []) {
       const sleutel = planningsSleutel(crypto.randomUUID().replace(/-/g, ""));
       const { data: claim, error: cErr } = await admin.from("factuur_planning").insert({
         klant_contract_id: k.klant_contract_id, periode_start: k.periode_start, periode_eind: k.periode_eind,
@@ -223,8 +250,23 @@ Deno.serve(async (req) => {
       if (!claim) continue;
       try {
         if ((await zoekOpSleutel(c.creditsleutel, "Remarks")).length) throw new Error("creditsleutel bestaat al in Exact");
-        if (!c.exact_account_id || !c._item || !c.origineel_factuurnummer) throw new Error("creditnota mist account, artikel of factuurnummer");
+        const oud = c.bron === "oud_systeem";
+        if (!c.exact_account_id || !c._item || (!oud && !c.origineel_factuurnummer)) throw new Error("creditnota mist account, artikel of factuurnummer");
         const gl = c._gl ? (glCache[c._gl] ??= await getBavGlAccountId(admin, cfg, token)) : null;
+        if (oud) {
+          const p = oudSysteemCreditPayload({ creditsleutel: c.creditsleutel, exact_account_id: c.exact_account_id, exact_item_id: c._item, gl_account_id: gl,
+            einddatum: c.einddatum, credit_vanaf: c.credit_vanaf, credit_tm: c.credit_tm, vandaag, regels: c.berekening?.regels ?? [] });
+          const r = await exact("salesinvoice/SalesInvoices", { method: "POST", body: JSON.stringify(p) });
+          if (!r.ok) {
+            if (r.status >= 500) throw new Error(`credit POST onzeker HTTP ${r.status}`);
+            await admin.from("factuur_credit_planning").update({ status: "fout", foutmelding: (await r.text()).slice(0, 300) }).eq("id", c.id);
+            fouten.push(`credit HTTP ${r.status}`); continue;
+          }
+          const d = (await r.json())?.d ?? {};
+          await admin.from("factuur_credit_planning").update({ status: "concept_aangemaakt", concept_op: new Date().toISOString(), exact_invoice_id: d.InvoiceID ?? null, exact_status: 20 }).eq("id", c.id);
+          await admin.from("sensitive_audit_log").insert({ target_table: "klant_contracten", target_id: c.klant_contract_id, actie: "creditnota_concept_aangemaakt", veld: "factuur_credit_planning", nieuwe_waarde: c.creditsleutel, details: { credit_id: c.id, bedrag: c.bedrag, bron: "oud_systeem", invoice_id: d.InvoiceID } });
+          continue;
+        }
         const regel: any = { Item: c._item, ...exactRegelBedrag(8021, Number(c.bedrag)), VATCode: "0",
           Description: regelOmschrijving("restitutie_opzegging", c.credit_vanaf, c.credit_tm),
           StartTime: `${c.credit_vanaf}T00:00:00`, EndTime: `${c.credit_tm}T00:00:00` };
