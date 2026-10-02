@@ -29,12 +29,23 @@ export const METHODE_LABEL: Record<string, string> = {
 };
 
 type Aanvraag = {
-  id: string; created_at: string; voornaam: string; achternaam: string; email: string; polisnummer: string;
-  details: any; koppeling_status: string | null; koppeling_methode: string | null; koppeling_details: any;
-  onderneming_id: string | null; opzegging_verwerkt_op: string | null; is_test: boolean;
+  id: string; created_at: string; voornaam: string; achternaam: string; email: string; telefoon: string | null; polisnummer: string;
+  details: any; notities: string | null; koppeling_status: string | null; koppeling_methode: string | null; koppeling_details: any;
+  onderneming_id: string | null; opzegging_verwerkt_op: string | null; opzegging_verwerkt_door: string | null; is_test: boolean;
 };
 
-const KOLOMMEN = "id,created_at,voornaam,achternaam,email,polisnummer,details,koppeling_status,koppeling_methode,koppeling_details,onderneming_id,opzegging_verwerkt_op,is_test";
+export type CreditInfo = { klant_contract_id: string; status: string; melding: string | null; bedrag: number | null; credit_vanaf: string | null; credit_tm: string | null; bron: string };
+
+export const CREDIT_STATUS_LABEL: Record<string, string> = {
+  te_maken: "Te maken",
+  geblokkeerd: "Geblokkeerd",
+  concept_aangemaakt: "Concept in Exact",
+  verwerkt: "Verwerkt in Exact",
+  geen_planner_factuur: "Handmatig beoordelen",
+  niet_nodig: "Niet nodig",
+};
+
+const KOLOMMEN = "id,created_at,voornaam,achternaam,email,telefoon,polisnummer,details,notities,koppeling_status,koppeling_methode,koppeling_details,onderneming_id,opzegging_verwerkt_op,opzegging_verwerkt_door,is_test";
 
 function KoppelBadge({ a }: { a: Aanvraag }) {
   const s = a.koppeling_status ?? "niet_gekoppeld";
