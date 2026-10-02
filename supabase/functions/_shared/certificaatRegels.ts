@@ -77,3 +77,9 @@ export function actiefKlantContract<T extends { type: string; status: string; ei
   return contracten.find((c) => c.type === "verzekering" && (c.status === "actief" || c.status === "loopt_af") &&
     (!c.eind_datum || c.eind_datum >= vandaag)) ?? null;
 }
+
+/** Rollen die certificaten mogen genereren, aanpassen, intrekken, mailen en extra nummers uitgeven. */
+export const CERTIFICAAT_ROLLEN = ["admin", "supervisor", "verzekering", "medewerker"] as const;
+export function magCertificaatBeheren(rollen: readonly (string | null | undefined)[]): boolean {
+  return rollen.some((r) => !!r && (CERTIFICAAT_ROLLEN as readonly string[]).includes(r));
+}

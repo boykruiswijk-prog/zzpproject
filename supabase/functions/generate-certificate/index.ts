@@ -66,13 +66,14 @@ serve(async (req) => {
       new Response(JSON.stringify(b), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
     const adminClient = createClient(supabaseUrl, supabaseServiceKey);
-    const { data: isSupAdmin } = await adminClient.rpc("is_supervisor_or_admin", { _user_id: user.id });
+    const { data: rolRijen } = await adminClient.from("user_roles").select("role").eq("user_id", user.id);
+    const isSupAdmin = magCertificaatBeheren((rolRijen || []).map((r: any) => r.role));
 
     let policy: any;
     let kvkNummerBron: string | null = null;
 
     if (actie !== "nieuw") {
-      if (!isSupAdmin) return json({ error: "Alleen supervisor/admin mag certificaten aanpassen, intrekken of mailen" }, 403);
+      if (!isSupAdmin) return json({ error: "Alleen supervisor/admin/verzekering mag certificaten aanpassen, intrekken of mailen" }, 403);
       if (!body.policy_id) return json({ error: "policy_id vereist" }, 400);
       const { data: bestaand } = await adminClient.from("policies").select("*").eq("id", body.policy_id).maybeSingle();
       if (!bestaand) return json({ error: "Certificaat niet gevonden" }, 404);
@@ -139,7 +140,7 @@ serve(async (req) => {
       }
     } else if (body.onderneming_id) {
       // Bestaande klant (geïmporteerd, zonder lead): eigen nummer hergebruiken.
-      if (!isSupAdmin) return json({ error: "Alleen supervisor/admin mag certificaten genereren voor klanten" }, 403);
+      if (!isSupAdmin) return json({ error: "Alleen supervisor/admin/verzekering mag certificaten genereren voor klanten" }, 403);
       const ondId = String(body.onderneming_id);
       const vandaag = new Date().toISOString().split("T")[0];
       const { data: ond } = await adminClient.from("ondernemingen").select("id,naam,kvk").eq("id", ondId).maybeSingle();
@@ -193,7 +194,7 @@ serve(async (req) => {
           return json({ error: `Deze lead heeft al geldig certificaat ${besluit.bestaand}. Gebruik "Aanpassen".`, code: besluit.code, bestaand: besluit.bestaand }, 409);
         }
         if (body.bevestig_nieuw_nummer === true && (bestaande || []).some((p) => p.status === "geldig") && !isSupAdmin) {
-          return json({ error: "Alleen supervisor/admin mag een extra certificaatnummer uitgeven" }, 403);
+          return json({ error: "Alleen supervisor/admin/verzekering mag een extra certificaatnummer uitgeven" }, 403);
         }
       }
       if (lead_id && !data) {
