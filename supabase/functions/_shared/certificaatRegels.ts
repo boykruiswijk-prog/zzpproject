@@ -50,3 +50,30 @@ export function schoonAanpassing(input: Record<string, unknown>): Partial<Record
 export const FOOTER_REGISTER_TEKST = "ZP Zaken is ingeschreven in het register Wft bij de AFM onder vergunningsnummer:";
 export const POLISBLAD_NOTITIE =
   'Waar op het polisblad wordt vermeld "per jaar voor alle leden tezamen" wordt gerefereerd aan het verzekerd bedrag per jaar.';
+
+export type KlantNummerBesluit =
+  | { soort: "bestaand"; nummer: string }
+  | { soort: "nieuw_nodig" };
+
+/**
+ * Bestaande klant: hergebruik het nieuwste eigen certificaatnummer uit klant_certificaten
+ * (alleen rijen van déze onderneming). Bevestigde koppelingen gaan vóór voorstellen.
+ * Geen nummer → nieuw nummer pas na bevestiging.
+ */
+export function kiesKlantCertificaatnummer(
+  certs: { certificaatnummer: string; aanvraagdatum: string; koppeling_status?: string | null }[],
+): KlantNummerBesluit {
+  const sorteer = (a: { aanvraagdatum: string }, b: { aanvraagdatum: string }) => b.aanvraagdatum.localeCompare(a.aanvraagdatum);
+  const geldig = certs.filter((c) => (c.certificaatnummer ?? "").trim());
+  const bevestigd = geldig.filter((c) => (c.koppeling_status ?? "bevestigd") === "bevestigd").sort(sorteer);
+  const kies = bevestigd[0] ?? [...geldig].sort(sorteer)[0];
+  return kies ? { soort: "bestaand", nummer: kies.certificaatnummer.trim().toUpperCase() } : { soort: "nieuw_nodig" };
+}
+
+/** Actief = minstens één verzekeringsregel actief/loopt_af zonder einddatum in het verleden. */
+export function actiefKlantContract<T extends { type: string; status: string; eind_datum?: string | null }>(
+  contracten: T[], vandaag: string,
+): T | null {
+  return contracten.find((c) => c.type === "verzekering" && (c.status === "actief" || c.status === "loopt_af") &&
+    (!c.eind_datum || c.eind_datum >= vandaag)) ?? null;
+}

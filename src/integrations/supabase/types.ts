@@ -2886,6 +2886,7 @@ export type Database = {
           issued_by: string
           issued_date: string
           lead_id: string | null
+          onderneming_id: string | null
           own_risk: string
           package_type: string
           pdf_url: string | null
@@ -2915,6 +2916,7 @@ export type Database = {
           issued_by?: string
           issued_date?: string
           lead_id?: string | null
+          onderneming_id?: string | null
           own_risk?: string
           package_type?: string
           pdf_url?: string | null
@@ -2944,6 +2946,7 @@ export type Database = {
           issued_by?: string
           issued_date?: string
           lead_id?: string | null
+          onderneming_id?: string | null
           own_risk?: string
           package_type?: string
           pdf_url?: string | null
@@ -2967,6 +2970,13 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "policies_onderneming_id_fkey"
+            columns: ["onderneming_id"]
+            isOneToOne: false
+            referencedRelation: "ondernemingen"
             referencedColumns: ["id"]
           },
         ]

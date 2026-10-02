@@ -1,0 +1,2 @@
+ALTER TABLE public.policies ADD COLUMN IF NOT EXISTS onderneming_id uuid REFERENCES public.ondernemingen(id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS idx_policies_onderneming_id ON public.policies(onderneming_id);
