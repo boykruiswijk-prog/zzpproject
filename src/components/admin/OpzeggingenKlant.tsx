@@ -168,7 +168,7 @@ export function OpzeggingenKlant({ ondernemingId, contracten, onGewijzigd }: { o
               </div>
             )}
             {a.opzegging_verwerkt_op ? (
-              <p className="text-emerald-700">Verwerkt op {formatDateNL(a.opzegging_verwerkt_op)}.</p>
+              <p className="text-emerald-700">Verwerkt op {formatDateNL(a.opzegging_verwerkt_op)}{a.opzegging_verwerkt_door ? ` door ${verwerkers.get(a.opzegging_verwerkt_door) ?? "—"}` : ""}.</p>
             ) : a.koppeling_status !== "zeker" ? (
               <Button size="sm" variant="outline" disabled={bezig} onClick={() => bevestig(a)}>Koppeling met deze klant bevestigen</Button>
             ) : open !== a.id ? (
