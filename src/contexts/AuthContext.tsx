@@ -1,3 +1,4 @@
+import { magCertificaatBeheren } from "../../supabase/functions/_shared/certificaatRegels";
 import { createContext, useContext, useEffect, useState, useCallback, useRef, ReactNode } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,6 +24,7 @@ interface AuthContextType {
   isSupervisorOrAdmin: boolean;
   isVerzekering: boolean;
   isMarketing: boolean;
+  magCertificaten: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -177,6 +179,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isSupervisorOrAdmin: role === "supervisor" || role === "admin",
     isVerzekering: role === "verzekering" || role === "medewerker",
     isMarketing: role === "marketing",
+    magCertificaten: magCertificaatBeheren([role]),
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

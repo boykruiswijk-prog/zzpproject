@@ -7,6 +7,7 @@ import { createMailGate } from "../_shared/mail.ts";
 import {
   bepaalHoedanigheid, beslisNieuwCertificaat, schoonAanpassing, kiesKlantCertificaatnummer, actiefKlantContract,
   FOOTER_REGISTER_TEKST, POLISBLAD_NOTITIE,
+  magCertificaatBeheren,
 } from "../_shared/certificaatRegels.ts";
 import { brancheVoorSector } from "../_shared/sectorBranche.ts";
 

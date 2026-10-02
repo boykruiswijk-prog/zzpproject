@@ -54,7 +54,7 @@ const statusColors = LEAD_STATUS_COLORS;
 export default function AdminLeadDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isAdmin, isSupervisorOrAdmin, isTeamMember } = useAuth();
+  const { isAdmin, isSupervisorOrAdmin, isTeamMember, magCertificaten } = useAuth();
   const { toast } = useToast();
   const { data: lead, isLoading } = useLead(id);
   const updateLead = useUpdateLead();
@@ -572,7 +572,7 @@ export default function AdminLeadDetail() {
                   leadId={lead.id}
                   leadActief={lead.status === "actief"}
                   policies={policies || []}
-                  isSupervisorOrAdmin={isSupervisorOrAdmin}
+                  isSupervisorOrAdmin={magCertificaten}
                   onChanged={() => refetchPolicies()}
                   onDownload={handleDownloadCertificate}
                 />

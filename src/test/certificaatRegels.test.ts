@@ -36,3 +36,15 @@ describe("certificaatregels", () => {
     expect(POLISBLAD_NOTITIE).toContain("polisblad");
   });
 });
+
+import { magCertificaatBeheren } from "../../supabase/functions/_shared/certificaatRegels";
+describe("certificaatrechten", () => {
+  it("verzekering, supervisor en admin mogen", () => {
+    for (const r of ["verzekering", "supervisor", "admin"]) expect(magCertificaatBeheren([r])).toBe(true);
+  });
+  it("marketing en geen rol mogen niet", () => {
+    expect(magCertificaatBeheren(["marketing"])).toBe(false);
+    expect(magCertificaatBeheren([null])).toBe(false);
+    expect(magCertificaatBeheren([])).toBe(false);
+  });
+});

@@ -22,7 +22,7 @@ interface Props {
 }
 
 export function KlantCertificaat({ ond, contracten, personen, leadIds }: Props) {
-  const { isSupervisorOrAdmin } = useAuth();
+  const { magCertificaten: isSupervisorOrAdmin } = useAuth();
   const { toast } = useToast();
   const vandaag = new Date().toISOString().split("T")[0];
   const actief = actiefKlantContract(contracten, vandaag);
