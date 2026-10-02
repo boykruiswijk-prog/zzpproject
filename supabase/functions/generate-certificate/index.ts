@@ -8,6 +8,7 @@ import {
   bepaalHoedanigheid, beslisNieuwCertificaat, schoonAanpassing, kiesKlantCertificaatnummer, actiefKlantContract,
   FOOTER_REGISTER_TEKST, POLISBLAD_NOTITIE,
 } from "../_shared/certificaatRegels.ts";
+import { brancheVoorSector } from "../_shared/sectorBranche.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -163,11 +164,13 @@ serve(async (req) => {
       }
       const pd = policy_data || {};
       const tekst = (v: unknown) => (typeof v === "string" ? v.trim().slice(0, 200) : "");
-      const profession = tekst(pd.profession);
+      const sector = tekst(pd.sector);
+      const profession = brancheVoorSector(sector) ?? "";
+      if (!profession) return json({ error: "Kies een geldige branche/vak" }, 400);
       const holder = tekst(pd.certificate_holder) || ond.naam || "";
       const insured = tekst(pd.insured_name);
       const start = /^\d{4}-\d{2}-\d{2}$/.test(tekst(pd.start_date)) ? tekst(pd.start_date) : "";
-      if (!profession || !holder || !insured || !start) return json({ error: "Hoedanigheid, certificaathouder, verzekeringsnemer en ingangsdatum zijn verplicht" }, 400);
+      if (!profession || !holder || !insured || !start) return json({ error: "Branche, certificaathouder, verzekeringsnemer en ingangsdatum zijn verplicht" }, 400);
       const { data: prof } = await adminClient.from("profiles").select("full_name").eq("id", user.id).maybeSingle();
       kvkNummerBron = tekst(pd.kvk) || ond.kvk || null;
       const { data: ins, error: insErr } = await adminClient.from("policies").insert({
@@ -178,6 +181,7 @@ serve(async (req) => {
         issued_by: prof?.full_name || user.email || "ZP Zaken", issued_date: vandaag,
       }).select().single();
       if (insErr) return json({ error: "Certificaat opslaan mislukt", details: insErr.message }, 500);
+      await adminClient.from("ondernemingen").update({ branche: profession, sector }).eq("id", ondId);
       policy = ins;
     } else {
       if (!lead_id && !policy_data) return json({ error: "lead_id or policy_data required" }, 400);
