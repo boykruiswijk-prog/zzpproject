@@ -61,13 +61,29 @@ export function OpzeggingenKlant({ ondernemingId, contracten, onGewijzigd }: { o
   const { toast } = useToast();
   const { toonTest } = useToonTestrecords();
   const [lijst, setLijst] = useState<Aanvraag[]>([]);
+  const [credits, setCredits] = useState<Map<string, CreditInfo[]>>(new Map());
+  const [verwerkers, setVerwerkers] = useState<Map<string, string>>(new Map());
   const [open, setOpen] = useState<string | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState<string | null>(null);
   const [gekozen, setGekozen] = useState<Set<string>>(new Set());
   const [bezig, setBezig] = useState(false);
 
   async function laad() {
     const { data } = await supabase.from("klant_service_aanvragen").select(KOLOMMEN).eq("type", "opzeggen").eq("onderneming_id", ondernemingId).order("created_at", { ascending: false });
-    setLijst(((data ?? []) as Aanvraag[]).filter((a) => toonTest || !a.is_test));
+    const l = ((data ?? []) as Aanvraag[]).filter((a) => toonTest || !a.is_test);
+    setLijst(l);
+    const ids = l.map((a) => a.id);
+    if (ids.length) {
+      const { data: cr } = await supabase.from("factuur_credit_planning").select("aanvraag_id,klant_contract_id,status,melding,bedrag,credit_vanaf,credit_tm,bron").in("aanvraag_id", ids);
+      const m = new Map<string, CreditInfo[]>();
+      for (const c of cr ?? []) { const k = (c as any).aanvraag_id as string; m.set(k, [...(m.get(k) ?? []), c as any]); }
+      setCredits(m);
+      const verwerkerIds = [...new Set(l.map((a) => a.opzegging_verwerkt_door).filter(Boolean))] as string[];
+      if (verwerkerIds.length) {
+        const { data: p } = await supabase.from("profiles").select("id,full_name").in("id", verwerkerIds);
+        setVerwerkers(new Map((p ?? []).map((x) => [x.id, x.full_name ?? "Onbekend"])));
+      }
+    }
   }
   useEffect(() => { laad(); }, [ondernemingId, toonTest]);
 
