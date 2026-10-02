@@ -45,6 +45,15 @@ export const CREDIT_STATUS_LABEL: Record<string, string> = {
   niet_nodig: "Niet nodig",
 };
 
+/** Eén regel creditstatus voor in het detaildeel, bijv. "Concept in Exact · € 542,96 · periode 3 okt 2026 t/m 4 okt 2027". */
+export function creditStatusTekst(c: CreditInfo): string {
+  let t = CREDIT_STATUS_LABEL[c.status] ?? c.status;
+  if (c.status === "geblokkeerd" && c.melding) t += ` — ${c.melding}`;
+  if (c.bedrag != null) t += ` · € ${Number(c.bedrag).toFixed(2).replace(".", ",")}`;
+  if (c.credit_vanaf && c.credit_tm) t += ` · periode ${formatDateNL(c.credit_vanaf)} t/m ${formatDateNL(c.credit_tm)}`;
+  return t;
+}
+
 const KOLOMMEN = "id,created_at,voornaam,achternaam,email,telefoon,polisnummer,details,notities,koppeling_status,koppeling_methode,koppeling_details,onderneming_id,opzegging_verwerkt_op,opzegging_verwerkt_door,is_test";
 
 function KoppelBadge({ a }: { a: Aanvraag }) {
