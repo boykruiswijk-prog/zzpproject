@@ -246,6 +246,13 @@
       "when": 1790934080556,
       "tag": "0034_ondernemingen_branche",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1790941207047,
+      "tag": "0035_opzeg_credit_oud_systeem",
+      "breakpoints": true
     }
   ]
 }
