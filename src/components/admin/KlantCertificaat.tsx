@@ -10,10 +10,12 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { CertificaatBeheer } from "@/components/admin/CertificaatBeheer";
+import { WIZARD_SECTOREN } from "@/data/sectorVerzekeringskaart";
+import { brancheVoorSector } from "@/data/sectorBranche";
 import { actiefKlantContract } from "../../../supabase/functions/_shared/certificaatRegels";
 
 interface Props {
-  ond: { id: string; naam: string | null; kvk: string | null; afas_contactpersoon?: string | null };
+  ond: { id: string; naam: string | null; kvk: string | null; afas_contactpersoon?: string | null; sector?: string | null; branche?: string | null };
   contracten: any[];
   personen: any[];
   leadIds: string[];
@@ -28,7 +30,7 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds }: Props) 
   const [bevestig, setBevestig] = useState(false);
   const [geenNummer, setGeenNummer] = useState(false);
   const [bezig, setBezig] = useState(false);
-  const [form, setForm] = useState({ certificate_holder: "", insured_name: "", kvk: "", start_date: "", profession: "", package_type: "" });
+  const [form, setForm] = useState({ certificate_holder: "", insured_name: "", kvk: "", start_date: "", sector: "", package_type: "" });
 
   const { data: policies = [], refetch } = useQuery({
     queryKey: ["klant-policies", ond.id],
@@ -40,11 +42,16 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds }: Props) 
   });
 
   const openForm = async (bevestigNieuw: boolean) => {
-    let profession = "";
-    if (leadIds.length) {
-      const { data } = await supabase.from("leads").select("branche,beroep").in("id", leadIds);
-      const l = (data || []).find((x) => (x.branche || x.beroep || "").trim());
-      profession = (l?.branche || l?.beroep || "").trim();
+    // Voorkeur: eerder bij de klant gekozen sector, anders branche van een gekoppelde lead.
+    let sector = WIZARD_SECTOREN.some((x) => x.label === ond.sector) ? ond.sector! : "";
+    if (!sector && leadIds.length) {
+      const { data } = await supabase.from("leads").select("branche,extra_data").in("id", leadIds);
+      for (const l of data || []) {
+        const ed = (l.extra_data as any)?.sector;
+        if (ed && WIZARD_SECTOREN.some((x) => x.label === ed)) { sector = ed; break; }
+        const m = l.branche ? WIZARD_SECTOREN.find((x) => brancheVoorSector(x.label) === l.branche) : undefined;
+        if (m) { sector = m.label; break; }
+      }
     }
     const p = personen[0];
     const naam = p ? [p.voornaam, p.achternaam].filter(Boolean).join(" ") : "";
@@ -54,7 +61,7 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds }: Props) 
       insured_name: naam || ond.afas_contactpersoon || "",
       kvk: ond.kvk ?? "",
       start_date: bav?.begin_datum ?? "",
-      profession,
+      sector,
       package_type: bav ? `BAV & AVB ${bav.cyclus === "jaar" ? "Jaarlijks" : "Maandelijks"}` : "BAV & AVB Jaarlijks",
     });
     setBevestig(bevestigNieuw);
@@ -87,7 +94,7 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds }: Props) 
   };
 
   if (!isSupervisorOrAdmin && policies.length === 0) return null;
-  const compleet = form.profession.trim() && form.certificate_holder.trim() && form.insured_name.trim() && form.start_date;
+  const compleet = form.sector && form.certificate_holder.trim() && form.insured_name.trim() && form.start_date;
 
   return (
     <Card>
@@ -112,10 +119,17 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds }: Props) 
           <div className="space-y-3">
             {([
               ["certificate_holder", "Certificaathouder"], ["insured_name", "Verzekeringsnemer"], ["kvk", "KvK"],
-              ["profession", "Hoedanigheid (verplicht)"], ["package_type", "Pakket"],
+              ["package_type", "Pakket"],
             ] as const).map(([k, l]) => (
               <div key={k}><Label htmlFor={`kc-${k}`}>{l}</Label><Input id={`kc-${k}`} value={form[k]} onChange={(e) => setForm({ ...form, [k]: e.target.value })} /></div>
             ))}
+            <div><Label htmlFor="kc-sec">Branche/vak (verplicht)</Label>
+              <select id="kc-sec" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={form.sector} onChange={(e) => setForm({ ...form, sector: e.target.value })}>
+                <option value="">Kies…</option>
+                {WIZARD_SECTOREN.map((x) => <option key={x.id} value={x.label}>{x.label}</option>)}
+              </select>
+              {form.sector && <p className="mt-1 text-xs text-muted-foreground">Hoedanigheid op certificaat: {brancheVoorSector(form.sector)}</p>}
+            </div>
             <div><Label htmlFor="kc-sd">Ingangsdatum</Label><Input id="kc-sd" type="date" value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} /></div>
           </div>
           {geenNummer && (
