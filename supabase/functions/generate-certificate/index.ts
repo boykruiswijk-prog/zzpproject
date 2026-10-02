@@ -5,7 +5,7 @@ import { COMPANY } from "../_shared/company.ts";
 import { autoInvitePortalLead } from "../_shared/portalAccess.ts";
 import { createMailGate } from "../_shared/mail.ts";
 import {
-  bepaalHoedanigheid, beslisNieuwCertificaat, schoonAanpassing,
+  bepaalHoedanigheid, beslisNieuwCertificaat, schoonAanpassing, kiesKlantCertificaatnummer, actiefKlantContract,
   FOOTER_REGISTER_TEKST, POLISBLAD_NOTITIE,
 } from "../_shared/certificaatRegels.ts";
 
@@ -133,6 +133,49 @@ serve(async (req) => {
         const { data: l } = await adminClient.from("leads").select("kvk_nummer").eq("id", bestaand.lead_id).maybeSingle();
         kvkNummerBron = l?.kvk_nummer ?? null;
       }
+    } else if (body.onderneming_id) {
+      // Bestaande klant (geïmporteerd, zonder lead): eigen nummer hergebruiken.
+      if (!isSupAdmin) return json({ error: "Alleen supervisor/admin mag certificaten genereren voor klanten" }, 403);
+      const ondId = String(body.onderneming_id);
+      const vandaag = new Date().toISOString().split("T")[0];
+      const { data: ond } = await adminClient.from("ondernemingen").select("id,naam,kvk").eq("id", ondId).maybeSingle();
+      if (!ond) return json({ error: "Klant niet gevonden" }, 404);
+      const { data: kc } = await adminClient.from("klant_contracten").select("type,status,eind_datum,begin_datum,product").eq("onderneming_id", ondId);
+      if (!actiefKlantContract(kc || [], vandaag)) return json({ error: "Deze klant heeft geen actief verzekeringscontract (opgezegd of afgelopen). Genereren is geblokkeerd.", code: "niet_actief" }, 409);
+      const { data: bestaande } = await adminClient.from("policies").select("certificate_number,status").eq("onderneming_id", ondId);
+      const besluit = beslisNieuwCertificaat(bestaande || [], body.bevestig_nieuw_nummer === true);
+      if (!besluit.toegestaan) return json({ error: `Deze klant heeft al geldig certificaat ${besluit.bestaand}. Gebruik "Aanpassen".`, code: besluit.code, bestaand: besluit.bestaand }, 409);
+      const heeftGeldig = (bestaande || []).some((p) => p.status === "geldig");
+      let nummer = "";
+      if (!heeftGeldig) {
+        const { data: certs } = await adminClient.from("klant_certificaten").select("certificaatnummer,aanvraagdatum,koppeling_status").eq("onderneming_id", ondId);
+        const k = kiesKlantCertificaatnummer(certs || []);
+        if (k.soort === "bestaand") {
+          const { data: botsing } = await adminClient.from("policies").select("id,onderneming_id,lead_id").eq("certificate_number", k.nummer).maybeSingle();
+          if (botsing) return json({ error: `Nummer ${k.nummer} staat al op een ander certificaat in het systeem. Neem contact op met Boy.`, code: "nummer_bezet" }, 409);
+          nummer = k.nummer;
+        } else if (body.bevestig_nieuw_nummer !== true) {
+          return json({ error: "Deze klant heeft nog geen certificaatnummer. Bevestig om een nieuw nummer uit te geven.", code: "geen_nummer" }, 409);
+        }
+      }
+      const pd = policy_data || {};
+      const tekst = (v: unknown) => (typeof v === "string" ? v.trim().slice(0, 200) : "");
+      const profession = tekst(pd.profession);
+      const holder = tekst(pd.certificate_holder) || ond.naam || "";
+      const insured = tekst(pd.insured_name);
+      const start = /^\d{4}-\d{2}-\d{2}$/.test(tekst(pd.start_date)) ? tekst(pd.start_date) : "";
+      if (!profession || !holder || !insured || !start) return json({ error: "Hoedanigheid, certificaathouder, verzekeringsnemer en ingangsdatum zijn verplicht" }, 400);
+      const { data: prof } = await adminClient.from("profiles").select("full_name").eq("id", user.id).maybeSingle();
+      kvkNummerBron = tekst(pd.kvk) || ond.kvk || null;
+      const { data: ins, error: insErr } = await adminClient.from("policies").insert({
+        onderneming_id: ondId, lead_id: null, certificate_number: nummer,
+        certificate_holder: holder, insured_name: insured, start_date: start, profession,
+        package_type: tekst(pd.package_type) || "BAV & AVB Jaarlijks",
+        bav_per_event: "€ 5.000.000", bav_per_year: "€ 15.000.000", avb_per_event: "€ 2.500.000", avb_per_year: "€ 5.000.000",
+        issued_by: prof?.full_name || user.email || "ZP Zaken", issued_date: vandaag,
+      }).select().single();
+      if (insErr) return json({ error: "Certificaat opslaan mislukt", details: insErr.message }, 500);
+      policy = ins;
     } else {
       if (!lead_id && !policy_data) return json({ error: "lead_id or policy_data required" }, 400);
       let data = policy_data;
