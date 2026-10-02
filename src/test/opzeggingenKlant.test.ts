@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { CREDIT_STATUS_LABEL, creditStatusTekst, type CreditInfo } from "@/components/admin/OpzeggingenKlant";
+import { CREDIT_STATUS_LABEL, creditStatusTekst, type CreditInfo } from "@/lib/opzegCreditStatus";
 
 const basis: CreditInfo = { klant_contract_id: "c1", status: "concept_aangemaakt", melding: null, bedrag: 542.96, credit_vanaf: "2026-10-03", credit_tm: "2027-10-04", bron: "oud_systeem" };
 

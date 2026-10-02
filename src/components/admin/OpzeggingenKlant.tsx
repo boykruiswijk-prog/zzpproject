@@ -34,25 +34,9 @@ type Aanvraag = {
   onderneming_id: string | null; opzegging_verwerkt_op: string | null; opzegging_verwerkt_door: string | null; is_test: boolean;
 };
 
-export type CreditInfo = { klant_contract_id: string; status: string; melding: string | null; bedrag: number | null; credit_vanaf: string | null; credit_tm: string | null; bron: string };
-
-export const CREDIT_STATUS_LABEL: Record<string, string> = {
-  te_maken: "Te maken",
-  geblokkeerd: "Geblokkeerd",
-  concept_aangemaakt: "Concept in Exact",
-  verwerkt: "Verwerkt in Exact",
-  geen_planner_factuur: "Handmatig beoordelen",
-  niet_nodig: "Niet nodig",
-};
-
-/** Eén regel creditstatus voor in het detaildeel, bijv. "Concept in Exact · € 542,96 · periode 3 okt 2026 t/m 4 okt 2027". */
-export function creditStatusTekst(c: CreditInfo): string {
-  let t = CREDIT_STATUS_LABEL[c.status] ?? c.status;
-  if (c.status === "geblokkeerd" && c.melding) t += ` — ${c.melding}`;
-  if (c.bedrag != null) t += ` · € ${Number(c.bedrag).toFixed(2).replace(".", ",")}`;
-  if (c.credit_vanaf && c.credit_tm) t += ` · periode ${formatDateNL(c.credit_vanaf)} t/m ${formatDateNL(c.credit_tm)}`;
-  return t;
-}
+export type { CreditInfo } from "@/lib/opzegCreditStatus";
+export { CREDIT_STATUS_LABEL, creditStatusTekst } from "@/lib/opzegCreditStatus";
+import { creditStatusTekst, type CreditInfo } from "@/lib/opzegCreditStatus";
 
 const KOLOMMEN = "id,created_at,voornaam,achternaam,email,telefoon,polisnummer,details,notities,koppeling_status,koppeling_methode,koppeling_details,onderneming_id,opzegging_verwerkt_op,opzegging_verwerkt_door,is_test";
 
