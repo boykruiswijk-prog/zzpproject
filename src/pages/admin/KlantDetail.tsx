@@ -10,6 +10,7 @@ import { formatDateNL } from "@/lib/dateFormat";
 import { CONTRACT_STATUS_LABEL, PRODUCT_LABEL, formatEuro, maskeerIban, periodeBedrag, type Product } from "@/lib/klantContracten";
 import { OpzeggingenKlant } from "@/components/admin/OpzeggingenKlant";
 import { CertificatenKlant } from "@/components/admin/CertificatenKlant";
+import { KlantCertificaat } from "@/components/admin/KlantCertificaat";
 
 export default function KlantDetail() {
   const { id } = useParams();
@@ -78,6 +79,7 @@ export default function KlantDetail() {
                 <p className="mt-2 text-xs text-muted-foreground">Via contactpersonen of relatiecode; alleen ter informatie.</p>
               </CardContent></Card>
             </div>
+            <KlantCertificaat ond={ond} contracten={contracten} personen={personen} leadIds={leadMatch.map((l) => l.id)} />
             <CertificatenKlant ondernemingId={ond.id} />
             <OpzeggingenKlant ondernemingId={ond.id} contracten={contracten} onGewijzigd={() => setHerlaad((x) => x + 1)} />
             <Card><CardHeader><CardTitle className="text-base">Contractregels en planning</CardTitle></CardHeader><CardContent className="overflow-x-auto">
