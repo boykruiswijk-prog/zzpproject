@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-// creditStatusTekst gebruikt formatDateNL; zie CREDIT_STATUS_LABEL hieronder.
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
@@ -161,12 +160,7 @@ export function OpzeggingenKlant({ ondernemingId, contracten, onGewijzigd }: { o
                     {(credits.get(a.id) ?? []).length > 0 ? (
                       <ul className="space-y-1">
                         {(credits.get(a.id) ?? []).map((c, i) => (
-                          <li key={i}>
-                            Creditnota: <span className="font-medium">{CREDIT_STATUS_LABEL[c.status] ?? c.status}</span>
-                            {c.status === "geblokkeerd" && c.melding ? ` — ${c.melding}` : ""}
-                            {c.bedrag != null && <> · € {Number(c.bedrag).toFixed(2).replace(".", ",")}</>}
-                            {c.credit_vanaf && c.credit_tm && <> · periode {formatDateNL(c.credit_vanaf)} t/m {formatDateNL(c.credit_tm)}</>}
-                          </li>
+                          <li key={i}>Creditnota: <span className="font-medium">{creditStatusTekst(c)}</span></li>
                         ))}
                       </ul>
                     ) : (
