@@ -125,6 +125,48 @@ export function OpzeggingenKlant({ ondernemingId, contracten, onGewijzigd }: { o
               Ontvangen {formatDateNL(a.created_at)} · gewenste opzegdatum {formatDateNL(a.details?.opzegdatum)} · polis/contract {a.polisnummer || "—"}
               {a.details?.bedrijfsnaam && <> · bedrijf {a.details.bedrijfsnaam}</>}
             </div>
+            <div>
+              <Button size="sm" variant="ghost" className="h-7 px-2" onClick={() => setDetailsOpen(detailsOpen === a.id ? null : a.id)}>
+                {detailsOpen === a.id ? "Verberg details" : "Details"}
+              </Button>
+            </div>
+            {detailsOpen === a.id && (
+              <div className="rounded-md bg-muted/40 p-3 space-y-1.5">
+                <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5">
+                  <div><dt className="text-xs text-muted-foreground">Naam</dt><dd>{a.voornaam} {a.achternaam}</dd></div>
+                  {a.details?.bedrijfsnaam && <div><dt className="text-xs text-muted-foreground">Bedrijfsnaam</dt><dd>{a.details.bedrijfsnaam}</dd></div>}
+                  <div><dt className="text-xs text-muted-foreground">E-mail</dt><dd><a className="text-primary hover:underline" href={`mailto:${a.email}`}>{a.email}</a></dd></div>
+                  <div><dt className="text-xs text-muted-foreground">Telefoon</dt><dd>{a.telefoon ? <a className="text-primary hover:underline" href={`tel:${a.telefoon}`}>{a.telefoon}</a> : "—"}</dd></div>
+                  <div><dt className="text-xs text-muted-foreground">Polisnummer</dt><dd>{a.polisnummer || "—"}</dd></div>
+                  <div><dt className="text-xs text-muted-foreground">Opzegdatum</dt><dd>{formatDateNL(a.details?.opzegdatum)}</dd></div>
+                  <div><dt className="text-xs text-muted-foreground">Reden</dt><dd>{a.details?.reden || "—"}</dd></div>
+                  <div><dt className="text-xs text-muted-foreground">Ontvangen op</dt><dd>{formatDateNL(a.created_at)}</dd></div>
+                  <div><dt className="text-xs text-muted-foreground">Koppeling</dt><dd>{KOPPELING_LABEL[a.koppeling_status ?? "niet_gekoppeld"] ?? a.koppeling_status}{a.koppeling_methode ? ` (${METHODE_LABEL[a.koppeling_methode] ?? a.koppeling_methode})` : ""}</dd></div>
+                </dl>
+                {a.details?.toelichting && <div><p className="text-xs text-muted-foreground">Toelichting</p><p className="whitespace-pre-wrap">{a.details.toelichting}</p></div>}
+                {a.notities && <div><p className="text-xs text-muted-foreground">Notities</p><p className="whitespace-pre-wrap">{a.notities}</p></div>}
+                {a.opzegging_verwerkt_op && (
+                  <div className="border-t border-border pt-2 space-y-1.5">
+                    <p>Verwerkt op {formatDateNL(a.opzegging_verwerkt_op)}{a.opzegging_verwerkt_door ? ` door ${verwerkers.get(a.opzegging_verwerkt_door) ?? "—"}` : ""}.</p>
+                    {(credits.get(a.id) ?? []).length > 0 ? (
+                      <ul className="space-y-1">
+                        {(credits.get(a.id) ?? []).map((c, i) => (
+                          <li key={i}>
+                            Creditnota: <span className="font-medium">{CREDIT_STATUS_LABEL[c.status] ?? c.status}</span>
+                            {c.status === "geblokkeerd" && c.melding ? ` — ${c.melding}` : ""}
+                            {c.bedrag != null && <> · € {Number(c.bedrag).toFixed(2).replace(".", ",")}</>}
+                            {c.credit_vanaf && c.credit_tm && <> · periode {formatDateNL(c.credit_vanaf)} t/m {formatDateNL(c.credit_tm)}</>}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-muted-foreground">Geen creditnota gepland voor deze opzegging.</p>
+                    )}
+                  </div>
+                )}
+                <p><Link to={`/admin/service-aanvragen/${a.id}`} className="text-primary hover:underline">Bekijk de volledige aanvraag</Link></p>
+              </div>
+            )}
             {a.opzegging_verwerkt_op ? (
               <p className="text-emerald-700">Verwerkt op {formatDateNL(a.opzegging_verwerkt_op)}.</p>
             ) : a.koppeling_status !== "zeker" ? (
