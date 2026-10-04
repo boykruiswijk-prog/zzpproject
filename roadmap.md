@@ -9,9 +9,9 @@
 
 ## Beveiligingscheck 4 oktober 2026
 
-- [ ] Sluit SECURITY DEFINER-functies, herstel expliciete rechten en standaardprivileges, test e-mailwachtrij.
+- [x] Sluit SECURITY DEFINER-functies, herstel expliciete rechten en standaardprivileges, test e-mailwachtrij.
 - [ ] Beveilig process-klant-service met anti-spam, verificatiestatus en portal-eigendomscontrole.
-- [ ] Dwing MFA server-side af zonder service-role- of klantportaalstromen te breken.
+- [ ] Dwing MFA server-side af en stuur aal1-teamleden direct naar MFA-inschrijving/verificatie zonder service-role- of klantportaalstromen te breken.
 - [ ] Verwijder Exact-geheimen uit frontendtoegang en test Exact-status/keepalive.
 - [ ] Herstel login-lockout zodat publieke requests geen accounts kunnen blokkeren.
 - [ ] Beperk export-excel tot admin, supervisor en verzekering; vervang kwetsbare XLSX-library en test export.
