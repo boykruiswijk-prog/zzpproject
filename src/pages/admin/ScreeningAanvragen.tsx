@@ -63,7 +63,7 @@ export default function AdminScreeningAanvragen() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="min-w-0 space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Screening aanvragen</h1>
           <p className="text-muted-foreground">Beheer en volg alle screeningsaanvragen</p>
@@ -71,7 +71,7 @@ export default function AdminScreeningAanvragen() {
 
         </div>
 
-        <Card>
+        <Card className="min-w-0 w-full">
           <Table>
             <TableHeader>
               <TableRow>

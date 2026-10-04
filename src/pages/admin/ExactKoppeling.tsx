@@ -354,7 +354,7 @@ export default function ExactKoppeling() {
                 </Button>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+              <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <Label>Client ID</Label>
                 <Input
@@ -388,7 +388,7 @@ export default function ExactKoppeling() {
                   className="font-mono text-xs"
                 />
               </div>
-              <div className="col-span-2">
+              <div className="sm:col-span-2">
                 <Label>Webhook secret (optioneel)</Label>
                 <Input
                   type="password"
@@ -442,7 +442,7 @@ export default function ExactKoppeling() {
             <CardHeader>
               <CardTitle>Tokenstatus</CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-4 text-sm">
+            <CardContent className="grid min-w-0 grid-cols-1 gap-4 text-sm sm:grid-cols-2">
               <div>
                 <p className="text-muted-foreground">Access token vernieuwt</p>
                 <p className="font-medium">
