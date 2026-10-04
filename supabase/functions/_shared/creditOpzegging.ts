@@ -71,13 +71,15 @@ export function oudSysteemOmschrijving(einddatum: string, vanaf: string, tm: str
 /** Exact-payload voor een creditnota (Type 8021, concept Status 20). Kopteksten max 60 tekens; volledige omschrijving in Remarks naast de sleutel. */
 export function oudSysteemCreditPayload(c: {
   creditsleutel: string; exact_account_id: string; exact_item_id: string; gl_account_id?: string | null;
+  /** BTW-code van de oorspronkelijke factuur (uit de artikelmapping van het itemcode). */
+  btw_code?: string | null;
   einddatum: string; credit_vanaf: string; credit_tm: string; vandaag: string;
   regels: { credit_vanaf: string; periode_eind: string; credit_bedrag: number }[];
 }) {
   const nu = `${c.vandaag}T00:00:00`;
   const lijnen = c.regels.filter((r) => r.credit_bedrag > 0).map((r) => {
     const l: Record<string, unknown> = {
-      Item: c.exact_item_id, Quantity: 1, UnitPrice: Math.round(r.credit_bedrag * 100) / 100, VATCode: "0",
+      Item: c.exact_item_id, Quantity: 1, UnitPrice: Math.round(r.credit_bedrag * 100) / 100, VATCode: String(c.btw_code ?? "").trim() || "0",
       Description: `Credit ${nl(r.credit_vanaf)} t/m ${nl(r.periode_eind)} opzegging`.slice(0, 60),
       StartTime: `${r.credit_vanaf}T00:00:00`, EndTime: `${r.periode_eind}T00:00:00`,
     };

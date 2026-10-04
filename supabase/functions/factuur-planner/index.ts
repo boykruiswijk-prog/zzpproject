@@ -10,7 +10,7 @@ import { sendExactAlarm } from "../_shared/exactAlarm.ts";
 import { periodeTekst, regelOmschrijving } from "../_shared/factuurTekst.ts";
 import { planningsSleutel, planningStatusUitExact } from "../_shared/factuurPeriode.ts";
 import { getGlAccountIdVoorCode, GlNietGevondenError } from "../_shared/exactGl.ts";
-import { bouwFactuurPayload, glUitCache } from "../_shared/factuurRegel.ts";
+import { bouwFactuurPayload, glUitCache, btwCode, btwPastBijGrootboek, BtwNietPassendError, controleerBtw } from "../_shared/factuurRegel.ts";
 import { exactRegelBedrag } from "../_shared/factuurTekst.ts";
 import { berekenOpzegCredit, berekenOudSysteemCredit, oudSysteemCreditPayload } from "../_shared/creditOpzegging.ts";
 
@@ -136,8 +136,11 @@ Deno.serve(async (req) => {
     const k = (kand ?? []).find((r: any) => r.klant_contract_id === id);
     if (!k) return json({ error: "geen kandidaat voor dit contract in deze periode", grootboeken: gevonden }, 404);
     const gl = k.gl_code ? glUitCache(cfg, String(k.gl_code)) : null;
+    // Payload wordt los van een (tijdelijke) blokkade gebouwd; BTW-guard wordt apart gemeld.
+    const btwOk = btwPastBijGrootboek(k.gl_code, k.btw_code);
     return json({ modus: "dry-run", schrijft_naar_exact: false, schrijft_naar_database: false, grootboeken: gevonden, meldingen, kandidaat: k,
-      payload: bouwFactuurPayload(k, gl, "ZPF-DRYRUN0", "Remarks") });
+      btw_guard: btwOk ? "ok" : "BTW-code past niet bij grootboek",
+      payload: btwOk ? bouwFactuurPayload(k, gl, "ZPF-DRYRUN0", "Remarks") : null });
   }
 
 
@@ -153,10 +156,13 @@ Deno.serve(async (req) => {
     const ber = berekenOudSysteemCredit(k as any, eind);
     const blokkade = !m?.id || !m.bevestigd || !m.exact_item_id || m.blokkade_reden ? `geen bevestigde artikelmapping voor ${k.itemcode}` : !o?.exact_account_id ? "relatie niet gekoppeld aan Exact" : null;
     const sleutel = "ZPC-DRYRUN0";
-    const payload = blokkade ? null : oudSysteemCreditPayload({ creditsleutel: sleutel, exact_account_id: o!.exact_account_id, exact_item_id: m.exact_item_id,
+    const btwOk = btwPastBijGrootboek(m?.gl_code, m?.btw_code);
+    // Blokkade_reden van de mapping (tijdelijk) blokkeert de echte credit, maar de dry-run toont de payload toch.
+    const payloadBlok = !m?.exact_item_id ? "geen artikel" : !o?.exact_account_id ? "relatie niet gekoppeld aan Exact" : !btwOk ? "BTW-code past niet bij grootboek" : null;
+    const payload = payloadBlok ? null : oudSysteemCreditPayload({ creditsleutel: sleutel, exact_account_id: o!.exact_account_id, exact_item_id: m.exact_item_id, btw_code: btwCode(m.btw_code),
       gl_account_id: glUitCache(ecfg, String(m.gl_code ?? "")) ?? `(GUID grootboek ${m.gl_code})`, einddatum: eind, credit_vanaf: ber.vanaf, credit_tm: k.gefactureerd_tm, vandaag, regels: ber.regels });
     return json({ modus: "dry-run", schrijft_naar_exact: false, schrijft_naar_database: false, klant: o?.naam, contract: { bron_rij: k.bron_rij, itemcode: k.itemcode, cyclus: k.cyclus, bedrag_per_periode: k.bedrag_per_periode, aantal: k.aantal, begin_datum: k.begin_datum, gefactureerd_tm: k.gefactureerd_tm },
-      einddatum: eind, credit_vanaf: ber.vanaf, credit_tm: k.gefactureerd_tm, perioden: ber.regels, bedrag: ber.bedrag, blokkade, artikel: m?.exact_item_code, gl_code: m?.gl_code,
+      einddatum: eind, credit_vanaf: ber.vanaf, credit_tm: k.gefactureerd_tm, perioden: ber.regels, bedrag: ber.bedrag, blokkade, btw_code: btwCode(m?.btw_code), btw_guard: btwOk ? "ok" : "BTW-code past niet bij grootboek", artikel: m?.exact_item_code, gl_code: m?.gl_code,
       payload, opmerking: "Echte creditsleutel ZPC-xxxxxxxx ontstaat pas bij een opzegging (hash contract+aanvraag)." });
   }
   const van = actie === "proefrun" ? String(body?.van ?? vandaag) : vandaag;
@@ -174,15 +180,19 @@ Deno.serve(async (req) => {
   const credits: any[] = [];
   for (const c of creditRijen ?? []) {
     if (c.bron === "oud_systeem" && c.status === "te_maken") {
-      const { data: k } = await admin.from("klant_contracten").select("cyclus,aantal,bedrag_per_periode,begin_datum,factureren_vanaf,gefactureerd_tm").eq("id", c.klant_contract_id).single();
+      const { data: k } = await admin.from("klant_contracten").select("cyclus,aantal,bedrag_per_periode,begin_datum,factureren_vanaf,gefactureerd_tm,itemcode").eq("id", c.klant_contract_id).single();
       const ber = berekenOudSysteemCredit(k as any, c.einddatum);
       if (Number(c.bedrag) !== ber.bedrag) await admin.from("factuur_credit_planning").update({ bedrag: ber.bedrag, berekening: ber }).eq("id", c.id);
-      c.bedrag = ber.bedrag; c.berekening = ber; c._item = c.exact_item_id; c._gl = c.gl_code;
+      const { data: m } = await admin.rpc("factuur_mapping_voor", { _itemcode: (k as any)?.itemcode });
+      c.bedrag = ber.bedrag; c.berekening = ber; c._item = c.exact_item_id; c._gl = c.gl_code; c._btw = btwCode((m as any)?.btw_code);
     } else if (c.status === "te_maken" && c.planning_ids?.length) {
-      const { data: pl } = await admin.from("factuur_planning").select("periode_start,periode_eind,bedrag,exact_item_id,gl_code").in("id", c.planning_ids);
+      const { data: pl } = await admin.from("factuur_planning").select("periode_start,periode_eind,bedrag,exact_item_id,gl_code,btw_code").in("id", c.planning_ids);
       const ber = berekenOpzegCredit(c.einddatum, (pl ?? []) as any[]);
       if (Number(c.bedrag) !== ber.bedrag) await admin.from("factuur_credit_planning").update({ bedrag: ber.bedrag, berekening: ber }).eq("id", c.id);
       c.bedrag = ber.bedrag; c.berekening = ber; c._item = pl?.[0]?.exact_item_id ?? null; c._gl = pl?.[0]?.gl_code ?? null;
+      // Zelfde BTW-code als de gecrediteerde perioden; verschillende codes → null (blokkeert).
+      const codes = [...new Set((pl ?? []).map((x: any) => btwCode(x.btw_code)))];
+      c._btw = codes.length === 1 ? codes[0] : null;
     }
     credits.push(c);
   }
@@ -267,7 +277,7 @@ Deno.serve(async (req) => {
       const { data: claim, error: cErr } = await admin.from("factuur_planning").insert({
         klant_contract_id: k.klant_contract_id, periode_start: k.periode_start, periode_eind: k.periode_eind,
         aantal: k.aantal, bedrag_per_periode: k.bedrag_per_periode, bedrag: k.bedrag,
-        exact_account_id: k.exact_account_id, exact_item_id: k.exact_item_id, gl_code: k.gl_code,
+        exact_account_id: k.exact_account_id, exact_item_id: k.exact_item_id, gl_code: k.gl_code, btw_code: btwCode(k.btw_code),
         planningssleutel: sleutel, status: "geclaimd", invoice_date: k.periode_start,
       }).select("id").single();
       if (cErr) continue; // unieke sleutel: al geclaimd → overslaan
@@ -278,7 +288,7 @@ Deno.serve(async (req) => {
         const gl = k.gl_code ? await glVoor(String(k.gl_code)) : null;
         payload = bouwFactuurPayload(k, gl, sleutel, sleutelVeld);
       } catch (e) {
-        const status = e instanceof GlNietGevondenError ? "geblokkeerd" : "fout";
+        const status = e instanceof GlNietGevondenError || e instanceof BtwNietPassendError ? "geblokkeerd" : "fout";
         await admin.from("factuur_planning").update({ status, foutmelding: String((e as Error)?.message ?? e).slice(0, 300) }).eq("id", claim.id);
         fouten.push(`${status}: ${String((e as Error)?.message ?? e).slice(0, 160)}`); continue;
       }
@@ -319,17 +329,19 @@ Deno.serve(async (req) => {
       try {
         if ((await zoekOpSleutel(c.creditsleutel, "Remarks")).length) throw new Error("creditsleutel bestaat al in Exact");
         if (!c.exact_account_id || !c._item || (!oud && !c.origineel_factuurnummer)) throw new Error("creditnota mist account, artikel of factuurnummer");
+        if (!c._btw) throw new BtwNietPassendError();
+        controleerBtw(c._gl, c._btw);
         gl = c._gl ? await glVoor(String(c._gl)) : null;
       } catch (e) {
         // Alleen deze creditnota blokkeren; de rest gaat door.
-        const status = e instanceof GlNietGevondenError ? "geblokkeerd" : "fout";
+        const status = e instanceof GlNietGevondenError || e instanceof BtwNietPassendError ? "geblokkeerd" : "fout";
         const msg = String((e as Error)?.message ?? e).slice(0, 300);
         await admin.from("factuur_credit_planning").update(status === "geblokkeerd" ? { status, melding: msg } : { status, foutmelding: msg }).eq("id", c.id);
         fouten.push(`credit ${status}: ${msg.slice(0, 160)}`); continue;
       }
       try {
         if (oud) {
-          const p = oudSysteemCreditPayload({ creditsleutel: c.creditsleutel, exact_account_id: c.exact_account_id, exact_item_id: c._item, gl_account_id: gl,
+          const p = oudSysteemCreditPayload({ creditsleutel: c.creditsleutel, exact_account_id: c.exact_account_id, exact_item_id: c._item, gl_account_id: gl, btw_code: c._btw,
             einddatum: c.einddatum, credit_vanaf: c.credit_vanaf, credit_tm: c.credit_tm, vandaag, regels: c.berekening?.regels ?? [] });
           const r = await exact("salesinvoice/SalesInvoices", { method: "POST", body: JSON.stringify(p) });
           if (!r.ok) {
@@ -342,7 +354,7 @@ Deno.serve(async (req) => {
           await admin.from("sensitive_audit_log").insert({ target_table: "klant_contracten", target_id: c.klant_contract_id, actie: "creditnota_concept_aangemaakt", veld: "factuur_credit_planning", nieuwe_waarde: c.creditsleutel, details: { credit_id: c.id, bedrag: c.bedrag, bron: "oud_systeem", invoice_id: d.InvoiceID } });
           continue;
         }
-        const regel: any = { Item: c._item, ...exactRegelBedrag(8021, Number(c.bedrag)), VATCode: "0",
+        const regel: any = { Item: c._item, ...exactRegelBedrag(8021, Number(c.bedrag)), VATCode: c._btw,
           Description: regelOmschrijving("restitutie_opzegging", c.credit_vanaf, c.credit_tm),
           StartTime: `${c.credit_vanaf}T00:00:00`, EndTime: `${c.credit_tm}T00:00:00` };
         if (gl) regel.GLAccount = gl;

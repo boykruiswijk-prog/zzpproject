@@ -28,3 +28,4 @@
 - Certificaatnummer onveranderbaar; nieuw/aanpassen/intrekken/mailen via generate-certificate (supervisor/admin), versies in policy_versies, ingetrokken telt niet mee; klant zonder lead via policies.onderneming_id met eigen klant_certificaten-nummer (regels in _shared/certificaatRegels.ts). Waarom: altijd spoor, nooit andermans nummer.
 - Grootboek per regel via getGlAccountIdVoorCode (alleen GET, cache exact_config.gl_account_ids); fout in één regel blokkeert alleen die regel, alleen onzekere POST stopt de run. Waarom: één lidmaatschap legt de dagrun niet stil.
 - Admin gebruikt onder lg een Sheet-menu en mobiele kaartlijsten; desktop houdt de vaste zijbalk. Waarom: één rolgestuurde navigatie op elk schermformaat.
+- BTW per regel komt uit factuur_artikel_mapping.btw_code (opgeslagen in factuur_planning bij claim; credits nemen dezelfde code over); guard 8004≠0 en 8003=0 blokkeert de regel. Waarom: BTW nooit stil fout.
