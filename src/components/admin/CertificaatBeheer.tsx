@@ -135,18 +135,18 @@ export function CertificaatBeheer({ leadId, onNieuw, leadActief, policies, isSup
                 {ingetrokken && p.intrek_reden && <p className="text-xs text-muted-foreground">Reden: {p.intrek_reden}</p>}
               </div>
               {p.pdf_url && (
-                <Button size="sm" variant="outline" onClick={() => onDownload(p.pdf_url!)}>
+                <Button size="sm" variant="outline" className="min-h-10" onClick={() => onDownload(p.pdf_url!)}>
                   <Download className="h-3 w-3 mr-1" />PDF
                 </Button>
               )}
             </div>
             {!ingetrokken && isSupervisorOrAdmin && (
               <div className="flex flex-wrap gap-2">
-                <Button size="sm" variant="outline" onClick={() => openAanpassen(p)}><Pencil className="h-3 w-3 mr-1" />Aanpassen</Button>
-                <Button size="sm" variant="outline" onClick={() => mail(p)} disabled={bezig === `mail-${p.id}`}>
+                <Button size="sm" variant="outline" className="min-h-10" onClick={() => openAanpassen(p)}><Pencil className="h-3 w-3 mr-1" />Aanpassen</Button>
+                <Button size="sm" variant="outline" className="min-h-10" onClick={() => mail(p)} disabled={bezig === `mail-${p.id}`}>
                   {bezig === `mail-${p.id}` ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Mail className="h-3 w-3 mr-1" />}Certificaat mailen naar klant
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => setIntrekken(p)}><Ban className="h-3 w-3 mr-1" />Intrekken</Button>
+                <Button size="sm" variant="outline" className="min-h-10" onClick={() => setIntrekken(p)}><Ban className="h-3 w-3 mr-1" />Intrekken</Button>
               </div>
             )}
           </div>

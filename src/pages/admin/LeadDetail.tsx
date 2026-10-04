@@ -208,7 +208,7 @@ export default function AdminLeadDetail() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="min-w-0 space-y-6">
         {(lead as any)?.extra_data?.handmatige_acceptatie && (
           <div role="alert" className="rounded-lg border-2 border-destructive bg-destructive/10 p-4 text-sm font-semibold text-destructive">
             {teamWaarschuwingHandmatig(String((lead as any).extra_data.handmatige_acceptatie.sector ?? ""))}
@@ -219,23 +219,23 @@ export default function AdminLeadDetail() {
         )}
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Button variant="outline" size="icon" asChild>
+          <div className="flex min-w-0 items-start gap-3 sm:items-center sm:gap-4">
+            <Button variant="outline" size="icon" className="min-h-10 min-w-10 shrink-0" aria-label="Terug naar leads" asChild>
               <Link to="/admin/leads">
                 <ArrowLeft className="h-4 w-4" />
               </Link>
             </Button>
-            <div>
-              <h1 className="text-2xl font-bold">
+            <div className="min-w-0">
+              <h1 className="break-words text-xl font-bold sm:text-2xl">
                 {lead.voornaam} {lead.achternaam}
               </h1>
               {lead.bedrijfsnaam && (
-                <p className="text-muted-foreground">{lead.bedrijfsnaam}</p>
+                <p className="break-words text-muted-foreground">{lead.bedrijfsnaam}</p>
               )}
               <KlantLinkVoorLead leadId={lead.id} relatiecode={(lead as any).exact_relatie_code} />
             </div>
           </div>
-          <div className="flex gap-2 items-center">
+          <div className="flex flex-wrap items-center gap-2">
             {lead.type !== "verzekering_aanvraag" && lead.status !== "klant" && (
               <Button variant="accent" onClick={handleMarkAsCustomer}>
                 <UserCheck className="h-4 w-4 mr-2" />
@@ -334,7 +334,7 @@ export default function AdminLeadDetail() {
                       <Mail className="h-4 w-4 text-muted-foreground" />
                       <a
                         href={`mailto:${lead.email}`}
-                        className="text-primary hover:underline"
+                        className="min-w-0 break-all text-primary hover:underline"
                       >
                         {lead.email}
                       </a>

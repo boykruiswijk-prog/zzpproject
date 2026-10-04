@@ -72,7 +72,7 @@ export default function ExactReconciliatie() {
       <Helmet><title>Exact-reconciliatie | ZP Zaken beheer</title></Helmet>
       <div className="space-y-6 min-w-0">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-2xl font-bold">Exact-reconciliatie</h1>
+          <h1 className="break-words text-xl font-bold sm:text-2xl">Exact-reconciliatie</h1>
           <Button onClick={verversen} disabled={bezig} variant="outline">{bezig ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}Spiegel verversen (alleen lezen)</Button>
         </div>
         <p className="text-sm text-muted-foreground">

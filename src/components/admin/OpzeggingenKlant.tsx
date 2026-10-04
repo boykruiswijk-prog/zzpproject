@@ -110,7 +110,7 @@ export function OpzeggingenKlant({ ondernemingId, contracten, onGewijzigd }: { o
           <div key={a.id} className="rounded-md border border-border p-3 space-y-2 min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <Link to={`/admin/service-aanvragen/${a.id}`} className="font-medium hover:text-primary">{a.voornaam} {a.achternaam}</Link>
-              <span className="text-muted-foreground truncate">{a.email}</span>
+              <span className="break-all text-muted-foreground">{a.email}</span>
               <KoppelBadge a={a} />
               {a.is_test && <Badge variant="outline">Test</Badge>}
             </div>
@@ -119,7 +119,7 @@ export function OpzeggingenKlant({ ondernemingId, contracten, onGewijzigd }: { o
               {a.details?.bedrijfsnaam && <> · bedrijf {a.details.bedrijfsnaam}</>}
             </div>
             <div>
-              <Button size="sm" variant="ghost" className="h-7 px-2" onClick={() => setDetailsOpen(detailsOpen === a.id ? null : a.id)}>
+              <Button size="sm" variant="ghost" className="min-h-10 px-2" onClick={() => setDetailsOpen(detailsOpen === a.id ? null : a.id)}>
                 {detailsOpen === a.id ? "Verberg details" : "Details"}
               </Button>
             </div>
@@ -171,7 +171,7 @@ export function OpzeggingenKlant({ ondernemingId, contracten, onGewijzigd }: { o
                     <span>Rij {c.bron_rij} · {PRODUCT_LABEL[c.product as Product] ?? c.product} · {c.cyclus === "jaar" ? "jaar" : "maand"}</span>
                   </label>
                 ))}
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <Button size="sm" disabled={bezig || gekozen.size === 0} onClick={() => verwerk(a)}>Bevestig en verwerk</Button>
                   <Button size="sm" variant="ghost" onClick={() => setOpen(null)}>Annuleren</Button>
                 </div>

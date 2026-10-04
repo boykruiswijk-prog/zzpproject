@@ -64,16 +64,16 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout>
-      <div className="space-y-8">
+      <div className="min-w-0 space-y-8">
         {(isSupervisor || isVerzekering) && <ExactKoppelingAlarm />}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Dashboard</h1>
+            <h1 className="break-words text-2xl font-bold sm:text-3xl">Dashboard</h1>
             <p className="text-muted-foreground">
               Klanten, contracten en leads uit het CRM
             </p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             <ToonTestrecordsSchakelaar />
             <Button variant="outline" onClick={handleExport} disabled={isExporting}>
               {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}

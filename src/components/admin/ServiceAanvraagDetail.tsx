@@ -50,7 +50,7 @@ interface Props {
 
 export function ServiceAanvraagDetailHeader({ aanvraag }: { aanvraag: ServiceAanvraag }) {
   return (
-    <span className="flex items-center gap-2">
+    <span className="flex min-w-0 flex-wrap items-center gap-2 pr-8">
       <Badge className={SERVICE_TYPE_COLOR[aanvraag.type]}>
         {SERVICE_TYPE_LABEL[aanvraag.type] ?? aanvraag.type}
       </Badge>
@@ -75,7 +75,7 @@ export function ServiceAanvraagDetail({ aanvraag, onSaveNotes, onMarkAfgerond, o
         </div>
         <div>
           <div className="text-muted-foreground">Email</div>
-          <div>{aanvraag.email}</div>
+          <div className="break-all">{aanvraag.email}</div>
         </div>
         <div>
           <div className="text-muted-foreground">Telefoon</div>
@@ -89,7 +89,7 @@ export function ServiceAanvraagDetail({ aanvraag, onSaveNotes, onMarkAfgerond, o
       {aanvraag.details && Object.keys(aanvraag.details).length > 0 && (
         <div>
           <div className="text-muted-foreground mb-1">Details</div>
-          <ul className="bg-muted/50 rounded p-3 space-y-1">
+          <ul className="space-y-1 break-words rounded bg-muted/50 p-3">
             {Object.entries(aanvraag.details).map(([k, v]) => (
               <li key={k}>
                 <span className="font-medium">{k}:</span>{" "}
@@ -107,12 +107,12 @@ export function ServiceAanvraagDetail({ aanvraag, onSaveNotes, onMarkAfgerond, o
           onBlur={(e) => onSaveNotes(aanvraag.id, e.target.value)}
         />
       </div>
-      <div className="flex gap-2 pt-2">
-        <Button onClick={() => onResend(aanvraag)} variant="outline">
+      <div className="flex flex-col gap-2 pt-2 sm:flex-row">
+        <Button onClick={() => onResend(aanvraag)} variant="outline" className="min-h-10 w-full sm:w-auto">
           <Mail className="h-4 w-4 mr-2" />
           Stuur notificatie opnieuw
         </Button>
-        <Button onClick={() => onMarkAfgerond(aanvraag.id)} variant="default">
+        <Button onClick={() => onMarkAfgerond(aanvraag.id)} variant="default" className="min-h-10 w-full sm:w-auto">
           Markeer als afgerond
         </Button>
       </div>

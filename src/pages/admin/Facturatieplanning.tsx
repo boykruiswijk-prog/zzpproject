@@ -113,7 +113,7 @@ export default function Facturatieplanning() {
     <AdminLayout>
       <Helmet><title>Facturatieplanning | ZP Zaken beheer</title></Helmet>
       <div className="space-y-6 min-w-0">
-        <h1 className="text-2xl font-bold">Facturatieplanning</h1>
+        <h1 className="break-words text-xl font-bold sm:text-2xl">Facturatieplanning</h1>
 
         <Card>
           <CardHeader><CardTitle className="text-base">Hoofdschakelaar</CardTitle></CardHeader>
@@ -132,8 +132,8 @@ export default function Facturatieplanning() {
           <CardHeader><CardTitle className="text-base">Proefrun</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-wrap items-end gap-2">
-              <label className="text-sm">Van <Input type="date" value={van} onChange={(e) => setVan(e.target.value)} className="w-40" /></label>
-              <label className="text-sm">Tot en met <Input type="date" value={tot} onChange={(e) => setTot(e.target.value)} className="w-40" /></label>
+              <label className="w-full text-sm sm:w-auto">Van <Input type="date" value={van} onChange={(e) => setVan(e.target.value)} className="min-h-10 w-full sm:w-40" /></label>
+              <label className="w-full text-sm sm:w-auto">Tot en met <Input type="date" value={tot} onChange={(e) => setTot(e.target.value)} className="min-h-10 w-full sm:w-40" /></label>
               <Button onClick={proefrun} disabled={laden}>{laden ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}Bereken</Button>
             </div>
             <div className="grid gap-3 sm:grid-cols-4 text-sm">

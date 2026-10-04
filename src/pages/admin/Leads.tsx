@@ -5,9 +5,9 @@ import { LeadTable } from "@/components/admin/LeadTable";
 export default function AdminLeads() {
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="min-w-0 space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">Leads</h1>
+          <h1 className="break-words text-2xl font-bold sm:text-3xl">Leads</h1>
           <p className="text-muted-foreground">
             Beheer en volg alle leads
           </p>
