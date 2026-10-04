@@ -32,6 +32,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { useFormGuard, submitPublicForm, PublicFormError } from "@/lib/antiSpam";
+import { maakFormulier } from "../../supabase/functions/_shared/leadVelden";
+
 import { HoneypotField } from "@/components/shared/HoneypotField";
 import { WIZARD_SECTOREN, isHandmatigeAcceptatieSector } from "@/data/sectorVerzekeringskaart";
 import { brancheVoorSector } from "@/data/sectorBranche";
@@ -158,6 +160,16 @@ export default function OffertePage() {
         aantal_medewerkers: form.aantal_medewerkers,
         aantal_medewerkers_num: aantalNum,
         gewenste_startdatum: form.gewenste_startdatum || null,
+        formulier_naam: "Offerteaanvraag",
+        pagina: window.location.pathname,
+        formulier: maakFormulier([
+          ["Voornaam", form.voornaam], ["Achternaam", form.achternaam], ["E-mail", form.email], ["Telefoon", form.telefoon],
+          ["Naam organisatie", form.naam_organisatie], ["Land", form.adres_land], ["Postcode", form.adres_postcode],
+          ["Huisnummer", form.adres_huisnummer], ["Adres (opgezocht)", pdokAdres && (pdokAdres as any).straat ? `${(pdokAdres as any).straat} ${form.adres_huisnummer}, ${(pdokAdres as any).plaats ?? ""}` : ""],
+          ["KvK-nummer", form.kvk_nummer], ["Branche", sectorLabel], ["Belangrijkste opdrachtgever", form.belangrijkste_opdrachtgever],
+          ["Omschrijving werkzaamheden", form.omschrijving_werkzaamheden], ["Aantal medewerkers", form.aantal_medewerkers],
+          ["Gewenste startdatum", form.gewenste_startdatum],
+        ]),
       };
 
       // Anon-rol heeft geen SELECT op leads — id client-side genereren.
