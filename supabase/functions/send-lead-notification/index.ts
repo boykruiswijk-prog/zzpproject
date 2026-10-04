@@ -314,7 +314,7 @@ Deno.serve(async (req) => {
       const msg = mailErr instanceof Error ? mailErr.message : String(mailErr);
       console.error("Resend error", msg);
       await supabase.from("lead_notification_log").insert({
-        lead_type: type, lead_id: leadId ?? null, recipient, cc: userEmail ?? null,
+        lead_type: type, lead_id: leadId ?? null, recipient: "interne-ontvangers", cc: userEmail ?? null,
         subject, status: "failed", error_message: msg, metadata: fields,
       });
       return new Response(JSON.stringify({ success: false, error: msg }), {
