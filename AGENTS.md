@@ -15,7 +15,7 @@
 - Prerender rendert elke publieke route volledig via src/entry-server.tsx (AppRoutes + vooraf gevulde querydata); oude URL's uit src/config/legacyRedirects.ts (gespiegeld in _shared) en artikel-slugs krijgen noindex-doorverwijspagina's. Waarom: hosting kent geen SSR, 301 of 404.
 - 404's worden alleen via RPC log_not_found vastgelegd (alleen optellen, begrensd). Waarom: monitoring zonder anonieme tabelrechten.
 - Testdata wordt gemarkeerd met kolom is_test (nooit verwijderd); beheeroverzichten filteren is_test standaard weg, alleen admin/supervisor kan via useToonTestrecords tonen. Leadstatuslabels komen uit src/lib/statusLabels.ts. Waarom: herleidbare historie en één bron voor labels.
-- Collectieve aanmeldtellingen worden alleen in afgeschermd beheer opgevraagd; publieke pagina's tonen geen aantallen, doelen of voortgang. Waarom: eerlijke communicatie zonder gevoelige of misleidende sociale bewijslast.
+- Collectieve aanmeldtellingen alleen in afgeschermd beheer; publiek geen aantallen of voortgang. Waarom: geen misleidende sociale bewijslast.
 - Opzegregels (toelichting bij "Anders" 3-500 tekens, datum vandaag tot 180 dagen, NL-tijd) staan in src/lib/opzegValidatie.ts, byte-gelijk in _shared/opzegValidatie.ts. Waarom: formulier en server hanteren exact dezelfde regels.
 
 - Lopende contracten staan in klant_contracten via exact_relatie_code; importeer_afas_20261001 is idempotent en alleen service_role.
@@ -26,7 +26,7 @@
 - Opzeg-creditnota's: één rij per contractregel/opzegging in factuur_credit_planning (sleutel ZPC-…); oud-systeemperiodes via _shared/creditOpzegging.ts; verzenden alleen met opzeg_credits_actief. Waarom: nooit dubbel crediteren.
 - Certificaten per klant staan in klant_certificaten, uniek op onderneming+nummer+aanvraagdatum; import via importeer_certificaten_20261001 (idempotent, service_role), voorstellen via RPC beoordeel_klant_certificaat; generate_certificate_number slaat bezette nummers over. Waarom: nummer alleen is geen sleutel.
 - Certificaatnummer onveranderbaar; nieuw/aanpassen/intrekken/mailen via generate-certificate (supervisor/admin), versies in policy_versies, ingetrokken telt niet mee; klant zonder lead via policies.onderneming_id met eigen klant_certificaten-nummer (regels in _shared/certificaatRegels.ts). Waarom: altijd spoor, nooit andermans nummer.
-- Grootboek per regel via getGlAccountIdVoorCode (alleen GET, cache exact_config.gl_account_ids); fout in één regel blokkeert alleen die regel, alleen onzekere POST stopt de run. Waarom: één lidmaatschap legt de dagrun niet stil.
+- Grootboek per regel via getGlAccountIdVoorCode (GET, cache exact_config.gl_account_ids); regelfout blokkeert alleen die regel, onzekere POST stopt de run. Waarom: dagrun blijft lopen.
 - Admin onder lg: Sheet-menu en kaartlijsten; desktop vaste zijbalk. Waarom: één navigatie.
 - BTW per regel komt uit factuur_artikel_mapping.btw_code (opgeslagen in factuur_planning bij claim; credits nemen dezelfde code over); guard 8004≠0 en 8003=0 blokkeert de regel. Waarom: BTW nooit stil fout.
 - Bezoekersinvoer in leads.extra_data.formulier (geordende lijst) via _shared/leadVelden.ts voor detail, lijst en teammail; preview-inzendingen zijn is_test zonder klantmail. Waarom: één bron.
