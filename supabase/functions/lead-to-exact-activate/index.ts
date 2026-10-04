@@ -366,8 +366,11 @@ Deno.serve(async (req) => {
   });
   const { data: { user }, error: userErr } = await userClient.auth.getUser();
   if (userErr || !user) return json({ success: false, error: "unauthorized" }, 401);
-  const { data: isTeamMember } = await supabase.rpc("is_team_member", { _user_id: user.id });
-  if (!isTeamMember) return json({ success: false, error: "forbidden" }, 403);
+  const { data: roleRows } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
+  const allowedRoles = new Set(["admin", "supervisor", "verzekering", "medewerker"]);
+  if (!(roleRows ?? []).some((row: { role: string }) => allowedRoles.has(row.role))) {
+    return json({ success: false, error: "forbidden" }, 403);
+  }
 
   // deno-lint-ignore no-explicit-any
   let body: any = {};

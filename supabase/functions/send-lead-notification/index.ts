@@ -5,6 +5,7 @@ import { Resend } from "npm:resend@4.0.0";
 import { z } from "npm:zod@3.23.8";
 import { resolveEnvironment } from "../_shared/environment.ts";
 import { getFromAddress } from "../_shared/mail.ts";
+import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -220,8 +221,6 @@ Deno.serve(async (req) => {
     const { type, leadId, reference, fields } = parsed.data;
     // Interne waarschuwing alleen van vertrouwde aanroepers (wordt hieronder gecontroleerd).
     let { recipientEmail, userEmail } = parsed.data;
-    const TO_DEFAULT = "info@zpzaken.nl";
-    const BCC_DEFAULT = ["boy.kruiswijk@zpzaken.nl", "ellen.baars@zpzaken.nl"];
 
     // ── Toegang: intern (x-internal-secret), ingelogd teamlid, of publiek (strikt) ──
     const isTrusted = await isTrustedCaller(req);
@@ -248,16 +247,12 @@ Deno.serve(async (req) => {
       replyToEmail = dbEmail || undefined;
       customerFields = customerFieldsFromRecord(spec.table, rec as Record<string, unknown>);
     }
-    const baseRecipient = recipientEmail || TO_DEFAULT;
-
     // Centrale, fail-safe omgevingsdetectie (host-based, APP_ENV is secundair).
     // Zie supabase/functions/_shared/environment.ts.
     const env = resolveEnvironment(req);
     const isProd = env.isProduction;
     console.log("send-lead-notification env:", JSON.stringify(env));
-    const recipient = isProd ? baseRecipient : "boy.kruiswijk@zpzaken.nl";
-    const bccList = isProd ? BCC_DEFAULT : [];
-    console.log(`[mail] ${JSON.stringify({ function: "send-lead-notification", from: getFromAddress(), environment: isProd ? "production" : "preview", env_reason: env.reason, host_source: env.hostSource, app_env: env.appEnv, to: [recipient], bcc: bccList, original_to: [baseRecipient], redirected: !isProd })}`);
+    console.log(`[mail] ${JSON.stringify({ function: "send-lead-notification", environment: isProd ? "production" : "preview", env_reason: env.reason, host_source: env.hostSource, app_env: env.appEnv })}`);
 
     const label = LEAD_LABELS[type] || type;
     const subjBase = (SUBJECTS[type] || ((r: string) => `Nieuwe lead (${type}) via zpzaken.nl - ${r}`))(reference || leadId || "");
@@ -267,44 +262,14 @@ Deno.serve(async (req) => {
     const adminBase = isProd ? "https://zpzaken.nl" : (Deno.env.get("ADMIN_BASE_URL") || "https://zpzaken.nl").replace(/\/$/, "");
     const deeplink = leadId ? `${adminBase}/admin/leads/${leadId}` : null;
 
-    if (!resend) {
-      await supabase.from("lead_notification_log").insert({
-        lead_type: type, lead_id: leadId ?? null, recipient, cc: userEmail ?? null,
-        subject, status: "failed", error_message: "RESEND_API_KEY missing", metadata: fields,
-      });
-      return new Response(JSON.stringify({ success: false, error: "email_not_configured" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
     const waarschuwing = isTrusted ? parsed.data.waarschuwing : undefined;
     const html = renderHtml(label, fields, leadId, deeplink, waarschuwing);
     const text = (waarschuwing ? `${waarschuwing}\n\n` : "") + renderText(label, fields) + (deeplink ? `\nOpen in admin: ${deeplink}\n` : "");
 
     try {
-      const sendRes: any = await resend.emails.send({
-        from: getFromAddress(),
-        to: [recipient],
-        bcc: bccList.length ? bccList : undefined,
+      const internalResults = await verstuurInterneMelding(supabase, req, "send-lead-notification", {
+        leadType: type, leadId, subject, html, text,
         replyTo: isProd ? replyToEmail : undefined,
-        subject, html, text,
-      });
-
-      if (sendRes?.error) {
-        const msg = `${sendRes.error.name ?? "resend"}: ${sendRes.error.message ?? JSON.stringify(sendRes.error)}`;
-        await supabase.from("lead_notification_log").insert({
-          lead_type: type, lead_id: leadId ?? null, recipient, cc: null,
-          subject, status: "failed", error_message: msg, metadata: fields,
-        });
-        return new Response(JSON.stringify({ success: false, error: msg }), {
-          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      await supabase.from("lead_notification_log").insert({
-        lead_type: type, lead_id: leadId ?? null, recipient, cc: null,
-        subject, status: "sent",
-        resend_message_id: sendRes?.data?.id ?? null,
         metadata: fields,
       });
 
@@ -342,7 +307,7 @@ Deno.serve(async (req) => {
         }
       }
 
-      return new Response(JSON.stringify({ success: true }), {
+      return new Response(JSON.stringify({ success: internalResults.every((result) => result.ok) }), {
         status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     } catch (mailErr) {
