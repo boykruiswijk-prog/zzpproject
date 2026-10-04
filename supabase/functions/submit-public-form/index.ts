@@ -147,9 +147,7 @@ Deno.serve(async (req) => {
       payload.extra_data = extraUit;
       // Inzendingen vanuit preview/testomgeving zijn altijd testrecords (zelfde regel als chat Zeker).
       payload.is_test = !resolveEnvironment(req).isProduction;
-      const extra2 = extraUit;
-      if (extra2 && typeof extra2.adres_postcode === "string") extra2.adres_postcode = n.postcode || normaliseerAdres({ postcode: extra2.adres_postcode as string, land }).postcode;
-      if (false && extra && typeof extra.adres_postcode === "string") extra.adres_postcode = n.postcode || normaliseerAdres({ postcode: extra.adres_postcode, land }).postcode;
+      if (typeof extraUit.adres_postcode === "string") extraUit.adres_postcode = n.postcode || normaliseerAdres({ postcode: extraUit.adres_postcode, land }).postcode;
     }
 
     let chatSamenvatting = "";
