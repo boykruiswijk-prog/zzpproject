@@ -76,6 +76,49 @@ Deno.serve(async (req) => {
 
   const vandaag = vandaagNL();
 
+  // Pre-flight: uitsluitend GET naar Exact (BTW-codes, dagboeken, betalingscondities, facturen). Schrijft niets.
+  if (actie === "preflight_get") {
+    const { data: cfg } = await admin.from("exact_config").select("*").limit(1).maybeSingle();
+    if (!cfg?.is_actief) return json({ error: "Exact niet actief" }, 400);
+    const baseUrl = cfg.base_url || "https://start.exactonline.nl";
+    const div = String(cfg.divisie_code ?? "").trim();
+    let token = await ensureValidToken(admin, cfg);
+    const get = async (pad: string, max = 2000): Promise<any> => {
+      const rows: any[] = []; let url: string | null = `${baseUrl}/api/v1/${div}/${pad}`;
+      while (url && rows.length < max) {
+        let r = await fetch(url, { method: "GET", headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } });
+        if (r.status === 401) { token = await refreshAccessToken(admin, cfg); r = await fetch(url, { method: "GET", headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } }); }
+        if (!r.ok) return { fout: `HTTP ${r.status}: ${(await r.text()).slice(0, 300)}`, rows };
+        const d = (await r.json())?.d ?? {}; rows.push(...(d.results ?? (Array.isArray(d) ? d : [d])));
+        url = d.__next ?? null; await new Promise((s) => setTimeout(s, 1100));
+      }
+      return rows;
+    };
+    const deel = String(body?.deel ?? "");
+    if (deel === "basis") return json({
+      vat: await get("vat/VATCodes?$select=Code,Description,Percentage,Type,VATTransactionType,Charged"),
+      journals: await get("financial/Journals?$select=Code,Description,Type"),
+      betaal: await get("cashflow/PaymentConditions?$select=Code,Description,PaymentDays"),
+    });
+    if (deel === "facturen") {
+      const van = String(body?.vanaf ?? "2026-10-01");
+      return json({ facturen: await get(`salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,InvoiceDate,InvoiceTo,InvoiceToName,Journal,PaymentCondition,Type,Status,Description,AmountFC,VATAmountFC&$filter=${encodeURIComponent(`InvoiceDate ge datetime'${van}'`)}`) });
+    }
+    if (deel === "regels") {
+      const ids = (Array.isArray(body?.invoice_ids) ? body.invoice_ids : []).filter((x: string) => /^[0-9a-f-]{36}$/.test(x)).slice(0, 40);
+      const out: Record<string, unknown> = {};
+      for (const id of ids) out[id] = await get(`salesinvoice/SalesInvoiceLines?$select=Description,Item,ItemCode,VATCode,VATPercentage,VATAmountFC,AmountFC,Quantity,UnitPrice,GLAccount,StartTime,EndTime&$filter=${encodeURIComponent(`InvoiceID eq guid'${id}'`)}`);
+      return json({ regels: out });
+    }
+    if (deel === "itemregels") {
+      const item = String(body?.item ?? "7061187b-4aaf-4e74-b347-4b5a1464c97b");
+      return json({ regels: await get(`salesinvoice/SalesInvoiceLines?$select=InvoiceID,Description,ItemCode,VATCode,VATPercentage,VATAmountFC,AmountFC,GLAccount,StartTime,EndTime&$filter=${encodeURIComponent(`Item eq guid'${item}'`)}`, Number(body?.max ?? 3000)) });
+    }
+    if (deel === "boekingen") return json({ boekingen: await get(`salesentry/SalesEntries?$select=EntryNumber,Customer,CustomerName,Journal,EntryDate,AmountDC,Description,YourRef&$filter=${encodeURIComponent(`EntryDate ge datetime'${String(body?.vanaf ?? "2026-09-01")}'`)}`) });
+    if (deel === "gl") return json({ gl: await get(`financial/GLAccounts?$select=ID,Code,Description,VATCode&$filter=${encodeURIComponent("Code ge '8000' and Code le '8099'")}`) });
+    return json({ error: "deel: basis|facturen|regels|itemregels|gl" }, 400);
+  }
+
   // Grootboek opzoeken (alleen GET naar Exact) en eventueel een voorbeeldfactuur tonen. Schrijft niets naar Exact.
   if (actie === "gl_opzoeken" || actie === "factuur_dryrun") {
     const { data: cfg } = await admin.from("exact_config").select("*").limit(1).maybeSingle();
@@ -189,7 +232,7 @@ Deno.serve(async (req) => {
     const sleutelVeld = fcfg?.sleutel_veld === "YourRef" ? "YourRef" : "Remarks";
 
     // 1) Status open concepten bijwerken (alleen lezen).
-    const { data: openPl } = await admin.from("factuur_planning").select("*").in("status", ["concept_aangemaakt", "te_laat", "geclaimd"]);
+    const { data: openPl } = await admin.from("factuur_planning").select("*").in("status", ["concept_aangemaakt", "te_laat", "geclaimd"]).eq("is_test", false);
     for (const p of (live ? openPl : []) ?? []) {
       const gevonden = p.exact_invoice_id
         ? await (async () => { const r = await exact(`salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,Status,InvoiceDate&$filter=${encodeURIComponent(`InvoiceID eq guid'${p.exact_invoice_id}'`)}`); const d = (await r.json())?.d; return (d?.results ?? d ?? [])[0] ?? null; })()
