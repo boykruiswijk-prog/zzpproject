@@ -248,11 +248,20 @@ Deno.serve(async (req) => {
     for (const c of credits.filter((x) => x.status === "te_maken" && !x.is_test && Number(x.bedrag) > 0)) {
       const { data: claim } = await admin.from("factuur_credit_planning").update({ status: "geclaimd" }).eq("id", c.id).eq("status", "te_maken").select("id").maybeSingle();
       if (!claim) continue;
+      const oud = c.bron === "oud_systeem";
+      let gl: string | null = null;
       try {
         if ((await zoekOpSleutel(c.creditsleutel, "Remarks")).length) throw new Error("creditsleutel bestaat al in Exact");
-        const oud = c.bron === "oud_systeem";
         if (!c.exact_account_id || !c._item || (!oud && !c.origineel_factuurnummer)) throw new Error("creditnota mist account, artikel of factuurnummer");
-        const gl = c._gl ? (glCache[c._gl] ??= await getBavGlAccountId(admin, cfg, token)) : null;
+        gl = c._gl ? await glVoor(String(c._gl)) : null;
+      } catch (e) {
+        // Alleen deze creditnota blokkeren; de rest gaat door.
+        const status = e instanceof GlNietGevondenError ? "geblokkeerd" : "fout";
+        const msg = String((e as Error)?.message ?? e).slice(0, 300);
+        await admin.from("factuur_credit_planning").update(status === "geblokkeerd" ? { status, melding: msg } : { status, foutmelding: msg }).eq("id", c.id);
+        fouten.push(`credit ${status}: ${msg.slice(0, 160)}`); continue;
+      }
+      try {
         if (oud) {
           const p = oudSysteemCreditPayload({ creditsleutel: c.creditsleutel, exact_account_id: c.exact_account_id, exact_item_id: c._item, gl_account_id: gl,
             einddatum: c.einddatum, credit_vanaf: c.credit_vanaf, credit_tm: c.credit_tm, vandaag, regels: c.berekening?.regels ?? [] });
@@ -284,7 +293,7 @@ Deno.serve(async (req) => {
         const d = (await r.json())?.d ?? {};
         await admin.from("factuur_credit_planning").update({ status: "concept_aangemaakt", concept_op: new Date().toISOString(), exact_invoice_id: d.InvoiceID ?? null, exact_status: 20 }).eq("id", c.id);
         await admin.from("sensitive_audit_log").insert({ target_table: "klant_contracten", target_id: c.klant_contract_id, actie: "creditnota_concept_aangemaakt", veld: "factuur_credit_planning", nieuwe_waarde: c.creditsleutel, details: { credit_id: c.id, bedrag: c.bedrag, origineel: c.origineel_factuurnummer, invoice_id: d.InvoiceID } });
-      } catch (e) { fouten.push(String(e).slice(0, 200)); break; }
+      } catch (e) { fouten.push(String(e).slice(0, 200)); break; } // onzekere POST: stoppen, rij blijft "geclaimd"
     }
   } catch (e) { fouten.push(String(e).slice(0, 200)); }
 
