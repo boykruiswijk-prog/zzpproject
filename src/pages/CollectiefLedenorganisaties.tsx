@@ -22,7 +22,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFormGuard, submitPublicForm, PublicFormError } from "@/lib/antiSpam";
-import { supabase } from "@/integrations/supabase/client";
 import { maakFormulier } from "../../supabase/functions/_shared/leadVelden";
 
 import { HoneypotField } from "@/components/shared/HoneypotField";
