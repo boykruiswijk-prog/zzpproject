@@ -180,7 +180,7 @@ export default function KennisbankActualiteit() {
                           >
                             {r.score} signalen
                           </Badge>
-                          <span className="font-medium">{r.artikel.title}</span>
+                          <span className="min-w-0 max-w-full break-words font-medium">{r.artikel.title}</span>
                           {!r.artikel.is_published && (
                             <Badge variant="outline" className="border-orange-400 text-orange-700">
                               Concept
