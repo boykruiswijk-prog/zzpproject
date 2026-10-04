@@ -302,6 +302,7 @@ Deno.serve(async (req) => {
         rekeninghouder: machtiging.debiteurNaam,
         status: "nieuw",
         exact_status: "wachtend",
+        is_test: isTestLead,
       })
       .select()
       .single();
