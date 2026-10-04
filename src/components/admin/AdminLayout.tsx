@@ -1,7 +1,10 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { AdminSidebar } from "./AdminSidebar";
+import { MFAEnroll } from "./MFAEnroll";
+import { MFAVerify } from "./MFAVerify";
 import { Loader2 } from "lucide-react";
 
 interface AdminLayoutProps {
@@ -9,7 +12,8 @@ interface AdminLayoutProps {
 }
 
 export function AdminLayout({ children }: AdminLayoutProps) {
-  const { isLoading, isTeamMember, user } = useAuth();
+  const { isLoading, isTeamMember, user, isAal2 } = useAuth();
+  const [mfaState, setMfaState] = useState<"check" | "enroll" | "verify" | "ok">("check");
 
   if (isLoading) {
     return (
@@ -19,8 +23,35 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     );
   }
 
+  useEffect(() => {
+    if (!user || !isTeamMember || isAal2) { setMfaState(user && isTeamMember && isAal2 ? "ok" : "check"); return; }
+    supabase.auth.mfa.listFactors().then(({ data }) => {
+      const verified = data?.totp.filter((f) => f.status === "verified") ?? [];
+      setMfaState(verified.length > 0 ? "verify" : "enroll");
+    });
+  }, [user, isTeamMember, isAal2]);
+
   if (!user) {
     return <Navigate to="/admin/login" replace />;
+  }
+
+  if (isTeamMember && !isAal2) {
+    if (mfaState === "check") {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      );
+    }
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        {mfaState === "verify" ? (
+          <MFAVerify onVerified={() => window.location.reload()} onCancel={() => supabase.auth.signOut()} />
+        ) : (
+          <MFAEnroll onEnrolled={() => window.location.reload()} />
+        )}
+      </div>
+    );
   }
 
   if (!isTeamMember) {
