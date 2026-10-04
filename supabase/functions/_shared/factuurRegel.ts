@@ -33,8 +33,31 @@ export function glUitCache(cfg: any, code: string): string | null {
   return id ? String(id) : null;
 }
 
+/** Exact-BTW-code; spaties (Exact levert "2  ") weg, leeg → "0" (Geen BTW). */
+export function btwCode(c?: string | null): string {
+  const v = String(c ?? "").trim();
+  return v || "0";
+}
+
+export class BtwNietPassendError extends Error {
+  constructor() { super("BTW-code past niet bij grootboek"); this.name = "BtwNietPassendError"; }
+}
+
+/** Guard: lidmaatschap (8004) nooit zonder BTW, verzekering (8003) altijd Geen BTW. */
+export function btwPastBijGrootboek(glCode?: string | null, btw?: string | null): boolean {
+  const gl = String(glCode ?? "").trim(); const b = btwCode(btw);
+  if (gl === "8004" && b === "0") return false;
+  if (gl === "8003" && b !== "0") return false;
+  return true;
+}
+
+export function controleerBtw(glCode?: string | null, btw?: string | null): void {
+  if (!btwPastBijGrootboek(glCode, btw)) throw new BtwNietPassendError();
+}
+
 export function bouwFactuurPayload(k: any, glId: string | null, sleutel: string, sleutelVeld: "YourRef" | "Remarks") {
-  const regel: any = { Item: k.exact_item_id, Quantity: Number(k.aantal), UnitPrice: Number(k.bedrag_per_periode), VATCode: "0",
+  controleerBtw(k.gl_code, k.btw_code);
+  const regel: any = { Item: k.exact_item_id, Quantity: Number(k.aantal), UnitPrice: Number(k.bedrag_per_periode), VATCode: btwCode(k.btw_code),
     Description: factuurRegelTekst(k), StartTime: `${k.periode_start}T00:00:00`, EndTime: `${k.periode_eind}T00:00:00` };
   if (glId) regel.GLAccount = glId;
   const payload: any = { InvoiceTo: k.exact_account_id, OrderedBy: k.exact_account_id, Journal: "70", PaymentCondition: "IN",
