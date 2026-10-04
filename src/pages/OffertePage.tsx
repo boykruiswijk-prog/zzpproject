@@ -165,7 +165,7 @@ export default function OffertePage() {
         formulier: maakFormulier([
           ["Voornaam", form.voornaam], ["Achternaam", form.achternaam], ["E-mail", form.email], ["Telefoon", form.telefoon],
           ["Naam organisatie", form.naam_organisatie], ["Land", form.adres_land], ["Postcode", form.adres_postcode],
-          ["Huisnummer", form.adres_huisnummer], ["Adres (opgezocht)", pdokAdres && (pdokAdres as any).straat ? `${(pdokAdres as any).straat} ${form.adres_huisnummer}, ${(pdokAdres as any).plaats ?? ""}` : ""],
+          ["Huisnummer", form.adres_huisnummer], ["Adres (opgezocht)", pdokAdres ? `${pdokAdres.straat} ${form.adres_huisnummer}, ${pdokAdres.plaats}` : ""],
           ["KvK-nummer", form.kvk_nummer], ["Branche", sectorLabel], ["Belangrijkste opdrachtgever", form.belangrijkste_opdrachtgever],
           ["Omschrijving werkzaamheden", form.omschrijving_werkzaamheden], ["Aantal medewerkers", form.aantal_medewerkers],
           ["Gewenste startdatum", form.gewenste_startdatum],
