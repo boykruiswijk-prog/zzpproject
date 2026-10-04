@@ -63,7 +63,7 @@ export default function AdminScreeningAanvragen() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="min-w-0 space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Screening aanvragen</h1>
           <p className="text-muted-foreground">Beheer en volg alle screeningsaanvragen</p>
@@ -71,8 +71,23 @@ export default function AdminScreeningAanvragen() {
 
         </div>
 
-        <Card>
-          <Table>
+        <div className="space-y-3 md:hidden">
+          {loading ? <p className="py-8 text-center text-muted-foreground">Laden...</p> : aanvragen.length === 0 ? <Card className="p-6 text-center text-muted-foreground">Nog geen aanvragen</Card> : aanvragen.map((a) => (
+            <Card key={a.id} className="min-w-0 p-4 text-sm">
+              <p className="break-words font-medium">{a.voornaam} {a.achternaam}</p>
+              <p className="break-all text-muted-foreground">{a.email}</p>
+              <dl className="mt-3 grid grid-cols-[7rem_minmax(0,1fr)] gap-x-3 gap-y-1">
+                <dt className="text-muted-foreground">Bedrijf</dt><dd className="break-words">{a.bedrijfsnaam || "-"}</dd>
+                <dt className="text-muted-foreground">Pakket</dt><dd>{a.screening_type ? PAKKET_LABELS[a.screening_type] || a.screening_type : "-"}</dd>
+                <dt className="text-muted-foreground">Status</dt><dd>{a.status.replace("_", " ")}</dd>
+                {otenticaAan && <><dt className="text-muted-foreground">Otentica</dt><dd>{a.otentica_status.replace("_", " ")}</dd></>}
+                <dt className="text-muted-foreground">Aangemeld</dt><dd>{formatDateNL(a.aangemeld_op)}</dd>
+              </dl>
+            </Card>
+          ))}
+        </div>
+        <Card className="hidden min-w-0 w-full overflow-x-auto md:block">
+          <Table className="min-w-[700px]">
             <TableHeader>
               <TableRow>
                 <TableHead>Naam</TableHead>

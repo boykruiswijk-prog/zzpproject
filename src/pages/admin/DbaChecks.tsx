@@ -144,9 +144,9 @@ export default function AdminDbaChecks() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold flex items-center gap-3">
+        <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <h1 className="flex min-w-0 items-center gap-3 break-words text-2xl font-bold sm:text-3xl">
               <ShieldCheck className="h-8 w-8 text-primary" />
               Wet DBA Checks
             </h1>
@@ -156,7 +156,7 @@ export default function AdminDbaChecks() {
               Upload overeenkomsten en controleer op Wet DBA compliance
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex min-w-0 flex-wrap gap-2">
             <Button variant="outline" onClick={handleExportPdf} disabled={!checks?.length}>
               <Download className="h-4 w-4 mr-2" />
               Export PDF

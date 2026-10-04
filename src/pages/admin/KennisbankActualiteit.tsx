@@ -120,7 +120,7 @@ export default function KennisbankActualiteit() {
 
         <Card>
           <CardContent className="p-4 flex flex-wrap gap-3 items-center">
-            <div className="relative flex-1 min-w-[220px]">
+            <div className="relative min-w-0 flex-1 basis-full sm:min-w-[220px] sm:basis-auto">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Zoek op titel of slug"
@@ -130,7 +130,7 @@ export default function KennisbankActualiteit() {
               />
             </div>
             <Select value={status} onValueChange={(v) => setStatus(v as typeof status)}>
-              <SelectTrigger className="w-[190px]">
+              <SelectTrigger className="w-full sm:w-[190px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -140,7 +140,7 @@ export default function KennisbankActualiteit() {
               </SelectContent>
             </Select>
             <Select value={type} onValueChange={(v) => setType(v as typeof type)}>
-              <SelectTrigger className="w-[220px]">
+              <SelectTrigger className="w-full sm:w-[220px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -165,8 +165,8 @@ export default function KennisbankActualiteit() {
               <Accordion type="multiple" className="divide-y divide-border">
                 {filtered.map((r) => (
                   <AccordionItem key={r.artikel.id} value={r.artikel.id} className="border-0">
-                    <AccordionTrigger className="px-4 hover:no-underline">
-                      <div className="flex-1 text-left">
+                    <AccordionTrigger className="min-w-0 px-4 hover:no-underline">
+                      <div className="min-w-0 flex-1 break-words text-left">
                         <div className="flex items-center gap-2 flex-wrap">
                           <Badge
                             variant="outline"
@@ -180,7 +180,7 @@ export default function KennisbankActualiteit() {
                           >
                             {r.score} signalen
                           </Badge>
-                          <span className="font-medium">{r.artikel.title}</span>
+                          <span className="min-w-0 max-w-full break-words font-medium">{r.artikel.title}</span>
                           {!r.artikel.is_published && (
                             <Badge variant="outline" className="border-orange-400 text-orange-700">
                               Concept

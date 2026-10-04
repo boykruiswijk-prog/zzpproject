@@ -348,17 +348,17 @@ export default function CRM() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold flex items-center gap-2">
+      <div className="min-w-0 space-y-6">
+        <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <h1 className="flex min-w-0 items-center gap-2 break-words text-2xl font-bold sm:text-3xl">
               <Users className="h-7 w-7 text-primary" /> CRM
             </h1>
             <p className="text-muted-foreground">
               Alle leads, service-aanvragen en screeningen gegroepeerd per persoon
             </p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex min-w-0 flex-wrap items-center gap-3">
           <ToonTestrecordsSchakelaar />
           <Button variant="outline" onClick={load}>
             <RotateCw className="h-4 w-4 mr-2" />Herladen

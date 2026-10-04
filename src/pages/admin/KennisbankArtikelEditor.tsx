@@ -347,11 +347,11 @@ export default function KennisbankArtikelEditor() {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="secondary" onClick={() => setClaudeOpen(true)} disabled={saving || claudeBusy}>
+          <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+            <Button className="max-w-full" variant="secondary" onClick={() => setClaudeOpen(true)} disabled={saving || claudeBusy}>
               <Sparkles className="h-4 w-4 mr-1" /> Schrijf met Claude
             </Button>
-            <Button variant="outline" onClick={() => save(false)} disabled={saving}>
+            <Button className="max-w-full" variant="outline" onClick={() => save(false)} disabled={saving}>
               <Save className="h-4 w-4 mr-1" /> Opslaan als concept
             </Button>
             <Button onClick={() => save(true)} disabled={publishDisabled} title={needsReview ? "Eerst controleren en akkoord bevestigen" : undefined}>

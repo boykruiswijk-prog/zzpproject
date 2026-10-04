@@ -183,7 +183,7 @@ export default function Integraties() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6 max-w-5xl">
+      <div className="min-w-0 w-full max-w-5xl space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Integraties</h1>
           <p className="text-muted-foreground">Beheer externe koppelingen — Exact Online</p>
@@ -203,9 +203,9 @@ export default function Integraties() {
                   <Badge className={badgeVariant}>{health.label}</Badge>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="grid grid-cols-2 gap-4 text-sm">
+              <CardContent className="grid min-w-0 grid-cols-1 gap-4 text-sm sm:grid-cols-2">
                 {health.kind === "fout" && (
-                  <div className="col-span-2 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-destructive break-words">
+                   <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-destructive break-words sm:col-span-2">
                     {health.melding}
                   </div>
                 )}

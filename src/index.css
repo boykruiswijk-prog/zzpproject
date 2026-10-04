@@ -98,6 +98,43 @@
   .section-padding {
     @apply py-16 md:py-24;
   }
+
+  @media (max-width: 767px) {
+    .admin-shell main,
+    .admin-shell main > div,
+    .admin-shell main section,
+    .admin-shell main article,
+    .admin-shell main [class*="grid"],
+    .admin-shell main [class*="Card"] {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .admin-shell table {
+      width: 100% !important;
+      min-width: 0 !important;
+      table-layout: fixed;
+    }
+
+    .admin-shell th,
+    .admin-shell td {
+      min-width: 0 !important;
+      max-width: none !important;
+      white-space: normal !important;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .admin-shell h1,
+    .admin-shell h2,
+    .admin-shell h3,
+    .admin-shell [role="heading"] {
+      white-space: normal !important;
+      overflow: visible !important;
+      text-overflow: clip !important;
+      overflow-wrap: anywhere;
+    }
+  }
 }
 
 @layer utilities {

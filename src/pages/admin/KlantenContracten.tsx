@@ -137,9 +137,9 @@ export default function KlantenContracten() {
         {laden ? <div className="flex justify-center p-12"><Loader2 className="h-6 w-6 animate-spin" /></div> : (
           <>
             <OpzeggingenTeKoppelen />
-            <div className="grid gap-6 xl:grid-cols-2">
-              <Card>
-                <CardHeader><CardTitle className="flex items-center gap-2 text-base">Reconciliatie startstand
+            <div className="grid min-w-0 gap-6 xl:grid-cols-2">
+              <Card className="min-w-0 w-full">
+                <CardHeader className="min-w-0"><CardTitle className="flex min-w-0 flex-wrap items-center gap-2 break-words text-base">Reconciliatie startstand
                   <Badge variant={klopt ? "secondary" : "destructive"}>{klopt ? "Klopt met bron" : "Wijkt af"}</Badge></CardTitle></CardHeader>
                 <CardContent className="overflow-x-auto">
                   <table className="w-full text-sm">
@@ -160,10 +160,22 @@ export default function KlantenContracten() {
                   </table>
                 </CardContent>
               </Card>
-              <Card>
-                <CardHeader><CardTitle className="text-base">Facturatie-agenda (periodes die starten per maand)</CardTitle></CardHeader>
-                <CardContent className="overflow-x-auto">
-                  <table className="w-full text-sm">
+              <Card className="min-w-0 w-full">
+                <CardHeader className="min-w-0"><CardTitle className="break-words text-base">Facturatie-agenda (periodes die starten per maand)</CardTitle></CardHeader>
+                <CardContent className="min-w-0">
+                  <div className="space-y-2 md:hidden">
+                    {agenda.map((m) => (
+                      <div key={m.maand} className="min-w-0 rounded-md border border-border p-3 text-sm">
+                        <p className="mb-2 font-medium capitalize">{maandLabel(m.maand)}</p>
+                        <dl className="grid min-w-0 grid-cols-2 gap-x-3 gap-y-1">
+                          <dt className="text-muted-foreground">Maand</dt><dd className="text-right tabular-nums">{m.maandAantal} · {formatEuro(m.maandBedrag)}</dd>
+                          <dt className="text-muted-foreground">Jaar</dt><dd className="text-right tabular-nums">{m.jaarAantal} · {formatEuro(m.jaarBedrag)}</dd>
+                          <dt className="font-medium">Totaal</dt><dd className="text-right font-medium tabular-nums">{m.maandAantal + m.jaarAantal} · {formatEuro(m.maandBedrag + m.jaarBedrag)}</dd>
+                        </dl>
+                      </div>
+                    ))}
+                  </div>
+                  <table className="hidden w-full text-sm md:table">
                     <thead><tr className="text-muted-foreground"><th className="p-2 text-left font-normal">Maand</th><th className="p-2 text-right font-normal">Maand: aantal</th><th className="p-2 text-right font-normal">Maand: bedrag</th><th className="p-2 text-right font-normal">Jaar: aantal</th><th className="p-2 text-right font-normal">Jaar: bedrag</th></tr></thead>
                     <tbody>{agenda.map((m) => (
                       <tr key={m.maand} className="border-t border-border">
@@ -174,7 +186,7 @@ export default function KlantenContracten() {
                         <td className="p-2 text-right tabular-nums">{formatEuro(m.jaarBedrag)}</td>
                       </tr>))}</tbody>
                   </table>
-                  <p className="mt-2 text-xs text-muted-foreground">Achterlopende periodes van vóór deze maand staan niet in de agenda. Huidige MRR (actief): {formatEuro(mrrNu)}.</p>
+                   <p className="mt-2 break-words text-xs text-muted-foreground">Achterlopende periodes van vóór deze maand staan niet in de agenda. Huidige MRR (actief): {formatEuro(mrrNu)}.</p>
                 </CardContent>
               </Card>
             </div>

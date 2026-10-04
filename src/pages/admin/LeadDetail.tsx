@@ -290,13 +290,13 @@ export default function AdminLeadDetail() {
         <LeadDoorlooptijd lead={lead} />
 
 
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid min-w-0 gap-6 lg:grid-cols-3">
           {/* Lead info */}
-          <div className="lg:col-span-2 space-y-6">
-            <Card>
+          <div className="min-w-0 space-y-6 lg:col-span-2">
+            <Card className="min-w-0 w-full overflow-hidden">
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Lead informatie</CardTitle>
+                <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <CardTitle className="break-words">Lead informatie</CardTitle>
                   {isSupervisorOrAdmin ? (
                     <details className="text-xs">
                       <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
