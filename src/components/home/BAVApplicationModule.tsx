@@ -26,6 +26,8 @@ import { TrustSignalsStrip } from "@/components/social-proof/TrustSignalsStrip";
 import { bavPakketten, getPakket, type BavPakketId } from "@/data/bavPakketten";
 import { checkAcceptance } from "@/data/acceptanceCriteria";
 import { useFormGuard } from "@/lib/antiSpam";
+import { maakFormulier } from "../../../supabase/functions/_shared/leadVelden";
+
 import { HoneypotField } from "@/components/shared/HoneypotField";
 import { WIZARD_SECTOREN, verzekeringskaartVoorSector, isHandmatigeAcceptatieSector } from "@/data/sectorVerzekeringskaart";
 import { LocalizedLink } from "@/components/LocalizedLink";
@@ -276,6 +278,20 @@ export function BAVApplicationModule() {
            lead_id: leadId,
            client_akkoord_op: clientAkkoordOp,
            pagina_url: window.location.href,
+           formulier_naam: "Online aanvraag BAV + AVB",
+           formulier: maakFormulier([
+             ["Pakket", selectedBavPakket.name], ["Betaalwijze", betaalwijze], ["Ingangsdatum", startDate],
+             ["Bedrijfsnaam", formData.bedrijfsnaam], ["KvK-nummer", formData.kvkNummer],
+             ["Sector", verzekeringskaartVoorSector(formData.sector)?.sector.label ?? formData.sector], ["Beroep", formData.beroep],
+             ["Functie", formData.functie], ["Aantal medewerkers", formData.aantalMedewerkers],
+             ["Voornaam", formData.voornaam], ["Achternaam", formData.achternaam], ["E-mail", formData.email], ["Telefoon", formData.telefoon],
+             ["Belangrijkste opdrachtgever", formData.opdrachtgever],
+             ["Via bemiddelaar", viaBemiddelaar === null ? "" : viaBemiddelaar], ["Naam bemiddelaar", viaBemiddelaar ? formData.bemiddelaarNaam : ""],
+             ["Straat", formData.adresStraat], ["Huisnummer", formData.adresHuisnummer], ["Postcode", formData.adresPostcode],
+             ["Plaats", formData.adresPlaats], ["Land", formData.adresLand],
+             ["IBAN", formData.iban], ["Rekeninghouder", formData.rekeninghouder],
+             ["SEPA-machtiging akkoord", incassoAkkoord], ["Slotverklaring akkoord", slotverklaringAkkoord],
+           ]),
            getoonde_documenten: wizardDocumenten(formData.sector).map((d) => d.href),
            vereist_handmatige_beoordeling: parseInt(formData.aantalMedewerkers || "0") > 3,
            opmerkingen: [

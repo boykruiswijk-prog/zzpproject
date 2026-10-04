@@ -3,6 +3,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { MessageCircle, Phone, RotateCcw, Send, ThumbsDown, ThumbsUp, X } from "lucide-react";
 import { parseMarkdownLite, type Inline } from "@/lib/zeker/markdownLite";
 import { submitPublicForm, useFormGuard } from "@/lib/antiSpam";
+import { maakFormulier } from "../../../supabase/functions/_shared/leadVelden";
+
 import { trackPhone, trackWhatsApp } from "@/lib/tracking";
 import { ZEKER_TEKSTEN, type ZekerTaal } from "./zekerTeksten";
 
@@ -227,7 +229,11 @@ function TerugbelFormulier({ taal, sessieId, onKlaar, onAnnuleer }: { taal: Zeke
     try {
       await submitPublicForm("leads", {
         type: "contact", voornaam, achternaam, telefoon: v.telefoon.trim(), email: v.email.trim(), opmerkingen: v.vraag.trim(),
-        extra_data: { bron: "chat-zeker", chat_sessie_id: sessieId, voorkeursmoment: v.moment, toestemming: v.toestemming },
+        extra_data: {
+          bron: "chat-zeker", chat_sessie_id: sessieId, voorkeursmoment: v.moment, toestemming: v.toestemming,
+          formulier_naam: "Terugbelverzoek chat Zeker", pagina: window.location.pathname,
+          formulier: maakFormulier([["Naam", v.naam], ["Telefoon", v.telefoon], ["E-mail", v.email], ["Voorkeursmoment", v.moment], ["Vraag", v.vraag], ["Toestemming terugbellen", v.toestemming]]),
+        },
       }, guard);
       onKlaar(true);
     } catch (err) {

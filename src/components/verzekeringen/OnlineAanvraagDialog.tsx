@@ -22,6 +22,8 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { trackFormStart, trackFormComplete } from "@/lib/tracking";
 import { useFormGuard, submitPublicForm, PublicFormError } from "@/lib/antiSpam";
+import { maakFormulier } from "../../../supabase/functions/_shared/leadVelden";
+
 import { HoneypotField } from "@/components/shared/HoneypotField";
 
 interface OnlineAanvraagDialogProps {
@@ -154,6 +156,16 @@ export function OnlineAanvraagDialog({
         eigen_risico: formData.eigenRisico || null,
         ingangsdatum: formData.ingangsdatum || null,
         opmerkingen: formData.opmerkingen || null,
+        extra_data: {
+          formulier_naam: `Online aanvraag ${insuranceTitle}`, pagina: window.location.pathname,
+          formulier: maakFormulier([
+            ["Verzekering", insuranceTitle], ["Voornaam", formData.voornaam], ["Achternaam", formData.achternaam],
+            ["E-mail", formData.email], ["Telefoon", formData.telefoon], ["Geboortedatum", formData.geboortedatum],
+            ["Bedrijfsnaam", formData.bedrijfsnaam], ["KvK-nummer", formData.kvkNummer], ["Beroep", formData.beroep],
+            ["Jaaromzet", formData.jaarOmzet], ["Verzekerd bedrag", formData.dekkingsBedrag], ["Eigen risico", formData.eigenRisico],
+            ["Ingangsdatum", formData.ingangsdatum], ["Opmerkingen", formData.opmerkingen],
+          ]),
+        },
       }, guard);
 
       // Mail-notificatie (logt zelf in lead_notification_log)

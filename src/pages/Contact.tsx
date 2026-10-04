@@ -16,6 +16,8 @@ import teamRoxy from "@/assets/team-roxy.webp";
 import ellenPortrait from "@/assets/ellen-baars-avatar.webp";
 import { SITE_CONFIG, ADDRESS_ONE_LINE } from "@/config/site";
 import { useFormGuard, submitPublicForm, PublicFormError } from "@/lib/antiSpam";
+import { maakFormulier } from "../../supabase/functions/_shared/leadVelden";
+
 import { HoneypotField } from "@/components/shared/HoneypotField";
 
 const SEO = seoRoute("/contact");
@@ -53,6 +55,10 @@ export default function Contact() {
         {
           id: leadId,
           type: "contact", voornaam: voornaam || naam, achternaam: achternaam || "-", email, telefoon: telefoon || null, beroep: beroep || null, opmerkingen: `Onderwerp: ${onderwerp}\n\n${bericht}`,
+          extra_data: {
+            formulier_naam: "Contactformulier", pagina: window.location.pathname,
+            formulier: maakFormulier([["Naam", naam], ["E-mail", email], ["Telefoon", telefoon], ["Beroep", beroep], ["Onderwerp", onderwerp], ["Bericht", bericht], ["Akkoord privacyverklaring", formDataRaw.get("privacy") ? "Ja" : ""]]),
+          },
         },
         guard,
       );

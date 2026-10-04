@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFormGuard, submitPublicForm, PublicFormError } from "@/lib/antiSpam";
+import { maakFormulier } from "../../supabase/functions/_shared/leadVelden";
+
 import { HoneypotField } from "@/components/shared/HoneypotField";
 import teamWalking from "@/assets/team-walking.webp";
 
@@ -165,7 +167,9 @@ export default function CollectiefLedenorganisaties() {
     if (!validate()) return;
     setIsSubmitting(true);
     try {
+      const leadId = crypto.randomUUID();
       await submitPublicForm("leads", {
+        id: leadId,
         type: "contact" as const,
         voornaam: formData.contactpersoon.split(" ")[0] || formData.contactpersoon,
         achternaam: formData.contactpersoon.split(" ").slice(1).join(" ") || "-",
@@ -173,8 +177,18 @@ export default function CollectiefLedenorganisaties() {
         telefoon: formData.telefoon,
         bedrijfsnaam: formData.organisatienaam,
         beroep: formData.branche,
-        opmerkingen: `Aantal leden: ${formData.aantalLeden}. ${formData.opmerking}`,
+        opmerkingen: `Onderwerp: Collectief voorstel ledenorganisatie\nAantal leden: ${formData.aantalLeden}\n\n${formData.opmerking}`.trim(),
+        extra_data: {
+          formulier_naam: "Collectief voor ledenorganisaties", pagina: window.location.pathname,
+          formulier: maakFormulier([
+            ["Organisatienaam", formData.organisatienaam], ["Aantal leden", formData.aantalLeden], ["Branche", formData.branche],
+            ["Contactpersoon", formData.contactpersoon], ["Telefoon", formData.telefoon], ["E-mail", formData.email], ["Opmerking", formData.opmerking],
+          ]),
+        },
       }, guard);
+      // Interne teammelding (geen klantmail); inhoud komt server-side uit de database.
+      supabase.functions.invoke("send-notification", { body: { type: "contact", lead_id: leadId } })
+        .catch((err) => console.error("Teammelding mislukt:", err));
       toast({ title: "Aanvraag verzonden!", description: "We nemen binnen 24 uur contact met je op." });
       setFormData({ organisatienaam: "", aantalLeden: "", branche: "", contactpersoon: "", telefoon: "", email: "", opmerking: "" });
     } catch (err) {

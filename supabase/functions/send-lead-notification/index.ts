@@ -6,6 +6,7 @@ import { z } from "npm:zod@3.23.8";
 import { resolveEnvironment } from "../_shared/environment.ts";
 import { getFromAddress } from "../_shared/mail.ts";
 import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
+import { interneMailVelden } from "../_shared/leadVelden.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -132,13 +133,14 @@ const LABEL_MAP: Record<string, string> = {
 
 function prettyLabel(key: string): string {
   if (LABEL_MAP[key]) return LABEL_MAP[key];
+  if (/[A-Z ]/.test(key)) return key; // al een net label (uit leadVelden)
   const spaced = key.replace(/[_-]+/g, " ").trim();
   return spaced.charAt(0).toUpperCase() + spaced.slice(1);
 }
 
 function renderHtml(label: string, fields: Record<string, unknown>, leadId?: string | null, deeplink?: string | null, waarschuwing?: string): string {
   const rows = Object.entries(fields)
-    .map(([k, v]) => `<tr><td style="padding:10px 14px;font-weight:600;color:#333;background:#fafafa;border:1px solid #e5e5e5;width:200px">${esc(prettyLabel(k))}</td><td style="padding:10px 14px;border:1px solid #e5e5e5;color:#222">${esc(Array.isArray(v) ? v.join(", ") : v)}</td></tr>`)
+    .map(([k, v]) => `<tr><td style="padding:10px 14px;font-weight:600;color:#333;background:#fafafa;border:1px solid #e5e5e5;width:200px">${esc(prettyLabel(k))}</td><td style="padding:10px 14px;border:1px solid #e5e5e5;color:#222;white-space:pre-line">${esc(Array.isArray(v) ? v.join(", ") : v)}</td></tr>`)
     .join("");
   return `
     <div style="font-family:Arial,sans-serif;max-width:640px;color:#222;line-height:1.5">
@@ -254,17 +256,34 @@ Deno.serve(async (req) => {
     console.log("send-lead-notification env:", JSON.stringify(env));
     console.log(`[mail] ${JSON.stringify({ function: "send-lead-notification", environment: isProd ? "production" : "preview", env_reason: env.reason, host_source: env.hostSource, app_env: env.appEnv })}`);
 
+    // Interne mail: volledige veldenlijst uit het leadrecord (e-mail en telefoon bovenaan).
+    let internFields: Record<string, unknown> = fields;
+    let isTestLead = false;
+    if (leadId) {
+      const { data: leadRec } = await supabase.from("leads").select("*").eq("id", leadId).maybeSingle();
+      if (leadRec) {
+        isTestLead = (leadRec as any).is_test === true;
+        const { velden, bericht } = interneMailVelden(leadRec as Record<string, unknown>);
+        internFields = Object.fromEntries(velden);
+        if (bericht) internFields["Bericht"] = bericht;
+        // Extra context van vertrouwde aanroepers (bijv. chatsamenvatting, premie) behouden.
+        if (isTrusted) for (const [k, v] of Object.entries(fields)) {
+          if (["samenvatting_chat", "premie", "dekking"].includes(k) && v) internFields[prettyLabel(k)] = v;
+        }
+      }
+    }
+
     const label = LEAD_LABELS[type] || type;
     const subjBase = (SUBJECTS[type] || ((r: string) => `Nieuwe lead (${type}) via zpzaken.nl - ${r}`))(reference || leadId || "");
-    const subject = isProd ? subjBase : `[PREVIEW] ${subjBase}`;
+    const subject = `${isTestLead ? "[TEST] " : ""}${isProd ? subjBase : `[PREVIEW] ${subjBase}`}`;
 
     // Deeplinks in teammails altijd naar het productiedomein (live sinds 1-10-2026).
     const adminBase = isProd ? "https://zpzaken.nl" : (Deno.env.get("ADMIN_BASE_URL") || "https://zpzaken.nl").replace(/\/$/, "");
     const deeplink = leadId ? `${adminBase}/admin/leads/${leadId}` : null;
 
     const waarschuwing = isTrusted ? parsed.data.waarschuwing : undefined;
-    const html = renderHtml(label, fields, leadId, deeplink, waarschuwing);
-    const text = (waarschuwing ? `${waarschuwing}\n\n` : "") + renderText(label, fields) + (deeplink ? `\nOpen in admin: ${deeplink}\n` : "");
+    const html = renderHtml(label, internFields, leadId, deeplink, waarschuwing);
+    const text = (waarschuwing ? `${waarschuwing}\n\n` : "") + renderText(label, internFields) + (deeplink ? `\nOpen in admin: ${deeplink}\n` : "");
 
     try {
       const internalResults = await verstuurInterneMelding(supabase, req, "send-lead-notification", {
@@ -275,7 +294,8 @@ Deno.serve(async (req) => {
 
       // Klantbevestigingsmail (alleen als userEmail aanwezig)
       const customerEmailRaw = (isTrusted ? (userEmail || (fields.email as string | undefined) || "") : (userEmail || "")).trim();
-      if (customerEmailRaw && resend) {
+      // Testleads krijgen nooit een klantbevestiging.
+      if (customerEmailRaw && resend && !isTestLead) {
         const customerRecipient = isProd ? customerEmailRaw : "boy.kruiswijk@zpzaken.nl";
         const customerSubjBase = `Bevestiging van je aanvraag bij ZP Zaken`;
         const customerSubject = isProd ? customerSubjBase : `[PREVIEW] ${customerSubjBase} (origineel naar ${customerEmailRaw})`;
