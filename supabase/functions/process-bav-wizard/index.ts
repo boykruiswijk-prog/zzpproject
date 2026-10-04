@@ -78,7 +78,13 @@ interface BavSubmission {
   vereist_handmatige_beoordeling?: boolean;
   /** Documenten (pad) die in stap 5 getoond zijn en waarvan de klant lezen bevestigt. */
   getoonde_documenten?: unknown;
+  /** Volledige formulierinhoud als geordende lijst {label, waarde}. */
+  formulier?: unknown;
+  formulier_naam?: string;
 }
+
+import { saneerFormulier, saneerPagina } from "../_shared/leadVelden.ts";
+import { resolveEnvironment } from "../_shared/environment.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -193,6 +199,8 @@ Deno.serve(async (req) => {
 
     // ── 0. BEWIJSRECORD SEPA-MACHTIGING (eerst; faalt dit, dan faalt de aanvraag) ──
     const leadId = submission.lead_id as string;
+    // Preview/testomgeving: altijd testrecord, geen klantbevestiging.
+    const isTestLead = !resolveEnvironment(req).isProduction;
     const machtiging = bouwMachtigingData({
       type: "doorlopend",
       bronId: leadId,
@@ -248,7 +256,11 @@ Deno.serve(async (req) => {
         bron: "website",
         exact_status: "wachtend",
         vereist_handmatige_beoordeling: handmatigeAcceptatie || submission.vereist_handmatige_beoordeling === true,
+        is_test: isTestLead,
         extra_data: {
+          formulier: saneerFormulier(submission.formulier),
+          formulier_naam: typeof submission.formulier_naam === "string" ? submission.formulier_naam.slice(0, 100) : "Online aanvraag BAV + AVB",
+          pagina: saneerPagina(submission.pagina_url),
           sector: submission.sector,
           ...(handmatigeAcceptatie
             ? { handmatige_acceptatie: { reden: HANDMATIGE_ACCEPTATIE_REDEN, sector: submission.sector } }
@@ -300,7 +312,7 @@ Deno.serve(async (req) => {
     // Bewijs, lead en aanmelding staan hierboven al synchroon vast. Fouten worden
     // gelogd in lead_notification_log (verstuurMachtigingBevestiging / send-lead-notification).
     const achtergrond = (async () => {
-    await verstuurMachtigingBevestiging(supabase, req, {
+    if (!isTestLead) await verstuurMachtigingBevestiging(supabase, req, {
       fnName: "process-bav-wizard",
       leadType: "bav-sepa-machtiging",
       record: bewijs,
