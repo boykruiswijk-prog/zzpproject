@@ -55,6 +55,34 @@ export async function getGlAccountIdByCode(
   return id;
 }
 
+/** Grootboek ontbreekt in Exact: blokkeert alleen de betreffende regel. */
+export class GlNietGevondenError extends Error {}
+
+/**
+ * Elke grootboekcode (8003, 8004, ...): alleen GET op financial/GLAccounts, cache in
+ * exact_config.gl_account_ids (jsonb code → ID). BAV-code gebruikt de bestaande cache.
+ */
+export async function getGlAccountIdVoorCode(supabase: any, cfg: any, token: string, code: string): Promise<string> {
+  const c = String(code ?? "").trim();
+  if (c === String(cfg?.gl_code_bav ?? "8003").trim()) return await getBavGlAccountId(supabase, cfg, token);
+  const cached = cfg?.gl_account_ids?.[c];
+  if (cached) return String(cached);
+  const base = `${cfg.base_url || "https://start.exactonline.nl"}/api/v1/${cfg.divisie_code}`;
+  const r = await fetch(`${base}/financial/GLAccounts?$select=ID,Code,IsBlocked&$filter=${encodeURIComponent(`trim(Code) eq '${c.replace(/'/g, "''")}'`)}`,
+    { headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } });
+  if (!r.ok) { await r.text().catch(() => ""); throw new BavGlError(`grootboek ${c} opzoeken mislukt (HTTP ${r.status})`); }
+  const j: any = await r.json().catch(() => ({}));
+  const rows: any[] = (j?.d?.results ?? []).filter((x: any) => String(x?.Code ?? "").trim() === c);
+  if (rows.length === 0) throw new GlNietGevondenError(`grootboek ${c} niet gevonden in Exact`);
+  if (rows.length > 1) throw new GlNietGevondenError(`grootboek ${c} niet eenduidig in Exact (${rows.length} treffers)`);
+  if (rows[0].IsBlocked) throw new GlNietGevondenError(`grootboek ${c} is geblokkeerd in Exact`);
+  const id = String(rows[0].ID);
+  const nieuw = { ...(cfg.gl_account_ids ?? {}), [c]: id };
+  await supabase.from("exact_config").update({ gl_account_ids: nieuw }).eq("id", cfg.id);
+  cfg.gl_account_ids = nieuw;
+  return id;
+}
+
 /** BAV-AVB (standaard 8003). */
 export async function getBavGlAccountId(supabase: any, cfg: any, token: string): Promise<string> {
   return await getGlAccountIdByCode(supabase, cfg, token, "gl_code_bav", "gl_account_id_bav", "8003");
