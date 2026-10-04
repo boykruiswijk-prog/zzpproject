@@ -1,7 +1,7 @@
 # Roadmap
 
 - [x] Mobiele admin: menu, compacte klant-/leadlijsten, scrollbare tabellen en passende dialogen
-- [ ] Mobiele admin: visuele controle op 390, 768 en 1280 px
+- [x] Mobiele admin: visuele controle op 390, 768 en 1280 px
 
 - [x] Part A: H13/H14/M1/M2/M3 uitvoeren volgens goedgekeurd plan
 - [x] B1: alle gedeelde Exact-token/GL-functies controleren en read-only smoke-testen
