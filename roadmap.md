@@ -1,5 +1,11 @@
 # Roadmap
 
+- [ ] Centrale interne meldingsontvangers, afzonderlijke logging, alarm en routetests
+- [ ] Boy admin maken; admin-only team, facturatieschakelaars, Exact en integraties afdwingen
+- [ ] Admin-only activiteitenlog samenstellen en exports/downloads auditen
+- [ ] Beheermenu groeperen en oude beheer-URL's behouden
+- [ ] Rechtenmatrix en verzekering-rol vóór/na verifiëren
+
 - [x] Mobiele admin: menu, compacte klant-/leadlijsten, scrollbare tabellen en passende dialogen
 - [x] Mobiele admin: visuele controle op 390, 768 en 1280 px
 
