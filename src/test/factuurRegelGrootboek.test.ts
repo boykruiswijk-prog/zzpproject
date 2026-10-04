@@ -7,7 +7,7 @@ const basis = { exact_item_id: "item", exact_account_id: "acc", aantal: 1, bedra
 
 describe("grootboek per regel", () => {
   it("lidmaatschap krijgt GL 8004 en eigen omschrijving", () => {
-    const k = { ...basis, itemcode: "450", product: "lidmaatschap_allin", gl_code: "8004" };
+    const k = { ...basis, itemcode: "450", product: "lidmaatschap_allin", gl_code: "8004", btw_code: "2" };
     const p = bouwFactuurPayload(k, glUitCache(cfg, k.gl_code), "ZPF-ABCDEF12", "Remarks");
     const r = p.SalesInvoiceLines[0];
     expect(r.GLAccount).toBe("GUID-8004");
@@ -20,7 +20,7 @@ describe("grootboek per regel", () => {
     expect(glUitCache(cfg, "8999")).toBeNull();
   });
   it("BAV-AVB blijft op 8003", () => {
-    const k = { ...basis, itemcode: "100-OUDJ540", gl_code: "8003", bedrag_per_periode: 540 };
+    const k = { ...basis, itemcode: "100-OUDJ540", gl_code: "8003", btw_code: "0", bedrag_per_periode: 540 };
     const r = bouwFactuurPayload(k, glUitCache(cfg, "8003"), "ZPF-ABCDEF12", "Remarks").SalesInvoiceLines[0];
     expect(r.GLAccount).toBe("GUID-8003");
     expect(r.Description).toContain("BAV-AVB premie");
