@@ -13,6 +13,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import { createMailGate, getFromAddress } from "../_shared/mail.ts";
 import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
+import { interneMailVelden } from "../_shared/leadVelden.ts";
 
 const supabaseAdmin = createClient(
   Deno.env.get("SUPABASE_URL") ?? "",
@@ -181,7 +182,7 @@ serve(async (req) => {
 
       const { data: lead } = await supabaseAdmin
         .from("leads")
-        .select("id, created_at, type, voornaam, achternaam, email, telefoon, beroep, opmerkingen, verzekering_type")
+        .select("*")
         .eq("id", leadId)
         .maybeSingle();
 
@@ -216,19 +217,10 @@ serve(async (req) => {
           emails.push(bevestigingEmail(from, klantEmail, String(lead.voornaam ?? "").split(" ")[0] || naam));
         }
       } else {
-        emails.push(
-          internEmail(
-            from,
-            `Nieuw contactverzoek via zpzaken: ${naam}`,
-            [
-              ["Naam", naam],
-              ["E-mail", klantEmail],
-              ["Telefoon", String(lead.telefoon ?? "-")],
-              ["Beroep", String(lead.beroep ?? "-")],
-            ],
-            String(lead.opmerkingen ?? ""),
-          ),
-        );
+        // Volledige veldenlijst uit het leadrecord; e-mail en telefoon bovenaan.
+        const { velden, bericht } = interneMailVelden(lead as Record<string, unknown>);
+        const testPrefix = (lead as any).is_test ? "[TEST] " : "";
+        emails.push(internEmail(from, `${testPrefix}Nieuw contactverzoek via zpzaken: ${naam}`, velden, bericht));
       }
     }
 
