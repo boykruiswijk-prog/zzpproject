@@ -27,7 +27,6 @@ const corsHeaders = {
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
-const ADMIN_EMAIL = "info@zpzaken.nl";
 const ONEFELLOW_EMAIL = "info@onefellow.nl";
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
 // Afzender komt uit de gedeelde helper (_shared/mail.ts): RESEND_FROM_ADDRESS,

@@ -275,7 +275,7 @@ Deno.serve(async (req) => {
 
       // Klantbevestigingsmail (alleen als userEmail aanwezig)
       const customerEmailRaw = (isTrusted ? (userEmail || (fields.email as string | undefined) || "") : (userEmail || "")).trim();
-      if (customerEmailRaw) {
+      if (customerEmailRaw && resend) {
         const customerRecipient = isProd ? customerEmailRaw : "boy.kruiswijk@zpzaken.nl";
         const customerSubjBase = `Bevestiging van je aanvraag bij ZP Zaken`;
         const customerSubject = isProd ? customerSubjBase : `[PREVIEW] ${customerSubjBase} (origineel naar ${customerEmailRaw})`;

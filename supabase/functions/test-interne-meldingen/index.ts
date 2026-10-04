@@ -1,7 +1,8 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { z } from "npm:zod@3.23.8";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
+
+const corsHeaders = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, apikey, content-type" };
 
 const schema = z.object({ route: z.enum(["nieuwe-aanvraag", "opzegging", "contactverzoek", "terugbelverzoek", "certificaat-opgevraagd", "pauze", "heractivering"]) });
 
