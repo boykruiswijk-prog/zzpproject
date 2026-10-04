@@ -281,6 +281,13 @@
       "when": 1791135515040,
       "tag": "0039_security_hardening_20261004",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1791136220750,
+      "tag": "0040_deprecate_audit_resttabellen",
+      "breakpoints": true
     }
   ]
 }
