@@ -1,4 +1,4 @@
-import * as XLSX from "https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.mjs";
+import ExcelJS from "npm:exceljs@4.4.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -55,7 +55,13 @@ Deno.serve(async (req) => {
     const articles = articlesRes.data || [];
 
     // Create workbook
-    const wb = XLSX.utils.book_new();
+    const wb = new ExcelJS.Workbook();
+    const addSheet = (name: string, rows: Record<string, unknown>[]) => {
+      const ws = wb.addWorksheet(name);
+      if (rows.length === 0) return;
+      ws.columns = Object.keys(rows[0]).map((key) => ({ header: key, key }));
+      for (const row of rows) ws.addRow(row);
+    };
 
     // --- Tab 1: Alle Leads (overview) ---
     const allLeadsRows = leads.map((l: any) => ({
@@ -79,12 +85,11 @@ Deno.serve(async (req) => {
       "Aangemaakt": l.created_at,
       "Bijgewerkt": l.updated_at,
     }));
-    const wsLeads = XLSX.utils.json_to_sheet(allLeadsRows);
-    XLSX.utils.book_append_sheet(wb, wsLeads, "Alle Leads");
+    addSheet("Alle Leads", allLeadsRows);
 
     // --- Tab 2: Verzekeringsaanvragen ---
     const verzekeringLeads = leads.filter((l: any) => l.type === "verzekering_aanvraag");
-    const wsVerzekering = XLSX.utils.json_to_sheet(
+    addSheet("Verzekeringen",
       verzekeringLeads.map((l: any) => ({
         "Voornaam": l.voornaam,
         "Achternaam": l.achternaam,
@@ -103,11 +108,10 @@ Deno.serve(async (req) => {
         "Aangemaakt": l.created_at,
       }))
     );
-    XLSX.utils.book_append_sheet(wb, wsVerzekering, "Verzekeringen");
 
     // --- Tab 3: Contactaanvragen ---
     const contactLeads = leads.filter((l: any) => l.type === "contact");
-    const wsContact = XLSX.utils.json_to_sheet(
+    addSheet("Contactaanvragen",
       contactLeads.map((l: any) => ({
         "Voornaam": l.voornaam,
         "Achternaam": l.achternaam,
@@ -120,10 +124,9 @@ Deno.serve(async (req) => {
         "Aangemaakt": l.created_at,
       }))
     );
-    XLSX.utils.book_append_sheet(wb, wsContact, "Contactaanvragen");
 
     // --- Tab 4: Collectieve Inkoop ---
-    const wsSignups = XLSX.utils.json_to_sheet(
+    addSheet("Collectieve Inkoop",
       signups.map((s: any) => ({
         "Naam": s.naam,
         "Email": s.email,
@@ -136,19 +139,17 @@ Deno.serve(async (req) => {
         "Aangemaakt": s.created_at,
       }))
     );
-    XLSX.utils.book_append_sheet(wb, wsSignups, "Collectieve Inkoop");
 
     // --- Tab 5: Nieuwsbrief ---
-    const wsNewsletter = XLSX.utils.json_to_sheet(
+    addSheet("Nieuwsbrief",
       newsletter.map((n: any) => ({
         "Email": n.email,
         "Aangemeld op": n.created_at,
       }))
     );
-    XLSX.utils.book_append_sheet(wb, wsNewsletter, "Nieuwsbrief");
 
     // --- Tab 6: Artikelen ---
-    const wsArticles = XLSX.utils.json_to_sheet(
+    addSheet("Artikelen",
       articles.map((a: any) => ({
         "Titel": a.title,
         "Slug": a.slug,
@@ -161,10 +162,9 @@ Deno.serve(async (req) => {
         "Aangemaakt": a.created_at,
       }))
     );
-    XLSX.utils.book_append_sheet(wb, wsArticles, "Artikelen");
 
     // Generate buffer
-    const buf = XLSX.write(wb, { type: "buffer", bookType: "xlsx", compression: true });
+    const buf = await wb.xlsx.writeBuffer();
 
     const now = new Date().toISOString().slice(0, 10);
     await admin.from("sensitive_audit_log").insert({
@@ -172,7 +172,7 @@ Deno.serve(async (req) => {
       uitgevoerd_door_email: user.email ?? null,
       details: { leads: leads.length, signups: signups.length, newsletter: newsletter.length, articles: articles.length },
     });
-    return new Response(buf, {
+    return new Response(buf as ArrayBuffer, {
       status: 200,
       headers: {
         ...corsHeaders,

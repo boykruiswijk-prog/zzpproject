@@ -18,6 +18,7 @@ export type ServiceAanvraag = {
   behandeld_door: string | null;
   behandeld_op: string | null;
   created_at: string;
+  geverifieerd?: boolean;
 };
 
 export const SERVICE_TYPE_COLOR: Record<string, string> = {
@@ -69,8 +70,9 @@ export function ServiceAanvraagDetail({ aanvraag, onSaveNotes, onMarkAfgerond, o
         </div>
         <div>
           <div className="text-muted-foreground">Status</div>
-          <div>
+          <div className="flex flex-wrap gap-1">
             <Badge className={SERVICE_STATUS_COLOR[aanvraag.status]}>{aanvraag.status}</Badge>
+            <Badge variant={aanvraag.geverifieerd ? "secondary" : "outline"}>{aanvraag.geverifieerd ? "Geverifieerd" : "Ongeverifieerd"}</Badge>
           </div>
         </div>
         <div>

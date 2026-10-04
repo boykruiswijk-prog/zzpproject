@@ -11,13 +11,9 @@ project_id = "eugkavokktjwpqaqlwsj"
     verify_jwt = false
   [functions.exact-oauth-callback]
     verify_jwt = false
-  [functions.exact-refresh-token]
-    verify_jwt = false
   [functions.export-excel]
     verify_jwt = false
   [functions.generate-certificate]
-    verify_jwt = false
-  [functions.generate-invoice]
     verify_jwt = false
   [functions.genereer-artikel]
     verify_jwt = false

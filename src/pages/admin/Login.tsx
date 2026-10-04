@@ -57,17 +57,25 @@ export default function AdminLogin() {
     if (!email.trim() || !password.trim()) return;
     setIsLoading(true);
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
-      password,
+    const normalizedEmail = email.trim().toLowerCase();
+    const guard = await supabase.functions.invoke("login-guard", {
+      body: { action: "attempt", email: normalizedEmail, password },
     });
-
-    if (error) {
+    const guardData = guard.data as { authenticated?: boolean; session?: { access_token: string; refresh_token: string }; locked?: boolean; minutesLeft?: number } | null;
+    if (guard.error || !guardData?.authenticated || !guardData.session) {
       toast({
         title: "Inloggen mislukt",
-        description: "Controleer je e-mailadres en wachtwoord.",
+        description: guardData?.locked
+          ? `Te veel mislukte pogingen. Probeer het over ${guardData.minutesLeft} minuten opnieuw.`
+          : "Controleer je e-mailadres en wachtwoord.",
         variant: "destructive",
       });
+      setIsLoading(false);
+      return;
+    }
+    const { error: sessionError } = await supabase.auth.setSession(guardData.session);
+    if (sessionError) {
+      toast({ title: "Inloggen mislukt", description: "Sessie kon niet worden gezet.", variant: "destructive" });
       setIsLoading(false);
       return;
     }

@@ -9,18 +9,18 @@
 
 ## Beveiligingscheck 4 oktober 2026
 
-- [ ] Sluit SECURITY DEFINER-functies, herstel expliciete rechten en standaardprivileges, test e-mailwachtrij.
-- [ ] Beveilig process-klant-service met anti-spam, verificatiestatus en portal-eigendomscontrole.
-- [ ] Dwing MFA server-side af zonder service-role- of klantportaalstromen te breken.
-- [ ] Verwijder Exact-geheimen uit frontendtoegang en test Exact-status/keepalive.
-- [ ] Herstel login-lockout zodat publieke requests geen accounts kunnen blokkeren.
-- [ ] Beperk export-excel tot admin, supervisor en verzekering; vervang kwetsbare XLSX-library en test export.
-- [ ] Upgrade Vite 7.3.x en verwijder package-lock.json.
-- [ ] Herstel anonieme 404-logging inclusief onbekende hostingpaden.
-- [ ] Voeg auditlogging toe voor wijzigingen aan user_roles.
-- [ ] Verwijder vier ongebruikte Edge Functions en twee ongebruikte tabellen na referentiecontrole; neutraliseer wachtwoordmigratie.
-- [ ] Herstel escaping en veilige Exact-queryopbouw in drie Edge Functions.
-- [ ] Onderzoek twee pending e-maillogs en corrigeer hun status zonder opnieuw te verzenden.
-- [ ] Voeg security.txt toe en controleer dat het statisch wordt bediend.
-- [ ] Controleer uitsluitend de aanwezigheid van OTENTICA_WEBHOOK_SECRET.
-- [ ] Draai gerichte tests, securityscan, linter en build; rapporteer per punt en resterende acties voor Boy.
+- [x] Sluit SECURITY DEFINER-functies, herstel expliciete rechten en standaardprivileges, test e-mailwachtrij.
+- [x] Beveilig process-klant-service met anti-spam, verificatiestatus en portal-eigendomscontrole.
+- [x] Dwing MFA server-side af en stuur aal1-teamleden direct naar MFA-inschrijving/verificatie zonder service-role- of klantportaalstromen te breken.
+- [x] Verwijder Exact-geheimen uit frontendtoegang en test Exact-status/keepalive.
+- [x] Herstel login-lockout zodat publieke requests geen accounts kunnen blokkeren.
+- [x] Beperk export-excel tot admin, supervisor en verzekering; vervang kwetsbare XLSX-library en test export.
+- [x] Upgrade Vite 7.3.x en verwijder package-lock.json.
+- [x] Herstel anonieme 404-logging inclusief onbekende hostingpaden.
+- [x] Voeg auditlogging toe voor wijzigingen aan user_roles.
+- [x] Verwijder vier ongebruikte Edge Functions en twee ongebruikte tabellen na referentiecontrole; neutraliseer wachtwoordmigratie.
+- [x] Herstel escaping en veilige Exact-queryopbouw in drie Edge Functions.
+- [x] Onderzoek twee pending e-maillogs en corrigeer hun status zonder opnieuw te verzenden.
+- [x] Voeg security.txt toe en controleer dat het statisch wordt bediend.
+- [x] Controleer uitsluitend de aanwezigheid van OTENTICA_WEBHOOK_SECRET.
+- [x] Draai gerichte tests, securityscan, linter en build; rapporteer per punt en resterende acties voor Boy.

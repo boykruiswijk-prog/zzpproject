@@ -263,7 +263,7 @@ Deno.serve(async (req) => {
     lead.exact_invoice_status = status;
     if (status === 50) {
       const nummer = String(invoice.InvoiceNumber ?? lead.exact_invoice_number ?? "onbekend");
-      const klant = [lead.voornaam, lead.achternaam].filter(Boolean).join(" ") || lead.bedrijfsnaam || lead.email;
+      const klant = [escapeHtml(lead.voornaam), escapeHtml(lead.achternaam)].filter(Boolean).join(" ") || lead.bedrijfsnaam || lead.email;
       await supabase.from("activiteiten_log").insert({
         actie_type: "incassobatch_controle", omschrijving: `Controleer of factuur ${nummer} van ${klant} uit de incassobatch moet`,
         uitgevoerd_door: uid, uitgevoerd_door_naam: rol, lead_id, klant_email: lead.email ?? null,
@@ -438,7 +438,7 @@ Deno.serve(async (req) => {
         const mailResults: any[] = [];
         mailResults.push(await lcMail("pauzeren", "klant", recipientKlant, "Je polis is gepauzeerd",
           mailShell("Polis gepauzeerd", `
-            <p>Hoi ${lead.voornaam},</p>
+            <p>Hoi ${escapeHtml(lead.voornaam)},</p>
             <p>Je polis is per <strong>${fmtNL(today)}</strong> gepauzeerd. Tijdens de pauze ben je niet meer gedekt voor nieuwe schade. Schade van vóór de pauze blijft gedekt.</p>
             <p><strong>Reden:</strong> ${reden.replace(/_/g, " ")}</p>
             ${pauze_toelichting ? `<p><strong>Toelichting:</strong> ${escapeHtml(pauze_toelichting)}</p>` : ""}
@@ -447,10 +447,10 @@ Deno.serve(async (req) => {
             <p><a href="${COMPANY.url}/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
           `)));
 
-        mailResults.push(await teamMail("pauzeren", `[Pauze] ${lead.voornaam} ${lead.achternaam}`,
+        mailResults.push(await teamMail("pauzeren", `[Pauze] ${escapeHtml(lead.voornaam)} ${escapeHtml(lead.achternaam)}`,
           mailShell("Polis gepauzeerd", `
-            <p><strong>${lead.voornaam} ${lead.achternaam}</strong> (${lead.email}) heeft de polis gepauzeerd.</p>
-            <p><strong>Reden:</strong> ${reden}<br/><strong>Datum:</strong> ${fmtNL(today)}</p>
+            <p><strong>${escapeHtml(lead.voornaam)} ${escapeHtml(lead.achternaam)}</strong> (${lead.email}) heeft de polis gepauzeerd.</p>
+            <p><strong>Reden:</strong> ${escapeHtml(reden)}<br/><strong>Datum:</strong> ${fmtNL(today)}</p>
             ${pauze_toelichting ? `<p><strong>Toelichting:</strong> ${escapeHtml(pauze_toelichting)}</p>` : ""}
             <p><strong>Creditnota:</strong> ${"ok" in creditResult && creditResult.ok ? `€ ${calc.credit_bedrag.toFixed(2)} (Exact ID ${creditResult.invoiceId})` : (creditResult.reden ?? "n.v.t.")}</p>
             ${lead.exact_invoice_status === 50 ? `<p style="background:#fff7ed;border:1px solid #fed7aa;padding:10px;border-radius:6px"><strong>⚠️ Let op:</strong> originele factuur staat op Status 50 (definitief). Controleer of de eerstvolgende SEPA-incassobatch deze klant nog bevat en verwijder indien nodig handmatig in Exact → Cashflow → Incasso.</p>` : ""}
@@ -459,10 +459,10 @@ Deno.serve(async (req) => {
         // B7 (privacy): Onefellow cross-sell staat standaard UIT via integratie_config.
         const onefellowAan = await isIntegratieEnabled(supabase, ONEFELLOW_SWITCH);
         if (magOnefellowMailen(onefellowAan, reden)) {
-          mailResults.push(await lcMail("pauzeren", "onefellow", ONEFELLOW_EMAIL, `[ZP Zaken cross-sell] Klant zoekt opdrachten: ${lead.voornaam} ${lead.achternaam}`,
+          mailResults.push(await lcMail("pauzeren", "onefellow", ONEFELLOW_EMAIL, `[ZP Zaken cross-sell] Klant zoekt opdrachten: ${escapeHtml(lead.voornaam)} ${escapeHtml(lead.achternaam)}`,
             mailShell("Cross-sell signal", `
               <p>Een klant van ZP Zaken heeft de polis gepauzeerd wegens geen opdrachten.</p>
-              <p><strong>Naam:</strong> ${lead.voornaam} ${lead.achternaam}<br/>
+              <p><strong>Naam:</strong> ${escapeHtml(lead.voornaam)} ${escapeHtml(lead.achternaam)}<br/>
               <strong>Email:</strong> ${lead.email}<br/>
               <strong>Telefoon:</strong> ${lead.telefoon ?? "-"}<br/>
               <strong>Functie:</strong> ${lead.functie_bij_aanvraag ?? lead.beroep ?? "-"}<br/>
@@ -560,14 +560,14 @@ Deno.serve(async (req) => {
           : `<p>Je polis is weer actief. Onze administratie verwerkt de financiële afhandeling.</p>`;
         await lcMail("hervatten", "klant", recipientKlant, "Je polis is weer actief",
           mailShell("Polis weer actief", `
-            <p>Hoi ${lead.voornaam},</p>
+            <p>Hoi ${escapeHtml(lead.voornaam)},</p>
             <p>Je polis is per <strong>${fmtNL(today)}</strong> weer actief. Je bent weer volledig gedekt.</p>
             ${factuurZin}
             <p><a href="${COMPANY.url}/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
           `));
-        await teamMail("hervatten", `[Hervat] ${lead.voornaam} ${lead.achternaam}`,
+        await teamMail("hervatten", `[Hervat] ${escapeHtml(lead.voornaam)} ${escapeHtml(lead.achternaam)}`,
           mailShell("Polis hervat", `
-            <p><strong>${lead.voornaam} ${lead.achternaam}</strong> heeft de polis hervat.</p>
+            <p><strong>${escapeHtml(lead.voornaam)} ${escapeHtml(lead.achternaam)}</strong> heeft de polis hervat.</p>
             <p><strong>Datum:</strong> ${fmtNL(today)}<br/>
             <strong>Nieuwe factuur:</strong> ${"ok" in factuurResult && factuurResult.ok ? `€ ${calc.factuur_bedrag.toFixed(2)} (Exact ID ${factuurResult.invoiceId})` : (factuurResult.reden ?? "n.v.t.")}</p>
           `));
@@ -691,7 +691,7 @@ Deno.serve(async (req) => {
         try {
           await supabase.from("activiteiten_log").insert({
             actie_type: "lead_opgezegd",
-            omschrijving: `Polis opgezegd per ${today} (reden: ${reden}${wasGepauzeerd ? ", vanuit gepauzeerd" : ""})`,
+            omschrijving: `Polis opgezegd per ${today} (reden: ${escapeHtml(reden)}${wasGepauzeerd ? ", vanuit gepauzeerd" : ""})`,
             uitgevoerd_door: uid,
             uitgevoerd_door_naam: rol ?? null,
             lead_id,
@@ -708,17 +708,17 @@ Deno.serve(async (req) => {
 
         await lcMail("opzeggen", "klant", recipientKlant, "Je polis is opgezegd",
           mailShell("Polis opgezegd", `
-            <p>Hoi ${lead.voornaam},</p>
+            <p>Hoi ${escapeHtml(lead.voornaam)},</p>
             <p>Je polis is per <strong>${fmtNL(today)}</strong> opgezegd. Schade van vóór deze datum blijft gedekt volgens de polisvoorwaarden.</p>
             <p><strong>Reden:</strong> ${reden.replace(/_/g, " ")}</p>
             ${toelichting ? `<p><strong>Toelichting:</strong> ${escapeHtml(toelichting)}</p>` : ""}
             ${creditBlokKlant}
             <p>Mocht je in de toekomst weer een polis willen, dan zijn we er voor je.</p>
           `));
-        await teamMail("opzeggen", `[Opzegging] ${lead.voornaam} ${lead.achternaam}`,
+        await teamMail("opzeggen", `[Opzegging] ${escapeHtml(lead.voornaam)} ${escapeHtml(lead.achternaam)}`,
           mailShell("Polis opgezegd", `
-            <p><strong>${lead.voornaam} ${lead.achternaam}</strong> heeft de polis opgezegd.</p>
-            <p><strong>Reden:</strong> ${reden}<br/>
+            <p><strong>${escapeHtml(lead.voornaam)} ${escapeHtml(lead.achternaam)}</strong> heeft de polis opgezegd.</p>
+            <p><strong>Reden:</strong> ${escapeHtml(reden)}<br/>
             ${toelichting ? `<strong>Toelichting:</strong> ${escapeHtml(toelichting)}<br/>` : ""}
             <strong>Was gepauzeerd:</strong> ${wasGepauzeerd ? "ja" : "nee"}<br/>
             ${creditBlokAdmin}</p>
@@ -793,14 +793,14 @@ Deno.serve(async (req) => {
 
         await lcMail("heractiveren", "klant", recipientKlant, "Je polis is weer actief",
           mailShell("Welkom terug — polis geheractiveerd", `
-            <p>Hoi ${lead.voornaam},</p>
+            <p>Hoi ${escapeHtml(lead.voornaam)},</p>
             <p>Je polis is per <strong>${fmtNL(today)}</strong> weer actief.</p>
             ${functieGewijzigd ? `<p>We hebben je nieuwe functie geregistreerd: <strong>${escapeHtml(nieuwe_functie)}</strong></p>` : ""}
             <p><a href="${COMPANY.url}/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
           `));
-        await teamMail("heractiveren", `[Heractivering] ${lead.voornaam} ${lead.achternaam}`,
+        await teamMail("heractiveren", `[Heractivering] ${escapeHtml(lead.voornaam)} ${escapeHtml(lead.achternaam)}`,
           mailShell("Polis geheractiveerd", `
-            <p><strong>${lead.voornaam} ${lead.achternaam}</strong> heeft de polis geheractiveerd.</p>
+            <p><strong>${escapeHtml(lead.voornaam)} ${escapeHtml(lead.achternaam)}</strong> heeft de polis geheractiveerd.</p>
             <p><strong>Functie:</strong> ${escapeHtml(nieuwe_functie)} ${functieGewijzigd ? "(gewijzigd t.o.v. aanvraag: " + escapeHtml(lead.functie_bij_aanvraag ?? "onbekend") + ")" : "(ongewijzigd)"}</p>
           `));
 
