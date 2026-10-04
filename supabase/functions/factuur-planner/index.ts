@@ -9,7 +9,8 @@ import { requireSupervisor } from "../_shared/teamAuth.ts";
 import { sendExactAlarm } from "../_shared/exactAlarm.ts";
 import { periodeTekst, regelOmschrijving } from "../_shared/factuurTekst.ts";
 import { planningsSleutel, planningStatusUitExact } from "../_shared/factuurPeriode.ts";
-import { getBavGlAccountId } from "../_shared/exactGl.ts";
+import { getGlAccountIdVoorCode, GlNietGevondenError } from "../_shared/exactGl.ts";
+import { bouwFactuurPayload, glUitCache } from "../_shared/factuurRegel.ts";
 import { exactRegelBedrag } from "../_shared/factuurTekst.ts";
 import { berekenOpzegCredit, berekenOudSysteemCredit, oudSysteemCreditPayload } from "../_shared/creditOpzegging.ts";
 
@@ -74,6 +75,28 @@ Deno.serve(async (req) => {
   }
 
   const vandaag = vandaagNL();
+
+  // Grootboek opzoeken (alleen GET naar Exact) en eventueel een voorbeeldfactuur tonen. Schrijft niets naar Exact.
+  if (actie === "gl_opzoeken" || actie === "factuur_dryrun") {
+    const { data: cfg } = await admin.from("exact_config").select("*").limit(1).maybeSingle();
+    if (!cfg?.is_actief) return json({ error: "Exact niet actief" }, 400);
+    const codes = Array.isArray(body?.codes) ? body.codes.map(String).filter((c: string) => /^\d{3,6}$/.test(c)).slice(0, 10) : ["8003", "8004"];
+    const token = await ensureValidToken(admin, cfg);
+    const gevonden: Record<string, string | null> = {}; const meldingen: Record<string, string> = {};
+    for (const c of codes) {
+      try { gevonden[c] = await getGlAccountIdVoorCode(admin, cfg, token, c); }
+      catch (e) { gevonden[c] = null; meldingen[c] = String((e as Error)?.message ?? e); }
+    }
+    if (actie === "gl_opzoeken") return json({ modus: "alleen GET", schrijft_naar_exact: false, grootboeken: gevonden, meldingen });
+    const id = String(body?.klant_contract_id ?? "");
+    const { data: kand } = await admin.rpc("facturatie_kandidaten", { _van: String(body?.van ?? vandaag), _tot: String(body?.tot ?? vandaag) });
+    const k = (kand ?? []).find((r: any) => r.klant_contract_id === id);
+    if (!k) return json({ error: "geen kandidaat voor dit contract in deze periode", grootboeken: gevonden }, 404);
+    const gl = k.gl_code ? glUitCache(cfg, String(k.gl_code)) : null;
+    return json({ modus: "dry-run", schrijft_naar_exact: false, schrijft_naar_database: false, grootboeken: gevonden, meldingen, kandidaat: k,
+      payload: bouwFactuurPayload(k, gl, "ZPF-DRYRUN00".slice(0, 12), "Remarks") });
+  }
+
 
   // Dry-run creditnota oud systeem: berekent bedrag en Exact-payload, schrijft niets (DB noch Exact).
   if (actie === "credit_dryrun") {
