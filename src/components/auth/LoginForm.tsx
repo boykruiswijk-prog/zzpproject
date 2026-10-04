@@ -16,6 +16,8 @@ interface GuardStatus {
   locked: boolean
   minutesLeft: number
   attemptsLeft: number
+  authenticated?: boolean
+  session?: { access_token: string; refresh_token: string }
 }
 
 const OPEN_GUARD: GuardStatus = { locked: false, minutesLeft: 0, attemptsLeft: 5 }
@@ -35,8 +37,7 @@ async function callLoginGuard(body: Record<string, unknown>): Promise<GuardStatu
 }
 
 const checkLoginGuard = (email: string) => callLoginGuard({ action: 'check', email })
-const recordLoginAttempt = (email: string, success: boolean) =>
-  callLoginGuard({ action: 'record', email, success })
+const attemptLogin = (email: string, password: string) => callLoginGuard({ action: 'attempt', email, password })
 
 export function LoginForm() {
   const navigate = useNavigate()
@@ -70,14 +71,9 @@ export function LoginForm() {
         return
       }
 
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email: normalizedEmail,
-        password,
-      })
-
-      if (authError) {
-        const after = await recordLoginAttempt(normalizedEmail, false)
-        let msg = getAuthErrorMessage(authError)
+      const after = await attemptLogin(normalizedEmail, password)
+      if (!after.authenticated || !after.session) {
+        let msg = 'Controleer je e-mailadres en wachtwoord.'
         if (after.locked) {
           msg = `Te veel mislukte inlogpogingen. Probeer het over ${after.minutesLeft} ${
             after.minutesLeft === 1 ? 'minuut' : 'minuten'
@@ -90,11 +86,8 @@ export function LoginForm() {
         setError(msg)
         return
       }
-      void recordLoginAttempt(normalizedEmail, true)
-      if (!data.session) {
-        setError('Login geslaagd maar geen sessie ontvangen. Probeer opnieuw.')
-        return
-      }
+      const { data, error: sessionError } = await supabase.auth.setSession(after.session)
+      if (sessionError || !data.session) throw sessionError ?? new Error('Geen sessie ontvangen')
 
       // MFA check (verplicht voor /admin)
       const { data: factorsData } = await supabase.auth.mfa.listFactors()

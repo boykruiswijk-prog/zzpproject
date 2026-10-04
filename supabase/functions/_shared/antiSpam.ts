@@ -13,6 +13,7 @@ const LIMITS: Record<string, { max: number; windowMinutes: number }> = {
   newsletter: { max: 3, windowMinutes: 60 },
   bav: { max: 3, windowMinutes: 60 },
   screening: { max: 3, windowMinutes: 60 },
+  "klant-service": { max: 5, windowMinutes: 60 },
 };
 
 /** Totaalplafond per IP over alle formulieren heen. */

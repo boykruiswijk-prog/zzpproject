@@ -68,6 +68,8 @@ export function ServiceWizardShell({
   });
   const [details, setDetails] = useState<Record<string, any>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [hp, setHp] = useState("");
+  const openedAt = useRef(Date.now());
 
   const total = steps.length;
   const kopRef = useRef<HTMLHeadingElement>(null);
@@ -100,7 +102,7 @@ export function ServiceWizardShell({
     setSubmitting(true);
     try {
       const { data, error } = await supabase.functions.invoke("process-klant-service", {
-        body: { type, ...formData, details },
+        body: { type, ...formData, details, hp, ms: Date.now() - openedAt.current },
       });
       if (error || !data?.success) {
         let melding: string | undefined;
@@ -149,6 +151,7 @@ export function ServiceWizardShell({
             </div>
           ) : (
             <div className="bg-card border border-border rounded-2xl p-6 md:p-8 space-y-6">
+              <div className="hidden" aria-hidden="true"><Label htmlFor="company-website">Website</Label><Input id="company-website" name="company_website" tabIndex={-1} autoComplete="off" value={hp} onChange={(event) => setHp(event.target.value)} /></div>
               <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <span aria-live="polite">Stap {step + 1} van {total}</span>
                 <div className="flex gap-1" aria-hidden="true">

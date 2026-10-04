@@ -170,16 +170,10 @@ Deno.serve(async (req) => {
     {
       const cleanEmail = submission.email.trim().toLowerCase();
       const cleanKvk = (submission.kvk_nummer ?? "").trim();
-      const orParts: string[] = [`email.ilike.${cleanEmail}`];
-      if (cleanKvk) orParts.push(`kvk_nummer.eq.${cleanKvk}`);
-      const { data: existing } = await supabase
-        .from("leads")
-        .select("id")
-        .or(orParts.join(","))
-        .not("exact_account_id", "is", null)
-        .in("status", ["actief", "klant"])
-        .limit(1);
-      if (existing && existing.length > 0) {
+      const emailQuery = supabase.from("leads").select("id").eq("email", cleanEmail).not("exact_account_id", "is", null).in("status", ["actief", "klant"]).limit(1);
+      const kvkQuery = cleanKvk ? supabase.from("leads").select("id").eq("kvk_nummer", cleanKvk).not("exact_account_id", "is", null).in("status", ["actief", "klant"]).limit(1) : Promise.resolve({ data: [] });
+      const [{ data: emailExisting }, { data: kvkExisting }] = await Promise.all([emailQuery, kvkQuery]);
+      if ((emailExisting?.length ?? 0) > 0 || (kvkExisting?.length ?? 0) > 0) {
         return new Response(
           JSON.stringify({
             success: false,

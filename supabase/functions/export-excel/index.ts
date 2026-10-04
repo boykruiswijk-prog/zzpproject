@@ -1,4 +1,4 @@
-import * as XLSX from "npm:xlsx@0.18.5";
+import * as XLSX from "https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.mjs";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -37,15 +37,16 @@ Deno.serve(async (req) => {
       });
     }
     const admin = createClient(supabaseUrl, serviceKey);
-    const { data: isTeam } = await admin.rpc("is_team_member", { _user_id: user.id });
-    if (!isTeam) return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    const { data: roles } = await admin.from("user_roles").select("role").eq("user_id", user.id);
+    const allowed = (roles ?? []).some(({ role }) => ["admin", "supervisor", "verzekering"].includes(role));
+    if (!allowed) return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
     // Fetch all data in parallel
     const [leadsRes, signupsRes, newsletterRes, articlesRes] = await Promise.all([
-      supabase.from("leads").select("*").order("created_at", { ascending: false }),
-      supabase.from("collective_signups").select("*").order("created_at", { ascending: false }),
-      supabase.from("collective_newsletter").select("*").order("created_at", { ascending: false }),
-      supabase.from("articles").select("*").order("created_at", { ascending: false }),
+      admin.from("leads").select("*").order("created_at", { ascending: false }),
+      admin.from("collective_signups").select("*").order("created_at", { ascending: false }),
+      admin.from("collective_newsletter").select("*").order("created_at", { ascending: false }),
+      admin.from("articles").select("*").order("created_at", { ascending: false }),
     ]);
 
     const leads = leadsRes.data || [];
