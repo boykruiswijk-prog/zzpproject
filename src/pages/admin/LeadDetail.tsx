@@ -4,6 +4,7 @@ import { useState } from "react";
 import { KlantLinkVoorLead } from "@/components/admin/KlantLinkVoorLead";
 import { SepaMachtigingBewijsBlok } from "@/components/admin/SepaMachtigingBewijsBlok";
 import { CertificaatBeheer } from "@/components/admin/CertificaatBeheer";
+import { LeadIngevuldeGegevens } from "@/components/admin/LeadIngevuldeGegevens";
 
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
@@ -326,71 +327,11 @@ export default function AdminLeadDetail() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Contact info */}
-                <div>
-                  <h4 className="font-medium mb-3">Contactgegevens</h4>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="flex items-center gap-3">
-                      <Mail className="h-4 w-4 text-muted-foreground" />
-                      <a
-                        href={`mailto:${lead.email}`}
-                        className="min-w-0 break-all text-primary hover:underline"
-                      >
-                        {lead.email}
-                      </a>
-                    </div>
-                    {lead.telefoon && (
-                      <div className="flex items-center gap-3">
-                        <Phone className="h-4 w-4 text-muted-foreground" />
-                        <a
-                          href={`tel:${lead.telefoon}`}
-                          className="text-primary hover:underline"
-                        >
-                          {lead.telefoon}
-                        </a>
-                      </div>
-                    )}
-                    {lead.geboortedatum && (
-                      <div className="flex items-center gap-3">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span>
-                          {formatDateNL(lead.geboortedatum)}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                <LeadIngevuldeGegevens lead={lead as any} />
 
-                {/* Company info */}
-                <div>
-                  <h4 className="font-medium mb-3">Bedrijfsgegevens</h4>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    {lead.bedrijfsnaam && (
-                      <div className="flex items-center gap-3">
-                        <Building className="h-4 w-4 text-muted-foreground" />
-                        <span>{lead.bedrijfsnaam}</span>
-                      </div>
-                    )}
-                    {lead.kvk_nummer && (
-                      <div>
-                        <span className="text-muted-foreground text-sm">KvK:</span>{" "}
-                        {lead.kvk_nummer}
-                      </div>
-                    )}
-                    {lead.beroep && (
-                      <div>
-                        <span className="text-muted-foreground text-sm">Beroep:</span>{" "}
-                        {lead.beroep}
-                      </div>
-                    )}
-                    {lead.omzet && (
-                      <div>
-                        <span className="text-muted-foreground text-sm">Betaalfrequentie:</span>{" "}
-                        {lead.omzet === "1" ? "Jaarlijks" : lead.omzet === "2" ? "Maandelijks" : lead.omzet === "maandelijks" ? "Maandelijks" : lead.omzet === "jaarlijks" ? "Jaarlijks" : lead.omzet}
-                      </div>
-                    )}
-                  </div>
-
+                {/* Beheer: branche en IBAN (bewerkbaar) */}
+                <div className="border-t pt-4">
+                  <h4 className="font-medium mb-1">Beheer</h4>
                   {/* Branche - always visible, full width */}
                   <div className="mt-4">
                     <label className="text-muted-foreground text-sm block mb-1">
@@ -440,64 +381,8 @@ export default function AdminLeadDetail() {
                   })()}
                 </div>
 
-                {/* Insurance info */}
-                {lead.verzekering_type && (
-                  <div>
-                    <h4 className="font-medium mb-3">Verzekeringsaanvraag</h4>
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      <div>
-                        <span className="text-muted-foreground text-sm">Type:</span>{" "}
-                        <Badge variant="outline">{lead.verzekering_type}</Badge>
-                      </div>
-                      {lead.verzekerd_bedrag && (
-                        <div>
-                          <span className="text-muted-foreground text-sm">
-                            Verzekerd bedrag:
-                          </span>{" "}
-                          {lead.verzekerd_bedrag}
-                        </div>
-                      )}
-                      {lead.eigen_risico && (
-                        <div>
-                          <span className="text-muted-foreground text-sm">
-                            Eigen risico:
-                          </span>{" "}
-                          €{lead.eigen_risico}
-                        </div>
-                      )}
-                      {lead.ingangsdatum && (
-                        <div>
-                          <span className="text-muted-foreground text-sm">
-                            Ingangsdatum:
-                          </span>{" "}
-                          {formatDateNL(lead.ingangsdatum)}
-                        </div>
-                      )}
-                    </div>
-                    {lead.opmerkingen && (
-                      <div className="mt-4">
-                        <span className="text-muted-foreground text-sm">
-                          Opmerkingen:
-                        </span>
-                        <p className="mt-1 text-sm bg-secondary/50 p-3 rounded-lg whitespace-pre-line">
-                          {lead.opmerkingen}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {lead.type === "offerte-aanvraag" && (lead as any).extra_data && (
+                {lead.type === "offerte-aanvraag" && (
                   <div className="border-t pt-4">
-                    <h3 className="font-semibold mb-2">Offerte-aanvraag details</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                      {Object.entries((lead as any).extra_data as Record<string, unknown>).map(([k, v]) => (
-                        <div key={k}>
-                          <span className="text-muted-foreground">{k}:</span>{" "}
-                          <span className="font-medium break-words">{v == null || v === "" ? "-" : String(v)}</span>
-                        </div>
-                      ))}
-                    </div>
                     <Button variant="outline" size="sm" className="mt-4" disabled title="Komt binnenkort">
                       <FileText className="h-4 w-4" /> Maak offerte (binnenkort)
                     </Button>
