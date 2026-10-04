@@ -268,7 +268,7 @@ export function leadWeergave(lead: Rec): LeadWeergave {
     shown.add(`${label}|${waarde}`);
     overig.push({ label, waarde });
   };
-  for (const [k, label] of Object.entries(KOLOM_LABELS)) if (!gebruiktKol.has(k)) voeg(label, formatWaarde(lead[k]));
+  for (const [k, label] of Object.entries(KOLOM_LABELS)) if (!gebruiktKol.has(k) && lead[k] !== false) voeg(label, formatWaarde(lead[k]));
   for (const f of parsed) if (!gebruiktParsed.has(f.label)) voeg(f.label, f.waarde);
   for (const [k, v] of Object.entries(extra)) {
     if (EXTRA_NIET_TONEN.has(k) || gebruiktExtra.has(k)) continue;

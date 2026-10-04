@@ -29,3 +29,4 @@
 - Grootboek per regel via getGlAccountIdVoorCode (alleen GET, cache exact_config.gl_account_ids); fout in één regel blokkeert alleen die regel, alleen onzekere POST stopt de run. Waarom: één lidmaatschap legt de dagrun niet stil.
 - Admin gebruikt onder lg een Sheet-menu en mobiele kaartlijsten; desktop houdt de vaste zijbalk. Waarom: één rolgestuurde navigatie op elk schermformaat.
 - BTW per regel komt uit factuur_artikel_mapping.btw_code (opgeslagen in factuur_planning bij claim; credits nemen dezelfde code over); guard 8004≠0 en 8003=0 blokkeert de regel. Waarom: BTW nooit stil fout.
+- Alles wat een bezoeker invult staat in leads.extra_data.formulier (geordende lijst {label, waarde}) + formulier_naam/pagina; weergave en interne teammail lopen via _shared/leadVelden.ts; inzendingen vanuit preview zijn is_test en krijgen geen klantmail. Waarom: jsonb bewaart geen sleutelvolgorde en één bron voor detail, lijst en mail.
