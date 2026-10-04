@@ -133,8 +133,8 @@ export default function AdminTeam() {
     return userId.substring(0, 8) + "...";
   };
 
-  // Redirect if not supervisor/admin (after all hooks)
-  if (!isSupervisorOrAdmin) {
+  // Alleen admin beheert teamleden en rollen.
+  if (!isAdmin) {
     return <Navigate to="/admin" replace />;
   }
 

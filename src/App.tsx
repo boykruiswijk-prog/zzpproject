@@ -47,6 +47,8 @@ const AdminActiviteiten = lazy(() => import("./pages/admin/Activiteiten"));
 const AdminSocialMediaFeatures = lazy(() => import("./pages/admin/SocialMediaFeatures"));
 const AdminIntegraties = lazy(() => import("./pages/admin/Integraties"));
 const AdminExactKoppeling = lazy(() => import("./pages/admin/ExactKoppeling"));
+const AdminInterneMeldingen = lazy(() => import("./pages/admin/InterneMeldingen"));
+const AdminActiviteitenlog = lazy(() => import("./pages/admin/Activiteitenlog"));
 const AdminMarketing = lazy(() => import("./pages/admin/MarketingPlaceholder"));
 const AdminKennisbank = lazy(() => import("./pages/admin/KennisbankArtikelen"));
 const AdminKennisbankEditor = lazy(() => import("./pages/admin/KennisbankArtikelEditor"));
@@ -221,6 +223,8 @@ export const AppRoutes = () => (
 
             <Route path="/admin/integraties" element={<RoleGuard allow={[]}><AdminIntegraties /></RoleGuard>} />
             <Route path="/admin/exact-koppeling" element={<RoleGuard allow={[]}><AdminExactKoppeling /></RoleGuard>} />
+            <Route path="/admin/interne-meldingen" element={<AdminInterneMeldingen />} />
+            <Route path="/admin/activiteitenlog" element={<AdminActiviteitenlog />} />
             <Route path="/api/exact/callback" element={<ExactCallback />} />
 
             

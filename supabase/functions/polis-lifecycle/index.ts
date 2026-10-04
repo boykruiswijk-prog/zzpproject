@@ -12,6 +12,7 @@ import { COMPANY } from "../_shared/company.ts";
 import { createMailGate, type MailGate } from "../_shared/mail.ts";
 import { verstuurLifecycleMail, magOnefellowMailen, ONEFELLOW_SWITCH, type LifecycleActie, type Doelgroep } from "../_shared/lifecycleMail.ts";
 import { isIntegratieEnabled } from "../_shared/integraties.ts";
+import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
 import { valideerToelichting } from "../_shared/opzegValidatie.ts";
 import { exactRegelBedrag, factuurReferentie, kopOmschrijving, regelNotities, regelOmschrijving } from "../_shared/factuurTekst.ts";
 import { readLatestInvoiceStatus } from "../_shared/exactInvoiceStatus.ts";
@@ -294,6 +295,11 @@ Deno.serve(async (req) => {
       send: (t, su, h) => sendMail(gate, t, su, h),
       insertLog: (row) => supabase.from("lead_notification_log").insert(row),
     }, { actie, doel, leadId: lead_id, to, subject, html });
+  const teamMail = (actie: LifecycleActie, subject: string, html: string) =>
+    verstuurInterneMelding(supabase, req, "polis-lifecycle", {
+      leadType: `polis-${actie}-intern`, leadId: lead_id, subject, html,
+      metadata: { actie, doelgroep: "intern" },
+    });
   const logActiviteit = async (actie_type: string, omschrijving: string) => {
     try {
       await supabase.from("activiteiten_log").insert({
@@ -442,7 +448,7 @@ Deno.serve(async (req) => {
             <p><a href="${COMPANY.url}/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
           `)));
 
-        mailResults.push(await lcMail("pauzeren", "intern", ADMIN_EMAIL, `[Pauze] ${lead.voornaam} ${lead.achternaam}`,
+        mailResults.push(await teamMail("pauzeren", `[Pauze] ${lead.voornaam} ${lead.achternaam}`,
           mailShell("Polis gepauzeerd", `
             <p><strong>${lead.voornaam} ${lead.achternaam}</strong> (${lead.email}) heeft de polis gepauzeerd.</p>
             <p><strong>Reden:</strong> ${reden}<br/><strong>Datum:</strong> ${fmtNL(today)}</p>
@@ -560,7 +566,7 @@ Deno.serve(async (req) => {
             ${factuurZin}
             <p><a href="${COMPANY.url}/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
           `));
-        await lcMail("hervatten", "intern", ADMIN_EMAIL, `[Hervat] ${lead.voornaam} ${lead.achternaam}`,
+        await teamMail("hervatten", `[Hervat] ${lead.voornaam} ${lead.achternaam}`,
           mailShell("Polis hervat", `
             <p><strong>${lead.voornaam} ${lead.achternaam}</strong> heeft de polis hervat.</p>
             <p><strong>Datum:</strong> ${fmtNL(today)}<br/>
@@ -710,7 +716,7 @@ Deno.serve(async (req) => {
             ${creditBlokKlant}
             <p>Mocht je in de toekomst weer een polis willen, dan zijn we er voor je.</p>
           `));
-        await lcMail("opzeggen", "intern", ADMIN_EMAIL, `[Opzegging] ${lead.voornaam} ${lead.achternaam}`,
+        await teamMail("opzeggen", `[Opzegging] ${lead.voornaam} ${lead.achternaam}`,
           mailShell("Polis opgezegd", `
             <p><strong>${lead.voornaam} ${lead.achternaam}</strong> heeft de polis opgezegd.</p>
             <p><strong>Reden:</strong> ${reden}<br/>
@@ -793,7 +799,7 @@ Deno.serve(async (req) => {
             ${functieGewijzigd ? `<p>We hebben je nieuwe functie geregistreerd: <strong>${escapeHtml(nieuwe_functie)}</strong></p>` : ""}
             <p><a href="${COMPANY.url}/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
           `));
-        await lcMail("heractiveren", "intern", ADMIN_EMAIL, `[Heractivering] ${lead.voornaam} ${lead.achternaam}`,
+        await teamMail("heractiveren", `[Heractivering] ${lead.voornaam} ${lead.achternaam}`,
           mailShell("Polis geheractiveerd", `
             <p><strong>${lead.voornaam} ${lead.achternaam}</strong> heeft de polis geheractiveerd.</p>
             <p><strong>Functie:</strong> ${escapeHtml(nieuwe_functie)} ${functieGewijzigd ? "(gewijzigd t.o.v. aanvraag: " + escapeHtml(lead.functie_bij_aanvraag ?? "onbekend") + ")" : "(ongewijzigd)"}</p>

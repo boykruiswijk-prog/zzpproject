@@ -174,7 +174,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signIn,
     signOut,
     isTeamMember: role !== null,
-    isAdmin: role === "supervisor" || role === "admin",
+    isAdmin: role === "admin",
     isSupervisor: role === "supervisor" || role === "admin",
     isSupervisorOrAdmin: role === "supervisor" || role === "admin",
     isVerzekering: role === "verzekering" || role === "medewerker",
