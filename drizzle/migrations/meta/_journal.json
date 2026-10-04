@@ -274,6 +274,13 @@
       "when": 1791127559919,
       "tag": "0038_btw_code_facturatie",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1791135515040,
+      "tag": "0039_security_hardening_20261004",
+      "breakpoints": true
     }
   ]
 }

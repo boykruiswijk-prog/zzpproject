@@ -2234,6 +2234,7 @@ export type Database = {
           created_at: string
           details: Json
           email: string
+          geverifieerd: boolean
           id: string
           is_test: boolean
           koppeling_details: Json
@@ -2258,6 +2259,7 @@ export type Database = {
           created_at?: string
           details?: Json
           email: string
+          geverifieerd?: boolean
           id?: string
           is_test?: boolean
           koppeling_details?: Json
@@ -2282,6 +2284,7 @@ export type Database = {
           created_at?: string
           details?: Json
           email?: string
+          geverifieerd?: boolean
           id?: string
           is_test?: boolean
           koppeling_details?: Json
@@ -3742,6 +3745,7 @@ export type Database = {
         Args: { _anker: string; _cyclus: string; _n: number }
         Returns: string
       }
+      get_exact_config_status: { Args: never; Returns: Json }
       get_exact_koppeling_fout: { Args: never; Returns: string }
       get_klant_contracten_reconciliatie: { Args: never; Returns: Json }
       get_mijn_polissen: {
