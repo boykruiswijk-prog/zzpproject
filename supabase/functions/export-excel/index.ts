@@ -85,12 +85,11 @@ Deno.serve(async (req) => {
       "Aangemaakt": l.created_at,
       "Bijgewerkt": l.updated_at,
     }));
-    const rows_leads = (allLeadsRows);
-    XLSX.utils.book_append_sheet(wb, wsLeads, "Alle Leads");
+    addSheet("Alle Leads", allLeadsRows);
 
     // --- Tab 2: Verzekeringsaanvragen ---
     const verzekeringLeads = leads.filter((l: any) => l.type === "verzekering_aanvraag");
-    const rows_verzekering = (
+    addSheet("Verzekeringen",
       verzekeringLeads.map((l: any) => ({
         "Voornaam": l.voornaam,
         "Achternaam": l.achternaam,
@@ -112,7 +111,7 @@ Deno.serve(async (req) => {
 
     // --- Tab 3: Contactaanvragen ---
     const contactLeads = leads.filter((l: any) => l.type === "contact");
-    const rows_contact = (
+    addSheet("Contactaanvragen",
       contactLeads.map((l: any) => ({
         "Voornaam": l.voornaam,
         "Achternaam": l.achternaam,
@@ -127,7 +126,7 @@ Deno.serve(async (req) => {
     ));
 
     // --- Tab 4: Collectieve Inkoop ---
-    const rows_signups = (
+    addSheet("Collectieve Inkoop",
       signups.map((s: any) => ({
         "Naam": s.naam,
         "Email": s.email,
@@ -142,7 +141,7 @@ Deno.serve(async (req) => {
     ));
 
     // --- Tab 5: Nieuwsbrief ---
-    const rows_newsletter = (
+    addSheet("Nieuwsbrief",
       newsletter.map((n: any) => ({
         "Email": n.email,
         "Aangemeld op": n.created_at,
@@ -150,7 +149,7 @@ Deno.serve(async (req) => {
     ));
 
     // --- Tab 6: Artikelen ---
-    const rows_articles = (
+    addSheet("Artikelen",
       articles.map((a: any) => ({
         "Titel": a.title,
         "Slug": a.slug,
