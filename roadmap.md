@@ -5,6 +5,7 @@
 - [x] Admin-only activiteitenlog samenstellen en exports/downloads auditen
 - [x] Beheermenu groeperen en oude beheer-URL's behouden
 - [x] Rechtenmatrix en verzekering-rol vóór/na verifiëren
+- [x] Controle: 7 testmeldingen, verzekering-rechten, mobiel 390 px
 
 - [x] Mobiele admin: menu, compacte klant-/leadlijsten, scrollbare tabellen en passende dialogen
 - [x] Mobiele admin: visuele controle op 390, 768 en 1280 px
