@@ -1516,6 +1516,7 @@ export type Database = {
           bevestigd_door: string | null
           bevestigd_op: string | null
           blokkade_reden: string | null
+          btw_code: string
           created_at: string
           exact_item_code: string | null
           exact_item_id: string | null
@@ -1531,6 +1532,7 @@ export type Database = {
           bevestigd_door?: string | null
           bevestigd_op?: string | null
           blokkade_reden?: string | null
+          btw_code?: string
           created_at?: string
           exact_item_code?: string | null
           exact_item_id?: string | null
@@ -1546,6 +1548,7 @@ export type Database = {
           bevestigd_door?: string | null
           bevestigd_op?: string | null
           blokkade_reden?: string | null
+          btw_code?: string
           created_at?: string
           exact_item_code?: string | null
           exact_item_id?: string | null
@@ -1705,6 +1708,7 @@ export type Database = {
           aantal: number
           bedrag: number
           bedrag_per_periode: number
+          btw_code: string
           concept_op: string | null
           exact_account_id: string
           exact_invoice_id: string | null
@@ -1730,6 +1734,7 @@ export type Database = {
           aantal: number
           bedrag: number
           bedrag_per_periode: number
+          btw_code?: string
           concept_op?: string | null
           exact_account_id: string
           exact_invoice_id?: string | null
@@ -1755,6 +1760,7 @@ export type Database = {
           aantal?: number
           bedrag?: number
           bedrag_per_periode?: number
+          btw_code?: string
           concept_op?: string | null
           exact_account_id?: string
           exact_invoice_id?: string | null
@@ -3684,6 +3690,7 @@ export type Database = {
           bestaande_planning_status: string
           blokkade: string
           blokkade_soort: string
+          btw_code: string
           cyclus: string
           exact_account_id: string
           exact_item_id: string
@@ -3705,6 +3712,7 @@ export type Database = {
           bevestigd_door: string | null
           bevestigd_op: string | null
           blokkade_reden: string | null
+          btw_code: string
           created_at: string
           exact_item_code: string | null
           exact_item_id: string | null
