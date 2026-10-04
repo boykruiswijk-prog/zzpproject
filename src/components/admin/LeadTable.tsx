@@ -1,3 +1,4 @@
+import { leadOnderwerp } from "../../../supabase/functions/_shared/leadVelden";
 import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS } from "@/lib/statusLabels";
 import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 import { useState } from "react";
@@ -177,7 +178,11 @@ export function LeadTable() {
               </div>
               <Badge variant="outline">{lead.type === "verzekering_aanvraag" ? "Verzekering" : lead.type === "offerte-aanvraag" ? "Offerte" : "Contact"}</Badge>
             </div>
-            <a href={`mailto:${lead.email}`} className="block break-all text-sm text-primary hover:underline">{lead.email}</a>
+            <div className="space-y-1 text-sm">
+              {lead.email && <a href={`mailto:${lead.email}`} className="block break-all text-primary hover:underline">{lead.email}</a>}
+              {lead.telefoon && <a href={`tel:${lead.telefoon.replace(/[^\d+]/g, "")}`} className="block text-primary hover:underline">{lead.telefoon}</a>}
+              {leadOnderwerp(lead) && <p className="line-clamp-2 break-words text-muted-foreground">{leadOnderwerp(lead)}</p>}
+            </div>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <Select value={lead.status} onValueChange={(value) => handleStatusChange(lead.id, value as LeadStatus)}>
                 <SelectTrigger className="min-h-10 w-44">
@@ -202,7 +207,7 @@ export function LeadTable() {
             <TableRow>
               <TableHead>Naam</TableHead>
               <TableHead>Type</TableHead>
-              <TableHead>Email</TableHead>
+              <TableHead>Contact</TableHead>
               <TableHead>Verzekering</TableHead>
               <TableHead>Pakket</TableHead>
               <TableHead>Status</TableHead>
@@ -227,6 +232,11 @@ export function LeadTable() {
                         {lead.bedrijfsnaam}
                       </span>
                     )}
+                    {leadOnderwerp(lead) && (
+                      <span className="block max-w-[20rem] truncate text-xs font-normal text-muted-foreground" title={leadOnderwerp(lead)}>
+                        {leadOnderwerp(lead)}
+                      </span>
+                    )}
                   </TableCell>
                   <TableCell>
                     {lead.type === "offerte-aanvraag" ? (
@@ -237,7 +247,10 @@ export function LeadTable() {
                       <Badge variant="outline" className="bg-slate-100 text-slate-700">Contact</Badge>
                     )}
                   </TableCell>
-                  <TableCell>{lead.email}</TableCell>
+                  <TableCell className="max-w-[16rem] text-sm">
+                    {lead.email && <a href={`mailto:${lead.email}`} className="block break-all text-primary hover:underline">{lead.email}</a>}
+                    {lead.telefoon && <a href={`tel:${lead.telefoon.replace(/[^\d+]/g, "")}`} className="block text-primary hover:underline">{lead.telefoon}</a>}
+                  </TableCell>
                   <TableCell>
                     {lead.verzekering_type ? (
                       <Badge variant="outline">{lead.verzekering_type}</Badge>
