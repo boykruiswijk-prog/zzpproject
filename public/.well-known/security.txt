@@ -1,0 +1,4 @@
+Contact: mailto:info@zpzaken.nl
+Expires: 2027-10-04T00:00:00.000Z
+Preferred-Languages: nl, en
+Canonical: https://zpzaken.nl/.well-known/security.txt

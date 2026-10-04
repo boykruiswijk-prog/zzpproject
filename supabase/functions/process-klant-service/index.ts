@@ -5,6 +5,7 @@ import { maybeFormatDate } from "../_shared/dateFormat.ts";
 import { createMailGate } from "../_shared/mail.ts";
 import { valideerOpzegdatum, valideerToelichting } from "../_shared/opzegValidatie.ts";
 import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
+import { guardPublicSubmission } from "../_shared/antiSpam.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -27,6 +28,8 @@ const schema = z.object({
   telefoon: z.string().trim().min(8).max(20),
   polisnummer: z.string().trim().min(1).max(50),
   details: z.record(z.any()).default({}),
+  hp: z.string().max(200).optional().default(""),
+  ms: z.number().nonnegative().optional(),
 });
 
 const labels: Record<string, string> = {
@@ -76,6 +79,23 @@ Deno.serve(async (req) => {
       });
     }
     const v = parsed.data;
+    const spamGuard = await guardPublicSubmission(req, supabase, { hp: v.hp, ms: v.ms, kind: "klant-service" });
+    if (!spamGuard.ok) return new Response(JSON.stringify({ error: spamGuard.reason, melding: spamGuard.error }), { status: spamGuard.status ?? 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    const recentEmailSince = new Date(Date.now() - 60 * 60_000).toISOString();
+    const { count: recentEmailCount, error: recentEmailError } = await supabase.from("klant_service_aanvragen").select("id", { count: "exact", head: true }).eq("email", v.email.toLowerCase()).gte("created_at", recentEmailSince);
+    if (recentEmailError) return new Response(JSON.stringify({ error: "rate_limit_unavailable" }), { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    if ((recentEmailCount ?? 0) >= 3) return new Response(JSON.stringify({ error: "rate_limited_email", melding: "Je hebt kort achter elkaar meerdere aanvragen verstuurd. Probeer het later opnieuw of bel ons." }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    let verifiedUserId: string | null = null;
+    const authHeader = req.headers.get("Authorization") ?? "";
+    if (authHeader.startsWith("Bearer ")) {
+      const userClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: authHeader } } });
+      const { data: { user } } = await userClient.auth.getUser();
+      if (user) {
+        const { data: ownedPolicy } = await supabase.from("policies").select("id").eq("user_id", user.id).eq("certificate_number", v.polisnummer).limit(1).maybeSingle();
+        if (!ownedPolicy) return new Response(JSON.stringify({ error: "forbidden", melding: "Deze polis hoort niet bij je account." }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        verifiedUserId = user.id;
+      }
+    }
 
     // Server-side dezelfde regels als het formulier: reden verplicht, toelichting bij "Anders", datum vandaag of later.
     if (v.type === "opzeggen") {
@@ -105,6 +125,8 @@ Deno.serve(async (req) => {
         telefoon: v.telefoon,
         polisnummer: v.polisnummer,
         details: v.details,
+         user_id: verifiedUserId,
+         geverifieerd: verifiedUserId !== null,
         is_test: !gate.isProduction,
       })
       .select()

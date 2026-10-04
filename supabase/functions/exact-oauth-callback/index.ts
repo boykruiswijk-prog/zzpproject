@@ -1,6 +1,7 @@
 // Exact Online OAuth2 callback. Valideert state, wisselt code in voor tokens,
 // slaat ze op in exact_config en toont een nette HTML-bevestiging.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+function escapeHtml(value: unknown): string { return String(value ?? "").replace(/[&<>'"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[c] ?? c); }
 
 function htmlResponse(title: string, bodyInner: string, status = 200): Response {
   const html = `<!doctype html>
@@ -41,7 +42,7 @@ Deno.serve(async (req) => {
   if (error) {
     return htmlResponse(
       "Autorisatie geweigerd",
-      `<h1 class="err">Autorisatie geweigerd</h1><p>Exact Online gaf terug: <code>${error}</code></p>${adminLink}`,
+      `<h1 class="err">Autorisatie geweigerd</h1><p>Exact Online gaf terug: <code>${escapeHtml(error)}</code></p>${adminLink}`,
       400,
     );
   }
@@ -118,7 +119,7 @@ Deno.serve(async (req) => {
         "Tokenuitwisseling mislukt",
         `<h1 class="err">Tokenuitwisseling mislukt</h1>
          <p>Exact gaf status <code>${tokenRes.status}</code> terug.</p>
-         <pre>${JSON.stringify(tokenData, null, 2)}</pre>${adminLink}`,
+         <pre>${escapeHtml(JSON.stringify(tokenData, null, 2))}</pre>${adminLink}`,
         500,
       );
     }
@@ -169,7 +170,7 @@ Deno.serve(async (req) => {
   } catch (err) {
     return htmlResponse(
       "Onverwachte fout",
-      `<h1 class="err">Onverwachte fout</h1><pre>${err instanceof Error ? err.message : String(err)}</pre>${adminLink}`,
+      `<h1 class="err">Onverwachte fout</h1><pre>${escapeHtml(err instanceof Error ? err.message : String(err))}</pre>${adminLink}`,
       500,
     );
   }

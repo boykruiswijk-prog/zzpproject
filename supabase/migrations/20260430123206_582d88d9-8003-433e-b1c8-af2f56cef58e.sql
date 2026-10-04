@@ -1,4 +1,1 @@
-UPDATE auth.users 
-SET encrypted_password = crypt('WelkomBoy!', gen_salt('bf')),
-    updated_at = now()
-WHERE email = 'boy.kruiswijk@zpzaken.nl';
+-- Neutralized 2026-10-04: historical plaintext password migration removed.
