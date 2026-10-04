@@ -94,7 +94,7 @@ Deno.serve(async (req) => {
     if (!k) return json({ error: "geen kandidaat voor dit contract in deze periode", grootboeken: gevonden }, 404);
     const gl = k.gl_code ? glUitCache(cfg, String(k.gl_code)) : null;
     return json({ modus: "dry-run", schrijft_naar_exact: false, schrijft_naar_database: false, grootboeken: gevonden, meldingen, kandidaat: k,
-      payload: bouwFactuurPayload(k, gl, "ZPF-DRYRUN00".slice(0, 12), "Remarks") });
+      payload: bouwFactuurPayload(k, gl, "ZPF-DRYRUN0", "Remarks") });
   }
 
 
@@ -106,12 +106,12 @@ Deno.serve(async (req) => {
     if (!k) return json({ error: "contract niet gevonden" }, 404);
     const { data: o } = await admin.from("ondernemingen").select("naam,exact_account_id").eq("id", k.onderneming_id).maybeSingle();
     const { data: m } = await admin.rpc("factuur_mapping_voor", { _itemcode: k.itemcode });
-    const { data: ecfg } = await admin.from("exact_config").select("gl_account_id_bav").limit(1).maybeSingle();
+    const { data: ecfg } = await admin.from("exact_config").select("*").limit(1).maybeSingle();
     const ber = berekenOudSysteemCredit(k as any, eind);
     const blokkade = !m?.id || !m.bevestigd || !m.exact_item_id || m.blokkade_reden ? `geen bevestigde artikelmapping voor ${k.itemcode}` : !o?.exact_account_id ? "relatie niet gekoppeld aan Exact" : null;
     const sleutel = "ZPC-DRYRUN0";
     const payload = blokkade ? null : oudSysteemCreditPayload({ creditsleutel: sleutel, exact_account_id: o!.exact_account_id, exact_item_id: m.exact_item_id,
-      gl_account_id: (ecfg as any)?.gl_account_id_bav ?? `(GUID grootboek ${m.gl_code})`, einddatum: eind, credit_vanaf: ber.vanaf, credit_tm: k.gefactureerd_tm, vandaag, regels: ber.regels });
+      gl_account_id: glUitCache(ecfg, String(m.gl_code ?? "")) ?? `(GUID grootboek ${m.gl_code})`, einddatum: eind, credit_vanaf: ber.vanaf, credit_tm: k.gefactureerd_tm, vandaag, regels: ber.regels });
     return json({ modus: "dry-run", schrijft_naar_exact: false, schrijft_naar_database: false, klant: o?.naam, contract: { bron_rij: k.bron_rij, itemcode: k.itemcode, cyclus: k.cyclus, bedrag_per_periode: k.bedrag_per_periode, aantal: k.aantal, begin_datum: k.begin_datum, gefactureerd_tm: k.gefactureerd_tm },
       einddatum: eind, credit_vanaf: ber.vanaf, credit_tm: k.gefactureerd_tm, perioden: ber.regels, bedrag: ber.bedrag, blokkade, artikel: m?.exact_item_code, gl_code: m?.gl_code,
       payload, opmerking: "Echte creditsleutel ZPC-xxxxxxxx ontstaat pas bij een opzegging (hash contract+aanvraag)." });
