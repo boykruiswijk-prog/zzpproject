@@ -121,7 +121,7 @@ export default function ExactKoppeling() {
       ({ error } = await supabase.from("exact_config").update(payload).eq("id", config.id));
     } else {
       // table not yet in generated types
-      ({ error } = await supabase.from("exact_config").insert(payload));
+      ({ error } = await supabase.from("exact_config").insert(payload as never));
     }
     setSaving(false);
     if (error) return toast.error(`Opslaan mislukt: ${error.message}`);
