@@ -260,6 +260,13 @@
       "when": 1791110015889,
       "tag": "0036_meerdere_grootboeken",
       "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1791116246781,
+      "tag": "0037_admin_control_internal_notifications",
+      "breakpoints": true
     }
   ]
 }

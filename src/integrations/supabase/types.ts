@@ -1884,6 +1884,36 @@ export type Database = {
         }
         Relationships: []
       }
+      interne_melding_ontvangers: {
+        Row: {
+          aangemaakt_door: string | null
+          aangemaakt_op: string
+          actief: boolean
+          bijgewerkt_door: string | null
+          bijgewerkt_op: string
+          email: string
+          id: string
+        }
+        Insert: {
+          aangemaakt_door?: string | null
+          aangemaakt_op?: string
+          actief?: boolean
+          bijgewerkt_door?: string | null
+          bijgewerkt_op?: string
+          email: string
+          id?: string
+        }
+        Update: {
+          aangemaakt_door?: string | null
+          aangemaakt_op?: string
+          actief?: boolean
+          bijgewerkt_door?: string | null
+          bijgewerkt_op?: string
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
       invoices: {
         Row: {
           amount_excl_btw: number
@@ -3731,6 +3761,7 @@ export type Database = {
       herbeoordeel_opzeg_credits: { Args: never; Returns: number }
       importeer_afas_20261001: { Args: never; Returns: Json }
       importeer_certificaten_20261001: { Args: never; Returns: Json }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_supervisor_or_admin: { Args: { _user_id: string }; Returns: boolean }
       is_team_member: { Args: { _user_id: string }; Returns: boolean }
       koppel_opzegging: {
@@ -3792,6 +3823,7 @@ export type Database = {
         }[]
       }
       zet_facturatie_actief: { Args: { _aan: boolean }; Returns: boolean }
+      zet_opzeg_credits_actief: { Args: { _aan: boolean }; Returns: boolean }
     }
     Enums: {
       app_role:
