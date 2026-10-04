@@ -16,13 +16,9 @@ import { Copy, Loader2, RefreshCw, Plug, Unlink, ExternalLink, Eye, Repeat } fro
 type ExactConfig = {
   id: string;
   client_id: string | null;
-  client_secret: string | null;
   divisie_code: string | null;
   redirect_uri: string | null;
   base_url: string | null;
-  webhook_secret: string | null;
-  access_token: string | null;
-  refresh_token: string | null;
   access_token_expires_at: string | null;
   refresh_token_obtained_at: string | null;
   is_actief: boolean;
@@ -86,7 +82,7 @@ export default function ExactKoppeling() {
     setLoading(true);
     const [{ data: cfg }, { data: logRows }] = await Promise.all([
       // table not yet in generated types
-      supabase.from("exact_config").select("*").maybeSingle(),
+      supabase.from("exact_config").select("id,client_id,divisie_code,redirect_uri,base_url,access_token_expires_at,refresh_token_obtained_at,is_actief,last_sync_at,last_error").maybeSingle(),
       // table not yet in generated types
       supabase
         .from("exact_sync_log")
@@ -100,10 +96,10 @@ export default function ExactKoppeling() {
     if (c) {
       setForm({
         client_id: c.client_id ?? "",
-        client_secret: c.client_secret ?? "",
+        client_secret: "",
         divisie_code: c.divisie_code ?? "",
         redirect_uri: c.redirect_uri ?? RECOMMENDED_REDIRECT,
-        webhook_secret: c.webhook_secret ?? "",
+        webhook_secret: "",
       });
     }
     setLogs((logRows as SyncLog[]) ?? []);
@@ -112,13 +108,13 @@ export default function ExactKoppeling() {
 
   const saveConfig = async () => {
     setSaving(true);
-    const payload = {
+    const payload: Record<string, string | null> = {
       client_id: form.client_id.trim() || null,
-      client_secret: form.client_secret.trim() || null,
       divisie_code: form.divisie_code.trim() || null,
       redirect_uri: form.redirect_uri.trim() || null,
-      webhook_secret: form.webhook_secret.trim() || null,
     };
+    if (form.client_secret.trim()) payload.client_secret = form.client_secret.trim();
+    if (form.webhook_secret.trim()) payload.webhook_secret = form.webhook_secret.trim();
     let error;
     if (config) {
       // table not yet in generated types
@@ -219,8 +215,6 @@ export default function ExactKoppeling() {
       .from("exact_config")
       .update({
         is_actief: false,
-        access_token: null,
-        refresh_token: null,
         access_token_expires_at: null,
       })
       .eq("id", config.id);
@@ -232,8 +226,8 @@ export default function ExactKoppeling() {
   const status = (() => {
     if (!config?.client_id) return { label: "Niet geconfigureerd", color: "bg-muted text-muted-foreground" };
     if (config.last_error) return { label: "Fout", color: "bg-red-500 text-white" };
-    if (config.is_actief && config.refresh_token) return { label: "Actief", color: "bg-green-500 text-white" };
-    if (config.client_id && !config.refresh_token) return { label: "Wacht op autorisatie", color: "bg-orange-500 text-white" };
+    if (config.is_actief && config.refresh_token_obtained_at) return { label: "Actief", color: "bg-green-500 text-white" };
+    if (config.client_id && !config.refresh_token_obtained_at) return { label: "Wacht op autorisatie", color: "bg-orange-500 text-white" };
     return { label: "Onbekend", color: "bg-muted" };
   })();
 
