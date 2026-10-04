@@ -162,8 +162,41 @@ export function LeadTable() {
         </Select>
       </div>
 
-      {/* Table */}
-      <div className="border rounded-lg overflow-hidden">
+      {/* Compacte mobiele lijst */}
+      <div className="space-y-3 md:hidden">
+        {leads?.length === 0 ? (
+          <p className="rounded-lg border p-6 text-center text-sm text-muted-foreground">Geen leads gevonden</p>
+        ) : leads?.map((lead) => (
+          <div key={lead.id} className="min-w-0 space-y-3 rounded-lg border p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <Link to={`/admin/leads/${lead.id}`} className="block break-words font-medium hover:text-primary">
+                  {lead.voornaam} {lead.achternaam}
+                </Link>
+                {lead.bedrijfsnaam && <p className="break-words text-sm text-muted-foreground">{lead.bedrijfsnaam}</p>}
+              </div>
+              <Badge variant="outline">{lead.type === "verzekering_aanvraag" ? "Verzekering" : lead.type === "offerte-aanvraag" ? "Offerte" : "Contact"}</Badge>
+            </div>
+            <a href={`mailto:${lead.email}`} className="block break-all text-sm text-primary hover:underline">{lead.email}</a>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <Select value={lead.status} onValueChange={(value) => handleStatusChange(lead.id, value as LeadStatus)}>
+                <SelectTrigger className="min-h-10 w-44">
+                  <Badge className={statusColors[lead.status]} variant="secondary">{statusLabels[lead.status]}</Badge>
+                </SelectTrigger>
+                <SelectContent>{Object.entries(statusLabels).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent>
+              </Select>
+              <div className="flex items-center gap-1">
+                <Button variant="outline" size="sm" asChild><Link to={`/admin/leads/${lead.id}`}><Eye className="h-4 w-4" />Bekijken</Link></Button>
+                {canDelete && <Button variant="ghost" size="icon" className="min-h-10 min-w-10 text-destructive hover:bg-destructive/10 hover:text-destructive" aria-label={`Lead ${lead.voornaam} verwijderen`} onClick={() => setDeleteTarget({ id: lead.id, name: `${lead.voornaam} ${lead.achternaam}` })}><Trash2 className="h-4 w-4" /></Button>}
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">Ontvangen {formatDateNL(lead.created_at)}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Tabel vanaf tablet */}
+      <div className="hidden overflow-x-auto rounded-lg border md:block">
         <Table>
           <TableHeader>
             <TableRow>
@@ -250,7 +283,7 @@ export function LeadTable() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
-                      <Button variant="ghost" size="icon" asChild>
+                      <Button variant="ghost" size="icon" aria-label={`Lead ${lead.voornaam} bekijken`} asChild>
                         <Link to={`/admin/leads/${lead.id}`}>
                           <Eye className="h-4 w-4" />
                         </Link>
@@ -266,6 +299,7 @@ export function LeadTable() {
                               name: `${lead.voornaam} ${lead.achternaam}`,
                             })
                           }
+                          aria-label={`Lead ${lead.voornaam} verwijderen`}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

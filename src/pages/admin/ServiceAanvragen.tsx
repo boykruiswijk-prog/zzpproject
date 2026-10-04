@@ -146,11 +146,11 @@ export default function ServiceAanvragen() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="min-w-0 space-y-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold flex items-center gap-2">
-              <ConciergeBell className="h-7 w-7 text-primary" /> Service-aanvragen
+            <h1 className="flex items-center gap-2 break-words text-2xl font-bold sm:text-3xl">
+              <ConciergeBell className="h-7 w-7 shrink-0 text-primary" /> Service-aanvragen
             </h1>
             <div className="mt-2"><ToonTestrecordsSchakelaar /></div>
 
@@ -158,12 +158,12 @@ export default function ServiceAanvragen() {
               Polis-, pauzeer-, document- en opzeg-aanvragen vanuit Mijn ZP
             </p>
           </div>
-          <Button variant="outline" onClick={load}><RotateCw className="h-4 w-4 mr-2" />Herladen</Button>
+          <Button variant="outline" className="min-h-10 self-start" onClick={load}><RotateCw className="h-4 w-4 mr-2" />Herladen</Button>
         </div>
 
-        <div className="bg-card border border-border rounded-lg p-4 flex flex-wrap gap-3">
+        <div className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 sm:flex-row sm:flex-wrap">
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-48"><SelectValue placeholder="Type" /></SelectTrigger>
+            <SelectTrigger className="min-h-10 w-full sm:w-48"><SelectValue placeholder="Type" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="alle">Alle types</SelectItem>
               <SelectItem value="certificaat">Polis</SelectItem>
@@ -173,7 +173,7 @@ export default function ServiceAanvragen() {
             </SelectContent>
           </Select>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-48"><SelectValue placeholder="Status" /></SelectTrigger>
+            <SelectTrigger className="min-h-10 w-full sm:w-48"><SelectValue placeholder="Status" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="alle">Alle statussen</SelectItem>
               {STATUS.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
@@ -183,11 +183,25 @@ export default function ServiceAanvragen() {
             placeholder="Zoek op naam, polis of email"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="flex-1 min-w-[200px]"
+            className="min-h-10 w-full flex-1 sm:min-w-[200px]"
           />
         </div>
 
-        <div className="bg-card border border-border rounded-lg overflow-hidden">
+        <div className="space-y-3 md:hidden">
+          {loading ? <p className="rounded-lg border p-8 text-center text-muted-foreground">Laden…</p> : filtered.length === 0 ? <p className="rounded-lg border p-8 text-center text-muted-foreground">Geen aanvragen</p> : filtered.map((it) => (
+            <div key={it.id} className="min-w-0 space-y-3 rounded-lg border border-border bg-card p-4" onClick={() => setSelected(it)}>
+              <div className="flex items-start justify-between gap-2"><span className="break-words font-medium">{it.voornaam} {it.achternaam}</span><Badge className={TYPE_COLOR[it.type]}>{TYPE_LABEL[it.type] ?? it.type}</Badge></div>
+              <p className="break-all text-sm text-muted-foreground">{it.email}</p>
+              <p className="text-sm">Polis {it.polisnummer || "—"} · {formatDate(it.created_at)}</p>
+              <Select value={it.status} onValueChange={(v) => updateStatus(it.id, v)}>
+                <SelectTrigger className="min-h-10 w-full" onClick={(e) => e.stopPropagation()}><SelectValue /></SelectTrigger>
+                <SelectContent>{STATUS.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+          ))}
+        </div>
+
+        <div className="hidden overflow-x-auto rounded-lg border border-border bg-card md:block">
           <table className="w-full text-sm">
             <thead className="bg-muted/50">
               <tr>

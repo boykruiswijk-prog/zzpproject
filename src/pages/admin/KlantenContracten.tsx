@@ -130,7 +130,7 @@ export default function KlantenContracten() {
       <Helmet><title>Klanten & contracten | ZP Zaken beheer</title></Helmet>
       <div className="space-y-6 min-w-0">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="flex items-center gap-2 text-2xl font-bold"><Building2 className="h-6 w-6" /> Klanten & contracten</h1>
+          <h1 className="flex min-w-0 items-center gap-2 break-words text-xl font-bold sm:text-2xl"><Building2 className="h-6 w-6 shrink-0" /> Klanten & contracten</h1>
           <ToonTestrecordsSchakelaar />
         </div>
         {fout && <p className="text-sm text-destructive">{fout}</p>}
@@ -181,23 +181,38 @@ export default function KlantenContracten() {
 
             <Card>
               <CardContent className="space-y-4 pt-6">
-                <div className="flex flex-wrap items-center gap-3">
-                  <Input placeholder="Zoek op naam, relatiecode of certificaat" value={zoek} onChange={(e) => setZoek(e.target.value)} className="w-64" aria-label="Zoeken" />
+                <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+                  <Input placeholder="Zoek op naam, relatiecode of certificaat" value={zoek} onChange={(e) => setZoek(e.target.value)} className="w-full sm:w-64" aria-label="Zoeken" />
                   <Select value={product} onValueChange={setProduct}>
-                    <SelectTrigger className="w-52" aria-label="Product"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="min-h-10 w-full sm:w-52" aria-label="Product"><SelectValue /></SelectTrigger>
                     <SelectContent><SelectItem value="alle">Alle producten</SelectItem>
                       {Object.entries(PRODUCT_LABEL).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent>
                   </Select>
                   <Select value={cyclus} onValueChange={setCyclus}>
-                    <SelectTrigger className="w-40" aria-label="Cyclus"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="min-h-10 w-full sm:w-40" aria-label="Cyclus"><SelectValue /></SelectTrigger>
                     <SelectContent><SelectItem value="alle">Maand en jaar</SelectItem><SelectItem value="maand">Maand</SelectItem><SelectItem value="jaar">Jaar</SelectItem></SelectContent>
                   </Select>
                   {[["Volgende periode binnen 30 dagen", binnen30, setBinnen30], ["Loopt af", looptAf, setLooptAf], ["Met afwijkingen", metAfw, setMetAfw], ["Geen certificaat bekend", geenCert, setGeenCert]].map(([l, v, s]: any) => (
-                    <label key={l} className="flex items-center gap-2 text-sm whitespace-nowrap"><Checkbox checked={v} onCheckedChange={(x) => s(!!x)} />{l}</label>
+                    <label key={l} className="flex min-h-10 items-center gap-2 text-sm"><Checkbox checked={v} onCheckedChange={(x) => s(!!x)} />{l}</label>
                   ))}
                   <span className="ml-auto text-sm text-muted-foreground">{gefilterd.length} klanten</span>
                 </div>
-                <div className="overflow-x-auto">
+                <div className="space-y-3 md:hidden">
+                  {gefilterd.map((r) => (
+                    <Link key={r.o.id} to={`/admin/klanten/${r.o.id}`} className="block min-w-0 space-y-2 rounded-md border border-border p-4 hover:bg-muted/30">
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="break-words font-medium">{r.o.naam || "—"}</span>
+                        {r.afw.length > 0 && <Badge variant="outline" className="shrink-0 border-amber-500 text-amber-700">{r.afw.length} afwijking(en)</Badge>}
+                      </div>
+                      <p className="text-sm text-muted-foreground">Relatie {r.o.exact_relatie_code ?? "—"} · {r.cs.length} contractregel(s)</p>
+                      <p className="break-words text-sm">{r.producten.map((p) => PRODUCT_LABEL[p]).join(", ") || "Geen actief product"}</p>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm tabular-nums">
+                        <span>Maand {r.maand ? formatEuro(r.maand) : "—"}</span><span>Jaar {r.jaar ? formatEuro(r.jaar) : "—"}</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+                <div className="hidden overflow-x-auto md:block">
                   <table className="w-full table-fixed text-sm min-w-[1200px]">
                     <colgroup><col className="w-[18%]" /><col className="w-[8%]" /><col className="w-[9%]" /><col className="w-[15%]" /><col className="w-[14%]" /><col className="w-[8%]" /><col className="w-[8%]" /><col className="w-[9%]" /><col className="w-[6%]" /><col className="w-[7%]" /></colgroup>
                     <thead><tr className="text-left text-muted-foreground">
