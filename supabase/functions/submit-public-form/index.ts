@@ -5,6 +5,8 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
 import { normaliseerAdres } from "../_shared/adresNormalisatie.ts";
 import { samenvattingVoorTeam } from "../_shared/zeker.ts";
+import { saneerFormulier, saneerPagina } from "../_shared/leadVelden.ts";
+import { resolveEnvironment } from "../_shared/environment.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -136,7 +138,18 @@ Deno.serve(async (req) => {
       for (const [k, v] of [["adres_straat", n.straat], ["adres_huisnummer", n.huisnummer], ["adres_postcode", n.postcode], ["adres_plaats", n.plaats]] as const) {
         if (payload[k] !== undefined && payload[k] !== null) payload[k] = v || null;
       }
-      if (extra && typeof extra.adres_postcode === "string") extra.adres_postcode = n.postcode || normaliseerAdres({ postcode: extra.adres_postcode, land }).postcode;
+      // Volledige formulierinhoud (geordende lijst label → waarde) + formuliernaam en pagina.
+      const extraUit: Record<string, unknown> = { ...(extra ?? {}) };
+      const formulier = saneerFormulier(extraUit.formulier);
+      if (formulier.length) extraUit.formulier = formulier; else delete extraUit.formulier;
+      extraUit.formulier_naam = typeof extraUit.formulier_naam === "string" ? extraUit.formulier_naam.slice(0, 100) : null;
+      extraUit.pagina = saneerPagina(extraUit.pagina);
+      payload.extra_data = extraUit;
+      // Inzendingen vanuit preview/testomgeving zijn altijd testrecords (zelfde regel als chat Zeker).
+      payload.is_test = !resolveEnvironment(req).isProduction;
+      const extra2 = extraUit;
+      if (extra2 && typeof extra2.adres_postcode === "string") extra2.adres_postcode = n.postcode || normaliseerAdres({ postcode: extra2.adres_postcode as string, land }).postcode;
+      if (false && extra && typeof extra.adres_postcode === "string") extra.adres_postcode = n.postcode || normaliseerAdres({ postcode: extra.adres_postcode, land }).postcode;
     }
 
     let chatSamenvatting = "";
@@ -145,7 +158,8 @@ Deno.serve(async (req) => {
       chatSamenvatting = samenvattingVoorTeam((rijen ?? []) as any);
       const extra = payload.extra_data as Record<string, unknown>;
       const moment = String(extra.voorkeursmoment ?? "").slice(0, 100);
-      payload.extra_data = { bron: "chat-zeker", chat_sessie_id: chatSessie.id, voorkeursmoment: moment, toestemming: true, toestemming_op: new Date().toISOString() };
+      payload.extra_data = { bron: "chat-zeker", chat_sessie_id: chatSessie.id, voorkeursmoment: moment, toestemming: true, toestemming_op: new Date().toISOString(),
+        formulier: extra.formulier, formulier_naam: extra.formulier_naam, pagina: extra.pagina };
       payload.opmerkingen = `Terugbelverzoek via chatassistent Zeker.\nVoorkeursmoment: ${moment || "-"}\nVraag: ${String(payload.opmerkingen ?? "-").slice(0, 1000)}\n\nSamenvatting chat:\n${chatSamenvatting}`;
       payload.is_test = chatSessie.is_test;
     }
