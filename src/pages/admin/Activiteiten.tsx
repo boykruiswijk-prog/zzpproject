@@ -81,7 +81,7 @@ export default function Activiteiten() {
 
   return (
     <AdminLayout>
-      <div className="p-6 space-y-4">
+      <div className="min-w-0 space-y-4">
         <div>
           <h1 className="text-2xl font-bold">Activiteiten</h1>
           <p className="text-sm text-muted-foreground">
@@ -118,8 +118,20 @@ export default function Activiteiten() {
           </Select>
         </div>
 
-        <div className="border rounded-lg bg-card">
-          <Table>
+        <div className="space-y-3 md:hidden">
+          {loading ? <p className="py-8 text-center text-muted-foreground">Laden…</p> : filtered.length === 0 ? <p className="py-8 text-center text-muted-foreground">Geen activiteiten gevonden.</p> : filtered.map((r) => (
+            <article key={r.id} className="min-w-0 rounded-md border bg-card p-4 text-sm">
+              <p className="break-words font-medium">{r.omschrijving}</p>
+              <dl className="mt-3 grid min-w-0 grid-cols-[6.5rem_minmax(0,1fr)] gap-x-3 gap-y-1">
+                <dt className="text-muted-foreground">Datum/tijd</dt><dd className="break-words">{new Date(r.aangemaakt_op).toLocaleString("nl-NL")}</dd>
+                <dt className="text-muted-foreground">Wie</dt><dd className="break-words">{r.uitgevoerd_door_naam ?? "Onbekend"}</dd>
+                <dt className="text-muted-foreground">Lead/klant</dt><dd className="min-w-0 break-all">{r.lead_id ? <Link to={`/admin/leads/${r.lead_id}`} className="text-primary hover:underline">{r.klant_email ?? "Lead openen"}</Link> : r.klant_email ?? "—"}</dd>
+              </dl>
+            </article>
+          ))}
+        </div>
+        <div className="hidden overflow-x-auto rounded-lg border bg-card md:block">
+          <Table className="min-w-[700px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-44">Datum/tijd</TableHead>
