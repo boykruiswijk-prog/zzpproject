@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
 
-type AllowedRole = "supervisor" | "verzekering" | "marketing";
+type AllowedRole = "admin" | "supervisor" | "verzekering" | "marketing";
 
 interface RoleGuardProps {
   allow: AllowedRole[];
@@ -15,7 +15,7 @@ interface RoleGuardProps {
  * Supervisor heeft altijd toegang (ziet alles).
  */
 export function RoleGuard({ allow, children }: RoleGuardProps) {
-  const { isLoading, isTeamMember, isSupervisor, isVerzekering, isMarketing, user } = useAuth();
+  const { isLoading, isTeamMember, isAdmin, isSupervisor, isVerzekering, isMarketing, user } = useAuth();
 
   if (isLoading) {
     return (
@@ -28,7 +28,8 @@ export function RoleGuard({ allow, children }: RoleGuardProps) {
   if (!user) return <Navigate to="/admin/login" replace />;
   if (!isTeamMember) return <Navigate to="/admin/login" replace />;
 
-  const roleMatches =
+  const adminOnly = allow.length === 1 && allow[0] === "admin";
+  const roleMatches = adminOnly ? isAdmin :
     isSupervisor ||
     (allow.includes("verzekering") && isVerzekering) ||
     (allow.includes("marketing") && isMarketing);

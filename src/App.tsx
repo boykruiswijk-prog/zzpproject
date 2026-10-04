@@ -197,7 +197,7 @@ export const AppRoutes = () => (
             <Route path="/admin/activiteiten" element={<RoleGuard allow={[]}><AdminActiviteiten /></RoleGuard>} />
             <Route path="/admin/leads" element={<AdminLeads />} />
             <Route path="/admin/leads/:id" element={<AdminLeadDetail />} />
-            <Route path="/admin/team" element={<RoleGuard allow={[]}><AdminTeam /></RoleGuard>} />
+            <Route path="/admin/team" element={<RoleGuard allow={["admin"]}><AdminTeam /></RoleGuard>} />
             <Route path="/admin/dba-checks" element={<AdminDbaChecks />} />
             <Route path="/admin/dba-checks/nieuw" element={<DbaCheckNew />} />
             <Route path="/admin/dba-checks/bulk" element={<DbaCheckBulk />} />
@@ -219,10 +219,10 @@ export const AppRoutes = () => (
             <Route path="/admin/exact-reconciliatie" element={<RoleGuard allow={[]}><AdminExactReconciliatie /></RoleGuard>} />
             <Route path="/admin/chatgesprekken" element={<AdminChatgesprekken />} />
             <Route path="/admin/niet-gevonden" element={<RoleGuard allow={["marketing"]}><AdminNietGevonden /></RoleGuard>} />
-            <Route path="/admin/wp-import" element={<RoleGuard allow={["marketing"]}><AdminWpImport /></RoleGuard>} />
+            <Route path="/admin/wp-import" element={<RoleGuard allow={["admin"]}><AdminWpImport /></RoleGuard>} />
 
-            <Route path="/admin/integraties" element={<RoleGuard allow={[]}><AdminIntegraties /></RoleGuard>} />
-            <Route path="/admin/exact-koppeling" element={<RoleGuard allow={[]}><AdminExactKoppeling /></RoleGuard>} />
+            <Route path="/admin/integraties" element={<RoleGuard allow={["admin"]}><AdminIntegraties /></RoleGuard>} />
+            <Route path="/admin/exact-koppeling" element={<RoleGuard allow={["admin"]}><AdminExactKoppeling /></RoleGuard>} />
             <Route path="/admin/interne-meldingen" element={<AdminInterneMeldingen />} />
             <Route path="/admin/activiteitenlog" element={<AdminActiviteitenlog />} />
             <Route path="/api/exact/callback" element={<ExactCallback />} />
