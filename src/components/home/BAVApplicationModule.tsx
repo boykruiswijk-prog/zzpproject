@@ -277,10 +277,10 @@ export function BAVApplicationModule() {
            rekeninghouder: formData.rekeninghouder.trim(),
            lead_id: leadId,
            client_akkoord_op: clientAkkoordOp,
-           pagina_url: window.location.pathname,
+           pagina_url: window.location.href,
            formulier_naam: "Online aanvraag BAV + AVB",
            formulier: maakFormulier([
-             ["Pakket", selectedBavPakket?.naam ?? gekozenPakketId], ["Betaalwijze", betaalwijze], ["Ingangsdatum", startDate],
+             ["Pakket", selectedBavPakket.name], ["Betaalwijze", betaalwijze], ["Ingangsdatum", startDate],
              ["Bedrijfsnaam", formData.bedrijfsnaam], ["KvK-nummer", formData.kvkNummer],
              ["Sector", verzekeringskaartVoorSector(formData.sector)?.sector.label ?? formData.sector], ["Beroep", formData.beroep],
              ["Functie", formData.functie], ["Aantal medewerkers", formData.aantalMedewerkers],
