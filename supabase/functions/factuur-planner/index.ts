@@ -114,6 +114,7 @@ Deno.serve(async (req) => {
       const item = String(body?.item ?? "7061187b-4aaf-4e74-b347-4b5a1464c97b");
       return json({ regels: await get(`salesinvoice/SalesInvoiceLines?$select=InvoiceID,Description,ItemCode,VATCode,VATPercentage,VATAmountFC,AmountFC,GLAccount,StartTime,EndTime&$filter=${encodeURIComponent(`Item eq guid'${item}'`)}`, Number(body?.max ?? 3000)) });
     }
+    if (deel === "boekingen") return json({ boekingen: await get(`salesentry/SalesEntries?$select=EntryNumber,Customer,CustomerName,Journal,EntryDate,AmountDC,Description,YourRef&$filter=${encodeURIComponent(`EntryDate ge datetime'${String(body?.vanaf ?? "2026-09-01")}'`)}`) });
     if (deel === "gl") return json({ gl: await get(`financial/GLAccounts?$select=ID,Code,Description,VATCode&$filter=${encodeURIComponent("Code ge '8000' and Code le '8099'")}`) });
     return json({ error: "deel: basis|facturen|regels|itemregels|gl" }, 400);
   }
