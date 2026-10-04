@@ -33,6 +33,7 @@ type Aanvraag = {
   behandeld_door: string | null;
   behandeld_op: string | null;
   created_at: string;
+  geverifieerd?: boolean;
 };
 
 const STATUS = [
@@ -191,6 +192,7 @@ export default function ServiceAanvragen() {
           {loading ? <p className="rounded-lg border p-8 text-center text-muted-foreground">Laden…</p> : filtered.length === 0 ? <p className="rounded-lg border p-8 text-center text-muted-foreground">Geen aanvragen</p> : filtered.map((it) => (
             <div key={it.id} className="min-w-0 space-y-3 rounded-lg border border-border bg-card p-4" onClick={() => setSelected(it)}>
               <div className="flex items-start justify-between gap-2"><span className="break-words font-medium">{it.voornaam} {it.achternaam}</span><Badge className={TYPE_COLOR[it.type]}>{TYPE_LABEL[it.type] ?? it.type}</Badge></div>
+              {!it.geverifieerd && <Badge variant="outline" className="w-fit">Ongeverifieerd</Badge>}
               <p className="break-all text-sm text-muted-foreground">{it.email}</p>
               <p className="text-sm">Polis {it.polisnummer || "—"} · {formatDate(it.created_at)}</p>
               <Select value={it.status} onValueChange={(v) => updateStatus(it.id, v)}>
@@ -222,7 +224,7 @@ export default function ServiceAanvragen() {
               ) : filtered.map((it) => (
                 <tr key={it.id} className="border-t border-border hover:bg-muted/30 cursor-pointer" onClick={() => setSelected(it)}>
                   <td className="p-3 whitespace-nowrap">{formatDate(it.created_at)}</td>
-                  <td className="p-3"><Badge className={TYPE_COLOR[it.type]}>{TYPE_LABEL[it.type] ?? it.type}</Badge></td>
+                  <td className="p-3"><Badge className={TYPE_COLOR[it.type]}>{TYPE_LABEL[it.type] ?? it.type}</Badge>{!it.geverifieerd && <Badge variant="outline" className="ml-1">Ongeverifieerd</Badge>}</td>
                   <td className="p-3">{it.voornaam} {it.achternaam}</td>
                   <td className="p-3 font-mono text-xs">{it.polisnummer}</td>
                   <td className="p-3">{it.email}</td>
