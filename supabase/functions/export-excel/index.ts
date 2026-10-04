@@ -107,7 +107,7 @@ Deno.serve(async (req) => {
         "Opmerkingen": l.opmerkingen || "",
         "Aangemaakt": l.created_at,
       }))
-    ));
+    );
 
     // --- Tab 3: Contactaanvragen ---
     const contactLeads = leads.filter((l: any) => l.type === "contact");
@@ -123,7 +123,7 @@ Deno.serve(async (req) => {
         "Opmerkingen": l.opmerkingen || "",
         "Aangemaakt": l.created_at,
       }))
-    ));
+    );
 
     // --- Tab 4: Collectieve Inkoop ---
     addSheet("Collectieve Inkoop",
@@ -138,7 +138,7 @@ Deno.serve(async (req) => {
         "Interesse gebieden": (s.interesse_gebieden || []).join(", "),
         "Aangemaakt": s.created_at,
       }))
-    ));
+    );
 
     // --- Tab 5: Nieuwsbrief ---
     addSheet("Nieuwsbrief",
@@ -146,7 +146,7 @@ Deno.serve(async (req) => {
         "Email": n.email,
         "Aangemeld op": n.created_at,
       }))
-    ));
+    );
 
     // --- Tab 6: Artikelen ---
     addSheet("Artikelen",
@@ -161,7 +161,7 @@ Deno.serve(async (req) => {
         "Bron": a.source_name || "",
         "Aangemaakt": a.created_at,
       }))
-    ));
+    );
 
     // Generate buffer
     const buf = await wb.xlsx.writeBuffer();
