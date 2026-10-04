@@ -11,6 +11,9 @@ export async function requireSupervisor(req: Request, admin: any): Promise<{ use
   );
   const { data: { user } } = await userClient.auth.getUser();
   if (!user) return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: { "Content-Type": "application/json" } });
+  const aal = user.aal ?? (user as unknown as { factors?: unknown }).factors !== undefined ? (user as unknown as Record<string, unknown>).aal : undefined;
+  const sessionAal = typeof aal === "string" ? aal : null;
+  if (sessionAal !== "aal2") return new Response(JSON.stringify({ error: "mfa_required" }), { status: 403, headers: { "Content-Type": "application/json" } });
   const { data: allowed } = await admin.rpc("is_supervisor_or_admin", { _user_id: user.id });
   if (allowed !== true) return new Response(JSON.stringify({ error: "forbidden" }), { status: 403, headers: { "Content-Type": "application/json" } });
   return { userId: user.id };
