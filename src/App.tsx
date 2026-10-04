@@ -223,8 +223,8 @@ export const AppRoutes = () => (
 
             <Route path="/admin/integraties" element={<RoleGuard allow={["admin"]}><AdminIntegraties /></RoleGuard>} />
             <Route path="/admin/exact-koppeling" element={<RoleGuard allow={["admin"]}><AdminExactKoppeling /></RoleGuard>} />
-            <Route path="/admin/interne-meldingen" element={<AdminInterneMeldingen />} />
-            <Route path="/admin/activiteitenlog" element={<AdminActiviteitenlog />} />
+            <Route path="/admin/interne-meldingen" element={<RoleGuard allow={["admin"]}><AdminInterneMeldingen /></RoleGuard>} />
+            <Route path="/admin/activiteitenlog" element={<RoleGuard allow={["admin"]}><AdminActiviteitenlog /></RoleGuard>} />
             <Route path="/api/exact/callback" element={<ExactCallback />} />
 
             
