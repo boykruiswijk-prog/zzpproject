@@ -16,6 +16,7 @@ interface AuthContextType {
   session: Session | null;
   role: AppRole | null;
   isLoading: boolean;
+  isAal2: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   isTeamMember: boolean;
@@ -33,8 +34,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
+  const [isAal2, setIsAal2] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const inactivityTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const fetchAal = async (): Promise<boolean> => {
+    try {
+      const { data } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      return data?.currentLevel === "aal2";
+    } catch {
+      return false;
+    }
+  };
 
   const fetchUserRole = async (userId: string) => {
     try {
@@ -129,12 +140,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (session?.user) {
           // Use setTimeout to prevent Supabase deadlock
           setTimeout(async () => {
-            const userRole = await fetchUserRole(session.user.id);
+            const [userRole, aal2] = await Promise.all([fetchUserRole(session.user.id), fetchAal()]);
             setRole(userRole);
+            setIsAal2(aal2);
             setIsLoading(false);
           }, 0);
         } else {
           setRole(null);
+          setIsAal2(false);
           setIsLoading(false);
         }
       }
@@ -146,8 +159,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(session?.user ?? null);
 
       if (session?.user) {
-        fetchUserRole(session.user.id).then((userRole) => {
+        Promise.all([fetchUserRole(session.user.id), fetchAal()]).then(([userRole, aal2]) => {
           setRole(userRole);
+          setIsAal2(aal2);
           setIsLoading(false);
         });
       } else {
@@ -171,6 +185,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     session,
     role,
     isLoading,
+    isAal2,
     signIn,
     signOut,
     isTeamMember: role !== null,
