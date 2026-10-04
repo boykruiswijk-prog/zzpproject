@@ -68,7 +68,7 @@ export function DashboardStats() {
   ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {kaarten.map((k) => (
         <Link key={k.title} to={k.href} className="block rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
           <Card className={`h-full hover:bg-muted/30 ${k.let ? "border-amber-500" : ""}`}>
@@ -77,7 +77,7 @@ export function DashboardStats() {
               <k.icon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold tabular-nums">{isLoading ? "…" : k.value ?? "—"}</div>
+              <div className="break-words text-xl font-bold tabular-nums sm:text-2xl">{isLoading ? "…" : k.value ?? "—"}</div>
               <p className="text-xs text-muted-foreground">{k.description}</p>
             </CardContent>
           </Card>

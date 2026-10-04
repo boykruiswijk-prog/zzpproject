@@ -1,4 +1,5 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,8 +22,10 @@ import {
   SearchX,
   MessageCircle,
   Building2,
+  Menu,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 type NavRole = "supervisor" | "verzekering" | "marketing";
 
@@ -61,6 +64,8 @@ export function AdminSidebar() {
   const { user, signOut, isSupervisor, isVerzekering, isMarketing } = useAuth();
   const { data: takenCount } = useAdminTakenCount();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
@@ -74,16 +79,9 @@ export function AdminSidebar() {
     return false;
   };
 
-  return (
-    <aside className="w-64 border-r border-border bg-card flex flex-col">
-      {/* Logo */}
-      <div className="p-6 border-b border-border">
-        <h1 className="text-xl font-bold text-primary">ZP Zaken</h1>
-        <p className="text-sm text-muted-foreground">Dashboard</p>
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-1">
+  const Navigation = ({ mobile = false }: { mobile?: boolean }) => (
+    <>
+      <nav className={cn("flex-1 space-y-1", mobile ? "overflow-y-auto px-4 pb-4" : "p-4")}>
         {navItems.map((item) => {
           if (!roleAllows(item.roles)) return null;
           return (
@@ -91,16 +89,17 @@ export function AdminSidebar() {
               key={item.to}
               to={item.to}
               end={item.end}
+              onClick={() => mobile && setMobileOpen(false)}
               className={({ isActive }) =>
                 cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                  "flex min-h-10 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                   isActive
                     ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                    : "text-muted-foreground hover:bg-secondary hover:text-foreground",
                 )
               }
             >
-              <item.icon className="h-5 w-5" />
+              <item.icon className="h-5 w-5 shrink-0" />
               <span className="flex-1">{item.label}</span>
               {item.showTakenBadge && takenCount && takenCount > 0 ? (
                 <Badge variant="destructive" className="ml-auto h-5 px-2 text-xs">{takenCount}</Badge>
@@ -109,31 +108,64 @@ export function AdminSidebar() {
           );
         })}
       </nav>
-
-      {/* User section */}
-      <div className="p-4 border-t border-border space-y-3">
+      <div className="space-y-3 border-t border-border p-4">
         <NavLink
           to="/"
-          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+          onClick={() => mobile && setMobileOpen(false)}
+          className="flex min-h-10 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
         >
           <ChevronLeft className="h-5 w-5" />
           Terug naar website
         </NavLink>
-
         <div className="px-3 py-2">
-          <p className="text-sm font-medium truncate">{user?.email}</p>
+          <p className="truncate text-sm font-medium">{user?.email}</p>
         </div>
-
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full justify-start"
-          onClick={handleSignOut}
-        >
-          <LogOut className="h-4 w-4 mr-2" />
+        <Button variant="outline" size="sm" className="min-h-10 w-full justify-start" onClick={handleSignOut}>
+          <LogOut className="mr-2 h-4 w-4" />
           Uitloggen
         </Button>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      <header className="fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-card px-4 lg:hidden">
+        <div className="min-w-0">
+          <p className="truncate text-base font-bold text-primary">ZP Zaken Dashboard</p>
+          <p className="sr-only">Huidige pagina: {location.pathname}</p>
+        </div>
+        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+          <SheetTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="min-h-10 min-w-10"
+              aria-label="Menu openen"
+              aria-expanded={mobileOpen}
+              aria-controls="mobiel-admin-menu"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent id="mobiel-admin-menu" side="top" className="flex max-h-[calc(100dvh-1rem)] flex-col p-0">
+            <SheetHeader className="border-b border-border px-4 py-4 text-left">
+              <SheetTitle className="text-primary">ZP Zaken Dashboard</SheetTitle>
+            </SheetHeader>
+            <Navigation mobile />
+          </SheetContent>
+        </Sheet>
+      </header>
+
+      <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-card lg:flex">
+      {/* Logo */}
+      <div className="p-6 border-b border-border">
+        <h1 className="text-xl font-bold text-primary">ZP Zaken</h1>
+        <p className="text-sm text-muted-foreground">Dashboard</p>
+      </div>
+
+        <Navigation />
+      </aside>
+    </>
   );
 }
