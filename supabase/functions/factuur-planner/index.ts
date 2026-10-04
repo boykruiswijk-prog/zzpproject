@@ -9,7 +9,8 @@ import { requireSupervisor } from "../_shared/teamAuth.ts";
 import { sendExactAlarm } from "../_shared/exactAlarm.ts";
 import { periodeTekst, regelOmschrijving } from "../_shared/factuurTekst.ts";
 import { planningsSleutel, planningStatusUitExact } from "../_shared/factuurPeriode.ts";
-import { getBavGlAccountId } from "../_shared/exactGl.ts";
+import { getGlAccountIdVoorCode, GlNietGevondenError } from "../_shared/exactGl.ts";
+import { bouwFactuurPayload, glUitCache } from "../_shared/factuurRegel.ts";
 import { exactRegelBedrag } from "../_shared/factuurTekst.ts";
 import { berekenOpzegCredit, berekenOudSysteemCredit, oudSysteemCreditPayload } from "../_shared/creditOpzegging.ts";
 
@@ -75,6 +76,28 @@ Deno.serve(async (req) => {
 
   const vandaag = vandaagNL();
 
+  // Grootboek opzoeken (alleen GET naar Exact) en eventueel een voorbeeldfactuur tonen. Schrijft niets naar Exact.
+  if (actie === "gl_opzoeken" || actie === "factuur_dryrun") {
+    const { data: cfg } = await admin.from("exact_config").select("*").limit(1).maybeSingle();
+    if (!cfg?.is_actief) return json({ error: "Exact niet actief" }, 400);
+    const codes = Array.isArray(body?.codes) ? body.codes.map(String).filter((c: string) => /^\d{3,6}$/.test(c)).slice(0, 10) : ["8003", "8004"];
+    const token = await ensureValidToken(admin, cfg);
+    const gevonden: Record<string, string | null> = {}; const meldingen: Record<string, string> = {};
+    for (const c of codes) {
+      try { gevonden[c] = await getGlAccountIdVoorCode(admin, cfg, token, c); }
+      catch (e) { gevonden[c] = null; meldingen[c] = String((e as Error)?.message ?? e); }
+    }
+    if (actie === "gl_opzoeken") return json({ modus: "alleen GET", schrijft_naar_exact: false, grootboeken: gevonden, meldingen });
+    const id = String(body?.klant_contract_id ?? "");
+    const { data: kand } = await admin.rpc("facturatie_kandidaten", { _van: String(body?.van ?? vandaag), _tot: String(body?.tot ?? vandaag) });
+    const k = (kand ?? []).find((r: any) => r.klant_contract_id === id);
+    if (!k) return json({ error: "geen kandidaat voor dit contract in deze periode", grootboeken: gevonden }, 404);
+    const gl = k.gl_code ? glUitCache(cfg, String(k.gl_code)) : null;
+    return json({ modus: "dry-run", schrijft_naar_exact: false, schrijft_naar_database: false, grootboeken: gevonden, meldingen, kandidaat: k,
+      payload: bouwFactuurPayload(k, gl, "ZPF-DRYRUN0", "Remarks") });
+  }
+
+
   // Dry-run creditnota oud systeem: berekent bedrag en Exact-payload, schrijft niets (DB noch Exact).
   if (actie === "credit_dryrun") {
     const id = String(body?.klant_contract_id ?? ""); const eind = String(body?.einddatum ?? "");
@@ -83,12 +106,12 @@ Deno.serve(async (req) => {
     if (!k) return json({ error: "contract niet gevonden" }, 404);
     const { data: o } = await admin.from("ondernemingen").select("naam,exact_account_id").eq("id", k.onderneming_id).maybeSingle();
     const { data: m } = await admin.rpc("factuur_mapping_voor", { _itemcode: k.itemcode });
-    const { data: ecfg } = await admin.from("exact_config").select("gl_account_id_bav").limit(1).maybeSingle();
+    const { data: ecfg } = await admin.from("exact_config").select("*").limit(1).maybeSingle();
     const ber = berekenOudSysteemCredit(k as any, eind);
     const blokkade = !m?.id || !m.bevestigd || !m.exact_item_id || m.blokkade_reden ? `geen bevestigde artikelmapping voor ${k.itemcode}` : !o?.exact_account_id ? "relatie niet gekoppeld aan Exact" : null;
     const sleutel = "ZPC-DRYRUN0";
     const payload = blokkade ? null : oudSysteemCreditPayload({ creditsleutel: sleutel, exact_account_id: o!.exact_account_id, exact_item_id: m.exact_item_id,
-      gl_account_id: (ecfg as any)?.gl_account_id_bav ?? `(GUID grootboek ${m.gl_code})`, einddatum: eind, credit_vanaf: ber.vanaf, credit_tm: k.gefactureerd_tm, vandaag, regels: ber.regels });
+      gl_account_id: glUitCache(ecfg, String(m.gl_code ?? "")) ?? `(GUID grootboek ${m.gl_code})`, einddatum: eind, credit_vanaf: ber.vanaf, credit_tm: k.gefactureerd_tm, vandaag, regels: ber.regels });
     return json({ modus: "dry-run", schrijft_naar_exact: false, schrijft_naar_database: false, klant: o?.naam, contract: { bron_rij: k.bron_rij, itemcode: k.itemcode, cyclus: k.cyclus, bedrag_per_periode: k.bedrag_per_periode, aantal: k.aantal, begin_datum: k.begin_datum, gefactureerd_tm: k.gefactureerd_tm },
       einddatum: eind, credit_vanaf: ber.vanaf, credit_tm: k.gefactureerd_tm, perioden: ber.regels, bedrag: ber.bedrag, blokkade, artikel: m?.exact_item_code, gl_code: m?.gl_code,
       payload, opmerking: "Echte creditsleutel ZPC-xxxxxxxx ontstaat pas bij een opzegging (hash contract+aanvraag)." });
@@ -192,7 +215,10 @@ Deno.serve(async (req) => {
     }
 
     // 2) Nieuwe concepten voor niet-geblokkeerde kandidaten (incl. achterstallig).
-    const glCache: Record<string, string> = {};
+    // Eerder geblokkeerde regels (bv. grootboek ontbrak) krijgen elke run een nieuwe kans; de oude rij blijft als 'vervangen' staan.
+    if (live) await admin.from("factuur_planning").update({ status: "vervangen" }).eq("status", "geblokkeerd");
+    const glVoor = async (code: string) => await getGlAccountIdVoorCode(admin, cfg, token, code);
+    let gestopt = false;
     for (const k of live ? rijen.filter((r) => !r.blokkade && r.periode_start <= vandaag) : []) {
       const sleutel = planningsSleutel(crypto.randomUUID().replace(/-/g, ""));
       const { data: claim, error: cErr } = await admin.from("factuur_planning").insert({
@@ -202,36 +228,33 @@ Deno.serve(async (req) => {
         planningssleutel: sleutel, status: "geclaimd", invoice_date: k.periode_start,
       }).select("id").single();
       if (cErr) continue; // unieke sleutel: al geclaimd → overslaan
+      // Vóór de POST: elke fout blokkeert alleen deze regel; de run gaat door.
+      let payload: any;
       try {
         if ((await zoekOpSleutel(sleutel, sleutelVeld)).length) throw new Error("sleutel bestaat al in Exact");
-        if (k.gl_code && String(k.gl_code) !== String(cfg.gl_code_bav ?? "8003")) throw new Error(`grootboek ${k.gl_code} niet ondersteund`);
-        const gl = k.gl_code ? (glCache[k.gl_code] ??= await getBavGlAccountId(admin, cfg, token)) : null;
-        const regel: any = { Item: k.exact_item_id, Quantity: Number(k.aantal), UnitPrice: Number(k.bedrag_per_periode), VATCode: "0",
-          Description: regelOmschrijving("premie", k.periode_start, k.periode_eind),
-          StartTime: `${k.periode_start}T00:00:00`, EndTime: `${k.periode_eind}T00:00:00` };
-        if (gl) regel.GLAccount = gl;
-        const payload: any = { InvoiceTo: k.exact_account_id, OrderedBy: k.exact_account_id, Journal: "70", PaymentCondition: "IN",
-          Type: 8020, Status: 20, InvoiceDate: `${k.periode_start}T00:00:00`, OrderDate: `${k.periode_start}T00:00:00`,
-          Description: `Premie ${periodeTekst(k.periode_start, k.periode_eind)}`.slice(0, 60), SalesInvoiceLines: [regel] };
-        if (sleutelVeld === "YourRef") payload.YourRef = sleutel; else payload.Remarks = sleutel;
-        const r = await exact("salesinvoice/SalesInvoices", { method: "POST", body: JSON.stringify(payload) });
-        if (!r.ok) {
-          // Onzeker na 5xx/timeout: rij blijft "geclaimd"; volgende run beslist via sleutelcontrole.
-          if (r.status >= 500) throw new Error(`POST onzeker HTTP ${r.status}`);
-          await admin.from("factuur_planning").update({ status: "fout", foutmelding: (await r.text()).slice(0, 300) }).eq("id", claim.id);
-          fouten.push(`HTTP ${r.status}`); continue;
-        }
-        const d = (await r.json())?.d ?? {};
-        await admin.from("factuur_planning").update({ status: "concept_aangemaakt", concept_op: new Date().toISOString(), exact_invoice_id: d.InvoiceID ?? null, exact_status: 20 }).eq("id", claim.id);
-        await admin.from("factuur_planning_log").insert({ planning_id: claim.id, klant_contract_id: k.klant_contract_id, actie: "concept_aangemaakt", nieuw: { invoice_id: d.InvoiceID, sleutel } });
-        aangemaakt++;
+        const gl = k.gl_code ? await glVoor(String(k.gl_code)) : null;
+        payload = bouwFactuurPayload(k, gl, sleutel, sleutelVeld);
       } catch (e) {
-        fouten.push(String(e).slice(0, 200));
-        break; // stop de run; niets half
+        const status = e instanceof GlNietGevondenError ? "geblokkeerd" : "fout";
+        await admin.from("factuur_planning").update({ status, foutmelding: String((e as Error)?.message ?? e).slice(0, 300) }).eq("id", claim.id);
+        fouten.push(`${status}: ${String((e as Error)?.message ?? e).slice(0, 160)}`); continue;
       }
+      let r: Response;
+      try { r = await exact("salesinvoice/SalesInvoices", { method: "POST", body: JSON.stringify(payload) }); }
+      catch (e) { fouten.push(`POST onzeker: ${String(e).slice(0, 160)}`); gestopt = true; break; } // rij blijft "geclaimd"
+      if (!r.ok) {
+        // Onzeker na 5xx: rij blijft "geclaimd"; volgende run beslist via sleutelcontrole. Run stopt.
+        if (r.status >= 500) { fouten.push(`POST onzeker HTTP ${r.status}`); gestopt = true; break; }
+        await admin.from("factuur_planning").update({ status: "fout", foutmelding: (await r.text()).slice(0, 300) }).eq("id", claim.id);
+        fouten.push(`HTTP ${r.status}`); continue;
+      }
+      const d = (await r.json().catch(() => ({})))?.d ?? {};
+      await admin.from("factuur_planning").update({ status: "concept_aangemaakt", concept_op: new Date().toISOString(), exact_invoice_id: d.InvoiceID ?? null, exact_status: 20 }).eq("id", claim.id);
+      await admin.from("factuur_planning_log").insert({ planning_id: claim.id, klant_contract_id: k.klant_contract_id, actie: "concept_aangemaakt", nieuw: { invoice_id: d.InvoiceID, sleutel } });
+      aangemaakt++;
     }
 
-    if (fouten.length) throw new Error("run gestopt na fout; geen creditnota's");
+    if (gestopt) throw new Error("run gestopt na onzekere POST; geen creditnota's");
     // 3) Creditnota's: status bijwerken (lezen) en nieuwe concepten (Type 8021). Testrecords nooit naar Exact.
     for (const c of credits.filter((x) => ["concept_aangemaakt", "te_laat", "geclaimd"].includes(x.status) && !x.is_test)) {
       const gevonden = (await zoekOpSleutel(c.creditsleutel, "Remarks"))[0] ?? null;
@@ -248,11 +271,20 @@ Deno.serve(async (req) => {
     for (const c of credits.filter((x) => x.status === "te_maken" && !x.is_test && Number(x.bedrag) > 0)) {
       const { data: claim } = await admin.from("factuur_credit_planning").update({ status: "geclaimd" }).eq("id", c.id).eq("status", "te_maken").select("id").maybeSingle();
       if (!claim) continue;
+      const oud = c.bron === "oud_systeem";
+      let gl: string | null = null;
       try {
         if ((await zoekOpSleutel(c.creditsleutel, "Remarks")).length) throw new Error("creditsleutel bestaat al in Exact");
-        const oud = c.bron === "oud_systeem";
         if (!c.exact_account_id || !c._item || (!oud && !c.origineel_factuurnummer)) throw new Error("creditnota mist account, artikel of factuurnummer");
-        const gl = c._gl ? (glCache[c._gl] ??= await getBavGlAccountId(admin, cfg, token)) : null;
+        gl = c._gl ? await glVoor(String(c._gl)) : null;
+      } catch (e) {
+        // Alleen deze creditnota blokkeren; de rest gaat door.
+        const status = e instanceof GlNietGevondenError ? "geblokkeerd" : "fout";
+        const msg = String((e as Error)?.message ?? e).slice(0, 300);
+        await admin.from("factuur_credit_planning").update(status === "geblokkeerd" ? { status, melding: msg } : { status, foutmelding: msg }).eq("id", c.id);
+        fouten.push(`credit ${status}: ${msg.slice(0, 160)}`); continue;
+      }
+      try {
         if (oud) {
           const p = oudSysteemCreditPayload({ creditsleutel: c.creditsleutel, exact_account_id: c.exact_account_id, exact_item_id: c._item, gl_account_id: gl,
             einddatum: c.einddatum, credit_vanaf: c.credit_vanaf, credit_tm: c.credit_tm, vandaag, regels: c.berekening?.regels ?? [] });
@@ -284,7 +316,7 @@ Deno.serve(async (req) => {
         const d = (await r.json())?.d ?? {};
         await admin.from("factuur_credit_planning").update({ status: "concept_aangemaakt", concept_op: new Date().toISOString(), exact_invoice_id: d.InvoiceID ?? null, exact_status: 20 }).eq("id", c.id);
         await admin.from("sensitive_audit_log").insert({ target_table: "klant_contracten", target_id: c.klant_contract_id, actie: "creditnota_concept_aangemaakt", veld: "factuur_credit_planning", nieuwe_waarde: c.creditsleutel, details: { credit_id: c.id, bedrag: c.bedrag, origineel: c.origineel_factuurnummer, invoice_id: d.InvoiceID } });
-      } catch (e) { fouten.push(String(e).slice(0, 200)); break; }
+      } catch (e) { fouten.push(String(e).slice(0, 200)); break; } // onzekere POST: stoppen, rij blijft "geclaimd"
     }
   } catch (e) { fouten.push(String(e).slice(0, 200)); }
 

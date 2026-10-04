@@ -1164,6 +1164,7 @@ export type Database = {
           gl_account_id_bav_code: string | null
           gl_account_id_screening: string | null
           gl_account_id_screening_code: string | null
+          gl_account_ids: Json
           gl_code_bav: string
           gl_code_screening: string | null
           id: string
@@ -1193,6 +1194,7 @@ export type Database = {
           gl_account_id_bav_code?: string | null
           gl_account_id_screening?: string | null
           gl_account_id_screening_code?: string | null
+          gl_account_ids?: Json
           gl_code_bav?: string
           gl_code_screening?: string | null
           id?: string
@@ -1222,6 +1224,7 @@ export type Database = {
           gl_account_id_bav_code?: string | null
           gl_account_id_screening?: string | null
           gl_account_id_screening_code?: string | null
+          gl_account_ids?: Json
           gl_code_bav?: string
           gl_code_screening?: string | null
           id?: string
