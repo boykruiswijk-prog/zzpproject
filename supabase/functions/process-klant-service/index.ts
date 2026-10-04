@@ -4,6 +4,7 @@ import { z } from "npm:zod@3.23.8";
 import { maybeFormatDate } from "../_shared/dateFormat.ts";
 import { createMailGate } from "../_shared/mail.ts";
 import { valideerOpzegdatum, valideerToelichting } from "../_shared/opzegValidatie.ts";
+import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -179,7 +180,10 @@ Deno.serve(async (req) => {
         }
       };
 
-      await sendAndLog("info@zpzaken.nl", subject, baseHtml);
+      await verstuurInterneMelding(supabase, req, "process-klant-service", {
+        leadType, leadId: data.id, subject, html: baseHtml, replyTo: v.email,
+        metadata: { type: v.type, email: v.email, polisnummer: v.polisnummer },
+      });
       await sendAndLog(
         v.email,
         `Bevestiging: ${labels[v.type]}`,

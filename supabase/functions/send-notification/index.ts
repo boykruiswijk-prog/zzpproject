@@ -12,6 +12,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import { createMailGate, getFromAddress } from "../_shared/mail.ts";
+import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
 
 const supabaseAdmin = createClient(
   Deno.env.get("SUPABASE_URL") ?? "",
@@ -231,7 +232,13 @@ serve(async (req) => {
       }
     }
 
-    const plannedEmails = emails
+    const [internalEmail, ...customerEmails] = emails;
+    if (internalEmail) {
+      await verstuurInterneMelding(supabaseAdmin, req, "send-notification", {
+        leadType: logType, leadId, subject: internalEmail.subject, html: internalEmail.html,
+      });
+    }
+    const plannedEmails = customerEmails
       .map((email) => gate.plan({ to: email.to, subject: email.subject, html: email.html }))
       .filter((plan) => plan.send)
       .map((plan) => ({ from: plan.from, to: plan.to, subject: plan.subject, html: plan.html }));

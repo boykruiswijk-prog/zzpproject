@@ -12,6 +12,7 @@ import {
   verstuurMachtigingBevestiging,
 } from "../_shared/sepaBewijs.ts";
 import { isUuid, mandaatkenmerkVoor, redenScreening } from "../_shared/sepaMachtiging.ts";
+import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -323,7 +324,10 @@ Deno.serve(async (req) => {
         <p><strong>Incasso-akkoord:</strong> gegeven op ${new Date().toLocaleString("nl-NL")} (rekening ${maskIban(ibanSchoon)}, t.n.v. ${rekeninghouder})</p>
         <p>Aanvraag-ID: ${aanvraag.id}</p>
       `;
-      await sendMail("info@zpzaken.nl", `Nieuwe screeningsaanvraag: ${pakketLabel}`, adminHtml);
+      await verstuurInterneMelding(supabase, req, "process-screening-aanvraag", {
+        leadType, leadId: aanvraag.id, subject: `Nieuwe screeningsaanvraag: ${pakketLabel}`, html: adminHtml,
+        replyTo: data.email, metadata: { naam: volledigeNaam, email: data.email, pakket: data.screening_type },
+      });
 
       // Bevestiging naar aanvrager
       const klantHtml = `

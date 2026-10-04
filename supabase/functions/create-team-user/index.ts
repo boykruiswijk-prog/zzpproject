@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
 
     const { data: roleRows } = await userClient.from("user_roles").select("role").eq("user_id", user.id);
     const roles = (roleRows ?? []).map((r: any) => r.role);
-    if (!roles.includes("admin") && !roles.includes("supervisor")) throw new Error("Geen supervisor/admin rechten");
+    if (!roles.includes("admin")) throw new Error("Geen admin-rechten");
 
     const { email, password, fullName, role } = await req.json();
     if (!email || !password || !fullName || !role) throw new Error("Alle velden zijn verplicht");

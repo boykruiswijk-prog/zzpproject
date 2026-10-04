@@ -23,6 +23,7 @@ Deno.serve(async (req) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey, {
       global: { headers: { Authorization: authHeader } },
     });
@@ -35,6 +36,9 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    const admin = createClient(supabaseUrl, serviceKey);
+    const { data: isTeam } = await admin.rpc("is_team_member", { _user_id: user.id });
+    if (!isTeam) return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
     // Fetch all data in parallel
     const [leadsRes, signupsRes, newsletterRes, articlesRes] = await Promise.all([
@@ -162,6 +166,11 @@ Deno.serve(async (req) => {
     const buf = XLSX.write(wb, { type: "buffer", bookType: "xlsx", compression: true });
 
     const now = new Date().toISOString().slice(0, 10);
+    await admin.from("sensitive_audit_log").insert({
+      target_table: "export", actie: "klantlijsten_exporteren", uitgevoerd_door: user.id,
+      uitgevoerd_door_email: user.email ?? null,
+      details: { leads: leads.length, signups: signups.length, newsletter: newsletter.length, articles: articles.length },
+    });
     return new Response(buf, {
       status: 200,
       headers: {

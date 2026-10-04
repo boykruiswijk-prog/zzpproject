@@ -186,6 +186,7 @@ serve(async (req) => {
       await adminClient.from("ondernemingen").update({ branche: profession, sector }).eq("id", ondId);
       policy = ins;
     } else {
+      if (!isSupAdmin) return json({ error: "Alleen supervisor/admin/verzekering mag certificaten genereren" }, 403);
       if (!lead_id && !policy_data) return json({ error: "lead_id or policy_data required" }, 400);
       let data = policy_data;
       if (lead_id) {

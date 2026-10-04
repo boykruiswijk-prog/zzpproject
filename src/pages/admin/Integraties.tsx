@@ -42,7 +42,7 @@ type FailedBav = {
 };
 
 export default function Integraties() {
-  const { user, isSupervisor } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [params] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState<TokenRow | null>(null);
@@ -52,8 +52,6 @@ export default function Integraties() {
   const [lastKeepalive, setLastKeepalive] = useState<string | null>(null);
   const [exactTypes, setExactTypes] = useState<{ ID: string; Code: string; Description: string }[]>([]);
   const [screeningEnabled, setScreeningEnabled] = useState(false);
-
-  const isAdmin = isSupervisor;
 
   useEffect(() => {
     const status = params.get("status");
