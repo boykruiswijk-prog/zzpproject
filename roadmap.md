@@ -26,6 +26,6 @@
 - [x] Draai gerichte tests, securityscan, linter en build; rapporteer per punt en resterende acties voor Boy.
 
 ## Opdracht 5 okt 2026 (niet publiceren)
-- [ ] /bav-zzp-vergelijken pagina + data + SEO/prerender/sitemap/llms + interne links
-- [ ] aanvraag_concepten: tabel, edge-actie, formulier, privacy, cron anonimiseren, admin-blok, dagmail
-- [ ] Cloudflare bulk-redirects CSV bij build
+- [x] /bav-zzp-vergelijken pagina + data + SEO/prerender/sitemap/llms + interne links
+- [x] aanvraag_concepten: tabel, edge-actie, formulier, privacy, cron anonimiseren, admin-blok, dagmail
+- [x] Cloudflare bulk-redirects CSV bij build
