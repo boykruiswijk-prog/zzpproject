@@ -11,9 +11,9 @@
 /financien    /kennisbank    301
 /verzekeringen-info    /kennisbank    301
 /wet-en-regelgeving    /kennisbank/wet-en-regelgeving    301
-/movir    /verzekeringen    301
-/wijzijnaov    /verzekeringen    301
-/aov-via-centraalbeheer    /verzekeringen    301
+/movir    /aov    301
+/wijzijnaov    /aov    301
+/aov-via-centraalbeheer    /aov    301
 /sharepeople    /partners    301
 /eherkenning    /kennisbank/eherkenning    301  # gepubliceerd artikel
 /klachten    /klachtenprocedure    301
@@ -85,6 +85,8 @@
 /wet-toekomst-pensioenen-wtp-voor-zzp-ers    /kennisbank/wet-toekomst-pensioenen-wtp-voor-zzp-ers    301  # gepubliceerd artikel
 /welke-verzekeringen-zzp    /kennisbank/welke-verzekeringen-zzp    301  # gepubliceerd artikel
 /wat-kosten-verzekeringen-voor-zzp-ers    /kennisbank/wat-kosten-verzekeringen-voor-zzp-ers    301  # gepubliceerd artikel
+/zzp-verzekering-kosten-2026    /kennisbank/zzp-verzekering-kosten-2026    301  # gepubliceerd artikel
+/kennisbank/zzp-verzekering-kosten-2026    /kennisbank/wat-kosten-verzekeringen-voor-zzp-ers    301
 /rijd-je-als-zzp-er-fiscaal-voordelig-met-een-youngtimer    /kennisbank/rijd-je-als-zzp-er-fiscaal-voordelig-met-een-youngtimer    301  # gepubliceerd artikel
 /voordelen-van-zzp    /kennisbank/voordelen-van-zzp    301  # gepubliceerd artikel
 /hoe-combineer-je-loondienst-en-zzp    /kennisbank/hoe-combineer-je-loondienst-en-zzp    301  # gepubliceerd artikel

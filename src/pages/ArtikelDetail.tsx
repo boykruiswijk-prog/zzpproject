@@ -85,10 +85,10 @@ type ArticleFaq = { question: string; answer: string };
 
 function extractMarkdownFaqs(content: string | null | undefined): ArticleFaq[] {
   if (!content) return [];
-  const sectionMatch = content.match(/^## Veelgestelde vragen\s*$([\s\S]*?)(?=^##\s|\z)/m);
+  const sectionMatch = content.match(/^## Veelgestelde vragen\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m);
   if (!sectionMatch) return [];
 
-  return [...sectionMatch[1].matchAll(/^###\s+(.+)\n([\s\S]*?)(?=^###\s|\z)/gm)]
+  return [...sectionMatch[1].matchAll(/^###\s+(.+)\n([\s\S]*?)(?=^###\s|(?![\s\S]))/gm)]
     .map((match) => ({
       question: stripMarkdown(match[1]),
       answer: stripMarkdown(match[2]),
