@@ -281,6 +281,11 @@ export default function KennisbankArtikelEditor() {
         }
       }
 
+      // Bing/IndexNow op de hoogte brengen; mislukking blokkeert opslaan niet.
+      if (nextPublished && (isNew || !wasPublished)) {
+        void supabase.functions.invoke("indexnow-ping", { body: { paths: [`/kennisbank/${payload.slug}`, "/kennisbank"] } }).catch(() => {});
+      }
+
       qc.invalidateQueries({ queryKey: ["admin-articles"] });
       qc.invalidateQueries({ queryKey: ["articles"] });
       qc.invalidateQueries({ queryKey: ["article", form.slug] });
