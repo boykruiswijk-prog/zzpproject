@@ -8,6 +8,7 @@ import { WhatsAppFloatingButton } from "@/components/common/WhatsAppFloatingButt
 import { ZekerLauncher } from "@/components/zeker/ZekerLauncher";
 import { SiteSchemaMarkup } from "@/components/social-proof/SiteSchemaMarkup";
 import { TrustSignalsStrip } from "@/components/social-proof/TrustSignalsStrip";
+import { TerugbelDialog } from "@/components/shared/TerugbelDialog";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -31,6 +32,7 @@ export function Layout({ children }: LayoutProps) {
       <ExitIntentPopup />
       <WhatsAppFloatingButton />
       <ZekerLauncher />
+      <TerugbelDialog />
     </div>
   );
 }

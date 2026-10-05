@@ -100,6 +100,7 @@ export default function ZzpVerzekeringBouw() {
       ctaTitle="Vraag gratis advies aan"
       ctaSubtitle="Vertel ons welk werk je doet. Wij regelen de juiste dekking."
       ctaButton="Vraag gratis advies aan"
+      aanvraag="terugbel"
     >
       <section className="section-padding bg-background">
         <div className="container-wide">

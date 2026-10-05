@@ -64,3 +64,12 @@ export const VANAF_PRIJS_LABEL = "Vanaf €55 per maand";
 export function getPakket(id: BavPakketId) {
   return bavPakketten.find((p) => p.id === id)!;
 }
+
+/** "€5M" / "€2,5M" notatie voor dekkingsbedragen. */
+export const formatMiljoenKort = (n: number) => `€${(n / 1_000_000).toLocaleString("nl-NL", { maximumFractionDigits: 1 })}M`;
+
+/** Compacte prijsregel, bv. "Vanaf €55/mnd · BAV €5M · AVB €2,5M" (uit het maandpakket). */
+export function vanafPrijsregel(): string {
+  const p = getPakket("maandelijks");
+  return `Vanaf €${p.prijs}/mnd · BAV ${formatMiljoenKort(p.dekkingen.bav.perGebeurtenis)} · AVB ${formatMiljoenKort(p.dekkingen.avb.perGebeurtenis)}`;
+}
