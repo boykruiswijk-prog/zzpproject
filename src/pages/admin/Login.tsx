@@ -28,15 +28,19 @@ export default function AdminLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<LoginStep>("credentials");
   const [mfaChecked, setMfaChecked] = useState(false);
+  const [isAal2Sessie, setIsAal2Sessie] = useState(false);
 
   // Check MFA assurance level for already-logged-in users
   useEffect(() => {
     const checkMFA = async () => {
+      setMfaChecked(false);
+      setIsAal2Sessie(false);
       if (!user) {
         setMfaChecked(true);
         return;
       }
       const { data } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (data?.currentLevel === "aal2") setIsAal2Sessie(true);
       if (data && data.currentLevel !== "aal2") {
         if (data.nextLevel === "aal2") {
           // Factor ingesteld maar deze sessie is nog aal1: altijd eerst de code.
@@ -57,7 +61,7 @@ export default function AdminLogin() {
   }, [user, isTeamMember, authLoading]);
 
   // Only redirect if MFA is satisfied
-  if (!authLoading && mfaChecked && user && isTeamMember && step === "credentials") {
+  if (!authLoading && mfaChecked && isAal2Sessie && user && isTeamMember && step === "credentials") {
     return <Navigate to={doel} replace />;
   }
 
