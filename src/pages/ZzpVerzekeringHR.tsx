@@ -34,7 +34,7 @@ export default function ZzpVerzekeringHR() {
         { title: "Persoonlijk advies", text: "Je adviseur kijkt met je mee naar je opdracht en contract. De polisvoorwaarden zijn leidend." },
       ]}
       faqs={faqs}
-      leesMeer={["bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "zzp-verzekering-kosten-2026", "welke-verzekeringen-zzp", "bedrijfsaansprakelijkheidsverzekering-zzp", "wat-kosten-verzekeringen-voor-zzp-ers"]}
+      leesMeer={["bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "wat-kosten-verzekeringen-voor-zzp-ers", "welke-verzekeringen-zzp", "bedrijfsaansprakelijkheidsverzekering-zzp"]}
     />
   );
 }

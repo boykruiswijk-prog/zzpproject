@@ -34,7 +34,7 @@ export default function ZzpVerzekeringFinance() {
         { title: "Accountant met wettelijke taken of Wft-adviseur?", text: "Ben je accountant met wettelijke taken, zoals een controle van de jaarrekening? Of geef je financieel advies onder de Wft? Neem dan eerst contact met ons op. Daarvoor gelden aparte eisen." },
       ]}
       faqs={faqs}
-      leesMeer={["bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "zzp-verzekering-kosten-2026", "welke-verzekeringen-zzp", "bedrijfsaansprakelijkheidsverzekering-zzp", "wat-kosten-verzekeringen-voor-zzp-ers"]}
+      leesMeer={["bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "wat-kosten-verzekeringen-voor-zzp-ers", "welke-verzekeringen-zzp", "bedrijfsaansprakelijkheidsverzekering-zzp"]}
     />
   );
 }

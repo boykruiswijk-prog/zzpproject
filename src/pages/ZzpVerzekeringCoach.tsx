@@ -34,7 +34,7 @@ export default function ZzpVerzekeringCoach() {
         { title: "Therapeut of psycholoog?", text: "Werk je als therapeut of psycholoog? Dan valt je werk onder zorg. Neem contact met ons op, dan kijken we samen wat past." },
       ]}
       faqs={faqs}
-      leesMeer={["bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "zzp-verzekering-kosten-2026", "welke-verzekeringen-zzp", "bedrijfsaansprakelijkheidsverzekering-zzp", "wat-kosten-verzekeringen-voor-zzp-ers"]}
+      leesMeer={["bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "wat-kosten-verzekeringen-voor-zzp-ers", "welke-verzekeringen-zzp", "bedrijfsaansprakelijkheidsverzekering-zzp"]}
     />
   );
 }

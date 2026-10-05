@@ -125,7 +125,7 @@ export default function ZzpVerzekeringICT() {
           </div>
         </div>
       </section>
-      <LeesMeer voorkeur={["cyberverzekering-zzp", "bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "zzp-verzekering-kosten-2026", "welke-verzekeringen-zzp", "bedrijfsaansprakelijkheidsverzekering-zzp"]} />
+      <LeesMeer voorkeur={["cyberverzekering-zzp", "bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "wat-kosten-verzekeringen-voor-zzp-ers", "welke-verzekeringen-zzp", "bedrijfsaansprakelijkheidsverzekering-zzp"]} />
     </ServicePageTemplate>
   );
 }
