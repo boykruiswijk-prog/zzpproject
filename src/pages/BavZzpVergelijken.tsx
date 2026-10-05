@@ -207,7 +207,7 @@ export default function BavZzpVergelijken() {
       </Sectie>
 
       <Sectie id="disclaimer" titel="Disclaimer" alt>
-        <p className="text-sm">Deze pagina geeft algemene informatie en is geen persoonlijk advies. De gegevens van andere aanbieders komen van hun eigen websites en zijn gecontroleerd op {VERGELIJKING_GECONTROLEERD_LABEL}. Prijzen en voorwaarden kunnen sindsdien veranderd zijn. Voor elke verzekering zijn de polisvoorwaarden van de verzekeraar leidend. ZP Zaken is een verzekeringsbemiddelaar met een vergunning van de AFM.</p>
+        <p className="text-sm">Deze pagina geeft algemene informatie en is geen persoonlijk advies. De gegevens van andere aanbieders komen van hun eigen websites en zijn gecontroleerd op {VERGELIJKING_GECONTROLEERD_LABEL}. Prijzen en voorwaarden kunnen sindsdien veranderd zijn. Voor elke verzekering zijn de polisvoorwaarden van de verzekeraar leidend. ZP Zaken heeft een vergunning van de AFM (nummer {SITE_CONFIG.registrations.afm}).</p>
       </Sectie>
     </Layout>
   );
