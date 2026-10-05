@@ -1,4 +1,4 @@
-import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS } from "@/lib/statusLabels";
+import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS, statusTitel } from "@/lib/statusLabels";
 import { teamWaarschuwingHandmatig } from "../../../supabase/functions/_shared/sectorRegels";
 import { useState } from "react";
 import { KlantLinkVoorLead } from "@/components/admin/KlantLinkVoorLead";
@@ -305,7 +305,7 @@ export default function AdminLeadDetail() {
                       <div className="mt-2">
                         <Select value={lead.status} onValueChange={handleStatusChange}>
                           <SelectTrigger className="w-48">
-                            <Badge className={statusColors[lead.status]} variant="secondary">
+                            <Badge title={statusTitel(lead.status)} className={statusColors[lead.status]} variant="secondary">
                               {statusLabels[lead.status]}
                             </Badge>
                           </SelectTrigger>
@@ -320,7 +320,7 @@ export default function AdminLeadDetail() {
                       </div>
                     </details>
                   ) : (
-                    <Badge className={statusColors[lead.status]} variant="secondary">
+                    <Badge title={statusTitel(lead.status)} className={statusColors[lead.status]} variant="secondary">
                       {statusLabels[lead.status]}
                     </Badge>
                   )}

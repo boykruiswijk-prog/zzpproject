@@ -1,5 +1,5 @@
 import { leadOnderwerp } from "../../../supabase/functions/_shared/leadVelden";
-import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS } from "@/lib/statusLabels";
+import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS, statusTitel } from "@/lib/statusLabels";
 import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -186,7 +186,7 @@ export function LeadTable() {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <Select value={lead.status} onValueChange={(value) => handleStatusChange(lead.id, value as LeadStatus)}>
                 <SelectTrigger className="min-h-10 w-44">
-                  <Badge className={statusColors[lead.status]} variant="secondary">{statusLabels[lead.status]}</Badge>
+                  <Badge title={statusTitel(lead.status)} className={statusColors[lead.status]} variant="secondary">{statusLabels[lead.status]}</Badge>
                 </SelectTrigger>
                 <SelectContent>{Object.entries(statusLabels).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent>
               </Select>
@@ -276,6 +276,7 @@ export function LeadTable() {
                     >
                       <SelectTrigger className="w-40 h-8">
                         <Badge
+                          title={statusTitel(lead.status)}
                           className={statusColors[lead.status]}
                           variant="secondary"
                         >
