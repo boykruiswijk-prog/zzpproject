@@ -52,6 +52,7 @@ export function zichtbareBavUsps(usps: string[], sector: string): string[] {
   return usps.filter((_, index) => index !== DIRECT_DEKKING_USP_INDEX);
 }
 
+const CONCEPT_KEY = "zp_aanvraag_concept_id";
 const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 const isValidPhone = isNlTelefoon;
 const isValidKvk = (kvk: string) => /^[0-9]{8}$/.test(kvk.trim());
@@ -259,6 +260,42 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
     trackBeginCheckout(gekozenPakketId, verzekeringskaartVoorSector(formData.sector)?.sector.label ?? "");
   }
 
+  // Halve aanvraag tussentijds bewaren (aanvraag_concepten), zodra er een geldig e-mailadres of
+  // telefoonnummer staat. Nooit IBAN, rekeninghouder of SEPA-gegevens. Idempotent op het concept-id.
+  const conceptId = useRef<string>("");
+  const laatsteConcept = useRef("");
+  useEffect(() => {
+    if (isSubmitted) return;
+    const emailOk = isValidEmail(formData.email.trim());
+    const telOk = isNlTelefoon(formData.telefoon);
+    if (!emailOk && !telOk) return;
+    const row = {
+      stap: currentStep,
+      email: emailOk ? formData.email.trim() : "",
+      telefoon: telOk ? normaliseerNlTelefoon(formData.telefoon) : "",
+      voornaam: formData.voornaam, achternaam: formData.achternaam,
+      bedrijfsnaam: formData.bedrijfsnaam, kvk: formData.kvkNummer,
+      pakket: gekozenPakketId,
+      sector: verzekeringskaartVoorSector(formData.sector)?.sector.label ?? formData.sector,
+      pagina: window.location.pathname,
+    };
+    const sleutel = JSON.stringify(row);
+    if (sleutel === laatsteConcept.current) return;
+    const timer = window.setTimeout(() => {
+      try {
+        if (!conceptId.current) {
+          conceptId.current = sessionStorage.getItem(CONCEPT_KEY) || crypto.randomUUID();
+          sessionStorage.setItem(CONCEPT_KEY, conceptId.current);
+        }
+      } catch { if (!conceptId.current) conceptId.current = crypto.randomUUID(); }
+      laatsteConcept.current = sleutel;
+      supabase.functions.invoke("submit-public-form", {
+        body: { table: "aanvraag_concepten", hp: guard.honeypot, row: { id: conceptId.current, ...row }, attributie: leesAttributie() },
+      }).catch(() => { /* tussentijds opslaan mag de aanvraag nooit hinderen */ });
+    }, 1500);
+    return () => window.clearTimeout(timer);
+  }, [currentStep, formData.email, formData.telefoon, formData.voornaam, formData.achternaam, formData.bedrijfsnaam, formData.kvkNummer, formData.sector, gekozenPakketId, isSubmitted, guard.honeypot]);
+
   const nextStep = async () => {
     if (!validateStep(currentStep) || currentStep >= TOTAL_STEPS) return;
     trackWizardStep(currentStep, steps[currentStep - 1]?.name ?? "");
@@ -298,6 +335,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
            sepa_akkoord: incassoAkkoord,
            rekeninghouder: formData.rekeninghouder.trim(),
            lead_id: leadId,
+           concept_id: conceptId.current || undefined,
            client_akkoord_op: clientAkkoordOp,
            pagina_url: window.location.href,
            formulier_naam: "Online aanvraag BAV + AVB",
@@ -348,6 +386,8 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
           mandaatkenmerk: typeof data.mandaatkenmerk === "string" ? data.mandaatkenmerk : undefined,
           handmatig: isHandmatigeAcceptatieSector(formData.sector),
         });
+        try { sessionStorage.removeItem(CONCEPT_KEY); } catch { /* geen opslag */ }
+        conceptId.current = ""; laatsteConcept.current = "";
         trackPurchase(returnedLeadId.slice(0, 8).toUpperCase(), selectedBavPakket.id, selectedBavPakket.name, selectedBavPakket.prijs);
        setIsSubmitted(true);
         setFormData({
@@ -654,6 +694,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                         <Label htmlFor="email">{t("home.bavEmail")} *</Label>
                         <Input id="email" name="email" type="email" autoComplete="email" value={formData.email} onChange={handleInputChange} placeholder="jan@bedrijf.nl" className={cn(errors.email && "border-destructive")} />
                         <FieldError message={errors.email} />
+                        <p className="mt-1 text-xs text-muted-foreground">We bewaren je gegevens tijdens het invullen, zodat we je kunnen helpen als je ergens vastloopt.</p>
                       </div>
                       <div>
                         <Label htmlFor="telefoon">{t("home.bavPhone")} *</Label>

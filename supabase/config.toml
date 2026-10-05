@@ -23,6 +23,8 @@ project_id = "eugkavokktjwpqaqlwsj"
     verify_jwt = false
   [functions.polis-lifecycle]
     verify_jwt = false
+  [functions.afgehaakt-samenvatting]
+    verify_jwt = false
   [functions.polis-reminder-cron]
     verify_jwt = false
   [functions.portal-invite-login]

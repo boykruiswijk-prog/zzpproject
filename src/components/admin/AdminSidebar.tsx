@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useAdminTakenCount } from "@/hooks/useAdminTaken";
-import { Activity, AlertTriangle, BookOpen, Building2, ChevronDown, ChevronLeft, CircleDollarSign, FileText, KeyRound, LayoutDashboard, LogOut, Menu, MessageCircle, Plug, SearchX, Settings, Share2, ShieldCheck, UserCog, Users } from "lucide-react";
+import { Activity, AlertTriangle, BookOpen, Building2, ChevronDown, ChevronLeft, CircleDollarSign, FileText, KeyRound, LayoutDashboard, LogOut, Menu, MessageCircle, Plug, SearchX, Settings, Share2, ShieldCheck, UserCog, UserX, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
@@ -17,6 +17,7 @@ const groups: NavGroup[] = [
   { label: "Klanten", icon: Building2, roles: ["supervisor", "verzekering"], items: [
     { to: "/admin/klanten", icon: Building2, label: "Klanten & contracten", roles: ["supervisor", "verzekering"] },
     { to: "/admin/crm", icon: Users, label: "Leads / CRM", badge: true, roles: ["supervisor", "verzekering"] },
+    { to: "/admin/afgehaakt", icon: UserX, label: "Afgehaakte aanvragen", roles: ["supervisor", "verzekering"] },
     { to: "/admin/service-aanvragen", icon: FileText, label: "Aanvragen & opzeggingen", roles: ["supervisor", "verzekering"] },
     { to: "/admin/screening-aanvragen", icon: ShieldCheck, label: "Screening-aanvragen", roles: ["supervisor", "verzekering"] },
   ]},

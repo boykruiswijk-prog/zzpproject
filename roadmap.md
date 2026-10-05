@@ -24,3 +24,8 @@
 - [x] Voeg security.txt toe en controleer dat het statisch wordt bediend.
 - [x] Controleer uitsluitend de aanwezigheid van OTENTICA_WEBHOOK_SECRET.
 - [x] Draai gerichte tests, securityscan, linter en build; rapporteer per punt en resterende acties voor Boy.
+
+## Opdracht 5 okt 2026 (niet publiceren)
+- [ ] /bav-zzp-vergelijken pagina + data + SEO/prerender/sitemap/llms + interne links
+- [ ] aanvraag_concepten: tabel, edge-actie, formulier, privacy, cron anonimiseren, admin-blok, dagmail
+- [ ] Cloudflare bulk-redirects CSV bij build

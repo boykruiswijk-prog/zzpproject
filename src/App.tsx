@@ -56,6 +56,7 @@ const AdminKennisbankEditor = lazy(() => import("./pages/admin/KennisbankArtikel
 const AdminKennisbankActualiteit = lazy(() => import("./pages/admin/KennisbankActualiteit"));
 const AdminWpImport = lazy(() => import("./pages/admin/WpImport"));
 const AdminNietGevonden = lazy(() => import("./pages/admin/NietGevonden"));
+const AdminAfgehaakt = lazy(() => import("./pages/admin/Afgehaakt"));
 const AdminChatgesprekken = lazy(() => import("./pages/admin/Chatgesprekken"));
 const AdminKlantenContracten = lazy(() => import("./pages/admin/KlantenContracten"));
 const AdminKlantDetail = lazy(() => import("./pages/admin/KlantDetail"));
@@ -214,6 +215,7 @@ export const AppRoutes = () => (
             <Route path="/admin/kennisbank/actualiteit" element={<RoleGuard allow={["marketing"]}><AdminKennisbankActualiteit /></RoleGuard>} />
             <Route path="/admin/kennisbank/nieuw" element={<RoleGuard allow={["marketing"]}><AdminKennisbankEditor /></RoleGuard>} />
             <Route path="/admin/kennisbank/:id" element={<RoleGuard allow={["marketing"]}><AdminKennisbankEditor /></RoleGuard>} />
+            <Route path="/admin/afgehaakt" element={<RoleGuard allow={["verzekering"]}><AdminAfgehaakt /></RoleGuard>} />
             <Route path="/admin/klanten" element={<RoleGuard allow={["verzekering"]}><AdminKlantenContracten /></RoleGuard>} />
             <Route path="/admin/klanten/:id" element={<RoleGuard allow={["verzekering"]}><AdminKlantDetail /></RoleGuard>} />
             <Route path="/admin/facturatieplanning" element={<RoleGuard allow={[]}><AdminFacturatieplanning /></RoleGuard>} />

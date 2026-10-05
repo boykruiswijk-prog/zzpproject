@@ -72,6 +72,8 @@ interface BavSubmission {
   rekeninghouder?: string;
   // Vooraf (client-side) gegenereerde lead-UUID; basis voor het mandaatkenmerk.
   lead_id?: string;
+  /** Concept-id van de tussentijds opgeslagen halve aanvraag (aanvraag_concepten). */
+  concept_id?: string;
   client_akkoord_op?: string;
   pagina_url?: string;
   opmerkingen?: string;
@@ -358,6 +360,14 @@ Deno.serve(async (req) => {
     // ── 4. Geen Exact-stap bij aanmelding (H6) ──
     // Exact (relatie, bankrekening, machtiging, factuur) wordt pas ingericht bij
     // activatie via lead-to-exact-activate. exact_status blijft "wachtend" (zie insert hierboven).
+
+    // Halve aanvraag afgerond: concept op 'omgezet' met lead_id (nooit een omgezet concept overschrijven).
+    if (typeof submission.concept_id === "string" && isUuid(submission.concept_id)) {
+      const { error: cErr } = await supabase.from("aanvraag_concepten")
+        .update({ status: "omgezet", lead_id: lead.id, laatst_actief_op: new Date().toISOString(), stap: 5 })
+        .eq("id", submission.concept_id).neq("status", "omgezet");
+      if (cErr) console.error("concept omzetten mislukt:", cErr.message);
+    }
 
     return new Response(
       JSON.stringify({

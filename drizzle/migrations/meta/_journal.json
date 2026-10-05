@@ -288,6 +288,13 @@
       "when": 1791136220750,
       "tag": "0040_deprecate_audit_resttabellen",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1791188860061,
+      "tag": "0041_aanvraag_concepten",
+      "breakpoints": true
     }
   ]
 }
