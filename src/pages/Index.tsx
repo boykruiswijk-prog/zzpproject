@@ -4,7 +4,6 @@ import { Layout } from "@/components/layout/Layout";
 import { HeroSection } from "@/components/home/HeroSection";
 import { HiscoxTrustStrip } from "@/components/home/HiscoxTrustStrip";
 import { BAVApplicationModule } from "@/components/home/BAVApplicationModule";
-import { CombiPackageSection } from "@/components/home/CombiPackageSection";
 import { GoogleReviewsSection } from "@/components/social-proof/GoogleReviewsSection";
 import { EllenAdvisorSection } from "@/components/home/EllenAdvisorSection";
 import { CTASection } from "@/components/home/CTASection";
@@ -21,7 +20,6 @@ const Index = () => {
       <HeroSection />
       <HiscoxTrustStrip />
       <BAVApplicationModule />
-      <CombiPackageSection />
       <EllenAdvisorSection />
       <GoogleReviewsSection />
       <CTASection />

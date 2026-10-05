@@ -7,7 +7,7 @@ import { trackBeginCheckout, trackWizardStep, trackWizardValidationError, trackA
 import { leesAttributie } from "@/lib/attributie";
 import { isNlTelefoon, normaliseerNlTelefoon } from "../../../supabase/functions/_shared/telefoon";
 import { formatDateNL } from "@/lib/dateFormat";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -93,6 +93,18 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
      }
      return "maandelijks";
    });
+   // Ook na de eerste render reageren op een pakket-link (#combinatiepolis?pakket=<id>); ongeldige id negeren.
+   const routerLocatie = useLocation();
+   useEffect(() => {
+     const pas = () => {
+       const m = window.location.hash.match(/pakket=([\w-]+)/);
+       const p = m && bavPakketten.find((x) => x.id === m[1]);
+       if (p) setGekozenPakketId(p.id);
+     };
+     pas();
+     window.addEventListener("hashchange", pas);
+     return () => window.removeEventListener("hashchange", pas);
+   }, [routerLocatie.hash, routerLocatie.key]);
    const [startDate, setStartDate] = useState<string>("");
    const [viaBemiddelaar, setViaBemiddelaar] = useState<boolean | null>(null);
    const [incassoAkkoord, setIncassoAkkoord] = useState(false);

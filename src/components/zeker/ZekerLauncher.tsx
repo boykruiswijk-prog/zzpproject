@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { MessageCircle } from "lucide-react";
+import { useAanvraagInBeeld } from "@/lib/useAanvraagInBeeld";
 import { COOKIE_KEUZE_EVENT, cookieKeuzeGemaakt, useZekerOpen, zekerVerborgenOp, zetZekerOpen } from "./zekerStore";
 
 const ZekerChatWindow = lazy(() => import("./ZekerChatWindow"));
@@ -11,6 +12,7 @@ export function ZekerLauncher() {
   const open = useZekerOpen();
   const [cookieKlaar, setCookieKlaar] = useState(false);
   const [geladen, setGeladen] = useState(false);
+  const formulierInBeeld = useAanvraagInBeeld();
 
   useEffect(() => {
     setCookieKlaar(cookieKeuzeGemaakt());
@@ -24,7 +26,7 @@ export function ZekerLauncher() {
 
   return (
     <>
-      {cookieKlaar && !open && (
+      {cookieKlaar && !open && !formulierInBeeld && (
         <button
           type="button"
           onClick={() => zetZekerOpen(true)}
