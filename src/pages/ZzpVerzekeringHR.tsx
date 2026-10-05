@@ -9,7 +9,7 @@ import {
 
 const faqs = [
   { question: "Heb ik als HR-adviseur een BAV nodig?", answer: "Wettelijk niet. Maar veel opdrachtgevers vragen erom. En een fout in een ontslagadvies kan duur uitpakken." },
-  { question: "Kan ik als recruiter deze polis afsluiten?", answer: "Ja. Werk je als zelfstandig recruiter, dan kun je deze polis afsluiten. Twijfel je over je werk? Neem contact op." },
+  { question: "Kan ik als recruiter deze polis afsluiten?", answer: "Vaak wel. Werk je in werving en selectie, dan kijken we bij je aanvraag even mee of je werk onder de polis valt. Twijfel je? Neem contact op." },
   { question: "Wat als een kandidaat die ik selecteerde niet past?", answer: "Stelt je opdrachtgever je aansprakelijk, meld het dan bij ons. Of het gedekt is, staat in de polisvoorwaarden. Die zijn leidend." },
   { question: "Wat kost een BAV voor HR-adviseurs?", answer: `Vanaf ${PRIJS_MAAND} per maand of ${PRIJS_JAAR} per jaar voor BAV en AVB samen, zonder eigen risico.` },
   { question: "Ben ik als loopbaanadviseur ook verzekerd?", answer: "Ja, ook als loopbaanadviseur kun je deze polis afsluiten. Werk je als therapeut of psycholoog? Neem dan contact op." },
