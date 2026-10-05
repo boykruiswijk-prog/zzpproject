@@ -3,7 +3,9 @@ import { SITE_CONFIG } from "@/config/site";
 import { useState, useEffect, useRef } from "react";
 import { SepaMachtigingBlok, bouwFrontendMachtiging } from "@/components/shared/SepaMachtigingBlok";
 import { mandaatkenmerkVoor, redenBav } from "@/lib/sepaMachtiging";
-import { trackBeginWizard, trackWizardComplete } from "@/lib/tracking";
+import { trackBeginCheckout, trackWizardStep, trackWizardValidationError, trackAddPaymentInfo, trackPurchase } from "@/lib/tracking";
+import { leesAttributie } from "@/lib/attributie";
+import { isNlTelefoon, normaliseerNlTelefoon } from "../../../supabase/functions/_shared/telefoon";
 import { formatDateNL } from "@/lib/dateFormat";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -36,6 +38,9 @@ import { AdresGevonden } from "@/components/AdresGevonden";
 import { normaliseerPostcode } from "@/lib/adresNormalisatie";
 
 const formatBedrag = (n: number) => `€${n.toLocaleString("nl-NL")}`;
+/** Compacte bedragen: 5.000.000 → "€5M", 2.500.000 → "€2,5M". */
+const formatMiljoen = (n: number) => n >= 1_000_000 ? `€${(n / 1_000_000).toLocaleString("nl-NL", { maximumFractionDigits: 1 })}M` : formatBedrag(n);
+const formatPerMaand = (jaar: number) => (jaar / 12).toLocaleString("nl-NL", { minimumFractionDigits: jaar % 12 ? 2 : 0, maximumFractionDigits: 2 });
 
 const TOTAL_STEPS = 5;
 const DIRECT_DEKKING_USP_INDEX = 2;
@@ -48,7 +53,7 @@ export function zichtbareBavUsps(usps: string[], sector: string): string[] {
 }
 
 const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-const isValidPhone = (phone: string) => /^[0-9]{10}$/.test(phone.replace(/[\s-]/g, ""));
+const isValidPhone = isNlTelefoon;
 const isValidKvk = (kvk: string) => /^[0-9]{8}$/.test(kvk.trim());
 // Zelfde mod-97-controle als de server (anders slaagt de stap hier en weigert de server).
 const isValidIban = isValidSepaIban;
@@ -78,7 +83,15 @@ export function BAVApplicationModule() {
    const { t } = useTranslation();
    const { toast } = useToast();
    const [currentStep, setCurrentStep] = useState(1);
-   const [gekozenPakketId, setGekozenPakketId] = useState<BavPakketId>("jaarlijks");
+   const [gekozenPakketId, setGekozenPakketId] = useState<BavPakketId>(() => {
+     // Pakketkeuze vanuit een link (#combinatiepolis?pakket=…), anders maandelijks.
+     if (typeof window !== "undefined") {
+       const m = window.location.hash.match(/pakket=([\w-]+)/);
+       const p = m && bavPakketten.find((x) => x.id === m[1]);
+       if (p) return p.id;
+     }
+     return "maandelijks";
+   });
    const [startDate, setStartDate] = useState<string>("");
    const [viaBemiddelaar, setViaBemiddelaar] = useState<boolean | null>(null);
    const [incassoAkkoord, setIncassoAkkoord] = useState(false);
@@ -94,7 +107,7 @@ export function BAVApplicationModule() {
    const [existingCustomerOpen, setExistingCustomerOpen] = useState(false);
    const [magicLinkSending, setMagicLinkSending] = useState(false);
    const [magicLinkSent, setMagicLinkSent] = useState(false);
-   useEffect(() => { trackBeginWizard(); }, []);
+   const checkoutGestart = useRef(false);
   const [formData, setFormData] = useState({
     bedrijfsnaam: "", kvkNummer: "", sector: "", beroep: "", functie: "", aantalMedewerkers: "",
     voornaam: "", achternaam: "", email: "", telefoon: "",
@@ -206,6 +219,7 @@ export function BAVApplicationModule() {
     }
 
     setErrors(newErrors);
+    for (const veld of Object.keys(newErrors)) trackWizardValidationError(step, veld);
     return Object.keys(newErrors).length === 0;
   };
 
@@ -241,8 +255,17 @@ export function BAVApplicationModule() {
     return () => window.clearTimeout(timer);
   }, [isSubmitted]);
 
+  // begin_checkout pas bij de eerste echte interactie met het formulier.
+  function startCheckout() {
+    if (checkoutGestart.current) return;
+    checkoutGestart.current = true;
+    trackBeginCheckout(gekozenPakketId, verzekeringskaartVoorSector(formData.sector)?.sector.label ?? "");
+  }
+
   const nextStep = async () => {
     if (!validateStep(currentStep) || currentStep >= TOTAL_STEPS) return;
+    trackWizardStep(currentStep, steps[currentStep - 1]?.name ?? "");
+    if (currentStep === 4) trackAddPaymentInfo(gekozenPakketId, currentPrice);
     stapGewisseld.current = true;
     setCurrentStep(currentStep + 1);
   };
@@ -250,6 +273,7 @@ export function BAVApplicationModule() {
    const handleSubmit = async () => {
      if (isSubmitting) return;
      if (!validateStep(currentStep)) return;
+     trackWizardStep(currentStep, steps[currentStep - 1]?.name ?? "");
      setIsSubmitting(true);
      try {
        const { data, error } = await supabase.functions.invoke("process-bav-wizard", {
@@ -262,7 +286,8 @@ export function BAVApplicationModule() {
            voornaam: formData.voornaam,
            achternaam: formData.achternaam,
            email: formData.email,
-           telefoon: formData.telefoon || null,
+           telefoon: formData.telefoon ? normaliseerNlTelefoon(formData.telefoon) : null,
+           attributie: leesAttributie(),
            bedrijfsnaam: formData.bedrijfsnaam,
            kvk_nummer: formData.kvkNummer || null,
            beroep: formData.beroep || null,
@@ -284,7 +309,7 @@ export function BAVApplicationModule() {
              ["Bedrijfsnaam", formData.bedrijfsnaam], ["KvK-nummer", formData.kvkNummer],
              ["Sector", verzekeringskaartVoorSector(formData.sector)?.sector.label ?? formData.sector], ["Beroep", formData.beroep],
              ["Functie", formData.functie], ["Aantal medewerkers", formData.aantalMedewerkers],
-             ["Voornaam", formData.voornaam], ["Achternaam", formData.achternaam], ["E-mail", formData.email], ["Telefoon", formData.telefoon],
+             ["Voornaam", formData.voornaam], ["Achternaam", formData.achternaam], ["E-mail", formData.email], ["Telefoon", normaliseerNlTelefoon(formData.telefoon)],
              ["Belangrijkste opdrachtgever", formData.opdrachtgever],
              ["Via bemiddelaar", viaBemiddelaar === null ? "" : viaBemiddelaar], ["Naam bemiddelaar", viaBemiddelaar ? formData.bemiddelaarNaam : ""],
              ["Straat", formData.adresStraat], ["Huisnummer", formData.adresHuisnummer], ["Postcode", formData.adresPostcode],
@@ -326,7 +351,7 @@ export function BAVApplicationModule() {
           mandaatkenmerk: typeof data.mandaatkenmerk === "string" ? data.mandaatkenmerk : undefined,
           handmatig: isHandmatigeAcceptatieSector(formData.sector),
         });
-        trackWizardComplete(selectedBavPakket.name, selectedBavPakket.prijs);
+        trackPurchase(returnedLeadId.slice(0, 8).toUpperCase(), selectedBavPakket.id, selectedBavPakket.name, selectedBavPakket.prijs);
        setIsSubmitted(true);
         setFormData({
           bedrijfsnaam: "", kvkNummer: "", sector: "", beroep: "", functie: "", aantalMedewerkers: "",
@@ -496,7 +521,13 @@ export function BAVApplicationModule() {
         </AnimatedSection>
 
         <AnimatedSection delay={0.2} className="max-w-4xl mx-auto">
-          <div ref={wizardRef} className="scroll-mt-24">
+          <div
+            ref={wizardRef}
+            className="scroll-mt-24"
+            onPointerDownCapture={startCheckout}
+            onFocusCapture={startCheckout}
+            onKeyDownCapture={startCheckout}
+          >
           {/* Progress Steps */}
           <div className="flex justify-between mb-8 relative">
             <div className="absolute top-5 left-0 right-0 h-0.5 bg-border -z-10" />
@@ -562,6 +593,9 @@ export function BAVApplicationModule() {
                               €{pkg.prijs}
                               <span className="text-xs font-normal text-muted-foreground"> / {pkg.periode}</span>
                             </p>
+                            {pkg.periode === "jaar" && (
+                              <p className="-mt-2 mb-3 text-xs text-muted-foreground">= €{formatPerMaand(pkg.prijs)} per maand</p>
+                            )}
                             <ul className="space-y-1.5 text-xs text-muted-foreground">
                               <li className="flex items-start gap-1.5">
                                 <Check className="h-3.5 w-3.5 text-accent mt-0.5 flex-shrink-0" />
@@ -913,8 +947,12 @@ export function BAVApplicationModule() {
                 )}
                 </AnimatePresence>
 
+                {/* Compacte prijsregel (mobiel), uit bavPakketten */}
+                <p className="mt-8 text-center text-xs font-medium text-muted-foreground sm:hidden" data-testid="bav-prijsregel">
+                  €{selectedBavPakket.prijs}/{selectedBavPakket.periode === "maand" ? "mnd" : "jr"} · BAV {formatMiljoen(selectedBavPakket.dekkingen.bav.perGebeurtenis)} · AVB {formatMiljoen(selectedBavPakket.dekkingen.avb.perGebeurtenis)} · dagelijks opzegbaar
+                </p>
                 {/* Navigation Buttons */}
-                <div className="flex justify-between mt-8 pt-6 border-t border-border">
+                <div className="flex justify-between mt-3 sm:mt-8 pt-6 border-t border-border">
                   {currentStep > 1 ? (
                     <Button variant="outline" onClick={prevStep}><ArrowLeft className="h-4 w-4" />{t("home.bavPrev")}</Button>
                   ) : <div />}

@@ -5,7 +5,7 @@ import { parseMarkdownLite, type Inline } from "@/lib/zeker/markdownLite";
 import { submitPublicForm, useFormGuard } from "@/lib/antiSpam";
 import { maakFormulier } from "../../../supabase/functions/_shared/leadVelden";
 
-import { trackPhone, trackWhatsApp } from "@/lib/tracking";
+import { trackChatHandoff } from "@/lib/tracking";
 import { ZEKER_TEKSTEN, type ZekerTaal } from "./zekerTeksten";
 
 type Actie = "terugbelformulier" | "afsluiten" | "offerte" | "bellen" | "whatsapp";
@@ -127,10 +127,10 @@ export default function ZekerChatWindow({ open, onClose }: { open: boolean; onCl
   const actieKnop = (a: Actie, sector?: string | null) => {
     const cls = "inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-background px-3 py-1.5 text-xs font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground";
     if (a === "terugbelformulier") return <button key={a} type="button" className={cls} onClick={() => setFormOpen(true)}>{T.acties[a]}</button>;
-    if (a === "bellen") return <a key={a} href="tel:+31204573077" onClick={() => trackPhone()} className={cls}><Phone className="h-3 w-3" aria-hidden="true" />{T.acties[a]}</a>;
-    if (a === "whatsapp") return <a key={a} href="https://wa.me/31652064589" target="_blank" rel="noopener noreferrer" onClick={() => trackWhatsApp()} className={cls}>{T.acties[a]}</a>;
+    if (a === "bellen") return <a key={a} href="tel:+31204573077" onClick={() => trackChatHandoff("bellen")} className={cls}><Phone className="h-3 w-3" aria-hidden="true" />{T.acties[a]}</a>;
+    if (a === "whatsapp") return <a key={a} href="https://wa.me/31652064589" target="_blank" rel="noopener noreferrer" onClick={() => trackChatHandoff("whatsapp")} className={cls}>{T.acties[a]}</a>;
     const to = a === "afsluiten" ? lp("/verzekeringen#combinatiepolis") : lp(`/offerte${sector ? `?sector=${encodeURIComponent(sector)}` : ""}`);
-    return <button key={a} type="button" className={cls} onClick={() => { navigate(to); if (window.innerWidth < 768) onClose(); }}>{T.acties[a]}</button>;
+    return <button key={a} type="button" className={cls} onClick={() => { trackChatHandoff(a); navigate(to); if (window.innerWidth < 768) onClose(); }}>{T.acties[a]}</button>;
   };
 
   if (!open) return null;

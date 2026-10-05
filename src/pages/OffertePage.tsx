@@ -1,3 +1,4 @@
+import { isNlTelefoon, normaliseerNlTelefoon } from "../../supabase/functions/_shared/telefoon";
 import { seoRoute } from "@/config/seoRoutes";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -55,10 +56,7 @@ const MEDEWERKERS = ["1", "2", "3", "Meer dan 3"];
 
 const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 const isKvk = (v: string) => /^[0-9]{8}$/.test(v.trim());
-const isNlPhone = (v: string) => {
-  const clean = v.replace(/[\s-]/g, "");
-  return /^(\+31|0031|0)[1-9][0-9]{8}$/.test(clean);
-};
+const isNlPhone = isNlTelefoon;
 
 /** Overig, zorg en bouw worden altijd handmatig beoordeeld. */
 const vereistHandmatig = (id: string) => id === "overig" || isHandmatigeAcceptatieSector(id);
@@ -163,7 +161,7 @@ export default function OffertePage() {
         formulier_naam: "Offerteaanvraag",
         pagina: window.location.pathname,
         formulier: maakFormulier([
-          ["Voornaam", form.voornaam], ["Achternaam", form.achternaam], ["E-mail", form.email], ["Telefoon", form.telefoon],
+          ["Voornaam", form.voornaam], ["Achternaam", form.achternaam], ["E-mail", form.email], ["Telefoon", normaliseerNlTelefoon(form.telefoon)],
           ["Naam organisatie", form.naam_organisatie], ["Land", form.adres_land], ["Postcode", form.adres_postcode],
           ["Huisnummer", form.adres_huisnummer], ["Adres (opgezocht)", pdokAdres ? `${pdokAdres.straat} ${form.adres_huisnummer}, ${pdokAdres.plaats}` : ""],
           ["KvK-nummer", form.kvk_nummer], ["Branche", sectorLabel], ["Belangrijkste opdrachtgever", form.belangrijkste_opdrachtgever],
@@ -180,7 +178,7 @@ export default function OffertePage() {
           voornaam: form.voornaam.trim(),
           achternaam: form.achternaam.trim(),
           email: form.email.trim().toLowerCase(),
-          telefoon: form.telefoon.trim(),
+          telefoon: normaliseerNlTelefoon(form.telefoon),
           bedrijfsnaam: form.naam_organisatie.trim(),
           kvk_nummer: form.kvk_nummer.trim(),
           beroep: sectorLabel,

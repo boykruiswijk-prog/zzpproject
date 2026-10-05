@@ -1,9 +1,10 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, Outlet, useParams } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useParams, useLocation } from "react-router-dom";
+import { zetGaUitschakeling } from "@/lib/tracking";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { AuthProvider } from "@/contexts/AuthContext";
 const Index = lazy(() => import("./pages/Index"));
@@ -262,9 +263,17 @@ export const AppProviders = ({ client, children }: { client: QueryClient; childr
   </QueryClientProvider>
 );
 
+/** Houdt de GA-opt-out-vlag synchroon met de route (geen GA4 op admin/portal/mijn-zp). */
+function GaRouteGuard() {
+  const { pathname } = useLocation();
+  useEffect(() => { zetGaUitschakeling(pathname); }, [pathname]);
+  return null;
+}
+
 const App = () => (
   <AppProviders client={queryClient}>
     <BrowserRouter>
+      <GaRouteGuard />
       <ScrollToTop />
       <AppRoutes />
     </BrowserRouter>

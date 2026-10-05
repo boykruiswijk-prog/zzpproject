@@ -2,6 +2,7 @@ import { ArrowRight, FileText, MessageCircle, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { cn } from "@/lib/utils";
+import { scrollNaarAanvraag } from "@/lib/scrollNaarAanvraag";
 
 interface ThreeOptionCTAProps {
   variant?: "default" | "hero";
@@ -24,7 +25,7 @@ export function ThreeOptionCTA({
     <div className={cn("w-full", className)}>
       <div className="flex flex-col sm:flex-row gap-3 sm:justify-center">
         <Button variant="accent" size="lg" asChild className="shadow-lg">
-          <LocalizedLink to="/verzekeringen">
+          <LocalizedLink to="/verzekeringen#combinatiepolis" onClick={(e) => scrollNaarAanvraag(e)}>
             <Zap className="h-5 w-5" />
             Direct afsluiten
             <ArrowRight className="h-5 w-5" />
