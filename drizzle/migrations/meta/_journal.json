@@ -302,6 +302,13 @@
       "when": 1791189562798,
       "tag": "0042_aanvraag_concepten_revoke_anon",
       "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1791203468816,
+      "tag": "0043_mijn_acties_vandaag",
+      "breakpoints": true
     }
   ]
 }
