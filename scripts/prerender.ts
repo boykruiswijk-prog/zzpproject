@@ -558,7 +558,8 @@ export async function prerender(distDir: string, env: Record<string, string> = {
     });
     if (route.path === "/") {
       // Hero-beeld (LCP) vroeg laden.
-      const hero = fs.readdirSync(path.join(distDir, "assets")).find((f) => /^team-walking-.*\.webp$/.test(f));
+      const assetsDir = path.join(distDir, "assets");
+      const hero = (fs.existsSync(assetsDir) ? fs.readdirSync(assetsDir) : []).find((f) => /^team-walking-.*\.webp$/.test(f));
       if (hero) html = html.replace("</head>", `  <link rel="preload" as="image" href="/assets/${hero}" fetchpriority="high" type="image/webp" imagesizes="100vw" data-width="1600" data-height="1067">\n  </head>`);
       // Taalversies: eigen bestand met noindex,follow en zonder canonical.
       for (const lang of LANGS) {
