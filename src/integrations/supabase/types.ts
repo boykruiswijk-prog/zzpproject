@@ -361,6 +361,81 @@ export type Database = {
         }
         Relationships: []
       }
+      articles_backup_20261005: {
+        Row: {
+          author_id: string | null
+          author_name: string | null
+          category: string
+          content: string | null
+          content_reviewed_at: string | null
+          created_at: string
+          excerpt: string | null
+          generated_by_ai: boolean
+          id: string
+          image_url: string | null
+          is_published: boolean | null
+          published_at: string | null
+          read_time: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          seo_description: string | null
+          seo_title: string | null
+          slug: string
+          source_name: string | null
+          source_url: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          author_name?: string | null
+          category?: string
+          content?: string | null
+          content_reviewed_at?: string | null
+          created_at?: string
+          excerpt?: string | null
+          generated_by_ai?: boolean
+          id?: string
+          image_url?: string | null
+          is_published?: boolean | null
+          published_at?: string | null
+          read_time?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug: string
+          source_name?: string | null
+          source_url?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          author_name?: string | null
+          category?: string
+          content?: string | null
+          content_reviewed_at?: string | null
+          created_at?: string
+          excerpt?: string | null
+          generated_by_ai?: boolean
+          id?: string
+          image_url?: string | null
+          is_published?: boolean | null
+          published_at?: string | null
+          read_time?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string
+          source_name?: string | null
+          source_url?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bav_aanmeldingen: {
         Row: {
           aangemeld_op: string

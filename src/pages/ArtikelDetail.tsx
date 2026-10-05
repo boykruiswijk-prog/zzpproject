@@ -81,6 +81,21 @@ function estimateReadTime(content?: string | null) {
   return `${Math.max(1, Math.round(words / 200))} min`;
 }
 
+type ArticleFaq = { question: string; answer: string };
+
+function extractMarkdownFaqs(content: string | null | undefined): ArticleFaq[] {
+  if (!content) return [];
+  const sectionMatch = content.match(/^## Veelgestelde vragen\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m);
+  if (!sectionMatch) return [];
+
+  return [...sectionMatch[1].matchAll(/^###\s+(.+)\n([\s\S]*?)(?=^###\s|(?![\s\S]))/gm)]
+    .map((match) => ({
+      question: stripMarkdown(match[1]),
+      answer: stripMarkdown(match[2]),
+    }))
+    .filter((item) => item.question && item.answer);
+}
+
 /** Categorieën met een commerciële afsluiter; hoofdletterongevoelig. */
 const COMMERCIAL_CATEGORIES = ["verzekeringen", "wet- en regelgeving", "belastingen", "financiën", "wetgeving", "regelgeving", "fiscaal"];
 
@@ -245,10 +260,12 @@ export default function ArtikelDetail() {
 
   // FAQPage-schema: alleen vragen die zichtbaar in het artikel beantwoord worden.
   // Antwoorden komen uit dezelfde fiscale tokens als de artikeltekst.
-  const faqItems = ARTIKEL_FAQS[article.slug];
-  const jsonLdFaq = faqItems
+  const configuredFaqItems = ARTIKEL_FAQS[article.slug];
+  const markdownFaqItems = extractMarkdownFaqs(resolveFiscaleTokens(article.content));
+  const schemaFaqItems = configuredFaqItems || markdownFaqItems;
+  const jsonLdFaq = schemaFaqItems.length > 0
     ? faqSchema(
-        faqItems.map((f) => ({
+        schemaFaqItems.map((f) => ({
           question: resolveFiscaleTokens(f.question),
           answer: resolveFiscaleTokens(f.answer),
         })),
@@ -414,13 +431,13 @@ export default function ArtikelDetail() {
 
               {/* Zichtbare FAQ: dekt het FAQPage-schema hierboven, zodat schema
                   en zichtbare tekst altijd overeenkomen. */}
-              {faqItems && faqItems.length > 0 && (
+              {configuredFaqItems && configuredFaqItems.length > 0 && (
                 <section aria-labelledby="artikel-faq" className="mt-14 border-t border-border/40 pt-10">
                   <h2 id="artikel-faq" className="text-2xl md:text-[28px] font-bold mb-6">
                     Veelgestelde vragen
                   </h2>
                   <dl className="space-y-5">
-                    {faqItems.map((f) => (
+                    {configuredFaqItems.map((f) => (
                       <div key={f.question} className="rounded-xl border border-border/50 bg-secondary/30 p-5">
                         <dt className="font-semibold text-foreground mb-2">
                           {resolveFiscaleTokens(f.question)}

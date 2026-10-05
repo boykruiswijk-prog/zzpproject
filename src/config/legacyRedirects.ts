@@ -19,9 +19,9 @@ export const legacyRedirects: LegacyRedirect[] = [
   { from: "financien", to: "/kennisbank" },
   { from: "verzekeringen-info", to: "/kennisbank" },
   { from: "wet-en-regelgeving", to: "/kennisbank/wet-en-regelgeving" },
-  { from: "movir", to: "/verzekeringen" },
-  { from: "wijzijnaov", to: "/verzekeringen" },
-  { from: "aov-via-centraalbeheer", to: "/verzekeringen" },
+  { from: "movir", to: "/aov" },
+  { from: "wijzijnaov", to: "/aov" },
+  { from: "aov-via-centraalbeheer", to: "/aov" },
   { from: "sharepeople", to: "/partners" },
   { from: "eherkenning", to: "/kennisbank/eherkenning" },
   { from: "klachten", to: "/klachtenprocedure" },
@@ -118,6 +118,8 @@ export const legacyRedirects: LegacyRedirect[] = [
   { from: "wet-toekomst-pensioenen-wtp-voor-zzp-ers", to: "/kennisbank/wet-toekomst-pensioenen-wtp-voor-zzp-ers" },
   { from: "welke-verzekeringen-zzp", to: "/kennisbank/welke-verzekeringen-zzp" },
   { from: "wat-kosten-verzekeringen-voor-zzp-ers", to: "/kennisbank/wat-kosten-verzekeringen-voor-zzp-ers" },
+  { from: "zzp-verzekering-kosten-2026", to: "/kennisbank/wat-kosten-verzekeringen-voor-zzp-ers" },
+  { from: "kennisbank/zzp-verzekering-kosten-2026", to: "/kennisbank/wat-kosten-verzekeringen-voor-zzp-ers" },
   { from: "rijd-je-als-zzp-er-fiscaal-voordelig-met-een-youngtimer", to: "/kennisbank/rijd-je-als-zzp-er-fiscaal-voordelig-met-een-youngtimer" },
   { from: "voordelen-van-zzp", to: "/kennisbank/voordelen-van-zzp" },
   { from: "hoe-combineer-je-loondienst-en-zzp", to: "/kennisbank/hoe-combineer-je-loondienst-en-zzp" },
@@ -638,6 +640,10 @@ export function resolveRedirectTarget(
   redirect: LegacyRedirect,
   articles: Map<string, ArticleRedirectInfo>,
 ): string {
+  const canonicalArticlePath = `/kennisbank/${redirect.from}`;
+  if (redirect.to.startsWith("/kennisbank/") && redirect.to !== canonicalArticlePath) {
+    return redirect.to;
+  }
   const article = articles.get(redirect.from);
   if (!article) return redirect.to;
   if (article.is_published) return `/kennisbank/${article.slug}`;

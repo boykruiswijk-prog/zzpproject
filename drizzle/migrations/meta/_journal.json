@@ -316,6 +316,20 @@
       "when": 1791203997898,
       "tag": "0044_dashboard_tellers_planning_recht",
       "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1791205745583,
+      "tag": "0045_backup_articles_20261005",
+      "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "7",
+      "when": 1791205963994,
+      "tag": "0046_restrict_articles_backup_20261005",
+      "breakpoints": true
     }
   ]
 }

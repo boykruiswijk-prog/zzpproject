@@ -215,7 +215,12 @@ export default function Verzekeringen() {
       </section>
 
       <HiscoxTrustStrip />
-      <LeesMeer voorkeur={["bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "bedrijfsaansprakelijkheidsverzekering-zzp", "zzp-verzekering-kosten-2026", "welke-verzekeringen-zzp", "zp-zaken-zorgeloos-zzpen-goedkoopste-bav-avb", "cyberverzekering-zzp"]} />
+      <p className="container-wide pb-2 text-center text-sm text-muted-foreground">
+        <LocalizedLink className="font-medium text-accent underline underline-offset-2" to="/kennisbank/wat-kosten-verzekeringen-voor-zzp-ers">
+          Wat kosten verzekeringen voor zzp'ers in 2026?
+        </LocalizedLink>
+      </p>
+      <LeesMeer voorkeur={["bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "bedrijfsaansprakelijkheidsverzekering-zzp", "wat-kosten-verzekeringen-voor-zzp-ers", "welke-verzekeringen-zzp", "zp-zaken-zorgeloos-zzpen-goedkoopste-bav-avb", "cyberverzekering-zzp"]} />
     </Layout>
   );
 }
