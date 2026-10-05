@@ -11,9 +11,9 @@
 /financien    /kennisbank    301
 /verzekeringen-info    /kennisbank    301
 /wet-en-regelgeving    /kennisbank/wet-en-regelgeving    301
-/movir    /aov    301
-/wijzijnaov    /aov    301
-/aov-via-centraalbeheer    /aov    301
+/movir    /aov    301!
+/wijzijnaov    /aov    301!
+/aov-via-centraalbeheer    /aov    301!
 /sharepeople    /partners    301
 /eherkenning    /kennisbank/eherkenning    301  # gepubliceerd artikel
 /klachten    /klachtenprocedure    301
