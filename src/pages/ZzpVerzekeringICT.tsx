@@ -36,7 +36,7 @@ const faqs = [
   {
     question: "Dekt een BAV ook schade door een datalek?",
     answer:
-      "Ja, beroepsaansprakelijkheid dekt ook schade die voortvloeit uit fouten in je dienstverlening, waaronder indirect veroorzaakte datalekken. Vraag je adviseur naar de exacte polisvoorwaarden.",
+      "Dat hangt af van de situatie. Wat precies gedekt is, staat in de polisvoorwaarden op de pagina documenten; die zijn leidend. Wil je extra zekerheid bij cyberrisico's? Kijk dan naar het pakket BAV & AVB Jaarlijks + Cyber, met aanvullende cyberdekking.",
   },
 ];
 
@@ -74,15 +74,15 @@ export default function ZzpVerzekeringICT() {
         },
         {
           icon: ShieldCheck,
-          title: "Dekking voor datalekken en fouten",
+          title: "Beschermd bij fouten in je werk",
           description:
-            "Softwarefouten, onjuist advies of een datalek — jouw polis dekt de schade die jouw opdrachtgever lijdt.",
+            "Een softwarefout of onjuist advies kan schade geven bij je opdrachtgever. Je BAV beschermt je als je daarvoor aansprakelijk wordt gesteld. De polisvoorwaarden zijn leidend.",
         },
         {
           icon: Clock,
           title: "Binnen 24 uur verzekerd",
           description:
-            "Geen wachttijden. Je ontvangt je polis dezelfde dag digitaal, zodat je morgen kunt starten.",
+            "Geen wachttijden. Je sluit online af, binnen 24 uur is het geregeld en staat je certificaat in je mailbox.",
         },
       ]}
       explainers={[

@@ -16,6 +16,12 @@ const Zorgverzekering = lazy(() => import("./pages/Zorgverzekering"));
 const ZzpVerzekeringICT = lazy(() => import("./pages/ZzpVerzekeringICT"));
 const ZzpVerzekeringZorg = lazy(() => import("./pages/ZzpVerzekeringZorg"));
 const ZzpVerzekeringBouw = lazy(() => import("./pages/ZzpVerzekeringBouw"));
+const ZzpVerzekeringConsultant = lazy(() => import("./pages/ZzpVerzekeringConsultant"));
+const ZzpVerzekeringInterimManager = lazy(() => import("./pages/ZzpVerzekeringInterimManager"));
+const ZzpVerzekeringFinance = lazy(() => import("./pages/ZzpVerzekeringFinance"));
+const ZzpVerzekeringHR = lazy(() => import("./pages/ZzpVerzekeringHR"));
+const ZzpVerzekeringMarketing = lazy(() => import("./pages/ZzpVerzekeringMarketing"));
+const ZzpVerzekeringCoach = lazy(() => import("./pages/ZzpVerzekeringCoach"));
 const MentaleGezondheid = lazy(() => import("./pages/MentaleGezondheid"));
 const WaaromZpZaken = lazy(() => import("./pages/WaaromZpZaken"));
 const VoorWie = lazy(() => import("./pages/VoorWie"));
@@ -135,6 +141,12 @@ const publicRoutes = (
     <Route path="zzp-verzekering-ict" element={<ZzpVerzekeringICT />} />
     <Route path="zzp-verzekering-zorg" element={<ZzpVerzekeringZorg />} />
     <Route path="zzp-verzekering-bouw" element={<ZzpVerzekeringBouw />} />
+    <Route path="zzp-verzekering-consultant" element={<ZzpVerzekeringConsultant />} />
+    <Route path="zzp-verzekering-interim-manager" element={<ZzpVerzekeringInterimManager />} />
+    <Route path="zzp-verzekering-finance" element={<ZzpVerzekeringFinance />} />
+    <Route path="zzp-verzekering-hr" element={<ZzpVerzekeringHR />} />
+    <Route path="zzp-verzekering-marketing" element={<ZzpVerzekeringMarketing />} />
+    <Route path="zzp-verzekering-coach" element={<ZzpVerzekeringCoach />} />
     <Route path="mentale-gezondheid" element={<MentaleGezondheid />} />
     <Route path="waarom-zp-zaken" element={<WaaromZpZaken />} />
     <Route path="voor-wie" element={<VoorWie />} />
