@@ -1,3 +1,4 @@
+import { AdminAalGuard } from "@/components/admin/AdminAalGuard";
 import { lazy, Suspense, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -208,6 +209,7 @@ export const AppRoutes = () => (
             <Route path="/admin/wachtwoord-reset" element={<ResetPassword />} />
             <Route path="/admin/reset-password" element={<ResetPassword />} />
             <Route path="/admin/wachtwoord-wijzigen" element={<ChangePasswordPage />} />
+            <Route element={<AdminAalGuard />}>
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/crm" element={<AdminCRM />} />
             <Route path="/admin/activiteiten" element={<RoleGuard allow={[]}><AdminActiviteiten /></RoleGuard>} />
@@ -242,6 +244,7 @@ export const AppRoutes = () => (
             <Route path="/admin/exact-koppeling" element={<RoleGuard allow={["admin"]}><AdminExactKoppeling /></RoleGuard>} />
             <Route path="/admin/interne-meldingen" element={<RoleGuard allow={["admin"]}><AdminInterneMeldingen /></RoleGuard>} />
             <Route path="/admin/activiteitenlog" element={<RoleGuard allow={["admin"]}><AdminActiviteitenlog /></RoleGuard>} />
+            </Route>
             <Route path="/api/exact/callback" element={<ExactCallback />} />
 
             

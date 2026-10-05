@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Navigate, Link } from "react-router-dom";
+import { useNavigate, Navigate, Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,10 @@ type LoginStep = "credentials" | "mfa_verify" | "mfa_enroll";
 export default function AdminLogin() {
   const { user, isLoading: authLoading, isTeamMember } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  // Alleen interne admin-paden als terugkeeradres (geen open redirect).
+  const nextParam = searchParams.get("next") ?? "";
+  const doel = /^\/admin(\/|$|\?|#)/.test(nextParam) && !nextParam.startsWith("//") && !nextParam.startsWith("/admin/login") ? nextParam : "/admin";
   const { toast } = useToast();
 
   const [email, setEmail] = useState("");
@@ -28,16 +32,21 @@ export default function AdminLogin() {
   // Check MFA assurance level for already-logged-in users
   useEffect(() => {
     const checkMFA = async () => {
-      if (!user || !isTeamMember) {
+      if (!user) {
         setMfaChecked(true);
         return;
       }
       const { data } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-      if (data) {
-        const { currentLevel, nextLevel } = data;
-        if (nextLevel === "aal2" && currentLevel !== "aal2") {
-          // User has MFA but hasn't verified this session
+      if (data && data.currentLevel !== "aal2") {
+        if (data.nextLevel === "aal2") {
+          // Factor ingesteld maar deze sessie is nog aal1: altijd eerst de code.
           setStep("mfa_verify");
+          setMfaChecked(true);
+          return;
+        }
+        if (isTeamMember) {
+          // Teamlid zonder geverifieerde factor: eerst MFA instellen.
+          setStep("mfa_enroll");
           setMfaChecked(true);
           return;
         }
@@ -49,7 +58,7 @@ export default function AdminLogin() {
 
   // Only redirect if MFA is satisfied
   if (!authLoading && mfaChecked && user && isTeamMember && step === "credentials") {
-    return <Navigate to="/admin" replace />;
+    return <Navigate to={doel} replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -101,11 +110,11 @@ export default function AdminLogin() {
       title: "Succesvol ingelogd ✓",
       description: "Tweestapsverificatie voltooid.",
     });
-    navigate("/admin");
+    navigate(doel, { replace: true });
   };
 
   const handleMFAEnrolled = () => {
-    navigate("/admin");
+    navigate(doel, { replace: true });
   };
 
   const handleCancel = async () => {
