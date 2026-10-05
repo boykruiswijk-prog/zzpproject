@@ -12,6 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { ExactKoppelingAlarm } from "@/components/admin/ExactKoppelingAlarm";
 import { CollectiefAanmeldingenTeller } from "@/components/admin/CollectiefAanmeldingenTeller";
 import { ZekerChatKpi } from "@/components/admin/ZekerChatKpi";
+import { VandaagTeDoen } from "@/components/admin/VandaagTeDoen";
 import { ToonTestrecordsSchakelaar } from "@/components/admin/ToonTestrecordsSchakelaar";
 
 
@@ -82,6 +83,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        <VandaagTeDoen />
         <DashboardStats />
         <MFAManagement />
         <ZekerChatKpi />

@@ -56,7 +56,7 @@ const PHASES: { key: Exclude<OnboardingPhase, "afgewezen">; label: string }[] = 
   { key: "beoordelen", label: "Beoordelen" },
   { key: "goedkeuren", label: "Goedkeuren" },
   { key: "activeren", label: "Polis activeren" },
-  { key: "actief", label: "Actief" },
+  { key: "actief", label: "Polis actief" },
 ];
 
 export function derivePhase(lead: any): OnboardingPhase {

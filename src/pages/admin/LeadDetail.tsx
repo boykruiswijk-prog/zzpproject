@@ -1,4 +1,4 @@
-import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS } from "@/lib/statusLabels";
+import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS, statusTitel } from "@/lib/statusLabels";
 import { teamWaarschuwingHandmatig } from "../../../supabase/functions/_shared/sectorRegels";
 import { useState } from "react";
 import { KlantLinkVoorLead } from "@/components/admin/KlantLinkVoorLead";
@@ -305,7 +305,7 @@ export default function AdminLeadDetail() {
                       <div className="mt-2">
                         <Select value={lead.status} onValueChange={handleStatusChange}>
                           <SelectTrigger className="w-48">
-                            <Badge className={statusColors[lead.status]} variant="secondary">
+                            <Badge title={statusTitel(lead.status)} className={statusColors[lead.status]} variant="secondary">
                               {statusLabels[lead.status]}
                             </Badge>
                           </SelectTrigger>
@@ -320,7 +320,7 @@ export default function AdminLeadDetail() {
                       </div>
                     </details>
                   ) : (
-                    <Badge className={statusColors[lead.status]} variant="secondary">
+                    <Badge title={statusTitel(lead.status)} className={statusColors[lead.status]} variant="secondary">
                       {statusLabels[lead.status]}
                     </Badge>
                   )}
@@ -450,7 +450,7 @@ export default function AdminLeadDetail() {
               <CardContent className="space-y-3">
                 {lead.status !== "actief" && (
                   <p className="text-sm text-muted-foreground bg-secondary/50 p-3 rounded-lg">
-                    Certificaten kunnen pas worden aangemaakt zodra de polis is geactiveerd (status <strong>Actief</strong>).
+                    Certificaten kunnen pas worden aangemaakt zodra de polis is geactiveerd (status <strong>Polis actief</strong>).
                   </p>
                 )}
                 <CertificaatBeheer

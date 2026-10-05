@@ -13,7 +13,7 @@ import { Users, RotateCw, ChevronDown, ChevronRight, AlertTriangle, Check, Split
 import { formatDateNL } from "@/lib/dateFormat";
 import { useAuth } from "@/contexts/AuthContext";
 import { CERT_VELDEN, actueelCertificaat, groepeerPerOnderneming, type KlantCertificaat } from "@/lib/klantCertificaten";
-import { statusLabel } from "@/lib/statusLabels";
+import { statusLabel, statusTitel } from "@/lib/statusLabels";
 import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 import { fetchAlle } from "@/lib/fetchAlle";
 import { ToonTestrecordsSchakelaar } from "@/components/admin/ToonTestrecordsSchakelaar";
@@ -425,7 +425,7 @@ export default function CRM() {
                     <p className="break-words font-medium">{p.naam}</p>
                     {eerste?.bedrijfsnaam && <p className="break-words text-sm text-muted-foreground">{eerste.bedrijfsnaam}</p>}
                   </div>
-                  <Badge variant="secondary" className="max-w-[9rem] shrink-0"><span className="truncate">{statusLabel(p.persoonStatus)}</span></Badge>
+                  <Badge variant="secondary" className="max-w-[9rem] shrink-0" title={statusTitel(p.persoonStatus) ?? statusLabel(p.persoonStatus)}><span className="truncate">{statusLabel(p.persoonStatus)}</span></Badge>
                 </div>
                 <div className="min-w-0 space-y-1 text-sm">
                   {p.email ? <a href={`mailto:${p.email}`} className="block break-all text-primary hover:underline">{p.email}</a> : <span className="text-amber-600">Geen emailadres</span>}
@@ -547,7 +547,7 @@ export default function CRM() {
                         ) : "—"}
                       </td>
                       <td className="p-3 min-w-0">
-                        <Badge variant="secondary" className="max-w-full" title={statusLabel(p.persoonStatus)}>
+                        <Badge variant="secondary" className="max-w-full" title={statusTitel(p.persoonStatus) ?? statusLabel(p.persoonStatus)}>
                           <span className="truncate">{statusLabel(p.persoonStatus)}</span>
                         </Badge>
                       </td>
@@ -583,7 +583,7 @@ export default function CRM() {
                                   <Link to={ev.detailHref} className="flex-1 min-w-0 truncate hover:underline" title={ev.onderwerp || ev.omschrijving}>
                                     {ev.onderwerp || ev.omschrijving || "—"}
                                   </Link>
-                                  <Badge variant="secondary" className="shrink-0 max-w-[160px]" title={statusLabel(ev.status)}>
+                                  <Badge variant="secondary" className="shrink-0 max-w-[160px]" title={statusTitel(ev.status) ?? statusLabel(ev.status)}>
                                     <span className="truncate">{statusLabel(ev.status)}</span>
                                   </Badge>
                                 </li>

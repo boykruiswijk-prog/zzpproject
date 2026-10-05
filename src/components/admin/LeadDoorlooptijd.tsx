@@ -37,7 +37,7 @@ const PHASE_LABEL: Record<string, string> = {
   beoordelen: "Beoordelen",
   goedkeuren: "Goedkeuren",
   activeren: "Polis activeren",
-  actief: "Actief",
+  actief: "Polis actief",
   afgewezen: "Afgewezen",
 };
 

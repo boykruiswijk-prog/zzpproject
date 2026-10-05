@@ -10,11 +10,20 @@ export const LEAD_STATUS_LABELS: Record<LeadStatus, string> = {
   afspraak_gepland: "Afspraak gepland",
   offerte_verstuurd: "Offerte verstuurd",
   klant: "Klant",
-  actief: "Actief",
+  actief: "Polis actief",
   gepauzeerd: "Gepauzeerd",
   opgezegd: "Opgezegd",
   afgewezen: "Afgewezen",
 };
+
+/** Uitleg (title/tooltip) bij leadstatussen waar het label alleen niet genoeg zegt. */
+export const LEAD_STATUS_TITELS: Partial<Record<LeadStatus, string>> = {
+  actief: "De aanvraag is geactiveerd en de polis loopt",
+};
+
+export function statusTitel(raw: string | null | undefined): string | undefined {
+  return raw ? (LEAD_STATUS_TITELS as Record<string, string>)[raw] : undefined;
+}
 
 export const LEAD_STATUS_COLORS: Record<LeadStatus, string> = {
   nieuw: "bg-blue-100 text-blue-800",

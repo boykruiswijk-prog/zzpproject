@@ -3872,6 +3872,7 @@ export type Database = {
         Args: { _pad: string; _referrer?: string; _user_agent?: string }
         Returns: undefined
       }
+      mijn_acties_vandaag: { Args: { _toon_test?: boolean }; Returns: Json }
       move_to_dlq: {
         Args: {
           dlq_name: string
