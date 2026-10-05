@@ -173,6 +173,7 @@ export function articleSchema(article: ArticleSchemaInput): JsonLd {
 export const BREADCRUMB_LABELS: Record<string, string> = {
   "/diensten": "Diensten",
   "/verzekeringen": "Verzekeringen",
+  "/bav-zzp-vergelijken": "BAV zzp vergelijken",
   "/aov": "AOV",
   "/pensioen": "Pensioen",
   "/zorgverzekering": "Zorgverzekering",

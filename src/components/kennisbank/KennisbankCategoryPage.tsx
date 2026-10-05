@@ -21,6 +21,8 @@ interface Props {
   categoryTags?: string[];
   metaTitle: string;
   metaDescription: string;
+  /** Optionele extra inhoud boven de artikelenlijst (bv. een contextuele link). */
+  children?: React.ReactNode;
 }
 
 export function KennisbankCategoryPage({
@@ -30,6 +32,7 @@ export function KennisbankCategoryPage({
   categoryTags,
   metaTitle,
   metaDescription,
+  children,
 }: Props) {
   const url = `https://zpzaken.nl/kennisbank/${slug}`;
   const { data: articles, isLoading } = useArticles("Alle");

@@ -18,7 +18,7 @@ const oneLine = (s: string) => s.replace(/\s+/g, " ").trim();
 
 /** Geldbelangrijke pagina's eerst; overige publieke routes daarna. */
 const KERN = [
-  "/", "/verzekeringen", "/offerte", "/waarom-zp-zaken", "/aov", "/pensioen", "/zorgverzekering",
+  "/", "/verzekeringen", "/bav-zzp-vergelijken", "/offerte", "/waarom-zp-zaken", "/aov", "/pensioen", "/zorgverzekering",
   "/zzp-verzekering-ict", "/zzp-verzekering-zorg", "/zzp-verzekering-bouw", "/diensten",
   "/screening", "/faq", "/contact", "/over-ons",
 ];

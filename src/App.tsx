@@ -56,6 +56,7 @@ const AdminKennisbankEditor = lazy(() => import("./pages/admin/KennisbankArtikel
 const AdminKennisbankActualiteit = lazy(() => import("./pages/admin/KennisbankActualiteit"));
 const AdminWpImport = lazy(() => import("./pages/admin/WpImport"));
 const AdminNietGevonden = lazy(() => import("./pages/admin/NietGevonden"));
+const BavZzpVergelijken = lazy(() => import("./pages/BavZzpVergelijken"));
 const AdminAfgehaakt = lazy(() => import("./pages/admin/Afgehaakt"));
 const AdminChatgesprekken = lazy(() => import("./pages/admin/Chatgesprekken"));
 const AdminKlantenContracten = lazy(() => import("./pages/admin/KlantenContracten"));
@@ -127,6 +128,7 @@ const publicRoutes = (
     <Route index element={<Index />} />
     <Route path="diensten" element={<Diensten />} />
     <Route path="verzekeringen" element={<Verzekeringen />} />
+    <Route path="bav-zzp-vergelijken" element={<BavZzpVergelijken />} />
     <Route path="aov" element={<AOV />} />
     <Route path="pensioen" element={<Pensioen />} />
     <Route path="zorgverzekering" element={<Zorgverzekering />} />

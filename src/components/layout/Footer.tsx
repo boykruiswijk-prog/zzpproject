@@ -31,6 +31,7 @@ export function Footer() {
     ],
     verzekeringen: [
       { href: "/verzekeringen", label: "BAV + AVB" },
+      { href: "/bav-zzp-vergelijken", label: "BAV vergelijken" },
       { href: "/aov", label: "AOV" },
       { href: "/pensioen", label: "Pensioen" },
       { href: "/zorgverzekering", label: "Zorgverzekering" },
