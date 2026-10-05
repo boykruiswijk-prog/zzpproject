@@ -640,6 +640,10 @@ export function resolveRedirectTarget(
   redirect: LegacyRedirect,
   articles: Map<string, ArticleRedirectInfo>,
 ): string {
+  const canonicalArticlePath = `/kennisbank/${redirect.from}`;
+  if (redirect.to.startsWith("/kennisbank/") && redirect.to !== canonicalArticlePath) {
+    return redirect.to;
+  }
   const article = articles.get(redirect.from);
   if (!article) return redirect.to;
   if (article.is_published) return `/kennisbank/${article.slug}`;
