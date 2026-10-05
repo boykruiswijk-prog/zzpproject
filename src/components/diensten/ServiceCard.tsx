@@ -31,7 +31,7 @@ export function ServiceCard({
     "name": title,
     "description": description,
     "provider": { "@type": "Organization", "name": "ZP Zaken", "url": "https://zpzaken.nl" },
-    "areaServed": { "@type": "Country", "name": "Nederland" },
+    "areaServed": "NL",
     "audience": { "@type": "Audience", "audienceType": forWho },
     "serviceType": title,
     "offers": { "@type": "Offer", "availability": "https://schema.org/InStock" }

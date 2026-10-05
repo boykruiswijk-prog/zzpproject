@@ -40,10 +40,11 @@ i18n
       escapeValue: false,
     },
     detection: {
-      order: ['path', 'localStorage'],
+      // De taal volgt uitsluitend de URL; een eerder gekozen taal in
+      // localStorage mag nooit een andere taal op een Nederlandse URL tonen.
+      order: ['path'],
       lookupFromPathIndex: 0,
-      lookupLocalStorage: 'i18nextLng',
-      caches: ['localStorage'],
+      caches: [],
     },
   });
 

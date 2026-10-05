@@ -23,14 +23,16 @@ export function SEOHead({
   canonical,
   ogType = "website",
   ogImage = SITE_CONFIG.ogImage,
-  noindex = false,
+  noindex: noindexProp = false,
   children,
 }: SEOHeadProps) {
   const { pathname } = useLocation();
+  // Taalversies /en, /de, /fr worden niet geïndexeerd (alleen Nederlands).
+  const noindex = noindexProp || /^\/(en|de|fr)(\/|$)/.test(pathname);
   // Eén merknaam achteraan; zie formatPageTitle.
   const pageTitle = formatPageTitle(title);
 
-  // Pad zonder taalprefix, gebruikt voor de hreflang-set.
+  // Pad zonder taalprefix (voor de breadcrumb).
   const cleanPath = pathname.replace(/^\/(en|de|fr)(\/|$)/, "/");
   // Canonical is self-referencing: /en/verzekeringen → https://zpzaken.nl/en/verzekeringen
   const selfPath = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
@@ -47,7 +49,7 @@ export function SEOHead({
       {!noindex && <link rel="canonical" href={canonicalUrl} />}
 
 
-      {noindex && <meta name="robots" content="noindex" />}
+      {noindex && <meta name="robots" content="noindex, follow" />}
 
       {/* Open Graph */}
       <meta property="og:title" content={pageTitle} />
@@ -67,19 +69,6 @@ export function SEOHead({
       <meta name="twitter:title" content={pageTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
-
-      {/* Hreflang alternates — niet op noindex-pagina's (die bestaan niet per taal) */}
-      {!noindex && <link rel="alternate" hrefLang="nl" href={`${BASE_URL}${nlPath}`} />}
-      {!noindex &&
-        SUPPORTED_LANGS.map((lang) => (
-          <link
-            key={lang}
-            rel="alternate"
-            hrefLang={lang}
-            href={`${BASE_URL}/${lang}${nlPath === "/" ? "" : nlPath}`}
-          />
-        ))}
-      {!noindex && <link rel="alternate" hrefLang="x-default" href={`${BASE_URL}${nlPath}`} />}
 
       {breadcrumb && (
         <script type="application/ld+json">{JSON.stringify(breadcrumb)}</script>

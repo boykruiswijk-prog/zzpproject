@@ -8,12 +8,6 @@ import logoZp from "@/assets/logo-zp.webp";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { SiteSearch } from "@/components/search/SiteSearch";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 function useNavItems() {
   const { t } = useTranslation();
@@ -85,9 +79,12 @@ function useNavItems() {
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
   const location = useLocation();
   const { t } = useTranslation();
   const navItems = useNavItems();
+
+  useEffect(() => setOpenMenu(null), [location.pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -117,40 +114,59 @@ export function Header() {
         <nav className="hidden xl:flex items-center gap-1">
           {navItems.map((item) => (
             item.children ? (
-              <DropdownMenu key={item.href}>
-              <DropdownMenuTrigger className={`flex items-center gap-1 whitespace-nowrap px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+              <div
+                key={item.href}
+                className="relative group"
+                onMouseLeave={() => setOpenMenu(null)}
+              >
+                <div className={`flex items-center whitespace-nowrap rounded-md text-sm font-medium transition-colors ${
                   'isService' in item && item.isService
                     ? "text-primary bg-primary/5 hover:bg-primary/10 border border-primary/20"
                     : (item.children || []).some(c => location.pathname === c.href) || location.pathname === item.href
                       ? "text-primary"
                       : "text-muted-foreground hover:text-foreground"
                 }`}>
-                  {'isService' in item && item.isService && <Shield className="h-3.5 w-3.5" />}
-                  {item.label}
-                  {'isNew' in item && item.isNew && (
-                    <span className="whitespace-nowrap rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none text-accent-foreground">Nieuw</span>
-                  )}
-                  <ChevronDown className="h-4 w-4" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className={'isService' in item && item.isService ? "min-w-[260px]" : undefined}>
-                  {item.children.map((child) => {
-                    const Icon = 'icon' in child ? (child as any).icon : null;
-                    return (
-                      <DropdownMenuItem key={child.href} asChild>
-                        <LocalizedLink to={child.href} className="flex items-center gap-2">
+                  <LocalizedLink to={item.href} className="flex items-center gap-1 py-2 pl-3">
+                    {'isService' in item && item.isService && <Shield className="h-3.5 w-3.5" />}
+                    {item.label}
+                    {'isNew' in item && item.isNew && (
+                      <span className="whitespace-nowrap rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none text-accent-foreground">Nieuw</span>
+                    )}
+                  </LocalizedLink>
+                  <button
+                    type="button"
+                    className="py-2 pl-1 pr-3"
+                    aria-expanded={openMenu === item.href}
+                    aria-label={`Submenu ${item.label}`}
+                    onClick={() => setOpenMenu(openMenu === item.href ? null : item.href)}
+                  >
+                    <ChevronDown className="h-4 w-4" />
+                  </button>
+                </div>
+                <div className={`absolute left-0 top-full z-50 pt-1 group-hover:block group-focus-within:block ${openMenu === item.href ? "block" : "hidden"}`}>
+                  <div className={`rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md ${'isService' in item && item.isService ? "min-w-[260px]" : "min-w-[220px]"}`}>
+                    {item.children.map((child) => {
+                      const Icon = 'icon' in child ? (child as any).icon : null;
+                      return (
+                        <LocalizedLink
+                          key={child.href}
+                          to={child.href}
+                          onClick={() => setOpenMenu(null)}
+                          className="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+                        >
                           {Icon && <Icon className="h-4 w-4 text-primary" />}
                           {child.label}
                         </LocalizedLink>
-                      </DropdownMenuItem>
-                    );
-                  })}
-                  {'isService' in item && item.isService && (
-                    <div className="px-2 py-1.5 text-xs text-muted-foreground border-t border-border mt-1">
-                      Service-aanvragen voor bestaande klanten
-                    </div>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                      );
+                    })}
+                    {'isService' in item && item.isService && (
+                      <div className="px-2 py-1.5 text-xs text-muted-foreground border-t border-border mt-1">
+                        Service-aanvragen voor bestaande klanten
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             ) : (
               <LocalizedLink
                 key={item.href}

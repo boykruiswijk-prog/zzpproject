@@ -93,28 +93,15 @@ export function ExitIntentPopup() {
       if (e.relatedTarget === null && e.clientY <= 10) trigger();
     };
 
-    const onPopState = (e: PopStateEvent) => {
-      if (Date.now() - loadedAt < 8_000) return;
-      if (sessionStorage.getItem(sessionKey)) return;
-      // Show popup, push state back to intercept
-      sessionStorage.setItem(sessionKey, "1");
-      setConfig(cfg);
-      setOpen(true);
-      window.history.pushState(null, "", window.location.href);
-      cleanup();
-    };
-
     const cleanup = () => {
       document.removeEventListener("mouseout", onMouseOut);
-      window.removeEventListener("popstate", onPopState);
       window.removeEventListener("click", recordInteraction);
       window.removeEventListener("keydown", recordInteraction);
     };
 
+    // Alleen desktop (muis): geen trigger op touchapparaten, geen history-manipulatie.
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return cleanup;
     document.addEventListener("mouseout", onMouseOut);
-    window.addEventListener("popstate", onPopState);
-    // Push a state so mobile back can be intercepted
-    window.history.pushState(null, "", window.location.href);
 
     return cleanup;
   }, [location.pathname]);

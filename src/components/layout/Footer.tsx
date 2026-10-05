@@ -27,14 +27,24 @@ export function Footer() {
       { href: "/algemene-voorwaarden", label: t("footer.algemeneVoorwaarden") },
       { href: "/cookies", label: t("footer.privacybeleid") },
       { href: "/cookies", label: "Cookies" },
-      { href: "/klachten", label: t("footer.klachtenprocedure") },
+      { href: "/klachtenprocedure", label: t("footer.klachtenprocedure") },
+    ],
+    verzekeringen: [
+      { href: "/verzekeringen", label: "BAV + AVB" },
+      { href: "/aov", label: "AOV" },
+      { href: "/pensioen", label: "Pensioen" },
+      { href: "/zorgverzekering", label: "Zorgverzekering" },
+      { href: "/zzp-verzekering-ict", label: "ICT" },
+      { href: "/zzp-verzekering-zorg", label: "Zorg" },
+      { href: "/zzp-verzekering-bouw", label: "Bouw" },
+      { href: "/waarom-zp-zaken", label: "Waarom ZP Zaken" },
     ],
   };
 
   return (
     <footer className="bg-foreground text-background">
       <div className="container-wide section-padding">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10">
           {/* Brand */}
           <div className="lg:col-span-2">
             <LocalizedLink
@@ -94,6 +104,19 @@ export function Footer() {
           </div>
 
           {/* Links */}
+          <div>
+            <h4 className="font-semibold mb-4 text-sm">Verzekeringen</h4>
+            <ul className="space-y-2">
+              {footerLinks.verzekeringen.map((link) => (
+                <li key={link.href}>
+                  <LocalizedLink to={link.href} className="text-background/60 hover:text-background transition-colors text-sm">
+                    {link.label}
+                  </LocalizedLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           <div>
             <h4 className="font-semibold mb-4 text-sm">{t("footer.diensten")}</h4>
             <ul className="space-y-2">

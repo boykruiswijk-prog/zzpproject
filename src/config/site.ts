@@ -41,6 +41,7 @@ export const SITE_CONFIG = {
     instagram: "https://www.instagram.com/zp_zaken",
     facebook: "https://www.facebook.com/ZPZaken",
     x: "https://x.com/ZP_Zaken",
+    trustpilot: "https://www.trustpilot.com/review/zpzaken.nl",
   },
 } as const;
 

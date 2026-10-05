@@ -37,6 +37,7 @@ import {
 } from "../src/lib/schema";
 
 const LANGS = ["en", "de", "fr"] as const;
+import { buildLlmsTxt, buildLlmsFullTxt } from "./llmsTxt";
 
 /** Belangrijkste pagina's in het statische fallback-blok. */
 const FALLBACK_LINKS: Array<{ href: string; label: string }> = [
@@ -65,25 +66,12 @@ function isExcluded(routePath: string) {
 
 function headFor(routePath: string, title: string, description: string, ogType: string) {
   const url = `${SITE_CONFIG.url}${routePath === "/" ? "/" : routePath}`;
-  const alternates = [
-    `<link rel="alternate" data-rh="true" hreflang="nl" href="${SITE_CONFIG.url}${routePath === "/" ? "/" : routePath}">`,
-    ...LANGS.map(
-      (lang) =>
-        `<link rel="alternate" data-rh="true" hreflang="${lang}" href="${SITE_CONFIG.url}/${lang}${
-          routePath === "/" ? "" : routePath
-        }">`,
-    ),
-    `<link rel="alternate" data-rh="true" hreflang="x-default" href="${SITE_CONFIG.url}${
-      routePath === "/" ? "/" : routePath
-    }">`,
-  ];
   return {
     url,
     tags: [
       `<link rel="canonical" href="${url}" data-rh="true">`,
-      ...alternates,
-      `<meta name="twitter:title" content="${esc(title)}">`,
-      `<meta name="twitter:description" content="${esc(description)}">`,
+      `<meta name="twitter:title" content="${esc(title)}" data-rh="true">`,
+      `<meta name="twitter:description" content="${esc(description)}" data-rh="true">`,
     ].join("\n    "),
     ogType,
   };
@@ -373,8 +361,47 @@ function routeSourceFiles(root: string): Map<string, string[]> {
   return map;
 }
 
-/** Script dat op de terugval-HTML (homepage-bestand op een onbekend pad) noindex zet. */
-const SOFT_404_GUARD = `<script>(function(){var p=location.pathname.replace(/\\/+$/,"")||"/";if(p!=="/"){var c=document.querySelector('link[rel="canonical"]');if(c)c.remove();var m=document.querySelector('meta[name="robots"]');if(!m){m=document.createElement("meta");m.name="robots";document.head.appendChild(m);}m.content="noindex";}})();</script>`;
+/**
+ * Het homepagebestand is ook de terugval voor niet-geprerenderde paden. Alleen
+ * taalversies (/en, /de, /fr) krijgen hier noindex; geldige NL-routes (ook nieuwe
+ * artikelen) houden index en krijgen hun canonical van de app zelf. Echte 404's
+ * zet NotFound/ArtikelDetail op noindex.
+ */
+const LANG_NOINDEX_GUARD = `<script>(function(){if(/^\\/(en|de|fr)(\\/|$)/.test(location.pathname)){var c=document.querySelector('link[rel="canonical"]');if(c)c.remove();var m=document.querySelector('meta[name="robots"]');if(!m){m=document.createElement("meta");m.name="robots";document.head.appendChild(m);}m.content="noindex, follow";}})();</script>`;
+
+/** JSON-LD uit de Helmet-head van de SSR-render. */
+function helmetJsonLd(helmetScript: string | undefined): JsonLd[] {
+  if (!helmetScript) return [];
+  const out: JsonLd[] = [];
+  for (const m of helmetScript.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)) {
+    try {
+      const v = JSON.parse(m[1]);
+      for (const item of Array.isArray(v) ? v : [v]) if (item && typeof item === "object" && (item as Record<string, unknown>)["@id"] !== `${SITE_CONFIG.url}/#organization`) out.push(item as JsonLd); // organisatie staat al in index.html
+    } catch {
+      /* ongeldig blok overslaan */
+    }
+  }
+  return out;
+}
+
+/** Ontdubbelen: per @type (en @id/name) één blok; de prerender-versie wint. */
+function mergeSchemas(base: JsonLd[], extra: JsonLd[]): JsonLd[] {
+  const key = (s: JsonLd) => {
+    const t = String((s as Record<string, unknown>)["@type"] ?? "");
+    // Product/Offer kan meerdere keren voorkomen (één per pakket).
+    const id = (s as Record<string, unknown>)["@id"] ?? ((t === "Product" || t === "Service") ? (s as Record<string, unknown>).name : "");
+    return `${t}|${id ?? ""}`;
+  };
+  const seen = new Set(base.map(key));
+  const result = [...base];
+  for (const s of extra) {
+    const k = key(s);
+    if (seen.has(k)) continue;
+    seen.add(k);
+    result.push(s);
+  }
+  return result;
+}
 
 interface PublishedArticle {
   slug: string;
@@ -488,10 +515,13 @@ export async function prerender(distDir: string, env: Record<string, string> = {
   };
   let ssrOk = 0;
   let ssrFail = 0;
+  let lastHelmetLd: JsonLd[] = [];
   const ssrBody = async (url: string, extra: Record<string, unknown> = {}): Promise<string | null> => {
+    lastHelmetLd = [];
     if (!ssr) return null;
     try {
-      const { html } = await ssr.render(url, { ...basePreload, ...extra });
+      const { html, helmet } = await ssr.render(url, { ...basePreload, ...extra });
+      lastHelmetLd = helmetJsonLd(helmet?.script?.toString());
       ssrOk++;
       return html;
     } catch (error) {
@@ -523,11 +553,33 @@ export async function prerender(distDir: string, env: Record<string, string> = {
       description: route.description,
       ogType: "website",
       image: SITE_CONFIG.ogImage,
-      schemas: schemasFor(route.path),
+      schemas: mergeSchemas(schemasFor(route.path), lastHelmetLd),
       fallback: body ?? renderFallback(route.h1, route.intro, extra),
     });
-    // Het homepagebestand is ook de terugval voor onbekende paden: daar noindex.
-    if (route.path === "/") html = html.replace("</head>", `  ${SOFT_404_GUARD}\n  </head>`);
+    if (route.path === "/") {
+      // Hero-beeld (LCP) vroeg laden.
+      const assetsDir = path.join(distDir, "assets");
+      const hero = (fs.existsSync(assetsDir) ? fs.readdirSync(assetsDir) : []).find((f) => /^team-walking-.*\.webp$/.test(f));
+      if (hero) html = html.replace("</head>", `  <link rel="preload" as="image" href="/assets/${hero}" fetchpriority="high" type="image/webp" imagesizes="100vw" data-width="1600" data-height="1067">\n  </head>`);
+      // Taalversies: eigen bestand met noindex,follow en zonder canonical.
+      for (const lang of LANGS) {
+        const body = await ssrBody(`/${lang}`);
+        let langHtml = buildHtml(template, {
+          routePath: `/${lang}`,
+          title: formatPageTitle(route.title),
+          description: route.description,
+          ogType: "website",
+          image: SITE_CONFIG.ogImage,
+          schemas: [],
+          fallback: body ?? renderFallback(route.h1, route.intro, extra),
+        });
+        langHtml = langHtml
+          .replace(/<link rel="canonical"[^>]*>/, "")
+          .replace(/<meta name="robots" content="[^"]*" \/>/, '<meta name="robots" content="noindex, follow" data-rh="true" />');
+        write(`/${lang}`, langHtml);
+      }
+      html = html.replace("</head>", `  ${LANG_NOINDEX_GUARD}\n  </head>`);
+    }
     write(route.path, html);
   }
 
@@ -571,7 +623,8 @@ export async function prerender(distDir: string, env: Record<string, string> = {
             category: article.category || "Kennisbank",
           }),
           ...(artikelFaqs.length ? [faqSchema(artikelFaqs)] : []),
-        ].filter((s) => Object.keys(s).length > 0),
+          ...lastHelmetLd,
+        ].filter((s) => Object.keys(s).length > 0).reduce<JsonLd[]>((acc, s) => mergeSchemas(acc, [s]), []),
         fallback: articleBody ?? renderFallback(
           article.title,
           samenvatting || alinea,
@@ -700,6 +753,12 @@ export async function prerender(distDir: string, env: Record<string, string> = {
   ].join("\n");
   fs.writeFileSync(path.join(distDir, "sitemap.xml"), sitemapXml);
   console.log(`[prerender] sitemap.xml geschreven met ${seen.size} URL's.`);
+
+  // 7. llms.txt en llms-full.txt uit dezelfde bronnen als de pagina's.
+  const publicRoutes = (seoRoutes as SeoRoute[]).filter((r) => !isExcluded(r.path));
+  fs.writeFileSync(path.join(distDir, "llms.txt"), buildLlmsTxt(publicRoutes, articles));
+  fs.writeFileSync(path.join(distDir, "llms-full.txt"), buildLlmsFullTxt(publicRoutes));
+  console.log("[prerender] llms.txt en llms-full.txt geschreven.");
 
   console.log(`[prerender] ${written.length} HTML-bestanden gegenereerd.`);
   console.log(`[prerender] voorbeeld: ${written.slice(0, 2).join(", ")}`);
