@@ -450,7 +450,7 @@ export default function AdminLeadDetail() {
               <CardContent className="space-y-3">
                 {lead.status !== "actief" && (
                   <p className="text-sm text-muted-foreground bg-secondary/50 p-3 rounded-lg">
-                    Certificaten kunnen pas worden aangemaakt zodra de polis is geactiveerd (status <strong>Actief</strong>).
+                    Certificaten kunnen pas worden aangemaakt zodra de polis is geactiveerd (status <strong>Polis actief</strong>).
                   </p>
                 )}
                 <CertificaatBeheer

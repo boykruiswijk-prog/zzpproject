@@ -4,7 +4,7 @@ import { statusLabel, LEAD_STATUS_LABELS } from "@/lib/statusLabels";
 describe("statusLabel", () => {
   it("geeft leesbare Nederlandse labels", () => {
     expect(statusLabel("nieuw_te_beoordelen")).toBe("Te beoordelen");
-    expect(statusLabel("actief")).toBe("Actief");
+    expect(statusLabel("actief")).toBe("Polis actief");
     expect(statusLabel("gepauzeerd")).toBe("Gepauzeerd");
     expect(statusLabel("nieuw")).toBe("Nieuw");
     expect(statusLabel("")).toBe("—");
