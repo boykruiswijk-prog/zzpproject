@@ -28,6 +28,11 @@ const goedkoopstePakket = bavPakketten.reduce((laagste, p) =>
   p.prijs < laagste.prijs ? p : laagste,
 );
 
+const goedkoopstePakketMaand = () => {
+  const m = bavPakketten.find((p) => p.periode === "maand")!;
+  return `€ ${m.prijs} per maand`;
+};
+
 export const seoRoutes: SeoRoute[] = [
   {
     path: "/",
@@ -263,6 +268,16 @@ export const seoRoutes: SeoRoute[] = [
     intro:
       `De algemene voorwaarden van ${SITE_CONFIG.legalName} zijn van toepassing op al onze dienstverlening. ` +
       "Op deze pagina lees je de volledige tekst.",
+  },
+  {
+    path: "/bav-zzp-vergelijken",
+    title: "BAV zzp vergelijken 2026: prijs, dekking en eigen risico",
+    description:
+      "BAV zzp vergelijken in 2026? Zie per aanbieder de vanaf-prijs, het verzekerd bedrag, het eigen risico en of de AVB erbij zit. Gecontroleerd op 5 oktober 2026.",
+    h1: "BAV zzp vergelijken 2026",
+    intro:
+      "Vergelijk een beroepsaansprakelijkheidsverzekering (BAV) nooit alleen op de laagste prijs. Kijk ook naar het verzekerd bedrag, het eigen risico, of de AVB erbij zit en hoe snel je kunt opzeggen. " +
+      `ZP Zaken biedt BAV en AVB in één polis via Hiscox, vanaf ${goedkoopstePakketMaand()}, zonder eigen risico.`,
   },
   {
     path: "/klachtenprocedure",
