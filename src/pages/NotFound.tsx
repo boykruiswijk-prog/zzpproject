@@ -1,3 +1,4 @@
+import { openTerugbelKlik } from "@/components/shared/TerugbelDialog";
 import { useLocation, Navigate, Link } from "react-router-dom";
 import { SITE_CONFIG } from "@/config/site";
 import { useEffect } from "react";
@@ -117,7 +118,7 @@ const NotFound = () => {
                 asChild
                 className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
               >
-                <Link to="/contact">
+                <Link to="/contact" onClick={openTerugbelKlik}>
                   Vrijblijvend gesprek <ArrowRight className="h-5 w-5" />
                 </Link>
               </Button>

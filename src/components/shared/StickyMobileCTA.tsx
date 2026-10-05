@@ -1,3 +1,4 @@
+import { openTerugbelKlik } from "@/components/shared/TerugbelDialog";
 import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { MessageCircle, Phone, Zap } from "lucide-react";
@@ -101,7 +102,7 @@ export function StickyMobileCTA() {
         <MessageCircle className="h-4 w-4" aria-hidden="true" />
         Chat
       </button>}
-      <Link to="/contact" className="flex flex-1 items-center justify-center bg-accent text-center text-accent-foreground">
+      <Link to="/contact" onClick={openTerugbelKlik} className="flex flex-1 items-center justify-center bg-accent text-center text-accent-foreground">
         Vrijblijvend gesprek →
       </Link>
     </div>

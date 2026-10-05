@@ -1,3 +1,4 @@
+import { openTerugbelKlik } from "@/components/shared/TerugbelDialog";
 import { seoRoute } from "@/config/seoRoutes";
 import { SEOHead } from "@/components/SEOHead";
 import { bavPakketten } from "@/data/bavPakketten";
@@ -59,7 +60,7 @@ export default function Verzekeringen() {
             <a href="#combinatiepolis" onClick={(e) => scrollNaarAanvraag(e)}>Direct afsluiten<ArrowRight className="h-5 w-5" /></a>
           </Button>
           <Button variant="heroOutline" size="lg" asChild>
-            <LocalizedLink to="/contact">Vrijblijvend advies</LocalizedLink>
+            <LocalizedLink to="/contact" onClick={openTerugbelKlik}>Vrijblijvend advies</LocalizedLink>
           </Button>
         </div>
       </PageHero>

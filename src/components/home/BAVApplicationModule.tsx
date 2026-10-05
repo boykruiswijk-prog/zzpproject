@@ -79,7 +79,7 @@ function FieldError({ message }: { message?: string }) {
   );
 }
 
-export function BAVApplicationModule() {
+export function BAVApplicationModule({ initialSector = "" }: { initialSector?: string } = {}) {
    const { t } = useTranslation();
    const { toast } = useToast();
    const [currentStep, setCurrentStep] = useState(1);
@@ -109,7 +109,7 @@ export function BAVApplicationModule() {
    const [magicLinkSent, setMagicLinkSent] = useState(false);
    const checkoutGestart = useRef(false);
   const [formData, setFormData] = useState({
-    bedrijfsnaam: "", kvkNummer: "", sector: "", beroep: "", functie: "", aantalMedewerkers: "",
+    bedrijfsnaam: "", kvkNummer: "", sector: initialSector, beroep: "", functie: "", aantalMedewerkers: "",
     voornaam: "", achternaam: "", email: "", telefoon: "",
     opdrachtgever: "", bemiddelaarNaam: "",
     iban: "",
@@ -168,6 +168,10 @@ export function BAVApplicationModule() {
       } else if (startDate > maxStr) {
         newErrors.startDate = "Kies een datum binnen 6 maanden. Voor latere ingangsdata neem contact op.";
       }
+      if (!formData.email.trim()) newErrors.email = t("bavApp.valEmail");
+      else if (!isValidEmail(formData.email)) newErrors.email = t("bavApp.valEmailInvalid");
+      if (!formData.telefoon.trim()) newErrors.telefoon = t("bavApp.valPhone");
+      else if (!isValidPhone(formData.telefoon)) newErrors.telefoon = t("bavApp.valPhoneFormat");
     }
 
     if (step === 2) {
@@ -176,7 +180,6 @@ export function BAVApplicationModule() {
       else if (!isValidKvk(formData.kvkNummer)) newErrors.kvkNummer = t("bavApp.valKvkFormat");
       if (!verzekeringskaartVoorSector(formData.sector)) newErrors.sector = "Kies je sector";
       if (!formData.beroep.trim()) newErrors.beroep = t("bavApp.valProfession");
-      if (!formData.functie.trim()) newErrors.functie = t("bavApp.valFunction");
       if (!formData.aantalMedewerkers.trim()) newErrors.aantalMedewerkers = t("bavApp.valEmployees");
       else if (parseInt(formData.aantalMedewerkers) < 0) newErrors.aantalMedewerkers = t("bavApp.valEmployeesInvalid");
       if (!formData.adresStraat.trim()) newErrors.adresStraat = "Vul de straatnaam in";
@@ -195,12 +198,6 @@ export function BAVApplicationModule() {
     if (step === 3) {
       if (!formData.voornaam.trim()) newErrors.voornaam = t("bavApp.valFirstName");
       if (!formData.achternaam.trim()) newErrors.achternaam = t("bavApp.valLastName");
-      if (!formData.email.trim()) newErrors.email = t("bavApp.valEmail");
-      else if (!isValidEmail(formData.email)) newErrors.email = t("bavApp.valEmailInvalid");
-      if (!formData.telefoon.trim()) newErrors.telefoon = t("bavApp.valPhone");
-      else if (!isValidPhone(formData.telefoon)) newErrors.telefoon = t("bavApp.valPhoneFormat");
-      if (!formData.opdrachtgever.trim()) newErrors.opdrachtgever = t("bavApp.valClient");
-      if (viaBemiddelaar === null) newErrors.bemiddelaar = t("bavApp.valMediator");
       if (viaBemiddelaar && !formData.bemiddelaarNaam.trim()) newErrors.bemiddelaarNaam = t("bavApp.valMediatorName");
     }
 
@@ -548,7 +545,7 @@ export function BAVApplicationModule() {
           <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden hover:shadow-xl transition-shadow duration-300">
             <div className="grid lg:grid-cols-3">
               {/* Form Section */}
-              <div className="lg:col-span-2 p-6 md:p-8">
+              <div className="lg:col-span-2 min-w-0 p-6 md:p-8">
                 <AnimatePresence mode="wait">
                 {currentStep === 1 && (
                   <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="space-y-6">
@@ -652,6 +649,18 @@ export function BAVApplicationModule() {
                          <p className="text-xs mt-1.5" style={{ color: '#E53E2F' }}>{errors.startDate}</p>
                        ) : null}
                      </div>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div>
+                        <Label htmlFor="email">{t("home.bavEmail")} *</Label>
+                        <Input id="email" name="email" type="email" autoComplete="email" value={formData.email} onChange={handleInputChange} placeholder="jan@bedrijf.nl" className={cn(errors.email && "border-destructive")} />
+                        <FieldError message={errors.email} />
+                      </div>
+                      <div>
+                        <Label htmlFor="telefoon">{t("home.bavPhone")} *</Label>
+                        <Input id="telefoon" name="telefoon" type="tel" autoComplete="tel" value={formData.telefoon} onChange={handleInputChange} placeholder="0612345678" className={cn(errors.telefoon && "border-destructive")} />
+                        <FieldError message={errors.telefoon} />
+                      </div>
+                    </div>
                   </motion.div>
                 )}
 
@@ -717,7 +726,7 @@ export function BAVApplicationModule() {
                         <FieldError message={errors.beroep} />
                       </div>
                       <div>
-                        <Label htmlFor="functie">{t("home.bavFunction")} *</Label>
+                        <Label htmlFor="functie">{t("home.bavFunction")} (optioneel)</Label>
                         <Input id="functie" name="functie" value={formData.functie} onChange={handleInputChange} placeholder={t("bavApp.functionPlaceholder")} className={cn(errors.functie && "border-destructive")} />
                         <FieldError message={errors.functie} />
                       </div>
@@ -773,27 +782,17 @@ export function BAVApplicationModule() {
                           <FieldError message={errors.achternaam} />
                         </div>
                       </div>
-                      <div>
-                        <Label htmlFor="email">{t("home.bavEmail")} *</Label>
-                        <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} placeholder="jan@bedrijf.nl" className={cn(errors.email && "border-destructive")} />
-                        <FieldError message={errors.email} />
-                      </div>
-                      <div>
-                        <Label htmlFor="telefoon">{t("home.bavPhone")} *</Label>
-                        <Input id="telefoon" name="telefoon" type="tel" value={formData.telefoon} onChange={handleInputChange} placeholder="0612345678" className={cn(errors.telefoon && "border-destructive")} />
-                        <FieldError message={errors.telefoon} />
-                      </div>
 
                       <div className="border-t border-border pt-4">
                         <div>
-                          <Label htmlFor="opdrachtgever">{t("home.bavClient")} *</Label>
+                          <Label htmlFor="opdrachtgever">{t("home.bavClient")} (optioneel)</Label>
                           <Input id="opdrachtgever" name="opdrachtgever" value={formData.opdrachtgever} onChange={handleInputChange} className={cn(errors.opdrachtgever && "border-destructive")} />
                           <FieldError message={errors.opdrachtgever} />
                         </div>
                       </div>
 
                       <div className="border-t border-border pt-4">
-                        <Label className="text-sm font-medium mb-3 block">{t("home.bavMediator")} *</Label>
+                        <Label className="text-sm font-medium mb-3 block">{t("home.bavMediator")} (optioneel)</Label>
                         <div className="grid grid-cols-2 gap-3">
                           <button onClick={() => { setViaBemiddelaar(true); if (errors.bemiddelaar) setErrors(prev => { const n = { ...prev }; delete n.bemiddelaar; return n; }); }}
                             style={viaBemiddelaar === true ? { borderColor: '#16A34A', backgroundColor: '#F0FDF4', color: '#16A34A' } : undefined}
@@ -900,7 +899,7 @@ export function BAVApplicationModule() {
                         <h4 className="font-medium mb-3">{t("home.bavStep4")}</h4>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("home.bavIban")}</span><span className="uppercase tracking-wider">{formData.iban || "-"}</span></div>
-                          <div className="flex justify-between"><span className="text-muted-foreground">Doorlopende SEPA-machtiging</span><span>{incassoAkkoord ? `Gegeven (kenmerk ${mandaatkenmerkVoor(leadId)})` : "Niet gegeven"}</span></div>
+                          <div className="flex justify-between gap-3"><span className="text-muted-foreground">Doorlopende SEPA-machtiging</span><span className="min-w-0 break-all text-right">{incassoAkkoord ? `Gegeven (kenmerk ${mandaatkenmerkVoor(leadId)})` : "Niet gegeven"}</span></div>
                         </div>
                       </div>
 
@@ -910,17 +909,17 @@ export function BAVApplicationModule() {
                         <p className="text-xs text-muted-foreground">
                           Door op 'Verstuur aanvraag' te klikken bevestig je dat je deze documenten hebt gelezen.
                         </p>
-                        <div className="grid sm:grid-cols-2 gap-2">
+                        <div className="grid min-w-0 sm:grid-cols-2 gap-2">
                           {wizardDocumenten(formData.sector).map((doc) => (
                             <a
                               key={doc.href + doc.title}
                               href={doc.href}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex items-center gap-2 p-2 rounded border border-border hover:border-accent hover:bg-accent/5 transition-colors text-xs"
+                              className="flex min-w-0 items-center gap-2 p-2 rounded border border-border hover:border-accent hover:bg-accent/5 transition-colors text-xs"
                             >
                               <FileCheck className="h-4 w-4 text-accent flex-shrink-0" />
-                              <span className="truncate">{doc.title}</span>
+                              <span className="min-w-0 break-words">{doc.title}</span>
                               <ExternalLink className="h-3 w-3 ml-auto flex-shrink-0 opacity-60" />
                             </a>
                           ))}

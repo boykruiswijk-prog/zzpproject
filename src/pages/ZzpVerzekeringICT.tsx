@@ -8,6 +8,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Monitor, ShieldCheck, Clock } from "lucide-react";
+import { BAVApplicationModule } from "@/components/home/BAVApplicationModule";
+import { bavPakketten, formatMiljoenKort } from "@/data/bavPakketten";
 import { LeesMeer } from "@/components/kennisbank/LeesMeer";
 
 import serviceVerzekeringen from "@/assets/service-verzekeringen.webp";
@@ -15,6 +17,10 @@ import teamMeeting from "@/assets/team-meeting.webp";
 import officeCoffee from "@/assets/office-coffee.webp";
 
 const SEO = seoRoute("/zzp-verzekering-ict");
+
+const PAKKET = bavPakketten[0];
+const BAV_DEKKING = formatMiljoenKort(PAKKET.dekkingen.bav.perGebeurtenis);
+const AVB_DEKKING = formatMiljoenKort(PAKKET.dekkingen.avb.perGebeurtenis);
 
 const faqs = [
   {
@@ -25,7 +31,7 @@ const faqs = [
   {
     question: "Wat is de minimale dekking voor ICT-freelancers?",
     answer:
-      "In de ICT-sector is €500.000 per aanspraak gebruikelijk. Voor grotere opdrachtgevers (overheid, banken) kan €1.000.000 vereist zijn. Wij adviseren je op maat.",
+      `Onze combinatiepolis dekt standaard ${BAV_DEKKING} BAV en ${AVB_DEKKING} AVB per aanspraak. Twijfel je over de eis in je contract? Wij kijken gratis mee.`,
   },
   {
     question: "Dekt een BAV ook schade door een datalek?",
@@ -64,7 +70,7 @@ export default function ZzpVerzekeringICT() {
           icon: Monitor,
           title: "Veelgevraagd door opdrachtgevers",
           description:
-            "De meeste grote ICT-opdrachtgevers eisen een BAV-polis met minimaal €500.000 dekking. ZP Zaken regelt dit snel en zorgt dat je voldoet.",
+            `De meeste grote ICT-opdrachtgevers eisen een BAV-polis. Bij ons ben je standaard verzekerd voor ${BAV_DEKKING} BAV en ${AVB_DEKKING} AVB per aanspraak.`,
         },
         {
           icon: ShieldCheck,
@@ -101,7 +107,9 @@ export default function ZzpVerzekeringICT() {
       ctaTitle="Vraag gratis advies aan"
       ctaSubtitle="Vertel ons wat je doet en voor wie. Wij regelen de juiste dekking."
       ctaButton="Vraag gratis advies aan"
+      aanvraag="direct"
     >
+      <BAVApplicationModule initialSector="ict" />
       <section className="section-padding bg-background">
         <div className="container-wide">
           <div className="max-w-3xl mx-auto">

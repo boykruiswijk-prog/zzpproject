@@ -1,3 +1,4 @@
+import { openTerugbelKlik } from "@/components/shared/TerugbelDialog";
 import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -198,7 +199,7 @@ export function Header() {
             className="bg-foreground/70 text-background border-background/20 hover:bg-foreground/80 hover:text-background backdrop-blur-sm shadow-sm"
             asChild
           >
-            <LocalizedLink to="/contact">{t("nav.gratisAdvies")}</LocalizedLink>
+            <LocalizedLink to="/contact" onClick={openTerugbelKlik}>{t("nav.gratisAdvies")}</LocalizedLink>
           </Button>
         </div>
 
@@ -272,7 +273,7 @@ export function Header() {
                 {t("nav.phone")}
               </a>
               <Button variant="accent" className="mx-4" asChild>
-                <LocalizedLink to="/contact" onClick={() => setIsOpen(false)}>{t("nav.gratisPersoonlijk gesprek")}</LocalizedLink>
+                <LocalizedLink to="/contact" onClick={(e) => { setIsOpen(false); openTerugbelKlik(e); }}>{t("nav.gratisPersoonlijk gesprek")}</LocalizedLink>
               </Button>
             </div>
           </nav>

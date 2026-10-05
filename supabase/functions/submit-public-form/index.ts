@@ -8,6 +8,7 @@ import { samenvattingVoorTeam } from "../_shared/zeker.ts";
 import { saneerFormulier, saneerPagina } from "../_shared/leadVelden.ts";
 import { resolveEnvironment } from "../_shared/environment.ts";
 import { saneerAttributie } from "../_shared/attributie.ts";
+import { isNlTelefoon, normaliseerNlTelefoon } from "../_shared/telefoon.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -107,13 +108,23 @@ Deno.serve(async (req) => {
       payload.type = "contact";
     }
 
-    // E-mail is voor elk formulier verplicht behalve de suggestiebox (en optioneel bij een chat-terugbelverzoek).
+    // Compact terugbelverzoek (naam + telefoon): e-mail optioneel, telefoon en toestemming verplicht.
+    const isTerugbel = table === "leads" && !chatSessie && extraIn?.formulier_naam === "Terugbelverzoek";
+    if (isTerugbel) {
+      const tel = String(payload.telefoon ?? "");
+      if (!isNlTelefoon(tel)) return json({ success: false, error: "Vul een geldig telefoonnummer in." }, 400);
+      if (extraIn?.toestemming !== true) return json({ success: false, error: "Toestemming is verplicht." }, 400);
+      payload.telefoon = normaliseerNlTelefoon(tel);
+      payload.type = "contact";
+    }
+
+    // E-mail is voor elk formulier verplicht behalve de suggestiebox (en optioneel bij een terugbelverzoek).
     const email = typeof payload.email === "string" ? payload.email.toLowerCase() : "";
     if (table === "collective_suggestions") {
       if (email && !EMAIL_RE.test(email)) return json({ success: false, error: "Ongeldig e-mailadres." }, 400);
       if (!payload.suggestie) return json({ success: false, error: "Vul een suggestie in." }, 400);
       if (email) payload.email = email;
-    } else if (chatSessie && !email) {
+    } else if ((chatSessie || isTerugbel) && !email) {
       payload.email = "";
     } else {
       if (!EMAIL_RE.test(email)) return json({ success: false, error: "Ongeldig e-mailadres." }, 400);
@@ -202,6 +213,20 @@ Deno.serve(async (req) => {
         });
       } catch (e) {
         console.error("submit-public-form: teammail chat mislukt", e instanceof Error ? e.message : e);
+      }
+    }
+
+    // Compact terugbelverzoek: interne melding (info@ + Boy) server-side via de contactroute, nooit een klantmail.
+    if (isTerugbel && data?.id) {
+      try {
+        await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-notification`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${Deno.env.get("SUPABASE_ANON_KEY") ?? ""}`,
+            ...(req.headers.get("origin") ? { origin: req.headers.get("origin")! } : {}) },
+          body: JSON.stringify({ type: "contact", lead_id: data.id }),
+        });
+      } catch (e) {
+        console.error("submit-public-form: teammail terugbel mislukt", e instanceof Error ? e.message : e);
       }
     }
 

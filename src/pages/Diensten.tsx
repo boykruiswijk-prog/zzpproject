@@ -1,3 +1,4 @@
+import { openTerugbelKlik } from "@/components/shared/TerugbelDialog";
 import { seoRoute } from "@/config/seoRoutes";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { SEOHead } from "@/components/SEOHead";
@@ -97,7 +98,7 @@ export default function Diensten() {
         backgroundImage={zpLogoGlass}
       >
         <Button variant="accent" size="lg" asChild>
-          <LocalizedLink to="/contact">{t("diensten.ctaAdvies")}<ArrowRight className="h-5 w-5" /></LocalizedLink>
+          <LocalizedLink to="/contact" onClick={openTerugbelKlik}>{t("diensten.ctaAdvies")}<ArrowRight className="h-5 w-5" /></LocalizedLink>
         </Button>
       </PageHero>
 

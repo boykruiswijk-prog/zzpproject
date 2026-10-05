@@ -1,3 +1,4 @@
+import { openTerugbelKlik } from "@/components/shared/TerugbelDialog";
 import { seoRoute } from "@/config/seoRoutes";
 import { SITE_CONFIG } from "@/config/site";
 import { LocalizedLink } from "@/components/LocalizedLink";
@@ -285,7 +286,7 @@ export default function SocialMedia() {
             </p>
             <div className="flex flex-wrap justify-center gap-4 mb-8">
               <Button variant="accent" size="lg" asChild>
-                <LocalizedLink to="/contact">Vrijblijvend gesprek <ArrowRight className="h-4 w-4" /></LocalizedLink>
+                <LocalizedLink to="/contact" onClick={openTerugbelKlik}>Vrijblijvend gesprek <ArrowRight className="h-4 w-4" /></LocalizedLink>
               </Button>
               <Button size="lg" variant="outline" className="bg-primary-foreground/10 text-primary-foreground border-primary-foreground/30 hover:bg-primary-foreground/20" asChild>
                 <a href="tel:0204573077"><Phone className="h-4 w-4" /> Bel 020 - 457 3077</a>

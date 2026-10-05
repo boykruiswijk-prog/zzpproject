@@ -220,7 +220,8 @@ serve(async (req) => {
         // Volledige veldenlijst uit het leadrecord; e-mail en telefoon bovenaan.
         const { velden, bericht } = interneMailVelden(lead as Record<string, unknown>);
         const testPrefix = (lead as any).is_test ? "[TEST] " : "";
-        emails.push(internEmail(from, `${testPrefix}Nieuw contactverzoek via zpzaken: ${naam}`, velden, bericht));
+        const isTerugbel = (lead as any).extra_data?.formulier_naam === "Terugbelverzoek";
+        emails.push(internEmail(from, `${testPrefix}${isTerugbel ? "Terugbelverzoek" : "Nieuw contactverzoek"} via zpzaken: ${naam}`, velden, bericht));
       }
     }
 

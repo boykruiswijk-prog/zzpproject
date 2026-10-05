@@ -8,6 +8,9 @@ import { ArrowRight, Sparkles, CheckCircle, LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { MiniSocialProof } from "@/components/shared/MiniSocialProof";
 import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
+import { openTerugbel, openTerugbelKlik } from "@/components/shared/TerugbelDialog";
+import { scrollNaarAanvraag } from "@/lib/scrollNaarAanvraag";
+import { vanafPrijsregel } from "@/data/bavPakketten";
 import teamCheers from "@/assets/team-cheers.webp";
 
 interface Benefit {
@@ -37,6 +40,8 @@ interface ServicePageTemplateProps {
   ctaSubtitle: string;
   ctaButton: string;
   children?: ReactNode;
+  /** Productpagina-hero: "direct" = prijsregel + Direct afsluiten naar ingebed formulier; "terugbel" = wij regelen het. */
+  aanvraag?: "direct" | "terugbel";
   schema?: Record<string, unknown>;
 }
 
@@ -63,6 +68,7 @@ export function ServicePageTemplate({
   ctaSubtitle,
   ctaButton,
   children,
+  aanvraag,
   schema,
 }: ServicePageTemplateProps) {
   return (
@@ -82,11 +88,32 @@ export function ServicePageTemplate({
         badge={{ icon: <Sparkles className="h-4 w-4" />, text: badge }}
         backgroundImage={heroImage}
       >
-        <Button variant="accent" size="lg" asChild>
-          <LocalizedLink to="/contact">
-            Neem contact op <ArrowRight className="h-5 w-5" />
-          </LocalizedLink>
-        </Button>
+        {aanvraag === "direct" ? (
+          <div className="space-y-3">
+            <p className="font-semibold text-white">{vanafPrijsregel()}</p>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button variant="accent" size="lg" asChild>
+                <a href="#combinatiepolis" onClick={(e) => scrollNaarAanvraag(e)}>Direct afsluiten <ArrowRight className="h-5 w-5" /></a>
+              </Button>
+              <Button variant="heroOutline" size="lg" asChild>
+                <LocalizedLink to="/contact" onClick={openTerugbelKlik}>Vrijblijvend advies</LocalizedLink>
+              </Button>
+            </div>
+          </div>
+        ) : aanvraag === "terugbel" ? (
+          <div className="space-y-3">
+            <p className="font-semibold text-white">Wij regelen het voor je, je hoort binnen 1 werkdag van ons.</p>
+            <Button variant="accent" size="lg" onClick={openTerugbel}>
+              Bel mij terug <ArrowRight className="h-5 w-5" />
+            </Button>
+          </div>
+        ) : (
+          <Button variant="accent" size="lg" asChild>
+            <LocalizedLink to="/contact">
+              Neem contact op <ArrowRight className="h-5 w-5" />
+            </LocalizedLink>
+          </Button>
+        )}
       </PageHero>
 
       {/* Benefits - 3 columns */}
@@ -123,7 +150,7 @@ export function ServicePageTemplate({
         return (
           <section
             key={i}
-            className={`section-padding ${i % 2 === 0 ? "bg-background" : "bg-secondary"}`}
+            className={`section-padding overflow-x-clip ${i % 2 === 0 ? "bg-background" : "bg-secondary"}`}
           >
             <div className="container-wide">
               <div className={`grid lg:grid-cols-2 gap-12 items-center ${!imageLeft ? "lg:grid-flow-col-dense" : ""}`}>
@@ -204,7 +231,7 @@ export function ServicePageTemplate({
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
               <Button size="lg" asChild className="bg-white text-accent hover:bg-white/90 shadow-lg">
-                <LocalizedLink to="/contact">
+                <LocalizedLink to="/contact" onClick={openTerugbelKlik}>
                   {ctaButton} <ArrowRight className="h-5 w-5" />
                 </LocalizedLink>
               </Button>
