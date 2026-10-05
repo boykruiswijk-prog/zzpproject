@@ -369,6 +369,8 @@ function routeSourceFiles(root: string): Map<string, string[]> {
  */
 const LANG_NOINDEX_GUARD = `<script>(function(){if(/^\\/(en|de|fr)(\\/|$)/.test(location.pathname)){var c=document.querySelector('link[rel="canonical"]');if(c)c.remove();var m=document.querySelector('meta[name="robots"]');if(!m){m=document.createElement("meta");m.name="robots";document.head.appendChild(m);}m.content="noindex, follow";}})();</script>`;
 
+const HOME_CANONICAL_SCRIPT = `<script>(function(){if(location.pathname==="/"&&!document.querySelector('link[rel="canonical"]')){var l=document.createElement("link");l.rel="canonical";l.href="${SITE_CONFIG.url}/";l.setAttribute("data-rh","true");document.head.appendChild(l);}})();</script>`;
+
 /** JSON-LD uit de Helmet-head van de SSR-render. */
 function helmetJsonLd(helmetScript: string | undefined): JsonLd[] {
   if (!helmetScript) return [];
@@ -579,6 +581,12 @@ export async function prerender(distDir: string, env: Record<string, string> = {
         write(`/${lang}`, langHtml);
       }
       html = html.replace("</head>", `  ${LANG_NOINDEX_GUARD}\n  </head>`);
+      // dist/index.html is ook de terugval voor niet-geprerenderde routes (nieuwe
+      // artikelen): daar mag geen statische canonical naar "/" staan. Alleen op het
+      // echte pad "/" wordt de canonical direct bij laden gezet; elders doet de app het.
+      html = html
+        .replace(/\s*<link rel="canonical"[^>]*>/, "")
+        .replace("</head>", `  ${HOME_CANONICAL_SCRIPT}\n  </head>`);
     }
     write(route.path, html);
   }

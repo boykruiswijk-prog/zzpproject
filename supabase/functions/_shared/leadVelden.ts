@@ -1,3 +1,4 @@
+import { attributieRegels } from "./attributie.ts";
 // Eén bron voor "alles wat een bezoeker invult" bij een lead.
 // - Formulieren sturen extra_data.formulier mee als geordende lijst [{label, waarde}]
 //   (jsonb bewaart de volgorde van objectsleutels niet, een lijst wel).
@@ -258,7 +259,9 @@ export function leadWeergave(lead: Rec): LeadWeergave {
     ...rij("Aantal medewerkers", eerste(ex("aantal_medewerkers"), pa("Aantal medewerkers"))),
     ...rij("Aantal leden", pa("Aantal leden")),
     ...rij("Voorkeursmoment terugbellen", eerste(ex("voorkeursmoment"), pa("Voorkeursmoment"))),
+    ...attributieRegels(extra.attributie).flatMap(([l, w]) => rij(l, w)),
   ];
+  gebruiktExtra.add("attributie");
   if (extra.sector && extra.branche) gebruiktExtra.add("sector");
 
   const shown = new Set([...contact, ...aanvraag].map((f) => `${f.label}|${f.waarde}`));

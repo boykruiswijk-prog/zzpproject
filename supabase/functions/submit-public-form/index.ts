@@ -7,6 +7,7 @@ import { normaliseerAdres } from "../_shared/adresNormalisatie.ts";
 import { samenvattingVoorTeam } from "../_shared/zeker.ts";
 import { saneerFormulier, saneerPagina } from "../_shared/leadVelden.ts";
 import { resolveEnvironment } from "../_shared/environment.ts";
+import { saneerAttributie } from "../_shared/attributie.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -144,6 +145,10 @@ Deno.serve(async (req) => {
       if (formulier.length) extraUit.formulier = formulier; else delete extraUit.formulier;
       extraUit.formulier_naam = typeof extraUit.formulier_naam === "string" ? extraUit.formulier_naam.slice(0, 100) : null;
       extraUit.pagina = saneerPagina(extraUit.pagina);
+      // Herkomst (utm/gclid/referrer/landingspagina) uitsluitend uit het aparte veld, opgeschoond.
+      delete extraUit.attributie;
+      const attributie = saneerAttributie(body?.attributie);
+      if (attributie) extraUit.attributie = attributie;
       payload.extra_data = extraUit;
       // Inzendingen vanuit preview/testomgeving zijn altijd testrecords (zelfde regel als chat Zeker).
       payload.is_test = !resolveEnvironment(req).isProduction;
@@ -157,7 +162,8 @@ Deno.serve(async (req) => {
       const extra = payload.extra_data as Record<string, unknown>;
       const moment = String(extra.voorkeursmoment ?? "").slice(0, 100);
       payload.extra_data = { bron: "chat-zeker", chat_sessie_id: chatSessie.id, voorkeursmoment: moment, toestemming: true, toestemming_op: new Date().toISOString(),
-        formulier: extra.formulier, formulier_naam: extra.formulier_naam, pagina: extra.pagina };
+        formulier: extra.formulier, formulier_naam: extra.formulier_naam, pagina: extra.pagina,
+        ...(extra.attributie ? { attributie: extra.attributie } : {}) };
       payload.opmerkingen = `Terugbelverzoek via chatassistent Zeker.\nVoorkeursmoment: ${moment || "-"}\nVraag: ${String(payload.opmerkingen ?? "-").slice(0, 1000)}\n\nSamenvatting chat:\n${chatSamenvatting}`;
       payload.is_test = chatSessie.is_test;
     }

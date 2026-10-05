@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
+import { scrollNaarAanvraag } from "@/lib/scrollNaarAanvraag";
 import { Shield, Heart, Scale, ArrowRight, CheckCircle, Globe, Sparkles, Euro, Star } from "lucide-react";
 
 import { TrustBar } from "@/components/shared/TrustBar";
@@ -27,9 +28,9 @@ export default function Verzekeringen() {
   const { t } = useTranslation();
 
   const insurances = [
-    { id: "combinatiepolis", icon: Shield, title: t("insuranceData.combiTitle"), subtitle: t("insuranceData.combiSubtitle"), description: t("insuranceData.combiDesc"), features: t("insuranceData.combiFeatures", { returnObjects: true }) as string[], forWho: t("insuranceData.combiForWho"), price: t("insuranceData.combiPrice"), canApplyOnline: true, isUnique: true, isMostChosen: true },
+    { id: "bav-avb-combinatiepolis", icon: Shield, title: t("insuranceData.combiTitle"), subtitle: t("insuranceData.combiSubtitle"), description: t("insuranceData.combiDesc"), features: t("insuranceData.combiFeatures", { returnObjects: true }) as string[], forWho: t("insuranceData.combiForWho"), price: t("insuranceData.combiPrice"), canApplyOnline: true, isUnique: true, isMostChosen: true },
     { id: "arbeidsongeschiktheid", icon: Heart, title: t("insuranceData.aovTitle"), subtitle: t("insuranceData.aovSubtitle"), description: t("insuranceData.aovDesc"), features: t("insuranceData.aovFeatures", { returnObjects: true }) as string[], forWho: t("insuranceData.aovForWho"), price: t("insuranceData.aovPrice"), canApplyOnline: false },
-    { id: "rechtsbijstand", icon: Scale, title: t("insuranceData.rechtsbijstandTitle"), subtitle: t("insuranceData.rechtsbijstandSubtitle"), description: t("insuranceData.rechtsbijstandDesc"), features: t("insuranceData.rechtsbijstandFeatures", { returnObjects: true }) as string[], forWho: t("insuranceData.rechtsbijstandForWho"), price: t("insuranceData.rechtsbijstandPrice"), canApplyOnline: true },
+    { id: "rechtsbijstand", icon: Scale, title: t("insuranceData.rechtsbijstandTitle"), subtitle: t("insuranceData.rechtsbijstandSubtitle"), description: t("insuranceData.rechtsbijstandDesc"), features: t("insuranceData.rechtsbijstandFeatures", { returnObjects: true }) as string[], forWho: t("insuranceData.rechtsbijstandForWho"), price: t("insuranceData.rechtsbijstandPrice"), canApplyOnline: false },
   ];
   
 
@@ -53,9 +54,14 @@ export default function Verzekeringen() {
         badge={{ icon: <Sparkles className="h-4 w-4" />, text: t("verzekeringenPage.badge") }}
         backgroundImage={teamBoyCalling}
       >
-        <Button variant="accent" size="lg" asChild>
-          <LocalizedLink to="/contact">{t("verzekeringenPage.ctaAdvies")}<ArrowRight className="h-5 w-5" /></LocalizedLink>
-        </Button>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Button variant="accent" size="lg" asChild>
+            <a href="#combinatiepolis" onClick={(e) => scrollNaarAanvraag(e)}>Direct afsluiten<ArrowRight className="h-5 w-5" /></a>
+          </Button>
+          <Button variant="heroOutline" size="lg" asChild>
+            <LocalizedLink to="/contact">Vrijblijvend advies</LocalizedLink>
+          </Button>
+        </div>
       </PageHero>
 
       {/* BAV Wizard */}
@@ -140,9 +146,9 @@ export default function Verzekeringen() {
                       <div className="flex flex-wrap items-center gap-3">
                         {insurance.canApplyOnline && (
                           <Button variant="accent" asChild>
-                            <LocalizedLink to="/#combinatiepolis">
+                            <a href="#combinatiepolis" onClick={(e) => scrollNaarAanvraag(e)}>
                               <Globe className="h-4 w-4" />{t("verzekeringenPage.onlineApply")}
-                            </LocalizedLink>
+                            </a>
                           </Button>
                         )}
                         <Button variant={insurance.canApplyOnline ? "outline" : "accent"} asChild>

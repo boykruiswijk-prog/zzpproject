@@ -3,6 +3,8 @@
 // de edge function submit-public-form / _shared/antiSpam.ts.
 import { useCallback, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { leesAttributie } from "@/lib/attributie";
+import { trackGenerateLead, trackChatHandoff } from "@/lib/tracking";
 
 /** Naam van het onzichtbare veld. Bots vullen 'm, mensen zien 'm niet. */
 export const HONEYPOT_NAME = "website_url";
@@ -67,7 +69,7 @@ export async function submitPublicForm<T extends Record<string, unknown>>(
   guard: { honeypot: string; elapsedMs: () => number },
 ): Promise<{ id: string | null }> {
   const { data, error } = await supabase.functions.invoke("submit-public-form", {
-    body: { table, row, hp: guard.honeypot, ms: guard.elapsedMs() },
+    body: { table, row, hp: guard.honeypot, ms: guard.elapsedMs(), attributie: table === "leads" ? leesAttributie() : undefined },
   });
 
   if (error) {
@@ -89,6 +91,17 @@ export async function submitPublicForm<T extends Record<string, unknown>>(
 
   if (data && data.success === false) {
     throw new PublicFormError(data.error ?? "Verzenden mislukt.", data.reason);
+  }
+
+  if (table === "leads") {
+    const extra = (row as Record<string, unknown>).extra_data as Record<string, unknown> | undefined;
+    const naam = String(extra?.formulier_naam ?? "");
+    const type = String((row as Record<string, unknown>).type ?? "");
+    if (extra?.bron === "chat-zeker") { trackGenerateLead("terugbel"); trackChatHandoff("terugbelverzoek"); }
+    else if (/terugbel/i.test(naam)) trackGenerateLead("terugbel");
+    else if (type === "offerte-aanvraag") trackGenerateLead("offerte");
+    else if (type === "contact") trackGenerateLead("contact");
+    else trackGenerateLead("aanvraag");
   }
 
   return { id: data?.id ?? null };

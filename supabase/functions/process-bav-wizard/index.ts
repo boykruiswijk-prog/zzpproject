@@ -81,10 +81,14 @@ interface BavSubmission {
   /** Volledige formulierinhoud als geordende lijst {label, waarde}. */
   formulier?: unknown;
   formulier_naam?: string;
+  /** Herkomst van het bezoek (first-party, sessionStorage). */
+  attributie?: unknown;
 }
 
 import { saneerFormulier, saneerPagina } from "../_shared/leadVelden.ts";
 import { resolveEnvironment } from "../_shared/environment.ts";
+import { saneerAttributie } from "../_shared/attributie.ts";
+import { normaliseerNlTelefoon } from "../_shared/telefoon.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -108,6 +112,7 @@ Deno.serve(async (req) => {
   try {
     const t0 = Date.now();
     const submission = (await req.json()) as BavSubmission;
+    if (typeof submission.telefoon === "string") submission.telefoon = normaliseerNlTelefoon(submission.telefoon);
 
     if (
       !submission?.gekozen_pakket ||
@@ -256,6 +261,7 @@ Deno.serve(async (req) => {
           formulier_naam: typeof submission.formulier_naam === "string" ? submission.formulier_naam.slice(0, 100) : "Online aanvraag BAV + AVB",
           pagina: saneerPagina(submission.pagina_url),
           sector: submission.sector,
+          ...(saneerAttributie(submission.attributie) ? { attributie: saneerAttributie(submission.attributie) } : {}),
           ...(handmatigeAcceptatie
             ? { handmatige_acceptatie: { reden: HANDMATIGE_ACCEPTATIE_REDEN, sector: submission.sector } }
             : {}),

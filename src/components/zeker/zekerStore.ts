@@ -1,10 +1,12 @@
 // Klein gedeeld open/dicht-signaal voor chatassistent Zeker (zit in de hoofdbundel).
 import { useSyncExternalStore } from "react";
+import { trackChatOpen } from "@/lib/tracking";
 
 let open = false;
 const listeners = new Set<() => void>();
 
 export function zetZekerOpen(v: boolean) {
+  if (v && !open) trackChatOpen();
   open = v;
   listeners.forEach((l) => l());
 }
