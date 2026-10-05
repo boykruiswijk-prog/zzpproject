@@ -86,6 +86,8 @@ export function KennisbankCategoryPage({
             </Button>
           </div>
 
+          {children}
+
           {isLoading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(3)].map((_, i) => (

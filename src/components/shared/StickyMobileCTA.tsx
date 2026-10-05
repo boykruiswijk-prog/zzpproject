@@ -9,6 +9,8 @@ import { AANVRAAG_ID, scrollNaarAanvraag } from "@/lib/scrollNaarAanvraag";
 
 const HIDDEN_PATHS = ["/contact"];
 const AANVRAAG_PATHS = ["/", "/verzekeringen"];
+/** Pagina's zonder eigen formulier waar de actieknop naar het formulier op /verzekeringen gaat. */
+const AANVRAAG_LINK_PATHS = ["/bav-zzp-vergelijken"];
 
 function WhatsAppIcoon() {
   return (
@@ -43,8 +45,9 @@ function useAanvraagInBeeld(actief: boolean) {
 export function StickyMobileCTA() {
   const location = useLocation();
   const path = location.pathname.replace(/^\/(nl|en|de|fr)(?=\/|$)/, "") || "/";
-  const aanvraagPagina = AANVRAAG_PATHS.includes(path);
-  const formulierInBeeld = useAanvraagInBeeld(aanvraagPagina);
+  const linkPagina = AANVRAAG_LINK_PATHS.includes(path);
+  const aanvraagPagina = AANVRAAG_PATHS.includes(path) || linkPagina;
+  const formulierInBeeld = useAanvraagInBeeld(aanvraagPagina && !linkPagina);
   const chatToegestaan = !zekerVerborgenOp(location.pathname);
 
   if (HIDDEN_PATHS.includes(path) || path.startsWith("/admin")) return null;
@@ -56,14 +59,21 @@ export function StickyMobileCTA() {
     const maand = getPakket("maandelijks");
     return (
       <div className={balk}>
-        <a
-          href={`#${AANVRAAG_ID}`}
-          onClick={(e) => scrollNaarAanvraag(e)}
-          className="flex flex-1 items-center justify-center gap-2 bg-accent text-center text-accent-foreground"
-        >
-          <Zap className="h-4 w-4" aria-hidden="true" />
-          Afsluiten vanaf €{maand.prijs}/mnd
-        </a>
+        {linkPagina ? (
+          <Link to={`/verzekeringen#${AANVRAAG_ID}`} className="flex flex-1 items-center justify-center gap-2 bg-accent text-center text-accent-foreground">
+            <Zap className="h-4 w-4" aria-hidden="true" />
+            Afsluiten vanaf €{maand.prijs}/mnd
+          </Link>
+        ) : (
+          <a
+            href={`#${AANVRAAG_ID}`}
+            onClick={(e) => scrollNaarAanvraag(e)}
+            className="flex flex-1 items-center justify-center gap-2 bg-accent text-center text-accent-foreground"
+          >
+            <Zap className="h-4 w-4" aria-hidden="true" />
+            Afsluiten vanaf €{maand.prijs}/mnd
+          </a>
+        )}
         <a
           href={SITE_CONFIG.whatsappUrl}
           target="_blank"
