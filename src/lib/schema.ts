@@ -86,7 +86,7 @@ export function organizationSchema(extra: JsonLd = {}): JsonLd {
       { "@type": "PropertyValue", name: "KvK-nummer", value: SITE_CONFIG.registrations.kvk },
       { "@type": "PropertyValue", name: "Kifid-aansluitnummer", value: SITE_CONFIG.registrations.kifid },
     ],
-    areaServed: { "@type": "Country", name: "Netherlands" },
+    areaServed: "NL",
     ...extra,
   };
 }

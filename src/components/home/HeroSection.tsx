@@ -23,14 +23,14 @@ export function HeroSection() {
   return (
     <section className="relative min-h-[85vh] flex items-center overflow-hidden pb-14">
       <div className="absolute inset-0 z-0">
-        <img decoding="async" fetchpriority="high" src={teamWalking} alt="ZP Zaken" className="w-full h-full object-cover" />
+        <img decoding="async" fetchpriority="high" src={teamWalking} alt="ZP Zaken" width={W} height={H} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-foreground/95 via-foreground/85 to-foreground/70" />
       </div>
 
       <div className="container-wide relative z-10 py-16 lg:py-24">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.21, 0.47, 0.32, 0.98] }}
           >
@@ -45,7 +45,7 @@ export function HeroSection() {
             </motion.div>
 
             <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
               className="mb-6 leading-tight text-primary-foreground drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
@@ -55,7 +55,7 @@ export function HeroSection() {
             </motion.h1>
 
             <motion.p 
-              initial={{ opacity: 0, y: 20 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
               className="text-lg text-primary-foreground/80 mb-8 max-w-lg"
