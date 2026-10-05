@@ -1,11 +1,11 @@
 import { openTerugbelKlik } from "@/components/shared/TerugbelDialog";
-import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { MessageCircle, Phone, Zap } from "lucide-react";
 import { zekerVerborgenOp, zetZekerOpen } from "@/components/zeker/zekerStore";
 import { SITE_CONFIG } from "@/config/site";
 import { getPakket } from "@/data/bavPakketten";
 import { AANVRAAG_ID, scrollNaarAanvraag } from "@/lib/scrollNaarAanvraag";
+import { useAanvraagInBeeld } from "@/lib/useAanvraagInBeeld";
 
 const HIDDEN_PATHS = ["/contact"];
 const AANVRAAG_PATHS = ["/", "/verzekeringen"];
@@ -20,37 +20,17 @@ function WhatsAppIcoon() {
   );
 }
 
-/** True zolang het aanvraagformulier (deels) in beeld is. */
-function useAanvraagInBeeld(actief: boolean) {
-  const [inBeeld, setInBeeld] = useState(false);
-  useEffect(() => {
-    if (!actief || typeof IntersectionObserver === "undefined") { setInBeeld(false); return; }
-    let huidig: Element | null = null;
-    const io = new IntersectionObserver((entries) => setInBeeld(entries.some((e) => e.isIntersecting)), { threshold: 0, rootMargin: "0px 0px -40% 0px" });
-    // Het formulier wordt na verzenden opnieuw opgebouwd: element periodiek opnieuw koppelen.
-    const koppel = () => {
-      const el = document.getElementById(AANVRAAG_ID);
-      if (el === huidig) return;
-      if (huidig) io.unobserve(huidig);
-      huidig = el;
-      if (el) io.observe(el); else setInBeeld(false);
-    };
-    koppel();
-    const t = window.setInterval(koppel, 1000);
-    return () => { window.clearInterval(t); io.disconnect(); };
-  }, [actief]);
-  return inBeeld;
-}
-
 export function StickyMobileCTA() {
   const location = useLocation();
   const path = location.pathname.replace(/^\/(nl|en|de|fr)(?=\/|$)/, "") || "/";
   const linkPagina = AANVRAAG_LINK_PATHS.includes(path);
   const aanvraagPagina = AANVRAAG_PATHS.includes(path) || linkPagina;
-  const formulierInBeeld = useAanvraagInBeeld(aanvraagPagina && !linkPagina);
+  const formulierInBeeld = useAanvraagInBeeld(!linkPagina);
   const chatToegestaan = !zekerVerborgenOp(location.pathname);
 
   if (HIDDEN_PATHS.includes(path) || path.startsWith("/admin")) return null;
+  // Nooit over het aanvraagformulier heen, op welke pagina het ook staat.
+  if (formulierInBeeld) return null;
 
   const balk = "fixed bottom-0 left-0 right-0 z-40 flex h-[calc(56px+env(safe-area-inset-bottom))] pb-[env(safe-area-inset-bottom)] text-sm font-semibold md:hidden";
 

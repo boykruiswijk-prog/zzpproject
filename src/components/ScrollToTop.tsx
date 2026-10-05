@@ -8,7 +8,7 @@ export function ScrollToTop() {
     if (hash) {
       // Small delay to ensure the page has rendered
       setTimeout(() => {
-        const element = document.getElementById(hash.replace("#", ""));
+        const element = document.getElementById(hash.replace("#", "").split("?")[0]);
         if (element) {
           element.scrollIntoView({ behavior: "smooth", block: "start" });
         }

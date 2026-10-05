@@ -1,6 +1,9 @@
 import { trackWhatsApp } from "@/lib/tracking";
+import { useAanvraagInBeeld } from "@/lib/useAanvraagInBeeld";
 
 export function WhatsAppFloatingButton() {
+  // Verborgen zolang het aanvraagformulier in beeld is, zodat de knop nooit over "Volgende" valt.
+  if (useAanvraagInBeeld()) return null;
   return (
     <a
       href="https://wa.me/31652064589"

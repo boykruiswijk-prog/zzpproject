@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import { Phone, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { trackPhone } from "@/lib/tracking";
+import { useAanvraagInBeeld } from "@/lib/useAanvraagInBeeld";
 
 export function StickyContactBar() {
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const formulierInBeeld = useAanvraagInBeeld();
 
   useEffect(() => {
     const onScroll = () => {
@@ -19,13 +21,13 @@ export function StickyContactBar() {
 
   return (
     <AnimatePresence>
-      {visible && (
+      {visible && !formulierInBeeld && (
         <motion.div
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="fixed bottom-4 right-24 z-50 hidden items-center gap-2 md:flex"
+          className="fixed bottom-4 right-24 z-50 hidden items-center gap-2 lg:flex"
         >
           <a
             href="tel:0204573077"
