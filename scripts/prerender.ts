@@ -376,7 +376,7 @@ function helmetJsonLd(helmetScript: string | undefined): JsonLd[] {
   for (const m of helmetScript.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)) {
     try {
       const v = JSON.parse(m[1]);
-      for (const item of Array.isArray(v) ? v : [v]) if (item && typeof item === "object") out.push(item as JsonLd);
+      for (const item of Array.isArray(v) ? v : [v]) if (item && typeof item === "object" && (item as Record<string, unknown>)["@id"] !== `${SITE_CONFIG.url}/#organization`) out.push(item as JsonLd); // organisatie staat al in index.html
     } catch {
       /* ongeldig blok overslaan */
     }
