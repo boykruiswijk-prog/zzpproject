@@ -60,8 +60,17 @@ export function cloudflareBulkCsv(redirectLines: string[], host = "zpzaken.nl"):
   const seen = new Set<string>();
   const veld = (v: string) => (/[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
   const push = (src: string, target: string, flags: string) => {
-    if (seen.has(src)) return;
-    seen.add(src);
+    // Cloudflare Bulk Redirects weigert dubbele bron-URL's na normalisatie
+    // (filters.api.duplicate_item_value): ontdubbel op gedecodeerd + lowercase.
+    const sleutel = (() => {
+      try {
+        return decodeURIComponent(src).toLowerCase();
+      } catch {
+        return src.toLowerCase();
+      }
+    })();
+    if (seen.has(sleutel)) return;
+    seen.add(sleutel);
     out.push([veld(src), veld(target), "301", flags].join(","));
   };
   for (const raw of redirectLines) {
