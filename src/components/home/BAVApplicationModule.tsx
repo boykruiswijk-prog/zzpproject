@@ -3,7 +3,7 @@ import { SITE_CONFIG } from "@/config/site";
 import { useState, useEffect, useRef } from "react";
 import { SepaMachtigingBlok, bouwFrontendMachtiging } from "@/components/shared/SepaMachtigingBlok";
 import { mandaatkenmerkVoor, redenBav } from "@/lib/sepaMachtiging";
-import { trackBeginCheckout, trackWizardStep, trackWizardValidationError, trackAddPaymentInfo, trackPurchase } from "@/lib/tracking";
+import { trackBeginCheckout, trackWizardStep, trackWizardValidationError, trackAddPaymentInfo, trackPurchase, jaarpremie } from "@/lib/tracking";
 import { leesAttributie } from "@/lib/attributie";
 import { isNlTelefoon, normaliseerNlTelefoon } from "../../../supabase/functions/_shared/telefoon";
 import { formatDateNL } from "@/lib/dateFormat";
@@ -400,7 +400,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
         });
         try { sessionStorage.removeItem(CONCEPT_KEY); } catch { /* geen opslag */ }
         conceptId.current = ""; laatsteConcept.current = "";
-        trackPurchase(returnedLeadId.slice(0, 8).toUpperCase(), selectedBavPakket.id, selectedBavPakket.name, selectedBavPakket.prijs);
+        trackPurchase(returnedLeadId, selectedBavPakket.id, selectedBavPakket.name, jaarpremie(selectedBavPakket));
        setIsSubmitted(true);
         setFormData({
           bedrijfsnaam: "", kvkNummer: "", sector: "", beroep: "", functie: "", aantalMedewerkers: "",
