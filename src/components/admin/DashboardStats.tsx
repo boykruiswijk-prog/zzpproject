@@ -12,9 +12,10 @@ export type DashboardTellers = {
   klanten: number; contracten_actief: number; mrr: number; arr: number;
   leads_totaal: number; leads_week: number; leads_maand: number; leads_omgezet: number;
   opzeggingen_te_koppelen: number; opzeggingen_te_verwerken: number;
-  planning_aantal: number; planning_bedrag: number;
-  planning_factureerbaar_aantal: number; planning_factureerbaar_bedrag: number;
-  planning_geblokkeerd_aantal: number;
+  /** Planning-velden zijn null voor teamleden zonder supervisor/admin-rechten. */
+  planning_aantal: number | null; planning_bedrag: number | null;
+  planning_factureerbaar_aantal: number | null; planning_factureerbaar_bedrag: number | null;
+  planning_geblokkeerd_aantal: number | null;
 };
 
 /** Eén bron voor alle dashboardtellers: RPC dashboard_tellers (CRM). */
@@ -64,7 +65,8 @@ export function DashboardStats() {
     { title: "Leads", value: t ? `${t.leads_week} / ${t.leads_maand}` : undefined, icon: Users, description: `deze week / deze maand · ${t?.leads_totaal ?? 0} totaal`, href: "/admin/leads" },
     { title: "Conversie leads", value: t ? `${conversie}%` : undefined, icon: TrendingUp, description: `${t?.leads_omgezet ?? 0} leads met status actief of klant`, href: "/admin/leads" },
     { title: "Opzeggingen te koppelen", value: t?.opzeggingen_te_koppelen, icon: UserX, description: `${t?.opzeggingen_te_verwerken ?? 0} gekoppeld, nog te verwerken`, href: "/admin/klanten#opzeggingen", let: (t?.opzeggingen_te_koppelen ?? 0) > 0 },
-    { title: "Facturatieplanning (30 dagen)", value: t ? `${t.planning_aantal} · ${formatEuro(t.planning_bedrag)}` : undefined, icon: CalendarClock, description: t ? `${t.planning_factureerbaar_aantal} factureerbaar (${formatEuro(t.planning_factureerbaar_bedrag)}) · ${t.planning_geblokkeerd_aantal} geblokkeerd` : "Periodes die de komende 30 dagen starten", href: "/admin/facturatieplanning" },
+    // Alleen tonen als de planning-velden gevuld zijn (supervisor/admin).
+    ...(t?.planning_aantal != null ? [{ title: "Facturatieplanning (30 dagen)", value: `${t.planning_aantal} · ${formatEuro(t.planning_bedrag ?? 0)}`, icon: CalendarClock, description: `${t.planning_factureerbaar_aantal} factureerbaar (${formatEuro(t.planning_factureerbaar_bedrag ?? 0)}) · ${t.planning_geblokkeerd_aantal} geblokkeerd`, href: "/admin/facturatieplanning" }] : []),
   ];
 
   return (
