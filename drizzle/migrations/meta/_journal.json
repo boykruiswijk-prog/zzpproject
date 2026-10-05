@@ -309,6 +309,13 @@
       "when": 1791203468816,
       "tag": "0043_mijn_acties_vandaag",
       "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1791203997898,
+      "tag": "0044_dashboard_tellers_planning_recht",
+      "breakpoints": true
     }
   ]
 }

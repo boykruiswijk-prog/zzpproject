@@ -12,9 +12,10 @@ export type DashboardTellers = {
   klanten: number; contracten_actief: number; mrr: number; arr: number;
   leads_totaal: number; leads_week: number; leads_maand: number; leads_omgezet: number;
   opzeggingen_te_koppelen: number; opzeggingen_te_verwerken: number;
-  planning_aantal: number; planning_bedrag: number;
-  planning_factureerbaar_aantal: number; planning_factureerbaar_bedrag: number;
-  planning_geblokkeerd_aantal: number;
+  /** Planning-velden zijn null voor teamleden zonder supervisor/admin-rechten. */
+  planning_aantal: number | null; planning_bedrag: number | null;
+  planning_factureerbaar_aantal: number | null; planning_factureerbaar_bedrag: number | null;
+  planning_geblokkeerd_aantal: number | null;
 };
 
 /** Eén bron voor alle dashboardtellers: RPC dashboard_tellers (CRM). */
