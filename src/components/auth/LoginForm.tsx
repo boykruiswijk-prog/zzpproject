@@ -30,6 +30,8 @@ async function callLoginGuard(body: Record<string, unknown>): Promise<GuardStatu
       locked: data.locked === true,
       minutesLeft: Number(data.minutesLeft ?? 0),
       attemptsLeft: Number(data.attemptsLeft ?? 0),
+      authenticated: data.authenticated === true,
+      session: data.session,
     }
   } catch {
     return OPEN_GUARD
@@ -39,14 +41,21 @@ async function callLoginGuard(body: Record<string, unknown>): Promise<GuardStatu
 const checkLoginGuard = (email: string) => callLoginGuard({ action: 'check', email })
 const attemptLogin = (email: string, password: string) => callLoginGuard({ action: 'attempt', email, password })
 
-export function LoginForm() {
+interface LoginFormProps {
+  /** Admin-URL om na geslaagde tweestapscode naartoe te gaan. */
+  doel?: string
+  /** Startstap, bv. wanneer een bestaande aal1-sessie binnenkomt. */
+  beginStap?: Step
+}
+
+export function LoginForm({ doel = '/admin', beginStap = 'credentials' }: LoginFormProps = {}) {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [step, setStep] = useState<Step>('credentials')
+  const [step, setStep] = useState<Step>(beginStap)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -115,14 +124,14 @@ export function LoginForm() {
       <MFAVerify
         onVerified={() => {
           toast.success('Welkom terug')
-          navigate('/admin', { replace: true })
+          navigate(doel, { replace: true })
         }}
         onCancel={handleCancelMfa}
       />
     )
   }
   if (step === 'mfa_enroll') {
-    return <MFAEnroll onEnrolled={() => navigate('/admin', { replace: true })} />
+    return <MFAEnroll onEnrolled={() => navigate(doel, { replace: true })} />
   }
 
   return (
