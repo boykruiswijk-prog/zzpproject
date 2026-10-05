@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { submitPublicForm, useFormGuard, PublicFormError } from "@/lib/antiSpam";
-import { trackGenerateLead } from "@/lib/tracking";
 import { maakFormulier } from "../../../supabase/functions/_shared/leadVelden";
 import { isNlTelefoon, normaliseerNlTelefoon } from "../../../supabase/functions/_shared/telefoon";
 import { LocalizedLink } from "@/components/LocalizedLink";
@@ -62,7 +61,6 @@ export function TerugbelDialog() {
           formulier: maakFormulier([["Naam", naam], ["Telefoon", tel], ["Voorkeursmoment", moment || "Geen voorkeur"], ["Toestemming terugbellen", "Ja"]]),
         },
       }, guard);
-      trackGenerateLead("terugbel");
       setKlaar(true);
     } catch (err) {
       setFout(err instanceof PublicFormError ? err.message : "Verzenden mislukt. Bel ons gerust op 020 - 457 3077.");

@@ -13,8 +13,12 @@ export const AI_VERWIJZERS = [
 
 export const ATTRIBUTIE_SLEUTELS = [
   "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content",
-  "gclid", "gbraid", "wbraid", "referrer", "landingspagina", "eerste_bezoek_op",
+  "gclid", "gbraid", "wbraid", "msclkid", "referrer", "landingspagina", "eerste_bezoek_op",
 ] as const;
+
+/** Advertentie-klik-ID's: alleen opgeslagen en verstuurd na toestemming marketing-cookies. */
+export const KLIK_ID_SLEUTELS = ["gclid", "gbraid", "wbraid", "msclkid"] as const;
+export type KlikIdSleutel = (typeof KLIK_ID_SLEUTELS)[number];
 
 export type AttributieSleutel = (typeof ATTRIBUTIE_SLEUTELS)[number];
 export type Kanaal = "ai" | "betaald" | "campagne" | "verwijzing" | "direct";
@@ -33,7 +37,7 @@ export function isAiVerwijzer(v: string | undefined | null): boolean {
 
 export function bepaalKanaal(a: Partial<Record<AttributieSleutel, string>>): Kanaal {
   if (isAiVerwijzer(a.referrer) || isAiVerwijzer(a.utm_source)) return "ai";
-  if (a.gclid || a.gbraid || a.wbraid) return "betaald";
+  if (a.gclid || a.gbraid || a.wbraid || a.msclkid) return "betaald";
   if (a.utm_source) return "campagne";
   if (a.referrer) return "verwijzing";
   return "direct";
@@ -57,7 +61,7 @@ export function saneerAttributie(x: unknown): Attributie | null {
     const v = r[k];
     if (typeof v !== "string") continue;
     let s = v.trim().slice(0, k === "referrer" || k === "landingspagina" ? 300 : 200);
-    if (k === "gclid" || k === "gbraid" || k === "wbraid") s = /^[\w-]+$/.test(s) ? s : "";
+    if ((KLIK_ID_SLEUTELS as readonly string[]).includes(k)) s = /^[\w-]+$/.test(s) ? s : "";
     if (k === "referrer") s = schoneUrl(s);
     if (k === "landingspagina") s = s.startsWith("/") ? s.split(/[?#]/)[0] : "";
     if (k === "eerste_bezoek_op") s = /^\d{4}-\d{2}-\d{2}T[\d:.]+Z$/.test(s) ? s : "";
@@ -77,13 +81,15 @@ export function attributieRegels(x: unknown): Array<[string, string]> {
   if (!a) return [];
   const utm = [a.utm_source, a.utm_medium, a.utm_campaign].filter(Boolean).join(" / ");
   const klik = a.gclid ? "gclid" : a.gbraid ? "gbraid" : a.wbraid ? "wbraid" : "";
+  const bron = a.kanaal === "betaald" && !klik && a.msclkid ? "Microsoft Ads" : KANAAL_LABEL[a.kanaal];
   return ([
-    ["Bron", KANAAL_LABEL[a.kanaal]],
+    ["Bron", bron],
     ["Verwijzer", a.referrer ?? ""],
     ["Campagne (utm)", utm],
     ["Zoekterm (utm_term)", a.utm_term ?? ""],
     ["Advertentie (utm_content)", a.utm_content ?? ""],
     ["Google Ads-klik", klik],
+    ["Microsoft Ads-klik", a.msclkid ? "msclkid" : ""],
     ["Landingspagina", a.landingspagina ?? ""],
   ] as Array<[string, string]>).filter(([, w]) => !!w);
 }

@@ -86,6 +86,12 @@ async function bewaarConcept(req: Request, body: any, json: (b: unknown, s?: num
   };
   if (bestaand) {
     for (const k of Object.keys(payload)) if (payload[k] === null) delete payload[k];
+    // Later gegeven toestemming kan klik-ID's toevoegen; bestaande velden blijven staan.
+    const nieuw = saneerAttributie(body?.attributie);
+    if (nieuw) {
+      const oud = (bestaand.attributie && typeof bestaand.attributie === "object") ? bestaand.attributie as Record<string, unknown> : {};
+      payload.attributie = saneerAttributie({ ...oud, ...nieuw, eerste_bezoek_op: oud.eerste_bezoek_op ?? nieuw.eerste_bezoek_op, landingspagina: oud.landingspagina ?? nieuw.landingspagina });
+    }
   } else {
     payload.attributie = saneerAttributie(body?.attributie);
     payload.is_test = !resolveEnvironment(req).isProduction;

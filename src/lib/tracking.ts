@@ -96,17 +96,28 @@ export const trackWizardValidationError = (step: number, veldnaam: string) =>
 export const trackAddPaymentInfo = (pakket: string, value: number) =>
   trackGa("add_payment_info", { payment_type: "sepa", pakket, value, currency: "EUR" });
 
-export const trackPurchase = (transactionId: string, pakketId: string, pakketNaam: string, value: number) =>
+/** Jaarpremie uit bavPakketten: maandpakket x 12, jaarpakket = prijs. */
+export const jaarpremie = (p: { prijs: number; periode: "maand" | "jaar" }) => (p.periode === "maand" ? p.prijs * 12 : p.prijs);
+
+const PURCHASE_KEY = "zp_purchase_verstuurd";
+/** purchase vuurt maximaal één keer per transaction_id (ook na herladen in dezelfde browser). */
+export const trackPurchase = (transactionId: string, pakketId: string, pakketNaam: string, value: number) => {
+  try {
+    const al: string[] = JSON.parse(localStorage.getItem(PURCHASE_KEY) || "[]");
+    if (al.includes(transactionId)) return;
+    localStorage.setItem(PURCHASE_KEY, JSON.stringify([...al, transactionId].slice(-20)));
+  } catch { /* geen opslag: toch één keer versturen */ }
   trackGa("purchase", {
     transaction_id: transactionId,
     value,
     currency: "EUR",
     items: [{ item_id: pakketId, item_name: pakketNaam, price: value, quantity: 1 }],
   });
+};
 
 export type LeadFormulier = "offerte" | "contact" | "terugbel" | "aanvraag";
 export const trackGenerateLead = (formulier: LeadFormulier) =>
-  trackGa("generate_lead", { formulier, page: page() });
+  trackGa("generate_lead", { formulier, page: page(), value: 0, currency: "EUR" });
 
 // ── Chat Zeker ──
 export const trackChatOpen = () => trackGa("chat_open", { page: page() });
