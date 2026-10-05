@@ -504,7 +504,7 @@
 /vragen-en-antwoorden-over-de-verplichte-aov-voor-zpers    /aov    301
 /wat-betekent-het-pensioenakkoord-voor-zzpers-en-ondernemers    /pensioen    301
 /webinar-brightpensioen    /pensioen    301
-/wijzigingsformulier    /    301
+/wijzigingsformulier    /contact    301
 /woningmarkt-voor-zzpers-op-slot    /kennisbank    301
 /zes-tips-voor-opstellen-ideale-factuur    /kennisbank/financien    301
 /zorg-overstapformulier    /kennisbank    301
@@ -521,6 +521,37 @@
 /beroepsaansprakelijkheidsverzekering-zzp    /verzekeringen    301
 /kennisbank/hoe-bereken-ik-bijtelling-als-zzp-er    /kennisbank/hoe-bereken-ik-bijtelling-als-zzper    301
 /kennisbank/vbar-wet-verduidelijking-beoordeling-arbeidsrelaties    /kennisbank/vbar-wet-verduidelijking-arbeidsrelaties    301
+/opzeggen    /mijn-zp/opzeggen    301
+/opzegging    /mijn-zp/opzeggen    301
+/opzegformulier    /mijn-zp/opzeggen    301
+/opzeggen-bav    /mijn-zp/opzeggen    301
+/bav-opzeggen    /mijn-zp/opzeggen    301
+/polis-opzeggen    /mijn-zp/opzeggen    301
+/verzekering-opzeggen    /mijn-zp/opzeggen    301
+/beeindigen    /mijn-zp/opzeggen    301
+/stoppen    /mijn-zp/opzeggen    301
+/annuleren    /mijn-zp/opzeggen    301
+/pauzeren    /mijn-zp/pauzeren    301
+/pauze    /mijn-zp/pauzeren    301
+/wijzigen    /contact    301
+/wijziging    /contact    301
+/adreswijziging    /contact    301
+/gegevens-wijzigen    /contact    301
+/mijn-zp    /mijn-zp/polis    301
+/mijnzp    /mijn-zp/polis    301
+/mijn-polis    /mijn-zp/polis    301
+/mijnpolis    /mijn-zp/polis    301
+/klantenservice    /mijn-zp/polis    301
+/service    /mijn-zp/polis    301
+/en/opzeggen    /mijn-zp/opzeggen    301
+/en/opzegging    /mijn-zp/opzeggen    301
+/en/opzegformulier    /mijn-zp/opzeggen    301
+/en/pauzeren    /mijn-zp/pauzeren    301
+/en/wijzigingsformulier    /contact    301
+/en/mijn-zp    /mijn-zp/polis    301
+/en/mijnzp    /mijn-zp/polis    301
+/en/mijn-polis    /mijn-zp/polis    301
+/en/klantenservice    /mijn-zp/polis    301
 
 # Pad met afsluitende slash → zelfde pad zonder slash (homepage uitgezonderd).
 /:path/    /:path    301!
