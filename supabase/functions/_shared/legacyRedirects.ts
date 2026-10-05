@@ -12,6 +12,7 @@ export const legacyRedirects: { from: string; to: string }[] = [
   { from: "aov-via-centraalbeheer", to: "/verzekeringen" },
   { from: "sharepeople", to: "/partners" },
   { from: "eherkenning", to: "/kennisbank/eherkenning" },
+  { from: "klachten", to: "/klachtenprocedure" },
 
   // Oude artikel-URL's
   { from: "verplichte-aov-voor-zzp", to: "/kennisbank/verplichte-aov-voor-zzp" },

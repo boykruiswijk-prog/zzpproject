@@ -150,7 +150,7 @@ const publicRoutes = (
     <Route path="faq" element={<FAQ />} />
     <Route path="algemene-voorwaarden" element={<AlgemeneVoorwaarden />} />
     <Route path="klachtenprocedure" element={<Klachtenprocedure />} />
-    <Route path="klachten" element={<Klachtenprocedure />} />
+    <Route path="klachten" element={<Navigate to="/klachtenprocedure" replace />} />
     <Route path="documenten" element={<Documenten />} />
     <Route path="documenten/slotverklaring" element={<SlotverklaringPage />} />
     <Route path="documenten/dienstverleningsdocument" element={<DienstverleningsdocumentPage />} />
