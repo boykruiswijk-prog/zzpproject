@@ -65,7 +65,8 @@ export function DashboardStats() {
     { title: "Leads", value: t ? `${t.leads_week} / ${t.leads_maand}` : undefined, icon: Users, description: `deze week / deze maand · ${t?.leads_totaal ?? 0} totaal`, href: "/admin/leads" },
     { title: "Conversie leads", value: t ? `${conversie}%` : undefined, icon: TrendingUp, description: `${t?.leads_omgezet ?? 0} leads met status actief of klant`, href: "/admin/leads" },
     { title: "Opzeggingen te koppelen", value: t?.opzeggingen_te_koppelen, icon: UserX, description: `${t?.opzeggingen_te_verwerken ?? 0} gekoppeld, nog te verwerken`, href: "/admin/klanten#opzeggingen", let: (t?.opzeggingen_te_koppelen ?? 0) > 0 },
-    { title: "Facturatieplanning (30 dagen)", value: t ? `${t.planning_aantal} · ${formatEuro(t.planning_bedrag)}` : undefined, icon: CalendarClock, description: t ? `${t.planning_factureerbaar_aantal} factureerbaar (${formatEuro(t.planning_factureerbaar_bedrag)}) · ${t.planning_geblokkeerd_aantal} geblokkeerd` : "Periodes die de komende 30 dagen starten", href: "/admin/facturatieplanning" },
+    // Alleen tonen als de planning-velden gevuld zijn (supervisor/admin).
+    ...(t?.planning_aantal != null ? [{ title: "Facturatieplanning (30 dagen)", value: `${t.planning_aantal} · ${formatEuro(t.planning_bedrag ?? 0)}`, icon: CalendarClock, description: `${t.planning_factureerbaar_aantal} factureerbaar (${formatEuro(t.planning_factureerbaar_bedrag ?? 0)}) · ${t.planning_geblokkeerd_aantal} geblokkeerd`, href: "/admin/facturatieplanning" }] : []),
   ];
 
   return (
