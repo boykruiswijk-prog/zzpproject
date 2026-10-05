@@ -218,6 +218,24 @@ export default function Cookies() {
         </div>
       </section>
 
+      {/* Onvoltooide aanvragen */}
+      <section id="onvoltooide-aanvragen" className="section-padding bg-background scroll-mt-24">
+        <div className="container-wide">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-bold mb-6">Onvoltooide aanvragen</h2>
+            <div className="space-y-4 text-muted-foreground">
+              <p>
+                Vul je ons online aanvraagformulier voor de BAV + AVB in, dan bewaren we je gegevens al tijdens het invullen. Het gaat om je contactgegevens (naam, e-mailadres en telefoonnummer), je bedrijfsgegevens (bedrijfsnaam, KvK-nummer en sector) en het gekozen pakket. Bankgegevens zoals je IBAN en de machtiging bewaren we pas als je de aanvraag echt verstuurt.
+              </p>
+              <p>
+                We gebruiken deze gegevens alleen om contact met je op te nemen als je de aanvraag niet afrondt, zodat we je kunnen helpen om hem af te ronden. De grondslag is ons gerechtvaardigd belang. We bewaren een onvoltooide aanvraag maximaal 90 dagen. Daarna worden de persoonsgegevens geanonimiseerd.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
       {/* Your Rights */}
       <section className="section-padding bg-background">
         <div className="container-wide">

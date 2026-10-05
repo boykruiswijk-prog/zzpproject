@@ -288,6 +288,20 @@
       "when": 1791136220750,
       "tag": "0040_deprecate_audit_resttabellen",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1791188860061,
+      "tag": "0041_aanvraag_concepten",
+      "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1791189562798,
+      "tag": "0042_aanvraag_concepten_revoke_anon",
+      "breakpoints": true
     }
   ]
 }

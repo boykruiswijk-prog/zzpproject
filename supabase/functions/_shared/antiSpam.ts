@@ -14,6 +14,8 @@ const LIMITS: Record<string, { max: number; windowMinutes: number }> = {
   bav: { max: 3, windowMinutes: 60 },
   screening: { max: 3, windowMinutes: 60 },
   "klant-service": { max: 5, windowMinutes: 60 },
+  // Tussentijds opslaan van een halve aanvraag: meerdere keren per aanvraag, telt niet mee in het totaalplafond.
+  concept: { max: 40, windowMinutes: 60 },
 };
 
 /** Totaalplafond per IP over alle formulieren heen. */
@@ -97,6 +99,7 @@ export async function guardPublicSubmission(
       .from("form_rate_limit")
       .select("id", { count: "exact", head: true })
       .eq("ip", ip)
+      .neq("kind", "concept")
       .gte("created_at", sinceGlobal);
 
     if ((totalCount ?? 0) >= GLOBAL_LIMIT.max) {

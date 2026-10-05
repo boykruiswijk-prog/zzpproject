@@ -8,6 +8,7 @@ const STATIC_URLS: Array<{ path: string; changefreq?: string; priority?: string 
   { path: "/", changefreq: "weekly", priority: "1.0" },
   { path: "/diensten", changefreq: "monthly", priority: "0.9" },
   { path: "/verzekeringen", changefreq: "monthly", priority: "0.9" },
+  { path: "/bav-zzp-vergelijken", changefreq: "monthly", priority: "0.8" },
   { path: "/aov", changefreq: "monthly", priority: "0.8" },
   { path: "/pensioen", changefreq: "monthly", priority: "0.8" },
   { path: "/zorgverzekering", changefreq: "monthly", priority: "0.8" },

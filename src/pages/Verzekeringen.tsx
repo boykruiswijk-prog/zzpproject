@@ -174,6 +174,11 @@ export default function Verzekeringen() {
               </div>
             ))}
           </div>
+          <p className="mt-10 text-center">
+            <LocalizedLink to="/bav-zzp-vergelijken" className="inline-flex items-center gap-2 font-semibold text-accent underline underline-offset-4">
+              BAV vergelijken met andere aanbieders<ArrowRight className="h-4 w-4" />
+            </LocalizedLink>
+          </p>
         </div>
       </section>
 

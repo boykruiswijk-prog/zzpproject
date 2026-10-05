@@ -36,5 +36,9 @@ export function formatPageTitle(rawTitle: string): string {
 
   const suffix = ` | ${BRAND}`;
   if (subject === BRAND) return BRAND;
+  // Past het onderwerp zelf wel, maar zou de merknaam er een groot deel van wegknippen?
+  // Dan liever de volledige titel zonder merknaam.
+  if (subject.length + suffix.length > MAX_LENGTH && subject.length <= MAX_LENGTH &&
+      subject.length - shorten(subject, MAX_LENGTH - suffix.length).length > 15) return subject;
   return `${shorten(subject, MAX_LENGTH - suffix.length)}${suffix}`;
 }

@@ -38,6 +38,93 @@ export type Database = {
         }
         Relationships: []
       }
+      aanvraag_concepten: {
+        Row: {
+          achternaam: string | null
+          attributie: Json | null
+          bedrijfsnaam: string | null
+          created_at: string
+          email: string | null
+          geanonimiseerd_op: string | null
+          id: string
+          is_test: boolean
+          kvk: string | null
+          laatst_actief_op: string
+          lead_id: string | null
+          opgevolgd_door: string | null
+          opgevolgd_op: string | null
+          opvolg_notitie: string | null
+          pagina: string | null
+          pakket: string | null
+          sector: string | null
+          stap: number
+          status: string
+          telefoon: string | null
+          voornaam: string | null
+        }
+        Insert: {
+          achternaam?: string | null
+          attributie?: Json | null
+          bedrijfsnaam?: string | null
+          created_at?: string
+          email?: string | null
+          geanonimiseerd_op?: string | null
+          id: string
+          is_test?: boolean
+          kvk?: string | null
+          laatst_actief_op?: string
+          lead_id?: string | null
+          opgevolgd_door?: string | null
+          opgevolgd_op?: string | null
+          opvolg_notitie?: string | null
+          pagina?: string | null
+          pakket?: string | null
+          sector?: string | null
+          stap?: number
+          status?: string
+          telefoon?: string | null
+          voornaam?: string | null
+        }
+        Update: {
+          achternaam?: string | null
+          attributie?: Json | null
+          bedrijfsnaam?: string | null
+          created_at?: string
+          email?: string | null
+          geanonimiseerd_op?: string | null
+          id?: string
+          is_test?: boolean
+          kvk?: string | null
+          laatst_actief_op?: string
+          lead_id?: string | null
+          opgevolgd_door?: string | null
+          opgevolgd_op?: string | null
+          opvolg_notitie?: string | null
+          pagina?: string | null
+          pakket?: string | null
+          sector?: string | null
+          stap?: number
+          status?: string
+          telefoon?: string | null
+          voornaam?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aanvraag_concepten_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "kpi_actieve_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aanvraag_concepten_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       activiteiten_log: {
         Row: {
           aangemaakt_op: string
@@ -3656,6 +3743,7 @@ export type Database = {
     }
     Functions: {
       accept_portal_invitation: { Args: { _token: string }; Returns: Json }
+      anonimiseer_aanvraag_concepten: { Args: never; Returns: number }
       beoordeel_klant_certificaat: {
         Args: { _bevestigen: boolean; _id: string }
         Returns: Json

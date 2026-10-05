@@ -54,6 +54,50 @@ function clean(value: unknown): unknown {
   return value;
 }
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const kort = (v: unknown, max: number) => (typeof v === "string" && v.trim() ? v.trim().slice(0, max) : null);
+
+/**
+ * Halve BAV-aanvraag (aanvraag_concepten). Idempotent op het concept-id uit de browser.
+ * Alleen contact-, bedrijfs- en pakketvelden; IBAN, rekeninghouder en SEPA worden nooit overgenomen.
+ * Omgezette of geanonimiseerde concepten worden nooit overschreven.
+ */
+async function bewaarConcept(req: Request, body: any, json: (b: unknown, s?: number) => Response): Promise<Response> {
+  const row = body?.row && typeof body.row === "object" ? body.row as Record<string, unknown> : null;
+  if (!row || typeof row.id !== "string" || !UUID_RE.test(row.id)) return json({ success: false, error: "Ongeldige aanvraag." }, 400);
+  const supabase = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
+  const guard = await guardPublicSubmission(req, supabase, { hp: body?.hp, kind: "concept" });
+  if (!guard.ok) return json({ success: false, error: guard.error, reason: guard.reason }, guard.status ?? 400);
+
+  const emailRaw = kort(row.email, 255)?.toLowerCase() ?? null;
+  const email = emailRaw && EMAIL_RE.test(emailRaw) ? emailRaw : null;
+  const telRaw = kort(row.telefoon, 30);
+  const telefoon = telRaw && isNlTelefoon(telRaw) ? normaliseerNlTelefoon(telRaw) : null;
+  if (!email && !telefoon) return json({ success: false, error: "Geldig e-mailadres of telefoonnummer nodig." }, 400);
+  const stap = Math.min(5, Math.max(1, Math.trunc(Number(row.stap) || 1)));
+
+  const { data: bestaand } = await supabase.from("aanvraag_concepten").select("id, status, geanonimiseerd_op, attributie").eq("id", row.id).maybeSingle();
+  if (bestaand && (bestaand.status === "omgezet" || bestaand.geanonimiseerd_op)) return json({ success: true, id: row.id, already: true });
+
+  const payload: Record<string, unknown> = {
+    id: row.id, stap, email, telefoon, laatst_actief_op: new Date().toISOString(),
+    voornaam: kort(row.voornaam, 100), achternaam: kort(row.achternaam, 100), bedrijfsnaam: kort(row.bedrijfsnaam, 200),
+    kvk: kort(row.kvk, 20), pakket: kort(row.pakket, 50), sector: kort(row.sector, 100), pagina: saneerPagina(row.pagina),
+  };
+  if (bestaand) {
+    for (const k of Object.keys(payload)) if (payload[k] === null) delete payload[k];
+  } else {
+    payload.attributie = saneerAttributie(body?.attributie);
+    payload.is_test = !resolveEnvironment(req).isProduction;
+  }
+  const { error } = await supabase.from("aanvraag_concepten").upsert(payload, { onConflict: "id" });
+  if (error) {
+    console.error("submit-public-form: concept opslaan mislukt:", error.message);
+    return json({ success: false, error: "Opslaan mislukt." }, 500);
+  }
+  return json({ success: true, id: row.id });
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -66,6 +110,7 @@ Deno.serve(async (req) => {
   try {
     const body = await req.json().catch(() => ({}));
     const table = typeof body?.table === "string" ? body.table : "";
+    if (table === "aanvraag_concepten") return await bewaarConcept(req, body, json);
     const spec = ALLOWED[table];
     if (!spec) return json({ success: false, error: "Onbekend formulier." }, 400);
 

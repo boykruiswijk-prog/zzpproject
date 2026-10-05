@@ -51,6 +51,43 @@ async function fetchArticleIndex(
 }
 
 /**
+ * Zet de regels uit public/_redirects om naar Cloudflare Bulk Redirects-CSV (zonder header):
+ * source_url,target_url,status_code,preserve_query_string,include_subdomains,subpath_matching,preserve_path_suffix.
+ * Per pad met én zonder afsluitende slash; niet-ASCII-paden ook percent-encoded. /:path/ en /* worden overgeslagen.
+ */
+export function cloudflareBulkCsv(redirectLines: string[], host = "zpzaken.nl"): string[] {
+  const out: string[] = [];
+  const seen = new Set<string>();
+  const veld = (v: string) => (/[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
+  const push = (src: string, target: string, flags: string) => {
+    if (seen.has(src)) return;
+    seen.add(src);
+    out.push([veld(src), veld(target), "301", flags].join(","));
+  };
+  for (const raw of redirectLines) {
+    const line = raw.replace(/\s+#.*$/, "").trim();
+    if (!line || line.startsWith("#")) continue;
+    const [from, to, status] = line.split(/\s+/);
+    if (!from || !to || !status?.startsWith("301")) continue;
+    if (from === "/:path/" || from === "/*") continue;
+    if (from === "/wp-content/uploads/*") {
+      const doel = to.replace(/:splat$/, "");
+      push(`${host}/wp-content/uploads/`, doel, "TRUE,TRUE,TRUE,TRUE");
+      continue;
+    }
+    const target = /^https?:\/\//.test(to) ? to : `https://${host}${to}`;
+    const pad = from.replace(/^\/+|\/+$/g, "");
+    const varianten = [pad];
+    if (/[^\x00-\x7f]/.test(pad)) varianten.push(pad.split("/").map((d) => encodeURIComponent(d)).join("/"));
+    for (const p of varianten) {
+      push(`${host}/${p}`, target, "TRUE,TRUE,FALSE,FALSE");
+      push(`${host}/${p}/`, target, "TRUE,TRUE,FALSE,FALSE");
+    }
+  }
+  return out;
+}
+
+/**
  * Genereert public/_redirects uit src/config/legacyRedirects.ts, waarbij de
  * bestemming van een legacy-URL met bijbehorend kennisbankartikel automatisch
  * meebeweegt met de publicatiestatus van dat artikel.
@@ -97,6 +134,11 @@ function redirectsPlugin(env: Record<string, string>): Plugin {
       ];
       fs.mkdirSync(path.resolve(__dirname, "public"), { recursive: true });
       fs.writeFileSync(path.resolve(__dirname, "public/_redirects"), lines.join("\n"));
+      // Zelfde regels als CSV voor Cloudflare Bulk Redirects (niet in public/, alleen ter referentie).
+      const csv = cloudflareBulkCsv(lines);
+      fs.mkdirSync(path.resolve(__dirname, "docs"), { recursive: true });
+      fs.writeFileSync(path.resolve(__dirname, "docs/cloudflare-bulk-redirects.csv"), csv.join("\n") + "\n");
+      console.log(`[redirects] ${csv.length} Cloudflare-regels geschreven naar docs/cloudflare-bulk-redirects.csv`);
       console.log(
         `[redirects] ${rules.length} legacy-regels geschreven` +
           (articles.size ? ` (${articles.size} artikelen uit de database).` : " (terugvallijst)."),
