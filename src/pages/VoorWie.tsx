@@ -31,24 +31,34 @@ const audiences = [
     title: "Management Consultancy",
     description: "Voor zelfstandige consultants en interim-managers die strategisch advies geven aan organisaties.",
     examples: "strategy consultants, change managers, interim directeuren, transformatie-experts",
+    links: [
+      { to: "/zzp-verzekering-consultant", label: "ZZP verzekering voor consultants" },
+      { to: "/zzp-verzekering-interim-manager", label: "ZZP verzekering voor interim managers" },
+    ],
   },
   {
     icon: Calculator,
     title: "HR en Finance",
     description: "Voor specialisten in human resources, finance en gerelateerde adviestrajecten.",
     examples: "HR-managers, recruiters, financieel adviseurs, controllers, interim CFO's",
+    links: [
+      { to: "/zzp-verzekering-hr", label: "ZZP verzekering voor HR-adviseurs" },
+      { to: "/zzp-verzekering-finance", label: "ZZP verzekering voor finance professionals" },
+    ],
   },
   {
     icon: Scale,
     title: "Zakelijke Dienstverlening",
     description: "Voor brede zakelijke ondersteuning: juridisch, fiscaal, organisatorisch en operationeel advies.",
     examples: "bedrijfsjuristen, fiscaal adviseurs, operations consultants, business analysts",
+    links: [{ to: "/zzp-verzekering-coach", label: "ZZP verzekering voor coaches en trainers" }],
   },
   {
     icon: Megaphone,
     title: "PR en Marketing",
     description: "Voor marketing-, communicatie- en PR-professionals die als zelfstandige werken voor opdrachtgevers.",
     examples: "marketing strategen, content specialisten, communicatie-adviseurs, PR-consultants",
+    links: [{ to: "/zzp-verzekering-marketing", label: "ZZP verzekering voor marketeers" }],
   },
   {
     icon: Monitor,
@@ -100,6 +110,15 @@ export default function VoorWie() {
                     {audience.link.label} <ArrowRight className="h-4 w-4" />
                   </LocalizedLink>
                 )}
+                {"links" in audience && audience.links?.map((l) => (
+                  <LocalizedLink
+                    key={l.to}
+                    to={l.to}
+                    className="flex items-center gap-1 mt-3 text-sm font-medium text-accent hover:underline"
+                  >
+                    {l.label} <ArrowRight className="h-4 w-4" />
+                  </LocalizedLink>
+                ))}
               </div>
             ))}
           </div>

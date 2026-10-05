@@ -38,6 +38,12 @@ export function Footer() {
       { href: "/zzp-verzekering-ict", label: "ICT" },
       { href: "/zzp-verzekering-zorg", label: "Zorg" },
       { href: "/zzp-verzekering-bouw", label: "Bouw" },
+      { href: "/zzp-verzekering-consultant", label: "Consultant" },
+      { href: "/zzp-verzekering-interim-manager", label: "Interim manager" },
+      { href: "/zzp-verzekering-finance", label: "Finance" },
+      { href: "/zzp-verzekering-hr", label: "HR" },
+      { href: "/zzp-verzekering-marketing", label: "Marketing" },
+      { href: "/zzp-verzekering-coach", label: "Coach" },
       { href: "/waarom-zp-zaken", label: "Waarom ZP Zaken" },
     ],
   };

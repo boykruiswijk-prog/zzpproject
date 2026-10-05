@@ -207,6 +207,12 @@ export const BREADCRUMB_LABELS: Record<string, string> = {
   "/zzp-verzekering-ict": "ZZP verzekering ICT",
   "/zzp-verzekering-zorg": "ZZP verzekering zorg",
   "/zzp-verzekering-bouw": "ZZP verzekering bouw",
+  "/zzp-verzekering-consultant": "ZZP verzekering consultants",
+  "/zzp-verzekering-interim-manager": "ZZP verzekering interim managers",
+  "/zzp-verzekering-finance": "ZZP verzekering finance",
+  "/zzp-verzekering-hr": "ZZP verzekering HR-adviseurs",
+  "/zzp-verzekering-marketing": "ZZP verzekering marketing",
+  "/zzp-verzekering-coach": "ZZP verzekering coaches",
 };
 
 /** BreadcrumbList voor een pad, of null als het pad geen breadcrumb heeft. */

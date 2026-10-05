@@ -120,7 +120,7 @@ export const seoRoutes: SeoRoute[] = [
     path: "/voor-wie",
     title: "Voor wie? | Bouw, Zorg, ICT, Consultancy en meer",
     description:
-      "ZP Zaken helpt zelfstandig professionals in bouw, zorg, consultancy, HR, finance, marketing en ICT. Persoonlijk verzekeringsbemiddeling op maat voor jouw beroep.",
+      "ZP Zaken helpt zelfstandig professionals in bouw, zorg, consultancy, HR, finance, marketing en ICT. Persoonlijk advies over de juiste verzekering voor jouw beroep.",
     h1: "Voor wie is ZP Zaken bedoeld?",
     intro:
       "ZP Zaken werkt voor zelfstandig professionals in onder andere ICT, consultancy, HR, finance, marketing, coaching en management. " +
@@ -388,6 +388,60 @@ export const seoRoutes: SeoRoute[] = [
     intro:
       "Als ICT-freelancer schrijf je code, implementeer je systemen of geef je advies. Een fout in je werk kan grote financiele gevolgen hebben voor je opdrachtgever. " +
       "Beroepsaansprakelijkheidsverzekering (BAV) is in de ICT-sector bij veel opdrachtgevers verplicht en beschermt jou en je klant.",
+  },
+  {
+    path: "/zzp-verzekering-consultant",
+    title: "BAV consultant zzp | Verzekering voor adviseurs",
+    description:
+      "Beroepsaansprakelijkheidsverzekering voor zzp-consultants. BAV en AVB in één polis via Hiscox, geen eigen risico, online geregeld binnen 24 uur.",
+    h1: "ZZP verzekering voor consultants",
+    intro:
+      "Als consultant neemt je opdrachtgever besluiten op basis van jouw advies. Een fout in je advies of rapport kan veel geld kosten. Een BAV en AVB in één polis beschermen je.",
+  },
+  {
+    path: "/zzp-verzekering-interim-manager",
+    title: "Verzekering interim manager zzp | BAV en AVB",
+    description:
+      "Verzekering voor zzp interim managers en projectmanagers. BAV en AVB in één polis via Hiscox, geen eigen risico en dagelijks opzegbaar.",
+    h1: "ZZP verzekering voor interim managers",
+    intro:
+      "Als interim manager of projectmanager neem je besluiten en maak je planningen waar je opdrachtgever op vertrouwt. Een BAV en AVB in één polis beschermen je.",
+  },
+  {
+    path: "/zzp-verzekering-finance",
+    title: "BAV zzp finance | Verzekering voor controllers",
+    description:
+      "BAV voor zzp finance professionals zoals interim controllers en CFO's. BAV en AVB in één polis via Hiscox, geen eigen risico, binnen 24 uur geregeld.",
+    h1: "ZZP verzekering voor finance professionals",
+    intro:
+      "Als interim controller of CFO werk je met cijfers waar je opdrachtgever op stuurt. Een BAV en AVB in één polis beschermen je. Accountant met wettelijke taken of Wft-adviseur? Neem eerst contact op.",
+  },
+  {
+    path: "/zzp-verzekering-hr",
+    title: "BAV HR-adviseur zzp | Verzekering voor HR en P&O",
+    description:
+      "Beroepsaansprakelijkheidsverzekering voor zzp HR-adviseurs, P&O'ers en recruiters. BAV en AVB in één polis, geen eigen risico, dagelijks opzegbaar.",
+    h1: "ZZP verzekering voor HR-adviseurs",
+    intro:
+      "Als HR-adviseur, recruiter of loopbaanadviseur werk je met mensen en contracten. Een BAV en AVB in één polis beschermen je bij een fout in je advies of selectie.",
+  },
+  {
+    path: "/zzp-verzekering-marketing",
+    title: "BAV marketing zzp | Verzekering voor marketeers",
+    description:
+      "Beroepsaansprakelijkheidsverzekering voor zzp marketeers, copywriters en designers. BAV en AVB in één polis via Hiscox, geen eigen risico.",
+    h1: "ZZP verzekering voor marketeers",
+    intro:
+      "Als marketeer, copywriter of designer maak je werk dat de wereld in gaat. Een BAV en AVB in één polis beschermen je bij een fout in je werk.",
+  },
+  {
+    path: "/zzp-verzekering-coach",
+    title: "Beroepsaansprakelijkheidsverzekering coach | ZP Zaken",
+    description:
+      "Beroepsaansprakelijkheidsverzekering voor coaches en trainers. BAV en AVB in één polis via Hiscox, geen eigen risico, online geregeld binnen 24 uur.",
+    h1: "ZZP verzekering voor coaches en trainers",
+    intro:
+      "Als coach of trainer vertrouwt je klant op jouw begeleiding. Een BAV en AVB in één polis beschermen je. Therapeut of psycholoog? Dat valt onder zorg; neem contact op.",
   },
   {
     path: "/zzp-verzekering-zorg",
