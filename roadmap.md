@@ -29,3 +29,11 @@
 - [x] /bav-zzp-vergelijken pagina + data + SEO/prerender/sitemap/llms + interne links
 - [x] aanvraag_concepten: tabel, edge-actie, formulier, privacy, cron anonimiseren, admin-blok, dagmail
 - [x] Cloudflare bulk-redirects CSV bij build
+
+## SEO-update 5 oktober 2026 (niet publiceren)
+- [ ] Back-up vijf artikelen in afgeschermde back-uptabel
+- [ ] Kostenartikel samenvoegen, oude variant depubliceren en interne links corrigeren
+- [ ] FAQ-schema uit markdownsectie ondersteunen
+- [ ] Kosten- en AOV-redirects aanpassen en Cloudflare-CSV regenereren
+- [ ] Interpunctie in drie gepubliceerde artikelen corrigeren met voor/na-rapport
+- [ ] Database, redirects, grep, tests en build controleren
