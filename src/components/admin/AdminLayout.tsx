@@ -15,14 +15,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const { isLoading, isTeamMember, user, isAal2 } = useAuth();
   const [mfaState, setMfaState] = useState<"check" | "enroll" | "verify" | "ok">("check");
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
   useEffect(() => {
     if (!user || !isTeamMember || isAal2) { setMfaState(user && isTeamMember && isAal2 ? "ok" : "check"); return; }
     supabase.auth.mfa.listFactors().then(({ data }) => {
@@ -30,6 +22,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       setMfaState(verified.length > 0 ? "verify" : "enroll");
     });
   }, [user, isTeamMember, isAal2]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (!user) {
     return <Navigate to="/admin/login" replace />;
