@@ -35,6 +35,7 @@ function intro(): string[] {
     "",
     `- Premies: ${prijzen}. Premie inclusief kosten en assurantiebelasting.`,
     `- Starterspakket BAV + AVB (${SITE_CONFIG.url}/starters): startertarief ${eur(STARTER.maandprijs)} per maand of ${eur(STARTER.jaarprijs)} per jaar de eerste ${STARTER.duurMaanden} maanden, daarna ${eur(STARTER.naMaandprijs)} per maand of ${eur(STARTER.naJaarprijs)} per jaar, inclusief kosten en assurantiebelasting. Voor zzp'ers met een KVK-inschrijving jonger dan 12 maanden, onder voorbehoud van controle van de KVK-inschrijvingsdatum. BAV + AVB in één polis, verzekerd bij Hiscox.`,
+    "- ZP Zaken maakt deel uit van BusinessFellow Group. Via zusteronderneming Onefellow (onefellow.nl), arbeidsbemiddelaar voor zelfstandige professionals, kunnen klanten van ZP Zaken ook geholpen worden bij het vinden van een nieuwe opdracht.",
     "- Dagelijks opzegbaar, geen eigen risico.",
     "- Binnen 24 uur verzekerd, met certificaat als bewijs voor je opdrachtgever.",
     `- Contact: ${SITE_CONFIG.phoneDisplay}, ${SITE_CONFIG.email}, ${SITE_CONFIG.address.streetAddress}, ${SITE_CONFIG.address.postalCode} ${SITE_CONFIG.address.addressLocality}.`,

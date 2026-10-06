@@ -7,6 +7,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Button } from "@/components/ui/button";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { formatMiljoenKort, getPakket } from "@/data/bavPakketten";
+import { TIJDELIJK_GEEN_OPDRACHT_FAQ } from "@/data/faqItems";
 import { STARTER, STARTER_VOORWAARDE_TEKST } from "@/lib/starterTarief";
 
 import serviceVerzekeringen from "@/assets/service-verzekeringen.webp";
@@ -23,6 +24,7 @@ export const STARTERS_FAQS = [
   { question: "Wat betaal ik na de eerste 12 maanden?", answer: `Na 12 maanden betaal je automatisch de gewone prijs: € ${STARTER.naMaandprijs} per maand of € ${STARTER.naJaarprijs} per jaar, inclusief kosten en assurantiebelasting. Je hoeft daarvoor niets te doen.` },
   { question: "Is de dekking anders dan bij de gewone BAV + AVB?", answer: `Nee. Het is dezelfde polis met dezelfde dekking en dezelfde voorwaarden: BAV ${BAV} en AVB ${AVB} per gebeurtenis, verzekerd bij Hiscox.` },
   { question: "Kan ik maandelijks opzeggen?", answer: "Ja. Betaal je per maand, dan is je polis maandelijks opzegbaar, net als bij de gewone maandbetaling." },
+  TIJDELIJK_GEEN_OPDRACHT_FAQ,
   { question: "Hoe controleren jullie mijn KVK-startdatum?", answer: "Je vult de startdatum van je KVK-inschrijving in bij je aanvraag. Een collega controleert die datum voordat je polis ingaat. Klopt de datum niet, dan geldt de gewone prijs en hoor je dat van ons." },
 ];
 

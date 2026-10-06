@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Target, Eye, Users, Award, Heart, Shield, CheckCircle, UserPlus, Mail, Phone, User } from "lucide-react";
+import { ArrowRight, Target, Eye, Users, Award, Heart, Shield, CheckCircle, UserPlus, Mail, Phone, User, BriefcaseBusiness } from "lucide-react";
 import teamMember1 from "@/assets/team-member-1.webp";
 import teamMember2 from "@/assets/team-member-2.webp";
 import teamMember3 from "@/assets/team-member-3.webp";
@@ -29,6 +29,7 @@ const values = [
   { icon: Eye, title: "Transparant", description: "Geen kleine lettertjes of verborgen kosten. We leggen alles helder uit zodat je weet waar je aan toe bent." },
   { icon: Users, title: "Persoonlijk", description: "Je spreekt met echte adviseurs die je situatie kennen. Geen callcenters of doorverwijzingen." },
   { icon: Award, title: "Deskundig", description: "Meer dan 13 jaar ervaring in verzekeringen voor zelfstandigen. We kennen de markt en jouw uitdagingen." },
+  { icon: BriefcaseBusiness, title: "Ook hulp bij je volgende opdracht, via Onefellow", description: "Onze zusteronderneming Onefellow helpt zelfstandige professionals zoeken naar een nieuwe opdracht." },
 ];
 
 const facts = [
@@ -42,8 +43,8 @@ const team = [
   { name: "Boy Kruiswijk", role: "Oprichter", image: teamMember1, description: "Ruim 13 jaar geleden bedenker van de unieke polis voor zzp'ers in Nederland. Zijn visie: ondernemers goed en zorgeloos verzekerd." },
   { name: "Roxy Taskin", role: "Backoffice", image: teamMember2, description: "Zorgt ervoor dat alles op de achtergrond soepel verloopt. Van administratie tot klantondersteuning." },
   { name: "Ellen Baars", role: "Senior Adviseur", image: teamMember3, description: "Met jarenlange ervaring in verzekeringen helpt zij ondernemers met passende bemiddeling voor hun situatie." },
-  { name: "Gert-Jan Schellingerhout", role: "Backoffice medewerker", image: gertjanPortrait, description: "Versterkt ons team met gedegen kennis en persoonlijk gesprek voor zelfstandig ondernemers." },
-  { name: "Noah Sikkema", role: "Backoffice medewerker", image: noahPortrait, description: "Versterkt ons team met gedegen kennis en persoonlijk gesprek voor zelfstandig ondernemers." },
+  { name: "Gert-Jan Schellingerhout", role: "CEO Onefellow", image: gertjanPortrait, description: "Gert-Jan is CEO van Onefellow en BusinessFellow Group, waar ZP Zaken deel van uitmaakt. Via Onefellow helpt hij zzp'ers aan nieuwe opdrachten, zodat je na een afgeronde klus niet stil hoeft te staan." },
+  { name: "Noah Sikkema", role: "Recruiter Onefellow", image: noahPortrait, description: "Noah is recruiter bij Onefellow, onze zusteronderneming voor opdrachten. Zit je klus erop? Dan kijkt Noah graag met je mee naar een nieuwe opdracht die bij je past." },
   { name: "Sandra Jonker - van Nobelen", role: "Financieel & Administratief", image: sandraPortrait, description: "Sandra is onze financiële steunpilaar. Met meer dan 30 jaar ervaring in financiële administratie en salarisverwerking weet zij als geen ander hoe de backoffice van een dienstverlener in elkaar steekt. Na een loopbaan van 24 jaar bij HeadFirst Group brengt Sandra precisie en persoonlijk contact samen.", email: "sandra@zpzaken.nl" },
   { name: "We groeien!", role: "Nieuw teamlid", image: null, description: "ZP Zaken is op zoek naar versterking. Wil jij onderdeel worden van ons team?" },
   { name: "Online Sales Adviseur", role: "Sales", image: null, vacancy: true, description: "Wij zijn op zoek naar een gedreven online sales adviseur die zzp'ers helpt de juiste verzekering te vinden. Jij bent het eerste aanspreekpunt voor nieuwe klanten via de website, chat en telefoon. Je werkt vanuit huis of kantoor en combineert commercieel inzicht met oprechte aandacht voor de klant." },
