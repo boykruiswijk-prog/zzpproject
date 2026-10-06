@@ -5,17 +5,6 @@ import { LocalizedLink } from "@/components/LocalizedLink";
 import { formatDateNL } from "@/lib/dateFormat";
 import { articleImage } from "@/lib/articleImage";
  
- // Default images based on category
- const categoryImages: Record<string, string> = {
-   Wetgeving: "/placeholder.svg",
-   Verzekeringen: "/placeholder.svg",
-   Fiscaal: "/placeholder.svg",
-   "ZP Radio": "/placeholder.svg",
-   "ZP Facts": "/placeholder.svg",
-   Nieuws: "/placeholder.svg",
-   Administratie: "/placeholder.svg",
-   Algemeen: "/placeholder.svg",
- };
  
  interface ArticleCardProps {
    article: Article;
@@ -43,11 +32,11 @@ import { articleImage } from "@/lib/articleImage";
              alt={article.title}
              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
-           <div className="absolute inset-0 bg-gradient-to-t from-card/80 via-transparent to-transparent" />
-           <div className="absolute bottom-3 left-3 inline-flex items-center gap-2 bg-accent/90 backdrop-blur-sm text-primary-foreground px-3 py-1.5 rounded-lg text-sm font-medium">
+           {article.image_url && <div className="absolute inset-0 bg-gradient-to-t from-card/80 via-transparent to-transparent" />}
+           {article.image_url && <div className="absolute bottom-3 left-3 inline-flex items-center gap-2 bg-accent/90 backdrop-blur-sm text-primary-foreground px-3 py-1.5 rounded-lg text-sm font-medium">
              <Shield className="h-3.5 w-3.5" />
              <span itemProp="articleSection">{article.category}</span>
-           </div>
+           </div>}
          </div>
  
          <div className="p-6 flex flex-col flex-1">

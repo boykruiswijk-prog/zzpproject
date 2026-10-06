@@ -208,7 +208,7 @@ async function listStorageFiles(
   return files;
 }
 
-function buildHtml(
+export function buildHtml(
   template: string,
   opts: {
     routePath: string;
@@ -252,16 +252,20 @@ function buildHtml(
   );
   if (opts.image) {
     html = html.replace(
-      /<meta property="og:image" content="[\s\S]*?" \/>/,
+      /<meta property="og:image"[^>]*>/,
       `<meta property="og:image" content="${esc(opts.image)}" data-rh="true" />`,
     );
     html = html.replace(
-      /<meta name="twitter:image" content="[\s\S]*?" \/>/,
+      /<meta name="twitter:image"[^>]*>/,
       `<meta name="twitter:image" content="${esc(opts.image)}" data-rh="true" />`,
     );
     if (opts.generatedImage) {
+      html = html.replace(/<meta property="og:image:width"[^>]*>/, '<meta property="og:image:width" content="1200" data-rh="true" />');
+      html = html.replace(/<meta property="og:image:height"[^>]*>/, '<meta property="og:image:height" content="630" data-rh="true" />');
       html = html.replace(/<meta property="og:image:type"[^>]*>/, '<meta property="og:image:type" content="image/png" data-rh="true" />');
       html = html.replace(/<meta property="og:image:alt"[^>]*>/, `<meta property="og:image:alt" content="${esc(opts.title)}" data-rh="true" />`);
+    } else if (opts.ogType === "article") {
+      html = html.replace(/<meta property="og:image:(?:width|height|type)"[^>]*>/g, "");
     }
   }
   const jsonLd = opts.schemas
