@@ -3421,6 +3421,75 @@ export type Database = {
         }
         Relationships: []
       }
+      review_kaart_verborgen: {
+        Row: {
+          user_id: string
+          verborgen_op: string
+        }
+        Insert: {
+          user_id: string
+          verborgen_op?: string
+        }
+        Update: {
+          user_id?: string
+          verborgen_op?: string
+        }
+        Relationships: []
+      }
+      review_verzoeken: {
+        Row: {
+          created_at: string
+          email: string
+          geklikt_op: string | null
+          herinnering_op: string | null
+          id: string
+          lead_id: string
+          platform: string
+          status: string
+          token: string
+          verstuurd_op: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          geklikt_op?: string | null
+          herinnering_op?: string | null
+          id?: string
+          lead_id: string
+          platform?: string
+          status?: string
+          token?: string
+          verstuurd_op?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          geklikt_op?: string | null
+          herinnering_op?: string | null
+          id?: string
+          lead_id?: string
+          platform?: string
+          status?: string
+          token?: string
+          verstuurd_op?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_verzoeken_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: true
+            referencedRelation: "kpi_actieve_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_verzoeken_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: true
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       screening_aanvragen: {
         Row: {
           aangemeld_op: string
@@ -3948,6 +4017,7 @@ export type Database = {
         Returns: undefined
       }
       mijn_acties_vandaag: { Args: { _toon_test?: boolean }; Returns: Json }
+      mijn_review_kaart: { Args: never; Returns: Json }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -3975,6 +4045,26 @@ export type Database = {
           read_ct: number
         }[]
       }
+      review_herinnering_kandidaten: {
+        Args: { _limit?: number }
+        Returns: {
+          email: string
+          id: string
+          lead_id: string
+          token: string
+          voornaam: string
+        }[]
+      }
+      review_kandidaten: {
+        Args: { _limit?: number }
+        Returns: {
+          email: string
+          geactiveerd_op: string
+          lead_id: string
+          voornaam: string
+        }[]
+      }
+      verberg_review_kaart: { Args: never; Returns: boolean }
       verify_cron_secret: { Args: { p_secret: string }; Returns: boolean }
       verify_dba_certificate: {
         Args: { _token: string }
