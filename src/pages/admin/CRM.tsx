@@ -430,6 +430,7 @@ export default function CRM() {
                 <div className="min-w-0 space-y-1 text-sm">
                   {p.email ? <a href={`mailto:${p.email}`} className="block break-all text-primary hover:underline">{p.email}</a> : <span className="text-amber-600">Geen emailadres</span>}
                   {p.telefoon && <a href={`tel:${p.telefoon.replace(/[^\d+]/g, "")}`} className="block break-all text-primary hover:underline">{p.telefoon}</a>}
+                  <Link to={`/admin/personen/${p.id}`} className="block text-primary hover:underline">Persoonspagina met notities</Link>
                   {laatsteLead?.onderwerp && <p className="line-clamp-2 break-words text-muted-foreground">{laatsteLead.onderwerp}</p>}
                 </div>
                 <div className="space-y-2 border-t border-border pt-3">
@@ -558,6 +559,7 @@ export default function CRM() {
                       <tr key={p.id + "-detail"} className="bg-muted/20 border-t border-border">
                         <td></td>
                         <td colSpan={6} className="p-4 space-y-4 min-w-0">
+                          <Link to={`/admin/personen/${p.id}`} className="inline-block text-sm font-medium text-primary hover:underline">Persoonspagina met notities openen</Link>
                           {p.bedrijven.length > 0 && (
                             <div>
                               <div className="text-xs uppercase text-muted-foreground mb-1">Ondernemingen</div>
