@@ -35,8 +35,8 @@ export default function Afmelden() {
   const teksten: Record<Stand, string> = {
     laden: "Even geduld...",
     geldig: "Wil je geen mails meer van ons ontvangen over je ervaring met ZP Zaken?",
-    al_afgemeld: "Je bent al afgemeld. Je ontvangt deze mails niet meer.",
-    afgemeld: "Je bent afgemeld. Je ontvangt deze mails niet meer.",
+    al_afgemeld: "Je bent al afgemeld. Je ontvangt geen verzoeken meer om een review te schrijven. Mails over je verzekering, certificaat en facturen blijven we gewoon sturen.",
+    afgemeld: "Je ontvangt geen verzoeken meer om een review te schrijven. Mails over je verzekering, certificaat en facturen blijven we gewoon sturen.",
     ongeldig: "Deze afmeldlink is niet geldig. Neem contact met ons op als je je wilt afmelden.",
     fout: "Er ging iets mis. Probeer het later opnieuw of neem contact met ons op.",
   };

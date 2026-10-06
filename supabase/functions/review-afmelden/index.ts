@@ -1,4 +1,5 @@
-// Afmelden voor reviewmails via email_unsubscribe_tokens -> suppressed_emails.
+// Afmelden UITSLUITEND voor reviewverzoeken: review_afmeldingen + review_verzoeken.status.
+// Nooit suppressed_emails: transactionele mails (certificaat, polis, factuur, incasso, opzegging) blijven doorgaan.
 // GET ?token= controleert alleen; POST { token } meldt echt af (bescherming tegen linkscanners).
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
@@ -30,8 +31,7 @@ Deno.serve(async (req) => {
 
   const email = rij.email.trim().toLowerCase();
   await admin.from("email_unsubscribe_tokens").update({ used_at: new Date().toISOString() }).eq("id", rij.id);
-  const { data: al } = await admin.from("suppressed_emails").select("id").ilike("email", email).limit(1).maybeSingle();
-  if (!al) await admin.from("suppressed_emails").insert({ email, reason: "unsubscribe", metadata: { bron: "review-verzoeken" } });
+  await admin.from("review_afmeldingen").upsert({ email }, { onConflict: "email", ignoreDuplicates: true });
   await admin.from("review_verzoeken").update({ status: "afgemeld" }).ilike("email", email);
   return json({ status: "afgemeld" });
 });
