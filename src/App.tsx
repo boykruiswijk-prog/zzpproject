@@ -98,6 +98,7 @@ const MijnZpPolis = lazy(() => import("./pages/mijn-zp/Certificaat"));
 const MijnZpPauzeren = lazy(() => import("./pages/mijn-zp/Pauzeren"));
 const MijnZpDocumenten = lazy(() => import("./pages/mijn-zp/Documenten"));
 const MijnZpOpzeggen = lazy(() => import("./pages/mijn-zp/Opzeggen"));
+const Afmelden = lazy(() => import("./pages/Afmelden"));
 const PortalLogin = lazy(() => import("./pages/portal/PortalLogin"));
 const PortalInviteAccept = lazy(() => import("./pages/portal/PortalInviteAccept"));
 const PortalOverview = lazy(() => import("./pages/portal/PortalOverview"));
@@ -185,6 +186,7 @@ const publicRoutes = (
     <Route path="mijn-zp/pauzeren" element={<MijnZpPauzeren />} />
     <Route path="mijn-zp/documenten" element={<MijnZpDocumenten />} />
     <Route path="mijn-zp/opzeggen" element={<MijnZpOpzeggen />} />
+    <Route path="afmelden" element={<Afmelden />} />
   </>
 );
 

@@ -6,6 +6,7 @@ import { useProfile } from "@/hooks/useProfiles";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { ReviewKaart } from "@/components/portal/ReviewKaart";
 import { FileText, Receipt, Briefcase, ArrowRight } from "lucide-react";
 
 export default function PortalOverview() {
@@ -69,6 +70,8 @@ export default function PortalOverview() {
           </Card>
 
         </div>
+
+        <ReviewKaart />
 
         {/* Onefellow — geherformuleerd: ZP Zaken stelt je gratis voor aan opdrachtgevers */}
         <Card className="border-accent/30 bg-accent/5">
