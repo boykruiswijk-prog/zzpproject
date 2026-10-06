@@ -237,7 +237,7 @@ export default function AdminLeadDetail() {
                 <p className="break-words text-muted-foreground">{lead.bedrijfsnaam}</p>
               )}
               <KlantLinkVoorLead leadId={lead.id} relatiecode={(lead as any).exact_relatie_code} />
-              <LeadBavNummer leadId={lead.id} />
+              <LeadBavNummer leadId={lead.id} relatiecode={(lead as any).exact_relatie_code} />
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
