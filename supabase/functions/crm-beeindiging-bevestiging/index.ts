@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
 <p style="font-size:20px;font-weight:bold;color:#E53E2F">ZP Zaken</p><p>${voornaam}</p>
 <p>Hierbij bevestigen we dat je verzekering of lidmaatschap voor ${esc(o?.naam ?? "je onderneming")} is beeindigd per ${datum}.</p>
 <p>Is er na die datum al iets gefactureerd, dan ontvang je daarvoor een creditnota. Klopt er iets niet? Antwoord dan op deze mail.</p>
-<p>Groet,<br>${esc(COMPANY?.naam ?? "ZP Zaken")}</p></div></body></html>`;
+<p>Groet,<br>${esc(COMPANY.legalName)}</p></div></body></html>`;
   const gate = createMailGate("crm-beeindiging-bevestiging", req);
   const plan = gate.plan({ to, subject, html });
   const key = Deno.env.get("RESEND_API_KEY");
