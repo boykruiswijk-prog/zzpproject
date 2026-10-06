@@ -51,3 +51,6 @@ project_id = "eugkavokktjwpqaqlwsj"
 
 [functions.factuur-diagnose]
   verify_jwt = false
+
+[functions.indexnow-ping]
+verify_jwt = false
