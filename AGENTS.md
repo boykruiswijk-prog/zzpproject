@@ -32,4 +32,3 @@
 - CRM-regels (notities, beeindigen, BAV-nummer, dossier, testmarkering) staan in src/components/admin/crm/AGENTS.md.
 - Artikelen zonder image_url krijgen per build een huisstijlafbeelding (concepten alleen build-side).
 - scripts/* importeren geen React. Waarom: anders crasht de SSR-prerender (prod/dev-mix).
-- Kennisbank-IndexNow: trigger trg_indexnow_artikel zet URL's in indexnow_log en wekt indexnow-ping {wachtrij:true}, dat alleen wachtrij-URL's meldt; overige aanroepen alleen cron/supervisor. Waarom: geen geheim in de database en elk resultaat gelogd.
