@@ -29,6 +29,4 @@
 - docs/cloudflare-bulk-redirects.csv wordt bij elke build afgeleid van public/_redirects (cloudflareBulkCsv in vite.config.ts). Waarom: één bron voor redirects.
 
 - Reviewverzoeken aan nieuwe klanten lopen alleen via Edge Function review-verzoeken (cron, schakelaar integratie_config 'reviewverzoeken_actief', kandidaten via RPC review_kandidaten); klikken via review-klik, afmelden via review-afmelden alleen naar review_afmeldingen (nooit suppressed_emails, zodat transactionele mail doorgaat). Waarom: één filter dat testleads en bestaande klanten uitsluit.
-- CRM-notities/beeindigen/ondernemingswijziging alleen via crm_*-RPC's (crm_beeindig hergebruikt plan_opzeg_credit); bijlagen privaat in klant-documenten/notities/<id>/ via signed URL. Waarom: zelfde opzegpad, niets verwijderen, geaudit.
-- BAV-nummer komt uit view crm_bav_nummers via src/lib/bavNummer.ts (volgorde site-certificaat, AFAS abonnement_nr, opgave klant; HPI. apart als Hiscox); contractstatus voor weergave via contractEindStatus (einddatum vandaag of eerder = beeindigd, alleen contract zonder einddatum krijgt Beeindigen). Waarom: overal hetzelfde nummer en geen dubbele beeindiging.
-- CRM-dossier combineert client-leesbare bronnen met RPC crm_dossier (factuurplanning, creditnota's, mails, certificaten); lead-testmarkering alleen via RPC zet_lead_test. Waarom: team ziet alles zonder directe leesrechten op planning en maillog.
+- CRM-regels (notities, beeindigen, BAV-nummer, dossier, testmarkering) staan in src/components/admin/crm/AGENTS.md.
