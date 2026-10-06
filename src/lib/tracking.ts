@@ -4,6 +4,9 @@
  */
 
 export const GA_ID = "G-YY7YJFFEZN";
+export const GOOGLE_ADS_ID = "AW-18497139684";
+/** Google Ads-conversieactie (aanvraag BAV + AVB). Pas hier aan bij een nieuwe conversieactie. */
+export const GOOGLE_ADS_CONVERSIE = "AW-18497139684/rIoQCIid-5IdEOTnj_RE";
 
 type Params = Record<string, string | number | boolean | undefined | unknown[]>;
 
@@ -13,10 +16,13 @@ export function isNietGemetenPad(pathname: string): boolean {
   return ["/admin", "/portal", "/mijn-zp"].some((x) => p === x || p.startsWith(`${x}/`));
 }
 
-/** Zet de officiële GA-opt-out-vlag voor het huidige pad (blokkeert ook automatische pageviews). */
+/** Zet de officiële opt-out-vlag (GA4 en Google Ads) voor het huidige pad. */
 export function zetGaUitschakeling(pathname: string) {
   if (typeof window === "undefined") return;
-  (window as unknown as Record<string, boolean>)[`ga-disable-${GA_ID}`] = isNietGemetenPad(pathname);
+  const uit = isNietGemetenPad(pathname);
+  const w = window as unknown as Record<string, boolean>;
+  w[`ga-disable-${GA_ID}`] = uit;
+  w[`ga-disable-${GOOGLE_ADS_ID}`] = uit;
 }
 
 export function trackGa(event: string, params: Params = {}) {
@@ -112,6 +118,12 @@ export const trackPurchase = (transactionId: string, pakketId: string, pakketNaa
     value,
     currency: "EUR",
     items: [{ item_id: pakketId, item_name: pakketNaam, price: value, quantity: 1 }],
+  });
+  trackGa("conversion", {
+    send_to: GOOGLE_ADS_CONVERSIE,
+    value,
+    currency: "EUR",
+    transaction_id: transactionId,
   });
 };
 
