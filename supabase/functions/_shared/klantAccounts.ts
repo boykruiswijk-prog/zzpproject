@@ -1,5 +1,6 @@
 // Mijn ZP: welke Exact-accounts horen bij deze ingelogde klant?
 // Route 1: policies.user_id → leads.exact_account_id (bestaande polisklanten).
+// Route 3: ondernemingen.factuur_email.
 // Route 2: genormaliseerd e-mailadres → personen → persoon_onderneming → ondernemingen.exact_account_id.
 // deno-lint-ignore-file no-explicit-any
 export const PORTAL_FACTUREN_VANAF = "2026-10-17";
@@ -25,6 +26,12 @@ export async function accountIdsVoorGebruiker(admin: any, userId: string, email:
         for (const o of ond ?? []) ids.add(String(o.exact_account_id));
       }
     }
+  }
+  // Route 3: factuur-e-mail van de onderneming (toegestaan loginadres).
+  if (norm) {
+    const { data: ond } = await admin.from("ondernemingen").select("exact_account_id")
+      .ilike("factuur_email", norm).eq("is_test", false).not("exact_account_id", "is", null).is("facturatie_blokkade", null);
+    for (const o of ond ?? []) ids.add(String(o.exact_account_id));
   }
   return [...ids].filter((id) => /^[0-9a-f-]{36}$/i.test(id));
 }

@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Download, Receipt, Loader2, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 function formatEuro(n: number) {
   const abs = `€ ${Math.abs(n).toFixed(2).replace(".", ",")}`;
@@ -19,6 +20,8 @@ export default function PortalInvoices() {
   const invoices = data?.invoices;
   const { toast } = useToast();
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [aangevraagd, setAangevraagd] = useState(false);
+  const [bezig, setBezig] = useState(false);
 
   const handleDownload = async (inv: CustomerInvoice) => {
     setDownloadingId(inv.id);
@@ -118,6 +121,20 @@ export default function PortalInvoices() {
           </Card>
         ))}
       </div>
+
+      <Card className="mt-6">
+        <CardContent className="space-y-3 p-4 text-sm">
+          <p>Facturen van voor oktober 2026 kunnen we je mailen, vraag ze aan via de knop hieronder.</p>
+          <Button variant="outline" size="sm" disabled={aangevraagd || bezig} onClick={async () => {
+            setBezig(true);
+            const { error } = await (supabase.rpc as any)("portal_factuur_opvragen", { _toelichting: null });
+            setBezig(false);
+            if (error) { toast({ title: "Aanvragen mislukt", description: error.message, variant: "destructive" }); return; }
+            setAangevraagd(true);
+            toast({ title: "Aanvraag ontvangen", description: "We mailen je de facturen zo snel mogelijk." });
+          }}>{aangevraagd ? "Aangevraagd" : "Oudere facturen opvragen"}</Button>
+        </CardContent>
+      </Card>
     </PortalLayout>
   );
 }

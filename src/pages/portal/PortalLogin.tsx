@@ -72,8 +72,7 @@ export default function PortalLogin() {
                 <Mail className="h-6 w-6 text-accent" />
               </div>
               <p className="text-sm text-muted-foreground">
-                Als dit e-mailadres bij ons bekend is, ontvang je binnen enkele minuten een
-                inloglink in je inbox.
+                Als dit e-mailadres bij ons bekend is, ontvang je binnen enkele minuten een inloglink. Geen mail ontvangen? Gebruik het e-mailadres waarmee je klant bent geworden, of neem contact op via 020 457 3077 of info@zpzaken.nl.
               </p>
               <Button
                 type="button"
