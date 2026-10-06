@@ -14,7 +14,6 @@ const json = (body: unknown, status = 200) =>
 const Body = z.object({
   paths: z.array(z.string().regex(/^\/[a-z0-9\-/]*$/i).max(300)).max(1000).optional(),
   alles: z.boolean().optional(),
-  bron: z.enum(["artikel_trigger", "handmatig", "cron"]).optional(),
 });
 
 async function ping(urls: string[]) {
@@ -52,6 +51,9 @@ Deno.serve(async (req) => {
 
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
   const admin = createClient(Deno.env.get("SUPABASE_URL") ?? "", serviceKey);
+  const raw = await req.json().catch(() => ({}));
+  if (raw && typeof raw === "object" && (raw as { wachtrij?: unknown }).wachtrij === true) return verwerkWachtrij(admin);
+
   const cronSecret = req.headers.get("x-cron-secret") ?? "";
   let isCron = serviceKey !== "" && req.headers.get("Authorization") === `Bearer ${serviceKey}`;
   if (!isCron && cronSecret) {
@@ -63,11 +65,11 @@ Deno.serve(async (req) => {
     if (auth instanceof Response) return new Response(auth.body, { status: auth.status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 
-  const parsed = Body.safeParse(await req.json().catch(() => ({})));
+  const parsed = Body.safeParse(raw);
   if (!parsed.success) return json({ error: parsed.error.flatten().fieldErrors }, 400);
-  const bron = parsed.data.bron ?? (isCron ? "cron" : "handmatig");
+  const bron = isCron ? "cron" : "handmatig";
   const log = (row: Record<string, unknown>) =>
-    admin.from("indexnow_log").insert({ bron, ...row }).then(() => {}, () => {});
+    admin.from("indexnow_log").insert({ bron, verwerkt_op: new Date().toISOString(), ...row }).then(() => {}, () => {});
 
   let urls = (parsed.data.paths ?? []).map((p) => `https://${HOST}${p}`);
   if (parsed.data.alles) {
@@ -79,11 +81,7 @@ Deno.serve(async (req) => {
   if (!urls.length) return json({ error: "geen_urls" }, 400);
 
   try {
-    const res = await fetch("https://api.indexnow.org/indexnow", {
-      method: "POST",
-      headers: { "Content-Type": "application/json; charset=utf-8" },
-      body: JSON.stringify({ host: HOST, key: KEY, keyLocation: `https://${HOST}/${KEY}.txt`, urlList: urls }),
-    });
+    const res = await ping(urls);
     await log({ urls: urls.slice(0, 50), aantal: urls.length, ok: res.ok, http_status: res.status });
     return json({ ok: res.ok, status: res.status, aantal: urls.length });
   } catch (e) {
