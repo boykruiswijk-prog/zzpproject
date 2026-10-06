@@ -27,3 +27,5 @@
 - Halve BAV-aanvragen staan in aanvraag_concepten, alleen geschreven via submit-public-form (table "aanvraag_concepten", idempotent op browser-concept-id) en omgezet door process-bav-wizard; nooit bank-/SEPA-velden, na 90 dagen geanonimiseerd (cron), nooit verwijderd. Waarom: opvolging zonder gevoelige gegevens of anon-toegang.
 - Concurrentievergelijking BAV staat in src/data/bavVergelijking.ts (per aanbieder bron-URL + gecontroleerd_op); de ZP Zaken-rij komt uit bavPakketten. Waarom: per kwartaal bij te werken zonder pagina-code te wijzigen.
 - docs/cloudflare-bulk-redirects.csv wordt bij elke build afgeleid van public/_redirects (cloudflareBulkCsv in vite.config.ts). Waarom: één bron voor redirects.
+
+- Reviewverzoeken aan nieuwe klanten lopen alleen via Edge Function review-verzoeken (cron, schakelaar integratie_config 'reviewverzoeken_actief', kandidaten via RPC review_kandidaten); klikken via review-klik, afmelden via review-afmelden naar suppressed_emails. Waarom: één filter dat testleads en bestaande klanten uitsluit.
