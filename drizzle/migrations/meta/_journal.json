@@ -379,6 +379,13 @@
       "when": 1791281983470,
       "tag": "0053_lead_status_afgerond_enum",
       "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "7",
+      "when": 1791282024086,
+      "tag": "0054_lead_afgerond_logica",
+      "breakpoints": true
     }
   ]
 }
