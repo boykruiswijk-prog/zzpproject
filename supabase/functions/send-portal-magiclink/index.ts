@@ -7,6 +7,8 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { safeAppOrigin } from "../_shared/company.ts";
 import { clientIp } from "../_shared/antiSpam.ts";
+import { accountIdsVoorGebruiker } from "../_shared/klantAccounts.ts";
+import { meldPortaltoegang } from "../_shared/portaltoegang.ts";
 import { buildLoginHtml, findUserIdByEmail, generateMagicLink, sendPortalMail } from "../_shared/portalAccess.ts";
 
 const corsHeaders = {
@@ -55,9 +57,17 @@ Deno.serve(async (req) => {
     ]);
 
     const userId = await findUserIdByEmail(admin, email);
-    if (!userId) return NEUTRAL();
-    const { count: polCount } = await admin.from("policies").select("id", { count: "exact", head: true }).eq("user_id", userId);
-    if (!polCount) return NEUTRAL();
+    // Toegang: account bestaat en hoort bij een polis of een gekoppelde Exact-relatie (persoon of factuur-e-mail).
+    let toegang = false;
+    if (userId) {
+      const { count: polCount } = await admin.from("policies").select("id", { count: "exact", head: true }).eq("user_id", userId);
+      toegang = (polCount ?? 0) > 0 || (await accountIdsVoorGebruiker(admin, userId, email)).length > 0;
+    }
+    if (!toegang) {
+      // Onbekend of nog niet uitgenodigd: intern een aanvraag "portaltoegang" (geen mail aan de bezoeker).
+      await meldPortaltoegang(admin, email, !!userId).catch((e) => console.error("[send-portal-magiclink] portaltoegang", e?.message));
+      return NEUTRAL();
+    }
 
     const origin = safeAppOrigin(req.headers.get("origin"));
     const link = await generateMagicLink(admin, email, `${origin}${redirect}`);
