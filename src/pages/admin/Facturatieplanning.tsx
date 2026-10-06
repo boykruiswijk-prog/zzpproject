@@ -33,7 +33,7 @@ export default function Facturatieplanning() {
   const { role } = useAuth();
   const isAdmin = role === "admin";
   const { toast } = useToast();
-  const [van, setVan] = useState("2026-10-17");
+  const [van, setVan] = useState("2026-10-13");
   const [tot, setTot] = useState("2026-10-31");
   const [rijen, setRijen] = useState<Kandidaat[]>([]);
   const [laden, setLaden] = useState(false);

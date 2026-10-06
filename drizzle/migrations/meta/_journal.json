@@ -407,6 +407,13 @@
       "when": 1791285494860,
       "tag": "0057_kvk_niet_wijzigbaar",
       "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "7",
+      "when": 1791291602087,
+      "tag": "0058_facturatie_grens_20261013",
+      "breakpoints": true
     }
   ]
 }

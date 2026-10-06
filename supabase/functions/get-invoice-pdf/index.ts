@@ -1,5 +1,5 @@
 // Portal: streamt PDF van één Exact verkoopfactuur naar de ingelogde klant.
-// Validatie: factuur hoort bij een account van de klant (polis of persoon), Status 50, vanaf 17-10-2026.
+// Validatie: factuur hoort bij een account van de klant (polis of persoon), Status 50, vanaf 13-10-2026.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { ensureValidToken } from "../_shared/exactToken.ts";
 import { accountIdsVoorGebruiker, PORTAL_FACTUREN_VANAF } from "../_shared/klantAccounts.ts";
