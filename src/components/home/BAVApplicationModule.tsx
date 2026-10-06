@@ -1067,7 +1067,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                 )}
               </div>
 
-              {/* Price Sidebar */}
+              {/* Price Sidebar; bij een starter toont het vak het startertarief */}
               <div className="bg-foreground p-6 md:p-8 text-background">
                 <div className="sticky top-8">
                   <h4 className="text-lg font-semibold mb-4">{t("home.bavStep1")}</h4>
@@ -1095,7 +1095,16 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                     <div className="border-t border-white/20 pt-4">
                       <div className="flex flex-col gap-1">
                         <p className="text-sm text-background/70">{periodeLabel}</p>
-                        <p className="text-3xl font-bold whitespace-nowrap">€{Number.isInteger(currentPrice) ? currentPrice : currentPrice.toFixed(2).replace('.', ',')}</p>
+                        <p className="text-3xl font-bold whitespace-nowrap">
+                          €{starterVanToepassing
+                            ? (betaalwijze === "maandelijks" ? STARTER.maandprijs : STARTER.jaarprijs)
+                            : (Number.isInteger(currentPrice) ? currentPrice : currentPrice.toFixed(2).replace('.', ','))}
+                        </p>
+                        {starterVanToepassing && (
+                          <p className="text-xs text-background/70">
+                            de eerste 12 maanden, daarna € {betaalwijze === "maandelijks" ? STARTER.naMaandprijs : STARTER.naJaarprijs} {periodeLabel}, inclusief kosten en assurantiebelasting
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
