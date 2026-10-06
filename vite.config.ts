@@ -138,6 +138,8 @@ function redirectsPlugin(env: Record<string, string>): Plugin {
         "/:path/    /:path    301!",
         "",
         "# SPA-fallback: moet als laatste staan, na alle 301-regels.",
+        "# Kennisbankafbeeldingen zijn statische bestanden, geen SPA-pagina's.",
+        "/images/kennisbank/*    /images/kennisbank/:splat    200",
         "/*    /index.html    200",
         "",
       ];

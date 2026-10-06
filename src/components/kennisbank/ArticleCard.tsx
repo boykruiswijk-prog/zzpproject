@@ -3,6 +3,7 @@
  import type { Article } from "@/hooks/useArticles";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { formatDateNL } from "@/lib/dateFormat";
+import { articleImage } from "@/lib/articleImage";
  
  // Default images based on category
  const categoryImages: Record<string, string> = {
@@ -22,7 +23,7 @@ import { formatDateNL } from "@/lib/dateFormat";
  }
  
  export function ArticleCard({ article, index }: ArticleCardProps) {
-   const imageUrl = article.image_url || categoryImages[article.category] || "/placeholder.svg";
+   const imageUrl = articleImage(article);
   const formattedDate = article.published_at ? formatDateNL(article.published_at) : null;
  
    return (
@@ -36,7 +37,7 @@ import { formatDateNL } from "@/lib/dateFormat";
      >
        <LocalizedLink to={`/kennisbank/${article.slug}`} className="flex flex-col flex-1">
          {/* Article Image */}
-         <div className="relative h-48 overflow-hidden">
+         <div className={article.image_url ? "relative h-48 overflow-hidden" : "relative aspect-[1200/630] overflow-hidden"}>
            <img loading="lazy" decoding="async"
              src={imageUrl}
              alt={article.title}

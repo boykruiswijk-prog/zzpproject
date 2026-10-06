@@ -22,6 +22,8 @@ import { waaromFaqs } from "../src/config/waaromFaqs";
 import { formatPageTitle } from "../src/lib/seoTitle";
 import { resolveFiscaleTokens } from "../src/lib/fiscaleTokens";
 import { markdownToSafeHtml } from "./markdownToSafeHtml";
+import { generateArticleImages } from "./articleImages";
+import { absoluteArticleImage } from "../src/lib/articleImage";
 import {
   legacyRedirects,
   resolveRedirectTarget,
@@ -217,6 +219,7 @@ function buildHtml(
     fallback: string;
     /** Absolute URL van de deelafbeelding; leeg = algemene og-image. */
     image?: string;
+    generatedImage?: boolean;
   },
 ) {
   const { url, tags, ogType } = headFor(
@@ -256,6 +259,10 @@ function buildHtml(
       /<meta name="twitter:image" content="[\s\S]*?" \/>/,
       `<meta name="twitter:image" content="${esc(opts.image)}" data-rh="true" />`,
     );
+    if (opts.generatedImage) {
+      html = html.replace(/<meta property="og:image:type"[^>]*>/, '<meta property="og:image:type" content="image/png" data-rh="true" />');
+      html = html.replace(/<meta property="og:image:alt"[^>]*>/, `<meta property="og:image:alt" content="${esc(opts.title)}" data-rh="true" />`);
+    }
   }
   const jsonLd = opts.schemas
     .map((s) => `<script type="application/ld+json">${JSON.stringify(s)}</script>`)
@@ -504,6 +511,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
   //     gevuld, zodat artikel- en categoriepagina's direct hun inhoud tonen.
   // Projectmap (waar src/ staat), onafhankelijk van de dist-map.
   const root = fileURLToPath(new URL("..", import.meta.url));
+  await generateArticleImages(distDir, root, env, articles);
   const ssr = await loadSsr(root);
   const categoryList = await fetchCategoryList(env).catch(() => []);
   const basePreload: Record<string, unknown> = {
@@ -618,7 +626,8 @@ export async function prerender(distDir: string, env: Record<string, string> = {
         title: formatPageTitle(titel),
         description,
         ogType: "article",
-        image: SITE_CONFIG.ogImage,
+        image: absoluteArticleImage(article),
+        generatedImage: !article.image_url,
         schemas: [
           breadcrumbForPath("/kennisbank") ?? {},
           articleSchema({
@@ -627,7 +636,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
             slug: article.slug,
             datePublished,
             dateModified: article.content_reviewed_at || datePublished,
-            image: SITE_CONFIG.ogImage,
+            image: absoluteArticleImage(article),
             category: article.category || "Kennisbank",
           }),
           ...(artikelFaqs.length ? [faqSchema(artikelFaqs)] : []),
@@ -637,6 +646,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
           article.title,
           samenvatting || alinea,
           [
+            `<img src="${esc(absoluteArticleImage(article))}" alt="${esc(article.title)}" width="1200" height="630">`,
             `<article>${bodyHtml}</article>`,
             renderFaqBlock(artikelFaqs),
             renderArticleLinks(
