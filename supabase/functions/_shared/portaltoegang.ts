@@ -35,7 +35,7 @@ export async function meldPortaltoegang(admin: any, email: string, heeftAccount:
   }
   await admin.from("klant_service_aanvragen").insert({
     type: "portaltoegang", voornaam: "", achternaam: "", email, telefoon: "", polisnummer: "",
-    details: { bron: "portal_login", heeft_account: heeftAccount, mogelijke_match: matches, bedrijfsnaam: matches.find((m) => m.bedrijf || m.naam)?.bedrijf ?? null },
+    details: { bron: "portal_login", heeft_account: heeftAccount, mogelijke_match: matches, bedrijfsnaam: matches.find((m) => m.bedrijf)?.bedrijf ?? matches.find((m) => m.soort === "factuur_email")?.naam ?? null },
     status: "nieuw", onderneming_id: ondId, geverifieerd: false,
   });
 }
