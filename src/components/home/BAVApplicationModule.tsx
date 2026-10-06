@@ -26,7 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import ellenAvatar from "@/assets/ellen-baars-avatar.webp";
 import { TrustSignalsStrip } from "@/components/social-proof/TrustSignalsStrip";
 import { bavPakketten, getPakket, type BavPakketId } from "@/data/bavPakketten";
-import { STARTER, STARTER_VOORWAARDE_TEKST, isStarter, starterTot } from "@/lib/starterTarief";
+import { STARTER, STARTER_VOORBEHOUD_TEKST, STARTER_VOORWAARDE_TEKST, isStarter, starterTot } from "@/lib/starterTarief";
 import { checkAcceptance } from "@/data/acceptanceCriteria";
 import { useFormGuard } from "@/lib/antiSpam";
 import { maakFormulier } from "../../../supabase/functions/_shared/leadVelden";
@@ -115,7 +115,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
    const [slotverklaringAkkoord, setSlotverklaringAkkoord] = useState(false);
    const [errors, setErrors] = useState<ValidationErrors>({});
    const [isSubmitted, setIsSubmitted] = useState(false);
-   const [submissionResult, setSubmissionResult] = useState<{ reference: string; mandaatkenmerk?: string; handmatig?: boolean } | null>(null);
+   const [submissionResult, setSubmissionResult] = useState<{ reference: string; mandaatkenmerk?: string; handmatig?: boolean; starter?: boolean } | null>(null);
    const [isSubmitting, setIsSubmitting] = useState(false);
    const guard = useFormGuard();
    const [existingCustomerOpen, setExistingCustomerOpen] = useState(false);
@@ -400,6 +400,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
 
         const returnedLeadId = typeof data.lead_id === "string" ? data.lead_id : leadId;
         setSubmissionResult({
+          starter: starterVanToepassing,
           reference: returnedLeadId.slice(0, 8).toUpperCase(),
           mandaatkenmerk: typeof data.mandaatkenmerk === "string" ? data.mandaatkenmerk : undefined,
           handmatig: isHandmatigeAcceptatieSector(formData.sector),
@@ -454,6 +455,9 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                 ? "We hebben je aanvraag ontvangen. Een adviseur neemt binnen 1 werkdag contact met je op om alles met je af te ronden. Je ontvangt een bevestiging per e-mail, met je SEPA-machtiging als PDF."
                 : "We beoordelen je aanvraag en nemen binnen 1 werkdag contact met je op. Je ontvangt een bevestiging per e-mail, met je SEPA-machtiging als PDF. Na goedkeuring ontvang je je polis en een uitnodiging voor Mijn ZP."}
             </p>
+            {submissionResult.starter && (
+              <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">{STARTER_VOORBEHOUD_TEKST}</p>
+            )}
             <div className="mt-6 space-y-1 text-sm">
               <p><span className="font-semibold">Referentie:</span> {submissionResult.reference}</p>
               {submissionResult.mandaatkenmerk && (
@@ -751,6 +755,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                           <p className="font-semibold mb-1">Startertarief van toepassing</p>
                           <p className="text-muted-foreground">{STARTER_VOORWAARDE_TEKST}</p>
                           <p className="text-muted-foreground mt-1">Zelfde polis, dekking en voorwaarden als de gewone BAV + AVB. Wij controleren je KVK-startdatum voordat de polis ingaat.</p>
+                          <p className="text-muted-foreground mt-1">{STARTER_VOORBEHOUD_TEKST}</p>
                         </div>
                       )}
                       <div className="grid grid-cols-3 gap-3">
@@ -944,7 +949,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.package")}</span><span className="font-medium">{gekozenPakketLabel}</span></div>
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.coverage")}</span><span>BAV {formatBedrag(selectedBavPakket.dekkingen.bav.perGebeurtenis)} / AVB {formatBedrag(selectedBavPakket.dekkingen.avb.perGebeurtenis)}</span></div>
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.payment")}</span><span>{starterVanToepassing ? `€ ${betaalwijzeIsMaand ? STARTER.maandprijs : STARTER.jaarprijs} per ${betaalwijzeIsMaand ? "maand" : "jaar"} (startertarief t/m ${formatDateNL(starterTot(startDate))})` : selectedBavPakket.prijsLabel}</span></div>
-                          {starterVanToepassing && <p className="text-xs text-muted-foreground">{STARTER_VOORWAARDE_TEKST}</p>}
+                          {starterVanToepassing && <p className="text-xs text-muted-foreground">{STARTER_VOORWAARDE_TEKST} {STARTER_VOORBEHOUD_TEKST}</p>}
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.startDate")}</span><span>{startDate ? formatDateNL(startDate) : t("bavApp.immediately")}</span></div>
                         </div>
                       </div>

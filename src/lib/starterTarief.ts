@@ -13,6 +13,10 @@ export const STARTER = {
 export const STARTER_VOORWAARDE_TEKST =
   "€ 45 per maand of € 495 per jaar, inclusief kosten en assurantiebelasting, de eerste 12 maanden; daarna € 55 per maand of € 600 per jaar. Voor zzp'ers met een KVK-inschrijving jonger dan 12 maanden.";
 
+/** Verplichte voorbehoudtekst zolang de KVK-startdatum nog niet is gecontroleerd. */
+export const STARTER_VOORBEHOUD_TEKST =
+  "Het startertarief geldt onder voorbehoud van controle van je KVK-inschrijvingsdatum. Blijkt je inschrijving ouder dan 12 maanden, dan geldt de gewone prijs van € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting.";
+
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
 
 function parse(d: string): Date | null {

@@ -11,7 +11,7 @@ import {
 } from "../_shared/sepaBewijs.ts";
 import { isUuid, isValidIban, redenBav } from "../_shared/sepaMachtiging.ts";
 import { brancheVoorSector } from "../_shared/sectorBranche.ts";
-import { STARTER, isStarter, starterTot } from "../_shared/starterTarief.ts";
+import { STARTER, STARTER_VOORBEHOUD_TEKST, isStarter, starterTot } from "../_shared/starterTarief.ts";
 import { HANDMATIGE_ACCEPTATIE_REDEN, teamWaarschuwingHandmatig, vereistHandmatigeAcceptatie } from "../_shared/sectorRegels.ts";
 
 const corsHeaders = {
@@ -334,7 +334,7 @@ Deno.serve(async (req) => {
       data: machtiging,
       email: submission.email,
       aanhef: volledigeNaam,
-      bedragOfReden: `${redenBav()} (${pakket.naam}, € ${premium} ${pakket.betaalwijze === "maandelijks" ? "per maand" : "per jaar"})`,
+      bedragOfReden: `${redenBav()} (${pakket.naam}, € ${premium} ${pakket.betaalwijze === "maandelijks" ? "per maand" : "per jaar"})${starter ? `. ${STARTER_VOORBEHOUD_TEKST}` : ""}`,
     });
 
     // ── 3. E-MAIL VIA send-lead-notification ──
