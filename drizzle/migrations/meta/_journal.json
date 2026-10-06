@@ -358,6 +358,13 @@
       "when": 1791275739572,
       "tag": "0050_crm_beeindigen_medewerker",
       "breakpoints": true
+    },
+    {
+      "idx": 51,
+      "version": "7",
+      "when": 1791275808080,
+      "tag": "0051_crm_notitie_naam_fix",
+      "breakpoints": true
     }
   ]
 }
