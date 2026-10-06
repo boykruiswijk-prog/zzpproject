@@ -63,7 +63,7 @@ export function CrmTijdlijn({ ondernemingen, personen, invoerDoel, readOnly = fa
 
     const [notRes, aanvrRes, kopRes, dosRes] = await Promise.all([
       filters.length ? supabase.from("crm_notities").select("*").or(filters.join(",")).order("aangemaakt_op", { ascending: false }) : Promise.resolve({ data: [] as any[] }),
-      ondIds.length ? supabase.from("klant_service_aanvragen").select("id,type,status,created_at,details,onderneming_id,voornaam,achternaam").in("onderneming_id", ondIds) : Promise.resolve({ data: [] as any[] }),
+      ondIds.length ? supabase.from("klant_service_aanvragen").select("id,type,status,created_at,details,onderneming_id,voornaam,achternaam").in("onderneming_id", ondIds).is("gekoppeld_aan", null) : Promise.resolve({ data: [] as any[] }),
       persIds.length ? supabase.from("persoon_bron_koppeling").select("persoon_id,bron_id").eq("bron_tabel", "leads").in("persoon_id", persIds) : Promise.resolve({ data: [] as any[] }),
       supabase.rpc("crm_dossier" as any, { _ond: ondIds, _pers: persIds } as any),
     ]);
@@ -90,6 +90,13 @@ export function CrmTijdlijn({ ondernemingen, personen, invoerDoel, readOnly = fa
       const extra = a.type === "opzeggen" ? ` per ${d.opzegdatum ?? "?"}${d.bron === "beheer_handmatig" ? " (handmatig in beheer)" : ""}` : "";
       const handmatig = d.bron === "beheer_handmatig";
       if (handmatig) continue; // staat al als beeindiging (notitie) in de tijdlijn
+      const nl = (x: string) => String(x).slice(0, 10).split("-").reverse().join("-");
+      if (a.type === "opzeggen" && d.verwerkt_einddatum) {
+        uit.push({ key: "a" + a.id, datum: a.created_at, bron: "aanvraag", type: "opzegverzoek", wie: "klant", soort: "Opzegging",
+          tekst: `Opzegging klant ${nl(a.created_at)}, verwerkt door ${String(d.verwerkt_door_naam ?? "team").split(" ")[0]} op ${nl(d.verwerkt_op_datum ?? a.created_at)} per ${nl(d.verwerkt_einddatum)}.`,
+          hoortBij: ondNaam.get(a.onderneming_id) ?? "-", href: `/admin/service-aanvragen/${a.id}` });
+        continue;
+      }
       uit.push({ key: "a" + a.id, datum: a.created_at, bron: "aanvraag", type: a.type === "opzeggen" ? "opzegverzoek" : a.type === "pauzeren" ? "pauze" : "service", wie: "klant", soort: `Serviceaanvraag: ${a.type}`,
         tekst: `${a.type === "opzeggen" ? "Opzegging" : a.type}${extra}. Status: ${a.status}.${d.toelichting ? " " + d.toelichting : ""}`,
         hoortBij: ondNaam.get(a.onderneming_id) ?? "-", href: `/admin/service-aanvragen/${a.id}` });

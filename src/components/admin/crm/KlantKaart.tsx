@@ -29,7 +29,7 @@ export function KlantKaart({ ondernemingen, personen, leadIds, herlaadSleutel = 
         leadIds.length ? supabase.from("leads").select("id,email,telefoon,iban,status,gekozen_pakket,ingangsdatum,created_at").in("id", leadIds) : Promise.resolve({ data: [] as any[] }),
         codes.length ? (supabase.from as any)("klant_mandaat_v").select("relatiecode,iban").in("relatiecode", codes) : Promise.resolve({ data: [] as any[] }),
         ondIds.length + persIds.length ? supabase.from("crm_notities").select("aangemaakt_op,soort,aangemaakt_door_naam").or([ondIds.length ? `onderneming_id.in.(${ondIds.join(",")})` : "", persIds.length ? `persoon_id.in.(${persIds.join(",")})` : ""].filter(Boolean).join(",")).is("ingetrokken_op", null).order("aangemaakt_op", { ascending: false }).limit(1) : Promise.resolve({ data: [] as any[] }),
-        ondIds.length ? supabase.from("klant_service_aanvragen").select("id,type,status,created_at").in("onderneming_id", ondIds).in("status", ["nieuw", "in_behandeling"]) : Promise.resolve({ data: [] as any[] }),
+        ondIds.length ? supabase.from("klant_service_aanvragen").select("id,type,status,created_at").in("onderneming_id", ondIds).is("gekoppeld_aan", null).in("status", ["nieuw", "in_behandeling"]) : Promise.resolve({ data: [] as any[] }),
       ]);
       const contracten = (k.data ?? []) as any[];
       const c = contracten.length ? (await supabase.from("factuur_credit_planning").select("id,status,credit_vanaf,credit_tm,klant_contract_id").in("klant_contract_id", contracten.map((x) => x.id)).in("status", Object.keys(CREDIT_OPEN))).data ?? [] : [];
