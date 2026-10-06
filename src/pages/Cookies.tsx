@@ -65,6 +65,27 @@ const cookieDetails = [
     type: "Analytisch",
   },
   {
+    name: "_gcl_au, _gcl_aw",
+    provider: "Google Ads",
+    purpose: "Meten welke advertentie tot een aanvraag leidde",
+    expiry: "90 dagen",
+    type: "Marketing",
+  },
+  {
+    name: "_uetsid, _uetvid, _uetmsclkid",
+    provider: "Microsoft Advertising",
+    purpose: "Meten welke advertentie tot een aanvraag leidde",
+    expiry: "1 dag / 13 maanden / 90 dagen",
+    type: "Marketing",
+  },
+  {
+    name: "zp_attributie (klik-ID's)",
+    provider: "ZP Zaken",
+    purpose: "Bewaart gclid, gbraid, wbraid of msclkid om een aanvraag aan de advertentie te koppelen",
+    expiry: "90 dagen",
+    type: "Marketing",
+  },
+  {
     name: "_fbp",
     provider: "Meta (Facebook)",
     purpose: "Marketing en retargeting",
@@ -234,6 +255,27 @@ export default function Cookies() {
           </div>
         </div>
       </section>
+
+      {/* Advertenties */}
+      <section id="advertenties" className="section-padding bg-background scroll-mt-24">
+        <div className="container-wide">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-bold mb-6">Advertenties van Google en Microsoft</h2>
+            <div className="space-y-4 text-muted-foreground">
+              <p>
+                Geef je toestemming voor marketingcookies, dan plaatsen Google Ads en Microsoft Advertising cookies. Zo kunnen wij meten welke advertentie tot een aanvraag heeft geleid. Zonder die toestemming plaatsen zij geen advertentiecookies.
+              </p>
+              <p>
+                Kom je via een advertentie op onze website, dan staat er een advertentie-klik-ID in het adres (gclid, gbraid, wbraid of msclkid). Met je toestemming bewaren we dit ID maximaal 90 dagen in je browser. Doe je in die periode een aanvraag, dan koppelen we het ID aan je dossier. Zo weten we welke advertentie tot de aanvraag leidde.
+              </p>
+              <p>
+                Je kunt je toestemming altijd intrekken via de cookie-instellingen onderaan deze pagina. Daarna worden er geen nieuwe klik-ID's of advertentiecookies meer vastgelegd.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
 
 
       {/* Your Rights */}

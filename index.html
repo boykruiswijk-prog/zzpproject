@@ -67,8 +67,8 @@
     <script>
       // Geen GA4 op interne omgevingen: officiële opt-out-vlag, ook vóór elke SPA-navigatie.
       (function(){
-        var K='ga-disable-G-YY7YJFFEZN', R=/^\/(?:(?:nl|en|de|fr)\/)?(?:admin|portal|mijn-zp)(?:\/|$)/;
-        function zet(u){ try { window[K] = R.test(new URL(String(u), location.href).pathname); } catch(e){} }
+        var K=['ga-disable-G-YY7YJFFEZN','ga-disable-AW-18497139684'], R=/^\/(?:(?:nl|en|de|fr)\/)?(?:admin|portal|mijn-zp)(?:\/|$)/;
+        function zet(u){ try { var v = R.test(new URL(String(u), location.href).pathname); K.forEach(function(k){ window[k] = v; }); } catch(e){} }
         zet(location.href);
         ['pushState','replaceState'].forEach(function(m){ var o=history[m]; history[m]=function(s,t,u){ if(u!=null) zet(u); return o.apply(this, arguments); }; });
         window.addEventListener('popstate', function(){ zet(location.href); });
@@ -92,6 +92,7 @@
         page_title: document.title,
         page_location: window.location.href
       });
+      gtag('config', 'AW-18497139684');
     </script>
 
     <!-- Google Search Console -->
