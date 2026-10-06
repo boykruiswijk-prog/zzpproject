@@ -26,7 +26,7 @@ export async function renderArticleImage(article: ImageArticle, root: string): P
   const logo = fs.readFileSync(path.join(root, "public/logo.png"));
   const colon = article.title.indexOf(":");
   const title = colon < 0 ? article.title : [article.title.slice(0, colon + 1),
-    createElement("span", { style: { color: palette.accent } }, article.title.slice(colon + 1))];
+    createElement("span", { key: "accent", style: { color: palette.accent } }, article.title.slice(colon + 1))];
   const svg = await satori(createElement("div", { style: {
     width: 1200, height: 630, display: "flex", flexDirection: "column",
     padding: "110px 110px 0", position: "relative",
@@ -45,7 +45,7 @@ export async function renderArticleImage(article: ImageArticle, root: string): P
     lineHeight: 1.05, letterSpacing: "-0.02em", color: palette.title,
     lineClamp: 3, textOverflow: "ellipsis", overflow: "hidden", maxHeight: 189,
     wordBreak: "break-word",
-  } }, title),
+  } }, createElement("span", null, title)),
   createElement("img", { src: `data:image/png;base64,${logo.toString("base64")}`, height: 56,
     style: { position: "absolute", left: 110, bottom: 60, height: 56, objectFit: "contain" } }),
   createElement("div", { style: {
