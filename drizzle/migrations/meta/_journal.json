@@ -400,6 +400,13 @@
       "when": 1791284836349,
       "tag": "0056_mijn_zp_factuur_email_portaltoegang",
       "breakpoints": true
+    },
+    {
+      "idx": 57,
+      "version": "7",
+      "when": 1791285494860,
+      "tag": "0057_kvk_niet_wijzigbaar",
+      "breakpoints": true
     }
   ]
 }

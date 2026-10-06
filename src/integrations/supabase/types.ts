@@ -890,6 +890,7 @@ export type Database = {
           persoon_id: string | null
           soort: string
           status: string
+          team: string | null
         }
         Insert: {
           aangemaakt_door?: string | null
@@ -905,6 +906,7 @@ export type Database = {
           persoon_id?: string | null
           soort: string
           status?: string
+          team?: string | null
         }
         Update: {
           aangemaakt_door?: string | null
@@ -920,6 +922,7 @@ export type Database = {
           persoon_id?: string | null
           soort?: string
           status?: string
+          team?: string | null
         }
         Relationships: [
           {

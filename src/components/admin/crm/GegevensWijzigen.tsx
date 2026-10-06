@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Loader2, Pencil } from "lucide-react";
+import { Loader2, Lock, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -60,7 +60,7 @@ export function GegevensWijzigen({ ondernemingen, personen, onGewijzigd }: { ond
 
   const opslaan = async () => {
     const w: Record<string, string> = {};
-    for (const v of VELDEN) if ((waarden[v.key] ?? "") !== (oud[v.key] ?? "") && (v.doel === "ond" ? ondId : persId)) w[v.key] = waarden[v.key];
+    for (const v of VELDEN) if (!(v.key === "kvk" && oud.kvk) && (waarden[v.key] ?? "") !== (oud[v.key] ?? "") && (v.doel === "ond" ? ondId : persId)) w[v.key] = waarden[v.key];
     if (iban.trim() && isSupervisorOrAdmin) w.iban = iban;
     if (!Object.keys(w).length) { setOpen(false); return; }
     setBezig(true);
@@ -79,7 +79,17 @@ export function GegevensWijzigen({ ondernemingen, personen, onGewijzigd }: { ond
         {ondernemingen.length > 1 && <Select value={ondId} onValueChange={setOndId}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{ondernemingen.map((o) => <SelectItem key={o.id} value={o.id}>{o.naam}</SelectItem>)}</SelectContent></Select>}
         {personen.length > 1 && <Select value={persId} onValueChange={setPersId}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{personen.map((p) => <SelectItem key={p.id} value={p.id}>{[p.voornaam, p.achternaam].filter(Boolean).join(" ")}</SelectItem>)}</SelectContent></Select>}
         <div className="grid gap-3 sm:grid-cols-2">
-          {VELDEN.filter((v) => (v.doel === "ond" ? ondId : persId)).map((v) => (
+          {VELDEN.filter((v) => (v.doel === "ond" ? ondId : persId)).map((v) => v.key === "kvk" && (oud.kvk || !isSupervisorOrAdmin) ? (
+            <div key="kvk" className="text-sm sm:col-span-2"><span className="text-muted-foreground">{v.label}</span>
+              <div className="flex items-center gap-2 rounded-md border border-input bg-muted px-3 py-2"><Lock className="h-4 w-4 text-muted-foreground" aria-hidden /><span>{oud.kvk || "leeg"}</span></div>
+              <p className="mt-1 text-xs text-muted-foreground">KvK-nummer is vast. Nieuw KvK-nummer? Dan is een nieuwe aanvraag en een nieuwe polis nodig. Gebruik Ondernemingswijziging.{!oud.kvk && " Een leeg KvK-nummer kan alleen een supervisor of admin invullen."}</p>
+              <Button type="button" variant="link" size="sm" className="h-auto p-0" onClick={() => { setOpen(false); window.dispatchEvent(new CustomEvent("open-ondernemingswijziging", { detail: ondId })); }}>Ondernemingswijziging vastleggen</Button>
+            </div>
+          ) : v.key === "kvk" ? (
+            <label key="kvk" className="text-sm sm:col-span-2"><span className="text-muted-foreground">{v.label}</span>
+              <Input value={waarden.kvk ?? ""} inputMode="numeric" maxLength={8} onChange={(e) => setWaarden((w) => ({ ...w, kvk: e.target.value.replace(/\D/g, "") }))} />
+              <span className="mt-1 block text-xs text-destructive">Eenmalig invullen. Daarna niet meer wijzigbaar.</span></label>
+          ) : (
             <label key={v.key} className="text-sm"><span className="text-muted-foreground">{v.label}</span>
               <Input value={waarden[v.key] ?? ""} onChange={(e) => setWaarden((w) => ({ ...w, [v.key]: e.target.value }))} /></label>
           ))}
