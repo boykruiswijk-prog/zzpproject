@@ -1,43 +1,49 @@
-# SEO-update kennisbank en redirects
+# Beheerpunten Ellen (6 onderdelen)
 
-## Uitvoering
+Volgorde van uitvoering: 4, 1, 3, 2, 5, 6. Testen gebeurt als Ellen in de database. Daarna volgt publicatie. Er wordt niets verwijderd en alles krijgt een auditregel.
 
-1. **Veilige artikelback-up**
-   - Maak `public.articles_backup_20261005` met exact dezelfde kolommen als `public.articles`.
-   - Kopieer alleen de vijf opgegeven artikelen.
-   - Zet RLS aan, trek publieke rechten in en geef uitsluitend `service_role` toegang.
-   - Verwijder geen rijen of bestaande data.
+## 1. Factuur wacht op Roxy (Santosh, Logineering)
+- Een lead met status actief en exact_invoice_status 20 zonder factuurnummer krijgt het label "Factuur staat klaar in Exact, wacht op verwerking door Roxy".
+- In Vandaag te doen komt de nieuwe categorie "Facturen te verwerken". Die is alleen zichtbaar voor de facturatierol (Roxy) en admin, en verschijnt niet bij Ellen.
+- De bestaande lees-sync voor de factuurstatus draait één keer handmatig. Bij status 50 met een nummer toont de lead het nummer en verdwijnt de actie. De sync leest alleen en wijzigt niets.
+- Ik tel en meld hoeveel leads hierop wachten.
 
-2. **Kostenartikel samenvoegen**
-   - Werk het canonieke artikel bij met exact de aangeleverde titel, SEO-velden, samenvatting en markdown.
-   - Behoud afbeelding, categorie en auteur; wijzig `updated_at` naar het uitvoermoment.
-   - Zet `zzp-verzekering-kosten-2026` op niet-gepubliceerd zonder het artikel te verwijderen.
-   - Vervang interne artikel- en broncodeverwijzingen naar de oude slug door de canonieke slug.
-   - Voeg natuurlijke interne links toe op `/verzekeringen` en `/bav-zzp-vergelijken`.
+## 2. Aanvragen en Leads apart
+- Er komen twee menu-items met elk een eigen pagina, op basis van de bestaande leadlijst:
+  - **Aanvragen:** verzekering_aanvraag en andere afsluitingen.
+  - **Leads:** offerte-aanvraag, contact, terugbelverzoek en overige.
+- Filters, zoeken (ook op BAV-nummer), de status Afgerond en het testfilter blijven op beide pagina's gelijk.
 
-3. **FAQ-schema voor kennisbankartikelen**
-   - Breid het bestaande artikelsjabloon uit zodat vijf vragen onder `## Veelgestelde vragen` met `###`-koppen automatisch dezelfde zichtbare antwoorden én FAQPage JSON-LD opleveren.
-   - Laat bestaande handmatig ingestelde artikel-FAQ's ongewijzigd werken.
+## 3. Offerte Kristina Lisniak
+- Eerst zoek ik uit of er een automatische offertemail of een verstuurknop bestaat, en waarom die niet verstuurde. De oorzaak meld ik.
+- Ik bouw de knop "Offerte versturen" met een voorbeeld vooraf. Die verstuurt via de bestaande mailroute vanaf info@zpzaken.nl en legt de mail vast in het maillog. Pas na een geslaagde verzending wordt de status offerte_verstuurd en komt er een notitie in de tijdlijn.
+- De offerte aan Kristina:
+  - bovenaan de opgegeven Engelse alinea, daarna de Nederlandse offerte;
+  - BAV en AVB in één polis via Hiscox: BAV 5.000.000, AVB 2.500.000 per gebeurtenis, geen eigen risico;
+  - 55 euro per maand of 600 euro per jaar, inclusief kosten en assurantiebelasting, dagelijks opzegbaar;
+  - een link om direct af te sluiten, met sector ICT vooringevuld;
+  - geen tekst over het Verenigd Koninkrijk of het buitenland.
+- Dit is één echte klantmail, verstuurd met akkoord van Boy.
 
-4. **Redirects en Cloudflare-lijst**
-   - Voeg beide kostenartikelredirects toe naar het canonieke artikel.
-   - Wijzig alleen de drie genoemde AOV-redirects naar `/aov`.
-   - Houd de gedeelde redirectkopie gelijk en regenereer `docs/cloudflare-bulk-redirects.csv` via de bestaande buildgenerator.
+## 4. Peschier: één opzegregel
+- Nieuwe kolom gekoppeld_aan op klant_service_aanvragen. Regel 362d6d18 wordt gekoppeld aan 719f3202; er wordt niets verwijderd.
+- Overzichten en de tijdlijn verbergen gekoppelde regels. Er blijft één regel over: "Opzegging klant 02-10-2026, verwerkt door Ellen op 06-10-2026 per 08-07-2026".
+- crm_beeindig werkt voortaan een bestaand open of recent opzegverzoek van dezelfde onderneming bij (laatste 60 dagen) en maakt dan geen nieuwe regel.
 
-5. **Leesbare interpunctie in drie artikelen**
-   - Vervang per zin de em dash door passende interpunctie.
-   - Zet en-dashes in eurobereiken om naar `€ 20 tot € 60`-stijl.
-   - Rapporteer per artikel letterlijk de oude en nieuwe gewijzigde zinnen.
+## 5. Gegevens wijzigen
+- Op de klantkaart van persoon en onderneming komt de knop "Gegevens wijzigen". Die werkt via een nieuwe beveiligde functie, crm_gegevens_wijzigen, en is er voor de rollen verzekering, supervisor en admin.
+- Te wijzigen: naam, e-mail, telefoon, bedrijfsnaam, KvK, rechtsvorm en adres (met de bestaande PDOK-postcodecheck).
+- IBAN kan alleen een supervisor of admin wijzigen, en het IBAN wordt gemaskeerd getoond.
+- Elke wijziging komt in de audit met de oude en nieuwe waarde, plus een regel in de tijdlijn.
+- Bij een wijziging van naam, adres of IBAN komt er een taak "Ook in Exact aanpassen" bij Roxy in Vandaag te doen. Exact zelf wordt niet aangepast.
 
-6. **Controle**
-   - Controleer dat gepubliceerde artikelen geen em dash meer bevatten.
-   - Controleer de back-up, publicatiestatus, redirects, interne links en FAQ-schema.
-   - Draai gerichte tests en laat de automatische buildcontrole slagen.
-   - Publiceer niet.
+## 6. Tellers in het menu
+- Nieuwe functie menu_tellers() telt per menu-item de openstaande items op basis van status en rol, zonder testdata.
+- Het gaat om Aanvragen, Leads, Service-aanvragen, Screening, Afgehaakt, Chatgesprekken, Klanten en Facturatie.
+- In de zijbalk en het mobiele menu staat een rood bolletje met het aantal. Het ververst elke minuut.
+- De tellers kijken alleen naar status. Wat Boy aanklikt, verandert niets aan de tellers van Ellen.
 
-## Technische details
-
-- De tabelwijziging en back-upkopie komen samen in één additieve migratie met expliciete `GRANT`-rechten.
-- Artikelinhoud wordt pas na de back-up bijgewerkt.
-- De canonieke artikelafbeelding, categorie, `author_id` en `author_name` worden niet overschreven.
-- De bestaande fiscale tokens en prerenderroute blijven intact.
+## Aannames, graag corrigeren
+- "Roxy" is herkenbaar aan een eigen rol of e-mailadres. Bestaat er geen facturatierol, dan toon ik haar taken aan de rol verzekering met het label "Facturatie (Roxy)".
+- Een "recent" opzegverzoek betekent: van de laatste 60 dagen.
+- Als de bestaande offertetemplate de gevraagde bedragen niet kan tonen, maak ik een aparte template met dezelfde opmaak.
