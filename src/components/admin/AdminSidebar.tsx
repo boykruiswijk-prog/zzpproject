@@ -58,7 +58,7 @@ export function AdminSidebar() {
   const closeMobile = () => setMobileOpen(false);
   const Navigation = ({ mobile = false }: { mobile?: boolean }) => <>
     <nav className={cn("flex-1 space-y-2", mobile ? "overflow-y-auto px-4 pb-4" : "overflow-y-auto p-4")}>
-      <NavLink to="/admin" end onClick={mobile ? closeMobile : undefined} className={linkClass}><LayoutDashboard className="h-5 w-5"/><span>Dashboard</span></NavLink>
+      <NavLink to="/admin" end onClick={mobile ? closeMobile : undefined} className={linkClass}><LayoutDashboard className="h-5 w-5"/><span className="flex-1">Dashboard</span>{tellers?.facturatie ? <Badge variant="destructive" className="rounded-full px-2" title="Facturatie: zie Vandaag te doen">{tellers.facturatie}</Badge> : null}</NavLink>
       {groups.map(group => {
         const items = group.items.filter(item => roleAllows(item.roles));
         if (!items.length || !roleAllows(group.roles)) return null;
