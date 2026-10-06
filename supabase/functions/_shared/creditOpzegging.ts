@@ -65,7 +65,7 @@ export function berekenOudSysteemCredit(k: ContractVoorCredit, einddatum: string
 const nl = (iso: string) => { const [j, m, d] = iso.slice(0, 10).split("-"); return `${d}-${m}-${j}`; };
 
 export function oudSysteemOmschrijving(einddatum: string, vanaf: string, tm: string): string {
-  return `Creditnota opzegging per ${nl(einddatum)} – periode ${nl(vanaf)} t/m ${nl(tm)} (oorspronkelijk gefactureerd vóór 17-10-2026)`;
+  return `Creditnota opzegging per ${nl(einddatum)} – periode ${nl(vanaf)} t/m ${nl(tm)} (oorspronkelijk gefactureerd vóór 13-10-2026)`;
 }
 
 /** Exact-payload voor een creditnota (Type 8021, concept Status 20). Kopteksten max 60 tekens; volledige omschrijving in Remarks naast de sleutel. */

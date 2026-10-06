@@ -1,5 +1,5 @@
 // Portal: haalt live verkoopfacturen (Status=50) uit Exact voor de ingelogde klant.
-// Lookup via _shared/klantAccounts.ts (polis én persoon → onderneming). Alleen Status=50 vanaf 17-10-2026.
+// Lookup via _shared/klantAccounts.ts (polis én persoon → onderneming). Alleen Status=50 vanaf 13-10-2026.
 // Geen lokale caching. Single source of truth = Exact.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { ensureValidToken } from "../_shared/exactToken.ts";

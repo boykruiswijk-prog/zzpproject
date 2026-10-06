@@ -3,7 +3,7 @@
 // Route 3: ondernemingen.factuur_email.
 // Route 2: genormaliseerd e-mailadres → personen → persoon_onderneming → ondernemingen.exact_account_id.
 // deno-lint-ignore-file no-explicit-any
-export const PORTAL_FACTUREN_VANAF = "2026-10-17";
+export const PORTAL_FACTUREN_VANAF = "2026-10-13";
 
 export async function accountIdsVoorGebruiker(admin: any, userId: string, email: string | null | undefined): Promise<string[]> {
   const ids = new Set<string>();
