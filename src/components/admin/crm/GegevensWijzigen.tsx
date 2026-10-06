@@ -14,7 +14,7 @@ type Veld = { key: string; label: string; doel: "ond" | "pers" };
 const VELDEN: Veld[] = [
   { key: "voornaam", label: "Voornaam", doel: "pers" }, { key: "achternaam", label: "Achternaam", doel: "pers" },
   { key: "email_weergave", label: "E-mail", doel: "pers" }, { key: "telefoon", label: "Telefoon", doel: "pers" },
-  { key: "naam", label: "Bedrijfsnaam", doel: "ond" }, { key: "kvk", label: "KvK-nummer", doel: "ond" }, { key: "rechtsvorm", label: "Rechtsvorm", doel: "ond" },
+  { key: "naam", label: "Bedrijfsnaam", doel: "ond" }, { key: "factuur_email", label: "Factuur-e-mail", doel: "ond" }, { key: "kvk", label: "KvK-nummer", doel: "ond" }, { key: "rechtsvorm", label: "Rechtsvorm", doel: "ond" },
   { key: "postcode", label: "Postcode", doel: "ond" }, { key: "huisnummer", label: "Huisnummer", doel: "ond" },
   { key: "straat", label: "Straat", doel: "ond" }, { key: "plaats", label: "Plaats", doel: "ond" },
 ];
@@ -37,7 +37,7 @@ export function GegevensWijzigen({ ondernemingen, personen, onGewijzigd }: { ond
     if (!open) return;
     (async () => {
       const [o, p] = await Promise.all([
-        ondId ? supabase.from("ondernemingen").select("naam,kvk,rechtsvorm,straat,huisnummer,postcode,plaats,iban").eq("id", ondId).maybeSingle() : Promise.resolve({ data: null }),
+        ondId ? supabase.from("ondernemingen").select("naam,factuur_email,kvk,rechtsvorm,straat,huisnummer,postcode,plaats,iban").eq("id", ondId).maybeSingle() : Promise.resolve({ data: null }),
         persId ? supabase.from("personen").select("voornaam,achternaam,email_weergave,telefoon").eq("id", persId).maybeSingle() : Promise.resolve({ data: null }),
       ]);
       const w: Record<string, string> = {};
