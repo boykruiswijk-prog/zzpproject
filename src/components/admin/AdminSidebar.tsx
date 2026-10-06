@@ -5,24 +5,28 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useAdminTakenCount } from "@/hooks/useAdminTaken";
+import { useMenuTellers } from "@/hooks/useMenuTellers";
 import { Activity, AlertTriangle, BookOpen, Building2, ChevronDown, ChevronLeft, CircleDollarSign, FileText, KeyRound, LayoutDashboard, LogOut, Menu, MessageCircle, Plug, SearchX, Settings, Share2, ShieldCheck, UserCog, UserX, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 type NavRole = "supervisor" | "verzekering" | "marketing" | "admin";
-type NavItem = { to: string; icon: typeof Users; label: string; end?: boolean; badge?: boolean; roles: NavRole[] };
+type Teller = "aanvragen" | "leads" | "service" | "screening" | "afgehaakt" | "chat" | "klanten" | "facturatie";
+type NavItem = { to: string; icon: typeof Users; label: string; end?: boolean; badge?: boolean; teller?: Teller; roles: NavRole[] };
 type NavGroup = { label: string; icon: typeof Users; roles: NavRole[]; items: NavItem[] };
 
 const groups: NavGroup[] = [
   { label: "Klanten", icon: Building2, roles: ["supervisor", "verzekering"], items: [
-    { to: "/admin/klanten", icon: Building2, label: "Klanten & contracten", roles: ["supervisor", "verzekering"] },
-    { to: "/admin/crm", icon: Users, label: "Leads / CRM", badge: true, roles: ["supervisor", "verzekering"] },
-    { to: "/admin/afgehaakt", icon: UserX, label: "Afgehaakte aanvragen", roles: ["supervisor", "verzekering"] },
-    { to: "/admin/service-aanvragen", icon: FileText, label: "Aanvragen & opzeggingen", roles: ["supervisor", "verzekering"] },
-    { to: "/admin/screening-aanvragen", icon: ShieldCheck, label: "Screening-aanvragen", roles: ["supervisor", "verzekering"] },
+    { to: "/admin/aanvragen", icon: FileText, label: "Aanvragen", teller: "aanvragen", roles: ["supervisor", "verzekering"] },
+    { to: "/admin/leads", icon: Users, label: "Leads", teller: "leads", roles: ["supervisor", "verzekering"] },
+    { to: "/admin/klanten", icon: Building2, label: "Klanten & contracten", teller: "klanten", roles: ["supervisor", "verzekering"] },
+    { to: "/admin/crm", icon: Users, label: "CRM", badge: true, roles: ["supervisor", "verzekering"] },
+    { to: "/admin/afgehaakt", icon: UserX, label: "Afgehaakte aanvragen", teller: "afgehaakt", roles: ["supervisor", "verzekering"] },
+    { to: "/admin/service-aanvragen", icon: FileText, label: "Service-aanvragen & opzeggingen", teller: "service", roles: ["supervisor", "verzekering"] },
+    { to: "/admin/screening-aanvragen", icon: ShieldCheck, label: "Screening-aanvragen", teller: "screening", roles: ["supervisor", "verzekering"] },
   ]},
   { label: "Facturatie", icon: CircleDollarSign, roles: ["supervisor"], items: [
-    { to: "/admin/facturatieplanning", icon: CircleDollarSign, label: "Facturatieplanning", roles: ["supervisor"] },
+    { to: "/admin/facturatieplanning", icon: CircleDollarSign, label: "Facturatieplanning", teller: "facturatie", roles: ["supervisor"] },
     { to: "/admin/exact-reconciliatie", icon: Plug, label: "Exact-reconciliatie", roles: ["supervisor"] },
   ]},
   { label: "Website", icon: Share2, roles: ["supervisor", "marketing", "verzekering"], items: [
@@ -31,7 +35,7 @@ const groups: NavGroup[] = [
     { to: "/admin/kennisbank/actualiteit", icon: AlertTriangle, label: "Verouderingscheck", roles: ["supervisor", "marketing"] },
     { to: "/admin/niet-gevonden", icon: SearchX, label: "Niet-gevonden pagina's", roles: ["supervisor", "marketing"] },
     { to: "/admin/social-media", icon: Share2, label: "Social media", roles: ["supervisor", "marketing"] },
-    { to: "/admin/chatgesprekken", icon: MessageCircle, label: "Chatgesprekken", roles: ["supervisor", "verzekering", "marketing"] },
+    { to: "/admin/chatgesprekken", icon: MessageCircle, label: "Chatgesprekken", teller: "chat", roles: ["supervisor", "verzekering", "marketing"] },
   ]},
   { label: "Instellingen", icon: Settings, roles: ["admin"], items: [
     { to: "/admin/team", icon: UserCog, label: "Team & rechten", roles: ["admin"] },
@@ -45,6 +49,7 @@ const groups: NavGroup[] = [
 export function AdminSidebar() {
   const { user, signOut, isAdmin, isSupervisor, isVerzekering, isMarketing } = useAuth();
   const { data: takenCount } = useAdminTakenCount();
+  const { data: tellers } = useMenuTellers();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -53,14 +58,14 @@ export function AdminSidebar() {
   const closeMobile = () => setMobileOpen(false);
   const Navigation = ({ mobile = false }: { mobile?: boolean }) => <>
     <nav className={cn("flex-1 space-y-2", mobile ? "overflow-y-auto px-4 pb-4" : "overflow-y-auto p-4")}>
-      <NavLink to="/admin" end onClick={mobile ? closeMobile : undefined} className={linkClass}><LayoutDashboard className="h-5 w-5"/><span>Dashboard</span></NavLink>
+      <NavLink to="/admin" end onClick={mobile ? closeMobile : undefined} className={linkClass}><LayoutDashboard className="h-5 w-5"/><span className="flex-1">Dashboard</span>{tellers?.facturatie ? <Badge variant="destructive" className="rounded-full px-2" title="Facturatie: zie Vandaag te doen">{tellers.facturatie}</Badge> : null}</NavLink>
       {groups.map(group => {
         const items = group.items.filter(item => roleAllows(item.roles));
         if (!items.length || !roleAllows(group.roles)) return null;
         const active = items.some(item => location.pathname === item.to || location.pathname.startsWith(`${item.to}/`));
         return <Collapsible key={group.label} defaultOpen={active || mobile}>
-          <CollapsibleTrigger asChild><Button variant="ghost" className="min-h-10 w-full justify-start gap-3 px-3 text-muted-foreground"><group.icon className="h-5 w-5"/><span className="flex-1 text-left">{group.label}</span><ChevronDown className="h-4 w-4 transition-transform [[data-state=open]_&]:rotate-180"/></Button></CollapsibleTrigger>
-          <CollapsibleContent className="ml-4 space-y-1 border-l pl-2">{items.map(item => <NavLink key={item.to} to={item.to} onClick={mobile ? closeMobile : undefined} className={linkClass}><item.icon className="h-4 w-4"/><span className="flex-1">{item.label}</span>{item.badge && takenCount ? <Badge variant="destructive">{takenCount}</Badge> : null}</NavLink>)}</CollapsibleContent>
+          <CollapsibleTrigger asChild><Button variant="ghost" className="min-h-10 w-full justify-start gap-3 px-3 text-muted-foreground"><group.icon className="h-5 w-5"/><span className="flex-1 text-left">{group.label}</span>{(() => { const t = items.reduce((n, i) => n + (i.teller ? tellers?.[i.teller] ?? 0 : 0), 0); return t ? <Badge variant="destructive" className="rounded-full px-2">{t}</Badge> : null; })()}<ChevronDown className="h-4 w-4 transition-transform [[data-state=open]_&]:rotate-180"/></Button></CollapsibleTrigger>
+          <CollapsibleContent className="ml-4 space-y-1 border-l pl-2">{items.map(item => <NavLink key={item.to} to={item.to} onClick={mobile ? closeMobile : undefined} className={linkClass}><item.icon className="h-4 w-4"/><span className="flex-1">{item.label}</span>{item.badge && takenCount ? <Badge variant="destructive">{takenCount}</Badge> : null}{item.teller && tellers?.[item.teller] ? <Badge variant="destructive" className="rounded-full px-2" aria-label={`${tellers[item.teller]} openstaand`}>{tellers[item.teller]}</Badge> : null}</NavLink>)}</CollapsibleContent>
         </Collapsible>;
       })}
       {roleAllows(["supervisor", "verzekering"]) && <NavLink to="/admin/dba-checks" onClick={mobile ? closeMobile : undefined} className={linkClass}><ShieldCheck className="h-5 w-5"/><span>Wet DBA</span></NavLink>}

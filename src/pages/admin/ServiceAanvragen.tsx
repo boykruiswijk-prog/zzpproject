@@ -81,6 +81,7 @@ export default function ServiceAanvragen() {
     const { data, error } = await supabase
       .from("klant_service_aanvragen" as any)
       .select("*")
+      .is("gekoppeld_aan", null)
       .order("created_at", { ascending: false });
     if (error) {
       toast({ title: "Fout bij laden", description: error.message, variant: "destructive" });

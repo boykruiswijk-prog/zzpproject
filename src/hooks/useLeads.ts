@@ -15,6 +15,7 @@ export function useLeads(filters?: {
   search?: string;
   toonTest?: boolean;
   toonAfgerond?: boolean;
+  soort?: "aanvragen" | "leads";
 }) {
   return useQuery({
     queryKey: ["leads", filters],
@@ -39,6 +40,8 @@ export function useLeads(filters?: {
       if (filters?.type) {
         query = query.eq("type", filters.type as Database["public"]["Enums"]["lead_type"]);
       }
+      if (filters?.soort === "aanvragen") query = query.eq("type", "verzekering_aanvraag");
+      if (filters?.soort === "leads") query = query.neq("type", "verzekering_aanvraag");
       if (filters?.assignedTo) {
         query = query.eq("assigned_to", filters.assignedTo);
       }

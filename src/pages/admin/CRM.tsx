@@ -101,7 +101,7 @@ export default function CRM() {
       fetchAlle((a, b) => supabase.from("ondernemingen" as any).select("id,kvk,naam,is_test,exact_relatie_code").range(a, b)),
       supabase.from("persoon_bron_koppeling" as any).select("persoon_id,bron_tabel,bron_id"),
       supabase.from("leads").select("id,created_at,voornaam,achternaam,email,telefoon,status,verzekering_type,bedrijfsnaam,opmerkingen,extra_data,is_test"),
-      supabase.from("klant_service_aanvragen" as any).select("id,created_at,voornaam,achternaam,email,telefoon,status,type,polisnummer,is_test"),
+      supabase.from("klant_service_aanvragen" as any).select("id,created_at,voornaam,achternaam,email,telefoon,status,type,polisnummer,is_test").is("gekoppeld_aan", null),
       supabase.from("screening_aanvragen" as any).select("id,aangemeld_op,voornaam,achternaam,email,telefoon,status,screening_type,bedrijfsnaam,is_test"),
       supabase.from("crm_identiteit_beslissingen" as any).select("genormaliseerd_email,beslissing,bekende_namen"),
       fetchAlle<KlantCertificaat>((a, b) => supabase.from("klant_certificaten" as any).select(CERT_VELDEN).range(a, b)),

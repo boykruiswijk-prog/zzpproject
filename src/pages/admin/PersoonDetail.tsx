@@ -45,7 +45,7 @@ export default function PersoonDetail() {
               <h1 className="break-words text-2xl font-bold">{naam}</h1>
               <p className="break-words text-sm text-muted-foreground">{persoon.email_weergave}{persoon.is_test ? " · testrecord" : ""}</p>
             </div>
-            <KlantKaart ondernemingen={onds} personen={[persoon]} leadIds={leadIds} herlaadSleutel={herlaad} />
+            <KlantKaart ondernemingen={onds} personen={[persoon]} leadIds={leadIds} herlaadSleutel={herlaad} onGewijzigd={() => setHerlaad((h) => h + 1)} />
             <Card><CardHeader><CardTitle className="text-base">Ondernemingen</CardTitle></CardHeader><CardContent className="space-y-1 text-sm">
               {onds.length === 0 ? <p className="text-muted-foreground">Niet gekoppeld aan een onderneming.</p> :
                 onds.map((o) => <Link key={o.id} to={`/admin/klanten/${o.id}`} className="block truncate font-medium hover:text-primary">{o.naam} <span className="text-xs font-normal text-muted-foreground">{o.rechtsvorm ?? ""} {o.kvk ? `· KvK ${o.kvk}` : ""}</span></Link>)}

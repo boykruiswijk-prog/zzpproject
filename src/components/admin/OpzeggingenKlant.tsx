@@ -62,7 +62,7 @@ export function OpzeggingenKlant({ ondernemingId, contracten, onGewijzigd }: { o
   const [bezig, setBezig] = useState(false);
 
   async function laad() {
-    const { data } = await supabase.from("klant_service_aanvragen").select(KOLOMMEN).eq("type", "opzeggen").eq("onderneming_id", ondernemingId).order("created_at", { ascending: false });
+    const { data } = await supabase.from("klant_service_aanvragen").select(KOLOMMEN).eq("type", "opzeggen").eq("onderneming_id", ondernemingId).is("gekoppeld_aan", null).order("created_at", { ascending: false });
     const l = ((data ?? []) as Aanvraag[]).filter((a) => toonTest || !a.is_test);
     setLijst(l);
     const ids = l.map((a) => a.id);
@@ -193,7 +193,7 @@ export function OpzeggingenTeKoppelen() {
   const [code, setCode] = useState<Record<string, string>>({});
 
   async function laad() {
-    const { data } = await supabase.from("klant_service_aanvragen").select(KOLOMMEN).eq("type", "opzeggen").is("opzegging_verwerkt_op", null).order("created_at", { ascending: false });
+    const { data } = await supabase.from("klant_service_aanvragen").select(KOLOMMEN).eq("type", "opzeggen").is("opzegging_verwerkt_op", null).is("gekoppeld_aan", null).order("created_at", { ascending: false });
     const l = ((data ?? []) as Aanvraag[]).filter((a) => (toonTest || !a.is_test) && (a.koppeling_status ?? "niet_gekoppeld") !== "zeker");
     setLijst(l);
     const ids = l.map((a) => a.onderneming_id).filter(Boolean) as string[];

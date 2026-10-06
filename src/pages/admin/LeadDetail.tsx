@@ -8,6 +8,7 @@ import { KlantLinkVoorLead } from "@/components/admin/KlantLinkVoorLead";
 import { SepaMachtigingBewijsBlok } from "@/components/admin/SepaMachtigingBewijsBlok";
 import { CertificaatBeheer } from "@/components/admin/CertificaatBeheer";
 import { LeadIngevuldeGegevens } from "@/components/admin/LeadIngevuldeGegevens";
+import { OfferteVersturen } from "@/components/admin/OfferteVersturen";
 
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
@@ -290,7 +291,7 @@ export default function AdminLeadDetail() {
                             </Badge>
                           </SelectTrigger>
                           <SelectContent>
-                            {Object.entries(statusLabels).filter(([value]) => value !== "afgerond" || lead.status === "afgerond" || magAfronden(lead as any)).map(([value, label]) => (
+                            {Object.entries(statusLabels).filter(([value]) => (value !== "afgerond" || lead.status === "afgerond" || magAfronden(lead as any)) && (value !== "offerte_verstuurd" || lead.status === value)).map(([value, label]) => (
                               <SelectItem key={value} value={value}>
                                 {label}
                               </SelectItem>
@@ -361,13 +362,7 @@ export default function AdminLeadDetail() {
                   })()}
                 </div>
 
-                {lead.type === "offerte-aanvraag" && (
-                  <div className="border-t pt-4">
-                    <Button variant="outline" size="sm" className="mt-4" disabled title="Komt binnenkort">
-                      <FileText className="h-4 w-4" /> Maak offerte (binnenkort)
-                    </Button>
-                  </div>
-                )}
+                {lead.type === "offerte-aanvraag" && <OfferteVersturen leadId={lead.id} verstuurdOp={(lead as any).offerte_verstuurd_op} />}
               </CardContent>
             </Card>
 
@@ -377,6 +372,14 @@ export default function AdminLeadDetail() {
 
           {/* Sidebar */}
           <div className="min-w-0 space-y-6">
+            {lead.exact_invoice_id && (lead.exact_invoice_number ? (
+              <Card className="min-w-0"><CardContent className="pt-6 text-sm">Factuur verwerkt in Exact: <strong>{lead.exact_invoice_number}</strong></CardContent></Card>
+            ) : (
+              <Card className="min-w-0 border-amber-300 bg-amber-50/50"><CardContent className="pt-6 text-sm">
+                <p className="font-medium">Factuur staat klaar in Exact, wacht op verwerking door Roxy</p>
+                <p className="text-muted-foreground">Voor jou is hier niets meer te doen. Zodra de factuur in Exact is verwerkt, staat hier het factuurnummer.</p>
+              </CardContent></Card>
+            ))}
             {lead.type === "verzekering_aanvraag" && (() => {
               const phase = derivePhase(lead);
               return <LeadActivationPanel lead={lead} magActiveren={isTeamMember} fase={phase} />;
