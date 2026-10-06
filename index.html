@@ -12,14 +12,14 @@
                base-uri 'self';
                object-src 'none';
                form-action 'self';
-               script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://*.lovable.app https://*.lovable.dev;
+               script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://*.lovable.app https://*.lovable.dev https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://bat.bing.com https://*.bing.com;
                style-src 'self' 'unsafe-inline';
                font-src 'self' data:;
-               img-src 'self' data: blob: https://eugkavokktjwpqaqlwsj.supabase.co https://www.googletagmanager.com https://*.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://www.google.com https://zpzaken.nl;
+               img-src 'self' data: blob: https://eugkavokktjwpqaqlwsj.supabase.co https://www.googletagmanager.com https://*.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://www.google.com https://zpzaken.nl https://googleads.g.doubleclick.net https://www.googleadservices.com https://www.google.nl https://*.doubleclick.net https://bat.bing.com https://*.bing.com;
                media-src 'self' blob: https://eugkavokktjwpqaqlwsj.supabase.co;
-               connect-src 'self' https://api.pdok.nl https://eugkavokktjwpqaqlwsj.supabase.co wss://eugkavokktjwpqaqlwsj.supabase.co https://www.googletagmanager.com https://*.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://www.google.com ws: wss:;
+               connect-src 'self' https://api.pdok.nl https://eugkavokktjwpqaqlwsj.supabase.co wss://eugkavokktjwpqaqlwsj.supabase.co https://www.googletagmanager.com https://*.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://www.google.com ws: wss: https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.doubleclick.net https://www.google.nl https://pagead2.googlesyndication.com https://bat.bing.com https://*.bing.com;
                worker-src 'self' blob:;
-               frame-src 'self';
+               frame-src 'self' https://td.doubleclick.net https://www.googletagmanager.com;
                upgrade-insecure-requests"
     />
 
