@@ -79,7 +79,7 @@ const cookieDetails = [
     type: "Marketing",
   },
   {
-    name: "zp_attributie (klik-ID's)",
+    name: "zp_klikids",
     provider: "ZP Zaken",
     purpose: "Bewaart gclid, gbraid, wbraid of msclkid om een aanvraag aan de advertentie te koppelen",
     expiry: "90 dagen",

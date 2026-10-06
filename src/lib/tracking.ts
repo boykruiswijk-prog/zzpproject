@@ -119,6 +119,12 @@ export const trackPurchase = (transactionId: string, pakketId: string, pakketNaa
     currency: "EUR",
     items: [{ item_id: pakketId, item_name: pakketNaam, price: value, quantity: 1 }],
   });
+  trackGa("conversion", {
+    send_to: GOOGLE_ADS_CONVERSIE,
+    value,
+    currency: "EUR",
+    transaction_id: transactionId,
+  });
 };
 
 export type LeadFormulier = "offerte" | "contact" | "terugbel" | "aanvraag";
