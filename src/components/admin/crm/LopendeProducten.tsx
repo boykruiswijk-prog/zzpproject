@@ -16,6 +16,8 @@ import { formatDateNL } from "@/lib/dateFormat";
 import { PRODUCT_LABEL, type Product } from "@/lib/klantContracten";
 import { uploadBijlagen } from "@/lib/crmBijlagen";
 import { BijlageKiezer } from "./BijlageKiezer";
+import { BavNummer } from "./BavNummer";
+import { contractEindStatus, kiesBavNummer, useBavRijen } from "@/lib/bavNummer";
 
 export const STOP_REDENEN: Record<string, string> = {
   opzegging_klant: "Opzegging klant",
@@ -39,6 +41,8 @@ export function LopendeProducten({ ondernemingId, ondernemingNaam, leadIds = [],
   readOnly?: boolean; titel?: string; onGewijzigd?: () => void;
 }) {
   const mag = useMagBeeindigen() && !readOnly;
+  const { isSupervisorOrAdmin } = useAuth();
+  const [wijzig, setWijzig] = useState<any | null>(null);
   const [contracten, setContracten] = useState<any[]>([]);
   const [polissen, setPolissen] = useState<any[]>([]);
   const [laden, setLaden] = useState(true);
@@ -51,14 +55,17 @@ export function LopendeProducten({ ondernemingId, ondernemingNaam, leadIds = [],
       const filt = leadIds.length ? `onderneming_id.eq.${ondernemingId},lead_id.in.(${leadIds.join(",")})` : `onderneming_id.eq.${ondernemingId}`;
       const [k, p] = await Promise.all([
         supabase.from("klant_contracten").select("id,bron_rij,product,itemcode,cyclus,status,eind_datum,gefactureerd_tm").eq("onderneming_id", ondernemingId).order("bron_rij"),
-        supabase.from("policies").select("id,certificate_number,package_type,insured_name,start_date,status,intrek_reden,onderneming_id,lead_id").or(filt).order("created_at"),
+        supabase.from("policies").select("id,certificate_number,package_type,insured_name,start_date,status,intrek_reden,ingetrokken_op,onderneming_id,lead_id").or(filt).order("created_at"),
       ]);
       setContracten(k.data ?? []); setPolissen(p.data ?? []); setLaden(false);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ondernemingId, leadIds.join(","), herlaad]);
 
-  const lopendC = contracten.filter((c) => c.status === "actief" || c.status === "loopt_af");
+  const bav = useBavRijen([ondernemingId], leadIds);
+  const bavRijen = (bav.data ?? []).filter((r) => r.onderneming_id === ondernemingId || (r.lead_id && leadIds.includes(r.lead_id)));
+  // Regel: alleen contracten zonder einddatum en geldige polissen krijgen een knop Beeindigen.
+  const lopendC = contracten.filter((c) => c.status === "actief" && contractEindStatus(c).soort === "lopend");
   const lopendP = polissen.filter((p) => p.status === "geldig");
 
   return (
@@ -70,18 +77,26 @@ export function LopendeProducten({ ondernemingId, ondernemingNaam, leadIds = [],
       <CardContent className="space-y-2 text-sm">
         {laden ? <Loader2 className="h-4 w-4 animate-spin" /> : contracten.length + polissen.length === 0 ? <p className="text-muted-foreground">Geen contracten of polissen.</p> : (
           <>
-            {contracten.map((c) => (
+            {contracten.map((c) => {
+              const es = contractEindStatus(c);
+              return (
               <div key={c.id} className="flex flex-wrap items-center gap-2 rounded border border-border p-2">
                 <span className="font-medium">{PRODUCT_LABEL[c.product as Product] ?? c.product}</span>
+                <BavNummer keuze={kiesBavNummer(bavRijen, { contractId: c.id })} />
                 <span className="text-xs text-muted-foreground">regel {c.bron_rij} · {c.cyclus} · gefactureerd t/m {formatDateNL(c.gefactureerd_tm)}</span>
-                <Badge variant="secondary">{c.status === "loopt_af" ? `loopt af ${formatDateNL(c.eind_datum)}` : c.status}</Badge>
-                {mag && (c.status === "actief" || (c.status === "loopt_af")) && <Button size="sm" variant="destructive" className="ml-auto" onClick={() => setDialoog({ c: [c.id], p: [] })}>Beeindigen</Button>}
-              </div>))}
+                {es.soort === "beeindigd" ? <Badge variant="outline">Beeindigd{es.datum ? ` per ${formatDateNL(es.datum)}` : ""}</Badge>
+                  : es.soort === "loopt_af" ? <Badge variant="secondary">Loopt af per {formatDateNL(es.datum)}</Badge>
+                  : <Badge variant="secondary">actief</Badge>}
+                {mag && es.soort === "lopend" && c.status === "actief" && <Button size="sm" variant="destructive" className="ml-auto" onClick={() => setDialoog({ c: [c.id], p: [] })}>Beeindigen</Button>}
+                {!readOnly && isSupervisorOrAdmin && es.soort !== "lopend" && c.eind_datum && <Button size="sm" variant="outline" className="ml-auto" onClick={() => setWijzig(c)}>Einddatum wijzigen</Button>}
+              </div>); })}
             {polissen.map((p) => (
               <div key={p.id} className="flex flex-wrap items-center gap-2 rounded border border-border p-2">
-                <span className="font-medium">Polis {p.certificate_number ?? "zonder nummer"}</span>
+                <span className="font-medium">Polis</span>
+                <BavNummer keuze={kiesBavNummer(bavRijen, { policyId: p.id })} />
                 <span className="text-xs text-muted-foreground">{p.package_type} · {p.insured_name} · start {formatDateNL(p.start_date)}</span>
-                <Badge variant={p.status === "geldig" ? "secondary" : "outline"} title={p.intrek_reden ?? ""}>{p.status === "geldig" ? "actief" : "beeindigd"}</Badge>
+                {p.status === "geldig" ? <Badge variant="secondary">actief</Badge>
+                  : <Badge variant="outline" title={p.intrek_reden ?? ""}>Beeindigd{p.ingetrokken_op ? ` per ${formatDateNL(p.ingetrokken_op)}` : ""}</Badge>}
                 {mag && p.status === "geldig" && <Button size="sm" variant="destructive" className="ml-auto" onClick={() => setDialoog({ c: [], p: [p.id] })}>Beeindigen</Button>}
               </div>))}
           </>
@@ -90,6 +105,8 @@ export function LopendeProducten({ ondernemingId, ondernemingNaam, leadIds = [],
       {dialoog && <BeeindigDialoog ondernemingId={ondernemingId} ondernemingNaam={ondernemingNaam} persoonId={persoonId}
         contracten={lopendC} polissen={lopendP} start={dialoog} onSluit={() => setDialoog(null)}
         onKlaar={() => { setDialoog(null); setHerlaad((x) => x + 1); onGewijzigd?.(); }} />}
+      {wijzig && <EinddatumDialoog contract={wijzig} onSluit={() => setWijzig(null)}
+        onKlaar={() => { setWijzig(null); setHerlaad((x) => x + 1); onGewijzigd?.(); }} />}
     </Card>
   );
 }
@@ -170,6 +187,39 @@ function BeeindigDialoog({ ondernemingId, ondernemingNaam, persoonId, contracten
           {stap === "invoer"
             ? <><Button variant="outline" onClick={onSluit}>Annuleren</Button><Button disabled={!geldig} onClick={() => setStap("bevestig")}>Verder</Button></>
             : <><Button variant="outline" onClick={() => setStap("invoer")} disabled={bezig}>Terug</Button><Button variant="destructive" onClick={uitvoeren} disabled={bezig}>{bezig && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Definitief beeindigen</Button></>}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function EinddatumDialoog({ contract, onSluit, onKlaar }: { contract: any; onSluit: () => void; onKlaar: () => void }) {
+  const [datum, setDatum] = useState<string>(contract.eind_datum ?? vandaag());
+  const [reden, setReden] = useState("");
+  const [bezig, setBezig] = useState(false);
+  async function opslaan() {
+    setBezig(true);
+    const { data, error } = await supabase.rpc("crm_einddatum_wijzigen" as any, { _contract_id: contract.id, _einddatum: datum, _reden: reden } as any);
+    setBezig(false);
+    if (error) { toast.error(error.message); return; }
+    const n = (data as any)?.creditregels_bijgewerkt ?? 0;
+    toast.success(`Einddatum gewijzigd.${n ? " Het creditnotavoorstel wordt opnieuw berekend." : ""}`);
+    onKlaar();
+  }
+  return (
+    <Dialog open onOpenChange={(o) => !o && onSluit()}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Einddatum wijzigen</DialogTitle>
+          <DialogDescription>Huidige einddatum {formatDateNL(contract.eind_datum)}. De wijziging wordt vastgelegd in de tijdlijn en het auditlog.</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3 text-sm">
+          <div><Label>Nieuwe einddatum</Label><Input type="date" value={datum} onChange={(e) => setDatum(e.target.value)} /></div>
+          <div><Label>Reden (verplicht)</Label><Textarea value={reden} onChange={(e) => setReden(e.target.value)} rows={3} /></div>
+        </div>
+        <DialogFooter className="gap-2">
+          <Button variant="outline" onClick={onSluit}>Annuleren</Button>
+          <Button onClick={opslaan} disabled={bezig || reden.trim().length < 3 || !datum || datum === contract.eind_datum}>{bezig && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Opslaan</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

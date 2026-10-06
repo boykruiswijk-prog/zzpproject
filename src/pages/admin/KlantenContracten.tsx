@@ -15,6 +15,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Building2, Loader2 } from "lucide-react";
 import { OpzeggingenTeKoppelen } from "@/components/admin/OpzeggingenKlant";
 import { formatDateNL } from "@/lib/dateFormat";
+import { haalAlleBavRijen, kiesBavNummer, type BavRij } from "@/lib/bavNummer";
+import { BavNummer } from "@/components/admin/crm/BavNummer";
 import {
   PRODUCT_LABEL, facturatieAgenda, formatEuro, maandwaarde, periodeBedrag,
   type ContractRegel, type Product,
@@ -46,6 +48,14 @@ export default function KlantenContracten() {
   const [metAfw, setMetAfw] = useState(false);
   const [geenCert, setGeenCert] = useState(false);
   const [certs, setCerts] = useState<Map<string, KlantCertificaat[]>>(new Map());
+  const [bav, setBav] = useState<Map<string, BavRij[]>>(new Map());
+  useEffect(() => {
+    haalAlleBavRijen().then((rs) => {
+      const m = new Map<string, BavRij[]>();
+      for (const r of rs) if (r.onderneming_id) m.set(r.onderneming_id, [...(m.get(r.onderneming_id) ?? []), r]);
+      setBav(m);
+    }).catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -95,13 +105,15 @@ export default function KlantenContracten() {
         mails: emails.get(o.id) ?? [],
         certNummers: (certs.get(o.id) ?? []).filter((c) => c.koppeling_status !== "afgewezen").map((c) => c.certificaatnummer),
         cert: actueelCertificaat(certs.get(o.id) ?? []),
+        bav: kiesBavNummer(bav.get(o.id) ?? []),
+        bavZoek: (bav.get(o.id) ?? []).map((x) => x.nummer).join(" "),
       };
     });
-  }, [onds, zichtbareContracten, emails, mandaten, toonTest, certs]);
+  }, [onds, zichtbareContracten, emails, mandaten, toonTest, certs, bav]);
 
   const gefilterd = rijen.filter((r) => {
     const q = zoek.trim().toLowerCase();
-    if (q && !`${r.o.naam ?? ""} ${r.o.exact_relatie_code ?? ""} ${r.certNummers.join(" ")}`.toLowerCase().includes(q)) return false;
+    if (q && !`${r.o.naam ?? ""} ${r.o.exact_relatie_code ?? ""} ${r.certNummers.join(" ")} ${r.bavZoek}`.toLowerCase().includes(q)) return false;
     if (product !== "alle" && !r.producten.includes(product as Product)) return false;
     if (cyclus !== "alle" && !r.cs.some((c) => c.status !== "vervangen" && c.cyclus === cyclus)) return false;
     if (binnen30 && !r.binnen30) return false;
@@ -194,7 +206,7 @@ export default function KlantenContracten() {
             <Card>
               <CardContent className="space-y-4 pt-6">
                 <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-                  <Input placeholder="Zoek op naam, relatiecode of certificaat" value={zoek} onChange={(e) => setZoek(e.target.value)} className="w-full sm:w-64" aria-label="Zoeken" />
+                  <Input placeholder="Zoek op naam, relatiecode, BAV- of Hiscox-nummer" value={zoek} onChange={(e) => setZoek(e.target.value)} className="w-full sm:w-64" aria-label="Zoeken" />
                   <Select value={product} onValueChange={setProduct}>
                     <SelectTrigger className="min-h-10 w-full sm:w-52" aria-label="Product"><SelectValue /></SelectTrigger>
                     <SelectContent><SelectItem value="alle">Alle producten</SelectItem>
@@ -217,6 +229,7 @@ export default function KlantenContracten() {
                         {r.afw.length > 0 && <Badge variant="outline" className="shrink-0 border-amber-500 text-amber-700">{r.afw.length} afwijking(en)</Badge>}
                       </div>
                       <p className="text-sm text-muted-foreground">Relatie {r.o.exact_relatie_code ?? "—"} · {r.cs.length} contractregel(s)</p>
+                      <BavNummer keuze={r.bav} />
                       <p className="break-words text-sm">{r.producten.map((p) => PRODUCT_LABEL[p]).join(", ") || "Geen actief product"}</p>
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm tabular-nums">
                         <span>Maand {r.maand ? formatEuro(r.maand) : "—"}</span><span>Jaar {r.jaar ? formatEuro(r.jaar) : "—"}</span>
@@ -228,14 +241,14 @@ export default function KlantenContracten() {
                   <table className="w-full table-fixed text-sm min-w-[1200px]">
                     <colgroup><col className="w-[18%]" /><col className="w-[8%]" /><col className="w-[9%]" /><col className="w-[15%]" /><col className="w-[14%]" /><col className="w-[8%]" /><col className="w-[8%]" /><col className="w-[9%]" /><col className="w-[6%]" /><col className="w-[7%]" /></colgroup>
                     <thead><tr className="text-left text-muted-foreground">
-                      <th className="p-2 font-normal">Klant</th><th className="p-2 font-normal">Relatiecode</th><th className="p-2 font-normal">Certificaat</th><th className="p-2 font-normal">Contact</th><th className="p-2 font-normal">Contracten</th>
+                      <th className="p-2 font-normal">Klant</th><th className="p-2 font-normal">Relatiecode</th><th className="p-2 font-normal">BAV-nummer</th><th className="p-2 font-normal">Contact</th><th className="p-2 font-normal">Contracten</th>
                       <th className="p-2 text-right font-normal">Per maand</th><th className="p-2 text-right font-normal">Per jaar</th><th className="p-2 font-normal">Volgende periode vanaf</th><th className="p-2 font-normal">Mandaat</th><th className="p-2 font-normal">Afwijking</th>
                     </tr></thead>
                     <tbody>{gefilterd.map((r) => (
                       <tr key={r.o.id} className="border-t border-border hover:bg-muted/30">
                         <td className="p-2 min-w-0"><Link to={`/admin/klanten/${r.o.id}`} className="block truncate font-medium hover:text-primary" title={r.o.naam ?? ""}>{r.o.naam || "—"}</Link></td>
                         <td className="p-2 tabular-nums truncate">{r.o.exact_relatie_code}</td>
-                        <td className="p-2 tabular-nums truncate" title={r.cert ? `${r.cert.certificaatnummer} · ${r.cert.koppeling_status}` : "Geen certificaat bekend"}>{r.cert ? <>{r.cert.certificaatnummer}{r.cert.koppeling_status === "voorstel" && <span className="text-xs text-amber-700"> (voorstel)</span>}</> : "—"}</td>
+                        <td className="p-2 min-w-0"><BavNummer keuze={r.bav} compact /></td>
                         <td className="p-2 min-w-0"><div className="truncate" title={r.o.afas_contactpersoon ?? ""}>{r.o.afas_contactpersoon || "—"}</div><div className="truncate text-xs text-muted-foreground" title={r.mails.join(", ")}>{r.mails[0] ?? "Geen e-mail"}</div></td>
                         <td className="p-2 min-w-0"><div className="truncate" title={r.producten.map((p) => PRODUCT_LABEL[p]).join(", ")}>{r.cs.length} · {r.producten.map((p) => PRODUCT_LABEL[p]).join(", ")}</div></td>
                         <td className="p-2 text-right tabular-nums">{r.maand ? formatEuro(r.maand) : "—"}</td>

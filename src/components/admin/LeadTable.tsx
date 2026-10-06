@@ -1,4 +1,8 @@
 import { leadOnderwerp } from "../../../supabase/functions/_shared/leadVelden";
+import { LeadTestSchakelaar } from "@/components/admin/LeadTestSchakelaar";
+import { BavNummer } from "@/components/admin/crm/BavNummer";
+import { haalBavRijen, kiesBavNummer } from "@/lib/bavNummer";
+import { useQuery as useBavQuery } from "@tanstack/react-query";
 import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS, statusTitel } from "@/lib/statusLabels";
 import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 import { useState } from "react";
@@ -75,6 +79,20 @@ export function LeadTable() {
     toonTest,
   });
 
+  const leadIds = (leads ?? []).map((l) => l.id);
+  const { data: bavRijen } = useBavQuery({
+    queryKey: ["bav-leads", leadIds.join(",")],
+    queryFn: async () => {
+      const uit = [];
+      for (let i = 0; i < leadIds.length; i += 150) uit.push(...(await haalBavRijen([], leadIds.slice(i, i + 150))));
+      return uit;
+    },
+    enabled: leadIds.length > 0,
+  });
+  const bavVoor = (id: string) => {
+    const rs = (bavRijen ?? []).filter((r) => r.lead_id === id);
+    return rs.length ? kiesBavNummer(rs) : null;
+  };
   const updateLead = useUpdateLead();
   const deleteLead = useDeleteLead();
 
@@ -175,6 +193,7 @@ export function LeadTable() {
                   {lead.voornaam} {lead.achternaam}
                 </Link>
                 {lead.bedrijfsnaam && <p className="break-words text-sm text-muted-foreground">{lead.bedrijfsnaam}</p>}
+                {bavVoor(lead.id) && <BavNummer keuze={bavVoor(lead.id)} />}
               </div>
               <Badge variant="outline">{lead.type === "verzekering_aanvraag" ? "Verzekering" : lead.type === "offerte-aanvraag" ? "Offerte" : "Contact"}</Badge>
             </div>
@@ -192,6 +211,7 @@ export function LeadTable() {
               </Select>
               <div className="flex items-center gap-1">
                 <Button variant="outline" size="sm" asChild><Link to={`/admin/leads/${lead.id}`}><Eye className="h-4 w-4" />Bekijken</Link></Button>
+                <LeadTestSchakelaar leadId={lead.id} isTest={!!lead.is_test} naam={`${lead.voornaam} ${lead.achternaam}`} compact />
                 {canDelete && <Button variant="ghost" size="icon" className="min-h-10 min-w-10 text-destructive hover:bg-destructive/10 hover:text-destructive" aria-label={`Lead ${lead.voornaam} verwijderen`} onClick={() => setDeleteTarget({ id: lead.id, name: `${lead.voornaam} ${lead.achternaam}` })}><Trash2 className="h-4 w-4" /></Button>}
               </div>
             </div>
@@ -232,6 +252,7 @@ export function LeadTable() {
                         {lead.bedrijfsnaam}
                       </span>
                     )}
+                    {bavVoor(lead.id) && <span className="block"><BavNummer keuze={bavVoor(lead.id)} /></span>}
                     {leadOnderwerp(lead) && (
                       <span className="block max-w-[20rem] truncate text-xs font-normal text-muted-foreground" title={leadOnderwerp(lead)}>
                         {leadOnderwerp(lead)}
@@ -302,6 +323,7 @@ export function LeadTable() {
                           <Eye className="h-4 w-4" />
                         </Link>
                       </Button>
+                      <LeadTestSchakelaar leadId={lead.id} isTest={!!lead.is_test} naam={`${lead.voornaam} ${lead.achternaam}`} compact />
                       {canDelete && (
                         <Button
                           variant="ghost"

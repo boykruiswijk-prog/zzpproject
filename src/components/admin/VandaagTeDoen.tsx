@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 import { cn } from "@/lib/utils";
+import { haalBavRijen, kiesBavNummer } from "@/lib/bavNummer";
 
 interface Item { id: string; naam?: string | null; bedrijfsnaam?: string | null; sinds?: string | null; reden?: string | null; eigen?: boolean | null }
 interface Categorie { aantal: number; items: Item[]; per_type?: Record<string, number>; handmatig?: number }
@@ -48,6 +49,19 @@ export function VandaagTeDoen() {
     refetchOnWindowFocus: true,
     retry: 1,
   });
+
+  const leadIds = Array.from(new Set(["nieuw", "activeren", "polissen", "exact"].flatMap((k) => ((data?.[k] as Categorie | undefined)?.items ?? []).map((i) => i.id))));
+  const { data: bav } = useQuery({
+    queryKey: ["vandaag-bav", leadIds.join(",")],
+    queryFn: () => haalBavRijen([], leadIds),
+    enabled: leadIds.length > 0,
+    staleTime: 60_000,
+  });
+  const bavTekst = (id: string) => {
+    const rs = (bav ?? []).filter((r) => r.lead_id === id);
+    const k = rs.length ? kiesBavNummer(rs) : null;
+    return k?.nummer ? `BAV ${k.nummer}` : "";
+  };
 
   return (
     <Card className="min-w-0">
@@ -113,7 +127,7 @@ export function VandaagTeDoen() {
                             {i.bedrijfsnaam && <span className="text-muted-foreground"> · {i.bedrijfsnaam}</span>}
                             {i.eigen && <Badge variant="outline" className="ml-2 text-[10px]">Aan jou</Badge>}
                           </span>
-                          <span className="min-w-0 truncate text-xs text-muted-foreground">{i.reden}{i.sinds ? ` · ${datum(i.sinds)}` : ""}</span>
+                          <span className="min-w-0 truncate text-xs text-muted-foreground">{[bavTekst(i.id), i.reden, i.sinds ? datum(i.sinds) : ""].filter(Boolean).join(" · ")}</span>
                         </Link>
                       </li>
                     ))}
