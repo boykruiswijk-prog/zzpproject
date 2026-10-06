@@ -417,6 +417,15 @@ export const seoRoutes: SeoRoute[] = [
       "Als interim controller of CFO werk je met cijfers waar je opdrachtgever op stuurt. Een BAV en AVB in één polis beschermen je. Accountant met wettelijke taken of Wft-adviseur? Neem eerst contact op.",
   },
   {
+    path: "/starters",
+    title: "Starterspakket BAV + AVB voor nieuwe zzp'ers | ZP Zaken",
+    description:
+      "BAV + AVB voor zzp'ers met een KVK-inschrijving jonger dan 12 maanden: € 45 per maand of € 495 per jaar de eerste 12 maanden, daarna € 55 of € 600.",
+    h1: "Starterspakket BAV + AVB",
+    intro:
+      "€ 45 per maand of € 495 per jaar, inclusief kosten en assurantiebelasting, de eerste 12 maanden; daarna € 55 per maand of € 600 per jaar. Voor zzp'ers met een KVK-inschrijving jonger dan 12 maanden.",
+  },
+  {
     path: "/zzp-verzekering-hr",
     title: "BAV HR-adviseur zzp | Verzekering voor HR en P&O",
     description:

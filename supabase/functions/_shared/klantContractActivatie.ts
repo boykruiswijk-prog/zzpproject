@@ -19,6 +19,10 @@ export interface ContractSpec {
   bedrag_per_periode: number;
   periodeStart: string;
   periodeEind: string;
+  /** Startertarief: eerste 12 maanden afwijkend bedrag, daarna bedrag_na_starter. */
+  tarief_type?: "standaard" | "starter";
+  starter_tot?: string | null;
+  bedrag_na_starter?: number | null;
 }
 
 export function contractRegelVoorActivatie(lead: any, ondernemingId: string, spec: ContractSpec) {
@@ -41,6 +45,9 @@ export function contractRegelVoorActivatie(lead: any, ondernemingId: string, spe
     status: "actief",
     facturatie_status: "planner",
     afwijkingen: [],
+    tarief_type: spec.tarief_type ?? "standaard",
+    starter_tot: spec.tarief_type === "starter" ? spec.starter_tot ?? null : null,
+    bedrag_na_starter: spec.tarief_type === "starter" ? spec.bedrag_na_starter ?? null : null,
     is_test: !!lead.is_test,
   };
 }

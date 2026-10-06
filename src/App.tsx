@@ -21,6 +21,7 @@ const ZzpVerzekeringConsultant = lazy(() => import("./pages/ZzpVerzekeringConsul
 const ZzpVerzekeringInterimManager = lazy(() => import("./pages/ZzpVerzekeringInterimManager"));
 const ZzpVerzekeringFinance = lazy(() => import("./pages/ZzpVerzekeringFinance"));
 const ZzpVerzekeringHR = lazy(() => import("./pages/ZzpVerzekeringHR"));
+const Starters = lazy(() => import("./pages/Starters"));
 const ZzpVerzekeringMarketing = lazy(() => import("./pages/ZzpVerzekeringMarketing"));
 const ZzpVerzekeringCoach = lazy(() => import("./pages/ZzpVerzekeringCoach"));
 const MentaleGezondheid = lazy(() => import("./pages/MentaleGezondheid"));
@@ -148,6 +149,7 @@ const publicRoutes = (
     <Route path="zzp-verzekering-interim-manager" element={<ZzpVerzekeringInterimManager />} />
     <Route path="zzp-verzekering-finance" element={<ZzpVerzekeringFinance />} />
     <Route path="zzp-verzekering-hr" element={<ZzpVerzekeringHR />} />
+    <Route path="starters" element={<Starters />} />
     <Route path="zzp-verzekering-marketing" element={<ZzpVerzekeringMarketing />} />
     <Route path="zzp-verzekering-coach" element={<ZzpVerzekeringCoach />} />
     <Route path="mentale-gezondheid" element={<MentaleGezondheid />} />

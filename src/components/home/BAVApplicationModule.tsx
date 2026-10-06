@@ -26,6 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import ellenAvatar from "@/assets/ellen-baars-avatar.webp";
 import { TrustSignalsStrip } from "@/components/social-proof/TrustSignalsStrip";
 import { bavPakketten, getPakket, type BavPakketId } from "@/data/bavPakketten";
+import { STARTER, STARTER_VOORWAARDE_TEKST, isStarter, starterTot } from "@/lib/starterTarief";
 import { checkAcceptance } from "@/data/acceptanceCriteria";
 import { useFormGuard } from "@/lib/antiSpam";
 import { maakFormulier } from "../../../supabase/functions/_shared/leadVelden";
@@ -122,7 +123,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
    const [magicLinkSent, setMagicLinkSent] = useState(false);
    const checkoutGestart = useRef(false);
   const [formData, setFormData] = useState({
-    bedrijfsnaam: "", kvkNummer: "", sector: initialSector, beroep: "", functie: "", aantalMedewerkers: "",
+    bedrijfsnaam: "", kvkNummer: "", kvkStartdatum: "", sector: initialSector, beroep: "", functie: "", aantalMedewerkers: "",
     voornaam: "", achternaam: "", email: "", telefoon: "",
     opdrachtgever: "", bemiddelaarNaam: "",
     iban: "",
@@ -191,6 +192,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
       if (!formData.bedrijfsnaam.trim()) newErrors.bedrijfsnaam = t("bavApp.valCompanyName");
       if (!formData.kvkNummer.trim()) newErrors.kvkNummer = t("bavApp.valKvk");
       else if (!isValidKvk(formData.kvkNummer)) newErrors.kvkNummer = t("bavApp.valKvkFormat");
+      if (formData.kvkStartdatum && (!/^\d{4}-\d{2}-\d{2}$/.test(formData.kvkStartdatum) || formData.kvkStartdatum > new Date().toISOString().slice(0, 10) || formData.kvkStartdatum < "1900-01-01")) newErrors.kvkStartdatum = "Vul een geldige startdatum in die niet in de toekomst ligt";
       if (!verzekeringskaartVoorSector(formData.sector)) newErrors.sector = "Kies je sector";
       if (!formData.beroep.trim()) newErrors.beroep = t("bavApp.valProfession");
       if (!formData.aantalMedewerkers.trim()) newErrors.aantalMedewerkers = t("bavApp.valEmployees");
@@ -316,6 +318,9 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
     setCurrentStep(currentStep + 1);
   };
   const prevStep = () => { if (currentStep > 1) { setErrors({}); stapGewisseld.current = true; setCurrentStep(currentStep - 1); } };
+   const betaalwijzeIsMaand = gekozenPakketId === "maandelijks";
+   const starterVanToepassing = (gekozenPakketId === "maandelijks" || gekozenPakketId === "jaarlijks")
+     && !!startDate && isStarter(formData.kvkStartdatum || null, startDate);
    const handleSubmit = async () => {
      if (isSubmitting) return;
      if (!validateStep(currentStep)) return;
@@ -336,6 +341,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
            attributie: leesAttributie(),
            bedrijfsnaam: formData.bedrijfsnaam,
            kvk_nummer: formData.kvkNummer || null,
+           kvk_startdatum: formData.kvkStartdatum || null,
            beroep: formData.beroep || null,
            sector: verzekeringskaartVoorSector(formData.sector)?.sector.label ?? null,
            adres_straat: formData.adresStraat || null,
@@ -353,7 +359,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
            formulier_naam: "Online aanvraag BAV + AVB",
            formulier: maakFormulier([
              ["Pakket", selectedBavPakket.name], ["Betaalwijze", betaalwijze], ["Ingangsdatum", startDate],
-             ["Bedrijfsnaam", formData.bedrijfsnaam], ["KvK-nummer", formData.kvkNummer],
+             ["Bedrijfsnaam", formData.bedrijfsnaam], ["KvK-nummer", formData.kvkNummer], ["Startdatum KVK-inschrijving", formData.kvkStartdatum],
              ["Sector", verzekeringskaartVoorSector(formData.sector)?.sector.label ?? formData.sector], ["Beroep", formData.beroep],
              ["Functie", formData.functie], ["Aantal medewerkers", formData.aantalMedewerkers],
              ["Voornaam", formData.voornaam], ["Achternaam", formData.achternaam], ["E-mail", formData.email], ["Telefoon", normaliseerNlTelefoon(formData.telefoon)],
@@ -403,7 +409,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
         trackPurchase(returnedLeadId, selectedBavPakket.id, selectedBavPakket.name, jaarpremie(selectedBavPakket));
        setIsSubmitted(true);
         setFormData({
-          bedrijfsnaam: "", kvkNummer: "", sector: "", beroep: "", functie: "", aantalMedewerkers: "",
+          bedrijfsnaam: "", kvkNummer: "", kvkStartdatum: "", sector: "", beroep: "", functie: "", aantalMedewerkers: "",
           voornaam: "", achternaam: "", email: "", telefoon: "", opdrachtgever: "", bemiddelaarNaam: "",
           iban: "", adresStraat: "", adresHuisnummer: "", adresPostcode: "", adresPlaats: "", adresLand: "Nederland",
           rekeninghouder: "",
@@ -734,6 +740,19 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                         <Input id="kvkNummer" name="kvkNummer" value={formData.kvkNummer} onChange={handleInputChange} maxLength={8} placeholder="12345678" className={cn(errors.kvkNummer && "border-destructive")} />
                         <FieldError message={errors.kvkNummer} />
                       </div>
+                      <div>
+                        <Label htmlFor="kvkStartdatum">Startdatum KVK-inschrijving</Label>
+                        <Input id="kvkStartdatum" name="kvkStartdatum" type="date" value={formData.kvkStartdatum} onChange={handleInputChange} max={new Date().toISOString().slice(0, 10)} className={cn(errors.kvkStartdatum && "border-destructive")} />
+                        <p className="text-xs text-muted-foreground mt-1">Staat op je KVK-uittreksel. Nodig voor het startertarief.</p>
+                        <FieldError message={errors.kvkStartdatum} />
+                      </div>
+                      {starterVanToepassing && (
+                        <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 text-sm" data-testid="starterblok">
+                          <p className="font-semibold mb-1">Startertarief van toepassing</p>
+                          <p className="text-muted-foreground">{STARTER_VOORWAARDE_TEKST}</p>
+                          <p className="text-muted-foreground mt-1">Zelfde polis, dekking en voorwaarden als de gewone BAV + AVB. Wij controleren je KVK-startdatum voordat de polis ingaat.</p>
+                        </div>
+                      )}
                       <div className="grid grid-cols-3 gap-3">
                         <div className="col-span-2">
                           <Label htmlFor="adresStraat">Straat *</Label>
@@ -924,7 +943,8 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.package")}</span><span className="font-medium">{gekozenPakketLabel}</span></div>
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.coverage")}</span><span>BAV {formatBedrag(selectedBavPakket.dekkingen.bav.perGebeurtenis)} / AVB {formatBedrag(selectedBavPakket.dekkingen.avb.perGebeurtenis)}</span></div>
-                          <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.payment")}</span><span>{selectedBavPakket.prijsLabel}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.payment")}</span><span>{starterVanToepassing ? `€ ${betaalwijzeIsMaand ? STARTER.maandprijs : STARTER.jaarprijs} per ${betaalwijzeIsMaand ? "maand" : "jaar"} (startertarief t/m ${formatDateNL(starterTot(startDate))})` : selectedBavPakket.prijsLabel}</span></div>
+                          {starterVanToepassing && <p className="text-xs text-muted-foreground">{STARTER_VOORWAARDE_TEKST}</p>}
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.startDate")}</span><span>{startDate ? formatDateNL(startDate) : t("bavApp.immediately")}</span></div>
                         </div>
                       </div>

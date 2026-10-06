@@ -211,6 +211,7 @@ export const BREADCRUMB_LABELS: Record<string, string> = {
   "/zzp-verzekering-interim-manager": "ZZP verzekering interim managers",
   "/zzp-verzekering-finance": "ZZP verzekering finance",
   "/zzp-verzekering-hr": "ZZP verzekering HR-adviseurs",
+  "/starters": "Starterspakket BAV + AVB",
   "/zzp-verzekering-marketing": "ZZP verzekering marketing",
   "/zzp-verzekering-coach": "ZZP verzekering coaches",
 };

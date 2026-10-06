@@ -18,6 +18,7 @@ type Acties = Record<string, Categorie> & { voornaam?: string | null; totaal?: n
 const CATEGORIEEN: { key: string; titel: string; icoon: LucideIcon; link: (i: Item) => string; alles: string }[] = [
   { key: "nieuw", titel: "Nieuwe aanvragen en leads", icoon: Inbox, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/leads" },
   { key: "activeren", titel: "Klaar om te activeren", icoon: ShieldCheck, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/leads" },
+  { key: "starter", titel: "Startertarief controleren", icoon: ShieldCheck, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/leads" },
   { key: "service", titel: "Opzeggingen, pauzes en wijzigingen", icoon: FileWarning, link: (i) => `/admin/service-aanvragen/${i.id}`, alles: "/admin/service-aanvragen" },
   { key: "screening", titel: "Screening-aanvragen", icoon: UserSearch, link: (i) => `/admin/screening-aanvragen/${i.id}`, alles: "/admin/screening-aanvragen" },
   { key: "chat", titel: "Terugbelverzoeken Chat Zeker", icoon: MessageCircle, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/chatgesprekken" },

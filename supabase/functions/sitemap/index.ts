@@ -22,6 +22,7 @@ const STATIC_URLS: Array<{ path: string; changefreq?: string; priority?: string 
   { path: "/zzp-verzekering-interim-manager", changefreq: "monthly", priority: "0.8" },
   { path: "/zzp-verzekering-finance", changefreq: "monthly", priority: "0.8" },
   { path: "/zzp-verzekering-hr", changefreq: "monthly", priority: "0.8" },
+  { path: "/starters", changefreq: "monthly", priority: "0.8" },
   { path: "/zzp-verzekering-marketing", changefreq: "monthly", priority: "0.8" },
   { path: "/zzp-verzekering-coach", changefreq: "monthly", priority: "0.8" },
   { path: "/offerte", changefreq: "monthly", priority: "0.8" },
