@@ -171,6 +171,7 @@ export function LeadTable() {
             ))}
           </SelectContent>
         </Select>
+        <label className="flex min-h-10 items-center gap-2 text-sm"><Checkbox checked={toonAfgerond} onCheckedChange={(v) => setToonAfgerond(v === true)} />Toon afgerond</label>
         <Select
           value={typeFilter}
           onValueChange={(value) => setTypeFilter(value)}
@@ -355,6 +356,7 @@ export function LeadTable() {
         </Table>
       </div>
 
+      {afronden && <AfrondDialoog lead={afronden} open onOpenChange={(o) => { if (!o) setAfronden(null); }} />}
       {/* Delete confirmation dialog */}
       <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <AlertDialogContent>
