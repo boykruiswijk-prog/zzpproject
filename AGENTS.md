@@ -29,3 +29,5 @@
 - docs/cloudflare-bulk-redirects.csv wordt bij elke build afgeleid van public/_redirects (cloudflareBulkCsv in vite.config.ts). Waarom: één bron voor redirects.
 
 - Reviewverzoeken aan nieuwe klanten lopen alleen via Edge Function review-verzoeken (cron, schakelaar integratie_config 'reviewverzoeken_actief', kandidaten via RPC review_kandidaten); klikken via review-klik, afmelden via review-afmelden alleen naar review_afmeldingen (nooit suppressed_emails, zodat transactionele mail doorgaat). Waarom: één filter dat testleads en bestaande klanten uitsluit.
+- CRM-notities, handmatig beeindigen en ondernemingswijzigingen lopen alleen via RPC's crm_notitie_toevoegen/crm_notitie_intrekken, crm_beeindig en crm_ondernemingswijziging; crm_beeindig maakt een interne opzegaanvraag en hergebruikt plan_opzeg_credit. Waarom: zelfde opzegpad als de site, niets verwijderen, alles geaudit.
+- Notitiebijlagen staan in private bucket klant-documenten onder notities/<notitie_id>/ en worden alleen via signed URL getoond. Waarom: geen publieke klantdocumenten.
