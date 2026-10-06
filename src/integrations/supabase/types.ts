@@ -4240,6 +4240,10 @@ export type Database = {
         Args: { _aanvraag_id: string; _onderneming_id: string }
         Returns: Json
       }
+      lead_afronden: {
+        Args: { _lead_id: string; _toelichting?: string }
+        Returns: boolean
+      }
       log_not_found: {
         Args: { _pad: string; _referrer?: string; _user_agent?: string }
         Returns: undefined
@@ -4343,6 +4347,7 @@ export type Database = {
         | "actief"
         | "gepauzeerd"
         | "opgezegd"
+        | "afgerond"
       lead_type: "contact" | "verzekering_aanvraag" | "offerte-aanvraag"
       note_type: "notitie" | "follow_up" | "telefoongesprek"
     }
@@ -4491,6 +4496,7 @@ export const Constants = {
         "actief",
         "gepauzeerd",
         "opgezegd",
+        "afgerond",
       ],
       lead_type: ["contact", "verzekering_aanvraag", "offerte-aanvraag"],
       note_type: ["notitie", "follow_up", "telefoongesprek"],
