@@ -23,7 +23,7 @@ export const STARTERS_FAQS = [
   { question: "Wie kan het startertarief krijgen?", answer: `Zzp'ers met een KVK-inschrijving jonger dan 12 maanden op de ingangsdatum van de polis. Wij kijken naar de startdatum op je KVK-uittreksel. ${STARTER_VOORWAARDE_TEKST}` },
   { question: "Wat betaal ik na de eerste 12 maanden?", answer: `Na 12 maanden betaal je automatisch de gewone prijs: € ${STARTER.naMaandprijs} per maand of € ${STARTER.naJaarprijs} per jaar, inclusief kosten en assurantiebelasting. Je hoeft daarvoor niets te doen.` },
   { question: "Is de dekking anders dan bij de gewone BAV + AVB?", answer: `Nee. Het is dezelfde polis met dezelfde dekking en dezelfde voorwaarden: BAV ${BAV} en AVB ${AVB} per gebeurtenis, verzekerd bij Hiscox.` },
-  { question: "Kan ik maandelijks opzeggen?", answer: "Ja. Betaal je per maand, dan is je polis maandelijks opzegbaar, net als bij de gewone maandbetaling." },
+  { question: "Kan ik tussentijds opzeggen?", answer: "Ja. Ook met het startertarief is je verzekering dagelijks opzegbaar, net als de gewone polis." },
   TIJDELIJK_GEEN_OPDRACHT_FAQ,
   { question: "Hoe controleren jullie mijn KVK-startdatum?", answer: "Je vult de startdatum van je KVK-inschrijving in bij je aanvraag. Een collega controleert die datum voordat je polis ingaat. Klopt de datum niet, dan geldt de gewone prijs en hoor je dat van ons." },
 ];

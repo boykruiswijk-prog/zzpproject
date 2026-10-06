@@ -4,7 +4,7 @@
 
 export const TIJDELIJK_GEEN_OPDRACHT_FAQ = {
   question: "Wat als ik tijdelijk geen opdracht heb?",
-  answer: "Dan hoef je niet meteen je verzekering op te zeggen. Via onze zusteronderneming Onefellow, arbeidsbemiddelaar voor zelfstandige professionals, helpen we je zoeken naar een nieuwe opdracht. Bekijk de actuele opdrachten op onefellow.nl/opdrachten of meld je aan via onefellow.nl/registreren. Wil je toch opzeggen, dan kan dat dagelijks; let op dat je daarna niet meer verzekerd bent voor nieuwe claims.",
+  answer: "Dan hoef je niet meteen je verzekering op te zeggen. Je kunt je verzekering pauzeren via Mijn ZP, en via onze zusteronderneming Onefellow, arbeidsbemiddelaar voor zelfstandige professionals, helpen we je zoeken naar een nieuwe opdracht. Bekijk de actuele opdrachten op onefellow.nl/opdrachten of meld je aan via onefellow.nl/registreren. Wil je toch opzeggen, dan kan dat dagelijks; let op dat je daarna niet meer verzekerd bent voor nieuwe claims.",
 };
 
 export const faqItems = [
