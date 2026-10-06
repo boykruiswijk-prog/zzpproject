@@ -3968,6 +3968,19 @@ export type Database = {
       }
     }
     Views: {
+      crm_bav_nummers: {
+        Row: {
+          bron: string | null
+          contract_id: string | null
+          datum: string | null
+          lead_id: string | null
+          nummer: string | null
+          onderneming_id: string | null
+          policy_id: string | null
+          status: string | null
+        }
+        Relationships: []
+      }
       exact_reconciliatie_v: {
         Row: {
           bron: string | null
@@ -4078,6 +4091,11 @@ export type Database = {
           _reden: string
           _toelichting: string
         }
+        Returns: Json
+      }
+      crm_dossier: { Args: { _ond: string[]; _pers: string[] }; Returns: Json }
+      crm_einddatum_wijzigen: {
+        Args: { _contract_id: string; _einddatum: string; _reden: string }
         Returns: Json
       }
       crm_notitie_intrekken: {
@@ -4300,6 +4318,10 @@ export type Database = {
         }[]
       }
       zet_facturatie_actief: { Args: { _aan: boolean }; Returns: boolean }
+      zet_lead_test: {
+        Args: { _is_test: boolean; _lead_id: string; _reden: string }
+        Returns: Json
+      }
       zet_opzeg_credits_actief: { Args: { _aan: boolean }; Returns: boolean }
     }
     Enums: {

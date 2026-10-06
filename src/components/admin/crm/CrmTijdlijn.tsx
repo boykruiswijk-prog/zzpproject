@@ -19,10 +19,17 @@ export const NOTITIE_SOORT_LABEL: Record<string, string> = {
   ondernemingswijziging: "Ondernemingswijziging", overig: "Overig",
 };
 
+export const TYPE_LABEL: Record<string, string> = {
+  aanvraag: "Aanvraag", certificaat: "Certificaat/polis", factuur: "Factuur", creditnota: "Creditnota",
+  opzegverzoek: "Opzegverzoek klant", beeindigd: "Beeindigd door medewerker", pauze: "Pauze/hervat",
+  notitie: "Notitie/telefoon", mail: "Mail", ondernemingswijziging: "Ondernemingswijziging", activiteit: "Activiteit", service: "Serviceaanvraag",
+};
+const NOTITIE_TYPE: Record<string, string> = { stop: "beeindigd", ondernemingswijziging: "ondernemingswijziging", opzegging: "opzegverzoek" };
+
 type Ref = { id: string; naam: string };
 type Bijlage = { id: string; storage_pad: string; bestandsnaam: string; mime: string; url?: string };
 type Item = {
-  key: string; datum: string; bron: "notitie" | "leadnotitie" | "activiteit" | "aanvraag";
+  key: string; datum: string; bron: "notitie" | "leadnotitie" | "activiteit" | "aanvraag" | "dossier"; type: string; status?: string;
   soort: string; tekst: string; wie?: string | null; hoortBij: string; href?: string;
   notitie?: any; bijlagen?: Bijlage[];
 };
@@ -40,6 +47,7 @@ export function CrmTijdlijn({ ondernemingen, personen, invoerDoel, readOnly = fa
   const [bestanden, setBestanden] = useState<File[]>([]);
   const [bezig, setBezig] = useState(false);
   const [groot, setGroot] = useState<Bijlage | null>(null);
+  const [filter, setFilter] = useState("alle");
   const ondIds = ondernemingen.map((o) => o.id);
   const persIds = personen.map((p) => p.id);
   const sleutel = ondIds.join(",") + "|" + persIds.join(",");
@@ -53,11 +61,15 @@ export function CrmTijdlijn({ ondernemingen, personen, invoerDoel, readOnly = fa
     if (persIds.length) filters.push(`persoon_id.in.(${persIds.join(",")})`);
     const uit: Item[] = [];
 
-    const [notRes, aanvrRes, kopRes] = await Promise.all([
+    const [notRes, aanvrRes, kopRes, dosRes] = await Promise.all([
       filters.length ? supabase.from("crm_notities").select("*").or(filters.join(",")).order("aangemaakt_op", { ascending: false }) : Promise.resolve({ data: [] as any[] }),
       ondIds.length ? supabase.from("klant_service_aanvragen").select("id,type,status,created_at,details,onderneming_id,voornaam,achternaam").in("onderneming_id", ondIds) : Promise.resolve({ data: [] as any[] }),
       persIds.length ? supabase.from("persoon_bron_koppeling").select("persoon_id,bron_id").eq("bron_tabel", "leads").in("persoon_id", persIds) : Promise.resolve({ data: [] as any[] }),
+      supabase.rpc("crm_dossier" as any, { _ond: ondIds, _pers: persIds } as any),
     ]);
+    for (const e of ((dosRes as any).data ?? []) as any[]) {
+      uit.push({ key: "d" + e.key, datum: e.datum, bron: "dossier", type: e.type, status: e.status, soort: TYPE_LABEL[e.type] ?? e.type, tekst: e.onderwerp, wie: e.door, hoortBij: "", href: e.href });
+    }
     const notities = (notRes.data ?? []) as any[];
     let bijlagen: any[] = [];
     if (notities.length) {
@@ -70,13 +82,15 @@ export function CrmTijdlijn({ ondernemingen, personen, invoerDoel, readOnly = fa
     }
     for (const n of notities) {
       const delen = [n.onderneming_id && ondNaam.get(n.onderneming_id), n.persoon_id && persNaam.get(n.persoon_id)].filter(Boolean);
-      uit.push({ key: "n" + n.id, datum: n.aangemaakt_op, bron: "notitie", soort: NOTITIE_SOORT_LABEL[n.soort] ?? n.soort, tekst: n.tekst,
+      uit.push({ key: "n" + n.id, datum: n.aangemaakt_op, bron: "notitie", type: NOTITIE_TYPE[n.soort] ?? "notitie", soort: NOTITIE_SOORT_LABEL[n.soort] ?? n.soort, tekst: n.tekst,
         wie: n.aangemaakt_door_naam, hoortBij: delen.join(" / ") || "-", notitie: n, bijlagen: bijlagen.filter((b) => b.notitie_id === n.id) });
     }
     for (const a of (aanvrRes.data ?? []) as any[]) {
       const d = a.details ?? {};
       const extra = a.type === "opzeggen" ? ` per ${d.opzegdatum ?? "?"}${d.bron === "beheer_handmatig" ? " (handmatig in beheer)" : ""}` : "";
-      uit.push({ key: "a" + a.id, datum: a.created_at, bron: "aanvraag", soort: `Serviceaanvraag: ${a.type}`,
+      const handmatig = d.bron === "beheer_handmatig";
+      if (handmatig) continue; // staat al als beeindiging (notitie) in de tijdlijn
+      uit.push({ key: "a" + a.id, datum: a.created_at, bron: "aanvraag", type: a.type === "opzeggen" ? "opzegverzoek" : a.type === "pauzeren" ? "pauze" : "service", wie: "klant", soort: `Serviceaanvraag: ${a.type}`,
         tekst: `${a.type === "opzeggen" ? "Opzegging" : a.type}${extra}. Status: ${a.status}.${d.toelichting ? " " + d.toelichting : ""}`,
         hoortBij: ondNaam.get(a.onderneming_id) ?? "-", href: `/admin/service-aanvragen/${a.id}` });
     }
@@ -88,9 +102,9 @@ export function CrmTijdlijn({ ondernemingen, personen, invoerDoel, readOnly = fa
         supabase.from("lead_notes").select("id,lead_id,content,type,created_at,user_id").in("lead_id", leadIds),
         supabase.from("activiteiten_log").select("id,lead_id,actie_type,omschrijving,uitgevoerd_door_naam,aangemaakt_op").in("lead_id", leadIds).order("aangemaakt_op", { ascending: false }).limit(200),
       ]);
-      for (const x of (ln.data ?? []) as any[]) uit.push({ key: "l" + x.id, datum: x.created_at, bron: "leadnotitie", soort: `Leadnotitie (${x.type})`, tekst: x.content,
+      for (const x of (ln.data ?? []) as any[]) uit.push({ key: "l" + x.id, datum: x.created_at, bron: "leadnotitie", type: "notitie", soort: `Leadnotitie (${x.type})`, tekst: x.content,
         hoortBij: `lead ${leadPersoon.get(x.lead_id) ?? ""}`.trim(), href: `/admin/leads/${x.lead_id}` });
-      for (const x of (al.data ?? []) as any[]) uit.push({ key: "g" + x.id, datum: x.aangemaakt_op, bron: "activiteit", soort: `Activiteit: ${x.actie_type}`, tekst: x.omschrijving,
+      for (const x of (al.data ?? []) as any[]) uit.push({ key: "g" + x.id, datum: x.aangemaakt_op, bron: "activiteit", type: /pauze|hervat/i.test(x.actie_type) ? "pauze" : "activiteit", soort: `Activiteit: ${x.actie_type}`, tekst: x.omschrijving,
         wie: x.uitgevoerd_door_naam, hoortBij: `lead ${leadPersoon.get(x.lead_id) ?? ""}`.trim(), href: `/admin/leads/${x.lead_id}` });
     }
     uit.sort((a, b) => (a.datum < b.datum ? 1 : -1));
@@ -144,22 +158,39 @@ export function CrmTijdlijn({ ondernemingen, personen, invoerDoel, readOnly = fa
         )}
         {laden ? <div className="flex justify-center p-6"><Loader2 className="h-5 w-5 animate-spin" /></div>
           : items.length === 0 ? <p className="text-sm text-muted-foreground">Nog niets vastgelegd.</p>
-          : <ol className="space-y-3">{items.map((it) => {
+          : <>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs text-muted-foreground">Filter op type</span>
+            <Select value={filter} onValueChange={setFilter}>
+              <SelectTrigger className="h-8 w-56"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="alle">Alle typen ({items.length})</SelectItem>
+                {Array.from(new Set(items.map((i) => i.type))).map((t) => <SelectItem key={t} value={t}>{TYPE_LABEL[t] ?? t} ({items.filter((i) => i.type === t).length})</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="hidden grid-cols-[9rem_9rem_11rem_1fr] gap-2 border-b border-border px-3 pb-1 text-xs font-medium text-muted-foreground md:grid">
+            <span>Datum</span><span>Door</span><span>Type</span><span>Onderwerp</span>
+          </div>
+          <ol className="space-y-2">{items.filter((i) => filter === "alle" || i.type === filter).map((it) => {
             const ingetrokken = it.notitie?.ingetrokken_op;
             const magIntrekken = !readOnly && it.notitie && !ingetrokken && (it.notitie.aangemaakt_door === user?.id || isSupervisorOrAdmin);
             return (
               <li key={it.key} className={`min-w-0 rounded-md border border-border p-3 text-sm ${ingetrokken ? "opacity-60" : ""}`}>
-                <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                  <Badge variant={it.bron === "notitie" ? "default" : "secondary"}>{it.soort}</Badge>
-                  <span>{formatDateTimeNL(it.datum)}</span>
-                  {it.wie && <span>door {it.wie}</span>}
-                  <span className="truncate">bij {it.hoortBij}</span>
+                <div className="grid min-w-0 gap-1 md:grid-cols-[9rem_9rem_11rem_1fr] md:gap-2">
+                  <span className="text-xs tabular-nums text-muted-foreground">{formatDateTimeNL(it.datum)}</span>
+                  <span className="truncate text-xs text-muted-foreground">{it.wie || "systeem"}</span>
+                  <span><Badge variant={it.bron === "notitie" ? "default" : "secondary"} className="max-w-full truncate">{TYPE_LABEL[it.type] ?? it.soort}</Badge></span>
+                  <p className={`min-w-0 whitespace-pre-wrap break-words ${ingetrokken ? "line-through" : ""}`}>{it.tekst}</p>
+                </div>
+                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                  {it.bron === "notitie" && it.soort && <span>{it.soort}</span>}
+                  {it.hoortBij && <span className="truncate">bij {it.hoortBij}</span>}
                   {it.notitie?.is_test && <Badge variant="outline">test</Badge>}
                   {ingetrokken && <Badge variant="outline">ingetrokken: {it.notitie.intrek_reden}</Badge>}
                   {it.href && <Link to={it.href} className="ml-auto hover:text-primary">openen</Link>}
                   {magIntrekken && <button className="ml-auto hover:text-primary" onClick={() => intrekken(it.notitie)}>intrekken</button>}
                 </div>
-                <p className={`mt-1 whitespace-pre-wrap break-words ${ingetrokken ? "line-through" : ""}`}>{it.tekst}</p>
                 {it.bijlagen && it.bijlagen.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-2">{it.bijlagen.map((b) => (
                     <button key={b.id} type="button" onClick={() => b.mime === "application/pdf" || /heic|heif/.test(b.mime) ? window.open(b.url, "_blank", "noopener") : setGroot(b)}
@@ -171,7 +202,7 @@ export function CrmTijdlijn({ ondernemingen, personen, invoerDoel, readOnly = fa
                     </button>))}</div>
                 )}
               </li>);
-          })}</ol>}
+          })}</ol></>}
       </CardContent>
       <Dialog open={!!groot} onOpenChange={(o) => !o && setGroot(null)}>
         <DialogContent className="max-w-4xl">

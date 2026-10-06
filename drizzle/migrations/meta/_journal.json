@@ -365,6 +365,13 @@
       "when": 1791275808080,
       "tag": "0051_crm_notitie_naam_fix",
       "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "7",
+      "when": 1791281434091,
+      "tag": "0052_crm_klantkaart_dossier_bav",
+      "breakpoints": true
     }
   ]
 }
