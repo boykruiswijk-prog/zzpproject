@@ -386,6 +386,11 @@ Deno.serve(async (req) => {
     .from("leads").select("*").eq("id", leadId).maybeSingle();
   if (leadErr || !lead) return json({ success: false, error: "lead_not_found" }, 404);
 
+  // Testleads krijgen nooit Exact-acties (alleen metadata-inspectie blijft mogelijk).
+  if (lead.is_test && action !== "introspect_metadata") {
+    return json({ success: false, error: "testlead_geen_exact", reason: "Testlead: geen Exact-acties" }, 409);
+  }
+
   // ── Handmatige acceptatie (zorg/bouw): alleen activeren na bewuste bevestiging ──
   if (action === "activate" && !lead.exact_account_id) {
     const check = controleerHandmatigeAcceptatie(lead.extra_data, body);
