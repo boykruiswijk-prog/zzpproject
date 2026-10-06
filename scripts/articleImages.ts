@@ -1,7 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
-import { createElement } from "react";
+// Geen React-import: die zou React in productiemodus laden vóór de SSR-prerender
+// (development) en daarmee de render laten crashen. Satori accepteert gewone objecten.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function createElement(type: string, props: Record<string, unknown> | null, ...children: unknown[]): any {
+  const kids = children.flat().filter((c) => c !== null && c !== undefined && c !== false);
+  return { type, key: null, props: { ...(props ?? {}), children: kids.length === 0 ? undefined : kids.length === 1 ? kids[0] : kids } };
+}
 import satori from "satori";
 import { Resvg } from "@resvg/resvg-js";
 import postgres from "postgres";
