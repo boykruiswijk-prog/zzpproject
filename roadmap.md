@@ -6,4 +6,4 @@
 - [x] Mijn ZP c) knop "Uitnodigen voor Mijn ZP" met voorbeeld
 - [x] Mijn ZP d) Exact-facturen via factuur-e-mail, oudere facturen opvragen
 - [ ] Publiceren (aangevraagd)
-- [ ] Automatische kennisbankafbeeldingen: generator, frontend/SEO, statische bestanden, tests en documentatie (niet publiceren)
+- [x] Automatische kennisbankafbeeldingen: generator, frontend/SEO, statische bestanden, tests en documentatie (niet gepubliceerd)

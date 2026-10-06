@@ -173,6 +173,28 @@ function prerenderPlugin(env: Record<string, string>): Plugin {
   };
 }
 
+/** Preview serves the same generated PNG files as the production static host. */
+function articleImagePreviewPlugin(): Plugin {
+  return {
+    name: "zp-article-image-preview",
+    apply: "serve",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const rawPath = (req.url || "").split("?")[0];
+        if (!rawPath.startsWith("/images/kennisbank/")) return next();
+        let filename: string;
+        try { filename = decodeURIComponent(rawPath.slice("/images/kennisbank/".length)); }
+        catch { res.statusCode = 400; res.end(); return; }
+        if (!/^[\p{L}\p{N}_-]+\.png$/u.test(filename)) { res.statusCode = 404; res.end(); return; }
+        const file = path.resolve(__dirname, "dist/images/kennisbank", filename);
+        if (!fs.existsSync(file)) { res.statusCode = 404; res.end(); return; }
+        res.setHeader("Content-Type", "image/png");
+        fs.createReadStream(file).pipe(res);
+      });
+    },
+  };
+}
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
@@ -191,6 +213,7 @@ export default defineConfig(({ mode }) => {
     react(),
     mode === "development" && componentTagger(),
     redirectsPlugin(env),
+    articleImagePreviewPlugin(),
     prerenderPlugin(env),
   ].filter(Boolean),
 
