@@ -393,6 +393,13 @@
       "when": 1791284133025,
       "tag": "0055_beheerpunten_ellen",
       "breakpoints": true
+    },
+    {
+      "idx": 56,
+      "version": "7",
+      "when": 1791284836349,
+      "tag": "0056_mijn_zp_factuur_email_portaltoegang",
+      "breakpoints": true
     }
   ]
 }

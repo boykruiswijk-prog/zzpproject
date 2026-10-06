@@ -3163,6 +3163,7 @@ export type Database = {
           exact_relatie_code: string | null
           facturatie_blokkade: string | null
           facturatie_blokkade_reden: string | null
+          factuur_email: string | null
           huisnummer: string | null
           iban: string | null
           id: string
@@ -3189,6 +3190,7 @@ export type Database = {
           exact_relatie_code?: string | null
           facturatie_blokkade?: string | null
           facturatie_blokkade_reden?: string | null
+          factuur_email?: string | null
           huisnummer?: string | null
           iban?: string | null
           id?: string
@@ -3215,6 +3217,7 @@ export type Database = {
           exact_relatie_code?: string | null
           facturatie_blokkade?: string | null
           facturatie_blokkade_reden?: string | null
+          factuur_email?: string | null
           huisnummer?: string | null
           iban?: string | null
           id?: string
@@ -4387,6 +4390,10 @@ export type Database = {
       plan_opzeg_credit: {
         Args: { _aanvraag_id: string; _contract_id: string; _einddatum: string }
         Returns: Json
+      }
+      portal_factuur_opvragen: {
+        Args: { _toelichting?: string }
+        Returns: boolean
       }
       portal_user_id_by_email: { Args: { p_email: string }; Returns: string }
       read_email_batch: {
