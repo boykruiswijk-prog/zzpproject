@@ -1067,7 +1067,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                 )}
               </div>
 
-              {/* Price Sidebar */}
+              {/* Price Sidebar; bij een starter toont het vak het startertarief */}
               <div className="bg-foreground p-6 md:p-8 text-background">
                 <div className="sticky top-8">
                   <h4 className="text-lg font-semibold mb-4">{t("home.bavStep1")}</h4>
