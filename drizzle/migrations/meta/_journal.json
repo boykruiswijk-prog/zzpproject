@@ -344,6 +344,13 @@
       "when": 1791273158276,
       "tag": "0048_review_afmeldingen",
       "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "7",
+      "when": 1791275436902,
+      "tag": "0049_crm_notities_stop_opvolging",
+      "breakpoints": true
     }
   ]
 }
