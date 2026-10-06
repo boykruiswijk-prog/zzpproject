@@ -1,4 +1,6 @@
 import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS, statusTitel } from "@/lib/statusLabels";
+import { LeadTestSchakelaar } from "@/components/admin/LeadTestSchakelaar";
+import { LeadBavNummer } from "@/components/admin/crm/LeadBavNummer";
 import { teamWaarschuwingHandmatig } from "../../../supabase/functions/_shared/sectorRegels";
 import { useState } from "react";
 import { KlantLinkVoorLead } from "@/components/admin/KlantLinkVoorLead";
@@ -235,6 +237,7 @@ export default function AdminLeadDetail() {
                 <p className="break-words text-muted-foreground">{lead.bedrijfsnaam}</p>
               )}
               <KlantLinkVoorLead leadId={lead.id} relatiecode={(lead as any).exact_relatie_code} />
+              <LeadBavNummer leadId={lead.id} />
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -244,36 +247,7 @@ export default function AdminLeadDetail() {
                 Markeer als klant
               </Button>
             )}
-            {isSupervisorOrAdmin && (
-              <Button
-                variant={lead.is_test ? "secondary" : "outline"}
-                size="sm"
-                onClick={async () => {
-                  const nieuw = !lead.is_test;
-                  const { error } = await supabase
-                    .from("leads")
-                    .update({ is_test: nieuw })
-                    .eq("id", lead.id);
-                  if (error) {
-                    toast({ title: "Fout", description: error.message, variant: "destructive" });
-                    return;
-                  }
-                  try {
-                    await supabase.from("activiteiten_log").insert({
-                      actie_type: "lead_test_markering_gewijzigd",
-                      omschrijving: `Testrecord-markering ${nieuw ? "aangezet" : "uitgezet"} voor ${lead.voornaam ?? ""} ${lead.achternaam ?? ""}`.trim(),
-                      lead_id: lead.id,
-                      klant_email: (lead.email ?? "").toLowerCase().trim() || null,
-                    });
-                  } catch { /* log-fout mag toggle niet blokkeren */ }
-                  toast({ title: nieuw ? "Als testrecord gemarkeerd" : "Testmarkering verwijderd" });
-                  window.location.reload();
-                }}
-                title="Alleen zichtbaar voor supervisor/admin"
-              >
-                {lead.is_test ? "✓ Testrecord" : "Markeer als test"}
-              </Button>
-            )}
+            <LeadTestSchakelaar leadId={lead.id} isTest={!!lead.is_test} naam={`${lead.voornaam ?? ""} ${lead.achternaam ?? ""}`.trim()} />
             {isSupervisorOrAdmin && (
               <Button variant="destructive" size="icon" onClick={handleDelete}
                       title="Lead verwijderen (supervisor/admin)">
