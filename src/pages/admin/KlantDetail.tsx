@@ -11,6 +11,9 @@ import { CONTRACT_STATUS_LABEL, PRODUCT_LABEL, formatEuro, maskeerIban, periodeB
 import { OpzeggingenKlant } from "@/components/admin/OpzeggingenKlant";
 import { CertificatenKlant } from "@/components/admin/CertificatenKlant";
 import { KlantCertificaat } from "@/components/admin/KlantCertificaat";
+import { CrmTijdlijn } from "@/components/admin/crm/CrmTijdlijn";
+import { LopendeProducten } from "@/components/admin/crm/LopendeProducten";
+import { ExactRelatieLabel, OndernemingswijzigingKnop, OpvolgerBanner, VoorgangerHistorie, useOpvolging } from "@/components/admin/crm/Opvolging";
 
 export default function KlantDetail() {
   const { id } = useParams();
@@ -21,6 +24,8 @@ export default function KlantDetail() {
   const [mandaat, setMandaat] = useState<any>(null);
   const [leadMatch, setLeadMatch] = useState<any[]>([]);
   const [herlaad, setHerlaad] = useState(0);
+  const { opvolger, voorgangers } = useOpvolging(id!, herlaad);
+  const persoonNaam = (p: any) => [p.voornaam, p.achternaam].filter(Boolean).join(" ") || p.email_weergave || "contactpersoon";
 
   useEffect(() => {
     (async () => {
@@ -60,15 +65,17 @@ export default function KlantDetail() {
         <Link to="/admin/klanten" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"><ArrowLeft className="h-4 w-4" /> Klanten & contracten</Link>
         {laden ? <div className="flex justify-center p-12"><Loader2 className="h-6 w-6 animate-spin" /></div> : !ond ? <p>Klant niet gevonden.</p> : (
           <>
-            <div>
+            <OpvolgerBanner opvolger={opvolger} />
+            <div className="flex flex-wrap items-start justify-between gap-2"><div>
               <h1 className="text-2xl font-bold break-words">{ond.naam}</h1>
               <p className="break-words text-sm text-muted-foreground">Relatiecode {ond.exact_relatie_code} · {ond.bron === "afas_20261001" ? "startstand 01-10-2026" : ond.bron ? `bron ${ond.bron}` : ""}</p>
               {ond.afwijkingen?.length > 0 && <div className="mt-2 flex flex-wrap gap-2">{ond.afwijkingen.map((a: string) => <Badge key={a} variant="outline" className="border-amber-500 text-amber-700">{a}</Badge>)}</div>}
-            </div>
+              <div className="mt-2"><ExactRelatieLabel ond={ond} heeftVoorganger={voorgangers.length > 0} /></div>
+            </div><OndernemingswijzigingKnop ond={ond} onKlaar={() => setHerlaad((x) => x + 1)} /></div>
             <div className="grid gap-6 md:grid-cols-3">
               <Card><CardHeader><CardTitle className="text-base">Contactpersonen</CardTitle></CardHeader><CardContent className="space-y-2 text-sm">
                 {personen.length === 0 && <p className="text-muted-foreground">Geen e-mailadres bekend.</p>}
-                {personen.map((p) => <div key={p.id} className="min-w-0"><Link to={`/admin/crm?q=${encodeURIComponent(p.email_weergave ?? "")}`} className="block truncate font-medium hover:text-primary">{[p.voornaam, p.achternaam].filter(Boolean).join(" ") || p.email_weergave || "—"}</Link><div className="truncate text-muted-foreground" title={p.email_weergave}>{p.email_weergave}</div></div>)}
+                {personen.map((p) => <div key={p.id} className="min-w-0"><Link to={`/admin/personen/${p.id}`} className="block truncate font-medium hover:text-primary">{[p.voornaam, p.achternaam].filter(Boolean).join(" ") || p.email_weergave || "—"}</Link><div className="truncate text-muted-foreground" title={p.email_weergave}>{p.email_weergave}</div></div>)}
               </CardContent></Card>
               <Card><CardHeader><CardTitle className="text-base">Mandaat (alleen lezen)</CardTitle></CardHeader><CardContent className="text-sm">
                 {mandaat ? <div className="space-y-1"><div>IBAN {maskeerIban(mandaat.iban)}</div><div className="text-muted-foreground">Kenmerk {mandaat.kenmerk} · ondertekend {formatDateNL(mandaat.ondertekend_op)}</div></div> : <p className="text-muted-foreground">Geen mandaat gevonden.</p>}
@@ -79,6 +86,9 @@ export default function KlantDetail() {
                 <p className="mt-2 text-xs text-muted-foreground">Via contactpersonen of relatiecode; alleen ter informatie.</p>
               </CardContent></Card>
             </div>
+            <LopendeProducten ondernemingId={ond.id} ondernemingNaam={ond.naam} leadIds={leadMatch.map((l) => l.id)} onGewijzigd={() => setHerlaad((x) => x + 1)} />
+            <CrmTijdlijn ondernemingen={[{ id: ond.id, naam: ond.naam }]} personen={personen.map((p) => ({ id: p.id, naam: persoonNaam(p) }))}
+              invoerDoel={{ onderneming_id: ond.id }} herlaadSleutel={herlaad} />
             <KlantCertificaat ond={ond} contracten={contracten} personen={personen} leadIds={leadMatch.map((l) => l.id)} />
             <CertificatenKlant ondernemingId={ond.id} />
             <OpzeggingenKlant ondernemingId={ond.id} contracten={contracten} onGewijzigd={() => setHerlaad((x) => x + 1)} />
@@ -98,6 +108,7 @@ export default function KlantDetail() {
                   </tr>))}</tbody>
               </table>
             </CardContent></Card>
+            <VoorgangerHistorie voorgangers={voorgangers} />
           </>
         )}
       </div>
