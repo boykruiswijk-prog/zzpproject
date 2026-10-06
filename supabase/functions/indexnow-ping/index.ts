@@ -14,6 +14,7 @@ const json = (body: unknown, status = 200) =>
 const Body = z.object({
   paths: z.array(z.string().regex(/^\/[a-z0-9\-/]*$/i).max(300)).max(1000).optional(),
   alles: z.boolean().optional(),
+  bron: z.enum(["artikel_trigger", "handmatig", "cron"]).optional(),
 });
 
 Deno.serve(async (req) => {
@@ -22,7 +23,12 @@ Deno.serve(async (req) => {
 
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
   const admin = createClient(Deno.env.get("SUPABASE_URL") ?? "", serviceKey);
-  const isCron = serviceKey !== "" && req.headers.get("Authorization") === `Bearer ${serviceKey}`;
+  const cronSecret = req.headers.get("x-cron-secret") ?? "";
+  let isCron = serviceKey !== "" && req.headers.get("Authorization") === `Bearer ${serviceKey}`;
+  if (!isCron && cronSecret) {
+    const { data } = await admin.rpc("verify_cron_secret", { p_secret: cronSecret });
+    isCron = data === true;
+  }
   if (!isCron) {
     const auth = await requireSupervisor(req, admin);
     if (auth instanceof Response) return new Response(auth.body, { status: auth.status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -30,20 +36,29 @@ Deno.serve(async (req) => {
 
   const parsed = Body.safeParse(await req.json().catch(() => ({})));
   if (!parsed.success) return json({ error: parsed.error.flatten().fieldErrors }, 400);
+  const bron = parsed.data.bron ?? (isCron ? "cron" : "handmatig");
+  const log = (row: Record<string, unknown>) =>
+    admin.from("indexnow_log").insert({ bron, ...row }).then(() => {}, () => {});
 
   let urls = (parsed.data.paths ?? []).map((p) => `https://${HOST}${p}`);
   if (parsed.data.alles) {
     const res = await fetch(`https://${HOST}/sitemap.xml`);
-    if (!res.ok) return json({ error: "sitemap_unavailable", status: res.status }, 502);
+    if (!res.ok) { await log({ ok: false, http_status: res.status, fout: "sitemap_unavailable" }); return json({ error: "sitemap_unavailable", status: res.status }, 502); }
     urls = [...(await res.text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
   }
   urls = [...new Set(urls)].filter((u) => new URL(u).host === HOST).slice(0, 10000);
   if (!urls.length) return json({ error: "geen_urls" }, 400);
 
-  const res = await fetch("https://api.indexnow.org/indexnow", {
-    method: "POST",
-    headers: { "Content-Type": "application/json; charset=utf-8" },
-    body: JSON.stringify({ host: HOST, key: KEY, keyLocation: `https://${HOST}/${KEY}.txt`, urlList: urls }),
-  });
-  return json({ ok: res.ok, status: res.status, aantal: urls.length });
+  try {
+    const res = await fetch("https://api.indexnow.org/indexnow", {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({ host: HOST, key: KEY, keyLocation: `https://${HOST}/${KEY}.txt`, urlList: urls }),
+    });
+    await log({ urls: urls.slice(0, 50), aantal: urls.length, ok: res.ok, http_status: res.status });
+    return json({ ok: res.ok, status: res.status, aantal: urls.length });
+  } catch (e) {
+    await log({ urls: urls.slice(0, 50), aantal: urls.length, ok: false, fout: String(e).slice(0, 300) });
+    return json({ error: "indexnow_onbereikbaar" }, 502);
+  }
 });
