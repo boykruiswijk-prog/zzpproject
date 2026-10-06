@@ -94,6 +94,12 @@ export function OndernemingswijzigingKnop({ ond, onKlaar }: { ond: Ond; onKlaar?
   const [bezig, setBezig] = useState(false);
 
   useEffect(() => {
+    const h = (e: Event) => { if ((e as CustomEvent).detail === ond.id) setOpen(true); };
+    window.addEventListener("open-ondernemingswijziging", h);
+    return () => window.removeEventListener("open-ondernemingswijziging", h);
+  }, [ond.id]);
+
+  useEffect(() => {
     if (modus !== "bestaand" || zoek.trim().length < 2) { setKandidaten([]); return; }
     const t = setTimeout(async () => {
       const q = zoek.trim().replace(/[%,()]/g, "");
@@ -151,6 +157,7 @@ export function OndernemingswijzigingKnop({ ond, onKlaar }: { ond: Ond; onKlaar?
             </div>
             <div><Label>Toelichting</Label><Textarea rows={3} value={toelichting} onChange={(e) => setToelichting(e.target.value)} /></div>
             <BijlageKiezer bestanden={bestanden} onChange={setBestanden} />
+            <p role="note" className="rounded-md border border-primary/40 bg-primary/5 p-3 text-sm">Een polis gaat niet mee naar een nieuw KvK-nummer. De klant moet een nieuwe aanvraag doen. Beëindig de oude polis per de dag vóór de ingangsdatum van de nieuwe polis, zodat er geen gat in de dekking zit en de klant niet dubbel betaalt.</p>
             <label className="flex items-start gap-2"><Checkbox checked={beeindigen} onCheckedChange={(v) => setBeeindigen(v === true)} />
               <span>Lopende contracten en polissen van {ond.naam} beeindigen per de dag voor de ingangsdatum (reden ondernemingswijziging). Te veel gefactureerd wordt alleen als concept-creditnota klaargezet.</span></label>
           </div>
