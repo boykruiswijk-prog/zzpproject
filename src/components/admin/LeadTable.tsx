@@ -63,7 +63,7 @@ const pakketColors: Record<string, string> = {
   "jaarlijks-cyber": "bg-accent/10 text-accent border-accent/30",
 };
 
-export function LeadTable() {
+export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "all">("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
@@ -76,15 +76,17 @@ export function LeadTable() {
   // Verwijderen blijft beperkt tot de gemarkeerde admin-mailbox, EN moet supervisor/admin-rol hebben.
   const canDelete = user?.email === AUTHORIZED_DELETE_EMAIL && isSupervisorOrAdmin;
 
-  const { data: leads, isLoading, isFetching } = useLeads({
-    search: search || undefined,
+  const { data: alleLeads, isLoading, isFetching } = useLeads({
+    // Alleen cijfers: zoeken op BAV-nummer (in de lijst), anders op naam/e-mail/bedrijf.
+    search: search && !/^[\d\s.-]+$/.test(search.trim()) ? search : undefined,
+    soort,
     status: statusFilter === "all" ? undefined : statusFilter,
     type: typeFilter === "all" ? undefined : typeFilter,
     toonTest,
     toonAfgerond,
   });
 
-  const leadIds = (leads ?? []).map((l) => l.id);
+  const leadIds = (alleLeads ?? []).map((l) => l.id);
   const { data: bavRijen } = useBavQuery({
     queryKey: ["bav-leads", leadIds.join(",")],
     queryFn: async () => {
@@ -98,6 +100,8 @@ export function LeadTable() {
     const rs = (bavRijen ?? []).filter((r) => r.lead_id === id);
     return rs.length ? kiesBavNummer(rs) : null;
   };
+  const bavZoek = search && /^[\d\s.-]+$/.test(search.trim()) ? search.replace(/\D/g, "") : "";
+  const leads = bavZoek ? (alleLeads ?? []).filter((l) => (bavVoor(l.id)?.nummer ?? "").replace(/\D/g, "").includes(bavZoek)) : alleLeads;
   const updateLead = useUpdateLead();
   const deleteLead = useDeleteLead();
 
@@ -181,9 +185,9 @@ export function LeadTable() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Alle types</SelectItem>
-            <SelectItem value="contact">Contactverzoek</SelectItem>
-            <SelectItem value="verzekering_aanvraag">Verzekeringsaanvraag</SelectItem>
-            <SelectItem value="offerte-aanvraag">Offerteaanvraag</SelectItem>
+            {soort !== "aanvragen" && <SelectItem value="contact">Contactverzoek</SelectItem>}
+            {soort !== "leads" && <SelectItem value="verzekering_aanvraag">Verzekeringsaanvraag</SelectItem>}
+            {soort !== "aanvragen" && <SelectItem value="offerte-aanvraag">Offerteaanvraag</SelectItem>}
           </SelectContent>
         </Select>
       </div>
