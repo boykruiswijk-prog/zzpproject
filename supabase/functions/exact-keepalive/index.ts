@@ -69,11 +69,14 @@ Deno.serve(async (req) => {
   const { data: leads } = await supabase.from("leads").select("id,exact_invoice_id").not("exact_invoice_id", "is", null).limit(500);
   try {
     const rows = await readInvoiceStatuses(baseUrl, configuredDivision, token, (leads ?? []).map((l: { exact_invoice_id: string | null }) => l.exact_invoice_id ?? ""));
-    const perId = new Map(rows.map((row) => [String(row.InvoiceID).toLowerCase(), Number(row.Status)]));
+    const perId = new Map(rows.map((row) => [String(row.InvoiceID).toLowerCase(), row]));
     for (const lead of (leads ?? []) as Array<{ id: string; exact_invoice_id: string }>) {
-      const status = perId.get(String(lead.exact_invoice_id).toLowerCase());
-      if (Number.isFinite(status)) {
-        await supabase.from("leads").update({ exact_invoice_status: status }).eq("id", lead.id);
+      const row = perId.get(String(lead.exact_invoice_id).toLowerCase());
+      const status = Number(row?.Status);
+      if (row && Number.isFinite(status)) {
+        // Alleen lezen uit Exact; factuurnummer pas overnemen als Exact er een heeft gegeven.
+        const nummer = row.InvoiceNumber != null && String(row.InvoiceNumber).trim() !== "" && status === 50 ? String(row.InvoiceNumber) : null;
+        await supabase.from("leads").update(nummer ? { exact_invoice_status: status, exact_invoice_number: nummer } : { exact_invoice_status: status }).eq("id", lead.id);
         statusesUpdated += 1;
       }
     }
