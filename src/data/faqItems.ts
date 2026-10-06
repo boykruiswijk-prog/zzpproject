@@ -45,7 +45,7 @@ export const faqItems = [
       { question: "Hoe lang zit ik aan deze verzekering vast?", answer: "Onze verzekeringen zijn dagelijks opzegbaar. Geen jaarcontract, geen verborgen voorwaarden." },
       { question: "Wat moet ik doen als mijn bedrijf aansprakelijk wordt gesteld?", answer: "Neem direct contact op met ons via 020 - 457 3077 of info@zpzaken.nl. Wij melden de schade bij de verzekeraar en begeleiden je door het proces." },
       { question: "Wanneer begint en eindigt de verzekering?", answer: "De verzekering begint op de door jou gekozen ingangsdatum (maximaal 6 maanden vooruit) en loopt door totdat je opzegt. Dagelijks opzegbaar." },
-      { question: "Mijn bedrijfsgegevens veranderen, hoe geef ik dat door?", answer: "Mail je nieuwe gegevens naar info@zpzaken.nl met je polisnummer. Wij werken je polis binnen 24 uur bij." },
+      { question: "Mijn bedrijfsgegevens veranderen, hoe geef ik dat door?", answer: "Geef een nieuw adres, een nieuwe bedrijfsnaam of nieuwe contactgegevens door via info@zpzaken.nl met je polisnummer. Wij werken je gegevens binnen 24 uur bij. Verandert je KvK-nummer, bijvoorbeeld omdat je van eenmanszaak naar bv gaat? Dan is een nieuwe aanvraag nodig, omdat de polis bij het KvK-nummer hoort." },
       { question: "Hoeveel personen zijn er verzekerd met de BAV & AVB verzekering van ZP Zaken?", answer: "Standaard ben je als zzp'er met maximaal 3 medewerkers verzekerd binnen onze polis. Heb je meer medewerkers? Neem contact op voor een passend voorstel." },
     ]
   },
