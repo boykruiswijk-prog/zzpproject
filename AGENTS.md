@@ -30,5 +30,5 @@
 
 - Reviewverzoeken aan nieuwe klanten lopen alleen via Edge Function review-verzoeken (cron, schakelaar integratie_config 'reviewverzoeken_actief', kandidaten via RPC review_kandidaten); klikken via review-klik, afmelden via review-afmelden alleen naar review_afmeldingen (nooit suppressed_emails, zodat transactionele mail doorgaat). Waarom: één filter dat testleads en bestaande klanten uitsluit.
 - CRM-regels (notities, beeindigen, BAV-nummer, dossier, testmarkering) staan in src/components/admin/crm/AGENTS.md.
-- Artikelen zonder image_url krijgen bij elke build automatisch een huisstijlafbeelding (conceptdata alleen build-side; helper articleImage).
+- Artikelen zonder image_url krijgen per build een huisstijlafbeelding (concepten alleen build-side).
 - scripts/* importeren geen React. Waarom: anders crasht de SSR-prerender (prod/dev-mix).
