@@ -23,6 +23,7 @@ import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
 import { resolveFiscaleTokens } from "@/lib/fiscaleTokens";
 import { SITE_CONFIG } from "@/config/site";
 import NotFound from "@/pages/NotFound";
+import { articleImage, absoluteArticleImage } from "@/lib/articleImage";
 
 const BAV_AVB_SLUG = "zp-zaken-zorgeloos-zzpen-goedkoopste-bav-avb";
 
@@ -50,7 +51,6 @@ const CATEGORY_SLUGS: Record<string, string> = {
   "Nieuws": "ondernemen",
 };
 
-const FALLBACK_OG_IMAGE = SITE_CONFIG.ogImage;
 
 function stripMarkdown(s: string) {
   return s
@@ -229,9 +229,8 @@ export default function ArtikelDetail() {
   const categorySlug = CATEGORY_SLUGS[article.category];
   const articleUrl = `https://zpzaken.nl/kennisbank/${article.slug}`;
   const wordCount = countWords(article.content);
-  // Afmetingen van oudere artikelafbeeldingen zijn niet betrouwbaar vastgelegd.
-  // Gebruik daarom de gegarandeerde 1200×630-deelafbeelding voor previews.
-  const ogImage = FALLBACK_OG_IMAGE;
+  const imageUrl = articleImage(article);
+  const ogImage = absoluteArticleImage(article);
   const metaDescription = article.seo_description || makeFallbackDescription(article.content, article.excerpt);
   const seoTitle = article.seo_title || article.title;
   // Eén merknaam achteraan, max 60 tekens; zie formatPageTitle.
@@ -295,10 +294,10 @@ export default function ArtikelDetail() {
         <meta property="og:description" content={metaDescription} />
         <meta property="og:url" content={articleUrl} />
         <meta property="og:image" content={ogImage} />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:type" content="image/jpeg" />
-        <meta property="og:image:alt" content="ZP Zaken – BAV & AVB voor zzp'ers" />
+        {!article.image_url && <meta property="og:image:width" content="1200" />}
+        {!article.image_url && <meta property="og:image:height" content="630" />}
+        {!article.image_url && <meta property="og:image:type" content="image/png" />}
+        <meta property="og:image:alt" content={article.title} />
         <meta property="og:locale" content="nl_NL" />
         <meta property="article:published_time" content={publishedAt} />
         <meta property="article:modified_time" content={(article as any).content_reviewed_at || publishedAt} />
@@ -310,7 +309,7 @@ export default function ArtikelDetail() {
         <meta name="twitter:description" content={metaDescription} />
         <meta name="twitter:image" content={ogImage} />
 
-        {article.image_url && <link rel="preload" as="image" href={article.image_url} />}
+        <link rel="preload" as="image" href={imageUrl} />
 
         <script type="application/ld+json">{JSON.stringify(jsonLdArticle)}</script>
         <script type="application/ld+json">{JSON.stringify(jsonLdBreadcrumb)}</script>
@@ -378,17 +377,17 @@ export default function ArtikelDetail() {
         </header>
 
         {/* Featured image */}
-        {article.image_url && (
+        {(
           <div className="container-wide max-w-4xl mx-auto px-4 sm:px-6 -mt-2 mb-8">
             <figure>
               <img decoding="async"
-                src={article.image_url}
+                src={imageUrl}
                 alt={article.title}
-                width={1600}
-                height={900}
+                width={article.image_url ? 1600 : 1200}
+                height={article.image_url ? 900 : 630}
                 loading="eager"
                 fetchpriority="high"
-                className="w-full aspect-[16/9] object-cover rounded-xl shadow-md"
+                className={article.image_url ? "w-full aspect-[16/9] object-cover rounded-xl shadow-md" : "w-full aspect-[1200/630] object-contain rounded-xl shadow-md"}
               />
             </figure>
           </div>
@@ -494,11 +493,7 @@ export default function ArtikelDetail() {
                       to={`/kennisbank/${r.slug}`}
                       className="group bg-background border border-border/50 rounded-xl overflow-hidden hover:shadow-lg transition-shadow"
                     >
-                      {r.image_url ? (
-                        <img loading="lazy" decoding="async" src={r.image_url} alt={r.title} className="w-full aspect-[16/9] object-cover" />
-                      ) : (
-                        <div className="w-full aspect-[16/9] bg-gradient-to-br from-secondary to-muted" />
-                      )}
+                      <img loading="lazy" decoding="async" src={articleImage(r)} alt={r.title} className={r.image_url ? "w-full aspect-[16/9] object-cover" : "w-full aspect-[1200/630] object-contain"} />
                       <div className="p-5">
                         <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${rStyle} mb-3`}>
                           {r.category}
