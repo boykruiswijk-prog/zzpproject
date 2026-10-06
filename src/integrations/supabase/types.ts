@@ -875,6 +875,69 @@ export type Database = {
           },
         ]
       }
+      crm_taken: {
+        Row: {
+          aangemaakt_door: string | null
+          aangemaakt_door_naam: string | null
+          aangemaakt_op: string
+          afgerond_door: string | null
+          afgerond_op: string | null
+          details: Json
+          id: string
+          is_test: boolean
+          omschrijving: string
+          onderneming_id: string | null
+          persoon_id: string | null
+          soort: string
+          status: string
+        }
+        Insert: {
+          aangemaakt_door?: string | null
+          aangemaakt_door_naam?: string | null
+          aangemaakt_op?: string
+          afgerond_door?: string | null
+          afgerond_op?: string | null
+          details?: Json
+          id?: string
+          is_test?: boolean
+          omschrijving: string
+          onderneming_id?: string | null
+          persoon_id?: string | null
+          soort: string
+          status?: string
+        }
+        Update: {
+          aangemaakt_door?: string | null
+          aangemaakt_door_naam?: string | null
+          aangemaakt_op?: string
+          afgerond_door?: string | null
+          afgerond_op?: string | null
+          details?: Json
+          id?: string
+          is_test?: boolean
+          omschrijving?: string
+          onderneming_id?: string | null
+          persoon_id?: string | null
+          soort?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_taken_onderneming_id_fkey"
+            columns: ["onderneming_id"]
+            isOneToOne: false
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_taken_persoon_id_fkey"
+            columns: ["persoon_id"]
+            isOneToOne: false
+            referencedRelation: "personen"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dba_batches: {
         Row: {
           certified_count: number
@@ -2500,6 +2563,7 @@ export type Database = {
           created_at: string
           details: Json
           email: string
+          gekoppeld_aan: string | null
           geverifieerd: boolean
           id: string
           is_test: boolean
@@ -2525,6 +2589,7 @@ export type Database = {
           created_at?: string
           details?: Json
           email: string
+          gekoppeld_aan?: string | null
           geverifieerd?: boolean
           id?: string
           is_test?: boolean
@@ -2550,6 +2615,7 @@ export type Database = {
           created_at?: string
           details?: Json
           email?: string
+          gekoppeld_aan?: string | null
           geverifieerd?: boolean
           id?: string
           is_test?: boolean
@@ -2569,6 +2635,13 @@ export type Database = {
           voornaam?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "klant_service_aanvragen_gekoppeld_aan_fkey"
+            columns: ["gekoppeld_aan"]
+            isOneToOne: false
+            referencedRelation: "klant_service_aanvragen"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "klant_service_aanvragen_onderneming_id_fkey"
             columns: ["onderneming_id"]
@@ -2717,6 +2790,7 @@ export type Database = {
           ingangsdatum: string | null
           is_test: boolean
           kvk_nummer: string | null
+          offerte_verstuurd_op: string | null
           omzet: string | null
           opmerkingen: string | null
           opzeg_datum: string | null
@@ -2794,6 +2868,7 @@ export type Database = {
           ingangsdatum?: string | null
           is_test?: boolean
           kvk_nummer?: string | null
+          offerte_verstuurd_op?: string | null
           omzet?: string | null
           opmerkingen?: string | null
           opzeg_datum?: string | null
@@ -2871,6 +2946,7 @@ export type Database = {
           ingangsdatum?: string | null
           is_test?: boolean
           kvk_nummer?: string | null
+          offerte_verstuurd_op?: string | null
           omzet?: string | null
           opmerkingen?: string | null
           opzeg_datum?: string | null
@@ -3087,13 +3163,17 @@ export type Database = {
           exact_relatie_code: string | null
           facturatie_blokkade: string | null
           facturatie_blokkade_reden: string | null
+          huisnummer: string | null
           iban: string | null
           id: string
           is_test: boolean
           kvk: string | null
           naam: string | null
+          plaats: string | null
+          postcode: string | null
           rechtsvorm: string | null
           sector: string | null
+          straat: string | null
           updated_at: string
         }
         Insert: {
@@ -3109,13 +3189,17 @@ export type Database = {
           exact_relatie_code?: string | null
           facturatie_blokkade?: string | null
           facturatie_blokkade_reden?: string | null
+          huisnummer?: string | null
           iban?: string | null
           id?: string
           is_test?: boolean
           kvk?: string | null
           naam?: string | null
+          plaats?: string | null
+          postcode?: string | null
           rechtsvorm?: string | null
           sector?: string | null
+          straat?: string | null
           updated_at?: string
         }
         Update: {
@@ -3131,13 +3215,17 @@ export type Database = {
           exact_relatie_code?: string | null
           facturatie_blokkade?: string | null
           facturatie_blokkade_reden?: string | null
+          huisnummer?: string | null
           iban?: string | null
           id?: string
           is_test?: boolean
           kvk?: string | null
           naam?: string | null
+          plaats?: string | null
+          postcode?: string | null
           rechtsvorm?: string | null
           sector?: string | null
+          straat?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -3150,6 +3238,7 @@ export type Database = {
           genormaliseerd_email: string | null
           id: string
           is_test: boolean
+          telefoon: string | null
           updated_at: string
           voornaam: string | null
         }
@@ -3160,6 +3249,7 @@ export type Database = {
           genormaliseerd_email?: string | null
           id?: string
           is_test?: boolean
+          telefoon?: string | null
           updated_at?: string
           voornaam?: string | null
         }
@@ -3170,6 +3260,7 @@ export type Database = {
           genormaliseerd_email?: string | null
           id?: string
           is_test?: boolean
+          telefoon?: string | null
           updated_at?: string
           voornaam?: string | null
         }
@@ -3945,6 +4036,24 @@ export type Database = {
         }
         Relationships: []
       }
+      team_taakverdeling: {
+        Row: {
+          bijgewerkt_op: string
+          facturatie: boolean
+          user_id: string
+        }
+        Insert: {
+          bijgewerkt_op?: string
+          facturatie?: boolean
+          user_id: string
+        }
+        Update: {
+          bijgewerkt_op?: string
+          facturatie?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -4098,6 +4207,14 @@ export type Database = {
         Args: { _contract_id: string; _einddatum: string; _reden: string }
         Returns: Json
       }
+      crm_gegevens_wijzigen: {
+        Args: {
+          _onderneming_id: string
+          _persoon_id: string
+          _wijzigingen: Json
+        }
+        Returns: Json
+      }
       crm_notitie_intrekken: {
         Args: { _id: string; _reden: string }
         Returns: boolean
@@ -4126,6 +4243,7 @@ export type Database = {
         }
         Returns: Json
       }
+      crm_taak_afronden: { Args: { _id: string }; Returns: boolean }
       dashboard_tellers: { Args: { _toon_test?: boolean }; Returns: Json }
       delete_email: {
         Args: { message_id: number; queue_name: string }
@@ -4249,6 +4367,7 @@ export type Database = {
         Returns: undefined
       }
       mag_crm_beeindigen: { Args: { _uid: string }; Returns: boolean }
+      menu_tellers: { Args: never; Returns: Json }
       mijn_acties_vandaag: { Args: { _toon_test?: boolean }; Returns: Json }
       mijn_review_kaart: { Args: never; Returns: Json }
       move_to_dlq: {
