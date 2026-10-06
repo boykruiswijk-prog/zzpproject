@@ -34,7 +34,7 @@ export default function Afmelden() {
 
   const teksten: Record<Stand, string> = {
     laden: "Even geduld...",
-    geldig: "Wil je geen mails meer van ons ontvangen over je ervaring met ZP Zaken?",
+    geldig: "Wil je geen verzoeken meer ontvangen om een review te schrijven? Mails over je verzekering, certificaat en facturen blijven we gewoon sturen.",
     al_afgemeld: "Je bent al afgemeld. Je ontvangt geen verzoeken meer om een review te schrijven. Mails over je verzekering, certificaat en facturen blijven we gewoon sturen.",
     afgemeld: "Je ontvangt geen verzoeken meer om een review te schrijven. Mails over je verzekering, certificaat en facturen blijven we gewoon sturen.",
     ongeldig: "Deze afmeldlink is niet geldig. Neem contact met ons op als je je wilt afmelden.",
@@ -43,7 +43,7 @@ export default function Afmelden() {
 
   return (
     <Layout>
-      <SEOHead title="Afmelden | ZP Zaken" description="Afmelden voor mails van ZP Zaken." noindex />
+      <SEOHead title="Afmelden | ZP Zaken" description="Afmelden voor reviewverzoeken van ZP Zaken." noindex />
       <section className="container mx-auto px-4 py-20 max-w-xl text-center space-y-6">
         <h1 className="text-3xl font-bold">Afmelden</h1>
         <p className="text-muted-foreground">{teksten[stand]}</p>
