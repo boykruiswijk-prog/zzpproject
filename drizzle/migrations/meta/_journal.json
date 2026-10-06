@@ -372,6 +372,13 @@
       "when": 1791281434091,
       "tag": "0052_crm_klantkaart_dossier_bav",
       "breakpoints": true
+    },
+    {
+      "idx": 53,
+      "version": "7",
+      "when": 1791281983470,
+      "tag": "0053_lead_status_afgerond_enum",
+      "breakpoints": true
     }
   ]
 }
