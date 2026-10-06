@@ -11,8 +11,8 @@ import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 import { cn } from "@/lib/utils";
 import { haalBavRijen, kiesBavNummer } from "@/lib/bavNummer";
 
-interface Item { id: string; naam?: string | null; bedrijfsnaam?: string | null; sinds?: string | null; reden?: string | null; eigen?: boolean | null }
-interface Categorie { aantal: number; items: Item[]; per_type?: Record<string, number>; handmatig?: number }
+interface Item { bron?: string | null; id: string; naam?: string | null; bedrijfsnaam?: string | null; sinds?: string | null; reden?: string | null; eigen?: boolean | null }
+interface Categorie { verborgen?: boolean; aantal: number; items: Item[]; per_type?: Record<string, number>; handmatig?: number }
 type Acties = Record<string, Categorie> & { voornaam?: string | null; totaal?: number };
 
 const CATEGORIEEN: { key: string; titel: string; icoon: LucideIcon; link: (i: Item) => string; alles: string }[] = [
@@ -23,6 +23,7 @@ const CATEGORIEEN: { key: string; titel: string; icoon: LucideIcon; link: (i: It
   { key: "chat", titel: "Terugbelverzoeken Chat Zeker", icoon: MessageCircle, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/chatgesprekken" },
   { key: "afgehaakt", titel: "Afgehaakte aanvragen (2 dagen)", icoon: PhoneCall, link: () => "/admin/afgehaakt", alles: "/admin/afgehaakt" },
   { key: "polissen", titel: "Polissen die aflopen of gepauzeerd zijn", icoon: CalendarClock, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/leads" },
+  { key: "facturatie", titel: "Facturatie (Roxy): facturen en Exact-aanpassingen", icoon: AlertTriangle, link: (i) => i.bron === "taak" ? `/admin/klanten/${i.id}` : `/admin/leads/${i.id}`, alles: "/admin/facturatieplanning" },
   { key: "exact", titel: "Exact-fouten", icoon: AlertTriangle, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/leads" },
 ];
 
@@ -85,6 +86,7 @@ export function VandaagTeDoen() {
           CATEGORIEEN.map((c) => {
             const cat = data?.[c.key] as Categorie | undefined;
             const n = cat?.aantal ?? 0;
+            if (cat?.verborgen || (c.key === "facturatie" && !cat)) return null;
             const Icoon = c.icoon;
             const uit = open === c.key;
             if (!isLoading && n === 0) {
