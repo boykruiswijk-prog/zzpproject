@@ -309,6 +309,18 @@ async function loadSsr(root: string): Promise<{ render: SsrRender; close: () => 
   // in development-modus laden, anders ontbreekt jsxDEV.
   const prevEnv = process.env.NODE_ENV;
   process.env.NODE_ENV = "development";
+  // Als React eerder in dit proces al in productiemodus is geladen, mengt
+  // react-dom/server (development) met die kopie en crasht de render.
+  // Daarom de React-modules uit de cache halen zodat ze opnieuw laden.
+  try {
+    const { createRequire } = await import("module");
+    const req = createRequire(import.meta.url);
+    for (const key of Object.keys(req.cache)) {
+      if (/[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/.test(key)) delete req.cache[key];
+    }
+  } catch {
+    /* geen CJS-cache beschikbaar */
+  }
   try {
     vite = await createServer({
       root,
