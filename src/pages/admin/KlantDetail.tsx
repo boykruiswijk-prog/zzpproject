@@ -73,7 +73,7 @@ export default function KlantDetail() {
               {ond.afwijkingen?.length > 0 && <div className="mt-2 flex flex-wrap gap-2">{ond.afwijkingen.map((a: string) => <Badge key={a} variant="outline" className="border-amber-500 text-amber-700">{a}</Badge>)}</div>}
               <div className="mt-2"><ExactRelatieLabel ond={ond} heeftVoorganger={voorgangers.length > 0} /></div>
             </div><OndernemingswijzigingKnop ond={ond} onKlaar={() => setHerlaad((x) => x + 1)} /></div>
-            <KlantKaart ondernemingen={[ond]} personen={personen} leadIds={leadMatch.map((l) => l.id)} herlaadSleutel={herlaad} />
+            <KlantKaart ondernemingen={[ond]} personen={personen} leadIds={leadMatch.map((l) => l.id)} herlaadSleutel={herlaad} onGewijzigd={() => setHerlaad((h) => h + 1)} />
             <div className="grid gap-6 md:grid-cols-3">
               <Card><CardHeader><CardTitle className="text-base">Contactpersonen</CardTitle></CardHeader><CardContent className="space-y-2 text-sm">
                 {personen.length === 0 && <p className="text-muted-foreground">Geen e-mailadres bekend.</p>}
