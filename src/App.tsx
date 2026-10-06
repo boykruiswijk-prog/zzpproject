@@ -216,7 +216,8 @@ export const AppRoutes = () => (
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/crm" element={<AdminCRM />} />
             <Route path="/admin/activiteiten" element={<RoleGuard allow={[]}><AdminActiviteiten /></RoleGuard>} />
-            <Route path="/admin/leads" element={<AdminLeads />} />
+            <Route path="/admin/leads" element={<AdminLeads soort="leads" />} />
+            <Route path="/admin/aanvragen" element={<AdminLeads soort="aanvragen" />} />
             <Route path="/admin/leads/:id" element={<AdminLeadDetail />} />
             <Route path="/admin/team" element={<RoleGuard allow={["admin"]}><AdminTeam /></RoleGuard>} />
             <Route path="/admin/dba-checks" element={<AdminDbaChecks />} />

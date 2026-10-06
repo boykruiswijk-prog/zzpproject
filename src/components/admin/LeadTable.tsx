@@ -153,7 +153,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           )}
           <Input
-            placeholder="Zoeken op naam, email of bedrijf..."
+            placeholder="Zoeken op naam, e-mail, bedrijf of BAV-nummer"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
