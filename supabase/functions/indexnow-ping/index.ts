@@ -17,6 +17,35 @@ const Body = z.object({
   bron: z.enum(["artikel_trigger", "handmatig", "cron"]).optional(),
 });
 
+async function ping(urls: string[]) {
+  const res = await fetch("https://api.indexnow.org/indexnow", {
+    method: "POST",
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+    body: JSON.stringify({ host: HOST, key: KEY, keyLocation: `https://${HOST}/${KEY}.txt`, urlList: urls }),
+  });
+  return res;
+}
+
+/** Wachtrij-modus (gewekt door de artikeltrigger): meldt alleen URL's die de
+ * database zelf in indexnow_log heeft gezet; vraagt daarom geen inlog. */
+async function verwerkWachtrij(admin: ReturnType<typeof createClient>) {
+  const { data: rows } = await admin.from("indexnow_log").select("id, urls")
+    .is("verwerkt_op", null).eq("bron", "artikel_trigger").order("created_at").limit(100);
+  if (!rows?.length) return json({ ok: true, aantal: 0 });
+  const urls = [...new Set(rows.flatMap((r: { urls: string[] }) => r.urls))]
+    .filter((p) => /^\/kennisbank\/[A-Za-z0-9_-]+$/.test(p)).map((p) => `https://${HOST}${p}`);
+  const ids = rows.map((r: { id: string }) => r.id);
+  let upd: Record<string, unknown>;
+  try {
+    const res = urls.length ? await ping(urls) : null;
+    upd = { ok: res ? res.ok : false, http_status: res?.status ?? null, fout: res ? null : "geen geldige urls" };
+  } catch (e) {
+    upd = { ok: false, fout: String(e).slice(0, 300) };
+  }
+  await admin.from("indexnow_log").update({ ...upd, verwerkt_op: new Date().toISOString() }).in("id", ids);
+  return json({ ...upd, aantal: urls.length });
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
