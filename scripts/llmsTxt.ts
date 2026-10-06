@@ -20,7 +20,7 @@ const oneLine = (s: string) => s.replace(/\s+/g, " ").trim();
 const KERN = [
   "/", "/verzekeringen", "/bav-zzp-vergelijken", "/offerte", "/waarom-zp-zaken", "/aov", "/pensioen", "/zorgverzekering",
   "/zzp-verzekering-ict", "/zzp-verzekering-zorg", "/zzp-verzekering-bouw",
-  "/zzp-verzekering-consultant", "/zzp-verzekering-interim-manager", "/zzp-verzekering-finance", "/zzp-verzekering-hr", "/zzp-verzekering-marketing", "/zzp-verzekering-coach", "/diensten",
+  "/zzp-verzekering-consultant", "/zzp-verzekering-interim-manager", "/zzp-verzekering-finance", "/zzp-verzekering-hr", "/starters", "/zzp-verzekering-marketing", "/zzp-verzekering-coach", "/diensten",
   "/screening", "/faq", "/contact", "/over-ons",
 ];
 

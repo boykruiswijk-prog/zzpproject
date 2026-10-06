@@ -1,6 +1,7 @@
 import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS, statusTitel } from "@/lib/statusLabels";
 import { LeadAfrondenKnop, AfrondDialoog, magAfronden } from "@/components/admin/LeadAfronden";
 import { LeadTestSchakelaar } from "@/components/admin/LeadTestSchakelaar";
+import { StartertariefControle } from "@/components/admin/StartertariefControle";
 import { LeadBavNummer } from "@/components/admin/crm/LeadBavNummer";
 import { teamWaarschuwingHandmatig } from "../../../supabase/functions/_shared/sectorRegels";
 import { useState } from "react";
@@ -274,6 +275,7 @@ export default function AdminLeadDetail() {
         <div className="grid min-w-0 gap-6 lg:grid-cols-3">
           {/* Lead info */}
           <div className="min-w-0 space-y-6 lg:col-span-2">
+            <StartertariefControle lead={lead as any} magBeoordelen={isSupervisorOrAdmin} />
             <Card className="min-w-0 w-full overflow-hidden">
               <CardHeader>
                 <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">

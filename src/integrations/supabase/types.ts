@@ -460,6 +460,7 @@ export type Database = {
           is_test: boolean
           jaarpremie: number | null
           kvk_nummer: string | null
+          kvk_startdatum: string | null
           lead_id: string | null
           maandpremie: number | null
           pakket: string
@@ -467,7 +468,9 @@ export type Database = {
           premiebedrag: number
           rekeninghouder: string | null
           sector: string | null
+          starter_tot: string | null
           status: string
+          tarief_type: string
           telefoon: string | null
           voornaam: string
         }
@@ -494,6 +497,7 @@ export type Database = {
           is_test?: boolean
           jaarpremie?: number | null
           kvk_nummer?: string | null
+          kvk_startdatum?: string | null
           lead_id?: string | null
           maandpremie?: number | null
           pakket: string
@@ -501,7 +505,9 @@ export type Database = {
           premiebedrag: number
           rekeninghouder?: string | null
           sector?: string | null
+          starter_tot?: string | null
           status?: string
+          tarief_type?: string
           telefoon?: string | null
           voornaam: string
         }
@@ -528,6 +534,7 @@ export type Database = {
           is_test?: boolean
           jaarpremie?: number | null
           kvk_nummer?: string | null
+          kvk_startdatum?: string | null
           lead_id?: string | null
           maandpremie?: number | null
           pakket?: string
@@ -535,7 +542,9 @@ export type Database = {
           premiebedrag?: number
           rekeninghouder?: string | null
           sector?: string | null
+          starter_tot?: string | null
           status?: string
+          tarief_type?: string
           telefoon?: string | null
           voornaam?: string
         }
@@ -2456,6 +2465,7 @@ export type Database = {
           afas_volgende_factuurdatum: string | null
           afw_prijs: number | null
           afwijkingen: string[]
+          bedrag_na_starter: number | null
           bedrag_per_periode: number
           begin_datum: string | null
           bron: string
@@ -2477,7 +2487,9 @@ export type Database = {
           onderneming_id: string
           org_prijs: number | null
           product: string
+          starter_tot: string | null
           status: string
+          tarief_type: string
           type: string
           updated_at: string
           volgende_factuurdatum: string | null
@@ -2489,6 +2501,7 @@ export type Database = {
           afas_volgende_factuurdatum?: string | null
           afw_prijs?: number | null
           afwijkingen?: string[]
+          bedrag_na_starter?: number | null
           bedrag_per_periode?: number
           begin_datum?: string | null
           bron: string
@@ -2510,7 +2523,9 @@ export type Database = {
           onderneming_id: string
           org_prijs?: number | null
           product: string
+          starter_tot?: string | null
           status?: string
+          tarief_type?: string
           type: string
           updated_at?: string
           volgende_factuurdatum?: string | null
@@ -2522,6 +2537,7 @@ export type Database = {
           afas_volgende_factuurdatum?: string | null
           afw_prijs?: number | null
           afwijkingen?: string[]
+          bedrag_na_starter?: number | null
           bedrag_per_periode?: number
           begin_datum?: string | null
           bron?: string
@@ -2543,7 +2559,9 @@ export type Database = {
           onderneming_id?: string
           org_prijs?: number | null
           product?: string
+          starter_tot?: string | null
           status?: string
+          tarief_type?: string
           type?: string
           updated_at?: string
           volgende_factuurdatum?: string | null
@@ -2793,6 +2811,7 @@ export type Database = {
           ingangsdatum: string | null
           is_test: boolean
           kvk_nummer: string | null
+          kvk_startdatum: string | null
           offerte_verstuurd_op: string | null
           omzet: string | null
           opmerkingen: string | null
@@ -2808,7 +2827,13 @@ export type Database = {
           polis_einddatum: string | null
           sepa_akkoord: boolean
           sepa_akkoord_datum: string | null
+          starter_beoordeeld_door: string | null
+          starter_beoordeeld_op: string | null
+          starter_controle_status: string | null
+          starter_toelichting: string | null
+          starter_tot: string | null
           status: Database["public"]["Enums"]["lead_status"]
+          tarief_type: string
           telefoon: string | null
           type: Database["public"]["Enums"]["lead_type"]
           updated_at: string
@@ -2871,6 +2896,7 @@ export type Database = {
           ingangsdatum?: string | null
           is_test?: boolean
           kvk_nummer?: string | null
+          kvk_startdatum?: string | null
           offerte_verstuurd_op?: string | null
           omzet?: string | null
           opmerkingen?: string | null
@@ -2886,7 +2912,13 @@ export type Database = {
           polis_einddatum?: string | null
           sepa_akkoord?: boolean
           sepa_akkoord_datum?: string | null
+          starter_beoordeeld_door?: string | null
+          starter_beoordeeld_op?: string | null
+          starter_controle_status?: string | null
+          starter_toelichting?: string | null
+          starter_tot?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
+          tarief_type?: string
           telefoon?: string | null
           type?: Database["public"]["Enums"]["lead_type"]
           updated_at?: string
@@ -2949,6 +2981,7 @@ export type Database = {
           ingangsdatum?: string | null
           is_test?: boolean
           kvk_nummer?: string | null
+          kvk_startdatum?: string | null
           offerte_verstuurd_op?: string | null
           omzet?: string | null
           opmerkingen?: string | null
@@ -2964,7 +2997,13 @@ export type Database = {
           polis_einddatum?: string | null
           sepa_akkoord?: boolean
           sepa_akkoord_datum?: string | null
+          starter_beoordeeld_door?: string | null
+          starter_beoordeeld_op?: string | null
+          starter_controle_status?: string | null
+          starter_toelichting?: string | null
+          starter_tot?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
+          tarief_type?: string
           telefoon?: string | null
           type?: Database["public"]["Enums"]["lead_type"]
           updated_at?: string
@@ -4190,12 +4229,26 @@ export type Database = {
         Args: { _bevestigen: boolean; _id: string }
         Returns: Json
       }
+      beoordeel_startertarief: {
+        Args: { _goedkeuren: boolean; _lead_id: string; _toelichting?: string }
+        Returns: Json
+      }
       bepaal_opzegging_koppeling: { Args: { _id: string }; Returns: Json }
       bevestig_artikel_mapping: {
         Args: { _bevestigd: boolean; _id: string }
         Returns: boolean
       }
       cleanup_expired_oauth_states: { Args: never; Returns: undefined }
+      contract_bedrag_voor_periode: {
+        Args: {
+          _bedrag: number
+          _na: number
+          _periode_start: string
+          _starter_tot: string
+          _tarief: string
+        }
+        Returns: number
+      }
       crm_beeindig: {
         Args: {
           _contract_ids: string[]

@@ -11,6 +11,7 @@ import {
 } from "../_shared/sepaBewijs.ts";
 import { isUuid, isValidIban, redenBav } from "../_shared/sepaMachtiging.ts";
 import { brancheVoorSector } from "../_shared/sectorBranche.ts";
+import { STARTER, isStarter, starterTot } from "../_shared/starterTarief.ts";
 import { HANDMATIGE_ACCEPTATIE_REDEN, teamWaarschuwingHandmatig, vereistHandmatigeAcceptatie } from "../_shared/sectorRegels.ts";
 
 const corsHeaders = {
@@ -54,6 +55,8 @@ interface BavSubmission {
   gekozen_pakket: keyof typeof PAKKET_CONFIG;
   betaalwijze: "maandelijks" | "jaarlijks";
   ingangsdatum: string;
+  /** Door de klant opgegeven startdatum KVK-inschrijving (YYYY-MM-DD); basis voor het startertarief. */
+  kvk_startdatum?: string;
   voornaam: string;
   achternaam: string;
   email: string;
@@ -192,7 +195,13 @@ Deno.serve(async (req) => {
     }
 
     const pakket = PAKKET_CONFIG[submission.gekozen_pakket];
-    const premium = pakket.prijs;
+    // Startertarief: altijd op de server bepaald; alleen BAV + AVB maand/jaar (niet Cyber).
+    const kvkStart = typeof submission.kvk_startdatum === "string" && /^\d{4}-\d{2}-\d{2}$/.test(submission.kvk_startdatum)
+      && submission.kvk_startdatum >= "1900-01-01" && submission.kvk_startdatum <= submission.ingangsdatum ? submission.kvk_startdatum : null;
+    const starter = (submission.gekozen_pakket === "maandelijks" || submission.gekozen_pakket === "jaarlijks") && isStarter(kvkStart, submission.ingangsdatum);
+    const starterTotDatum = starter ? starterTot(submission.ingangsdatum) : null;
+    const premium = starter ? (pakket.betaalwijze === "maandelijks" ? STARTER.maandprijs : STARTER.jaarprijs) : pakket.prijs;
+    const starterVelden = { kvk_startdatum: kvkStart, tarief_type: starter ? "starter" : "standaard", starter_tot: starterTotDatum };
     const volledigeNaam = `${submission.voornaam} ${submission.achternaam}`;
     const branche = brancheVoorSector(submission.sector);
     if (!branche) return weiger(400, "Kies een geldige sector.", "sector");
@@ -246,6 +255,8 @@ Deno.serve(async (req) => {
         verzekerd_bedrag: pakket.dekking,
         ingangsdatum: submission.ingangsdatum,
         gekozen_pakket: submission.gekozen_pakket,
+        ...starterVelden,
+        starter_controle_status: starter ? "te_controleren" : null,
         opmerkingen: [
           // IBAN wordt bewust NIET in het vrije opmerkingenveld herhaald (alleen in de iban-kolom).
           submission.rekeninghouder ? `Rekeninghouder: ${submission.rekeninghouder}` : null,
@@ -297,9 +308,10 @@ Deno.serve(async (req) => {
         pakket_naam: pakket.naam,
         betaalwijze: pakket.betaalwijze,
         ingangsdatum: submission.ingangsdatum,
-        maandpremie: pakket.maandprijs,
-        jaarpremie: pakket.jaarprijs,
+        maandpremie: starter ? (pakket.betaalwijze === "maandelijks" ? STARTER.maandprijs : Math.round((STARTER.jaarprijs / 12) * 100) / 100) : pakket.maandprijs,
+        jaarpremie: starter ? (pakket.betaalwijze === "maandelijks" ? STARTER.maandprijs * 12 : STARTER.jaarprijs) : pakket.jaarprijs,
         premiebedrag: premium,
+        ...starterVelden,
         iban: machtiging.iban,
         rekeninghouder: machtiging.debiteurNaam,
         status: "nieuw",
@@ -345,7 +357,7 @@ Deno.serve(async (req) => {
             dekking: pakket.dekking,
             betaalwijze: pakket.betaalwijze,
             ingangsdatum: submission.ingangsdatum,
-            premie: `€${premium}`,
+            premie: starter ? `€${premium} startertarief t/m ${starterTotDatum}, daarna €${pakket.prijs}; KVK-startdatum ${kvkStart} controleren` : `€${premium}`,
           },
         },
       })

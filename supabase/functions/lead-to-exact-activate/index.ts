@@ -12,6 +12,7 @@ import { mandaatkenmerkVoor } from "../_shared/sepaMachtiging.ts";
 import { autoInvitePortalLead } from "../_shared/portalAccess.ts";
 import { factuurReferentie, kopOmschrijving, regelNotities, regelOmschrijving } from "../_shared/factuurTekst.ts";
 import { landcodeVoor } from "../_shared/landcode.ts";
+import { maandprijsVoorLead, pakketSpecVoorLead, starterContractVelden, starterStatus } from "../_shared/starterActivatie.ts";
 import { zetInPlanner, factuurLogTekst, type ContractSpec } from "../_shared/klantContractActivatie.ts";
 
 // SEPA-mandaat in Exact. Waarden geverifieerd in de Exact Online REST-documentatie:
@@ -83,12 +84,12 @@ async function captureExactError(label: string, res: Response): Promise<{ summar
 function plannerSpec(lead: any, bedragJaar: number, override?: { periodStart: string; periodEnd: string }): ContractSpec | null {
   if (isMaandPolis(lead.gekozen_pakket)) {
     if (!override) return null;
-    return { cyclus: "maand", itemcode: "100M", bedrag_per_periode: getMaandprijs(lead.gekozen_pakket), periodeStart: override.periodStart, periodeEind: override.periodEnd };
+    return { cyclus: "maand", itemcode: "100M", bedrag_per_periode: maandprijsVoorLead(lead, getMaandprijs(lead.gekozen_pakket)), periodeStart: override.periodStart, periodeEind: override.periodEnd, ...starterContractVelden(lead) };
   }
   const ingang = lead.ingangsdatum ? String(lead.ingangsdatum).slice(0, 10) : null;
   if (!ingang) return null;
   const eind = String(lead.polis_einddatum ?? calcPolisEinddatum(ingang)).slice(0, 10);
-  return { cyclus: "jaar", itemcode: "100J", bedrag_per_periode: bedragJaar, periodeStart: ingang, periodeEind: eind };
+  return { cyclus: "jaar", itemcode: "100J", bedrag_per_periode: bedragJaar, periodeStart: ingang, periodeEind: eind, ...starterContractVelden(lead) };
 }
 
 // ── Fase 2: factuur-aanmaak helpers ────────────────────────────────────────
@@ -391,6 +392,11 @@ Deno.serve(async (req) => {
     return json({ success: false, error: "testlead_geen_exact", reason: "Testlead: geen Exact-acties" }, 409);
   }
 
+  // ── Startertarief: eerst met de hand controleren (beoordeel_startertarief), dan pas Exact ──
+  if ((action === "activate" || action === "retry_invoice") && starterStatus(lead) === "wacht") {
+    return json({ success: false, error: "Startertarief eerst controleren (KVK-startdatum).", reason: "startertarief_niet_gecontroleerd" }, 409);
+  }
+
   // ── Handmatige acceptatie (zorg/bouw): alleen activeren na bewuste bevestiging ──
   if (action === "activate" && !lead.exact_account_id) {
     const check = controleerHandmatigeAcceptatie(lead.extra_data, body);
@@ -606,7 +612,7 @@ Deno.serve(async (req) => {
         exact_invoice_number: lead.exact_invoice_number,
       }, 409);
     }
-    const spec = resolvePakketInvoice(lead.gekozen_pakket);
+    const spec = pakketSpecVoorLead(lead, resolvePakketInvoice(lead.gekozen_pakket));
     if (!spec) {
       return json({ success: false, error: "onbekend_pakket", gekozen_pakket: lead.gekozen_pakket }, 400);
     }
@@ -624,7 +630,7 @@ Deno.serve(async (req) => {
       const startStr = String(lead.ingangsdatum).slice(0, 10);
       const endStr = lastOfMonth(startStr);
       const calc = calcMaandProrata({
-        maandprijs: getMaandprijs(lead.gekozen_pakket),
+        maandprijs: maandprijsVoorLead(lead, getMaandprijs(lead.gekozen_pakket)),
         vanaf_datum: startStr, tot_datum: endStr,
       });
       retryOverride = {
@@ -1028,7 +1034,7 @@ Deno.serve(async (req) => {
   let factuurPeriode: { start: string; eind: string; naarRato?: boolean } | undefined;
   let exactInvoiceCreatedAt: string | null = null;
   let invoiceWarning: string | null = null;
-  const pakketSpec = resolvePakketInvoice(lead.gekozen_pakket);
+  const pakketSpec = pakketSpecVoorLead(lead, resolvePakketInvoice(lead.gekozen_pakket));
   if (!pakketSpec) {
     invoiceWarning = `Onbekend pakket "${lead.gekozen_pakket}" — geen factuur aangemaakt.`;
   } else {
@@ -1046,7 +1052,7 @@ Deno.serve(async (req) => {
       const startStr = String(lead.ingangsdatum).slice(0, 10);
       const endStr = lastOfMonth(startStr);
       const calc = calcMaandProrata({
-        maandprijs: getMaandprijs(lead.gekozen_pakket),
+        maandprijs: maandprijsVoorLead(lead, getMaandprijs(lead.gekozen_pakket)),
         vanaf_datum: startStr, tot_datum: endStr,
       });
       override = {
