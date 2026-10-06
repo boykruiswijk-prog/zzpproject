@@ -291,7 +291,7 @@ export default function AdminLeadDetail() {
                             </Badge>
                           </SelectTrigger>
                           <SelectContent>
-                            {Object.entries(statusLabels).filter(([value]) => value !== "afgerond" || lead.status === "afgerond" || magAfronden(lead as any)).map(([value, label]) => (
+                            {Object.entries(statusLabels).filter(([value]) => (value !== "afgerond" || lead.status === "afgerond" || magAfronden(lead as any)) && (value !== "offerte_verstuurd" || lead.status === value)).map(([value, label]) => (
                               <SelectItem key={value} value={value}>
                                 {label}
                               </SelectItem>
