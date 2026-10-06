@@ -1,4 +1,5 @@
 import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS, statusTitel } from "@/lib/statusLabels";
+import { LeadAfrondenKnop, AfrondDialoog, magAfronden } from "@/components/admin/LeadAfronden";
 import { LeadTestSchakelaar } from "@/components/admin/LeadTestSchakelaar";
 import { LeadBavNummer } from "@/components/admin/crm/LeadBavNummer";
 import { teamWaarschuwingHandmatig } from "../../../supabase/functions/_shared/sectorRegels";
@@ -160,8 +161,10 @@ export default function AdminLeadDetail() {
 
 
 
+  const [afrondOpen, setAfrondOpen] = useState(false);
   const handleStatusChange = (newStatus: LeadStatus) => {
     if (!id) return;
+    if (newStatus === "afgerond") { setAfrondOpen(true); return; }
     const updates: { status: LeadStatus; converted_at?: string | null } = {
       status: newStatus,
     };
@@ -247,6 +250,7 @@ export default function AdminLeadDetail() {
                 Markeer als klant
               </Button>
             )}
+            <LeadAfrondenKnop lead={lead as any} />
             <LeadTestSchakelaar leadId={lead.id} isTest={!!lead.is_test} naam={`${lead.voornaam ?? ""} ${lead.achternaam ?? ""}`.trim()} />
             {isSupervisorOrAdmin && (
               <Button variant="destructive" size="icon" onClick={handleDelete}
@@ -257,6 +261,7 @@ export default function AdminLeadDetail() {
           </div>
         </div>
 
+        <AfrondDialoog lead={lead as any} open={afrondOpen} onOpenChange={setAfrondOpen} />
         {/* Onboarding-stepper bovenaan */}
         {lead.type === "verzekering_aanvraag" && (
           <LeadOnboardingStepper lead={lead} />
@@ -285,7 +290,7 @@ export default function AdminLeadDetail() {
                             </Badge>
                           </SelectTrigger>
                           <SelectContent>
-                            {Object.entries(statusLabels).map(([value, label]) => (
+                            {Object.entries(statusLabels).filter(([value]) => value !== "afgerond" || lead.status === "afgerond" || magAfronden(lead as any)).map(([value, label]) => (
                               <SelectItem key={value} value={value}>
                                 {label}
                               </SelectItem>

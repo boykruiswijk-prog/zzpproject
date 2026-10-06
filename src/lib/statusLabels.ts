@@ -14,11 +14,13 @@ export const LEAD_STATUS_LABELS: Record<LeadStatus, string> = {
   gepauzeerd: "Gepauzeerd",
   opgezegd: "Opgezegd",
   afgewezen: "Afgewezen",
+  afgerond: "Afgerond",
 };
 
 /** Uitleg (title/tooltip) bij leadstatussen waar het label alleen niet genoeg zegt. */
 export const LEAD_STATUS_TITELS: Partial<Record<LeadStatus, string>> = {
   actief: "De aanvraag is geactiveerd en de polis loopt",
+  afgerond: "De actie is volledig afgehandeld; dit zegt niets over een polis",
 };
 
 export function statusTitel(raw: string | null | undefined): string | undefined {
@@ -36,6 +38,7 @@ export const LEAD_STATUS_COLORS: Record<LeadStatus, string> = {
   gepauzeerd: "bg-gray-100 text-gray-800",
   opgezegd: "bg-gray-200 text-gray-700",
   afgewezen: "bg-red-100 text-red-800",
+  afgerond: "bg-slate-100 text-slate-700",
 };
 
 /** Overige statussen (service, screening, Wet DBA). */
