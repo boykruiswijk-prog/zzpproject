@@ -2201,6 +2201,42 @@ export type Database = {
         }
         Relationships: []
       }
+      indexnow_log: {
+        Row: {
+          aantal: number
+          bron: string
+          created_at: string
+          fout: string | null
+          http_status: number | null
+          id: string
+          ok: boolean | null
+          urls: string[]
+          verwerkt_op: string | null
+        }
+        Insert: {
+          aantal?: number
+          bron: string
+          created_at?: string
+          fout?: string | null
+          http_status?: number | null
+          id?: string
+          ok?: boolean | null
+          urls?: string[]
+          verwerkt_op?: string | null
+        }
+        Update: {
+          aantal?: number
+          bron?: string
+          created_at?: string
+          fout?: string | null
+          http_status?: number | null
+          id?: string
+          ok?: boolean | null
+          urls?: string[]
+          verwerkt_op?: string | null
+        }
+        Relationships: []
+      }
       integratie_config: {
         Row: {
           aangemaakt_op: string

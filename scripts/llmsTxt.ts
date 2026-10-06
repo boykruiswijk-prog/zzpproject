@@ -4,6 +4,7 @@
 import { SITE_CONFIG } from "../src/config/site";
 import { bavPakketten } from "../src/data/bavPakketten";
 import { faqItems } from "../src/data/faqItems";
+import { STARTER } from "../src/lib/starterTarief";
 import type { SeoRoute } from "../src/config/seoRoutes";
 
 interface LlmsArticle {
@@ -33,6 +34,7 @@ function intro(): string[] {
     `> ${SITE_CONFIG.legalName} is een AFM-geregistreerde verzekeringsadviseur voor zzp'ers in Nederland (AFM ${r.afm}, KvK ${r.kvk}, Kifid ${r.kifid}). ZP Zaken biedt de BAV + AVB in één polis voor zzp'ers, verzekerd bij Hiscox.`,
     "",
     `- Premies: ${prijzen}. Premie inclusief kosten en assurantiebelasting.`,
+    `- Starterspakket BAV + AVB (${SITE_CONFIG.url}/starters): startertarief ${eur(STARTER.maandprijs)} per maand of ${eur(STARTER.jaarprijs)} per jaar de eerste ${STARTER.duurMaanden} maanden, daarna ${eur(STARTER.naMaandprijs)} per maand of ${eur(STARTER.naJaarprijs)} per jaar, inclusief kosten en assurantiebelasting. Voor zzp'ers met een KVK-inschrijving jonger dan 12 maanden, onder voorbehoud van controle van de KVK-inschrijvingsdatum. BAV + AVB in één polis, verzekerd bij Hiscox.`,
     "- Dagelijks opzegbaar, geen eigen risico.",
     "- Binnen 24 uur verzekerd, met certificaat als bewijs voor je opdrachtgever.",
     `- Contact: ${SITE_CONFIG.phoneDisplay}, ${SITE_CONFIG.email}, ${SITE_CONFIG.address.streetAddress}, ${SITE_CONFIG.address.postalCode} ${SITE_CONFIG.address.addressLocality}.`,

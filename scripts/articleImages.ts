@@ -60,14 +60,19 @@ export async function renderArticleImage(article: ImageArticle, root: string): P
 /** Build-only read of draft metadata; never expose credentials or draft content. */
 export async function generateArticleImages(distDir: string, root: string, env: Record<string, string>, published: ImageArticle[]) {
   const databaseUrl = process.env.SUPABASE_DB_URL || env.SUPABASE_DB_URL;
-  if (!databaseUrl) throw new Error("[article-images] Beveiligde buildverbinding ontbreekt; conceptafbeeldingen kunnen niet worden gemaakt.");
-  const sql = postgres(databaseUrl, { max: 1, connect_timeout: 15 });
-  let drafts: ImageArticle[];
-  try {
-    drafts = await sql<ImageArticle[]>`select slug, title, category, image_url from public.articles where is_published = false`;
-  } catch {
-    throw new Error("[article-images] Conceptmetadata kon niet veilig worden gelezen.");
-  } finally { await sql.end(); }
+  // Zonder beveiligde buildverbinding (bijv. publicatiebuild) alleen gepubliceerde
+  // artikelen; de bouw mag hierdoor nooit mislukken.
+  let drafts: ImageArticle[] = [];
+  if (!databaseUrl) {
+    console.warn("[article-images] Geen buildverbinding; conceptafbeeldingen overgeslagen.");
+  } else {
+    const sql = postgres(databaseUrl, { max: 1, connect_timeout: 15 });
+    try {
+      drafts = await sql<ImageArticle[]>`select slug, title, category, image_url from public.articles where is_published = false`;
+    } catch {
+      console.warn("[article-images] Conceptmetadata niet leesbaar; conceptafbeeldingen overgeslagen.");
+    } finally { await sql.end().catch(() => {}); }
+  }
   const output = path.join(distDir, "images/kennisbank");
   fs.mkdirSync(output, { recursive: true });
   let count = 0;
