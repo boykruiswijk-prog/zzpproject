@@ -32,6 +32,6 @@ export function reviewHtml(p: { soort: ReviewSoort; voornaam?: string | null; kl
 <p style="margin:0 0 24px"><a href="${esc(p.klikUrl)}" style="display:inline-block;background:#E53E2F;color:#ffffff;text-decoration:none;font-weight:bold;padding:12px 22px;border-radius:8px">Review schrijven op Google</a></p>
 ${naKnop}<p style="margin:0">Groet,<br>Ellen van ZP Zaken</p>
 <hr style="border:none;border-top:1px solid #eeeeee;margin:32px 0 16px">
-<p style="margin:0;font-size:12px;color:#777777">ZP Zaken B.V., Tupolevlaan 41, 1119 NW Schiphol-Rijk. Wil je deze mails niet meer ontvangen? <a href="${esc(p.afmeldUrl)}" style="color:#777777">Afmelden</a>.</p>
+<p style="margin:0;font-size:12px;color:#777777">ZP Zaken B.V., Tupolevlaan 41, 1119 NW Schiphol-Rijk. Geen reviewverzoeken meer ontvangen? <a href="${esc(p.afmeldUrl)}" style="color:#777777">Afmelden</a>.</p>
 </div></body></html>`;
 }

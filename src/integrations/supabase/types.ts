@@ -3421,6 +3421,21 @@ export type Database = {
         }
         Relationships: []
       }
+      review_afmeldingen: {
+        Row: {
+          afgemeld_op: string
+          email: string
+        }
+        Insert: {
+          afgemeld_op?: string
+          email: string
+        }
+        Update: {
+          afgemeld_op?: string
+          email?: string
+        }
+        Relationships: []
+      }
       review_kaart_verborgen: {
         Row: {
           user_id: string
