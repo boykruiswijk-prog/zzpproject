@@ -432,7 +432,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
         });
         try { sessionStorage.removeItem(CONCEPT_KEY); } catch { /* geen opslag */ }
         conceptId.current = ""; laatsteConcept.current = "";
-        trackPurchase(returnedLeadId, selectedBavPakket.id, selectedBavPakket.name, jaarpremie(selectedBavPakket));
+        trackPurchase(returnedLeadId, selectedBavPakket.id, selectedBavPakket.name, jaarpremie(selectedBavPakket), { email: formData.email, phone_number: formData.telefoon });
        setIsSubmitted(true);
         setFormData({
           bedrijfsnaam: "", kvkNummer: "", kvkStartdatum: "", sector: "", beroep: "", functie: "", aantalMedewerkers: "",

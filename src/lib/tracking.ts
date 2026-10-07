@@ -2,6 +2,9 @@
  * GA4-meting via gtag (Consent Mode v2 uit index.html bepaalt wat er mag).
  * Interne omgevingen (/admin, /portal, /mijn-zp) sturen nooit iets naar GA4.
  */
+import { heeftMarketingToestemming } from "./attributie";
+import { isNlTelefoon, normaliseerNlTelefoon } from "../../supabase/functions/_shared/telefoon";
+
 
 export const GA_ID = "G-YY7YJFFEZN";
 export const GOOGLE_ADS_ID = "AW-18497139684";
@@ -107,7 +110,13 @@ export const jaarpremie = (p: { prijs: number; periode: "maand" | "jaar" }) => (
 
 const PURCHASE_KEY = "zp_purchase_verstuurd";
 /** purchase vuurt maximaal één keer per transaction_id (ook na herladen in dezelfde browser). */
-export const trackPurchase = (transactionId: string, pakketId: string, pakketNaam: string, value: number) => {
+export const trackPurchase = (
+  transactionId: string,
+  pakketId: string,
+  pakketNaam: string,
+  value: number,
+  userData?: { email?: string; phone_number?: string },
+) => {
   try {
     const al: string[] = JSON.parse(localStorage.getItem(PURCHASE_KEY) || "[]");
     if (al.includes(transactionId)) return;
@@ -119,6 +128,24 @@ export const trackPurchase = (transactionId: string, pakketId: string, pakketNaa
     currency: "EUR",
     items: [{ item_id: pakketId, item_name: pakketNaam, price: value, quantity: 1 }],
   });
+  // Enhanced Conversions: alleen met marketingtoestemming en nooit op interne paden.
+  // E-mail en telefoon gaan uitsluitend naar gtag en komen nooit in een log of console.
+  if (
+    typeof window !== "undefined" &&
+    userData &&
+    !isNietGemetenPad(window.location.pathname) &&
+    heeftMarketingToestemming()
+  ) {
+    const email = (userData.email ?? "").trim().toLowerCase();
+    const telefoon = e164Telefoon(userData.phone_number);
+    const data: Record<string, string> = {};
+    if (email) data.email = email;
+    if (telefoon) data.phone_number = telefoon;
+    if (Object.keys(data).length) {
+      const gtag = (window as unknown as { gtag?: (...a: unknown[]) => void }).gtag;
+      if (typeof gtag === "function") gtag("set", "user_data", data);
+    }
+  }
   trackGa("conversion", {
     send_to: GOOGLE_ADS_CONVERSIE,
     value,
@@ -126,6 +153,7 @@ export const trackPurchase = (transactionId: string, pakketId: string, pakketNaa
     transaction_id: transactionId,
   });
 };
+
 
 export type LeadFormulier = "offerte" | "contact" | "terugbel" | "aanvraag";
 export const trackGenerateLead = (formulier: LeadFormulier) =>
