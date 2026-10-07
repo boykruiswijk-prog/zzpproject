@@ -136,3 +136,10 @@ export function kvkKolommen(p: KvkProfiel) {
     kvk_opgehaald_op: new Date().toISOString(), kvk_bron: "kvk_api", kvk_status: "ok",
   };
 }
+
+const norm = (v: unknown) => String(v ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
+/** Verschillen tussen klantopgave en KVK (KVK wint). Adresvelden alleen vergelijken als het KVK-adres zichtbaar is. */
+export function kvkAfwijkingen(klant: Record<string, unknown>, kvk: Record<string, unknown>, metAdres: boolean): { veld: string; klant: unknown; kvk: unknown }[] {
+  const velden = ["bedrijfsnaam", "kvk_startdatum", ...(metAdres ? ["straat", "huisnummer", "postcode", "plaats"] : [])];
+  return velden.filter((v) => kvk[v] && klant[v] && norm(klant[v]) !== norm(kvk[v])).map((v) => ({ veld: v, klant: klant[v], kvk: kvk[v] }));
+}
