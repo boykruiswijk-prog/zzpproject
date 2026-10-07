@@ -108,7 +108,15 @@ export const trackAddPaymentInfo = (pakket: string, value: number) =>
 /** Jaarpremie uit bavPakketten: maandpakket x 12, jaarpakket = prijs. */
 export const jaarpremie = (p: { prijs: number; periode: "maand" | "jaar" }) => (p.periode === "maand" ? p.prijs * 12 : p.prijs);
 
+/** NL-telefoonnummer in E.164 (bv. +31612345678); ongeldig of leeg levert "" op. */
+export function e164Telefoon(v: string | undefined | null): string {
+  const n = normaliseerNlTelefoon(v ?? "");
+  if (!isNlTelefoon(n)) return "";
+  return `+31${n.replace(/^0/, "")}`;
+}
+
 const PURCHASE_KEY = "zp_purchase_verstuurd";
+
 /** purchase vuurt maximaal één keer per transaction_id (ook na herladen in dezelfde browser). */
 export const trackPurchase = (
   transactionId: string,
