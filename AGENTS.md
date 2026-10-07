@@ -32,3 +32,4 @@
 - CRM-regels (notities, beeindigen, BAV-nummer, dossier, testmarkering) staan in src/components/admin/crm/AGENTS.md.
 - Artikelen zonder image_url krijgen per build een huisstijlafbeelding (concepten alleen build-side).
 - scripts/* importeren geen React. Waarom: anders crasht de SSR-prerender (prod/dev-mix).
+- Universele beheerzoekfunctie loopt alleen via RPC zoek_universeel (rolcheck verzekering/supervisor/admin, IBAN gemaskeerd, IBAN-zoekacties in sensitive_audit_log); UI in src/components/admin/UniverseleZoeker.tsx, ook gebruikt door KoppelZoeker. Waarom: één zoeklogica zonder ruwe tabeltoegang.
