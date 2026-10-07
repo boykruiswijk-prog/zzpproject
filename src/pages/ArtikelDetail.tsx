@@ -109,7 +109,7 @@ function slugHash(s: string) {
 }
 
 const InlineCTA = ({ aov = false }: { aov?: boolean }) => (
-  <div className="my-8 rounded-lg p-5 bg-accent/5 border-l-4 border-accent">
+  <div className="not-prose my-8 rounded-lg p-5 bg-accent/5 border-l-4 border-accent">
     <div className="text-xs font-semibold uppercase tracking-wide text-accent mb-1">
       Direct geregeld
     </div>
