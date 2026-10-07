@@ -776,6 +776,25 @@ export async function prerender(distDir: string, env: Record<string, string> = {
   fs.writeFileSync(path.join(distDir, "sitemap.xml"), sitemapXml);
   console.log(`[prerender] sitemap.xml geschreven met ${seen.size} URL's.`);
 
+  // 6b. Controle: elke sitemap-URL is een echte pagina (geen redirect-stub, geen
+  //     noindex, geen beheer/portaal) met een canonical naar precies die URL.
+  const sitemapFouten: string[] = [];
+  for (const loc of seen) {
+    const pad = loc.slice(SITE_CONFIG.url.length) || "/";
+    if (/^\/(admin|portal|mijn-zp)(\/|$)/.test(pad)) { sitemapFouten.push(`${pad}: afgeschermd pad`); continue; }
+    const file = path.join(distDir, pad === "/" ? "index.html" : path.join(pad, "index.html"));
+    if (!fs.existsSync(file)) { sitemapFouten.push(`${pad}: geen HTML-bestand`); continue; }
+    const html = fs.readFileSync(file, "utf8");
+    if (/http-equiv="refresh"/i.test(html)) sitemapFouten.push(`${pad}: redirect`);
+    if (/<meta name="robots" content="[^"]*noindex/i.test(html)) sitemapFouten.push(`${pad}: noindex`);
+    const canon = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
+    if (pad !== "/" && canon !== loc) sitemapFouten.push(`${pad}: canonical ${canon ?? "ontbreekt"}`);
+  }
+  if (sitemapFouten.length) {
+    throw new Error(`[prerender] sitemap bevat ${sitemapFouten.length} ongeldige URL's:\n${sitemapFouten.join("\n")}`);
+  }
+  console.log(`[prerender] sitemapcontrole: alle ${seen.size} URL's 200, self-canonical, zonder noindex.`);
+
   // 7. llms.txt en llms-full.txt uit dezelfde bronnen als de pagina's.
   const publicRoutes = (seoRoutes as SeoRoute[]).filter((r) => !isExcluded(r.path));
   fs.writeFileSync(path.join(distDir, "llms.txt"), buildLlmsTxt(publicRoutes, articles));
