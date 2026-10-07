@@ -143,9 +143,10 @@ export default function ServiceAanvragen({ modus = "service" }: { modus?: Modus 
       documenten: "mijn-zp-documenten",
       opzeggen: "mijn-zp-opzeggen",
     } as const;
+    if (!(it.type in typeMap)) return;
     const { error } = await supabase.functions.invoke("send-lead-notification", {
       body: {
-        type: typeMap[it.type],
+        type: typeMap[it.type as keyof typeof typeMap],
         leadId: it.id,
         reference: `${it.voornaam} ${it.achternaam} ${it.polisnummer}`,
         userEmail: it.email,
