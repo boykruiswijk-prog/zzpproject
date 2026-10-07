@@ -5,6 +5,7 @@ import { Mail } from "lucide-react";
 import { formatDateNL } from "@/lib/dateFormat";
 import { Link } from "react-router-dom";
 import { KoppelZoeker } from "@/components/admin/KoppelZoeker";
+import { PortaltoegangStappen } from "@/components/admin/PortaltoegangStappen";
 const KOPPELING_LABEL: Record<string, string> = { zeker: "Automatisch zeker", voorstel: "Voorstel", niet_gekoppeld: "Niet gekoppeld" };
 
 export type ServiceAanvraag = {
@@ -102,12 +103,13 @@ export function ServiceAanvraagDetail({ aanvraag, onSaveNotes, onMarkAfgerond, o
           {aanvraag.onderneming_id && <div className="min-w-0"><dt className="text-xs text-muted-foreground">Gekoppelde klant</dt><dd><Link to={`/admin/klanten/${aanvraag.onderneming_id}`} className="text-primary hover:underline">Klant openen</Link></dd></div>}
         </dl>
       </div>
-      {(opzeg || aanvraag.type === "portaltoegang") && !aanvraag.opzegging_verwerkt_op && (
+      {opzeg && !aanvraag.opzegging_verwerkt_op && (
         <div className="rounded-md border border-border p-3">
-          <p className="mb-2 font-medium">{opzeg ? "Koppelen aan klant" : "Mogelijke klant"}</p>
-          <KoppelZoeker aanvraagId={aanvraag.id} kanKoppelen={opzeg} onGekoppeld={onGekoppeld} />
+          <p className="mb-2 font-medium">Koppelen aan klant</p>
+          <KoppelZoeker aanvraagId={aanvraag.id} kanKoppelen onGekoppeld={onGekoppeld} />
         </div>
       )}
+      {aanvraag.type === "portaltoegang" && <PortaltoegangStappen aanvraag={aanvraag} onGewijzigd={onGekoppeld} />}
       <div className="grid grid-cols-2 gap-3">
         <div>
           <div className="text-muted-foreground">Datum</div>
@@ -154,7 +156,7 @@ export function ServiceAanvraagDetail({ aanvraag, onSaveNotes, onMarkAfgerond, o
           onBlur={(e) => onSaveNotes(aanvraag.id, e.target.value)}
         />
       </div>
-      <div className="flex flex-col gap-2 pt-2 sm:flex-row">
+      {aanvraag.type !== "portaltoegang" && <div className="flex flex-col gap-2 pt-2 sm:flex-row">
         {onResend && <Button onClick={() => onResend(aanvraag)} variant="outline" className="min-h-10 w-full sm:w-auto">
           <Mail className="h-4 w-4 mr-2" />
           Stuur notificatie opnieuw
@@ -162,7 +164,7 @@ export function ServiceAanvraagDetail({ aanvraag, onSaveNotes, onMarkAfgerond, o
         <Button onClick={() => onMarkAfgerond(aanvraag.id)} variant="default" className="min-h-10 w-full sm:w-auto">
           Markeer als afgerond
         </Button>
-      </div>
+      </div>}
     </div>
   );
 }
