@@ -6,13 +6,14 @@ import { AdminSidebar } from "./AdminSidebar";
 import { MFAEnroll } from "./MFAEnroll";
 import { MFAVerify } from "./MFAVerify";
 import { Loader2 } from "lucide-react";
+import { UniverseleZoekbalk } from "./UniverseleZoeker";
 
 interface AdminLayoutProps {
   children: ReactNode;
 }
 
 export function AdminLayout({ children }: AdminLayoutProps) {
-  const { isLoading, isTeamMember, user, isAal2 } = useAuth();
+  const { isLoading, isTeamMember, user, isAal2, role, isSupervisorOrAdmin } = useAuth();
   const [mfaState, setMfaState] = useState<"check" | "enroll" | "verify" | "ok">("check");
 
   useEffect(() => {
@@ -72,7 +73,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       <AdminSidebar />
       <main className="min-w-0 flex-1 overflow-x-hidden pt-14 lg:pt-0">
         <div className="min-w-0 p-4 sm:p-6 lg:p-8">
-          {(isVerzekering || isSupervisorOrAdmin) && <UniverseleZoekbalk />}
+          {(role === "verzekering" || isSupervisorOrAdmin) && <UniverseleZoekbalk />}
           {children}
         </div>
       </main>
