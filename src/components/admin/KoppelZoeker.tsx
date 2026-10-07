@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { zoekUniverseel } from "@/components/admin/UniverseleZoeker";
 
 export type KoppelKandidaat = {
   onderneming_id: string; naam: string | null; exact_relatie_code: string | null; kvk: string | null;
@@ -29,11 +30,24 @@ export function KoppelZoeker({ aanvraagId, kanKoppelen, onGekoppeld, onKoppel, g
     let weg = false;
     const t = setTimeout(async () => {
       setLaden(true);
-      const { data, error } = await (supabase.rpc as any)("zoek_koppel_kandidaten", { _aanvraag_id: aanvraagId, _zoek: zoek || null });
+      const term = zoek.trim();
+      const [{ data, error }, uni] = await Promise.all([
+        (supabase.rpc as any)("zoek_koppel_kandidaten", { _aanvraag_id: aanvraagId, _zoek: zoek || null }),
+        // Universele zoekfunctie vult aan met o.a. IBAN, telefoon, postcode en plaats (alleen bij een eigen zoekterm).
+        term.length >= 2 ? zoekUniverseel(term).catch(() => null) : Promise.resolve(null),
+      ]);
       if (weg) return;
       setLaden(false);
       if (error) return toast({ title: "Zoeken mislukt", description: error.message, variant: "destructive" });
-      setLijst((data ?? []) as KoppelKandidaat[]);
+      const basis = ((data ?? []) as KoppelKandidaat[]).map((k) => ({ ...k, redenen: [...k.redenen] }));
+      for (const u of uni?.klanten ?? []) {
+        const b = basis.find((k) => k.onderneming_id === u.id);
+        if (b) { b.score = Math.max(b.score, u.score); b.redenen = Array.from(new Set([...b.redenen, ...u.redenen])); }
+        else basis.push({ onderneming_id: u.id, naam: u.titel, exact_relatie_code: u.exact_relatie_code ?? null, kvk: u.kvk ?? null, score: u.score,
+          redenen: u.redenen, contactpersoon: u.contactpersoon ?? null, email: u.email ?? null, bav_nummer: u.bav_nummer ?? null, contract_status: null });
+      }
+      basis.sort((a, b) => b.score - a.score);
+      setLijst(basis.slice(0, 12));
     }, 300);
     return () => { weg = true; clearTimeout(t); };
   }, [aanvraagId, zoek]);
