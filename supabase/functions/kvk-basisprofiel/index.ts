@@ -3,7 +3,10 @@
 // modus "opzoeken": openbaar (aanvraagformulier), rate limit per IP, alleen niet-afgeschermde gegevens.
 // modus "verversen": supervisor/admin met 2FA; schrijft alleen ondernemingen.kvk_*-kolommen, nooit naam/adres of Exact.
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+};
 import { haalKvkProfiel, ipHash, kvkGeldig, kvkKolommen, kvkStartdatum, KVK_NIET_BESCHIKBAAR } from "../_shared/kvk.ts";
 import { requireSupervisor } from "../_shared/teamAuth.ts";
 
