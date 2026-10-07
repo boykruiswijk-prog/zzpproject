@@ -4557,6 +4557,12 @@ export type Database = {
         Args: { _aanvraag_id: string; _zoek?: string }
         Returns: Json
       }
+      zoek_masker_iban: { Args: { _t: string }; Returns: string }
+      zoek_norm_tel: { Args: { _t: string }; Returns: string }
+      zoek_universeel: {
+        Args: { _met_test?: boolean; _zoek: string }
+        Returns: Json
+      }
     }
     Enums: {
       app_role:
