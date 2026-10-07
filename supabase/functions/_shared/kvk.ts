@@ -1,7 +1,10 @@
 // deno-lint-ignore-file no-explicit-any
 // KVK API (Basisprofiel + Vestigingsprofiel hoofdvestiging). Sleutel: secret KVK_API_KEY.
 // Cache 30 dagen in kvk_profielen; elke opvraging in kvk_opvraag_log. Afgeschermde adressen worden nooit teruggegeven.
-import { sha256Hex } from "./sepaBewijs.ts";
+async function sha256Hex(t: string): Promise<string> {
+  const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t));
+  return Array.from(new Uint8Array(b)).map((x) => x.toString(16).padStart(2, "0")).join("");
+}
 
 export const KVK_CACHE_DAGEN = 30;
 const BASIS = "https://api.kvk.nl/api/v1";
