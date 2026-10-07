@@ -88,6 +88,21 @@ export function Header() {
 
   useEffect(() => setOpenMenu(null), [location.pathname]);
 
+  // Sluit het mobiele menu bij een routewissel.
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location.pathname, location.search]);
+
+  // Zet scrollen van de body uit zolang het mobiele menu open staat.
+  useEffect(() => {
+    if (!isOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [isOpen]);
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -224,7 +239,12 @@ export function Header() {
             transition={{ duration: 0.3 }}
             className="overflow-hidden border-t border-border bg-background xl:hidden"
           >
-            <nav className="container-wide py-4 flex flex-col gap-1">
+            <nav
+              className="container-wide py-4 flex flex-col gap-1 max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]"
+              style={{
+                paddingBottom: "calc(7rem + env(safe-area-inset-bottom))",
+              }}
+            >
             {navItems.map((item) => (
               item.children ? (
                 <div key={item.href}>
