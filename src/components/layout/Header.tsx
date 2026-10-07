@@ -88,6 +88,21 @@ export function Header() {
 
   useEffect(() => setOpenMenu(null), [location.pathname]);
 
+  // Sluit het mobiele menu bij een routewissel.
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location.pathname, location.search]);
+
+  // Zet scrollen van de body uit zolang het mobiele menu open staat.
+  useEffect(() => {
+    if (!isOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [isOpen]);
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
