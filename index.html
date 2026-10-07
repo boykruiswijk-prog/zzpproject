@@ -67,11 +67,11 @@
         var set = function () {
           var m = document.querySelectorAll('meta[name="robots"]');
           if (!m.length) { var n = document.createElement("meta"); n.name = "robots"; document.head.appendChild(n); m = [n]; }
-          for (var i = 0; i < m.length; i++) m[i].setAttribute("content", "noindex, follow");
+          for (var i = 0; i < m.length; i++) if (m[i].getAttribute("content") !== "noindex, follow") m[i].setAttribute("content", "noindex, follow");
           var c = document.querySelector('link[rel="canonical"]');
           if (!c) { c = document.createElement("link"); c.rel = "canonical"; document.head.appendChild(c); }
           var p = location.pathname === "/" ? "/" : location.pathname.replace(/\/$/, "");
-          c.setAttribute("href", "https://zpzaken.nl" + p);
+          if (c.getAttribute("href") !== "https://zpzaken.nl" + p) c.setAttribute("href", "https://zpzaken.nl" + p);
         };
         set();
         document.addEventListener("DOMContentLoaded", set);
