@@ -1,3 +1,4 @@
+import { KvkLeadAfwijkingen } from "@/components/admin/KvkLeadAfwijkingen";
 import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS, statusTitel } from "@/lib/statusLabels";
 import { LeadAfrondenKnop, AfrondDialoog, magAfronden } from "@/components/admin/LeadAfronden";
 import { LeadTestSchakelaar } from "@/components/admin/LeadTestSchakelaar";
@@ -276,6 +277,7 @@ export default function AdminLeadDetail() {
           {/* Lead info */}
           <div className="min-w-0 space-y-6 lg:col-span-2">
             <StartertariefControle lead={lead as any} magBeoordelen={isSupervisorOrAdmin} />
+            <KvkLeadAfwijkingen lead={lead as any} />
             <Card className="min-w-0 w-full overflow-hidden">
               <CardHeader>
                 <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
