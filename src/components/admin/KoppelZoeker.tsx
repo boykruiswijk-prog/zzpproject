@@ -18,7 +18,7 @@ export type KoppelKandidaat = {
  * Zoekt op Exact-relatiecode, BAV-nummer, KVK, e-mail(domein), bedrijfsnaam en contactpersoon.
  * Koppelen gaat alleen via de bestaande RPC koppel_opzegging, en alleen als `kanKoppelen`.
  */
-export function KoppelZoeker({ aanvraagId, kanKoppelen, onGekoppeld }: { aanvraagId: string; kanKoppelen: boolean; onGekoppeld?: () => void }) {
+export function KoppelZoeker({ aanvraagId, kanKoppelen, onGekoppeld, onKoppel, gekoppeldId, extBezig }: { aanvraagId: string; kanKoppelen: boolean; onGekoppeld?: () => void; onKoppel?: (ondId: string) => void; gekoppeldId?: string | null; extBezig?: boolean }) {
   const { toast } = useToast();
   const [zoek, setZoek] = useState("");
   const [lijst, setLijst] = useState<KoppelKandidaat[]>([]);
@@ -39,6 +39,7 @@ export function KoppelZoeker({ aanvraagId, kanKoppelen, onGekoppeld }: { aanvraa
   }, [aanvraagId, zoek]);
 
   async function koppel(k: KoppelKandidaat) {
+    if (onKoppel) return onKoppel(k.onderneming_id);
     setBezig(k.onderneming_id);
     const { error } = await supabase.rpc("koppel_opzegging", { _aanvraag_id: aanvraagId, _onderneming_id: k.onderneming_id });
     setBezig(null);
@@ -78,7 +79,7 @@ export function KoppelZoeker({ aanvraagId, kanKoppelen, onGekoppeld }: { aanvraa
                   </p>
                   <ul className="list-disc pl-4 text-xs text-muted-foreground">{k.redenen.map((r) => <li key={r}>{r}</li>)}</ul>
                 </div>
-                {kanKoppelen && <Button size="sm" className="min-h-9" disabled={!!bezig} onClick={() => koppel(k)}>{bezig === k.onderneming_id ? <Loader2 className="h-4 w-4 animate-spin" /> : "Koppelen"}</Button>}
+                {gekoppeldId === k.onderneming_id ? <Badge variant="secondary">Gekoppeld</Badge> : kanKoppelen && <Button size="sm" className="min-h-9" disabled={!!bezig || extBezig} onClick={() => koppel(k)}>{bezig === k.onderneming_id ? <Loader2 className="h-4 w-4 animate-spin" /> : "Koppelen"}</Button>}
               </div>
             </li>
           ))}
