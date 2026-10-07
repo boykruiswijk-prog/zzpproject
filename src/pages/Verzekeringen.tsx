@@ -179,6 +179,11 @@ export default function Verzekeringen() {
               BAV vergelijken met andere aanbieders<ArrowRight className="h-4 w-4" />
             </LocalizedLink>
           </p>
+          <p className="mt-4 text-center">
+            <LocalizedLink to="/starters" className="inline-flex items-center gap-2 font-semibold text-accent underline underline-offset-4">
+              Net begonnen als zzp'er? Bekijk het starterspakket<ArrowRight className="h-4 w-4" />
+            </LocalizedLink>
+          </p>
         </div>
       </section>
 
