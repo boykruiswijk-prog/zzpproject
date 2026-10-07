@@ -2708,6 +2708,66 @@ export type Database = {
           },
         ]
       }
+      kvk_opvraag_log: {
+        Row: {
+          bron: string
+          created_at: string
+          http_status: number | null
+          id: string
+          ip_hash: string | null
+          kvk_nummer: string | null
+          melding: string | null
+          resultaat: string
+          uit_cache: boolean
+          uitgevoerd_door: string | null
+        }
+        Insert: {
+          bron: string
+          created_at?: string
+          http_status?: number | null
+          id?: string
+          ip_hash?: string | null
+          kvk_nummer?: string | null
+          melding?: string | null
+          resultaat: string
+          uit_cache?: boolean
+          uitgevoerd_door?: string | null
+        }
+        Update: {
+          bron?: string
+          created_at?: string
+          http_status?: number | null
+          id?: string
+          ip_hash?: string | null
+          kvk_nummer?: string | null
+          melding?: string | null
+          resultaat?: string
+          uit_cache?: boolean
+          uitgevoerd_door?: string | null
+        }
+        Relationships: []
+      }
+      kvk_profielen: {
+        Row: {
+          bron: string
+          kvk_nummer: string
+          opgehaald_op: string
+          profiel: Json
+        }
+        Insert: {
+          bron?: string
+          kvk_nummer: string
+          opgehaald_op?: string
+          profiel: Json
+        }
+        Update: {
+          bron?: string
+          kvk_nummer?: string
+          opgehaald_op?: string
+          profiel?: Json
+        }
+        Relationships: []
+      }
       lead_notes: {
         Row: {
           content: string
@@ -2846,6 +2906,8 @@ export type Database = {
           id: string
           ingangsdatum: string | null
           is_test: boolean
+          kvk_datum_bron: string | null
+          kvk_gegevens: Json | null
           kvk_nummer: string | null
           kvk_startdatum: string | null
           offerte_verstuurd_op: string | null
@@ -2931,6 +2993,8 @@ export type Database = {
           id?: string
           ingangsdatum?: string | null
           is_test?: boolean
+          kvk_datum_bron?: string | null
+          kvk_gegevens?: Json | null
           kvk_nummer?: string | null
           kvk_startdatum?: string | null
           offerte_verstuurd_op?: string | null
@@ -3016,6 +3080,8 @@ export type Database = {
           id?: string
           ingangsdatum?: string | null
           is_test?: boolean
+          kvk_datum_bron?: string | null
+          kvk_gegevens?: Json | null
           kvk_nummer?: string | null
           kvk_startdatum?: string | null
           offerte_verstuurd_op?: string | null
@@ -3247,6 +3313,23 @@ export type Database = {
           id: string
           is_test: boolean
           kvk: string | null
+          kvk_adres_afgeschermd: boolean
+          kvk_bron: string | null
+          kvk_datum_aanvang: string | null
+          kvk_datum_inschrijving: string | null
+          kvk_handelsnamen: string[] | null
+          kvk_huisnummer: string | null
+          kvk_naam: string | null
+          kvk_opgehaald_op: string | null
+          kvk_overgenomen_door: string | null
+          kvk_overgenomen_op: string | null
+          kvk_plaats: string | null
+          kvk_postadres: Json | null
+          kvk_postcode: string | null
+          kvk_rechtsvorm: string | null
+          kvk_sbi: Json | null
+          kvk_status: string | null
+          kvk_straat: string | null
           naam: string | null
           plaats: string | null
           postcode: string | null
@@ -3274,6 +3357,23 @@ export type Database = {
           id?: string
           is_test?: boolean
           kvk?: string | null
+          kvk_adres_afgeschermd?: boolean
+          kvk_bron?: string | null
+          kvk_datum_aanvang?: string | null
+          kvk_datum_inschrijving?: string | null
+          kvk_handelsnamen?: string[] | null
+          kvk_huisnummer?: string | null
+          kvk_naam?: string | null
+          kvk_opgehaald_op?: string | null
+          kvk_overgenomen_door?: string | null
+          kvk_overgenomen_op?: string | null
+          kvk_plaats?: string | null
+          kvk_postadres?: Json | null
+          kvk_postcode?: string | null
+          kvk_rechtsvorm?: string | null
+          kvk_sbi?: Json | null
+          kvk_status?: string | null
+          kvk_straat?: string | null
           naam?: string | null
           plaats?: string | null
           postcode?: string | null
@@ -3301,6 +3401,23 @@ export type Database = {
           id?: string
           is_test?: boolean
           kvk?: string | null
+          kvk_adres_afgeschermd?: boolean
+          kvk_bron?: string | null
+          kvk_datum_aanvang?: string | null
+          kvk_datum_inschrijving?: string | null
+          kvk_handelsnamen?: string[] | null
+          kvk_huisnummer?: string | null
+          kvk_naam?: string | null
+          kvk_opgehaald_op?: string | null
+          kvk_overgenomen_door?: string | null
+          kvk_overgenomen_op?: string | null
+          kvk_plaats?: string | null
+          kvk_postadres?: Json | null
+          kvk_postcode?: string | null
+          kvk_rechtsvorm?: string | null
+          kvk_sbi?: Json | null
+          kvk_status?: string | null
+          kvk_straat?: string | null
           naam?: string | null
           plaats?: string | null
           postcode?: string | null
@@ -4451,6 +4568,10 @@ export type Database = {
       is_team_member: { Args: { _user_id: string }; Returns: boolean }
       koppel_opzegging: {
         Args: { _aanvraag_id: string; _onderneming_id: string }
+        Returns: Json
+      }
+      kvk_gegevens_overnemen: {
+        Args: { _adres: boolean; _ids: string[]; _naam: boolean }
         Returns: Json
       }
       lead_afronden: {
