@@ -4,7 +4,6 @@ import { CheckCircle2, Circle, Loader2, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { formatDateTimeNL } from "@/lib/dateFormat";
@@ -32,14 +31,13 @@ export function PortaltoegangStappen({ aanvraag, onGewijzigd }: { aanvraag: Serv
   const [klant, setKlant] = useState<{ naam: string | null; exact_relatie_code: string | null } | null>(null);
   const [bekend, setBekend] = useState<boolean | null>(null);
   const [html, setHtml] = useState<string | null>(null);
-  const [gecontroleerd, setGecontroleerd] = useState(false);
   const [bezig, setBezig] = useState<string | null>(null);
   const [toelichting, setToelichting] = useState("");
   const afgerond = aanvraag.status === "afgerond";
   const verleend = d.toegang_verleend as { op: string; door_naam?: string; email: string; handmatig_gecontroleerd?: boolean } | undefined;
 
   useEffect(() => {
-    setKlant(null); setBekend(null); setHtml(null); setGecontroleerd(false);
+    setKlant(null); setBekend(null); setHtml(null);
     if (!aanvraag.onderneming_id) return;
     supabase.from("ondernemingen").select("naam,exact_relatie_code").eq("id", aanvraag.onderneming_id).maybeSingle().then(({ data }) => setKlant(data));
     // Voorbeeld ophalen: verstuurt niets, vertelt of het adres al bij de klant bekend is.
@@ -57,7 +55,7 @@ export function PortaltoegangStappen({ aanvraag, onGewijzigd }: { aanvraag: Serv
   async function verleen() {
     setBezig("verleen");
     const { data, error } = await supabase.functions.invoke("crm-portal-uitnodigen", {
-      body: { onderneming_id: aanvraag.onderneming_id, aanvraag_id: aanvraag.id, email, modus: "versturen", controle_bevestigd: gecontroleerd },
+      body: { onderneming_id: aanvraag.onderneming_id, aanvraag_id: aanvraag.id, email, modus: "versturen" },
     });
     setBezig(null);
     if (error || !data?.ok) return toast({ title: "Toegang verlenen mislukt", description: data?.error ?? error?.message, variant: "destructive" });
@@ -97,22 +95,19 @@ export function PortaltoegangStappen({ aanvraag, onGewijzigd }: { aanvraag: Serv
         ) : <p className="text-muted-foreground">Nog niet gekoppeld. Kies hierboven een klant.</p>}
         {aanvraag.onderneming_id && bekend !== null && (
           bekend ? <p className="text-muted-foreground">Het adres is bekend bij deze klant (contactpersoon of factuur-e-mail).</p>
-            : <p className="text-amber-700">Het adres staat nog niet bij deze klant. Toegang verlenen kan pas als je bevestigt dat je het hebt gecontroleerd.</p>
+            : <p className="text-amber-700">Het adres staat nog niet bij deze klant. Bij Toegang verlenen wordt het als contactpersoon toegevoegd.</p>
         )}
       </Stap>
 
       <Stap nr={4} klaar={!!verleend} titel="Toegang verlenen">
-        {verleend && <p>Uitnodiging verstuurd aan {verleend.email} op {formatDateTimeNL(verleend.op)}{verleend.door_naam ? ` door ${verleend.door_naam}` : ""}{verleend.handmatig_gecontroleerd ? " (handmatig gecontroleerd)" : ""}.</p>}
+        {verleend && <p>Uitnodiging verstuurd aan {verleend.email} op {formatDateTimeNL(verleend.op)}{verleend.door_naam ? ` door ${verleend.door_naam}` : ""}{(verleend as any).contactpersoon === "nieuw" ? " (contactpersoon toegevoegd)" : ""}.</p>}
         {!afgerond && aanvraag.onderneming_id && (<>
           {bekend === false && (
-            <label className="flex items-start gap-2">
-              <Checkbox checked={gecontroleerd} onCheckedChange={(v) => setGecontroleerd(v === true)} className="mt-0.5" />
-              <span>Ik heb gecontroleerd dat {aanvraag.email} (of het domein) bij deze klant hoort.</span>
-            </label>
+            <p className="rounded-md border border-border bg-muted/40 p-2">Dit e-mailadres wordt toegevoegd als contactpersoon bij {klant?.naam ?? "deze klant"}.</p>
           )}
           {html && <details><summary className="cursor-pointer text-muted-foreground">Voorbeeld van de mail</summary><iframe title="Voorbeeld uitnodiging" srcDoc={html} sandbox="" className="mt-2 h-80 w-full rounded border" /></details>}
           <p className="text-xs text-muted-foreground">Er gaat pas een mail naar {aanvraag.email} als je op de knop klikt.</p>
-          <Button size="sm" className="min-h-10" disabled={!!bezig || bekend === null || (bekend === false && !gecontroleerd)} onClick={verleen}>
+          <Button size="sm" className="min-h-10" disabled={!!bezig || bekend === null} onClick={verleen}>
             {bezig === "verleen" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} {verleend ? "Opnieuw uitnodigen" : "Toegang verlenen"}
           </Button>
         </>)}
