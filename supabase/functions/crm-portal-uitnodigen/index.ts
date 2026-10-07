@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
     let aanvraag: any = null;
     if (aanvraagId) {
       if (!UUID.test(aanvraagId)) return json({ error: "aanvraag_id ongeldig" }, 400);
-      const { data: a } = await admin.from("klant_service_aanvragen").select("id,type,email,status,onderneming_id,details").eq("id", aanvraagId).maybeSingle();
+      const { data: a } = await admin.from("klant_service_aanvragen").select("id,type,email,status,onderneming_id,details,voornaam").eq("id", aanvraagId).maybeSingle();
       if (!a || a.type !== "portaltoegang") return json({ error: "portaltoegang-aanvraag niet gevonden" }, 404);
       if (a.onderneming_id !== ondId) return json({ error: "koppel de aanvraag eerst aan deze klant" }, 400);
       if (a.status === "afgerond") return json({ error: "aanvraag is al afgerond" }, 400);
@@ -54,41 +54,38 @@ Deno.serve(async (req) => {
     let keuze = opties.find((x) => x.email === email);
     const handmatig = !keuze && !!aanvraag;
     if (handmatig) {
-      // Adres staat niet bij de klant: alleen na expliciete controle door het teamlid.
-      if (body?.controle_bevestigd !== true && body?.modus === "versturen") return json({ error: "bevestig eerst dat dit adres bij de klant hoort" }, 400);
-      keuze = { email, soort: "aanvrager", voornaam: null, persoon_id: null };
+      // Adres staat nog niet bij de klant: wordt bij verlenen als contactpersoon vastgelegd (RPC portaltoegang_verlenen).
+      keuze = { email, soort: "aanvrager", voornaam: aanvraag.voornaam || null, persoon_id: null };
     }
     if (!keuze) return json({ error: "kies een e-mailadres van deze klant" }, 400);
     if (o.is_test && !email.endsWith("@zpzaken.nl")) return json({ error: "testrecord: alleen @zpzaken.nl" }, 400);
     const origin = safeAppOrigin(req.headers.get("origin"));
 
     if (body?.modus !== "versturen") {
-      return json({ ok: true, voorbeeld: true, aan: email, bekend_bij_klant: !handmatig, onderwerp: "Welkom bij Mijn ZP", html: buildInviteHtml("#voorbeeld", keuze.voornaam, origin) });
+      return json({ ok: true, voorbeeld: true, aan: email, bekend_bij_klant: !handmatig, klantnaam: o.naam, onderwerp: "Welkom bij Mijn ZP", html: buildInviteHtml("#voorbeeld", keuze.voornaam, origin) });
     }
     const { userId, created } = await ensurePortalUser(admin, email, keuze.voornaam);
+    let vastgelegd: any = null;
+    if (aanvraag) {
+      // Contactpersoon, polissen, aanvraagstatus en log in één transactie, uitgevoerd als het teamlid.
+      const { data: r, error: rErr } = await userClient.rpc("portaltoegang_verlenen", { _aanvraag_id: aanvraag.id, _portal_user_id: userId, _user_created: created });
+      if (rErr) return json({ error: rErr.message }, 400);
+      vastgelegd = r;
+    }
     const link = await generateMagicLink(admin, email, `${origin}/portal`);
     const res = await sendPortalMail(admin, req, "crm-portal-uitnodigen", {
       to: email, subject: "Welkom bij Mijn ZP", html: buildInviteHtml(link, keuze.voornaam, origin),
-      leadType: "portal_invite", leadId: null, metadata: { onderneming_id: ondId, uitgevoerd_door: uid, soort: keuze.soort, aanvraag_id: aanvraagId, handmatig_gecontroleerd: handmatig },
+      leadType: "portal_invite", leadId: null, metadata: { onderneming_id: ondId, uitgevoerd_door: uid, soort: keuze.soort, aanvraag_id: aanvraagId, contactpersoon: vastgelegd?.contactpersoon ?? null },
     });
     const { data: prof } = await admin.from("profiles").select("full_name").eq("id", uid).maybeSingle();
     const naam = prof?.full_name ?? "teamlid";
-    if (res.sent) {
+    if (res.sent && !aanvraag) {
       await admin.from("crm_notities").insert({ onderneming_id: ondId, persoon_id: keuze.persoon_id, soort: "overig", is_test: o.is_test,
-        tekst: `Uitgenodigd voor Mijn ZP op ${email} (${keuze.soort === "factuur" ? "factuur-e-mail" : keuze.soort === "aanvrager" ? "adres aanvrager, handmatig gecontroleerd" : "persoon-e-mail"}) door ${naam}.${created ? " Account aangemaakt." : ""}`,
-        aangemaakt_door: uid, aangemaakt_door_naam: naam, details: { soort: "portal_uitnodiging", email, user_created: created, aanvraag_id: aanvraagId, handmatig_gecontroleerd: handmatig } });
-      if (aanvraag) {
-        const op = new Date().toISOString();
-        await admin.from("klant_service_aanvragen").update({
-          status: aanvraag.status === "nieuw" ? "in_behandeling" : aanvraag.status,
-          details: { ...(aanvraag.details ?? {}), toegang_verleend: { door: uid, door_naam: naam, op, email, handmatig_gecontroleerd: handmatig, user_created: created } },
-        }).eq("id", aanvraag.id);
-        await admin.from("sensitive_audit_log").insert({ target_table: "klant_service_aanvragen", target_id: aanvraag.id, actie: "portaltoegang_verleend",
-          veld: "toegang", oude_waarde: null, nieuwe_waarde: email, uitgevoerd_door: uid, uitgevoerd_door_rol: null,
-          details: { onderneming_id: ondId, handmatig_gecontroleerd: handmatig, user_created: created } });
-      }
+        tekst: `Uitgenodigd voor Mijn ZP op ${email} (${keuze.soort === "factuur" ? "factuur-e-mail" : "persoon-e-mail"}) door ${naam}.${created ? " Account aangemaakt." : ""}`,
+        aangemaakt_door: uid, aangemaakt_door_naam: naam, details: { soort: "portal_uitnodiging", email, user_created: created } });
     }
-    return res.sent ? json({ ok: true, aan: res.recipient, user_created: created }) : json({ error: res.error ?? "verzenden mislukt" }, 502);
+    return res.sent ? json({ ok: true, aan: res.recipient, user_created: created, ...(vastgelegd ?? {}) })
+      : json({ error: res.error ?? "verzenden mislukt", toegang_vastgelegd: !!vastgelegd }, 502);
   } catch (e: any) {
     console.error("crm-portal-uitnodigen", e?.message);
     return json({ error: e?.message ?? "onbekende fout" }, 500);
