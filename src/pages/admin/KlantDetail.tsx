@@ -16,6 +16,7 @@ import { KlantKaart } from "@/components/admin/crm/KlantKaart";
 import { LopendeProducten } from "@/components/admin/crm/LopendeProducten";
 import { ExactRelatieLabel, OndernemingswijzigingKnop, OpvolgerBanner, VoorgangerHistorie, useOpvolging } from "@/components/admin/crm/Opvolging";
 
+import { KvkVergelijking } from "@/components/admin/KvkGegevens";
 import { kiesBavNummer, useBavRijen } from "@/lib/bavNummer";
 export default function KlantDetail() {
   const { id } = useParams();
@@ -77,6 +78,7 @@ export default function KlantDetail() {
               <div className="mt-2"><ExactRelatieLabel ond={ond} heeftVoorganger={voorgangers.length > 0} /></div>
             </div><OndernemingswijzigingKnop ond={ond} onKlaar={() => setHerlaad((x) => x + 1)} /></div>
             <KlantKaart ondernemingen={[ond]} personen={personen} leadIds={leadMatch.map((l) => l.id)} herlaadSleutel={herlaad} onGewijzigd={() => setHerlaad((h) => h + 1)} />
+            <KvkVergelijking ond={ond} onGewijzigd={() => setHerlaad((x) => x + 1)} />
             <div className="grid gap-6 md:grid-cols-3">
               <Card><CardHeader><CardTitle className="text-base">Contactpersonen</CardTitle></CardHeader><CardContent className="space-y-2 text-sm">
                 {personen.length === 0 && <p className="text-muted-foreground">Geen e-mailadres bekend.</p>}

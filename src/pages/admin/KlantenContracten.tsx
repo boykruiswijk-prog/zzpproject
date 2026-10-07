@@ -1,3 +1,4 @@
+import { KvkBatch } from "@/components/admin/KvkGegevens";
 import { CERT_VELDEN, actueelCertificaat, groepeerPerOnderneming, type KlantCertificaat } from "@/lib/klantCertificaten";
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
@@ -146,6 +147,7 @@ export default function KlantenContracten() {
           <ToonTestrecordsSchakelaar />
         </div>
         {fout && <p className="text-sm text-destructive">{fout}</p>}
+        <KvkBatch />
         {laden ? <div className="flex justify-center p-12"><Loader2 className="h-6 w-6 animate-spin" /></div> : (
           <>
             <OpzeggingenTeKoppelen />

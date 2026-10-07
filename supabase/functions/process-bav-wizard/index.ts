@@ -1,3 +1,4 @@
+import { haalKvkProfiel, kvkGeldig, kvkStartdatum, kvkAfwijkingen } from "../_shared/kvk.ts";
 import { normaliseerAdres } from "../_shared/adresNormalisatie.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.39.0";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
@@ -195,13 +196,34 @@ Deno.serve(async (req) => {
     }
 
     const pakket = PAKKET_CONFIG[submission.gekozen_pakket];
+    // KVK is leidend voor naam, adres en inschrijvingsdatum. Lukt de KVK-opvraging niet, dan geldt de klantopgave met handmatige controle.
+    const kvkNr = String(submission.kvk_nummer ?? "").replace(/\D/g, "");
+    const kvkRes = kvkGeldig(kvkNr) ? await haalKvkProfiel(supabase, kvkNr, { bron: "aanvraag" }) : null;
+    const kvkProfiel = kvkRes?.ok ? kvkRes.profiel : null;
+    const klantOpgave = { bedrijfsnaam: submission.bedrijfsnaam, straat: adres.straat, huisnummer: adres.huisnummer, postcode: adres.postcode, plaats: adres.plaats, kvk_startdatum: submission.kvk_startdatum ?? null };
+    const leadAdres = kvkProfiel?.bezoekadres?.postcode
+      ? { straat: kvkProfiel.bezoekadres.straat ?? "", huisnummer: kvkProfiel.bezoekadres.huisnummer ?? "", postcode: kvkProfiel.bezoekadres.postcode ?? "", plaats: kvkProfiel.bezoekadres.plaats ?? "" }
+      : adres;
+    const adresBron = !kvkProfiel ? "klant" : kvkProfiel.bezoekadres?.postcode ? "kvk" : kvkProfiel.adres_afgeschermd ? "klant_kvk_afgeschermd" : "klant";
+    if (kvkProfiel?.naam) submission.bedrijfsnaam = kvkProfiel.naam;
+    const kvkApiStart = kvkProfiel ? kvkStartdatum(kvkProfiel) : null;
+    const kvkGegevens = kvkRes ? {
+      status: kvkRes.ok ? "ok" : kvkRes.reden,
+      opgehaald_op: new Date().toISOString(),
+      profiel: kvkProfiel,
+      klant_opgave: klantOpgave,
+      adres_bron: adresBron,
+      afwijkingen: kvkProfiel ? kvkAfwijkingen(klantOpgave, { bedrijfsnaam: kvkProfiel.naam, ...leadAdres, kvk_startdatum: kvkApiStart }, adresBron === "kvk") : [],
+    } : null;
     // Startertarief: altijd op de server bepaald; alleen BAV + AVB maand/jaar (niet Cyber).
-    const kvkStart = typeof submission.kvk_startdatum === "string" && /^\d{4}-\d{2}-\d{2}$/.test(submission.kvk_startdatum)
+    const klantStart = typeof submission.kvk_startdatum === "string" && /^\d{4}-\d{2}-\d{2}$/.test(submission.kvk_startdatum)
       && submission.kvk_startdatum >= "1900-01-01" && submission.kvk_startdatum <= submission.ingangsdatum ? submission.kvk_startdatum : null;
+    const kvkStart = kvkApiStart ?? klantStart;
+    const kvkDatumBron = kvkApiStart ? "kvk_api" : klantStart ? "klant" : null;
     const starter = (submission.gekozen_pakket === "maandelijks" || submission.gekozen_pakket === "jaarlijks") && isStarter(kvkStart, submission.ingangsdatum);
     const starterTotDatum = starter ? starterTot(submission.ingangsdatum) : null;
     const premium = starter ? (pakket.betaalwijze === "maandelijks" ? STARTER.maandprijs : STARTER.jaarprijs) : pakket.prijs;
-    const starterVelden = { kvk_startdatum: kvkStart, tarief_type: starter ? "starter" : "standaard", starter_tot: starterTotDatum };
+    const starterVelden = { kvk_startdatum: kvkStart, kvk_datum_bron: kvkDatumBron, kvk_gegevens: kvkGegevens, tarief_type: starter ? "starter" : "standaard", starter_tot: starterTotDatum };
     const volledigeNaam = `${submission.voornaam} ${submission.achternaam}`;
     const branche = brancheVoorSector(submission.sector);
     if (!branche) return weiger(400, "Kies een geldige sector.", "sector");
@@ -243,10 +265,10 @@ Deno.serve(async (req) => {
         kvk_nummer: submission.kvk_nummer || null,
         beroep: submission.beroep || null,
         branche,
-        adres_straat: adres.straat || null,
-        adres_huisnummer: adres.huisnummer || null,
-        adres_postcode: adres.postcode || null,
-        adres_plaats: adres.plaats || null,
+        adres_straat: leadAdres.straat || null,
+        adres_huisnummer: leadAdres.huisnummer || null,
+        adres_postcode: leadAdres.postcode || null,
+        adres_plaats: leadAdres.plaats || null,
         iban: machtiging.iban,
         sepa_akkoord: true,
         sepa_akkoord_datum: bewijs.akkoord_op,
@@ -256,7 +278,9 @@ Deno.serve(async (req) => {
         ingangsdatum: submission.ingangsdatum,
         gekozen_pakket: submission.gekozen_pakket,
         ...starterVelden,
-        starter_controle_status: starter ? "te_controleren" : null,
+        // Datum uit de KVK API: automatisch bevestigd. Alleen bij klantopgave (API faalde) handmatige controle.
+        starter_controle_status: starter ? (kvkDatumBron === "kvk_api" ? "goedgekeurd" : "te_controleren") : null,
+        ...(starter && kvkDatumBron === "kvk_api" ? { starter_beoordeeld_op: new Date().toISOString(), starter_toelichting: "Automatisch bevestigd via KVK API" } : {}),
         opmerkingen: [
           // IBAN wordt bewust NIET in het vrije opmerkingenveld herhaald (alleen in de iban-kolom).
           submission.rekeninghouder ? `Rekeninghouder: ${submission.rekeninghouder}` : null,

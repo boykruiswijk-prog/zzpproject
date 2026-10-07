@@ -137,6 +137,31 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
     setFormData(prev => ({ ...prev, adresStraat: pdokAdres.straat, adresPlaats: pdokAdres.plaats, adresPostcode: pdokAdres.postcode }));
     setErrors(prev => { const next = { ...prev }; delete next.adresStraat; delete next.adresPlaats; delete next.adresPostcode; return next; });
   }, [pdokAdres]);
+  // KVK leidend: na een geldig KVK-nummer naam, adres en inschrijvingsdatum uit het handelsregister vooraf invullen.
+  const [kvkStatus, setKvkStatus] = useState<string | null>(null);
+  useEffect(() => {
+    const nr = formData.kvkNummer.trim();
+    if (!isValidKvk(nr)) { setKvkStatus(null); return; }
+    let weg = false;
+    const h = setTimeout(async () => {
+      setKvkStatus("Gegevens ophalen bij de KVK...");
+      const { data } = await supabase.functions.invoke("kvk-basisprofiel", { body: { modus: "opzoeken", kvk_nummer: nr } }).catch(() => ({ data: null }));
+      if (weg) return;
+      const p = data?.ok ? data.profiel : null;
+      if (!p) { setKvkStatus(data?.reden === "niet_gevonden" ? "Dit KVK-nummer vinden we niet in het handelsregister. Controleer het nummer." : "KVK-controle niet beschikbaar. Vul je gegevens zelf in."); return; }
+      const a = p.bezoekadres;
+      setFormData(prev => ({
+        ...prev,
+        bedrijfsnaam: p.naam || prev.bedrijfsnaam,
+        kvkStartdatum: p.startdatum || prev.kvkStartdatum,
+        ...(a?.postcode ? { adresStraat: a.straat || "", adresHuisnummer: a.huisnummer || "", adresPostcode: a.postcode, adresPlaats: a.plaats || "", adresLand: "Nederland" } : {}),
+      }));
+      setKvkStatus(a?.postcode ? "Naam, adres en startdatum ingevuld uit het KVK-handelsregister."
+        : p.adres_afgeschermd ? "Naam en startdatum ingevuld uit het KVK-handelsregister. Je adres is afgeschermd; vul het zelf in."
+        : "Naam en startdatum ingevuld uit het KVK-handelsregister.");
+    }, 400);
+    return () => { weg = true; clearTimeout(h); };
+  }, [formData.kvkNummer]);
 
 
   const steps = [
@@ -743,6 +768,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                         <Label htmlFor="kvkNummer">{t("home.bavKvk")} *</Label>
                         <Input id="kvkNummer" name="kvkNummer" value={formData.kvkNummer} onChange={handleInputChange} maxLength={8} placeholder="12345678" className={cn(errors.kvkNummer && "border-destructive")} />
                         <FieldError message={errors.kvkNummer} />
+                        {kvkStatus && <p className="text-xs text-muted-foreground mt-1" role="status">{kvkStatus}</p>}
                       </div>
                       <div>
                         <Label htmlFor="kvkStartdatum">Startdatum KVK-inschrijving</Label>
