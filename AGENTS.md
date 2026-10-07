@@ -18,9 +18,7 @@
 - Collectieve aanmeldtellingen alleen in afgeschermd beheer; publiek geen aantallen of voortgang. Waarom: geen misleidende sociale bewijslast.
 - Opzegregels (toelichting bij "Anders" 3-500 tekens, datum vandaag tot 180 dagen, NL-tijd) staan in src/lib/opzegValidatie.ts, byte-gelijk in _shared/opzegValidatie.ts. Waarom: formulier en server hanteren exact dezelfde regels.
 
-- Dashboardtellers komen uitsluitend uit RPC dashboard_tellers (klanten/contracten uit klant_contracten, leads uit leads). Waarom: één definitie zonder dubbele bronnen.
 - Opzeggingen worden bij insert gekoppeld door bepaal_opzegging_koppeling (e-mail → contractnummer → KvK/bedrijfsnaam als voorstel); contracten wijzigen alleen via RPC verwerk_opzegging. Waarom: nooit automatisch een contract beëindigen.
-- Admin onder lg: Sheet-menu en kaartlijsten; desktop vaste zijbalk. Waarom: één navigatie.
 - Bezoekersinvoer in leads.extra_data.formulier (geordende lijst) via _shared/leadVelden.ts voor detail, lijst en teammail; preview-inzendingen zijn is_test zonder klantmail. Waarom: één bron.
 - Leadherkomst via _shared/attributie.ts (sessionStorage, src/lib/attributie.ts) → leads.extra_data.attributie; GA4-events alleen via src/lib/tracking.ts, tel:/wa.me-klikken via één globale listener, geen GA4 op /admin, /portal, /mijn-zp (ga-disable-vlag). Waarom: één meetbron zonder dubbele events of interne vervuiling.
 - Telefoonvalidatie/-normalisatie via _shared/telefoon.ts. Waarom: formulier en server hanteren hetzelfde formaat.
@@ -29,6 +27,6 @@
 - docs/cloudflare-bulk-redirects.csv wordt bij elke build afgeleid van public/_redirects (cloudflareBulkCsv in vite.config.ts). Waarom: één bron voor redirects.
 
 - Reviewverzoeken aan nieuwe klanten lopen alleen via Edge Function review-verzoeken (cron, schakelaar integratie_config 'reviewverzoeken_actief', kandidaten via RPC review_kandidaten); klikken via review-klik, afmelden via review-afmelden alleen naar review_afmeldingen (nooit suppressed_emails, zodat transactionele mail doorgaat). Waarom: één filter dat testleads en bestaande klanten uitsluit.
-- CRM-regels (notities, beeindigen, BAV-nummer, dossier, testmarkering) staan in src/components/admin/crm/AGENTS.md.
+- Beheer-UI-regels staan in src/components/admin/AGENTS.md, CRM-regels in src/components/admin/crm/AGENTS.md.
 - Artikelen zonder image_url krijgen per build een huisstijlafbeelding (concepten alleen build-side).
 - scripts/* importeren geen React. Waarom: anders crasht de SSR-prerender (prod/dev-mix).
