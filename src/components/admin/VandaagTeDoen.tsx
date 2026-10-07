@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 import { cn } from "@/lib/utils";
 import { haalBavRijen, kiesBavNummer } from "@/lib/bavNummer";
+import { ServiceAanvraagOog } from "@/components/admin/ServiceAanvraagOog";
 
 interface Item { bron?: string | null; id: string; naam?: string | null; bedrijfsnaam?: string | null; sinds?: string | null; reden?: string | null; eigen?: boolean | null }
 interface Categorie { verborgen?: boolean; aantal: number; items: Item[]; per_type?: Record<string, number>; handmatig?: number }
@@ -124,8 +125,8 @@ export function VandaagTeDoen() {
                 {uit && cat && (
                   <ul className="border-t border-border">
                     {cat.items.map((i) => (
-                      <li key={`${c.key}-${i.id}`}>
-                        <Link to={c.link(i)} className="flex min-w-0 flex-col gap-0.5 px-3 py-2 text-sm hover:bg-muted/50 sm:flex-row sm:items-center sm:gap-3">
+                      <li key={`${c.key}-${i.id}`} className="flex min-w-0 items-center">
+                        <Link to={c.link(i)} className="flex min-w-0 flex-1 flex-col gap-0.5 px-3 py-2 text-sm hover:bg-muted/50 sm:flex-row sm:items-center sm:gap-3">
                           <span className="min-w-0 flex-1 truncate">
                             <span className="font-medium">{i.naam?.trim() || "Onbekend"}</span>
                             {i.bedrijfsnaam && <span className="text-muted-foreground"> · {i.bedrijfsnaam}</span>}
@@ -133,6 +134,7 @@ export function VandaagTeDoen() {
                           </span>
                           <span className="min-w-0 truncate text-xs text-muted-foreground">{[bavTekst(i.id), i.reden, i.sinds ? datum(i.sinds) : ""].filter(Boolean).join(" · ")}</span>
                         </Link>
+                        {c.key === "service" && <span className="shrink-0 pr-2"><ServiceAanvraagOog id={i.id} onGewijzigd={() => refetch()} /></span>}
                       </li>
                     ))}
                     {n > cat.items.length && (

@@ -230,6 +230,8 @@ export const AppRoutes = () => (
             <Route path="/admin/screening-aanvragen" element={<AdminScreeningAanvragen />} />
             <Route path="/admin/screening-aanvragen/:id" element={<AdminScreeningAanvraagDetail />} />
             <Route path="/admin/service-aanvragen" element={<AdminServiceAanvragen />} />
+            <Route path="/admin/opzeggingen" element={<AdminServiceAanvragen modus="opzeggingen" />} />
+            <Route path="/admin/portaltoegang" element={<AdminServiceAanvragen modus="portaltoegang" />} />
             <Route path="/admin/service-aanvragen/:id" element={<AdminServiceAanvraagDetail />} />
             <Route path="/admin/social-media" element={<RoleGuard allow={["marketing"]}><AdminSocialMediaFeatures /></RoleGuard>} />
             <Route path="/admin/marketing" element={<RoleGuard allow={["marketing"]}><AdminMarketing /></RoleGuard>} />

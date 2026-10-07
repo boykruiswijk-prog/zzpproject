@@ -46,7 +46,7 @@ export function ExactEmailImportBlock() {
 
   const csv = () => {
     const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-    const lines = [["Excel-rij", "Relatiecode", "Naam in Excel", "Naam in Exact", "Status", "Melding", "E-mail in Exact"].map(esc).join(";"),
+    const lines = [["Excel-rij", "Exact-relatiecode", "Naam in Excel", "Naam in Exact", "Status", "Melding", "E-mail in Exact"].map(esc).join(";"),
       ...aandacht.map((r) => [r.excel_rij, r.relatiecode, r.naam, r.exact_naam, r.status, r.melding, r.exact_email_voor].map(esc).join(";"))];
     const blob = new Blob(["\uFEFF" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
     const a = document.createElement("a");

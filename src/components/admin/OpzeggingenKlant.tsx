@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { formatDateNL } from "@/lib/dateFormat";
 import { PRODUCT_LABEL, type Product } from "@/lib/klantContracten";
 import { useToonTestrecords } from "@/hooks/useToonTestrecords";
+import { ServiceAanvraagOog } from "@/components/admin/ServiceAanvraagOog";
 
 export const KOPPELING_LABEL: Record<string, string> = {
   zeker: "Automatisch zeker",
@@ -112,6 +113,7 @@ export function OpzeggingenKlant({ ondernemingId, contracten, onGewijzigd }: { o
               <Link to={`/admin/service-aanvragen/${a.id}`} className="font-medium hover:text-primary">{a.voornaam} {a.achternaam}</Link>
               <span className="break-all text-muted-foreground">{a.email}</span>
               <KoppelBadge a={a} />
+              <ServiceAanvraagOog id={a.id} onGewijzigd={laad} />
               {a.is_test && <Badge variant="outline">Test</Badge>}
             </div>
             <div className="text-muted-foreground">
@@ -190,7 +192,6 @@ export function OpzeggingenTeKoppelen() {
   const { toonTest } = useToonTestrecords();
   const [lijst, setLijst] = useState<Aanvraag[]>([]);
   const [namen, setNamen] = useState<Map<string, string>>(new Map());
-  const [code, setCode] = useState<Record<string, string>>({});
 
   async function laad() {
     const { data } = await supabase.from("klant_service_aanvragen").select(KOLOMMEN).eq("type", "opzeggen").is("opzegging_verwerkt_op", null).is("gekoppeld_aan", null).order("created_at", { ascending: false });
@@ -199,19 +200,11 @@ export function OpzeggingenTeKoppelen() {
     const ids = l.map((a) => a.onderneming_id).filter(Boolean) as string[];
     if (ids.length) {
       const { data: o } = await supabase.from("ondernemingen").select("id,naam,exact_relatie_code").in("id", ids);
-      setNamen(new Map((o ?? []).map((x) => [x.id, `${x.naam ?? "—"} (${x.exact_relatie_code ?? "geen code"})`])));
+      setNamen(new Map((o ?? []).map((x) => [x.id, `${x.naam ?? "—"} (Exact-relatiecode ${x.exact_relatie_code ?? "onbekend"})`])));
     }
   }
   useEffect(() => { laad(); }, [toonTest]);
 
-  async function koppelOpCode(a: Aanvraag) {
-    const c = (code[a.id] ?? "").trim();
-    const { data: o } = await supabase.from("ondernemingen").select("id").eq("exact_relatie_code", c).maybeSingle();
-    if (!o) return toast({ title: "Geen klant met deze relatiecode", variant: "destructive" });
-    const { error } = await supabase.rpc("koppel_opzegging", { _aanvraag_id: a.id, _onderneming_id: o.id });
-    if (error) return toast({ title: "Koppelen mislukt", description: error.message, variant: "destructive" });
-    toast({ title: "Gekoppeld" }); laad();
-  }
 
   return (
     <Card id="opzeggingen">
@@ -219,7 +212,7 @@ export function OpzeggingenTeKoppelen() {
       <CardContent className="overflow-x-auto">
         {lijst.length === 0 ? <p className="text-sm text-muted-foreground">Geen opzeggingen die op koppeling wachten.</p> : (
           <table className="w-full table-fixed text-sm min-w-[900px]">
-            <thead><tr className="text-left text-muted-foreground"><th className="p-2 font-normal w-[18%]">Aanvrager</th><th className="p-2 font-normal w-[14%]">Ontvangen</th><th className="p-2 font-normal w-[20%]">Koppeling</th><th className="p-2 font-normal w-[24%]">Voorgestelde klant</th><th className="p-2 font-normal w-[24%]">Handmatig koppelen</th></tr></thead>
+            <thead><tr className="text-left text-muted-foreground"><th className="p-2 font-normal w-[18%]">Aanvrager</th><th className="p-2 font-normal w-[14%]">Ontvangen</th><th className="p-2 font-normal w-[20%]">Koppeling</th><th className="p-2 font-normal w-[24%]">Voorgestelde klant</th><th className="p-2 font-normal w-[24%]">Melding en koppelen</th></tr></thead>
             <tbody>{lijst.map((a) => (
               <tr key={a.id} className="border-t border-border hover:bg-muted/30 align-top">
                 <td className="p-2 min-w-0"><Link to={`/admin/service-aanvragen/${a.id}`} className="block truncate font-medium hover:text-primary">{a.voornaam} {a.achternaam}</Link><div className="truncate text-xs text-muted-foreground" title={a.email}>{a.email}</div></td>
@@ -227,7 +220,7 @@ export function OpzeggingenTeKoppelen() {
                 <td className="p-2"><KoppelBadge a={a} /></td>
                 <td className="p-2 min-w-0">{a.onderneming_id ? <Link to={`/admin/klanten/${a.onderneming_id}`} className="block truncate font-medium hover:text-primary">{namen.get(a.onderneming_id) ?? "Klant"}</Link> : <span className="text-muted-foreground">—</span>}
                   {a.details?.bedrijfsnaam && <div className="truncate text-xs text-muted-foreground">Opgegeven: {a.details.bedrijfsnaam}</div>}</td>
-                <td className="p-2"><div className="flex gap-2"><Input className="h-8" placeholder="Relatiecode" aria-label="Relatiecode" value={code[a.id] ?? ""} onChange={(e) => setCode({ ...code, [a.id]: e.target.value })} /><Button size="sm" variant="outline" onClick={() => koppelOpCode(a)}>Koppel</Button></div></td>
+                <td className="p-2"><ServiceAanvraagOog id={a.id} onGewijzigd={laad} label="Bekijken en koppelen" /><div className="mt-1 truncate text-xs text-muted-foreground" title={a.polisnummer}>{a.polisnummer || "geen nummer opgegeven"}</div></td>
               </tr>))}</tbody>
           </table>
         )}

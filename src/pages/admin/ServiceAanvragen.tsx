@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { ConciergeBell, RotateCw } from "lucide-react";
+import { ConciergeBell, KeyRound, RotateCw, UserX } from "lucide-react";
+import { ServiceAanvraagOog } from "@/components/admin/ServiceAanvraagOog";
 import { formatDateNL } from "@/lib/dateFormat";
 import {
   ServiceAanvraagDetail,
@@ -21,7 +22,7 @@ import {
 
 type Aanvraag = {
   id: string;
-  type: "certificaat" | "pauzeren" | "documenten" | "opzeggen";
+  type: "certificaat" | "pauzeren" | "documenten" | "opzeggen" | "portaltoegang" | "factuur_opvragen";
   voornaam: string;
   achternaam: string;
   email: string;
@@ -70,7 +71,16 @@ const STATUS_COLOR: Record<string, string> = {
 
 const formatDate = formatDateNL;
 
-export default function ServiceAanvragen() {
+type Modus = "service" | "opzeggingen" | "portaltoegang";
+const MODUS: Record<Modus, { titel: string; uitleg: string; icoon: typeof ConciergeBell }> = {
+  service: { titel: "Serviceaanvragen", uitleg: "Polis-, pauzeer-, document- en factuuraanvragen vanuit Mijn ZP", icoon: ConciergeBell },
+  opzeggingen: { titel: "Opzeggingen", uitleg: "Opzeggingen vanuit Mijn ZP; koppelen aan de klant via het oog-icoon", icoon: UserX },
+  portaltoegang: { titel: "Portaltoegang", uitleg: "Loginpogingen op Mijn ZP zonder toegang; telt niet mee in de meldingen", icoon: KeyRound },
+};
+const hoortBij = (m: Modus, type: string) => m === "opzeggingen" ? type === "opzeggen" : m === "portaltoegang" ? type === "portaltoegang" : type !== "opzeggen" && type !== "portaltoegang";
+
+export default function ServiceAanvragen({ modus = "service" }: { modus?: Modus }) {
+  const M = MODUS[modus];
   const { toast } = useToast();
   const { toonTest } = useToonTestrecords();
   const [items, setItems] = useState<Aanvraag[]>([]);
@@ -96,8 +106,10 @@ export default function ServiceAanvragen() {
   }
 
   useEffect(() => { load(); }, [toonTest]);
+  useEffect(() => { setTypeFilter("alle"); setSelected(null); }, [modus]);
 
   const filtered = items.filter((it) => {
+    if (!hoortBij(modus, it.type)) return false;
     if (typeFilter !== "alle" && it.type !== typeFilter) return false;
     if (statusFilter !== "alle" && it.status !== statusFilter) return false;
     if (query) {
@@ -156,28 +168,28 @@ export default function ServiceAanvragen() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="flex items-center gap-2 break-words text-2xl font-bold sm:text-3xl">
-              <ConciergeBell className="h-7 w-7 shrink-0 text-primary" /> Service-aanvragen
+              <M.icoon className="h-7 w-7 shrink-0 text-primary" /> {M.titel}
             </h1>
             <div className="mt-2"><ToonTestrecordsSchakelaar /></div>
 
             <p className="text-muted-foreground">
-              Polis-, pauzeer-, document- en opzeg-aanvragen vanuit Mijn ZP
+              {M.uitleg}
             </p>
           </div>
           <Button variant="outline" className="min-h-10 self-start" onClick={load}><RotateCw className="h-4 w-4 mr-2" />Herladen</Button>
         </div>
 
         <div className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 sm:flex-row sm:flex-wrap">
-          <Select value={typeFilter} onValueChange={setTypeFilter}>
+          {modus === "service" && <Select value={typeFilter} onValueChange={setTypeFilter}>
             <SelectTrigger className="min-h-10 w-full sm:w-48"><SelectValue placeholder="Type" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="alle">Alle types</SelectItem>
               <SelectItem value="certificaat">Polis</SelectItem>
               <SelectItem value="pauzeren">Pauzeren</SelectItem>
               <SelectItem value="documenten">Documenten</SelectItem>
-              <SelectItem value="opzeggen">Opzeggen</SelectItem>
+              <SelectItem value="factuur_opvragen">Factuur opvragen</SelectItem>
             </SelectContent>
-          </Select>
+          </Select>}
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="min-h-10 w-full sm:w-48"><SelectValue placeholder="Status" /></SelectTrigger>
             <SelectContent>
@@ -196,7 +208,7 @@ export default function ServiceAanvragen() {
         <div className="space-y-3 md:hidden">
           {loading ? <p className="rounded-lg border p-8 text-center text-muted-foreground">Laden…</p> : filtered.length === 0 ? <p className="rounded-lg border p-8 text-center text-muted-foreground">Geen aanvragen</p> : filtered.map((it) => (
             <div key={it.id} className="min-w-0 space-y-3 rounded-lg border border-border bg-card p-4" onClick={() => setSelected(it)}>
-              <div className="flex items-start justify-between gap-2"><span className="break-words font-medium">{it.voornaam} {it.achternaam}</span><Badge className={TYPE_COLOR[it.type]}>{TYPE_LABEL[it.type] ?? it.type}</Badge></div>
+              <div className="flex items-start justify-between gap-2"><span className="break-words font-medium">{it.voornaam} {it.achternaam}</span><ServiceAanvraagOog id={it.id} onGewijzigd={load} /><Badge className={TYPE_COLOR[it.type]}>{TYPE_LABEL[it.type] ?? it.type}</Badge></div>
               {!it.geverifieerd && <Badge variant="outline" className="w-fit">Ongeverifieerd</Badge>}
               <p className="break-all text-sm text-muted-foreground">{it.email}</p>
               <p className="text-sm">Polis {it.polisnummer || "—"} · {formatDate(it.created_at)}</p>
@@ -215,7 +227,7 @@ export default function ServiceAanvragen() {
                 <th className="text-left p-3">Datum</th>
                 <th className="text-left p-3">Type</th>
                 <th className="text-left p-3">Naam</th>
-                <th className="text-left p-3">Polisnummer</th>
+                <th className="text-left p-3">Polis-/BAV-nummer</th>
                 <th className="text-left p-3">Email</th>
                 <th className="text-left p-3">Status</th>
                 <th className="text-right p-3">Acties</th>
@@ -234,7 +246,8 @@ export default function ServiceAanvragen() {
                   <td className="p-3 font-mono text-xs">{it.polisnummer}</td>
                   <td className="p-3">{it.email}</td>
                   <td className="p-3"><Badge className={`${STATUS_COLOR[it.status] || ""} whitespace-nowrap`}>{STATUS.find((s) => s.value === it.status)?.label ?? statusLabel(it.status)}</Badge></td>
-                  <td className="p-3 text-right" onClick={(e) => e.stopPropagation()}>
+                  <td className="p-3 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                    <ServiceAanvraagOog id={it.id} onGewijzigd={load} />
                     <Select value={it.status} onValueChange={(v) => updateStatus(it.id, v)}>
                       <SelectTrigger className="w-36 h-8 inline-flex"><SelectValue /></SelectTrigger>
                       <SelectContent>{STATUS.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}</SelectContent>
@@ -261,6 +274,7 @@ export default function ServiceAanvragen() {
                 onSaveNotes={saveNotes}
                 onMarkAfgerond={(id) => updateStatus(id, "afgerond")}
                 onResend={resendNotification}
+                onGekoppeld={() => { setSelected(null); load(); }}
               />
             </>
           )}

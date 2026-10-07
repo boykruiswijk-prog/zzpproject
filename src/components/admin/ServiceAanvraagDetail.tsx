@@ -5,7 +5,7 @@ import { Mail } from "lucide-react";
 import { formatDateNL } from "@/lib/dateFormat";
 import { Link } from "react-router-dom";
 import { KoppelZoeker } from "@/components/admin/KoppelZoeker";
-import { KOPPELING_LABEL } from "@/components/admin/OpzeggingenKlant";
+const KOPPELING_LABEL: Record<string, string> = { zeker: "Automatisch zeker", voorstel: "Voorstel", niet_gekoppeld: "Niet gekoppeld" };
 
 export type ServiceAanvraag = {
   id: string;
