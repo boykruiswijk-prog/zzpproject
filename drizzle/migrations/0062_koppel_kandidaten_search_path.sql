@@ -1,0 +1,1 @@
+ALTER FUNCTION public.zoek_koppel_kandidaten(uuid, text) SET search_path TO 'public', 'extensions';

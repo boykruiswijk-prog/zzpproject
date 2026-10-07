@@ -4545,6 +4545,10 @@ export type Database = {
         Returns: Json
       }
       zet_opzeg_credits_actief: { Args: { _aan: boolean }; Returns: boolean }
+      zoek_koppel_kandidaten: {
+        Args: { _aanvraag_id: string; _zoek?: string }
+        Returns: Json
+      }
     }
     Enums: {
       app_role:

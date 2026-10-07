@@ -16,6 +16,7 @@ import { KlantKaart } from "@/components/admin/crm/KlantKaart";
 import { LopendeProducten } from "@/components/admin/crm/LopendeProducten";
 import { ExactRelatieLabel, OndernemingswijzigingKnop, OpvolgerBanner, VoorgangerHistorie, useOpvolging } from "@/components/admin/crm/Opvolging";
 
+import { kiesBavNummer, useBavRijen } from "@/lib/bavNummer";
 export default function KlantDetail() {
   const { id } = useParams();
   const [laden, setLaden] = useState(true);
@@ -59,6 +60,8 @@ export default function KlantDetail() {
     })();
   }, [id, herlaad]);
 
+  const { data: bavRijen } = useBavRijen(id ? [id] : []);
+  const bavKeuze = kiesBavNummer(bavRijen ?? []);
   return (
     <AdminLayout>
       <Helmet><title>{ond?.naam ?? "Klant"} | ZP Zaken beheer</title></Helmet>
@@ -69,7 +72,7 @@ export default function KlantDetail() {
             <OpvolgerBanner opvolger={opvolger} />
             <div className="flex flex-wrap items-start justify-between gap-2"><div>
               <h1 className="text-2xl font-bold break-words">{ond.naam}</h1>
-              <p className="break-words text-sm text-muted-foreground">Relatiecode {ond.exact_relatie_code} · {ond.bron === "afas_20261001" ? "startstand 01-10-2026" : ond.bron ? `bron ${ond.bron}` : ""}</p>
+              <p className="break-words text-sm text-muted-foreground">Exact-relatiecode {ond.exact_relatie_code ?? "onbekend"} · BAV-nummer {bavKeuze?.nummer || "onbekend"} · {ond.bron === "afas_20261001" ? "startstand 01-10-2026" : ond.bron ? `bron ${ond.bron}` : ""}</p>
               {ond.afwijkingen?.length > 0 && <div className="mt-2 flex flex-wrap gap-2">{ond.afwijkingen.map((a: string) => <Badge key={a} variant="outline" className="border-amber-500 text-amber-700">{a}</Badge>)}</div>}
               <div className="mt-2"><ExactRelatieLabel ond={ond} heeftVoorganger={voorgangers.length > 0} /></div>
             </div><OndernemingswijzigingKnop ond={ond} onKlaar={() => setHerlaad((x) => x + 1)} /></div>

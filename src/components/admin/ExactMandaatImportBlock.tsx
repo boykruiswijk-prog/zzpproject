@@ -50,7 +50,7 @@ export function ExactMandaatImportBlock() {
 
   const csv = () => {
     const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-    const lines = [["Relatiecode", "Naam in CRM", "Naam in Exact", "Kenmerk", "Status", "Melding", "Bankrekening", "Bestaande machtigingen"].map(esc).join(";"),
+    const lines = [["Exact-relatiecode", "Naam in CRM", "Naam in Exact", "Kenmerk", "Status", "Melding", "Bankrekening", "Bestaande machtigingen"].map(esc).join(";"),
       ...aandacht.map((r) => [r.relatiecode, r.naam, r.exact_naam, r.kenmerk, r.status, r.melding, r.bankrekening_actie, fmtMandaten(r.bestaande_mandaten)].map(esc).join(";"))];
     const blob = new Blob(["\uFEFF" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
     const a = document.createElement("a");

@@ -67,9 +67,10 @@ export default function ServiceAanvraagDetailPage() {
       documenten: "mijn-zp-documenten",
       opzeggen: "mijn-zp-opzeggen",
     } as const;
+    if (!(it.type in typeMap)) return;
     const { error } = await supabase.functions.invoke("send-lead-notification", {
       body: {
-        type: typeMap[it.type],
+        type: typeMap[it.type as keyof typeof typeMap],
         leadId: it.id,
         reference: `${it.voornaam} ${it.achternaam} ${it.polisnummer}`,
         userEmail: it.email,
@@ -89,7 +90,7 @@ export default function ServiceAanvraagDetailPage() {
   return (
     <AdminLayout>
       <div className="space-y-6 max-w-3xl">
-        <Button variant="ghost" onClick={() => navigate("/admin/service-aanvragen")}>
+        <Button variant="ghost" onClick={() => navigate(aanvraag?.type === "opzeggen" ? "/admin/opzeggingen" : aanvraag?.type === "portaltoegang" ? "/admin/portaltoegang" : "/admin/service-aanvragen")}>
           <ArrowLeft className="h-4 w-4 mr-2" />Terug naar overzicht
         </Button>
 
@@ -107,6 +108,7 @@ export default function ServiceAanvraagDetailPage() {
               onSaveNotes={saveNotes}
               onMarkAfgerond={markAfgerond}
               onResend={resend}
+              onGekoppeld={load}
             />
           </div>
         )}

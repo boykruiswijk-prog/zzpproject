@@ -12,9 +12,10 @@ import { Loader2, Play } from "lucide-react";
 import { formatDateNL, formatDateTimeNL } from "@/lib/dateFormat";
 import { formatEuro } from "@/lib/klantContracten";
 import { useToast } from "@/hooks/use-toast";
+import { kiesBavNummer, useBavRijen } from "@/lib/bavNummer";
 
 type Kandidaat = {
-  klant_contract_id: string; relatiecode: string | null; klantnaam: string | null; itemcode: string; cyclus: string;
+  klant_contract_id: string; onderneming_id?: string | null; relatiecode: string | null; klantnaam: string | null; itemcode: string; cyclus: string;
   periode_start: string; periode_eind: string; bedrag: number; achterstallig: boolean;
   blokkade: string | null; blokkade_soort: string | null;
 };
@@ -96,9 +97,13 @@ export default function Facturatieplanning() {
     laadVast(); proefrun();
   }
 
+  const ondIds = useMemo(() => [...new Set(rijen.map((r) => r.onderneming_id).filter(Boolean))] as string[], [rijen]);
+  const { data: bavRijen } = useBavRijen(ondIds);
+  const bavVan = (r: Kandidaat) => kiesBavNummer((bavRijen ?? []).filter((b) => b.onderneming_id === r.onderneming_id), { contractId: r.klant_contract_id })?.nummer || "—";
+  const codeTekst = (r: Kandidaat) => `Exact-relatiecode ${r.relatiecode ?? "—"} · BAV-nummer ${bavVan(r)}`;
   const Regel = ({ r }: { r: Kandidaat }) => (
     <tr className="border-t">
-      <td className="py-1 pr-2 whitespace-nowrap">{r.relatiecode ?? "—"}</td>
+      <td className="py-1 pr-2 whitespace-nowrap" title={codeTekst(r)}><span className="text-xs text-muted-foreground">Exact-relatiecode </span>{r.relatiecode ?? "—"}<div className="text-xs text-muted-foreground">BAV-nummer {bavVan(r)}</div></td>
       <td className="py-1 pr-2 max-w-[220px] truncate" title={r.klantnaam ?? ""}>{r.klantnaam}</td>
       <td className="py-1 pr-2 whitespace-nowrap">{r.itemcode}</td>
       <td className="py-1 pr-2 whitespace-nowrap">{formatDateNL(r.periode_start)} t/m {formatDateNL(r.periode_eind)}</td>
@@ -111,7 +116,7 @@ export default function Facturatieplanning() {
   const RegelKaart = ({ r }: { r: Kandidaat }) => (
     <div className="min-w-0 rounded-md border p-3 text-sm">
       <div className="flex min-w-0 items-start justify-between gap-3"><span className="break-words font-medium">{r.klantnaam || "—"}</span><span className="shrink-0 tabular-nums">{formatEuro(Number(r.bedrag))}</span></div>
-      <p className="mt-1 break-words text-muted-foreground">{r.relatiecode ?? "—"} · {r.itemcode}</p>
+      <p className="mt-1 break-words text-muted-foreground">{codeTekst(r)} · {r.itemcode}</p>
       <p className="break-words">{formatDateNL(r.periode_start)} t/m {formatDateNL(r.periode_eind)}</p>
       <div className="mt-2 break-words">{r.blokkade ? <span className="text-destructive">{r.blokkade}</span> : <Badge variant="secondary">Klaar</Badge>}</div>
     </div>

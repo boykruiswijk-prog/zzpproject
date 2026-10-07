@@ -206,7 +206,7 @@ export default function KlantenContracten() {
             <Card>
               <CardContent className="space-y-4 pt-6">
                 <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-                  <Input placeholder="Zoek op naam, relatiecode, BAV- of Hiscox-nummer" value={zoek} onChange={(e) => setZoek(e.target.value)} className="w-full sm:w-64" aria-label="Zoeken" />
+                  <Input placeholder="Zoek op naam, Exact-relatiecode, BAV- of Hiscox-nummer" value={zoek} onChange={(e) => setZoek(e.target.value)} className="w-full sm:w-64" aria-label="Zoeken" />
                   <Select value={product} onValueChange={setProduct}>
                     <SelectTrigger className="min-h-10 w-full sm:w-52" aria-label="Product"><SelectValue /></SelectTrigger>
                     <SelectContent><SelectItem value="alle">Alle producten</SelectItem>
@@ -241,7 +241,7 @@ export default function KlantenContracten() {
                   <table className="w-full table-fixed text-sm min-w-[1200px]">
                     <colgroup><col className="w-[18%]" /><col className="w-[8%]" /><col className="w-[9%]" /><col className="w-[15%]" /><col className="w-[14%]" /><col className="w-[8%]" /><col className="w-[8%]" /><col className="w-[9%]" /><col className="w-[6%]" /><col className="w-[7%]" /></colgroup>
                     <thead><tr className="text-left text-muted-foreground">
-                      <th className="p-2 font-normal">Klant</th><th className="p-2 font-normal">Relatiecode</th><th className="p-2 font-normal">BAV-nummer</th><th className="p-2 font-normal">Contact</th><th className="p-2 font-normal">Contracten</th>
+                      <th className="p-2 font-normal">Klant</th><th className="p-2 font-normal">Exact-relatiecode</th><th className="p-2 font-normal">BAV-nummer</th><th className="p-2 font-normal">Contact</th><th className="p-2 font-normal">Contracten</th>
                       <th className="p-2 text-right font-normal">Per maand</th><th className="p-2 text-right font-normal">Per jaar</th><th className="p-2 font-normal">Volgende periode vanaf</th><th className="p-2 font-normal">Mandaat</th><th className="p-2 font-normal">Afwijking</th>
                     </tr></thead>
                     <tbody>{gefilterd.map((r) => (
