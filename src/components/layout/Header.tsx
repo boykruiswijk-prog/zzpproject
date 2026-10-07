@@ -239,7 +239,12 @@ export function Header() {
             transition={{ duration: 0.3 }}
             className="overflow-hidden border-t border-border bg-background xl:hidden"
           >
-            <nav className="container-wide py-4 flex flex-col gap-1">
+            <nav
+              className="container-wide py-4 flex flex-col gap-1 max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]"
+              style={{
+                paddingBottom: "calc(7rem + env(safe-area-inset-bottom))",
+              }}
+            >
             {navItems.map((item) => (
               item.children ? (
                 <div key={item.href}>
