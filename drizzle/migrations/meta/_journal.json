@@ -435,6 +435,13 @@
       "when": 1791368873817,
       "tag": "0061_koppel_kandidaten",
       "breakpoints": true
+    },
+    {
+      "idx": 62,
+      "version": "7",
+      "when": 1791368956755,
+      "tag": "0062_koppel_kandidaten_search_path",
+      "breakpoints": true
     }
   ]
 }
