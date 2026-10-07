@@ -118,16 +118,22 @@ export function faqSchema(items: FaqItem[]): JsonLd {
 
 type Pakket = (typeof bavPakketten)[number];
 
-/** Product + Offer voor één BAV-pakket. Prijs uitsluitend uit bavPakketten.ts. */
+/**
+ * Service + Offer voor één BAV-pakket. Prijs uitsluitend uit bavPakketten.ts.
+ * Bewust geen "Product": Google toetst Product aan verkooplijst-eisen (image,
+ * verzending, retour) die voor een verzekering niet gelden en dan FAIL geven.
+ */
 export function productSchema(pakket: Pakket): JsonLd {
   return {
     "@context": "https://schema.org",
-    "@type": "Product",
+    "@type": "Service",
+    serviceType: "Beroeps- en bedrijfsaansprakelijkheidsverzekering",
     name: pakket.name,
     description: `Beroeps- en bedrijfsaansprakelijkheidsverzekering voor zzp'ers${
       pakket.dekkingen.cyber ? " inclusief cyberdekking" : ""
     }. ${pakket.prijsLabel}.`,
-    brand: organizationRef(),
+    provider: organizationRef(),
+    areaServed: "NL",
     offers: {
       "@type": "Offer",
       priceCurrency: "EUR",
