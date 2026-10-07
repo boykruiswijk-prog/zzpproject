@@ -104,7 +104,7 @@ export async function haalKvkProfiel(admin: any, kvk: string, opts: { bron: stri
       .eq("ip_hash", opts.ip_hash).eq("uit_cache", false).gte("created_at", new Date(Date.now() - 36e5).toISOString());
     if ((count ?? 0) >= opts.limietPerUur) { await log("rate_limit"); return { ok: false, reden: "rate_limit", melding: "Te veel KVK-opvragingen, probeer het later opnieuw" }; }
   }
-  const sleutel = Deno.env.get("KVK_API_KEY");
+  const sleutel = (globalThis as any).Deno?.env.get("KVK_API_KEY");
   if (!sleutel) { await log("geen_sleutel"); return { ok: false, reden: "geen_sleutel", melding: KVK_NIET_BESCHIKBAAR }; }
 
   try {
