@@ -59,6 +59,25 @@
 
     <!-- Additional SEO -->
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <!-- Elke andere host dan zpzaken.nl: noindex en canonical naar https://zpzaken.nl/<pad>. -->
+    <script>
+      (function () {
+        var h = location.hostname;
+        if (h === "zpzaken.nl" || h === "localhost") return;
+        var set = function () {
+          var m = document.querySelectorAll('meta[name="robots"]');
+          if (!m.length) { var n = document.createElement("meta"); n.name = "robots"; document.head.appendChild(n); m = [n]; }
+          for (var i = 0; i < m.length; i++) if (m[i].getAttribute("content") !== "noindex, follow") m[i].setAttribute("content", "noindex, follow");
+          var c = document.querySelector('link[rel="canonical"]');
+          if (!c) { c = document.createElement("link"); c.rel = "canonical"; document.head.appendChild(c); }
+          var p = location.pathname === "/" ? "/" : location.pathname.replace(/\/$/, "");
+          if (c.getAttribute("href") !== "https://zpzaken.nl" + p) c.setAttribute("href", "https://zpzaken.nl" + p);
+        };
+        set();
+        document.addEventListener("DOMContentLoaded", set);
+        new MutationObserver(set).observe(document.head, { childList: true, subtree: true, attributes: true, attributeFilter: ["content", "href"] });
+      })();
+    </script>
     <meta name="geo.region" content="NL" />
     <meta name="geo.placename" content="Schiphol-Rijk" />
 

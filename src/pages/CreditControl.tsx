@@ -140,11 +140,11 @@ export default function CreditControl() {
 
   const schema = {
     "@context": "https://schema.org",
-    "@type": "Product",
+    "@type": "Service",
     name: "ZP Zaken CreditControl",
     description:
       "Een veilige, transparante en eerlijke oplossing voor eerder betalen én volledige zekerheid rondom betaling voor ZZP'ers.",
-    brand: { "@type": "Organization", name: "ZP Zaken", url: "https://zpzaken.nl" },
+    provider: { "@type": "Organization", name: "ZP Zaken", url: "https://zpzaken.nl" },
     url: "https://zpzaken.nl/creditcontrol",
   };
 

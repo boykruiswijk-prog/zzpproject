@@ -57,6 +57,12 @@ export function CTASection() {
             <MiniSocialProof variant="dark" className="justify-center" />
           </AnimatedSection>
 
+          <p className="mb-8 text-sm">
+            <LocalizedLink to="/starters" className="text-primary-foreground underline underline-offset-4">
+              Net begonnen als zzp'er? Bekijk het starterspakket
+            </LocalizedLink>
+          </p>
+
           <StaggerContainer className="flex flex-wrap items-center justify-center gap-6 text-primary-foreground/70 text-sm mb-8" staggerDelay={0.1}>
             {[t("home.gratisVrijblijvend"), t("home.binnen24uur"), t("home.marktleider")].map((text) => (
               <StaggerItem key={text}>
