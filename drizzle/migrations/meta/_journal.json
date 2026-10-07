@@ -477,6 +477,20 @@
       "when": 1791370408177,
       "tag": "0067_kvk_basisprofiel",
       "breakpoints": true
+    },
+    {
+      "idx": 68,
+      "version": "7",
+      "when": 1791393602159,
+      "tag": "0068_portaltoegang_contactpersoon",
+      "breakpoints": true
+    },
+    {
+      "idx": 69,
+      "version": "7",
+      "when": 1791393620895,
+      "tag": "0069_portaltoegang_verlenen_fix",
+      "breakpoints": true
     }
   ]
 }

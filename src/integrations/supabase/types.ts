@@ -4617,6 +4617,14 @@ export type Database = {
         Args: { _aanvraag_id: string; _onderneming_id: string }
         Returns: Json
       }
+      portaltoegang_verlenen: {
+        Args: {
+          _aanvraag_id: string
+          _portal_user_id: string
+          _user_created?: boolean
+        }
+        Returns: Json
+      }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {
