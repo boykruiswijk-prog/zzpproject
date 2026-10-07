@@ -3,10 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail } from "lucide-react";
 import { formatDateNL } from "@/lib/dateFormat";
+import { Link } from "react-router-dom";
+import { KoppelZoeker } from "@/components/admin/KoppelZoeker";
+import { KOPPELING_LABEL } from "@/components/admin/OpzeggingenKlant";
 
 export type ServiceAanvraag = {
   id: string;
-  type: "certificaat" | "pauzeren" | "documenten" | "opzeggen";
+  type: "certificaat" | "pauzeren" | "documenten" | "opzeggen" | "portaltoegang" | "factuur_opvragen";
   voornaam: string;
   achternaam: string;
   email: string;
@@ -19,7 +22,18 @@ export type ServiceAanvraag = {
   behandeld_op: string | null;
   created_at: string;
   geverifieerd?: boolean;
+  onderneming_id?: string | null;
+  koppeling_status?: string | null;
+  opzegging_verwerkt_op?: string | null;
 };
+
+/** Debiteurnummer uit het formulierveld of uit vrije tekst ("Debiteurnummer 2006364"). */
+export function debiteurnummerVan(a: Pick<ServiceAanvraag, "polisnummer" | "details">): string | null {
+  const d = a.details?.debiteurnummer ?? a.details?.relatiecode;
+  if (d) return String(d);
+  const tekst = [a.polisnummer, a.details?.toelichting, a.details?.opmerkingen].filter(Boolean).join(" ");
+  return tekst.match(/debiteur(?:en)?(?:nummer|nr)?\.?\s*:?\s*(\d{4,})/i)?.[1] ?? null;
+}
 
 export const SERVICE_TYPE_COLOR: Record<string, string> = {
   certificaat: "bg-blue-100 text-blue-800",
@@ -33,6 +47,8 @@ export const SERVICE_TYPE_LABEL: Record<string, string> = {
   pauzeren: "Pauzeren",
   documenten: "Documenten",
   opzeggen: "Opzeggen",
+  portaltoegang: "Portaltoegang",
+  factuur_opvragen: "Factuur opvragen",
 };
 
 export const SERVICE_STATUS_COLOR: Record<string, string> = {
@@ -46,7 +62,8 @@ interface Props {
   aanvraag: ServiceAanvraag;
   onSaveNotes: (id: string, notities: string) => void;
   onMarkAfgerond: (id: string) => void;
-  onResend: (aanvraag: ServiceAanvraag) => void;
+  onResend?: (aanvraag: ServiceAanvraag) => void;
+  onGekoppeld?: () => void;
 }
 
 export function ServiceAanvraagDetailHeader({ aanvraag }: { aanvraag: ServiceAanvraag }) {
@@ -60,9 +77,37 @@ export function ServiceAanvraagDetailHeader({ aanvraag }: { aanvraag: ServiceAan
   );
 }
 
-export function ServiceAanvraagDetail({ aanvraag, onSaveNotes, onMarkAfgerond, onResend }: Props) {
+export function ServiceAanvraagDetail({ aanvraag, onSaveNotes, onMarkAfgerond, onResend, onGekoppeld }: Props) {
+  const d = aanvraag.details ?? {};
+  const veld = (label: string, waarde: any) => (
+    <div className="min-w-0"><dt className="text-xs text-muted-foreground">{label}</dt><dd className="break-words">{waarde === null || waarde === undefined || waarde === "" ? "—" : String(waarde)}</dd></div>
+  );
+  const opzeg = aanvraag.type === "opzeggen";
   return (
     <div className="space-y-4 text-sm">
+      <div className="rounded-md border border-border p-3">
+        <p className="mb-2 font-medium">Formuliervelden</p>
+        <dl className="grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-2">
+          {veld("Naam", `${aanvraag.voornaam ?? ""} ${aanvraag.achternaam ?? ""}`.trim())}
+          {veld("Bedrijfsnaam", d.bedrijfsnaam)}
+          {veld("E-mail", aanvraag.email)}
+          {veld("Telefoon", aanvraag.telefoon)}
+          {veld("Polisnummer / BAV-nummer", aanvraag.polisnummer)}
+          {veld("Debiteurnummer (Exact-relatiecode)", debiteurnummerVan(aanvraag))}
+          {opzeg && veld("Opzegdatum", d.opzegdatum ? formatDateNL(d.opzegdatum) : null)}
+          {opzeg && veld("Reden", d.reden)}
+          {veld("Opmerkingen", d.toelichting ?? d.opmerkingen)}
+          {veld("Ontvangen op", formatDateNL(aanvraag.created_at))}
+          {opzeg && veld("Koppeling", KOPPELING_LABEL[aanvraag.koppeling_status ?? "niet_gekoppeld"] ?? aanvraag.koppeling_status)}
+          {aanvraag.onderneming_id && <div className="min-w-0"><dt className="text-xs text-muted-foreground">Gekoppelde klant</dt><dd><Link to={`/admin/klanten/${aanvraag.onderneming_id}`} className="text-primary hover:underline">Klant openen</Link></dd></div>}
+        </dl>
+      </div>
+      {(opzeg || aanvraag.type === "portaltoegang") && !aanvraag.opzegging_verwerkt_op && (
+        <div className="rounded-md border border-border p-3">
+          <p className="mb-2 font-medium">{opzeg ? "Koppelen aan klant" : "Mogelijke klant"}</p>
+          <KoppelZoeker aanvraagId={aanvraag.id} kanKoppelen={opzeg} onGekoppeld={onGekoppeld} />
+        </div>
+      )}
       <div className="grid grid-cols-2 gap-3">
         <div>
           <div className="text-muted-foreground">Datum</div>
@@ -110,10 +155,10 @@ export function ServiceAanvraagDetail({ aanvraag, onSaveNotes, onMarkAfgerond, o
         />
       </div>
       <div className="flex flex-col gap-2 pt-2 sm:flex-row">
-        <Button onClick={() => onResend(aanvraag)} variant="outline" className="min-h-10 w-full sm:w-auto">
+        {onResend && <Button onClick={() => onResend(aanvraag)} variant="outline" className="min-h-10 w-full sm:w-auto">
           <Mail className="h-4 w-4 mr-2" />
           Stuur notificatie opnieuw
-        </Button>
+        </Button>}
         <Button onClick={() => onMarkAfgerond(aanvraag.id)} variant="default" className="min-h-10 w-full sm:w-auto">
           Markeer als afgerond
         </Button>
