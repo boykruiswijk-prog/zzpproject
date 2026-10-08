@@ -392,6 +392,34 @@ Deno.serve(async (req) => {
     return json({ success: false, error: "testlead_geen_exact", reason: "Testlead: geen Exact-acties" }, 409);
   }
 
+  // ── Ontbrekende aanmelding (bv. door een fout na opslaan): alleen toevoegen vanuit de lead, nooit overschrijven ──
+  if (action === "activate" && lead.type === "verzekering_aanvraag" && ["maandelijks", "jaarlijks"].includes(String(lead.gekozen_pakket)) && lead.ingangsdatum) {
+    const { count } = await supabase.from("bav_aanmeldingen").select("id", { count: "exact", head: true }).eq("lead_id", leadId);
+    if ((count ?? 0) === 0) {
+      const maand = lead.gekozen_pakket === "maandelijks";
+      const starter = lead.tarief_type === "starter";
+      const jaar = starter ? (maand ? 540 : 495) : (maand ? 660 : 600);
+      // deno-lint-ignore no-explicit-any
+      const form: any[] = Array.isArray(lead.extra_data?.formulier) ? lead.extra_data.formulier : [];
+      const { error: herstelErr } = await supabase.from("bav_aanmeldingen").insert({
+        lead_id: leadId, voornaam: lead.voornaam ?? "", achternaam: lead.achternaam ?? "", email: String(lead.email ?? "").trim().toLowerCase(),
+        telefoon: lead.telefoon ?? null, bedrijfsnaam: lead.bedrijfsnaam ?? "", kvk_nummer: lead.kvk_nummer ?? null, beroep: lead.beroep ?? null,
+        sector: lead.extra_data?.sector ?? null, pakket: lead.gekozen_pakket, pakket_naam: maand ? "BAV & AVB Maandelijks" : "BAV & AVB Jaarlijks",
+        betaalwijze: lead.gekozen_pakket, ingangsdatum: lead.ingangsdatum, maandpremie: maand ? jaar / 12 : Math.round((jaar / 12) * 100) / 100,
+        jaarpremie: jaar, premiebedrag: maand ? jaar / 12 : jaar, iban: lead.iban ?? null,
+        rekeninghouder: form.find((f) => f?.label === "Rekeninghouder")?.waarde ?? null, is_test: !!lead.is_test,
+        kvk_startdatum: lead.kvk_startdatum ?? null, tarief_type: lead.tarief_type ?? "standaard", starter_tot: lead.starter_tot ?? null,
+      });
+      if (herstelErr) {
+        console.error("aanmelding herstel mislukt", herstelErr.message);
+        return json({ success: false, error: `Aanmeldgegevens ontbreken en konden niet automatisch worden hersteld (${herstelErr.message}). Meld dit aan Boy.`, reason: "aanmelding_ontbreekt" }, 409);
+      }
+      try {
+        await supabase.from("activiteiten_log").insert({ actie_type: "aanmelding_hersteld", omschrijving: "Ontbrekende aanmeldgegevens automatisch hersteld vanuit de lead bij activatie", uitgevoerd_door: user.id, uitgevoerd_door_naam: user.email ?? null, lead_id: leadId, is_test: !!lead.is_test });
+      } catch (_e) { /* logfout blokkeert niet */ }
+    }
+  }
+
   // ── Startertarief: eerst met de hand controleren (beoordeel_startertarief), dan pas Exact ──
   if ((action === "activate" || action === "retry_invoice") && starterStatus(lead) === "wacht") {
     return json({ success: false, error: "Startertarief eerst controleren (KVK-startdatum).", reason: "startertarief_niet_gecontroleerd" }, 409);
