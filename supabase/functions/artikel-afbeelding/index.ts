@@ -108,15 +108,16 @@ Deno.serve(async req => {
   return json({ ok: false, error: 'Artikelafbeelding niet verwerkt' }, 500);
  } finally {
   await admin.from('article_image_worker').update({ lease_id: null, lease_until: null }).eq('id',true).eq('lease_id',lease);
-  const { data: state } = await admin.from('article_image_worker').select('paused_reason,wake_token').eq('id',true).single();
+  const { data: state } = await admin.from('article_image_worker').select('wake_token').eq('id',true).single();
   const { count } = await admin.from('article_image_jobs').select('article_id', { count: 'exact', head: true }).eq('status','pending');
-  if (depth > 1 && count && state?.wake_token && !state.paused_reason) {
+  if (depth > 1 && count && state?.wake_token) {
    EdgeRuntime.waitUntil((async () => {
     await new Promise(resolve => setTimeout(resolve, 2000));
     const response = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/artikel-afbeelding`, {
      method: 'POST', headers: { 'Content-Type': 'application/json', 'x-article-wake-token': state.wake_token, 'x-article-depth': String(depth - 1) }, body: '{}'
     });
-    if (!response.ok) await admin.from('article_image_worker').update({ paused_reason: `Vervolgverwerking mislukt (${response.status})` }).eq('id',true);
+    // Geen pauze: de cron (elke 5 minuten) pakt resterend werk op.
+    if (!response.ok) console.error('[artikel-afbeelding] vervolgverwerking', response.status);
    })());
   }
  }
