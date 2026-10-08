@@ -18,7 +18,7 @@ export const ZEKER_KENNIS = {
       },
       "cyber": null,
       "usps": [
-        "Dagelijks opzegbaar",
+        "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt.",
         "Premie inclusief kosten en assurantiebelasting"
       ]
     },
@@ -39,7 +39,7 @@ export const ZEKER_KENNIS = {
       "cyber": null,
       "usps": [
         "Voordeligste optie",
-        "Dagelijks opzegbaar",
+        "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt.",
         "Premie inclusief kosten en assurantiebelasting"
       ]
     },
@@ -63,7 +63,7 @@ export const ZEKER_KENNIS = {
       },
       "usps": [
         "Inclusief cyberdekking",
-        "Dagelijks opzegbaar",
+        "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt.",
         "Premie inclusief kosten en assurantiebelasting"
       ]
     }
@@ -82,7 +82,7 @@ export const ZEKER_KENNIS = {
     {
       "path": "/verzekeringen",
       "title": "BAV + AVB voor ZZP'ers | Direct online afsluiten",
-      "intro": "De combinatiepolis van ZP Zaken bundelt beroepsaansprakelijkheid (BAV) en bedrijfsaansprakelijkheid (AVB) in één verzekering, vanaf € 55 per maand. Er is geen eigen risico en je kunt dagelijks opzeggen. Aanvragen doe je online in vijf stappen."
+      "intro": "ZP Zaken is de bedenker van de BAV + AVB in één polis voor zzp'ers. De combinatiepolis bundelt beroepsaansprakelijkheid (BAV) en bedrijfsaansprakelijkheid (AVB) in één verzekering, vanaf € 55 per maand. Er is geen eigen risico en je kunt dagelijks opzeggen. Aanvragen doe je online in vijf stappen."
     },
     {
       "path": "/aov",
@@ -121,7 +121,7 @@ export const ZEKER_KENNIS = {
     },
     {
       "path": "/kennisbank",
-      "title": "Kennisbank ZZP Verzekeringen | Artikelen & Nieuws | ZP Zaken",
+      "title": "Kennisbank voor zzp'ers: verzekeringen, belasting & wetgeving",
       "intro": "In de kennisbank van ZP Zaken vind je artikelen over de Wet DBA, aansprakelijkheid, belastingen, financiën en ondernemen als zelfstandige. De artikelen zijn geordend in vier categorieën, zodat je snel bij het juiste onderwerp bent."
     },
     {
@@ -145,9 +145,14 @@ export const ZEKER_KENNIS = {
       "intro": "Artikelen over cashflow, sparen, pensioen en financieel beheer voor zelfstandig professionals. Zo houd je zicht op je financiële toekomst."
     },
     {
+      "path": "/kennisbank/verzekeringen",
+      "title": "Verzekeringen voor zzp'ers | Kennisbank | ZP Zaken",
+      "intro": "Uitleg over aansprakelijkheid, AOV, cyberrisico's, zorgverzekering en wat verzekeringen voor zzp'ers kosten. Zo weet je welke dekking bij jouw werk past."
+    },
+    {
       "path": "/over-ons",
-      "title": "Over ons | Direct en onafhankelijk sinds 2014",
-      "intro": "ZP Zaken B.V. is in 2014 opgericht door Boy Kruiswijk en werkt vanuit Schiphol-Rijk voor zelfstandig professionals. Het kantoor staat geregistreerd bij de AFM onder 12050636 en is aangesloten bij Kifid onder 300.019283. Op deze pagina stelt het team zich voor."
+      "title": "Over ons | Direct en onafhankelijk, actief sinds 2013",
+      "intro": "ZP Zaken B.V. is actief sinds 2013 onder leiding van Boy Kruiswijk en werkt vanuit Schiphol-Rijk voor zelfstandig professionals. ZP Zaken bedacht de gecombineerde BAV + AVB voor zzp'ers en is sinds de oprichting marktleider. Het kantoor staat geregistreerd bij de AFM onder 12050636 en is aangesloten bij Kifid onder 300.019283. Op deze pagina stelt het team zich voor."
     },
     {
       "path": "/partners",
@@ -156,8 +161,8 @@ export const ZEKER_KENNIS = {
     },
     {
       "path": "/historie",
-      "title": "12 Jaar ZP Zaken | ZP Zaken",
-      "intro": "ZP Zaken bestaat sinds 2014 en groeide van startup tot vaste partner voor meer dan 5.000 zelfstandigen. De tijdlijn op deze pagina laat de belangrijkste stappen uit die periode zien."
+      "title": "13+ jaar ZP Zaken | ZP Zaken",
+      "intro": "ZP Zaken bestaat sinds 2013 en groeide van startup tot marktleider voor meer dan 5.000 zelfstandigen. ZP Zaken bedacht de gecombineerde BAV + AVB voor zzp'ers en is sinds de oprichting marktleider. De tijdlijn op deze pagina laat de belangrijkste stappen uit die periode zien."
     },
     {
       "path": "/contact",
@@ -178,6 +183,11 @@ export const ZEKER_KENNIS = {
       "path": "/algemene-voorwaarden",
       "title": "Algemene Voorwaarden | ZP Zaken",
       "intro": "De algemene voorwaarden van ZP Zaken B.V. zijn van toepassing op al onze dienstverlening. Op deze pagina lees je de volledige tekst."
+    },
+    {
+      "path": "/bav-zzp-vergelijken",
+      "title": "BAV zzp vergelijken 2026: prijs, dekking en eigen risico",
+      "intro": "Vergelijk een beroepsaansprakelijkheidsverzekering (BAV) nooit alleen op de laagste prijs. Kijk ook naar het verzekerd bedrag, het eigen risico, of de AVB erbij zit en hoe snel je kunt opzeggen. ZP Zaken biedt BAV en AVB in één polis via Hiscox, vanaf € 55 per maand, zonder eigen risico."
     },
     {
       "path": "/klachtenprocedure",
@@ -235,6 +245,41 @@ export const ZEKER_KENNIS = {
       "intro": "Als ICT-freelancer schrijf je code, implementeer je systemen of geef je advies. Een fout in je werk kan grote financiele gevolgen hebben voor je opdrachtgever. Beroepsaansprakelijkheidsverzekering (BAV) is in de ICT-sector bij veel opdrachtgevers verplicht en beschermt jou en je klant."
     },
     {
+      "path": "/zzp-verzekering-consultant",
+      "title": "BAV consultant zzp | Verzekering voor adviseurs",
+      "intro": "Als consultant neemt je opdrachtgever besluiten op basis van jouw advies. Een fout in je advies of rapport kan veel geld kosten. Een BAV en AVB in één polis beschermen je."
+    },
+    {
+      "path": "/zzp-verzekering-interim-manager",
+      "title": "Verzekering interim manager zzp | BAV en AVB",
+      "intro": "Als interim manager of projectmanager neem je besluiten en maak je planningen waar je opdrachtgever op vertrouwt. Een BAV en AVB in één polis beschermen je."
+    },
+    {
+      "path": "/zzp-verzekering-finance",
+      "title": "BAV zzp finance | Verzekering voor controllers",
+      "intro": "Als interim controller of CFO werk je met cijfers waar je opdrachtgever op stuurt. Een BAV en AVB in één polis beschermen je. Accountant met wettelijke taken of Wft-adviseur? Neem eerst contact op."
+    },
+    {
+      "path": "/starters",
+      "title": "Starterspakket BAV + AVB voor nieuwe zzp'ers | ZP Zaken",
+      "intro": "€ 45 per maand of € 495 per jaar, inclusief kosten en assurantiebelasting, de eerste 12 maanden; daarna € 55 per maand of € 600 per jaar. Voor zzp'ers met een KVK-inschrijving jonger dan 12 maanden."
+    },
+    {
+      "path": "/zzp-verzekering-hr",
+      "title": "BAV HR-adviseur zzp | Verzekering voor HR en P&O",
+      "intro": "Als HR-adviseur, recruiter of loopbaanadviseur werk je met mensen en contracten. Een BAV en AVB in één polis beschermen je bij een fout in je advies of selectie."
+    },
+    {
+      "path": "/zzp-verzekering-marketing",
+      "title": "BAV marketing zzp | Verzekering voor marketeers",
+      "intro": "Als marketeer, copywriter of designer maak je werk dat de wereld in gaat. Een BAV en AVB in één polis beschermen je bij een fout in je werk."
+    },
+    {
+      "path": "/zzp-verzekering-coach",
+      "title": "Beroepsaansprakelijkheidsverzekering coach | ZP Zaken",
+      "intro": "Als coach of trainer vertrouwt je klant op jouw begeleiding. Een BAV en AVB in één polis beschermen je. Therapeut of psycholoog? Dat valt onder zorg; neem contact op."
+    },
+    {
       "path": "/zzp-verzekering-zorg",
       "title": "ZZP Verzekering Zorg | BAV & AVB voor de zorg",
       "intro": "Als zorgprofessional werk je met kwetsbare mensen. Een fout of misverstand kan leiden tot schadeclaims. Beroepsaansprakelijkheidsverzekering geeft jou de vrijheid om je werk te doen zonder financieel risico."
@@ -264,7 +309,7 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Verzekeringen",
       "vraag": "Hoe snel kan ik een verzekering afsluiten?",
-      "antwoord": "Bij ZP Zaken kun je binnen 24 uur verzekerd zijn. Na het invullen van je gegevens ontvang je direct een offerte. Na akkoord wordt je polis dezelfde dag nog opgemaakt en ontvang je je polisblad per e-mail. In urgente gevallen kunnen we dezelfde dag nog dekking regelen."
+      "antwoord": "Je BAV + AVB is binnen 24 uur geregeld, certificaat in je mailbox. Werk je in de zorg of bouw? Binnen 24 uur hoor je van ons."
     },
     {
       "categorie": "Verzekeringen",
@@ -294,12 +339,17 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Mijn verzekering beheren",
       "vraag": "Hoe kan ik mijn verzekering opzeggen?",
-      "antwoord": "Je verzekering opzeggen kan dagelijks. Start de opzeg-wizard op /mijn-zp/opzeggen en geef de reden en gewenste opzegdatum op. Wij verwerken je opzegging binnen 24 uur en sturen je een bevestiging per mail."
+      "antwoord": "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt. Start de opzeg-wizard op /mijn-zp/opzeggen en geef de reden en gewenste opzegdatum op. Wij verwerken je opzegging binnen 24 uur en sturen je een bevestiging per mail."
     },
     {
       "categorie": "Mijn verzekering beheren",
       "vraag": "Hoe pauzeer ik mijn verzekering?",
-      "antwoord": "Heb je tijdelijk geen opdracht of ga je tijdelijk in loondienst? Dan kun je je verzekering eenvoudig pauzeren via de pauzeer-wizard op /mijn-zp/pauzeren. Wij verwerken je pauzering binnen 24 uur en jouw uitlooprisico blijft tijdens de pauze gewoon behouden."
+      "antwoord": "Heb je tijdelijk geen opdracht of ga je tijdelijk in loondienst? Dan kun je je verzekering eenvoudig pauzeren via de pauzeer-wizard op /mijn-zp/pauzeren. Wij verwerken je pauzering binnen 24 uur."
+    },
+    {
+      "categorie": "Mijn verzekering beheren",
+      "vraag": "Wat als ik tijdelijk geen opdracht heb?",
+      "antwoord": "Dan hoef je niet meteen je verzekering op te zeggen. Je kunt je verzekering pauzeren via Mijn ZP, en via onze zusteronderneming Onefellow, arbeidsbemiddelaar voor zelfstandige professionals, helpen we je zoeken naar een nieuwe opdracht. Bekijk de actuele opdrachten op onefellow.nl/opdrachten of meld je aan via onefellow.nl/registreren. Wil je toch opzeggen, dan kan dat dagelijks; let op dat je daarna niet meer verzekerd bent voor nieuwe claims."
     },
     {
       "categorie": "Mijn verzekering beheren",
@@ -313,8 +363,18 @@ export const ZEKER_KENNIS = {
     },
     {
       "categorie": "Mijn verzekering beheren",
-      "vraag": "Wat gebeurt er met mijn uitlooprisico als ik pauzeer?",
-      "antwoord": "Jouw uitlooprisico blijft tijdens een pauze gewoon behouden. Schades die voortvloeien uit werkzaamheden van vóór de pauze blijven gedekt. Je bent alleen niet verzekerd voor nieuwe werkzaamheden tijdens de pauze."
+      "vraag": "Wat gebeurt er als ik mijn verzekering pauzeer?",
+      "antwoord": "Tijdens de pauze ben je niet verzekerd voor nieuwe werkzaamheden. Heb je vragen over een claim voor eerder werk? Neem contact met ons op en raadpleeg de polisvoorwaarden."
+    },
+    {
+      "categorie": "Mijn verzekering beheren",
+      "vraag": "Kan ik mijn KvK-nummer wijzigen?",
+      "antwoord": "Nee. Je BAV en AVB zijn afgegeven op je onderneming met het KvK-nummer uit je aanvraag. Het risico en de polis horen bij dat KvK-nummer. Krijg je een nieuw KvK-nummer, bijvoorbeeld omdat je van eenmanszaak naar bv gaat of een nieuwe onderneming start? Dan vraag je een nieuwe verzekering aan voor je nieuwe onderneming. Je huidige verzekering is dagelijks opzegbaar: we stoppen je oude polis per de dag voordat de nieuwe ingaat, zodat je doorlopend verzekerd bent en niet dubbel betaalt. Je adres, e-mailadres of telefoonnummer wijzigen kan wel gewoon door contact met ons op te nemen."
+    },
+    {
+      "categorie": "Mijn verzekering beheren",
+      "vraag": "Ik ga van eenmanszaak naar bv. Wat moet ik doen?",
+      "antwoord": "Een bv krijgt een eigen KvK-nummer en is daarmee een nieuwe onderneming. Vraag voor je bv een nieuwe BAV en AVB aan en geef de startdatum van je bv op. Wij zorgen dat je oude polis stopt op de dag voordat de nieuwe ingaat. Zo zit er geen gat in je dekking en betaal je niet dubbel."
     },
     {
       "categorie": "Onze verzekering",
@@ -344,7 +404,7 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Onze verzekering",
       "vraag": "Hoe lang zit ik aan deze verzekering vast?",
-      "antwoord": "Onze verzekeringen zijn dagelijks opzegbaar. Geen jaarcontract, geen verborgen voorwaarden."
+      "antwoord": "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt. Geen minimale looptijd en geen opzegtermijn."
     },
     {
       "categorie": "Onze verzekering",
@@ -359,7 +419,7 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Onze verzekering",
       "vraag": "Mijn bedrijfsgegevens veranderen, hoe geef ik dat door?",
-      "antwoord": "Mail je nieuwe gegevens naar info@zpzaken.nl met je polisnummer. Wij werken je polis binnen 24 uur bij."
+      "antwoord": "Geef een nieuw adres, een nieuwe bedrijfsnaam of nieuwe contactgegevens door via info@zpzaken.nl met je polisnummer. Wij werken je gegevens binnen 24 uur bij. Verandert je KvK-nummer, bijvoorbeeld omdat je van eenmanszaak naar bv gaat? Dan is een nieuwe aanvraag nodig, omdat de polis bij het KvK-nummer hoort."
     },
     {
       "categorie": "Onze verzekering",
