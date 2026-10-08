@@ -1,6 +1,7 @@
 # Roadmap
 
-- [ ] Gevarieerde AI-artikelbeelden, categorie-terugval, acht vervangingen en visuele controle (niet publiceren)
+- [x] AI-artikelgenerator, categorie-terugval, vijf vervangingen en vier visuele controles (niet publiceren)
+- [ ] Drie resterende artikelbeelden vervangen: AI-beeldkeuring geweigerd, wachtrij gepauzeerd
 
 - [x] Beheerpunten Ellen (1-6)
 - [x] Mijn ZP a) neutrale logintekst, portaltoegang-aanvraag, rate limit
