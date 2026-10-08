@@ -9,6 +9,12 @@ export const CYBER_POLISVOORWAARDEN = "Wat precies gedekt is, lees je in de poli
 export const CYBER_INTERNE_JAARLIMIET = "Interne informatie: de gedeelde jaarlimiet voor alle deelnemers aan het ZP Zaken Cyber Collectief is €2.500.000.";
 export const CYBER_LOOPTIJD = "Cyber heeft een vaste looptijd van 12 maanden en wordt daarna stilzwijgend met 12 maanden verlengd. Opzeggen kan tegen het einde van de looptijd. Cyber is niet dagelijks opzegbaar en niet pauzeerbaar. Bij maandbetaling betaal je het jaarcontract in 12 termijnen van €27,50. Zeg je de BAV + AVB op, dan loopt cyber door tot het einde van het lopende cyberjaar en blijven de resterende cybertermijnen verschuldigd.";
 export const CYBER_AFGEWEZEN = "Cyberdekking past op dit moment niet bij jouw situatie. Je BAV + AVB sluit je gewoon af; Ellen neemt contact op over een passende oplossing.";
+export function formatPremieBedrag(bedrag: number) {
+  return bedrag.toLocaleString("nl-NL", {
+    minimumFractionDigits: Number.isInteger(bedrag) ? 0 : 2,
+    maximumFractionDigits: 2,
+  });
+}
 export const CYBER_VRAGEN = [
   { id: "a", afwijzenBij: true, tekst: "Werk je in een van deze sectoren: financiële instelling, advies of bemiddeling in financiële producten, betalingsverwerking, sociale media/sociale netwerken, kredietbeoordeling (rating), kansspelen, seksbranche, logistiek of opslag/koeriersdienst, gemeente, of lever je diensten als managed service provider (je beheert de IT-omgeving van klanten)?" },
   { id: "b", afwijzenBij: false, tekst: "Heb je een actief antivirusprogramma van een bekende leverancier op al je apparaten (ook Apple)?" },

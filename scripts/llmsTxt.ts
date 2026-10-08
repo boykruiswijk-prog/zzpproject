@@ -1,4 +1,4 @@
-import { CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER_LOOPTIJD } from "../supabase/functions/_shared/cyber";
+import { CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER_LOOPTIJD, formatPremieBedrag } from "../supabase/functions/_shared/cyber";
 // Genereert llms.txt en llms-full.txt tijdens de prerender. Alleen feiten die
 // al op de site staan: bedrijfsgegevens uit site.ts, premies en dekkingen uit
 // bavPakketten.ts, pagina's uit seoRoutes.ts en vragen uit faqItems.ts.
@@ -15,8 +15,9 @@ interface LlmsArticle {
   seo_description: string | null;
 }
 
-const eur = (n: number) => `€ ${n.toLocaleString("nl-NL")}`;
+const eur = (n: number) => `€ ${formatPremieBedrag(n)}`;
 const oneLine = (s: string) => s.replace(/\s+/g, " ").trim();
+const metPunt = (s: string) => /[.!?:]$/.test(s.trim()) ? s.trim() : `${s.trim()}.`;
 
 /** Geldbelangrijke pagina's eerst; overige publieke routes daarna. */
 const KERN = [
@@ -77,14 +78,17 @@ export function buildLlmsFullTxt(routes: SeoRoute[]): string {
   const lines = [...intro(), "## Producten", ""];
   for (const p of bavPakketten) {
     const d = p.dekkingen;
+    const cyberRegels = d.cyber ? [CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD, CYBER_POLISVOORWAARDEN] : [];
+    const productRegels = [...cyberRegels, ...p.usps]
+      .filter((regel, index, regels) => regels.indexOf(regel) === index)
+      .map((regel) => `- ${metPunt(regel)}`);
     lines.push(
       `### ${p.name}`,
       "",
       `- Premie: ${p.prijsLabel} (inclusief kosten en assurantiebelasting).`,
       `- Beroepsaansprakelijkheid (BAV): ${eur(d.bav.perGebeurtenis)} per aanspraak, ${eur(d.bav.perJaar)} per jaar.`,
       `- Bedrijfsaansprakelijkheid (AVB): ${eur(d.avb.perGebeurtenis)} per aanspraak, ${eur(d.avb.perJaar)} per jaar.`,
-      ...(d.cyber ? [`- ${CYBER_DEKKING}`, `- ${CYBER_HULP}`, `- ${CYBER_LOOPTIJD}`, `- ${CYBER_POLISVOORWAARDEN}`] : []),
-      ...p.usps.map((u) => `- ${u}.`),
+      ...productRegels,
       "- Voor: zzp'ers en zelfstandig professionals in Nederland.",
       `- Meer informatie: ${SITE_CONFIG.url}/verzekeringen`,
       "",

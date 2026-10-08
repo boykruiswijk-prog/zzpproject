@@ -1,4 +1,4 @@
-import { CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN } from "../../../supabase/functions/_shared/cyber";
+import { CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, formatPremieBedrag } from "../../../supabase/functions/_shared/cyber";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Shield, ArrowRight } from "lucide-react";
@@ -71,7 +71,7 @@ export function CombiPackageSection() {
 
                   <div className="mb-5">
                     <p className="text-3xl font-bold text-foreground whitespace-nowrap">
-                      €{pkg.prijs.toLocaleString("nl-NL")}
+                      €{formatPremieBedrag(pkg.prijs)}
                       <span className="text-sm font-normal text-muted-foreground">
                         {" "}/ {pkg.periode}
                       </span>
