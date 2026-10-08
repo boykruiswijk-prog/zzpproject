@@ -167,8 +167,18 @@ Deno.serve(async (req) => {
       : null;
     if (machtigingFout) return weiger(400, machtigingFout, "validatie_machtiging");
 
+    // Herhaalde aanvraag (zelfde e-mail, laatste 24 uur): nooit blokkeren door de IP-limiet,
+    // wel als nieuwe aanvraag vastleggen met verwijzing naar de vorige (niets overschrijven).
+    const { data: vorige } = await supabase.from("leads").select("id")
+      .eq("type", "verzekering_aanvraag").ilike("email", submission.email.trim())
+      .gte("created_at", new Date(Date.now() - 86_400_000).toISOString())
+      .order("created_at", { ascending: false }).limit(1);
+    const vorigeLeadId: string | null = vorige?.[0]?.id ?? null;
+    if (vorigeLeadId) console.log(`process-bav-wizard: herhaalde aanvraag, vorige lead ${vorigeLeadId}`);
+
     // Anti-spam: honeypot, invultijd en IP-limiet.
     const guard = await guardPublicSubmission(req, supabase, {
+      throttle: !vorigeLeadId,
       hp: (submission as unknown as Record<string, unknown>).hp,
       ms: (submission as unknown as Record<string, unknown>).ms,
       kind: "bav",
@@ -311,6 +321,7 @@ Deno.serve(async (req) => {
                 .slice(0, 10)
             : [],
           documenten_bevestigd_op: bewijs.akkoord_op,
+          ...(vorigeLeadId ? { herhaalde_aanvraag_van: vorigeLeadId } : {}),
         },
       })
       .select()
