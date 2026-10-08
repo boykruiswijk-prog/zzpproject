@@ -131,7 +131,7 @@ export function ServiceAanvraagDetail({ aanvraag, onSaveNotes, onMarkAfgerond, o
           <div>{aanvraag.telefoon}</div>
         </div>
         <div className="col-span-2">
-          <div className="text-muted-foreground">Polisnummer</div>
+          <div className="text-muted-foreground">BAV-nummer (opgegeven door klant)</div>
           <div className="font-mono">{aanvraag.polisnummer}</div>
         </div>
       </div>

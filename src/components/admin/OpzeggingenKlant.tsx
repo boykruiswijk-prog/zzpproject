@@ -132,7 +132,7 @@ export function OpzeggingenKlant({ ondernemingId, contracten, onGewijzigd }: { o
                   {a.details?.bedrijfsnaam && <div><dt className="text-xs text-muted-foreground">Bedrijfsnaam</dt><dd>{a.details.bedrijfsnaam}</dd></div>}
                   <div><dt className="text-xs text-muted-foreground">E-mail</dt><dd><a className="text-primary hover:underline" href={`mailto:${a.email}`}>{a.email}</a></dd></div>
                   <div><dt className="text-xs text-muted-foreground">Telefoon</dt><dd>{a.telefoon ? <a className="text-primary hover:underline" href={`tel:${a.telefoon}`}>{a.telefoon}</a> : "—"}</dd></div>
-                  <div><dt className="text-xs text-muted-foreground">Polisnummer</dt><dd>{a.polisnummer || "—"}</dd></div>
+                  <div><dt className="text-xs text-muted-foreground">BAV-nummer (opgegeven door klant)</dt><dd>{a.polisnummer || "—"}</dd></div>
                   <div><dt className="text-xs text-muted-foreground">Opzegdatum</dt><dd>{formatDateNL(a.details?.opzegdatum)}</dd></div>
                   <div><dt className="text-xs text-muted-foreground">Reden</dt><dd>{a.details?.reden || "—"}</dd></div>
                   <div><dt className="text-xs text-muted-foreground">Ontvangen op</dt><dd>{formatDateNL(a.created_at)}</dd></div>
