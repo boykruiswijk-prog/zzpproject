@@ -24,7 +24,9 @@ const corsHeaders = {
 import { CYBER_VERSIE, CYBER_AKKOORD, CYBER_DEKKING, CYBER_HULP, CYBER_DETAILS, CYBER_LOOPTIJD, CYBER_AFGEWEZEN, beoordeelCyber, basisPakket, isCyberPakket, aanvraagPremie, cyberJaarEind } from "../_shared/cyber.ts";
 const PAKKET_CONFIG = Object.fromEntries(["maandelijks", "jaarlijks", "jaarlijks-cyber", "maandelijks-cyber"].map(id => {
   const p = aanvraagPremie(id, false);
-  return [id, { naam: `BAV & AVB ${p.maand ? "Maandelijks" : "Jaarlijks"}${p.cyber ? " + Cyber" : ""}`, prijs: p.totaal, betaalwijze: p.maand ? "maandelijks" as const : "jaarlijks" as const, maandprijs: p.maand ? p.totaal : Math.round(p.totaal / 12 * 100) / 100, jaarprijs: p.maand ? p.totaal * 12 : p.totaal, dekking: `BAV €5.000.000 / AVB €2.500.000 per aanspraak${p.cyber ? `; ${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_DETAILS}` : ""}` }];
+  const bavAvbDekking = "BAV €5.000.000 / AVB €2.500.000 per aanspraak";
+  const cyberDekking = p.cyber ? `; ${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_DETAILS}` : "";
+  return [id, { naam: `BAV & AVB ${p.maand ? "Maandelijks" : "Jaarlijks"}${p.cyber ? " + Cyber" : ""}`, prijs: p.totaal, betaalwijze: p.maand ? "maandelijks" as const : "jaarlijks" as const, maandprijs: p.maand ? p.totaal : Math.round(p.totaal / 12 * 100) / 100, jaarprijs: p.maand ? p.totaal * 12 : p.totaal, dekking: `${bavAvbDekking}${cyberDekking}` }];
 }));
 
 interface BavSubmission {
