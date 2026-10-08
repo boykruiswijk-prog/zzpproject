@@ -23,7 +23,7 @@ import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
 import { resolveFiscaleTokens } from "@/lib/fiscaleTokens";
 import { SITE_CONFIG } from "@/config/site";
 import NotFound from "@/pages/NotFound";
-import { articleImage, absoluteArticleImage, isGeneratedArticleImage } from "@/lib/articleImage";
+import { articleImage, absoluteArticleImage, absoluteArticleOgImage, isGeneratedArticleImage } from "@/lib/articleImage";
 import { ArticleImage } from "@/components/kennisbank/ArticleImage";
 
 const BAV_AVB_SLUG = "zp-zaken-zorgeloos-zzpen-goedkoopste-bav-avb";
@@ -231,7 +231,7 @@ export default function ArtikelDetail() {
   const articleUrl = `https://zpzaken.nl/kennisbank/${article.slug}`;
   const wordCount = countWords(article.content);
   const gegenereerd = isGeneratedArticleImage(article);
-  const ogImage = absoluteArticleImage(article);
+  const ogImage = absoluteArticleOgImage(article);
   const metaDescription = article.seo_description || makeFallbackDescription(article.content, article.excerpt);
   const seoTitle = article.seo_title || article.title;
   // Eén merknaam achteraan, max 60 tekens; zie formatPageTitle.
@@ -246,7 +246,7 @@ export default function ArtikelDetail() {
     // Inhoudelijke controledatum; een cosmetische wijziging (updated_at) mag
     // niet als inhoudelijke update aan Google worden gemeld.
     dateModified: (article as any).content_reviewed_at || publishedAt,
-    image: ogImage,
+    image: absoluteArticleImage(article),
     category: article.category,
     wordCount,
   });

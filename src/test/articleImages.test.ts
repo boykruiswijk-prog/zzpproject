@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
-import { articleImage, absoluteArticleImage } from "../lib/articleImage";
+import { articleImage, absoluteArticleImage, absoluteArticleOgImage } from "../lib/articleImage";
 import { renderArticleImage } from "../../scripts/articleImages";
 import { buildHtml } from "../../scripts/prerender";
 import { articleSchema } from "../lib/schema";
@@ -12,6 +12,12 @@ describe("automatische artikelafbeeldingen", () => {
   it("behoudt bestaande afbeeldingen en maakt fallback-URLs absoluut", () => {
     expect(articleImage({ ...article, image_url: "/bestaand.png" })).toBe("/bestaand.png");
     expect(absoluteArticleImage(article)).toBe("https://zpzaken.nl/images/kennisbank/opdrachtgever-eist-bav.png");
+  });
+  it("scheidt de AI-illustratie van het bijbehorende deelbeeld", () => {
+    const image_url = "https://example.org/article-images/generated/test-illustration.png";
+    expect(articleImage({ ...article, image_url })).toBe(image_url);
+    expect(absoluteArticleOgImage({ ...article, image_url })).toBe(image_url.replace('-illustration.png', '-og.png'));
+    expect(absoluteArticleOgImage({ ...article, image_url: '/eigen.png' })).toBe('https://zpzaken.nl/eigen.png');
   });
   it("rendert een echte PNG van 1200x630, ook voor lange titels", async () => {
     for (const title of [article.title, "Een lange titel met veel woorden ".repeat(20)]) {
