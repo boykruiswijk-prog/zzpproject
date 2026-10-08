@@ -129,8 +129,7 @@ function KandidaatKaart({ leadId, k, eigenOnd, magBeslissen }: { leadId: string;
             <Button size="sm" disabled={bezig} onClick={certificaatBijwerken}>Certificaat bijwerken naar {k.beslissing.bav_nummer}</Button>
           </div>
         )}
-        {k.beslissing ? null
-        ) : k.partner ? (
+        {k.beslissing ? null : k.partner ? (
           <p className="rounded-md bg-muted p-2">Via partner {k.partner}, nieuw nummer. Het BAV-nummer van de voorganger wordt niet overgenomen.</p>
         ) : !magBeslissen ? (
           <p className="text-muted-foreground">Een collega met de rol verzekering, supervisor of admin beslist hierover.</p>
