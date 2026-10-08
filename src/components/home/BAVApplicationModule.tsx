@@ -415,6 +415,12 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
            setExistingCustomerOpen(true);
            return;
          }
+         if (ctx?.status === 429 || ctx?.status === 400) {
+           let melding = "";
+           try { melding = (await ctx.clone().json())?.error ?? ""; } catch { /* geen body */ }
+           toast({ title: "Aanvraag niet verstuurd", description: `${melding || "Controleer je gegevens."} Bel gerust 020 - 457 3077.`, variant: "destructive" });
+           return;
+         }
          if (ctx?.status === 503) {
            toast({ title: "Aanmelden tijdelijk niet mogelijk", description: "Aanmelden is tijdelijk niet mogelijk, bel 020 - 457 3077", variant: "destructive" });
            return;

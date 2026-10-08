@@ -170,7 +170,7 @@ Deno.serve(async (req) => {
     // Herhaalde aanvraag (zelfde e-mail, laatste 24 uur): nooit blokkeren door de IP-limiet,
     // wel als nieuwe aanvraag vastleggen met verwijzing naar de vorige (niets overschrijven).
     const { data: vorige } = await supabase.from("leads").select("id")
-      .eq("type", "verzekering_aanvraag").ilike("email", submission.email.trim())
+      .eq("type", "verzekering_aanvraag").ilike("email", submission.email.trim().replace(/[\\%_]/g, (c) => `\\${c}`))
       .gte("created_at", new Date(Date.now() - 86_400_000).toISOString())
       .order("created_at", { ascending: false }).limit(1);
     const vorigeLeadId: string | null = vorige?.[0]?.id ?? null;
