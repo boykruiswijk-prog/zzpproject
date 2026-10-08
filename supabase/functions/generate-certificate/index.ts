@@ -129,8 +129,7 @@ serve(async (req) => {
           oude_pdf_pad: bestaand.pdf_url, uitgevoerd_door: user.id, uitgevoerd_door_email: user.email,
         });
         return json({ success: true, verzonden_naar: r.to, opmerking: r.opmerking });
-      }
-
+      } else {
       // aanpassen: oude PDF als versie bewaren, waarden bijwerken, zelfde nummer opnieuw renderen
       const wijz = schoonAanpassing(body.wijzigingen || {});
       let oudePdfPad: string | null = null;
@@ -157,6 +156,7 @@ serve(async (req) => {
       } else if (bestaand.onderneming_id) {
         const { data: o } = await adminClient.from("ondernemingen").select("kvk").eq("id", bestaand.onderneming_id).maybeSingle();
         kvkNummerBron = o?.kvk ?? null;
+      }
       }
     } else if (body.onderneming_id) {
       // Bestaande klant (geïmporteerd, zonder lead): eigen nummer hergebruiken.
