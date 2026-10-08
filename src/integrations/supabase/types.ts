@@ -4821,8 +4821,16 @@ export type Database = {
         Returns: Json
       }
       onderneming_is_partner: { Args: { _ond: string }; Returns: string }
+      overgenomen_certificaatnummer: {
+        Args: { _lead_id: string }
+        Returns: string
+      }
       plan_opzeg_credit: {
         Args: { _aanvraag_id: string; _contract_id: string; _einddatum: string }
+        Returns: Json
+      }
+      policy_nummer_overnemen: {
+        Args: { _oude_pdf_pad: string; _policy_id: string }
         Returns: Json
       }
       portal_factuur_opvragen: {
