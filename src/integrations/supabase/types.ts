@@ -247,18 +247,21 @@ export type Database = {
           lease_id: string | null
           lease_until: string | null
           paused_reason: string | null
+          wake_token: string
         }
         Insert: {
           id?: boolean
           lease_id?: string | null
           lease_until?: string | null
           paused_reason?: string | null
+          wake_token?: string
         }
         Update: {
           id?: boolean
           lease_id?: string | null
           lease_until?: string | null
           paused_reason?: string | null
+          wake_token?: string
         }
         Relationships: []
       }

@@ -505,6 +505,13 @@
       "when": 1791452299028,
       "tag": "0071_article_image_ai_jobs",
       "breakpoints": true
+    },
+    {
+      "idx": 72,
+      "version": "7",
+      "when": 1791452557355,
+      "tag": "0072_article_image_authenticated_wakeup",
+      "breakpoints": true
     }
   ]
 }
