@@ -422,7 +422,7 @@ Deno.serve(async (req) => {
 
   // ── Startertarief: eerst met de hand controleren (beoordeel_startertarief), dan pas Exact ──
   if ((action === "activate" || action === "retry_invoice") && starterStatus(lead) === "wacht") {
-    return json({ success: false, error: "Startertarief eerst controleren (KVK-startdatum).", reason: "startertarief_niet_gecontroleerd" }, 409);
+    return json({ success: false, error: "Eerst het startertarief beoordelen: kies op de leadpagina "Startertarief goedkeuren" of "Afwijzen, normaal tarief". Daarna kun je activeren.", reason: "startertarief_niet_gecontroleerd" }, 409);
   }
 
   // ── Handmatige acceptatie (zorg/bouw): alleen activeren na bewuste bevestiging ──
