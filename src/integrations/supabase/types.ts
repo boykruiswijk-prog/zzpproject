@@ -4767,6 +4767,7 @@ export type Database = {
       }
       nextval_text: { Args: { seq_name: string }; Returns: string }
       omzetting_kandidaten: { Args: { _lead_id: string }; Returns: Json }
+      omzetting_leidend_bav: { Args: { _van: string }; Returns: Json }
       omzetting_vastleggen: {
         Args: {
           _bav_nummer: string

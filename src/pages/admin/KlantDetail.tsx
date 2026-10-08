@@ -92,7 +92,7 @@ export default function KlantDetail() {
               <Card><CardHeader><CardTitle className="text-base">Leads</CardTitle></CardHeader><CardContent className="text-sm">
                 {leadMatch.length === 0 ? <p className="text-muted-foreground">Geen leads gekoppeld.</p> :
                   leadMatch.map((l) => <Link key={l.id} to={`/admin/leads/${l.id}`} className="block truncate font-medium hover:text-primary">{l.voornaam} {l.achternaam}</Link>)}
-                <p className="mt-2 text-xs text-muted-foreground">Via contactpersonen of relatiecode; alleen ter informatie.</p>
+                <p className="mt-2 text-xs text-muted-foreground">Via contactpersonen of Exact-relatiecode; alleen ter informatie.</p>
               </CardContent></Card>
             </div>
             <LopendeProducten ondernemingId={ond.id} ondernemingNaam={ond.naam} leadIds={leadMatch.map((l) => l.id)} onGewijzigd={() => setHerlaad((x) => x + 1)} />

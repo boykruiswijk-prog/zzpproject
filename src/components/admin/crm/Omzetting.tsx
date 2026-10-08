@@ -50,17 +50,22 @@ export function OmzettingKaart({ leadId, magBeslissen }: { leadId: string; magBe
 
 function KandidaatKaart({ leadId, k, eigenOnd, magBeslissen }: { leadId: string; k: Kandidaat; eigenOnd: string | null; magBeslissen: boolean }) {
   const qc = useQueryClient();
-  const [nummer, setNummer] = useState("");
+  const { data: leidend } = useQuery({
+    queryKey: ["omzetting-leidend-bav", k.onderneming_id],
+    queryFn: async () => ((await (supabase.rpc as any)("omzetting_leidend_bav", { _van: k.onderneming_id })).data ?? null) as BavOptie | null,
+  });
+  const nummer = leidend?.nummer ?? "";
+  const overige = k.bav_nummers.filter((b) => b.nummer !== nummer && b.bron !== "overgenomen");
   const [toelichting, setToelichting] = useState("");
   const [bezig, setBezig] = useState(false);
-  const voorstelNummer = k.bav_nummers.map((b) => b.nummer).join(" of ") || "onbekend";
+  const voorstelNummer = nummer || "onbekend";
 
   async function kies(keuze: "omzetting" | "nieuwe_klant") {
     setBezig(true);
     const { error } = await (supabase.rpc as any)("omzetting_vastleggen", { _lead_id: leadId, _van: k.onderneming_id, _keuze: keuze, _bav_nummer: keuze === "omzetting" ? nummer : null, _toelichting: toelichting });
     setBezig(false);
     if (error) { toast.error(error.message); return; }
-    toast.success(keuze === "omzetting" ? `Omzetting vastgelegd, BAV-nummer ${nummer} overgenomen` : "Vastgelegd als nieuwe klant");
+    toast.success(keuze === "omzetting" ? `Omzetting vastgelegd, leidend BAV-nummer ${nummer}` : "Vastgelegd als nieuwe klant");
     qc.invalidateQueries({ queryKey: ["omzetting-kandidaten", leadId] });
     qc.invalidateQueries({ queryKey: ["bav-nummers"] });
   }
@@ -95,17 +100,13 @@ function KandidaatKaart({ leadId, k, eigenOnd, magBeslissen }: { leadId: string;
         ) : (
           <div className="space-y-2">
             {!eigenOnd && <p className="text-xs text-amber-700">De nieuwe onderneming staat nog niet in het CRM; omzetting kan pas daarna.</p>}
-            <Label>Kies het BAV-nummer dat de nieuwe onderneming houdt</Label>
-            <div className="space-y-1">
-              {k.bav_nummers.map((b) => (
-                <label key={b.nummer + b.bron} className={`flex cursor-pointer items-start gap-2 rounded border p-2 ${nummer === b.nummer ? "border-primary" : "border-border"}`}>
-                  <input type="radio" name={`bav-${k.onderneming_id}`} checked={nummer === b.nummer} onChange={() => setNummer(b.nummer)} className="mt-1" />
-                  <span><span className="font-medium tabular-nums">{b.nummer}</span> <span className="text-xs text-muted-foreground">{HERKOMST[b.bron] ?? b.bron}{b.datum ? `, ${formatDateNL(b.datum)}` : ""}</span></span>
-                </label>
-              ))}
+            <div className="rounded border border-primary p-2">
+              <p>Leidend BAV-nummer (initieel, oudste): <span className="font-medium tabular-nums">{nummer || "onbekend"}</span>{leidend && <span className="text-xs text-muted-foreground"> {HERKOMST[leidend.bron] ?? leidend.bron}{leidend.datum ? `, sinds ${formatDateNL(leidend.datum)}` : ""}</span>}</p>
+              {overige.length > 0 && <p className="mt-1 text-xs text-muted-foreground">Gaat ook mee en blijft zichtbaar: {overige.map((b) => `${b.nummer} (${HERKOMST[b.bron] ?? b.bron}${b.datum ? `, ${formatDateNL(b.datum)}` : ""})`).join(", ")}</p>}
+              <p className="mt-1 text-xs text-muted-foreground">De BV houdt dezelfde BAV-nummers; er komt geen nieuw nummer.</p>
             </div>
             <div><Label>Toelichting (optioneel)</Label><Textarea rows={2} value={toelichting} onChange={(e) => setToelichting(e.target.value)} /></div>
-            <p className="text-xs text-muted-foreground">Startertarief blijft bij omzetting standaard aan; afwijzen kan in de startertarief-beoordeling. Exact: de nieuwe onderneming wordt een nieuwe debiteur via de gewone activatie.</p>
+            <p className="text-xs text-muted-foreground">Startertarief blijft bij omzetting standaard aan; afwijzen kan in de startertarief-beoordeling. Exact: de BV is een eigen debiteur met een eigen Exact-relatiecode uit de Exact-koppeling (via de gewone activatie); de Exact-relatiecode van de voorganger ({k.exact_relatie_code ?? "onbekend"}) wordt niet overgenomen.</p>
             <div className="flex flex-wrap gap-2">
               <Button size="sm" disabled={bezig || !nummer || !eigenOnd} onClick={() => kies("omzetting")}>{bezig && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Omzetting: BAV-nummer en historie overnemen</Button>
               <Button size="sm" variant="outline" disabled={bezig} onClick={() => kies("nieuwe_klant")}>Nieuwe klant</Button>
@@ -125,12 +126,12 @@ export function RechtsvoorgangerBanner({ ondernemingId, herlaad = 0 }: { onderne
       const { data } = await (supabase.from as any)("onderneming_opvolging").select("van_onderneming_id,ingangsdatum,bav_nummer,bav_nummer_herkomst").eq("naar_onderneming_id", ondernemingId);
       const rijen = (data ?? []) as any[];
       if (!rijen.length) return [];
-      const { data: onds } = await supabase.from("ondernemingen").select("id,naam,created_at").in("id", rijen.map((r) => r.van_onderneming_id));
+      const { data: onds } = await supabase.from("ondernemingen").select("id,naam,created_at,exact_relatie_code").in("id", rijen.map((r) => r.van_onderneming_id));
       const { data: kc } = await supabase.from("klant_contracten").select("onderneming_id,begin_datum").in("onderneming_id", rijen.map((r) => r.van_onderneming_id));
       return rijen.map((r) => {
         const o = (onds ?? []).find((x) => x.id === r.van_onderneming_id);
         const data = [o?.created_at?.slice(0, 10), ...(kc ?? []).filter((c) => c.onderneming_id === r.van_onderneming_id).map((c) => c.begin_datum)].filter(Boolean).sort();
-        return { ...r, naam: o?.naam ?? "onbekend", sinds: data[0] ?? null };
+        return { ...r, naam: o?.naam ?? "onbekend", relatiecode: (o as any)?.exact_relatie_code ?? null, sinds: data[0] ?? null };
       });
     },
   });
@@ -139,7 +140,7 @@ export function RechtsvoorgangerBanner({ ondernemingId, herlaad = 0 }: { onderne
     <div className="space-y-1">{data.map((r) => (
       <div key={r.van_onderneming_id} className="rounded-md border border-primary/40 bg-primary/5 p-3 text-sm">
         Rechtsvoorganger <Link to={`/admin/klanten/${r.van_onderneming_id}`} className="font-medium text-primary hover:underline">{r.naam}</Link> (per {formatDateNL(r.ingangsdatum)}), klant sinds {formatDateNL(r.sinds)}.
-        {r.bav_nummer && <> BAV-nummer {r.bav_nummer} overgenomen ({HERKOMST[r.bav_nummer_herkomst] ?? r.bav_nummer_herkomst}).</>} Historie staat onderaan deze kaart.
+        {r.bav_nummer && <> Leidend BAV-nummer {r.bav_nummer} overgenomen ({HERKOMST[r.bav_nummer_herkomst] ?? r.bav_nummer_herkomst}); overige BAV-nummers van de voorganger staan erbij.</>} Exact-relatiecode voorganger (historie): {r.relatiecode ?? "onbekend"}. Historie staat onderaan deze kaart.
       </div>
     ))}</div>
   );
