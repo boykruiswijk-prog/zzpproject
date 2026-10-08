@@ -10,6 +10,7 @@ describe("productmapping", () => {
   it("koppelt alle bekende codes", () => {
     for (const code of ["100M", "100J", "100J495", "100HDI", "100-OUD", "100-OUDJ540", "100-OUDM55"]) expect(productVoorItemcode(code)).toBe("bav_avb");
     expect(productVoorItemcode("102J")).toBe("cyber_clear");
+    expect(productVoorItemcode("102M")).toBe("cyber_clear");
     expect(productVoorItemcode("102-OUD")).toBe("cyber_clear");
     expect(productVoorItemcode("450")).toBe("lidmaatschap_allin");
     expect(productVoorItemcode("400")).toBe("lidmaatschap_startup");

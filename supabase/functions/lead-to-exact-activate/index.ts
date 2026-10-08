@@ -116,12 +116,12 @@ const PAKKET_INVOICE: Record<string, { naam: string; bedrag: number; betalingsre
   "maandelijks-cyber": { naam: "BAV & AVB Maandelijks + Cyber", bedrag: 660, betalingsregel: "BAV + AVB maandelijks €55; cyber jaarcontract in 12 termijnen van €27,50" },
   "jaarlijks-cyber": {
     naam: "BAV & AVB Jaarlijks + Cyber",
-    bedrag: 750,
+    bedrag: 600,
     betalingsregel: "Betaling: jaarlijks vooraf via SEPA-incasso",
   },
   "jaarlijks_cyber": {
     naam: "BAV & AVB Jaarlijks + Cyber",
-    bedrag: 750,
+    bedrag: 600,
     betalingsregel: "Betaling: jaarlijks vooraf via SEPA-incasso",
   },
 };

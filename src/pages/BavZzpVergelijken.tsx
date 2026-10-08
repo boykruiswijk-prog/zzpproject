@@ -167,7 +167,7 @@ export default function BavZzpVergelijken() {
         <p>Het verschil zit in wat je ervoor krijgt:</p>
         <ul className="list-disc space-y-2 pl-5">
           <li><strong className="text-foreground">Lager verzekerd bedrag.</strong> Knab dekt € 250.000 of € 500.000 per claim. De Goudse gaat tot € 1.000.000 per aanspraak. ZP Zaken dekt {bav} BAV per aanspraak.</li>
-          <li><strong className="text-foreground">Eigen risico.</strong> Bij De Goudse betaal je € 750 per aanspraak zelf, bij Insify € 250 tot € 2.500. Bij ZP Zaken is er geen eigen risico.</li>
+          <li><strong className="text-foreground">Eigen risico.</strong> Bij De Goudse betaal je € 750 per aanspraak zelf, bij Insify € 250 tot € 2.500. Bij ZP Zaken is er geen eigen risico op BAV + AVB. Voor cyber geldt € 500, of € 1.000 bij cyberfraude.</li>
           <li><strong className="text-foreground">AVB niet inbegrepen.</strong> Bij de meeste aanbieders betaal je de AVB apart. Bij ZP Zaken zitten BAV en AVB in één polis.</li>
         </ul>
         <p>Heb je weinig risico en vraagt je opdrachtgever geen hoge dekking? Dan kan een goedkopere BAV met lagere dekking voldoende zijn. Wil je hoge dekking, geen eigen risico en BAV en AVB in één keer geregeld? Dan past ZP Zaken beter.</p>

@@ -50,6 +50,12 @@ describe("activatie", () => {
     expect(maandprijsVoorLead(l, 55)).toBe(45);
     expect(starterContractVelden(l)).toEqual({ tarief_type: "starter", starter_tot: "2027-10-12", bedrag_na_starter: 55 });
   });
+  it("starter met cyber houdt de BAV-starterprijs", () => {
+    const maand = { ...basis, gekozen_pakket: "maandelijks-cyber", cyber_voorwaarden_versie: "2026-10-08", tarief_type: "starter", starter_controle_status: "goedgekeurd" };
+    const jaar = { ...maand, gekozen_pakket: "jaarlijks-cyber" };
+    expect(maandprijsVoorLead(maand, 55)).toBe(45);
+    expect(pakketSpecVoorLead(jaar, { naam: "x", bedrag: 600, betalingsregel: "" })!.bedrag).toBe(495);
+  });
   it("afgewezen of standaard: gewone prijs", () => {
     const l = { ...basis, gekozen_pakket: "maandelijks", tarief_type: "standaard", starter_controle_status: "afgewezen" };
     expect(maandprijsVoorLead(l, 55)).toBe(55);

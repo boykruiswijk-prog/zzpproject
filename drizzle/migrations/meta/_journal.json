@@ -610,6 +610,13 @@
       "when": 1791484183775,
       "tag": "0086_cyber_evidence_and_exact_lead_link",
       "breakpoints": true
+    },
+    {
+      "idx": 87,
+      "version": "7",
+      "when": 1791484922909,
+      "tag": "0087_fix_cyber_date_sync_and_month_article",
+      "breakpoints": true
     }
   ]
 }

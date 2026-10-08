@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { CyberPolis } from "@/components/portal/CyberPolis";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -134,7 +133,6 @@ export function PolicyLifecycleActions() {
   return (
     <Card>
       <CardContent className="py-5 space-y-4">
-        <CyberPolis leadId={lead.id} />
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
             <p className="text-sm text-muted-foreground">Status</p>

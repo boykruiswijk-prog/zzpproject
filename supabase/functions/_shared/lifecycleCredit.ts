@@ -25,7 +25,7 @@ export async function maandLifecycleCredit(db: any, lead: LeadVoorCredit, eindda
   if (oudFout) throw new Error("Gefactureerde maandperioden konden niet worden gelezen");
   for (const p of oud ?? []) {
     if (p.exact_invoice_id && p.periode_start && p.periode_eind && !["failed", "error", "skipped"].includes(p.status)) {
-      voegToe(p.exact_invoice_id, p.periode_start, p.periode_eind, p.bedrag);
+       voegToe(p.exact_invoice_id, p.periode_start, p.periode_eind, p.bedrag);
     }
   }
   const { data: contract, error: contractFout } = await db.from("klant_contracten")

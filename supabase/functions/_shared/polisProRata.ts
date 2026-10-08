@@ -4,6 +4,7 @@
 export const PAKKET_JAARPRIJS: Record<string, number> = {
   "maandelijks": 660,        // €55/maand × 12 (gebruikt voor pro-rata bij upgrade-pad)
   "jaarlijks": 600,
+  // Legacy cyberprijzen blijven uitsluitend voor onversiede bestaande leads gelden.
   "jaarlijks-cyber": 750,
   "jaarlijks_cyber": 750,
 };
