@@ -1065,7 +1065,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                       </div>
 
                       {/* Slotverklaring */}
-                      {heeftCyber && <div className="space-y-2 border border-border rounded-lg p-4"><div className="flex items-start gap-3"><input id="cyber-akkoord" type="checkbox" checked={!!cyberAkkoordOp} onChange={(e) => setCyberAkkoordOp(e.target.checked ? new Date().toISOString() : null)} className="mt-0.5 h-4 w-4 accent-primary" /><Label htmlFor="cyber-akkoord" className="text-sm leading-relaxed">{CYBER_AKKOORD}</Label></div><FieldError message={errors.cyberAkkoord} /></div>}
+                      {heeftCyber && <div className="space-y-2 border border-border rounded-lg p-4"><div className="flex items-start gap-3"><Checkbox id="cyber-akkoord" checked={!!cyberAkkoordOp} onCheckedChange={(v) => setCyberAkkoordOp(v === true ? new Date().toISOString() : null)} /><Label htmlFor="cyber-akkoord" className="text-sm leading-relaxed">{CYBER_AKKOORD}</Label></div><FieldError message={errors.cyberAkkoord} /></div>}
                       <div className={cn("border rounded-lg p-4 bg-accent/5 space-y-3", errors.slotverklaring ? "border-destructive" : "border-accent/30")}>
                         <div className="flex items-start gap-3">
                           <Checkbox
