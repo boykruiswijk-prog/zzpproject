@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { PartnerBronnenBeheer } from "@/components/admin/crm/Omzetting";
 import { Loader2, CheckCircle2, XCircle, RefreshCw, ExternalLink } from "lucide-react";
 import { ExactEmailImportBlock } from "@/components/admin/ExactEmailImportBlock";
 import { ExactMandaatImportBlock } from "@/components/admin/ExactMandaatImportBlock";
@@ -364,6 +365,7 @@ export default function Integraties() {
             </Card>
             <ExactEmailImportBlock />
             <ExactMandaatImportBlock />
+            <PartnerBronnenBeheer />
           </>
         )}
       </div>
