@@ -203,6 +203,65 @@ export type Database = {
         }
         Relationships: []
       }
+      article_image_jobs: {
+        Row: {
+          article_id: string
+          attempts: number
+          completed_at: string | null
+          error: string | null
+          image_url: string | null
+          requested_at: string
+          status: string
+        }
+        Insert: {
+          article_id: string
+          attempts?: number
+          completed_at?: string | null
+          error?: string | null
+          image_url?: string | null
+          requested_at?: string
+          status?: string
+        }
+        Update: {
+          article_id?: string
+          attempts?: number
+          completed_at?: string | null
+          error?: string | null
+          image_url?: string | null
+          requested_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "article_image_jobs_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: true
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      article_image_worker: {
+        Row: {
+          id: boolean
+          lease_id: string | null
+          lease_until: string | null
+          paused_reason: string | null
+        }
+        Insert: {
+          id?: boolean
+          lease_id?: string | null
+          lease_until?: string | null
+          paused_reason?: string | null
+        }
+        Update: {
+          id?: boolean
+          lease_id?: string | null
+          lease_until?: string | null
+          paused_reason?: string | null
+        }
+        Relationships: []
+      }
       articles: {
         Row: {
           author_id: string | null
@@ -4389,6 +4448,10 @@ export type Database = {
       bepaal_opzegging_koppeling: { Args: { _id: string }; Returns: Json }
       bevestig_artikel_mapping: {
         Args: { _bevestigd: boolean; _id: string }
+        Returns: boolean
+      }
+      claim_article_image_worker: {
+        Args: { p_lease: string }
         Returns: boolean
       }
       cleanup_expired_oauth_states: { Args: never; Returns: undefined }
