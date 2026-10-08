@@ -4817,6 +4817,10 @@ export type Database = {
         }
         Returns: Json
       }
+      cyber_term_eind: {
+        Args: { _start: string; _vandaag: string }
+        Returns: string
+      }
       dashboard_tellers: { Args: { _toon_test?: boolean }; Returns: Json }
       delete_email: {
         Args: { message_id: number; queue_name: string }
