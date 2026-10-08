@@ -5,6 +5,7 @@
 //   - opzeggen vanuit actief     → creditnota Type 8021 voor resterende dagen (geen jaarcontract-lock-in, USP)
 //   - opzeggen vanuit gepauzeerd → GEEN tweede creditnota (klant heeft al gekregen via pauze-creditnota)
 import { getBavGlAccountId } from "../_shared/exactGl.ts";
+import { maandLifecycleCredit } from "../_shared/lifecycleCredit.ts";
 import { ensureValidToken } from "../_shared/exactToken.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { checkAcceptance } from "../_shared/acceptanceCriteria.ts";
@@ -340,18 +341,17 @@ Deno.serve(async (req) => {
         if (!lead.ingangsdatum) return json({ error: "geen_ingangsdatum_op_lead" }, 400);
 
         const jaarprijs = getJaarprijs(lead.gekozen_pakket);
-        const eind = lead.polis_einddatum ?? calcPolisEinddatum(lead.ingangsdatum);
-        const calc = calculatePauzeCredit({
+        const maand = isMaandPolis(lead.gekozen_pakket);
+        const maandCredit = maand ? await maandLifecycleCredit(supabase, lead, today) : null;
+        const eind = maandCredit?.periode_eind ?? lead.polis_einddatum ?? calcPolisEinddatum(lead.ingangsdatum);
+        const calc = maandCredit ?? calculatePauzeCredit({
           ingangsdatum: lead.ingangsdatum, polis_einddatum: eind,
           jaarprijs, pauze_datum: today,
         });
 
         // Creditnota in Exact (alleen als account + factuur reeds bestaan)
-        // Maandpolis: GEEN creditnota (toekomstige maandfacturen worden simpelweg gestopt).
         let creditResult: any = { skipped: true, reden: "Geen Exact-account gekoppeld" };
-        if (isMaandPolis(lead.gekozen_pakket)) {
-          creditResult = { skipped: true, reden: "Maandpolis — geen creditnota, maandcron stopt vanzelf" };
-        } else if (lead.exact_account_id && calc.credit_bedrag > 0) {
+        if (lead.exact_account_id && calc.credit_bedrag > 0) {
           if (!(await heeftGeslaagdeFactuur())) {
             creditResult = { skipped: true, reden: "Geen geslaagde factuur voor deze polisperiode" };
             await supabase.from("exact_sync_log").insert({
@@ -368,10 +368,10 @@ Deno.serve(async (req) => {
             lead, itemId: ctx.itemId,
             type: TYPE_SALES_CREDIT,
             description: "BAV-AVB restitutie pauze",
-            lineDescription: regelOmschrijving("restitutie_pauze", today, eind),
+            lineDescription: regelOmschrijving("restitutie_pauze", maandCredit?.credit_vanaf ?? today, eind),
             lineNotes: regelNotities(calc.resterende_dagen, calc.dagprijs), yourRef,
             unitPrice: calc.credit_bedrag,
-            periodStart: today, periodEnd: eind,
+            periodStart: maandCredit?.credit_vanaf ?? today, periodEnd: eind,
           });
           if (!res.ok) {
             // Logging-gat dichten: ook naar exact_sync_log naast polis_audit_log
@@ -439,7 +439,7 @@ Deno.serve(async (req) => {
         mailResults.push(await lcMail("pauzeren", "klant", recipientKlant, "Je polis is gepauzeerd",
           mailShell("Polis gepauzeerd", `
             <p>Hoi ${escapeHtml(lead.voornaam)},</p>
-            <p>Je polis is per <strong>${fmtNL(today)}</strong> gepauzeerd. Tijdens de pauze ben je niet meer gedekt voor nieuwe schade. Schade van vóór de pauze blijft gedekt.</p>
+            <p>Je polis is per <strong>${fmtNL(today)}</strong> gepauzeerd. Tijdens de pauze ben je niet meer gedekt voor nieuwe schade. Heb je vragen over een claim voor eerder werk? Neem contact met ons op en raadpleeg de polisvoorwaarden.</p>
             <p><strong>Reden:</strong> ${reden.replace(/_/g, " ")}</p>
             ${pauze_toelichting ? `<p><strong>Toelichting:</strong> ${escapeHtml(pauze_toelichting)}</p>` : ""}
             ${creditZin}
@@ -600,12 +600,13 @@ Deno.serve(async (req) => {
         let calc: ReturnType<typeof calculatePauzeCredit> | null = null;
         let eindForMail: string | null = null;
 
-        if (vanuitActief && lead.exact_account_id && !isMaandPolis(lead.gekozen_pakket)) {
+        if ((vanuitActief || (wasGepauzeerd && isMaandPolis(lead.gekozen_pakket) && !lead.exact_credit_invoice_id_pauze)) && lead.exact_account_id) {
           if (!lead.ingangsdatum) return json({ error: "geen_ingangsdatum_op_lead" }, 400);
           const jaarprijs = getJaarprijs(lead.gekozen_pakket);
-          const eind = lead.polis_einddatum ?? calcPolisEinddatum(lead.ingangsdatum);
+          const maandCredit = isMaandPolis(lead.gekozen_pakket) ? await maandLifecycleCredit(supabase, lead, today) : null;
+          const eind = maandCredit?.periode_eind ?? lead.polis_einddatum ?? calcPolisEinddatum(lead.ingangsdatum);
           eindForMail = eind;
-          calc = calculatePauzeCredit({
+          calc = maandCredit ?? calculatePauzeCredit({
             ingangsdatum: lead.ingangsdatum, polis_einddatum: eind,
             jaarprijs, pauze_datum: today,
           });
@@ -624,10 +625,10 @@ Deno.serve(async (req) => {
               lead, itemId: ctx.itemId,
               type: TYPE_SALES_CREDIT,
               description: "BAV-AVB restitutie opzegging",
-              lineDescription: regelOmschrijving("restitutie_opzegging", today, eind),
+              lineDescription: regelOmschrijving("restitutie_opzegging", maandCredit?.credit_vanaf ?? today, eind),
               lineNotes: regelNotities(calc.resterende_dagen, calc.dagprijs), yourRef,
               unitPrice: calc.credit_bedrag,
-              periodStart: today, periodEnd: eind,
+              periodStart: maandCredit?.credit_vanaf ?? today, periodEnd: eind,
             });
             if (!res.ok) {
               await supabase.from("exact_sync_log").insert({
@@ -700,7 +701,7 @@ Deno.serve(async (req) => {
         } catch (_e) { /* logfout mag opzegging niet laten falen */ }
 
         const creditBlokKlant = creditResult?.ok && calc
-          ? `<p>Je ontvangt een creditnota van <strong>€ ${calc.credit_bedrag.toFixed(2).replace(".", ",")}</strong> voor ${calc.resterende_dagen} dagen restdekking tot ${fmtNL(eindForMail!)}.</p>`
+          ? `<p>Je ontvangt een creditnota van <strong>€ ${calc.credit_bedrag.toFixed(2).replace(".", ",")}</strong> voor ${calc.resterende_dagen} resterende al betaalde dagen tot ${fmtNL(eindForMail!)}.</p>`
           : "";
         const creditBlokAdmin = creditResult?.ok && calc
           ? `<strong>Creditnota:</strong> € ${calc.credit_bedrag.toFixed(2)} (${calc.resterende_dagen} dagen, Exact ID ${creditResult.invoiceId})<br/>`
@@ -709,7 +710,7 @@ Deno.serve(async (req) => {
         await lcMail("opzeggen", "klant", recipientKlant, "Je polis is opgezegd",
           mailShell("Polis opgezegd", `
             <p>Hoi ${escapeHtml(lead.voornaam)},</p>
-            <p>Je polis is per <strong>${fmtNL(today)}</strong> opgezegd. Schade van vóór deze datum blijft gedekt volgens de polisvoorwaarden.</p>
+            <p>Je polis is per <strong>${fmtNL(today)}</strong> opgezegd. Heb je vragen over een claim voor eerder werk? Neem contact met ons op en raadpleeg de polisvoorwaarden.</p>
             <p><strong>Reden:</strong> ${reden.replace(/_/g, " ")}</p>
             ${toelichting ? `<p><strong>Toelichting:</strong> ${escapeHtml(toelichting)}</p>` : ""}
             ${creditBlokKlant}

@@ -198,12 +198,12 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/over-ons",
-    title: "Over ons | Direct en onafhankelijk sinds 2014",
+    title: "Over ons | Direct en onafhankelijk, actief sinds 2013",
     description:
-      `ZP Zaken is opgericht in 2014 door Boy Kruiswijk. Meer dan ${SITE_CONFIG.klantenAantalTekst} tevreden zzp'ers, AFM geregistreerd, Kifid aangesloten. Persoonlijk gesprek zonder callcenter.`,
+      `ZP Zaken is actief sinds 2013 onder leiding van Boy Kruiswijk. Meer dan ${SITE_CONFIG.klantenAantalTekst} tevreden zzp'ers, AFM geregistreerd, Kifid aangesloten. Persoonlijk gesprek zonder callcenter.`,
     h1: "Over ZP Zaken",
     intro:
-      `ZP Zaken B.V. is in 2014 opgericht door Boy Kruiswijk en werkt vanuit ${SITE_CONFIG.address.addressLocality} voor zelfstandig professionals. ` +
+      `ZP Zaken B.V. is actief sinds 2013 onder leiding van Boy Kruiswijk en werkt vanuit ${SITE_CONFIG.address.addressLocality} voor zelfstandig professionals. ` +
       "ZP Zaken bedacht de gecombineerde BAV + AVB voor zzp'ers en is sinds de oprichting marktleider. " +
       `Het kantoor staat geregistreerd bij de AFM onder ${SITE_CONFIG.registrations.afm} en is aangesloten bij Kifid onder ${SITE_CONFIG.registrations.kifid}. ` +
       "Op deze pagina stelt het team zich voor.",
@@ -225,7 +225,7 @@ export const seoRoutes: SeoRoute[] = [
       `Van startup tot marktleider. Ontdek onze reis en waarom ${SITE_CONFIG.klantenAantal} zzp'ers ons vertrouwen.`,
     h1: "13+ jaar ZP Zaken",
     intro:
-      `ZP Zaken bestaat sinds 2014 en groeide van startup tot marktleider voor meer dan ${SITE_CONFIG.klantenAantalTekst} zelfstandigen. ` +
+      `ZP Zaken bestaat sinds 2013 en groeide van startup tot marktleider voor meer dan ${SITE_CONFIG.klantenAantalTekst} zelfstandigen. ` +
       "ZP Zaken bedacht de gecombineerde BAV + AVB voor zzp'ers en is sinds de oprichting marktleider. " +
       "De tijdlijn op deze pagina laat de belangrijkste stappen uit die periode zien.",
   },
@@ -383,7 +383,7 @@ export const seoRoutes: SeoRoute[] = [
     path: "/zzp-verzekering-ict",
     title: "ZZP Verzekering ICT | BAV & AVB voor IT'ers",
     description:
-      "Als ICT-freelancer aansprakelijk voor een softwarefout of datalek? ZP Zaken regelt jouw beroepsaansprakelijkheidsverzekering. Binnen 24 uur verzekerd.",
+      "Als ICT-freelancer aansprakelijk voor een softwarefout of datalek? ZP Zaken regelt jouw beroepsaansprakelijkheidsverzekering. Binnen 24 uur geregeld, certificaat in je mailbox.",
     h1: "ZZP Verzekering voor ICT-freelancers",
     intro:
       "Als ICT-freelancer schrijf je code, implementeer je systemen of geef je advies. Een fout in je werk kan grote financiele gevolgen hebben voor je opdrachtgever. " +

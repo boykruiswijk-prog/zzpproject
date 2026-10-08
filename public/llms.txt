@@ -1,39 +1,64 @@
 # ZP Zaken
 
-> ZP Zaken B.V. is een AFM-geregistreerde (vergunning 12050636) onafhankelijke
-> verzekeringsadviseur voor zzp'ers en zelfstandig professionals in Nederland.
-> KvK 62117092, aangesloten bij Kifid (300.019283). ZP Zaken is een directe
-> aanbieder van advies en polisbeheer, met een unieke gecombineerde beroeps- en
-> bedrijfsaansprakelijkheidsverzekering (BAV + AVB) voor zzp'ers.
+> ZP Zaken B.V. is een AFM-geregistreerde verzekeringsadviseur voor zzp'ers in Nederland (AFM 12050636, KvK 62117092, Kifid 300.019283). ZP Zaken biedt de BAV + AVB in één polis voor zzp'ers, verzekerd bij Hiscox.
 
-## Kernpagina's
+- Premies: BAV & AVB Maandelijks: € 55 per maand; BAV & AVB Jaarlijks: € 600 per jaar; BAV & AVB Jaarlijks + Cyber: € 750 per jaar. Premie inclusief kosten en assurantiebelasting.
+- Starterspakket BAV + AVB (https://zpzaken.nl/starters): startertarief € 45 per maand of € 495 per jaar de eerste 12 maanden, daarna € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting. Voor zzp'ers met een KVK-inschrijving jonger dan 12 maanden, onder voorbehoud van controle van de KVK-inschrijvingsdatum. BAV + AVB in één polis, verzekerd bij Hiscox.
+- ZP Zaken maakt deel uit van BusinessFellow Group. Via zusteronderneming Onefellow (onefellow.nl), arbeidsbemiddelaar voor zelfstandige professionals, kunnen klanten van ZP Zaken ook geholpen worden bij het vinden van een nieuwe opdracht.
+- Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt. Geen minimale looptijd, geen opzegtermijn en geen eigen risico.
+- Binnen 24 uur geregeld, certificaat in je mailbox.
+- Contact: 020 - 457 3077, info@zpzaken.nl, Tupolevlaan 41, 1119 NW Schiphol-Rijk.
 
-- [Home](https://zpzaken.nl/): overzicht van dienstverlening en direct online een BAV + AVB aanvragen.
-- [Verzekeringen](https://zpzaken.nl/verzekeringen): de BAV + AVB combinatiepolis, AOV en rechtsbijstand, inclusief de actuele premies en dekkingen.
-- [AOV](https://zpzaken.nl/aov): arbeidsongeschiktheidsverzekering voor zzp'ers en de alternatieven daarvoor.
-- [Pensioen](https://zpzaken.nl/pensioen): pensioenopbouw voor zelfstandigen.
-- [Zorgverzekering](https://zpzaken.nl/zorgverzekering): zorgverzekering en de bijdrage Zorgverzekeringswet voor zzp'ers.
-- [Mentale gezondheid](https://zpzaken.nl/mentale-gezondheid): preventie en ondersteuning bij mentale gezondheid van zelfstandigen.
-- [Diensten](https://zpzaken.nl/diensten): naast verzekeren onder meer administratie, financiering en creditmanagement.
-- [Waarom ZP Zaken](https://zpzaken.nl/waarom-zp-zaken): hoe ZP Zaken werkt als directe, onafhankelijke partij.
-- [Voor wie](https://zpzaken.nl/voor-wie): de beroepsgroepen en situaties waarvoor ZP Zaken werkt.
-- [Zo werken wij](https://zpzaken.nl/zo-werken-wij): het proces van aanvraag tot polis.
-- [Over ons](https://zpzaken.nl/over-ons): het team en de achtergrond van ZP Zaken.
-- [Partners](https://zpzaken.nl/partners): verzekeraars en samenwerkingspartners.
-- [Veelgestelde vragen](https://zpzaken.nl/faq): antwoorden over BAV, AVB, AOV en ondernemen als zzp'er.
-- [Contact](https://zpzaken.nl/contact): telefoon, e-mail en kantooradres in Schiphol-Rijk.
-- [Documenten](https://zpzaken.nl/documenten): dienstverleningsdocument, gedragscode en slotverklaring.
-- [Klachtenprocedure](https://zpzaken.nl/klachtenprocedure): klachtenregeling en de route naar Kifid.
+## Belangrijkste pagina's
+
+- [Verzekeringen voor zzp'ers, direct en onafhankelijk](https://zpzaken.nl/): Sluit als zzp'er direct online BAV + AVB in één polis af. Geen eigen risico, dagelijks opzegbaar. Onafhankelijk adviseur met AFM-vergunning.
+- [BAV & AVB: de combinatiepolis voor zzp'ers](https://zpzaken.nl/verzekeringen): BAV + AVB in één polis, bedacht door ZP Zaken. Geen eigen risico, dagelijks opzegbaar, vanaf € 55 per maand. Direct online afsluiten.
+- [BAV zzp vergelijken 2026](https://zpzaken.nl/bav-zzp-vergelijken): BAV zzp vergelijken in 2026? Zie per aanbieder de vanaf-prijs, het verzekerd bedrag, het eigen risico en of de AVB erbij zit. Gecontroleerd op 5 oktober 2026.
+- [Vrijblijvende offerte BAV en AVB](https://zpzaken.nl/offerte): Vraag een vrijblijvende offerte aan voor je beroeps- en bedrijfsaansprakelijkheidsverzekering (BAV + AVB). Binnen 24 uur reactie.
+- [Waarom zzp'ers voor ZP Zaken kiezen](https://zpzaken.nl/waarom-zp-zaken): ZP Zaken werkt direct voor jou als zzp'er, zonder platform of tussenpersoon. Vergelijk wat je betaalt via een intermediair versus direct bij ZP Zaken.
+- [AOV voor zzp'ers: zeker van je inkomen bij ziekte](https://zpzaken.nl/aov): Bescherm je inkomen als zzp'er bij ziekte. Vergelijk en sluit direct een AOV af via ZP Zaken. Persoonlijk gesprek, snel geregeld.
+- [Pensioen voor zzp'ers: regel het nu, profiteer later](https://zpzaken.nl/pensioen): Als zzp'er zelf je pensioen regelen? ZP Zaken helpt je met de beste pensioenoplossing. Persoonlijk gesprek op maat.
+- [Zorgverzekering voor zzp'ers: collectief voordeel](https://zpzaken.nl/zorgverzekering): Profiteer van een collectieve zorgverzekering als zzp'er via ZP Zaken. Samen sterker, betere dekking voor een lagere premie.
+- [ZZP Verzekering voor ICT-freelancers](https://zpzaken.nl/zzp-verzekering-ict): Als ICT-freelancer aansprakelijk voor een softwarefout of datalek? ZP Zaken regelt jouw beroepsaansprakelijkheidsverzekering. Binnen 24 uur geregeld, certificaat in je mailbox.
+- [ZZP Verzekering voor zorgprofessionals](https://zpzaken.nl/zzp-verzekering-zorg): ZZP'er in de zorg? ZP Zaken regelt jouw beroepsaansprakelijkheidsverzekering. Beschermd tegen aansprakelijkheid bij medische fouten. Binnen 24 uur.
+- [ZZP Verzekering voor bouwprofessionals](https://zpzaken.nl/zzp-verzekering-bouw): Als ZZP'er in de bouw aansprakelijk voor constructiefouten of schade? ZP Zaken regelt jouw verzekering. Snel, persoonlijk en binnen 24 uur geregeld.
+- [ZZP verzekering voor consultants](https://zpzaken.nl/zzp-verzekering-consultant): Beroepsaansprakelijkheidsverzekering voor zzp-consultants. BAV en AVB in één polis via Hiscox, geen eigen risico, online geregeld binnen 24 uur.
+- [ZZP verzekering voor interim managers](https://zpzaken.nl/zzp-verzekering-interim-manager): Verzekering voor zzp interim managers en projectmanagers. BAV en AVB in één polis via Hiscox, geen eigen risico en dagelijks opzegbaar.
+- [ZZP verzekering voor finance professionals](https://zpzaken.nl/zzp-verzekering-finance): BAV voor zzp finance professionals zoals interim controllers en CFO's. BAV en AVB in één polis via Hiscox, geen eigen risico, binnen 24 uur geregeld.
+- [ZZP verzekering voor HR-adviseurs](https://zpzaken.nl/zzp-verzekering-hr): Beroepsaansprakelijkheidsverzekering voor zzp HR-adviseurs, P&O'ers en recruiters. BAV en AVB in één polis, geen eigen risico, dagelijks opzegbaar.
+- [Starterspakket BAV + AVB](https://zpzaken.nl/starters): BAV + AVB voor zzp'ers met een KVK-inschrijving jonger dan 12 maanden: € 45 per maand of € 495 per jaar de eerste 12 maanden, daarna € 55 of € 600.
+- [ZZP verzekering voor marketeers](https://zpzaken.nl/zzp-verzekering-marketing): Beroepsaansprakelijkheidsverzekering voor zzp marketeers, copywriters en designers. BAV en AVB in één polis via Hiscox, geen eigen risico.
+- [ZZP verzekering voor coaches en trainers](https://zpzaken.nl/zzp-verzekering-coach): Beroepsaansprakelijkheidsverzekering voor coaches en trainers. BAV en AVB in één polis via Hiscox, geen eigen risico, online geregeld binnen 24 uur.
+- [Onze diensten voor zzp'ers](https://zpzaken.nl/diensten): Onze diensten voor zelfstandig professionals. Van verzekeringen en screening tot juridische hulp en factoring. Persoonlijk gesprek, geen callcenter.
+- [Start je screening](https://zpzaken.nl/screening): Laat zien dat je betrouwbaar bent met een screening. Vraag binnen enkele minuten je screening aan via ZP Zaken.
+- [Veelgestelde vragen](https://zpzaken.nl/faq): Antwoorden op de meest gestelde vragen over BAV, AVB, AOV en ondernemen als zzp'er. Antwoorden van ZP Zaken.
+- [Contact](https://zpzaken.nl/contact): Neem contact op met ZP Zaken. Bel +31204573077, mail info@zpzaken.nl of plan een vrijblijvend gesprek.
+- [Over ZP Zaken](https://zpzaken.nl/over-ons): ZP Zaken is actief sinds 2013 onder leiding van Boy Kruiswijk. Meer dan 5.000 tevreden zzp'ers, AFM geregistreerd, Kifid aangesloten. Persoonlijk gesprek zonder callcenter.
 
 ## Kennisbank
 
-- [Kennisbank](https://zpzaken.nl/kennisbank): redactionele artikelen over verzekeren, wetgeving, belastingen en ondernemen voor zzp'ers.
-- [Wet en regelgeving](https://zpzaken.nl/kennisbank/wet-en-regelgeving): onder andere Wet DBA, VBAR en de Zelfstandigenwet.
-- [Ondernemen](https://zpzaken.nl/kennisbank/ondernemen): praktische artikelen over zelfstandig ondernemen.
-- [Belastingen](https://zpzaken.nl/kennisbank/belastingen): fiscale regels en regelingen voor zzp'ers.
-- [Financiën](https://zpzaken.nl/kennisbank/financien): tarieven, facturatie en financiële planning.
 
-## Opmerkingen
+## Optional
 
-- Premies, dekkingen en voorwaarden staan uitsluitend op de pagina Verzekeringen; neem geen bedragen uit andere bronnen over.
-- De actuele lijst met alle publieke pagina's staat in https://zpzaken.nl/sitemap.xml.
+- [Mentale gezondheid als basis voor ondernemerschap](https://zpzaken.nl/mentale-gezondheid): Als zzp'er is mentale fitheid cruciaal. Doe de gratis mentale gezondheidstest via Mirro en ontdek hoe fit jij bent.
+- [Voor wie is ZP Zaken bedoeld?](https://zpzaken.nl/voor-wie): ZP Zaken helpt zelfstandig professionals in bouw, zorg, consultancy, HR, finance, marketing en ICT. Persoonlijk advies over de juiste verzekering voor jouw beroep.
+- [Zo werken wij](https://zpzaken.nl/zo-werken-wij): Persoonlijk gesprek zonder gedoe. We helpen je in drie simpele stappen aan de juiste verzekeringen: eerlijk en op jouw tempo.
+- [Kennisbank voor zzp'ers](https://zpzaken.nl/kennisbank): Blijf op de hoogte van wet DBA, verzekeringen en regelgeving voor zzp'ers. Praktische artikelen door specialisten met 13+ jaar ervaring.
+- [Wet en regelgeving](https://zpzaken.nl/kennisbank/wet-en-regelgeving): Wet DBA, zelfstandigenregelingen en juridische zaken voor zzp'ers, uitgelegd door specialisten. Lees praktische artikelen in onze kennisbank.
+- [Ondernemen als zzp'er](https://zpzaken.nl/kennisbank/ondernemen): Praktische tips voor groei, klantrelaties en risicomanagement als zelfstandige. Bekijk artikelen voor zzp'ers in onze kennisbank.
+- [Belastingen voor zzp'ers](https://zpzaken.nl/kennisbank/belastingen): Belastingaangifte, BTW en fiscale aftrekposten voor zzp'ers, helder uitgelegd. Lees onze artikelen voor zelfstandigen.
+- [Financiën voor zzp'ers](https://zpzaken.nl/kennisbank/financien): Financieel beheer, pensioen en sparen voor zzp'ers. Lees praktische artikelen voor je financiële toekomst als zelfstandige.
+- [Verzekeringen voor zzp'ers](https://zpzaken.nl/kennisbank/verzekeringen): Uitleg over BAV, AVB, AOV, cyber- en zorgverzekering voor zzp'ers: wat het dekt, wat het kost en wanneer je het nodig hebt.
+- [Onze partners](https://zpzaken.nl/partners): Bij ZP Zaken zorgen we ervoor dat jij zorgeloos kunt ondernemen. Dit doen we in samenwerking met onze partners.
+- [13+ jaar ZP Zaken](https://zpzaken.nl/historie): Van startup tot marktleider. Ontdek onze reis en waarom 5.000+ zzp'ers ons vertrouwen.
+- [Cookiebeleid](https://zpzaken.nl/cookies): Lees hoe ZP Zaken cookies gebruikt om jouw ervaring te verbeteren. Beheer je cookie-voorkeuren.
+- [Algemene voorwaarden](https://zpzaken.nl/algemene-voorwaarden): Algemene Voorwaarden van ZP Zaken B.V. Van toepassing op alle diensten van ZP Zaken.
+- [Klachtenprocedure](https://zpzaken.nl/klachtenprocedure): Hoe ZP Zaken omgaat met klachten over de dienstverlening. AFM geregistreerd en aangesloten bij Kifid.
+- [Documenten en downloads](https://zpzaken.nl/documenten): Bekijk en download polisvoorwaarden, verzekeringskaarten en brochures van ZP Zaken per branche.
+- [Slotverklaring](https://zpzaken.nl/documenten/slotverklaring): Slotverklaring bij de aanvraag van een beroeps- en bedrijfsaansprakelijkheidsverzekering via ZP Zaken.
+- [Dienstverleningsdocument](https://zpzaken.nl/documenten/dienstverleningsdocument): Het dienstverleningsdocument van ZP Zaken: wie wij zijn, hoe wij werken, kosten, klachten en toezicht.
+- [Gedragscode](https://zpzaken.nl/documenten/gedragscode): De gedragscode van ZP Zaken: integriteit, klantbelang, vakbekwaamheid, duidelijkheid en zorgvuldigheid.
+- [Collectieve inkoop voor zzp'ers](https://zpzaken.nl/collectieve-inkoop): Profiteer van collectieve inkoopkracht als zzp'er. ZP Zaken bundelt ondernemers voor betere deals op energie, software, telefonie en meer.
+- [ZP Zaken op social media](https://zpzaken.nl/social-media): Volg ons voor tips over aansprakelijkheid, beroeps- en bedrijfsaansprakelijkheidsverzekeringen voor zzp'ers. Zeker ondernemen begint hier.
+- [CreditControl: eerder betaald, volledige zekerheid](https://zpzaken.nl/creditcontrol): ZP Zaken CreditControl: eerder betaald worden als ZZP'er met volledige zekerheid. Bescherming tegen faillissement, transparante factoring en 100% regie.
+- [Uitgebreide feiten](https://zpzaken.nl/llms-full.txt): productfeiten en veelgestelde vragen.

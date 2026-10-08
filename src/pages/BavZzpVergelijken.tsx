@@ -91,7 +91,7 @@ export default function BavZzpVergelijken() {
             <p className="mb-3 text-sm font-medium text-accent">Gecontroleerd op {VERGELIJKING_GECONTROLEERD_LABEL}</p>
             <h1 className="mb-6 text-3xl font-bold md:text-5xl">BAV zzp vergelijken 2026</h1>
             <p className="mb-8 text-lg leading-relaxed text-muted-foreground">
-              Vergelijk een beroepsaansprakelijkheidsverzekering (BAV) nooit alleen op de laagste prijs. Kijk ook naar het verzekerd bedrag, het eigen risico, of de bedrijfsaansprakelijkheidsverzekering (AVB) erbij zit en hoe snel je kunt opzeggen. ZP Zaken biedt BAV en AVB in één polis via Hiscox, vanaf {eur(maand.prijs)} per maand, met {bav} BAV-dekking, {avb} AVB-dekking per gebeurtenis en geen eigen risico.
+              Vergelijk een beroepsaansprakelijkheidsverzekering (BAV) nooit alleen op de laagste prijs. Kijk ook naar het verzekerd bedrag, het eigen risico, of de bedrijfsaansprakelijkheidsverzekering (AVB) erbij zit en hoe snel je kunt opzeggen. ZP Zaken biedt BAV en AVB in één polis via Hiscox, vanaf {eur(maand.prijs)} per maand, met {bav} BAV-dekking, {avb} AVB-dekking per aanspraak en geen eigen risico.
             </p>
             <Ctas />
           </div>
@@ -164,7 +164,7 @@ export default function BavZzpVergelijken() {
         <p>Meer weten over alle premies? Lees <LocalizedLink to="/kennisbank/wat-kosten-verzekeringen-voor-zzp-ers" className="text-accent underline underline-offset-2">wat verzekeringen voor zzp'ers in 2026 kosten</LocalizedLink>.</p>
         <p>Het verschil zit in wat je ervoor krijgt:</p>
         <ul className="list-disc space-y-2 pl-5">
-          <li><strong className="text-foreground">Lager verzekerd bedrag.</strong> Knab dekt € 250.000 of € 500.000 per claim. De Goudse gaat tot € 1.000.000 per aanspraak. ZP Zaken dekt {bav} BAV per gebeurtenis.</li>
+          <li><strong className="text-foreground">Lager verzekerd bedrag.</strong> Knab dekt € 250.000 of € 500.000 per claim. De Goudse gaat tot € 1.000.000 per aanspraak. ZP Zaken dekt {bav} BAV per aanspraak.</li>
           <li><strong className="text-foreground">Eigen risico.</strong> Bij De Goudse betaal je € 750 per aanspraak zelf, bij Insify € 250 tot € 2.500. Bij ZP Zaken is er geen eigen risico.</li>
           <li><strong className="text-foreground">AVB niet inbegrepen.</strong> Bij de meeste aanbieders betaal je de AVB apart. Bij ZP Zaken zitten BAV en AVB in één polis.</li>
         </ul>
@@ -175,7 +175,7 @@ export default function BavZzpVergelijken() {
         <ul className="space-y-3">
           {[
             [`BAV en AVB in één polis.`, `ZP Zaken bedacht de BAV + AVB in één polis voor zzp'ers en is daarin marktleider. De verzekeraar is Hiscox.`],
-            [`Hoge dekking.`, `BAV ${bav} en AVB ${avb} per gebeurtenis.`],
+            [`Hoge dekking.`, `BAV ${bav} en AVB ${avb} per aanspraak.`],
             [`Geen eigen risico.`, ``],
             [`Vaste prijs.`, `Vanaf ${eur(maand.prijs)} per maand, of ${eur(jaar.prijs)} per jaar.`],
             [`Dagelijks opzegbaar.`, `Je zit nergens aan vast.`],

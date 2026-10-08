@@ -105,7 +105,7 @@ const PAKKET_INVOICE: Record<string, { naam: string; bedrag: number; betalingsre
   "maandelijks": {
     naam: "BAV & AVB Maandelijks",
     bedrag: 660,
-    betalingsregel: "Betaling: 12 termijnen van € 55 via SEPA-incasso",
+    betalingsregel: "Betaling: maandelijks € 55 via SEPA-incasso, dagelijks opzegbaar",
   },
   "jaarlijks": {
     naam: "BAV & AVB Jaarlijks",

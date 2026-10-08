@@ -98,7 +98,7 @@ export default function ZzpVerzekeringBouw() {
         },
       ]}
       ctaTitle="Vraag gratis advies aan"
-      ctaSubtitle="Vertel ons welk werk je doet. Wij regelen de juiste dekking."
+      ctaSubtitle="Vertel ons welk werk je doet. Binnen 24 uur hoor je van ons."
       ctaButton="Vraag gratis advies aan"
       aanvraag="terugbel"
     >

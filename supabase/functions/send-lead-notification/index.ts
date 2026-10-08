@@ -163,15 +163,15 @@ function renderText(label: string, fields: Record<string, unknown>): string {
 }
 
 const CUSTOMER_INTRO: Record<string, string> = {
-  bav: "We hebben je BAV-aanvraag in goede orde ontvangen. Onze acceptant beoordeelt je aanvraag en neemt binnen één werkdag contact met je op.",
-  "verzekering-aanvraag": "We hebben je verzekeringsaanvraag in goede orde ontvangen. Een van onze adviseurs neemt binnen één werkdag contact met je op om de aanvraag af te ronden.",
-  "offerte-aanvraag": "We hebben je offerteaanvraag in goede orde ontvangen. Je ontvangt binnen één werkdag een persoonlijke offerte van ons.",
-  "terugbelverzoek-chat": "Bedankt voor je terugbelverzoek via onze chat. Een collega belt je zo snel mogelijk, uiterlijk binnen één werkdag.",
-  contact: "Bedankt voor je bericht. We nemen zo spoedig mogelijk, uiterlijk binnen één werkdag, contact met je op.",
+  bav: "We hebben je BAV-aanvraag in goede orde ontvangen. Binnen 24 uur geregeld, certificaat in je mailbox.",
+  "verzekering-aanvraag": "We hebben je verzekeringsaanvraag in goede orde ontvangen. Binnen 24 uur geregeld, certificaat in je mailbox.",
+  "offerte-aanvraag": "We hebben je offerteaanvraag in goede orde ontvangen. Je ontvangt binnen 24 uur een persoonlijke offerte van ons.",
+  "terugbelverzoek-chat": "Bedankt voor je terugbelverzoek via onze chat. Een collega belt je zo snel mogelijk, uiterlijk binnen 24 uur.",
+  contact: "Bedankt voor je bericht. We nemen zo spoedig mogelijk, uiterlijk binnen 24 uur, contact met je op.",
 };
 
 function renderCustomerHtml(type: string, label: string, fields: Record<string, unknown>): string {
-  const intro = CUSTOMER_INTRO[type] || "We hebben je aanvraag in goede orde ontvangen en nemen binnen één werkdag contact met je op.";
+  const intro = CUSTOMER_INTRO[type] || "We hebben je aanvraag in goede orde ontvangen en nemen binnen 24 uur contact met je op.";
   const SHOW_KEYS = new Set([
     "naam", "contact_naam", "bedrijfsnaam", "kvk_nummer", "pakket", "gekozen_pakket",
     "dekking", "betaalwijze", "ingangsdatum", "verzekering", "premie",
@@ -195,7 +195,7 @@ function renderCustomerHtml(type: string, label: string, fields: Record<string, 
 }
 
 function renderCustomerText(type: string, fields: Record<string, unknown>): string {
-  const intro = CUSTOMER_INTRO[type] || "We hebben je aanvraag in goede orde ontvangen en nemen binnen één werkdag contact met je op.";
+  const intro = CUSTOMER_INTRO[type] || "We hebben je aanvraag in goede orde ontvangen en nemen binnen 24 uur contact met je op.";
   const SHOW_KEYS = new Set(["naam","contact_naam","bedrijfsnaam","kvk_nummer","pakket","gekozen_pakket","dekking","betaalwijze","ingangsdatum","verzekering","premie"]);
   const lines = Object.entries(fields)
     .filter(([k, v]) => SHOW_KEYS.has(k) && v != null && String(v).trim() !== "" && String(v).trim() !== "-")

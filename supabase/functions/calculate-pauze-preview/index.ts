@@ -2,6 +2,7 @@
 // Body: { lead_id, action?: "pauze" | "hervat" | "opzeg" }   (default: "pauze")
 // Returns: { credit_bedrag/factuur_bedrag, resterende_dagen, dagprijs, polis_einddatum, jaarprijs }
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { maandLifecycleCredit } from "../_shared/lifecycleCredit.ts";
 import {
   getJaarprijs, calculatePauzeCredit, calculateHervatFactuur, calcPolisEinddatum, isMaandPolis,
 } from "../_shared/polisProRata.ts";
@@ -47,7 +48,7 @@ Deno.serve(async (req) => {
   }
 
   const { data: lead, error: lErr } = await supabase
-    .from("leads").select("ingangsdatum, polis_einddatum, gekozen_pakket")
+    .from("leads").select("id, ingangsdatum, polis_einddatum, gekozen_pakket, exact_invoice_id, exact_invoice_amount")
     .eq("id", leadId).single();
   if (lErr || !lead) return json({ error: "lead_not_found" }, 404);
   if (!lead.ingangsdatum) return json({ error: "geen_ingangsdatum" }, 400);
@@ -62,10 +63,13 @@ Deno.serve(async (req) => {
   if (action === "pauze" || action === "opzeg") {
     if (isMaandPolis(lead.gekozen_pakket)) {
       const dateKey = action === "opzeg" ? "opzeg_datum" : "pauze_datum";
+      let credit;
+      try { credit = await maandLifecycleCredit(supabase, lead, today); }
+      catch { return json({ error: "credit_preview_niet_beschikbaar" }, 503); }
       return json({
         ok: true, action, jaarprijs, polis_einddatum: eind, [dateKey]: today,
-        credit_bedrag: 0, resterende_dagen: 0, dagprijs: 0, is_maandpolis: true,
-        uitleg: "Bij een maandpolis wordt de lopende maand niet terugbetaald; vanaf de pauze worden geen nieuwe maandfacturen gemaakt.",
+        ...credit, is_maandpolis: true,
+        uitleg: "Je krijgt een creditnota voor de resterende dagen die je al betaald hebt. Dit geldt bij maand- en jaarbetaling. Nieuwe maandfacturen stoppen.",
       });
     }
     const calc = calculatePauzeCredit({

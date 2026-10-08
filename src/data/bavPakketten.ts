@@ -15,7 +15,7 @@ export const bavPakketten = [
       cyber: null,
     },
     usps: [
-      "Dagelijks opzegbaar",
+      "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt.",
       "Premie inclusief kosten en assurantiebelasting",
     ],
   },
@@ -33,7 +33,7 @@ export const bavPakketten = [
     },
     usps: [
       "Voordeligste optie",
-      "Dagelijks opzegbaar",
+      "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt.",
       "Premie inclusief kosten en assurantiebelasting",
     ],
   },
@@ -51,7 +51,7 @@ export const bavPakketten = [
     },
     usps: [
       "Inclusief cyberdekking",
-      "Dagelijks opzegbaar",
+      "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt.",
       "Premie inclusief kosten en assurantiebelasting",
     ],
   },

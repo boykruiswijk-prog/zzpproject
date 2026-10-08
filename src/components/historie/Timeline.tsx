@@ -20,7 +20,7 @@ import officeCoffee from "@/assets/office-coffee.webp";
 
 const timelineEvents = [
   {
-    year: "2014",
+    year: "2013",
     title: "De start van een droom",
     subtitle: "Ontstaan vanuit HeadFirst",
     description: "ZP Zaken werd geboren vanuit Kennisbemiddelaar HeadFirst. Oprichter Boy Kruiswijk zag een gat in de markt: zzp'ers verdienden persoonlijke begeleiding en unieke verzekeringsoplossingen.",

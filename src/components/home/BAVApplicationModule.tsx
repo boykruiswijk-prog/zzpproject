@@ -44,13 +44,13 @@ const formatMiljoen = (n: number) => n >= 1_000_000 ? `€${(n / 1_000_000).toLo
 const formatPerMaand = (jaar: number) => (jaar / 12).toLocaleString("nl-NL", { minimumFractionDigits: jaar % 12 ? 2 : 0, maximumFractionDigits: 2 });
 
 const TOTAL_STEPS = 5;
-const DIRECT_DEKKING_USP_INDEX = 2;
 
 type ValidationErrors = Record<string, string>;
 
 export function zichtbareBavUsps(usps: string[], sector: string): string[] {
-  if (!isHandmatigeAcceptatieSector(sector)) return usps;
-  return usps.filter((_, index) => index !== DIRECT_DEKKING_USP_INDEX);
+  return usps.map((usp, index) => index === 2 && isHandmatigeAcceptatieSector(sector)
+    ? "Binnen 24 uur hoor je van ons"
+    : usp);
 }
 
 const CONCEPT_KEY = "zp_aanvraag_concept_id";
@@ -203,7 +203,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
       if (!startDate) newErrors.startDate = t("bavApp.valStartDate");
       else if (startDate < today) {
         setStartDate(today);
-        newErrors.startDate = "De ingangsdatum kan niet in het verleden liggen. Neem contact op als je met terugwerkende kracht wilt verzekeren.";
+        newErrors.startDate = `Online kan de ingangsdatum niet in het verleden liggen. Heb je een vraag, bel ${SITE_CONFIG.phoneDisplay}.`;
       } else if (startDate > maxStr) {
         newErrors.startDate = "Kies een datum binnen 6 maanden. Voor latere ingangsdata neem contact op.";
       }
@@ -483,8 +483,8 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
               {submissionResult.handmatig
-                ? "We hebben je aanvraag ontvangen. Een adviseur neemt binnen 1 werkdag contact met je op om alles met je af te ronden. Je ontvangt een bevestiging per e-mail, met je SEPA-machtiging als PDF."
-                : "We beoordelen je aanvraag en nemen binnen 1 werkdag contact met je op. Je ontvangt een bevestiging per e-mail, met je SEPA-machtiging als PDF. Na goedkeuring ontvang je je polis en een uitnodiging voor Mijn ZP."}
+                ? "We hebben je aanvraag ontvangen. Binnen 24 uur hoor je van ons. Je ontvangt een bevestiging per e-mail, met je SEPA-machtiging als PDF."
+                : "Binnen 24 uur geregeld, certificaat in je mailbox. Je ontvangt een bevestiging per e-mail, met je SEPA-machtiging als PDF, en een uitnodiging voor Mijn ZP."}
             </p>
             {submissionResult.starter && (
               <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">{STARTER_VOORBEHOUD_TEKST}</p>
@@ -698,7 +698,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                               {pkg.dekkingen.cyber && (
                                 <li className="flex items-start gap-1.5">
                                   <Check className="h-3.5 w-3.5 text-accent mt-0.5 flex-shrink-0" />
-                                  <span>Cyber tot <span className="whitespace-nowrap">{formatBedrag(pkg.dekkingen.cyber.perJaar)}</span>/jr</span>
+                                  <span>Cyber {formatBedrag(pkg.dekkingen.cyber.perSchade)} per schade, maximaal {formatBedrag(pkg.dekkingen.cyber.perJaar)} per jaar</span>
                                 </li>
                               )}
                             </ul>
@@ -730,7 +730,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                             const maxStr = max.toISOString().split('T')[0];
                             if (e.target.value && e.target.value < today) {
                               setStartDate(today);
-                              setErrors(prev => ({ ...prev, startDate: "De ingangsdatum kan niet in het verleden liggen. Neem contact op als je met terugwerkende kracht wilt verzekeren." }));
+                              setErrors(prev => ({ ...prev, startDate: `Online kan de ingangsdatum niet in het verleden liggen. Heb je een vraag, bel ${SITE_CONFIG.phoneDisplay}.` }));
                             } else if (e.target.value && e.target.value > maxStr) {
                               setErrors(prev => ({ ...prev, startDate: "Kies een datum binnen 6 maanden. Voor latere ingangsdata neem contact op." }));
                             }
@@ -1110,17 +1110,17 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                     </div>
                     <div className="space-y-3 text-sm mb-4">
                       <div className="flex flex-col gap-0.5">
-                        <span className="text-background/70">BAV per gebeurtenis</span>
+                        <span className="text-background/70">BAV per aanspraak</span>
                         <span className="font-semibold whitespace-nowrap">{formatBedrag(selectedBavPakket.dekkingen.bav.perGebeurtenis)}</span>
                       </div>
                       <div className="flex flex-col gap-0.5">
-                        <span className="text-background/70">AVB per gebeurtenis</span>
+                        <span className="text-background/70">AVB per aanspraak</span>
                         <span className="font-semibold whitespace-nowrap">{formatBedrag(selectedBavPakket.dekkingen.avb.perGebeurtenis)}</span>
                       </div>
                       {selectedBavPakket.dekkingen.cyber && (
                         <div className="flex flex-col gap-0.5">
-                          <span className="text-background/70">Cyber per jaar</span>
-                          <span className="font-semibold whitespace-nowrap">{formatBedrag(selectedBavPakket.dekkingen.cyber.perJaar)}</span>
+                          <span className="text-background/70">Cyber per schade / per jaar</span>
+                          <span className="font-semibold whitespace-nowrap">{formatBedrag(selectedBavPakket.dekkingen.cyber.perSchade)} / {formatBedrag(selectedBavPakket.dekkingen.cyber.perJaar)}</span>
                         </div>
                       )}
                     </div>

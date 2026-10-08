@@ -166,3 +166,38 @@ Regelnummers kloppen met de code van 8-10-2026. Waar staat "onbekend, besluit Bo
 
 - generate-certificate:525-530 tekent bij "Polisvoorwaarden" een vaste tekst "Informatie en Communicatie Technologie". Of die per branche verandert, is in fase 2 te controleren.
 - Dekkingsgebied, standaardtekst: "ongeacht waar in de EU" (generate-certificate:586). Elders op de site niet genoemd.
+
+## Na fase 2
+
+Boy heeft op 8 oktober 2026 de klantwaarheid vastgesteld. De fase-1-inventarisatie hierboven blijft als historisch verslag staan; de besluiten en controles hieronder vervangen de eerdere onzekerheden over de teksten. Layout en design zijn niet gewijzigd.
+
+| Onderwerp | Nieuwe eenduidige klanttekst en vindplaatsen | Controle tegenstrijdige variant |
+|---|---|---|
+| 1. Opzegbaarheid | Geen jaarcontract, dagelijks opzegbaar, creditnota voor resterende al betaalde dagen. `bavPakketten`, FAQ, Starters-FAQ/FAQPage, pakketkaarten, wizard, Mijn ZP, offerte, llms en Zeker. | Oude jaarcontract-/opzegtermijnclaim niet meer in actuele klantteksten. |
+| 2. Looptijd | Certificaatstandaard: "Doorlopend, zonder minimale looptijd, dagelijks opzegbaar." `generate-certificate`; NL/EN/DE/FR vertaald waar aanwezig. | **9 bestaande policies.contract_duration** bevatten nog de oude 12-maanden-/verlengingstekst. Bewust niet gewijzigd, geen bestaande certificaten opnieuw gemaakt of verstuurd. Nieuwe PDF-output gebruikt de nieuwe standaard. |
+| 3. Creditnota | Maand- en jaarbetaling: naar rato van resterende betaalde dagen. `calculate-pauze-preview`, `PolicyLifecycleActions`, `faqItems`, `_shared/offerte`. | Het legacy-pad is bereikbaar vanuit de portal-acties. Maanduitsluiting verwijderd: gedeelde read-only `maandLifecycleCredit` leest factuurperioden en rekent met `berekenOpzegCredit`, dezelfde dagberekening als de planner. Factuur-ID deduplicatie voorkomt dubbel tellen. Geen live opzegging of Exact-credit uitgevoerd. |
+| 4. Prijzen | "Bespaar € 60" in NL/EN/DE/FR. Starterbedragen en voorwaarden blijven ongewijzigd. "Goedkoopste" blijft buiten starters. | Geen €40-besparingsvariant gevonden. Activatiefactuurbedrag afzonderlijk hieronder. |
+| 5. Eigen risico | Certificaat: "Eigen risico: geen". `PortalPolicy` toont altijd "Geen", ook bij leeg veld. | Oude PDF-uitleg dat ZP Zaken eigen-risicokosten draagt verwijderd uit generator; bestaande PDF-bestanden blijven intact. |
+| 6. Verzekerde bedragen | BAV en AVB "per aanspraak"; bestaande jaarmaxima behouden. Cyber €50.000 per schade én maximaal €5.000.000 per jaar uit `bavPakketten` bij wizard, prijskaarten, Zeker en llms. | Geen klanttekst "per gebeurtenis" meer gevonden. Technische veldnamen `perGebeurtenis`, `bav_per_event` en `avb_per_event` zijn geen klanttekst en blijven intact. Artikel `cyberverzekering-zzp` bevat beide bedragen. |
+| 7. Snelheid/ingangsdatum | "Binnen 24 uur geregeld, certificaat in je mailbox"; zorg/bouw "binnen 24 uur hoor je van ons". Wizard/server: "Online kan de ingangsdatum niet in het verleden liggen. Heb je een vraag, bel 020 - 457 3077." | "Direct gedekt/verzekerd", "binnen 1 werkdag/één werkdag" bij BAV-aanvragen en certificaten verwijderd. Reactieteksten van terugbelverzoeken, screening, klachten en factoring zijn geen verzekeringsdekking en vallen buiten deze vervanging. Geen automatische activatie toegevoegd. |
+| 8. Inloop/uitloop | Kenmerk `runOffCoverage` verwijderd in alle vertalingen. Pauze-, zoek-, portal- en mailbeloften vervangen door contact/polisvoorwaarden bij claims voor eerder werk. | Geen toezegging behoud uitlooprisico meer. Algemene uitleg op vergelijkings-/bouwpagina blijft, zonder belofte voor ZP-polis. |
+| 9. Doelgroep | Zorg/bouw normale aanvraagteksten zonder interne acceptatie-/offertetrajectmelding. Beveiligde teamcontroles blijven. | Geen "handmatige acceptatie" of "aparte beoordeling" in gescande klantteksten/artikelen. Interne teammeldingen en chatbot-instructie die deze woorden verbiedt zijn bewust behouden. |
+| 10. Historie | Actief sinds 2013, 13+ jaar. `OverOns`, bestaande timeline-startjaar, `SiteSchemaMarkup`, `index.html`, `seoRoutes`, zoekdata. | Geen 2014-oprichtingsclaim gevonden. Geen nieuwe timelinegebeurtenissen verzonnen. |
+
+### Activatiefactuurbedrag (apart)
+
+Het maandpakket heeft nog een technische jaarpremie van €660 in de pakketspecificatie, maar de daadwerkelijke activatieconceptfactuur gebruikt `override.amount`: `calcMaandProrata` over de gekozen ingangsdatum tot de laatste dag van die maand. Dat is maximaal €55 bij een volledige maand, anders de eerste periode naar rato. Ook het opnieuw-proberen-pad gebruikt deze override. Daarom is uitsluitend de betalingsregel gewijzigd naar **"Betaling: maandelijks € 55 via SEPA-incasso, dagelijks opzegbaar"**. Bedragen en facturatieberekeningen zijn niet gewijzigd. Geen nieuwe Exact-factuur aangemaakt voor deze controle.
+
+### Herhaalde controles
+
+- Bronscan opnieuw uitgevoerd op pagina's, componenten, NL/EN/DE/FR, wizard/formulieren, mailtemplates, PDF-generator, Zeker, llms-generator, SEO/meta/JSON-LD. Zoekpatronen: `per gebeurtenis`, `direct (weer )?(verzekerd|gedekt)`, `binnen (1|één) werkdag`, `12 termijnen`, `2014`, `runOffCoverage`, `behoud van uitloop`, `uitlooprisico blijft`, `handmatige acceptatie`, `aparte beoordeling`, `bespaar.{0,6}40`; Engelse/Duitse varianten afzonderlijk gecontroleerd.
+- Gepubliceerde `articles`: gerichte vervanging in vier artikelen met `updated_at`, niets verwijderd. Na controle **0 artikelen** met de bovenstaande tegenstrijdige Nederlandse varianten (content/title/excerpt/seo_description).
+- Tabelkolommen geïnventariseerd op FAQ/page/content: geen afzonderlijke publieke FAQ-/paginadatabel gevonden. Artikelbackups en interne leadnotities blijven ongemoeid; integratie-/boekhoudconfiguratie bevat geen publieke FAQ-teksten. Geheimen niet gelezen of gelogd.
+- Facturatie 13-19 oktober: **51 / €6.943,00; 1 geblokkeerde regel**. Directe RPC-uitvoering door de read-only rol is geweigerd. De controle is daarom uitgevoerd als read-only SQL met dezelfde kandidaatselectie, mappingvolgorde, periode-/starterberekening en blokkades als de gelezen functie, zonder rechten te verruimen. Zowel vóór als na de laatste wijzigingen identieke uitkomst.
+- **79 tests geslaagd**: Zeker-bronsynchronisatie, offertes/sectoren, kredietberekeningen oud/nieuw, lifecyclemail, SEPA-bytegelijkheid, factuurtekst/periode, startertarief en drie nieuwe maandcredit-tests. Preview-buildlog meldt `build OK`.
+- Browsercontrole op `/verzekeringen`, `/faq`, `/starters`, `/over-ons`: geen JavaScript-runtimefouten; pakket-/wizardtekst zichtbaar gecontroleerd. FAQ-antwoorden zijn ingeklapt en niet allemaal visueel geopend; bron en schema gecontroleerd.
+- Gewijzigde functies gedeployed: `calculate-pauze-preview`, `polis-lifecycle`, `generate-certificate`, `lead-to-exact-activate`, `process-bav-wizard`, `send-notification`, `send-offerte`, `send-lead-notification`, `zeker-chat`, `submit-public-form`.
+
+### Afbakening
+
+Geen publicatie, klantmails, Exact-writes, verwijderingen of wijzigingen aan bestaande certificaten. De bestaande voorwaarden/IPID/PDF-bestanden van de verzekeraar zijn niet herschreven; de vaste ICT-polisvoorwaardenregel in de certificaatgenerator is buiten deze tekstbesluiten gebleven. De daadwerkelijke afhandelingstijd en geldigheid van toekomstige claims zijn niet via een live klantactie getest. De code- en tekstcontrole is geen bevestiging van verzekeraarsdocumenten buiten deze bronnen.

@@ -25,7 +25,7 @@ export default function ZzpVerzekeringCoach() {
       subtitle="Als coach of trainer help je mensen en teams verder. Je klant vertrouwt op jouw begeleiding. Stelt iemand je aansprakelijk voor schade door je werk, dan helpt een BAV en AVB in één polis."
       sector="coaches"
       benefits={[
-        { icon: HeartHandshake, title: "Voor coaches en trainers", description: `Voor loopbaancoaches, business coaches, teamcoaches en trainers. ${BAV_DEKKING} BAV en ${AVB_DEKKING} AVB per gebeurtenis.` },
+        { icon: HeartHandshake, title: "Voor coaches en trainers", description: `Voor loopbaancoaches, business coaches, teamcoaches en trainers. ${BAV_DEKKING} BAV en ${AVB_DEKKING} AVB per aanspraak.` },
         { icon: ShieldCheck, title: "Geen eigen risico", description: "Je betaalt geen eigen risico. Je polis is dagelijks opzegbaar." },
         { icon: Clock, title: "Binnen 24 uur geregeld", description: "Online afsluiten, binnen 24 uur geregeld en je certificaat in je mailbox." },
       ]}

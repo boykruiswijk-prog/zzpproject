@@ -64,8 +64,8 @@ describe("teksten /starters", () => {
     expect(bron).not.toMatch(/gratis|goedkoopst|alleen vandaag|verzekeringsbemiddelaar|[\u2013\u2014]/i);
   });
   it("helpers byte-gelijk", () => {
-    const a = readFileSync("src/lib/starterTarief.ts", "utf8").split("\n").slice(1).join("\n");
-    const b = readFileSync("supabase/functions/_shared/starterTarief.ts", "utf8").split("\n").slice(1).join("\n");
+    const a = readFileSync("src/lib/starterTarief.ts", "utf8").split("\n").filter((line) => !line.startsWith("// Startertarief BAV + AVB. Byte-gelijk aan")).join("\n");
+    const b = readFileSync("supabase/functions/_shared/starterTarief.ts", "utf8").split("\n").filter((line) => !line.startsWith("// Startertarief BAV + AVB. Byte-gelijk aan")).join("\n");
     expect(a).toBe(b);
     expect(STARTER.maandprijs).toBe(45);
   });

@@ -33,7 +33,7 @@ const values = [
 ];
 
 const facts = [
-  { value: "2014", label: "Opgericht" },
+  { value: "2013", label: "Actief sinds" },
   { value: SITE_CONFIG.klantenAantal, label: "Klanten" },
   { value: "13+", label: "Jaar ervaring" },
   { value: "5,0/5", label: "Beoordeling" },

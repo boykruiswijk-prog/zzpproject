@@ -99,7 +99,7 @@ export function PolicyLifecycleActions() {
   const handleHervatten = async () => {
     try {
       await lifecycle.mutateAsync({ action: "hervatten", lead_id: lead.id });
-      toast({ title: "Polis weer actief", description: "Je bent direct weer gedekt." });
+      toast({ title: "Polis weer actief", description: "Je polis is hervat." });
       setHervatOpen(false);
     } catch (e: any) {
       toast({ title: "Fout", description: e.message, variant: "destructive" });
@@ -177,7 +177,7 @@ export function PolicyLifecycleActions() {
           <DialogHeader>
             <DialogTitle>Polis pauzeren</DialogTitle>
             <DialogDescription>
-              Tijdens de pauze ben je niet gedekt voor nieuwe schade. Schade van vóór de pauze blijft gedekt.
+              Tijdens de pauze ben je niet gedekt voor nieuwe schade. Heb je vragen over een claim voor eerder werk? Neem contact met ons op en raadpleeg de polisvoorwaarden.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -188,7 +188,7 @@ export function PolicyLifecycleActions() {
                   <p className="font-medium text-amber-900">Financiële afhandeling</p>
                   <p className="text-amber-800">
                     {pauzePreview.data?.is_maandpolis ? pauzePreview.data.uitleg : <>
-                    Je ontvangt een creditnota voor de resterende dagen van je polisjaar
+                    Je ontvangt een creditnota voor de resterende dagen die je al betaald hebt
                     {pauzePreview.data?.polis_einddatum ? ` tot ${formatDateLongNL(pauzePreview.data.polis_einddatum)}` : ""}.
                     Bij hervatten ontvang je een nieuwe factuur voor de dagen vanaf hervat-datum.
                     </>}
@@ -254,7 +254,7 @@ export function PolicyLifecycleActions() {
           <DialogHeader>
             <DialogTitle>Polis hervatten</DialogTitle>
             <DialogDescription>
-              Vanaf vandaag ben je weer volledig gedekt. Je ontvangt een nieuwe factuur voor de resterende dagen van je polisjaar.
+              Je hervatting is binnen 24 uur geregeld, certificaat in je mailbox. Je ontvangt een nieuwe factuur voor de resterende dagen die je al betaald hebt.
             </DialogDescription>
           </DialogHeader>
           <div className="rounded-md border bg-muted/40 p-3 text-sm">
@@ -283,7 +283,7 @@ export function PolicyLifecycleActions() {
           <DialogHeader>
             <DialogTitle>Polis opzeggen</DialogTitle>
             <DialogDescription>
-              Je polis kan dagelijks worden opgezegd. Schade die vóór de opzegdatum ontstond blijft gedekt.
+              Je polis kan dagelijks worden opgezegd. Heb je vragen over een claim voor eerder werk? Neem contact met ons op en raadpleeg de polisvoorwaarden.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -295,7 +295,7 @@ export function PolicyLifecycleActions() {
                     <p className="font-medium text-amber-900">Financiële afhandeling</p>
                     <p className="text-amber-800">
                       {opzegPreview.data?.is_maandpolis ? opzegPreview.data.uitleg : <>
-                      Geen jaarcontract-lock-in: je ontvangt een creditnota voor de resterende dagen van je polisjaar
+                      Geen jaarcontract en dagelijks opzegbaar: je ontvangt een creditnota voor de resterende dagen die je al betaald hebt
                       {opzegPreview.data?.polis_einddatum ? ` tot ${formatDateLongNL(opzegPreview.data.polis_einddatum)}` : ""}.
                       </>}
                     </p>
@@ -348,7 +348,7 @@ export function PolicyLifecycleActions() {
             {opzegVanuitActief && (
               <label className="flex items-start gap-2 text-sm cursor-pointer">
                 <Checkbox checked={opzegAkkoord} onCheckedChange={(v) => setOpzegAkkoord(v === true)} className="mt-0.5" />
-                <span>Ik begrijp dat mijn polis per vandaag eindigt en dat er een creditnota wordt aangemaakt voor de resterende dagen van mijn polisjaar.</span>
+                <span>Ik begrijp dat mijn polis per vandaag eindigt en dat er een creditnota wordt aangemaakt voor de resterende dagen die ik al betaald heb.</span>
               </label>
             )}
           </div>

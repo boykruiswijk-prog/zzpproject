@@ -80,7 +80,7 @@ export default function ZzpVerzekeringICT() {
         },
         {
           icon: Clock,
-          title: "Binnen 24 uur verzekerd",
+          title: "Binnen 24 uur geregeld, certificaat in je mailbox",
           description:
             "Geen wachttijden. Je sluit online af, binnen 24 uur is het geregeld en staat je certificaat in je mailbox.",
         },

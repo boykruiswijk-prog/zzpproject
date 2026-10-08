@@ -1,3 +1,4 @@
+import { getPakket } from "@/data/bavPakketten";
 import { seoRoute } from "@/config/seoRoutes";
 import { SITE_CONFIG } from "@/config/site";
 import { SEOHead } from "@/components/SEOHead";
@@ -40,9 +41,9 @@ const fade = {
 // Tarieven gesynchroniseerd met src/data/bavPakketten.ts (single source of truth).
 // Toont anoniem concurrent-prijzen ter vergelijking; behoud de anonimisering.
 const packages = [
-  { name: "BAV & AVB Maandelijks", price: 55, periode: "maand", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Dagelijks opzegbaar"] },
-  { name: "BAV & AVB Jaarlijks", price: 600, periode: "jaar", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Dagelijks opzegbaar", "Goedkoopste premie"], popular: true },
-  { name: "BAV & AVB Jaarlijks + Cyber", price: 750, periode: "jaar", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB + Cyber", "Cyber tot €5.000.000 per jaar", "Geen eigen risico", "Dagelijks opzegbaar"] },
+  { name: "BAV & AVB Maandelijks", price: 55, periode: "maand", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt."] },
+  { name: "BAV & AVB Jaarlijks", price: 600, periode: "jaar", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt.", "Goedkoopste premie"], popular: true },
+  { name: "BAV & AVB Jaarlijks + Cyber", price: 750, periode: "jaar", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB + Cyber", `Cyber € ${getPakket("jaarlijks-cyber").dekkingen.cyber?.perSchade.toLocaleString("nl-NL")} per schade, maximaal € ${getPakket("jaarlijks-cyber").dekkingen.cyber?.perJaar.toLocaleString("nl-NL")} per jaar`, "Geen eigen risico", "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt."] },
 ];
 
 const diffBlocks = [
@@ -182,7 +183,7 @@ export default function WaaromZpZaken() {
                 <h3 className="text-lg font-bold mb-1">{pkg.name}</h3>
                 <p className="text-3xl font-bold text-accent mb-1 whitespace-nowrap">€{pkg.price}<span className="text-sm font-normal text-muted-foreground">/{pkg.periode}</span></p>
                 <div className="text-xs text-muted-foreground mb-6 space-y-0.5">
-                  <p className="flex justify-between gap-2"><span>Per gebeurtenis</span><span className="font-medium whitespace-nowrap">{pkg.eventCoverage}</span></p>
+                  <p className="flex justify-between gap-2"><span>Per aanspraak</span><span className="font-medium whitespace-nowrap">{pkg.eventCoverage}</span></p>
                   <p className="flex justify-between gap-2"><span>Per jaar</span><span className="font-medium whitespace-nowrap">{pkg.yearCoverage}</span></p>
                 </div>
                 <ul className="space-y-2">
@@ -197,7 +198,7 @@ export default function WaaromZpZaken() {
             ))}
           </div>
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center">
-            <p className="text-muted-foreground mb-6">Geen eigen risico. Geen medische keuring. Dagelijks opzegbaar. Direct gedekt.</p>
+            <p className="text-muted-foreground mb-6">Geen eigen risico. Geen medische keuring. Dagelijks opzegbaar. Binnen 24 uur geregeld, certificaat in je mailbox.</p>
             <Button variant="accent" size="lg" asChild>
               <LocalizedLink to="/verzekeringen">Sluit nu direct af <ArrowRight className="h-5 w-5" /></LocalizedLink>
             </Button>
