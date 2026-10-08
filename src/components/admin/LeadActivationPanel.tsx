@@ -86,13 +86,24 @@ export function LeadActivationPanel({ lead, magActiveren, fase }: Props) {
   const canShow = magActiveren && faseStaatActivatieToe && !alreadyActivated && !isAfgewezen;
 
   const activate = async () => {
+    if ((lead as any).starter_controle_status === "te_controleren") {
+      setDialogOpen(false);
+      toast({ title: "Eerst startertarief beoordelen", description: "Kies bij het blok Startertarief bovenaan: startertarief goedkeuren of afwijzen (normaal tarief). Daarna kun je activeren.", variant: "destructive" });
+      document.getElementById("starter-toelichting")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
     setIsActivating(true);
     setDialogOpen(false);
     try {
       const { data, error } = await supabase.functions.invoke("lead-to-exact-activate", {
         body: { lead_id: lead.id, ...(vereistAcceptatie ? { handmatige_acceptatie_bevestigd: acceptatieAfgestemd } : {}) },
       });
-      if (error) throw error;
+      if (error) {
+        // Bij een 4xx-antwoord staat de echte reden in de response body.
+        let reden: string | null = null;
+        try { const b = await (error as any)?.context?.json?.(); reden = b?.error ?? null; } catch { /* geen body */ }
+        throw new Error(reden ?? error.message);
+      }
       if (!data?.success) {
         const detail = data?.missing ? ` Ontbrekend: ${data.missing.join(", ")}` : "";
         throw new Error(`${data?.error || "Onbekende fout"}${detail}`);
