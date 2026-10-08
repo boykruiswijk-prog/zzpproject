@@ -1,14 +1,14 @@
 # Technische afspraken
 
 - SEPA-tekst staat byte-gelijk in frontend en _shared/sepaMachtiging.ts; bewijs is onveranderbaar.
-- Mijn ZP-toegang (gebruiker aanmaken, polissen koppelen, magic link, mail+log) staat in supabase/functions/_shared/portalAccess.ts; klanten lezen leadvelden alleen via RPC get_mijn_polissen. Waarom: één toegangsroute en geen klant-SELECT op leads.
+- Portal access (create user, link policies, magic link, mail/log) uses _shared/portalAccess.ts; customers read lead fields only via get_mijn_polissen RPC. Why: one access path, no customer SELECT on leads.
 - BAV-AVB-factuurteksten en YourRef lopen via _shared/factuurTekst.ts; periode vooraan, maximaal 60 tekens.
 - BAV-sector → adminbranche loopt via _shared/sectorBranche.ts; het sectorlabel blijft in extra_data. Waarom: vaste waarden zonder informatieverlies.
 - Intakeadres via _shared/adresNormalisatie.ts vóór legBewijsVast. Waarom: overal hetzelfde adres.
 
 ## Beveiligingsarchitectuur
 
-- Openbare formulieren schrijven uitsluitend via gevalideerde Edge Functions; anon krijgt geen directe tabelrechten. Waarom: formulieren blijven bruikbaar zonder persoonsgegevens publiek leesbaar te maken.
+- Public forms write only via validated Edge Functions; anon has no direct table grants. Why: usable forms without public personal data.
 - Exact-verwerking voor screening wordt nooit vanuit de openbare formulierfunctie uitgevoerd. Waarom: boekhoudmutaties vereisen een afzonderlijke beveiligde teamactie.
 - Security-definerfuncties krijgen minimale EXECUTE-rechten; alleen expliciete publieke leesfuncties blijven voor anon beschikbaar. Waarom: privilege-escalatie via RPC voorkomen.
 - Policies met rolfuncties gelden alleen `TO authenticated`; publieke leespolicies gebruiken geen rolfunctie. Controle: scripts/check-anon-kennisbank.mjs.
@@ -31,4 +31,4 @@
 - Article images: leased queue, wake token or MFA supervisor, max 2 AI attempts then category fallback; never a global pause (AI refusal only sets admin notice); crashed jobs resume as fallback. Preserve custom/old assets; build verifies images; keep ArticleImage guard. Why: every article gets an image within minutes.
 - scripts/* importeren geen React. Waarom: anders crasht de SSR-prerender (prod/dev-mix).
 
-- Legacy monthly lifecycle credits use actual invoiced periods via the shared lifecycle credit reader and berekenOpzegCredit, also used by planner credits; preview uses the same reader. Why: no annual-premium refund on monthly plans and no duplicate period refunds.
+- Monthly lifecycle/preview credits read actual invoiced periods via _shared/lifecycleCredit.ts and planner helper berekenOpzegCredit. Why: no annual-premium math or duplicate refunds.
