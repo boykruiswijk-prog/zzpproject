@@ -1,3 +1,4 @@
+// Regel: alleen de huidige KVK-inschrijvingsdatum telt; omzetting eenmanszaak -> nieuwe BV telt als starter.
 // Startertarief BAV + AVB. Byte-gelijk aan src/lib/starterTarief.ts (op deze regel na).
 // Pure functies: geen netwerk, geen database.
 

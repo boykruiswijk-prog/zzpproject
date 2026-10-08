@@ -49,7 +49,8 @@ export function StartertariefControle({ lead, magBeoordelen }: { lead: LeadStart
       </CardHeader>
       <CardContent className="space-y-3 text-sm">
         <p>KVK-nummer: <strong>{lead.kvk_nummer || "onbekend"}</strong>{lead.bedrijfsnaam ? <> ({lead.bedrijfsnaam})</> : null}</p>
-        <p>Rechtsvorm: <strong>{rechtsvorm || "onbekend"}</strong>{!rechtsvorm && /\b(b\.?v\.?|bv)\b/i.test(lead.bedrijfsnaam ?? "") ? <span className="text-muted-foreground"> (naam eindigt op BV; controleer of het een omzetting van een eenmanszaak is)</span> : null}</p>
+        <p>Rechtsvorm: <strong>{rechtsvorm || "onbekend"}</strong>{!rechtsvorm && /\b(b\.?v\.?|bv)\b/i.test(lead.bedrijfsnaam ?? "") ? <span className="text-muted-foreground"> (BV: een omzetting van eenmanszaak naar een nieuwe BV telt als starter; leidend is de inschrijvingsdatum van de huidige KVK-inschrijving)</span> : null}</p>
+        <p className="text-xs text-muted-foreground">Regel: KVK-inschrijvingsdatum van de huidige inschrijving jonger dan 12 maanden op de ingangsdatum = startertarief, ook na omzetting van eenmanszaak naar BV.</p>
         <p>Opgegeven startdatum KVK-inschrijving: <strong>{lead.kvk_startdatum ? formatDateNL(lead.kvk_startdatum) : "onbekend"}</strong></p>
         {lead.tarief_type === "starter" && lead.starter_tot && <p>Startertarief t/m <strong>{formatDateNL(lead.starter_tot)}</strong>, daarna automatisch de gewone prijs.</p>}
         <p className="text-muted-foreground">{STARTER_VOORWAARDE_TEKST}</p>
