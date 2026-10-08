@@ -575,6 +575,13 @@
       "when": 1791462254942,
       "tag": "0081_certificaat_nummer_omzetting",
       "breakpoints": true
+    },
+    {
+      "idx": 82,
+      "version": "7",
+      "when": 1791462662189,
+      "tag": "0082_bav_nummer_werklijst_en_uniciteit",
+      "breakpoints": true
     }
   ]
 }

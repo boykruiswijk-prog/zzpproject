@@ -671,6 +671,38 @@ export type Database = {
           },
         ]
       }
+      bav_nummer_nakijken: {
+        Row: {
+          gemarkeerd_door: string
+          gemarkeerd_op: string
+          onderneming_id: string
+          status: string
+          toelichting: string | null
+        }
+        Insert: {
+          gemarkeerd_door: string
+          gemarkeerd_op?: string
+          onderneming_id: string
+          status?: string
+          toelichting?: string | null
+        }
+        Update: {
+          gemarkeerd_door?: string
+          gemarkeerd_op?: string
+          onderneming_id?: string
+          status?: string
+          toelichting?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bav_nummer_nakijken_onderneming_id_fkey"
+            columns: ["onderneming_id"]
+            isOneToOne: true
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_messages: {
         Row: {
           acties: Json | null
@@ -4581,6 +4613,20 @@ export type Database = {
         Args: { _nummer: string; _onderneming_id: string; _toelichting: string }
         Returns: Json
       }
+      bav_nummer_bezet_door: {
+        Args: { _nummer: string; _voor_ond: string }
+        Returns: Json
+      }
+      bav_nummer_handmatig_bevestigen: {
+        Args: { _nummer: string; _onderneming_id: string; _toelichting: string }
+        Returns: Json
+      }
+      bav_nummer_later: {
+        Args: { _onderneming_id: string; _toelichting: string }
+        Returns: boolean
+      }
+      bav_nummer_werklijst: { Args: never; Returns: Json }
+      bav_sleutel: { Args: { _t: string }; Returns: string }
       beoordeel_klant_certificaat: {
         Args: { _bevestigen: boolean; _id: string }
         Returns: Json

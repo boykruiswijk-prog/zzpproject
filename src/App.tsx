@@ -50,6 +50,7 @@ const Screening = lazy(() => import("./pages/Screening"));
 const AdminScreeningAanvragen = lazy(() => import("./pages/admin/ScreeningAanvragen"));
 const AdminScreeningAanvraagDetail = lazy(() => import("./pages/admin/ScreeningAanvraagDetailPage"));
 const AdminServiceAanvragen = lazy(() => import("./pages/admin/ServiceAanvragen"));
+const AdminBavNummerNakijken = lazy(() => import("./pages/admin/BavNummerNakijken"));
 const AdminServiceAanvraagDetail = lazy(() => import("./pages/admin/ServiceAanvraagDetailPage"));
 const AdminCRM = lazy(() => import("./pages/admin/CRM"));
 const AdminActiviteiten = lazy(() => import("./pages/admin/Activiteiten"));
@@ -232,6 +233,7 @@ export const AppRoutes = () => (
             <Route path="/admin/service-aanvragen" element={<AdminServiceAanvragen />} />
             <Route path="/admin/opzeggingen" element={<AdminServiceAanvragen modus="opzeggingen" />} />
             <Route path="/admin/portaltoegang" element={<AdminServiceAanvragen modus="portaltoegang" />} />
+            <Route path="/admin/bav-nummer-nakijken" element={<AdminBavNummerNakijken />} />
             <Route path="/admin/service-aanvragen/:id" element={<AdminServiceAanvraagDetail />} />
             <Route path="/admin/social-media" element={<RoleGuard allow={["marketing"]}><AdminSocialMediaFeatures /></RoleGuard>} />
             <Route path="/admin/marketing" element={<RoleGuard allow={["marketing"]}><AdminMarketing /></RoleGuard>} />
