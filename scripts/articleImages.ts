@@ -74,8 +74,24 @@ export async function generateArticleImages(distDir: string, root: string, env: 
   fs.mkdirSync(output, { recursive: true });
   let count = 0;
   for (const article of [...published, ...drafts]) {
-    if (article.image_url || !article.slug) continue;
+    if (!article.slug) continue;
     if (!/^[\p{L}\p{N}_-]+$/u.test(article.slug)) throw new Error("[article-images] Ongeldige artikelslug.");
+    if (article.image_url) {
+      const url = new URL(article.image_url, 'https://zpzaken.nl');
+      const response = await fetch(url);
+      const contentType = response.headers.get('content-type') ?? '';
+      if (!response.ok || !contentType.startsWith('image/')) throw new Error(`[article-images] Afbeelding niet bereikbaar: ${article.slug}`);
+      const image = Buffer.from(await response.arrayBuffer());
+      if (!image.length) throw new Error(`[article-images] Lege afbeelding: ${article.slug}`);
+      const extension = contentType.includes('png') ? 'png' : contentType.includes('webp') ? 'webp' : 'jpg';
+      fs.writeFileSync(path.join(output, `${article.slug}.${extension}`), image);
+      if (article.image_url.includes('/article-images/generated/') && article.image_url.endsWith('-illustration.png')) {
+        const og = await fetch(article.image_url.replace(/-illustration\.png$/, '-og.png'));
+        if (!og.ok || !og.headers.get('content-type')?.startsWith('image/')) throw new Error(`[article-images] Deelbeeld ontbreekt: ${article.slug}`);
+        fs.writeFileSync(path.join(output, `${article.slug}-og.png`), Buffer.from(await og.arrayBuffer()));
+      }
+      continue;
+    }
     fs.writeFileSync(path.join(output, `${article.slug}.png`), await renderArticleImage(article, root));
     count++;
   }

@@ -1,0 +1,1 @@
+GRANT SELECT (id,lease_until,paused_reason) ON public.article_image_worker TO authenticated;

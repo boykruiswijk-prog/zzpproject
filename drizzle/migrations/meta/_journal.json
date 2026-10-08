@@ -519,6 +519,13 @@
       "when": 1791452676981,
       "tag": "0073_article_image_job_wakeup",
       "breakpoints": true
+    },
+    {
+      "idx": 74,
+      "version": "7",
+      "when": 1791452791824,
+      "tag": "0074_article_image_worker_status_read",
+      "breakpoints": true
     }
   ]
 }
