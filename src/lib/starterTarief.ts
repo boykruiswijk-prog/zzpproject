@@ -1,3 +1,4 @@
+// Regel: alleen de huidige KVK-inschrijvingsdatum telt; omzetting eenmanszaak -> nieuwe BV telt als starter.
 // Startertarief BAV + AVB. Byte-gelijk aan supabase/functions/_shared/starterTarief.ts.
 // Pure functies: geen netwerk, geen database.
 
