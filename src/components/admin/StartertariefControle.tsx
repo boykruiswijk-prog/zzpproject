@@ -14,17 +14,20 @@ import { STARTER_VOORWAARDE_TEKST } from "@/lib/starterTarief";
 type LeadStarter = {
   id: string; kvk_startdatum?: string | null; tarief_type?: string | null; starter_tot?: string | null;
   starter_controle_status?: string | null; starter_beoordeeld_op?: string | null; starter_toelichting?: string | null;
-  geactiveerd_op?: string | null;
+  geactiveerd_op?: string | null; kvk_nummer?: string | null; bedrijfsnaam?: string | null;
+  extra_data?: Record<string, any> | null;
 };
 
 const LABEL: Record<string, string> = { te_controleren: "Startertarief controleren", goedgekeurd: "Startertarief goedgekeurd", afgewezen: "Startertarief afgewezen" };
 
-/** Startertarief op de leaddetailpagina. Beoordelen alleen door supervisor/admin, voor activatie. */
+/** Startertarief op de leaddetailpagina. Beoordelen door verzekering/supervisor/admin, voor activatie. */
 export function StartertariefControle({ lead, magBeoordelen }: { lead: LeadStarter; magBeoordelen: boolean }) {
   const qc = useQueryClient();
   const [toelichting, setToelichting] = useState("");
   const [bezig, setBezig] = useState(false);
   if (!lead.starter_controle_status) return null;
+  const kg = (lead.extra_data?.kvk_gegevens ?? lead.extra_data?.kvk ?? {}) as Record<string, any>;
+  const rechtsvorm: string | null = kg?.rechtsvorm ?? kg?.profiel?.rechtsvorm ?? null;
   const open = lead.starter_controle_status === "te_controleren" && !lead.geactiveerd_op;
 
   async function beoordeel(goedkeuren: boolean) {
@@ -45,6 +48,8 @@ export function StartertariefControle({ lead, magBeoordelen }: { lead: LeadStart
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3 text-sm">
+        <p>KVK-nummer: <strong>{lead.kvk_nummer || "onbekend"}</strong>{lead.bedrijfsnaam ? <> ({lead.bedrijfsnaam})</> : null}</p>
+        <p>Rechtsvorm: <strong>{rechtsvorm || "onbekend"}</strong>{!rechtsvorm && /\b(b\.?v\.?|bv)\b/i.test(lead.bedrijfsnaam ?? "") ? <span className="text-muted-foreground"> (naam eindigt op BV; controleer of het een omzetting van een eenmanszaak is)</span> : null}</p>
         <p>Opgegeven startdatum KVK-inschrijving: <strong>{lead.kvk_startdatum ? formatDateNL(lead.kvk_startdatum) : "onbekend"}</strong></p>
         {lead.tarief_type === "starter" && lead.starter_tot && <p>Startertarief t/m <strong>{formatDateNL(lead.starter_tot)}</strong>, daarna automatisch de gewone prijs.</p>}
         <p className="text-muted-foreground">{STARTER_VOORWAARDE_TEKST}</p>
@@ -55,11 +60,11 @@ export function StartertariefControle({ lead, magBeoordelen }: { lead: LeadStart
             <Label htmlFor="starter-toelichting">Toelichting (optioneel)</Label>
             <Textarea id="starter-toelichting" rows={2} maxLength={500} value={toelichting} onChange={(e) => setToelichting(e.target.value)} />
             <div className="flex flex-wrap gap-2">
-              <Button size="sm" disabled={bezig} onClick={() => beoordeel(true)}>{bezig && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Goedkeuren</Button>
-              <Button size="sm" variant="outline" disabled={bezig} onClick={() => beoordeel(false)}>Afwijzen (gewone prijs)</Button>
+              <Button size="sm" disabled={bezig} onClick={() => beoordeel(true)}>{bezig && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Startertarief goedkeuren</Button>
+              <Button size="sm" variant="outline" disabled={bezig} onClick={() => beoordeel(false)}>Afwijzen, normaal tarief (€ 55 per maand / € 600 per jaar)</Button>
             </div>
           </div>
-        ) : <p className="text-muted-foreground">Een supervisor of admin controleert dit voor activatie.</p>)}
+        ) : <p className="text-muted-foreground">Een teamlid met rol verzekering, supervisor of admin controleert dit voor activatie.</p>)}
       </CardContent>
     </Card>
   );
