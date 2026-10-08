@@ -5,6 +5,7 @@ import satori from 'npm:satori@0.10.14';
 import { Resvg, initWasm } from 'npm:@resvg/resvg-wasm@2.6.2';
 import { categoryDesign, illustrationPrompt } from './design.ts';
 import { illustration, inspectIllustration, GatewayError } from './ai.ts';
+import { kiesBeeld } from './kiesBeeld.ts';
 import { requireSupervisor } from '../_shared/teamAuth.ts';
 const BUCKET = 'article-images';
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
@@ -70,27 +71,16 @@ Deno.serve(async req => {
    return json({ ok: true, status: 'eigen_afbeelding_behouden' });
   }
   await admin.from('article_image_jobs').update({ status: 'running' }).eq('article_id',job.article_id);
-  let image: string | undefined, reason: string | null = null, usedAttempts = 0;
   const key = Deno.env.get('LOVABLE_API_KEY');
-  if (key) {
-   for (let attempt = 1; attempt <= 2; attempt++) {
-    try {
-     usedAttempts = attempt;
-     const candidate = await illustration(illustrationPrompt(article, attempt), key);
-     const review = await inspectIllustration(candidate, key);
-     console.log(JSON.stringify({ slug: article.slug, attempt, accepted: review.accepted, reason: review.reason }));
-     if (review.accepted) { image = candidate; reason = null; break; }
-     reason = review.reason;
-    } catch (e) {
-     reason = e instanceof Error ? e.message : 'Beeldgeneratie mislukt';
-     // Failed provider requests are not quality rejections: never retry/rephrase them.
-     if (e instanceof GatewayError && (e.status === 402 || e.status === 403 || e.status === 429 || e.status === 404 || e.terminal)) {
-      await admin.from('article_image_worker').update({ paused_reason: reason }).eq('id', true);
-     }
-     break;
-    }
-   }
-  } else reason = 'LOVABLE_API_KEY ontbreekt';
+  const keuze = await kiesBeeld(
+   key ? (attempt) => illustration(illustrationPrompt(article, attempt), key) : null,
+   (img) => inspectIllustration(img, key!),
+   (e) => e instanceof GatewayError && (e.status === 402 || e.status === 403 || e.status === 404 || e.terminal),
+  );
+  const image = keuze.image, reason = keuze.reason, usedAttempts = keuze.attempts;
+  console.log(JSON.stringify({ slug: article.slug, attempts: usedAttempts, type: image ? 'illustration' : 'fallback', reason }));
+  // Structurele AI-weigering: admin-melding, nooit pauze; terugval loopt altijd door.
+  if (keuze.structureel) await admin.from('article_image_worker').update({ ai_melding: reason, ai_melding_op: new Date().toISOString() }).eq('id', true);
   const stamp = `${article.slug}-${Date.now()}-${lease.slice(0,8)}`;
   const path = image ? `generated/${stamp}-illustration.png` : `generated/${stamp}-fallback.png`;
   try {
