@@ -34,6 +34,8 @@ export interface GuardInput {
   ms?: unknown;
   /** Soort formulier, bepaalt de limiet. */
   kind: string;
+  /** false = IP-limiet overslaan (bijv. herhaalde aanvraag van een bekende klant). */
+  throttle?: boolean;
 }
 
 export interface GuardResult {
@@ -73,6 +75,7 @@ export async function guardPublicSubmission(
   }
 
   // 3. IP-throttle
+  if (input.throttle === false) return { ok: true };
   const ip = clientIp(req);
   const limit = LIMITS[input.kind] ?? LIMITS.default;
   try {
