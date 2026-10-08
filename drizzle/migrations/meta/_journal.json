@@ -547,6 +547,13 @@
       "when": 1791457727413,
       "tag": "0077_startertarief_beoordelen_verzekering",
       "breakpoints": true
+    },
+    {
+      "idx": 78,
+      "version": "7",
+      "when": 1791459343001,
+      "tag": "0078_omzetting_rechtsopvolging",
+      "breakpoints": true
     }
   ]
 }
