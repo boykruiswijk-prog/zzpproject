@@ -12,14 +12,14 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDateNL } from "@/lib/dateFormat";
 
-type BavOptie = { nummer: string; bron: string; datum: string | null };
+type BavOptie = { nummer: string; bron: string; datum: string | null; bevestigd?: boolean };
 type Kandidaat = {
   onderneming_id: string; naam: string; kvk: string | null; exact_relatie_code: string | null; klant_sinds: string | null;
   signalen: string[]; entiteit_opzegging: boolean; partner: string | null; actieve_contracten: number;
   bav_nummers: BavOptie[]; beslissing: { keuze: string; bav_nummer: string | null; beslist_op: string } | null;
 };
 
-const HERKOMST: Record<string, string> = { zp: "certificaat ZP Zaken", afas: "AFAS-abonnement", klant: "opgegeven door klant (opzegging/serviceaanvraag)", overgenomen: "eerder overgenomen" };
+const HERKOMST: Record<string, string> = { zp: "ZP-certificaat", bevestigd: "bevestigd door team", klant: "opgegeven door klant (opzegging/serviceaanvraag)", overgenomen: "eerder overgenomen" };
 
 export function useOmzettingKandidaten(leadId: string) {
   return useQuery({
@@ -55,6 +55,10 @@ function KandidaatKaart({ leadId, k, eigenOnd, magBeslissen }: { leadId: string;
     queryFn: async () => ((await (supabase.rpc as any)("omzetting_leidend_bav", { _van: k.onderneming_id })).data ?? null) as BavOptie | null,
   });
   const nummer = leidend?.nummer ?? "";
+  const { data: afas = [] } = useQuery({
+    queryKey: ["afas-voorganger", k.onderneming_id],
+    queryFn: async () => Array.from(new Set((((await (supabase.from as any)("crm_bav_nummers").select("nummer").eq("onderneming_id", k.onderneming_id).eq("bron", "afas_abonnement")).data ?? []) as any[]).map((r) => r.nummer as string))),
+  });
   const overige = k.bav_nummers.filter((b) => b.nummer !== nummer && b.bron !== "overgenomen");
   const [toelichting, setToelichting] = useState("");
   const [bezig, setBezig] = useState(false);
@@ -101,14 +105,16 @@ function KandidaatKaart({ leadId, k, eigenOnd, magBeslissen }: { leadId: string;
           <div className="space-y-2">
             {!eigenOnd && <p className="text-xs text-amber-700">De nieuwe onderneming staat nog niet in het CRM; omzetting kan pas daarna.</p>}
             <div className="rounded border border-primary p-2">
-              <p>Leidend BAV-nummer (initieel, oudste): <span className="font-medium tabular-nums">{nummer || "onbekend"}</span>{leidend && <span className="text-xs text-muted-foreground"> {HERKOMST[leidend.bron] ?? leidend.bron}{leidend.datum ? `, sinds ${formatDateNL(leidend.datum)}` : ""}</span>}</p>
+              <p>Leidend BAV-nummer van de voorganger: <span className="font-medium tabular-nums">{nummer || "onbekend"}</span>{leidend && <span className="text-xs text-muted-foreground"> {HERKOMST[leidend.bron] ?? leidend.bron}{leidend.datum ? `, sinds ${formatDateNL(leidend.datum)}` : ""}</span>}</p>
               {overige.length > 0 && <p className="mt-1 text-xs text-muted-foreground">Gaat ook mee en blijft zichtbaar: {overige.map((b) => `${b.nummer} (${HERKOMST[b.bron] ?? b.bron}${b.datum ? `, ${formatDateNL(b.datum)}` : ""})`).join(", ")}</p>}
-              <p className="mt-1 text-xs text-muted-foreground">De BV houdt dezelfde BAV-nummers; er komt geen nieuw nummer.</p>
+              {leidend && leidend.bevestigd === false && <p className="mt-1 text-xs text-amber-700">Dit nummer is opgegeven door de klant en nog niet bevestigd. Met de knop hieronder bevestig je het en leg je de omzetting vast.</p>}
+              {afas.length > 0 && <p className="mt-1 text-xs text-muted-foreground">AFAS-abonnementsnummer (oud systeem), geen BAV-nummer, gaat als historie mee: {afas.join(", ")}</p>}
+              <p className="mt-1 text-xs text-muted-foreground">De BV houdt hetzelfde BAV-nummer; er komt geen nieuw nummer.</p>
             </div>
             <div><Label>Toelichting (optioneel)</Label><Textarea rows={2} value={toelichting} onChange={(e) => setToelichting(e.target.value)} /></div>
             <p className="text-xs text-muted-foreground">Startertarief blijft bij omzetting standaard aan; afwijzen kan in de startertarief-beoordeling. Exact: de BV is een eigen debiteur met een eigen Exact-relatiecode uit de Exact-koppeling (via de gewone activatie); de Exact-relatiecode van de voorganger ({k.exact_relatie_code ?? "onbekend"}) wordt niet overgenomen.</p>
             <div className="flex flex-wrap gap-2">
-              <Button size="sm" disabled={bezig || !nummer || !eigenOnd} onClick={() => kies("omzetting")}>{bezig && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Omzetting: BAV-nummer en historie overnemen</Button>
+              <Button size="sm" disabled={bezig || !nummer || !eigenOnd} onClick={() => kies("omzetting")}>{bezig && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{leidend?.bevestigd === false ? `BAV-nummer ${nummer} bevestigen en omzetting vastleggen` : "Omzetting: BAV-nummer en historie overnemen"}</Button>
               <Button size="sm" variant="outline" disabled={bezig} onClick={() => kies("nieuwe_klant")}>Nieuwe klant</Button>
             </div>
           </div>
@@ -127,11 +133,11 @@ export function RechtsvoorgangerBanner({ ondernemingId, herlaad = 0 }: { onderne
       const rijen = (data ?? []) as any[];
       if (!rijen.length) return [];
       const { data: onds } = await supabase.from("ondernemingen").select("id,naam,created_at,exact_relatie_code").in("id", rijen.map((r) => r.van_onderneming_id));
-      const { data: kc } = await supabase.from("klant_contracten").select("onderneming_id,begin_datum").in("onderneming_id", rijen.map((r) => r.van_onderneming_id));
+      const { data: kc } = await supabase.from("klant_contracten").select("onderneming_id,begin_datum,abonnement_nr").in("onderneming_id", rijen.map((r) => r.van_onderneming_id));
       return rijen.map((r) => {
         const o = (onds ?? []).find((x) => x.id === r.van_onderneming_id);
         const data = [o?.created_at?.slice(0, 10), ...(kc ?? []).filter((c) => c.onderneming_id === r.van_onderneming_id).map((c) => c.begin_datum)].filter(Boolean).sort();
-        return { ...r, naam: o?.naam ?? "onbekend", relatiecode: (o as any)?.exact_relatie_code ?? null, sinds: data[0] ?? null };
+        return { ...r, naam: o?.naam ?? "onbekend", relatiecode: (o as any)?.exact_relatie_code ?? null, afas: Array.from(new Set((kc ?? []).filter((c: any) => c.onderneming_id === r.van_onderneming_id && c.abonnement_nr).map((c: any) => c.abonnement_nr))), sinds: data[0] ?? null };
       });
     },
   });
@@ -140,7 +146,7 @@ export function RechtsvoorgangerBanner({ ondernemingId, herlaad = 0 }: { onderne
     <div className="space-y-1">{data.map((r) => (
       <div key={r.van_onderneming_id} className="rounded-md border border-primary/40 bg-primary/5 p-3 text-sm">
         Rechtsvoorganger <Link to={`/admin/klanten/${r.van_onderneming_id}`} className="font-medium text-primary hover:underline">{r.naam}</Link> (per {formatDateNL(r.ingangsdatum)}), klant sinds {formatDateNL(r.sinds)}.
-        {r.bav_nummer && <> Leidend BAV-nummer {r.bav_nummer} overgenomen ({HERKOMST[r.bav_nummer_herkomst] ?? r.bav_nummer_herkomst}); overige BAV-nummers van de voorganger staan erbij.</>} Exact-relatiecode voorganger (historie): {r.relatiecode ?? "onbekend"}. Historie staat onderaan deze kaart.
+        {r.bav_nummer && <> Leidend BAV-nummer {r.bav_nummer} overgenomen ({HERKOMST[r.bav_nummer_herkomst] ?? r.bav_nummer_herkomst}); overige BAV-nummers van de voorganger staan erbij.</>} Exact-relatiecode voorganger (historie): {r.relatiecode ?? "onbekend"}.{r.afas.length > 0 && <> AFAS-abonnementsnummer (oud systeem) voorganger: {r.afas.join(", ")}.</>} Historie staat onderaan deze kaart.
       </div>
     ))}</div>
   );
