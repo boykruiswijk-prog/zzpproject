@@ -209,6 +209,11 @@ serve(async (req) => {
       if (!lead_id && !policy_data) return json({ error: "lead_id or policy_data required" }, 400);
       let data = policy_data;
       if (lead_id) {
+        // Open omzettingsvoorstel: eerst beslissen, anders zou een nieuw nummer worden uitgegeven.
+        const { data: oz } = await userClient.rpc("omzetting_kandidaten", { _lead_id: lead_id });
+        if (((oz as any)?.kandidaten ?? []).some((k: any) => !k.beslissing)) {
+          return json({ error: "Beslis eerst over de omzetting", code: "omzetting_open" }, 409);
+        }
         const { data: bestaande } = await adminClient.from("policies").select("certificate_number,status").eq("lead_id", lead_id);
         const besluit = beslisNieuwCertificaat(bestaande || [], body.bevestig_nieuw_nummer === true);
         if (!besluit.toegestaan) {
