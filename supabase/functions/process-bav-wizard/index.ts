@@ -278,6 +278,9 @@ Deno.serve(async (req) => {
         verzekerd_bedrag: pakket.dekking,
         ingangsdatum: submission.ingangsdatum,
         gekozen_pakket: submission.gekozen_pakket,
+         cyber_voorwaarden_versie: cyberGekozen ? CYBER_VERSIE : null,
+         cyber_ingangsdatum: cyberGekozen ? submission.ingangsdatum : null,
+         cyber_einddatum: cyberGekozen ? cyberJaarEind(submission.ingangsdatum) : null,
         ...starterVelden,
         // Datum uit de KVK API: automatisch bevestigd. Alleen bij klantopgave (API faalde) handmatige controle.
         starter_controle_status: starter ? (kvkDatumBron === "kvk_api" ? "goedgekeurd" : "te_controleren") : null,
@@ -295,6 +298,7 @@ Deno.serve(async (req) => {
         vereist_handmatige_beoordeling: handmatigeAcceptatie || submission.vereist_handmatige_beoordeling === true,
         is_test: isTestLead,
         extra_data: {
+           ...(cyberWasGekozen ? { cyber: { versie: CYBER_VERSIE, gekozen: cyberGekozen, afgewezen: cyberAfgewezen, antwoorden: cyberToets.antwoorden, redenen: cyberToets.redenen, akkoord: cyberGekozen && submission.cyber_akkoord === true, client_akkoord_op: submission.cyber_client_akkoord_op ?? null } } : {}),
           formulier: saneerFormulier(submission.formulier),
           formulier_naam: typeof submission.formulier_naam === "string" ? submission.formulier_naam.slice(0, 100) : "Online aanvraag BAV + AVB",
           pagina: saneerPagina(submission.pagina_url),
@@ -386,6 +390,7 @@ Deno.serve(async (req) => {
             kvk_nummer: submission.kvk_nummer || "-",
             pakket: pakket.naam,
             dekking: pakket.dekking,
+             ...(cyberGekozen ? { cyber_looptijd: CYBER_LOOPTIJD, cyber_einddatum: cyberJaarEind(submission.ingangsdatum) } : {}),
             betaalwijze: pakket.betaalwijze,
             ingangsdatum: submission.ingangsdatum,
             premie: starter ? `€${premium} startertarief t/m ${starterTotDatum}, daarna €${pakket.prijs}; KVK-startdatum ${kvkStart} controleren` : `€${premium}`,

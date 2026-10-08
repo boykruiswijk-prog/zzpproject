@@ -10,7 +10,7 @@ const STARTER_PAKKETTEN = new Set(["maandelijks", "jaarlijks"]);
 export function starterStatus(lead: any): null | "wacht" | "starter" {
   if (lead?.tarief_type !== "starter" && lead?.starter_controle_status !== "te_controleren") return null;
   if (lead.starter_controle_status === "te_controleren") return "wacht";
-  if (lead.tarief_type === "starter" && lead.starter_controle_status === "goedgekeurd" && STARTER_PAKKETTEN.has(basisPakket(String(lead.gekozen_pakket))) && lead.ingangsdatum) return "starter";
+   if (lead.tarief_type === "starter" && lead.starter_controle_status === "goedgekeurd" && STARTER_PAKKETTEN.has(nieuweCyber(lead) ? basisPakket(String(lead.gekozen_pakket)) : String(lead.gekozen_pakket)) && lead.ingangsdatum) return "starter";
   return null;
 }
 

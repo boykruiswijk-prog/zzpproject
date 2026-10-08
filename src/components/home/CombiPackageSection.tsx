@@ -100,7 +100,7 @@ export function CombiPackageSection() {
                     {pkg.dekkingen.cyber && (
                       <li className="flex items-start gap-2">
                         <CheckCircle className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
-                        <div className="flex-1 flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-x-2">
+                        <div className="flex-1 flex flex-col gap-2">
                           <span>{CYBER_DEKKING}</span>
                           <span className="text-xs">
                             {CYBER_HULP} {CYBER_DETAILS}
