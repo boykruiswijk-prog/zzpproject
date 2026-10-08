@@ -2,6 +2,8 @@
 // Maakt (idempotent) onderneming + klant_contracten-regel met gefactureerd_tm = einde eerste periode.
 // Geen Exact-verkeer, geen mails.
 // deno-lint-ignore-file no-explicit-any
+import { nieuweCyber, CYBER_VERSIE, cyberPremie, cyberJaarEind } from "./cyber.ts";
+import { lastOfMonth } from "./polisProRata.ts";
 import { dagErna } from "./factuurPeriode.ts";
 
 export const SITE_BRON = "site_activatie";
@@ -76,6 +78,18 @@ export async function zetInPlanner(supabase: any, lead: any, exactAccountId: str
   const { error } = await supabase.from("klant_contracten")
     .upsert(rij, { onConflict: "bron,bron_rij", ignoreDuplicates: true });
   if (error) return { ok: false, fout: `contract: ${error.message}` };
+  if (nieuweCyber(lead)) {
+    const ingang = String(lead.cyber_ingangsdatum ?? lead.ingangsdatum).slice(0, 10);
+    const maand = spec.cyclus === "maand";
+    const { error: cyberFout } = await supabase.from("klant_contracten").upsert({
+      onderneming_id: ond.id, bron: "site_cyber_20261008", bron_rij: bronRijVoorLead(String(lead.id)), type: "verzekering", product: "cyber_clear",
+      itemcode: maand ? "100M" : "100J", cyclus: spec.cyclus, aantal: 1, bedrag_per_periode: cyberPremie(String(lead.gekozen_pakket)),
+      begin_datum: ingang, factureren_vanaf: ingang, gefactureerd_tm: maand ? lastOfMonth(ingang) : cyberJaarEind(ingang),
+      volgende_factuurdatum: dagErna(maand ? lastOfMonth(ingang) : cyberJaarEind(ingang)), gefactureerd_tm_bron: "site_cyber_20261008", status: "actief", facturatie_status: "planner", afwijkingen: [],
+      cyber_voorwaarden_versie: CYBER_VERSIE, cyber_ingangsdatum: ingang, cyber_einddatum: lead.cyber_einddatum ?? cyberJaarEind(ingang), is_test: !!lead.is_test,
+    }, { onConflict: "bron,bron_rij", ignoreDuplicates: true });
+    if (cyberFout) return { ok: false, fout: `cybercontract: ${cyberFout.message}` };
+  }
   return { ok: true, onderneming_id: ond.id, bron_rij: rij.bron_rij };
 }
 

@@ -11,6 +11,7 @@ export const PAKKET_JAARPRIJS: Record<string, number> = {
 // Maandprijzen voor maandpakketten.
 export const PAKKET_MAANDPRIJS: Record<string, number> = {
   "maandelijks": 55,
+  "maandelijks-cyber": 55,
 };
 
 export function getJaarprijs(pakket: string | null | undefined): number {
@@ -26,7 +27,7 @@ export function getMaandprijs(pakket: string | null | undefined): number {
 // Maandpolis = pakket dat per maand wordt gefactureerd via maandcron.
 export function isMaandPolis(pakket: string | null | undefined): boolean {
   if (!pakket) return false;
-  return pakket === "maandelijks";
+  return pakket === "maandelijks" || pakket === "maandelijks-cyber";
 }
 
 export function toDateOnly(d: string | Date): Date {

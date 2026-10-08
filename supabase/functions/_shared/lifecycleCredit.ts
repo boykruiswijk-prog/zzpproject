@@ -1,11 +1,12 @@
 // Read-only invoiced-period reader. Monthly refunds never use an annual premium.
 import { berekenOpzegCredit, type GefactureerdePeriode } from "./creditOpzegging.ts";
 import { bronRijVoorLead, SITE_BRON } from "./klantContractActivatie.ts";
+import { nieuweCyber, cyberPremie } from "./cyber.ts";
 import { lastOfMonth } from "./polisProRata.ts";
 
 type LeadVoorCredit = {
   id: string; ingangsdatum: string; exact_invoice_id?: string | null;
-  exact_invoice_amount?: number | null;
+  exact_invoice_amount?: number | null; extra_data?: unknown; gekozen_pakket?: string | null;
 };
 
 // deno-lint-ignore no-explicit-any
@@ -17,7 +18,7 @@ export async function maandLifecycleCredit(db: any, lead: LeadVoorCredit, eindda
     }
   };
   if (lead.exact_invoice_id && lead.exact_invoice_amount != null) {
-    voegToe(lead.exact_invoice_id, lead.ingangsdatum, lastOfMonth(lead.ingangsdatum), lead.exact_invoice_amount);
+    voegToe(lead.exact_invoice_id, lead.ingangsdatum, lastOfMonth(lead.ingangsdatum), Number(lead.exact_invoice_amount) - (nieuweCyber(lead) ? cyberPremie(String(lead.gekozen_pakket)) : 0));
   }
   const { data: oud, error: oudFout } = await db.from("monthly_invoices_log")
     .select("exact_invoice_id,periode_start,periode_eind,bedrag,status").eq("lead_id", lead.id);

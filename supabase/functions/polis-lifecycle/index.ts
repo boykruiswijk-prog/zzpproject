@@ -1,3 +1,5 @@
+import { nieuweCyber, basisPakket, CYBER_LOOPTIJD } from "../_shared/cyber.ts";
+import { starterStatus } from "../_shared/starterActivatie.ts";
 // Polis-lifecycle: pauzeren / hervatten / opzeggen / heractiveren
 // Financiële afhandeling:
 //   - pauzeren                   → creditnota Type 8021 voor resterende dagen polisjaar
@@ -286,6 +288,7 @@ Deno.serve(async (req) => {
   }
 
   const today = todayAmsterdam();
+  const cyberZin = nieuweCyber(lead) ? `<p>${CYBER_LOOPTIJD} Lopend cyberjaar tot ${lead.cyber_einddatum}.</p>` : "";
   const recipientKlant = lead.email;
   // Omgevingsbepaling + preview-redirect (max. één mail per actie in preview).
   const gate = createMailGate("polis-lifecycle", req);
@@ -340,7 +343,7 @@ Deno.serve(async (req) => {
         }
         if (!lead.ingangsdatum) return json({ error: "geen_ingangsdatum_op_lead" }, 400);
 
-        const jaarprijs = getJaarprijs(lead.gekozen_pakket);
+        const jaarprijs = (nieuweCyber(lead) ? (starterStatus(lead) === "starter" ? 495 : getJaarprijs(basisPakket(lead.gekozen_pakket))) : getJaarprijs(lead.gekozen_pakket));
         const maand = isMaandPolis(lead.gekozen_pakket);
         const maandCredit = maand ? await maandLifecycleCredit(supabase, lead, today) : null;
         const eind = maandCredit?.periode_eind ?? lead.polis_einddatum ?? calcPolisEinddatum(lead.ingangsdatum);
@@ -442,7 +445,7 @@ Deno.serve(async (req) => {
             <p>Je polis is per <strong>${fmtNL(today)}</strong> gepauzeerd. Tijdens de pauze ben je niet meer gedekt voor nieuwe schade. Heb je vragen over een claim voor eerder werk? Neem contact met ons op en raadpleeg de polisvoorwaarden.</p>
             <p><strong>Reden:</strong> ${reden.replace(/_/g, " ")}</p>
             ${pauze_toelichting ? `<p><strong>Toelichting:</strong> ${escapeHtml(pauze_toelichting)}</p>` : ""}
-            ${creditZin}
+            ${creditZin}${cyberZin}
             <p>Klaar om weer te starten? Log in op je portaal en klik op 'Hervatten'. Je krijgt dan een nieuwe factuur voor de resterende dagen tot ${fmtNL(eind)}.</p>
             <p><a href="${COMPANY.url}/portal/polis" style="display:inline-block;background:#E53E2F;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Naar mijn polis</a></p>
           `)));
@@ -485,7 +488,7 @@ Deno.serve(async (req) => {
         }
         if (!lead.ingangsdatum) return json({ error: "geen_ingangsdatum" }, 400);
 
-        const jaarprijs = getJaarprijs(lead.gekozen_pakket);
+        const jaarprijs = (nieuweCyber(lead) ? (starterStatus(lead) === "starter" ? 495 : getJaarprijs(basisPakket(lead.gekozen_pakket))) : getJaarprijs(lead.gekozen_pakket));
         const eind = lead.polis_einddatum ?? calcPolisEinddatum(lead.ingangsdatum);
         const calc = calculateHervatFactuur({
           ingangsdatum: lead.ingangsdatum, polis_einddatum: eind,
@@ -602,7 +605,7 @@ Deno.serve(async (req) => {
 
         if ((vanuitActief || (wasGepauzeerd && isMaandPolis(lead.gekozen_pakket) && !lead.exact_credit_invoice_id_pauze)) && lead.exact_account_id) {
           if (!lead.ingangsdatum) return json({ error: "geen_ingangsdatum_op_lead" }, 400);
-          const jaarprijs = getJaarprijs(lead.gekozen_pakket);
+          const jaarprijs = (nieuweCyber(lead) ? (starterStatus(lead) === "starter" ? 495 : getJaarprijs(basisPakket(lead.gekozen_pakket))) : getJaarprijs(lead.gekozen_pakket));
           const maandCredit = isMaandPolis(lead.gekozen_pakket) ? await maandLifecycleCredit(supabase, lead, today) : null;
           const eind = maandCredit?.periode_eind ?? lead.polis_einddatum ?? calcPolisEinddatum(lead.ingangsdatum);
           eindForMail = eind;
@@ -713,7 +716,7 @@ Deno.serve(async (req) => {
             <p>Je polis is per <strong>${fmtNL(today)}</strong> opgezegd. Heb je vragen over een claim voor eerder werk? Neem contact met ons op en raadpleeg de polisvoorwaarden.</p>
             <p><strong>Reden:</strong> ${reden.replace(/_/g, " ")}</p>
             ${toelichting ? `<p><strong>Toelichting:</strong> ${escapeHtml(toelichting)}</p>` : ""}
-            ${creditBlokKlant}
+            ${creditBlokKlant}${cyberZin}
             <p>Mocht je in de toekomst weer een polis willen, dan zijn we er voor je.</p>
           `));
         await teamMail("opzeggen", `[Opzegging] ${escapeHtml(lead.voornaam)} ${escapeHtml(lead.achternaam)}`,
