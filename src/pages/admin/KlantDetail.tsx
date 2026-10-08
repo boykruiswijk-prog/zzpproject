@@ -75,7 +75,7 @@ export default function KlantDetail() {
             <RechtsvoorgangerBanner ondernemingId={ond.id} herlaad={herlaad} />
             <div className="flex flex-wrap items-start justify-between gap-2"><div>
               <h1 className="text-2xl font-bold break-words">{ond.naam}</h1>
-              <p className="break-words text-sm text-muted-foreground">Exact-relatiecode {ond.exact_relatie_code ?? "onbekend"} · BAV-nummer {bavKeuze?.nummer || "onbekend"} · {ond.bron === "afas_20261001" ? "startstand 01-10-2026" : ond.bron ? `bron ${ond.bron}` : ""}</p>
+              <p className="break-words text-sm text-muted-foreground">Exact-relatiecode {ond.exact_relatie_code ?? "onbekend"} · {bavKeuze?.nummer ? `BAV-nummer ${bavKeuze.nummer}` : "BAV-nummer onbekend"}{bavKeuze?.afas.length ? ` · AFAS-abonnementsnummer (oud systeem) ${bavKeuze.afas.join(", ")}` : ""} · {ond.bron === "afas_20261001" ? "startstand 01-10-2026" : ond.bron ? `bron ${ond.bron}` : ""}</p>
               {ond.afwijkingen?.length > 0 && <div className="mt-2 flex flex-wrap gap-2">{ond.afwijkingen.map((a: string) => <Badge key={a} variant="outline" className="border-amber-500 text-amber-700">{a}</Badge>)}</div>}
               <div className="mt-2"><ExactRelatieLabel ond={ond} heeftVoorganger={voorgangers.length > 0} /></div>
             </div><OndernemingswijzigingKnop ond={ond} onKlaar={() => setHerlaad((x) => x + 1)} /></div>
@@ -107,7 +107,7 @@ export default function KlantDetail() {
                 <tbody>{contracten.map((c) => (
                   <tr key={c.id} className="border-t border-border align-top">
                     <td className="p-2 tabular-nums">{c.bron_rij}</td>
-                    <td className="p-2">{PRODUCT_LABEL[c.product as Product]}<div className="text-xs text-muted-foreground">{c.itemcode} · abonnement {c.abonnement_nr ?? "—"}</div></td>
+                    <td className="p-2">{PRODUCT_LABEL[c.product as Product]}<div className="text-xs text-muted-foreground">{c.itemcode} · AFAS-abonnementsnummer (oud systeem) {c.abonnement_nr ?? "—"}</div></td>
                     <td className="p-2">{c.cyclus === "jaar" ? "Jaar" : "Maand"}{Number(c.aantal) !== 1 && ` × ${c.aantal}`}</td>
                     <td className="p-2 text-right tabular-nums">{formatEuro(periodeBedrag(c))}</td>
                     <td className="p-2 tabular-nums">{formatDateNL(c.gefactureerd_tm)}</td>

@@ -99,7 +99,7 @@ export default function Facturatieplanning() {
 
   const ondIds = useMemo(() => [...new Set(rijen.map((r) => r.onderneming_id).filter(Boolean))] as string[], [rijen]);
   const { data: bavRijen } = useBavRijen(ondIds);
-  const bavVan = (r: Kandidaat) => kiesBavNummer((bavRijen ?? []).filter((b) => b.onderneming_id === r.onderneming_id), { contractId: r.klant_contract_id })?.nummer || "—";
+  const bavVan = (r: Kandidaat) => kiesBavNummer((bavRijen ?? []).filter((b) => b.onderneming_id === r.onderneming_id), { contractId: r.klant_contract_id })?.nummer || "onbekend";
   const codeTekst = (r: Kandidaat) => `Exact-relatiecode ${r.relatiecode ?? "—"} · BAV-nummer ${bavVan(r)}`;
   const Regel = ({ r }: { r: Kandidaat }) => (
     <tr className="border-t">
