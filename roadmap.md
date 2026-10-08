@@ -1,11 +1,11 @@
 # Roadmap
 
-- [ ] Cyber: centrale prijzen/dekking, alle publieke teksten en Zeker consistent
-- [ ] Cyber: acceptatievragen, afzonderlijk akkoord met dossierregistratie en Ellen-taak
-- [ ] Cyber: afzonderlijke contract/factuurregels, vaste looptijd en BAV-opzeg/pauze zonder cybercredit
-- [ ] Cyber: Mijn ZP en beheer/CRM, handmatige datums en verlengingsvoorwaarden
-- [ ] Cyber: vijf flowtests, facturatiepreview 51/6943, SEO-behoud en publicatie alleen na geslaagde tests
-- [ ] Cyber: desktop- en mobiele kliktests, pagina-links/beelden/console en Ads-conversie AW-18497139684 controleren
+- [x] Cyber: centrale prijzen/dekking, alle publieke teksten en Zeker consistent
+- [x] Cyber: acceptatievragen, afzonderlijk akkoord met dossierregistratie en Ellen-taak
+- [x] Cyber: afzonderlijke contract/factuurregels, vaste looptijd en BAV-opzeg/pauze zonder cybercredit
+- [x] Cyber: Mijn ZP en beheer/CRM, handmatige datums en verlengingsvoorwaarden
+- [x] Cyber: vijf flowtests, facturatiepreview 51/6943, SEO-behoud en publicatie alleen na geslaagde tests
+- [x] Cyber: desktop- en mobiele kliktests, pagina-links/beelden/console en Ads-conversie AW-18497139684 controleren
 
 - [x] Fase 2 tekstaudit: klantteksten, artikelen, certificaatstandaard en opzegpad consistent maken
 - [x] Fase 2 controles: activatiefactuurbedrag, 9 oude contractduren, preview 51/6943, tests en auditrapport
