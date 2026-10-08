@@ -62,7 +62,7 @@ const statusColors = LEAD_STATUS_COLORS;
 export default function AdminLeadDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isAdmin, isSupervisorOrAdmin, isTeamMember, magCertificaten } = useAuth();
+  const { isAdmin, isSupervisorOrAdmin, isTeamMember, isVerzekering, magCertificaten } = useAuth();
   const { toast } = useToast();
   const { data: lead, isLoading } = useLead(id);
   const updateLead = useUpdateLead();
@@ -276,7 +276,7 @@ export default function AdminLeadDetail() {
         <div className="grid min-w-0 gap-6 lg:grid-cols-3">
           {/* Lead info */}
           <div className="min-w-0 space-y-6 lg:col-span-2">
-            <StartertariefControle lead={lead as any} magBeoordelen={isSupervisorOrAdmin} />
+            <StartertariefControle lead={lead as any} magBeoordelen={isSupervisorOrAdmin || isVerzekering} />
             <KvkLeadAfwijkingen lead={lead as any} />
             <Card className="min-w-0 w-full overflow-hidden">
               <CardHeader>
