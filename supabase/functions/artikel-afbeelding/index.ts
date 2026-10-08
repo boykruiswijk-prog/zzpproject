@@ -5,6 +5,7 @@ import satori from 'npm:satori@0.10.14';
 import { Resvg, initWasm } from 'npm:@resvg/resvg-wasm@2.6.2';
 import { categoryDesign, illustrationPrompt } from './design.ts';
 import { illustration, inspectIllustration, GatewayError } from './ai.ts';
+import { requireSupervisor } from '../_shared/teamAuth.ts';
 const BUCKET = 'article-images';
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 let ready: Promise<{ fonts: unknown[]; logo: string }> | null = null;
@@ -45,6 +46,14 @@ Deno.serve(async req => {
  const raw = await req.text();
  if (raw.length > 100 || (raw.trim() && raw.trim() !== '{}')) return json({ error: 'Geen invoer toegestaan' }, 400);
  const admin = createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '');
+ const { data: worker } = await admin.from('article_image_worker').select('wake_token').eq('id',true).maybeSingle();
+ const internal = Boolean(worker?.wake_token && req.headers.get('x-article-wake-token') === worker.wake_token);
+ if (!internal) {
+  const auth = await requireSupervisor(req, admin);
+  if (auth instanceof Response) return new Response(auth.body, { status: auth.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+ }
+ const depth = Number(req.headers.get('x-article-depth') ?? '8');
+ if (!Number.isInteger(depth) || depth < 1 || depth > 8) return json({ error: 'Ongeldig werkbudget' },400);
  const lease = crypto.randomUUID();
  const { data: claimed, error: claimError } = await admin.rpc('claim_article_image_worker', { p_lease: lease });
  if (claimError) return json({ error: 'Wachtrij niet beschikbaar' }, 500);
@@ -70,7 +79,7 @@ Deno.serve(async req => {
      const candidate = await illustration(illustrationPrompt(article, attempt), key);
      const review = await inspectIllustration(candidate, key);
      console.log(JSON.stringify({ slug: article.slug, attempt, accepted: review.accepted, reason: review.reason }));
-     if (review.accepted) { image = candidate; break; }
+     if (review.accepted) { image = candidate; reason = null; break; }
      reason = review.reason;
     } catch (e) {
      reason = e instanceof Error ? e.message : 'Beeldgeneratie mislukt';
@@ -109,5 +118,16 @@ Deno.serve(async req => {
   return json({ ok: false, error: 'Artikelafbeelding niet verwerkt' }, 500);
  } finally {
   await admin.from('article_image_worker').update({ lease_id: null, lease_until: null }).eq('id',true).eq('lease_id',lease);
+  const { data: state } = await admin.from('article_image_worker').select('paused_reason,wake_token').eq('id',true).single();
+  const { count } = await admin.from('article_image_jobs').select('article_id', { count: 'exact', head: true }).eq('status','pending');
+  if (depth > 1 && count && state?.wake_token && !state.paused_reason) {
+   EdgeRuntime.waitUntil((async () => {
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    const response = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/artikel-afbeelding`, {
+     method: 'POST', headers: { 'Content-Type': 'application/json', 'x-article-wake-token': state.wake_token, 'x-article-depth': String(depth - 1) }, body: '{}'
+    });
+    if (!response.ok) await admin.from('article_image_worker').update({ paused_reason: `Vervolgverwerking mislukt (${response.status})` }).eq('id',true);
+   })());
+  }
  }
 });
