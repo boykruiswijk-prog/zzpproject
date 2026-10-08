@@ -2,6 +2,7 @@
 // De uitkomst wordt door scripts/genereer-zeker-kennis.ts weggeschreven naar
 // supabase/functions/_shared/zekerKennis.generated.ts; een test borgt dat beide gelijk zijn.
 // Bewust NIET opgenomen: interne vlaggen zoals handmatige acceptatie per sector.
+import { CYBER_DETAILS, CYBER_LOOPTIJD } from "../../../supabase/functions/_shared/cyber";
 import { bavPakketten } from "../../data/bavPakketten";
 import { faqItems } from "../../data/faqItems";
 import { seoRoutes } from "../../config/seoRoutes";
@@ -34,7 +35,7 @@ export function bouwZekerKennis(): ZekerKennis {
       id: p.id, naam: p.name, prijs: p.prijs, periode: p.periode, prijsLabel: p.prijsLabel,
       bav: { ...p.dekkingen.bav }, avb: { ...p.dekkingen.avb },
       cyber: p.dekkingen.cyber ? { ...p.dekkingen.cyber } : null,
-      usps: [...p.usps],
+      usps: [...p.usps, ...(p.dekkingen.cyber ? [CYBER_DETAILS, CYBER_LOOPTIJD] : [])],
     })),
     paginas: seoRoutes.map((r) => ({ path: r.path, title: r.title, intro: r.intro })),
     faq: faqItems.flatMap((c) => c.questions.map((q) => ({ categorie: c.category, vraag: q.question, antwoord: q.answer }))),

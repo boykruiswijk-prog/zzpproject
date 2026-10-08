@@ -1,3 +1,4 @@
+import { CYBER_LOOPTIJD, CYBER_DEKKING, CYBER_HULP, CYBER_DETAILS } from "../../supabase/functions/_shared/cyber";
 import { Award, ShieldCheck, Users } from "lucide-react";
 import { ArrowRight } from "lucide-react";
 import { seoRoute } from "@/config/seoRoutes";
@@ -24,6 +25,7 @@ export const STARTERS_FAQS = [
   { question: "Wat betaal ik na de eerste 12 maanden?", answer: `Na 12 maanden betaal je automatisch de gewone prijs: € ${STARTER.naMaandprijs} per maand of € ${STARTER.naJaarprijs} per jaar, inclusief kosten en assurantiebelasting. Je hoeft daarvoor niets te doen.` },
   { question: "Is de dekking anders dan bij de gewone BAV + AVB?", answer: `Nee. Het is dezelfde polis met dezelfde dekking en dezelfde voorwaarden: BAV ${BAV} en AVB ${AVB} per aanspraak, verzekerd bij Hiscox.` },
   { question: "Kan ik tussentijds opzeggen?", answer: "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt. Dit geldt ook bij het startertarief, bij maand- en jaarbetaling." },
+  { question: "Kan ik cyber toevoegen aan het starterspakket?", answer: `Ja. €72,50 per maand of €745 per jaar, inclusief kosten en assurantiebelasting, de eerste 12 maanden; daarna €82,50 per maand of €850 per jaar. Voor een KVK-inschrijving jonger dan 12 maanden, onder voorbehoud van controle. Cyber krijgt geen startkorting. ${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_DETAILS} ${CYBER_LOOPTIJD}` },
   TIJDELIJK_GEEN_OPDRACHT_FAQ,
   { question: "Hoe controleren jullie mijn KVK-startdatum?", answer: "Je vult de startdatum van je KVK-inschrijving in bij je aanvraag. Een collega controleert die datum voordat je polis ingaat. Klopt de datum niet, dan geldt de gewone prijs en hoor je dat van ons." },
 ];
@@ -77,7 +79,8 @@ export default function Starters() {
             <h2 className="mb-4">Startertarief</h2>
             <p className="text-3xl font-bold">€ {STARTER.maandprijs} per maand <span className="text-muted-foreground text-xl font-medium">of</span> € {STARTER.jaarprijs} per jaar</p>
             <p className="mt-4 text-muted-foreground">{STARTER_VOORWAARDE_TEKST}</p>
-            <p className="mt-2 text-sm text-muted-foreground">Na 12 maanden gaat je polis automatisch over naar de gewone prijs. Dekking en voorwaarden blijven gelijk.</p>
+            <p className="mt-2 text-sm text-muted-foreground">Met cyber: €72,50 per maand of €745 per jaar de eerste 12 maanden, daarna €82,50 per maand of €850 per jaar, inclusief kosten en assurantiebelasting. Voor KVK-inschrijving jonger dan 12 maanden, onder voorbehoud van controle. Cyber krijgt geen startkorting. {CYBER_LOOPTIJD}</p>
+             <p className="mt-2 text-sm text-muted-foreground">Na 12 maanden gaat je polis automatisch over naar de gewone prijs. Dekking en voorwaarden blijven gelijk.</p>
             <Button variant="accent" size="lg" className="mt-6" asChild>
               <LocalizedLink to="/#combinatiepolis">Vraag het starterspakket aan <ArrowRight className="h-5 w-5" /></LocalizedLink>
             </Button>

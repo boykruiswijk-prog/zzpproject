@@ -46,9 +46,9 @@ export const ZEKER_KENNIS = {
     {
       "id": "jaarlijks-cyber",
       "naam": "BAV & AVB Jaarlijks + Cyber",
-      "prijs": 750,
+      "prijs": 850,
       "periode": "jaar",
-      "prijsLabel": "€ 750 per jaar",
+      "prijsLabel": "€ 850 per jaar",
       "bav": {
         "perGebeurtenis": 5000000,
         "perJaar": 15000000
@@ -59,12 +59,44 @@ export const ZEKER_KENNIS = {
       },
       "cyber": {
         "perSchade": 50000,
-        "perJaar": 5000000
+        "perJaar": 2500000
       },
       "usps": [
-        "Inclusief cyberdekking",
-        "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt.",
-        "Premie inclusief kosten en assurantiebelasting"
+        "BAV + AVB: geen eigen risico, dagelijks opzegbaar en pauzeerbaar. Creditnota voor resterende al betaalde dagen.",
+        "Cyber: tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000).",
+        "Directe hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.",
+        "Cyber heeft een vaste looptijd van 12 maanden en wordt daarna stilzwijgend met 12 maanden verlengd. Opzeggen kan tegen het einde van de looptijd. Cyber is niet dagelijks opzegbaar en niet pauzeerbaar. Bij maandbetaling betaal je het jaarcontract in 12 termijnen van €27,50. Zeg je de BAV + AVB op, dan loopt cyber door tot het einde van het lopende cyberjaar en blijven de resterende cybertermijnen verschuldigd.",
+        "Premie inclusief kosten en assurantiebelasting",
+        "Het jaarmaximum van €2.500.000 is een gedeelde limiet voor alle deelnemers aan het ZP Zaken Cyber Collectief. Dekkingsgebied: wereld exclusief VS en Canada. Verzekerd via Hiscox (CyberClear, polisvoorwaarden HCC-2022/01).",
+        "Cyber heeft een vaste looptijd van 12 maanden en wordt daarna stilzwijgend met 12 maanden verlengd. Opzeggen kan tegen het einde van de looptijd. Cyber is niet dagelijks opzegbaar en niet pauzeerbaar. Bij maandbetaling betaal je het jaarcontract in 12 termijnen van €27,50. Zeg je de BAV + AVB op, dan loopt cyber door tot het einde van het lopende cyberjaar en blijven de resterende cybertermijnen verschuldigd."
+      ]
+    },
+    {
+      "id": "maandelijks-cyber",
+      "naam": "BAV & AVB Maandelijks + Cyber",
+      "prijs": 82.5,
+      "periode": "maand",
+      "prijsLabel": "€ 82,50 per maand",
+      "bav": {
+        "perGebeurtenis": 5000000,
+        "perJaar": 15000000
+      },
+      "avb": {
+        "perGebeurtenis": 2500000,
+        "perJaar": 5000000
+      },
+      "cyber": {
+        "perSchade": 50000,
+        "perJaar": 2500000
+      },
+      "usps": [
+        "BAV + AVB: geen eigen risico, dagelijks opzegbaar en pauzeerbaar. Creditnota voor resterende al betaalde dagen.",
+        "Cyber: tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000).",
+        "Directe hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.",
+        "Cyber heeft een vaste looptijd van 12 maanden en wordt daarna stilzwijgend met 12 maanden verlengd. Opzeggen kan tegen het einde van de looptijd. Cyber is niet dagelijks opzegbaar en niet pauzeerbaar. Bij maandbetaling betaal je het jaarcontract in 12 termijnen van €27,50. Zeg je de BAV + AVB op, dan loopt cyber door tot het einde van het lopende cyberjaar en blijven de resterende cybertermijnen verschuldigd.",
+        "Premie inclusief kosten en assurantiebelasting",
+        "Het jaarmaximum van €2.500.000 is een gedeelde limiet voor alle deelnemers aan het ZP Zaken Cyber Collectief. Dekkingsgebied: wereld exclusief VS en Canada. Verzekerd via Hiscox (CyberClear, polisvoorwaarden HCC-2022/01).",
+        "Cyber heeft een vaste looptijd van 12 maanden en wordt daarna stilzwijgend met 12 maanden verlengd. Opzeggen kan tegen het einde van de looptijd. Cyber is niet dagelijks opzegbaar en niet pauzeerbaar. Bij maandbetaling betaal je het jaarcontract in 12 termijnen van €27,50. Zeg je de BAV + AVB op, dan loopt cyber door tot het einde van het lopende cyberjaar en blijven de resterende cybertermijnen verschuldigd."
       ]
     }
   ],
@@ -293,6 +325,21 @@ export const ZEKER_KENNIS = {
   "faq": [
     {
       "categorie": "Verzekeringen",
+      "vraag": "Wat kost cyberdekking en kan ik die los afsluiten?",
+      "antwoord": "Cyber kan alleen samen met de BAV + AVB: €82,50 per maand (€55 BAV + AVB en €27,50 cyber) of €850 per jaar (€600 + €250). Voor starters: €72,50 per maand of €745 per jaar de eerste 12 maanden, daarna €82,50 per maand of €850 per jaar, inclusief kosten en assurantiebelasting. Voor een KVK-inschrijving jonger dan 12 maanden, onder voorbehoud van controle. Cyber krijgt nooit startkorting."
+    },
+    {
+      "categorie": "Verzekeringen",
+      "vraag": "Wat dekt cyber?",
+      "antwoord": "Cyber: tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000). Directe hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico. Het jaarmaximum van €2.500.000 is een gedeelde limiet voor alle deelnemers aan het ZP Zaken Cyber Collectief. Dekkingsgebied: wereld exclusief VS en Canada. Verzekerd via Hiscox (CyberClear, polisvoorwaarden HCC-2022/01)."
+    },
+    {
+      "categorie": "Verzekeringen",
+      "vraag": "Kan ik cyber dagelijks opzeggen of pauzeren?",
+      "antwoord": "Cyber heeft een vaste looptijd van 12 maanden en wordt daarna stilzwijgend met 12 maanden verlengd. Opzeggen kan tegen het einde van de looptijd. Cyber is niet dagelijks opzegbaar en niet pauzeerbaar. Bij maandbetaling betaal je het jaarcontract in 12 termijnen van €27,50. Zeg je de BAV + AVB op, dan loopt cyber door tot het einde van het lopende cyberjaar en blijven de resterende cybertermijnen verschuldigd."
+    },
+    {
+      "categorie": "Verzekeringen",
       "vraag": "Wat is een AOV en waarom heb ik die nodig als zzp'er?",
       "antwoord": "Een Arbeidsongeschiktheidsverzekering (AOV) beschermt je inkomen als je door ziekte of een ongeval niet meer kunt werken. Als zzp'er heb je geen werkgever die je doorbetaalt bij ziekte, dus een AOV zorgt ervoor dat je financieel niet in de problemen komt. De verzekering keert maandelijks een bedrag uit zolang je arbeidsongeschikt bent."
     },
@@ -339,17 +386,17 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Mijn verzekering beheren",
       "vraag": "Hoe kan ik mijn verzekering opzeggen?",
-      "antwoord": "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt. Start de opzeg-wizard op /mijn-zp/opzeggen en geef de reden en gewenste opzegdatum op. Wij verwerken je opzegging binnen 24 uur en sturen je een bevestiging per mail."
+      "antwoord": "Voor de BAV + AVB: geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt. Start de opzeg-wizard op /mijn-zp/opzeggen en geef de reden en gewenste opzegdatum op. Wij verwerken je opzegging binnen 24 uur en sturen je een bevestiging per mail."
     },
     {
       "categorie": "Mijn verzekering beheren",
       "vraag": "Hoe pauzeer ik mijn verzekering?",
-      "antwoord": "Heb je tijdelijk geen opdracht of ga je tijdelijk in loondienst? Dan kun je je verzekering eenvoudig pauzeren via de pauzeer-wizard op /mijn-zp/pauzeren. Wij verwerken je pauzering binnen 24 uur."
+      "antwoord": "Heb je tijdelijk geen opdracht of ga je tijdelijk in loondienst? Dan kun je je BAV + AVB eenvoudig pauzeren via de pauzeer-wizard op /mijn-zp/pauzeren. Wij verwerken je pauzering binnen 24 uur. Cyber is niet pauzeerbaar."
     },
     {
       "categorie": "Mijn verzekering beheren",
       "vraag": "Wat als ik tijdelijk geen opdracht heb?",
-      "antwoord": "Dan hoef je niet meteen je verzekering op te zeggen. Je kunt je verzekering pauzeren via Mijn ZP, en via onze zusteronderneming Onefellow, arbeidsbemiddelaar voor zelfstandige professionals, helpen we je zoeken naar een nieuwe opdracht. Bekijk de actuele opdrachten op onefellow.nl/opdrachten of meld je aan via onefellow.nl/registreren. Wil je toch opzeggen, dan kan dat dagelijks; let op dat je daarna niet meer verzekerd bent voor nieuwe claims."
+      "antwoord": "Dan hoef je niet meteen je verzekering op te zeggen. Je kunt je BAV + AVB pauzeren via Mijn ZP (cyber niet), en via onze zusteronderneming Onefellow, arbeidsbemiddelaar voor zelfstandige professionals, helpen we je zoeken naar een nieuwe opdracht. Bekijk de actuele opdrachten op onefellow.nl/opdrachten of meld je aan via onefellow.nl/registreren. Wil je toch opzeggen, dan kan dat dagelijks; let op dat je daarna niet meer verzekerd bent voor nieuwe claims."
     },
     {
       "categorie": "Mijn verzekering beheren",
@@ -404,7 +451,7 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Onze verzekering",
       "vraag": "Hoe lang zit ik aan deze verzekering vast?",
-      "antwoord": "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt. Geen minimale looptijd en geen opzegtermijn."
+      "antwoord": "Voor de BAV + AVB: geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt. Geen minimale looptijd en geen opzegtermijn."
     },
     {
       "categorie": "Onze verzekering",

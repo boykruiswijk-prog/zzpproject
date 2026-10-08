@@ -1,3 +1,4 @@
+import { CYBER_DEKKING, CYBER_HULP, CYBER_DETAILS } from "../../../supabase/functions/_shared/cyber";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Shield, ArrowRight } from "lucide-react";
@@ -25,13 +26,13 @@ export function CombiPackageSection() {
             <span className="text-accent">{t("home.allUnderOneRoofAccent")}</span>
           </h2>
           <p className="text-muted-foreground">
-            Kies je pakket. Alle pakketten zijn dagelijks opzegbaar en
+            Kies je pakket. De BAV + AVB is dagelijks opzegbaar; cyber heeft een vaste looptijd van 12 maanden. Alle premies zijn
             inclusief kosten en assurantiebelasting.
           </p>
         </AnimatedSection>
 
         <StaggerContainer
-          className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12"
+          className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto mb-12"
           staggerDelay={0.15}
         >
           {bavPakketten.map((pkg) => {
@@ -70,7 +71,7 @@ export function CombiPackageSection() {
 
                   <div className="mb-5">
                     <p className="text-3xl font-bold text-foreground whitespace-nowrap">
-                      €{pkg.prijs}
+                      €{pkg.prijs.toLocaleString("nl-NL")}
                       <span className="text-sm font-normal text-muted-foreground">
                         {" "}/ {pkg.periode}
                       </span>
@@ -100,9 +101,9 @@ export function CombiPackageSection() {
                       <li className="flex items-start gap-2">
                         <CheckCircle className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
                         <div className="flex-1 flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-x-2">
-                          <span>Cyber per schade / per jaar</span>
-                          <span className="font-semibold whitespace-nowrap">
-                            {formatBedrag(pkg.dekkingen.cyber.perSchade)} / {formatBedrag(pkg.dekkingen.cyber.perJaar)}
+                          <span>{CYBER_DEKKING}</span>
+                          <span className="text-xs">
+                            {CYBER_HULP} {CYBER_DETAILS}
                           </span>
                         </div>
                       </li>
