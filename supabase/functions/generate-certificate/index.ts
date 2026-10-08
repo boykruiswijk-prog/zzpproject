@@ -101,7 +101,26 @@ serve(async (req) => {
         return json({ success: true, policy: { id: bestaand.id, certificate_number: bestaand.certificate_number, status: "ingetrokken" } });
       }
 
-      if (actie === "mailen") {
+      if (actie === "nummer_overnemen") {
+        // Omzetting vastgelegd: nummer vervangen door het overgenomen BAV-nummer en PDF opnieuw maken. Nooit mail.
+        let oudePdfPad: string | null = null;
+        if (bestaand.pdf_url) {
+          oudePdfPad = `versies/${bestaand.certificate_number}-v${bestaand.versie}-vervangen-${Date.now()}.pdf`;
+          const { error: cErr } = await adminClient.storage.from("certificates").copy(bestaand.pdf_url, oudePdfPad);
+          if (cErr) return json({ error: `Oude PDF kon niet bewaard worden: ${cErr.message}` }, 500);
+        }
+        const { data: r, error: rErr } = await userClient.rpc("policy_nummer_overnemen", { _policy_id: bestaand.id, _oude_pdf_pad: oudePdfPad });
+        if (rErr) return json({ error: rErr.message }, 409);
+        const { data: upd } = await adminClient.from("policies").select("*").eq("id", bestaand.id).single();
+        if (!(r as any)?.gewijzigd && upd?.pdf_url === `${upd?.certificate_number}.pdf`) {
+          return json({ success: true, gewijzigd: false, policy: { id: upd.id, certificate_number: upd.certificate_number } });
+        }
+        policy = upd;
+        if (bestaand.lead_id) {
+          const { data: l } = await adminClient.from("leads").select("kvk_nummer").eq("id", bestaand.lead_id).maybeSingle();
+          kvkNummerBron = l?.kvk_nummer ?? null;
+        }
+      } else if (actie === "mailen") {
         const r = await mailCertificaat(adminClient, req, bestaand, user);
         if (!r.ok) return json({ error: r.error }, 500);
         await adminClient.from("policy_versies").insert({
