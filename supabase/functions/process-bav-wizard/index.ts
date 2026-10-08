@@ -115,9 +115,11 @@ Deno.serve(async (req) => {
     );
   };
 
+  let submissionVoorFout: BavSubmission | null = null;
   try {
     const t0 = Date.now();
     const submission = (await req.json()) as BavSubmission;
+    submissionVoorFout = submission;
     if (typeof submission.telefoon === "string") submission.telefoon = normaliseerNlTelefoon(submission.telefoon);
 
     if (
@@ -335,7 +337,10 @@ Deno.serve(async (req) => {
         maandpremie: starter ? (pakket.betaalwijze === "maandelijks" ? STARTER.maandprijs : Math.round((STARTER.jaarprijs / 12) * 100) / 100) : pakket.maandprijs,
         jaarpremie: starter ? (pakket.betaalwijze === "maandelijks" ? STARTER.maandprijs * 12 : STARTER.jaarprijs) : pakket.jaarprijs,
         premiebedrag: premium,
-        ...starterVelden,
+        // Alleen kolommen die bav_aanmeldingen kent (kvk_datum_bron/kvk_gegevens staan alleen op leads).
+        kvk_startdatum: starterVelden.kvk_startdatum,
+        tarief_type: starterVelden.tarief_type,
+        starter_tot: starterVelden.starter_tot,
         iban: machtiging.iban,
         rekeninghouder: machtiging.debiteurNaam,
         status: "nieuw",
@@ -345,7 +350,8 @@ Deno.serve(async (req) => {
       .select()
       .single();
 
-    if (dbError) throw new Error(`Aanmelding insert: ${dbError.message}`);
+    // Lead en SEPA-bewijs staan al vast: een fout hier mag de aanvraag niet laten mislukken.
+    if (dbError) console.error(`process-bav-wizard: aanmelding insert mislukt (lead ${lead.id} wel opgeslagen): ${dbError.message}`);
 
     // ── 2b/3. Na het antwoord: PDF + bevestigingsmail en teamnotificatie.
     // Bewijs, lead en aanmelding staan hierboven al synchroon vast. Fouten worden
@@ -408,7 +414,7 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        aanmelding_id: aanmelding.id,
+        aanmelding_id: aanmelding?.id ?? null,
         lead_id: lead.id,
         mandaatkenmerk: machtiging.mandaatkenmerk,
       }),
@@ -416,7 +422,15 @@ Deno.serve(async (req) => {
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : "Onbekende fout";
-    console.error("process-bav-wizard error:", message);
+    console.error(`process-bav-wizard mislukt: reason=server_fout melding="${message}"`);
+    // Ingevulde gegevens bewaren voor terugbellen: concept blijft open op stap 5 (verzenden geprobeerd).
+    try {
+      const cid = (submissionVoorFout as { concept_id?: unknown } | null)?.concept_id;
+      if (typeof cid === "string" && isUuid(cid)) {
+        await supabase.from("aanvraag_concepten").update({ stap: 5, laatst_actief_op: new Date().toISOString() })
+          .eq("id", cid).neq("status", "omgezet");
+      }
+    } catch (e) { console.error("concept bijwerken na fout mislukt:", e instanceof Error ? e.message : e); }
     return new Response(
       JSON.stringify({ success: false, error: message }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
