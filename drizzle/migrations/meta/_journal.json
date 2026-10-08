@@ -554,6 +554,13 @@
       "when": 1791459343001,
       "tag": "0078_omzetting_rechtsopvolging",
       "breakpoints": true
+    },
+    {
+      "idx": 79,
+      "version": "7",
+      "when": 1791460259652,
+      "tag": "0079_omzetting_initieel_bav_nummer",
+      "breakpoints": true
     }
   ]
 }
