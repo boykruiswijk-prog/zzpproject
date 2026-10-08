@@ -243,6 +243,8 @@ export type Database = {
       }
       article_image_worker: {
         Row: {
+          ai_melding: string | null
+          ai_melding_op: string | null
           id: boolean
           lease_id: string | null
           lease_until: string | null
@@ -250,6 +252,8 @@ export type Database = {
           wake_token: string
         }
         Insert: {
+          ai_melding?: string | null
+          ai_melding_op?: string | null
           id?: boolean
           lease_id?: string | null
           lease_until?: string | null
@@ -257,6 +261,8 @@ export type Database = {
           wake_token?: string
         }
         Update: {
+          ai_melding?: string | null
+          ai_melding_op?: string | null
           id?: boolean
           lease_id?: string | null
           lease_until?: string | null
@@ -4601,6 +4607,7 @@ export type Database = {
         Args: { _anker: string; _cyclus: string; _n: number }
         Returns: string
       }
+      get_artikelbeeld_melding: { Args: never; Returns: string }
       get_exact_config_status: { Args: never; Returns: Json }
       get_exact_koppeling_fout: { Args: never; Returns: string }
       get_klant_contracten_reconciliatie: { Args: never; Returns: Json }
