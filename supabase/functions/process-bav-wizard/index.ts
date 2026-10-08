@@ -116,6 +116,7 @@ Deno.serve(async (req) => {
   };
 
   let submissionVoorFout: BavSubmission | null = null;
+  let leadOpgeslagen: { id: string; mandaatkenmerk: string } | null = null;
   try {
     const t0 = Date.now();
     const submission = (await req.json()) as BavSubmission;
@@ -316,6 +317,7 @@ Deno.serve(async (req) => {
       .single();
 
     if (leadError) throw new Error(`Lead insert: ${leadError.message}`);
+    leadOpgeslagen = { id: lead.id, mandaatkenmerk: machtiging.mandaatkenmerk };
 
     // ── 2. INSERT IN BAV_AANMELDINGEN ──
     const { data: aanmelding, error: dbError } = await supabase
@@ -431,6 +433,14 @@ Deno.serve(async (req) => {
           .eq("id", cid).neq("status", "omgezet");
       }
     } catch (e) { console.error("concept bijwerken na fout mislukt:", e instanceof Error ? e.message : e); }
+    // Aanvraag is al opgeslagen: vervolgfout alleen loggen, klant krijgt de normale bevestiging.
+    if (leadOpgeslagen) {
+      console.error(`process-bav-wizard vervolgstap mislukt na opslaan lead ${leadOpgeslagen.id}: ${message}`);
+      return new Response(
+        JSON.stringify({ success: true, aanmelding_id: null, lead_id: leadOpgeslagen.id, mandaatkenmerk: leadOpgeslagen.mandaatkenmerk, vervolgfout: true }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
     return new Response(
       JSON.stringify({ success: false, error: message }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
