@@ -23,7 +23,8 @@ import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
 import { resolveFiscaleTokens } from "@/lib/fiscaleTokens";
 import { SITE_CONFIG } from "@/config/site";
 import NotFound from "@/pages/NotFound";
-import { articleImage, absoluteArticleImage } from "@/lib/articleImage";
+import { articleImage, absoluteArticleImage, isGeneratedArticleImage } from "@/lib/articleImage";
+import { ArticleImage } from "@/components/kennisbank/ArticleImage";
 
 const BAV_AVB_SLUG = "zp-zaken-zorgeloos-zzpen-goedkoopste-bav-avb";
 
@@ -229,7 +230,7 @@ export default function ArtikelDetail() {
   const categorySlug = CATEGORY_SLUGS[article.category];
   const articleUrl = `https://zpzaken.nl/kennisbank/${article.slug}`;
   const wordCount = countWords(article.content);
-  const imageUrl = articleImage(article);
+  const gegenereerd = isGeneratedArticleImage(article);
   const ogImage = absoluteArticleImage(article);
   const metaDescription = article.seo_description || makeFallbackDescription(article.content, article.excerpt);
   const seoTitle = article.seo_title || article.title;
@@ -294,9 +295,9 @@ export default function ArtikelDetail() {
         <meta property="og:description" content={metaDescription} />
         <meta property="og:url" content={articleUrl} />
         <meta property="og:image" content={ogImage} />
-        {!article.image_url && <meta property="og:image:width" content="1200" />}
-        {!article.image_url && <meta property="og:image:height" content="630" />}
-        {!article.image_url && <meta property="og:image:type" content="image/png" />}
+        {gegenereerd && <meta property="og:image:width" content="1200" />}
+        {gegenereerd && <meta property="og:image:height" content="630" />}
+        {gegenereerd && <meta property="og:image:type" content="image/png" />}
         <meta property="og:image:alt" content={article.title} />
         <meta property="og:locale" content="nl_NL" />
         <meta property="article:published_time" content={publishedAt} />
@@ -309,7 +310,7 @@ export default function ArtikelDetail() {
         <meta name="twitter:description" content={metaDescription} />
         <meta name="twitter:image" content={ogImage} />
 
-        <link rel="preload" as="image" href={imageUrl} />
+        <link rel="preload" as="image" href={articleImage(article)} />
 
         <script type="application/ld+json">{JSON.stringify(jsonLdArticle)}</script>
         <script type="application/ld+json">{JSON.stringify(jsonLdBreadcrumb)}</script>
@@ -380,14 +381,13 @@ export default function ArtikelDetail() {
         {(
           <div className="container-wide max-w-4xl mx-auto px-4 sm:px-6 -mt-2 mb-8">
             <figure>
-              <img decoding="async"
-                src={imageUrl}
-                alt={article.title}
-                width={article.image_url ? 1600 : 1200}
-                height={article.image_url ? 900 : 630}
+              <ArticleImage decoding="async"
+                article={article}
+                width={gegenereerd ? 1200 : 1600}
+                height={gegenereerd ? 630 : 900}
                 loading="eager"
                 fetchpriority="high"
-                className={article.image_url ? "w-full aspect-[16/9] object-cover rounded-xl shadow-md" : "w-full aspect-[1200/630] object-contain rounded-xl shadow-md"}
+                className={!gegenereerd ? "w-full aspect-[16/9] object-cover rounded-xl shadow-md" : "w-full aspect-[1200/630] object-contain rounded-xl shadow-md"}
               />
             </figure>
           </div>
@@ -493,7 +493,7 @@ export default function ArtikelDetail() {
                       to={`/kennisbank/${r.slug}`}
                       className="group bg-background border border-border/50 rounded-xl overflow-hidden hover:shadow-lg transition-shadow"
                     >
-                      <img loading="lazy" decoding="async" src={articleImage(r)} alt={r.title} className={r.image_url ? "w-full aspect-[16/9] object-cover" : "w-full aspect-[1200/630] object-contain"} />
+                      <ArticleImage loading="lazy" decoding="async" article={r} className={!isGeneratedArticleImage(r) ? "w-full aspect-[16/9] object-cover" : "w-full aspect-[1200/630] object-contain"} />
                       <div className="p-5">
                         <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${rStyle} mb-3`}>
                           {r.category}

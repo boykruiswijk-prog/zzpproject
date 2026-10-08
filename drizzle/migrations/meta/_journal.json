@@ -491,6 +491,13 @@
       "when": 1791393620895,
       "tag": "0069_portaltoegang_verlenen_fix",
       "breakpoints": true
+    },
+    {
+      "idx": 70,
+      "version": "7",
+      "when": 1791446139026,
+      "tag": "0070_artikel_afbeelding_bij_publicatie",
+      "breakpoints": true
     }
   ]
 }

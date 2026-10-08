@@ -3,7 +3,8 @@
  import type { Article } from "@/hooks/useArticles";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { formatDateNL } from "@/lib/dateFormat";
-import { articleImage } from "@/lib/articleImage";
+import { isGeneratedArticleImage } from "@/lib/articleImage";
+import { ArticleImage } from "./ArticleImage";
  
  
  interface ArticleCardProps {
@@ -12,7 +13,7 @@ import { articleImage } from "@/lib/articleImage";
  }
  
  export function ArticleCard({ article, index }: ArticleCardProps) {
-   const imageUrl = articleImage(article);
+   const eigen = !isGeneratedArticleImage(article);
   const formattedDate = article.published_at ? formatDateNL(article.published_at) : null;
  
    return (
@@ -26,14 +27,13 @@ import { articleImage } from "@/lib/articleImage";
      >
        <LocalizedLink to={`/kennisbank/${article.slug}`} className="flex flex-col flex-1">
          {/* Article Image */}
-         <div className={article.image_url ? "relative h-48 overflow-hidden" : "relative aspect-[1200/630] overflow-hidden"}>
-           <img loading="lazy" decoding="async"
-             src={imageUrl}
-             alt={article.title}
+         <div className={eigen ? "relative h-48 overflow-hidden" : "relative aspect-[1200/630] overflow-hidden"}>
+           <ArticleImage loading="lazy" decoding="async"
+             article={article}
              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
-           {article.image_url && <div className="absolute inset-0 bg-gradient-to-t from-card/80 via-transparent to-transparent" />}
-           {article.image_url && <div className="absolute bottom-3 left-3 inline-flex items-center gap-2 bg-accent/90 backdrop-blur-sm text-primary-foreground px-3 py-1.5 rounded-lg text-sm font-medium">
+           {eigen && <div className="absolute inset-0 bg-gradient-to-t from-card/80 via-transparent to-transparent" />}
+           {eigen && <div className="absolute bottom-3 left-3 inline-flex items-center gap-2 bg-accent/90 backdrop-blur-sm text-primary-foreground px-3 py-1.5 rounded-lg text-sm font-medium">
              <Shield className="h-3.5 w-3.5" />
              <span itemProp="articleSection">{article.category}</span>
            </div>}
