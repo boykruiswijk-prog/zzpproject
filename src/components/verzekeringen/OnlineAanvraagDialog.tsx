@@ -199,7 +199,7 @@ export function OnlineAanvraagDialog({
       setIsCompleted(true);
       toast({
         title: "Aanvraag ontvangen!",
-        description: "We nemen binnen 1 werkdag contact met je op.",
+        description: "We nemen binnen 24 uur contact met je op.",
       });
     } catch (error) {
       console.error("Error submitting lead:", error);
@@ -249,7 +249,7 @@ export function OnlineAanvraagDialog({
               <DialogTitle className="text-2xl mb-2">Aanvraag verzonden!</DialogTitle>
               <DialogDescription className="text-base">
                 Bedankt voor je aanvraag voor de {insuranceTitle}. We hebben je gegevens 
-                ontvangen en nemen binnen 1 werkdag contact met je op om de aanvraag af te ronden.
+                ontvangen en nemen binnen 24 uur contact met je op om de aanvraag af te ronden.
               </DialogDescription>
             </DialogHeader>
             <div className="mt-8 p-4 bg-secondary rounded-lg text-left">
@@ -261,7 +261,7 @@ export function OnlineAanvraagDialog({
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
-                  <span>Persoonlijk contact binnen 1 werkdag</span>
+                  <span>Persoonlijk contact binnen 24 uur</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
@@ -284,7 +284,7 @@ export function OnlineAanvraagDialog({
         <DialogHeader>
           <DialogTitle>{insuranceTitle} online afsluiten</DialogTitle>
           <DialogDescription>
-            Sluit je verzekering direct online af. Vul onderstaande gegevens in en ontvang binnen 1 werkdag je polis.
+            Sluit je verzekering direct online af. Vul onderstaande gegevens in en ontvang binnen 24 uur je polis.
           </DialogDescription>
         </DialogHeader>
 
@@ -546,7 +546,7 @@ export function OnlineAanvraagDialog({
 
             <div className="p-4 bg-accent/10 rounded-lg border border-accent/20">
               <p className="text-sm">
-                <strong>Let op:</strong> Na het versturen ontvang je binnen 1 werkdag een definitief 
+                <strong>Let op:</strong> Na het versturen ontvang je binnen 24 uur een definitief 
                 voorstel met premieberekening. Je zit nergens aan vast tot je akkoord geeft.
               </p>
             </div>

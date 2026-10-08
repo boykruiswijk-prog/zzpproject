@@ -22,8 +22,8 @@ const AVB = formatMiljoenKort(PAKKET.dekkingen.avb.perGebeurtenis);
 export const STARTERS_FAQS = [
   { question: "Wie kan het startertarief krijgen?", answer: `Zzp'ers met een KVK-inschrijving jonger dan 12 maanden op de ingangsdatum van de polis. Wij kijken naar de startdatum op je KVK-uittreksel. ${STARTER_VOORWAARDE_TEKST}` },
   { question: "Wat betaal ik na de eerste 12 maanden?", answer: `Na 12 maanden betaal je automatisch de gewone prijs: € ${STARTER.naMaandprijs} per maand of € ${STARTER.naJaarprijs} per jaar, inclusief kosten en assurantiebelasting. Je hoeft daarvoor niets te doen.` },
-  { question: "Is de dekking anders dan bij de gewone BAV + AVB?", answer: `Nee. Het is dezelfde polis met dezelfde dekking en dezelfde voorwaarden: BAV ${BAV} en AVB ${AVB} per gebeurtenis, verzekerd bij Hiscox.` },
-  { question: "Kan ik tussentijds opzeggen?", answer: "Ja. Ook met het startertarief is je verzekering dagelijks opzegbaar, net als de gewone polis." },
+  { question: "Is de dekking anders dan bij de gewone BAV + AVB?", answer: `Nee. Het is dezelfde polis met dezelfde dekking en dezelfde voorwaarden: BAV ${BAV} en AVB ${AVB} per aanspraak, verzekerd bij Hiscox.` },
+  { question: "Kan ik tussentijds opzeggen?", answer: "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt. Dit geldt ook bij het startertarief, bij maand- en jaarbetaling." },
   TIJDELIJK_GEEN_OPDRACHT_FAQ,
   { question: "Hoe controleren jullie mijn KVK-startdatum?", answer: "Je vult de startdatum van je KVK-inschrijving in bij je aanvraag. Een collega controleert die datum voordat je polis ingaat. Klopt de datum niet, dan geldt de gewone prijs en hoor je dat van ons." },
 ];
@@ -61,7 +61,7 @@ export default function Starters() {
       benefits={[
         { icon: Award, title: "De bedenker van BAV + AVB in één polis", description: "ZP Zaken bracht de BAV en AVB als eerste samen in één polis voor zzp'ers en is marktleider." },
         { icon: Users, title: "13+ jaar, 5.000+ zzp'ers", description: "Al meer dan 13 jaar verzekeren wij zzp'ers. Meer dan 5.000 zzp'ers gingen je voor." },
-        { icon: ShieldCheck, title: "Verzekerd bij Hiscox", description: `BAV ${BAV} en AVB ${AVB} per gebeurtenis. Zelfde polis, dekking en voorwaarden als de gewone BAV + AVB.` },
+        { icon: ShieldCheck, title: "Verzekerd bij Hiscox", description: `BAV ${BAV} en AVB ${AVB} per aanspraak. Zelfde polis, dekking en voorwaarden als de gewone BAV + AVB.` },
       ]}
       explainers={[
         { image: teamMeeting, title: "Zekerheid vanaf je eerste opdracht", text: "Veel opdrachtgevers vragen om een BAV. Met de BAV + AVB ben je verzekerd als een fout in je werk of een ongeluk op locatie schade veroorzaakt.", bullets: ["Beroepsaansprakelijkheid en bedrijfsaansprakelijkheid in één polis", "Certificaat direct te delen met je opdrachtgever", "Maandelijks opzegbaar bij maandbetaling"] },

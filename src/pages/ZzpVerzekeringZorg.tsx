@@ -94,11 +94,11 @@ export default function ZzpVerzekeringZorg() {
           image: officeCoffee,
           title: "Snel geregeld, zonder papierwerk",
           text:
-            "Je aanvraag wordt dezelfde dag opgepakt en je ontvangt je polis digitaal. Zo kun je zonder vertraging aan een nieuwe opdracht beginnen.",
+            "Binnen 24 uur hoor je van ons. Je ontvangt je certificaat in je mailbox.",
         },
       ]}
       ctaTitle="Vraag gratis advies aan"
-      ctaSubtitle="Vertel ons wat je doet en voor welke instelling. Wij regelen de juiste dekking."
+      ctaSubtitle="Vertel ons wat je doet en voor welke instelling. Binnen 24 uur hoor je van ons."
       ctaButton="Vraag gratis advies aan"
       aanvraag="terugbel"
     >

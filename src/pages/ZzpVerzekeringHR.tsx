@@ -25,7 +25,7 @@ export default function ZzpVerzekeringHR() {
       subtitle="Als HR-adviseur, recruiter of loopbaanadviseur werk je met mensen en contracten. Een fout in een ontslagadvies of selectie kan je opdrachtgever geld kosten. Een BAV en AVB in één polis beschermen je."
       sector="management-consultancy"
       benefits={[
-        { icon: Users, title: "Voor HR, P&O en recruitment", description: `Voor HR-adviseurs, P&O'ers, recruiters en loopbaanadviseurs. Verzekerd voor ${BAV_DEKKING} BAV en ${AVB_DEKKING} AVB per gebeurtenis.` },
+        { icon: Users, title: "Voor HR, P&O en recruitment", description: `Voor HR-adviseurs, P&O'ers, recruiters en loopbaanadviseurs. Verzekerd voor ${BAV_DEKKING} BAV en ${AVB_DEKKING} AVB per aanspraak.` },
         { icon: ShieldCheck, title: "Geen eigen risico", description: "Bij een schade betaal je geen eigen risico. Je polis is dagelijks opzegbaar." },
         { icon: Clock, title: "Binnen 24 uur geregeld", description: "Online afsluiten, binnen 24 uur geregeld en je certificaat in je mailbox." },
       ]}

@@ -34,7 +34,7 @@ function zpZakenRij(): BavAanbieder {
     aanbieder: "ZP Zaken (via Hiscox)",
     watJeKrijgt: "BAV + AVB in één polis",
     vanafPrijs: `${eur(maand.prijs)} per maand of ${eur(jaar.prijs)} per jaar${inclKosten ? ", premie incl. kosten en assurantiebelasting" : ""}`,
-    verzekerdBedrag: `BAV ${eur(d.bav.perGebeurtenis)} en AVB ${eur(d.avb.perGebeurtenis)} per gebeurtenis`,
+    verzekerdBedrag: `BAV ${eur(d.bav.perGebeurtenis)} en AVB ${eur(d.avb.perGebeurtenis)} per aanspraak`,
     eigenRisico: "Geen",
     opzeggen: "Dagelijks",
     bronUrl: "/verzekeringen",

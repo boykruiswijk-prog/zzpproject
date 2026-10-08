@@ -11,7 +11,7 @@ export function SiteSchemaMarkup() {
     "@id": ORGANIZATION_ID,
     description:
       "ZP Zaken is al 13+ jaar de onafhankelijke adviseur voor zzp'ers. BAV, AVB, AOV en meer. Persoonlijk gesprek, scherpe premies.",
-    foundingDate: "2014",
+    foundingDate: "2013",
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",

@@ -21,9 +21,9 @@ export default function PauzerenWizard() {
     <ServiceWizardShell
       type="pauzeren"
       pageTitle="Verzekering pauzeren | Mijn ZP, ZP Zaken"
-      pageDescription="Pauzeer tijdelijk je BAV/AVB. Je uitlooprisico blijft behouden. Binnen 24 uur verwerkt."
+      pageDescription="Pauzeer tijdelijk je BAV/AVB. Binnen 24 uur verwerkt."
       introTitle="Verzekering pauzeren"
-      introText="Tijdelijk geen opdracht of in loondienst? Pauzeer je verzekering: je uitlooprisico blijft behouden."
+      introText="Tijdelijk geen opdracht of in loondienst? Pauzeer je verzekering via Mijn ZP."
       steps={[
         {
           title: "Identificatie",
@@ -98,8 +98,7 @@ export default function PauzerenWizard() {
                 <div>
                   <p className="font-semibold text-sm mb-1">Goed om te weten</p>
                   <p className="text-sm text-muted-foreground">
-                    Jouw uitlooprisico blijft tijdens de pauze gewoon behouden. Schades die voortvloeien
-                    uit werkzaamheden van vóór de pauze blijven gedekt.
+                    Tijdens de pauze ben je niet verzekerd voor nieuwe werkzaamheden. Heb je vragen over een claim voor eerder werk? Neem contact met ons op en raadpleeg de polisvoorwaarden.
                   </p>
                 </div>
               </div>

@@ -71,10 +71,10 @@ export default function PortalPolicy() {
                 </div>
                 <div>
                   <dt className="text-muted-foreground">Looptijd</dt>
-                  <dd className="font-medium">{p.contract_duration}</dd>
+                  <dd className="font-medium">Doorlopend, zonder minimale looptijd, dagelijks opzegbaar.</dd>
                 </div>
                 <div>
-                  <dt className="text-muted-foreground">BAV per gebeurtenis</dt>
+                  <dt className="text-muted-foreground">BAV per aanspraak</dt>
                   <dd className="font-medium">{p.bav_per_event}</dd>
                 </div>
                 <div>
@@ -82,7 +82,7 @@ export default function PortalPolicy() {
                   <dd className="font-medium">{p.bav_per_year}</dd>
                 </div>
                 <div>
-                  <dt className="text-muted-foreground">AVB per gebeurtenis</dt>
+                  <dt className="text-muted-foreground">AVB per aanspraak</dt>
                   <dd className="font-medium">{p.avb_per_event}</dd>
                 </div>
                 <div>
@@ -91,7 +91,7 @@ export default function PortalPolicy() {
                 </div>
                 <div className="sm:col-span-2">
                   <dt className="text-muted-foreground">Eigen risico</dt>
-                  <dd className="font-medium">{p.own_risk}</dd>
+                  <dd className="font-medium">Geen</dd>
                 </div>
                 <div className="sm:col-span-2">
                   <dt className="text-muted-foreground">Dekkingsgebied</dt>

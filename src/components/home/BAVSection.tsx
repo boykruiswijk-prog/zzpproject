@@ -95,7 +95,7 @@ export function BAVSection() {
                 <CheckCircle className="h-5 w-5 text-accent" />
               </div>
               <div className="flex justify-between items-center py-3">
-                <span className="text-primary-foreground/80">{t("bavSection.runOffCoverage")}</span>
+                <span className="text-primary-foreground/80">{t("home.bavUsps.0")}</span>
                 <CheckCircle className="h-5 w-5 text-accent" />
               </div>
             </div>

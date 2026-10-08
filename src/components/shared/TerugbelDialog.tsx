@@ -82,14 +82,14 @@ export function TerugbelDialog() {
           <div className="text-center py-4 space-y-3">
             <CheckCircle className="h-12 w-12 text-accent mx-auto" aria-hidden="true" />
             <DialogTitle>Gelukt, we bellen je terug</DialogTitle>
-            <DialogDescription>Wij regelen het voor je. Je hoort binnen 1 werkdag van ons.</DialogDescription>
+            <DialogDescription>Wij regelen het voor je. Je hoort binnen 24 uur van ons.</DialogDescription>
             <Button onClick={() => sluit(false)} variant="accent">Sluiten</Button>
           </div>
         ) : (
           <>
             <DialogHeader>
               <DialogTitle>Vrijblijvend gesprek</DialogTitle>
-              <DialogDescription>Laat je naam en nummer achter. Wij regelen het voor je, je hoort binnen 1 werkdag van ons.</DialogDescription>
+              <DialogDescription>Laat je naam en nummer achter. Wij regelen het voor je, je hoort binnen 24 uur van ons.</DialogDescription>
             </DialogHeader>
             <form onSubmit={verstuur} className="space-y-4" noValidate>
               <input type="text" className="hidden" {...guard.honeypotProps} />

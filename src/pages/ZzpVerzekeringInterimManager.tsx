@@ -25,7 +25,7 @@ export default function ZzpVerzekeringInterimManager() {
       subtitle="Als interim manager of projectmanager neem je besluiten en maak je planningen. Je opdrachtgever vertrouwt daarop. Loopt een project vast door een fout van jou, dan kan je opdrachtgever je aansprakelijk stellen. Een BAV en AVB in één polis beschermen je."
       sector="management-consultancy"
       benefits={[
-        { icon: Users, title: "Voor interim en projectmanagement", description: `Ook voor projectmanagers, programmamanagers en scrum masters buiten ICT. Je bent verzekerd voor ${BAV_DEKKING} BAV en ${AVB_DEKKING} AVB per gebeurtenis.` },
+        { icon: Users, title: "Voor interim en projectmanagement", description: `Ook voor projectmanagers, programmamanagers en scrum masters buiten ICT. Je bent verzekerd voor ${BAV_DEKKING} BAV en ${AVB_DEKKING} AVB per aanspraak.` },
         { icon: ShieldCheck, title: "Geen eigen risico, dagelijks opzegbaar", description: "Je betaalt geen eigen risico. Stopt je opdracht? Dan zeg je de polis op wanneer je wilt." },
         { icon: Clock, title: "Snel geregeld", description: "Sluit online af. Binnen 24 uur is het geregeld en heb je je certificaat in je mailbox." },
       ]}

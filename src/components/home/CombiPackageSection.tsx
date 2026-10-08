@@ -81,7 +81,7 @@ export function CombiPackageSection() {
                     <li className="flex items-start gap-2">
                       <CheckCircle className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
                       <div className="flex-1 flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-x-2">
-                        <span>BAV per gebeurtenis</span>
+                        <span>BAV per aanspraak</span>
                         <span className="font-semibold whitespace-nowrap">
                           {formatBedrag(pkg.dekkingen.bav.perGebeurtenis)}
                         </span>
@@ -90,7 +90,7 @@ export function CombiPackageSection() {
                     <li className="flex items-start gap-2">
                       <CheckCircle className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
                       <div className="flex-1 flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-x-2">
-                        <span>AVB per gebeurtenis</span>
+                        <span>AVB per aanspraak</span>
                         <span className="font-semibold whitespace-nowrap">
                           {formatBedrag(pkg.dekkingen.avb.perGebeurtenis)}
                         </span>
@@ -100,9 +100,9 @@ export function CombiPackageSection() {
                       <li className="flex items-start gap-2">
                         <CheckCircle className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
                         <div className="flex-1 flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-x-2">
-                          <span>Cyber per jaar</span>
+                          <span>Cyber per schade / per jaar</span>
                           <span className="font-semibold whitespace-nowrap">
-                            {formatBedrag(pkg.dekkingen.cyber.perJaar)}
+                            {formatBedrag(pkg.dekkingen.cyber.perSchade)} / {formatBedrag(pkg.dekkingen.cyber.perJaar)}
                           </span>
                         </div>
                       </li>

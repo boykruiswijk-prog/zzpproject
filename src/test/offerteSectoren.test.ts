@@ -106,17 +106,14 @@ describe("afsluitwizard zonder blokkade", () => {
     expect(m![1]).not.toMatch(/offerte|handmatig|afgewezen|propositie/i);
   });
 
-  it("toont directe dekking alleen buiten Zorg en Bouw & techniek", () => {
+  it("toont de 24-uursbelofte zonder directe dekking of intern traject", () => {
     const vertalingen = [nl.home.bavUsps, en.home.bavUsps, de.home.bavUsps, fr.home.bavUsps];
-    const directeDekking = /direct gedekt|immediately covered|sofort versichert|couvert immédiatement/i;
-
     for (const usps of vertalingen) {
-      expect(zichtbareBavUsps(usps, "ict").some((usp) => directeDekking.test(usp))).toBe(true);
-      expect(zichtbareBavUsps(usps, "").some((usp) => directeDekking.test(usp))).toBe(true);
-      for (const sector of ["zorg", "bouw", "Zorg", "Bouw & techniek"]) {
+      for (const sector of ["ict", "", "zorg", "bouw", "Zorg", "Bouw & techniek"]) {
         const zichtbaar = zichtbareBavUsps(usps, sector);
-        expect(zichtbaar.some((usp) => directeDekking.test(usp))).toBe(false);
-        expect(zichtbaar).toHaveLength(usps.length - 1);
+        expect(zichtbaar.join(" ")).not.toMatch(/direct gedekt|immediately covered|sofort versichert|couvert immédiatement|handmatige acceptatie/i);
+        expect(zichtbaar).toHaveLength(usps.length);
+        expect(zichtbaar[2]).toMatch(/24/);
       }
     }
   });

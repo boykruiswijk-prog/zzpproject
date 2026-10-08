@@ -125,8 +125,8 @@ export const searchIndex: SearchEntry[] = [
   {
     title: "Historie",
     path: "/historie",
-    keywords: "geschiedenis tijdlijn 2014 jubileum",
-    snippet: "ZP Zaken sinds 2014, onze tijdlijn.",
+    keywords: "geschiedenis tijdlijn 2013 jubileum",
+    snippet: "ZP Zaken sinds 2013, onze tijdlijn.",
   },
   {
     title: "Collectieve inkoop",
@@ -186,6 +186,6 @@ export const searchIndex: SearchEntry[] = [
   { title: "Mijn ZP | Verzekering pauzeren", path: "/mijn-zp/pauzeren", keywords: "pauzeren tijdelijk loondienst uitloop", snippet: "Pauzeer tijdelijk je verzekering met behoud van uitlooprisico." },
   { title: "Mijn ZP | Documenten opvragen", path: "/mijn-zp/documenten", keywords: "polisblad polisvoorwaarden documenten kopie", snippet: "Vraag een kopie op van je polisblad, voorwaarden of ander document." },
   { title: "Mijn ZP | Verzekering opzeggen", path: "/mijn-zp/opzeggen", keywords: "opzeggen opzeg beëindigen stoppen verzekering opzeggen BAV opzeggen einde verzekering loondienst BV entiteit wijzigen", snippet: "Zeg je BAV-verzekering bij ZP Zaken eenvoudig op. Dagelijks opzegbaar, binnen 24 uur verwerkt." },
-  { title: "FAQ | Hoe pauzeer ik mijn verzekering?", path: "/faq", keywords: "pauzeren verzekering uitlooprisico mijn verzekering beheren", snippet: "Pauzeer je verzekering via de wizard; uitlooprisico blijft behouden." },
+  { title: "FAQ | Hoe pauzeer ik mijn verzekering?", path: "/faq", keywords: "pauzeren verzekering uitlooprisico mijn verzekering beheren", snippet: "Pauzeer je verzekering via Mijn ZP. Tijdens de pauze ben je niet verzekerd voor nieuwe werkzaamheden." },
   { title: "FAQ | Polis opvragen", path: "/faq", keywords: "polis verzekeringspolis opvragen aanvragen", snippet: "Hoe vraag je je polis op." },
 ];

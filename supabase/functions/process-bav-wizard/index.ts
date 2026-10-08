@@ -32,7 +32,7 @@ const PAKKET_CONFIG: Record<
     betaalwijze: "maandelijks",
     maandprijs: 55,
     jaarprijs: 660,
-    dekking: "BAV €5.000.000 / AVB €2.500.000 per gebeurtenis",
+    dekking: "BAV €5.000.000 / AVB €2.500.000 per aanspraak",
   },
   "jaarlijks": {
     naam: "BAV & AVB Jaarlijks",
@@ -40,7 +40,7 @@ const PAKKET_CONFIG: Record<
     betaalwijze: "jaarlijks",
     maandprijs: 50,
     jaarprijs: 600,
-    dekking: "BAV €5.000.000 / AVB €2.500.000 per gebeurtenis",
+    dekking: "BAV €5.000.000 / AVB €2.500.000 per aanspraak",
   },
   "jaarlijks-cyber": {
     naam: "BAV & AVB Jaarlijks + Cyber",
@@ -48,7 +48,7 @@ const PAKKET_CONFIG: Record<
     betaalwijze: "jaarlijks",
     maandprijs: 62.5,
     jaarprijs: 750,
-    dekking: "BAV €5.000.000 / AVB €2.500.000 / Cyber tot €5.000.000 per jaar",
+    dekking: "BAV €5.000.000 / AVB €2.500.000 per aanspraak / Cyber €50.000 per schade, maximaal €5.000.000 per jaar",
   },
 };
 
@@ -187,7 +187,7 @@ Deno.serve(async (req) => {
 
     const todayStr = new Date().toISOString().split("T")[0];
     if (submission.ingangsdatum < todayStr) {
-      return weiger(400, "Een verzekering kan niet met terugwerkende kracht worden afgesloten. De vroegste ingangsdatum is vandaag.", "ingangsdatum");
+      return weiger(400, `Online kan de ingangsdatum niet in het verleden liggen. Heb je een vraag, bel ${COMPANY.phoneDisplay}.`, "ingangsdatum");
     }
 
     // ── DUPLICATE GUARD: bestaande klant met polis kan geen tweede aanvraag doen ──

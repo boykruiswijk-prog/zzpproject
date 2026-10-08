@@ -67,7 +67,7 @@ Deno.serve(async (req) => {
   if (gate.isProduction) {
     await admin.from("leads").update({ status: "offerte_verstuurd", offerte_verstuurd_op: new Date().toISOString() }).eq("id", lead_id);
     await admin.from("lead_notes").insert({ lead_id, user_id: uid, type: "notitie",
-      content: `Offerte verstuurd aan ${to} door ${naamTeamlid}: BAV ${OFFERTE.bav} en AVB ${OFFERTE.avb} per gebeurtenis via ${OFFERTE.verzekeraar}, ${OFFERTE.maand} of ${OFFERTE.jaar}${engels ? ", met Engelse inleiding" : ""}.` });
+      content: `Offerte verstuurd aan ${to} door ${naamTeamlid}: BAV ${OFFERTE.bav} en AVB ${OFFERTE.avb} per aanspraak via ${OFFERTE.verzekeraar}, ${OFFERTE.maand} of ${OFFERTE.jaar}${engels ? ", met Engelse inleiding" : ""}.` });
     await admin.from("activiteiten_log").insert({ actie_type: "offerte_verstuurd", omschrijving: `Offerte verstuurd aan ${to}`, uitgevoerd_door: uid, uitgevoerd_door_naam: naamTeamlid, lead_id, klant_email: to, is_test: lead.is_test });
   }
   return json({ ok: true, productie: gate.isProduction, aan: plan.to });

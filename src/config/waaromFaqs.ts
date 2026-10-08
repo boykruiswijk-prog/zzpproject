@@ -14,7 +14,7 @@ export interface WaaromFaq {
 export const waaromFaqs: WaaromFaq[] = [
   {
     q: "Wat is het verschil tussen een platformverzekering en een eigen polis bij ZP Zaken?",
-    a: "Een platformverzekering is gekoppeld aan jouw opdracht bij dat platform. Zodra de opdracht eindigt, eindigt ook je dekking. Een eigen polis bij ZP Zaken staat op jouw naam, loopt door zolang jij dat wilt en is dagelijks opzegbaar. Jij hebt de controle.",
+    a: "Een platformverzekering is gekoppeld aan jouw opdracht bij dat platform. Zodra de opdracht eindigt, eindigt ook je dekking. Een eigen polis bij ZP Zaken staat op jouw naam, loopt door zolang jij dat wilt en is dagelijks opzegbaar. Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt. Jij hebt de controle.",
   },
   {
     q: "Kan ik naast mijn intermediairverzekering ook bij ZP Zaken verzekerd zijn?",

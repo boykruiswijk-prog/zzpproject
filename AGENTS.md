@@ -30,3 +30,5 @@
 - Beheer-UI-regels staan in src/components/admin/AGENTS.md, CRM-regels in src/components/admin/crm/AGENTS.md.
 - Article images: leased queue, wake token or MFA supervisor, max 2 AI attempts then category fallback; never a global pause (AI refusal only sets admin notice); crashed jobs resume as fallback. Preserve custom/old assets; build verifies images; keep ArticleImage guard. Why: every article gets an image within minutes.
 - scripts/* importeren geen React. Waarom: anders crasht de SSR-prerender (prod/dev-mix).
+
+- Legacy monthly lifecycle credits use actual invoiced periods via the shared lifecycle credit reader and berekenOpzegCredit, also used by planner credits; preview uses the same reader. Why: no annual-premium refund on monthly plans and no duplicate period refunds.

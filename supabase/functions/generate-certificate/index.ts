@@ -512,7 +512,7 @@ serve(async (req) => {
     y -= 20;
     drawRow(
       "Eigen risico:",
-      policy.own_risk || "ZP Zaken draagt de kosten voor het eigen risico.",
+      "geen",
       y
     );
 
@@ -593,7 +593,7 @@ serve(async (req) => {
 
     // Contractduur
     y -= 20;
-    const contractText = policy.contract_duration || "12 maanden doorlopend, met stilzwijgende verlenging voor telkens 12 maanden, per direct opzegbaar.";
+    const contractText = "Doorlopend, zonder minimale looptijd, dagelijks opzegbaar.";
     const contractLines = wrapText(contractText, helvetica, fontSize, maxValueWidth);
     page.drawText("Contractduur:", { x: labelX, y, size: fontSize, font: helvetica, color: gray });
     contractLines.forEach((line: string, i: number) => {

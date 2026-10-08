@@ -102,7 +102,7 @@ export function ServicePageTemplate({
           </div>
         ) : aanvraag === "terugbel" ? (
           <div className="space-y-3">
-            <p className="font-semibold text-white">Wij regelen het voor je, je hoort binnen 1 werkdag van ons.</p>
+            <p className="font-semibold text-white">Wij regelen het voor je, je hoort binnen 24 uur van ons.</p>
             <Button variant="accent" size="lg" onClick={openTerugbel}>
               Bel mij terug <ArrowRight className="h-5 w-5" />
             </Button>
