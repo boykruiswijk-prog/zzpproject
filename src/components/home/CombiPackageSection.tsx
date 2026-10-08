@@ -1,4 +1,4 @@
-import { CYBER_DEKKING, CYBER_HULP, CYBER_DETAILS } from "../../../supabase/functions/_shared/cyber";
+import { CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN } from "../../../supabase/functions/_shared/cyber";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Shield, ArrowRight } from "lucide-react";
@@ -103,7 +103,7 @@ export function CombiPackageSection() {
                         <div className="flex-1 flex flex-col gap-2">
                           <span>{CYBER_DEKKING}</span>
                           <span className="text-xs">
-                            {CYBER_HULP} {CYBER_DETAILS}
+                            {CYBER_HULP} {CYBER_POLISVOORWAARDEN}
                           </span>
                         </div>
                       </li>

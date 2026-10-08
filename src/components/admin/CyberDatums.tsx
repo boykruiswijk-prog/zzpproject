@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useToast } from "@/hooks/use-toast";
 import { formatDateNL } from "@/lib/dateFormat";
 import { Pencil } from "lucide-react";
+import { CYBER_INTERNE_JAARLIMIET } from "../../../supabase/functions/_shared/cyber";
 
 export function CyberDatums({ leadId, contractId, ingang, eind, nieuwePer, onGewijzigd }: { leadId?: string; contractId?: string; ingang?: string | null; eind?: string | null; nieuwePer?: string | null; onGewijzigd?: () => void }) {
   const [open, setOpen] = useState(false);
@@ -16,6 +17,7 @@ export function CyberDatums({ leadId, contractId, ingang, eind, nieuwePer, onGew
   return <div className="space-y-2 border-t border-border pt-3 text-sm">
     <div className="flex flex-wrap items-center gap-3"><strong>Cyber</strong><span>Ingang {formatDateNL(ingang)} · einde lopend cyberjaar {formatDateNL(eind)}</span><Button variant="ghost" size="icon" title="Cyberdatums wijzigen" aria-label="Cyberdatums wijzigen" onClick={() => setOpen(true)}><Pencil className="h-4 w-4" /></Button></div>
     <p className="text-muted-foreground">Nieuwe cybervoorwaarden per verlengingsdatum: {formatDateNL(nieuwePer)}</p>
+    <p className="text-muted-foreground">{CYBER_INTERNE_JAARLIMIET}</p>
     <Dialog open={open} onOpenChange={setOpen}><DialogContent><DialogHeader><DialogTitle>Cyberdatums wijzigen</DialogTitle></DialogHeader>
       <Label htmlFor="cyber-ingang">Cyber-ingangsdatum</Label><Input id="cyber-ingang" type="date" value={start} onChange={(e) => setStart(e.target.value)} />
       <Label htmlFor="cyber-eind">Einde lopend cyberjaar</Label><Input id="cyber-eind" type="date" value={tot} onChange={(e) => setTot(e.target.value)} />

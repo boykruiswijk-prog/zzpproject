@@ -33,4 +33,4 @@
 
 - Monthly lifecycle/preview credits read actual invoiced periods via _shared/lifecycleCredit.ts and planner helper berekenOpzegCredit. Why: no annual-premium math or duplicate refunds.
 
-- New cyber uses versioned _shared/cyber.ts, immutable cyber_akkoord_bewijs and separate cyber_clear contract lines; legacy unversioned customers remain unchanged. Why: fixed cyber obligation never enters BAV credits.
+- New cyber uses versioned _shared/cyber.ts, immutable consent and separate cyber_clear lines; shared annual limit is admin-only. Why: preserve legacy terms and BAV credits.

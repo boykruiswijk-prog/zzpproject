@@ -3,9 +3,10 @@ import { plusMaanden } from "./starterTarief.ts";
 export const CYBER_VERSIE = "2026-10-08";
 export const CYBER = { maandprijs: 27.5, jaarprijs: 250, perSchade: 50_000, gedeeldJaarmaximum: 2_500_000, eigenRisico: 500, fraudeEigenRisico: 1000, incident72uur: 15_000 } as const;
 export const CYBER_AKKOORD = "Ik begrijp dat de cyberdekking een looptijd heeft van 12 maanden en daarna stilzwijgend met 12 maanden wordt verlengd. De BAV + AVB blijft dagelijks opzegbaar.";
-export const CYBER_DEKKING = "Cyber tot €50.000 per schade, eigen risico €500";
+export const CYBER_DEKKING = "Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000)";
 export const CYBER_HULP = "Directe hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.";
-export const CYBER_DETAILS = "Het jaarmaximum van €2.500.000 is een gedeelde limiet voor alle deelnemers aan het ZP Zaken Cyber Collectief. Dekkingsgebied: wereld exclusief VS en Canada. Verzekerd via Hiscox (CyberClear, polisvoorwaarden HCC-2022/01).";
+export const CYBER_POLISVOORWAARDEN = "Wat precies gedekt is, lees je in de polisvoorwaarden.";
+export const CYBER_INTERNE_JAARLIMIET = "Interne informatie: de gedeelde jaarlimiet voor alle deelnemers aan het ZP Zaken Cyber Collectief is €2.500.000.";
 export const CYBER_LOOPTIJD = "Cyber heeft een vaste looptijd van 12 maanden en wordt daarna stilzwijgend met 12 maanden verlengd. Opzeggen kan tegen het einde van de looptijd. Cyber is niet dagelijks opzegbaar en niet pauzeerbaar. Bij maandbetaling betaal je het jaarcontract in 12 termijnen van €27,50. Zeg je de BAV + AVB op, dan loopt cyber door tot het einde van het lopende cyberjaar en blijven de resterende cybertermijnen verschuldigd.";
 export const CYBER_AFGEWEZEN = "Cyberdekking past op dit moment niet bij jouw situatie. Je BAV + AVB sluit je gewoon af; Ellen neemt contact op over een passende oplossing.";
 export const CYBER_VRAGEN = [

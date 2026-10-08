@@ -1,4 +1,4 @@
-import { CYBER_DEKKING, CYBER_HULP, CYBER_DETAILS, CYBER_LOOPTIJD } from "./cyber.ts";
+import { CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER_LOOPTIJD } from "./cyber.ts";
 // Pure logica voor chatassistent Zeker (geen Deno-API's, zodat vitest dit kan testen).
 // Systeemprompt, origin-check, rate limit, maskering en geschiedenisopbouw.
 import { ZEKER_KENNIS } from "./zekerKennis.generated.ts";
@@ -89,7 +89,7 @@ export function bouwSysteemPrompt(opts: { taal: ZekerTaal; artikelen: KennisArti
   const k = ZEKER_KENNIS;
   const pakketten = k.pakketten.map((p) =>
     `- ${p.naam}: ${p.prijsLabel}. BAV ${euro(p.bav.perGebeurtenis)} per aanspraak, ${euro(p.bav.perJaar)} per jaar. AVB ${euro(p.avb.perGebeurtenis)} per aanspraak, ${euro(p.avb.perJaar)} per jaar.` +
-    (p.cyber ? ` ${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_DETAILS} ${CYBER_LOOPTIJD}` : " Geen cyberdekking.") +
+    (p.cyber ? ` ${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_LOOPTIJD} ${CYBER_POLISVOORWAARDEN}` : " Geen cyberdekking.") +
     ` Kenmerken: ${p.usps.join("; ")}.`).join("\n");
   const paginas = k.paginas.map((p) => `- ${p.path} — ${p.title}: ${p.intro}`).join("\n");
   const faq = k.faq.map((f) => `V: ${f.vraag}\nA: ${f.antwoord}`).join("\n");

@@ -19,7 +19,8 @@ describe("Zeker kennisbasis", () => {
       bavPakketten.map((p) => [p.id, p.prijs, p.dekkingen.bav.perGebeurtenis, p.dekkingen.avb.perJaar]));
     const prompt = bouwSysteemPrompt({ taal: "nl", artikelen: [] });
     for (const p of bavPakketten) expect(prompt).toContain(p.prijsLabel);
-    expect(prompt).toContain("€ 2.500.000");
+    expect(prompt).not.toContain("gedeelde limiet");
+    expect(prompt).toContain("cyberfraude €1.000");
   });
   it("prompt bevat compliancegrenzen en geen interne sectorvlaggen", () => {
     const p = bouwSysteemPrompt({ taal: "en", artikelen: [{ slug: "wet-dba", title: "Wet DBA", excerpt: "x" }] });

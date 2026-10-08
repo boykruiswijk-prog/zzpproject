@@ -1,4 +1,4 @@
-import { CYBER_DEKKING, CYBER_HULP, CYBER_DETAILS, CYBER_LOOPTIJD } from "../../supabase/functions/_shared/cyber";
+import { CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER_LOOPTIJD } from "../../supabase/functions/_shared/cyber";
 import { seoRoute } from "@/config/seoRoutes";
 import { ServicePageTemplate } from "@/components/diensten/ServicePageTemplate";
 import { faqSchema } from "@/lib/schema";
@@ -37,7 +37,7 @@ const faqs = [
   {
     question: "Dekt een BAV ook schade door een datalek?",
     answer:
-      `Dat hangt af van de situatie. De polisvoorwaarden zijn leidend. Cyber kan bij maand- en jaarbetaling alleen samen met BAV + AVB. ${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_DETAILS} ${CYBER_LOOPTIJD}`,
+      `Dat hangt af van de situatie. Cyber kan bij maand- en jaarbetaling alleen samen met BAV + AVB. ${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_LOOPTIJD} ${CYBER_POLISVOORWAARDEN}`,
   },
 ];
 

@@ -1,4 +1,4 @@
-import { CYBER_LOOPTIJD, CYBER_DEKKING, CYBER_HULP, CYBER_DETAILS } from "../../supabase/functions/_shared/cyber";
+import { CYBER_LOOPTIJD, CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN } from "../../supabase/functions/_shared/cyber";
 import { Award, ShieldCheck, Users } from "lucide-react";
 import { ArrowRight } from "lucide-react";
 import { seoRoute } from "@/config/seoRoutes";
@@ -25,7 +25,7 @@ export const STARTERS_FAQS = [
   { question: "Wat betaal ik na de eerste 12 maanden?", answer: `Na 12 maanden betaal je automatisch de gewone prijs: € ${STARTER.naMaandprijs} per maand of € ${STARTER.naJaarprijs} per jaar, inclusief kosten en assurantiebelasting. Je hoeft daarvoor niets te doen.` },
   { question: "Is de dekking anders dan bij de gewone BAV + AVB?", answer: `Nee. Het is dezelfde polis met dezelfde dekking en dezelfde voorwaarden: BAV ${BAV} en AVB ${AVB} per aanspraak, verzekerd bij Hiscox.` },
   { question: "Kan ik tussentijds opzeggen?", answer: "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt. Dit geldt ook bij het startertarief, bij maand- en jaarbetaling." },
-  { question: "Kan ik cyber toevoegen aan het starterspakket?", answer: `Ja. €72,50 per maand of €745 per jaar, inclusief kosten en assurantiebelasting, de eerste 12 maanden; daarna €82,50 per maand of €850 per jaar. Voor een KVK-inschrijving jonger dan 12 maanden, onder voorbehoud van controle. Cyber krijgt geen startkorting. ${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_DETAILS} ${CYBER_LOOPTIJD}` },
+  { question: "Kan ik cyber toevoegen aan het starterspakket?", answer: `Ja. €72,50 per maand of €745 per jaar, inclusief kosten en assurantiebelasting, de eerste 12 maanden; daarna €82,50 per maand of €850 per jaar. Voor een KVK-inschrijving jonger dan 12 maanden, onder voorbehoud van controle. Cyber krijgt geen startkorting. ${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_LOOPTIJD} ${CYBER_POLISVOORWAARDEN}` },
   TIJDELIJK_GEEN_OPDRACHT_FAQ,
   { question: "Hoe controleren jullie mijn KVK-startdatum?", answer: "Je vult de startdatum van je KVK-inschrijving in bij je aanvraag. Een collega controleert die datum voordat je polis ingaat. Klopt de datum niet, dan geldt de gewone prijs en hoor je dat van ons." },
 ];
