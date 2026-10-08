@@ -98,7 +98,7 @@ export default function PauzerenWizard() {
                 <div>
                   <p className="font-semibold text-sm mb-1">Goed om te weten</p>
                   <p className="text-sm text-muted-foreground">
-                    Tijdens de pauze ben je niet verzekerd voor nieuwe werkzaamheden. Heb je vragen over een claim voor eerder werk? Neem contact met ons op en raadpleeg de polisvoorwaarden.
+                    Tijdens de BAV + AVB-pauze ben je niet verzekerd voor nieuwe werkzaamheden. Cyber is niet pauzeerbaar en loopt door; de cybertermijnen blijven verschuldigd. Heb je vragen over een claim voor eerder werk? Neem contact met ons op en raadpleeg de polisvoorwaarden.
                   </p>
                 </div>
               </div>

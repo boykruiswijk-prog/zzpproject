@@ -39,6 +39,7 @@ function intro(): string[] {
     "- ZP Zaken maakt deel uit van BusinessFellow Group. Via zusteronderneming Onefellow (onefellow.nl), arbeidsbemiddelaar voor zelfstandige professionals, kunnen klanten van ZP Zaken ook geholpen worden bij het vinden van een nieuwe opdracht.",
     "- BAV + AVB: geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt. Geen minimale looptijd, geen opzegtermijn en geen eigen risico.",
     `- Cyber: ${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_DETAILS} ${CYBER_LOOPTIJD}`,
+    "- Starter met cyber: €72,50 per maand of €745 per jaar de eerste 12 maanden, daarna €82,50 per maand of €850 per jaar, inclusief kosten en assurantiebelasting. Voor KVK-inschrijving jonger dan 12 maanden, onder voorbehoud van controle; cyber krijgt geen startkorting.",
     "- Binnen 24 uur geregeld, certificaat in je mailbox.",
     `- Contact: ${SITE_CONFIG.phoneDisplay}, ${SITE_CONFIG.email}, ${SITE_CONFIG.address.streetAddress}, ${SITE_CONFIG.address.postalCode} ${SITE_CONFIG.address.addressLocality}.`,
     "",

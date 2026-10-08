@@ -51,6 +51,7 @@ export function contractRegelVoorActivatie(lead: any, ondernemingId: string, spe
     starter_tot: spec.tarief_type === "starter" ? spec.starter_tot ?? null : null,
     bedrag_na_starter: spec.tarief_type === "starter" ? spec.bedrag_na_starter ?? null : null,
     is_test: !!lead.is_test,
+    ...(nieuweCyber(lead) ? { cyber_lead_id: lead.id } : {}),
   };
 }
 
@@ -82,7 +83,7 @@ export async function zetInPlanner(supabase: any, lead: any, exactAccountId: str
     const ingang = String(lead.cyber_ingangsdatum ?? lead.ingangsdatum).slice(0, 10);
     const maand = spec.cyclus === "maand";
     const { error: cyberFout } = await supabase.from("klant_contracten").upsert({
-      onderneming_id: ond.id, bron: "site_cyber_20261008", bron_rij: bronRijVoorLead(String(lead.id)), type: "verzekering", product: "cyber_clear",
+      onderneming_id: ond.id, bron: "site_cyber_20261008", bron_rij: bronRijVoorLead(String(lead.id)), type: "verzekering", product: "cyber_clear", cyber_lead_id: lead.id,
       itemcode: maand ? "100M" : "100J", cyclus: spec.cyclus, aantal: 1, bedrag_per_periode: cyberPremie(String(lead.gekozen_pakket)),
       begin_datum: ingang, factureren_vanaf: ingang, gefactureerd_tm: maand ? lastOfMonth(ingang) : cyberJaarEind(ingang),
       volgende_factuurdatum: dagErna(maand ? lastOfMonth(ingang) : cyberJaarEind(ingang)), gefactureerd_tm_bron: "site_cyber_20261008", status: "actief", facturatie_status: "planner", afwijkingen: [],
