@@ -512,6 +512,13 @@
       "when": 1791452557355,
       "tag": "0072_article_image_authenticated_wakeup",
       "breakpoints": true
+    },
+    {
+      "idx": 73,
+      "version": "7",
+      "when": 1791452676981,
+      "tag": "0073_article_image_job_wakeup",
+      "breakpoints": true
     }
   ]
 }
