@@ -41,7 +41,7 @@ function PackageCards({ value, onChange }: { value: string; onChange: (v: string
   return (
     <div>
       <label className="text-sm font-semibold text-foreground block mb-3">Kies je ZP Zaken pakket</label>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         {packages.map((p) => {
           const active = value === p.id;
           return (
@@ -60,9 +60,9 @@ function PackageCards({ value, onChange }: { value: string; onChange: (v: string
                 </span>
               )}
               <p className="text-xs font-semibold text-foreground leading-tight">{p.label}</p>
-              <p className="text-base font-bold text-accent mt-1">€{p.monthly}<span className="text-xs font-normal text-muted-foreground">/mnd</span></p>
+              <p className="text-base font-bold text-accent mt-1">€{p.monthly.toLocaleString("nl-NL")}<span className="text-xs font-normal text-muted-foreground">/mnd</span></p>
               <p className="text-[11px] text-muted-foreground mt-0.5">{p.dekking}</p>
-              <p className="text-[11px] text-accent font-medium mt-1">✓ Dagelijks opzegbaar</p>
+              <p className="text-[11px] text-accent font-medium mt-1">BAV + AVB dagelijks opzegbaar{p.id.includes("cyber") ? "; cyber 12 maanden" : ""}</p>
             </button>
           );
         })}

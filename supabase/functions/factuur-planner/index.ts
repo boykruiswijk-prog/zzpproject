@@ -165,14 +165,15 @@ Deno.serve(async (req) => {
       einddatum: eind, credit_vanaf: ber.vanaf, credit_tm: k.gefactureerd_tm, perioden: ber.regels, bedrag: ber.bedrag, blokkade, btw_code: btwCode(m?.btw_code), btw_guard: btwOk ? "ok" : "BTW-code past niet bij grootboek", artikel: m?.exact_item_code, gl_code: m?.gl_code,
       payload, opmerking: "Echte creditsleutel ZPC-xxxxxxxx ontstaat pas bij een opzegging (hash contract+aanvraag)." });
   }
-  const van = actie === "proefrun" ? String(body?.van ?? vandaag) : vandaag;
-  const tot = actie === "proefrun" ? String(body?.tot ?? van) : vandaag;
+  const van = ["proefrun", "proef_readonly"].includes(actie) ? String(body?.van ?? vandaag) : vandaag;
+  const tot = ["proefrun", "proef_readonly"].includes(actie) ? String(body?.tot ?? van) : vandaag;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(van) || !/^\d{4}-\d{2}-\d{2}$/.test(tot)) return json({ error: "ongeldige datum" }, 400);
 
   const { data: kand, error: kErr } = await admin.rpc("facturatie_kandidaten", { _van: van, _tot: tot });
   if (kErr) return json({ error: kErr.message }, 500);
   const rijen = (kand ?? []) as any[];
   const sam = samenvatting(rijen);
+  if (actie === "proef_readonly") return json({ modus: "proef", schrijft_naar_exact: false, schrijft_naar_database: false, van, tot, samenvatting: sam });
 
   // Creditnota's bij opzegging: herbeoordelen en bedrag berekenen (alleen database, nooit Exact).
   await admin.rpc("herbeoordeel_opzeg_credits");
