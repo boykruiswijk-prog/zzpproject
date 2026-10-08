@@ -1,4 +1,5 @@
 import { KvkLeadAfwijkingen } from "@/components/admin/KvkLeadAfwijkingen";
+import { CyberDatums } from "@/components/admin/CyberDatums";
 import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS, statusTitel } from "@/lib/statusLabels";
 import { LeadAfrondenKnop, AfrondDialoog, magAfronden } from "@/components/admin/LeadAfronden";
 import { LeadTestSchakelaar } from "@/components/admin/LeadTestSchakelaar";
@@ -280,6 +281,7 @@ export default function AdminLeadDetail() {
           <div className="min-w-0 space-y-6 lg:col-span-2">
             <OmzettingKaart leadId={lead.id} magBeslissen={isSupervisorOrAdmin || isVerzekering} />
             <StartertariefControle lead={lead as any} magBeoordelen={isSupervisorOrAdmin || isVerzekering} />
+            {String(lead.gekozen_pakket ?? "").includes("cyber") && <CyberDatums leadId={lead.id} ingang={lead.cyber_ingangsdatum} eind={lead.cyber_einddatum} nieuwePer={lead.cyber_nieuwe_voorwaarden_per} />}
             <KvkLeadAfwijkingen lead={lead as any} />
             <Card className="min-w-0 w-full overflow-hidden">
               <CardHeader>

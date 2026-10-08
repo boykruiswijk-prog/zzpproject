@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { CyberDatums } from "@/components/admin/CyberDatums";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,7 +29,7 @@ export function KlantKaart({ ondernemingen, personen, leadIds, herlaadSleutel = 
     queryFn: async () => {
       const codes = ondernemingen.map((o) => o.exact_relatie_code).filter(Boolean) as string[];
       const [k, l, m, n, a, tk] = await Promise.all([
-        ondIds.length ? supabase.from("klant_contracten").select("id,onderneming_id,product,status,begin_datum,eind_datum,gefactureerd_tm,volgende_factuurdatum,bron_rij").in("onderneming_id", ondIds).order("bron_rij") : Promise.resolve({ data: [] as any[] }),
+        ondIds.length ? supabase.from("klant_contracten").select("id,onderneming_id,product,status,begin_datum,eind_datum,gefactureerd_tm,volgende_factuurdatum,bron_rij,cyber_ingangsdatum,cyber_einddatum,cyber_nieuwe_voorwaarden_per").in("onderneming_id", ondIds).order("bron_rij") : Promise.resolve({ data: [] as any[] }),
         leadIds.length ? supabase.from("leads").select("id,email,telefoon,iban,status,gekozen_pakket,ingangsdatum,created_at").in("id", leadIds) : Promise.resolve({ data: [] as any[] }),
         codes.length ? (supabase.from as any)("klant_mandaat_v").select("relatiecode,iban").in("relatiecode", codes) : Promise.resolve({ data: [] as any[] }),
         ondIds.length + persIds.length ? supabase.from("crm_notities").select("aangemaakt_op,soort,aangemaakt_door_naam").or([ondIds.length ? `onderneming_id.in.(${ondIds.join(",")})` : "", persIds.length ? `persoon_id.in.(${persIds.join(",")})` : ""].filter(Boolean).join(",")).is("ingetrokken_op", null).order("aangemaakt_op", { ascending: false }).limit(1) : Promise.resolve({ data: [] as any[] }),
@@ -79,6 +80,7 @@ export function KlantKaart({ ondernemingen, personen, leadIds, herlaadSleutel = 
                   <BavNummer keuze={kiesBavNummer(rijen.filter((r) => !r.onderneming_id || r.onderneming_id === c.onderneming_id), { contractId: c.id })} />
                   <Badge variant={es.soort === "lopend" ? "secondary" : "outline"}>{es.soort === "beeindigd" ? `Beeindigd${es.datum ? ` per ${formatDateNL(es.datum)}` : ""}` : es.soort === "loopt_af" ? `Loopt af per ${formatDateNL(es.datum)}` : "Actief"}</Badge>
                   <span className="text-xs text-muted-foreground">ingang {formatDateNL(c.begin_datum)} · gefactureerd t/m {formatDateNL(c.gefactureerd_tm)}{es.soort === "lopend" ? ` · volgende factuur ${formatDateNL(c.volgende_factuurdatum)}` : ""}</span>
+                  {c.product === "cyber_clear" && <CyberDatums contractId={c.id} ingang={c.cyber_ingangsdatum} eind={c.cyber_einddatum} nieuwePer={c.cyber_nieuwe_voorwaarden_per} onGewijzigd={() => refetch()} />}
                 </div>);
             })}
             {(data?.contracten ?? []).length === 0 && leads.map((l) => (
