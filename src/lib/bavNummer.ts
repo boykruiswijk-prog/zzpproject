@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 /** Rij uit de view crm_bav_nummers. */
 export type BavRij = {
-  bron: "zp" | "afas" | "klant" | "hiscox";
+  bron: "zp" | "afas" | "klant" | "hiscox" | "overgenomen";
   nummer: string;
   onderneming_id: string | null;
   lead_id: string | null;
@@ -15,6 +15,7 @@ export type BavRij = {
 
 export const BAV_BRON_LABEL: Record<string, string> = {
   zp: "ZP Zaken",
+  overgenomen: "overgenomen van rechtsvoorganger",
   afas: "AFAS-import",
   klant: "opgegeven door klant",
 };
@@ -24,11 +25,13 @@ export type BavKeuze = { nummer: string; bron: string; hiscox: string | null } |
 const nieuwsteEerst = (a: BavRij, b: BavRij) => ((a.datum ?? "") < (b.datum ?? "") ? 1 : -1);
 
 /**
- * Volgorde: a) certificaat van de site (geldig eerst), b) AFAS-import (voor dit contract), c) opgave klant.
+ * Volgorde: 0) bij omzetting overgenomen nummer, a) certificaat van de site (geldig eerst), b) AFAS-import (voor dit contract), c) opgave klant.
  * Een HPI.-nummer van de klant wordt apart als Hiscox-polis getoond.
  */
 export function kiesBavNummer(rijen: BavRij[], opties: { contractId?: string | null; policyId?: string | null } = {}): BavKeuze {
   const hiscox = rijen.filter((r) => r.bron === "hiscox").sort(nieuwsteEerst)[0]?.nummer ?? null;
+  const over = rijen.filter((r) => r.bron === "overgenomen").sort(nieuwsteEerst)[0];
+  if (over) return { nummer: over.nummer, bron: BAV_BRON_LABEL.overgenomen, hiscox };
   const zp = rijen.filter((r) => r.bron === "zp").sort((a, b) => {
     if (opties.policyId) { if (a.policy_id === opties.policyId) return -1; if (b.policy_id === opties.policyId) return 1; }
     const ga = a.status === "geldig" || a.status === "bevestigd" ? 0 : 1, gb = b.status === "geldig" || b.status === "bevestigd" ? 0 : 1;
