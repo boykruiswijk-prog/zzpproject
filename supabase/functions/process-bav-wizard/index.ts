@@ -21,7 +21,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-import { CYBER_VERSIE, CYBER_AKKOORD, CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER_LOOPTIJD, CYBER_AFGEWEZEN, beoordeelCyber, basisPakket, isCyberPakket, aanvraagPremie, cyberJaarEind } from "../_shared/cyber.ts";
+import { CYBER_VERSIE, CYBER_AKKOORD, CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER_LOOPTIJD, CYBER_AFGEWEZEN, beoordeelCyber, basisPakket, isCyberPakket, aanvraagPremie, cyberJaarEind, formatPremieBedrag } from "../_shared/cyber.ts";
 const PAKKET_CONFIG = Object.fromEntries(["maandelijks", "jaarlijks", "jaarlijks-cyber", "maandelijks-cyber"].map(id => {
   const p = aanvraagPremie(id, false);
   const bavAvbDekking = "BAV €5.000.000 / AVB €2.500.000 per aanspraak";
@@ -371,7 +371,7 @@ Deno.serve(async (req) => {
       data: machtiging,
       email: submission.email,
       aanhef: volledigeNaam,
-      bedragOfReden: `${redenBav()} (${pakket.naam}, € ${premium} ${pakket.betaalwijze === "maandelijks" ? "per maand" : "per jaar"})${starter ? `. ${STARTER_VOORBEHOUD_TEKST}` : ""}${cyberGekozen ? `. ${CYBER_LOOPTIJD} Lopend cyberjaar tot ${cyberJaarEind(submission.ingangsdatum)}. ${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_POLISVOORWAARDEN}` : ""}`,
+      bedragOfReden: `${redenBav()} (${pakket.naam}, € ${formatPremieBedrag(premium)} ${pakket.betaalwijze === "maandelijks" ? "per maand" : "per jaar"})${starter ? `. ${STARTER_VOORBEHOUD_TEKST}` : ""}${cyberGekozen ? `. ${CYBER_LOOPTIJD} Lopend cyberjaar tot ${cyberJaarEind(submission.ingangsdatum)}. ${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_POLISVOORWAARDEN}` : ""}`,
     });
 
     // ── 3. E-MAIL VIA send-lead-notification ──
@@ -395,7 +395,7 @@ Deno.serve(async (req) => {
              ...(cyberGekozen ? { cyber_looptijd: CYBER_LOOPTIJD, cyber_einddatum: cyberJaarEind(submission.ingangsdatum) } : {}),
             betaalwijze: pakket.betaalwijze,
             ingangsdatum: submission.ingangsdatum,
-            premie: starter ? `€${premium} startertarief t/m ${starterTotDatum}, daarna €${pakket.prijs}; KVK-startdatum ${kvkStart} controleren` : `€${premium}`,
+             premie: starter ? `€${formatPremieBedrag(premium)} startertarief t/m ${starterTotDatum}, daarna €${formatPremieBedrag(pakket.prijs)}; KVK-startdatum ${kvkStart} controleren` : `€${formatPremieBedrag(premium)}`,
           },
         },
       })

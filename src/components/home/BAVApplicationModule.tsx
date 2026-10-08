@@ -1,7 +1,7 @@
 import { isValidIban as isValidSepaIban } from "@/lib/sepaMachtiging";
 import { SITE_CONFIG } from "@/config/site";
 import { CyberVragen } from "@/components/verzekeringen/CyberVragen";
-import { CYBER_AKKOORD, CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER_LOOPTIJD, CYBER_AFGEWEZEN, CYBER_VRAGEN, beoordeelCyber, basisPakket, aanvraagPremie, type CyberAntwoorden } from "../../../supabase/functions/_shared/cyber";
+import { CYBER_AKKOORD, CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER_LOOPTIJD, CYBER_AFGEWEZEN, CYBER_VRAGEN, beoordeelCyber, basisPakket, aanvraagPremie, formatPremieBedrag, type CyberAntwoorden } from "../../../supabase/functions/_shared/cyber";
 import { useState, useEffect, useRef } from "react";
 import { SepaMachtigingBlok, bouwFrontendMachtiging } from "@/components/shared/SepaMachtigingBlok";
 import { mandaatkenmerkVoor, redenBav } from "@/lib/sepaMachtiging";
@@ -43,7 +43,7 @@ import { normaliseerPostcode } from "@/lib/adresNormalisatie";
 const formatBedrag = (n: number) => `€${n.toLocaleString("nl-NL")}`;
 /** Compacte bedragen: 5.000.000 → "€5M", 2.500.000 → "€2,5M". */
 const formatMiljoen = (n: number) => n >= 1_000_000 ? `€${(n / 1_000_000).toLocaleString("nl-NL", { maximumFractionDigits: 1 })}M` : formatBedrag(n);
-const formatPerMaand = (jaar: number) => (jaar / 12).toLocaleString("nl-NL", { minimumFractionDigits: jaar % 12 ? 2 : 0, maximumFractionDigits: 2 });
+const formatPerMaand = (jaar: number) => formatPremieBedrag(jaar / 12);
 
 const TOTAL_STEPS = 5;
 
@@ -706,7 +706,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                               <h4 className="font-semibold text-sm leading-tight">{pkg.name}</h4>
                             </div>
                             <p className="text-2xl font-bold text-foreground mb-3">
-                              €{pkg.prijs.toLocaleString("nl-NL")}
+                              €{formatPremieBedrag(pkg.prijs)}
                               <span className="text-xs font-normal text-muted-foreground"> / {pkg.periode}</span>
                             </p>
                             {pkg.periode === "jaar" && (
@@ -1008,7 +1008,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.package")}</span><span className="font-medium">{gekozenPakketLabel}</span></div>
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.coverage")}</span><span>BAV {formatBedrag(selectedBavPakket.dekkingen.bav.perGebeurtenis)} / AVB {formatBedrag(selectedBavPakket.dekkingen.avb.perGebeurtenis)}</span></div>
-                          <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.payment")}</span><span>{starterVanToepassing ? `€ ${currentPrice.toLocaleString("nl-NL")} per ${betaalwijzeIsMaand ? "maand" : "jaar"} (startertarief t/m ${formatDateNL(starterTot(startDate))})` : selectedBavPakket.prijsLabel}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.payment")}</span><span>{starterVanToepassing ? `€ ${formatPremieBedrag(currentPrice)} per ${betaalwijzeIsMaand ? "maand" : "jaar"} (startertarief t/m ${formatDateNL(starterTot(startDate))})` : selectedBavPakket.prijsLabel}</span></div>
                           {starterVanToepassing && <p className="text-xs text-muted-foreground">{STARTER_VOORWAARDE_TEKST} {STARTER_VOORBEHOUD_TEKST}</p>}
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.startDate")}</span><span>{startDate ? formatDateNL(startDate) : t("bavApp.immediately")}</span></div>
                         </div>
@@ -1087,7 +1087,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
 
                 {/* Compacte prijsregel (mobiel), uit bavPakketten */}
                 <p className="mt-8 text-center text-xs font-medium text-muted-foreground sm:hidden" data-testid="bav-prijsregel">
-                  €{currentPrice.toLocaleString("nl-NL")}/{selectedBavPakket.periode === "maand" ? "mnd" : "jr"} · BAV {formatMiljoen(selectedBavPakket.dekkingen.bav.perGebeurtenis)} · AVB {formatMiljoen(selectedBavPakket.dekkingen.avb.perGebeurtenis)} · BAV + AVB dagelijks opzegbaar{heeftCyber ? "; cyber 12 maanden" : ""}
+                  €{formatPremieBedrag(currentPrice)}/{selectedBavPakket.periode === "maand" ? "mnd" : "jr"} · BAV {formatMiljoen(selectedBavPakket.dekkingen.bav.perGebeurtenis)} · AVB {formatMiljoen(selectedBavPakket.dekkingen.avb.perGebeurtenis)} · BAV + AVB dagelijks opzegbaar{heeftCyber ? "; cyber 12 maanden" : ""}
                 </p>
                 {/* Navigation Buttons */}
                 <div className="flex justify-between mt-3 sm:mt-8 pt-6 border-t border-border">
@@ -1157,11 +1157,11 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                       <div className="flex flex-col gap-1">
                         <p className="text-sm text-background/70">{periodeLabel}</p>
                         <p className="text-3xl font-bold whitespace-nowrap">
-                          €{currentPrice.toLocaleString("nl-NL")}
+                          €{formatPremieBedrag(currentPrice)}
                         </p>
                         {starterVanToepassing && (
                           <p className="text-xs text-background/70">
-                            de eerste 12 maanden, daarna € {aanvraagPremie(gekozenPakketId, false).totaal.toLocaleString("nl-NL")} {periodeLabel}, inclusief kosten en assurantiebelasting. Voor KVK-inschrijving jonger dan 12 maanden. Cyber krijgt geen startkorting.
+                            de eerste 12 maanden, daarna € {formatPremieBedrag(aanvraagPremie(gekozenPakketId, false).totaal)} {periodeLabel}, inclusief kosten en assurantiebelasting. Voor KVK-inschrijving jonger dan 12 maanden. Cyber krijgt geen startkorting.
                           </p>
                         )}
                       </div>
