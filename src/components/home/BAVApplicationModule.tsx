@@ -304,10 +304,6 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
     const timer = window.setTimeout(() => successHeadingRef.current?.focus({ preventScroll: true }), 350);
     return () => window.clearTimeout(timer);
   }, [isSubmitted]);
-  useEffect(() => {
-    if (currentStep !== 5 || !heeftCyber) return;
-    setCyberAkkoordOp(null);
-  }, [currentStep, heeftCyber]);
 
   // begin_checkout pas bij de eerste echte interactie met het formulier.
   function startCheckout() {
