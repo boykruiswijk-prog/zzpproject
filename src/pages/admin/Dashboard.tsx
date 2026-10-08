@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { ExactKoppelingAlarm } from "@/components/admin/ExactKoppelingAlarm";
+import { ArtikelbeeldMelding } from "@/components/admin/ArtikelbeeldMelding";
 import { CollectiefAanmeldingenTeller } from "@/components/admin/CollectiefAanmeldingenTeller";
 import { ZekerChatKpi } from "@/components/admin/ZekerChatKpi";
 import { VandaagTeDoen } from "@/components/admin/VandaagTeDoen";
@@ -67,6 +68,7 @@ export default function AdminDashboard() {
     <AdminLayout>
       <div className="min-w-0 space-y-8">
         {(isSupervisor || isVerzekering) && <ExactKoppelingAlarm />}
+        {isSupervisor && <ArtikelbeeldMelding />}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="break-words text-2xl font-bold sm:text-3xl">Dashboard</h1>

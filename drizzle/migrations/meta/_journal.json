@@ -526,6 +526,20 @@
       "when": 1791452791824,
       "tag": "0074_article_image_worker_status_read",
       "breakpoints": true
+    },
+    {
+      "idx": 75,
+      "version": "7",
+      "when": 1791453526672,
+      "tag": "0075_article_image_no_global_pause",
+      "breakpoints": true
+    },
+    {
+      "idx": 76,
+      "version": "7",
+      "when": 1791453884518,
+      "tag": "0076_article_image_short_lease",
+      "breakpoints": true
     }
   ]
 }
