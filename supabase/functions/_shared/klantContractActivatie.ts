@@ -84,7 +84,7 @@ export async function zetInPlanner(supabase: any, lead: any, exactAccountId: str
     const maand = spec.cyclus === "maand";
     const { error: cyberFout } = await supabase.from("klant_contracten").upsert({
       onderneming_id: ond.id, bron: "site_cyber_20261008", bron_rij: bronRijVoorLead(String(lead.id)), type: "verzekering", product: "cyber_clear", cyber_lead_id: lead.id,
-      itemcode: maand ? "100M" : "100J", cyclus: spec.cyclus, aantal: 1, bedrag_per_periode: cyberPremie(String(lead.gekozen_pakket)),
+       itemcode: maand ? "102M" : "102J", cyclus: spec.cyclus, aantal: 1, bedrag_per_periode: cyberPremie(String(lead.gekozen_pakket)),
       begin_datum: ingang, factureren_vanaf: ingang, gefactureerd_tm: maand ? lastOfMonth(ingang) : cyberJaarEind(ingang),
       volgende_factuurdatum: dagErna(maand ? lastOfMonth(ingang) : cyberJaarEind(ingang)), gefactureerd_tm_bron: "site_cyber_20261008", status: "actief", facturatie_status: "planner", afwijkingen: [],
       cyber_voorwaarden_versie: CYBER_VERSIE, cyber_ingangsdatum: ingang, cyber_einddatum: lead.cyber_einddatum ?? cyberJaarEind(ingang), is_test: !!lead.is_test,

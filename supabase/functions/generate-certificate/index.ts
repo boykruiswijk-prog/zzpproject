@@ -71,6 +71,7 @@ serve(async (req) => {
     const isSupAdmin = magCertificaatBeheren((rolRijen || []).map((r: any) => r.role));
 
     let policy: any;
+    let policyLead: any = null;
     let kvkNummerBron: string | null = null;
 
     if (actie !== "nieuw") {
@@ -256,6 +257,13 @@ serve(async (req) => {
       }
       policy = ins;
     }
+    if (policy?.lead_id) {
+      const { data: leadVoorPolis } = await adminClient.from("leads")
+        .select("gekozen_pakket,cyber_voorwaarden_versie,cyber_ingangsdatum,cyber_einddatum")
+        .eq("id", policy.lead_id).maybeSingle();
+      policyLead = leadVoorPolis;
+    }
+    const heeftNieuweCyber = policyLead?.cyber_voorwaarden_versie === "2026-10-08";
 
     // === Load the template background image from storage (private bucket) ===
     const { data: templateData, error: templateError } = await adminClient.storage
@@ -512,7 +520,7 @@ serve(async (req) => {
     y -= 20;
     drawRow(
       "Eigen risico:",
-      "geen",
+      heeftNieuweCyber ? "BAV + AVB: geen. Cyber: EUR 500 (fraude EUR 1.000)." : "geen",
       y
     );
 
@@ -593,7 +601,9 @@ serve(async (req) => {
 
     // Contractduur
     y -= 20;
-    const contractText = "Doorlopend, zonder minimale looptijd, dagelijks opzegbaar.";
+    const contractText = heeftNieuweCyber
+      ? `BAV + AVB doorlopend, zonder minimale looptijd, dagelijks opzegbaar. Cyber 12 maanden, daarna telkens 12 maanden verlengd; lopend cyberjaar t/m ${formatShortDate(policyLead.cyber_einddatum)}.`
+      : "Doorlopend, zonder minimale looptijd, dagelijks opzegbaar.";
     const contractLines = wrapText(contractText, helvetica, fontSize, maxValueWidth);
     page.drawText("Contractduur:", { x: labelX, y, size: fontSize, font: helvetica, color: gray });
     contractLines.forEach((line: string, i: number) => {

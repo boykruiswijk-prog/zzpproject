@@ -99,7 +99,6 @@ export default function PortalPolicy() {
                   <dd className="font-medium">{p.coverage_area}</dd>
                 </div>
               </dl>
-              <CyberPolis leadId={p.lead_id ?? undefined} />
             </CardContent>
           </Card>
         ))}

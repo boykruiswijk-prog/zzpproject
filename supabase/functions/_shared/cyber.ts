@@ -27,9 +27,10 @@ export function beoordeelCyber(input: unknown) {
 }
 export function isCyberPakket(pakket: string | null | undefined) { return !!pakket && /[-_]cyber$/.test(pakket); }
 export function basisPakket(pakket: string) { return pakket.startsWith("maandelijks") ? "maandelijks" : "jaarlijks"; }
-export function nieuweCyber(lead: { extra_data?: unknown }) {
+export function nieuweCyber(lead: { extra_data?: unknown; cyber_voorwaarden_versie?: string | null; gekozen_pakket?: string | null }) {
   const extra = lead.extra_data as { cyber?: { versie?: string; gekozen?: boolean } } | null;
-  return extra?.cyber?.versie === CYBER_VERSIE && extra.cyber.gekozen === true;
+  return (extra?.cyber?.versie === CYBER_VERSIE && extra.cyber.gekozen === true)
+    || (lead.cyber_voorwaarden_versie === CYBER_VERSIE && isCyberPakket(lead.gekozen_pakket));
 }
 export function cyberJaarEind(start: string, vandaag = start) {
   let n = 12;

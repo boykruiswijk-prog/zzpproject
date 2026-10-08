@@ -5,7 +5,7 @@ import { CYBER_AKKOORD, CYBER_DEKKING, CYBER_HULP, CYBER_DETAILS, CYBER_LOOPTIJD
 import { useState, useEffect, useRef } from "react";
 import { SepaMachtigingBlok, bouwFrontendMachtiging } from "@/components/shared/SepaMachtigingBlok";
 import { mandaatkenmerkVoor, redenBav } from "@/lib/sepaMachtiging";
-import { trackBeginCheckout, trackWizardStep, trackWizardValidationError, trackAddPaymentInfo, trackPurchase, jaarpremie } from "@/lib/tracking";
+import { trackBeginCheckout, trackWizardStep, trackWizardValidationError, trackAddPaymentInfo, trackPurchase } from "@/lib/tracking";
 import { leesAttributie } from "@/lib/attributie";
 import { isNlTelefoon, normaliseerNlTelefoon } from "../../../supabase/functions/_shared/telefoon";
 import { formatDateNL } from "@/lib/dateFormat";
@@ -461,7 +461,8 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
         });
         try { sessionStorage.removeItem(CONCEPT_KEY); } catch { /* geen opslag */ }
         conceptId.current = ""; laatsteConcept.current = "";
-        trackPurchase(returnedLeadId, selectedBavPakket.id, selectedBavPakket.name, jaarpremie(selectedBavPakket), { email: formData.email, phone_number: formData.telefoon });
+        const conversiePremie = aanvraagPremie(selectedBavPakket.id, starterVanToepassing);
+        trackPurchase(returnedLeadId, selectedBavPakket.id, selectedBavPakket.name, conversiePremie.maand ? conversiePremie.totaal * 12 : conversiePremie.totaal, { email: formData.email, phone_number: formData.telefoon });
        setIsSubmitted(true);
         setFormData({
           bedrijfsnaam: "", kvkNummer: "", kvkStartdatum: "", sector: "", beroep: "", functie: "", aantalMedewerkers: "",
@@ -1007,7 +1008,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.package")}</span><span className="font-medium">{gekozenPakketLabel}</span></div>
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.coverage")}</span><span>BAV {formatBedrag(selectedBavPakket.dekkingen.bav.perGebeurtenis)} / AVB {formatBedrag(selectedBavPakket.dekkingen.avb.perGebeurtenis)}</span></div>
-                          <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.payment")}</span><span>{starterVanToepassing ? `€ ${betaalwijzeIsMaand ? STARTER.maandprijs : STARTER.jaarprijs} per ${betaalwijzeIsMaand ? "maand" : "jaar"} (startertarief t/m ${formatDateNL(starterTot(startDate))})` : selectedBavPakket.prijsLabel}</span></div>
+                          <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.payment")}</span><span>{starterVanToepassing ? `€ ${currentPrice.toLocaleString("nl-NL")} per ${betaalwijzeIsMaand ? "maand" : "jaar"} (startertarief t/m ${formatDateNL(starterTot(startDate))})` : selectedBavPakket.prijsLabel}</span></div>
                           {starterVanToepassing && <p className="text-xs text-muted-foreground">{STARTER_VOORWAARDE_TEKST} {STARTER_VOORBEHOUD_TEKST}</p>}
                           <div className="flex justify-between"><span className="text-muted-foreground">{t("bavApp.startDate")}</span><span>{startDate ? formatDateNL(startDate) : t("bavApp.immediately")}</span></div>
                         </div>

@@ -28,4 +28,15 @@ describe("monthly lifecycle credit", () => {
     const credit = await maandLifecycleCredit(database([{ exact_invoice_id: "failed", periode_start: "2026-10-01", periode_eind: "2026-10-31", bedrag: 55, status: "failed" }]), { id: lead.id, ingangsdatum: lead.ingangsdatum }, "2026-10-12");
     expect(credit.credit_bedrag).toBe(0);
   });
+  it("credits only BAV + AVB when a current cyber year remains active", async () => {
+    const cyberLead = {
+      ...lead,
+      gekozen_pakket: "maandelijks-cyber",
+      cyber_voorwaarden_versie: "2026-10-08",
+      exact_invoice_amount: 82.5,
+    };
+    const credit = await maandLifecycleCredit(database([]), cyberLead, "2026-10-12");
+    expect(credit.credit_bedrag).toBe(33.71);
+    expect(credit.perioden[0]?.bedrag).toBe(55);
+  });
 });

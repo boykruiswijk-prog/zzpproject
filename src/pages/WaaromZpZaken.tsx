@@ -43,7 +43,7 @@ const fade = {
 const packages = [
   { name: "BAV & AVB Maandelijks", price: 55, periode: "maand", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt."] },
   { name: "BAV & AVB Jaarlijks", price: 600, periode: "jaar", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt.", "Goedkoopste premie"], popular: true },
-  { name: "BAV & AVB Jaarlijks + Cyber", price: 750, periode: "jaar", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB + Cyber", `Cyber € ${getPakket("jaarlijks-cyber").dekkingen.cyber?.perSchade.toLocaleString("nl-NL")} per schade, maximaal € ${getPakket("jaarlijks-cyber").dekkingen.cyber?.perJaar.toLocaleString("nl-NL")} per jaar`, "Geen eigen risico", "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt."] },
+  { name: "BAV & AVB Jaarlijks + Cyber", price: 850, periode: "jaar", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB + Cyber", "Cyber: tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000).", "Directe hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.", "BAV + AVB: geen eigen risico en dagelijks opzegbaar. Cyber: vaste looptijd van 12 maanden."] },
 ];
 
 const diffBlocks = [
@@ -198,7 +198,7 @@ export default function WaaromZpZaken() {
             ))}
           </div>
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center">
-            <p className="text-muted-foreground mb-6">Geen eigen risico. Geen medische keuring. Dagelijks opzegbaar. Binnen 24 uur geregeld, certificaat in je mailbox.</p>
+             <p className="text-muted-foreground mb-6">BAV + AVB zonder eigen risico en dagelijks opzegbaar. Cyber heeft een eigen risico en een vaste looptijd van 12 maanden. Binnen 24 uur geregeld, certificaat in je mailbox.</p>
             <Button variant="accent" size="lg" asChild>
               <LocalizedLink to="/verzekeringen">Sluit nu direct af <ArrowRight className="h-5 w-5" /></LocalizedLink>
             </Button>

@@ -49,6 +49,23 @@ describe("activatie zet klant in planner", () => {
     expect("maandwaarde" in contractRegelVoorActivatie(l, "x", spec)).toBe(false);
   });
 
+  it("nieuwe maandcyber maakt een aparte regel van € 27,50 met cyberartikel", async () => {
+    const sb = nepSupabase();
+    const l = { ...lead("33333333-3333-3333-3333-333333333333"), gekozen_pakket: "maandelijks-cyber", cyber_voorwaarden_versie: "2026-10-08", cyber_ingangsdatum: "2026-10-02", cyber_einddatum: "2027-10-01" };
+    const r = await zetInPlanner(sb, l, "acc-3", { cyclus: "maand", itemcode: "100M", bedrag_per_periode: 55, periodeStart: "2026-10-02", periodeEind: "2026-10-31" });
+    expect(r.ok).toBe(true);
+    expect(sb.contracten).toHaveLength(2);
+    expect(sb.contracten[1]).toMatchObject({ product: "cyber_clear", itemcode: "102M", bedrag_per_periode: 27.5, cyber_einddatum: "2027-10-01" });
+  });
+
+  it("nieuwe jaarcyber maakt een aparte regel van € 250 met cyberartikel", async () => {
+    const sb = nepSupabase();
+    const l = { ...lead("44444444-4444-4444-4444-444444444444"), gekozen_pakket: "jaarlijks-cyber", cyber_voorwaarden_versie: "2026-10-08", cyber_ingangsdatum: "2026-10-02", cyber_einddatum: "2027-10-01" };
+    const r = await zetInPlanner(sb, l, "acc-4", { cyclus: "jaar", itemcode: "100J", bedrag_per_periode: 600, periodeStart: "2026-10-02", periodeEind: "2027-10-01" });
+    expect(r.ok).toBe(true);
+    expect(sb.contracten[1]).toMatchObject({ product: "cyber_clear", itemcode: "102J", bedrag_per_periode: 250 });
+  });
+
   it("logtekst toont werkelijk factuurbedrag", () => {
     expect(factuurLogTekst(null, 53.23, { start: "2026-10-02", eind: "2026-10-31", naarRato: true }))
       .toBe("Factuur (concept) aangemaakt: € 53,23 (02-10-2026 t/m 31-10-2026, naar rato)");

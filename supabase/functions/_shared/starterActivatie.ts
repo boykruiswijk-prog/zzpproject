@@ -1,7 +1,7 @@
 // Startertarief bij activatie: alleen na handmatige goedkeuring (beoordeel_startertarief).
 // Pure functies, geen Exact- of databaseverkeer.
 // deno-lint-ignore-file no-explicit-any
-import { nieuweCyber, basisPakket } from "./cyber.ts";
+import { basisPakket } from "./cyber.ts";
 import { STARTER, starterTot } from "./starterTarief.ts";
 
 const STARTER_PAKKETTEN = new Set(["maandelijks", "jaarlijks"]);
@@ -10,7 +10,7 @@ const STARTER_PAKKETTEN = new Set(["maandelijks", "jaarlijks"]);
 export function starterStatus(lead: any): null | "wacht" | "starter" {
   if (lead?.tarief_type !== "starter" && lead?.starter_controle_status !== "te_controleren") return null;
   if (lead.starter_controle_status === "te_controleren") return "wacht";
-   if (lead.tarief_type === "starter" && lead.starter_controle_status === "goedgekeurd" && STARTER_PAKKETTEN.has(nieuweCyber(lead) ? basisPakket(String(lead.gekozen_pakket)) : String(lead.gekozen_pakket)) && lead.ingangsdatum) return "starter";
+  if (lead.tarief_type === "starter" && lead.starter_controle_status === "goedgekeurd" && STARTER_PAKKETTEN.has(basisPakket(String(lead.gekozen_pakket))) && lead.ingangsdatum) return "starter";
   return null;
 }
 
@@ -28,7 +28,6 @@ export function maandprijsVoorLead(lead: any, gewoon: number): number {
 
 /** Eerste factuur: zelfde artikel, alleen de prijs op de regel wijkt af. */
 export function pakketSpecVoorLead<T extends { naam: string; bedrag: number; betalingsregel: string }>(lead: any, spec: T | null): T | null {
-  if (spec && nieuweCyber(lead)) spec = { ...spec, bedrag: basisPakket(String(lead.gekozen_pakket)) === "maandelijks" ? 660 : 600 };
   if (!spec || starterStatus(lead) !== "starter") return spec;
   if (basisPakket(String(lead.gekozen_pakket)) === "maandelijks") {
     return { ...spec, bedrag: STARTER.maandprijs * 12, betalingsregel: `Betaling: maandelijks € ${STARTER.maandprijs} (startertarief eerste 12 maanden, daarna € ${STARTER.naMaandprijs}) via SEPA-incasso` };

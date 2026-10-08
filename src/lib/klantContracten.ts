@@ -24,7 +24,7 @@ export const CONTRACT_STATUS_LABEL: Record<string, string> = {
 export function productVoorItemcode(code: string): Product {
   const c = (code ?? "").trim();
   if (["100M", "100J", "100J495", "100HDI", "100-OUD"].includes(c) || c.startsWith("100-OUDJ") || c.startsWith("100-OUDM")) return "bav_avb";
-  if (c === "102J" || c === "102-OUD") return "cyber_clear";
+  if (c === "102M" || c === "102J" || c === "102-OUD") return "cyber_clear";
   if (c === "450") return "lidmaatschap_allin";
   if (c === "400") return "lidmaatschap_startup";
   if (c === "425") return "lidmaatschap_light";
