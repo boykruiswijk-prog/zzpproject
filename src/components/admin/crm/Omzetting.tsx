@@ -64,22 +64,37 @@ function KandidaatKaart({ leadId, k, eigenOnd, magBeslissen }: { leadId: string;
   const [bezig, setBezig] = useState(false);
   const voorstelNummer = nummer || "onbekend";
 
+  const { data: afwijkend = [], refetch: herlaadPolissen } = useQuery({
+    queryKey: ["omzetting-polissen", leadId, k.beslissing?.bav_nummer],
+    enabled: k.beslissing?.keuze === "omzetting",
+    queryFn: async () => ((await supabase.from("policies").select("id,certificate_number").eq("lead_id", leadId).eq("status", "geldig")).data ?? [])
+      .filter((p) => p.certificate_number !== k.beslissing?.bav_nummer),
+  });
+
+  // Al geactiveerd met een eigen nummer? Dan nummer vervangen door het overgenomen BAV-nummer en PDF opnieuw maken (geen mail).
+  async function certificaatBijwerken() {
+    setBezig(true);
+    const { data: pol } = await supabase.from("policies").select("id,certificate_number").eq("lead_id", leadId).eq("status", "geldig");
+    for (const p of pol ?? []) {
+      const { data: r, error: e } = await supabase.functions.invoke("generate-certificate", { body: { actie: "nummer_overnemen", policy_id: p.id } });
+      if (e || (r as any)?.error) {
+        let reden = (r as any)?.error ?? null;
+        try { reden = reden ?? (await (e as any)?.context?.json?.())?.error; } catch { /* geen body */ }
+        toast.error(`Certificaat ${p.certificate_number} niet bijgewerkt: ${reden ?? e?.message}`);
+      } else if ((r as any)?.gewijzigd !== false) toast.success(`Certificaat ${p.certificate_number} vervangen door ${(r as any)?.policy?.certificate_number}`);
+    }
+    setBezig(false);
+    qc.invalidateQueries({ queryKey: ["lead", leadId] });
+    herlaadPolissen();
+  }
+
   async function kies(keuze: "omzetting" | "nieuwe_klant") {
     setBezig(true);
     const { error } = await (supabase.rpc as any)("omzetting_vastleggen", { _lead_id: leadId, _van: k.onderneming_id, _keuze: keuze, _bav_nummer: keuze === "omzetting" ? nummer : null, _toelichting: toelichting });
     setBezig(false);
     if (error) { toast.error(error.message); return; }
     toast.success(keuze === "omzetting" ? `Omzetting vastgelegd, leidend BAV-nummer ${nummer}` : "Vastgelegd als nieuwe klant");
-    if (keuze === "omzetting") {
-      // Al geactiveerd met een eigen nummer? Dan nummer vervangen en PDF opnieuw maken (geen mail).
-      const { data: pol } = await supabase.from("policies").select("id,certificate_number").eq("lead_id", leadId).eq("status", "geldig");
-      for (const p of pol ?? []) {
-        const { data: r, error: e } = await supabase.functions.invoke("generate-certificate", { body: { actie: "nummer_overnemen", policy_id: p.id } });
-        if (e || (r as any)?.error) toast.error(`Certificaat ${p.certificate_number} niet bijgewerkt: ${(r as any)?.error ?? e?.message}`);
-        else if ((r as any)?.gewijzigd !== false) toast.success(`Certificaat ${p.certificate_number} vervangen door ${(r as any)?.policy?.certificate_number}`);
-      }
-      qc.invalidateQueries({ queryKey: ["lead", leadId] });
-    }
+    if (keuze === "omzetting") await certificaatBijwerken();
     qc.invalidateQueries({ queryKey: ["omzetting-kandidaten", leadId] });
     qc.invalidateQueries({ queryKey: ["bav-nummers"] });
   }
@@ -107,6 +122,14 @@ function KandidaatKaart({ leadId, k, eigenOnd, magBeslissen }: { leadId: string;
           <p className="rounded-md bg-muted p-2">
             {k.beslissing.keuze === "omzetting" ? `Omzetting vastgelegd: BAV-nummer ${k.beslissing.bav_nummer} overgenomen` : "Vastgelegd als nieuwe klant"} op {formatDateNL(k.beslissing.beslist_op)}.
           </p>
+        ) : null}
+        {k.beslissing?.keuze === "omzetting" && afwijkend.length > 0 && magBeslissen && (
+          <div className="rounded-md border border-amber-500/50 bg-amber-500/10 p-2 text-xs space-y-2">
+            <p>Het certificaat staat nog op {afwijkend.map((p) => p.certificate_number).join(", ")}. Dit moet {k.beslissing.bav_nummer} zijn. Het oude nummer blijft zichtbaar als vervangen; er gaat geen mail uit.</p>
+            <Button size="sm" disabled={bezig} onClick={certificaatBijwerken}>Certificaat bijwerken naar {k.beslissing.bav_nummer}</Button>
+          </div>
+        )}
+        {k.beslissing ? null
         ) : k.partner ? (
           <p className="rounded-md bg-muted p-2">Via partner {k.partner}, nieuw nummer. Het BAV-nummer van de voorganger wordt niet overgenomen.</p>
         ) : !magBeslissen ? (
