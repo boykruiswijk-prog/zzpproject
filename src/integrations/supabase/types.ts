@@ -44,6 +44,7 @@ export type Database = {
           attributie: Json | null
           bedrijfsnaam: string | null
           created_at: string
+          dubbel_lead_id: string | null
           email: string | null
           geanonimiseerd_op: string | null
           id: string
@@ -67,6 +68,7 @@ export type Database = {
           attributie?: Json | null
           bedrijfsnaam?: string | null
           created_at?: string
+          dubbel_lead_id?: string | null
           email?: string | null
           geanonimiseerd_op?: string | null
           id: string
@@ -90,6 +92,7 @@ export type Database = {
           attributie?: Json | null
           bedrijfsnaam?: string | null
           created_at?: string
+          dubbel_lead_id?: string | null
           email?: string | null
           geanonimiseerd_op?: string | null
           id?: string
@@ -109,6 +112,20 @@ export type Database = {
           voornaam?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "aanvraag_concepten_dubbel_lead_id_fkey"
+            columns: ["dubbel_lead_id"]
+            isOneToOne: false
+            referencedRelation: "kpi_actieve_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aanvraag_concepten_dubbel_lead_id_fkey"
+            columns: ["dubbel_lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "aanvraag_concepten_lead_id_fkey"
             columns: ["lead_id"]
@@ -4645,6 +4662,14 @@ export type Database = {
         Returns: boolean
       }
       cleanup_expired_oauth_states: { Args: never; Returns: undefined }
+      concept_afgeronde_leads: {
+        Args: { _ids: string[] }
+        Returns: {
+          concept_id: string
+          created_at: string
+          lead_id: string
+        }[]
+      }
       contract_bedrag_voor_periode: {
         Args: {
           _bedrag: number
