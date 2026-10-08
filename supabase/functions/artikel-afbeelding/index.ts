@@ -60,10 +60,12 @@ Deno.serve(async req => {
  if (claimError) return json({ error: 'Wachtrij niet beschikbaar' }, 500);
  if (!claimed) return json({ ok: true, status: 'bezet_of_gepauzeerd' });
  try {
-  const { data: jobs, error } = await admin.from('article_image_jobs').select('article_id,attempts').eq('status','pending').order('requested_at').limit(1);
+  // 'running' zonder lease = vorige verwerking afgebroken (bijv. CPU-limiet): opnieuw oppakken.
+  const { data: jobs, error } = await admin.from('article_image_jobs').select('article_id,attempts,status').in('status',['pending','running']).order('requested_at').limit(1);
   if (error) throw error;
   const job = jobs?.[0];
   if (!job) return json({ ok: true, status: 'geen_werk' });
+  const afgebroken = job.status === 'running';
   const { data: article } = await admin.from('articles').select('id,slug,title,category,excerpt,image_url,is_published').eq('id',job.article_id).single();
   // Explicit replacement jobs only target our generated files; never custom images.
   if (!article || !article.is_published || (article.image_url && !article.image_url.includes('/article-images/generated/'))) {
@@ -72,7 +74,8 @@ Deno.serve(async req => {
   }
   await admin.from('article_image_jobs').update({ status: 'running' }).eq('article_id',job.article_id);
   const key = Deno.env.get('LOVABLE_API_KEY');
-  const keuze = await kiesBeeld(
+  // Na een afgebroken poging direct de lichte huisstijl-terugval: nooit langer zonder beeld.
+  const keuze = afgebroken ? { image: undefined, reason: 'Vorige verwerking afgebroken', attempts: job.attempts ?? 0, structureel: false } : await kiesBeeld(
    key ? (attempt) => illustration(illustrationPrompt(article, attempt), key) : null,
    (img) => inspectIllustration(img, key!),
    (e) => e instanceof GatewayError && (e.status === 402 || e.status === 403 || e.status === 404 || e.terminal),
@@ -84,14 +87,15 @@ Deno.serve(async req => {
   const stamp = `${article.slug}-${Date.now()}-${lease.slice(0,8)}`;
   const path = image ? `generated/${stamp}-illustration.png` : `generated/${stamp}-fallback.png`;
   try {
-   const png = await render(article.title, article.category, image, Boolean(image));
-   const upload = await admin.storage.from(BUCKET).upload(path, png, { contentType: 'image/png', upsert: false });
-   if (upload.error) throw upload.error;
    if (image) {
+    // OG eerst (zwaarste stap); artikelbeeld is de ruwe illustratie zonder extra rendering.
     const og = await render(article.title, article.category, image);
     const ogUpload = await admin.storage.from(BUCKET).upload(path.replace('-illustration.png','-og.png'), og, { contentType: 'image/png', upsert: false });
     if (ogUpload.error) throw ogUpload.error;
    }
+   const png = image ? Uint8Array.from(atob(image), c => c.charCodeAt(0)) : await render(article.title, article.category);
+   const upload = await admin.storage.from(BUCKET).upload(path, png, { contentType: 'image/png', upsert: false });
+   if (upload.error) throw upload.error;
    const url = admin.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
    let update = admin.from('articles').update({ image_url: url }).eq('id',article.id);
    update = article.image_url ? update.eq('image_url',article.image_url) : update.is('image_url',null);
