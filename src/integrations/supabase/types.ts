@@ -2712,6 +2712,7 @@ export type Database = {
           created_at: string
           cyber_einddatum: string | null
           cyber_ingangsdatum: string | null
+          cyber_lead_id: string | null
           cyber_nieuwe_voorwaarden_per: string | null
           cyber_voorwaarden_versie: string | null
           cyclus: string
@@ -2752,6 +2753,7 @@ export type Database = {
           created_at?: string
           cyber_einddatum?: string | null
           cyber_ingangsdatum?: string | null
+          cyber_lead_id?: string | null
           cyber_nieuwe_voorwaarden_per?: string | null
           cyber_voorwaarden_versie?: string | null
           cyclus: string
@@ -2792,6 +2794,7 @@ export type Database = {
           created_at?: string
           cyber_einddatum?: string | null
           cyber_ingangsdatum?: string | null
+          cyber_lead_id?: string | null
           cyber_nieuwe_voorwaarden_per?: string | null
           cyber_voorwaarden_versie?: string | null
           cyclus?: string
@@ -2818,6 +2821,20 @@ export type Database = {
           volgende_factuurdatum?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "klant_contracten_cyber_lead_id_fkey"
+            columns: ["cyber_lead_id"]
+            isOneToOne: false
+            referencedRelation: "kpi_actieve_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "klant_contracten_cyber_lead_id_fkey"
+            columns: ["cyber_lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "klant_contracten_onderneming_id_fkey"
             columns: ["onderneming_id"]
