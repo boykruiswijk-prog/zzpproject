@@ -1,4 +1,4 @@
-import { CYBER_DEKKING, CYBER_HULP, CYBER_DETAILS, CYBER_LOOPTIJD } from "../../supabase/functions/_shared/cyber";
+import { CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER_LOOPTIJD } from "../../supabase/functions/_shared/cyber";
 // Enige bron van waarheid voor de zichtbare FAQ-content op /faq.
 // Ook gebruikt door de prerender-plugin, zodat FAQPage-schema en zichtbare
 // tekst altijd identiek zijn. Alleen relatieve/geen imports (ook buiten Vite).
@@ -13,7 +13,7 @@ export const faqItems = [
     category: "Verzekeringen",
     questions: [
       { question: "Wat kost cyberdekking en kan ik die los afsluiten?", answer: "Cyber kan alleen samen met de BAV + AVB: €82,50 per maand (€55 BAV + AVB en €27,50 cyber) of €850 per jaar (€600 + €250). Voor starters: €72,50 per maand of €745 per jaar de eerste 12 maanden, daarna €82,50 per maand of €850 per jaar, inclusief kosten en assurantiebelasting. Voor een KVK-inschrijving jonger dan 12 maanden, onder voorbehoud van controle. Cyber krijgt nooit startkorting." },
-      { question: "Wat dekt cyber?", answer: `${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_DETAILS}` },
+      { question: "Wat dekt cyber?", answer: `${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_POLISVOORWAARDEN}` },
       { question: "Kan ik cyber dagelijks opzeggen of pauzeren?", answer: CYBER_LOOPTIJD },
       { question: "Wat is een AOV en waarom heb ik die nodig als zzp'er?", answer: "Een Arbeidsongeschiktheidsverzekering (AOV) beschermt je inkomen als je door ziekte of een ongeval niet meer kunt werken. Als zzp'er heb je geen werkgever die je doorbetaalt bij ziekte, dus een AOV zorgt ervoor dat je financieel niet in de problemen komt. De verzekering keert maandelijks een bedrag uit zolang je arbeidsongeschikt bent." },
       { question: "Wat is het verschil tussen een BAV en een AVB?", answer: "Een Beroepsaansprakelijkheidsverzekering (BAV) dekt schade die ontstaat door fouten in je werk, zoals verkeerd advies of een fout in een ontwerp. Een Aansprakelijkheidsverzekering Bedrijven (AVB) dekt schade aan personen of spullen die je per ongeluk veroorzaakt tijdens je werk, zoals een laptop die je laat vallen bij een klant. Veel zzp'ers hebben beide verzekeringen nodig." },

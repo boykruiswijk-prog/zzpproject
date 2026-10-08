@@ -1,7 +1,7 @@
 import { isValidIban as isValidSepaIban } from "@/lib/sepaMachtiging";
 import { SITE_CONFIG } from "@/config/site";
 import { CyberVragen } from "@/components/verzekeringen/CyberVragen";
-import { CYBER_AKKOORD, CYBER_DEKKING, CYBER_HULP, CYBER_DETAILS, CYBER_LOOPTIJD, CYBER_AFGEWEZEN, CYBER_VRAGEN, beoordeelCyber, basisPakket, aanvraagPremie, type CyberAntwoorden } from "../../../supabase/functions/_shared/cyber";
+import { CYBER_AKKOORD, CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER_LOOPTIJD, CYBER_AFGEWEZEN, CYBER_VRAGEN, beoordeelCyber, basisPakket, aanvraagPremie, type CyberAntwoorden } from "../../../supabase/functions/_shared/cyber";
 import { useState, useEffect, useRef } from "react";
 import { SepaMachtigingBlok, bouwFrontendMachtiging } from "@/components/shared/SepaMachtigingBlok";
 import { mandaatkenmerkVoor, redenBav } from "@/lib/sepaMachtiging";
@@ -737,7 +737,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                         );
                       })}
                     </div>
-                    {heeftCyber && <><div className="space-y-2 text-sm text-muted-foreground"><p>{CYBER_HULP}</p><p>{CYBER_DETAILS}</p><p>{CYBER_LOOPTIJD}</p></div><CyberVragen antwoorden={cyberAntwoorden} onChange={setCyberAntwoorden} /><FieldError message={errors.cyber} /></>}
+                    {heeftCyber && <><div className="space-y-2 text-sm text-muted-foreground"><p>{CYBER_HULP}</p><p>{CYBER_LOOPTIJD}</p><p>{CYBER_POLISVOORWAARDEN}</p></div><CyberVragen antwoorden={cyberAntwoorden} onChange={setCyberAntwoorden} /><FieldError message={errors.cyber} /></>}
                     {(cyberAfgewezen || (heeftCyber && beoordeelCyber(cyberAntwoorden).volledig && !beoordeelCyber(cyberAntwoorden).toegestaan)) && <p role="status" className="text-sm text-foreground">{CYBER_AFGEWEZEN}</p>}
                     <div>
                        <Label htmlFor="startDate" className="text-sm font-medium mb-2 block">{t("home.bavStartDate")}</Label>
@@ -1149,7 +1149,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                       {selectedBavPakket.dekkingen.cyber && (
                         <div className="flex flex-col gap-0.5">
                           <span className="text-background/70">{CYBER_DEKKING}</span>
-                          <span className="text-xs">{CYBER_HULP} {CYBER_DETAILS} {CYBER_LOOPTIJD}</span>
+                          <span className="text-xs">{CYBER_HULP} {CYBER_LOOPTIJD} {CYBER_POLISVOORWAARDEN}</span>
                         </div>
                       )}
                     </div>

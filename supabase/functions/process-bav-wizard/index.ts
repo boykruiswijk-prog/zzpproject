@@ -21,11 +21,11 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-import { CYBER_VERSIE, CYBER_AKKOORD, CYBER_DEKKING, CYBER_HULP, CYBER_DETAILS, CYBER_LOOPTIJD, CYBER_AFGEWEZEN, beoordeelCyber, basisPakket, isCyberPakket, aanvraagPremie, cyberJaarEind } from "../_shared/cyber.ts";
+import { CYBER_VERSIE, CYBER_AKKOORD, CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER_LOOPTIJD, CYBER_AFGEWEZEN, beoordeelCyber, basisPakket, isCyberPakket, aanvraagPremie, cyberJaarEind } from "../_shared/cyber.ts";
 const PAKKET_CONFIG = Object.fromEntries(["maandelijks", "jaarlijks", "jaarlijks-cyber", "maandelijks-cyber"].map(id => {
   const p = aanvraagPremie(id, false);
   const bavAvbDekking = "BAV €5.000.000 / AVB €2.500.000 per aanspraak";
-  const cyberDekking = p.cyber ? `; ${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_DETAILS}` : "";
+  const cyberDekking = p.cyber ? `; ${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_POLISVOORWAARDEN}` : "";
   return [id, { naam: `BAV & AVB ${p.maand ? "Maandelijks" : "Jaarlijks"}${p.cyber ? " + Cyber" : ""}`, prijs: p.totaal, betaalwijze: p.maand ? "maandelijks" as const : "jaarlijks" as const, maandprijs: p.maand ? p.totaal : Math.round(p.totaal / 12 * 100) / 100, jaarprijs: p.maand ? p.totaal * 12 : p.totaal, dekking: `${bavAvbDekking}${cyberDekking}` }];
 }));
 
@@ -371,7 +371,7 @@ Deno.serve(async (req) => {
       data: machtiging,
       email: submission.email,
       aanhef: volledigeNaam,
-      bedragOfReden: `${redenBav()} (${pakket.naam}, € ${premium} ${pakket.betaalwijze === "maandelijks" ? "per maand" : "per jaar"})${starter ? `. ${STARTER_VOORBEHOUD_TEKST}` : ""}${cyberGekozen ? `. ${CYBER_LOOPTIJD} Lopend cyberjaar tot ${cyberJaarEind(submission.ingangsdatum)}. ${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_DETAILS}` : ""}`,
+      bedragOfReden: `${redenBav()} (${pakket.naam}, € ${premium} ${pakket.betaalwijze === "maandelijks" ? "per maand" : "per jaar"})${starter ? `. ${STARTER_VOORBEHOUD_TEKST}` : ""}${cyberGekozen ? `. ${CYBER_LOOPTIJD} Lopend cyberjaar tot ${cyberJaarEind(submission.ingangsdatum)}. ${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_POLISVOORWAARDEN}` : ""}`,
     });
 
     // ── 3. E-MAIL VIA send-lead-notification ──

@@ -1,6 +1,6 @@
 // Single source of truth voor BAV-pakketten. Alle plekken op de site
 // die tarieven of dekkingen tonen importeren uit dit bestand.
-import { CYBER, CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD } from "../../supabase/functions/_shared/cyber";
+import { CYBER, CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD, CYBER_POLISVOORWAARDEN } from "../../supabase/functions/_shared/cyber";
 
 export const bavPakketten = [
   {
@@ -48,11 +48,11 @@ export const bavPakketten = [
     dekkingen: {
       bav: { perGebeurtenis: 5_000_000, perJaar: 15_000_000 },
       avb: { perGebeurtenis: 2_500_000, perJaar: 5_000_000 },
-      cyber: { perSchade: CYBER.perSchade, perJaar: CYBER.gedeeldJaarmaximum },
+      cyber: { perSchade: CYBER.perSchade },
     },
     usps: [
       "BAV + AVB: geen eigen risico, dagelijks opzegbaar en pauzeerbaar. Creditnota voor resterende al betaalde dagen.",
-      CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD,
+      CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD, CYBER_POLISVOORWAARDEN,
       "Premie inclusief kosten en assurantiebelasting",
     ],
   },
@@ -62,9 +62,9 @@ export const bavPakketten = [
     dekkingen: {
       bav: { perGebeurtenis: 5_000_000, perJaar: 15_000_000 },
       avb: { perGebeurtenis: 2_500_000, perJaar: 5_000_000 },
-      cyber: { perSchade: CYBER.perSchade, perJaar: CYBER.gedeeldJaarmaximum },
+      cyber: { perSchade: CYBER.perSchade },
     },
-    usps: ["BAV + AVB: geen eigen risico, dagelijks opzegbaar en pauzeerbaar. Creditnota voor resterende al betaalde dagen.", CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD, "Premie inclusief kosten en assurantiebelasting"],
+    usps: ["BAV + AVB: geen eigen risico, dagelijks opzegbaar en pauzeerbaar. Creditnota voor resterende al betaalde dagen.", CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD, CYBER_POLISVOORWAARDEN, "Premie inclusief kosten en assurantiebelasting"],
   },
 ] as const;
 
