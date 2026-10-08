@@ -9,7 +9,7 @@ export function generateImage(config: ImageConfig, prompt: string, stream = true
   let input: Record<string, unknown>;
   switch (config.format) {
     case "openai":
-      input = { prompt, ...(stream ? { partial_images: 1 } : {}) };
+      input = { prompt, size: "1600x912", quality: "medium", ...(stream ? { partial_images: 1 } : {}) };
       break;
     case "cloudflare-input":
       input = { input: { prompt } };
