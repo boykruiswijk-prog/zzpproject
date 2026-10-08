@@ -54,3 +54,6 @@ project_id = "eugkavokktjwpqaqlwsj"
 
 [functions.indexnow-ping]
 verify_jwt = false
+
+[functions.artikel-afbeelding]
+verify_jwt = false

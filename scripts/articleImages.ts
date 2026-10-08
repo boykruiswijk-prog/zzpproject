@@ -82,5 +82,10 @@ export async function generateArticleImages(distDir: string, root: string, env: 
     fs.writeFileSync(path.join(output, `${article.slug}.png`), await renderArticleImage(article, root));
     count++;
   }
+  // Harde controle: elk gepubliceerd artikel heeft een eigen image_url of een
+  // bestand in de build. Anders faalt de build (nooit een kapotte afbeelding live).
+  const ontbrekend = published.filter((a) => a.slug && !a.image_url && !fs.existsSync(path.join(output, `${a.slug}.png`)));
+  if (ontbrekend.length) throw new Error(`[article-images] Afbeelding ontbreekt voor: ${ontbrekend.map((a) => a.slug).join(", ")}`);
+  console.log(`[article-images] Controle: alle ${published.length} gepubliceerde artikelen hebben een afbeelding.`);
   console.log(`[article-images] ${count} PNG-afbeeldingen gemaakt (1200x630, inclusief concepten).`);
 }
