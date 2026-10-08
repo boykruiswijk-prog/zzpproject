@@ -99,7 +99,7 @@ export function PolicyLifecycleActions() {
   const handleHervatten = async () => {
     try {
       await lifecycle.mutateAsync({ action: "hervatten", lead_id: lead.id });
-      toast({ title: "Polis weer actief", description: "Je bent direct weer gedekt." });
+      toast({ title: "Polis weer actief", description: "Je polis is hervat." });
       setHervatOpen(false);
     } catch (e: any) {
       toast({ title: "Fout", description: e.message, variant: "destructive" });
