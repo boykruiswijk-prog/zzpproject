@@ -29,7 +29,7 @@ function RijKaart({ r, onKlaar }: { r: Rij; onKlaar: () => void }) {
   return (
     <Card><CardContent className="space-y-3 p-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <Link to={`/admin/crm?onderneming=${r.onderneming_id}`} className="font-semibold hover:underline">{r.naam ?? "Onbekend"}</Link>
+        <Link to={`/admin/klanten/${r.onderneming_id}`} className="font-semibold hover:underline">{r.naam ?? "Onbekend"}</Link>
         {r.later && <Badge variant="secondary">Later ({datum(r.later.op)}){r.later.toelichting ? `: ${r.later.toelichting}` : ""}</Badge>}
       </div>
       <dl className="grid gap-1 text-sm sm:grid-cols-2">

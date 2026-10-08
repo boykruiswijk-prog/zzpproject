@@ -6,12 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useAdminTakenCount } from "@/hooks/useAdminTaken";
 import { useMenuTellers } from "@/hooks/useMenuTellers";
-import { Activity, AlertTriangle, BookOpen, Building2, ChevronDown, ConciergeBell, UserMinus, ChevronLeft, CircleDollarSign, FileText, KeyRound, LayoutDashboard, LogOut, Menu, MessageCircle, Plug, SearchX, Settings, Share2, ShieldCheck, UserCog, UserX, Users } from "lucide-react";
+import { Activity, AlertTriangle, BookOpen, Building2, ChevronDown, ConciergeBell, UserMinus, ChevronLeft, CircleDollarSign, FileText, Hash, KeyRound, LayoutDashboard, LogOut, Menu, MessageCircle, Plug, SearchX, Settings, Share2, ShieldCheck, UserCog, UserX, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 type NavRole = "supervisor" | "verzekering" | "marketing" | "admin";
-type Teller = "aanvragen" | "leads" | "service" | "opzeggingen" | "screening" | "afgehaakt" | "chat" | "klanten" | "facturatie";
+type Teller = "aanvragen" | "leads" | "service" | "opzeggingen" | "screening" | "afgehaakt" | "chat" | "klanten" | "facturatie" | "bav_nakijken";
 type NavItem = { to: string; icon: typeof Users; label: string; end?: boolean; badge?: boolean; teller?: Teller; roles: NavRole[]; sub?: boolean };
 type NavGroup = { label: string; icon: typeof Users; roles: NavRole[]; items: NavItem[] };
 
@@ -24,6 +24,7 @@ const groups: NavGroup[] = [
     { to: "/admin/service-aanvragen", icon: ConciergeBell, label: "Serviceaanvragen", teller: "service", roles: ["supervisor", "verzekering"] },
     { to: "/admin/screening-aanvragen", icon: ShieldCheck, label: "Screeningaanvragen", teller: "screening", roles: ["supervisor", "verzekering"] },
     { to: "/admin/portaltoegang", icon: KeyRound, label: "Portaltoegang", roles: ["supervisor", "verzekering"] },
+    { to: "/admin/bav-nummer-nakijken", icon: Hash, label: "BAV-nummer nakijken", teller: "bav_nakijken", roles: ["supervisor", "verzekering"] },
   ]},
   { label: "Facturatie", icon: CircleDollarSign, roles: ["supervisor"], items: [
     { to: "/admin/facturatieplanning", icon: CircleDollarSign, label: "Facturatieplanning", teller: "facturatie", roles: ["supervisor"] },
