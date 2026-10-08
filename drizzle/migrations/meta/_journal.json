@@ -540,6 +540,13 @@
       "when": 1791453884518,
       "tag": "0076_article_image_short_lease",
       "breakpoints": true
+    },
+    {
+      "idx": 77,
+      "version": "7",
+      "when": 1791457727413,
+      "tag": "0077_startertarief_beoordelen_verzekering",
+      "breakpoints": true
     }
   ]
 }
