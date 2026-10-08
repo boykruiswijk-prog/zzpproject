@@ -29,6 +29,6 @@
 - Reviewverzoeken aan nieuwe klanten lopen alleen via Edge Function review-verzoeken (cron, schakelaar integratie_config 'reviewverzoeken_actief', kandidaten via RPC review_kandidaten); klikken via review-klik, afmelden via review-afmelden alleen naar review_afmeldingen (nooit suppressed_emails, zodat transactionele mail doorgaat). Waarom: één filter dat testleads en bestaande klanten uitsluit.
 - Beheer-UI-regels staan in src/components/admin/AGENTS.md, CRM-regels in src/components/admin/crm/AGENTS.md.
 - Article images: leased queue, wake token or MFA supervisor, max 2 AI attempts then category fallback; never a global pause (AI refusal only sets admin notice); crashed jobs resume as fallback. Preserve custom/old assets; build verifies images; keep ArticleImage guard. Why: every article gets an image within minutes.
-- scripts/* importeren geen React. Waarom: anders crasht de SSR-prerender (prod/dev-mix).
+- Scripts never import React. Why: avoid prod/dev SSR crashes.
 
 - Monthly lifecycle/preview credits read actual invoiced periods via _shared/lifecycleCredit.ts and planner helper berekenOpzegCredit. Why: no annual-premium math or duplicate refunds.
