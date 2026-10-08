@@ -62,7 +62,7 @@ serve(async (req) => {
 
     const body = await req.json();
     const { lead_id, policy_data } = body;
-    const actie: "nieuw" | "aanpassen" | "intrekken" | "mailen" = body.actie || "nieuw";
+    const actie: "nieuw" | "aanpassen" | "intrekken" | "mailen" | "nummer_overnemen" = body.actie || "nieuw";
     const json = (b: unknown, status = 200) =>
       new Response(JSON.stringify(b), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
