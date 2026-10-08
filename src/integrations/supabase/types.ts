@@ -633,6 +633,44 @@ export type Database = {
           },
         ]
       }
+      bav_nummer_bevestigingen: {
+        Row: {
+          bevestigd_door: string
+          bevestigd_op: string
+          herkomst: string
+          id: string
+          nummer: string
+          onderneming_id: string
+          toelichting: string | null
+        }
+        Insert: {
+          bevestigd_door: string
+          bevestigd_op?: string
+          herkomst: string
+          id?: string
+          nummer: string
+          onderneming_id: string
+          toelichting?: string | null
+        }
+        Update: {
+          bevestigd_door?: string
+          bevestigd_op?: string
+          herkomst?: string
+          id?: string
+          nummer?: string
+          onderneming_id?: string
+          toelichting?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bav_nummer_bevestigingen_onderneming_id_fkey"
+            columns: ["onderneming_id"]
+            isOneToOne: false
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_messages: {
         Row: {
           acties: Json | null
@@ -4539,6 +4577,10 @@ export type Database = {
     Functions: {
       accept_portal_invitation: { Args: { _token: string }; Returns: Json }
       anonimiseer_aanvraag_concepten: { Args: never; Returns: number }
+      bav_nummer_bevestigen: {
+        Args: { _nummer: string; _onderneming_id: string; _toelichting: string }
+        Returns: Json
+      }
       beoordeel_klant_certificaat: {
         Args: { _bevestigen: boolean; _id: string }
         Returns: Json

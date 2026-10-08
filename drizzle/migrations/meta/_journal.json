@@ -561,6 +561,13 @@
       "when": 1791460259652,
       "tag": "0079_omzetting_initieel_bav_nummer",
       "breakpoints": true
+    },
+    {
+      "idx": 80,
+      "version": "7",
+      "when": 1791460730959,
+      "tag": "0080_bav_nummer_zonder_afas",
+      "breakpoints": true
     }
   ]
 }
