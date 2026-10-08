@@ -1,3 +1,4 @@
+import { nieuweCyber, basisPakket, CYBER_LOOPTIJD } from "../_shared/cyber.ts";
 // Read-only preview voor pauze/hervat/opzeg-modals. Geen Exact-calls.
 // Body: { lead_id, action?: "pauze" | "hervat" | "opzeg" }   (default: "pauze")
 // Returns: { credit_bedrag/factuur_bedrag, resterende_dagen, dagprijs, polis_einddatum, jaarprijs }
@@ -48,12 +49,12 @@ Deno.serve(async (req) => {
   }
 
   const { data: lead, error: lErr } = await supabase
-    .from("leads").select("id, ingangsdatum, polis_einddatum, gekozen_pakket, exact_invoice_id, exact_invoice_amount")
+    .from("leads").select("id, ingangsdatum, polis_einddatum, gekozen_pakket, exact_invoice_id, exact_invoice_amount, extra_data, cyber_einddatum, tarief_type")
     .eq("id", leadId).single();
   if (lErr || !lead) return json({ error: "lead_not_found" }, 404);
   if (!lead.ingangsdatum) return json({ error: "geen_ingangsdatum" }, 400);
 
-  const jaarprijs = getJaarprijs(lead.gekozen_pakket);
+  const jaarprijs = nieuweCyber(lead) ? (lead.tarief_type === "starter" ? 495 : getJaarprijs(basisPakket(lead.gekozen_pakket))) : getJaarprijs(lead.gekozen_pakket);
   const eind = lead.polis_einddatum ?? calcPolisEinddatum(lead.ingangsdatum);
   const today = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Europe/Amsterdam",
@@ -67,7 +68,7 @@ Deno.serve(async (req) => {
       try { credit = await maandLifecycleCredit(supabase, lead, today); }
       catch { return json({ error: "credit_preview_niet_beschikbaar" }, 503); }
       return json({
-        ok: true, action, jaarprijs, polis_einddatum: eind, [dateKey]: today,
+        ok: true, action, cyber: nieuweCyber(lead) ? { eind: lead.cyber_einddatum, uitleg: CYBER_LOOPTIJD } : null, jaarprijs, polis_einddatum: eind, [dateKey]: today,
         ...credit, is_maandpolis: true,
         uitleg: "Je krijgt een creditnota voor de resterende dagen die je al betaald hebt. Dit geldt bij maand- en jaarbetaling. Nieuwe maandfacturen stoppen.",
       });
@@ -78,7 +79,7 @@ Deno.serve(async (req) => {
     });
     const dateKey = action === "opzeg" ? "opzeg_datum" : "pauze_datum";
     return json({
-      ok: true, action, jaarprijs, polis_einddatum: eind, [dateKey]: today, ...calc,
+      ok: true, action, cyber: nieuweCyber(lead) ? { eind: lead.cyber_einddatum, uitleg: CYBER_LOOPTIJD } : null, jaarprijs, polis_einddatum: eind, [dateKey]: today, ...calc,
     });
   }
   // hervat
@@ -87,6 +88,6 @@ Deno.serve(async (req) => {
     jaarprijs, hervat_datum: today,
   });
   return json({
-    ok: true, action, jaarprijs, polis_einddatum: eind, hervat_datum: today, ...calc,
+    ok: true, action, cyber: nieuweCyber(lead) ? { eind: lead.cyber_einddatum, uitleg: CYBER_LOOPTIJD } : null, jaarprijs, polis_einddatum: eind, hervat_datum: today, ...calc,
   });
 });

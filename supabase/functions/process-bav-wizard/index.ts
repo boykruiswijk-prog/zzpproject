@@ -21,39 +21,18 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// Sync met src/data/bavPakketten.ts — single source of truth voor BAV-prijzen.
-const PAKKET_CONFIG: Record<
-  string,
-  { naam: string; prijs: number; betaalwijze: "maandelijks" | "jaarlijks"; maandprijs: number; jaarprijs: number; dekking: string }
-> = {
-  "maandelijks": {
-    naam: "BAV & AVB Maandelijks",
-    prijs: 55,
-    betaalwijze: "maandelijks",
-    maandprijs: 55,
-    jaarprijs: 660,
-    dekking: "BAV €5.000.000 / AVB €2.500.000 per aanspraak",
-  },
-  "jaarlijks": {
-    naam: "BAV & AVB Jaarlijks",
-    prijs: 600,
-    betaalwijze: "jaarlijks",
-    maandprijs: 50,
-    jaarprijs: 600,
-    dekking: "BAV €5.000.000 / AVB €2.500.000 per aanspraak",
-  },
-  "jaarlijks-cyber": {
-    naam: "BAV & AVB Jaarlijks + Cyber",
-    prijs: 750,
-    betaalwijze: "jaarlijks",
-    maandprijs: 62.5,
-    jaarprijs: 750,
-    dekking: "BAV €5.000.000 / AVB €2.500.000 per aanspraak / Cyber €50.000 per schade, maximaal €5.000.000 per jaar",
-  },
-};
+import { CYBER_VERSIE, CYBER_AKKOORD, CYBER_DEKKING, CYBER_HULP, CYBER_DETAILS, CYBER_LOOPTIJD, CYBER_AFGEWEZEN, beoordeelCyber, basisPakket, isCyberPakket, aanvraagPremie, cyberJaarEind } from "../_shared/cyber.ts";
+const PAKKET_CONFIG = Object.fromEntries(["maandelijks", "jaarlijks", "jaarlijks-cyber", "maandelijks-cyber"].map(id => {
+  const p = aanvraagPremie(id, false);
+  return [id, { naam: `BAV & AVB ${p.maand ? "Maandelijks" : "Jaarlijks"}${p.cyber ? " + Cyber" : ""}`, prijs: p.totaal, betaalwijze: p.maand ? "maandelijks" as const : "jaarlijks" as const, maandprijs: p.maand ? p.totaal : Math.round(p.totaal / 12 * 100) / 100, jaarprijs: p.maand ? p.totaal * 12 : p.totaal, dekking: `BAV €5.000.000 / AVB €2.500.000 per aanspraak${p.cyber ? `; ${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_DETAILS}` : ""}` }];
+}));
 
 interface BavSubmission {
-  gekozen_pakket: keyof typeof PAKKET_CONFIG;
+  gekozen_pakket: string;
+  cyber_aangevraagd?: boolean;
+  cyber_antwoorden?: unknown;
+  cyber_akkoord?: boolean;
+  cyber_client_akkoord_op?: string;
   betaalwijze: "maandelijks" | "jaarlijks";
   ingangsdatum: string;
   /** Door de klant opgegeven startdatum KVK-inschrijving (YYYY-MM-DD); basis voor het startertarief. */
@@ -139,6 +118,14 @@ Deno.serve(async (req) => {
       return weiger(400, `Aanvraag onvolledig: ${ontbreekt.join(", ")}`, "validatie");
     }
 
+    const cyberWasGekozen = isCyberPakket(submission.gekozen_pakket) || submission.cyber_aangevraagd === true;
+    const cyberToets = beoordeelCyber(submission.cyber_antwoorden);
+    if (cyberWasGekozen && !cyberToets.volledig) return weiger(400, "Beantwoord alle vragen over cyberdekking", "cyber_vragen");
+    const cyberAfgewezen = cyberWasGekozen && !cyberToets.toegestaan;
+    if (cyberAfgewezen) submission.gekozen_pakket = basisPakket(submission.gekozen_pakket);
+    const cyberGekozen = isCyberPakket(submission.gekozen_pakket);
+    if (cyberGekozen && submission.cyber_akkoord !== true) return weiger(400, "Bevestig de afzonderlijke looptijd van cyber", "cyber_akkoord");
+    submission.betaalwijze = PAKKET_CONFIG[submission.gekozen_pakket].betaalwijze;
     // Zorg/bouw: normale flow, intern gemarkeerd voor handmatige acceptatie (klant merkt niets).
     const handmatigeAcceptatie = vereistHandmatigeAcceptatie(submission);
 
@@ -233,9 +220,10 @@ Deno.serve(async (req) => {
       && submission.kvk_startdatum >= "1900-01-01" && submission.kvk_startdatum <= submission.ingangsdatum ? submission.kvk_startdatum : null;
     const kvkStart = kvkApiStart ?? klantStart;
     const kvkDatumBron = kvkApiStart ? "kvk_api" : klantStart ? "klant" : null;
-    const starter = (submission.gekozen_pakket === "maandelijks" || submission.gekozen_pakket === "jaarlijks") && isStarter(kvkStart, submission.ingangsdatum);
+    const starter = isStarter(kvkStart, submission.ingangsdatum);
     const starterTotDatum = starter ? starterTot(submission.ingangsdatum) : null;
-    const premium = starter ? (pakket.betaalwijze === "maandelijks" ? STARTER.maandprijs : STARTER.jaarprijs) : pakket.prijs;
+    const premie = aanvraagPremie(submission.gekozen_pakket, starter);
+    const premium = premie.totaal;
     const starterVelden = { kvk_startdatum: kvkStart, kvk_datum_bron: kvkDatumBron, kvk_gegevens: kvkGegevens, tarief_type: starter ? "starter" : "standaard", starter_tot: starterTotDatum };
     const volledigeNaam = `${submission.voornaam} ${submission.achternaam}`;
     const branche = brancheVoorSector(submission.sector);
@@ -290,6 +278,9 @@ Deno.serve(async (req) => {
         verzekerd_bedrag: pakket.dekking,
         ingangsdatum: submission.ingangsdatum,
         gekozen_pakket: submission.gekozen_pakket,
+         cyber_voorwaarden_versie: cyberGekozen ? CYBER_VERSIE : null,
+         cyber_ingangsdatum: cyberGekozen ? submission.ingangsdatum : null,
+         cyber_einddatum: cyberGekozen ? cyberJaarEind(submission.ingangsdatum) : null,
         ...starterVelden,
         // Datum uit de KVK API: automatisch bevestigd. Alleen bij klantopgave (API faalde) handmatige controle.
         starter_controle_status: starter ? (kvkDatumBron === "kvk_api" ? "goedgekeurd" : "te_controleren") : null,
@@ -307,6 +298,7 @@ Deno.serve(async (req) => {
         vereist_handmatige_beoordeling: handmatigeAcceptatie || submission.vereist_handmatige_beoordeling === true,
         is_test: isTestLead,
         extra_data: {
+           ...(cyberWasGekozen ? { cyber: { versie: CYBER_VERSIE, gekozen: cyberGekozen, afgewezen: cyberAfgewezen, antwoorden: cyberToets.antwoorden, redenen: cyberToets.redenen, akkoord: cyberGekozen && submission.cyber_akkoord === true, client_akkoord_op: submission.cyber_client_akkoord_op ?? null } } : {}),
           formulier: saneerFormulier(submission.formulier),
           formulier_naam: typeof submission.formulier_naam === "string" ? submission.formulier_naam.slice(0, 100) : "Online aanvraag BAV + AVB",
           pagina: saneerPagina(submission.pagina_url),
@@ -347,8 +339,8 @@ Deno.serve(async (req) => {
         pakket_naam: pakket.naam,
         betaalwijze: pakket.betaalwijze,
         ingangsdatum: submission.ingangsdatum,
-        maandpremie: starter ? (pakket.betaalwijze === "maandelijks" ? STARTER.maandprijs : Math.round((STARTER.jaarprijs / 12) * 100) / 100) : pakket.maandprijs,
-        jaarpremie: starter ? (pakket.betaalwijze === "maandelijks" ? STARTER.maandprijs * 12 : STARTER.jaarprijs) : pakket.jaarprijs,
+        maandpremie: premie.maand ? premium : Math.round(premium / 12 * 100) / 100,
+        jaarpremie: premie.maand ? premium * 12 : premium,
         premiebedrag: premium,
         // Alleen kolommen die bav_aanmeldingen kent (kvk_datum_bron/kvk_gegevens staan alleen op leads).
         kvk_startdatum: starterVelden.kvk_startdatum,
@@ -377,7 +369,7 @@ Deno.serve(async (req) => {
       data: machtiging,
       email: submission.email,
       aanhef: volledigeNaam,
-      bedragOfReden: `${redenBav()} (${pakket.naam}, € ${premium} ${pakket.betaalwijze === "maandelijks" ? "per maand" : "per jaar"})${starter ? `. ${STARTER_VOORBEHOUD_TEKST}` : ""}`,
+      bedragOfReden: `${redenBav()} (${pakket.naam}, € ${premium} ${pakket.betaalwijze === "maandelijks" ? "per maand" : "per jaar"})${starter ? `. ${STARTER_VOORBEHOUD_TEKST}` : ""}${cyberGekozen ? `. ${CYBER_LOOPTIJD} Lopend cyberjaar tot ${cyberJaarEind(submission.ingangsdatum)}. ${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_DETAILS}` : ""}`,
     });
 
     // ── 3. E-MAIL VIA send-lead-notification ──
@@ -398,6 +390,7 @@ Deno.serve(async (req) => {
             kvk_nummer: submission.kvk_nummer || "-",
             pakket: pakket.naam,
             dekking: pakket.dekking,
+             ...(cyberGekozen ? { cyber_looptijd: CYBER_LOOPTIJD, cyber_einddatum: cyberJaarEind(submission.ingangsdatum) } : {}),
             betaalwijze: pakket.betaalwijze,
             ingangsdatum: submission.ingangsdatum,
             premie: starter ? `€${premium} startertarief t/m ${starterTotDatum}, daarna €${pakket.prijs}; KVK-startdatum ${kvkStart} controleren` : `€${premium}`,

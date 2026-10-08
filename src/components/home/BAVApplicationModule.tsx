@@ -1,5 +1,7 @@
 import { isValidIban as isValidSepaIban } from "@/lib/sepaMachtiging";
 import { SITE_CONFIG } from "@/config/site";
+import { CyberVragen } from "@/components/verzekeringen/CyberVragen";
+import { CYBER_AKKOORD, CYBER_DEKKING, CYBER_HULP, CYBER_DETAILS, CYBER_LOOPTIJD, CYBER_AFGEWEZEN, CYBER_VRAGEN, beoordeelCyber, basisPakket, aanvraagPremie, type CyberAntwoorden } from "../../../supabase/functions/_shared/cyber";
 import { useState, useEffect, useRef } from "react";
 import { SepaMachtigingBlok, bouwFrontendMachtiging } from "@/components/shared/SepaMachtigingBlok";
 import { mandaatkenmerkVoor, redenBav } from "@/lib/sepaMachtiging";
@@ -113,9 +115,13 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
    // Lead-UUID vooraf bepalen: basis voor het mandaatkenmerk dat de klant te zien krijgt.
    const [leadId] = useState<string>(() => crypto.randomUUID());
    const [slotverklaringAkkoord, setSlotverklaringAkkoord] = useState(false);
+   const [cyberAntwoorden, setCyberAntwoorden] = useState<CyberAntwoorden>({});
+   const [cyberAkkoordOp, setCyberAkkoordOp] = useState<string | null>(null);
+   const [cyberAangevraagd, setCyberAangevraagd] = useState(false);
+   const [cyberAfgewezen, setCyberAfgewezen] = useState(false);
    const [errors, setErrors] = useState<ValidationErrors>({});
    const [isSubmitted, setIsSubmitted] = useState(false);
-   const [submissionResult, setSubmissionResult] = useState<{ reference: string; mandaatkenmerk?: string; handmatig?: boolean; starter?: boolean } | null>(null);
+   const [submissionResult, setSubmissionResult] = useState<{ reference: string; mandaatkenmerk?: string; handmatig?: boolean; starter?: boolean; cyber?: boolean; cyberAfgewezen?: boolean } | null>(null);
    const [isSubmitting, setIsSubmitting] = useState(false);
    const guard = useFormGuard();
    const [existingCustomerOpen, setExistingCustomerOpen] = useState(false);
@@ -178,7 +184,12 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
   );
 
   const selectedBavPakket = getPakket(gekozenPakketId);
-  const currentPrice = selectedBavPakket.prijs;
+  const currentPrice = aanvraagPremie(gekozenPakketId, !!startDate && isStarter(formData.kvkStartdatum || null, startDate)).totaal;
+  const heeftCyber = !!selectedBavPakket.dekkingen.cyber;
+  const kiesPakket = (id: BavPakketId) => {
+    setGekozenPakketId(id); setCyberAangevraagd(!!getPakket(id).dekkingen.cyber);
+    setCyberAfgewezen(false); setCyberAkkoordOp(null);
+  };
   const periodeLabel = selectedBavPakket.periode === "maand" ? t("home.bavPerMonth") : t("home.bavPerYear");
   const betaalwijze: "maandelijks" | "jaarlijks" = selectedBavPakket.periode === "maand" ? "maandelijks" : "jaarlijks";
   const gekozenPakketLabel = selectedBavPakket.name;
@@ -196,6 +207,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
     const newErrors: ValidationErrors = {};
 
     if (step === 1) {
+      if (heeftCyber && !beoordeelCyber(cyberAntwoorden).volledig) newErrors.cyber = "Beantwoord alle vragen over cyberdekking";
       const today = new Date().toISOString().split('T')[0];
       const maxDate = new Date();
       maxDate.setMonth(maxDate.getMonth() + 6);
@@ -250,6 +262,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
      }
 
     if (step === 5) {
+      if (heeftCyber && !cyberAkkoordOp) newErrors.cyberAkkoord = "Bevestig de afzonderlijke looptijd van cyber";
       // Akkoord nooit zonder de juiste kaart: sector moet een bestaande kaart opleveren.
       if (!verzekeringskaartVoorSector(formData.sector)) newErrors.slotverklaring = "Kies eerst je sector in stap 2";
       else if (!slotverklaringAkkoord) newErrors.slotverklaring = t("bavApp.valSlotverklaring");
@@ -337,15 +350,18 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
 
   const nextStep = async () => {
     if (!validateStep(currentStep) || currentStep >= TOTAL_STEPS) return;
+    if (currentStep === 1 && heeftCyber && !beoordeelCyber(cyberAntwoorden).toegestaan) {
+      setCyberAangevraagd(true); setCyberAfgewezen(true); setCyberAkkoordOp(null);
+      setGekozenPakketId(basisPakket(gekozenPakketId));
+    }
     trackWizardStep(currentStep, steps[currentStep - 1]?.name ?? "");
     if (currentStep === 4) trackAddPaymentInfo(gekozenPakketId, currentPrice);
     stapGewisseld.current = true;
     setCurrentStep(currentStep + 1);
   };
   const prevStep = () => { if (currentStep > 1) { setErrors({}); stapGewisseld.current = true; setCurrentStep(currentStep - 1); } };
-   const betaalwijzeIsMaand = gekozenPakketId === "maandelijks";
-   const starterVanToepassing = (gekozenPakketId === "maandelijks" || gekozenPakketId === "jaarlijks")
-     && !!startDate && isStarter(formData.kvkStartdatum || null, startDate);
+   const betaalwijzeIsMaand = selectedBavPakket.periode === "maand";
+   const starterVanToepassing = !!startDate && isStarter(formData.kvkStartdatum || null, startDate);
    const handleSubmit = async () => {
      if (isSubmitting) return;
      if (!validateStep(currentStep)) return;
@@ -357,6 +373,10 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
            hp: guard.honeypot,
            ms: guard.elapsedMs(),
            gekozen_pakket: gekozenPakketId,
+            cyber_aangevraagd: cyberAangevraagd || heeftCyber,
+            cyber_antwoorden: cyberAntwoorden,
+            cyber_akkoord: !!cyberAkkoordOp,
+            cyber_client_akkoord_op: cyberAkkoordOp,
            betaalwijze,
            ingangsdatum: startDate,
            voornaam: formData.voornaam,
@@ -394,6 +414,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
              ["Plaats", formData.adresPlaats], ["Land", formData.adresLand],
              ["IBAN", formData.iban], ["Rekeninghouder", formData.rekeninghouder],
              ["SEPA-machtiging akkoord", incassoAkkoord], ["Slotverklaring akkoord", slotverklaringAkkoord],
+              ...((cyberAangevraagd || heeftCyber) ? CYBER_VRAGEN.map((q) => [q.tekst, cyberAntwoorden[q.id]] as [string, boolean | undefined]) : []),
            ]),
            getoonde_documenten: wizardDocumenten(formData.sector).map((d) => d.href),
            vereist_handmatige_beoordeling: parseInt(formData.aantalMedewerkers || "0") > 3,
@@ -432,6 +453,8 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
         const returnedLeadId = typeof data.lead_id === "string" ? data.lead_id : leadId;
         setSubmissionResult({
           starter: starterVanToepassing,
+          cyber: data.cyber_gekozen ?? heeftCyber,
+          cyberAfgewezen: data.cyber_afgewezen ?? cyberAfgewezen,
           reference: returnedLeadId.slice(0, 8).toUpperCase(),
           mandaatkenmerk: typeof data.mandaatkenmerk === "string" ? data.mandaatkenmerk : undefined,
           handmatig: isHandmatigeAcceptatieSector(formData.sector),
@@ -489,6 +512,8 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
             {submissionResult.starter && (
               <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">{STARTER_VOORBEHOUD_TEKST}</p>
             )}
+            {submissionResult.cyber && <p className="mt-4 text-sm text-muted-foreground">{CYBER_LOOPTIJD}</p>}
+            {submissionResult.cyberAfgewezen && <p className="mt-4 text-sm text-muted-foreground">{CYBER_AFGEWEZEN}</p>}
             <div className="mt-6 space-y-1 text-sm">
               <p><span className="font-semibold">Referentie:</span> {submissionResult.reference}</p>
               {submissionResult.mandaatkenmerk && (
@@ -646,18 +671,18 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                       <h3 data-step-heading tabIndex={-1} className="text-xl font-semibold mb-2 outline-none">{t("home.bavChooseCoverage")}</h3>
                       <p className="text-muted-foreground text-sm">{t("home.bavChooseDesc")}</p>
                     </div>
-                    <div className="grid sm:grid-cols-3 gap-4">
+                    <div className="grid sm:grid-cols-2 gap-4">
                       {bavPakketten.map((pkg) => {
                         const isSelected = gekozenPakketId === pkg.id;
                         return (
-                          <button
+                          <Button variant="outline"
                             key={pkg.id}
                             type="button"
-                            onClick={() => setGekozenPakketId(pkg.id)}
+                            onClick={() => kiesPakket(pkg.id)}
                             className={cn(
-                              "relative p-5 rounded-xl border-2 text-left transition-all flex flex-col",
+                              "relative h-auto whitespace-normal items-stretch p-5 rounded-xl border-2 text-left transition-all flex flex-col",
                               isSelected
-                                ? "border-[#16A34A] bg-[#F0FDF4] shadow-md"
+                                ? "border-accent bg-accent/5 shadow-md"
                                 : "border-border hover:border-accent/50 bg-card"
                             )}
                           >
@@ -680,7 +705,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                               <h4 className="font-semibold text-sm leading-tight">{pkg.name}</h4>
                             </div>
                             <p className="text-2xl font-bold text-foreground mb-3">
-                              €{pkg.prijs}
+                              €{pkg.prijs.toLocaleString("nl-NL")}
                               <span className="text-xs font-normal text-muted-foreground"> / {pkg.periode}</span>
                             </p>
                             {pkg.periode === "jaar" && (
@@ -698,19 +723,21 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                               {pkg.dekkingen.cyber && (
                                 <li className="flex items-start gap-1.5">
                                   <Check className="h-3.5 w-3.5 text-accent mt-0.5 flex-shrink-0" />
-                                  <span>Cyber {formatBedrag(pkg.dekkingen.cyber.perSchade)} per schade, maximaal {formatBedrag(pkg.dekkingen.cyber.perJaar)} per jaar</span>
+                                  <span>{CYBER_DEKKING}</span>
                                 </li>
                               )}
                             </ul>
                             {isSelected && (
                               <div className="absolute top-3 right-3">
-                                <CheckCircle className="h-5 w-5 text-[#16A34A]" />
+                                <CheckCircle className="h-5 w-5 text-accent" />
                               </div>
                             )}
-                          </button>
+                          </Button>
                         );
                       })}
                     </div>
+                    {heeftCyber && <><div className="space-y-2 text-sm text-muted-foreground"><p>{CYBER_HULP}</p><p>{CYBER_DETAILS}</p><p>{CYBER_LOOPTIJD}</p></div><CyberVragen antwoorden={cyberAntwoorden} onChange={setCyberAntwoorden} /><FieldError message={errors.cyber} /></>}
+                    {(cyberAfgewezen || (heeftCyber && beoordeelCyber(cyberAntwoorden).volledig && !beoordeelCyber(cyberAntwoorden).toegestaan)) && <p role="status" className="text-sm text-foreground">{CYBER_AFGEWEZEN}</p>}
                     <div>
                        <Label htmlFor="startDate" className="text-sm font-medium mb-2 block">{t("home.bavStartDate")}</Label>
                        <div className="relative">
@@ -1037,6 +1064,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                       </div>
 
                       {/* Slotverklaring */}
+                      {heeftCyber && <div className="space-y-2 border border-border rounded-lg p-4"><div className="flex items-start gap-3"><Checkbox id="cyber-akkoord" checked={!!cyberAkkoordOp} onCheckedChange={(v) => setCyberAkkoordOp(v === true ? new Date().toISOString() : null)} /><Label htmlFor="cyber-akkoord" className="text-sm leading-relaxed">{CYBER_AKKOORD}</Label></div><FieldError message={errors.cyberAkkoord} /></div>}
                       <div className={cn("border rounded-lg p-4 bg-accent/5 space-y-3", errors.slotverklaring ? "border-destructive" : "border-accent/30")}>
                         <div className="flex items-start gap-3">
                           <Checkbox
@@ -1058,7 +1086,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
 
                 {/* Compacte prijsregel (mobiel), uit bavPakketten */}
                 <p className="mt-8 text-center text-xs font-medium text-muted-foreground sm:hidden" data-testid="bav-prijsregel">
-                  €{selectedBavPakket.prijs}/{selectedBavPakket.periode === "maand" ? "mnd" : "jr"} · BAV {formatMiljoen(selectedBavPakket.dekkingen.bav.perGebeurtenis)} · AVB {formatMiljoen(selectedBavPakket.dekkingen.avb.perGebeurtenis)} · dagelijks opzegbaar
+                  €{currentPrice.toLocaleString("nl-NL")}/{selectedBavPakket.periode === "maand" ? "mnd" : "jr"} · BAV {formatMiljoen(selectedBavPakket.dekkingen.bav.perGebeurtenis)} · AVB {formatMiljoen(selectedBavPakket.dekkingen.avb.perGebeurtenis)} · BAV + AVB dagelijks opzegbaar{heeftCyber ? "; cyber 12 maanden" : ""}
                 </p>
                 {/* Navigation Buttons */}
                 <div className="flex justify-between mt-3 sm:mt-8 pt-6 border-t border-border">
@@ -1119,8 +1147,8 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                       </div>
                       {selectedBavPakket.dekkingen.cyber && (
                         <div className="flex flex-col gap-0.5">
-                          <span className="text-background/70">Cyber per schade / per jaar</span>
-                          <span className="font-semibold whitespace-nowrap">{formatBedrag(selectedBavPakket.dekkingen.cyber.perSchade)} / {formatBedrag(selectedBavPakket.dekkingen.cyber.perJaar)}</span>
+                          <span className="text-background/70">{CYBER_DEKKING}</span>
+                          <span className="text-xs">{CYBER_HULP} {CYBER_DETAILS} {CYBER_LOOPTIJD}</span>
                         </div>
                       )}
                     </div>
@@ -1128,13 +1156,11 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                       <div className="flex flex-col gap-1">
                         <p className="text-sm text-background/70">{periodeLabel}</p>
                         <p className="text-3xl font-bold whitespace-nowrap">
-                          €{starterVanToepassing
-                            ? (betaalwijze === "maandelijks" ? STARTER.maandprijs : STARTER.jaarprijs)
-                            : (Number.isInteger(currentPrice) ? currentPrice : currentPrice.toFixed(2).replace('.', ','))}
+                          €{currentPrice.toLocaleString("nl-NL")}
                         </p>
                         {starterVanToepassing && (
                           <p className="text-xs text-background/70">
-                            de eerste 12 maanden, daarna € {betaalwijze === "maandelijks" ? STARTER.naMaandprijs : STARTER.naJaarprijs} {periodeLabel}, inclusief kosten en assurantiebelasting
+                            de eerste 12 maanden, daarna € {aanvraagPremie(gekozenPakketId, false).totaal.toLocaleString("nl-NL")} {periodeLabel}, inclusief kosten en assurantiebelasting. Voor KVK-inschrijving jonger dan 12 maanden. Cyber krijgt geen startkorting.
                           </p>
                         )}
                       </div>
@@ -1142,7 +1168,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                   </div>
 
                   <ul className="space-y-3">
-                    {usps.map((usp) => (
+                    {(heeftCyber ? [...usps.map((u) => /eigen risico|opzegbaar|pauze/i.test(u) ? `BAV + AVB: ${u}` : u), "Cyber: vaste looptijd 12 maanden, niet pauzeerbaar"] : usps).map((usp) => (
                       <li key={usp} className="flex items-center gap-2 text-sm"><CheckCircle className="h-4 w-4 text-accent flex-shrink-0" /><span className="text-background/90">{usp}</span></li>
                     ))}
                   </ul>

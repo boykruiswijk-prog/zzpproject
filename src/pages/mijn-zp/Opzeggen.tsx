@@ -177,7 +177,7 @@ export default function OpzeggenWizard() {
                 />
               </div>
               <p id="uitleg-opzegdatum" className="text-xs text-muted-foreground">
-                Per dag opzegbaar, ten vroegste vanaf vandaag. Wij verwerken je opzegging binnen 24 uur en sturen je een
+                BAV + AVB per dag opzegbaar, ten vroegste vanaf vandaag. Cyber loopt door tot het einde van het lopende cyberjaar; resterende cybertermijnen blijven verschuldigd. Wij verwerken je opzegging binnen 24 uur en sturen je een
                 bevestiging per mail.
               </p>
             </div>

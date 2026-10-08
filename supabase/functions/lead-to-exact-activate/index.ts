@@ -1,6 +1,7 @@
 // Lead-to-Exact Fase 1: maakt Account + Contact + BankAccount + SEPA-mandaat
 // aan in Exact divisie 4401707 (ZP Zaken B.V.) op basis van een lead.
 // Doet GEEN factuur — fase 2.
+import { nieuweCyber, cyberPremie, cyberJaarEind } from "../_shared/cyber.ts";
 import { controleerHandmatigeAcceptatie } from "../_shared/sectorRegels.ts";
 import { getBavGlAccountId } from "../_shared/exactGl.ts";
 import { ensureValidToken } from "../_shared/exactToken.ts";
@@ -112,6 +113,7 @@ const PAKKET_INVOICE: Record<string, { naam: string; bedrag: number; betalingsre
     bedrag: 600,
     betalingsregel: "Betaling: jaarlijks vooraf via SEPA-incasso",
   },
+  "maandelijks-cyber": { naam: "BAV & AVB Maandelijks + Cyber", bedrag: 660, betalingsregel: "BAV + AVB maandelijks €55; cyber jaarcontract in 12 termijnen van €27,50" },
   "jaarlijks-cyber": {
     naam: "BAV & AVB Jaarlijks + Cyber",
     bedrag: 750,
@@ -287,6 +289,7 @@ async function createExactInvoice(opts: {
   const lineNotes = override?.lineNotes ?? pakketSpec.betalingsregel;
   const headerDescription = kopOmschrijving(override?.headerDescription ?? `BAV-AVB premie ${lead.bedrijfsnaam ?? ""}`);
   const unitPrice = override?.amount ?? pakketSpec.bedrag;
+  const cyberBedrag = nieuweCyber(lead) ? cyberPremie(String(lead.gekozen_pakket)) : 0;
 
   // deno-lint-ignore no-explicit-any
   const line: any = {
@@ -312,7 +315,11 @@ async function createExactInvoice(opts: {
     OrderDate: invoiceDate,
     YourRef: factuurReferentie(lead.certificate_number, lead.exact_relatie_code),
     Description: headerDescription,
-    SalesInvoiceLines: [line],
+    SalesInvoiceLines: [line, ...(cyberBedrag && ingang ? [{ ...line, UnitPrice: cyberBedrag,
+      Description: `${regelOmschrijving("premie", ingang, isMaandPolis(lead.gekozen_pakket) ? lastOfMonth(ingang) : cyberJaarEind(ingang))} Cyber`.slice(0,60),
+      Notes: "Cyber jaarcontract, 12 maanden. Resterende termijnen blijven verschuldigd bij BAV-opzegging.",
+      StartTime: `${ingang}T00:00:00`, EndTime: `${isMaandPolis(lead.gekozen_pakket) ? lastOfMonth(ingang) : cyberJaarEind(ingang)}T00:00:00`,
+    }] : [])],
   };
 
   const res = await fetch(`${baseUrl}/api/v1/${div}/salesinvoice/SalesInvoices`, {
@@ -331,7 +338,7 @@ async function createExactInvoice(opts: {
   const invoiceId: string = d?.InvoiceID || d?.ID || "";
   const invoiceNumber: string | null =
     d?.InvoiceNumber != null ? String(d.InvoiceNumber) : null;
-  return { ok: true, invoiceId, invoiceNumber, amount: unitPrice, raw: d };
+  return { ok: true, invoiceId, invoiceNumber, amount: unitPrice + cyberBedrag, raw: d };
 }
 
 

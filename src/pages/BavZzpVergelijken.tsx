@@ -1,3 +1,4 @@
+import { CYBER_DEKKING, CYBER_HULP, CYBER_DETAILS, CYBER_LOOPTIJD } from "../../supabase/functions/_shared/cyber";
 import { seoRoute } from "@/config/seoRoutes";
 import { Layout } from "@/components/layout/Layout";
 import { SEOHead } from "@/components/SEOHead";
@@ -98,6 +99,7 @@ export default function BavZzpVergelijken() {
         </div>
       </section>
 
+      <Sectie id="cyber" titel="Cyber bij je BAV + AVB"><p>Met cyber betaal je €82,50 per maand of €850 per jaar, inclusief kosten en assurantiebelasting. Cyber is niet los af te sluiten.</p><p>{CYBER_DEKKING} {CYBER_HULP} {CYBER_DETAILS}</p><p>{CYBER_LOOPTIJD}</p></Sectie>
       <Sectie id="waar-op-letten" titel="Waar let je op bij het vergelijken">
         <p><strong className="text-foreground">Verzekerd bedrag</strong> Dit is het maximum dat de verzekeraar uitkeert. Veel goedkope polissen starten bij € 250.000 per aanspraak. Kijk ook of er een maximum per jaar geldt. Vraagt je opdrachtgever een bepaald bedrag? Check dan of de polis dat haalt.</p>
         <p><strong className="text-foreground">Eigen risico</strong> Dit deel van de schade betaal je zelf. Bij sommige aanbieders kies je zelf een bedrag tussen € 250 en € 2.500. Een hoog eigen risico maakt de premie lager, maar je betaalt meer bij een claim.</p>
@@ -176,9 +178,9 @@ export default function BavZzpVergelijken() {
           {[
             [`BAV en AVB in één polis.`, `ZP Zaken bedacht de BAV + AVB in één polis voor zzp'ers en is daarin marktleider. De verzekeraar is Hiscox.`],
             [`Hoge dekking.`, `BAV ${bav} en AVB ${avb} per aanspraak.`],
-            [`Geen eigen risico.`, ``],
+            [`BAV + AVB: geen eigen risico.`, ``],
             [`Vaste prijs.`, `Vanaf ${eur(maand.prijs)} per maand, of ${eur(jaar.prijs)} per jaar.`],
-            [`Dagelijks opzegbaar.`, `Je zit nergens aan vast.`],
+            [`BAV + AVB dagelijks opzegbaar.`, `Cyber heeft een vaste looptijd van 12 maanden.`],
             [`Snel geregeld.`, `Je sluit online af, het is binnen 24 uur geregeld en je krijgt het certificaat in je mailbox.`],
           ].map(([kop, tekst]) => (
             <li key={kop} className="flex gap-3">

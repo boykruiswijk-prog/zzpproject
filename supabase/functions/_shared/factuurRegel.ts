@@ -12,6 +12,7 @@ export function lidmaatschapNaam(itemcode?: string | null, product?: string | nu
 }
 
 export function factuurRegelTekst(k: { itemcode?: string | null; product?: string | null; periode_start: string; periode_eind: string }): string {
+  if (k.product === "cyber_clear") return `${periodeTekst(k.periode_start, k.periode_eind)} Cyberpremie`.slice(0, MAX);
   const lid = lidmaatschapNaam(k.itemcode, k.product);
   return lid
     ? `Lidmaatschap ZP Zaken ${lid} ${periodeTekst(k.periode_start, k.periode_eind)}`.slice(0, MAX)

@@ -1,4 +1,5 @@
 import { PortalLayout } from "@/components/portal/PortalLayout";
+import { CyberPolis } from "@/components/portal/CyberPolis";
 import { formatDateNL } from "@/lib/dateFormat";
 import { usePortalPolicies } from "@/hooks/usePortalData";
 import { PolicyLifecycleActions } from "@/components/portal/PolicyLifecycleActions";
@@ -70,7 +71,7 @@ export default function PortalPolicy() {
                   <dd className="font-medium">{formatDateNL(p.start_date)}</dd>
                 </div>
                 <div>
-                  <dt className="text-muted-foreground">Looptijd</dt>
+                  <dt className="text-muted-foreground">Looptijd BAV + AVB</dt>
                   <dd className="font-medium">Doorlopend, zonder minimale looptijd, dagelijks opzegbaar.</dd>
                 </div>
                 <div>
@@ -90,7 +91,7 @@ export default function PortalPolicy() {
                   <dd className="font-medium">{p.avb_per_year}</dd>
                 </div>
                 <div className="sm:col-span-2">
-                  <dt className="text-muted-foreground">Eigen risico</dt>
+                  <dt className="text-muted-foreground">Eigen risico BAV + AVB</dt>
                   <dd className="font-medium">Geen</dd>
                 </div>
                 <div className="sm:col-span-2">
@@ -98,6 +99,7 @@ export default function PortalPolicy() {
                   <dd className="font-medium">{p.coverage_area}</dd>
                 </div>
               </dl>
+              <CyberPolis leadId={p.lead_id ?? undefined} />
             </CardContent>
           </Card>
         ))}

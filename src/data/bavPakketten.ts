@@ -1,5 +1,6 @@
 // Single source of truth voor BAV-pakketten. Alle plekken op de site
 // die tarieven of dekkingen tonen importeren uit dit bestand.
+import { CYBER, CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD } from "../../supabase/functions/_shared/cyber";
 
 export const bavPakketten = [
   {
@@ -41,19 +42,29 @@ export const bavPakketten = [
     id: "jaarlijks-cyber",
     name: "BAV & AVB Jaarlijks + Cyber",
     label: "Optimale dekking",
-    prijs: 750,
+    prijs: 850,
     periode: "jaar" as const,
-    prijsLabel: "€ 750 per jaar",
+    prijsLabel: "€ 850 per jaar",
     dekkingen: {
       bav: { perGebeurtenis: 5_000_000, perJaar: 15_000_000 },
       avb: { perGebeurtenis: 2_500_000, perJaar: 5_000_000 },
-      cyber: { perSchade: 50_000, perJaar: 5_000_000 },
+      cyber: { perSchade: CYBER.perSchade, perJaar: CYBER.gedeeldJaarmaximum },
     },
     usps: [
-      "Inclusief cyberdekking",
-      "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt.",
+      "BAV + AVB: geen eigen risico, dagelijks opzegbaar en pauzeerbaar. Creditnota voor resterende al betaalde dagen.",
+      CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD,
       "Premie inclusief kosten en assurantiebelasting",
     ],
+  },
+  {
+    id: "maandelijks-cyber", name: "BAV & AVB Maandelijks + Cyber", label: null,
+    prijs: 82.5, periode: "maand" as const, prijsLabel: "€ 82,50 per maand",
+    dekkingen: {
+      bav: { perGebeurtenis: 5_000_000, perJaar: 15_000_000 },
+      avb: { perGebeurtenis: 2_500_000, perJaar: 5_000_000 },
+      cyber: { perSchade: CYBER.perSchade, perJaar: CYBER.gedeeldJaarmaximum },
+    },
+    usps: ["BAV + AVB: geen eigen risico, dagelijks opzegbaar en pauzeerbaar. Creditnota voor resterende al betaalde dagen.", CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD, "Premie inclusief kosten en assurantiebelasting"],
   },
 ] as const;
 
@@ -62,7 +73,9 @@ export type BavPakketId = (typeof bavPakketten)[number]["id"];
 export const VANAF_PRIJS_LABEL = "Vanaf €55 per maand";
 
 export function getPakket(id: BavPakketId) {
-  return bavPakketten.find((p) => p.id === id)!;
+  const pakket = bavPakketten.find((p) => p.id === id);
+  if (!pakket) throw new Error("Onbekend BAV-pakket");
+  return pakket;
 }
 
 /** "€5M" / "€2,5M" notatie voor dekkingsbedragen. */

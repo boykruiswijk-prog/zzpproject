@@ -1105,6 +1105,54 @@ export type Database = {
           },
         ]
       }
+      cyber_akkoord_bewijs: {
+        Row: {
+          akkoord_op: string
+          akkoord_tekst: string
+          antwoorden: Json
+          client_akkoord_op: string | null
+          id: string
+          is_test: boolean
+          lead_id: string
+          versie: string
+        }
+        Insert: {
+          akkoord_op?: string
+          akkoord_tekst: string
+          antwoorden: Json
+          client_akkoord_op?: string | null
+          id?: string
+          is_test?: boolean
+          lead_id: string
+          versie: string
+        }
+        Update: {
+          akkoord_op?: string
+          akkoord_tekst?: string
+          antwoorden?: Json
+          client_akkoord_op?: string | null
+          id?: string
+          is_test?: boolean
+          lead_id?: string
+          versie?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cyber_akkoord_bewijs_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: true
+            referencedRelation: "kpi_actieve_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cyber_akkoord_bewijs_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: true
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dba_batches: {
         Row: {
           certified_count: number
@@ -2662,6 +2710,11 @@ export type Database = {
           bron: string
           bron_rij: number
           created_at: string
+          cyber_einddatum: string | null
+          cyber_ingangsdatum: string | null
+          cyber_lead_id: string | null
+          cyber_nieuwe_voorwaarden_per: string | null
+          cyber_voorwaarden_versie: string | null
           cyclus: string
           eind_datum: string | null
           exact_abonnement_id: string | null
@@ -2698,6 +2751,11 @@ export type Database = {
           bron: string
           bron_rij: number
           created_at?: string
+          cyber_einddatum?: string | null
+          cyber_ingangsdatum?: string | null
+          cyber_lead_id?: string | null
+          cyber_nieuwe_voorwaarden_per?: string | null
+          cyber_voorwaarden_versie?: string | null
           cyclus: string
           eind_datum?: string | null
           exact_abonnement_id?: string | null
@@ -2734,6 +2792,11 @@ export type Database = {
           bron?: string
           bron_rij?: number
           created_at?: string
+          cyber_einddatum?: string | null
+          cyber_ingangsdatum?: string | null
+          cyber_lead_id?: string | null
+          cyber_nieuwe_voorwaarden_per?: string | null
+          cyber_voorwaarden_versie?: string | null
           cyclus?: string
           eind_datum?: string | null
           exact_abonnement_id?: string | null
@@ -2758,6 +2821,20 @@ export type Database = {
           volgende_factuurdatum?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "klant_contracten_cyber_lead_id_fkey"
+            columns: ["cyber_lead_id"]
+            isOneToOne: false
+            referencedRelation: "kpi_actieve_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "klant_contracten_cyber_lead_id_fkey"
+            columns: ["cyber_lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "klant_contracten_onderneming_id_fkey"
             columns: ["onderneming_id"]
@@ -3022,6 +3099,10 @@ export type Database = {
           bron: Database["public"]["Enums"]["lead_bron"]
           converted_at: string | null
           created_at: string
+          cyber_einddatum: string | null
+          cyber_ingangsdatum: string | null
+          cyber_nieuwe_voorwaarden_per: string | null
+          cyber_voorwaarden_versie: string | null
           eigen_risico: string | null
           email: string
           exact_abonnement_id: string | null
@@ -3109,6 +3190,10 @@ export type Database = {
           bron?: Database["public"]["Enums"]["lead_bron"]
           converted_at?: string | null
           created_at?: string
+          cyber_einddatum?: string | null
+          cyber_ingangsdatum?: string | null
+          cyber_nieuwe_voorwaarden_per?: string | null
+          cyber_voorwaarden_versie?: string | null
           eigen_risico?: string | null
           email: string
           exact_abonnement_id?: string | null
@@ -3196,6 +3281,10 @@ export type Database = {
           bron?: Database["public"]["Enums"]["lead_bron"]
           converted_at?: string | null
           created_at?: string
+          cyber_einddatum?: string | null
+          cyber_ingangsdatum?: string | null
+          cyber_nieuwe_voorwaarden_per?: string | null
+          cyber_voorwaarden_versie?: string | null
           eigen_risico?: string | null
           email?: string
           exact_abonnement_id?: string | null
@@ -4734,6 +4823,21 @@ export type Database = {
         Returns: Json
       }
       crm_taak_afronden: { Args: { _id: string }; Returns: boolean }
+      cyber_datums_wijzigen: {
+        Args: {
+          _contract_id: string
+          _eind: string
+          _ingang: string
+          _lead_id: string
+          _nieuwe_per: string
+          _toelichting: string
+        }
+        Returns: Json
+      }
+      cyber_term_eind: {
+        Args: { _start: string; _vandaag: string }
+        Returns: string
+      }
       dashboard_tellers: { Args: { _toon_test?: boolean }; Returns: Json }
       delete_email: {
         Args: { message_id: number; queue_name: string }
@@ -4864,6 +4968,7 @@ export type Database = {
       mag_crm_beeindigen: { Args: { _uid: string }; Returns: boolean }
       menu_tellers: { Args: never; Returns: Json }
       mijn_acties_vandaag: { Args: { _toon_test?: boolean }; Returns: Json }
+      mijn_cyber_polissen: { Args: never; Returns: Json }
       mijn_review_kaart: { Args: never; Returns: Json }
       move_to_dlq: {
         Args: {
