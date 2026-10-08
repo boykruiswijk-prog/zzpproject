@@ -62,7 +62,7 @@ serve(async (req) => {
 
     const body = await req.json();
     const { lead_id, policy_data } = body;
-    const actie: "nieuw" | "aanpassen" | "intrekken" | "mailen" = body.actie || "nieuw";
+    const actie: "nieuw" | "aanpassen" | "intrekken" | "mailen" | "nummer_overnemen" = body.actie || "nieuw";
     const json = (b: unknown, status = 200) =>
       new Response(JSON.stringify(b), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
@@ -101,7 +101,26 @@ serve(async (req) => {
         return json({ success: true, policy: { id: bestaand.id, certificate_number: bestaand.certificate_number, status: "ingetrokken" } });
       }
 
-      if (actie === "mailen") {
+      if (actie === "nummer_overnemen") {
+        // Omzetting vastgelegd: nummer vervangen door het overgenomen BAV-nummer en PDF opnieuw maken. Nooit mail.
+        let oudePdfPad: string | null = null;
+        if (bestaand.pdf_url) {
+          oudePdfPad = `versies/${bestaand.certificate_number}-v${bestaand.versie}-vervangen-${Date.now()}.pdf`;
+          const { error: cErr } = await adminClient.storage.from("certificates").copy(bestaand.pdf_url, oudePdfPad);
+          if (cErr) return json({ error: `Oude PDF kon niet bewaard worden: ${cErr.message}` }, 500);
+        }
+        const { data: r, error: rErr } = await userClient.rpc("policy_nummer_overnemen", { _policy_id: bestaand.id, _oude_pdf_pad: oudePdfPad });
+        if (rErr) return json({ error: rErr.message }, 409);
+        const { data: upd } = await adminClient.from("policies").select("*").eq("id", bestaand.id).single();
+        if (!(r as any)?.gewijzigd && upd?.pdf_url === `${upd?.certificate_number}.pdf`) {
+          return json({ success: true, gewijzigd: false, policy: { id: upd.id, certificate_number: upd.certificate_number } });
+        }
+        policy = upd;
+        if (bestaand.lead_id) {
+          const { data: l } = await adminClient.from("leads").select("kvk_nummer").eq("id", bestaand.lead_id).maybeSingle();
+          kvkNummerBron = l?.kvk_nummer ?? null;
+        }
+      } else if (actie === "mailen") {
         const r = await mailCertificaat(adminClient, req, bestaand, user);
         if (!r.ok) return json({ error: r.error }, 500);
         await adminClient.from("policy_versies").insert({
@@ -110,8 +129,7 @@ serve(async (req) => {
           oude_pdf_pad: bestaand.pdf_url, uitgevoerd_door: user.id, uitgevoerd_door_email: user.email,
         });
         return json({ success: true, verzonden_naar: r.to, opmerking: r.opmerking });
-      }
-
+      } else {
       // aanpassen: oude PDF als versie bewaren, waarden bijwerken, zelfde nummer opnieuw renderen
       const wijz = schoonAanpassing(body.wijzigingen || {});
       let oudePdfPad: string | null = null;
@@ -138,6 +156,7 @@ serve(async (req) => {
       } else if (bestaand.onderneming_id) {
         const { data: o } = await adminClient.from("ondernemingen").select("kvk").eq("id", bestaand.onderneming_id).maybeSingle();
         kvkNummerBron = o?.kvk ?? null;
+      }
       }
     } else if (body.onderneming_id) {
       // Bestaande klant (geïmporteerd, zonder lead): eigen nummer hergebruiken.
@@ -190,6 +209,11 @@ serve(async (req) => {
       if (!lead_id && !policy_data) return json({ error: "lead_id or policy_data required" }, 400);
       let data = policy_data;
       if (lead_id) {
+        // Open omzettingsvoorstel: eerst beslissen, anders zou een nieuw nummer worden uitgegeven.
+        const { data: oz } = await userClient.rpc("omzetting_kandidaten", { _lead_id: lead_id });
+        if (((oz as any)?.kandidaten ?? []).some((k: any) => !k.beslissing)) {
+          return json({ error: "Beslis eerst over de omzetting", code: "omzetting_open" }, 409);
+        }
         const { data: bestaande } = await adminClient.from("policies").select("certificate_number,status").eq("lead_id", lead_id);
         const besluit = beslisNieuwCertificaat(bestaande || [], body.bevestig_nieuw_nummer === true);
         if (!besluit.toegestaan) {

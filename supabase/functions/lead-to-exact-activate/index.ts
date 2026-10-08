@@ -387,6 +387,15 @@ Deno.serve(async (req) => {
     .from("leads").select("*").eq("id", leadId).maybeSingle();
   if (leadErr || !lead) return json({ success: false, error: "lead_not_found" }, 404);
 
+  // Open omzettingsvoorstel: eerst beslissen (anders krijgt de klant een nieuw certificaatnummer).
+  if (action === "activate") {
+    const { data: oz, error: ozErr } = await userClient.rpc("omzetting_kandidaten", { _lead_id: leadId });
+    // deno-lint-ignore no-explicit-any
+    if (!ozErr && ((oz as any)?.kandidaten ?? []).some((k: any) => !k.beslissing)) {
+      return json({ success: false, error: "Beslis eerst over de omzetting", code: "omzetting_open" }, 409);
+    }
+  }
+
   // Testleads krijgen nooit Exact-acties (alleen metadata-inspectie blijft mogelijk).
   if (lead.is_test && action !== "introspect_metadata") {
     return json({ success: false, error: "testlead_geen_exact", reason: "Testlead: geen Exact-acties" }, 409);

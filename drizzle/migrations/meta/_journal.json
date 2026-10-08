@@ -568,6 +568,13 @@
       "when": 1791460730959,
       "tag": "0080_bav_nummer_zonder_afas",
       "breakpoints": true
+    },
+    {
+      "idx": 81,
+      "version": "7",
+      "when": 1791462254942,
+      "tag": "0081_certificaat_nummer_omzetting",
+      "breakpoints": true
     }
   ]
 }
