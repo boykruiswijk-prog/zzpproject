@@ -70,6 +70,16 @@ function KandidaatKaart({ leadId, k, eigenOnd, magBeslissen }: { leadId: string;
     setBezig(false);
     if (error) { toast.error(error.message); return; }
     toast.success(keuze === "omzetting" ? `Omzetting vastgelegd, leidend BAV-nummer ${nummer}` : "Vastgelegd als nieuwe klant");
+    if (keuze === "omzetting") {
+      // Al geactiveerd met een eigen nummer? Dan nummer vervangen en PDF opnieuw maken (geen mail).
+      const { data: pol } = await supabase.from("policies").select("id,certificate_number").eq("lead_id", leadId).eq("status", "geldig");
+      for (const p of pol ?? []) {
+        const { data: r, error: e } = await supabase.functions.invoke("generate-certificate", { body: { actie: "nummer_overnemen", policy_id: p.id } });
+        if (e || (r as any)?.error) toast.error(`Certificaat ${p.certificate_number} niet bijgewerkt: ${(r as any)?.error ?? e?.message}`);
+        else if ((r as any)?.gewijzigd !== false) toast.success(`Certificaat ${p.certificate_number} vervangen door ${(r as any)?.policy?.certificate_number}`);
+      }
+      qc.invalidateQueries({ queryKey: ["lead", leadId] });
+    }
     qc.invalidateQueries({ queryKey: ["omzetting-kandidaten", leadId] });
     qc.invalidateQueries({ queryKey: ["bav-nummers"] });
   }
