@@ -177,7 +177,7 @@ export function PolicyLifecycleActions() {
           <DialogHeader>
             <DialogTitle>Polis pauzeren</DialogTitle>
             <DialogDescription>
-              Tijdens de pauze ben je niet gedekt voor nieuwe schade. Schade van vóór de pauze blijft gedekt.
+              Tijdens de pauze ben je niet gedekt voor nieuwe schade. Heb je vragen over een claim voor eerder werk? Neem contact met ons op en raadpleeg de polisvoorwaarden.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -283,7 +283,7 @@ export function PolicyLifecycleActions() {
           <DialogHeader>
             <DialogTitle>Polis opzeggen</DialogTitle>
             <DialogDescription>
-              Je polis kan dagelijks worden opgezegd. Schade die vóór de opzegdatum ontstond blijft gedekt.
+              Je polis kan dagelijks worden opgezegd. Heb je vragen over een claim voor eerder werk? Neem contact met ons op en raadpleeg de polisvoorwaarden.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">

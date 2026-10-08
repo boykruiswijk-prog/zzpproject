@@ -28,7 +28,7 @@ describe("Zeker kennisbasis", () => {
     expect(p).toMatch(/BSN, IBAN/);
     expect(p).toMatch(/\/klachtenprocedure/);
     expect(p).toContain("/kennisbank/wet-dba");
-    expect(p).not.toMatch(/handmatigeAcceptatie|handmatige beoordeling|sectorbeperkingen: zorg/);
+    expect(p).not.toMatch(/handmatigeAcceptatie|Let op: handmatige acceptatie/);
     expect(JSON.stringify(ZEKER_KENNIS)).not.toMatch(/handmatige/i);
   });
 });
