@@ -16,6 +16,7 @@ import { KlantKaart } from "@/components/admin/crm/KlantKaart";
 import { LopendeProducten } from "@/components/admin/crm/LopendeProducten";
 import { ExactRelatieLabel, OndernemingswijzigingKnop, OpvolgerBanner, VoorgangerHistorie, useOpvolging } from "@/components/admin/crm/Opvolging";
 
+import { RechtsvoorgangerBanner } from "@/components/admin/crm/Omzetting";
 import { KvkVergelijking } from "@/components/admin/KvkGegevens";
 import { kiesBavNummer, useBavRijen } from "@/lib/bavNummer";
 export default function KlantDetail() {
@@ -71,6 +72,7 @@ export default function KlantDetail() {
         {laden ? <div className="flex justify-center p-12"><Loader2 className="h-6 w-6 animate-spin" /></div> : !ond ? <p>Klant niet gevonden.</p> : (
           <>
             <OpvolgerBanner opvolger={opvolger} />
+            <RechtsvoorgangerBanner ondernemingId={ond.id} herlaad={herlaad} />
             <div className="flex flex-wrap items-start justify-between gap-2"><div>
               <h1 className="text-2xl font-bold break-words">{ond.naam}</h1>
               <p className="break-words text-sm text-muted-foreground">Exact-relatiecode {ond.exact_relatie_code ?? "onbekend"} · BAV-nummer {bavKeuze?.nummer || "onbekend"} · {ond.bron === "afas_20261001" ? "startstand 01-10-2026" : ond.bron ? `bron ${ond.bron}` : ""}</p>

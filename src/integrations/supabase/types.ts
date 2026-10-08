@@ -3310,11 +3310,71 @@ export type Database = {
         }
         Relationships: []
       }
+      omzetting_beslissingen: {
+        Row: {
+          bav_herkomst: string | null
+          bav_nummer: string | null
+          beslist_door: string
+          beslist_op: string
+          id: string
+          is_test: boolean
+          keuze: string
+          lead_id: string
+          naar_onderneming_id: string | null
+          toelichting: string | null
+          van_onderneming_id: string
+        }
+        Insert: {
+          bav_herkomst?: string | null
+          bav_nummer?: string | null
+          beslist_door: string
+          beslist_op?: string
+          id?: string
+          is_test?: boolean
+          keuze: string
+          lead_id: string
+          naar_onderneming_id?: string | null
+          toelichting?: string | null
+          van_onderneming_id: string
+        }
+        Update: {
+          bav_herkomst?: string | null
+          bav_nummer?: string | null
+          beslist_door?: string
+          beslist_op?: string
+          id?: string
+          is_test?: boolean
+          keuze?: string
+          lead_id?: string
+          naar_onderneming_id?: string | null
+          toelichting?: string | null
+          van_onderneming_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "omzetting_beslissingen_naar_onderneming_id_fkey"
+            columns: ["naar_onderneming_id"]
+            isOneToOne: false
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "omzetting_beslissingen_van_onderneming_id_fkey"
+            columns: ["van_onderneming_id"]
+            isOneToOne: false
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       onderneming_opvolging: {
         Row: {
+          bav_nummer: string | null
+          bav_nummer_herkomst: string | null
           id: string
           ingangsdatum: string
           is_test: boolean
+          lead_id: string | null
           naar_onderneming_id: string
           soort: string
           toelichting: string | null
@@ -3323,9 +3383,12 @@ export type Database = {
           vastgelegd_op: string
         }
         Insert: {
+          bav_nummer?: string | null
+          bav_nummer_herkomst?: string | null
           id?: string
           ingangsdatum: string
           is_test?: boolean
+          lead_id?: string | null
           naar_onderneming_id: string
           soort?: string
           toelichting?: string | null
@@ -3334,9 +3397,12 @@ export type Database = {
           vastgelegd_op?: string
         }
         Update: {
+          bav_nummer?: string | null
+          bav_nummer_herkomst?: string | null
           id?: string
           ingangsdatum?: string
           is_test?: boolean
+          lead_id?: string | null
           naar_onderneming_id?: string
           soort?: string
           toelichting?: string | null
@@ -3493,6 +3559,33 @@ export type Database = {
           sector?: string | null
           straat?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      partner_bronnen: {
+        Row: {
+          aangemaakt_door: string | null
+          actief: boolean
+          created_at: string
+          id: string
+          naam: string
+          zoekterm: string
+        }
+        Insert: {
+          aangemaakt_door?: string | null
+          actief?: boolean
+          created_at?: string
+          id?: string
+          naam: string
+          zoekterm: string
+        }
+        Update: {
+          aangemaakt_door?: string | null
+          actief?: boolean
+          created_at?: string
+          id?: string
+          naam?: string
+          zoekterm?: string
         }
         Relationships: []
       }
@@ -4673,6 +4766,18 @@ export type Database = {
         Returns: Json
       }
       nextval_text: { Args: { seq_name: string }; Returns: string }
+      omzetting_kandidaten: { Args: { _lead_id: string }; Returns: Json }
+      omzetting_vastleggen: {
+        Args: {
+          _bav_nummer: string
+          _keuze: string
+          _lead_id: string
+          _toelichting: string
+          _van: string
+        }
+        Returns: Json
+      }
+      onderneming_is_partner: { Args: { _ond: string }; Returns: string }
       plan_opzeg_credit: {
         Args: { _aanvraag_id: string; _contract_id: string; _einddatum: string }
         Returns: Json

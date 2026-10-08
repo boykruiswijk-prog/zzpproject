@@ -4,6 +4,7 @@ import { LeadAfrondenKnop, AfrondDialoog, magAfronden } from "@/components/admin
 import { LeadTestSchakelaar } from "@/components/admin/LeadTestSchakelaar";
 import { StartertariefControle } from "@/components/admin/StartertariefControle";
 import { LeadBavNummer } from "@/components/admin/crm/LeadBavNummer";
+import { OmzettingKaart, OmzettingLabel } from "@/components/admin/crm/Omzetting";
 import { teamWaarschuwingHandmatig } from "../../../supabase/functions/_shared/sectorRegels";
 import { useState } from "react";
 import { KlantLinkVoorLead } from "@/components/admin/KlantLinkVoorLead";
@@ -244,6 +245,7 @@ export default function AdminLeadDetail() {
               )}
               <KlantLinkVoorLead leadId={lead.id} relatiecode={(lead as any).exact_relatie_code} />
               <LeadBavNummer leadId={lead.id} relatiecode={(lead as any).exact_relatie_code} />
+              <OmzettingLabel leadId={lead.id} />
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -276,6 +278,7 @@ export default function AdminLeadDetail() {
         <div className="grid min-w-0 gap-6 lg:grid-cols-3">
           {/* Lead info */}
           <div className="min-w-0 space-y-6 lg:col-span-2">
+            <OmzettingKaart leadId={lead.id} magBeslissen={isSupervisorOrAdmin || isVerzekering} />
             <StartertariefControle lead={lead as any} magBeoordelen={isSupervisorOrAdmin || isVerzekering} />
             <KvkLeadAfwijkingen lead={lead as any} />
             <Card className="min-w-0 w-full overflow-hidden">
