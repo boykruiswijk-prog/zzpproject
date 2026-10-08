@@ -439,7 +439,7 @@ Deno.serve(async (req) => {
         mailResults.push(await lcMail("pauzeren", "klant", recipientKlant, "Je polis is gepauzeerd",
           mailShell("Polis gepauzeerd", `
             <p>Hoi ${escapeHtml(lead.voornaam)},</p>
-            <p>Je polis is per <strong>${fmtNL(today)}</strong> gepauzeerd. Tijdens de pauze ben je niet meer gedekt voor nieuwe schade. Schade van vóór de pauze blijft gedekt.</p>
+            <p>Je polis is per <strong>${fmtNL(today)}</strong> gepauzeerd. Tijdens de pauze ben je niet meer gedekt voor nieuwe schade. Heb je vragen over een claim voor eerder werk? Neem contact met ons op en raadpleeg de polisvoorwaarden.</p>
             <p><strong>Reden:</strong> ${reden.replace(/_/g, " ")}</p>
             ${pauze_toelichting ? `<p><strong>Toelichting:</strong> ${escapeHtml(pauze_toelichting)}</p>` : ""}
             ${creditZin}
@@ -701,7 +701,7 @@ Deno.serve(async (req) => {
         } catch (_e) { /* logfout mag opzegging niet laten falen */ }
 
         const creditBlokKlant = creditResult?.ok && calc
-          ? `<p>Je ontvangt een creditnota van <strong>€ ${calc.credit_bedrag.toFixed(2).replace(".", ",")}</strong> voor ${calc.resterende_dagen} dagen restdekking tot ${fmtNL(eindForMail!)}.</p>`
+          ? `<p>Je ontvangt een creditnota van <strong>€ ${calc.credit_bedrag.toFixed(2).replace(".", ",")}</strong> voor ${calc.resterende_dagen} resterende al betaalde dagen tot ${fmtNL(eindForMail!)}.</p>`
           : "";
         const creditBlokAdmin = creditResult?.ok && calc
           ? `<strong>Creditnota:</strong> € ${calc.credit_bedrag.toFixed(2)} (${calc.resterende_dagen} dagen, Exact ID ${creditResult.invoiceId})<br/>`
@@ -710,7 +710,7 @@ Deno.serve(async (req) => {
         await lcMail("opzeggen", "klant", recipientKlant, "Je polis is opgezegd",
           mailShell("Polis opgezegd", `
             <p>Hoi ${escapeHtml(lead.voornaam)},</p>
-            <p>Je polis is per <strong>${fmtNL(today)}</strong> opgezegd. Schade van vóór deze datum blijft gedekt volgens de polisvoorwaarden.</p>
+            <p>Je polis is per <strong>${fmtNL(today)}</strong> opgezegd. Heb je vragen over een claim voor eerder werk? Neem contact met ons op en raadpleeg de polisvoorwaarden.</p>
             <p><strong>Reden:</strong> ${reden.replace(/_/g, " ")}</p>
             ${toelichting ? `<p><strong>Toelichting:</strong> ${escapeHtml(toelichting)}</p>` : ""}
             ${creditBlokKlant}
