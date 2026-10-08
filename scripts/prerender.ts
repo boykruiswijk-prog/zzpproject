@@ -23,7 +23,7 @@ import { formatPageTitle } from "../src/lib/seoTitle";
 import { resolveFiscaleTokens } from "../src/lib/fiscaleTokens";
 import { markdownToSafeHtml } from "./markdownToSafeHtml";
 import { generateArticleImages } from "./articleImages";
-import { absoluteArticleImage, isGeneratedArticleImage } from "../src/lib/articleImage";
+import { absoluteArticleImage, absoluteArticleOgImage, isGeneratedArticleImage } from "../src/lib/articleImage";
 import {
   legacyRedirects,
   resolveRedirectTarget,
@@ -630,7 +630,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
         title: formatPageTitle(titel),
         description,
         ogType: "article",
-        image: absoluteArticleImage(article),
+        image: absoluteArticleOgImage(article),
         generatedImage: isGeneratedArticleImage(article),
         schemas: [
           breadcrumbForPath("/kennisbank") ?? {},

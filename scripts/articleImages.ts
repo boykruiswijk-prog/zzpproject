@@ -11,17 +11,13 @@ function createElement(type: string, props: Record<string, unknown> | null, ...c
 import satori from "satori";
 import { Resvg } from "@resvg/resvg-js";
 import postgres from "postgres";
+import { categoryDesign } from "../supabase/functions/artikel-afbeelding/design";
 
 export interface ImageArticle {
   slug: string; title: string; category: string | null; image_url: string | null;
 }
 
 const require = createRequire(import.meta.url);
-const palette = {
-  backgroundStart: "#1F2D47", backgroundEnd: "#16213A",
-  accent: "#EE3E2C", glow: "rgba(238,62,44,0.13)",
-  title: "#FFFFFF", footer: "#B8C2D6",
-};
 const fonts = ([700, 800] as const).map((weight) => ({
   name: "Plus Jakarta Sans",
   data: fs.readFileSync(require.resolve(`@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-${weight}-normal.woff`)),
@@ -29,30 +25,31 @@ const fonts = ([700, 800] as const).map((weight) => ({
 }));
 
 export async function renderArticleImage(article: ImageArticle, root: string): Promise<Buffer> {
+  const palette = categoryDesign(article.category);
   const logo = fs.readFileSync(path.join(root, "public/logo.png"));
   const svg = await satori(createElement("div", { style: {
     width: 1200, height: 630, display: "flex", flexDirection: "column",
     padding: "110px 110px 0", position: "relative",
-    backgroundImage: `linear-gradient(160deg, ${palette.backgroundStart}, ${palette.backgroundEnd})`,
+    backgroundColor: palette.background,
     fontFamily: "Plus Jakarta Sans",
   } },
-  createElement("div", { style: {
-    position: "absolute", top: 0, right: 0, width: 800, height: 630,
-    backgroundImage: `radial-gradient(ellipse at top right, ${palette.glow}, transparent 70%)`,
-  } }),
+  ...[0, 1, 2, 3, 4].map((i) => createElement("div", { style: {
+    position: "absolute", right: 40 + i * 70, top: 35 + i * 50, width: 340, height: 340,
+    border: `2px solid ${palette.accent}`, opacity: 0.08, transform: `rotate(${15 + i * 7}deg)`,
+  } })),
   createElement("div", { style: {
     fontSize: 26, fontWeight: 700, letterSpacing: "0.12em", color: palette.accent,
   } }, (article.category || "KENNISBANK").toUpperCase()),
   createElement("div", { style: {
     display: "block", marginTop: 28, fontSize: 60, fontWeight: 800,
-    lineHeight: 1.05, letterSpacing: "-0.02em", color: palette.title,
+    lineHeight: 1.05, letterSpacing: 0, color: palette.ink,
     lineClamp: 3, textOverflow: "ellipsis", overflow: "hidden", maxHeight: 189,
     wordBreak: "break-word",
   } }, article.title),
   createElement("img", { src: `data:image/png;base64,${logo.toString("base64")}`, height: 56,
     style: { position: "absolute", left: 110, bottom: 60, height: 56, objectFit: "contain" } }),
   createElement("div", { style: {
-    position: "absolute", right: 110, bottom: 60, fontSize: 28, fontWeight: 700, color: palette.footer,
+    position: "absolute", right: 110, bottom: 60, fontSize: 28, fontWeight: 700, color: palette.ink,
   } }, "zpzaken.nl")), { width: 1200, height: 630, fonts });
   return new Resvg(svg).render().asPng();
 }
@@ -77,8 +74,24 @@ export async function generateArticleImages(distDir: string, root: string, env: 
   fs.mkdirSync(output, { recursive: true });
   let count = 0;
   for (const article of [...published, ...drafts]) {
-    if (article.image_url || !article.slug) continue;
+    if (!article.slug) continue;
     if (!/^[\p{L}\p{N}_-]+$/u.test(article.slug)) throw new Error("[article-images] Ongeldige artikelslug.");
+    if (article.image_url) {
+      const url = new URL(article.image_url, 'https://zpzaken.nl');
+      const response = await fetch(url);
+      const contentType = response.headers.get('content-type') ?? '';
+      if (!response.ok || !contentType.startsWith('image/')) throw new Error(`[article-images] Afbeelding niet bereikbaar: ${article.slug}`);
+      const image = Buffer.from(await response.arrayBuffer());
+      if (!image.length) throw new Error(`[article-images] Lege afbeelding: ${article.slug}`);
+      const extension = contentType.includes('png') ? 'png' : contentType.includes('webp') ? 'webp' : 'jpg';
+      fs.writeFileSync(path.join(output, `${article.slug}.${extension}`), image);
+      if (article.image_url.includes('/article-images/generated/') && article.image_url.endsWith('-illustration.png')) {
+        const og = await fetch(article.image_url.replace(/-illustration\.png$/, '-og.png'));
+        if (!og.ok || !og.headers.get('content-type')?.startsWith('image/')) throw new Error(`[article-images] Deelbeeld ontbreekt: ${article.slug}`);
+        fs.writeFileSync(path.join(output, `${article.slug}-og.png`), Buffer.from(await og.arrayBuffer()));
+      }
+      continue;
+    }
     fs.writeFileSync(path.join(output, `${article.slug}.png`), await renderArticleImage(article, root));
     count++;
   }

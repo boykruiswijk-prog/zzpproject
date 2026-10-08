@@ -15,6 +15,17 @@ export function isGeneratedArticleImage(article: ArticleImageSource): boolean {
   return !article.image_url || article.image_url.includes("/article-images/generated/");
 }
 
+export function isArticleIllustration(article: ArticleImageSource): boolean {
+  return Boolean(article.image_url?.includes('/article-images/generated/') && article.image_url.endsWith('-illustration.png'));
+}
+
 export function absoluteArticleImage(article: ArticleImageSource): string {
   return new URL(articleImage(article), `${SITE_CONFIG.url}/`).href;
+}
+
+/** Paired OG composition exists only for the new AI illustrations. */
+export function absoluteArticleOgImage(article: ArticleImageSource): string {
+  const image = absoluteArticleImage(article);
+  return image.includes('/article-images/generated/') && image.endsWith('-illustration.png')
+    ? image.replace(/-illustration\.png$/, '-og.png') : image;
 }

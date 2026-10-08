@@ -3,7 +3,7 @@
  import type { Article } from "@/hooks/useArticles";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { formatDateNL } from "@/lib/dateFormat";
-import { isGeneratedArticleImage } from "@/lib/articleImage";
+import { isGeneratedArticleImage, isArticleIllustration } from "@/lib/articleImage";
 import { ArticleImage } from "./ArticleImage";
  
  
@@ -27,7 +27,7 @@ import { ArticleImage } from "./ArticleImage";
      >
        <LocalizedLink to={`/kennisbank/${article.slug}`} className="flex flex-col flex-1">
          {/* Article Image */}
-         <div className={eigen ? "relative h-48 overflow-hidden" : "relative aspect-[1200/630] overflow-hidden"}>
+          <div className={eigen ? "relative h-48 overflow-hidden" : isArticleIllustration(article) ? "relative aspect-[16/9] overflow-hidden" : "relative aspect-[1200/630] overflow-hidden"}>
            <ArticleImage loading="lazy" decoding="async"
              article={article}
              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

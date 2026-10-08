@@ -23,7 +23,7 @@ import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
 import { resolveFiscaleTokens } from "@/lib/fiscaleTokens";
 import { SITE_CONFIG } from "@/config/site";
 import NotFound from "@/pages/NotFound";
-import { articleImage, absoluteArticleImage, isGeneratedArticleImage } from "@/lib/articleImage";
+import { articleImage, absoluteArticleImage, absoluteArticleOgImage, isGeneratedArticleImage, isArticleIllustration } from "@/lib/articleImage";
 import { ArticleImage } from "@/components/kennisbank/ArticleImage";
 
 const BAV_AVB_SLUG = "zp-zaken-zorgeloos-zzpen-goedkoopste-bav-avb";
@@ -231,7 +231,7 @@ export default function ArtikelDetail() {
   const articleUrl = `https://zpzaken.nl/kennisbank/${article.slug}`;
   const wordCount = countWords(article.content);
   const gegenereerd = isGeneratedArticleImage(article);
-  const ogImage = absoluteArticleImage(article);
+  const ogImage = absoluteArticleOgImage(article);
   const metaDescription = article.seo_description || makeFallbackDescription(article.content, article.excerpt);
   const seoTitle = article.seo_title || article.title;
   // Eén merknaam achteraan, max 60 tekens; zie formatPageTitle.
@@ -246,7 +246,7 @@ export default function ArtikelDetail() {
     // Inhoudelijke controledatum; een cosmetische wijziging (updated_at) mag
     // niet als inhoudelijke update aan Google worden gemeld.
     dateModified: (article as any).content_reviewed_at || publishedAt,
-    image: ogImage,
+    image: absoluteArticleImage(article),
     category: article.category,
     wordCount,
   });
@@ -383,11 +383,11 @@ export default function ArtikelDetail() {
             <figure>
               <ArticleImage decoding="async"
                 article={article}
-                width={gegenereerd ? 1200 : 1600}
-                height={gegenereerd ? 630 : 900}
+                width={gegenereerd && !isArticleIllustration(article) ? 1200 : 1600}
+                height={gegenereerd && !isArticleIllustration(article) ? 630 : 900}
                 loading="eager"
                 fetchpriority="high"
-                className={!gegenereerd ? "w-full aspect-[16/9] object-cover rounded-xl shadow-md" : "w-full aspect-[1200/630] object-contain rounded-xl shadow-md"}
+                className={!gegenereerd || isArticleIllustration(article) ? "w-full aspect-[16/9] object-cover rounded-xl shadow-md" : "w-full aspect-[1200/630] object-contain rounded-xl shadow-md"}
               />
             </figure>
           </div>
@@ -493,7 +493,7 @@ export default function ArtikelDetail() {
                       to={`/kennisbank/${r.slug}`}
                       className="group bg-background border border-border/50 rounded-xl overflow-hidden hover:shadow-lg transition-shadow"
                     >
-                      <ArticleImage loading="lazy" decoding="async" article={r} className={!isGeneratedArticleImage(r) ? "w-full aspect-[16/9] object-cover" : "w-full aspect-[1200/630] object-contain"} />
+                      <ArticleImage loading="lazy" decoding="async" article={r} className={!isGeneratedArticleImage(r) || isArticleIllustration(r) ? "w-full aspect-[16/9] object-cover" : "w-full aspect-[1200/630] object-contain"} />
                       <div className="p-5">
                         <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${rStyle} mb-3`}>
                           {r.category}

@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] AI-artikelgenerator, categorie-terugval, vijf vervangingen en vier visuele controles (niet publiceren)
+- [ ] Drie resterende artikelbeelden vervangen: AI-beeldkeuring geweigerd, wachtrij gepauzeerd
+
 - [x] Beheerpunten Ellen (1-6)
 - [x] Mijn ZP a) neutrale logintekst, portaltoegang-aanvraag, rate limit
 - [x] Mijn ZP b) factuur_email (Say Yup: finance@sayyup.nl), taak Roxy
