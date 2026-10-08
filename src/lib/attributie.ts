@@ -93,7 +93,16 @@ export function legAttributieVast(): void {
       window.addEventListener("storage", (e) => { if (e.key === CONSENT_KEY) verwerkCookieKeuze(); });
     }
 
-    if (sessionStorage.getItem(KEY)) return;
+    const bestaand = sessionStorage.getItem(KEY);
+    if (bestaand) {
+      // Latere advertentieklik in dezelfde sessie: alleen de kanaalmarkering bijwerken.
+      if (klik) {
+        const p = JSON.parse(bestaand) as Record<string, string>;
+        p.advertentieklik = klik.msclkid && !klik.gclid && !klik.gbraid && !klik.wbraid ? "microsoft" : "google";
+        sessionStorage.setItem(KEY, JSON.stringify(p));
+      }
+      return;
+    }
     const q = new URLSearchParams(window.location.search);
     const a: Record<string, string> = {};
     for (const k of ATTRIBUTIE_SLEUTELS) {
@@ -101,6 +110,7 @@ export function legAttributieVast(): void {
       const v = q.get(k);
       if (v) a[k] = v.slice(0, 200);
     }
+    if (klik) a.advertentieklik = klik.msclkid && !klik.gclid && !klik.gbraid && !klik.wbraid ? "microsoft" : "google";
     const ref = document.referrer ? schoneUrl(document.referrer) : "";
     if (ref && new URL(ref).host !== window.location.host) a.referrer = ref;
     a.landingspagina = window.location.pathname;
