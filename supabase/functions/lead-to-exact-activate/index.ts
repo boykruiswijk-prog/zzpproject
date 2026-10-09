@@ -696,7 +696,7 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
       exact_invoice_created_at: nowIso, exact_invoice_status: Number(controle?.Status ?? 20), exact_invoice_verwijderd_op: null,
       activatie_log: Array.isArray(lead.activatie_log) ? [...lead.activatie_log, entry] : [entry],
     }).eq("id", leadId);
-    await logSync(supabase, { trigger_type: "invoice_herplaatst", status: "success", lead_id: leadId, admin_user_id: user.id, exact_account_id: lead.exact_account_id, http_status: 201, payload: { oud_exact_invoice_id: oudId, exact_invoice_id: invRes.invoiceId, amount: invRes.amount, override: ov, request: invRes.request, controle } });
+    await logSync(supabase, { trigger_type: "invoice_herplaatst", status: "success", lead_id: leadId, admin_user_id: user.id, exact_account_id: lead.exact_account_id, http_status: 201, payload: { oud_exact_invoice_id: oudId, exact_invoice_id: invRes.invoiceId, amount: invRes.amount, override: ov, controle } });
     return json({ success: true, exact_invoice_id: invRes.invoiceId, bedrag: invRes.amount ?? ov!.amount, periode: `${ov!.periodStart} t/m ${ov!.periodEnd}`, omschrijving: ov!.headerDescription, controle });
   }
 
