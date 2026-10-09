@@ -15,6 +15,7 @@ import { factuurReferentie, kopOmschrijving, regelNotities, regelOmschrijving } 
 import { landcodeVoor } from "../_shared/landcode.ts";
 import { maandprijsVoorLead, pakketSpecVoorLead, starterContractVelden, starterStatus } from "../_shared/starterActivatie.ts";
 import { zetInPlanner, factuurLogTekst, type ContractSpec } from "../_shared/klantContractActivatie.ts";
+import { metExactMelding } from "../_shared/exactBoekingMelding.ts";
 
 // SEPA-mandaat in Exact. Waarden geverifieerd in de Exact Online REST-documentatie:
 // https://start.exactonline.nl/docs/HlpRestAPIResourcesDetails.aspx?name=CashflowDirectDebitMandates
@@ -352,7 +353,7 @@ function mandaatOmschrijving(exactNaam: string | null, lead: any): string {
   return naam.slice(0, 60);
 }
 
-Deno.serve(async (req) => {
+Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -1286,4 +1287,4 @@ Deno.serve(async (req) => {
       ? "Klant geactiveerd op bestaande Exact-relatie (hergebruik)"
       : "Klant succesvol geactiveerd in Exact",
   });
-});
+}));

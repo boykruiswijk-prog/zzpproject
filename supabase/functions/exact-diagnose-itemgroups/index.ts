@@ -5,6 +5,7 @@ import { getBavGlAccountId } from "../_shared/exactGl.ts";
 import { ensureValidToken } from "../_shared/exactToken.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { requireSupervisor } from "../_shared/teamAuth.ts";
+import { metExactMelding } from "../_shared/exactBoekingMelding.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -49,7 +50,7 @@ async function readExactBody(res: Response) {
 
 
 
-Deno.serve(async (req) => {
+Deno.serve(metExactMelding("exact-diagnose-itemgroups", async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -288,4 +289,4 @@ Deno.serve(async (req) => {
   } catch (e) {
     return json({ error: e instanceof Error ? e.message : String(e) }, 500);
   }
-});
+}));

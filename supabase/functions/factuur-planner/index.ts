@@ -13,6 +13,7 @@ import { getGlAccountIdVoorCode, GlNietGevondenError } from "../_shared/exactGl.
 import { bouwFactuurPayload, glUitCache, btwCode, btwPastBijGrootboek, BtwNietPassendError, controleerBtw } from "../_shared/factuurRegel.ts";
 import { exactRegelBedrag } from "../_shared/factuurTekst.ts";
 import { berekenOpzegCredit, berekenOudSysteemCredit, oudSysteemCreditPayload } from "../_shared/creditOpzegging.ts";
+import { metExactMelding } from "../_shared/exactBoekingMelding.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -43,7 +44,7 @@ function samenvatting(rijen: any[]) {
   };
 }
 
-Deno.serve(async (req) => {
+Deno.serve(metExactMelding("factuur-planner", async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const body = await req.json().catch(() => ({}));
@@ -380,4 +381,4 @@ Deno.serve(async (req) => {
     aantal_geblokkeerd: sam.geblokkeerd.aantal, aantal_aangemaakt: aangemaakt, bedrag: sam.klaar.bedrag, status: fouten.length ? "fout" : "ok", detail: { fouten } });
   if (fouten.length) await sendExactAlarm(admin, ALARM, "factuur-planner", null);
   return json({ modus: "live", aangemaakt, fouten, creditnotas: creditOverzicht });
-});
+}, { verzamel: true }));
