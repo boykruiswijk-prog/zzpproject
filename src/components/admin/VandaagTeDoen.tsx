@@ -131,7 +131,7 @@ export function VandaagTeDoen() {
                 {uit && cat && (
                   <ul className="border-t border-border">
                     {cat.items.map((i) => (
-                      <li key={`${c.key}-${i.id}`} className="flex min-w-0 items-center">
+                      <li key={`${c.key}-${i.contract_id ?? i.id}`} className="flex min-w-0 items-center">
                         <Link to={c.link(i)} className="flex min-w-0 flex-1 flex-col gap-0.5 px-3 py-2 text-sm hover:bg-muted/50 sm:flex-row sm:items-center sm:gap-3">
                           <span className="min-w-0 flex-1 truncate">
                             <span className="font-medium">{i.naam?.trim() || "Onbekend"}</span>
