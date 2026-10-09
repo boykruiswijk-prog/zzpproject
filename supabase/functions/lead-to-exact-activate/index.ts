@@ -644,6 +644,62 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
     return json({ success: true, exact_mandate_id: mandateId, exact_bankaccount_id: bankId, message: "SEPA-mandaat aangemaakt" });
   }
 
+  // ── Actie: in Exact verwijderd activatieconcept opnieuw als CONCEPT klaarzetten (supervisor/admin) ──
+  // Zelfde factuurregel als activatie/retry_invoice; bedrag moet gelijk zijn aan het oorspronkelijke concept.
+  // Controleert eerst met GET dat het oude concept echt weg is en dat er geen andere factuur voor de relatie bestaat.
+  // Wijzigt de planner niet (geen zetInPlanner). Oud ID blijft in activatie_log en exact_sync_log.
+  if (action === "herplaats_verwijderd_concept") {
+    if (!(roleRows ?? []).some((r: { role: string }) => r.role === "admin" || r.role === "supervisor")) return json({ success: false, error: "forbidden" }, 403);
+    if (!lead.exact_account_id || !lead.exact_invoice_id || lead.exact_invoice_number || !lead.exact_invoice_verwijderd_op) {
+      return json({ success: false, error: "geen_verwijderd_concept" }, 409);
+    }
+    const oudId = String(lead.exact_invoice_id);
+    const g = (p: string) => fetch(`${baseUrl}/api/v1/${div}/${p}`, { method: "GET", headers: { Authorization: headers.Authorization, Accept: "application/json" } });
+    const oud = await g(`salesinvoice/SalesInvoices(guid'${oudId}')?$select=InvoiceID`);
+    if (oud.status !== 404) return json({ success: false, error: "oud_concept_niet_404", http_status: oud.status }, 409);
+    const bestaand = await g(`salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,Status,AmountDC,Description,InvoiceDate&$filter=${encodeURIComponent(`OrderedBy eq guid'${lead.exact_account_id}'`)}`);
+    if (!bestaand.ok) return json({ success: false, error: "controle_get_mislukt", http_status: bestaand.status }, 502);
+    // deno-lint-ignore no-explicit-any
+    const lijst: any[] = (await bestaand.json())?.d?.results ?? [];
+    if (lijst.length) return json({ success: false, error: "er_staat_al_een_factuur", facturen: lijst }, 409);
+    const spec = pakketSpecVoorLead(lead, resolvePakketInvoice(lead.gekozen_pakket));
+    if (!spec || !lead.ingangsdatum) return json({ success: false, error: "onbekend_pakket" }, 400);
+    const startStr = String(lead.ingangsdatum).slice(0, 10);
+    let ov: Parameters<typeof createExactInvoice>[0]["override"];
+    if (isMaandPolis(lead.gekozen_pakket)) {
+      const endStr = lastOfMonth(startStr);
+      const calc = calcMaandProrata({ maandprijs: maandprijsVoorLead(lead, getMaandprijs(lead.gekozen_pakket)), vanaf_datum: startStr, tot_datum: endStr });
+      ov = { amount: calc.bedrag, headerDescription: "BAV-AVB premie instap", lineDescription: regelOmschrijving("premie", startStr, endStr), lineNotes: regelNotities(calc.dagen, calc.dagprijs), periodStart: startStr, periodEnd: endStr };
+    } else {
+      const endStr = String(lead.polis_einddatum ?? calcPolisEinddatum(startStr)).slice(0, 10);
+      ov = { amount: spec.bedrag, headerDescription: "BAV-AVB premie instap", lineDescription: regelOmschrijving("premie", startStr, endStr), lineNotes: spec.betalingsregel, periodStart: startStr, periodEnd: endStr };
+    }
+    const verwacht = Number(lead.exact_invoice_amount);
+    if (Math.abs(Number(ov!.amount) - verwacht) > 0.004) return json({ success: false, error: "bedrag_wijkt_af", berekend: ov!.amount, oorspronkelijk: verwacht }, 409);
+    const itemEnsure = await ensureBavAvbItem({ supabase, config, baseUrl, div, headers, accessToken, logCtx: { lead_id: leadId, admin_user_id: user.id } });
+    if (!itemEnsure.ok) return json({ success: false, error: "item_bootstrap_failed" }, 500);
+    const { data: policyRef } = await supabase.from("policies").select("certificate_number").eq("lead_id", leadId).eq("status", "geldig").limit(1).maybeSingle();
+    lead.certificate_number = policyRef?.certificate_number ?? null;
+    const invRes = await createExactInvoice({ baseUrl, div, headers, accountId: lead.exact_account_id, lead, pakketSpec: spec, itemId: itemEnsure.itemId, override: ov });
+    if (!invRes.ok) {
+      await logSync(supabase, { trigger_type: "invoice_herplaatst", status: "error", lead_id: leadId, admin_user_id: user.id, http_status: invRes.httpStatus, error_message: invRes.summary, payload: { oud_exact_invoice_id: oudId, request: invRes.request, response: invRes.detail } });
+      return json({ success: false, error: "invoice_create_failed", detail: invRes.detail }, 500);
+    }
+    const ctl = await g(`salesinvoice/SalesInvoices(guid'${invRes.invoiceId}')?$select=InvoiceID,InvoiceNumber,Status,AmountDC,OrderedBy,OrderedByName,Description,InvoiceDate`);
+    // deno-lint-ignore no-explicit-any
+    const cj: any = ctl.ok ? (await ctl.json())?.d : null;
+    const controle = cj?.results ? cj.results[0] : cj;
+    const nowIso = new Date().toISOString();
+    const entry = { timestamp: nowIso, action: `Verwijderd concept ${oudId} opnieuw als concept klaargezet: ${invRes.invoiceId}`, admin_user_id: user.id, admin_email: user.email, oud_exact_invoice_id: oudId, oud_verwijderd_op: lead.exact_invoice_verwijderd_op, exact_invoice_id: invRes.invoiceId, exact_invoice_amount: invRes.amount };
+    await supabase.from("leads").update({
+      exact_invoice_id: invRes.invoiceId, exact_invoice_number: null, exact_invoice_amount: invRes.amount ?? ov!.amount,
+      exact_invoice_created_at: nowIso, exact_invoice_status: Number(controle?.Status ?? 20), exact_invoice_verwijderd_op: null,
+      activatie_log: Array.isArray(lead.activatie_log) ? [...lead.activatie_log, entry] : [entry],
+    }).eq("id", leadId);
+    await logSync(supabase, { trigger_type: "invoice_herplaatst", status: "success", lead_id: leadId, admin_user_id: user.id, exact_account_id: lead.exact_account_id, http_status: 201, payload: { oud_exact_invoice_id: oudId, exact_invoice_id: invRes.invoiceId, amount: invRes.amount, override: ov, controle } });
+    return json({ success: true, exact_invoice_id: invRes.invoiceId, bedrag: invRes.amount ?? ov!.amount, periode: `${ov!.periodStart} t/m ${ov!.periodEnd}`, omschrijving: ov!.headerDescription, controle });
+  }
+
   // ── Actie: retry factuur voor reeds-geactiveerde lead ──
   if (action === "retry_invoice") {
     if (!lead.exact_account_id) {
