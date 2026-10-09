@@ -8,6 +8,7 @@ import { KoppelZoeker } from "@/components/admin/KoppelZoeker";
 import { PortaltoegangStappen } from "@/components/admin/PortaltoegangStappen";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { ServiceHerkomstLabels } from "@/components/admin/ServiceHerkomstLabels";
 const KOPPELING_LABEL: Record<string, string> = { zeker: "Automatisch zeker", voorstel: "Voorstel", niet_gekoppeld: "Niet gekoppeld" };
 
 export type ServiceAanvraag = {
@@ -132,7 +133,7 @@ export function ServiceAanvraagDetail({ aanvraag, onSaveNotes, onMarkAfgerond, o
           <div className="text-muted-foreground">Status</div>
           <div className="flex flex-wrap gap-1">
             <Badge className={SERVICE_STATUS_COLOR[aanvraag.status]}>{aanvraag.status}</Badge>
-            <Badge variant={aanvraag.geverifieerd ? "secondary" : "outline"}>{aanvraag.geverifieerd ? "Geverifieerd" : "Ongeverifieerd"}</Badge>
+            <ServiceHerkomstLabels aanvraag={aanvraag as any} />
           </div>
         </div>
         <div>
