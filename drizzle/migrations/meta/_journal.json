@@ -624,6 +624,13 @@
       "when": 1791538602053,
       "tag": "0088_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 89,
+      "version": "7",
+      "when": 1791541099318,
+      "tag": "0089_bav_override_en_service_koppeling",
+      "breakpoints": true
     }
   ]
 }
