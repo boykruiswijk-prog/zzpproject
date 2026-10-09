@@ -11,7 +11,7 @@ export const searchIndex: SearchEntry[] = [
   {
     title: "Home | ZP Zaken",
     path: "/",
-    keywords: "zzp verzekering BAV AVB combinatiepolis online afsluiten zelfstandig ondernemer",
+    keywords: "zzp verzekering BAV AVB combinatiepolis online aanvragen zelfstandig ondernemer",
     snippet: "BAV + AVB combinatieverzekering voor zzp'ers. Vanaf €55/maand, online aanvragen, binnen 24 uur geregeld.",
   },
   {
@@ -107,8 +107,8 @@ export const searchIndex: SearchEntry[] = [
   {
     title: "Waarom ZP Zaken",
     path: "/waarom-zp-zaken",
-    keywords: "voordelen onafhankelijk transparant directe partner geen bemiddelaar",
-    snippet: "Onafhankelijke bemiddeling, transparante tarieven en direct contact. Geen tussenpersonen.",
+    keywords: "voordelen onafhankelijk transparant directe partner persoonlijke service",
+    snippet: "Persoonlijke service, transparante tarieven en direct contact met ZP Zaken.",
   },
   {
     title: "Zo werken wij",
