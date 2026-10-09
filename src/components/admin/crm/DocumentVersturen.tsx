@@ -10,7 +10,7 @@ import { branches } from "@/data/documentenLijst";
 import { formatDateNL } from "@/lib/dateFormat";
 
 type Soort = "certificaat" | "factuur" | "verzekeringskaart";
-const KAARTEN = Array.from(new Map(branches.flatMap((b: any) => (b.documenten ?? b.docs ?? []).filter((d: any) => d.type === "verzekeringskaart").map((d: any) => [d.path, { path: d.path as string, titel: `${b.naam ?? b.titel ?? ""} ${d.productCode ?? ""}`.trim() }]))).values());
+const KAARTEN: { path: string; titel: string }[] = Array.from(new Map(branches.flatMap((b) => b.documenten.filter((d) => d.type === "verzekeringskaart").map((d) => [d.path, { path: d.path, titel: `${b.naam} ${d.productCode ?? ""}`.trim() }] as const))).values());
 
 async function roep(body: Record<string, unknown>) {
   const { data, error } = await supabase.functions.invoke("klant-document-versturen", { body });
