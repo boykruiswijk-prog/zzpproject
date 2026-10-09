@@ -34,3 +34,4 @@
 - Monthly lifecycle/preview credits read actual invoiced periods via _shared/lifecycleCredit.ts and planner helper berekenOpzegCredit. Why: no annual-premium math or duplicate refunds.
 
 - New cyber uses versioned _shared/cyber.ts, immutable consent and separate cyber_clear lines; shared annual limit is admin-only. Why: preserve legacy terms and BAV credits.
+- Every Exact write runs inside metExactMelding (_shared/exactBoekingMelding.ts), which observes fetch and mails recipients of soort exact_boeking; daily read-only check exact-concept-controle marks deleted drafts. Why: admin checks every booking without touching billing logic.
