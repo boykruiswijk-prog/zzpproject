@@ -20,9 +20,9 @@ import { valideerToelichting } from "../_shared/opzegValidatie.ts";
 import { exactRegelBedrag, factuurReferentie, kopOmschrijving, regelNotities, regelOmschrijving } from "../_shared/factuurTekst.ts";
 import { readLatestInvoiceStatus } from "../_shared/exactInvoiceStatus.ts";
 import {
-import { metExactMelding } from "../_shared/exactBoekingMelding.ts";
   getJaarprijs, calculatePauzeCredit, calculateHervatFactuur, calcPolisEinddatum, isMaandPolis,
 } from "../_shared/polisProRata.ts";
+import { metExactMelding } from "../_shared/exactBoekingMelding.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
