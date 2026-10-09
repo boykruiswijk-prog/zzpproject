@@ -70,7 +70,7 @@ export const branches: DocumentBranche[] = [
 ];
 
 export const algemeneBavDocumenten: Document[] = [
-  { id: 'polis-bav', titel: 'Polisvoorwaarden bedrijfsaansprakelijkheid', type: 'polisvoorwaarden', path: '/documenten/Verzekeringskaart-bedrijfsaansprakelijkheid-HAVB-08B.pdf', productCode: 'HAVB-08B' },
+  // Er is geen aparte voorwaarden-pdf voor HAVB-08B; alleen de verzekeringskaart.
   { id: 'kaart-bav', titel: 'Verzekeringskaart bedrijfsaansprakelijkheid', type: 'verzekeringskaart', path: '/documenten/Verzekeringskaart-bedrijfsaansprakelijkheid-HAVB-08B.pdf', productCode: 'HAVB-08B' },
 ];
 

@@ -106,7 +106,7 @@ export default function BavZzpVergelijken() {
         <p><strong className="text-foreground">AVB erbij of apart</strong> Een BAV dekt financiële schade door een fout in je werk, zoals verkeerd advies. Een AVB dekt schade aan personen en spullen. De meeste aanbieders verkopen de AVB als losse verzekering. Tel dan beide premies op als je vergelijkt.</p>
         <p><strong className="text-foreground">Opzegtermijn en contractduur</strong> Kun je dagelijks opzeggen, of zit je een jaar vast? Voor zzp'ers met wisselende opdrachten is dagelijks opzegbaar vaak prettig.</p>
         <p><strong className="text-foreground">Dekking voor je beroep</strong> Niet elke polis is er voor elk beroep. Sommige aanbieders sluiten beroepen uit, zoals advocaten, notarissen of accountants. Check of jouw werk onder de dekking valt.</p>
-        <p><strong className="text-foreground">Inloop en uitloop</strong> Inloop (ook wel voorrisico) dekt fouten die je maakte voordat de polis begon, maar die pas later bekend worden. Uitloop dekt claims die binnenkomen nadat je de polis hebt gestopt. Dat is belangrijk als je stopt als zzp'er of overstapt.</p>
+        <p><strong className="text-foreground">Inloop en uitloop:</strong> bij ZP Zaken loopt de dekking vanaf de ingangsdatum die je zelf kiest bij je aanmelding. Fouten van voor die datum vallen niet onder de verzekering. Uitloopdekking is er niet: stop je de verzekering, dan stopt ook de dekking. Kijk bij het vergelijken altijd hoe andere aanbieders dit regelen.</p>
         <p><strong className="text-foreground">Premie per maand of per jaar</strong> Sommige aanbieders noemen een prijs per maand, andere per jaar. Reken alles om naar hetzelfde. Kijk ook of assurantiebelasting en kosten in de prijs zitten.</p>
       </Sectie>
 

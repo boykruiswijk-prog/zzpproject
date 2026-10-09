@@ -42,6 +42,7 @@ const STATIC_URLS: Array<{ path: string; changefreq?: string; priority?: string 
   { path: "/creditcontrol", changefreq: "monthly", priority: "0.6" },
   { path: "/klachtenprocedure", changefreq: "yearly", priority: "0.3" },
   { path: "/documenten", changefreq: "monthly", priority: "0.5" },
+  { path: "/voorwaarden", changefreq: "monthly", priority: "0.6" },
   { path: "/documenten/slotverklaring", changefreq: "yearly", priority: "0.4" },
   { path: "/documenten/dienstverleningsdocument", changefreq: "yearly", priority: "0.4" },
   { path: "/documenten/gedragscode", changefreq: "yearly", priority: "0.4" },

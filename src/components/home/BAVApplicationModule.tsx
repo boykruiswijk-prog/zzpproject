@@ -768,7 +768,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                        </div>
                        {errors.startDate ? (
                          <p className="text-xs mt-1.5" style={{ color: '#E53E2F' }}>{errors.startDate}</p>
-                       ) : null}
+                       ) : <p className="mt-1.5 text-xs text-muted-foreground">Vanaf deze datum ben je verzekerd. Fouten van voor deze datum zijn niet gedekt.</p>}
                      </div>
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div>

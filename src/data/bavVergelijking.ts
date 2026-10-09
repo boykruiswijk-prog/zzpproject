@@ -23,6 +23,12 @@ export interface BavAanbieder {
 export const VERGELIJKING_GECONTROLEERD_OP = "2026-10-05";
 export const VERGELIJKING_GECONTROLEERD_LABEL = "5 oktober 2026";
 
+/** Vaste klantwaarheid inloop/uitloop (besluit directie 9 okt 2026); ook in faqItems en Zeker. */
+export const INLOOP_UITLOOP_FAQ: { question: string; answer: string }[] = [
+  { question: "Vanaf wanneer ben ik gedekt (inloop)?", answer: "Vanaf de ingangsdatum die je zelf kiest op het aanmeldformulier. Fouten die je voor die datum maakte, zijn niet gedekt. Kies daarom een ingangsdatum die aansluit op je eerste opdracht." },
+  { question: "Heeft de BAV van ZP Zaken uitloopdekking?", answer: "Nee. Stop je de verzekering, dan stopt ook de dekking. Er is geen uitloopdekking." },
+];
+
 const eur = (n: number) => `€ ${n.toLocaleString("nl-NL")}`;
 
 function zpZakenRij(): BavAanbieder {
@@ -140,7 +146,7 @@ export function bavVergelijkingFaq(): { question: string; answer: string }[] {
     { question: "Wat kost een BAV voor een zzp'er?", answer: `De prijzen op de sites van aanbieders beginnen rond € 25 tot € 40 per maand voor alleen een BAV. Je premie hangt af van je beroep, je omzet, het verzekerd bedrag en het eigen risico. Bij ZP Zaken betaal je vanaf ${eur(maand.prijs)} per maand voor BAV en AVB samen.` },
     { question: "Welk verzekerd bedrag heb ik nodig?", answer: "Dat hangt af van je werk en wat je opdrachtgever vraagt. Kijk in je contract welk bedrag er staat. Veel goedkope polissen starten bij € 250.000 per aanspraak. Dat is soms te weinig voor grotere opdrachten." },
     { question: "Kan ik mijn BAV dagelijks opzeggen?", answer: "Bij ZP Zaken, Insify en Knab wel. Bij andere aanbieders staat het niet altijd op de productpagina. Check de voorwaarden voordat je afsluit." },
-    { question: "Wat is uitloop en heb ik dat nodig?", answer: "Uitloop dekt claims die binnenkomen nadat je je polis hebt gestopt, voor fouten uit de tijd dat je verzekerd was. Dat is handig als je stopt als zzp'er. Vraag bij elke aanbieder na of en hoe uitloop geregeld is." },
+    ...INLOOP_UITLOOP_FAQ,
     { question: "Hoe snel ben ik verzekerd bij ZP Zaken?", answer: "Je sluit online af. Het is binnen 24 uur geregeld en je krijgt het certificaat in je mailbox." },
   ];
 }

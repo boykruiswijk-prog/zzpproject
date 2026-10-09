@@ -20,3 +20,4 @@
 - [x] Mijn ZP d) Exact-facturen via factuur-e-mail, oudere facturen opvragen
 - Publiceren: bewust niet uitgevoerd; Boy publiceert zelf.
 - [x] Automatische kennisbankafbeeldingen: generator, frontend/SEO, statische bestanden, tests en documentatie (niet gepubliceerd)
+- [x] Inloop/uitloop-klantwaarheid overal consistent en /voorwaarden-pagina (niet gepubliceerd)

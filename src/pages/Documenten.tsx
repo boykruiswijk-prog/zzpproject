@@ -84,8 +84,11 @@ export default function Documenten() {
         <div className="container-wide">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-2xl md:text-3xl font-bold mb-2">Documenten per branche</h2>
-            <p className="text-muted-foreground mb-10">
+            <p className="text-muted-foreground mb-4">
               Per beroepsgroep gelden specifieke polisvoorwaarden en verzekeringskaarten.
+            </p>
+            <p className="mb-10">
+              <Link to="/voorwaarden" className="font-medium text-accent hover:underline">Alle polisvoorwaarden op een rij</Link>
             </p>
 
             <div className="grid md:grid-cols-2 gap-8">
