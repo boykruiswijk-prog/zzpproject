@@ -92,6 +92,7 @@ const ScreenshotHelper = lazy(() => import("./pages/ScreenshotHelper"));
 const AlgemeneVoorwaarden = lazy(() => import("./pages/AlgemeneVoorwaarden"));
 const Klachtenprocedure = lazy(() => import("./pages/Klachtenprocedure"));
 const Documenten = lazy(() => import("./pages/Documenten"));
+const Voorwaarden = lazy(() => import("./pages/Voorwaarden"));
 const SlotverklaringPage = lazy(() => import("./pages/documenten/SlotverklaringPage"));
 const DienstverleningsdocumentPage = lazy(() => import("./pages/documenten/DienstverleningsdocumentPage"));
 const GedragscodePage = lazy(() => import("./pages/documenten/GedragscodePage"));
@@ -174,6 +175,7 @@ const publicRoutes = (
     <Route path="klachtenprocedure" element={<Klachtenprocedure />} />
     <Route path="klachten" element={<Navigate to="/klachtenprocedure" replace />} />
     <Route path="documenten" element={<Documenten />} />
+    <Route path="voorwaarden" element={<Voorwaarden />} />
     <Route path="documenten/slotverklaring" element={<SlotverklaringPage />} />
     <Route path="documenten/dienstverleningsdocument" element={<DienstverleningsdocumentPage />} />
     <Route path="documenten/gedragscode" element={<GedragscodePage />} />

@@ -1,5 +1,5 @@
 import { CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER_LOOPTIJD } from "../../supabase/functions/_shared/cyber";
-import { INLOOP_UITLOOP_FAQ } from "../data/bavVergelijking";
+import { INLOOP_UITLOOP_FAQ } from "./bavVergelijking";
 // Enige bron van waarheid voor de zichtbare FAQ-content op /faq.
 // Ook gebruikt door de prerender-plugin, zodat FAQPage-schema en zichtbare
 // tekst altijd identiek zijn. Alleen relatieve/geen imports (ook buiten Vite).
