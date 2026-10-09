@@ -23,7 +23,7 @@ export default function DocumentenWizard() {
       pageTitle="Documenten opvragen | Mijn ZP, ZP Zaken"
       pageDescription="Vraag eenvoudig je documenten op (verzekeringscertificaat, polisvoorwaarden, premiebewijs). Binnen 24 uur per mail."
       introTitle="Documenten ontvangen"
-      introText="Vraag je documenten op, zoals je verzekeringscertificaat. Je ontvangt ze binnen 24 uur per mail."
+      introText="Vraag je documenten op, zoals je verzekeringscertificaat. Je ontvangt ze binnen 24 uur per mail. De polisvoorwaarden download je direct op zpzaken.nl/voorwaarden."
       steps={[
         {
           title: "Identificatie",

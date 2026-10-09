@@ -141,6 +141,12 @@ export const searchIndex: SearchEntry[] = [
     snippet: "Download polisvoorwaarden, verzekeringskaarten en brochures per branche, plus ZP Zaken eigen documenten.",
   },
   {
+    title: "Polisvoorwaarden",
+    path: "/voorwaarden",
+    keywords: "polisvoorwaarden voorwaarden verzekeringskaart hiscox collectieve polis verzekeringscertificaat inloop uitloop ingangsdatum ICT consultancy marketing coaches",
+    snippet: "Alle polisvoorwaarden en verzekeringskaarten per branche. Je bent gedekt vanaf je ingangsdatum; er is geen uitloopdekking.",
+  },
+  {
     title: "Slotverklaring 2026",
     path: "/documenten/slotverklaring",
     keywords: "slotverklaring verklaring aanvraag BAV AVB compliance",
@@ -184,7 +190,7 @@ export const searchIndex: SearchEntry[] = [
   },
   { title: "Mijn ZP | Verzekeringscertificaat opvragen", path: "/mijn-zp/polis", keywords: "verzekeringscertificaat certificaat polis verzekeringspolis verzekeringsbewijs opdrachtgever", snippet: "Vraag je verzekeringscertificaat op voor je opdrachtgever." },
   { title: "Mijn ZP | Verzekering pauzeren", path: "/mijn-zp/pauzeren", keywords: "pauzeren tijdelijk loondienst", snippet: "Pauzeer tijdelijk je verzekering. Tijdens de pauze ben je niet verzekerd voor nieuwe werkzaamheden." },
-  { title: "Mijn ZP | Documenten opvragen", path: "/mijn-zp/documenten", keywords: "verzekeringscertificaat polisblad polisvoorwaarden documenten kopie", snippet: "Vraag een kopie op van je verzekeringscertificaat, de polisvoorwaarden of een ander document." },
+  { title: "Mijn ZP | Documenten opvragen", path: "/mijn-zp/documenten", keywords: "verzekeringscertificaat polisblad documenten kopie", snippet: "Vraag een kopie op van je verzekeringscertificaat, de polisvoorwaarden of een ander document." },
   { title: "Mijn ZP | Verzekering opzeggen", path: "/mijn-zp/opzeggen", keywords: "opzeggen opzeg beëindigen stoppen verzekering opzeggen BAV opzeggen einde verzekering loondienst BV entiteit wijzigen", snippet: "Zeg je BAV-verzekering bij ZP Zaken eenvoudig op. Dagelijks opzegbaar, binnen 24 uur verwerkt." },
   { title: "FAQ | Hoe pauzeer ik mijn verzekering?", path: "/faq", keywords: "pauzeren verzekering mijn verzekering beheren", snippet: "Pauzeer je verzekering via Mijn ZP. Tijdens de pauze ben je niet verzekerd voor nieuwe werkzaamheden." },
   { title: "FAQ | Verzekeringscertificaat opvragen", path: "/faq", keywords: "verzekeringscertificaat polis verzekeringspolis opvragen aanvragen", snippet: "Hoe vraag je je verzekeringscertificaat op." },
