@@ -383,6 +383,11 @@ export default function AdminLeadDetail() {
           <div className="min-w-0 space-y-6">
             {lead.exact_invoice_id && (lead.exact_invoice_number ? (
               <Card className="min-w-0"><CardContent className="pt-6 text-sm">Factuur verwerkt in Exact: <strong>{lead.exact_invoice_number}</strong></CardContent></Card>
+            ) : (lead as any).exact_invoice_verwijderd_op ? (
+              <Card className="min-w-0 border-destructive/40 bg-destructive/5"><CardContent className="pt-6 text-sm">
+                <p className="font-medium">Concept is in Exact verwijderd, opnieuw klaarzetten of bewust laten vervallen</p>
+                <p className="text-muted-foreground">Vastgesteld op {new Date((lead as any).exact_invoice_verwijderd_op).toLocaleDateString("nl-NL", { timeZone: "Europe/Amsterdam" })}. Oud Exact-ID: {lead.exact_invoice_id}</p>
+              </CardContent></Card>
             ) : (
               <Card className="min-w-0 border-amber-300 bg-amber-50/50"><CardContent className="pt-6 text-sm">
                 <p className="font-medium">Factuur staat klaar in Exact, wacht op verwerking door Roxy</p>

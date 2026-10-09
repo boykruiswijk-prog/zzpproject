@@ -26,7 +26,7 @@ const CATEGORIEEN: { key: string; titel: string; icoon: LucideIcon; link: (i: It
   { key: "afgehaakt", titel: "Afgehaakte aanvragen (2 dagen)", icoon: PhoneCall, link: () => "/admin/afgehaakt", alles: "/admin/afgehaakt" },
   { key: "polissen", titel: "Polissen die aflopen of gepauzeerd zijn", icoon: CalendarClock, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/leads" },
   { key: "nieuwe_aanvraag", titel: "Nieuwe aanvraag nodig (nieuw KvK-nummer)", icoon: FileWarning, link: (i) => `/admin/klanten/${i.id}`, alles: "/admin/klanten" },
-  { key: "facturatie", titel: "Facturatie (Roxy): facturen en Exact-aanpassingen", icoon: AlertTriangle, link: (i) => i.bron === "taak" ? `/admin/klanten/${i.id}` : `/admin/leads/${i.id}`, alles: "/admin/facturatieplanning" },
+  { key: "facturatie", titel: "Facturatie (Roxy): facturen en Exact-aanpassingen", icoon: AlertTriangle, link: (i) => i.bron === "taak" || i.bron === "planning" ? `/admin/klanten/${i.id}` : `/admin/leads/${i.id}`, alles: "/admin/facturatieplanning" },
   { key: "exact", titel: "Exact-fouten", icoon: AlertTriangle, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/leads" },
 ];
 
