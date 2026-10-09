@@ -40,7 +40,7 @@ interface ServicePageTemplateProps {
   ctaSubtitle: string;
   ctaButton: string;
   children?: ReactNode;
-  /** Productpagina-hero: "direct" = prijsregel + Direct afsluiten naar ingebed formulier; "terugbel" = wij regelen het. */
+  /** Productpagina-hero: "direct" = prijsregel + Online aanvragen naar ingebed formulier; "terugbel" = wij regelen het. */
   aanvraag?: "direct" | "terugbel";
   schema?: Record<string, unknown>;
 }
@@ -93,7 +93,7 @@ export function ServicePageTemplate({
             <p className="font-semibold text-white">{vanafPrijsregel()}</p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button variant="accent" size="lg" asChild>
-                <a href="#combinatiepolis" onClick={(e) => scrollNaarAanvraag(e)}>Direct afsluiten <ArrowRight className="h-5 w-5" /></a>
+                <a href="#combinatiepolis" onClick={(e) => scrollNaarAanvraag(e)}>Online aanvragen <ArrowRight className="h-5 w-5" /></a>
               </Button>
               <Button variant="heroOutline" size="lg" asChild>
                 <LocalizedLink to="/contact" onClick={openTerugbelKlik}>Persoonlijk contact</LocalizedLink>

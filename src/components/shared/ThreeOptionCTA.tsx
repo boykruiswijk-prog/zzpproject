@@ -11,7 +11,7 @@ interface ThreeOptionCTAProps {
 }
 
 /**
- * Drie-keuze CTA blok: direct afsluiten, offerte aanvragen, persoonlijk gesprek.
+ * Drie-keuze CTA blok: online aanvragen, offerte aanvragen, persoonlijk gesprek.
  * Wordt op homepage hero en op productpagina's getoond.
  */
 export function ThreeOptionCTA({
@@ -27,7 +27,7 @@ export function ThreeOptionCTA({
         <Button variant="accent" size="lg" asChild className="shadow-lg">
           <LocalizedLink to="/verzekeringen#combinatiepolis" onClick={(e) => scrollNaarAanvraag(e)}>
             <Zap className="h-5 w-5" />
-            Direct afsluiten
+            Online aanvragen
             <ArrowRight className="h-5 w-5" />
           </LocalizedLink>
         </Button>

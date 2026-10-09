@@ -123,7 +123,7 @@ const InlineCTA = ({ aov = false }: { aov?: boolean }) => (
     <div className="flex flex-wrap gap-3">
       <Button variant="accent" asChild>
         <LocalizedLink to="/verzekeringen">
-          BAV + AVB direct afsluiten <ArrowRight className="h-4 w-4" />
+          BAV + AVB online aanvragen <ArrowRight className="h-4 w-4" />
         </LocalizedLink>
       </Button>
       <Button variant="outline" asChild>
