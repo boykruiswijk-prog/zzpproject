@@ -118,7 +118,7 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds }: Props) 
   const compleet = form.sector && form.certificate_holder.trim() && form.insured_name.trim() && form.start_date;
 
   return (
-    <Card>
+    <Card id="klant-certificaat">
       <CardHeader><CardTitle className="text-base">Certificaat (PDF)</CardTitle></CardHeader>
       <CardContent className="space-y-3">
         {!actief && (
