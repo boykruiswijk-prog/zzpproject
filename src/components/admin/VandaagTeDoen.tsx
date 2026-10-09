@@ -11,8 +11,13 @@ import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 import { cn } from "@/lib/utils";
 import { haalBavRijen, kiesBavNummer } from "@/lib/bavNummer";
 import { ServiceAanvraagOog } from "@/components/admin/ServiceAanvraagOog";
+import { EinddatumControleKnoppen } from "@/components/admin/EinddatumControleKnoppen";
+import { PRODUCT_LABEL, formatEuro, type Product } from "@/lib/klantContracten";
 
-interface Item { bron?: string | null; id: string; naam?: string | null; bedrijfsnaam?: string | null; sinds?: string | null; reden?: string | null; eigen?: boolean | null }
+interface Item {
+  bron?: string | null; id: string; naam?: string | null; bedrijfsnaam?: string | null; sinds?: string | null; reden?: string | null; eigen?: boolean | null;
+  contract_id?: string; abonnement_nr?: string | null; product?: string | null; cyclus?: string | null; bedrag?: number | null; eind_datum?: string | null; volgende_factuurdatum?: string | null;
+}
 interface Categorie { verborgen?: boolean; aantal: number; items: Item[]; per_type?: Record<string, number>; handmatig?: number }
 type Acties = Record<string, Categorie> & { voornaam?: string | null; totaal?: number };
 
@@ -26,6 +31,7 @@ const CATEGORIEEN: { key: string; titel: string; icoon: LucideIcon; link: (i: It
   { key: "afgehaakt", titel: "Afgehaakte aanvragen (2 dagen)", icoon: PhoneCall, link: () => "/admin/afgehaakt", alles: "/admin/afgehaakt" },
   { key: "polissen", titel: "Polissen die aflopen of gepauzeerd zijn", icoon: CalendarClock, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/leads" },
   { key: "nieuwe_aanvraag", titel: "Nieuwe aanvraag nodig (nieuw KvK-nummer)", icoon: FileWarning, link: (i) => `/admin/klanten/${i.id}`, alles: "/admin/klanten" },
+  { key: "einddatum_controle", titel: "Einddatum controleren (geen opzegging geregistreerd)", icoon: CalendarClock, link: (i) => `/admin/klanten/${i.id}`, alles: "/admin/klanten" },
   { key: "facturatie", titel: "Facturatie (Roxy): facturen en Exact-aanpassingen", icoon: AlertTriangle, link: (i) => i.bron === "taak" || i.bron === "planning" ? `/admin/klanten/${i.id}` : `/admin/leads/${i.id}`, alles: "/admin/facturatieplanning" },
   { key: "exact", titel: "Exact-fouten", icoon: AlertTriangle, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/leads" },
 ];
@@ -132,9 +138,12 @@ export function VandaagTeDoen() {
                             {i.bedrijfsnaam && <span className="text-muted-foreground"> · {i.bedrijfsnaam}</span>}
                             {i.eigen && <Badge variant="outline" className="ml-2 text-[10px]">Aan jou</Badge>}
                           </span>
-                          <span className="min-w-0 truncate text-xs text-muted-foreground">{[bavTekst(i.id), i.reden, i.sinds ? datum(i.sinds) : ""].filter(Boolean).join(" · ")}</span>
+                          <span className="min-w-0 truncate text-xs text-muted-foreground">{c.key === "einddatum_controle"
+                            ? [`abonnement ${i.abonnement_nr ?? "-"}`, PRODUCT_LABEL[(i.product ?? "onbekend") as Product] ?? i.product, i.bedrag != null ? `${formatEuro(Number(i.bedrag))} per ${i.cyclus ?? "periode"}` : "", `einddatum AFAS ${datum(i.eind_datum)}`, `volgende factuur ${datum(i.volgende_factuurdatum)}`].filter(Boolean).join(" · ")
+                            : [bavTekst(i.id), i.reden, i.sinds ? datum(i.sinds) : ""].filter(Boolean).join(" · ")}</span>
                         </Link>
                         {c.key === "service" && <span className="shrink-0 pr-2"><ServiceAanvraagOog id={i.id} onGewijzigd={() => refetch()} /></span>}
+                        {c.key === "einddatum_controle" && i.contract_id && <EinddatumControleKnoppen contractId={i.contract_id} naam={i.naam ?? ""} eindDatum={i.eind_datum} onGewijzigd={() => refetch()} />}
                       </li>
                     ))}
                     {n > cat.items.length && (
