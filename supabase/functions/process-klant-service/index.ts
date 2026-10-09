@@ -47,8 +47,11 @@ function escapeHtml(value: unknown): string {
   })[character] ?? character);
 }
 
+// Oude documentlabels blijven opgeslagen, maar worden met het huidige label getoond.
+const DOC_LABEL: Record<string, string> = { "Premiebewijs / factuur": "Factuur" };
+
 function fmtValue(key: string, v: unknown): string {
-  if (Array.isArray(v)) return v.join(", ");
+  if (Array.isArray(v)) return v.map((x) => DOC_LABEL[String(x)] ?? String(x)).join(", ");
   if (v == null) return "-";
   if (DATE_KEYS.has(key)) return maybeFormatDate(v);
   return String(v);
@@ -91,6 +94,8 @@ Deno.serve(async (req) => {
       const userClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: authHeader } } });
       const { data: { user } } = await userClient.auth.getUser();
       if (user) {
+        const { data: isTeam } = await supabase.rpc("is_team_member", { _user_id: user.id });
+        if (isTeam === true) return new Response(JSON.stringify({ error: "medewerker", melding: "Je bent ingelogd als medewerker. Verstuur documenten voor een klant via de klantkaart in het beheer." }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
         const { data: ownedPolicy } = await supabase.from("policies").select("id").eq("user_id", user.id).eq("certificate_number", v.polisnummer).limit(1).maybeSingle();
         if (!ownedPolicy) return new Response(JSON.stringify({ error: "forbidden", melding: "Deze polis hoort niet bij je account." }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
         verifiedUserId = user.id;
