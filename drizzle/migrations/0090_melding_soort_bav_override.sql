@@ -1,0 +1,2 @@
+ALTER TABLE public.interne_melding_ontvangers DROP CONSTRAINT interne_melding_ontvangers_soort_check;
+ALTER TABLE public.interne_melding_ontvangers ADD CONSTRAINT interne_melding_ontvangers_soort_check CHECK (soort IN ('algemeen','exact_boeking','bav_override'));

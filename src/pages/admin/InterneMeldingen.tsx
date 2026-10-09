@@ -13,6 +13,7 @@ type Recipient = { id: string; email: string; actief: boolean; soort: string };
 const SOORTEN = [
   { key: "algemeen", titel: "Algemene meldingen", uitleg: "Nieuwe aanvragen, opzeggingen, contact- en terugbelverzoeken." },
   { key: "exact_boeking", titel: "Exact-boeking", uitleg: "Controlemail bij elke boeking naar Exact (ook mislukte) en de ochtendcontrole op concepten." },
+  { key: "bav_override", titel: "BAV-nummer override", uitleg: "Melding als een BAV-nummer bewust wordt gekoppeld terwijl het al bij een andere klant bekend is." },
 ];
 
 export default function InterneMeldingen() {

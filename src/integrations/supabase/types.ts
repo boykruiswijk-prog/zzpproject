@@ -4735,6 +4735,10 @@ export type Database = {
         Args: { _nummer: string; _voor_ond: string }
         Returns: Json
       }
+      bav_nummer_bezet_info: {
+        Args: { _nummer: string; _onderneming_id: string }
+        Returns: Json
+      }
       bav_nummer_handmatig_bevestigen: {
         Args: { _nummer: string; _onderneming_id: string; _toelichting: string }
         Returns: Json
@@ -4742,6 +4746,10 @@ export type Database = {
       bav_nummer_later: {
         Args: { _onderneming_id: string; _toelichting: string }
         Returns: boolean
+      }
+      bav_nummer_override_bevestigen: {
+        Args: { _nummer: string; _onderneming_id: string; _reden: string }
+        Returns: Json
       }
       bav_nummer_werklijst: { Args: never; Returns: Json }
       bav_sleutel: { Args: { _t: string }; Returns: string }
@@ -4754,6 +4762,7 @@ export type Database = {
         Returns: Json
       }
       bepaal_opzegging_koppeling: { Args: { _id: string }; Returns: Json }
+      bepaal_service_koppeling: { Args: { _id: string }; Returns: Json }
       bevestig_artikel_mapping: {
         Args: { _bevestigd: boolean; _id: string }
         Returns: boolean
@@ -5068,6 +5077,10 @@ export type Database = {
           lead_id: string
           voornaam: string
         }[]
+      }
+      service_aanvraag_koppelen: {
+        Args: { _aanvraag_id: string; _onderneming_id: string }
+        Returns: Json
       }
       verberg_review_kaart: { Args: never; Returns: boolean }
       verify_cron_secret: { Args: { p_secret: string }; Returns: boolean }
