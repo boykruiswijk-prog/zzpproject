@@ -4876,6 +4876,7 @@ export type Database = {
       }
       exact_code_norm: { Args: { _c: string }; Returns: string }
       exact_koppel_accounts: { Args: never; Returns: Json }
+      exact_koppeling_controle: { Args: never; Returns: Json }
       facturatie_kandidaten: {
         Args: { _tot: string; _van: string }
         Returns: {
