@@ -16,7 +16,13 @@ Deno.serve(async (req) => {
   const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const intern = Deno.env.get("INTERNAL_FUNCTION_SECRET");
   const gegeven = req.headers.get("x-internal-secret");
-  if (!(intern && gegeven && gegeven === intern)) {
+  const cronSecret = req.headers.get("x-cron-secret");
+  let cronOk = false;
+  if (cronSecret) {
+    const { data: ok } = await admin.rpc("verify_cron_secret", { p_secret: cronSecret });
+    cronOk = ok === true;
+  }
+  if (!cronOk && !(intern && gegeven && gegeven === intern)) {
     const auth = await requireSupervisor(req, admin);
     if (auth instanceof Response) return json({ error: "geen_toegang" }, auth.status);
   }
