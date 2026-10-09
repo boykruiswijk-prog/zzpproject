@@ -4622,6 +4622,39 @@ export type Database = {
         }
         Relationships: []
       }
+      wijzigingsmeldingen: {
+        Row: {
+          created_at: string
+          gemaild_op: string | null
+          id: string
+          mail_log_id: string | null
+          omschrijving: string
+          onderdeel: string
+          titel: string
+          wat_moet_ellen_doen: string | null
+        }
+        Insert: {
+          created_at?: string
+          gemaild_op?: string | null
+          id?: string
+          mail_log_id?: string | null
+          omschrijving: string
+          onderdeel: string
+          titel: string
+          wat_moet_ellen_doen?: string | null
+        }
+        Update: {
+          created_at?: string
+          gemaild_op?: string | null
+          id?: string
+          mail_log_id?: string | null
+          omschrijving?: string
+          onderdeel?: string
+          titel?: string
+          wat_moet_ellen_doen?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       crm_bav_nummers: {

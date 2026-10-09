@@ -673,6 +673,13 @@
       "when": 1791552775463,
       "tag": "0095_document_versturen_afas_taak",
       "breakpoints": true
+    },
+    {
+      "idx": 96,
+      "version": "7",
+      "when": 1791558403760,
+      "tag": "0096_wijzigingsmeldingen",
+      "breakpoints": true
     }
   ]
 }

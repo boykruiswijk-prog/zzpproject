@@ -57,3 +57,6 @@ verify_jwt = false
 
 [functions.artikel-afbeelding]
 verify_jwt = false
+
+[functions.wijziging-mailen]
+verify_jwt = false
