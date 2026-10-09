@@ -63,7 +63,7 @@ Deno.serve(async (req) => {
     return json({ resultaten: res, log });
   }
 
-  if (cron) {
+  if (cron && actie === "controle") {
     // Cron draait 05:15 en 06:15 UTC op werkdagen; alleen de run om 07:xx NL telt.
     const uurNL = Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Amsterdam", hour: "2-digit", hour12: false }).format(new Date()));
     if (uurNL !== 7) return json({ overgeslagen: true, uur_nl: uurNL });
