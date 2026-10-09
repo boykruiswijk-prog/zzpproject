@@ -182,10 +182,10 @@ export const searchIndex: SearchEntry[] = [
     keywords: "cookies privacy tracking",
     snippet: "Cookie- en privacy-informatie.",
   },
-  { title: "Mijn ZP | Polis opvragen", path: "/mijn-zp/polis", keywords: "polis verzekeringspolis verzekeringsbewijs opdrachtgever", snippet: "Vraag je verzekeringspolis op voor je opdrachtgever." },
+  { title: "Mijn ZP | Verzekeringscertificaat opvragen", path: "/mijn-zp/polis", keywords: "verzekeringscertificaat certificaat polis verzekeringspolis verzekeringsbewijs opdrachtgever", snippet: "Vraag je verzekeringscertificaat op voor je opdrachtgever." },
   { title: "Mijn ZP | Verzekering pauzeren", path: "/mijn-zp/pauzeren", keywords: "pauzeren tijdelijk loondienst", snippet: "Pauzeer tijdelijk je verzekering. Tijdens de pauze ben je niet verzekerd voor nieuwe werkzaamheden." },
-  { title: "Mijn ZP | Documenten opvragen", path: "/mijn-zp/documenten", keywords: "polisblad polisvoorwaarden documenten kopie", snippet: "Vraag een kopie op van je polisblad, voorwaarden of ander document." },
+  { title: "Mijn ZP | Documenten opvragen", path: "/mijn-zp/documenten", keywords: "verzekeringscertificaat polisblad polisvoorwaarden documenten kopie", snippet: "Vraag een kopie op van je verzekeringscertificaat, de polisvoorwaarden of een ander document." },
   { title: "Mijn ZP | Verzekering opzeggen", path: "/mijn-zp/opzeggen", keywords: "opzeggen opzeg beëindigen stoppen verzekering opzeggen BAV opzeggen einde verzekering loondienst BV entiteit wijzigen", snippet: "Zeg je BAV-verzekering bij ZP Zaken eenvoudig op. Dagelijks opzegbaar, binnen 24 uur verwerkt." },
   { title: "FAQ | Hoe pauzeer ik mijn verzekering?", path: "/faq", keywords: "pauzeren verzekering uitlooprisico mijn verzekering beheren", snippet: "Pauzeer je verzekering via Mijn ZP. Tijdens de pauze ben je niet verzekerd voor nieuwe werkzaamheden." },
-  { title: "FAQ | Polis opvragen", path: "/faq", keywords: "polis verzekeringspolis opvragen aanvragen", snippet: "Hoe vraag je je polis op." },
+  { title: "FAQ | Verzekeringscertificaat opvragen", path: "/faq", keywords: "verzekeringscertificaat polis verzekeringspolis opvragen aanvragen", snippet: "Hoe vraag je je verzekeringscertificaat op." },
 ];

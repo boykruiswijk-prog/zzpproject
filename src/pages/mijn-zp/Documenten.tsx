@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Mail } from "lucide-react";
 
 const DOCS = [
-  "Polisblad",
+  "Verzekeringscertificaat",
   "Polisvoorwaarden",
   "Verzekeringskaart",
   "Premiebewijs / factuur",
@@ -21,9 +21,9 @@ export default function DocumentenWizard() {
     <ServiceWizardShell
       type="documenten"
       pageTitle="Documenten opvragen | Mijn ZP, ZP Zaken"
-      pageDescription="Vraag eenvoudig je polisstukken op (polisblad, voorwaarden, premiebewijs). Binnen 24 uur per mail."
+      pageDescription="Vraag eenvoudig je documenten op (verzekeringscertificaat, polisvoorwaarden, premiebewijs). Binnen 24 uur per mail."
       introTitle="Documenten ontvangen"
-      introText="Vraag je polisstukken op. Je ontvangt ze binnen 24 uur per mail."
+      introText="Vraag je documenten op, zoals je verzekeringscertificaat. Je ontvangt ze binnen 24 uur per mail."
       steps={[
         {
           title: "Identificatie",

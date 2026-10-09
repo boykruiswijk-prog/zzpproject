@@ -396,13 +396,13 @@ export const ZEKER_KENNIS = {
     },
     {
       "categorie": "Mijn verzekering beheren",
-      "vraag": "Hoe vraag ik mijn polis op?",
-      "antwoord": "Heb je je polis nodig om aan een opdrachtgever te tonen? Vraag je polis op via de wizard op /mijn-zp/polis. Wij sturen je polis binnen 24 uur per mail."
+      "vraag": "Hoe vraag ik mijn verzekeringscertificaat op?",
+      "antwoord": "Heb je een bewijs van verzekering nodig voor een opdrachtgever? Vraag je verzekeringscertificaat op via de wizard op /mijn-zp/polis. Wij sturen het binnen 24 uur per mail. Je ontvangt een verzekeringscertificaat: het bewijs dat je verzekerd bent onder de collectieve polis van ZP Zaken bij Hiscox. Dit is het document dat je aan je opdrachtgever kunt geven."
     },
     {
       "categorie": "Mijn verzekering beheren",
-      "vraag": "Hoe ontvang ik kopieën van mijn polisstukken?",
-      "antwoord": "Heb je je polisblad, polisvoorwaarden of een ander document nodig? Vraag je documenten op via de wizard op /mijn-zp/documenten. Je ontvangt ze binnen 24 uur per mail."
+      "vraag": "Hoe ontvang ik kopieën van mijn documenten?",
+      "antwoord": "Heb je je verzekeringscertificaat, de polisvoorwaarden of een ander document nodig? Vraag je documenten op via de wizard op /mijn-zp/documenten. Je ontvangt ze binnen 24 uur per mail."
     },
     {
       "categorie": "Mijn verzekering beheren",

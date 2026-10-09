@@ -33,7 +33,7 @@ const schema = z.object({
 });
 
 const labels: Record<string, string> = {
-  certificaat: "Polis opgevraagd",
+  certificaat: "Verzekeringscertificaat opgevraagd",
   pauzeren: "Pauzeringsaanvraag",
   documenten: "Documenten opgevraagd",
   opzeggen: "Opzegging",

@@ -11,10 +11,10 @@ export default function PolisWizard() {
   return (
     <ServiceWizardShell
       type="certificaat"
-      pageTitle="Polis opvragen | Mijn ZP, ZP Zaken"
-      pageDescription="Vraag een verzekeringspolis (BAV/AVB) aan via Mijn ZP. Binnen 24 uur per mail."
-      introTitle="Polis opvragen"
-      introText="Heb je een verzekeringspolis nodig voor een opdrachtgever? Vul het formulier in. We sturen hem binnen 24 uur op."
+      pageTitle="Verzekeringscertificaat opvragen | Mijn ZP, ZP Zaken"
+      pageDescription="Vraag je verzekeringscertificaat (BAV/AVB) op via Mijn ZP. Binnen 24 uur per mail."
+      introTitle="Verzekeringscertificaat opvragen"
+      introText="Heb je een bewijs van verzekering nodig voor een opdrachtgever? Vul het formulier in. We sturen je verzekeringscertificaat binnen 24 uur op. Je ontvangt een verzekeringscertificaat: het bewijs dat je verzekerd bent onder de collectieve polis van ZP Zaken bij Hiscox. Dit is het document dat je aan je opdrachtgever kunt geven."
       steps={[
         {
           title: "Identificatie",
@@ -22,7 +22,7 @@ export default function PolisWizard() {
           validate: (f) => validateIdentificatie(f),
         },
         {
-          title: "Waarvoor heb je de polis nodig?",
+          title: "Waarvoor heb je het verzekeringscertificaat nodig?",
           render: ({ details, setDetails }) => (
             <div className="space-y-4">
               <div>
@@ -64,7 +64,7 @@ export default function PolisWizard() {
                 <Input type="email" value={details.opdrachtgeverEmail ?? ""}
                   onChange={(e) => setDetails({ ...details, opdrachtgeverEmail: e.target.value })} />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Wij sturen de polis dan direct naar dit adres.
+                  Wij sturen het verzekeringscertificaat dan direct naar dit adres.
                 </p>
               </div>
             </div>
