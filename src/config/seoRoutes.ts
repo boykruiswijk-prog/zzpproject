@@ -58,7 +58,7 @@ export const seoRoutes: SeoRoute[] = [
   {
     path: "/verzekeringen",
     title:
-      "BAV + AVB voor ZZP'ers | Online aanvragen, binnen 24 uur geregeld",
+      "BAV + AVB voor ZZP'ers | Online aanvragen",
     description: `BAV + AVB in één polis, bedacht door ZP Zaken. Geen eigen risico, dagelijks opzegbaar, vanaf € ${goedkoopstePakket.prijs} per maand. Online aanvragen, binnen 24 uur geregeld.`,
     h1: "BAV & AVB: de combinatiepolis voor zzp'ers",
     intro:

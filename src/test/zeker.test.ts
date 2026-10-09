@@ -25,6 +25,9 @@ describe("Zeker kennisbasis", () => {
   it("prompt bevat compliancegrenzen en geen interne sectorvlaggen", () => {
     const p = bouwSysteemPrompt({ taal: "en", artikelen: [{ slug: "wet-dba", title: "Wet DBA", excerpt: "x" }] });
     expect(p).toMatch(/nooit persoonlijk advies/);
+    expect(p).toContain("ZP Zaken geeft geen advies.");
+    expect(p).toContain("bied persoonlijk contact met ons team aan");
+    expect(p).not.toContain("gesprek met een adviseur");
     expect(p).toMatch(/Zeg nooit toe/);
     expect(p).toMatch(/BSN, IBAN/);
     expect(p).toMatch(/\/klachtenprocedure/);
