@@ -74,8 +74,8 @@
 /wie-zijn-wij    /over-ons    301
 /privacy    /cookies    301
 /privacyverklaring    /cookies    301
-/voorwaarden    /documenten#verzekeringsvoorwaarden    301
-/polisvoorwaarden    /documenten#verzekeringsvoorwaarden    301
+/polisvoorwaarden    /voorwaarden    301
+/verzekeringsvoorwaarden    /voorwaarden    301
 /disclaimer    /faq    301
 /kennis    /kennisbank    301
 /auto-van-de-zaak-of-prive    /kennisbank/auto-van-de-zaak-of-prive    301  # gepubliceerd artikel
@@ -277,9 +277,9 @@
 /financien/subsidie-check    /kennisbank/financien    301
 /gevaar-voor-cybercriminelen-die-misbruik-maken-van-thuiswerken    /verzekeringen    301
 /gevolgrecht    /kennisbank/wet-en-regelgeving    301
-/go/beroepsaansprakelijkheid-voorwaarden-kantoorrisico    /documenten#verzekeringsvoorwaarden    301
-/go/coaches-verzekeringskaart-beroepsaansprakelijkheid    /documenten#verzekeringsvoorwaarden    301
-/go/overige-zakelijke-dienstverlening-polisvoorwaarden-beroepsaansprakelijkheid    /documenten#verzekeringsvoorwaarden    301
+/go/beroepsaansprakelijkheid-voorwaarden-kantoorrisico    /voorwaarden    301
+/go/coaches-verzekeringskaart-beroepsaansprakelijkheid    /voorwaarden    301
+/go/overige-zakelijke-dienstverlening-polisvoorwaarden-beroepsaansprakelijkheid    /voorwaarden    301
 /golf    /    301
 /golf/nk    /    301
 /hackers-maken-gebruik-van-de-pandemie-hoe-houd-jij-ze-tegen    /kennisbank    301
@@ -290,7 +290,7 @@
 /het-nk-golftoernooi-voor-zpers-2019-burggolf-de-haverleij    /    301
 /home/nieuws    /kennisbank    301
 /ict-brochure-beroepsaansprakelijkheid    /documenten#verzekeringsvoorwaarden    301
-/ict-polisvoorwaarden-beroepsaansprakelijkheid    /documenten#verzekeringsvoorwaarden    301
+/ict-polisvoorwaarden-beroepsaansprakelijkheid    /voorwaarden    301
 /infographic-wie-is-de-zper-in-de-zakelijke-dienstverlening    /diensten    301
 /inschrijfformulier-bav    /verzekeringen    301
 /inschrijven    /    301
@@ -308,7 +308,7 @@
 /lidmaatschappen    /collectieve-inkoop    301
 /losgeldverbod-voor-ransomware-wordt-onderzocht    /kennisbank    301
 /management-consultancy-brochure-beroepsaansprakelijkheid    /documenten#verzekeringsvoorwaarden    301
-/management-consultancy-verzekeringskaart-beroepsaansprakelijkheid    /documenten#verzekeringsvoorwaarden    301
+/management-consultancy-verzekeringskaart-beroepsaansprakelijkheid    /voorwaarden    301
 /meerwerk-zo-voorkom-je-een-discussie    /kennisbank    301
 /mils-onderzoek    /mentale-gezondheid    301
 /milsonderzoek-inschrijven    /mentale-gezondheid    301
