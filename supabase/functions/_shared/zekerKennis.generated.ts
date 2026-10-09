@@ -228,6 +228,11 @@ export const ZEKER_KENNIS = {
       "intro": "Hier vind je de polisvoorwaarden, verzekeringskaarten en brochures per branche. Ook het dienstverleningsdocument, de gedragscode en de slotverklaring staan op deze pagina."
     },
     {
+      "path": "/voorwaarden",
+      "title": "Polisvoorwaarden BAV en AVB per branche | ZP Zaken",
+      "intro": "Je bent verzekerd via de collectieve polis van ZP Zaken bij Hiscox. Daarom ontvang je geen eigen polis, maar een verzekeringscertificaat. De voorwaarden hieronder gelden voor jouw dekking."
+    },
+    {
       "path": "/documenten/slotverklaring",
       "title": "Slotverklaring | ZP Zaken",
       "intro": "De slotverklaring hoort bij de aanvraag van een beroeps- en bedrijfsaansprakelijkheidsverzekering via ZP Zaken. Je leest hier welke verklaringen je bij de aanvraag aflegt."
@@ -396,13 +401,23 @@ export const ZEKER_KENNIS = {
     },
     {
       "categorie": "Mijn verzekering beheren",
+      "vraag": "Vanaf wanneer ben ik gedekt (inloop)?",
+      "antwoord": "Vanaf de ingangsdatum die je zelf kiest op het aanmeldformulier. Fouten die je voor die datum maakte, zijn niet gedekt. Kies daarom een ingangsdatum die aansluit op je eerste opdracht."
+    },
+    {
+      "categorie": "Mijn verzekering beheren",
+      "vraag": "Heeft de BAV van ZP Zaken uitloopdekking?",
+      "antwoord": "Nee. Stop je de verzekering, dan stopt ook de dekking. Er is geen uitloopdekking."
+    },
+    {
+      "categorie": "Mijn verzekering beheren",
       "vraag": "Hoe vraag ik mijn verzekeringscertificaat op?",
       "antwoord": "Heb je een bewijs van verzekering nodig voor een opdrachtgever? Vraag je verzekeringscertificaat op via de wizard op /mijn-zp/polis. Wij sturen het binnen 24 uur per mail. Je ontvangt een verzekeringscertificaat: het bewijs dat je verzekerd bent onder de collectieve polis van ZP Zaken bij Hiscox. Dit is het document dat je aan je opdrachtgever kunt geven."
     },
     {
       "categorie": "Mijn verzekering beheren",
       "vraag": "Hoe ontvang ik kopieën van mijn documenten?",
-      "antwoord": "Heb je je verzekeringscertificaat, de polisvoorwaarden of een ander document nodig? Vraag je documenten op via de wizard op /mijn-zp/documenten. Je ontvangt ze binnen 24 uur per mail."
+      "antwoord": "Heb je je verzekeringscertificaat of een ander document nodig? De polisvoorwaarden download je direct op /voorwaarden. Vraag je documenten op via de wizard op /mijn-zp/documenten. Je ontvangt ze binnen 24 uur per mail."
     },
     {
       "categorie": "Mijn verzekering beheren",
