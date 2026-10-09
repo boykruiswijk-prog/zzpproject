@@ -172,17 +172,20 @@ serve(async (req) => {
       const besluit = beslisNieuwCertificaat(bestaande || [], body.bevestig_nieuw_nummer === true);
       if (!besluit.toegestaan) return json({ error: `Deze klant heeft al geldig certificaat ${besluit.bestaand}. Gebruik "Aanpassen".`, code: besluit.code, bestaand: besluit.bestaand }, 409);
       const heeftGeldig = (bestaande || []).some((p) => p.status === "geldig");
+      // Nummerkeuze op één plek: RPC certificaatnummer_voorstel_intern (zelfde logica als de trigger).
       let nummer = "";
       if (!heeftGeldig) {
-        const { data: certs } = await adminClient.from("klant_certificaten").select("certificaatnummer,aanvraagdatum,koppeling_status").eq("onderneming_id", ondId);
-        const k = kiesKlantCertificaatnummer(certs || []);
-        if (k.soort === "bestaand") {
-          const { data: botsing } = await adminClient.from("policies").select("id,onderneming_id,lead_id").eq("certificate_number", k.nummer).maybeSingle();
-          if (botsing) return json({ error: `Nummer ${k.nummer} staat al op een ander certificaat in het systeem. Neem contact op met Boy.`, code: "nummer_bezet" }, 409);
-          nummer = k.nummer;
-        } else if (body.bevestig_nieuw_nummer !== true) {
-          return json({ error: "Deze klant heeft nog geen certificaatnummer. Bevestig om een nieuw nummer uit te geven.", code: "geen_nummer" }, 409);
+        const { data: vs, error: vsErr } = await adminClient.rpc("certificaatnummer_voorstel_intern", { _onderneming_id: ondId, _lead_id: null });
+        if (vsErr) return json({ error: "Nummerkeuze mislukt", details: vsErr.message }, 500);
+        const v = vs as { nummer: string | null; bron: string; staat_al_op_policy?: boolean };
+        if (v?.nummer && v.staat_al_op_policy) {
+          return json({ error: `Nummer ${v.nummer} staat al op een certificaat van deze klant. Gebruik "Aanpassen".`, code: "nummer_bezet", bestaand: v.nummer }, 409);
         }
+        if (v?.nummer) nummer = v.nummer;
+        else if (body.bevestig_nieuw_nummer === true) nummer = "NIEUW";
+        else return json({ error: "Deze klant heeft nog geen certificaatnummer. Bevestig om een nieuw nummer uit te geven.", code: "geen_nummer" }, 409);
+      } else if (body.bevestig_nieuw_nummer === true) {
+        nummer = "NIEUW";
       }
       const pd = policy_data || {};
       const tekst = (v: unknown) => (typeof v === "string" ? v.trim().slice(0, 200) : "");
@@ -239,7 +242,8 @@ serve(async (req) => {
       kvkNummerBron = data?.kvk ?? null;
       const { data: ins, error: policyError } = await adminClient.from("policies").insert({
         lead_id: lead_id || null,
-        certificate_number: "",
+        // Leeg = bekend nummer van de klant (trigger), "NIEUW" = expliciet nieuw nummer.
+        certificate_number: body.bevestig_nieuw_nummer === true ? "NIEUW" : "",
         certificate_holder: data.certificate_holder,
         insured_name: data.insured_name,
         start_date: data.start_date,

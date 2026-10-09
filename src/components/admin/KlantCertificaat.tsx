@@ -29,6 +29,7 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds }: Props) 
   const [open, setOpen] = useState(false);
   const [bevestig, setBevestig] = useState(false);
   const [geenNummer, setGeenNummer] = useState(false);
+  const [voorstel, setVoorstel] = useState<any>(null);
   const [bezig, setBezig] = useState(false);
   const [form, setForm] = useState({ certificate_holder: "", insured_name: "", kvk: "", start_date: "", sector: "", package_type: "" });
 
@@ -65,7 +66,27 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds }: Props) 
       package_type: bav ? `BAV & AVB ${bav.cyclus === "jaar" ? "Jaarlijks" : "Maandelijks"}` : "BAV & AVB Jaarlijks",
     });
     setBevestig(bevestigNieuw);
+    setVoorstel(null);
+    setGeenNummer(false);
     setOpen(true);
+    // Zelfde nummerkeuze als de server (trigger generate_certificate_number).
+    const { data: vs } = await supabase.rpc("certificaatnummer_voorstel" as any, { _onderneming_id: ond.id, _lead_id: null });
+    const v = vs as any;
+    setVoorstel(v ?? { nummer: null, bron: "geen" });
+    if (!v?.nummer && !bevestigNieuw) setGeenNummer(true);
+  };
+
+  const bronTekst = (v: any) => {
+    const d = v?.datum ? new Date(v.datum).toLocaleDateString("nl-NL", { day: "numeric", month: "short" }).replace(".", "") : "";
+    const wie = v?.door_naam ? ` door ${String(v.door_naam).split(" ")[0]}` : "";
+    const op = d ? ` op ${d}` : "";
+    switch (v?.bron) {
+      case "overgenomen": return `overgenomen bij omzetting${op}`;
+      case "bevestigd": return `bevestigd${wie}${op}`;
+      case "klant_certificaat": return `bekend certificaat van de klant`;
+      case "eerdere_policy": return `eerder certificaat van deze klant`;
+      default: return "";
+    }
   };
 
   const genereer = async (bevestigNieuw: boolean) => {
@@ -132,7 +153,12 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds }: Props) 
             </div>
             <div><Label htmlFor="kc-sd">Ingangsdatum</Label><Input id="kc-sd" type="date" value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} /></div>
           </div>
-          {geenNummer && (
+          {voorstel?.nummer && !bevestig && (
+            <p className="text-sm">Certificaatnummer: <strong>{voorstel.nummer}</strong> ({bronTekst(voorstel)})
+              {voorstel.staat_al_op_policy && <span className="block text-destructive">Dit nummer staat al op een certificaat van deze klant. Gebruik "Aanpassen".</span>}
+            </p>
+          )}
+          {geenNummer && !voorstel?.nummer && (
             <p className="flex items-start gap-2 text-sm text-destructive"><AlertTriangle className="h-4 w-4 mt-0.5" />Deze klant heeft nog geen certificaatnummer. Alleen doorgaan als dat echt klopt: er wordt dan een nieuw nummer uitgegeven.</p>
           )}
           <DialogFooter>
