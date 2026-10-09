@@ -4767,6 +4767,14 @@ export type Database = {
         Args: { _bevestigd: boolean; _id: string }
         Returns: boolean
       }
+      certificaatnummer_voorstel: {
+        Args: { _lead_id?: string; _onderneming_id: string }
+        Returns: Json
+      }
+      certificaatnummer_voorstel_intern: {
+        Args: { _lead_id: string; _onderneming_id: string }
+        Returns: Json
+      }
       claim_article_image_worker: {
         Args: { p_lease: string }
         Returns: boolean
