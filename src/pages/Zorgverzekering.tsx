@@ -63,7 +63,7 @@ export default function Zorgverzekering() {
           text: "We werken samen met betrouwbare zorgverzekeraars die ruime keuze bieden in pakketten. Zo vind je een verzekering die bij je past.",
           bullets: [
             "Breed aanbod van zorgverzekeraars",
-            "Vergelijking op maat door onze adviseurs",
+            "Persoonlijk contact voor je vragen",
             "Hulp bij het kiezen van de juiste aanvullende dekking",
           ],
         },

@@ -282,9 +282,9 @@ export function OnlineAanvraagDialog({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{insuranceTitle} online afsluiten</DialogTitle>
+          <DialogTitle>{insuranceTitle} online aanvragen</DialogTitle>
           <DialogDescription>
-            Sluit je verzekering direct online af. Vul onderstaande gegevens in en ontvang binnen 24 uur je polis.
+            Vraag je verzekering online aan. Vul onderstaande gegevens in, binnen 24 uur geregeld en je verzekeringscertificaat in je mailbox.
           </DialogDescription>
         </DialogHeader>
 

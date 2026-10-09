@@ -11,14 +11,14 @@ export const searchIndex: SearchEntry[] = [
   {
     title: "Home | ZP Zaken",
     path: "/",
-    keywords: "zzp verzekering BAV AVB combinatiepolis online afsluiten zelfstandig ondernemer",
-    snippet: "BAV + AVB combinatieverzekering voor zzp'ers. Vanaf €55/maand, direct online afsluiten.",
+    keywords: "zzp verzekering BAV AVB combinatiepolis online aanvragen zelfstandig ondernemer",
+    snippet: "BAV + AVB combinatieverzekering voor zzp'ers. Vanaf €55/maand, online aanvragen, binnen 24 uur geregeld.",
   },
   {
     title: "Over ons",
     path: "/over-ons",
-    keywords: "team Boy Kruiswijk Ellen Baars Roxy Gert-Jan adviseur missie",
-    snippet: "Wie wij zijn: een team van adviseurs gespecialiseerd in zzp-verzekeringen. AFM geregistreerd.",
+    keywords: "team Boy Kruiswijk Ellen Baars Roxy Gert-Jan persoonlijke service missie",
+    snippet: "Wie wij zijn: een team gespecialiseerd in zzp-verzekeringen. AFM geregistreerd.",
   },
   {
     title: "Voor wie",
@@ -36,7 +36,7 @@ export const searchIndex: SearchEntry[] = [
     title: "Verzekeringen",
     path: "/verzekeringen",
     keywords: "BAV AVB rechtsbijstand AOV beroepsaansprakelijkheid bedrijfsaansprakelijkheid",
-    snippet: "BAV en AVB combinatiepolis, AOV en rechtsbijstand. Direct online afsluiten of contact opnemen.",
+    snippet: "BAV en AVB combinatiepolis, AOV en rechtsbijstand. Online aanvragen, binnen 24 uur geregeld of contact opnemen.",
   },
   {
     title: "Offerte aanvragen | ZP Zaken",
@@ -107,8 +107,8 @@ export const searchIndex: SearchEntry[] = [
   {
     title: "Waarom ZP Zaken",
     path: "/waarom-zp-zaken",
-    keywords: "voordelen onafhankelijk transparant directe partner geen bemiddelaar",
-    snippet: "Onafhankelijke bemiddeling, transparante tarieven en direct contact. Geen tussenpersonen.",
+    keywords: "voordelen onafhankelijk transparant directe partner persoonlijke service",
+    snippet: "Persoonlijke service, transparante tarieven en direct contact met ZP Zaken.",
   },
   {
     title: "Zo werken wij",

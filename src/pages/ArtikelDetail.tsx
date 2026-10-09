@@ -115,7 +115,7 @@ const InlineCTA = ({ aov = false }: { aov?: boolean }) => (
       Direct geregeld
     </div>
     <h3 className="text-lg font-bold mb-1 text-foreground">
-      Sluit direct online af vanaf €55 per maand
+      Vraag online aan vanaf €55 per maand
     </h3>
     <p className="text-sm text-muted-foreground mb-4">
       Geen eigen risico. Dagelijks opzegbaar. BAV + AVB gecombineerd.
@@ -123,7 +123,7 @@ const InlineCTA = ({ aov = false }: { aov?: boolean }) => (
     <div className="flex flex-wrap gap-3">
       <Button variant="accent" asChild>
         <LocalizedLink to="/verzekeringen">
-          BAV + AVB direct afsluiten <ArrowRight className="h-4 w-4" />
+          BAV + AVB online aanvragen <ArrowRight className="h-4 w-4" />
         </LocalizedLink>
       </Button>
       <Button variant="outline" asChild>

@@ -27,11 +27,11 @@ export default function ZzpVerzekeringInterimManager() {
       benefits={[
         { icon: Users, title: "Voor interim en projectmanagement", description: `Ook voor projectmanagers, programmamanagers en scrum masters buiten ICT. Je bent verzekerd voor ${BAV_DEKKING} BAV en ${AVB_DEKKING} AVB per aanspraak.` },
         { icon: ShieldCheck, title: "Geen eigen risico, dagelijks opzegbaar", description: "Je betaalt geen eigen risico. Stopt je opdracht? Dan zeg je de polis op wanneer je wilt." },
-        { icon: Clock, title: "Snel geregeld", description: "Sluit online af. Binnen 24 uur is het geregeld en heb je je certificaat in je mailbox." },
+        { icon: Clock, title: "Snel geregeld", description: "Vraag online aan. Binnen 24 uur is het geregeld en heb je je certificaat in je mailbox." },
       ]}
       explainers={[
         { title: "Besluiten en planning waarop je opdrachtgever bouwt", text: "Als interim manager stuur je mensen, budgetten en planningen aan. Je opdrachtgever rekent op jouw keuzes. Een fout in een planning of besluit kan schade geven. Daarvoor is een BAV.", bullets: ["BAV en AVB in één polis via Hiscox", "Ook voor programma- en projectmanagers", "Certificaat voor je opdrachtgever of bemiddelingsbureau"] },
-        { title: "Persoonlijk advies bij je opdracht", text: "Elke opdracht is anders. Je adviseur kijkt met je mee naar wat je opdrachtgever vraagt. De polisvoorwaarden zijn leidend." },
+        { title: "Persoonlijk contact bij je opdracht", text: "Elke opdracht is anders. We beantwoorden je vragen over de aanvraag en voorwaarden. De polisvoorwaarden zijn leidend." },
       ]}
       faqs={faqs}
       leesMeer={["bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "wat-kosten-verzekeringen-voor-zzp-ers", "welke-verzekeringen-zzp", "bedrijfsaansprakelijkheidsverzekering-zzp"]}

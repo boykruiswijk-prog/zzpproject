@@ -50,7 +50,7 @@ export const faqItems = [
     category: "Onze verzekering",
     questions: [
       { question: "Bieden jullie een passende oplossing voor een BV?", answer: "Ja, ook voor een besloten vennootschap (BV) hebben wij passende beroeps- en bedrijfsaansprakelijkheidsverzekeringen. Neem contact op via 020 - 457 3077 voor een persoonlijk gesprek." },
-      { question: "Heb ik een beroeps- en een bedrijfsaansprakelijkheidsverzekering nodig?", answer: "Een BAV dekt schade door fouten in je werk (verkeerd advies, fout ontwerp). Een AVB dekt schade aan personen of spullen. Voor de meeste zzp'ers zijn beide aan te raden. Onze combinatiepolis bundelt ze met korting." },
+      { question: "Heb ik een beroeps- en een bedrijfsaansprakelijkheidsverzekering nodig?", answer: "Een BAV dekt schade door fouten in je werk (verkeerd advies, fout ontwerp). Een AVB dekt schade aan personen of spullen. Veel opdrachtgevers vragen om beide verzekeringen. Onze combinatiepolis bundelt ze met korting." },
       { question: "Kan ik mijn beroep altijd verzekeren bij ZP Zaken?", answer: "Wij verzekeren een groot deel van de zakelijke dienstverlening: ICT, consultancy, HR & finance, PR & marketing, coaching en management. Voor andere beroepen overleggen we graag of dekking mogelijk is." },
       { question: "Moet ik doorgeven dat ik nieuwe opdrachten heb?", answer: "Nee. Zolang je werkzaamheden binnen je verzekerde beroep vallen, ben je automatisch gedekt voor nieuwe opdrachten. Verandert de aard van je werk substantieel, geef dit dan even door." },
       { question: "Kunnen mijn andere opdrachten ook onder deze polis?", answer: "Ja, alle zakelijke werkzaamheden binnen het verzekerde beroep vallen onder dezelfde polis, ongeacht hoeveel opdrachtgevers je hebt." },

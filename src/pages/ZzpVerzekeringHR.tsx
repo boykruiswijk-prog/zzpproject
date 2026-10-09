@@ -27,11 +27,11 @@ export default function ZzpVerzekeringHR() {
       benefits={[
         { icon: Users, title: "Voor HR, P&O en recruitment", description: `Voor HR-adviseurs, P&O'ers, recruiters en loopbaanadviseurs. Verzekerd voor ${BAV_DEKKING} BAV en ${AVB_DEKKING} AVB per aanspraak.` },
         { icon: ShieldCheck, title: "Geen eigen risico", description: "Bij een schade betaal je geen eigen risico. Je polis is dagelijks opzegbaar." },
-        { icon: Clock, title: "Binnen 24 uur geregeld", description: "Online afsluiten, binnen 24 uur geregeld en je certificaat in je mailbox." },
+        { icon: Clock, title: "Binnen 24 uur geregeld", description: "Online aanvragen, binnen 24 uur geregeld en je certificaat in je mailbox." },
       ]}
       explainers={[
         { title: "Advies bij ontslag, contracten en selectie", text: "Je adviseert over ontslag, contracten of een nieuwe medewerker. Gaat er iets mis door een fout in je advies of selectie, dan kan je opdrachtgever schade hebben. Een BAV beschermt je als je daarvoor aansprakelijk wordt gesteld.", bullets: ["BAV en AVB in één polis via Hiscox", "Ook voor recruiters en loopbaanadviseurs", "Certificaat voor je opdrachtgever"] },
-        { title: "Persoonlijk advies", text: "Je adviseur kijkt met je mee naar je opdracht en contract. De polisvoorwaarden zijn leidend." },
+        { title: "Persoonlijk contact", text: "We beantwoorden je vragen over de aanvraag en voorwaarden. De polisvoorwaarden zijn leidend." },
       ]}
       faqs={faqs}
       leesMeer={["bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "wat-kosten-verzekeringen-voor-zzp-ers", "welke-verzekeringen-zzp", "bedrijfsaansprakelijkheidsverzekering-zzp"]}

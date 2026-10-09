@@ -38,11 +38,11 @@ export const seoRoutes: SeoRoute[] = [
     path: "/",
     title: `BAV & AVB Verzekering ZZP'ers | Vanaf €${goedkoopstePakket.prijs}/maand`,
     description:
-      "Sluit als zzp'er direct online BAV + AVB in één polis af. Geen eigen risico, dagelijks opzegbaar. Onafhankelijk adviseur met AFM-vergunning.",
+      `Vraag als zzp'er online BAV + AVB in één polis aan, binnen 24 uur geregeld. Geen eigen risico, dagelijks opzegbaar. AFM-vergunning ${SITE_CONFIG.registrations.afm}.`,
     h1: "Verzekeringen voor zzp'ers, direct en onafhankelijk",
     intro:
-      `ZP Zaken is een onafhankelijke verzekeringsadviseur voor zelfstandig professionals, met AFM-vergunning ${SITE_CONFIG.registrations.afm}. ` +
-      `De gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering sluit je online af vanaf ${goedkoopstePakket.prijsLabel.toLowerCase()}, zonder eigen risico en dagelijks opzegbaar. ` +
+      `ZP Zaken biedt persoonlijke service voor zelfstandig professionals, met AFM-vergunning ${SITE_CONFIG.registrations.afm}. ` +
+      `De gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering vraag je online aan vanaf ${goedkoopstePakket.prijsLabel.toLowerCase()}, zonder eigen risico en dagelijks opzegbaar. ` +
       `Vragen? Bel ${SITE_CONFIG.phone} of mail ${SITE_CONFIG.email}.`,
   },
   {
@@ -58,8 +58,8 @@ export const seoRoutes: SeoRoute[] = [
   {
     path: "/verzekeringen",
     title:
-      "BAV + AVB voor ZZP'ers | Direct online afsluiten",
-    description: `BAV + AVB in één polis, bedacht door ZP Zaken. Geen eigen risico, dagelijks opzegbaar, vanaf € ${goedkoopstePakket.prijs} per maand. Direct online afsluiten.`,
+      "BAV + AVB voor ZZP'ers | Online aanvragen",
+    description: `BAV + AVB in één polis, bedacht door ZP Zaken. Geen eigen risico, dagelijks opzegbaar, vanaf € ${goedkoopstePakket.prijs} per maand. Online aanvragen, binnen 24 uur geregeld.`,
     h1: "BAV & AVB: de combinatiepolis voor zzp'ers",
     intro:
       "ZP Zaken is de bedenker van de BAV + AVB in één polis voor zzp'ers. " +
@@ -70,7 +70,7 @@ export const seoRoutes: SeoRoute[] = [
     path: "/aov",
     title: "AOV Arbeidsongeschiktheidsverzekering ZZP | ZP Zaken",
     description:
-      "Bescherm je inkomen als zzp'er bij ziekte. Vergelijk en sluit direct een AOV af via ZP Zaken. Persoonlijk gesprek, snel geregeld.",
+      "Bescherm je inkomen als zzp'er bij ziekte. Vraag een AOV aan via ZP Zaken. Persoonlijk contact, binnen 24 uur reactie.",
     h1: "AOV voor zzp'ers: zeker van je inkomen bij ziekte",
     intro:
       "Als zelfstandige ben je zelf verantwoordelijk voor je inkomen bij ziekte of arbeidsongeschiktheid. Een AOV vangt je op wanneer je niet kunt werken. " +
@@ -120,7 +120,7 @@ export const seoRoutes: SeoRoute[] = [
     path: "/voor-wie",
     title: "Voor wie? | Bouw, Zorg, ICT, Consultancy en meer",
     description:
-      "ZP Zaken helpt zelfstandig professionals in bouw, zorg, consultancy, HR, finance, marketing en ICT. Persoonlijk advies over de juiste verzekering voor jouw beroep.",
+      "ZP Zaken helpt zelfstandig professionals in bouw, zorg, consultancy, HR, finance, marketing en ICT. We beantwoorden je vragen over verzekeringen voor jouw beroep.",
     h1: "Voor wie is ZP Zaken bedoeld?",
     intro:
       "ZP Zaken werkt voor zelfstandig professionals in onder andere ICT, consultancy, HR, finance, marketing, coaching en management. " +
@@ -387,7 +387,7 @@ export const seoRoutes: SeoRoute[] = [
     h1: "Vrijblijvende offerte BAV en AVB",
     intro:
       "Vraag hier vrijblijvend een offerte aan voor je beroeps- en bedrijfsaansprakelijkheidsverzekering. " +
-      "Je ontvangt binnen 24 uur een reactie van een adviseur.",
+      "Je ontvangt binnen 24 uur een reactie van ons team.",
   },
   {
     path: "/zzp-verzekering-ict",

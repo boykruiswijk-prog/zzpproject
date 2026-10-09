@@ -38,7 +38,7 @@ ${engels}
 <tr><td style="padding:6px 0;color:#555">Premie</td><td style="padding:6px 0">${OFFERTE.maand} of ${OFFERTE.jaar}, inclusief kosten en assurantiebelasting</td></tr>
 <tr><td style="padding:6px 0;color:#555">Looptijd</td><td style="padding:6px 0">Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt.</td></tr>
 </table>
-<p style="margin:24px 0"><a href="${link}" style="background:#E53E2F;color:#ffffff;padding:12px 20px;border-radius:6px;text-decoration:none;font-weight:bold">Direct afsluiten</a></p>
+<p style="margin:24px 0"><a href="${link}" style="background:#E53E2F;color:#ffffff;padding:12px 20px;border-radius:6px;text-decoration:none;font-weight:bold">Online aanvragen</a></p>
 <p>Vragen? Antwoord op deze mail of bel ${COMPANY.phoneDisplay}.</p>
 <p>Groet,<br>${esc(COMPANY.legalName)}</p>
 <p style="font-size:12px;color:#777">AFM ${COMPANY.registrations.afm} · KvK ${COMPANY.registrations.kvk} · Kifid ${COMPANY.registrations.kifid}</p>

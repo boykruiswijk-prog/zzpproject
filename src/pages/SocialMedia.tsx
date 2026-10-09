@@ -22,7 +22,7 @@ import teamCheers from "@/assets/team-cheers.webp";
 const SEO = seoRoute("/social-media");
 
 const trustPoints = [
-  { icon: Users, title: "Directe benadering", description: "Geen onnodige tussenpartijen:  je spreekt direct met een adviseur die jouw situatie begrijpt." },
+  { icon: Users, title: "Directe benadering", description: "Geen onnodige tussenpartijen:  je hebt direct persoonlijk contact met ons team." },
   { icon: Shield, title: "Specialist in aansprakelijkheid", description: "Beroeps- én bedrijfsaansprakelijkheid onder één dak, met onze unieke BAV+AVB combinatiepolis." },
   { icon: CheckCircle, title: "Transparante werkwijze", description: "Eerlijk, onafhankelijke bemiddeling zonder verborgen kosten. Wij bemiddelen alleen wat je écht nodig hebt." },
   { icon: Star, title: "Persoonlijke begeleiding", description: "Een team dat klaarstaat. Altijd een mens aan de lijn, nooit een callcenter." },

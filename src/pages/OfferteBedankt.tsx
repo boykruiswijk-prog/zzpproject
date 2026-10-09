@@ -19,7 +19,7 @@ export default function OfferteBedankt() {
           </div>
           <h1 className="mb-4">Bedankt! Je offerteaanvraag is verstuurd</h1>
           <p className="text-lg text-muted-foreground mb-8">
-            Een adviseur neemt binnen 24 uur contact met je op met een persoonlijke offerte.
+            Een medewerker neemt binnen 24 uur contact met je op met een persoonlijke offerte.
             Je ontvangt zo ook een bevestiging per e-mail.
           </p>
 

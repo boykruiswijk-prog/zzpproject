@@ -109,7 +109,7 @@ export default function WaaromZpZaken() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="text-lg md:text-xl text-primary-foreground/80 mb-8 max-w-2xl"
             >
-              ZP Zaken is de enige verzekeringsadviseur die BAV en AVB combineert in één polis:  direct voor jou als zzp'er, bij elke opdrachtgever en via elke bemiddelaar. Zonder platform, zonder opslag, zonder afhankelijkheid.
+              ZP Zaken combineert BAV en AVB in één polis:  direct voor jou als zzp'er, bij elke opdrachtgever en via elke bemiddelaar. Zonder platform, zonder opslag, zonder afhankelijkheid.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}

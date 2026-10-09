@@ -15,7 +15,7 @@ const schema = {
   "@type": "Service",
   "name": "AOV Arbeidsongeschiktheidsverzekering voor ZZP'ers",
   "provider": { "@type": "Organization", "name": "ZP Zaken", "url": "https://zpzaken.nl" },
-  "description": "Bescherm je inkomen als zzp'er bij ziekte. Vergelijk en sluit direct een AOV af via ZP Zaken. Persoonlijk gesprek, snel geregeld.",
+  "description": SEO.description,
   "areaServed": "NL",
 };
 

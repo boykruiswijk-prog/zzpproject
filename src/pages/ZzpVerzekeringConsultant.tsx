@@ -27,11 +27,11 @@ export default function ZzpVerzekeringConsultant() {
       benefits={[
         { icon: Briefcase, title: "Vaak gevraagd door opdrachtgevers", description: `Veel opdrachtgevers vragen om een BAV. Bij ons heb je ${BAV_DEKKING} BAV en ${AVB_DEKKING} AVB per aanspraak in één polis via Hiscox.` },
         { icon: ShieldCheck, title: "Geen eigen risico", description: "Bij een schademelding betaal je geen eigen risico. En je polis is dagelijks opzegbaar." },
-        { icon: Clock, title: "Binnen 24 uur geregeld", description: "Je sluit online af. Binnen 24 uur is alles geregeld en staat je certificaat in je mailbox." },
+        { icon: Clock, title: "Binnen 24 uur geregeld", description: "Je vraagt online aan. Binnen 24 uur is alles geregeld en staat je certificaat in je mailbox." },
       ]}
       explainers={[
         { title: "Verkeerd advies, gemiste deadline of een fout in je rapport", text: "Als adviseur zit het risico in je advies. Een rekenfout in een rapport, een gemiste deadline of een advies dat verkeerd uitpakt kan leiden tot een claim van je opdrachtgever.", bullets: ["Beroepsaansprakelijkheid (BAV) voor fouten in je advieswerk", "Bedrijfsaansprakelijkheid (AVB) voor schade aan personen of spullen", "Certificaat dat je direct naar je opdrachtgever stuurt"] },
-        { title: "Persoonlijk advies", text: "Twijfel je of de polis past bij je opdracht? Je adviseur kijkt met je mee naar je contract. De polisvoorwaarden zijn altijd leidend." },
+        { title: "Persoonlijk contact", text: "Twijfel je of de polis past bij je opdracht? We beantwoorden je vragen over de aanvraag en voorwaarden. De polisvoorwaarden zijn altijd leidend." },
       ]}
       faqs={faqs}
       leesMeer={["bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "wat-kosten-verzekeringen-voor-zzp-ers", "welke-verzekeringen-zzp", "bedrijfsaansprakelijkheidsverzekering-zzp"]}
