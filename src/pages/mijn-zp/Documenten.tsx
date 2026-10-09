@@ -10,9 +10,8 @@ import { Mail } from "lucide-react";
 
 const DOCS = [
   "Verzekeringscertificaat",
-  "Polisvoorwaarden",
   "Verzekeringskaart",
-  "Premiebewijs / factuur",
+  "Factuur",
   "Schadehistorie",
 ];
 
@@ -48,6 +47,10 @@ export default function DocumentenWizard() {
                     <span className="text-sm">{d}</span>
                   </label>
                 ))}
+                <p className="text-sm text-muted-foreground">
+                  Polisvoorwaarden download je direct op{" "}
+                  <a href="/voorwaarden" className="text-primary underline">zpzaken.nl/voorwaarden</a>
+                </p>
                 <div>
                   <Label>Anders (toelichting)</Label>
                   <Textarea
