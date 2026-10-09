@@ -154,7 +154,17 @@ Deno.serve(async (req) => {
 
   const rapport = { vandaag, nieuw_verwijderd: nieuwVerwijderd, langer_dan_2_werkdagen_open: langOpen, mislukt_gisteren: mislukt, controle_fouten: fouten, koppeling: kc };
   if (!nieuwVerwijderd.length && !langOpen.length && !mislukt.length && !fouten.length && !koppelingen) return json({ ...rapport, mail: "geen afwijkingen, geen mail" });
-...
+
+  const tabel = (titel: string, rijen: any[], kolommen: [string, (r: any) => string][]) => !rijen.length ? "" :
+    `<h3 style="margin:16px 0 4px">${titel} (${rijen.length})</h3><table style="border-collapse:collapse;font-size:13px"><tr>${kolommen.map(([h]) => `<th style="text-align:left;padding:4px 8px;border-bottom:2px solid #ccc">${h}</th>`).join("")}</tr>${rijen.map((r) => `<tr>${kolommen.map(([, f]) => `<td style="padding:4px 8px;border-bottom:1px solid #eee">${f(r)}</td>`).join("")}</tr>`).join("")}</table>`;
+  const basis: [string, (r: any) => string][] = [["Klant", (r) => esc(r.naam)], ["Bedrijf / periode", (r) => esc(r.bedrijf ?? "")], ["Exact-ID", (r) => esc(r.id)], ["Bedrag", (r) => esc(euro(r.bedrag))], ["Klaargezet", (r) => esc(nlDatum(new Date(r.sinds)))], ["", (r) => `<a href="${esc(r.link)}">klantkaart</a>`]];
+  const html = `<p>Ochtendcontrole Exact-concepten, administratie ${ADMINISTRATIE}. Alleen afwijkingen staan hieronder.</p>
+${tabel("Concept is in Exact verwijderd", nieuwVerwijderd, basis)}
+${nieuwVerwijderd.length ? `<p>Deze concepten bestaan niet meer in Exact. In het beheer staan ze nu in Vandaag te doen als "Concept is in Exact verwijderd, opnieuw klaarzetten of bewust laten vervallen". Het oude ID is bewaard.</p>` : ""}
+${tabel("Langer dan 2 werkdagen open", langOpen, [...basis.slice(0, 5), ["Werkdagen", (r) => String(r.werkdagen)], basis[5]])}
+${langOpen.length ? `<p><strong>Wat te doen:</strong> Controleer en verwerk dit in Exact via Verkoop &gt; Facturen &gt; Verwerken.</p>` : ""}
+${tabel("Mislukte Exact-boekingen van gisteren", mislukt, [["Soort", (r) => esc(r.soort)], ["ID", (r) => esc(r.id ?? "-")], ["Melding", (r) => esc(r.onderwerp)]])}
+${tabel("Kon niet worden gecontroleerd", fouten, [...basis.slice(0, 3), ["Reden", (r) => esc(r.fout)]])}
 ${nogOpenVerwijderd ? `<p style="color:#555">In totaal staan ${nogOpenVerwijderd} verwijderde concepten nog open in Vandaag te doen.</p>` : ""}
 ${tabel("Klant gekoppeld aan een Exact-testrelatie", testRel, [["Klant", (r) => esc(r.naam)], ["Code", (r) => esc(r.code)], ["Exact-naam", (r) => esc(r.exact_naam)], ["", (r) => `<a href="${SITE}/admin/klanten/${esc(r.id)}">klantkaart</a>`]])}
 ${tabel("Meerdere klanten op dezelfde Exact-relatie", dubbel, [["Exact-relatie", (r) => esc(r.exact_naam ?? r.account)], ["Klanten", (r) => (r.ondernemingen ?? []).map((o: any) => `<a href="${SITE}/admin/klanten/${esc(o.id)}">${esc(o.naam)}</a>`).join(", ")]])}
