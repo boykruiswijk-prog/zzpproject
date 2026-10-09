@@ -161,10 +161,10 @@ ${tabel("Meerdere klanten op dezelfde Exact-relatie", dubbel, [["Exact-relatie",
 ${tabel("Exact-naam wijkt sterk af", afwijkNaam, [["Klant", (r) => esc(r.naam)], ["Code", (r) => esc(r.code)], ["Exact-naam", (r) => esc(r.exact_naam)], ["Gelijkenis", (r) => esc(r.gelijkenis)], ["", (r) => `<a href="${SITE}/admin/klanten/${esc(r.id)}">klantkaart</a>`]])}
 ${koppelingen ? `<p><strong>Wat te doen:</strong> controleer de koppeling op de klantkaart. Het platform past niets automatisch aan.</p>` : ""}
 <p style="color:#777;font-size:12px">Interne controlemelding van het ZP Zaken-platform. De controle leest alleen in Exact en wijzigt daar niets.</p>`;
-  const subject = `Exact-controle ${vandaag}: ${[nieuwVerwijderd.length && `${nieuwVerwijderd.length} verwijderd`, langOpen.length && `${langOpen.length} lang open`, mislukt.length && `${mislukt.length} mislukt`, fouten.length && `${fouten.length} niet gecontroleerd`].filter(Boolean).join(", ")}`;
+  const subject = `Exact-controle ${vandaag}: ${[nieuwVerwijderd.length && `${nieuwVerwijderd.length} verwijderd`, langOpen.length && `${langOpen.length} lang open`, mislukt.length && `${mislukt.length} mislukt`, fouten.length && `${fouten.length} niet gecontroleerd`, koppelingen && `${koppelingen} koppeling(en) nakijken`].filter(Boolean).join(", ")}`;
   const res = await verstuurInterneMelding(admin, req, "exact-concept-controle", {
     leadType: "exact-controle", subject, html, soort: EXACT_BOEKING_SOORT,
-    metadata: { nieuw_verwijderd: nieuwVerwijderd.map((r) => r.id), lang_open: langOpen.map((r) => r.id), mislukt: mislukt.length },
+    metadata: { nieuw_verwijderd: nieuwVerwijderd.map((r) => r.id), lang_open: langOpen.map((r) => r.id), mislukt: mislukt.length, koppeling: kc },
   });
   return json({ ...rapport, mail: res });
 });
