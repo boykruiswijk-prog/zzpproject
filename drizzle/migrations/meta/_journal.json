@@ -617,6 +617,13 @@
       "when": 1791484922909,
       "tag": "0087_fix_cyber_date_sync_and_month_article",
       "breakpoints": true
+    },
+    {
+      "idx": 88,
+      "version": "7",
+      "when": 1791538602053,
+      "tag": "0088_migration",
+      "breakpoints": true
     }
   ]
 }
