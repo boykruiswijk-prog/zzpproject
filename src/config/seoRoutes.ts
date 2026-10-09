@@ -70,7 +70,7 @@ export const seoRoutes: SeoRoute[] = [
     path: "/aov",
     title: "AOV Arbeidsongeschiktheidsverzekering ZZP | ZP Zaken",
     description:
-      "Bescherm je inkomen als zzp'er bij ziekte. Vergelijk en sluit direct een AOV af via ZP Zaken. Persoonlijk gesprek, snel geregeld.",
+      "Bescherm je inkomen als zzp'er bij ziekte. Vraag een AOV aan via ZP Zaken. Persoonlijk contact, binnen 24 uur reactie.",
     h1: "AOV voor zzp'ers: zeker van je inkomen bij ziekte",
     intro:
       "Als zelfstandige ben je zelf verantwoordelijk voor je inkomen bij ziekte of arbeidsongeschiktheid. Een AOV vangt je op wanneer je niet kunt werken. " +

@@ -181,7 +181,7 @@ export default function BavZzpVergelijken() {
             [`BAV + AVB: geen eigen risico.`, ``],
             [`Vaste prijs.`, `Vanaf ${eur(maand.prijs)} per maand, of ${eur(jaar.prijs)} per jaar.`],
             [`BAV + AVB dagelijks opzegbaar.`, `Cyber heeft een vaste looptijd van 12 maanden.`],
-            [`Snel geregeld.`, `Je sluit online af, het is binnen 24 uur geregeld en je krijgt het certificaat in je mailbox.`],
+            [`Snel geregeld.`, `Je vraagt online aan, binnen 24 uur geregeld en je krijgt het certificaat in je mailbox.`],
           ].map(([kop, tekst]) => (
             <li key={kop} className="flex gap-3">
               <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-accent" aria-hidden="true" />
