@@ -300,6 +300,16 @@ export const seoRoutes: SeoRoute[] = [
       "Ook het dienstverleningsdocument, de gedragscode en de slotverklaring staan op deze pagina.",
   },
   {
+    path: "/voorwaarden",
+    title: "Polisvoorwaarden BAV en AVB per branche | ZP Zaken",
+    description:
+      "Alle polisvoorwaarden en verzekeringskaarten van Hiscox per branche, voor je BAV en AVB via de collectieve polis van ZP Zaken.",
+    h1: "Polisvoorwaarden",
+    intro:
+      "Je bent verzekerd via de collectieve polis van ZP Zaken bij Hiscox. Daarom ontvang je geen eigen polis, maar een verzekeringscertificaat. " +
+      "De voorwaarden hieronder gelden voor jouw dekking.",
+  },
+  {
     path: "/documenten/slotverklaring",
     title: "Slotverklaring | ZP Zaken",
     description:

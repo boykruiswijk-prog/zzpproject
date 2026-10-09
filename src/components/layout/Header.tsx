@@ -71,7 +71,7 @@ function useNavItems() {
         { href: "/mijn-zp/polis", label: "Verzekeringscertificaat opvragen", icon: FileText },
         { href: "/mijn-zp/pauzeren", label: "Verzekering pauzeren", icon: Pause },
         { href: "/mijn-zp/documenten", label: "Documenten opvragen", icon: FolderDown },
-        { href: "/documenten", label: "Polisvoorwaarden", icon: FileText },
+        { href: "/voorwaarden", label: "Polisvoorwaarden", icon: FileText },
         { href: "/mijn-zp/opzeggen", label: "Verzekering opzeggen", icon: XCircle },
       ],
     },
