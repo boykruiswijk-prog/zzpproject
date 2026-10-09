@@ -136,7 +136,13 @@ Deno.serve(async (req) => {
           rij.per_account = { http: r2.status, facturen: d2?.results ?? [], fout: r2.ok ? undefined : t2.slice(0, 300) };
         }
         uit.push(rij);
-      }
+          const r3 = await get(`${baseUrl}/api/v1/${div}/crm/Accounts(guid'${acc}')?$select=ID,Code,Name,Status`);
+          const j3: any = await r3.json().catch(() => null);
+          rij.account = { http: r3.status, code: j3?.d?.Code ?? j3?.d?.results?.[0]?.Code, naam: j3?.d?.Name ?? j3?.d?.results?.[0]?.Name };
+          const r4 = await get(`${baseUrl}/api/v1/${div}/salesentry/SalesEntries?$select=EntryID,EntryNumber,InvoiceNumber,EntryDate,Journal,JournalDescription,AmountDC,Description,Status,CreatorFullName&$filter=${encodeURIComponent(`Customer eq guid'${acc}'`)}`);
+          const j4: any = await r4.json().catch(() => null);
+          rij.boekingen = { http: r4.status, rijen: j4?.d?.results ?? [] };
+        }
       return json({ calls, division: div, resultaten: uit });
     }
     return json({ error: "stap: artikelen | recent | boekingen | remarks | pdf | facturen" }, 400);
