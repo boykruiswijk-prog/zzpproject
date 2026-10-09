@@ -666,6 +666,13 @@
       "when": 1791546148045,
       "tag": "0094_certificaatnummer_voorstel",
       "breakpoints": true
+    },
+    {
+      "idx": 95,
+      "version": "7",
+      "when": 1791552775463,
+      "tag": "0095_document_versturen_afas_taak",
+      "breakpoints": true
     }
   ]
 }
