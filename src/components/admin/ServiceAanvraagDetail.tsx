@@ -6,6 +6,8 @@ import { formatDateNL } from "@/lib/dateFormat";
 import { Link } from "react-router-dom";
 import { KoppelZoeker } from "@/components/admin/KoppelZoeker";
 import { PortaltoegangStappen } from "@/components/admin/PortaltoegangStappen";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 const KOPPELING_LABEL: Record<string, string> = { zeker: "Automatisch zeker", voorstel: "Voorstel", niet_gekoppeld: "Niet gekoppeld" };
 
 export type ServiceAanvraag = {
@@ -25,6 +27,8 @@ export type ServiceAanvraag = {
   geverifieerd?: boolean;
   onderneming_id?: string | null;
   koppeling_status?: string | null;
+  koppeling_methode?: string | null;
+  koppeling_details?: { voorstel_onderneming_id?: string } | null;
   opzegging_verwerkt_op?: string | null;
 };
 
@@ -107,6 +111,15 @@ export function ServiceAanvraagDetail({ aanvraag, onSaveNotes, onMarkAfgerond, o
         <div className="rounded-md border border-border p-3">
           <p className="mb-2 font-medium">Koppelen aan klant</p>
           <KoppelZoeker aanvraagId={aanvraag.id} kanKoppelen onGekoppeld={onGekoppeld} />
+        </div>
+      )}
+      {!opzeg && !aanvraag.onderneming_id && aanvraag.koppeling_status === "voorstel" && aanvraag.koppeling_details?.voorstel_onderneming_id && (
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border p-3">
+          <span>Voorstel: <Link to={`/admin/klanten/${aanvraag.koppeling_details.voorstel_onderneming_id}`} className="text-primary hover:underline">klant openen</Link> ({aanvraag.koppeling_methode ?? "voorstel"})</span>
+          <Button size="sm" onClick={async () => {
+            const { error } = await (supabase.rpc as any)("service_aanvraag_koppelen", { _aanvraag_id: aanvraag.id, _onderneming_id: aanvraag.koppeling_details!.voorstel_onderneming_id });
+            if (error) toast.error(error.message); else { toast.success("Gekoppeld"); onGekoppeld?.(); }
+          }}>Voorstel bevestigen</Button>
         </div>
       )}
       {aanvraag.type === "portaltoegang" && <PortaltoegangStappen aanvraag={aanvraag} onGewijzigd={onGekoppeld} />}
