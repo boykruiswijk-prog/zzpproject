@@ -112,7 +112,34 @@ Deno.serve(async (req) => {
       }
       return json(res);
     }
-    return json({ error: "stap: artikelen | recent | boekingen | remarks | pdf" }, 400);
+    if (stap === "facturen") {
+      // Alleen GET: per factuur-ID details, bij 404 zoeken op OrderedBy.
+      const guid = (s: unknown) => String(s ?? "").replace(/[^0-9a-f-]/gi, "").slice(0, 36);
+      const velden = "InvoiceID,InvoiceNumber,Status,StatusDescription,Journal,JournalDescription,InvoiceDate,Created,Modified,Division,OrderedBy,OrderedByName,InvoiceTo,InvoiceToName,Creator,CreatorFullName,AmountDC,Description,YourRef,Type,TypeDescription";
+      const lijst = Array.isArray(body?.facturen) ? body.facturen.slice(0, 10) : [];
+      const uit: any[] = [];
+      for (const f of lijst) {
+        const id = guid(f?.invoice_id); const acc = guid(f?.account_id);
+        const r = await get(`${baseUrl}/api/v1/${div}/salesinvoice/SalesInvoices(guid'${id}')?$select=${velden}`);
+        const t = await r.text();
+        let d: any = null; try { d = JSON.parse(t)?.d; } catch { /* */ }
+        const rij: any = { invoice_id: id, http: r.status, factuur: d?.results?.[0] ?? (d?.InvoiceID ? d : null), fout: r.ok ? undefined : t.slice(0, 300) };
+        if (acc) {
+          const r2 = await get(`${baseUrl}/api/v1/${div}/salesinvoice/SalesInvoices?$select=${velden}&$filter=${encodeURIComponent(`OrderedBy eq guid'${acc}'`)}`);
+          const t2 = await r2.text(); let d2: any = null; try { d2 = JSON.parse(t2)?.d; } catch { /* */ }
+          rij.per_account = { http: r2.status, facturen: d2?.results ?? [], fout: r2.ok ? undefined : t2.slice(0, 300) };
+          const r3 = await get(`${baseUrl}/api/v1/${div}/crm/Accounts(guid'${acc}')?$select=ID,Code,Name,Status`);
+          const j3: any = await r3.json().catch(() => null);
+          rij.account = { http: r3.status, code: j3?.d?.Code ?? j3?.d?.results?.[0]?.Code, naam: j3?.d?.Name ?? j3?.d?.results?.[0]?.Name };
+          const r4 = await get(`${baseUrl}/api/v1/${div}/salesentry/SalesEntries?$select=EntryID,EntryNumber,InvoiceNumber,EntryDate,Journal,JournalDescription,AmountDC,Description,Status,CreatorFullName&$filter=${encodeURIComponent(`Customer eq guid'${acc}'`)}`);
+          const j4: any = await r4.json().catch(() => null);
+          rij.boekingen = { http: r4.status, rijen: j4?.d?.results ?? [] };
+        }
+        uit.push(rij);
+      }
+      return json({ calls, division: div, resultaten: uit });
+    }
+    return json({ error: "stap: artikelen | recent | boekingen | remarks | pdf | facturen" }, 400);
   } catch (e) {
     return json({ calls, fout: String(e).slice(0, 500) }, 500);
   }
