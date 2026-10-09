@@ -12,6 +12,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { ensureValidToken } from "../_shared/exactToken.ts";
+import { metExactMelding } from "../_shared/exactBoekingMelding.ts";
 
 const json = (b: unknown, s = 200) =>
   new Response(JSON.stringify(b), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -47,7 +48,7 @@ const OUDE_OMSCHRIJVING = "Overgenomen uit AFAS";
 const omschrijving = (exactNaam: string | null | undefined, naam: string) =>
   ((exactNaam ?? "").trim() || (naam ?? "").trim()).slice(0, DESCRIPTION_MAX);
 
-Deno.serve(async (req) => {
+Deno.serve(metExactMelding("exact-mandaat-bulk", async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
@@ -239,4 +240,4 @@ Deno.serve(async (req) => {
   }
   return json({ mode, verwerkt: Object.values(perStatus).reduce((s, n) => s + n, 0), per_status: perStatus,
     open: await openCount(), ...(gestopt ? { gestopt } : {}) });
-});
+}, { verzamel: true }));

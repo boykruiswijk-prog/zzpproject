@@ -22,6 +22,7 @@ import { readLatestInvoiceStatus } from "../_shared/exactInvoiceStatus.ts";
 import {
   getJaarprijs, calculatePauzeCredit, calculateHervatFactuur, calcPolisEinddatum, isMaandPolis,
 } from "../_shared/polisProRata.ts";
+import { metExactMelding } from "../_shared/exactBoekingMelding.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -196,7 +197,7 @@ async function postSalesInvoice(opts: {
 }
 
 // ── Main handler ──────────────────────────────────────────────────────────
-Deno.serve(async (req) => {
+Deno.serve(metExactMelding("polis-lifecycle", async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
 
@@ -822,4 +823,4 @@ Deno.serve(async (req) => {
     });
     return json({ error: "internal", message: e.message }, 500);
   }
-});
+}));

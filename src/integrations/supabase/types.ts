@@ -2259,6 +2259,7 @@ export type Database = {
           exact_invoice_number: string | null
           exact_item_id: string
           exact_status: number | null
+          exact_verwijderd_op: string | null
           foutmelding: string | null
           gl_code: string | null
           id: string
@@ -2285,6 +2286,7 @@ export type Database = {
           exact_invoice_number?: string | null
           exact_item_id: string
           exact_status?: number | null
+          exact_verwijderd_op?: string | null
           foutmelding?: string | null
           gl_code?: string | null
           id?: string
@@ -2311,6 +2313,7 @@ export type Database = {
           exact_invoice_number?: string | null
           exact_item_id?: string
           exact_status?: number | null
+          exact_verwijderd_op?: string | null
           foutmelding?: string | null
           gl_code?: string | null
           id?: string
@@ -2479,6 +2482,7 @@ export type Database = {
           bijgewerkt_op: string
           email: string
           id: string
+          soort: string
         }
         Insert: {
           aangemaakt_door?: string | null
@@ -2488,6 +2492,7 @@ export type Database = {
           bijgewerkt_op?: string
           email: string
           id?: string
+          soort?: string
         }
         Update: {
           aangemaakt_door?: string | null
@@ -2497,6 +2502,7 @@ export type Database = {
           bijgewerkt_op?: string
           email?: string
           id?: string
+          soort?: string
         }
         Relationships: []
       }
@@ -3122,9 +3128,11 @@ export type Database = {
           exact_fout: string | null
           exact_invoice_amount: number | null
           exact_invoice_created_at: string | null
+          exact_invoice_gecontroleerd_op: string | null
           exact_invoice_id: string | null
           exact_invoice_number: string | null
           exact_invoice_status: number | null
+          exact_invoice_verwijderd_op: string | null
           exact_relatie_code: string | null
           exact_relatie_id: string | null
           exact_status: string | null
@@ -3213,9 +3221,11 @@ export type Database = {
           exact_fout?: string | null
           exact_invoice_amount?: number | null
           exact_invoice_created_at?: string | null
+          exact_invoice_gecontroleerd_op?: string | null
           exact_invoice_id?: string | null
           exact_invoice_number?: string | null
           exact_invoice_status?: number | null
+          exact_invoice_verwijderd_op?: string | null
           exact_relatie_code?: string | null
           exact_relatie_id?: string | null
           exact_status?: string | null
@@ -3304,9 +3314,11 @@ export type Database = {
           exact_fout?: string | null
           exact_invoice_amount?: number | null
           exact_invoice_created_at?: string | null
+          exact_invoice_gecontroleerd_op?: string | null
           exact_invoice_id?: string | null
           exact_invoice_number?: string | null
           exact_invoice_status?: number | null
+          exact_invoice_verwijderd_op?: string | null
           exact_relatie_code?: string | null
           exact_relatie_id?: string | null
           exact_status?: string | null
