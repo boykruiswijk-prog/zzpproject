@@ -81,7 +81,7 @@ export function OpzeggingenKlant({ ondernemingId, contracten, onGewijzigd }: { o
   }
   useEffect(() => { laad(); }, [ondernemingId, toonTest]);
 
-  const lopend = contracten.filter((c) => c.status === "actief" || c.status === "loopt_af");
+  const lopend = contracten.filter((c) => c.status === "actief" || c.status === "loopt_af" || c.status === "einddatum_controle");
 
   async function bevestig(a: Aanvraag) {
     setBezig(true);

@@ -4869,6 +4869,16 @@ export type Database = {
         Args: { _start: number }
         Returns: number
       }
+      einddatum_controle_beslissen: {
+        Args: {
+          _contract_id: string
+          _keuze: string
+          _opzegdatum: string
+          _toelichting: string
+        }
+        Returns: Json
+      }
+      einddatum_zonder_opzegging: { Args: never; Returns: Json }
       email_queue_dispatch: { Args: never; Returns: undefined }
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
@@ -4963,6 +4973,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      heeft_geregistreerde_opzegging: {
+        Args: { _contract_id: string }
         Returns: boolean
       }
       herbeoordeel_opzeg_credits: { Args: never; Returns: number }

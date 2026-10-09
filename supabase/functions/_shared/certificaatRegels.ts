@@ -74,7 +74,7 @@ export function kiesKlantCertificaatnummer(
 export function actiefKlantContract<T extends { type: string; status: string; eind_datum?: string | null }>(
   contracten: T[], vandaag: string,
 ): T | null {
-  return contracten.find((c) => c.type === "verzekering" && (c.status === "actief" || c.status === "loopt_af") &&
+  return contracten.find((c) => c.type === "verzekering" && (c.status === "actief" || c.status === "loopt_af" || c.status === "einddatum_controle") &&
     (!c.eind_datum || c.eind_datum >= vandaag)) ?? null;
 }
 
