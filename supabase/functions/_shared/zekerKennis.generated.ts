@@ -109,7 +109,7 @@ export const ZEKER_KENNIS = {
     },
     {
       "path": "/verzekeringen",
-      "title": "BAV + AVB voor ZZP'ers | Online aanvragen, binnen 24 uur geregeld",
+      "title": "BAV + AVB voor ZZP'ers | Online aanvragen",
       "intro": "ZP Zaken is de bedenker van de BAV + AVB in één polis voor zzp'ers. De combinatiepolis bundelt beroepsaansprakelijkheid (BAV) en bedrijfsaansprakelijkheid (AVB) in één verzekering, vanaf € 55 per maand. Er is geen eigen risico en je kunt dagelijks opzeggen. Aanvragen doe je online in vijf stappen."
     },
     {
