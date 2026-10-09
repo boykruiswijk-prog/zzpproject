@@ -9,7 +9,7 @@ import { exactCodeNorm, exactDatum } from "../_shared/exactCodeMatch.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-internal-secret",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-internal-secret, x-cron-secret",
 };
 const json = (d: unknown, s = 200) => new Response(JSON.stringify(d), { status: s, headers: { ...cors, "Content-Type": "application/json" } });
 
@@ -27,7 +27,10 @@ Deno.serve(async (req) => {
 
   const intern = Deno.env.get("INTERNAL_FUNCTION_SECRET");
   const gegeven = req.headers.get("x-internal-secret");
-  if (!(intern && gegeven && gegeven === intern)) {
+  const cron = req.headers.get("x-cron-secret");
+  let cronOk = false;
+  if (cron) { const { data: ok } = await admin.rpc("verify_cron_secret", { p_secret: cron }); cronOk = ok === true; }
+  if (!cronOk && !(intern && gegeven && gegeven === intern)) {
     const auth = await requireSupervisor(req, admin);
     if (auth instanceof Response) return json({ error: "geen_toegang" }, auth.status);
   }
