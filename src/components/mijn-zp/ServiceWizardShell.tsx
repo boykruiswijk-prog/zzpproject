@@ -70,6 +70,19 @@ export function ServiceWizardShell({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [hp, setHp] = useState("");
   const openedAt = useRef(Date.now());
+  const [isMedewerker, setIsMedewerker] = useState(false);
+
+  // Ingelogde teamleden versturen documenten via de klantkaart, niet via dit klantformulier.
+  useEffect(() => {
+    let actief = true;
+    supabase.auth.getSession().then(async ({ data }) => {
+      const uid = data.session?.user?.id;
+      if (!uid) return;
+      const { data: team } = await supabase.rpc("is_team_member", { _user_id: uid });
+      if (actief && team === true) setIsMedewerker(true);
+    });
+    return () => { actief = false; };
+  }, []);
 
   const total = steps.length;
   const kopRef = useRef<HTMLHeadingElement>(null);
@@ -136,7 +149,12 @@ export function ServiceWizardShell({
       />
       <section className="section-padding bg-secondary/30">
         <div className="container-wide max-w-2xl">
-          {submitted ? (
+          {isMedewerker ? (
+            <div className="bg-card border border-border rounded-2xl p-6 md:p-8 space-y-3" role="status">
+              <p className="font-semibold">Je bent ingelogd als medewerker. Verstuur documenten voor een klant via de klantkaart in het beheer.</p>
+              <a href="/admin/klanten" className="text-primary underline">Naar het beheer</a>
+            </div>
+          ) : submitted ? (
             <div className="bg-card border border-border rounded-2xl p-8 text-center space-y-4">
               <div className="h-16 w-16 mx-auto rounded-full bg-accent/10 flex items-center justify-center">
                 <CheckCircle className="h-8 w-8 text-accent" />

@@ -11,6 +11,7 @@ import { contractEindStatus, kiesBavNummer, useBavRijen } from "@/lib/bavNummer"
 import { BavNummer } from "./BavNummer";
 import { GegevensWijzigen } from "./GegevensWijzigen";
 import { PortalUitnodigen } from "./PortalUitnodigen";
+import { DocumentVersturen } from "./DocumentVersturen";
 import { Button } from "@/components/ui/button";
 
 type Ond = { id: string; naam: string | null; rechtsvorm?: string | null; kvk?: string | null; iban?: string | null; exact_relatie_code?: string | null };
@@ -58,7 +59,7 @@ export function KlantKaart({ ondernemingen, personen, leadIds, herlaadSleutel = 
 
   return (
     <Card className="min-w-0 border-primary/30">
-      <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2 pb-2"><CardTitle className="text-base">Klantkaart</CardTitle><div className="flex flex-wrap gap-2"><GegevensWijzigen ondernemingen={ondernemingen} personen={personen} onGewijzigd={() => { refetch(); onGewijzigd?.(); }} />{ondernemingen.map((o) => <PortalUitnodigen key={o.id} ondernemingId={o.id} onVerstuurd={onGewijzigd} />)}</div></CardHeader>
+      <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2 pb-2"><CardTitle className="text-base">Klantkaart</CardTitle><div className="flex flex-wrap gap-2"><GegevensWijzigen ondernemingen={ondernemingen} personen={personen} onGewijzigd={() => { refetch(); onGewijzigd?.(); }} />{ondernemingen.map((o) => <PortalUitnodigen key={o.id} ondernemingId={o.id} onVerstuurd={onGewijzigd} />)}{ondernemingen.map((o) => <DocumentVersturen key={`doc-${o.id}`} ondernemingId={o.id} onVerstuurd={() => { refetch(); onGewijzigd?.(); }} />)}</div></CardHeader>
       <CardContent className="space-y-3 text-sm">
         {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : (<>
           <dl className="grid min-w-0 gap-x-6 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -96,7 +97,7 @@ export function KlantKaart({ ondernemingen, personen, leadIds, herlaadSleutel = 
             {acties.length ? <ul className="list-disc pl-5">{acties.map((a) => <li key={a}>{a}</li>)}</ul> : !(data?.taken ?? []).length && <p className="text-muted-foreground">Geen</p>}
             {(data?.taken ?? []).map((t: any) => (
               <div key={t.id} className="mt-1 flex flex-wrap items-center gap-2 rounded border border-amber-300 p-2">
-                <span className="min-w-0 flex-1">Taak Roxy: {t.omschrijving} <span className="text-xs text-muted-foreground">({t.aangemaakt_door_naam}, {formatDateNL(t.aangemaakt_op)})</span></span>
+                <span className="min-w-0 flex-1">{/AFAS/.test(t.omschrijving) ? "Taak Sandra" : "Taak Roxy"}: {t.omschrijving} <span className="text-xs text-muted-foreground">({t.aangemaakt_door_naam}, {formatDateNL(t.aangemaakt_op)})</span></span>
                 <Button size="sm" variant="outline" onClick={async () => { const { error } = await (supabase.rpc as any)("crm_taak_afronden", { _id: t.id }); if (!error) refetch(); }}>Gedaan</Button>
               </div>))}
           </div>

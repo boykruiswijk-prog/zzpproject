@@ -156,7 +156,7 @@ export function ServiceAanvraagDetail({ aanvraag, onSaveNotes, onMarkAfgerond, o
             {Object.entries(aanvraag.details).map(([k, v]) => (
               <li key={k}>
                 <span className="font-medium">{k}:</span>{" "}
-                {Array.isArray(v) ? v.join(", ") : String(v ?? "-")}
+                {Array.isArray(v) ? v.map((x) => (x === "Premiebewijs / factuur" ? "Factuur (oud label: Premiebewijs / factuur)" : String(x))).join(", ") : String(v ?? "-")}
               </li>
             ))}
           </ul>

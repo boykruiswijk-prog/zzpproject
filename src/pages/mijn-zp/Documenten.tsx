@@ -10,9 +10,8 @@ import { Mail } from "lucide-react";
 
 const DOCS = [
   "Verzekeringscertificaat",
-  "Polisvoorwaarden",
   "Verzekeringskaart",
-  "Premiebewijs / factuur",
+  "Factuur",
   "Schadehistorie",
 ];
 
@@ -21,7 +20,7 @@ export default function DocumentenWizard() {
     <ServiceWizardShell
       type="documenten"
       pageTitle="Documenten opvragen | Mijn ZP, ZP Zaken"
-      pageDescription="Vraag eenvoudig je documenten op (verzekeringscertificaat, polisvoorwaarden, premiebewijs). Binnen 24 uur per mail."
+      pageDescription="Vraag eenvoudig je documenten op (verzekeringscertificaat, factuur, verzekeringskaart). Binnen 24 uur per mail."
       introTitle="Documenten ontvangen"
       introText="Vraag je documenten op, zoals je verzekeringscertificaat. Je ontvangt ze binnen 24 uur per mail. De polisvoorwaarden download je direct op zpzaken.nl/voorwaarden."
       steps={[
@@ -48,6 +47,10 @@ export default function DocumentenWizard() {
                     <span className="text-sm">{d}</span>
                   </label>
                 ))}
+                <p className="text-sm text-muted-foreground">
+                  Polisvoorwaarden download je direct op{" "}
+                  <a href="/voorwaarden" className="text-primary underline">zpzaken.nl/voorwaarden</a>
+                </p>
                 <div>
                   <Label>Anders (toelichting)</Label>
                   <Textarea
