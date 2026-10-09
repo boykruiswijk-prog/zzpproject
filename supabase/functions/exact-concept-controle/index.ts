@@ -151,9 +151,12 @@ Deno.serve(async (req) => {
   const { data: kc } = await admin.rpc("exact_koppeling_controle");
   const testRel: any[] = (kc as any)?.test_relatie ?? []; const dubbel: any[] = (kc as any)?.dubbel_account ?? []; const afwijkNaam: any[] = (kc as any)?.naam_wijkt_af ?? [];
   const koppelingen = testRel.length + dubbel.length + afwijkNaam.length;
+  // Bedrijfsregel 9-10-2026: een einddatum zonder geregistreerde opzegging is altijd een melding.
+  const { data: ez } = await admin.rpc("einddatum_zonder_opzegging");
+  const einddatumZonder: any[] = Array.isArray(ez) ? ez : [];
 
-  const rapport = { vandaag, nieuw_verwijderd: nieuwVerwijderd, langer_dan_2_werkdagen_open: langOpen, mislukt_gisteren: mislukt, controle_fouten: fouten, koppeling: kc };
-  if (!nieuwVerwijderd.length && !langOpen.length && !mislukt.length && !fouten.length && !koppelingen) return json({ ...rapport, mail: "geen afwijkingen, geen mail" });
+  const rapport = { vandaag, nieuw_verwijderd: nieuwVerwijderd, langer_dan_2_werkdagen_open: langOpen, mislukt_gisteren: mislukt, controle_fouten: fouten, koppeling: kc, einddatum_zonder_opzegging: einddatumZonder };
+  if (!nieuwVerwijderd.length && !langOpen.length && !mislukt.length && !fouten.length && !koppelingen && !einddatumZonder.length) return json({ ...rapport, mail: "geen afwijkingen, geen mail" });
 
   const tabel = (titel: string, rijen: any[], kolommen: [string, (r: any) => string][]) => !rijen.length ? "" :
     `<h3 style="margin:16px 0 4px">${titel} (${rijen.length})</h3><table style="border-collapse:collapse;font-size:13px"><tr>${kolommen.map(([h]) => `<th style="text-align:left;padding:4px 8px;border-bottom:2px solid #ccc">${h}</th>`).join("")}</tr>${rijen.map((r) => `<tr>${kolommen.map(([, f]) => `<td style="padding:4px 8px;border-bottom:1px solid #eee">${f(r)}</td>`).join("")}</tr>`).join("")}</table>`;
@@ -170,11 +173,13 @@ ${tabel("Klant gekoppeld aan een Exact-testrelatie", testRel, [["Klant", (r) => 
 ${tabel("Meerdere klanten op dezelfde Exact-relatie", dubbel, [["Exact-relatie", (r) => esc(r.exact_naam ?? r.account)], ["Klanten", (r) => (r.ondernemingen ?? []).map((o: any) => `<a href="${SITE}/admin/klanten/${esc(o.id)}">${esc(o.naam)}</a>`).join(", ")]])}
 ${tabel("Exact-naam wijkt sterk af", afwijkNaam, [["Klant", (r) => esc(r.naam)], ["Code", (r) => esc(r.code)], ["Exact-naam", (r) => esc(r.exact_naam)], ["Gelijkenis", (r) => esc(r.gelijkenis)], ["", (r) => `<a href="${SITE}/admin/klanten/${esc(r.id)}">klantkaart</a>`]])}
 ${koppelingen ? `<p><strong>Wat te doen:</strong> controleer de koppeling op de klantkaart. Het platform past niets automatisch aan.</p>` : ""}
+${tabel("Einddatum zonder geregistreerde opzegging", einddatumZonder, [["Klant", (r) => esc(r.naam)], ["Abonnement", (r) => esc(r.abonnement_nr ?? "-")], ["Product", (r) => esc(r.product)], ["Bedrag", (r) => esc(euro(r.bedrag))], ["Einddatum", (r) => esc(r.eind_datum)], ["Volgende factuur", (r) => esc(r.volgende_factuurdatum ?? "-")], ["Status", (r) => esc(r.status)], ["", (r) => `<a href="${SITE}/admin/klanten/${esc(r.id)}">klantkaart</a>`]])}
+${einddatumZonder.length ? `<p><strong>Wat te doen:</strong> kies in Vandaag te doen "Opzegging bevestigen" of "Loopt door". Zonder opzegging wordt een contract stilzwijgend verlengd.</p>` : ""}
 <p style="color:#777;font-size:12px">Interne controlemelding van het ZP Zaken-platform. De controle leest alleen in Exact en wijzigt daar niets.</p>`;
-  const subject = `Exact-controle ${vandaag}: ${[nieuwVerwijderd.length && `${nieuwVerwijderd.length} verwijderd`, langOpen.length && `${langOpen.length} lang open`, mislukt.length && `${mislukt.length} mislukt`, fouten.length && `${fouten.length} niet gecontroleerd`, koppelingen && `${koppelingen} koppeling(en) nakijken`].filter(Boolean).join(", ")}`;
+  const subject = `Exact-controle ${vandaag}: ${[nieuwVerwijderd.length && `${nieuwVerwijderd.length} verwijderd`, langOpen.length && `${langOpen.length} lang open`, mislukt.length && `${mislukt.length} mislukt`, fouten.length && `${fouten.length} niet gecontroleerd`, koppelingen && `${koppelingen} koppeling(en) nakijken`, einddatumZonder.length && `${einddatumZonder.length} einddatum zonder opzegging`].filter(Boolean).join(", ")}`;
   const res = await verstuurInterneMelding(admin, req, "exact-concept-controle", {
     leadType: "exact-controle", subject, html, soort: EXACT_BOEKING_SOORT,
-    metadata: { nieuw_verwijderd: nieuwVerwijderd.map((r) => r.id), lang_open: langOpen.map((r) => r.id), mislukt: mislukt.length, koppeling: kc },
+    metadata: { nieuw_verwijderd: nieuwVerwijderd.map((r) => r.id), lang_open: langOpen.map((r) => r.id), mislukt: mislukt.length, koppeling: kc, einddatum_zonder_opzegging: einddatumZonder.map((r) => r.contract_id) },
   });
   return json({ ...rapport, mail: res });
 });
