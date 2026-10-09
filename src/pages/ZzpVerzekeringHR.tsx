@@ -31,7 +31,7 @@ export default function ZzpVerzekeringHR() {
       ]}
       explainers={[
         { title: "Advies bij ontslag, contracten en selectie", text: "Je adviseert over ontslag, contracten of een nieuwe medewerker. Gaat er iets mis door een fout in je advies of selectie, dan kan je opdrachtgever schade hebben. Een BAV beschermt je als je daarvoor aansprakelijk wordt gesteld.", bullets: ["BAV en AVB in één polis via Hiscox", "Ook voor recruiters en loopbaanadviseurs", "Certificaat voor je opdrachtgever"] },
-        { title: "Persoonlijk advies", text: "Je adviseur kijkt met je mee naar je opdracht en contract. De polisvoorwaarden zijn leidend." },
+        { title: "Persoonlijk contact", text: "We beantwoorden je vragen over de aanvraag en voorwaarden. De polisvoorwaarden zijn leidend." },
       ]}
       faqs={faqs}
       leesMeer={["bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "wat-kosten-verzekeringen-voor-zzp-ers", "welke-verzekeringen-zzp", "bedrijfsaansprakelijkheidsverzekering-zzp"]}

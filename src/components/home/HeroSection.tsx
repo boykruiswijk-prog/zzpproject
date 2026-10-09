@@ -152,7 +152,7 @@ export function HeroSection() {
                       </div>
                     ))}
                   </div>
-                  <span className="text-xs text-muted-foreground">Jouw team van adviseurs</span>
+                  <span className="text-xs text-muted-foreground">Jouw team voor persoonlijke service</span>
                 </div>
 
                 <div className="space-y-4">

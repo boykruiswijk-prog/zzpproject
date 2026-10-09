@@ -27,7 +27,7 @@ const SEO = seoRoute("/over-ons");
 const values = [
   { icon: Target, title: "Onafhankelijk", description: "We zijn niet gebonden aan één verzekeraar. Onze bemiddeling is gebaseerd op wat het beste bij jou past, niet op commissies." },
   { icon: Eye, title: "Transparant", description: "Geen kleine lettertjes of verborgen kosten. We leggen alles helder uit zodat je weet waar je aan toe bent." },
-  { icon: Users, title: "Persoonlijk", description: "Je spreekt met echte adviseurs die je situatie kennen. Geen callcenters of doorverwijzingen." },
+  { icon: Users, title: "Persoonlijk", description: "Je hebt persoonlijk contact met ons team. Geen callcenters of doorverwijzingen." },
   { icon: Award, title: "Deskundig", description: "Meer dan 13 jaar ervaring in verzekeringen voor zelfstandigen. We kennen de markt en jouw uitdagingen." },
   { icon: BriefcaseBusiness, title: "Ook hulp bij je volgende opdracht, via Onefellow", description: "Onze zusteronderneming Onefellow helpt zelfstandige professionals zoeken naar een nieuwe opdracht." },
 ];
@@ -52,7 +52,7 @@ const team = [
 ];
 
 const registrations = [
-  { title: "AFM geregistreerd", description: "Wij staan geregistreerd bij de Autoriteit Financiële Markten als onafhankelijk adviseur." },
+  { title: "AFM geregistreerd", description: "Wij staan geregistreerd bij de Autoriteit Financiële Markten met een AFM-vergunning." },
   { title: "Kifid aangesloten", description: "Bij klachten kun je terecht bij het Klachteninstituut Financiële Dienstverlening." },
   { title: "Beroepsaansprakelijkheid verzekerd", description: "Uiteraard zijn wij zelf ook verzekerd tegen beroepsfouten." },
 ];

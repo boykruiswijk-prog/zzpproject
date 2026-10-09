@@ -27,7 +27,7 @@ const faqs = [
   {
     question: "Moet ik als ICT-freelancer verplicht verzekerd zijn?",
     answer:
-      "Veel opdrachtgevers eisen een BAV-polis in hun raamcontract. Controleer je overeenkomst. ZP Zaken adviseert je gratis over de minimale dekking die jouw opdrachtgever verwacht.",
+      "Veel opdrachtgevers eisen een BAV-polis in hun raamcontract. Controleer je overeenkomst. Heb je vragen over de aanvraag of voorwaarden? Neem persoonlijk contact met ons op.",
   },
   {
     question: "Wat is de minimale dekking voor ICT-freelancers?",
@@ -100,14 +100,14 @@ export default function ZzpVerzekeringICT() {
         },
         {
           image: officeCoffee,
-          title: "Persoonlijk advies, geen callcenter",
+          title: "Persoonlijk contact, geen callcenter",
           text:
-            "Je krijgt een vaste adviseur die de ICT-markt kent en weet wat opdrachtgevers in raamcontracten vragen. Zo voorkom je dat je te ruim of te krap verzekerd bent.",
+            "Je hebt een vast aanspreekpunt voor vragen over je aanvraag en de polisvoorwaarden.",
         },
       ]}
-      ctaTitle="Vraag gratis advies aan"
+      ctaTitle="Neem persoonlijk contact op"
       ctaSubtitle="Vertel ons wat je doet en voor wie. Wij regelen de juiste dekking."
-      ctaButton="Vraag gratis advies aan"
+      ctaButton="Neem persoonlijk contact op"
       aanvraag="direct"
     >
       <BAVApplicationModule initialSector="ict" />

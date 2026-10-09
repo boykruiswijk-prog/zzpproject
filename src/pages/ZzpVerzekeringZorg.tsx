@@ -19,7 +19,7 @@ const faqs = [
   {
     question: "Is een BAV verplicht als zzp'er in de zorg?",
     answer:
-      "De meeste zorginstellingen eisen een geldige BAV-polis als voorwaarde voor inhuur. Controleer je opdrachtovereenkomst. ZP Zaken adviseert je gratis over de vereiste dekking.",
+      "De meeste zorginstellingen eisen een geldige BAV-polis als voorwaarde voor inhuur. Controleer je opdrachtovereenkomst. Heb je vragen over de aanvraag of voorwaarden? Neem persoonlijk contact met ons op.",
   },
   {
     question: "Wat wordt gedekt bij een medische fout?",
@@ -73,9 +73,9 @@ export default function ZzpVerzekeringZorg() {
         },
         {
           icon: Users,
-          title: "Persoonlijk advies op maat",
+          title: "Persoonlijke service",
           description:
-            "Zorgprofessionals hebben specifieke risico's. Onze adviseurs kennen de sector en zorgen voor de juiste dekking.",
+            "Zorgprofessionals hebben specifieke risico's. Ons team beantwoordt je vragen over de aanvraag en polisvoorwaarden.",
         },
       ]}
       explainers={[
@@ -97,9 +97,9 @@ export default function ZzpVerzekeringZorg() {
             "Binnen 24 uur hoor je van ons. Je ontvangt je certificaat in je mailbox.",
         },
       ]}
-      ctaTitle="Vraag gratis advies aan"
+      ctaTitle="Neem persoonlijk contact op"
       ctaSubtitle="Vertel ons wat je doet en voor welke instelling. Binnen 24 uur hoor je van ons."
-      ctaButton="Vraag gratis advies aan"
+      ctaButton="Neem persoonlijk contact op"
       aanvraag="terugbel"
     >
       <section className="section-padding bg-background">

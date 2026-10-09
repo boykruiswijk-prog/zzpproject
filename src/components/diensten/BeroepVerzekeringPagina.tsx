@@ -73,9 +73,9 @@ export function BeroepVerzekeringPagina(p: Props) {
       schema={schema}
       benefits={p.benefits}
       explainers={p.explainers.map((e, i) => ({ ...e, image: images[i % images.length] }))}
-      ctaTitle="Vraag gratis advies aan"
+      ctaTitle="Neem persoonlijk contact op"
       ctaSubtitle="Vertel ons wat je doet en voor wie. Wij regelen de juiste dekking."
-      ctaButton="Vraag gratis advies aan"
+      ctaButton="Neem persoonlijk contact op"
       aanvraag="direct"
     >
       <BAVApplicationModule initialSector={p.sector} />

@@ -60,7 +60,7 @@ export default function Verzekeringen() {
             <a href="#combinatiepolis" onClick={(e) => scrollNaarAanvraag(e)}>Direct afsluiten<ArrowRight className="h-5 w-5" /></a>
           </Button>
           <Button variant="heroOutline" size="lg" asChild>
-            <LocalizedLink to="/contact" onClick={openTerugbelKlik}>Vrijblijvend advies</LocalizedLink>
+            <LocalizedLink to="/contact" onClick={openTerugbelKlik}>Persoonlijk contact</LocalizedLink>
           </Button>
         </div>
       </PageHero>

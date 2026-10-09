@@ -27,7 +27,7 @@ const popularPages = [
   {
     icon: Shield,
     title: "BAV + AVB Verzekering",
-    text: "Direct online afsluiten vanaf €55/maand",
+    text: "Online aanvragen, binnen 24 uur geregeld vanaf €55/maand",
     link: "/verzekeringen",
   },
   {

@@ -244,7 +244,7 @@ export default function Screening() {
               </div>
               <h2 className="text-2xl md:text-3xl mb-3">Aanvraag ontvangen!</h2>
               <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-                Bedankt voor je aanvraag. Een adviseur van ZP Zaken neemt binnen 24 uur contact met je op om de screening te bespreken en te starten.
+                Bedankt voor je aanvraag. Een medewerker van ZP Zaken neemt binnen 24 uur contact met je op om de screening te bespreken en te starten.
               </p>
               <Button variant="accent" size="lg" asChild>
                 <LocalizedLink to="/">
@@ -390,7 +390,7 @@ export default function Screening() {
 
                     <div className="bg-secondary rounded-lg p-4 text-sm text-muted-foreground space-y-3">
                       <p>
-                        Alle screenings worden uitgevoerd via Otentica, ISO 27001 gecertificeerd partner voor screening. Na je aanvraag neemt een adviseur binnen 24 uur contact met je op om de screening te starten. Gemiddelde doorlooptijd: 1 tot 3 werkdagen.
+                        Alle screenings worden uitgevoerd via Otentica, ISO 27001 gecertificeerd partner voor screening. Na je aanvraag neemt een medewerker binnen 24 uur contact met je op om de screening te starten. Gemiddelde doorlooptijd: 1 tot 3 werkdagen.
                       </p>
                       <div className="flex flex-wrap gap-2">
                         <span className="inline-flex items-center gap-1 bg-background border border-border rounded-full px-3 py-1 text-xs font-medium text-foreground">

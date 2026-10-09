@@ -31,7 +31,7 @@ export default function ZzpVerzekeringMarketing() {
       ]}
       explainers={[
         { title: "Campagne met een fout of een gemiste lancering", text: "Een prijsfout in een advertentie, een beeld waar een ander rechten op heeft of een lancering die te laat is. Zulke fouten kunnen leiden tot een claim. Wat precies gedekt is, staat in de polisvoorwaarden.", bullets: ["BAV en AVB in één polis via Hiscox", "Ook voor copywriters en designers", "Certificaat voor je opdrachtgever"] },
-        { title: "Persoonlijk advies", text: "Je adviseur denkt mee over je opdrachten en wat je opdrachtgever vraagt. De polisvoorwaarden zijn leidend." },
+        { title: "Persoonlijk contact", text: "We beantwoorden je vragen over de aanvraag en voorwaarden. De polisvoorwaarden zijn leidend." },
       ]}
       faqs={faqs}
       leesMeer={["bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "wat-kosten-verzekeringen-voor-zzp-ers", "welke-verzekeringen-zzp", "bedrijfsaansprakelijkheidsverzekering-zzp"]}

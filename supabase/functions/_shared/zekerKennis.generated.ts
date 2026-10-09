@@ -100,7 +100,7 @@ export const ZEKER_KENNIS = {
     {
       "path": "/",
       "title": "BAV & AVB Verzekering ZZP'ers | Vanaf €55/maand",
-      "intro": "ZP Zaken is een onafhankelijke verzekeringsadviseur voor zelfstandig professionals, met AFM-vergunning 12050636. De gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering sluit je online af vanaf € 55 per maand, zonder eigen risico en dagelijks opzegbaar. Vragen? Bel +31204573077 of mail info@zpzaken.nl."
+      "intro": "ZP Zaken biedt persoonlijke service voor zelfstandig professionals, met AFM-vergunning 12050636. De gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering vraag je online aan vanaf € 55 per maand, zonder eigen risico en dagelijks opzegbaar. Vragen? Bel +31204573077 of mail info@zpzaken.nl."
     },
     {
       "path": "/diensten",
@@ -109,7 +109,7 @@ export const ZEKER_KENNIS = {
     },
     {
       "path": "/verzekeringen",
-      "title": "BAV + AVB voor ZZP'ers | Direct online afsluiten",
+      "title": "BAV + AVB voor ZZP'ers | Online aanvragen, binnen 24 uur geregeld",
       "intro": "ZP Zaken is de bedenker van de BAV + AVB in één polis voor zzp'ers. De combinatiepolis bundelt beroepsaansprakelijkheid (BAV) en bedrijfsaansprakelijkheid (AVB) in één verzekering, vanaf € 55 per maand. Er is geen eigen risico en je kunt dagelijks opzeggen. Aanvragen doe je online in vijf stappen."
     },
     {
@@ -270,7 +270,7 @@ export const ZEKER_KENNIS = {
     {
       "path": "/offerte",
       "title": "Vrijblijvende offerte BAV en AVB | ZP Zaken",
-      "intro": "Vraag hier vrijblijvend een offerte aan voor je beroeps- en bedrijfsaansprakelijkheidsverzekering. Je ontvangt binnen 24 uur een reactie van een adviseur."
+      "intro": "Vraag hier vrijblijvend een offerte aan voor je beroeps- en bedrijfsaansprakelijkheidsverzekering. Je ontvangt binnen 24 uur een reactie van ons team."
     },
     {
       "path": "/zzp-verzekering-ict",
@@ -442,7 +442,7 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Onze verzekering",
       "vraag": "Heb ik een beroeps- en een bedrijfsaansprakelijkheidsverzekering nodig?",
-      "antwoord": "Een BAV dekt schade door fouten in je werk (verkeerd advies, fout ontwerp). Een AVB dekt schade aan personen of spullen. Voor de meeste zzp'ers zijn beide aan te raden. Onze combinatiepolis bundelt ze met korting."
+      "antwoord": "Een BAV dekt schade door fouten in je werk (verkeerd advies, fout ontwerp). Een AVB dekt schade aan personen of spullen. Veel opdrachtgevers vragen om beide verzekeringen. Onze combinatiepolis bundelt ze met korting."
     },
     {
       "categorie": "Onze verzekering",

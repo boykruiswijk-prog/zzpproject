@@ -31,7 +31,7 @@ export default function ZzpVerzekeringInterimManager() {
       ]}
       explainers={[
         { title: "Besluiten en planning waarop je opdrachtgever bouwt", text: "Als interim manager stuur je mensen, budgetten en planningen aan. Je opdrachtgever rekent op jouw keuzes. Een fout in een planning of besluit kan schade geven. Daarvoor is een BAV.", bullets: ["BAV en AVB in één polis via Hiscox", "Ook voor programma- en projectmanagers", "Certificaat voor je opdrachtgever of bemiddelingsbureau"] },
-        { title: "Persoonlijk advies bij je opdracht", text: "Elke opdracht is anders. Je adviseur kijkt met je mee naar wat je opdrachtgever vraagt. De polisvoorwaarden zijn leidend." },
+        { title: "Persoonlijk contact bij je opdracht", text: "Elke opdracht is anders. We beantwoorden je vragen over de aanvraag en voorwaarden. De polisvoorwaarden zijn leidend." },
       ]}
       faqs={faqs}
       leesMeer={["bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "wat-kosten-verzekeringen-voor-zzp-ers", "welke-verzekeringen-zzp", "bedrijfsaansprakelijkheidsverzekering-zzp"]}

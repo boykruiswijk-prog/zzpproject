@@ -24,12 +24,12 @@ const faqs = [
   {
     question: "Moet ik als bouwvakker een BAV hebben?",
     answer:
-      "Dat hangt af van je werkzaamheden. Voer je advies- of ontwerptaken uit? Dan is een BAV aan te raden. Voer je alleen fysiek uitvoerend werk uit? Dan volstaat mogelijk een AVB. Vraag gratis advies.",
+      "Dat hangt af van je werkzaamheden en de eisen van je opdrachtgever. Een BAV is bedoeld voor beroepsfouten en een AVB voor schade aan personen of spullen. Heb je vragen over de aanvraag of voorwaarden? Neem persoonlijk contact met ons op.",
   },
   {
     question: "Dekt mijn verzekering ook schade die jaren later aan het licht komt?",
     answer:
-      "Dat hangt af van de nawerking- en nadekkingsclausule in je polis. ZP Zaken adviseert je hierover zodat je niet voor verrassingen staat.",
+      "De polisvoorwaarden zijn leidend. De dekking begint op de ingangsdatum die je kiest. Fouten van voor die datum zijn niet gedekt. Na het beëindigen van de verzekering is er geen uitloopdekking.",
   },
 ];
 
@@ -83,7 +83,7 @@ export default function ZzpVerzekeringBouw() {
           image: teamMeeting,
           title: "BAV en AVB in de juiste verhouding",
           text:
-            "In de bouw lopen ontwerp, advies en uitvoering vaak door elkaar. Wij bepalen samen welk deel van jouw werk onder beroepsaansprakelijkheid valt en welk deel onder bedrijfsaansprakelijkheid.",
+            "In de bouw lopen ontwerp, advies en uitvoering vaak door elkaar. De polisvoorwaarden beschrijven wat onder beroepsaansprakelijkheid en bedrijfsaansprakelijkheid valt. We beantwoorden je vragen over deze voorwaarden.",
           bullets: [
             "Beroepsaansprakelijkheid voor ontwerp-, advies- en uitvoeringsfouten",
             "Bedrijfsaansprakelijkheid voor schade op de bouwplaats",
@@ -92,14 +92,14 @@ export default function ZzpVerzekeringBouw() {
         },
         {
           image: officeCoffee,
-          title: "Advies over nawerking en nadekking",
+          title: "Vragen over de polisvoorwaarden",
           text:
-            "Bouwschade komt soms jaren later aan het licht. Wij leggen uit wat jouw polis dan doet, zodat je weet waar je staat als een oude opdracht terugkomt.",
+            "Heb je vragen over je aanvraag of de voorwaarden? We beantwoorden ze graag. De polisvoorwaarden zijn leidend.",
         },
       ]}
-      ctaTitle="Vraag gratis advies aan"
+      ctaTitle="Neem persoonlijk contact op"
       ctaSubtitle="Vertel ons welk werk je doet. Binnen 24 uur hoor je van ons."
-      ctaButton="Vraag gratis advies aan"
+      ctaButton="Neem persoonlijk contact op"
       aanvraag="terugbel"
     >
       <section className="section-padding bg-background">
