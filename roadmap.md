@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Adviesclaims vervangen in site, metadata, Zeker, mails en artikelen; uitzonderingen en alle wijzigingen rapporteren, niet publiceren.
 
 - [x] Cyber: centrale prijzen/dekking, alle publieke teksten en Zeker consistent
 - [x] Cyber: acceptatievragen, afzonderlijk akkoord met dossierregistratie en Ellen-taak
