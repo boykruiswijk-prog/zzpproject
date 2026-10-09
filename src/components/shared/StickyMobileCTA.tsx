@@ -42,7 +42,7 @@ export function StickyMobileCTA() {
         {linkPagina ? (
           <Link to={`/verzekeringen#${AANVRAAG_ID}`} className="flex flex-1 items-center justify-center gap-2 bg-accent text-center text-accent-foreground">
             <Zap className="h-4 w-4" aria-hidden="true" />
-            Afsluiten vanaf €{maand.prijs}/mnd
+            Aanvragen vanaf €{maand.prijs}/mnd
           </Link>
         ) : (
           <a
@@ -51,7 +51,7 @@ export function StickyMobileCTA() {
             className="flex flex-1 items-center justify-center gap-2 bg-accent text-center text-accent-foreground"
           >
             <Zap className="h-4 w-4" aria-hidden="true" />
-            Afsluiten vanaf €{maand.prijs}/mnd
+            Aanvragen vanaf €{maand.prijs}/mnd
           </a>
         )}
         <a

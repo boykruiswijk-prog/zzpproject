@@ -147,6 +147,6 @@ export function bavVergelijkingFaq(): { question: string; answer: string }[] {
     { question: "Welk verzekerd bedrag heb ik nodig?", answer: "Dat hangt af van je werk en wat je opdrachtgever vraagt. Kijk in je contract welk bedrag er staat. Veel goedkope polissen starten bij € 250.000 per aanspraak. Dat is soms te weinig voor grotere opdrachten." },
     { question: "Kan ik mijn BAV dagelijks opzeggen?", answer: "Bij ZP Zaken, Insify en Knab wel. Bij andere aanbieders staat het niet altijd op de productpagina. Check de voorwaarden voordat je afsluit." },
     ...INLOOP_UITLOOP_FAQ,
-    { question: "Hoe snel ben ik verzekerd bij ZP Zaken?", answer: "Je sluit online af. Het is binnen 24 uur geregeld en je krijgt het certificaat in je mailbox." },
+    { question: "Hoe snel ben ik verzekerd bij ZP Zaken?", answer: "Je vraagt online aan. Het is binnen 24 uur geregeld en je krijgt het certificaat in je mailbox." },
   ];
 }

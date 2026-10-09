@@ -595,7 +595,7 @@
   "audiences": {
     "starters": "Einsteiger",
     "startersDesc": "Gerade als Freiberufler gestartet? Wir helfen Ihnen mit den Basisversicherungen.",
-    "startersNeeds": ["Berufs- oder Betriebshaftpflicht", "Grundberatung Berufsunfähigkeit", "Erklärung Pflichtversicherungen"],
+    "startersNeeds": ["Berufs- oder Betriebshaftpflicht", "Informationen zur Berufsunfähigkeit", "Erklärung Pflichtversicherungen"],
     "experienced": "Erfahrene Freiberufler",
     "experiencedDesc": "Seit Jahren selbstständig? Prüfen Sie ob Ihre Versicherungen noch aktuell sind.",
     "experiencedNeeds": ["Überprüfung aktueller Versicherungen", "Optimierung von Deckung und Prämie", "Erweiterung um zusätzliche Versicherungen"],

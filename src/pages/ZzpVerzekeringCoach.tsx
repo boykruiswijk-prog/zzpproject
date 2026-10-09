@@ -27,7 +27,7 @@ export default function ZzpVerzekeringCoach() {
       benefits={[
         { icon: HeartHandshake, title: "Voor coaches en trainers", description: `Voor loopbaancoaches, business coaches, teamcoaches en trainers. ${BAV_DEKKING} BAV en ${AVB_DEKKING} AVB per aanspraak.` },
         { icon: ShieldCheck, title: "Geen eigen risico", description: "Je betaalt geen eigen risico. Je polis is dagelijks opzegbaar." },
-        { icon: Clock, title: "Binnen 24 uur geregeld", description: "Online afsluiten, binnen 24 uur geregeld en je certificaat in je mailbox." },
+        { icon: Clock, title: "Binnen 24 uur geregeld", description: "Online aanvragen, binnen 24 uur geregeld en je certificaat in je mailbox." },
       ]}
       explainers={[
         { title: "Begeleiding waarop je klant vertrouwt", text: "Je geeft advies en begeleiding. Je geeft trainingen op locatie. Gaat er iets mis, dan kan een klant je aansprakelijk stellen. Een BAV is voor fouten in je werk, een AVB voor schade aan personen of spullen.", bullets: ["BAV en AVB in één polis via Hiscox", "Voor coaching en training", "Certificaat voor je opdrachtgever"] },

@@ -57,7 +57,7 @@ export default function Verzekeringen() {
       >
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button variant="accent" size="lg" asChild>
-            <a href="#combinatiepolis" onClick={(e) => scrollNaarAanvraag(e)}>Direct afsluiten<ArrowRight className="h-5 w-5" /></a>
+            <a href="#combinatiepolis" onClick={(e) => scrollNaarAanvraag(e)}>Online aanvragen<ArrowRight className="h-5 w-5" /></a>
           </Button>
           <Button variant="heroOutline" size="lg" asChild>
             <LocalizedLink to="/contact" onClick={openTerugbelKlik}>Persoonlijk contact</LocalizedLink>

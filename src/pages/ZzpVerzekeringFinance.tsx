@@ -27,7 +27,7 @@ export default function ZzpVerzekeringFinance() {
       benefits={[
         { icon: Calculator, title: "Voor controllers en interim CFO's", description: `Voor financial controllers, business controllers en interim CFO's. Je bent verzekerd voor ${BAV_DEKKING} BAV en ${AVB_DEKKING} AVB per aanspraak.` },
         { icon: ShieldCheck, title: "Geen eigen risico", description: "Je betaalt geen eigen risico bij een schade. De polis is dagelijks opzegbaar." },
-        { icon: Clock, title: "Online en binnen 24 uur", description: "Je sluit online af. Binnen 24 uur geregeld, met je certificaat in je mailbox." },
+        { icon: Clock, title: "Online en binnen 24 uur", description: "Je vraagt online aan. Binnen 24 uur geregeld, met je certificaat in je mailbox." },
       ]}
       explainers={[
         { title: "Cijfers waar je opdrachtgever op vertrouwt", text: "Je maakt rapportages, begrotingen en prognoses. Een fout in je cijfers kan leiden tot een verkeerde keuze van je opdrachtgever. Een BAV beschermt je als je daarvoor aansprakelijk wordt gesteld.", bullets: ["BAV en AVB in één polis via Hiscox", "Persoonlijk contact over je opdracht", "Certificaat dat je direct kunt doorsturen"] },

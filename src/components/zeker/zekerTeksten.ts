@@ -13,7 +13,7 @@ export const ZEKER_TEKSTEN: Record<ZekerTaal, {
     suggesties: ["Wat kost de BAV + AVB?", "Wat dekt de verzekering?", "Hoe sluit ik direct af?", "Ik wil teruggebeld worden"],
     disclaimer: "Je chat met een digitale assistent. Antwoorden zijn algemene informatie, geen persoonlijk advies.", disclaimerLink: "Lees hoe we met je gegevens omgaan.",
     placeholder: "Typ je vraag…", versturen: "Versturen", sluiten: "Chat sluiten", nieuw: "Nieuw gesprek", typen: "Zeker typt…", nuttig: "Nuttig antwoord", nietNuttig: "Niet nuttig",
-    acties: { terugbelformulier: "Terugbelverzoek", afsluiten: "Direct afsluiten", offerte: "Offerte aanvragen", bellen: "Bel 020 - 457 3077", whatsapp: "WhatsApp" },
+    acties: { terugbelformulier: "Terugbelverzoek", afsluiten: "Online aanvragen", offerte: "Offerte aanvragen", bellen: "Bel 020 - 457 3077", whatsapp: "WhatsApp" },
     form: { titel: "Laat je terugbellen", naam: "Naam", telefoon: "Telefoonnummer", email: "E-mail (optioneel)", moment: "Voorkeursmoment", vraag: "Korte vraag", toestemming: "Ik geef ZP Zaken toestemming om contact met mij op te nemen over deze vraag.", versturen: "Verstuur verzoek", annuleren: "Annuleren", bevestiging: "Bedankt! We hebben je terugbelverzoek ontvangen. Een collega belt je zo snel mogelijk, uiterlijk binnen één werkdag.", fout: "Versturen lukte niet. Bel ons gerust op 020 - 457 3077.", momenten: ["Zo snel mogelijk", "Ochtend", "Middag", "Einde van de dag"] },
     fout: "Sorry, dat lukt me nu even niet. Bel ons gerust op 020 - 457 3077 of stuur een WhatsApp.",
   },

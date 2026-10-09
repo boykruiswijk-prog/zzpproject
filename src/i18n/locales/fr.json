@@ -595,7 +595,7 @@
   "audiences": {
     "starters": "Débutants",
     "startersDesc": "Vous venez de commencer en freelance ? Nous vous aidons avec les assurances de base.",
-    "startersNeeds": ["Responsabilité professionnelle ou entreprise", "Conseil de base invalidité", "Explication des assurances obligatoires"],
+    "startersNeeds": ["Responsabilité professionnelle ou entreprise", "Informations sur l'assurance invalidité", "Explication des assurances obligatoires"],
     "experienced": "Freelances expérimentés",
     "experiencedDesc": "Indépendant depuis des années ? Vérifiez si vos assurances sont toujours à jour.",
     "experiencedNeeds": ["Révision des assurances actuelles", "Optimisation couverture et prime", "Extension aux assurances complémentaires"],

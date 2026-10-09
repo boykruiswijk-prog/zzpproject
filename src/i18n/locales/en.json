@@ -595,7 +595,7 @@
   "audiences": {
     "starters": "Starters",
     "startersDesc": "Just started as a freelancer? We help you get started with the basic insurance you need to work safely.",
-    "startersNeeds": ["Professional or business liability", "Basic advice on disability insurance", "Explanation of required insurance"],
+    "startersNeeds": ["Professional or business liability", "Information on disability insurance", "Explanation of required insurance"],
     "experienced": "Experienced freelancers",
     "experiencedDesc": "Been freelancing for years? Check if your insurance is still up to date and optimise your coverage and premium.",
     "experiencedNeeds": ["Review of current insurance", "Optimisation of coverage and premium", "Expansion to additional insurance"],
