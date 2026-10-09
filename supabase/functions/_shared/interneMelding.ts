@@ -14,12 +14,16 @@ export type InterneMeldingInput = {
   text?: string;
   replyTo?: string;
   metadata?: Record<string, unknown>;
+  /** Meldingssoort in interne_melding_ontvangers; standaard 'algemeen'. */
+  soort?: string;
 };
 
-export async function interneOntvangers(admin: AdminClient): Promise<string[]> {
+const FALLBACK_PER_SOORT: Record<string, string[]> = { exact_boeking: ["roxy@onefellow.nl"] };
+
+export async function interneOntvangers(admin: AdminClient, soort = "algemeen"): Promise<string[]> {
   const { data, error } = await admin.from("interne_melding_ontvangers")
-    .select("email").eq("actief", true).order("email");
-  if (error || !data?.length) return FALLBACK;
+    .select("email").eq("actief", true).eq("soort", soort).order("email");
+  if (error || !data?.length) return FALLBACK_PER_SOORT[soort] ?? FALLBACK;
   return [...new Set(data.map((row: { email: string }) => row.email.trim().toLowerCase()).filter(Boolean))];
 }
 
@@ -32,7 +36,7 @@ async function log(admin: AdminClient, input: InterneMeldingInput, recipient: st
     status,
     resend_message_id: id ?? null,
     error_message: error ?? null,
-    metadata: { ...(input.metadata ?? {}), internal_notification: true },
+    metadata: { ...(input.metadata ?? {}), internal_notification: true, soort: input.soort ?? "algemeen" },
   });
 }
 
@@ -67,7 +71,7 @@ async function sendOne(admin: AdminClient, req: Request | null, fnName: string, 
 }
 
 export async function verstuurInterneMelding(admin: AdminClient, req: Request | null, fnName: string, input: InterneMeldingInput) {
-  const recipients = await interneOntvangers(admin);
+  const recipients = await interneOntvangers(admin, input.soort ?? "algemeen");
   const results = [];
   for (const recipient of recipients) results.push({ recipient, ...(await sendOne(admin, req, fnName, input, recipient)) });
   if (results.some((result) => !result.ok)) {
