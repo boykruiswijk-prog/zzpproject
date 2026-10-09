@@ -8,6 +8,7 @@ import {
   resolveRedirectTarget,
   type ArticleRedirectInfo,
 } from "./src/config/legacyRedirects";
+import { redirectRouteConflicten } from "./scripts/routeConflicts";
 
 
 /** Storage-bucket waarin de gemigreerde WordPress-media staat. */
@@ -105,6 +106,10 @@ function redirectsPlugin(env: Record<string, string>): Plugin {
   return {
     name: "zp-generate-redirects",
     async buildStart() {
+      const conflicten = redirectRouteConflicten(__dirname);
+      if (conflicten.length) {
+        throw new Error(`[redirects] Bestaande route(s) staan als bron in legacyRedirects.ts: ${conflicten.join(", ")}`);
+      }
       const articles = await fetchArticleIndex(env);
       const storageBase = env.VITE_SUPABASE_URL
         ? `${env.VITE_SUPABASE_URL}/storage/v1/object/public/${MEDIA_BUCKET}`
