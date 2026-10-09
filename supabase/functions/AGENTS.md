@@ -11,3 +11,11 @@
 - Startertarief: regels in src/lib/starterTarief.ts (byte-gelijk _shared/starterTarief.ts); server bepaalt starter, activatie wacht op RPC beoordeel_startertarief (verzekering, supervisor of admin); activatie herstelt een ontbrekende bav_aanmeldingen-rij alleen additief vanuit de lead; planner rekent per periode via contract_bedrag_voor_periode (tarief_type/starter_tot/bedrag_na_starter). Waarom: geen Exact-inrichting en geen verkeerd bedrag.
 - Kennisbank-IndexNow: trigger trg_indexnow_artikel zet URL's in indexnow_log en wekt indexnow-ping {wachtrij:true}, dat alleen wachtrij-URL's meldt; overige aanroepen alleen cron/supervisor. Waarom: geen geheim in de database en elk resultaat gelogd.
 - Starterbeoordeling: alleen de inschrijvingsdatum van de huidige KVK-inschrijving telt (jonger dan 12 maanden op de ingangsdatum); een omzetting van eenmanszaak naar een nieuwe BV telt als starter, eerdere inschrijvingen tellen niet mee. Waarom: één toetsbare regel zonder voorgeschiedenisonderzoek.
+
+- BAV-AVB-factuurteksten en YourRef lopen via _shared/factuurTekst.ts; periode vooraan, maximaal 60 tekens.
+- BAV-sector → adminbranche loopt via _shared/sectorBranche.ts; het sectorlabel blijft in extra_data. Waarom: vaste waarden zonder informatieverlies.
+- Intakeadres via _shared/adresNormalisatie.ts vóór legBewijsVast. Waarom: overal hetzelfde adres.
+- Telefoonvalidatie/-normalisatie via _shared/telefoon.ts. Waarom: formulier en server hanteren hetzelfde formaat.
+- Monthly lifecycle/preview credits read actual invoiced periods via _shared/lifecycleCredit.ts and planner helper berekenOpzegCredit. Why: no annual-premium math or duplicate refunds.
+- New cyber uses versioned _shared/cyber.ts, immutable consent and separate cyber_clear lines; shared annual limit is admin-only. Why: preserve legacy terms and BAV credits.
+- Every Exact write runs inside metExactMelding (_shared/exactBoekingMelding.ts), which observes fetch and mails recipients of soort exact_boeking; daily read-only check exact-concept-controle marks deleted drafts. Why: admin checks every booking without touching billing logic.

@@ -2,9 +2,6 @@
 
 - SEPA-tekst staat byte-gelijk in frontend en _shared/sepaMachtiging.ts; bewijs is onveranderbaar.
 - Portal access (create user, link policies, magic link, mail/log) uses _shared/portalAccess.ts; customers read lead fields only via get_mijn_polissen RPC. Why: one access path, no customer SELECT on leads.
-- BAV-AVB-factuurteksten en YourRef lopen via _shared/factuurTekst.ts; periode vooraan, maximaal 60 tekens.
-- BAV-sector → adminbranche loopt via _shared/sectorBranche.ts; het sectorlabel blijft in extra_data. Waarom: vaste waarden zonder informatieverlies.
-- Intakeadres via _shared/adresNormalisatie.ts vóór legBewijsVast. Waarom: overal hetzelfde adres.
 
 ## Beveiligingsarchitectuur
 
@@ -21,7 +18,6 @@
 - Opzeggingen worden bij insert gekoppeld door bepaal_opzegging_koppeling (e-mail → contractnummer → KvK/bedrijfsnaam als voorstel); contracten wijzigen alleen via RPC verwerk_opzegging. Waarom: nooit automatisch een contract beëindigen.
 - Bezoekersinvoer in leads.extra_data.formulier (geordende lijst) via _shared/leadVelden.ts voor detail, lijst en teammail; preview-inzendingen zijn is_test zonder klantmail. Waarom: één bron.
 - Leadherkomst via _shared/attributie.ts (sessionStorage, src/lib/attributie.ts) → leads.extra_data.attributie; GA4-events alleen via src/lib/tracking.ts, tel:/wa.me-klikken via één globale listener, geen GA4 op /admin, /portal, /mijn-zp (ga-disable-vlag). Waarom: één meetbron zonder dubbele events of interne vervuiling.
-- Telefoonvalidatie/-normalisatie via _shared/telefoon.ts. Waarom: formulier en server hanteren hetzelfde formaat.
 - Halve BAV-aanvragen staan in aanvraag_concepten, alleen geschreven via submit-public-form (table "aanvraag_concepten", idempotent op browser-concept-id) en omgezet door process-bav-wizard; nooit bank-/SEPA-velden, na 90 dagen geanonimiseerd (cron), nooit verwijderd. Waarom: opvolging zonder gevoelige gegevens of anon-toegang.
 - Concurrentievergelijking BAV staat in src/data/bavVergelijking.ts (per aanbieder bron-URL + gecontroleerd_op); de ZP Zaken-rij komt uit bavPakketten. Waarom: per kwartaal bij te werken zonder pagina-code te wijzigen.
 - docs/cloudflare-bulk-redirects.csv wordt bij elke build afgeleid van public/_redirects (cloudflareBulkCsv in vite.config.ts). Waarom: één bron voor redirects.
@@ -31,7 +27,4 @@
 - Article images: leased queue, wake token or MFA supervisor, max 2 AI attempts then category fallback; never a global pause (AI refusal only sets admin notice); crashed jobs resume as fallback. Preserve custom/old assets; build verifies images; keep ArticleImage guard. Why: every article gets an image within minutes.
 - Scripts never import React. Why: avoid prod/dev SSR crashes.
 
-- Monthly lifecycle/preview credits read actual invoiced periods via _shared/lifecycleCredit.ts and planner helper berekenOpzegCredit. Why: no annual-premium math or duplicate refunds.
 
-- New cyber uses versioned _shared/cyber.ts, immutable consent and separate cyber_clear lines; shared annual limit is admin-only. Why: preserve legacy terms and BAV credits.
-- Every Exact write runs inside metExactMelding (_shared/exactBoekingMelding.ts), which observes fetch and mails recipients of soort exact_boeking; daily read-only check exact-concept-controle marks deleted drafts. Why: admin checks every booking without touching billing logic.
