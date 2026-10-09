@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { BavBezetMelding } from "@/components/admin/crm/BavBezetMelding";
 
 type Contract = { abonnement_nr: string | null; product: string; status: string | null; begin: string | null; eind: string | null; bedrag: number; cyclus: string };
 type Rij = { onderneming_id: string; naam: string | null; kvk: string | null; exact_relatie_code: string | null; afas: string[] | null; klantopgave: string[] | null; contracten: Contract[] | null; later: { op: string; toelichting: string | null } | null };
@@ -46,7 +47,9 @@ function RijKaart({ r, onKlaar }: { r: Rij; onKlaar: () => void }) {
         <Button disabled={bezig || nummer.trim().length < 3 || toelichting.trim().length < 3} onClick={() => rpc("bav_nummer_handmatig_bevestigen", { _onderneming_id: r.onderneming_id, _nummer: nummer, _toelichting: toelichting }, "BAV-nummer bevestigd")}>Bevestigen</Button>
         <Button variant="outline" disabled={bezig} onClick={() => rpc("bav_nummer_later", { _onderneming_id: r.onderneming_id, _toelichting: toelichting }, "Gemarkeerd als later")}>Later</Button>
       </div>
-      {fout && <p role="alert" className="text-sm text-destructive">{fout}</p>}
+      {fout && (/bestaat al/i.test(fout)
+        ? <BavBezetMelding ondernemingId={r.onderneming_id} nummer={nummer.trim()} onKlaar={onKlaar} />
+        : <p role="alert" className="text-sm text-destructive">{fout}</p>)}
     </CardContent></Card>
   );
 }
