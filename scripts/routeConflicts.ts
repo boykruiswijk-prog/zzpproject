@@ -11,6 +11,7 @@ export function bestaandeRoutes(root: string): Set<string> {
   const app = fs.readFileSync(path.join(root, "src/App.tsx"), "utf8");
   const seo = fs.readFileSync(path.join(root, "src/config/seoRoutes.ts"), "utf8");
   const routes = new Set<string>();
+  // Routes die zelf al doorverwijzen (<Navigate>) tellen niet als echte pagina.
   for (const m of app.matchAll(/<Route[^>]*\spath="([^"]+)"[^>]*>/g)) if (!m[0].includes("<Navigate")) routes.add(norm(m[1]));
   for (const m of seo.matchAll(/\bpath:\s*"([^"]+)"/g)) routes.add(norm(m[1]));
   routes.delete("");
