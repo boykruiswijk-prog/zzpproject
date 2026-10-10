@@ -23,7 +23,7 @@ export const bavPakketten = [
   {
     id: "jaarlijks",
     name: "BAV & AVB Jaarlijks",
-    label: "Goedkoopste premie",
+    label: "Maandelijks opzegbaar",
     prijs: 600,
     periode: "jaar" as const,
     prijsLabel: "€ 600 per jaar",

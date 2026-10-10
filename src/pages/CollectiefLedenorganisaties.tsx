@@ -576,7 +576,7 @@ export default function CollectiefLedenorganisaties() {
             </motion.div>
             <div className="flex-1 text-center md:text-left relative z-10">
               <h3 className="text-2xl font-black text-white mb-3">BAV + AVB Combinatiepolis</h3>
-              <p className="text-white/60 text-lg">De enige gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering in Nederland:  met exclusieve collectieve korting.</p>
+              <p className="text-white/60 text-lg">Bedacht door ZP Zaken: beroeps- en bedrijfsaansprakelijkheid in één polis, met exclusieve collectieve korting.</p>
             </div>
             <Button onClick={scrollToForm}
               className="text-white flex-shrink-0 font-bold rounded-xl px-6 py-5 relative z-10 border border-white/20 hover:bg-white/10 transition-all"
