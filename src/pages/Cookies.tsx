@@ -73,8 +73,8 @@ const cookieDetails = [
   },
   {
     name: "_uetsid, _uetvid, _uetmsclkid",
-    provider: "Microsoft Advertising",
-    purpose: "Meten welke advertentie tot een aanvraag leidde",
+    provider: "Microsoft Advertising (UET)",
+    purpose: "Meten welke Microsoft-advertenties tot een aanvraag leiden",
     expiry: "1 dag / 13 maanden / 90 dagen",
     type: "Marketing",
   },

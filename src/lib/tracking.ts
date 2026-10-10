@@ -10,6 +10,43 @@ export const GA_ID = "G-YY7YJFFEZN";
 export const GOOGLE_ADS_ID = "AW-18497139684";
 /** Google Ads-conversieactie (aanvraag BAV + AVB). Pas hier aan bij een nieuwe conversieactie. */
 export const GOOGLE_ADS_CONVERSIE = "AW-18497139684/rIoQCIid-5IdEOTnj_RE";
+/** Microsoft Advertising UET-tag-ID. Leeg = er wordt niets geladen. */
+export const MS_UET_ID = "";
+
+type Uetq = { push: (...a: unknown[]) => void };
+const uetq = (): Uetq | undefined => (typeof window === "undefined" ? undefined : (window as unknown as { uetq?: Uetq }).uetq);
+let uetGeladen = false;
+
+function zetUetToestemming() {
+  uetq()?.push("consent", "update", { ad_storage: heeftMarketingToestemming() ? "granted" : "denied" });
+}
+
+/** Laadt UET (bat.js) alleen als MS_UET_ID gevuld is en nooit op interne paden; Consent Mode standaard denied. */
+export function installeerUet(pathname: string) {
+  if (!MS_UET_ID || uetGeladen || typeof window === "undefined" || isNietGemetenPad(pathname)) return;
+  uetGeladen = true;
+  const w = window as unknown as { uetq?: unknown[] };
+  w.uetq = w.uetq || [];
+  (w.uetq as unknown[]).push("consent", "default", { ad_storage: "denied" });
+  zetUetToestemmingVroeg();
+  const s = document.createElement("script");
+  s.async = true;
+  s.src = "https://bat.bing.com/bat.js";
+  s.onload = () => {
+    const UET = (window as unknown as { UET?: new (o: Record<string, unknown>) => Uetq }).UET;
+    if (!UET) return;
+    const wachtrij = (window as unknown as { uetq?: unknown }).uetq;
+    const inst = new UET({ ti: MS_UET_ID, enableAutoSpaTracking: true, q: wachtrij });
+    (window as unknown as { uetq: Uetq }).uetq = inst;
+    inst.push("pageLoad");
+  };
+  document.head.appendChild(s);
+  window.addEventListener("zp-cookie-keuze", zetUetToestemming);
+}
+
+function zetUetToestemmingVroeg() {
+  if (heeftMarketingToestemming()) zetUetToestemming();
+}
 
 type Params = Record<string, string | number | boolean | undefined | unknown[]>;
 
@@ -160,6 +197,9 @@ export const trackPurchase = (
     currency: "EUR",
     transaction_id: transactionId,
   });
+  if (uetGeladen && typeof window !== "undefined" && !isNietGemetenPad(window.location.pathname)) {
+    uetq()?.push("event", "aanvraag_afgerond", { revenue_value: value, currency: "EUR" });
+  }
 };
 
 

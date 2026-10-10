@@ -13,6 +13,9 @@
 import { SITE_CONFIG } from "./site";
 import { bavPakketten } from "../data/bavPakketten";
 
+const LANDING_MAAND = bavPakketten.find((p) => p.id === "maandelijks")!.prijs;
+const LANDING_JAAR = bavPakketten.find((p) => p.id === "jaarlijks")!.prijs;
+
 export interface SeoRoute {
   /** Pad zonder taalprefix, beginnend met "/". */
   path: string;
@@ -398,6 +401,20 @@ export const seoRoutes: SeoRoute[] = [
     intro:
       "Als ICT-freelancer schrijf je code, implementeer je systemen of geef je advies. Een fout in je werk kan grote financiele gevolgen hebben voor je opdrachtgever. " +
       "Beroepsaansprakelijkheidsverzekering (BAV) is in de ICT-sector bij veel opdrachtgevers verplicht en beschermt jou en je klant.",
+  },
+  {
+    path: "/beroepsaansprakelijkheidsverzekering",
+    title: "Beroepsaansprakelijkheidsverzekering zzp | ZP Zaken",
+    description: `Beroepsaansprakelijkheidsverzekering voor zzp'ers: BAV en AVB in één polis via Hiscox, vanaf € ${LANDING_MAAND} per maand. Binnen 24 uur geregeld.`,
+    h1: "Beroepsaansprakelijkheidsverzekering voor zzp'ers",
+    intro: `Een beroepsaansprakelijkheidsverzekering beschermt je als een opdrachtgever je aansprakelijk stelt voor schade door een fout in je werk. Bij ZP Zaken kost die vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
+  },
+  {
+    path: "/bav-zzp",
+    title: `BAV zzp vanaf € ${LANDING_MAAND} per maand | ZP Zaken`,
+    description: `BAV en AVB voor zzp'ers in één polis via Hiscox. Vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, geen eigen risico, binnen 24 uur geregeld.`,
+    h1: "BAV voor zzp'ers: beroeps- en bedrijfsaansprakelijkheid in één polis",
+    intro: `Een BAV beschermt je bij schade door fouten in je werk, de AVB bij schade aan personen of spullen. Bij ZP Zaken heb je ze samen vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
   },
   {
     path: "/zzp-verzekering-consultant",

@@ -21,7 +21,7 @@ const metPunt = (s: string) => /[.!?:]$/.test(s.trim()) ? s.trim() : `${s.trim()
 
 /** Geldbelangrijke pagina's eerst; overige publieke routes daarna. */
 const KERN = [
-  "/", "/verzekeringen", "/bav-zzp-vergelijken", "/offerte", "/waarom-zp-zaken", "/aov", "/pensioen", "/zorgverzekering",
+  "/", "/verzekeringen", "/beroepsaansprakelijkheidsverzekering", "/bav-zzp", "/bav-zzp-vergelijken", "/offerte", "/waarom-zp-zaken", "/aov", "/pensioen", "/zorgverzekering",
   "/zzp-verzekering-ict", "/zzp-verzekering-zorg", "/zzp-verzekering-bouw",
   "/zzp-verzekering-consultant", "/zzp-verzekering-interim-manager", "/zzp-verzekering-finance", "/zzp-verzekering-hr", "/starters", "/zzp-verzekering-marketing", "/zzp-verzekering-coach", "/diensten",
   "/screening", "/faq", "/contact", "/over-ons",
