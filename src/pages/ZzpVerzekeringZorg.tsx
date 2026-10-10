@@ -87,7 +87,7 @@ export default function ZzpVerzekeringZorg() {
           bullets: [
             "Beroepsaansprakelijkheid voor fouten in je professionele handelen",
             "Bedrijfsaansprakelijkheid voor schade aan personen of eigendommen",
-            "Certificaat dat je direct bij de zorginstelling kunt aanleveren",
+            "Certificaat dat je binnen 24 uur bij de zorginstelling kunt aanleveren",
           ],
         },
         {

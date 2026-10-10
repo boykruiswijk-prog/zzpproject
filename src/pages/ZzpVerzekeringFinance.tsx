@@ -30,7 +30,7 @@ export default function ZzpVerzekeringFinance() {
         { icon: Clock, title: "Online en binnen 24 uur", description: "Je vraagt online aan. Binnen 24 uur geregeld, met je certificaat in je mailbox." },
       ]}
       explainers={[
-        { title: "Cijfers waar je opdrachtgever op vertrouwt", text: "Je maakt rapportages, begrotingen en prognoses. Een fout in je cijfers kan leiden tot een verkeerde keuze van je opdrachtgever. Een BAV beschermt je als je daarvoor aansprakelijk wordt gesteld.", bullets: ["BAV en AVB in één polis via Hiscox", "Persoonlijk contact over je opdracht", "Certificaat dat je direct kunt doorsturen"] },
+        { title: "Cijfers waar je opdrachtgever op vertrouwt", text: "Je maakt rapportages, begrotingen en prognoses. Een fout in je cijfers kan leiden tot een verkeerde keuze van je opdrachtgever. Een BAV beschermt je als je daarvoor aansprakelijk wordt gesteld. Wat precies gedekt is, staat in de polisvoorwaarden.", bullets: ["BAV en AVB in één polis via Hiscox", "Persoonlijk contact over je opdracht", "Certificaat dat je binnen 24 uur kunt doorsturen"] },
         { title: "Accountant met wettelijke taken of Wft-adviseur?", text: "Ben je accountant met wettelijke taken, zoals een controle van de jaarrekening? Of geef je financieel advies onder de Wft? Neem dan eerst contact met ons op. Daarvoor gelden aparte eisen." },
       ]}
       faqs={faqs}
