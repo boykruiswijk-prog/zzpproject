@@ -30,7 +30,7 @@ export function EinddatumControleKnoppen({ contractId, naam, eindDatum, onGewijz
   const credit = voorstel && !voorstel.cyber_geen_credit ? verwachtCredit(voorstel, datum, voorstel.planner_perioden ?? []) : null;
 
   const open = (k: Keuze) => { setKeuze(k); setDatum(eindDatum ?? ""); setToelichting(""); setCrediteren(null); };
-  const geldig = toelichting.trim().length >= 3 && (keuze !== "opzegging" || (!!datum && (crediteren !== null || !credit)));
+  const geldig = toelichting.trim().length >= 3 && (keuze !== "opzegging" || (!!datum && !!voorstel && (crediteren !== null || !credit)));
 
   async function opslaan() {
     if (!keuze || !geldig) return;
