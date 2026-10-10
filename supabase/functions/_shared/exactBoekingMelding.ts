@@ -104,6 +104,8 @@ export type Regel = {
   soort: string; ok: boolean; fout?: string; tijd: string; klantnaam: string; bedrijfsnaam: string; relatiecode: string;
   documentId: string | null; inclBtw: number | null; exclBtw: number | null; periode: string; omschrijving: string;
   klantkaart: string | null; isConcept: boolean;
+  /** Alleen bij opzeg-creditnota (sleutel ZPC-...): toelichting Ellen en wie goedkeurde. */
+  creditToelichting?: string | null; creditGoedgekeurdDoor?: string | null;
 };
 
 async function verrijk(admin: any, a: ExactSchrijfactie): Promise<Regel> {
@@ -126,6 +128,22 @@ async function verrijk(admin: any, a: ExactSchrijfactie): Promise<Regel> {
   const starts = regels.map((x) => exactDatum(x?.StartTime)).filter(Boolean);
   const eindes = regels.map((x) => exactDatum(x?.EndTime)).filter(Boolean);
   const periode = starts.length ? `${starts[0]} t/m ${eindes[eindes.length - 1] ?? "?"}` : (exactDatum(v.StartDate) ? `vanaf ${exactDatum(v.StartDate)}${exactDatum(v.EndDate) ? ` t/m ${exactDatum(v.EndDate)}` : ""}` : "niet van toepassing");
+  let creditToelichting: string | null = null; let creditGoedgekeurdDoor: string | null = null;
+  const sleutel = String(v.YourRef ?? "").match(/ZPC-[0-9A-F]{8}/)?.[0] ?? String(v.Remarks ?? "").match(/ZPC-[0-9A-F]{8}/)?.[0] ?? null;
+  if (sleutel) {
+    const { data: c } = await admin.from("factuur_credit_planning").select("id,klant_contract_id,aanvraag_id,opzeg_toelichting,beoordeeld_door_naam").eq("creditsleutel", sleutel).maybeSingle();
+    if (c) {
+      creditGoedgekeurdDoor = c.beoordeeld_door_naam ?? null;
+      creditToelichting = c.opzeg_toelichting ?? null;
+      if (!creditGoedgekeurdDoor || !creditToelichting) {
+        const { data: logs } = await admin.from("sensitive_audit_log").select("actie,details").eq("target_id", c.klant_contract_id).order("created_at", { ascending: false }).limit(50);
+        for (const l of logs ?? []) {
+          if (!creditGoedgekeurdDoor && l.actie === "creditnota_goedgekeurd" && l.details?.credit_id === c.id) creditGoedgekeurdDoor = l.details?.door_naam ?? null;
+          if (!creditToelichting && typeof l.details?.toelichting === "string") creditToelichting = l.details.toelichting;
+        }
+      }
+    }
+  }
   const documentId = guid(r.InvoiceID ?? r.EntryID ?? r.EntryId ?? r.ID ?? r.Id) ?? guid(a.pad);
   return {
     soort: a.soort, ok: a.ok, fout: a.fout, tijd: a.tijd,
@@ -136,6 +154,7 @@ async function verrijk(admin: any, a: ExactSchrijfactie): Promise<Regel> {
     omschrijving: String(v.Description ?? r.Description ?? regels[0]?.Description ?? v.YourRef ?? "").slice(0, 200) || "geen omschrijving",
     klantkaart: ond ? `${SITE}/admin/klanten/${ond.id}` : lead ? `${SITE}/admin/leads/${lead.id}` : null,
     isConcept: a.pad.toLowerCase().includes("salesinvoice/salesinvoices") && a.methode === "POST",
+    creditToelichting, creditGoedgekeurdDoor,
   };
 }
 
@@ -174,10 +193,10 @@ export function mailVerzamel(regels: Regel[], door: string) {
   const som = (a: Regel[], k: "inclBtw" | "exclBtw") => Math.round(a.reduce((s, r) => s + (r[k] ?? 0), 0) * 100) / 100;
   const subject = `Exact-boekingen factuurplanner: ${ok.length} ingeschoten${mis.length ? `, ${mis.length} MISLUKT` : ""}`;
   const td = (s: string, r = false) => `<td style="padding:4px 8px;border-bottom:1px solid #eee;${r ? "text-align:right" : ""}">${s}</td>`;
-  const rijen = regels.map((r) => `<tr>${td(r.ok ? "Ingeschoten" : "<strong>Mislukt</strong>")}${td(esc(r.soort))}${td(esc(r.bedrijfsnaam) + "<br><span style=\"color:#777\">" + esc(r.klantnaam) + "</span>")}${td(esc(r.relatiecode))}${td(esc(r.documentId ?? "-"))}${td(esc(r.periode))}${td(esc(euro(r.exclBtw)), true)}${td(esc(euro(r.inclBtw)), true)}${td(r.klantkaart ? `<a href="${esc(r.klantkaart)}">klantkaart</a>` : "-")}</tr>${r.ok ? "" : `<tr><td colspan="9" style="padding:4px 8px;color:#b00">${esc(r.fout ?? "")}</td></tr>`}`).join("");
+  const rijen = regels.map((r) => `<tr>${td(r.ok ? "Ingeschoten" : "<strong>Mislukt</strong>")}${td(esc(r.soort))}${td(esc(r.bedrijfsnaam) + "<br><span style=\"color:#777\">" + esc(r.klantnaam) + "</span>")}${td(esc(r.relatiecode))}${td(esc(r.documentId ?? "-"))}${td(esc(r.periode))}${td(esc(euro(r.exclBtw)), true)}${td(esc(euro(r.inclBtw)), true)}${td(r.klantkaart ? `<a href="${esc(r.klantkaart)}">klantkaart</a>` : "-")}${td(r.creditToelichting || r.creditGoedgekeurdDoor ? `${esc(r.creditToelichting ?? "geen toelichting")}<br><span style="color:#777">Goedgekeurd door ${esc(r.creditGoedgekeurdDoor ?? "onbekend")}</span>` : "-")}</tr>${r.ok ? "" : `<tr><td colspan="10" style="padding:4px 8px;color:#b00">${esc(r.fout ?? "")}</td></tr>`}`).join("");
   const html = `<p>De factuurplanner heeft in deze run de volgende acties in Exact Online (administratie ${ADMINISTRATIE}) uitgevoerd. Gedaan door: ${esc(door)}.</p>
-<table style="border-collapse:collapse;font-size:13px"><thead><tr>${["Status", "Soort", "Klant", "Relatiecode", "ID", "Periode", "Excl. btw", "Incl. btw", ""].map((h) => `<th style="text-align:left;padding:4px 8px;border-bottom:2px solid #ccc">${h}</th>`).join("")}</tr></thead><tbody>${rijen}</tbody>
-<tfoot><tr><td colspan="6" style="padding:6px 8px"><strong>Totaal ingeschoten (${ok.length})</strong></td><td style="padding:6px 8px;text-align:right"><strong>${euro(som(ok, "exclBtw"))}</strong></td><td style="padding:6px 8px;text-align:right"><strong>${euro(som(ok, "inclBtw"))}</strong></td><td></td></tr></tfoot></table>
+<table style="border-collapse:collapse;font-size:13px"><thead><tr>${["Status", "Soort", "Klant", "Relatiecode", "ID", "Periode", "Excl. btw", "Incl. btw", "", "Creditnota: toelichting / akkoord"].map((h) => `<th style="text-align:left;padding:4px 8px;border-bottom:2px solid #ccc">${h}</th>`).join("")}</tr></thead><tbody>${rijen}</tbody>
+<tfoot><tr><td colspan="6" style="padding:6px 8px"><strong>Totaal ingeschoten (${ok.length})</strong></td><td style="padding:6px 8px;text-align:right"><strong>${euro(som(ok, "exclBtw"))}</strong></td><td style="padding:6px 8px;text-align:right"><strong>${euro(som(ok, "inclBtw"))}</strong></td><td></td><td></td></tr></tfoot></table>
 <p><strong>Wat te doen:</strong> ${INSTRUCTIE_CONCEPT}${mis.length ? " De mislukte regels staan niet in Exact; laat het team weten dat deze opnieuw moeten." : ""}</p>
 <p style="color:#777;font-size:12px">Interne controlemelding van het ZP Zaken-platform. Niet doorsturen naar klanten.</p>`;
   return { subject, html };

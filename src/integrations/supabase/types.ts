@@ -2110,6 +2110,10 @@ export type Database = {
           aangemaakt_op: string
           aanvraag_id: string
           bedrag: number | null
+          beoordeeld_door: string | null
+          beoordeeld_door_naam: string | null
+          beoordeeld_op: string | null
+          beoordeling_reden: string | null
           berekening: Json | null
           bron: string
           concept_op: string | null
@@ -2129,15 +2133,21 @@ export type Database = {
           klant_contract_id: string
           laatst_gecontroleerd_op: string | null
           melding: string | null
+          opzeg_toelichting: string | null
           origineel_factuurnummer: string | null
           planning_ids: string[]
           status: string
           verwerkt_op: string | null
+          waarschuwingen: string[]
         }
         Insert: {
           aangemaakt_op?: string
           aanvraag_id: string
           bedrag?: number | null
+          beoordeeld_door?: string | null
+          beoordeeld_door_naam?: string | null
+          beoordeeld_op?: string | null
+          beoordeling_reden?: string | null
           berekening?: Json | null
           bron?: string
           concept_op?: string | null
@@ -2157,15 +2167,21 @@ export type Database = {
           klant_contract_id: string
           laatst_gecontroleerd_op?: string | null
           melding?: string | null
+          opzeg_toelichting?: string | null
           origineel_factuurnummer?: string | null
           planning_ids?: string[]
           status?: string
           verwerkt_op?: string | null
+          waarschuwingen?: string[]
         }
         Update: {
           aangemaakt_op?: string
           aanvraag_id?: string
           bedrag?: number | null
+          beoordeeld_door?: string | null
+          beoordeeld_door_naam?: string | null
+          beoordeeld_op?: string | null
+          beoordeling_reden?: string | null
           berekening?: Json | null
           bron?: string
           concept_op?: string | null
@@ -2185,10 +2201,12 @@ export type Database = {
           klant_contract_id?: string
           laatst_gecontroleerd_op?: string | null
           melding?: string | null
+          opzeg_toelichting?: string | null
           origineel_factuurnummer?: string | null
           planning_ids?: string[]
           status?: string
           verwerkt_op?: string | null
+          waarschuwingen?: string[]
         }
         Relationships: [
           {
@@ -4831,6 +4849,19 @@ export type Database = {
         }
         Returns: number
       }
+      credit_beoordelen: {
+        Args: { _goedkeuren: boolean; _id: string; _reden: string }
+        Returns: Json
+      }
+      credit_voorstel: {
+        Args: { _contract_id: string; _einddatum: string }
+        Returns: Json
+      }
+      credit_waarschuwingen: {
+        Args: { _contract_id: string; _einddatum: string }
+        Returns: string[]
+      }
+      credits_ter_goedkeuring: { Args: { _toon_test?: boolean }; Returns: Json }
       crm_beeindig: {
         Args: {
           _contract_ids: string[]
@@ -4910,15 +4941,26 @@ export type Database = {
         Args: { _start: number }
         Returns: number
       }
-      einddatum_controle_beslissen: {
-        Args: {
-          _contract_id: string
-          _keuze: string
-          _opzegdatum: string
-          _toelichting: string
-        }
-        Returns: Json
-      }
+      einddatum_controle_beslissen:
+        | {
+            Args: {
+              _contract_id: string
+              _keuze: string
+              _opzegdatum: string
+              _toelichting: string
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              _contract_id: string
+              _crediteren: boolean
+              _keuze: string
+              _opzegdatum: string
+              _toelichting: string
+            }
+            Returns: Json
+          }
       einddatum_zonder_opzegging: { Args: never; Returns: Json }
       email_queue_dispatch: { Args: never; Returns: undefined }
       enqueue_email: {
