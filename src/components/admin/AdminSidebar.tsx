@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 type NavRole = "supervisor" | "verzekering" | "marketing" | "admin";
-type Teller = "aanvragen" | "leads" | "service" | "opzeggingen" | "screening" | "afgehaakt" | "chat" | "klanten" | "facturatie" | "bav_nakijken";
+type Teller = "aanvragen" | "leads" | "service" | "opzeggingen" | "screening" | "afgehaakt" | "chat" | "klanten" | "facturatie" | "bav_nakijken" | "credits_akkoord";
 type NavItem = { to: string; icon: typeof Users; label: string; end?: boolean; badge?: boolean; teller?: Teller; roles: NavRole[]; sub?: boolean };
 type NavGroup = { label: string; icon: typeof Users; roles: NavRole[]; items: NavItem[] };
 
@@ -21,6 +21,7 @@ const groups: NavGroup[] = [
     { to: "/admin/aanvragen", icon: FileText, label: "Aanvragen", teller: "aanvragen", roles: ["supervisor", "verzekering"] },
     { to: "/admin/afgehaakt", icon: UserX, label: "Afgehaakte aanvragen", teller: "afgehaakt", roles: ["supervisor", "verzekering"], sub: true },
     { to: "/admin/opzeggingen", icon: UserMinus, label: "Opzeggingen", teller: "opzeggingen", roles: ["supervisor", "verzekering"] },
+    { to: "/admin/creditnotas-goedkeuren", icon: CircleDollarSign, label: "Creditnota's ter goedkeuring", teller: "credits_akkoord", roles: ["supervisor", "verzekering"], sub: true },
     { to: "/admin/service-aanvragen", icon: ConciergeBell, label: "Serviceaanvragen", teller: "service", roles: ["supervisor", "verzekering"] },
     { to: "/admin/screening-aanvragen", icon: ShieldCheck, label: "Screeningaanvragen", teller: "screening", roles: ["supervisor", "verzekering"] },
     { to: "/admin/portaltoegang", icon: KeyRound, label: "Portaltoegang", roles: ["supervisor", "verzekering"] },

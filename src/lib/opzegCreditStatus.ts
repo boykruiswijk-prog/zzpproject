@@ -9,6 +9,8 @@ export const CREDIT_STATUS_LABEL: Record<string, string> = {
   verwerkt: "Verwerkt in Exact",
   geen_planner_factuur: "Handmatig beoordelen",
   niet_nodig: "Niet nodig",
+  wacht_op_akkoord: "Wacht op akkoord Ellen",
+  niet_crediteren: "Niet crediteren",
 };
 
 /** Eén regel creditstatus voor in het detaildeel, bijv. "Concept in Exact · € 542,96 · periode 3 okt 2026 t/m 4 okt 2027". */
