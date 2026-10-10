@@ -4,7 +4,7 @@ import { LandingVerzekeringBlokken, BAV_MILJOEN, AVB_MILJOEN } from "@/component
 
 const faqs = [
   { question: "Wat dekt een BAV?", answer: "Een BAV dekt schade die je opdrachtgever lijdt door een fout in je werk als zzp'er. Wat precies gedekt is, staat in de polisvoorwaarden." },
-  { question: "Wat is het verschil tussen BAV en AVB?", answer: "De BAV gaat over schade door fouten in je werk, zoals een verkeerde berekening. De AVB gaat over schade aan personen of spullen, bijvoorbeeld als je een laptop van je opdrachtgever laat vallen. Bij ZP Zaken zitten ze samen in één polis." },
+  { question: "Wat is het verschil tussen BAV en AVB?", answer: "De BAV gaat over financiële schade door fouten in je werk, zoals een verkeerde berekening. De AVB gaat over schade aan personen of aan spullen van anderen. Bij ZP Zaken zitten ze samen in één polis. Wat precies gedekt is, staat in de polisvoorwaarden." },
   { question: "Wat kost een BAV voor zzp'ers?", answer: `Vanaf ${PRIJS_MAAND} per maand of ${PRIJS_JAAR} per jaar voor BAV en AVB samen, inclusief kosten en assurantiebelasting. Je betaalt geen eigen risico.` },
   { question: "Is een BAV verplicht?", answer: "Nee, een BAV is niet wettelijk verplicht. Opdrachtgevers eisen het wel vaak in hun contract." },
   { question: "Hoe snel heb ik een certificaat?", answer: "Binnen 24 uur geregeld. Je krijgt het certificaat per mail voor je opdrachtgever." },
