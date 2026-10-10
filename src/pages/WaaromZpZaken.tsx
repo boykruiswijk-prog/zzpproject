@@ -42,7 +42,7 @@ const fade = {
 // Toont anoniem concurrent-prijzen ter vergelijking; behoud de anonimisering.
 const packages = [
   { name: "BAV & AVB Maandelijks", price: 55, periode: "maand", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt."] },
-  { name: "BAV & AVB Jaarlijks", price: 600, periode: "jaar", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt.", "Goedkoopste premie"], popular: true },
+  { name: "BAV & AVB Jaarlijks", price: 600, periode: "jaar", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt.", "Maandelijks opzegbaar"], popular: true },
   {
     name: "BAV & AVB Jaarlijks + Cyber",
     price: 850,
