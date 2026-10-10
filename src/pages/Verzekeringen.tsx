@@ -184,6 +184,16 @@ export default function Verzekeringen() {
               Net begonnen als zzp'er? Bekijk het starterspakket<ArrowRight className="h-4 w-4" />
             </LocalizedLink>
           </p>
+          <p className="mt-4 text-center">
+            <LocalizedLink to="/beroepsaansprakelijkheidsverzekering" className="inline-flex items-center gap-2 font-semibold text-accent underline underline-offset-4">
+              Meer over de beroepsaansprakelijkheidsverzekering<ArrowRight className="h-4 w-4" />
+            </LocalizedLink>
+          </p>
+          <p className="mt-4 text-center">
+            <LocalizedLink to="/bav-zzp" className="inline-flex items-center gap-2 font-semibold text-accent underline underline-offset-4">
+              Meer over de BAV voor zzp'ers<ArrowRight className="h-4 w-4" />
+            </LocalizedLink>
+          </p>
         </div>
       </section>
 

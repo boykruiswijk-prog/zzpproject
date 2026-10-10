@@ -42,6 +42,8 @@ interface Props {
   explainers: { title: string; text: string; bullets?: string[] }[];
   faqs: Faq[];
   leesMeer: string[];
+  /** Extra blok boven de aanvraagwizard (advertentie-landingspagina's). */
+  extra?: ReactNode;
 }
 
 export function BeroepVerzekeringPagina(p: Props) {
@@ -78,6 +80,7 @@ export function BeroepVerzekeringPagina(p: Props) {
       ctaButton="Neem persoonlijk contact op"
       aanvraag="direct"
     >
+      {p.extra}
       <BAVApplicationModule initialSector={p.sector} />
       <section className="section-padding bg-background">
         <div className="container-wide">
