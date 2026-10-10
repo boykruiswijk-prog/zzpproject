@@ -95,7 +95,7 @@ export default function ZzpVerzekeringICT() {
           bullets: [
             "Beroepsaansprakelijkheid voor fouten in code, advies of implementatie",
             "Bedrijfsaansprakelijkheid voor schade aan personen of eigendommen",
-            "Certificaat dat je direct aan je opdrachtgever kunt doorsturen",
+            "Certificaat dat je binnen 24 uur aan je opdrachtgever kunt doorsturen",
           ],
         },
         {

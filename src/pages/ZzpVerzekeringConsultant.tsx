@@ -30,7 +30,7 @@ export default function ZzpVerzekeringConsultant() {
         { icon: Clock, title: "Binnen 24 uur geregeld", description: "Je vraagt online aan. Binnen 24 uur is alles geregeld en staat je certificaat in je mailbox." },
       ]}
       explainers={[
-        { title: "Verkeerd advies, gemiste deadline of een fout in je rapport", text: "Als adviseur zit het risico in je advies. Een rekenfout in een rapport, een gemiste deadline of een advies dat verkeerd uitpakt kan leiden tot een claim van je opdrachtgever.", bullets: ["Beroepsaansprakelijkheid (BAV) voor fouten in je advieswerk", "Bedrijfsaansprakelijkheid (AVB) voor schade aan personen of spullen", "Certificaat dat je direct naar je opdrachtgever stuurt"] },
+        { title: "Verkeerd advies of een fout in je rapport", text: "Als adviseur zit het risico in je advies. Een rekenfout in een rapport of een advies dat verkeerd uitpakt kan leiden tot een claim van je opdrachtgever. Wat precies gedekt is, staat in de polisvoorwaarden.", bullets: ["Beroepsaansprakelijkheid (BAV) voor fouten in je advieswerk", "Bedrijfsaansprakelijkheid (AVB) voor schade aan personen of aan spullen van anderen", "Certificaat dat je binnen 24 uur naar je opdrachtgever stuurt"] },
         { title: "Persoonlijk contact", text: "Twijfel je of de polis past bij je opdracht? We beantwoorden je vragen over de aanvraag en voorwaarden. De polisvoorwaarden zijn altijd leidend." },
       ]}
       faqs={faqs}
