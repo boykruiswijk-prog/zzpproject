@@ -680,6 +680,13 @@
       "when": 1791558403760,
       "tag": "0096_wijzigingsmeldingen",
       "breakpoints": true
+    },
+    {
+      "idx": 97,
+      "version": "7",
+      "when": 1791623805671,
+      "tag": "0097_credit_akkoord_ellen",
+      "breakpoints": true
     }
   ]
 }
