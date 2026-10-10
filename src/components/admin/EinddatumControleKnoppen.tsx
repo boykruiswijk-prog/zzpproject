@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { verwachtCredit, euro } from "@/lib/creditVoorstel";
+import { formatDateNL } from "@/lib/dateFormat";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -16,15 +18,26 @@ export function EinddatumControleKnoppen({ contractId, naam, eindDatum, onGewijz
   const [toelichting, setToelichting] = useState("");
   const [bezig, setBezig] = useState(false);
   const { toast } = useToast();
+  const [crediteren, setCrediteren] = useState<boolean | null>(null);
+  const [voorstel, setVoorstel] = useState<any>(null);
 
-  const open = (k: Keuze) => { setKeuze(k); setDatum(eindDatum ?? ""); setToelichting(""); };
-  const geldig = toelichting.trim().length >= 3 && (keuze !== "opzegging" || !!datum);
+  useEffect(() => {
+    if (keuze !== "opzegging" || !datum) { setVoorstel(null); return; }
+    let actief = true;
+    (supabase.rpc as any)("credit_voorstel", { _contract_id: contractId, _einddatum: datum }).then(({ data }: any) => { if (actief) setVoorstel(data ?? null); });
+    return () => { actief = false; };
+  }, [keuze, datum, contractId]);
+  const credit = voorstel && !voorstel.cyber_geen_credit ? verwachtCredit(voorstel, datum, voorstel.planner_perioden ?? []) : null;
+
+  const open = (k: Keuze) => { setKeuze(k); setDatum(eindDatum ?? ""); setToelichting(""); setCrediteren(null); };
+  const geldig = toelichting.trim().length >= 3 && (keuze !== "opzegging" || (!!datum && (crediteren !== null || !credit)));
 
   async function opslaan() {
     if (!keuze || !geldig) return;
     setBezig(true);
     const { error } = await supabase.rpc("einddatum_controle_beslissen", {
       _contract_id: contractId, _keuze: keuze, _opzegdatum: keuze === "opzegging" ? datum : null, _toelichting: toelichting.trim(),
+      ...(keuze === "opzegging" ? { _crediteren: credit ? crediteren === true : false } : {}),
     } as never);
     setBezig(false);
     if (error) { toast({ title: "Opslaan mislukt", description: error.message, variant: "destructive" }); return; }
@@ -54,6 +67,22 @@ export function EinddatumControleKnoppen({ contractId, naam, eindDatum, onGewijz
               <div className="space-y-1">
                 <Label htmlFor={`opz-${contractId}`}>Opzegdatum</Label>
                 <Input id={`opz-${contractId}`} type="date" value={datum} onChange={(e) => setDatum(e.target.value)} />
+              </div>
+            )}
+            {keuze === "opzegging" && datum && (
+              <div className="space-y-2 rounded-md border p-3">
+                <Label>Creditnota maken voor de al betaalde periode?</Label>
+                {credit ? (
+                  <>
+                    <p className="text-sm">Verwacht creditbedrag: <strong>{euro(credit.bedrag)}</strong>, periode {formatDateNL(credit.vanaf)} t/m {formatDateNL(credit.tm)}</p>
+                    <div className="flex gap-2">
+                      <Button type="button" size="sm" variant={crediteren === true ? "default" : "outline"} onClick={() => setCrediteren(true)}>Ja</Button>
+                      <Button type="button" size="sm" variant={crediteren === false ? "default" : "outline"} onClick={() => setCrediteren(false)}>Nee</Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Bij Ja komt de creditnota eerst op de lijst "Creditnota's ter goedkeuring". Bij Nee wordt er niet gecrediteerd, met je toelichting als reden.</p>
+                  </>
+                ) : <p className="text-sm text-muted-foreground">{voorstel ? "Geen al betaalde periode na deze datum, er komt geen creditnota." : "Bedrag berekenen..."}</p>}
+                {(voorstel?.waarschuwingen ?? []).map((w: string) => <p key={w} className="text-sm font-medium text-destructive">Let op: {w}</p>)}
               </div>
             )}
             <div className="space-y-1">
