@@ -268,7 +268,7 @@ export default function OffertePage() {
             {[
               { icon: ShieldCheck, text: "Gemakkelijk en snel online geregeld" },
               { icon: HeartHandshake, text: "Hulp bij schade. Wij staan voor je klaar" },
-              { icon: PiggyBank, text: "De goedkoopste online schadeverzekeraar" },
+              { icon: PiggyBank, text: "Verzekerd bij Hiscox, geen eigen risico" },
             ].map(({ icon: Icon, text }) => (
               <div
                 key={text}
