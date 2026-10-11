@@ -4849,6 +4849,18 @@ export type Database = {
         }
         Relationships: []
       }
+      scherm_machine_live: {
+        Row: {
+          actie: string | null
+          created_at: string | null
+          id: string | null
+          is_test: boolean | null
+          station: string | null
+          status: string | null
+          tekst: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       accept_portal_invitation: { Args: { _token: string }; Returns: Json }

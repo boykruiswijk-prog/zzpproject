@@ -722,6 +722,13 @@
       "when": 1791704455177,
       "tag": "0102_scherm_activiteit_actietype",
       "breakpoints": true
+    },
+    {
+      "idx": 103,
+      "version": "7",
+      "when": 1791704861805,
+      "tag": "0103_scherm_cron_readonly_view",
+      "breakpoints": true
     }
   ]
 }
