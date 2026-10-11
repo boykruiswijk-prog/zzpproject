@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Upgrade /scherm: agentkantoor, De stroom, Vandaag, breaking-overlay, browserdemo, privacytests en tv-controle. Niet publiceren.
 - [x] ZP Zaken Live-scherm (/scherm): activiteitentabel, triggers, backfill, scherm-data, 3D-machine en rapportage; getest op 1920x1080. Niet gepubliceerd.
 - [x] Foutencontrole 11 oktober: 404-aanroep uitgevoerd en onderschept getest zonder testlog, pakketclaim en artikelzin gecorrigeerd, cyberhulptekst aangepast; build OK, redirecttests 2/2 en Zeker-deeltests 9/9. Bestaande Zeker-brongelijkheid wijkt af door twee eerder toegevoegde landingspagina's; buiten deze tekstcorrecties gelaten. Niet gepubliceerd.
 - [x] Adviesclaims vervangen in site, metadata, Zeker, mails en artikelen; uitzonderingen en alle wijzigingen rapporteren, niet publiceren.
