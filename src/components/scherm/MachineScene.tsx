@@ -17,7 +17,7 @@ function palette() {
   return { bg: read('--s-bg'), floor: read('--s-surface'), desk: read('--s-lijn'), figure: read('--s-tekst'), dim: read('--s-dim'), red: read('--s-rood'), blue: read('--s-blauw'), green: read('--s-groen'), orange: read('--s-oranje') };
 }
 type Colors = ReturnType<typeof palette>;
-type Props = { stations: Record<string, { vandaag: number; laatste_status: string | null }>; totaalVandaag: number; kennisregels: number; pulsen: Puls[]; focus: Puls | null; actief: boolean; adsBeschikbaar: boolean };
+type Props = { stations: Record<string, { vandaag: number; skills?: number; laatste_status: string | null }>; totaalVandaag: number; kennisregels: number; pulsen: Puls[]; focus: Puls | null; actief: boolean; adsBeschikbaar: boolean };
 const POS = STATION_IDS.map((_, i) => { const a = i / STATION_IDS.length * Math.PI * 2 - Math.PI / 2; return new THREE.Vector3(Math.cos(a) * 8.5, 0, Math.sin(a) * 7); });
 const AGENTS = STATION_IDS.flatMap((_, i) => Array.from({ length: 1 + i % 3 }, (_, j) => ({ station: i, offset: (j - (i % 3) / 2) * 0.72 })));
 const EDGES = POS.flatMap((p, i) => [[p, new THREE.Vector3()], [p, POS[(i + 1) % POS.length]]] as [THREE.Vector3, THREE.Vector3][]);
@@ -129,8 +129,8 @@ export default function MachineScene(props: Props) {
     <group position={[0,1.6,0]}><mesh rotation-y={Math.PI/4}><octahedronGeometry args={[1.05,0]} /><meshStandardMaterial color={colors.red} emissive={colors.red} emissiveIntensity={2.4} metalness={0.8} roughness={0.15} /></mesh><mesh rotation-x={Math.PI/2} position-y={-0.5}><torusGeometry args={[1.7,0.04,6,60]} /><meshBasicMaterial color={colors.red.clone().multiplyScalar(2)} toneMapped={false} /></mesh>
       <Html position={[0,2.4,0]} center zIndexRange={[12,0]}><div className="scherm-core"><span>Het brein</span><b>{props.totaalVandaag}</b><small>gebeurtenissen vandaag</small><em>{props.kennisregels} kennisregels</em></div></Html>
     </group>
-    {POS.map((p,i)=>{const id=STATION_IDS[i];const Icon=ICONS[i];const n=props.stations[id]?.vandaag??0;const dim=id==='ads'&&!props.adsBeschikbaar;const bezig=props.pulsen.filter(a=>a.station===id&&a.status==='bezig'&&Date.now()-Date.parse(a.tijd)<300000).length;const skills=new Set(props.pulsen.filter(a=>a.station===id).map(a=>a.actie)).size;
-      return <Html key={id} position={[p.x, i === 5 || i === 6 ? 1.9 : 3.8, p.z]} center zIndexRange={[10,0]}><div className={`scherm-station ${dim?'station-dim':''}`}><Icon /><div><strong>{STATION_LABELS[id]}</strong><small>{dim ? '0 skills | 0 bezig' : `${skills} skills | ${bezig} bezig`}</small></div><b>{dim ? 0 : n}</b>{event?.station===id&&<p className="agent-balloon">{event.tekst}</p>}</div></Html>;
+    {POS.map((p,i)=>{const id=STATION_IDS[i];const Icon=ICONS[i];const n=props.stations[id]?.vandaag??0;const dim=id==='ads'&&!props.adsBeschikbaar;const bezig=props.pulsen.filter(a=>a.station===id&&a.status==='bezig'&&Date.now()-Date.parse(a.tijd)<300000).length;const skills=props.stations[id]?.skills??0;
+      return <Html key={id} position={[p.x, i === 5 || i === 6 ? 1.9 : 3.8, p.z]} center zIndexRange={[10,0]}><div className={`scherm-station ${dim?'station-dim':''}`}><Icon /><div><strong>{STATION_LABELS[id]}</strong><small>{`${skills} skills | ${bezig} bezig`}</small></div><b>{n}</b>{event?.station===id&&<p className="agent-balloon">{event.tekst}</p>}</div></Html>;
     })}
     {quality&&!reduced&&props.actief&&<Suspense fallback={null}><Effects /></Suspense>}
   </Canvas>;
