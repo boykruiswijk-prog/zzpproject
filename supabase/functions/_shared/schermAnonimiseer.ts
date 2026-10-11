@@ -48,7 +48,9 @@ export function schoonMarketing(m: Record<string, Snap> | null | undefined) {
       vertoningen: eerste(d, "vertoningen", "impressions"),
       klikken: eerste(d, "klikken", "clicks"),
       conversies: eerste(d, "conversies", "conversions"),
-      budget_pct: eerste(d, "budget_pct") ?? (kosten === null ? null : Math.round((kosten / ADS_BUDGET) * 1000) / 10),
+      // Only an explicitly defined month-to-date spend can use the monthly budget.
+      budget_pct: d.periode === 'maand_tot_datum' && d.budget_scope === 'totaal_advertenties' && kosten !== null
+        ? Math.round((kosten / ADS_BUDGET) * 1000) / 10 : null,
     };
   };
   uit.google_ads = ads(m?.google_ads);
