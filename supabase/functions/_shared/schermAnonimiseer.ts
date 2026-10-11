@@ -125,6 +125,22 @@ export function schermActiviteit(a: Ruw) {
   };
 }
 
+/** AI-team uit marketing_snapshot (bron ai_team): max 10 agents, vaste teksten door de privacyfilter. */
+export function schoonAiTeam(snap: Snap): { naam: string; taak: string; resultaat: string | null; laatste_run: string | null; status: 'klaar' | 'fout' | 'gepland' }[] {
+  const agents = (snap?.data as Ruw | undefined)?.agents;
+  if (!Array.isArray(agents)) return [];
+  return agents.slice(0, 10).filter((a: Ruw) => a && typeof a === 'object').map((a: Ruw) => {
+    const resultaat = schoonTekst(a.resultaat, 70);
+    return {
+      naam: schoonTekst(a.naam, 70),
+      taak: schoonTekst(a.taak, 70),
+      resultaat: resultaat || null,
+      laatste_run: typeof a.laatste_run === 'string' && Number.isFinite(Date.parse(a.laatste_run)) ? new Date(a.laatste_run).toISOString() : null,
+      status: a.status === 'fout' || a.status === 'gepland' ? a.status : 'klaar' as const,
+    };
+  }).filter(a => a.naam);
+}
+
 /** Bouwt de publieke payload uit de geaggregeerde RPC-uitvoer; alleen witte-lijstvelden. */
 export function bouwSchermPayload(r: Ruw, nu = new Date()) {
   const status = (s: unknown) => (s === "bezig" || s === "fout" ? s : "klaar");
@@ -192,7 +208,10 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
       gepubliceerd: getal(kb.gepubliceerd) ?? 0,
       nieuw_maand: getal(kb.nieuw_maand) ?? 0,
       laatste: (Array.isArray(kb.laatste) ? kb.laatste : []).slice(0, 3).map((t: unknown) => schoonTekst(t)).filter(Boolean),
+      content_nieuw: getal(kb.content_nieuw),
+      content_verbeterd: getal(kb.content_verbeterd),
     },
+    ai_team: schoonAiTeam(r?.marketing?.ai_team),
     marketing: schoonMarketing(r?.marketing),
   };
 }

@@ -2,7 +2,7 @@ import type { SchermPayload } from '../../../supabase/functions/_shared/schermAn
 
 export const STATION_LABELS: Record<string, string> = {
   intake: 'Aanvraag-intake', acceptatie: 'Acceptatie en KVK', certificaten: 'Certificaten',
-  facturatie: 'Facturatie', exact: 'Exact-koppeling', kennisbank: 'Kennisbank',
+  facturatie: 'Facturatie', exact: 'Exact-koppeling', kennisbank: 'Kennisbank en content',
   ads: 'Ads-monitor', kwaliteit: 'Kwaliteitscontrole', assistent: 'Zeker-assistent', mail: 'Mail', service: 'Klantservice',
 };
 export const STATION_IDS = Object.keys(STATION_LABELS);
