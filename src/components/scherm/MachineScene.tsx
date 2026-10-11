@@ -130,7 +130,7 @@ export default function MachineScene(props: Props) {
       <Html position={[0,2.4,0]} center zIndexRange={[12,0]}><div className="scherm-core"><span>Het brein</span><b>{props.totaalVandaag}</b><small>gebeurtenissen vandaag</small><em>{props.kennisregels} kennisregels</em></div></Html>
     </group>
     {POS.map((p,i)=>{const id=STATION_IDS[i];const Icon=ICONS[i];const n=props.stations[id]?.vandaag??0;const dim=id==='ads'&&!props.adsBeschikbaar;const bezig=props.pulsen.filter(a=>a.station===id&&a.status==='bezig'&&Date.now()-Date.parse(a.tijd)<300000).length;const skills=new Set(props.pulsen.filter(a=>a.station===id).map(a=>a.actie)).size;
-      return <Html key={id} position={[p.x,2.8,p.z]} center zIndexRange={[10,0]}><div className={`scherm-station ${dim?'station-dim':''}`}><Icon /><div><strong>{STATION_LABELS[id]}</strong><small>{skills} skills | {bezig} bezig</small></div><b>{n}</b>{event?.station===id&&<p className="agent-balloon">{event.tekst}</p>}</div></Html>;
+      return <Html key={id} position={[p.x, i === 5 || i === 6 ? 1.9 : 3.8, p.z]} center zIndexRange={[10,0]}><div className={`scherm-station ${dim?'station-dim':''}`}><Icon /><div><strong>{STATION_LABELS[id]}</strong><small>{dim ? '0 skills | 0 bezig' : `${skills} skills | ${bezig} bezig`}</small></div><b>{dim ? 0 : n}</b>{event?.station===id&&<p className="agent-balloon">{event.tekst}</p>}</div></Html>;
     })}
     {quality&&!reduced&&props.actief&&<Suspense fallback={null}><Effects /></Suspense>}
   </Canvas>;
