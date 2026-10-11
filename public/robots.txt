@@ -6,6 +6,7 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /scherm
+Disallow: /tv
 Disallow: /verificatie/
 Disallow: /collectief-ledenorganisaties
 Disallow: /portal
@@ -20,6 +21,7 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /scherm
+Disallow: /tv
 Disallow: /verificatie/
 Disallow: /collectief-ledenorganisaties
 Disallow: /portal
@@ -34,6 +36,7 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /scherm
+Disallow: /tv
 Disallow: /verificatie/
 Disallow: /collectief-ledenorganisaties
 Disallow: /portal
@@ -48,6 +51,7 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /scherm
+Disallow: /tv
 Disallow: /verificatie/
 Disallow: /collectief-ledenorganisaties
 Disallow: /portal
@@ -62,6 +66,7 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /scherm
+Disallow: /tv
 Disallow: /verificatie/
 Disallow: /collectief-ledenorganisaties
 Disallow: /portal
@@ -76,6 +81,7 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /scherm
+Disallow: /tv
 Disallow: /verificatie/
 Disallow: /collectief-ledenorganisaties
 Disallow: /portal
@@ -90,6 +96,7 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /scherm
+Disallow: /tv
 Disallow: /verificatie/
 Disallow: /collectief-ledenorganisaties
 Disallow: /portal
@@ -104,6 +111,7 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /scherm
+Disallow: /tv
 Disallow: /verificatie/
 Disallow: /collectief-ledenorganisaties
 Disallow: /portal
@@ -118,6 +126,7 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /scherm
+Disallow: /tv
 Disallow: /verificatie/
 Disallow: /collectief-ledenorganisaties
 Disallow: /portal
@@ -132,6 +141,7 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /screenshot-helper
 Disallow: /scherm
+Disallow: /tv
 Disallow: /verificatie/
 Disallow: /collectief-ledenorganisaties
 Disallow: /portal

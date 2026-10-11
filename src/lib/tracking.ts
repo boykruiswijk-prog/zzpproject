@@ -53,7 +53,7 @@ type Params = Record<string, string | number | boolean | undefined | unknown[]>;
 /** Paden die nooit gemeten worden (ook met taalprefix). */
 export function isNietGemetenPad(pathname: string): boolean {
   const p = pathname.replace(/^\/(nl|en|de|fr)(?=\/|$)/, "") || "/";
-  return ["/admin", "/portal", "/mijn-zp", "/scherm"].some((x) => p === x || p.startsWith(`${x}/`));
+  return ["/admin", "/portal", "/mijn-zp", "/scherm", "/tv"].some((x) => p === x || p.startsWith(`${x}/`));
 }
 
 /** Zet de officiële opt-out-vlag (GA4 en Google Ads) voor het huidige pad. */

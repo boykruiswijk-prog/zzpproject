@@ -113,6 +113,7 @@ const PortalPolicy = lazy(() => import("./pages/portal/PortalPolicy"));
 const PortalDocuments = lazy(() => import("./pages/portal/PortalDocuments"));
 const PortalInvoices = lazy(() => import("./pages/portal/PortalInvoices"));
 const Scherm = lazy(() => import("./pages/Scherm"));
+const TvCode = lazy(() => import("./pages/Scherm").then((m) => ({ default: m.TvCode })));
 const PortalHeractiveer = lazy(() => import("./pages/portal/PortalHeractiveer"));
 
 import { RoleGuard } from "./components/admin/RoleGuard";
@@ -271,6 +272,8 @@ export const AppRoutes = () => (
             {/* Public verification */}
             <Route path="/verificatie/dba/:token" element={<DbaVerificatie />} />
             <Route path="/scherm" element={<Scherm />} />
+            <Route path="/tv" element={<Scherm tv />} />
+            <Route path="/tv/:code" element={<TvCode />} />
             <Route path="/screenshot-helper" element={<ScreenshotHelper />} />
 
             {/* Klantportaal */}
