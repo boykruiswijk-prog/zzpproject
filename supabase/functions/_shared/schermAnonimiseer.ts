@@ -125,10 +125,10 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
   const totaal = getal(doel.totaal) ?? 0;
   const rest = Math.max(getal(doel.resterende_dagen) ?? 0, 0);
   const tempo = getal(doel.tempo_14d) ?? 0;
-  const stations: Record<string, { vandaag: number; laatste_status: string | null }> = {};
+  const stations: Record<string, { vandaag: number; skills: number; laatste_status: string | null }> = {};
   for (const s of STATIONS) {
     const x = r?.stations?.[s] ?? {};
-    stations[s] = { vandaag: getal(x.vandaag) ?? 0, laatste_status: x.laatste_status ? status(x.laatste_status) : null };
+    stations[s] = { vandaag: getal(x.vandaag) ?? 0, skills: getal(x.skills) ?? 0, laatste_status: x.laatste_status ? status(x.laatste_status) : null };
   }
   const kb = r?.kennisbank ?? {};
   const kbs = r?.klantbasis ?? {};
