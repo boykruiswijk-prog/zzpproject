@@ -225,8 +225,6 @@ const PANELEN = [PaneelDoel, PaneelGroei, PaneelService, PaneelZichtbaarheid, Pa
 
 function useWakeLock() {
   useEffect(() => {
-    const oudOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
     // deno-lint-ignore no-explicit-any
     let lock: any = null;
     const vraag = async () => {
@@ -259,6 +257,8 @@ export default function Scherm() {
 
   useWakeLock();
   useEffect(() => {
+    const oudOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     // index.html heeft een vaste robots-tag; op dit scherm altijd noindex
     const m = document.querySelector('meta[name="robots"]');
     const oud = m?.getAttribute("content");
@@ -318,7 +318,7 @@ export default function Scherm() {
     let i = 0;
     const t = window.setInterval(() => {
       const station = STATION_IDS[i % STATION_IDS.length];
-      const event: Puls = { id: `demo-${Date.now()}`, station, status: 'klaar', tekst: station === 'intake' ? 'Nieuwe aanvraag binnen, Consultant uit Utrecht' : 'Demonstratie: afdeling aan het werk', tijd: new Date().toISOString(), echte_aanvraag: station === 'intake', beroepsgroep: station === 'intake' ? 'Consultant' : null, provincie: station === 'intake' ? 'Utrecht' : null };
+      const event: Puls = { id: `demo-${Date.now()}`, station, actie: 'overig', status: 'klaar', tekst: station === 'intake' ? 'Nieuwe aanvraag binnen, Consultant uit Utrecht' : 'Demonstratie: afdeling aan het werk', tijd: new Date().toISOString(), echte_aanvraag: station === 'intake', beroepsgroep: station === 'intake' ? 'Consultant' : null, provincie: station === 'intake' ? 'Utrecht' : null };
       setDemoEvent(event); setFocus(event);
       if (station === 'intake') {
         setBreaking({ event, total: data.doel.totaal + 1 });

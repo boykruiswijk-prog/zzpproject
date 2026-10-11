@@ -44,7 +44,7 @@ function CameraRig({ focus, active }: { focus: Puls | null; active: boolean }) {
     const dt = Math.min(delta, 0.05);
     camera.position.lerp(target, 1 - Math.exp(-3 * dt)); look.lerp(aim, 1 - Math.exp(-3 * dt)); camera.lookAt(look);
     const cam = camera as THREE.OrthographicCamera;
-    cam.zoom = Math.min(size.width / 27, size.height / 23) * (1 + weight * 0.3); cam.updateProjectionMatrix();
+    cam.zoom = Math.min(size.width / 24, size.height / 20) * (1 + weight * 0.3); cam.updateProjectionMatrix();
   });
   return null;
 }
@@ -69,7 +69,7 @@ function AgentFigures({ colors, event }: { colors: Colors; event: Puls | null })
       const p = POS[agent.station]; const reacting = reactive.current.station === agent.station && performance.now() < reactive.current.until;
       dummy.position.set(p.x + agent.offset, 0.35 + (reacting ? 0.25 : 0), p.z + 0.65);
       dummy.rotation.set(0, reacting ? Math.sin(t * 2) * 0.5 : 0, 0);
-      parts.forEach((part, j) => { dummy.rotation.z = part.head ? Math.sin(t * 1.4 + i) * 0.04 : 0; dummy.updateMatrix(); refs.current[j]?.setMatrixAt(i, dummy.matrix); });
+      parts.forEach((part, j) => { dummy.position.set(p.x + agent.offset, 0.35 + (reacting ? 0.25 : 0), p.z + 0.65); dummy.rotation.z = part.head ? Math.sin(t * 1.4 + i) * 0.04 : 0; dummy.updateMatrix(); refs.current[j]?.setMatrixAt(i, dummy.matrix); });
       for (let hand = 0; hand < 2; hand++) { dummy.position.set(p.x + agent.offset + (hand ? 0.18 : -0.18), 1.03 + Math.sin(t * 9 + i + hand) * 0.025, p.z + 0.1); dummy.rotation.set(0,0,0); dummy.updateMatrix(); hands.current?.setMatrixAt(i * 2 + hand, dummy.matrix); }
     });
     refs.current.forEach(m => { if (m) m.instanceMatrix.needsUpdate = true; }); if (hands.current) hands.current.instanceMatrix.needsUpdate = true;
@@ -79,7 +79,7 @@ function AgentFigures({ colors, event }: { colors: Colors; event: Puls | null })
 }
 function Furniture({ colors, activity, ads }: { colors: Colors; activity: Props['stations']; ads: boolean }) {
   const refs = useRef<(THREE.InstancedMesh | null)[]>([]); const monitors = useRef<THREE.InstancedMesh>(null);
-  const dummy = useMemo(() => new THREE.Object3D(), []);
+  const dummy = useMemo(() => new THREE.Object3D(), []); const tempColor = useMemo(() => new THREE.Color(), []);
   useEffect(() => {
     AGENTS.forEach((a, i) => { const p = POS[a.station];
       [[0.6,0], [1.22,-0.22], [0.53,0.62]].forEach(([y,z], k) => { dummy.position.set(p.x + a.offset,y,p.z + z); dummy.updateMatrix(); refs.current[k]?.setMatrixAt(i,dummy.matrix); });
@@ -88,7 +88,7 @@ function Furniture({ colors, activity, ads }: { colors: Colors; activity: Props[
     refs.current.forEach(r => { if (r) r.instanceMatrix.needsUpdate = true; });if(monitors.current) monitors.current.instanceMatrix.needsUpdate=true;
   }, [dummy]);
   useFrame(({ clock }) => { const mesh = monitors.current; if(!mesh) return;
-    AGENTS.forEach((a,i) => {const id=STATION_IDS[a.station];const enabled=id!=='ads'||ads;const c=enabled?(a.station%2?colors.blue:colors.green):colors.dim;mesh.setColorAt(i,c.clone().multiplyScalar(enabled ? 1.3 + Math.sin(clock.elapsedTime * 8 + i) * 0.3 : 0.3));});if(mesh.instanceColor)mesh.instanceColor.needsUpdate=true;
+    AGENTS.forEach((a,i) => {const id=STATION_IDS[a.station];const enabled=id!=='ads'||ads;const c=enabled?(a.station%2?colors.blue:colors.green):colors.dim;mesh.setColorAt(i,tempColor.copy(c).multiplyScalar(enabled ? 1.3 + Math.sin(clock.elapsedTime * 8 + i) * 0.3 : 0.3));});if(mesh.instanceColor)mesh.instanceColor.needsUpdate=true;
   });
   return <>
     {[[0.65,0.12,0.6], [0.58,0.4,0.06], [0.5,0.52,0.42]].map((s,k)=><instancedMesh key={k} ref={m=>{refs.current[k]=m;}} args={[undefined,undefined,AGENTS.length]}><boxGeometry args={s as [number,number,number]} /><meshStandardMaterial color={colors.desk} metalness={0.45} roughness={0.35} /></instancedMesh>)}
@@ -106,9 +106,9 @@ function Network({ colors, busy }: { colors: Colors; busy: boolean }) {
   return <>{lines.map((line,i)=><primitive key={i} object={line} />)}<instancedMesh ref={particles} args={[undefined,undefined,EDGES.length*6]} frustumCulled={false}><sphereGeometry args={[0.06,6,4]} /><meshBasicMaterial color={colors.blue.clone().multiplyScalar(2)} toneMapped={false} /></instancedMesh><instancedMesh ref={beam} args={[undefined,undefined,90]} frustumCulled={false}><sphereGeometry args={[0.055,6,4]} /><meshBasicMaterial color={colors.red.clone().multiplyScalar(3)} toneMapped={false} /></instancedMesh></>;
 }
 function Floor({ colors }: { colors: Colors }) {
-  const texture=useMemo(()=>{const canvas=document.createElement('canvas');canvas.width=canvas.height=128;const c=canvas.getContext('2d');if(c){c.fillStyle=colors.floor.getStyle();c.fillRect(0,0,128,128);c.strokeStyle=colors.desk.getStyle();c.lineWidth=1;c.strokeRect(1,1,126,126);for(let i=0;i<40;i++){c.globalAlpha=0.2;c.fillRect((i*43)%128,(i*79)%128,1,1);}}const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.repeat.set(18,18);return tex;},[colors]);
+  const texture=useMemo(()=>{const canvas=document.createElement('canvas');canvas.width=canvas.height=128;const c=canvas.getContext('2d');if(c){c.fillStyle=colors.bg.getStyle();c.fillRect(0,0,128,128);c.strokeStyle=colors.desk.getStyle();c.lineWidth=1;c.strokeRect(1,1,126,126);for(let i=0;i<40;i++){c.globalAlpha=0.2;c.fillRect((i*43)%128,(i*79)%128,1,1);}}const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.repeat.set(18,18);return tex;},[colors]);
   useEffect(()=>()=>texture.dispose(),[texture]);
-  return <mesh rotation-x={-Math.PI/2} position-y={-0.18}><circleGeometry args={[18,64]} /><meshStandardMaterial map={texture} metalness={0.4} roughness={0.65} /></mesh>;
+  return <mesh rotation-x={-Math.PI/2} position-y={-0.18}><circleGeometry args={[13,64]} /><meshStandardMaterial map={texture} metalness={0.4} roughness={0.65} /></mesh>;
 }
 function Runtime({ onLow }: { onLow: ()=>void }) {
   const {setDpr,gl}=useThree();const sample=useRef({time:0,frames:0,done:false});
@@ -127,10 +127,10 @@ export default function MachineScene(props: Props) {
     <Furniture colors={colors} activity={props.stations} ads={props.adsBeschikbaar} /><Suspense fallback={null}><AgentFigures colors={colors} event={event} /></Suspense>
     <Network colors={colors} busy={Boolean(event)} />
     <group position={[0,1.6,0]}><mesh rotation-y={Math.PI/4}><octahedronGeometry args={[1.05,0]} /><meshStandardMaterial color={colors.red} emissive={colors.red} emissiveIntensity={2.4} metalness={0.8} roughness={0.15} /></mesh><mesh rotation-x={Math.PI/2} position-y={-0.5}><torusGeometry args={[1.7,0.04,6,60]} /><meshBasicMaterial color={colors.red.clone().multiplyScalar(2)} toneMapped={false} /></mesh>
-      <Html position={[0,3.6,0]} center zIndexRange={[12,0]}><div className="scherm-core"><span>Het brein</span><b>{props.totaalVandaag}</b><small>gebeurtenissen vandaag</small><em>{props.kennisregels} kennisregels</em></div></Html>
+      <Html position={[0,2.4,0]} center zIndexRange={[12,0]}><div className="scherm-core"><span>Het brein</span><b>{props.totaalVandaag}</b><small>gebeurtenissen vandaag</small><em>{props.kennisregels} kennisregels</em></div></Html>
     </group>
-    {POS.map((p,i)=>{const id=STATION_IDS[i];const Icon=ICONS[i];const n=props.stations[id]?.vandaag??0;const dim=id==='ads'&&!props.adsBeschikbaar;const bezig=props.pulsen.filter(a=>a.station===id&&a.status==='bezig'&&Date.now()-Date.parse(a.tijd)<300000).length;const skills=new Set(props.pulsen.filter(a=>a.station===id).map(a=>a.tekst)).size;
-      return <Html key={id} position={[p.x,2.1,p.z]} center zIndexRange={[10,0]}><div className={`scherm-station ${dim?'station-dim':''}`}><Icon /><div><strong>{STATION_LABELS[id]}</strong><small>{skills} skills | {bezig} bezig</small></div><b>{n}</b>{event?.station===id&&<p className="agent-balloon">{event.tekst}</p>}</div></Html>;
+    {POS.map((p,i)=>{const id=STATION_IDS[i];const Icon=ICONS[i];const n=props.stations[id]?.vandaag??0;const dim=id==='ads'&&!props.adsBeschikbaar;const bezig=props.pulsen.filter(a=>a.station===id&&a.status==='bezig'&&Date.now()-Date.parse(a.tijd)<300000).length;const skills=new Set(props.pulsen.filter(a=>a.station===id).map(a=>a.actie)).size;
+      return <Html key={id} position={[p.x,2.8,p.z]} center zIndexRange={[10,0]}><div className={`scherm-station ${dim?'station-dim':''}`}><Icon /><div><strong>{STATION_LABELS[id]}</strong><small>{skills} skills | {bezig} bezig</small></div><b>{n}</b>{event?.station===id&&<p className="agent-balloon">{event.tekst}</p>}</div></Html>;
     })}
     {quality&&!reduced&&props.actief&&<Suspense fallback={null}><Effects /></Suspense>}
   </Canvas>;
