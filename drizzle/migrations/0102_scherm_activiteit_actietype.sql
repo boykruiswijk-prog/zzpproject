@@ -1,0 +1,1 @@
+DO $$ DECLARE d text; n text; BEGIN d:=pg_get_functiondef('public.scherm_data()'::regprocedure); n:=replace(d, '''station'', station, ''tekst'', tekst', '''station'', station, ''actie'', actie, ''tekst'', tekst'); IF n=d THEN RAISE EXCEPTION 'Activity signature missing'; END IF; EXECUTE n; END $$;

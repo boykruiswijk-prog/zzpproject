@@ -24,7 +24,8 @@ describe("scherm-data anonimisering", () => {
   });
   it("maakt ads-budget procentueel en laat kosten per aanvraag weg", () => {
     const m = schoonMarketing(ruw.marketing);
-    expect(m.google_ads?.budget_pct).toBe(10);
+    expect(m.google_ads?.budget_pct).toBeNull();
+    expect(schoonMarketing({ google_ads: { data: { cost: 2250, periode: 'maand_tot_datum', budget_scope: 'totaal_advertenties' } } }).google_ads?.budget_pct).toBe(10);
     expect(JSON.stringify(m)).not.toContain("cpa");
     expect(JSON.stringify(m)).not.toContain("2250");
     expect(m.search_console).toBeNull();
@@ -37,5 +38,34 @@ describe("scherm-data anonimisering", () => {
   });
   it("schoonTekst kort in tot 90 tekens", () => {
     expect(schoonTekst("a".repeat(200)).length).toBe(90);
+  });
+  it('leaves no free-form names in activity, titles, metadata or processes', () => {
+    const p = bouwSchermPayload({
+      activiteit: [{ id: 'event', station: 'intake', actie: 'lead_verzekering_aanvraag', tekst: 'Nieuwe aanvraag van Klant Geheim uit Amsterdam', tijd: '2026-10-11T09:00:00Z' }],
+      kennisbank: { laatste: ['Klant Geheim'] },
+      processen: [{ station: 'mail', actie: 'Klant Geheim', n: 2 }],
+      tijdlijn: [{ station: 'mail', minuut: 300, n: 2, naam: 'Klant Geheim' }, { station: 'intake', minuut: 1600, n: 1 }],
+    });
+    expect(JSON.stringify(p)).not.toMatch(/Geheim|Amsterdam/);
+    expect(p.activiteit[0].beroepsgroep).toBe('Zelfstandig professional');
+    expect(p.activiteit[0].provincie).toBe('Nederland');
+    expect(p.tijdlijn).toHaveLength(1);
+  });
+  it('uses only real BAV lead insertions for breaking moments', () => {
+    const p = bouwSchermPayload({ activiteit: [
+      { id: 'a', station: 'intake', actie: 'bav_aanmelding', tijd: '2026-10-11T09:00:00Z' },
+      { id: 'b', station: 'intake', actie: 'lead_verzekering_aanvraag', tekst: 'Consultant uit Utrecht', tijd: '2026-10-11T09:01:00Z' },
+      { id: 'c', station: 'intake', is_test: true },
+    ] });
+    expect(p.activiteit).toHaveLength(2);
+    expect(p.activiteit[0].echte_aanvraag).toBe(false);
+    expect(p.activiteit[1]).toMatchObject({ echte_aanvraag: true, beroepsgroep: 'Consultant', provincie: 'Utrecht' });
+  });
+  it('never fabricates missing funnel counts or exposes spend', () => {
+    const p = bouwSchermPayload({ stroom: { gestart: 12, verstuurd: 8, email: 'secret', omzet: 99999 }, marketing: { microsoft_ads: { data: { cost: 2250, budget_pct: 10 } } } });
+    expect(p.stroom.sessies).toBeNull();
+    expect(p.stroom.actief).toBeNull();
+    expect(p.marketing.microsoft_ads?.budget_pct).toBeNull();
+    expect(JSON.stringify(p)).not.toMatch(/99999|secret|2250/);
   });
 });

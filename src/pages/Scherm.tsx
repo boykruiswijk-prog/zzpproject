@@ -2,9 +2,12 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } fro
 import { Helmet } from "react-helmet-async";
 import logo from "@/assets/logo-zp.webp";
 import type { SchermPayload } from "../../supabase/functions/_shared/schermAnonimiseer";
-import { STATION_LABELS, type Puls } from "@/components/scherm/MachineScene";
+import { STATION_LABELS, STATION_IDS, stationToken, type Puls } from "@/components/scherm/schermModel";
+import CountUp from '@/components/scherm/CountUp';
+import BreakingMoment from '@/components/scherm/BreakingMoment';
 
 const MachineScene = lazy(() => import("@/components/scherm/MachineScene"));
+const StroomScene = lazy(() => import('@/components/scherm/StroomScene'));
 
 const URL_DATA = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scherm-data`;
 const TZ = "Europe/Amsterdam";
@@ -50,7 +53,7 @@ function Sparkline({ waarden }: { waarden: number[] }) {
   return (
     <svg viewBox="0 0 100 40" preserveAspectRatio="none" className="h-[10vh] w-full">
       <polyline points={`0,40 ${pts} 100,40`} fill="hsl(var(--s-rood) / 0.15)" stroke="none" />
-      <polyline points={pts} fill="none" stroke="hsl(var(--s-rood))" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
+      <polyline className="scherm-spark" pathLength="1" points={pts} fill="none" stroke="hsl(var(--s-rood))" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
     </svg>
   );
 }
@@ -76,10 +79,12 @@ const Label = ({ children }: { children: React.ReactNode }) => <div className="t
 const Gemeten = () => <span className="text-[2.6vh] font-normal text-[hsl(var(--s-dim))]">wordt gemeten</span>;
 
 function Stat({ label, waarde, klein = false }: { label: string; waarde: string | null; klein?: boolean }) {
+  const match = waarde?.match(/^([\d.,]+)(.*)$/);
+  const number = match ? Number(match[1].replace(/\./g, '').replace(',', '.')) : null;
   return (
     <div className="min-w-0">
       <Label>{label}</Label>
-      <div className={`${klein ? "text-[5vh]" : "text-[8vh]"} font-bold leading-none tabular-nums text-[hsl(var(--s-tekst))]`}>{waarde ?? <Gemeten />}</div>
+      <div className={`${klein ? "text-[5vh]" : "text-[8vh]"} font-bold leading-none tabular-nums text-[hsl(var(--s-tekst))]`}>{number !== null && Number.isFinite(number) ? <><CountUp value={number} decimals={match?.[1].includes(',') ? 1 : 0} />{match?.[2]}</> : waarde ?? <Gemeten />}</div>
     </div>
   );
 }
@@ -92,7 +97,7 @@ function PaneelDoel({ d }: { d: SchermPayload }) {
       <Label>6 oktober tot en met 31 december 2026</Label>
       <div className="flex items-center gap-[2vw]">
         <Ring pct={g.totaal / 200}>
-          <div className="text-[9vh] font-bold leading-none tabular-nums text-[hsl(var(--s-tekst))]">{g.totaal}</div>
+          <div className="text-[9vh] font-bold leading-none tabular-nums text-[hsl(var(--s-tekst))]"><CountUp value={g.totaal} /></div>
           <div className="text-[2.6vh] text-[hsl(var(--s-dim))]">van 200</div>
         </Ring>
         <div className="grid flex-1 grid-cols-1 gap-[2.4vh]">
@@ -201,7 +206,22 @@ function PaneelZichtbaarheid({ d }: { d: SchermPayload }) {
   );
 }
 
-const PANELEN = [PaneelDoel, PaneelGroei, PaneelService, PaneelZichtbaarheid];
+function PaneelVandaag({ d }: { d: SchermPayload }) {
+  const drukste = STATION_IDS.reduce((best, id) => (d.stations[id]?.vandaag ?? 0) > (d.stations[best]?.vandaag ?? 0) ? id : best, STATION_IDS[0]);
+  return <div className="flex h-full flex-col gap-[3vh]">
+    <Kop>Vandaag</Kop><Stat label="Gebeurtenissen" waarde={nf.format(d.gebeurtenissen_vandaag)} />
+    <div className="vandaag-tijdlijn"><Label>Van 0 tot 24 uur</Label>
+      <svg viewBox="0 0 600 140" aria-label="Gebeurtenissen per minuut vandaag">
+        <line x1="10" x2="590" y1="110" y2="110" />
+        {d.tijdlijn.map((a, i) => <circle key={`${a.station}-${a.minuut}`} cx={10 + a.minuut / 1440 * 580} cy={95 - STATION_IDS.indexOf(a.station) * 7} r={Math.min(7, 2 + Math.sqrt(a.n))} style={{ fill: `hsl(${stationToken(a.station)})` }} />)}
+        {[0, 6, 12, 18, 24].map(h => <text key={h} x={10 + h / 24 * 580} y="135" textAnchor={h === 0 ? 'start' : h === 24 ? 'end' : 'middle'}>{h}</text>)}
+      </svg>
+    </div>
+    <div><Label>Drukste afdeling</Label><div className="text-[4vh] font-semibold">{d.gebeurtenissen_vandaag ? STATION_LABELS[drukste] : 'Nog geen gebeurtenissen'}</div><span className="text-[2.6vh] text-[hsl(var(--s-dim))]">{d.stations[drukste]?.vandaag ?? 0} gebeurtenissen</span></div>
+    <div className="vandaag-legenda">{STATION_IDS.filter(id => (d.stations[id]?.vandaag ?? 0) > 0).map(id => <span key={id}><i style={{ background: `hsl(${stationToken(id)})` }} />{STATION_LABELS[id]}</span>)}</div>
+  </div>;
+}
+const PANELEN = [PaneelDoel, PaneelGroei, PaneelService, PaneelZichtbaarheid, PaneelVandaag];
 
 function useWakeLock() {
   useEffect(() => {
@@ -219,22 +239,31 @@ function useWakeLock() {
 
 export default function Scherm() {
   const token = useMemo(() => new URLSearchParams(window.location.search).get("token") ?? "", []);
+  const demo = useMemo(() => new URLSearchParams(window.location.search).get('demo') === '1', []);
   const [data, setData] = useState<SchermPayload | null>(null);
   const [geweigerd, setGeweigerd] = useState(false);
   const [laatsteOk, setLaatsteOk] = useState<number>(0);
   const [nu, setNu] = useState(new Date());
   const [paneel, setPaneel] = useState(0);
+  const [scene, setScene] = useState(0);
+  const [demoEvent, setDemoEvent] = useState<Puls | null>(null);
+  const [breaking, setBreaking] = useState<{ event: Puls; total: number } | null>(null);
+  const [focus, setFocus] = useState<Puls | null>(null);
+  const seen = useRef<Set<string> | null>(null);
+  const breakingTimer = useRef<number>();
   const [verschuiving, setVerschuiving] = useState({ x: 0, y: 0 });
   const fouten = useRef(0);
   const timer = useRef<number>();
 
   useWakeLock();
   useEffect(() => {
+    const oudOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     // index.html heeft een vaste robots-tag; op dit scherm altijd noindex
     const m = document.querySelector('meta[name="robots"]');
     const oud = m?.getAttribute("content");
     m?.setAttribute("content", "noindex, nofollow");
-    return () => { if (oud) m?.setAttribute("content", oud); };
+    return () => { document.body.style.overflow = oudOverflow; if (oud) m?.setAttribute("content", oud); };
   }, []);
 
   const laad = useCallback(async () => {
@@ -242,7 +271,20 @@ export default function Scherm() {
       const r = await fetch(URL_DATA, { headers: { "x-scherm-token": token, apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY }, cache: "no-store" });
       if (r.status === 401) { setGeweigerd(true); return; }
       if (!r.ok) throw new Error(String(r.status));
-      setData(await r.json());
+      const next: SchermPayload = await r.json();
+      const nieuwe = seen.current ? next.activiteit.filter(a => !seen.current?.has(a.id)) : [];
+      seen.current = new Set(next.activiteit.map(a => a.id));
+      if (nieuwe.length) {
+        const latest = [...nieuwe].sort((a, b) => Date.parse(b.tijd) - Date.parse(a.tijd))[0];
+        setFocus(latest);
+        const intake = [...nieuwe].sort((a, b) => Date.parse(b.tijd) - Date.parse(a.tijd)).find(a => a.echte_aanvraag && Date.now() - Date.parse(a.tijd) < 120_000);
+        if (intake) {
+          setBreaking({ event: intake, total: next.doel.totaal });
+          clearTimeout(breakingTimer.current);
+          breakingTimer.current = window.setTimeout(() => setBreaking(null), 8000);
+        }
+      }
+      setData(next);
       setLaatsteOk(Date.now());
       fouten.current = 0;
       timer.current = window.setTimeout(laad, 15_000);
@@ -256,7 +298,7 @@ export default function Scherm() {
   useEffect(() => {
     if (!token) return;
     laad();
-    return () => window.clearTimeout(timer.current);
+    return () => { window.clearTimeout(timer.current); window.clearTimeout(breakingTimer.current); };
   }, [token, laad]);
 
   useEffect(() => {
@@ -266,14 +308,29 @@ export default function Scherm() {
       if (amsterdamTijd(d).hm === "04:30" && performance.now() > 120_000) window.location.reload();
     }, 1000);
     const p = window.setInterval(() => setPaneel((x) => (x + 1) % PANELEN.length), 20_000);
+    const sc = window.setInterval(() => setScene(x => 1 - x), 60_000);
     const v = window.setInterval(() => setVerschuiving({ x: Math.round(Math.random() * 4 - 2), y: Math.round(Math.random() * 4 - 2) }), 600_000);
-    return () => { clearInterval(t); clearInterval(p); clearInterval(v); };
+    return () => { clearInterval(t); clearInterval(p); clearInterval(v); clearInterval(sc); };
   }, []);
 
-  const pulsen: Puls[] = useMemo(() => (data?.activiteit ?? []).slice().reverse().map((a) => ({ id: a.id, station: a.station, status: a.status as Puls["status"] })), [data]);
-  const eersteIds = useRef<Set<string> | null>(null);
-  if (data && !eersteIds.current) eersteIds.current = new Set(data.activiteit.map((a) => a.id));
-  const nieuwePulsen = useMemo(() => pulsen.filter((p) => !eersteIds.current?.has(p.id)), [pulsen]);
+  useEffect(() => {
+    if (!demo || !data) return;
+    let i = 0;
+    const t = window.setInterval(() => {
+      const station = STATION_IDS[i % STATION_IDS.length];
+      const event: Puls = { id: `demo-${Date.now()}`, station, actie: 'overig', status: 'klaar', tekst: station === 'intake' ? 'Nieuwe aanvraag binnen, Consultant uit Utrecht' : 'Demonstratie: afdeling aan het werk', tijd: new Date().toISOString(), echte_aanvraag: station === 'intake', beroepsgroep: station === 'intake' ? 'Consultant' : null, provincie: station === 'intake' ? 'Utrecht' : null };
+      setDemoEvent(event); setFocus(event);
+      if (station === 'intake') {
+        setBreaking({ event, total: data.doel.totaal + 1 });
+        clearTimeout(breakingTimer.current);
+        breakingTimer.current = window.setTimeout(() => setBreaking(null), 8000);
+      }
+      i++;
+    }, 10_000);
+    return () => clearInterval(t);
+  }, [demo, Boolean(data)]);
+
+  const nieuwePulsen = useMemo(() => [...(data?.activiteit ?? []), ...(demoEvent ? [demoEvent] : [])], [data, demoEvent]);
 
   const meta = (
     <Helmet>
@@ -296,7 +353,7 @@ export default function Scherm() {
   const Huidig = PANELEN[paneel];
 
   return (
-    <div className="scherm h-screen w-screen overflow-hidden bg-[hsl(var(--s-bg))] text-[hsl(var(--s-tekst))]">
+    <div className="scherm fixed inset-0 h-screen w-screen overflow-hidden bg-[hsl(var(--s-bg))] text-[hsl(var(--s-tekst))]">
       {meta}
       <div className="flex h-full w-full flex-col" style={{ transform: `translate(${verschuiving.x}px, ${verschuiving.y}px)` }}>
         <header className="flex h-[9vh] shrink-0 items-center gap-[1.5vw] border-b border-[hsl(var(--s-lijn))] px-[2vw]">
@@ -316,11 +373,14 @@ export default function Scherm() {
 
         <main className="flex min-h-0 flex-1">
           <section className="flex w-[62vw] min-w-0 flex-col border-r border-[hsl(var(--s-lijn))]">
-            <div className="relative min-h-0 flex-1">
-              <div className="absolute left-[1.5vw] top-[1.5vh] z-10 text-[2.4vh] font-semibold uppercase tracking-[0.3em] text-[hsl(var(--s-dim))]">De machine</div>
+            <div className="relative min-h-0 flex-1 overflow-hidden">
+              <div className="scherm-scene-kop"><span>{scene === 0 ? 'Het agentkantoor' : 'De stroom'}</span><small>{scene === 0 ? 'Afdelingen verbonden met het brein' : 'De klantreis en processtromen'}</small></div>
               {data && (
                 <Suspense fallback={null}>
-                  <MachineScene stations={data.stations} totaalVandaag={data.gebeurtenissen_vandaag} pulsen={nieuwePulsen} />
+                  <div className={`scherm-scene ${scene === 0 ? 'scene-zichtbaar' : ''}`} aria-hidden={scene !== 0}>
+                    <MachineScene stations={data.stations} totaalVandaag={data.gebeurtenissen_vandaag} kennisregels={data.kennisbank.gepubliceerd} pulsen={nieuwePulsen} focus={focus} actief={scene === 0 && !breaking} adsBeschikbaar={Boolean(data.marketing.microsoft_ads)} />
+                  </div>
+                  {scene === 1 && <div className="scherm-scene scene-zichtbaar stroom-laag"><StroomScene data={data} /></div>}
                 </Suspense>
               )}
             </div>
@@ -342,7 +402,7 @@ export default function Scherm() {
             </div>
           </section>
 
-          <aside className="flex w-[38vw] min-w-0 flex-col px-[2vw] py-[3vh]">
+          <aside className="scherm-rapport flex w-[38vw] min-w-0 flex-col px-[2vw] py-[3vh]">
             <div className="relative min-h-0 flex-1">
               {data ? (
                 <div key={paneel} className="scherm-paneel absolute inset-0"><Huidig d={data} /></div>
@@ -358,6 +418,8 @@ export default function Scherm() {
           </aside>
         </main>
       </div>
+      {breaking && <BreakingMoment event={breaking.event} total={breaking.total} />}
+      {demo && <span className="scherm-demo">demo</span>}
     </div>
   );
 }

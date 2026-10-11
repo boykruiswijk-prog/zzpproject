@@ -18,6 +18,7 @@ Deno.serve(async (req) => {
     new Response(body, { status, headers: { ...corsHeaders, "Content-Type": "application/json", ...extra } });
 
   const verwacht = Deno.env.get("SCHERM_TOKEN") ?? "";
+  if (req.method !== 'GET') return json(JSON.stringify({ error: 'method_not_allowed' }), 405);
   const token = req.headers.get("x-scherm-token") ?? new URL(req.url).searchParams.get("token") ?? "";
   if (!verwacht || !gelijk(token, verwacht)) return json(JSON.stringify({ error: "unauthorized" }), 401);
 
@@ -25,10 +26,11 @@ Deno.serve(async (req) => {
 
   try {
     const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-    await admin.rpc("machine_cron_verwerken");
     const { data, error } = await admin.rpc("scherm_data");
     if (error) throw new Error(error.message);
-    const body = JSON.stringify(bouwSchermPayload(data ?? {}));
+    const { data: stromen, error: stroomFout } = await admin.rpc("scherm_stromen");
+    if (stroomFout) throw new Error(stroomFout.message);
+    const body = JSON.stringify(bouwSchermPayload({ ...(data ?? {}), ...(stromen ?? {}) }));
     cache = { op: Date.now(), body };
     return json(body, 200, { "Cache-Control": "private, max-age=20" });
   } catch (e) {
