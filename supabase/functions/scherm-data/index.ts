@@ -2,6 +2,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders as basisCors } from "npm:@supabase/supabase-js@2/cors";
 import { bouwSchermPayload } from "../_shared/schermAnonimiseer.ts";
 import { clientIp } from "../_shared/antiSpam.ts";
+import { requireSupervisor } from "../_shared/teamAuth.ts";
 
 const corsHeaders = { ...basisCors, "Access-Control-Allow-Headers": `${basisCors["Access-Control-Allow-Headers"]}, x-scherm-token, x-scherm-code` };
 let cache: { op: number; body: string } | null = null;
@@ -38,6 +39,10 @@ Deno.serve(async (req) => {
       .eq("token_hash", await sha256(apparaatToken)).is("ingetrokken_op", null).maybeSingle();
     if (!app) return json(JSON.stringify({ error: "unauthorized" }), 401);
     await admin.from("scherm_apparaten").update({ laatst_gezien_op: new Date().toISOString() }).eq("id", app.id);
+  } else if (!token && req.headers.get("x-scherm-sessie") === "1") {
+    // Beheersessie (supervisor/admin met 2FA) voor de demoweergave vanuit het beheer.
+    const auth = await requireSupervisor(req, admin);
+    if (auth instanceof Response) return json(JSON.stringify({ error: "unauthorized" }), 401);
   } else {
     // Lang token: maximaal 10 mislukte pogingen per IP per uur (form_rate_limit, soort scherm-code).
     const ip = clientIp(req);

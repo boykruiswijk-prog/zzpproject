@@ -2,6 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } fro
 import { Helmet } from "react-helmet-async";
 import { Navigate } from "react-router-dom";
 import logo from "@/assets/logo-zp.webp";
+import { supabase } from "@/integrations/supabase/client";
 import type { SchermPayload } from "../../supabase/functions/_shared/schermAnonimiseer";
 import { STATION_LABELS, STATION_IDS, stationToken, type Puls } from "@/components/scherm/schermModel";
 import CountUp from '@/components/scherm/CountUp';
@@ -38,9 +39,9 @@ const TV_SLEUTEL = "zp_tv_sleutel";
 const URL_KOPPEL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scherm-koppel`;
 function leesTvSleutel(): string { try { return window.localStorage.getItem(TV_SLEUTEL) ?? ""; } catch { return ""; } }
 function zetTvSleutel(s: string) { try { if (s) window.localStorage.setItem(TV_SLEUTEL, s); else window.localStorage.removeItem(TV_SLEUTEL); } catch { /* geen opslag */ } }
-const schermHeaders = (token: string, sleutel: string): Record<string, string> => ({
+const schermHeaders = (token: string, sleutel: string, sessie = ""): Record<string, string> => ({
   apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-  ...(token ? { "x-scherm-token": token } : { "x-scherm-apparaat": sleutel }),
+  ...(token ? { "x-scherm-token": token } : sleutel ? { "x-scherm-apparaat": sleutel } : sessie ? { "x-scherm-sessie": "1", Authorization: `Bearer ${sessie}` } : {}),
 });
 const koppelPost = (body: unknown) => fetch(URL_KOPPEL, {
   method: "POST", cache: "no-store",
@@ -310,7 +311,14 @@ function useWakeLock() {
 export default function Scherm({ tv = false }: { tv?: boolean }) {
   const token = useMemo(() => new URLSearchParams(window.location.search).get("token") ?? "", []);
   const [tvCode, setTvCode] = useState(() => (tv && !token ? leesTvSleutel() : ""));
-  const actief = Boolean(token || tvCode);
+  // Zonder token of apparaatsleutel: beheersessie van de ingelogde supervisor/admin (demo vanuit het beheer).
+  const [sessie, setSessie] = useState("");
+  const [sessieGecontroleerd, setSessieGecontroleerd] = useState(Boolean(tv || token));
+  useEffect(() => {
+    if (tv || token) return;
+    supabase.auth.getSession().then(({ data }) => { setSessie(data.session?.access_token ?? ""); setSessieGecontroleerd(true); }).catch(() => setSessieGecontroleerd(true));
+  }, [tv, token]);
+  const actief = Boolean(token || tvCode || sessie);
   const demo = useMemo(() => new URLSearchParams(window.location.search).get('demo') === '1', []);
   const [data, setData] = useState<SchermPayload | null>(null);
   const [geweigerd, setGeweigerd] = useState(false);
@@ -340,7 +348,7 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
 
   const laad = useCallback(async () => {
     try {
-      const r = await fetch(URL_DATA, { headers: schermHeaders(token, tvCode), cache: "no-store" });
+      const r = await fetch(URL_DATA, { headers: schermHeaders(token, tvCode, sessie), cache: "no-store" });
       if (r.status === 401) { if (!token && tvCode) { zetTvSleutel(""); seen.current = null; setData(null); setTvCode(""); } else setGeweigerd(true); return; }
       if (!r.ok) throw new Error(String(r.status));
       const next: SchermPayload = await r.json();
@@ -365,7 +373,7 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
       if (fouten.current >= 6) { window.location.reload(); return; }
       timer.current = window.setTimeout(laad, Math.min(15_000 * 2 ** fouten.current, 300_000));
     }
-  }, [token, tvCode]);
+  }, [token, tvCode, sessie]);
 
   useEffect(() => {
     if (!actief) return;
@@ -413,6 +421,7 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
 
   if (tv && !token && !tvCode) return <Koppelscherm onGekoppeld={setTvCode} />;
 
+  if (!sessieGecontroleerd) return null;
   if (!actief || geweigerd) {
     return (
       <div className="scherm flex h-screen w-screen items-center justify-center overflow-hidden bg-[hsl(var(--s-bg))]">
