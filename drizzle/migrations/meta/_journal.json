@@ -743,6 +743,13 @@
       "when": 1791725641219,
       "tag": "0105_scherm_apparaatkoppeling",
       "breakpoints": true
+    },
+    {
+      "idx": 106,
+      "version": "7",
+      "when": 1791744291738,
+      "tag": "0106_scherm_data_contentmachine",
+      "breakpoints": true
     }
   ]
 }

@@ -292,7 +292,50 @@ function PaneelVandaag({ d }: { d: SchermPayload }) {
     <div className="vandaag-legenda">{STATION_IDS.filter(id => (d.stations[id]?.vandaag ?? 0) > 0).map(id => <span key={id}><i style={{ background: `hsl(${stationToken(id)})` }} />{STATION_LABELS[id]}</span>)}</div>
   </div>;
 }
-const PANELEN = [PaneelDoel, PaneelGroei, PaneelService, PaneelZichtbaarheid, PaneelVandaag];
+function runTijd(iso: string | null, nu: string) {
+  if (!iso) return null;
+  const dag = (t: string) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Amsterdam' }).format(new Date(t));
+  if (dag(iso) === dag(nu)) return new Intl.DateTimeFormat('nl-NL', { timeZone: 'Europe/Amsterdam', hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
+  return new Intl.DateTimeFormat('nl-NL', { timeZone: 'Europe/Amsterdam', weekday: 'short', day: 'numeric', month: 'short' }).format(new Date(iso)).replace(/\./g, '');
+}
+
+function PaneelAiTeam({ d }: { d: SchermPayload }) {
+  const kb = d.kennisbank, team = d.ai_team ?? [];
+  const kleur = (s: string) => s === 'fout' ? 'var(--s-rood)' : s === 'gepland' ? 'var(--s-dim)' : 'var(--s-groen)';
+  return (
+    <div className="flex h-full flex-col gap-[1.6vh] overflow-hidden">
+      <Kop>Ons AI-team</Kop>
+      <div className="rounded-[1vh] border border-[hsl(var(--s-rood)/0.6)] bg-[hsl(var(--s-rood)/0.1)] p-[1.6vh]">
+        <div className="text-[2.6vh] font-semibold text-[hsl(var(--s-tekst))]">Contentmachine</div>
+        <div className="mt-[0.6vh] grid grid-cols-2 gap-[1vw]">
+          <div><div className="text-[6vh] font-bold leading-none tabular-nums text-[hsl(var(--s-tekst))]">{kb.content_nieuw ?? <Gemeten />}</div><Label>nieuwe artikelen</Label></div>
+          <div><div className="text-[6vh] font-bold leading-none tabular-nums text-[hsl(var(--s-tekst))]">{kb.content_verbeterd ?? <Gemeten />}</div><Label>artikelen verbeterd</Label></div>
+        </div>
+        <div className="mt-[0.6vh] text-[2vh] text-[hsl(var(--s-dim))]">sinds 6 oktober, automatisch geschreven en gecontroleerd</div>
+      </div>
+      {team.length === 0 ? <Gemeten /> : (
+        <div className="flex min-h-0 flex-1 flex-col justify-start gap-[0.9vh]">
+          {team.map((a, i) => {
+            const t = runTijd(a.laatste_run, d.gegenereerd_op);
+            return (
+              <div key={`${a.naam}-${i}`} className="min-w-0 leading-tight">
+                <div className="flex items-center gap-[0.6vw] text-[1.9vh]">
+                  <span className="h-[1.4vh] w-[1.4vh] shrink-0 rounded-full" style={{ background: `hsl(${kleur(a.status)})`, boxShadow: `0 0 1vh hsl(${kleur(a.status)})` }} />
+                  <span className="shrink-0 font-bold text-[hsl(var(--s-tekst))]">{a.naam}</span>
+                  <span className="min-w-0 truncate text-[hsl(var(--s-dim))]">{a.taak}</span>
+                  {t && <span className="ml-auto shrink-0 tabular-nums text-[hsl(var(--s-dim))]">{t}</span>}
+                </div>
+                {a.resultaat && <div className="truncate pl-[2vh] text-[1.7vh] text-[hsl(var(--s-tekst))]">{a.resultaat}</div>}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const PANELEN = [PaneelDoel, PaneelGroei, PaneelService, PaneelZichtbaarheid, PaneelAiTeam, PaneelVandaag];
 
 function useWakeLock() {
   useEffect(() => {

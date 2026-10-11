@@ -75,4 +75,23 @@ describe("scherm-data anonimisering", () => {
     expect(p.marketing.microsoft_ads?.budget_pct).toBe(10);
     expect(JSON.stringify(p)).not.toMatch(/99999|secret|2250/);
   });
+  it('ai_team: lege rij, onbekende status, lange tekst en e-mail', () => {
+    expect(bouwSchermPayload({}).ai_team).toEqual([]);
+    expect(bouwSchermPayload({ marketing: { ai_team: { dag: '2026-10-11', data: {} } } }).ai_team).toEqual([]);
+    const agents = Array.from({ length: 12 }, (_, i) => ({ id: String(i), naam: `Agent ${i}`, taak: 'x'.repeat(100), laatste_run: i ? '2026-10-11T16:53:51Z' : 'nooit', status: i === 1 ? 'raar' : i === 2 ? 'fout' : 'gepland', resultaat: i === 3 ? 'Mail naar jan@voorbeeld.nl gestuurd' : null }));
+    const t = bouwSchermPayload({ marketing: { ai_team: { dag: '2026-10-11', data: { agents } } } }).ai_team;
+    expect(t).toHaveLength(10);
+    expect(t[0].laatste_run).toBeNull();
+    expect(t[1].status).toBe('klaar');
+    expect(t[2].status).toBe('fout');
+    expect(t[1].taak.length).toBe(70);
+    expect(t[3].resultaat).not.toContain('@');
+    expect(t[3].resultaat).not.toContain('jan');
+    expect(t[4].resultaat).toBeNull();
+    expect(JSON.stringify(t)).not.toContain('"id"');
+  });
+  it('kennisbank contenttellingen: null als ze ontbreken', () => {
+    expect(bouwSchermPayload({}).kennisbank.content_nieuw).toBeNull();
+    expect(bouwSchermPayload({ kennisbank: { content_nieuw: 6, content_verbeterd: 9 } }).kennisbank).toMatchObject({ content_nieuw: 6, content_verbeterd: 9 });
+  });
 });
