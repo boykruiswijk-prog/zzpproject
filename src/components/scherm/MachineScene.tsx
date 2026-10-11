@@ -1,209 +1,137 @@
-import { useEffect, useMemo, useRef } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Html } from "@react-three/drei";
-import * as THREE from "three";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Environment, Html, Lightformer, useGLTF } from '@react-three/drei';
+import { ArrowDownToLine, BadgeCheck, BookOpen, BrainCircuit, FileCheck2, Mail, Megaphone, Receipt, RefreshCw, ShieldCheck, Headphones } from 'lucide-react';
+import * as THREE from 'three';
+import asset from '@/assets/scherm/agent.glb.asset.json';
+import { STATION_IDS, STATION_LABELS, type Puls } from './schermModel';
+export { STATION_LABELS, STATION_IDS } from './schermModel';
+export type { Puls } from './schermModel';
+const Effects = lazy(() => import('./SchermEffects'));
+const ICONS = [ArrowDownToLine, ShieldCheck, FileCheck2, Receipt, RefreshCw, BookOpen, Megaphone, BadgeCheck, BrainCircuit, Mail, Headphones];
+// Three materials resolve the scoped semantic screen palette once on mounting.
+function palette() {
+  const el = document.querySelector('.scherm');
+  const css = el ? getComputedStyle(el) : null;
+  const read = (key: string) => new THREE.Color(`hsl(${css?.getPropertyValue(key).trim().replace(/ /g, ',') || '0,0%,50%'})`);
+  return { bg: read('--s-bg'), floor: read('--s-surface'), desk: read('--s-lijn'), figure: read('--s-tekst'), dim: read('--s-dim'), red: read('--s-rood'), blue: read('--s-blauw'), green: read('--s-groen'), orange: read('--s-oranje') };
+}
+type Colors = ReturnType<typeof palette>;
+type Props = { stations: Record<string, { vandaag: number; laatste_status: string | null }>; totaalVandaag: number; kennisregels: number; pulsen: Puls[]; focus: Puls | null; actief: boolean; adsBeschikbaar: boolean };
+const POS = STATION_IDS.map((_, i) => { const a = i / STATION_IDS.length * Math.PI * 2 - Math.PI / 2; return new THREE.Vector3(Math.cos(a) * 8.5, 0, Math.sin(a) * 7); });
+const AGENTS = STATION_IDS.flatMap((_, i) => Array.from({ length: 1 + i % 3 }, (_, j) => ({ station: i, offset: (j - (i % 3) / 2) * 0.72 })));
+const EDGES = POS.flatMap((p, i) => [[p, new THREE.Vector3()], [p, POS[(i + 1) % POS.length]]] as [THREE.Vector3, THREE.Vector3][]);
 
-/** Kleuren van het muurscherm (three.js heeft echte kleurwaarden nodig). */
-export const SCHERM_KLEUR = {
-  vloer: "#10131b", bureau: "#1b2030", figuur: "#8a93a8", lijn: "#2a3142",
-  rood: "#E53E2F", blauw: "#3fa9f5", groen: "#2fd27f", dim: "#2a2f3c",
-};
-
-export const STATION_LABELS: Record<string, string> = {
-  intake: "Aanvraag-intake", acceptatie: "Acceptatie en KVK-check", certificaten: "Certificaten",
-  facturatie: "Facturatie", exact: "Exact-koppeling", kennisbank: "Kennisbank en content",
-  ads: "Ads-monitor", kwaliteit: "Kwaliteitscontrole", assistent: "Zeker-assistent",
-  mail: "Mail", service: "Klantservice",
-};
-export const STATION_IDS = Object.keys(STATION_LABELS);
-
-export type Puls = { id: string; station: string; status: "bezig" | "klaar" | "fout" };
-type Props = { stations: Record<string, { vandaag: number; laatste_status: string | null }>; totaalVandaag: number; pulsen: Puls[] };
-
-const kleurVoor = (s: string) => (s === "fout" ? SCHERM_KLEUR.rood : s === "bezig" ? SCHERM_KLEUR.blauw : SCHERM_KLEUR.groen);
-const R = 7.2;
-const posities = STATION_IDS.map((_, i) => {
-  const a = (i / STATION_IDS.length) * Math.PI * 2 - Math.PI / 2;
-  return new THREE.Vector3(Math.cos(a) * R, 0, Math.sin(a) * R * 0.92);
-});
-
-function Camera() {
+function CameraRig({ focus, active }: { focus: Puls | null; active: boolean }) {
   const { camera, size } = useThree();
-  useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
-    const az = Math.PI / 4 + THREE.MathUtils.degToRad(25) * Math.sin((t / 150) * Math.PI * 2);
-    camera.position.set(Math.cos(az) * 30, 22, Math.sin(az) * 30);
-    camera.lookAt(0, 0, 0);
+  const shot = useRef({ station: -1, start: -100, last: -100 });
+  const look = useMemo(() => new THREE.Vector3(), []);
+  const target = useMemo(() => new THREE.Vector3(), []);
+  const aim = useMemo(() => new THREE.Vector3(), []);
+  useEffect(() => {
+    if (!focus || !active || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const now = performance.now() / 1000;
+    if (now - shot.current.last < 30) return;
+    shot.current = { station: STATION_IDS.indexOf(focus.station), start: now, last: now };
+  }, [focus, active]);
+  useFrame(({ clock }, delta) => {
+    const a = Math.PI / 2 + Math.sin(clock.elapsedTime / 45) * 0.16;
+    target.set(Math.cos(a) * 22, 20, Math.sin(a) * 22);
+    aim.set(0, 0.9, 0);
+    const age = performance.now() / 1000 - shot.current.start;
+    const weight = active && shot.current.station >= 0 && age < 6 ? Math.sin(Math.PI * Math.max(0, age) / 6) * 0.42 : 0;
+    if (weight) { const p = POS[shot.current.station]; aim.lerp(p, weight); target.x += p.x * weight; target.z += p.z * weight; }
+    const dt = Math.min(delta, 0.05);
+    camera.position.lerp(target, 1 - Math.exp(-3 * dt)); look.lerp(aim, 1 - Math.exp(-3 * dt)); camera.lookAt(look);
     const cam = camera as THREE.OrthographicCamera;
-    const z = Math.min(size.width, size.height * 1.25) / 21;
-    if (Math.abs(cam.zoom - z) > 0.01) { cam.zoom = z; cam.updateProjectionMatrix(); }
+    cam.zoom = Math.min(size.width / 27, size.height / 23) * (1 + weight * 0.3); cam.updateProjectionMatrix();
   });
   return null;
 }
-
-function Werkplekken({ stations, pulsen }: Pick<Props, "stations" | "pulsen">) {
-  const bureaus = useRef<THREE.InstancedMesh>(null);
-  const lijven = useRef<THREE.InstancedMesh>(null);
-  const hoofden = useRef<THREE.InstancedMesh>(null);
-  const schermen = useRef<(THREE.Mesh | null)[]>([]);
-  const gloed = useRef<number[]>(STATION_IDS.map(() => 0));
-  const gloedKleur = useRef<THREE.Color[]>(STATION_IDS.map(() => new THREE.Color(SCHERM_KLEUR.groen)));
-  const pulsMeshes = useRef<(THREE.Mesh | null)[]>([]);
-  const pulsStaat = useRef<{ actief: boolean; start: number; i: number }[]>(Array.from({ length: 24 }, () => ({ actief: false, start: 0, i: 0 })));
-  const gezien = useRef(new Set<string>());
-  const wachtrij = useRef<Puls[]>([]);
-
-  useEffect(() => {
-    for (const p of pulsen) if (!gezien.current.has(p.id)) { gezien.current.add(p.id); wachtrij.current.push(p); }
-  }, [pulsen]);
-
-  useEffect(() => {
-    const m = new THREE.Matrix4(); const q = new THREE.Quaternion(); const s = new THREE.Vector3(1, 1, 1);
-    posities.forEach((p, i) => {
-      q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), -Math.atan2(p.z, p.x) - Math.PI / 2);
-      bureaus.current?.setMatrixAt(i, m.compose(new THREE.Vector3(p.x, 0.45, p.z), q, s));
-      const achter = p.clone().multiplyScalar(1.12);
-      lijven.current?.setMatrixAt(i, m.compose(new THREE.Vector3(achter.x, 0.7, achter.z), q, s));
-      hoofden.current?.setMatrixAt(i, m.compose(new THREE.Vector3(achter.x, 1.55, achter.z), q, s));
-    });
-    [bureaus, lijven, hoofden].forEach((r) => { if (r.current) r.current.instanceMatrix.needsUpdate = true; });
-  }, []);
-
-  const lijnGeo = useMemo(() => {
-    const g = new THREE.BufferGeometry();
-    const pts: number[] = [];
-    posities.forEach((p) => pts.push(p.x, 0.05, p.z, 0, 0.05, 0));
-    g.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
-    return g;
-  }, []);
-
-  useFrame(({ clock }, dt) => {
-    const t = clock.getElapsedTime();
-    // nieuwe gebeurtenissen gespreid starten
-    if (wachtrij.current.length) {
-      const vrij = pulsStaat.current.findIndex((x) => !x.actief);
-      if (vrij >= 0) {
-        const p = wachtrij.current.shift()!;
-        const i = STATION_IDS.indexOf(p.station);
-        if (i >= 0) {
-          pulsStaat.current[vrij] = { actief: true, start: t, i };
-          gloed.current[i] = 1; gloedKleur.current[i].set(kleurVoor(p.status));
-          const mesh = pulsMeshes.current[vrij];
-          if (mesh) (mesh.material as THREE.MeshBasicMaterial).color.set(kleurVoor(p.status));
-        }
-      }
-    }
-    pulsStaat.current.forEach((st, k) => {
-      const mesh = pulsMeshes.current[k];
-      if (!mesh) return;
-      if (!st.actief) { mesh.visible = false; return; }
-      const f = (t - st.start) / 1.8;
-      if (f >= 1) { st.actief = false; mesh.visible = false; return; }
-      mesh.visible = true;
-      mesh.position.lerpVectors(posities[st.i], new THREE.Vector3(0, 0, 0), f).setY(0.3 + Math.sin(f * Math.PI) * 1.2);
-    });
-    STATION_IDS.forEach((id, i) => {
-      const sc = schermen.current[i];
-      if (!sc) return;
-      gloed.current[i] = Math.max(0, gloed.current[i] - dt * 0.35);
-      const actief = (stations[id]?.vandaag ?? 0) > 0;
-      const basis = new THREE.Color(actief ? kleurVoor(stations[id]?.laatste_status ?? "klaar") : SCHERM_KLEUR.dim);
-      const mat = sc.material as THREE.MeshStandardMaterial;
-      mat.emissive.copy(basis).lerp(gloedKleur.current[i], gloed.current[i]);
-      mat.emissiveIntensity = (actief ? 0.9 : 0.25) + gloed.current[i] * 2.2 + (actief ? Math.sin(t * 2 + i) * 0.08 : 0);
-    });
-  });
-
-  return (
-    <group>
-      <lineSegments geometry={lijnGeo}>
-        <lineBasicMaterial color={SCHERM_KLEUR.lijn} transparent opacity={0.8} />
-      </lineSegments>
-      <instancedMesh ref={bureaus} args={[undefined, undefined, STATION_IDS.length]}>
-        <boxGeometry args={[2.2, 0.9, 1.1]} />
-        <meshStandardMaterial color={SCHERM_KLEUR.bureau} roughness={0.8} />
-      </instancedMesh>
-      <instancedMesh ref={lijven} args={[undefined, undefined, STATION_IDS.length]}>
-        <cylinderGeometry args={[0.28, 0.4, 1.0, 8]} />
-        <meshStandardMaterial color={SCHERM_KLEUR.figuur} roughness={0.6} />
-      </instancedMesh>
-      <instancedMesh ref={hoofden} args={[undefined, undefined, STATION_IDS.length]}>
-        <icosahedronGeometry args={[0.28, 0]} />
-        <meshStandardMaterial color={SCHERM_KLEUR.figuur} roughness={0.5} />
-      </instancedMesh>
-      {posities.map((p, i) => {
-        const id = STATION_IDS[i];
-        const n = stations[id]?.vandaag ?? 0;
-        return (
-          <group key={id}>
-            <mesh ref={(el) => (schermen.current[i] = el)} position={[p.x, 1.35, p.z]} rotation={[0, -Math.atan2(p.z, p.x) - Math.PI / 2, 0]}>
-              <boxGeometry args={[1.5, 0.85, 0.08]} />
-              <meshStandardMaterial color="#05070b" emissive={SCHERM_KLEUR.dim} emissiveIntensity={0.3} />
-            </mesh>
-            <Html position={[p.x, i % 2 ? 3.5 : 2.6, p.z]} center zIndexRange={[10, 0]} style={{ pointerEvents: "none" }}>
-              <div className={`scherm-label ${n > 0 ? "" : "scherm-label-dim"}`}>
-                <span>{STATION_LABELS[id]}</span>
-                <b>{n}</b>
-              </div>
-            </Html>
-          </group>
-        );
-      })}
-      {pulsStaat.current.map((_, k) => (
-        <mesh key={k} ref={(el) => (pulsMeshes.current[k] = el)} visible={false}>
-          <sphereGeometry args={[0.22, 10, 10]} />
-          <meshBasicMaterial color={SCHERM_KLEUR.groen} />
-        </mesh>
-      ))}
-    </group>
-  );
-}
-
-function Brein({ totaal }: { totaal: number }) {
-  const kern = useRef<THREE.Mesh>(null);
-  const ring = useRef<THREE.Mesh>(null);
+function AgentFigures({ colors, event }: { colors: Colors; event: Puls | null }) {
+  const { scene } = useGLTF(asset.url);
+  const parts = useMemo(() => {
+    scene.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(scene); const height = box.max.y - box.min.y; const scale = 1.25 / height;
+    const center = box.getCenter(new THREE.Vector3()); const result: { geometry: THREE.BufferGeometry; material: THREE.Material | THREE.Material[]; head: boolean }[] = [];
+    scene.traverse(o => { if (o instanceof THREE.Mesh) { const geo = o.geometry.clone(); geo.applyMatrix4(o.matrixWorld); geo.translate(-center.x, -box.min.y, -center.z); geo.scale(scale, scale, scale); result.push({ geometry: geo, material: o.material, head: o.name.includes('head') }); } });
+    return result;
+  }, [scene]);
+  useEffect(() => () => parts.forEach(p => p.geometry.dispose()), [parts]);
+  const refs = useRef<(THREE.InstancedMesh | null)[]>([]);
+  const hands = useRef<THREE.InstancedMesh>(null);
+  const dummy = useMemo(() => new THREE.Object3D(), []);
+  const reactive = useRef({ station: -1, until: 0 });
+  useEffect(() => { if (event) reactive.current = { station: STATION_IDS.indexOf(event.station), until: performance.now() + 3000 }; }, [event]);
   useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
-    const s = 1 + Math.sin(t * 1.6) * 0.06;
-    kern.current?.scale.setScalar(s);
-    if (kern.current) kern.current.rotation.y = t * 0.2;
-    if (ring.current) ring.current.rotation.z = t * 0.15;
+    const t = clock.elapsedTime;
+    AGENTS.forEach((agent, i) => {
+      const p = POS[agent.station]; const reacting = reactive.current.station === agent.station && performance.now() < reactive.current.until;
+      dummy.position.set(p.x + agent.offset, 0.35 + (reacting ? 0.25 : 0), p.z + 0.65);
+      dummy.rotation.set(0, reacting ? Math.sin(t * 2) * 0.5 : 0, 0);
+      parts.forEach((part, j) => { dummy.rotation.z = part.head ? Math.sin(t * 1.4 + i) * 0.04 : 0; dummy.updateMatrix(); refs.current[j]?.setMatrixAt(i, dummy.matrix); });
+      for (let hand = 0; hand < 2; hand++) { dummy.position.set(p.x + agent.offset + (hand ? 0.18 : -0.18), 1.03 + Math.sin(t * 9 + i + hand) * 0.025, p.z + 0.1); dummy.rotation.set(0,0,0); dummy.updateMatrix(); hands.current?.setMatrixAt(i * 2 + hand, dummy.matrix); }
+    });
+    refs.current.forEach(m => { if (m) m.instanceMatrix.needsUpdate = true; }); if (hands.current) hands.current.instanceMatrix.needsUpdate = true;
   });
-  return (
-    <group position={[0, 1.4, 0]}>
-      <mesh ref={kern}>
-        <icosahedronGeometry args={[1.25, 1]} />
-        <meshStandardMaterial color="#2a0d0a" emissive={SCHERM_KLEUR.rood} emissiveIntensity={1.1} flatShading />
-      </mesh>
-      <mesh ref={ring} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[2.1, 0.04, 6, 64]} />
-        <meshBasicMaterial color={SCHERM_KLEUR.rood} transparent opacity={0.6} />
-      </mesh>
-      <Html position={[0, 2.4, 0]} center zIndexRange={[10, 0]} style={{ pointerEvents: "none" }}>
-        <div className="scherm-brein">
-          <b>{totaal}</b>
-          <span>gebeurtenissen vandaag</span>
-        </div>
-      </Html>
-    </group>
-  );
+  return <>{parts.map((part, i) => <instancedMesh key={i} ref={m => { refs.current[i] = m; }} args={[part.geometry, part.material, AGENTS.length]} frustumCulled={false} />)}
+    <instancedMesh ref={hands} args={[undefined, undefined, AGENTS.length * 2]} frustumCulled={false}><boxGeometry args={[0.12,0.08,0.18]} /><meshStandardMaterial color={colors.figure} /></instancedMesh></>;
 }
-
+function Furniture({ colors, activity, ads }: { colors: Colors; activity: Props['stations']; ads: boolean }) {
+  const refs = useRef<(THREE.InstancedMesh | null)[]>([]); const monitors = useRef<THREE.InstancedMesh>(null);
+  const dummy = useMemo(() => new THREE.Object3D(), []);
+  useEffect(() => {
+    AGENTS.forEach((a, i) => { const p = POS[a.station];
+      [[0.6,0], [1.22,-0.22], [0.53,0.62]].forEach(([y,z], k) => { dummy.position.set(p.x + a.offset,y,p.z + z); dummy.updateMatrix(); refs.current[k]?.setMatrixAt(i,dummy.matrix); });
+      dummy.position.set(p.x+a.offset,1.24,p.z-0.25);dummy.updateMatrix();monitors.current?.setMatrixAt(i,dummy.matrix);
+    });
+    refs.current.forEach(r => { if (r) r.instanceMatrix.needsUpdate = true; });if(monitors.current) monitors.current.instanceMatrix.needsUpdate=true;
+  }, [dummy]);
+  useFrame(({ clock }) => { const mesh = monitors.current; if(!mesh) return;
+    AGENTS.forEach((a,i) => {const id=STATION_IDS[a.station];const enabled=id!=='ads'||ads;const c=enabled?(a.station%2?colors.blue:colors.green):colors.dim;mesh.setColorAt(i,c.clone().multiplyScalar(enabled ? 1.3 + Math.sin(clock.elapsedTime * 8 + i) * 0.3 : 0.3));});if(mesh.instanceColor)mesh.instanceColor.needsUpdate=true;
+  });
+  return <>
+    {[[0.65,0.12,0.6], [0.58,0.4,0.06], [0.5,0.52,0.42]].map((s,k)=><instancedMesh key={k} ref={m=>{refs.current[k]=m;}} args={[undefined,undefined,AGENTS.length]}><boxGeometry args={s as [number,number,number]} /><meshStandardMaterial color={colors.desk} metalness={0.45} roughness={0.35} /></instancedMesh>)}
+    <instancedMesh ref={monitors} args={[undefined,undefined,AGENTS.length]}><planeGeometry args={[0.48,0.3]} /><meshBasicMaterial toneMapped={false} /></instancedMesh>
+    {POS.map((p,i)=><group key={i} position={p}><mesh position-y={0.08}><cylinderGeometry args={[1.52,1.4,0.16,6]} /><meshStandardMaterial color={colors.floor} metalness={0.7} roughness={0.3} /></mesh><mesh position-y={0.18} rotation-x={-Math.PI/2}><ringGeometry args={[1.4,1.44,6]} /><meshBasicMaterial color={i===6&&!ads?colors.dim:i%2?colors.blue:colors.green} toneMapped={false} /></mesh></group>)}
+  </>;
+}
+function Network({ colors, busy }: { colors: Colors; busy: boolean }) {
+  const lines = useMemo(() => EDGES.map(([a,b]) => {const g = new THREE.BufferGeometry().setFromPoints([a.clone().setY(0.24),b.clone().setY(0.24)]);const mat=new THREE.LineDashedMaterial({color:colors.blue,transparent:true,opacity:0.32,dashSize:0.12,gapSize:0.18});const line=new THREE.Line(g,mat);line.computeLineDistances();return line;}),[colors]);
+  const particles = useRef<THREE.InstancedMesh>(null); const beam=useRef<THREE.InstancedMesh>(null);const dummy=useMemo(()=>new THREE.Object3D(),[]);
+  useEffect(()=>()=>lines.forEach(l=>{l.geometry.dispose();(l.material as THREE.Material).dispose();}),[lines]);
+  useFrame(({clock})=>{const t=clock.elapsedTime;EDGES.forEach(([a,b],edge)=>{for(let j=0;j<6;j++){const f=(t*(busy?0.2:0.055)+j/6)%1;dummy.position.lerpVectors(a,b,f);dummy.position.y=0.3+Math.sin(f*Math.PI)*0.5;dummy.scale.setScalar(busy?1.4:0.75);dummy.updateMatrix();particles.current?.setMatrixAt(edge*6+j,dummy.matrix);}});if(particles.current)particles.current.instanceMatrix.needsUpdate=true;
+    for(let i=0;i<90;i++){const f=(t*0.18+i/90)%1;const a=i*2.4+t;dummy.position.set(Math.cos(a)*(0.15+f*0.4),1.5+f*5,Math.sin(a)*(0.15+f*0.4));dummy.scale.setScalar((1-f)*0.8);dummy.updateMatrix();beam.current?.setMatrixAt(i,dummy.matrix);}if(beam.current)beam.current.instanceMatrix.needsUpdate=true;
+  });
+  return <>{lines.map((line,i)=><primitive key={i} object={line} />)}<instancedMesh ref={particles} args={[undefined,undefined,EDGES.length*6]} frustumCulled={false}><sphereGeometry args={[0.06,6,4]} /><meshBasicMaterial color={colors.blue.clone().multiplyScalar(2)} toneMapped={false} /></instancedMesh><instancedMesh ref={beam} args={[undefined,undefined,90]} frustumCulled={false}><sphereGeometry args={[0.055,6,4]} /><meshBasicMaterial color={colors.red.clone().multiplyScalar(3)} toneMapped={false} /></instancedMesh></>;
+}
+function Floor({ colors }: { colors: Colors }) {
+  const texture=useMemo(()=>{const canvas=document.createElement('canvas');canvas.width=canvas.height=128;const c=canvas.getContext('2d');if(c){c.fillStyle=colors.floor.getStyle();c.fillRect(0,0,128,128);c.strokeStyle=colors.desk.getStyle();c.lineWidth=1;c.strokeRect(1,1,126,126);for(let i=0;i<40;i++){c.globalAlpha=0.2;c.fillRect((i*43)%128,(i*79)%128,1,1);}}const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.repeat.set(18,18);return tex;},[colors]);
+  useEffect(()=>()=>texture.dispose(),[texture]);
+  return <mesh rotation-x={-Math.PI/2} position-y={-0.18}><circleGeometry args={[18,64]} /><meshStandardMaterial map={texture} metalness={0.4} roughness={0.65} /></mesh>;
+}
+function Runtime({ onLow }: { onLow: ()=>void }) {
+  const {setDpr,gl}=useThree();const sample=useRef({time:0,frames:0,done:false});
+  useEffect(()=>{const debug=gl.getContext().getExtension('WEBGL_debug_renderer_info');const ctx=gl.getContext();const renderer=debug?String(ctx.getParameter(debug.UNMASKED_RENDERER_WEBGL)):'';if(/SwiftShader|llvmpipe/i.test(renderer)){onLow();setDpr(1);}},[gl,onLow,setDpr]);
+  useFrame((_,delta)=>{const s=sample.current;if(s.done)return;s.time+=delta;s.frames++;if(s.time>6){if(s.frames/s.time<28){onLow();setDpr(1);}s.done=true;}});return null;
+}
 export default function MachineScene(props: Props) {
-  return (
-    <Canvas orthographic dpr={[1, 1.5]} gl={{ antialias: true, powerPreference: "high-performance" }} camera={{ position: [20, 22, 20], zoom: 40, near: 0.1, far: 200 }}>
-      <color attach="background" args={["#0B0D12"]} />
-      <ambientLight intensity={0.45} />
-      <directionalLight position={[10, 20, 5]} intensity={0.9} />
-      <pointLight position={[0, 4, 0]} color={SCHERM_KLEUR.rood} intensity={18} distance={14} />
-      <Camera />
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
-        <circleGeometry args={[10.5, 64]} />
-        <meshStandardMaterial color={SCHERM_KLEUR.vloer} roughness={0.95} />
-      </mesh>
-      <gridHelper args={[21, 21, "#1a1f2b", "#151a24"]} position={[0, 0.001, 0]} />
-      <Werkplekken stations={props.stations} pulsen={props.pulsen} />
-      <Brein totaal={props.totaalVandaag} />
-    </Canvas>
-  );
+  const colors=useMemo(palette,[]);const [quality,setQuality]=useState(true);const [event,setEvent]=useState<Puls|null>(null);const history=useRef(new Set<string>());const initial=useRef(true);
+  const low=useMemo(()=>()=>setQuality(false),[]);
+  useEffect(()=>{const fresh=props.pulsen.filter(p=>!history.current.has(p.id));history.current=new Set(props.pulsen.map(p=>p.id));if(initial.current){initial.current=false;return;}const latest=[...fresh].sort((a,b)=>Date.parse(b.tijd)-Date.parse(a.tijd))[0];if(latest){setEvent(latest);const t=setTimeout(()=>setEvent(null),3000);return()=>clearTimeout(t);}},[props.pulsen]);
+  const reduced=useMemo(()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches,[]);
+  return <Canvas orthographic dpr={[1,1.5]} frameloop={props.actief&&!reduced?'always':'demand'} camera={{position:[0,20,22],zoom:35,near:0.1,far:120}} gl={{antialias:false,powerPreference:'high-performance'}}>
+    <color attach="background" args={[colors.bg]} /><ambientLight intensity={0.8} /><directionalLight position={[0,15,8]} intensity={2.4} />
+    <Environment resolution={64}><Lightformer intensity={2} position={[0,8,0]} rotation-x={Math.PI/2} scale={[15,15,1]} /><Lightformer intensity={1.5} color={colors.blue} position={[-12,3,0]} rotation-y={Math.PI/2} scale={[8,4,1]} /></Environment>
+    <Runtime onLow={low} /><CameraRig focus={props.focus} active={props.actief} /><Floor colors={colors} />
+    <Furniture colors={colors} activity={props.stations} ads={props.adsBeschikbaar} /><Suspense fallback={null}><AgentFigures colors={colors} event={event} /></Suspense>
+    <Network colors={colors} busy={Boolean(event)} />
+    <group position={[0,1.6,0]}><mesh rotation-y={Math.PI/4}><octahedronGeometry args={[1.05,0]} /><meshStandardMaterial color={colors.red} emissive={colors.red} emissiveIntensity={2.4} metalness={0.8} roughness={0.15} /></mesh><mesh rotation-x={Math.PI/2} position-y={-0.5}><torusGeometry args={[1.7,0.04,6,60]} /><meshBasicMaterial color={colors.red.clone().multiplyScalar(2)} toneMapped={false} /></mesh>
+      <Html position={[0,3.6,0]} center zIndexRange={[12,0]}><div className="scherm-core"><span>Het brein</span><b>{props.totaalVandaag}</b><small>gebeurtenissen vandaag</small><em>{props.kennisregels} kennisregels</em></div></Html>
+    </group>
+    {POS.map((p,i)=>{const id=STATION_IDS[i];const Icon=ICONS[i];const n=props.stations[id]?.vandaag??0;const dim=id==='ads'&&!props.adsBeschikbaar;const bezig=props.pulsen.filter(a=>a.station===id&&a.status==='bezig'&&Date.now()-Date.parse(a.tijd)<300000).length;const skills=new Set(props.pulsen.filter(a=>a.station===id).map(a=>a.tekst)).size;
+      return <Html key={id} position={[p.x,2.1,p.z]} center zIndexRange={[10,0]}><div className={`scherm-station ${dim?'station-dim':''}`}><Icon /><div><strong>{STATION_LABELS[id]}</strong><small>{skills} skills | {bezig} bezig</small></div><b>{n}</b>{event?.station===id&&<p className="agent-balloon">{event.tekst}</p>}</div></Html>;
+    })}
+    {quality&&!reduced&&props.actief&&<Suspense fallback={null}><Effects /></Suspense>}
+  </Canvas>;
 }
