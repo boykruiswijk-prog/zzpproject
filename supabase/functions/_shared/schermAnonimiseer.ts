@@ -43,14 +43,21 @@ export function schoonMarketing(m: Record<string, Snap> | null | undefined) {
     const d = s?.data ?? {};
     if (!s || Object.keys(d).length === 0) return null;
     const kosten = eerste(d, "kosten", "cost", "spend", "budget_verbruikt");
+    // Alle numerieke velden door, behalve bedragvelden (en cpa/spend als kosten per aanvraag).
+    const vrij: Record<string, number> = {};
+    for (const [k, v] of Object.entries(d)) {
+      if (/kosten|cost|eur|bedrag|cpa|spend|verbruikt/i.test(k)) continue;
+      const n = getal(v); if (n !== null && typeof v === 'number') vrij[k] = n;
+    }
     return {
+      ...vrij,
       dag: s.dag ?? null,
       vertoningen: eerste(d, "vertoningen", "impressions"),
       klikken: eerste(d, "klikken", "clicks"),
       conversies: eerste(d, "conversies", "conversions"),
       // Only an explicitly defined month-to-date spend can use the monthly budget.
-      budget_pct: d.periode === 'maand_tot_datum' && d.budget_scope === 'totaal_advertenties' && kosten !== null
-        ? Math.round((kosten / ADS_BUDGET) * 1000) / 10 : null,
+      budget_pct: getal(d.budget_pct) ?? (d.periode === 'maand_tot_datum' && d.budget_scope === 'totaal_advertenties' && kosten !== null
+        ? Math.round((kosten / ADS_BUDGET) * 1000) / 10 : null),
     };
   };
   uit.google_ads = ads(m?.google_ads);
@@ -184,7 +191,7 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
     kennisbank: {
       gepubliceerd: getal(kb.gepubliceerd) ?? 0,
       nieuw_maand: getal(kb.nieuw_maand) ?? 0,
-      laatste: [], // Titels kunnen persoonsnamen bevatten; alleen aantallen zijn publiek.
+      laatste: (Array.isArray(kb.laatste) ? kb.laatste : []).slice(0, 3).map((t: unknown) => schoonTekst(t)).filter(Boolean),
     },
     marketing: schoonMarketing(r?.marketing),
   };

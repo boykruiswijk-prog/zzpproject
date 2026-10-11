@@ -248,3 +248,6 @@
 @keyframes scherm-burst { from { opacity: 1; transform: rotate(var(--hoek)) translateX(0); } to { opacity: 0; transform: rotate(var(--hoek)) translateX(var(--afstand)); } }
 .scherm-demo { position: absolute; z-index: 110; bottom: 0.8vh; right: 1vw; color: hsl(var(--s-dim)); font-size: 1.4vh; }
 @media (prefers-reduced-motion: reduce) { .scherm *, .scherm *::before, .scherm *::after { animation: none !important; transition: none !important; } }
+.breaking-pop { display: inline-block; animation: breaking-pop 0.9s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes breaking-pop { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .breaking-pop { animation: none; } }
