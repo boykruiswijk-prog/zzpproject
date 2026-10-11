@@ -5280,6 +5280,7 @@ export type Database = {
         }[]
       }
       scherm_data: { Args: never; Returns: Json }
+      scherm_stromen: { Args: never; Returns: Json }
       service_aanvraag_koppelen: {
         Args: { _aanvraag_id: string; _onderneming_id: string }
         Returns: Json
