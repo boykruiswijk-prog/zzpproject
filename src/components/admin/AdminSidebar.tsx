@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useAdminTakenCount } from "@/hooks/useAdminTaken";
 import { useMenuTellers } from "@/hooks/useMenuTellers";
-import { Activity, AlertTriangle, BookOpen, Building2, ChevronDown, ConciergeBell, UserMinus, ChevronLeft, CircleDollarSign, FileText, Hash, KeyRound, LayoutDashboard, LogOut, Menu, MessageCircle, Plug, SearchX, Settings, Share2, ShieldCheck, UserCog, UserX, Users } from "lucide-react";
+import { Activity, AlertTriangle, BookOpen, Building2, ChevronDown, ConciergeBell, UserMinus, ChevronLeft, CircleDollarSign, FileText, Hash, KeyRound, LayoutDashboard, LogOut, Menu, MessageCircle, Monitor, Plug, SearchX, Settings, Share2, ShieldCheck, UserCog, UserX, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
@@ -40,7 +40,7 @@ const groups: NavGroup[] = [
     { to: "/admin/chatgesprekken", icon: MessageCircle, label: "Chatgesprekken", teller: "chat", roles: ["supervisor", "verzekering", "marketing"] },
   ]},
   { label: "Instellingen", icon: Settings, roles: ["admin", "supervisor"], items: [
-    { to: "/admin/schermen", icon: Activity, label: "Schermen", roles: ["admin", "supervisor"] },
+    { to: "/admin/schermen", icon: Monitor, label: "Live-scherm", roles: ["admin", "supervisor"] },
     { to: "/admin/team", icon: UserCog, label: "Team & rechten", roles: ["admin"] },
     { to: "/admin/integraties", icon: Plug, label: "Integraties & Exact", roles: ["admin"] },
     { to: "/admin/interne-meldingen", icon: MessageCircle, label: "Interne meldingen", roles: ["admin"] },

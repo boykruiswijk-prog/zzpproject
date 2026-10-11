@@ -56,7 +56,10 @@ export default function Schermen() {
   return (
     <AdminLayout>
       <div className="mx-auto max-w-4xl space-y-6 p-6">
-        <h1 className="text-2xl font-semibold">Schermen</h1>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h1 className="text-2xl font-semibold">Live-scherm</h1>
+          <Button asChild variant="outline"><a href="/scherm?demo=1" target="_blank" rel="noopener noreferrer">Scherm openen in demo</a></Button>
+        </div>
         <Card>
           <CardHeader><CardTitle>Nieuw scherm koppelen</CardTitle></CardHeader>
           <CardContent>
