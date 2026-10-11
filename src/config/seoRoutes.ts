@@ -517,5 +517,6 @@ export const PRERENDER_EXCLUDE_PREFIXES = [
   "/mijn-zp",
   "/verificatie",
   "/screenshot-helper",
+  "/scherm",
   "/offerte/bedankt",
 ];
