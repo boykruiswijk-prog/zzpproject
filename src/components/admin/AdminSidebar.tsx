@@ -39,7 +39,8 @@ const groups: NavGroup[] = [
     { to: "/admin/social-media", icon: Share2, label: "Social media", roles: ["supervisor", "marketing"] },
     { to: "/admin/chatgesprekken", icon: MessageCircle, label: "Chatgesprekken", teller: "chat", roles: ["supervisor", "verzekering", "marketing"] },
   ]},
-  { label: "Instellingen", icon: Settings, roles: ["admin"], items: [
+  { label: "Instellingen", icon: Settings, roles: ["admin", "supervisor"], items: [
+    { to: "/admin/schermen", icon: Activity, label: "Schermen", roles: ["admin", "supervisor"] },
     { to: "/admin/team", icon: UserCog, label: "Team & rechten", roles: ["admin"] },
     { to: "/admin/integraties", icon: Plug, label: "Integraties & Exact", roles: ["admin"] },
     { to: "/admin/interne-meldingen", icon: MessageCircle, label: "Interne meldingen", roles: ["admin"] },
