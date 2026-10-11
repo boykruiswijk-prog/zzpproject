@@ -140,7 +140,7 @@ function Werkplekken({ stations, pulsen }: Pick<Props, "stations" | "pulsen">) {
               <boxGeometry args={[1.5, 0.85, 0.08]} />
               <meshStandardMaterial color="#05070b" emissive={SCHERM_KLEUR.dim} emissiveIntensity={0.3} />
             </mesh>
-            <Html position={[p.x, 2.7, p.z]} center zIndexRange={[10, 0]} style={{ pointerEvents: "none" }}>
+            <Html position={[p.x, i % 2 ? 3.5 : 2.6, p.z]} center zIndexRange={[10, 0]} style={{ pointerEvents: "none" }}>
               <div className={`scherm-label ${n > 0 ? "" : "scherm-label-dim"}`}>
                 <span>{STATION_LABELS[id]}</span>
                 <b>{n}</b>

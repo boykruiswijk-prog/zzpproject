@@ -102,7 +102,7 @@ function PaneelDoel({ d }: { d: SchermPayload }) {
         </div>
       </div>
       <div className="mt-auto">
-        <div className="flex justify-between"><Label>Aanvragen per dag</Label><Label>vandaag {g.vandaag}, deze week {g.deze_week}, nog {g.resterende_dagen} dagen</Label></div>
+        <div className="flex justify-between whitespace-nowrap"><Label>Per dag</Label><Label>vandaag {g.vandaag} | week {g.deze_week} | nog {g.resterende_dagen} dagen</Label></div>
         <Sparkline waarden={g.per_dag.map((x) => x.n)} />
       </div>
     </div>
@@ -229,6 +229,13 @@ export default function Scherm() {
   const timer = useRef<number>();
 
   useWakeLock();
+  useEffect(() => {
+    // index.html heeft een vaste robots-tag; op dit scherm altijd noindex
+    const m = document.querySelector('meta[name="robots"]');
+    const oud = m?.getAttribute("content");
+    m?.setAttribute("content", "noindex, nofollow");
+    return () => { if (oud) m?.setAttribute("content", oud); };
+  }, []);
 
   const laad = useCallback(async () => {
     try {
@@ -303,7 +310,7 @@ export default function Scherm() {
           </div>
           <div className="ml-auto text-right">
             <div className="text-[4.4vh] font-bold leading-none tabular-nums">{tijd.klok}</div>
-            <div className="text-[2.2vh] capitalize text-[hsl(var(--s-dim))]">{tijd.datum}</div>
+            <div className="text-[2.2vh] text-[hsl(var(--s-dim))]">{tijd.datum.charAt(0).toUpperCase() + tijd.datum.slice(1)}</div>
           </div>
         </header>
 
