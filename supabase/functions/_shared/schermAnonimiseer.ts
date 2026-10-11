@@ -95,6 +95,13 @@ const VEILIGE_TEKST: Record<string, string> = {
   ads: 'Advertentieresultaten worden gecontroleerd', kwaliteit: 'Platform verbeterd door het team',
   assistent: 'Zeker-assistent beantwoordt een vraag', mail: 'Bevestigingsmail verwerkt', service: 'Serviceverzoek binnen, wordt opgepakt',
 };
+/** Echte machine_activiteit.tekst; alleen als de privacyfilter iets weghaalt (of tekst ontbreekt) een neutrale tekst. */
+export function echteTekst(t: unknown, station: string): string {
+  const origineel = (typeof t === 'string' ? t : '').replace(/[\u2013\u2014]/g, '-').replace(/\s{2,}/g, ' ').trim();
+  const schoon = schoonTekst(origineel, 1000);
+  if (!origineel || schoon !== origineel) return VEILIGE_TEKST[station] ?? VEILIGE_TEKST.kwaliteit;
+  return origineel.slice(0, 90);
+}
 export function schermActiviteit(a: Ruw) {
   const station = (STATIONS as readonly string[]).includes(a.station) ? a.station : 'kwaliteit';
   const echteAanvraag = a.actie === 'lead_verzekering_aanvraag';
@@ -102,7 +109,7 @@ export function schermActiviteit(a: Ruw) {
   return {
     id: String(a.id ?? ''), station,
     actie: ['lead_verzekering_aanvraag','lead_actief','kvk_check','planner_run','exact_sync','wijziging','mail','cron','certificaat','chat','serviceverzoek','bav_aanmelding','artikel'].includes(a.actie) ? String(a.actie) : 'overig',
-    tekst: echteAanvraag ? `Nieuwe aanvraag binnen, ${groep.beroepsgroep} uit ${groep.provincie}` : VEILIGE_TEKST[station],
+    tekst: echteTekst(a.tekst, station),
     status: a.status === 'bezig' || a.status === 'fout' ? a.status as 'bezig' | 'fout' : 'klaar' as const,
     tijd: Number.isFinite(Date.parse(a.tijd)) ? new Date(a.tijd).toISOString() : '',
     echte_aanvraag: echteAanvraag,

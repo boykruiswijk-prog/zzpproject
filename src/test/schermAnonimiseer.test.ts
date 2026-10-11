@@ -39,16 +39,23 @@ describe("scherm-data anonimisering", () => {
   it("schoonTekst kort in tot 90 tekens", () => {
     expect(schoonTekst("a".repeat(200)).length).toBe(90);
   });
-  it('leaves no free-form names in activity, titles, metadata or processes', () => {
+  it('toont de echte activiteitstekst, valt alleen terug als de filter iets weghaalt', () => {
     const p = bouwSchermPayload({
-      activiteit: [{ id: 'event', station: 'intake', actie: 'lead_verzekering_aanvraag', tekst: 'Nieuwe aanvraag van Klant Geheim uit Amsterdam', tijd: '2026-10-11T09:00:00Z' }],
+      activiteit: [
+        { id: 'a', station: 'assistent', tekst: 'Oude assistentgesprekken opgeschoond', tijd: '2026-10-11T05:17:00Z' },
+        { id: 'b', station: 'mail', tekst: 'Reviewverzoeken klaargezet', tijd: '2026-10-11T09:15:00Z' },
+        { id: 'c', station: 'kwaliteit', tekst: 'Kwaliteitsagent heeft de site en het platform gecontroleerd', tijd: 'x' },
+        { id: 'd', station: 'service', tekst: 'Verzoek van piet@x.nl', tijd: 'x' },
+      ],
       kennisbank: { laatste: ['Klant Geheim'] },
       processen: [{ station: 'mail', actie: 'Klant Geheim', n: 2 }],
       tijdlijn: [{ station: 'mail', minuut: 300, n: 2, naam: 'Klant Geheim' }, { station: 'intake', minuut: 1600, n: 1 }],
     });
-    expect(JSON.stringify(p)).not.toMatch(/Geheim|Amsterdam/);
-    expect(p.activiteit[0].beroepsgroep).toBe('Zelfstandig professional');
-    expect(p.activiteit[0].provincie).toBe('Nederland');
+    expect(p.activiteit.map(a => a.tekst)).toEqual([
+      'Oude assistentgesprekken opgeschoond', 'Reviewverzoeken klaargezet',
+      'Kwaliteitsagent heeft de site en het platform gecontroleerd', 'Serviceverzoek binnen, wordt opgepakt',
+    ]);
+    expect(JSON.stringify(p)).not.toMatch(/Geheim|piet@/);
     expect(p.tijdlijn).toHaveLength(1);
   });
   it('uses only real BAV lead insertions for breaking moments', () => {
