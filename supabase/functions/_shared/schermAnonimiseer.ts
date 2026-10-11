@@ -129,7 +129,7 @@ export function schermActiviteit(a: Ruw) {
 export function schoonAiTeam(snap: Snap): { naam: string; taak: string; resultaat: string | null; laatste_run: string | null; status: 'klaar' | 'fout' | 'gepland' }[] {
   const agents = (snap?.data as Ruw | undefined)?.agents;
   if (!Array.isArray(agents)) return [];
-  return agents.slice(0, 10).filter((a: Ruw) => a && typeof a === 'object').map((a: Ruw) => {
+  return agents.slice(0, 12).filter((a: Ruw) => a && typeof a === 'object').map((a: Ruw) => {
     const resultaat = schoonTekst(a.resultaat, 70);
     return {
       naam: schoonTekst(a.naam, 70),
@@ -139,6 +139,25 @@ export function schoonAiTeam(snap: Snap): { naam: string; taak: string; resultaa
       status: a.status === 'fout' || a.status === 'gepland' ? a.status : 'klaar' as const,
     };
   }).filter(a => a.naam);
+}
+
+type WorkerStatus = 'klaar' | 'fout' | 'gepland';
+export type Worker = { naam: string; ritme: string | null; laatste: string | null; status: WorkerStatus; vandaag: number | null; week: number | null };
+/** Witte lijst voor workers uit scherm_data: alleen naam, ritme, laatste tijd, status en tellingen. */
+export function schoonWorkers(w: Ruw | null | undefined): { gepland: Worker[]; op_afroep: Worker[] } | null {
+  if (!w || typeof w !== 'object') return null;
+  const lijst = (x: unknown): Worker[] => (Array.isArray(x) ? x : []).slice(0, 20).filter((a: Ruw) => a && typeof a === 'object').map((a: Ruw) => {
+    const ritme = schoonTekst(a.ritme, 30);
+    return {
+      naam: schoonTekst(a.naam, 40),
+      ritme: ritme || null,
+      laatste: typeof a.laatste === 'string' && Number.isFinite(Date.parse(a.laatste)) ? new Date(a.laatste).toISOString() : null,
+      status: (a.status === 'fout' || a.status === 'gepland' ? a.status : 'klaar') as WorkerStatus,
+      vandaag: getal(a.vandaag), week: getal(a.week),
+    };
+  }).filter(a => a.naam);
+  const uit = { gepland: lijst(w.gepland), op_afroep: lijst(w.op_afroep) };
+  return uit.gepland.length || uit.op_afroep.length ? uit : null;
 }
 
 /** Bouwt de publieke payload uit de geaggregeerde RPC-uitvoer; alleen witte-lijstvelden. */
@@ -212,6 +231,7 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
       content_verbeterd: getal(kb.content_verbeterd),
     },
     ai_team: schoonAiTeam(r?.marketing?.ai_team),
+    workers: schoonWorkers(r?.workers),
     marketing: schoonMarketing(r?.marketing),
   };
 }

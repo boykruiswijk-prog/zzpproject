@@ -335,7 +335,53 @@ function PaneelAiTeam({ d }: { d: SchermPayload }) {
   );
 }
 
-const PANELEN = [PaneelDoel, PaneelGroei, PaneelService, PaneelZichtbaarheid, PaneelAiTeam, PaneelVandaag];
+const workerKleur = (s: string) => s === 'fout' ? 'var(--s-rood)' : s === 'gepland' ? 'var(--s-dim)' : 'var(--s-groen)';
+const Bolletje = ({ status }: { status: string }) => <span className="h-[1.4vh] w-[1.4vh] shrink-0 rounded-full" style={{ background: `hsl(${workerKleur(status)})`, boxShadow: `0 0 1vh hsl(${workerKleur(status)})` }} />;
+
+function PaneelWorkers({ d }: { d: SchermPayload }) {
+  const w = d.workers;
+  if (!w) return <div className="flex h-full flex-col gap-[2vh]"><Kop>Alle workers</Kop><Gemeten /></div>;
+  const aantal = w.gepland.length + w.op_afroep.length;
+  return (
+    <div className="flex h-full flex-col gap-[1.6vh] overflow-hidden">
+      <Kop>Alle workers</Kop>
+      <Label>{aantal} workers draaien automatisch</Label>
+      <div className="grid min-h-0 flex-1 grid-cols-2 gap-[1.4vw]">
+        <div className="flex min-w-0 flex-col gap-[0.8vh]">
+          <div className="text-[2.4vh] font-semibold text-[hsl(var(--s-tekst))]">Gepland</div>
+          {w.gepland.length === 0 ? <Gemeten /> : w.gepland.map((a, i) => {
+            const t = runTijd(a.laatste, d.gegenereerd_op);
+            return (
+              <div key={`${a.naam}-${i}`} className="flex min-w-0 items-center gap-[0.5vw] text-[1.8vh] leading-tight">
+                <Bolletje status={a.status} />
+                <div className="min-w-0 flex-1">
+                  <div className="truncate font-bold text-[hsl(var(--s-tekst))]">{a.naam}</div>
+                  {a.ritme && <div className="truncate text-[1.5vh] text-[hsl(var(--s-dim))]">{a.ritme}</div>}
+                </div>
+                {t && <span className="shrink-0 tabular-nums text-[hsl(var(--s-dim))]">{t}</span>}
+              </div>
+            );
+          })}
+        </div>
+        <div className="flex min-w-0 flex-col gap-[0.8vh]">
+          <div className="text-[2.4vh] font-semibold text-[hsl(var(--s-tekst))]">Op afroep</div>
+          {w.op_afroep.length === 0 ? <Gemeten /> : w.op_afroep.map((a, i) => (
+            <div key={`${a.naam}-${i}`} className="flex min-w-0 items-center gap-[0.5vw] text-[1.8vh] leading-tight">
+              <Bolletje status={a.status} />
+              <div className="min-w-0 flex-1 truncate font-bold text-[hsl(var(--s-tekst))]">{a.naam}</div>
+              <div className="shrink-0 text-right tabular-nums">
+                <div className="text-[hsl(var(--s-tekst))]">{a.vandaag === null ? 'wordt gemeten' : `${nf.format(a.vandaag)} vandaag`}</div>
+                {a.week !== null && <div className="text-[1.5vh] text-[hsl(var(--s-dim))]">{nf.format(a.week)} deze week</div>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const PANELEN = [PaneelDoel, PaneelGroei, PaneelService, PaneelZichtbaarheid, PaneelAiTeam, PaneelWorkers, PaneelVandaag];
 
 function useWakeLock() {
   useEffect(() => {
