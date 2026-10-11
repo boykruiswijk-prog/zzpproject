@@ -1,5 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { Navigate, useParams } from "react-router-dom";
 import logo from "@/assets/logo-zp.webp";
 import type { SchermPayload } from "../../supabase/functions/_shared/schermAnonimiseer";
 import { STATION_LABELS, STATION_IDS, stationToken, type Puls } from "@/components/scherm/schermModel";
@@ -29,6 +30,56 @@ function Logo({ groot = false }: { groot?: boolean }) {
   return (
     <div className={`flex items-center justify-center rounded-[0.6vh] bg-[hsl(var(--s-tekst))] ${groot ? "p-[2vh]" : "px-[1vh] py-[0.5vh]"}`}>
       <img src={logo} alt="ZP Zaken" className={groot ? "h-[14vh] w-auto" : "h-[4.5vh] w-auto"} />
+    </div>
+  );
+}
+
+const TV_SLEUTEL = "zp_tv_code";
+const CODE_TEKENS = /[^ABCDEFGHJKMNPQRSTUVWXYZ23456789]/g;
+const schoonCode = (c: string) => c.toUpperCase().replace(CODE_TEKENS, "").slice(0, 6);
+function leesTvCode(): string { try { return schoonCode(window.localStorage.getItem(TV_SLEUTEL) ?? ""); } catch { return ""; } }
+function zetTvCode(c: string) { try { if (c) window.localStorage.setItem(TV_SLEUTEL, c); else window.localStorage.removeItem(TV_SLEUTEL); } catch { /* geen opslag */ } }
+const schermHeaders = (token: string, code: string): Record<string, string> => ({
+  apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+  ...(token ? { "x-scherm-token": token } : { "x-scherm-code": code }),
+});
+
+/** /tv/<CODE>: code bewaren en doorsturen naar /tv, zodat de code niet in de adresbalk blijft. */
+export function TvCode() {
+  const { code = "" } = useParams();
+  const c = schoonCode(code);
+  if (c.length === 6) zetTvCode(c);
+  return <Navigate to="/tv" replace />;
+}
+
+function Koppelscherm({ onGekoppeld }: { onGekoppeld: (c: string) => void }) {
+  const [waarde, setWaarde] = useState("");
+  const [fout, setFout] = useState(false);
+  const [bezig, setBezig] = useState(false);
+  const ref = useRef<HTMLInputElement>(null);
+  useEffect(() => { ref.current?.focus(); }, []);
+  const verstuur = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (waarde.length !== 6 || bezig) { setFout(waarde.length > 0); return; }
+    setBezig(true);
+    try {
+      const r = await fetch(URL_DATA, { headers: schermHeaders("", waarde), cache: "no-store" });
+      if (r.ok) { zetTvCode(waarde); onGekoppeld(waarde); return; }
+      setFout(true); setWaarde("");
+    } catch { setFout(true); }
+    finally { setBezig(false); ref.current?.focus(); }
+  };
+  return (
+    <div className="scherm fixed inset-0 flex flex-col items-center justify-center gap-[5vh] overflow-hidden bg-[hsl(var(--s-bg))] text-[hsl(var(--s-tekst))]">
+      <Helmet><title>ZP Zaken Live</title><meta name="robots" content="noindex, nofollow" /></Helmet>
+      <Logo groot />
+      <form onSubmit={verstuur} className="flex flex-col items-center gap-[3vh]">
+        <label htmlFor="tv-code" className="text-[4.5vh] font-semibold">Voer de schermcode in</label>
+        <input id="tv-code" ref={ref} value={waarde} maxLength={6} autoComplete="off" autoCapitalize="characters" spellCheck={false}
+          onChange={(e) => { setWaarde(schoonCode(e.target.value)); setFout(false); }}
+          className="w-[52vh] rounded-[1.5vh] border-[0.5vh] border-[hsl(var(--s-lijn))] bg-transparent py-[2vh] text-center font-mono text-[9vh] uppercase tracking-[0.4em] outline-none focus:border-[hsl(var(--s-rood))]" />
+        <p role="alert" className="h-[4vh] text-[3.5vh] text-[hsl(var(--s-rood))]">{fout ? "Code onjuist" : ""}</p>
+      </form>
     </div>
   );
 }
@@ -237,8 +288,10 @@ function useWakeLock() {
   }, []);
 }
 
-export default function Scherm() {
+export default function Scherm({ tv = false }: { tv?: boolean }) {
   const token = useMemo(() => new URLSearchParams(window.location.search).get("token") ?? "", []);
+  const [tvCode, setTvCode] = useState(() => (tv && !token ? leesTvCode() : ""));
+  const actief = Boolean(token || tvCode);
   const demo = useMemo(() => new URLSearchParams(window.location.search).get('demo') === '1', []);
   const [data, setData] = useState<SchermPayload | null>(null);
   const [geweigerd, setGeweigerd] = useState(false);
@@ -268,8 +321,8 @@ export default function Scherm() {
 
   const laad = useCallback(async () => {
     try {
-      const r = await fetch(URL_DATA, { headers: { "x-scherm-token": token, apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY }, cache: "no-store" });
-      if (r.status === 401) { setGeweigerd(true); return; }
+      const r = await fetch(URL_DATA, { headers: schermHeaders(token, tvCode), cache: "no-store" });
+      if (r.status === 401) { if (!token && tvCode) { zetTvCode(""); setTvCode(""); } else setGeweigerd(true); return; }
       if (!r.ok) throw new Error(String(r.status));
       const next: SchermPayload = await r.json();
       const nieuwe = seen.current ? next.activiteit.filter(a => !seen.current?.has(a.id)) : [];
@@ -293,13 +346,13 @@ export default function Scherm() {
       if (fouten.current >= 6) { window.location.reload(); return; }
       timer.current = window.setTimeout(laad, Math.min(15_000 * 2 ** fouten.current, 300_000));
     }
-  }, [token]);
+  }, [token, tvCode]);
 
   useEffect(() => {
-    if (!token) return;
+    if (!actief) return;
     laad();
     return () => { window.clearTimeout(timer.current); window.clearTimeout(breakingTimer.current); };
-  }, [token, laad]);
+  }, [actief, laad]);
 
   useEffect(() => {
     const t = window.setInterval(() => {
@@ -339,7 +392,9 @@ export default function Scherm() {
     </Helmet>
   );
 
-  if (!token || geweigerd) {
+  if (tv && !token && !tvCode) return <Koppelscherm onGekoppeld={setTvCode} />;
+
+  if (!actief || geweigerd) {
     return (
       <div className="scherm flex h-screen w-screen items-center justify-center overflow-hidden bg-[hsl(var(--s-bg))]">
         {meta}
