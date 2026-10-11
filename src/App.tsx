@@ -243,7 +243,7 @@ export const AppRoutes = () => (
             <Route path="/admin/service-aanvragen" element={<AdminServiceAanvragen />} />
             <Route path="/admin/opzeggingen" element={<AdminServiceAanvragen modus="opzeggingen" />} />
             <Route path="/admin/portaltoegang" element={<AdminServiceAanvragen modus="portaltoegang" />} />
-            <Route path="/admin/schermen" element={<RoleGuard allow={["admin"]}><AdminSchermen /></RoleGuard>} />
+            <Route path="/admin/schermen" element={<RoleGuard allow={["supervisor"]}><AdminSchermen /></RoleGuard>} />
             <Route path="/admin/creditnotas-goedkeuren" element={<AdminCreditnotasGoedkeuren />} />
             <Route path="/admin/bav-nummer-nakijken" element={<AdminBavNummerNakijken />} />
             <Route path="/admin/service-aanvragen/:id" element={<AdminServiceAanvraagDetail />} />
