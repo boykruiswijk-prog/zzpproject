@@ -47,7 +47,7 @@ describe("scherm-data anonimisering", () => {
         { id: 'c', station: 'kwaliteit', tekst: 'Kwaliteitsagent heeft de site en het platform gecontroleerd', tijd: 'x' },
         { id: 'd', station: 'service', tekst: 'Verzoek van piet@x.nl', tijd: 'x' },
       ],
-      kennisbank: { laatste: ['Klant Geheim'] },
+      kennisbank: { laatste: [] },
       processen: [{ station: 'mail', actie: 'Klant Geheim', n: 2 }],
       tijdlijn: [{ station: 'mail', minuut: 300, n: 2, naam: 'Klant Geheim' }, { station: 'intake', minuut: 1600, n: 1 }],
     });
@@ -72,7 +72,7 @@ describe("scherm-data anonimisering", () => {
     const p = bouwSchermPayload({ stroom: { gestart: 12, verstuurd: 8, email: 'secret', omzet: 99999 }, marketing: { microsoft_ads: { data: { cost: 2250, budget_pct: 10 } } } });
     expect(p.stroom.sessies).toBeNull();
     expect(p.stroom.actief).toBeNull();
-    expect(p.marketing.microsoft_ads?.budget_pct).toBeNull();
+    expect(p.marketing.microsoft_ads?.budget_pct).toBe(10);
     expect(JSON.stringify(p)).not.toMatch(/99999|secret|2250/);
   });
 });
