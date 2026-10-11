@@ -225,6 +225,8 @@ const PANELEN = [PaneelDoel, PaneelGroei, PaneelService, PaneelZichtbaarheid, Pa
 
 function useWakeLock() {
   useEffect(() => {
+    const oudOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     // deno-lint-ignore no-explicit-any
     let lock: any = null;
     const vraag = async () => {
@@ -261,7 +263,7 @@ export default function Scherm() {
     const m = document.querySelector('meta[name="robots"]');
     const oud = m?.getAttribute("content");
     m?.setAttribute("content", "noindex, nofollow");
-    return () => { if (oud) m?.setAttribute("content", oud); };
+    return () => { document.body.style.overflow = oudOverflow; if (oud) m?.setAttribute("content", oud); };
   }, []);
 
   const laad = useCallback(async () => {
@@ -275,7 +277,7 @@ export default function Scherm() {
       if (nieuwe.length) {
         const latest = [...nieuwe].sort((a, b) => Date.parse(b.tijd) - Date.parse(a.tijd))[0];
         setFocus(latest);
-        const intake = nieuwe.find(a => a.echte_aanvraag && Date.now() - Date.parse(a.tijd) < 120_000);
+        const intake = [...nieuwe].sort((a, b) => Date.parse(b.tijd) - Date.parse(a.tijd)).find(a => a.echte_aanvraag && Date.now() - Date.parse(a.tijd) < 120_000);
         if (intake) {
           setBreaking({ event: intake, total: next.doel.totaal });
           clearTimeout(breakingTimer.current);
@@ -351,7 +353,7 @@ export default function Scherm() {
   const Huidig = PANELEN[paneel];
 
   return (
-    <div className="scherm h-screen w-screen overflow-hidden bg-[hsl(var(--s-bg))] text-[hsl(var(--s-tekst))]">
+    <div className="scherm fixed inset-0 h-screen w-screen overflow-hidden bg-[hsl(var(--s-bg))] text-[hsl(var(--s-tekst))]">
       {meta}
       <div className="flex h-full w-full flex-col" style={{ transform: `translate(${verschuiving.x}px, ${verschuiving.y}px)` }}>
         <header className="flex h-[9vh] shrink-0 items-center gap-[1.5vw] border-b border-[hsl(var(--s-lijn))] px-[2vw]">
@@ -371,7 +373,7 @@ export default function Scherm() {
 
         <main className="flex min-h-0 flex-1">
           <section className="flex w-[62vw] min-w-0 flex-col border-r border-[hsl(var(--s-lijn))]">
-            <div className="relative min-h-0 flex-1">
+            <div className="relative min-h-0 flex-1 overflow-hidden">
               <div className="scherm-scene-kop"><span>{scene === 0 ? 'Het agentkantoor' : 'De stroom'}</span><small>{scene === 0 ? 'Afdelingen verbonden met het brein' : 'De klantreis en processtromen'}</small></div>
               {data && (
                 <Suspense fallback={null}>

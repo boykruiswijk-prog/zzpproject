@@ -101,6 +101,7 @@ export function schermActiviteit(a: Ruw) {
   const groep = intakeGroep(a.tekst);
   return {
     id: String(a.id ?? ''), station,
+    actie: ['lead_verzekering_aanvraag','lead_actief','kvk_check','planner_run','exact_sync','wijziging','mail','cron','certificaat','chat','serviceverzoek','bav_aanmelding','artikel'].includes(a.actie) ? String(a.actie) : 'overig',
     tekst: echteAanvraag ? `Nieuwe aanvraag binnen, ${groep.beroepsgroep} uit ${groep.provincie}` : VEILIGE_TEKST[station],
     status: a.status === 'bezig' || a.status === 'fout' ? a.status as 'bezig' | 'fout' : 'klaar' as const,
     tijd: Number.isFinite(Date.parse(a.tijd)) ? new Date(a.tijd).toISOString() : '',
