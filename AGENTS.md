@@ -22,7 +22,7 @@
 - Concurrentievergelijking BAV staat in src/data/bavVergelijking.ts (per aanbieder bron-URL + gecontroleerd_op); de ZP Zaken-rij komt uit bavPakketten. Waarom: per kwartaal bij te werken zonder pagina-code te wijzigen.
 - docs/cloudflare-bulk-redirects.csv wordt bij elke build afgeleid van public/_redirects (cloudflareBulkCsv in vite.config.ts). Waarom: één bron voor redirects.
 
-- Reviewverzoeken aan nieuwe klanten lopen alleen via Edge Function review-verzoeken (cron, schakelaar integratie_config 'reviewverzoeken_actief', kandidaten via RPC review_kandidaten); klikken via review-klik, afmelden via review-afmelden alleen naar review_afmeldingen (nooit suppressed_emails, zodat transactionele mail doorgaat). Waarom: één filter dat testleads en bestaande klanten uitsluit.
+- Reviewverzoeken alleen via review-verzoeken (cron, schakelaar 'reviewverzoeken_actief', RPC review_kandidaten); afmelden alleen naar review_afmeldingen, nooit suppressed_emails. Waarom: één filter, transactionele mail blijft.
 - Beheer-UI-regels staan in src/components/admin/AGENTS.md, CRM-regels in src/components/admin/crm/AGENTS.md.
 - Article images: leased queue, wake token or MFA supervisor, max 2 AI attempts then category fallback; never a global pause (AI refusal only sets admin notice); crashed jobs resume as fallback. Preserve custom/old assets; build verifies images; keep ArticleImage guard. Why: every article gets an image within minutes.
 - Scripts never import React. Why: avoid prod/dev SSR crashes.
@@ -30,7 +30,7 @@
 
 
 - Elke wijziging die zichtbaar is op de website of in de admin krijgt bij het publiceren precies één rij in public.wijzigingsmeldingen, in gewone taal voor Ellen (geen technische termen of bestandsnamen); de trigger wijzigingsmelding_mailen en het vangnet (cron) mailen via Edge Function wijziging-mailen. Waarom: Ellen weet altijd wat er veranderd is.
-- /scherm krijgt data alleen via Edge Function scherm-data (SCHERM_TOKEN, RPC scherm_data, _shared/schermAnonimiseer.ts); machine_activiteit-triggers laten nooit de oorspronkelijke actie falen. Waarom: bezoekers zien het scherm.
+- /scherm en /tv: data alleen via scherm-data (SCHERM_TOKEN of apparaattoken, alleen sha-256 in scherm_apparaten; koppelen via scherm-koppel); machine_activiteit-triggers laten nooit de actie falen. Waarom: intrekbare toegang per tv.
 
 <!-- LOVABLE:BEGIN -->
 - Live scenes/effects are lazy; demo events stay in browser memory. Journey/timeline aggregates use service-only scherm_stromen via scherm-data. Why: site performance and visitor privacy.

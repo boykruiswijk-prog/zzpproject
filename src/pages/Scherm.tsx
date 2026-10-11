@@ -1,6 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import logo from "@/assets/logo-zp.webp";
 import type { SchermPayload } from "../../supabase/functions/_shared/schermAnonimiseer";
 import { STATION_LABELS, STATION_IDS, stationToken, type Puls } from "@/components/scherm/schermModel";
@@ -34,52 +34,71 @@ function Logo({ groot = false }: { groot?: boolean }) {
   );
 }
 
-const TV_SLEUTEL = "zp_tv_code";
-const CODE_TEKENS = /[^ABCDEFGHJKMNPQRSTUVWXYZ23456789]/g;
-const schoonCode = (c: string) => c.toUpperCase().replace(CODE_TEKENS, "").slice(0, 6);
-function leesTvCode(): string { try { return schoonCode(window.localStorage.getItem(TV_SLEUTEL) ?? ""); } catch { return ""; } }
-function zetTvCode(c: string) { try { if (c) window.localStorage.setItem(TV_SLEUTEL, c); else window.localStorage.removeItem(TV_SLEUTEL); } catch { /* geen opslag */ } }
-const schermHeaders = (token: string, code: string): Record<string, string> => ({
+const TV_SLEUTEL = "zp_tv_sleutel";
+const URL_KOPPEL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scherm-koppel`;
+function leesTvSleutel(): string { try { return window.localStorage.getItem(TV_SLEUTEL) ?? ""; } catch { return ""; } }
+function zetTvSleutel(s: string) { try { if (s) window.localStorage.setItem(TV_SLEUTEL, s); else window.localStorage.removeItem(TV_SLEUTEL); } catch { /* geen opslag */ } }
+const schermHeaders = (token: string, sleutel: string): Record<string, string> => ({
   apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-  ...(token ? { "x-scherm-token": token } : { "x-scherm-code": code }),
+  ...(token ? { "x-scherm-token": token } : { "x-scherm-apparaat": sleutel }),
+});
+const koppelPost = (body: unknown) => fetch(URL_KOPPEL, {
+  method: "POST", cache: "no-store",
+  headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY, "Content-Type": "application/json" },
+  body: JSON.stringify(body),
 });
 
-/** /tv/<CODE>: code bewaren en doorsturen naar /tv, zodat de code niet in de adresbalk blijft. */
+/** Oude directe links /tv/<CODE>: de vaste code bestaat niet meer, dus alleen doorsturen naar /tv. */
 export function TvCode() {
-  const { code = "" } = useParams();
-  const c = schoonCode(code);
-  if (c.length === 6) zetTvCode(c);
   return <Navigate to="/tv" replace />;
 }
 
-function Koppelscherm({ onGekoppeld }: { onGekoppeld: (c: string) => void }) {
-  const [waarde, setWaarde] = useState("");
+/** Koppelscherm: vraagt een koppelverzoek aan; het geheim blijft alleen in het geheugen. */
+function Koppelscherm({ onGekoppeld }: { onGekoppeld: (s: string) => void }) {
+  const [verzoek, setVerzoek] = useState<{ id: string; koppelcode: string; geheim: string; verloopt_op: string } | null>(null);
   const [fout, setFout] = useState(false);
-  const [bezig, setBezig] = useState(false);
-  const ref = useRef<HTMLInputElement>(null);
-  useEffect(() => { ref.current?.focus(); }, []);
-  const verstuur = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-    if (waarde.length !== 6 || bezig) { setFout(waarde.length > 0); return; }
-    setBezig(true);
-    try {
-      const r = await fetch(URL_DATA, { headers: schermHeaders("", waarde), cache: "no-store" });
-      if (r.ok) { zetTvCode(waarde); onGekoppeld(waarde); return; }
-      setFout(true); setWaarde("");
-    } catch { setFout(true); }
-    finally { setBezig(false); ref.current?.focus(); }
-  };
+  useEffect(() => {
+    let stop = false;
+    let t: number | undefined;
+    let huidig: { id: string; geheim: string; verloopt: number } | null = null;
+    const aanvragen = async () => {
+      try {
+        const r = await koppelPost({ actie: "aanvragen" });
+        if (!r.ok) throw new Error(String(r.status));
+        const v = await r.json();
+        if (stop) return;
+        huidig = { id: v.id, geheim: v.geheim, verloopt: Date.parse(v.verloopt_op) };
+        setVerzoek(v); setFout(false);
+        t = window.setTimeout(poll, 5000);
+      } catch { if (!stop) { setFout(true); t = window.setTimeout(aanvragen, 60_000); } }
+    };
+    const poll = async () => {
+      if (stop || !huidig) return;
+      if (Date.now() >= huidig.verloopt) { aanvragen(); return; }
+      try {
+        const r = await koppelPost({ actie: "status", id: huidig.id, geheim: huidig.geheim });
+        const s = await r.json().catch(() => ({}));
+        if (stop) return;
+        if (s.status === "gekoppeld" && s.token) { zetTvSleutel(s.token); onGekoppeld(s.token); return; }
+        if (s.status === "verlopen" || s.status === "onbekend") { aanvragen(); return; }
+      } catch { /* volgende poging */ }
+      t = window.setTimeout(poll, 5000);
+    };
+    aanvragen();
+    return () => { stop = true; window.clearTimeout(t); };
+  }, [onGekoppeld]);
   return (
     <div className="scherm fixed inset-0 flex flex-col items-center justify-center gap-[5vh] overflow-hidden bg-[hsl(var(--s-bg))] text-[hsl(var(--s-tekst))]">
       <Helmet><title>ZP Zaken Live</title><meta name="robots" content="noindex, nofollow" /></Helmet>
       <Logo groot />
-      <form onSubmit={verstuur} className="flex flex-col items-center gap-[3vh]">
-        <label htmlFor="tv-code" className="text-[4.5vh] font-semibold">Voer de schermcode in</label>
-        <input id="tv-code" ref={ref} value={waarde} maxLength={6} autoComplete="off" autoCapitalize="characters" spellCheck={false}
-          onChange={(e) => { setWaarde(schoonCode(e.target.value)); setFout(false); }}
-          className="w-[52vh] rounded-[1.5vh] border-[0.5vh] border-[hsl(var(--s-lijn))] bg-transparent py-[2vh] text-center font-mono text-[9vh] uppercase tracking-[0.4em] outline-none focus:border-[hsl(var(--s-rood))]" />
-        <p role="alert" className="h-[4vh] text-[3.5vh] text-[hsl(var(--s-rood))]">{fout ? "Code onjuist" : ""}</p>
-      </form>
+      <h1 className="text-[6vh] font-semibold">Koppel dit scherm</h1>
+      <p data-testid="koppelcode" className="rounded-[1.5vh] border-[0.5vh] border-[hsl(var(--s-lijn))] px-[4vh] py-[2vh] font-mono text-[12vh] font-bold tracking-[0.3em]">
+        {verzoek?.koppelcode ?? "......"}
+      </p>
+      <p className="max-w-[80vw] text-center text-[3.5vh] text-[hsl(var(--s-tekst-zacht,var(--s-tekst)))]">
+        Ga naar zpzaken.nl/admin/schermen en voer deze code in
+      </p>
+      <p role="alert" className="h-[4vh] text-[3vh] text-[hsl(var(--s-rood))]">{fout ? "Verbinding mislukt, nieuwe poging volgt" : ""}</p>
     </div>
   );
 }
@@ -290,7 +309,7 @@ function useWakeLock() {
 
 export default function Scherm({ tv = false }: { tv?: boolean }) {
   const token = useMemo(() => new URLSearchParams(window.location.search).get("token") ?? "", []);
-  const [tvCode, setTvCode] = useState(() => (tv && !token ? leesTvCode() : ""));
+  const [tvCode, setTvCode] = useState(() => (tv && !token ? leesTvSleutel() : ""));
   const actief = Boolean(token || tvCode);
   const demo = useMemo(() => new URLSearchParams(window.location.search).get('demo') === '1', []);
   const [data, setData] = useState<SchermPayload | null>(null);
@@ -322,7 +341,7 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
   const laad = useCallback(async () => {
     try {
       const r = await fetch(URL_DATA, { headers: schermHeaders(token, tvCode), cache: "no-store" });
-      if (r.status === 401) { if (!token && tvCode) { zetTvCode(""); setTvCode(""); } else setGeweigerd(true); return; }
+      if (r.status === 401) { if (!token && tvCode) { zetTvSleutel(""); seen.current = null; setData(null); setTvCode(""); } else setGeweigerd(true); return; }
       if (!r.ok) throw new Error(String(r.status));
       const next: SchermPayload = await r.json();
       const nieuwe = seen.current ? next.activiteit.filter(a => !seen.current?.has(a.id)) : [];

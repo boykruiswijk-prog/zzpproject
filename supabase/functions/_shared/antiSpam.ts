@@ -102,7 +102,7 @@ export async function guardPublicSubmission(
       .from("form_rate_limit")
       .select("id", { count: "exact", head: true })
       .eq("ip", ip)
-      .not("kind", "in", "(concept,review-klik,review-afmelden,scherm-code)")
+      .not("kind", "in", "(concept,review-klik,review-afmelden,scherm-code,scherm-koppel)")
       .gte("created_at", sinceGlobal);
 
     if ((totalCount ?? 0) >= GLOBAL_LIMIT.max) {
