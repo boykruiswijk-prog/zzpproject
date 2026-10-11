@@ -4,7 +4,7 @@ import { bouwSchermPayload } from "../_shared/schermAnonimiseer.ts";
 import { clientIp } from "../_shared/antiSpam.ts";
 import { requireSupervisor } from "../_shared/teamAuth.ts";
 
-const corsHeaders = { ...basisCors, "Access-Control-Allow-Headers": `${basisCors["Access-Control-Allow-Headers"]}, x-scherm-token, x-scherm-code` };
+const corsHeaders = { ...basisCors, "Access-Control-Allow-Headers": `${basisCors["Access-Control-Allow-Headers"]}, x-scherm-token, x-scherm-code, x-scherm-apparaat, x-scherm-sessie` };
 let cache: { op: number; body: string } | null = null;
 
 function gelijk(a: string, b: string) {
