@@ -3414,6 +3414,81 @@ export type Database = {
         }
         Relationships: []
       }
+      machine_activiteit: {
+        Row: {
+          actie: string
+          bron: string | null
+          created_at: string
+          id: string
+          is_test: boolean
+          station: string
+          status: string
+          tekst: string
+        }
+        Insert: {
+          actie: string
+          bron?: string | null
+          created_at?: string
+          id?: string
+          is_test?: boolean
+          station: string
+          status?: string
+          tekst: string
+        }
+        Update: {
+          actie?: string
+          bron?: string | null
+          created_at?: string
+          id?: string
+          is_test?: boolean
+          station?: string
+          status?: string
+          tekst?: string
+        }
+        Relationships: []
+      }
+      machine_cron_stand: {
+        Row: {
+          bijgewerkt_op: string
+          id: number
+          laatste_runid: number
+        }
+        Insert: {
+          bijgewerkt_op?: string
+          id?: number
+          laatste_runid?: number
+        }
+        Update: {
+          bijgewerkt_op?: string
+          id?: number
+          laatste_runid?: number
+        }
+        Relationships: []
+      }
+      marketing_snapshot: {
+        Row: {
+          bron: string
+          created_at: string
+          dag: string
+          data: Json
+          id: string
+        }
+        Insert: {
+          bron: string
+          created_at?: string
+          dag: string
+          data?: Json
+          id?: string
+        }
+        Update: {
+          bron?: string
+          created_at?: string
+          dag?: string
+          data?: Json
+          id?: string
+        }
+        Relationships: []
+      }
       monthly_invoices_log: {
         Row: {
           bedrag: number
@@ -5084,6 +5159,33 @@ export type Database = {
         Args: { _pad: string; _referrer?: string; _user_agent?: string }
         Returns: undefined
       }
+      machine_beroep: {
+        Args: { _beroep: string; _sector: string }
+        Returns: string
+      }
+      machine_cron_naam: { Args: { _job: string }; Returns: string }
+      machine_cron_verwerken: { Args: never; Returns: number }
+      machine_lead_tekst: {
+        Args: {
+          _beroep: string
+          _postcode: string
+          _sector: string
+          _type: string
+        }
+        Returns: string
+      }
+      machine_log: {
+        Args: {
+          _actie: string
+          _bron: string
+          _is_test: boolean
+          _op?: string
+          _station: string
+          _status: string
+          _tekst: string
+        }
+        Returns: undefined
+      }
       mag_crm_beeindigen: { Args: { _uid: string }; Returns: boolean }
       menu_tellers: { Args: never; Returns: Json }
       mijn_acties_vandaag: { Args: { _toon_test?: boolean }; Returns: Json }
@@ -5149,6 +5251,7 @@ export type Database = {
         }
         Returns: Json
       }
+      provincie_uit_postcode: { Args: { _pc: string }; Returns: string }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {
@@ -5176,6 +5279,7 @@ export type Database = {
           voornaam: string
         }[]
       }
+      scherm_data: { Args: never; Returns: Json }
       service_aanvraag_koppelen: {
         Args: { _aanvraag_id: string; _onderneming_id: string }
         Returns: Json
