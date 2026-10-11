@@ -309,7 +309,7 @@ function useWakeLock() {
 
 export default function Scherm({ tv = false }: { tv?: boolean }) {
   const token = useMemo(() => new URLSearchParams(window.location.search).get("token") ?? "", []);
-  const [tvCode, setTvCode] = useState(() => (tv && !token ? leesTvCode() : ""));
+  const [tvCode, setTvCode] = useState(() => (tv && !token ? leesTvSleutel() : ""));
   const actief = Boolean(token || tvCode);
   const demo = useMemo(() => new URLSearchParams(window.location.search).get('demo') === '1', []);
   const [data, setData] = useState<SchermPayload | null>(null);
@@ -341,7 +341,7 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
   const laad = useCallback(async () => {
     try {
       const r = await fetch(URL_DATA, { headers: schermHeaders(token, tvCode), cache: "no-store" });
-      if (r.status === 401) { if (!token && tvCode) { zetTvCode(""); setTvCode(""); } else setGeweigerd(true); return; }
+      if (r.status === 401) { if (!token && tvCode) { zetTvSleutel(""); seen.current = null; setData(null); setTvCode(""); } else setGeweigerd(true); return; }
       if (!r.ok) throw new Error(String(r.status));
       const next: SchermPayload = await r.json();
       const nieuwe = seen.current ? next.activiteit.filter(a => !seen.current?.has(a.id)) : [];
