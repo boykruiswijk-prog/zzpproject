@@ -59,10 +59,12 @@ const NotFound = () => {
     if (!redirect) {
       console.error("404 Error: User attempted to access non-existent route:", location.pathname);
       // 404-monitoring: gemiste oude URL's verschijnen in Beheer > Niet-gevonden pagina's.
-      void supabase.rpc("log_not_found", {
+      supabase.rpc("log_not_found", {
         _pad: location.pathname,
         _referrer: typeof document !== "undefined" ? document.referrer || null : null,
         _user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+      }).then(({ error }) => {
+        if (error) console.warn("log_not_found", error.message);
       });
       if (typeof window !== "undefined" && typeof window.gtag === "function") {
         window.gtag("event", "page_not_found", {
