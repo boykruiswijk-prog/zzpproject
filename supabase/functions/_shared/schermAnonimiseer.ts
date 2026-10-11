@@ -78,6 +78,36 @@ export function schoonMarketing(m: Record<string, Snap> | null | undefined) {
 // deno-lint-ignore no-explicit-any
 type Ruw = Record<string, any>;
 
+const BEROEPEN = ['ICT', 'Consultant', 'Interim-manager', 'Finance', 'HR', 'Marketing', 'Coach', 'Zorg', 'Zelfstandig professional'];
+const PROVINCIES = ['Noord-Holland', 'Zuid-Holland', 'Utrecht', 'Flevoland', 'Gelderland', 'Zeeland', 'Noord-Brabant', 'Limburg', 'Overijssel', 'Drenthe', 'Friesland', 'Groningen'];
+export function intakeGroep(tekst: unknown) {
+  const t = typeof tekst === 'string' ? tekst.toLowerCase() : '';
+  const beroepsgroep = BEROEPEN.find(b => t.includes(b.toLowerCase())) ?? 'Zelfstandig professional';
+  const provincie = PROVINCIES.find(p => t.includes(p.toLowerCase())) ?? 'Nederland';
+  return { beroepsgroep, provincie };
+}
+const VEILIGE_TEKST: Record<string, string> = {
+  intake: 'Aanvraag binnen, wordt verwerkt', acceptatie: 'Aanvraag en KVK-gegevens gecontroleerd',
+  certificaten: 'Certificaat verwerkt voor opdrachtgever', facturatie: 'Factuurplanner aan het werk',
+  exact: 'Exact-koppeling wordt gecontroleerd', kennisbank: 'Kennisbank wordt bijgewerkt',
+  ads: 'Advertentieresultaten worden gecontroleerd', kwaliteit: 'Platform verbeterd door het team',
+  assistent: 'Zeker-assistent beantwoordt een vraag', mail: 'Bevestigingsmail verwerkt', service: 'Serviceverzoek binnen, wordt opgepakt',
+};
+export function schermActiviteit(a: Ruw) {
+  const station = (STATIONS as readonly string[]).includes(a.station) ? a.station : 'kwaliteit';
+  const echteAanvraag = a.actie === 'lead_verzekering_aanvraag';
+  const groep = intakeGroep(a.tekst);
+  return {
+    id: String(a.id ?? ''), station,
+    tekst: echteAanvraag ? `Nieuwe aanvraag binnen, ${groep.beroepsgroep} uit ${groep.provincie}` : VEILIGE_TEKST[station],
+    status: a.status === 'bezig' || a.status === 'fout' ? a.status as 'bezig' | 'fout' : 'klaar' as const,
+    tijd: Number.isFinite(Date.parse(a.tijd)) ? new Date(a.tijd).toISOString() : '',
+    echte_aanvraag: echteAanvraag,
+    beroepsgroep: echteAanvraag ? groep.beroepsgroep : null,
+    provincie: echteAanvraag ? groep.provincie : null,
+  };
+}
+
 /** Bouwt de publieke payload uit de geaggregeerde RPC-uitvoer; alleen witte-lijstvelden. */
 export function bouwSchermPayload(r: Ruw, nu = new Date()) {
   const status = (s: unknown) => (s === "bezig" || s === "fout" ? s : "klaar");
@@ -96,13 +126,16 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
   const gz = r?.gezondheid ?? {};
   return {
     gegenereerd_op: nu.toISOString(),
-    activiteit: (Array.isArray(r?.activiteit) ? r.activiteit : []).slice(0, 40).map((a: Ruw) => ({
-      id: String(a.id ?? ""),
-      station: (STATIONS as readonly string[]).includes(a.station) ? a.station : "kwaliteit",
-      tekst: schoonTekst(a.tekst),
-      status: status(a.status),
-      tijd: String(a.tijd ?? ""),
-    })),
+    activiteit: (Array.isArray(r?.activiteit) ? r.activiteit : []).filter((a: Ruw) => !a.is_test).slice(0, 40).map(schermActiviteit),
+    stroom: {
+      sinds: '2026-10-06',
+      sessies: getal(r?.stroom?.sessies),
+      gestart: getal(r?.stroom?.gestart), verstuurd: getal(r?.stroom?.verstuurd),
+      kvk: getal(r?.stroom?.kvk), actief: getal(r?.stroom?.actief),
+      certificaat: getal(r?.stroom?.certificaat), klant: getal(r?.stroom?.klant),
+    },
+    tijdlijn: (Array.isArray(r?.tijdlijn) ? r.tijdlijn : []).filter((a: Ruw) => !a.is_test && STATIONS.includes(a.station) && getal(a.minuut) !== null && a.minuut >= 0 && a.minuut < 1440).map((a: Ruw) => ({ station: String(a.station), minuut: Math.floor(a.minuut), n: Math.max(0, getal(a.n) ?? 0) })),
+    processen: (Array.isArray(r?.processen) ? r.processen : []).filter((a: Ruw) => !a.is_test && STATIONS.includes(a.station)).map((a: Ruw) => ({ station: String(a.station), actie: ['kvk_check','planner_run','exact_sync','wijziging','lead_verzekering_aanvraag','lead_actief','mail'].includes(a.actie) ? a.actie as string : 'overig', status: status(a.status), n: Math.max(0, getal(a.n) ?? 0) })),
     stations,
     gebeurtenissen_vandaag: getal(r?.gebeurtenissen_vandaag) ?? 0,
     doel: {
@@ -141,7 +174,7 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
     kennisbank: {
       gepubliceerd: getal(kb.gepubliceerd) ?? 0,
       nieuw_maand: getal(kb.nieuw_maand) ?? 0,
-      laatste: (Array.isArray(kb.laatste) ? kb.laatste : []).slice(0, 3).map((t: unknown) => schoonTekst(t, 80)),
+      laatste: [], // Titels kunnen persoonsnamen bevatten; alleen aantallen zijn publiek.
     },
     marketing: schoonMarketing(r?.marketing),
   };
