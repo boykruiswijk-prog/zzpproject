@@ -30,3 +30,4 @@
 
 
 - Elke wijziging die zichtbaar is op de website of in de admin krijgt bij het publiceren precies één rij in public.wijzigingsmeldingen, in gewone taal voor Ellen (geen technische termen of bestandsnamen); de trigger wijzigingsmelding_mailen en het vangnet (cron) mailen via Edge Function wijziging-mailen. Waarom: Ellen weet altijd wat er veranderd is.
+- /scherm krijgt data alleen via Edge Function scherm-data (SCHERM_TOKEN, RPC scherm_data, _shared/schermAnonimiseer.ts); machine_activiteit-triggers laten nooit de oorspronkelijke actie falen. Waarom: bezoekers zien het scherm.

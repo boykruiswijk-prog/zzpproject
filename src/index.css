@@ -153,3 +153,27 @@
     object-position: center 10% !important;
   }
 }
+
+/* ZP Zaken Live-muurscherm */
+.scherm {
+  --s-bg: 225 24% 6%;
+  --s-lijn: 222 16% 18%;
+  --s-tekst: 220 20% 95%;
+  --s-dim: 220 10% 58%;
+  --s-rood: 5 77% 54%;
+  --s-blauw: 205 90% 60%;
+  --s-groen: 150 65% 50%;
+  --s-oranje: 32 95% 55%;
+}
+.scherm-label { display: flex; align-items: center; gap: 0.6vh; white-space: nowrap; padding: 0.5vh 1vh; border-radius: 0.6vh; background: hsl(225 24% 6% / 0.85); border: 1px solid hsl(222 16% 22%); color: hsl(220 20% 95%); font-size: 2.2vh; transition: opacity 1s; }
+.scherm-label b { color: hsl(5 77% 60%); font-size: 2.6vh; }
+.scherm-label-dim { opacity: 0.45; }
+.scherm-brein { display: flex; flex-direction: column; align-items: center; color: hsl(220 20% 95%); text-shadow: 0 0 2vh hsl(5 77% 54%); white-space: nowrap; }
+.scherm-brein b { font-size: 6vh; line-height: 1; }
+.scherm-brein span { font-size: 2.2vh; color: hsl(220 10% 75%); }
+.scherm-paneel { animation: scherm-in 1.2s ease both; }
+@keyframes scherm-in { from { opacity: 0; transform: translateY(1.5vh); } to { opacity: 1; transform: none; } }
+.scherm-ticker { animation: scherm-ticker 90s linear infinite; width: max-content; }
+@keyframes scherm-ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.scherm-knipper { animation: scherm-knipper 1.6s ease-in-out infinite; }
+@keyframes scherm-knipper { 50% { opacity: 0.25; } }
