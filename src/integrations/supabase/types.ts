@@ -4391,6 +4391,74 @@ export type Database = {
           },
         ]
       }
+      scherm_apparaten: {
+        Row: {
+          gekoppeld_door: string | null
+          gekoppeld_op: string
+          id: string
+          ingetrokken_op: string | null
+          laatst_gezien_op: string | null
+          naam: string
+          token_hash: string | null
+        }
+        Insert: {
+          gekoppeld_door?: string | null
+          gekoppeld_op?: string
+          id?: string
+          ingetrokken_op?: string | null
+          laatst_gezien_op?: string | null
+          naam: string
+          token_hash?: string | null
+        }
+        Update: {
+          gekoppeld_door?: string | null
+          gekoppeld_op?: string
+          id?: string
+          ingetrokken_op?: string | null
+          laatst_gezien_op?: string | null
+          naam?: string
+          token_hash?: string | null
+        }
+        Relationships: []
+      }
+      scherm_koppelverzoeken: {
+        Row: {
+          aangemaakt_op: string
+          apparaat_geheim_hash: string
+          apparaat_id: string | null
+          goedgekeurd_op: string | null
+          id: string
+          koppelcode: string
+          verloopt_op: string
+        }
+        Insert: {
+          aangemaakt_op?: string
+          apparaat_geheim_hash: string
+          apparaat_id?: string | null
+          goedgekeurd_op?: string | null
+          id?: string
+          koppelcode: string
+          verloopt_op?: string
+        }
+        Update: {
+          aangemaakt_op?: string
+          apparaat_geheim_hash?: string
+          apparaat_id?: string | null
+          goedgekeurd_op?: string | null
+          id?: string
+          koppelcode?: string
+          verloopt_op?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scherm_koppelverzoeken_apparaat_id_fkey"
+            columns: ["apparaat_id"]
+            isOneToOne: false
+            referencedRelation: "scherm_apparaten"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       screening_aanvragen: {
         Row: {
           aangemeld_op: string

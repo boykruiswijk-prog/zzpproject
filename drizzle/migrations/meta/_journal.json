@@ -736,6 +736,13 @@
       "when": 1791707529960,
       "tag": "0104_scherm_stations_skills",
       "breakpoints": true
+    },
+    {
+      "idx": 105,
+      "version": "7",
+      "when": 1791725641219,
+      "tag": "0105_scherm_apparaatkoppeling",
+      "breakpoints": true
     }
   ]
 }
