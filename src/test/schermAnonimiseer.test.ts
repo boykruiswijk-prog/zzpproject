@@ -80,7 +80,7 @@ describe("scherm-data anonimisering", () => {
     expect(bouwSchermPayload({ marketing: { ai_team: { dag: '2026-10-11', data: {} } } }).ai_team).toEqual([]);
     const agents = Array.from({ length: 12 }, (_, i) => ({ id: String(i), naam: `Agent ${i}`, taak: 'x'.repeat(100), laatste_run: i ? '2026-10-11T16:53:51Z' : 'nooit', status: i === 1 ? 'raar' : i === 2 ? 'fout' : 'gepland', resultaat: i === 3 ? 'Mail naar jan@voorbeeld.nl gestuurd' : null }));
     const t = bouwSchermPayload({ marketing: { ai_team: { dag: '2026-10-11', data: { agents } } } }).ai_team;
-    expect(t).toHaveLength(10);
+    expect(t).toHaveLength(12);
     expect(t[0].laatste_run).toBeNull();
     expect(t[1].status).toBe('klaar');
     expect(t[2].status).toBe('fout');
@@ -93,5 +93,16 @@ describe("scherm-data anonimisering", () => {
   it('kennisbank contenttellingen: null als ze ontbreken', () => {
     expect(bouwSchermPayload({}).kennisbank.content_nieuw).toBeNull();
     expect(bouwSchermPayload({ kennisbank: { content_nieuw: 6, content_verbeterd: 9 } }).kennisbank).toMatchObject({ content_nieuw: 6, content_verbeterd: 9 });
+  });
+  it('workers: witte lijst, filtering en ontbrekende data', () => {
+    expect(bouwSchermPayload({}).workers).toBeNull();
+    const w = bouwSchermPayload({ workers: {
+      gepland: [{ naam: 'Mail aan piet@x.nl € 50,00 ' + 'y'.repeat(60), ritme: 'elke nacht', laatste: '2026-10-11T02:00:00Z', status: 'raar', jobid: 7, command: 'select secret' }],
+      op_afroep: [{ naam: 'KVK-controle', vandaag: 3, week: 'x', laatste: null, status: 'gepland' }],
+    } }).workers!;
+    expect(w.gepland[0].naam.length).toBeLessThanOrEqual(40);
+    expect(JSON.stringify(w)).not.toMatch(/@|€|secret|jobid/);
+    expect(w.gepland[0].status).toBe('klaar');
+    expect(w.op_afroep[0]).toMatchObject({ vandaag: 3, week: null, laatste: null, status: 'gepland' });
   });
 });
