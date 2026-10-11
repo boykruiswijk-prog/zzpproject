@@ -40,7 +40,6 @@ const groups: NavGroup[] = [
     { to: "/admin/chatgesprekken", icon: MessageCircle, label: "Chatgesprekken", teller: "chat", roles: ["supervisor", "verzekering", "marketing"] },
   ]},
   { label: "Instellingen", icon: Settings, roles: ["admin", "supervisor"], items: [
-    { to: "/admin/schermen", icon: Monitor, label: "Live-scherm", roles: ["admin", "supervisor"] },
     { to: "/admin/team", icon: UserCog, label: "Team & rechten", roles: ["admin"] },
     { to: "/admin/integraties", icon: Plug, label: "Integraties & Exact", roles: ["admin"] },
     { to: "/admin/interne-meldingen", icon: MessageCircle, label: "Interne meldingen", roles: ["admin"] },
@@ -62,6 +61,7 @@ export function AdminSidebar() {
   const Navigation = ({ mobile = false }: { mobile?: boolean }) => <>
     <nav className={cn("flex-1 space-y-2", mobile ? "overflow-y-auto px-4 pb-4" : "overflow-y-auto p-4")}>
       <NavLink to="/admin" end onClick={mobile ? closeMobile : undefined} className={linkClass}><LayoutDashboard className="h-5 w-5"/><span className="flex-1">Dashboard</span>{tellers?.facturatie ? <Badge variant="destructive" className="rounded-full px-2" title="Facturatie: zie Vandaag te doen">{tellers.facturatie}</Badge> : null}</NavLink>
+      {roleAllows(["supervisor"]) && <NavLink to="/admin/schermen" onClick={mobile ? closeMobile : undefined} className={linkClass}><Monitor className="h-5 w-5"/><span className="flex-1">Live-scherm</span></NavLink>}
       {roleAllows(["supervisor", "verzekering"]) && <>
         <NavLink to="/admin/klanten" onClick={mobile ? closeMobile : undefined} className={linkClass}><Building2 className="h-5 w-5"/><span className="flex-1">Klanten & contracten</span>{tellers?.klanten ? <Badge variant="destructive" className="rounded-full px-2" aria-label={`${tellers.klanten} openstaand`}>{tellers.klanten}</Badge> : null}</NavLink>
         <NavLink to="/admin/crm" onClick={mobile ? closeMobile : undefined} className={linkClass}><Users className="h-5 w-5"/><span className="flex-1">CRM</span>{takenCount ? <Badge variant="destructive">{takenCount}</Badge> : null}</NavLink>
