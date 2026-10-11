@@ -63,7 +63,7 @@ export const ZEKER_KENNIS = {
       "usps": [
         "BAV + AVB: geen eigen risico, dagelijks opzegbaar en pauzeerbaar. Creditnota voor resterende al betaalde dagen.",
         "Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000)",
-        "Directe hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.",
+        "Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.",
         "Cyber heeft een vaste looptijd van 12 maanden en wordt daarna stilzwijgend met 12 maanden verlengd. Opzeggen kan tegen het einde van de looptijd. Cyber is niet dagelijks opzegbaar en niet pauzeerbaar. Bij maandbetaling betaal je het jaarcontract in 12 termijnen van €27,50. Zeg je de BAV + AVB op, dan loopt cyber door tot het einde van het lopende cyberjaar en blijven de resterende cybertermijnen verschuldigd.",
         "Wat precies gedekt is, lees je in de polisvoorwaarden.",
         "Premie inclusief kosten en assurantiebelasting"
@@ -89,7 +89,7 @@ export const ZEKER_KENNIS = {
       "usps": [
         "BAV + AVB: geen eigen risico, dagelijks opzegbaar en pauzeerbaar. Creditnota voor resterende al betaalde dagen.",
         "Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000)",
-        "Directe hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.",
+        "Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.",
         "Cyber heeft een vaste looptijd van 12 maanden en wordt daarna stilzwijgend met 12 maanden verlengd. Opzeggen kan tegen het einde van de looptijd. Cyber is niet dagelijks opzegbaar en niet pauzeerbaar. Bij maandbetaling betaal je het jaarcontract in 12 termijnen van €27,50. Zeg je de BAV + AVB op, dan loopt cyber door tot het einde van het lopende cyberjaar en blijven de resterende cybertermijnen verschuldigd.",
         "Wat precies gedekt is, lees je in de polisvoorwaarden.",
         "Premie inclusief kosten en assurantiebelasting"
@@ -332,7 +332,7 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Verzekeringen",
       "vraag": "Wat dekt cyber?",
-      "antwoord": "Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000) Directe hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico. Wat precies gedekt is, lees je in de polisvoorwaarden."
+      "antwoord": "Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000) Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico. Wat precies gedekt is, lees je in de polisvoorwaarden."
     },
     {
       "categorie": "Verzekeringen",
