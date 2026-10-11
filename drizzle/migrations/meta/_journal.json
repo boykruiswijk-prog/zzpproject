@@ -715,6 +715,13 @@
       "when": 1791704408041,
       "tag": "0101_scherm_stromen_aggregaten",
       "breakpoints": true
+    },
+    {
+      "idx": 102,
+      "version": "7",
+      "when": 1791704455177,
+      "tag": "0102_scherm_activiteit_actietype",
+      "breakpoints": true
     }
   ]
 }

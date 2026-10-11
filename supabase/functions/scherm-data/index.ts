@@ -28,7 +28,9 @@ Deno.serve(async (req) => {
     await admin.rpc("machine_cron_verwerken");
     const { data, error } = await admin.rpc("scherm_data");
     if (error) throw new Error(error.message);
-    const body = JSON.stringify(bouwSchermPayload(data ?? {}));
+    const { data: stromen, error: stroomFout } = await admin.rpc("scherm_stromen");
+    if (stroomFout) throw new Error(stroomFout.message);
+    const body = JSON.stringify(bouwSchermPayload({ ...(data ?? {}), ...(stromen ?? {}) }));
     cache = { op: Date.now(), body };
     return json(body, 200, { "Cache-Control": "private, max-age=20" });
   } catch (e) {
