@@ -34,3 +34,4 @@
 - Live scenes/effects are lazy; demo events stay in browser memory. Journey/timeline aggregates use service-only scherm_stromen via scherm-data. Why: site performance and visitor privacy.
 <!-- LOVABLE:END -->
 - Samengevoegd artikel: bron is_published=false + rij article_samenvoegingen + directe 301's; bewaakt door kennisbankSamenvoeging.test.ts. Waarom: niets verwijderen, geen ketens.
+- Datums (kolommen van type date) op leads/klant_contracten/policies/bav_aanmeldingen wijzigen alleen intern (supervisor/admin/verzekering met 2FA of service_role), via trigger guard_datums_alleen_intern; ingangsdatum via RPC lead_ingangsdatum_wijzigen. Waarom: klant kiest één keer bij aanmelding.
