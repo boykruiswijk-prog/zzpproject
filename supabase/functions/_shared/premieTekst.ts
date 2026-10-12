@@ -14,5 +14,6 @@ const INTERN = /\b(controleren|controle|check|checken|intern|interne)\b/i;
 /** Vangnet: haalt deel na een puntkomma met interne woorden weg uit een klanttekst. */
 export function klantVeiligeTekst(waarde: unknown): string {
   const s = String(waarde ?? "");
-  return s.split(";").filter((deel, i) => i === 0 ? !INTERN.test(deel) || !s.includes(";") ? true : false : !INTERN.test(deel)).map(d => d.trim()).filter(Boolean).join("; ");
+  const [eerste, ...rest] = s.split(";");
+  return [eerste, ...rest.filter(d => !INTERN.test(d))].map(d => d.trim()).filter(Boolean).join("; ");
 }
