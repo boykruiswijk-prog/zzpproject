@@ -827,6 +827,13 @@
       "when": 1791834664168,
       "tag": "0117_scherm_stromen_klant_definitie",
       "breakpoints": true
+    },
+    {
+      "idx": 118,
+      "version": "7",
+      "when": 1791839348998,
+      "tag": "0118_scherm_tellers_zonder_cron",
+      "breakpoints": true
     }
   ]
 }
