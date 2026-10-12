@@ -153,12 +153,17 @@ function renderArticleLinks(
  * Statische redirect-stub: canonical naar de nieuwe bestemming plus een
  * meta-refresh, zodat een oude URL ook zonder hosting-redirects goed landt.
  */
-function redirectStubHtml(from: string, to: string): string {
+export function redirectStubHtml(from: string, to: string): string {
   const target = `${SITE_CONFIG.url}${to}`;
   return `<!DOCTYPE html>
 <html lang="nl">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Verplaatst naar ${esc(to)} | ${esc(SITE_CONFIG.name)}</title>
     <meta name="description" content="Deze pagina is verplaatst. Je wordt doorgestuurd naar ${esc(target)}." />
