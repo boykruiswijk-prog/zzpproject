@@ -1,4 +1,6 @@
 # Roadmap
+- [ ] ZP Zaken-faviconset, manifest en prerender-head corrigeren en testen; niet publiceren.
+- [ ] Alle personenfoto’s lokaal en in storage/database read-only inventariseren, inclusief gebruik en teamnamen; geen foto’s wijzigen.
 - [x] AI-zichtbaarheid: zorg- en pensioenteksten geneutraliseerd; artikel-JSON-LD, gewijzigde meta en sitemap-lastmod gebruiken updated_at; regressietest toegevoegd; niet gepubliceerd.
 - [x] Besluit 12 oktober: gedeelde-dekkingsclaim vervangen in WaaromZpZaken.tsx; overige gevraagde bronnen bevatten geen dergelijke claim. Regressietest toegevoegd, 6 tests geslaagd, desktop/mobiel en build OK; geen bedragen/logica/data gewijzigd, niet gepubliceerd.
 - [x] Foutencontrole 12 oktober deel 2: Waarom ZP Zaken FAQ- en statistiekteksten gecorrigeerd; 3 tests geslaagd, preview en FAQPage-schema gecontroleerd, build OK; niet gepubliceerd.
