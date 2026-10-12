@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Foutencontrole 12 oktober deel 2: alleen Waarom ZP Zaken FAQ- en statistiekteksten corrigeren, schema en preview controleren; niet publiceren.
 - [x] Foutencontrole 12 oktober: telefoonlinks behouden, artikel-CTA en prijsvermelding gecorrigeerd; 18 tests geslaagd, drie artikeltelefoonlinks en alle genoemde teksten in preview gecontroleerd, mobiele nieuwe tekst past; build OK, niet gepubliceerd.
 - [x] Upgrade /scherm: agentkantoor, De stroom, Vandaag, breaking-overlay, browserdemo; privacytests 7/7 en tv-controle 1920x1080/3840x2160 (schaal 2), geen labeloverlap of scroll. Software-rendering is traag; werkelijke tv-framerate niet vastgesteld. Niet gepubliceerd.
 - [x] ZP Zaken Live-scherm (/scherm): activiteitentabel, triggers, backfill, scherm-data, 3D-machine en rapportage; getest op 1920x1080. Niet gepubliceerd.

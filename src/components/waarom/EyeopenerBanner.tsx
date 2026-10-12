@@ -4,7 +4,7 @@ const facts = [
   { value: "€2.500", label: "eigen risico bij beroepsfout via een platform of collectief" },
   { value: "€0", label: "eigen risico bij ZP Zaken", highlight: true },
   { value: "Stopt", label: "jouw dekking bij einde opdracht via een platform" },
-  { value: "Altijd", label: "jouw dekking via ZP Zaken, opdracht of niet", highlight: true },
+  { value: "Doorlopend", label: "jouw dekking via ZP Zaken, ook tussen opdrachten door", highlight: true },
 ];
 
 export function EyeopenerBanner() {
