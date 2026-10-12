@@ -1,6 +1,7 @@
 # Technische afspraken
 
-- Site icons use the ZP brand source, a multi-size ICO plus square PNGs and a web manifest; prerender pages and redirect stubs retain the same icon links. Why: crawlers and browsers must use the same brand mark.
+- ZP icons (ICO, PNG, manifest) share head links in pages and redirect stubs. Why: consistent brand.
+- No former-employee photos; doubtful photos are removed. New people photos need Boy's approval. Why: portrait rights, A9.
 
 - SEPA-tekst staat byte-gelijk in frontend en _shared/sepaMachtiging.ts; bewijs is onveranderbaar.
 - Portal access (create user, link policies, magic link, mail/log) uses _shared/portalAccess.ts; customers read lead fields only via get_mijn_polissen RPC. Why: one access path, no customer SELECT on leads.

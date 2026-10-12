@@ -2,9 +2,7 @@ import { seoRoute } from "@/config/seoRoutes";
 import { ServicePageTemplate } from "@/components/diensten/ServicePageTemplate";
 import { PiggyBank, TrendingUp, CalendarCheck } from "lucide-react";
 
-import teamHero from "@/assets/team-hero.webp";
 import officeMeetingRoom from "@/assets/office-meeting-room.webp";
-import teamWalking from "@/assets/team-walking.webp";
 import officeFlowers from "@/assets/office-flowers.webp";
 
 const SEO = seoRoute("/pensioen");
@@ -24,7 +22,7 @@ export default function Pensioen() {
       seoTitle={SEO.title}
       seoDescription={SEO.description}
       canonicalPath="/pensioen"
-      heroImage={teamHero}
+      heroImage={officeMeetingRoom}
       badge="Investeer in je toekomst"
       title={<>Pensioen voor zzp'ers: <span className="text-accent">Regel het nu, profiteer later</span></>}
       subtitle="Als zelfstandige bouw je niet automatisch pensioen op. Maar er zijn slimme, fiscaal voordelige manieren om toch goed voor je oude dag te zorgen."
@@ -58,7 +56,7 @@ export default function Pensioen() {
           ],
         },
         {
-          image: teamWalking,
+          image: officeMeetingRoom,
           title: "Welke opties heb je als ZZP'er?",
           text: "Er zijn verschillende manieren om pensioen op te bouwen: via een lijfrenteverzekering, banksparen, beleggen of een combinatie. Wij helpen je bij het kiezen.",
           bullets: [

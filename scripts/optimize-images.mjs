@@ -18,7 +18,7 @@ const LIMIT = 200 * 1024;
 /** Maximale breedte per gebruik. */
 function maxWidthFor(file) {
   const name = path.basename(file).toLowerCase();
-  if (/hero|office|team-meeting|team-walking|team-cheers|corporate/.test(name)) return 1920;
+  if (/hero|office|corporate/.test(name)) return 1920;
   if (/logo|icon|signature|favicon|approved/.test(name)) return 600;
   return 800;
 }

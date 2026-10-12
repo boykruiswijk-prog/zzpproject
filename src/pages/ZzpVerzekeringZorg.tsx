@@ -10,7 +10,7 @@ import {
 import { HeartPulse, BadgeCheck, Users } from "lucide-react";
 
 import serviceVerzekeringen from "@/assets/service-verzekeringen.webp";
-import teamMeeting from "@/assets/team-meeting.webp";
+import officeMeetingRoom from "@/assets/office-meeting-room.webp";
 import officeCoffee from "@/assets/office-coffee.webp";
 
 const SEO = seoRoute("/zzp-verzekering-zorg");
@@ -80,7 +80,7 @@ export default function ZzpVerzekeringZorg() {
       ]}
       explainers={[
         {
-          image: teamMeeting,
+          image: officeMeetingRoom,
           title: "Dekking die past bij jouw zorgrol",
           text:
             "Werk je adviserend, coachend, coördinerend of uitvoerend? Dat maakt verschil voor je risico en dus voor je polis. Wij kijken samen naar je werkzaamheden en opdrachtovereenkomst.",

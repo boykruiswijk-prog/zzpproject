@@ -1,4 +1,6 @@
 # Roadmap
+- [x] Besluit A9: 7 beelden en ongebruikte teammodule verwijderd; kantoorbeelden, regressietest 3/3, browsercontrole en build OK; niet gepubliceerd.
+- [ ] Volledige testset groen: 811/819 geslaagd; 8 fouten in Exact-bedragen, SEO-titels en WordPress-inventaris wachten op aparte opdracht, buiten deze foto-opdracht gehouden.
 - [x] ZP Zaken-faviconset, manifest en prerender-head gecorrigeerd; 5 tests geslaagd en vijf bestanden HTTP 200; ongebruikte placeholder verwijderd; niet gepubliceerd.
 - [x] Personenfoto’s lokaal en openbare opslag/database read-only geïnventariseerd, inclusief artikelinhoud/backups, gebruik en teamnamen; rapport en Excel geleverd; geen foto’s gewijzigd. Afgeschermde afbeeldingobjecten alleen metadata, geen visuele beoordeling.
 - [x] AI-zichtbaarheid: zorg- en pensioenteksten geneutraliseerd; artikel-JSON-LD, gewijzigde meta en sitemap-lastmod gebruiken updated_at; regressietest toegevoegd; niet gepubliceerd.

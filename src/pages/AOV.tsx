@@ -4,7 +4,7 @@ import { LeesMeer } from "@/components/kennisbank/LeesMeer";
 import { Shield, Clock, Euro } from "lucide-react";
 
 import serviceVerzekeringen from "@/assets/service-verzekeringen.webp";
-import teamMeeting from "@/assets/team-meeting.webp";
+import officeMeetingRoom from "@/assets/office-meeting-room.webp";
 import officeCoffee from "@/assets/office-coffee.webp";
 import teamBoyCalling from "@/assets/team-boy-calling.webp";
 
@@ -59,7 +59,7 @@ export default function AOV() {
           ],
         },
         {
-          image: teamMeeting,
+          image: officeMeetingRoom,
           title: "Hoe werkt het afsluiten?",
           text: "Via ZP Zaken krijg je informatie over de AOV die bij je past. We vergelijken verzekeraars en regelen een scherpe premie.",
           bullets: [

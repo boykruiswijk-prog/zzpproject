@@ -8,8 +8,7 @@ import { Timeline } from "@/components/historie/Timeline";
 import { History, Heart, Shield, Users, Sparkles, ArrowRight, Quote } from "lucide-react";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import boyKruiswijk from "@/assets/team-member-1.webp";
-import teamMeeting from "@/assets/team-meeting.webp";
-import teamCheers from "@/assets/team-cheers.webp";
+import officeMeetingRoom from "@/assets/office-meeting-room.webp";
 import officeFlowers from "@/assets/office-flowers.webp";
 
 const SEO = seoRoute("/historie");
@@ -40,7 +39,7 @@ export default function Historie() {
 
       <section className="py-16 md:py-24 text-primary-foreground relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img loading="lazy" decoding="async" src={teamCheers} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
+          <img loading="lazy" decoding="async" src={officeFlowers} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
         </div>
         <div className="container-wide relative z-10">
@@ -99,7 +98,7 @@ export default function Historie() {
 
       <section className="section-padding relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img loading="lazy" decoding="async" src={teamMeeting} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
+          <img loading="lazy" decoding="async" src={officeMeetingRoom} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-foreground/90 via-foreground/85 to-foreground/80" />
         </div>
         <div className="container-wide relative z-10">

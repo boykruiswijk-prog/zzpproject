@@ -2,9 +2,8 @@ import { seoRoute } from "@/config/seoRoutes";
 import { ServicePageTemplate } from "@/components/diensten/ServicePageTemplate";
 import { Brain, HeartHandshake, Sparkles } from "lucide-react";
 
-import teamCheers from "@/assets/team-cheers.webp";
 import officeFlowers from "@/assets/office-flowers.webp";
-import teamWalking from "@/assets/team-walking.webp";
+import officeMeetingRoom from "@/assets/office-meeting-room.webp";
 import officeCoffee from "@/assets/office-coffee.webp";
 
 const SEO = seoRoute("/mentale-gezondheid");
@@ -24,7 +23,7 @@ export default function MentaleGezondheid() {
       seoTitle={SEO.title}
       seoDescription={SEO.description}
       canonicalPath="/mentale-gezondheid"
-      heroImage={teamCheers}
+      heroImage={officeFlowers}
       badge="Zorg voor jezelf"
       title={<>Mentale gezondheid: <span className="text-accent">De basis voor succesvol ondernemerschap</span></>}
       subtitle="Ondernemen is geweldig, maar kan ook eenzaam en stressvol zijn. Investeer in je mentale gezondheid: dat is geen luxe, maar noodzaak."
@@ -58,7 +57,7 @@ export default function MentaleGezondheid() {
           ],
         },
         {
-          image: teamWalking,
+          image: officeMeetingRoom,
           title: "Wat bieden wij?",
           text: "Via onze partners bieden we laagdrempelige toegang tot coaching, psychologische ondersteuning en preventieve programma's. Speciaal ontwikkeld voor zelfstandig professionals.",
           bullets: [
