@@ -1,4 +1,5 @@
 import { useToonTestrecords } from "@/hooks/useToonTestrecords";
+import { serviceAanvraagStatus, serviceAanvraagNotitie } from "@/lib/serviceAanvraag";
 import { ToonTestrecordsSchakelaar } from "@/components/admin/ToonTestrecordsSchakelaar";
 import { statusLabel } from "@/lib/statusLabels";
 import { useEffect, useState } from "react";
@@ -122,8 +123,9 @@ export default function ServiceAanvragen({ modus = "service" }: { modus?: Modus 
   });
 
   async function updateStatus(id: string, status: string) {
-    const { error } = await supabase.from("klant_service_aanvragen" as any).update({ status }).eq("id", id);
-    if (error) toast({ title: "Fout", description: error.message, variant: "destructive" });
+    let fout: string | null = null;
+    try { await serviceAanvraagStatus(id, status); } catch (e) { fout = (e as Error).message; }
+    if (fout) toast({ title: "Status niet bijgewerkt", description: fout, variant: "destructive" });
     else {
       toast({ title: "Status bijgewerkt" });
       load();
@@ -132,9 +134,8 @@ export default function ServiceAanvragen({ modus = "service" }: { modus?: Modus 
   }
 
   async function saveNotes(id: string, notities: string) {
-    const { error } = await supabase.from("klant_service_aanvragen" as any).update({ notities }).eq("id", id);
-    if (error) toast({ title: "Fout", description: error.message, variant: "destructive" });
-    else toast({ title: "Notities opgeslagen" });
+    try { await serviceAanvraagNotitie(id, notities); toast({ title: "Notities opgeslagen" }); }
+    catch (e) { toast({ title: "Notities niet opgeslagen", description: (e as Error).message, variant: "destructive" }); }
   }
 
   async function resendNotification(it: Aanvraag) {

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
+import { IbanInzien } from "@/components/admin/IbanInzien";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { FileText } from "lucide-react";
-import { maskeerIban } from "@/lib/sepaMachtiging";
 
 type Bewijs = {
   id: string;
@@ -49,7 +49,7 @@ export function SepaMachtigingBewijsBlok({ bronId }: { bronId: string }) {
           <dt className="text-muted-foreground">Type</dt><dd className="min-w-0">{r.type === "doorlopend" ? "Doorlopend" : "Eenmalig"}</dd>
           <dt className="text-muted-foreground">Akkoord op</dt><dd className="min-w-0">{new Date(r.akkoord_op).toLocaleString("nl-NL")}</dd>
           <dt className="text-muted-foreground">IP-adres</dt><dd className="min-w-0 break-all">{r.ip_adres ?? "-"}</dd>
-          <dt className="text-muted-foreground">IBAN</dt><dd className="min-w-0 break-all">{maskeerIban(r.iban)}</dd>
+          <dt className="text-muted-foreground">IBAN</dt><dd className="min-w-0 break-all"><IbanInzien bron="sepa" id={r.id} gemaskeerd={r.iban} /></dd>
           <dt className="text-muted-foreground">Tekstversie</dt><dd className="min-w-0 break-all">{r.tekst_versie}</dd>
           <dt className="text-muted-foreground">Bevestigingsmail</dt>
           <dd className="min-w-0 break-words">{r.bevestigingsmail_verzonden_op ? `Verzonden ${new Date(r.bevestigingsmail_verzonden_op).toLocaleString("nl-NL")}` : "Niet (bevestigd) verzonden"}</dd>

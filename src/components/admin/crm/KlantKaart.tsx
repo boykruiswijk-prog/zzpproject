@@ -6,13 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Mail, Phone } from "lucide-react";
 import { formatDateNL, formatDateTimeNL } from "@/lib/dateFormat";
-import { PRODUCT_LABEL, maskeerIban, type Product } from "@/lib/klantContracten";
+import { PRODUCT_LABEL, type Product } from "@/lib/klantContracten";
 import { contractEindStatus, kiesBavNummer, useBavRijen } from "@/lib/bavNummer";
 import { BavNummer } from "./BavNummer";
 import { GegevensWijzigen } from "./GegevensWijzigen";
 import { PortalUitnodigen } from "./PortalUitnodigen";
 import { DocumentVersturen } from "./DocumentVersturen";
 import { Button } from "@/components/ui/button";
+import { IbanInzien, type IbanBron } from "@/components/admin/IbanInzien";
 
 type Ond = { id: string; naam: string | null; rechtsvorm?: string | null; kvk?: string | null; iban?: string | null; exact_relatie_code?: string | null };
 type Pers = { id: string; voornaam?: string | null; achternaam?: string | null; email_weergave?: string | null };
@@ -35,7 +36,7 @@ export function KlantKaart({ ondernemingen, personen, leadIds, herlaadSleutel = 
         codes.length ? (supabase.from as any)("klant_mandaat_v").select("relatiecode,iban").in("relatiecode", codes) : Promise.resolve({ data: [] as any[] }),
         ondIds.length + persIds.length ? supabase.from("crm_notities").select("aangemaakt_op,soort,aangemaakt_door_naam").or([ondIds.length ? `onderneming_id.in.(${ondIds.join(",")})` : "", persIds.length ? `persoon_id.in.(${persIds.join(",")})` : ""].filter(Boolean).join(",")).is("ingetrokken_op", null).order("aangemaakt_op", { ascending: false }).limit(1) : Promise.resolve({ data: [] as any[] }),
         ondIds.length ? supabase.from("klant_service_aanvragen").select("id,type,status,created_at").in("onderneming_id", ondIds).is("gekoppeld_aan", null).in("status", ["nieuw", "in_behandeling"]) : Promise.resolve({ data: [] as any[] }),
-        ondIds.length + persIds.length ? (supabase.from as any)("crm_taken").select("id,omschrijving,aangemaakt_op,aangemaakt_door_naam").eq("status", "open").or([ondIds.length ? `onderneming_id.in.(${ondIds.join(",")})` : "", persIds.length ? `persoon_id.in.(${persIds.join(",")})` : ""].filter(Boolean).join(",")) : Promise.resolve({ data: [] as any[] }),
+        ondIds.length + persIds.length ? (supabase.from as any)("crm_taken").select("id,omschrijving,aangemaakt_op,aangemaakt_door_naam,details").eq("status", "open").or([ondIds.length ? `onderneming_id.in.(${ondIds.join(",")})` : "", persIds.length ? `persoon_id.in.(${persIds.join(",")})` : ""].filter(Boolean).join(",")) : Promise.resolve({ data: [] as any[] }),
       ]);
       const contracten = (k.data ?? []) as any[];
       const c = contracten.length ? (await supabase.from("factuur_credit_planning").select("id,status,credit_vanaf,credit_tm,klant_contract_id").in("klant_contract_id", contracten.map((x) => x.id)).in("status", Object.keys(CREDIT_OPEN))).data ?? [] : [];
@@ -48,7 +49,12 @@ export function KlantKaart({ ondernemingen, personen, leadIds, herlaadSleutel = 
   const leads = data?.leads ?? [];
   const emails = Array.from(new Set([...personen.map((p) => p.email_weergave), ...leads.map((l) => l.email)].filter(Boolean))) as string[];
   const telefoons = Array.from(new Set(leads.map((l) => l.telefoon).filter(Boolean))) as string[];
-  const iban = data?.mandaten.find((m) => m.iban)?.iban ?? ondernemingen.find((o) => o.iban)?.iban ?? leads.find((l) => l.iban)?.iban ?? null;
+  const mandaat = data?.mandaten.find((m) => m.iban);
+  const mandaatOnd = mandaat ? ondernemingen.find((o) => o.exact_relatie_code === mandaat.relatiecode) : undefined;
+  const ondIban = ondernemingen.find((o) => o.iban);
+  const leadIban = leads.find((l) => l.iban);
+  const ibanBron: { bron: IbanBron; id: string; iban: string } | null = mandaat && mandaatOnd ? { bron: "mandaat", id: mandaatOnd.id, iban: mandaat.iban }
+    : ondIban ? { bron: "onderneming", id: ondIban.id, iban: ondIban.iban! } : leadIban ? { bron: "lead", id: leadIban.id, iban: leadIban.iban } : null;
   const laatste = [data?.laatsteNotitie?.aangemaakt_op, data?.laatsteLead?.created_at].filter(Boolean).sort().reverse()[0] as string | undefined;
   const rijen = bav.data ?? [];
   const persoonNaam = personen.map((p) => [p.voornaam, p.achternaam].filter(Boolean).join(" ")).filter(Boolean).join(", ");
@@ -68,7 +74,7 @@ export function KlantKaart({ ondernemingen, personen, leadIds, herlaadSleutel = 
             <Veld label="Rechtsvorm / KvK">{ondernemingen.map((o) => [o.rechtsvorm, o.kvk ? `KvK ${o.kvk}` : null].filter(Boolean).join(" · ") || "-").join(", ") || "-"}</Veld>
             <Veld label="E-mail">{emails.length ? emails.map((e) => <a key={e} href={`mailto:${e}`} className="mr-2 inline-flex items-center gap-1 break-all text-primary hover:underline"><Mail className="h-3 w-3" />{e}</a>) : "-"}</Veld>
             <Veld label="Telefoon">{telefoons.length ? telefoons.map((t) => <a key={t} href={`tel:${tel(t)}`} className="mr-2 inline-flex items-center gap-1 text-primary hover:underline"><Phone className="h-3 w-3" />{t}</a>) : "-"}</Veld>
-            <Veld label="IBAN">{iban ? maskeerIban(iban) : "-"}</Veld>
+            <Veld label="IBAN">{ibanBron ? <IbanInzien bron={ibanBron.bron} id={ibanBron.id} gemaskeerd={ibanBron.iban} /> : "-"}</Veld>
             <Veld label="Laatste contactmoment">{laatste ? formatDateTimeNL(laatste) : "-"}</Veld>
           </dl>
           <div className="space-y-1">
@@ -97,8 +103,9 @@ export function KlantKaart({ ondernemingen, personen, leadIds, herlaadSleutel = 
             {acties.length ? <ul className="list-disc pl-5">{acties.map((a) => <li key={a}>{a}</li>)}</ul> : !(data?.taken ?? []).length && <p className="text-muted-foreground">Geen</p>}
             {(data?.taken ?? []).map((t: any) => (
               <div key={t.id} className="mt-1 flex flex-wrap items-center gap-2 rounded border border-amber-300 p-2">
-                <span className="min-w-0 flex-1">{/AFAS/.test(t.omschrijving) ? "Taak Sandra" : "Taak Roxy"}: {t.omschrijving} <span className="text-xs text-muted-foreground">({t.aangemaakt_door_naam}, {formatDateNL(t.aangemaakt_op)})</span></span>
-                <Button size="sm" variant="outline" onClick={async () => { const { error } = await (supabase.rpc as any)("crm_taak_afronden", { _id: t.id }); if (!error) refetch(); }}>Gedaan</Button>
+                <span className="min-w-0 flex-1">{/AFAS/.test(t.omschrijving) ? "Taak Sandra" : "Taak Roxy"}: {t.omschrijving} <span className="text-xs text-muted-foreground">({t.aangemaakt_door_naam}, {formatDateNL(t.aangemaakt_op)})</span>
+                  {Array.isArray(t.details?.velden) && t.details.velden.includes("iban") && <span className="mt-1 block"><IbanInzien bron="taak" id={t.id} /></span>}</span>
+                <Button size="sm" variant="outline" onClick={async () => { const { error } = await (supabase.rpc as any)("crm_taak_afronden", { _id: t.id }); if (error) alert(`Taak niet afgerond: ${error.message}`); else refetch(); }}>Gedaan</Button>
               </div>))}
           </div>
         </>)}

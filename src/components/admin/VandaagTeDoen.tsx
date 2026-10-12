@@ -13,6 +13,27 @@ import { haalBavRijen, kiesBavNummer } from "@/lib/bavNummer";
 import { ServiceAanvraagOog } from "@/components/admin/ServiceAanvraagOog";
 import { EinddatumControleKnoppen } from "@/components/admin/EinddatumControleKnoppen";
 import { PRODUCT_LABEL, formatEuro, type Product } from "@/lib/klantContracten";
+import { useToast } from "@/hooks/use-toast";
+
+/** Haalt alleen de status en het factuurnummer op uit Exact (nooit schrijven in Exact) en sluit verwerkte facturen af. */
+function NuControlerenMetExact({ onKlaar }: { onKlaar: () => void }) {
+  const { toast } = useToast();
+  const [bezig, setBezig] = useState(false);
+  async function controleer() {
+    setBezig(true);
+    const { data, error } = await supabase.functions.invoke("exact-concept-controle", { body: { actie: "controle", alleen_status: true } });
+    setBezig(false);
+    if (error || (data as any)?.error) return toast({ title: "Controle met Exact mislukt", description: error?.message ?? String((data as any)?.error), variant: "destructive" });
+    const n = ((data as any)?.afgesloten ?? []).length;
+    toast({ title: "Gecontroleerd met Exact", description: n ? `${n} factuur/facturen verwerkt in Exact en afgesloten.` : "Geen nieuwe verwerkte facturen gevonden." });
+    onKlaar();
+  }
+  return (
+    <Button size="sm" variant="outline" onClick={controleer} disabled={bezig}>
+      <RefreshCw className={cn("h-4 w-4", bezig && "animate-spin")} /> Nu controleren met Exact
+    </Button>
+  );
+}
 
 interface Item {
   bron?: string | null; id: string; naam?: string | null; bedrijfsnaam?: string | null; sinds?: string | null; reden?: string | null; eigen?: boolean | null;
@@ -146,6 +167,7 @@ export function VandaagTeDoen() {
                         {c.key === "einddatum_controle" && i.contract_id && <EinddatumControleKnoppen contractId={i.contract_id} naam={i.naam ?? ""} eindDatum={i.eind_datum} onGewijzigd={() => refetch()} />}
                       </li>
                     ))}
+                    {c.key === "facturatie" && <li className="border-t border-border px-3 py-2"><NuControlerenMetExact onKlaar={() => refetch()} /></li>}
                     {n > cat.items.length && (
                       <li><Link to={c.alles} className="block px-3 py-2 text-xs font-medium text-primary hover:underline">Alle {n} bekijken</Link></li>
                     )}

@@ -19,6 +19,27 @@ const esc = (s: unknown) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g,
 const nlDatum = (d: Date) => new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Amsterdam" }).format(d);
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+/** Exact-status 50 = verwerkt; een factuurnummer betekent ook verwerkt. */
+export function isVerwerkt(c: { nummer?: string | null; exactStatus?: number | null }): boolean {
+  return !!c.nummer || c.exactStatus === 50;
+}
+
+// deno-lint-ignore no-explicit-any
+async function magFacturatieControleren(req: Request, admin: any): Promise<boolean> {
+  const h = req.headers.get("Authorization") ?? "";
+  if (!h.startsWith("Bearer ")) return false;
+  const token = h.slice(7).trim();
+  try {
+    const p = token.split(".")[1].replaceAll("-", "+").replaceAll("_", "/");
+    const claims = JSON.parse(atob(p.padEnd(Math.ceil(p.length / 4) * 4, "=")));
+    if (claims.aal !== "aal2") return false;
+  } catch { return false; }
+  const { data: { user } } = await admin.auth.getUser(token);
+  if (!user) return false;
+  const { data: t } = await admin.from("team_taakverdeling").select("facturatie").eq("user_id", user.id).maybeSingle();
+  return t?.facturatie === true;
+}
+
 /** Aantal werkdagen (ma-vr) na startdatum tot en met vandaag. */
 export function werkdagenSinds(startIso: string, vandaag: string): number {
   const d = new Date(`${nlDatum(new Date(startIso))}T12:00:00Z`); const eind = new Date(`${vandaag}T12:00:00Z`);
@@ -36,8 +57,12 @@ Deno.serve(metWerk({ station: "exact", actie: "exact_sync", tekst: "Exact-concep
     const { data: ok } = await admin.rpc("verify_cron_secret", { p_secret: cron });
     if (ok !== true) return json({ error: "geen_toegang" }, 401);
   } else {
+    // Supervisor/admin met 2FA, of een teamlid met de taak facturatie (Roxy) via de knop "Nu controleren met Exact".
     const auth = await requireSupervisor(req, admin);
-    if (auth instanceof Response) return json({ error: "geen_toegang" }, auth.status);
+    if (auth instanceof Response) {
+      const ok = await magFacturatieControleren(req, admin);
+      if (!ok) return json({ error: "geen_toegang" }, auth.status);
+    }
   }
   await werkVan(req).start();
   const actie = String(body?.actie ?? "controle");
@@ -65,18 +90,18 @@ Deno.serve(metWerk({ station: "exact", actie: "exact_sync", tekst: "Exact-concep
     return json({ resultaten: res, log });
   }
 
-  if (cron && actie === "controle") {
-    // Cron draait 05:15 en 06:15 UTC op werkdagen; alleen de run om 07:xx NL telt.
-    const uurNL = Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Amsterdam", hour: "2-digit", hour12: false }).format(new Date()));
-    if (uurNL !== 7) return json({ overgeslagen: true, uur_nl: uurNL });
-  }
+  // Cron draait elk uur 05:15-18:15 UTC op werkdagen; alleen 07:00-19:00 NL telt. De ochtendmail en
+  // koppelingscontrole alleen in de run van 07:xx NL; de andere runs (en de knop) halen alleen de status uit Exact op.
+  const uurNL = Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Amsterdam", hour: "2-digit", hour12: false }).format(new Date()));
+  if (cron && actie === "controle" && (uurNL < 7 || uurNL > 18)) return json({ overgeslagen: true, uur_nl: uurNL });
+  const ochtendrun = actie === "controle" && (!cron || uurNL === 7) && body?.alleen_status !== true;
 
   const { data: cfg } = await admin.from("exact_config").select("*").limit(1).maybeSingle();
   if (!cfg?.is_actief || !cfg.divisie_code) return json({ error: "exact_niet_actief" }, 400);
   const baseUrl = cfg.base_url || "https://start.exactonline.nl";
   const div = String(cfg.divisie_code).trim();
   let token = await ensureValidToken(admin, cfg);
-  async function bestaat(id: string): Promise<{ status: "bestaat" | "verwijderd" | "fout"; nummer?: string | null; fout?: string }> {
+  async function bestaat(id: string): Promise<{ status: "bestaat" | "verwijderd" | "fout"; nummer?: string | null; exactStatus?: number | null; fout?: string }> {
     const url = `${baseUrl}/api/v1/${div}/salesinvoice/SalesInvoices(guid'${id}')?$select=InvoiceID,InvoiceNumber,Status`;
     for (let p = 0; p < 3; p++) {
       const r = await fetch(url, { method: "GET", headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } });
@@ -87,14 +112,14 @@ Deno.serve(metWerk({ station: "exact", actie: "exact_sync", tekst: "Exact-concep
       if (!r.ok) return { status: "fout", fout: `HTTP ${r.status}` };
       const d = (await r.json().catch(() => null))?.d;
       const inv = d?.results ? d.results[0] : d?.InvoiceID ? d : null;
-      return inv ? { status: "bestaat", nummer: inv.InvoiceNumber ? String(inv.InvoiceNumber) : null } : { status: "verwijderd" };
+      return inv ? { status: "bestaat", nummer: inv.InvoiceNumber ? String(inv.InvoiceNumber) : null, exactStatus: Number.isFinite(Number(inv.Status)) ? Number(inv.Status) : null } : { status: "verwijderd" };
     }
     return { status: "fout", fout: "Exact bleef bezet (429)" };
   }
 
   const vandaag = nlDatum(new Date());
   const nu = new Date().toISOString();
-  const nieuwVerwijderd: any[] = []; const langOpen: any[] = []; const fouten: any[] = [];
+  const nieuwVerwijderd: any[] = []; const langOpen: any[] = []; const fouten: any[] = []; const afgesloten: any[] = [];
 
   const { data: leads } = await admin.from("leads")
     .select("id,voornaam,achternaam,bedrijfsnaam,exact_invoice_id,exact_invoice_amount,exact_invoice_created_at,created_at,exact_invoice_verwijderd_op,exact_invoice_status")
@@ -106,8 +131,10 @@ Deno.serve(metWerk({ station: "exact", actie: "exact_sync", tekst: "Exact-concep
       await admin.from("leads").update({ exact_invoice_verwijderd_op: nu, exact_invoice_gecontroleerd_op: nu }).eq("id", l.id).is("exact_invoice_verwijderd_op", null);
       nieuwVerwijderd.push(rij);
     } else if (c.status === "bestaat") {
-      await admin.from("leads").update({ exact_invoice_gecontroleerd_op: nu }).eq("id", l.id);
-      if (!c.nummer && werkdagenSinds(rij.sinds, vandaag) > 2) langOpen.push({ ...rij, werkdagen: werkdagenSinds(rij.sinds, vandaag) });
+      const verwerkt = isVerwerkt(c);
+      await admin.from("leads").update({ exact_invoice_gecontroleerd_op: nu, ...(c.exactStatus != null ? { exact_invoice_status: c.exactStatus } : {}), ...(verwerkt ? { exact_invoice_number: c.nummer } : {}) }).eq("id", l.id);
+      if (verwerkt) afgesloten.push({ soort: "lead", id: l.id, naam: rij.naam, bedrijf: l.bedrijfsnaam, nummer: c.nummer, status: c.exactStatus });
+      if (!verwerkt && !c.nummer && werkdagenSinds(rij.sinds, vandaag) > 2) langOpen.push({ ...rij, werkdagen: werkdagenSinds(rij.sinds, vandaag) });
     } else fouten.push({ ...rij, fout: c.fout });
   }
 
@@ -122,9 +149,15 @@ Deno.serve(metWerk({ station: "exact", actie: "exact_sync", tekst: "Exact-concep
       await admin.from("factuur_planning").update({ exact_verwijderd_op: nu }).eq("id", p.id).is("exact_verwijderd_op", null);
       nieuwVerwijderd.push(rij);
     } else if (c.status === "bestaat") {
-      if (!c.nummer && werkdagenSinds(rij.sinds, vandaag) > 2) langOpen.push({ ...rij, werkdagen: werkdagenSinds(rij.sinds, vandaag) });
+      const verwerkt = isVerwerkt(c);
+      await admin.from("factuur_planning").update({ laatst_gecontroleerd_op: nu, ...(c.exactStatus != null ? { exact_status: c.exactStatus } : {}),
+        ...(verwerkt ? { exact_invoice_number: c.nummer, status: "verwerkt", verwerkt_op: nu } : {}) }).eq("id", p.id).eq("status", "concept_aangemaakt");
+      if (verwerkt) afgesloten.push({ soort: "planning", id: p.id, naam: rij.naam, periode: rij.bedrijf, nummer: c.nummer, status: c.exactStatus });
+      if (!verwerkt && !c.nummer && werkdagenSinds(rij.sinds, vandaag) > 2) langOpen.push({ ...rij, werkdagen: werkdagenSinds(rij.sinds, vandaag) });
     } else fouten.push({ ...rij, fout: c.fout });
   }
+
+  if (!ochtendrun) return json({ vandaag, uur_nl: uurNL, afgesloten, nieuw_verwijderd: nieuwVerwijderd, controle_fouten: fouten, mail: "alleen status opgehaald, geen mail" });
 
   // Mislukte Exact-boekingen van gisteren (NL-datum).
   const gisteren = nlDatum(new Date(Date.now() - 86400000));
@@ -157,7 +190,7 @@ Deno.serve(metWerk({ station: "exact", actie: "exact_sync", tekst: "Exact-concep
   const { data: ez } = await admin.rpc("einddatum_zonder_opzegging");
   const einddatumZonder: any[] = Array.isArray(ez) ? ez : [];
 
-  const rapport = { vandaag, nieuw_verwijderd: nieuwVerwijderd, langer_dan_2_werkdagen_open: langOpen, mislukt_gisteren: mislukt, controle_fouten: fouten, koppeling: kc, einddatum_zonder_opzegging: einddatumZonder };
+  const rapport = { vandaag, afgesloten, nieuw_verwijderd: nieuwVerwijderd, langer_dan_2_werkdagen_open: langOpen, mislukt_gisteren: mislukt, controle_fouten: fouten, koppeling: kc, einddatum_zonder_opzegging: einddatumZonder };
   if (!nieuwVerwijderd.length && !langOpen.length && !mislukt.length && !fouten.length && !koppelingen && !einddatumZonder.length) return json({ ...rapport, mail: "geen afwijkingen, geen mail" });
 
   const tabel = (titel: string, rijen: any[], kolommen: [string, (r: any) => string][]) => !rijen.length ? "" :

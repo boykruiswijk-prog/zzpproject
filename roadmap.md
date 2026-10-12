@@ -30,3 +30,10 @@
 - [x] Inloop/uitloop-klantwaarheid overal consistent en /voorwaarden-pagina (niet gepubliceerd)
 
 - [x] Kennisbank samenvoegen (4 bronnen), 2 paren onderscheiden, redirects/sitemap/goedkoopste gecontroleerd
+
+- [x] Boy 12 okt 1: één bron voor aantallen (tel_*-functies, dashboardtegel doel, AI-team live, label gebeurtenissen, test)
+- [x] Boy 12 okt 2a: service-aanvraag RPC's afronden/notitie + UI-controle op 0 rijen
+- [x] Boy 12 okt 2b: exact-concept-controle schrijft status/nummer terug, cron elk uur werkdag 07-19, knop
+- [x] Boy 12 okt 2c: crm_taken dubbelen voorkomen + bestaande samenvoegen
+- [x] Boy 12 okt 3: IBAN intern tonen via RPC met audit
+- [ ] Na publicatie: exact-concept-controle deployen en één keer draaien, afgesloten leads melden (wacht op akkoord publicatie)
