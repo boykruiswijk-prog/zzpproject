@@ -687,6 +687,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
     // slug staat op /kennisbank/<slug>, niet op /<slug>; de oude URL heeft dus
     // juist wél een stub nodig.
     if (routePaths.has(routePath)) continue;
+    if (verouderdeMedia.has(redirect.from)) continue; // .pdf-pad: geen stub, Cloudflare geeft de 301
     const to = resolveRedirectTarget(redirect, articleIndex);
     const dir = path.join(distDir, redirect.from);
     fs.mkdirSync(dir, { recursive: true });
