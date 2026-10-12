@@ -18,18 +18,18 @@ export const waaromFaqs: WaaromFaq[] = [
   },
   {
     q: "Kan ik naast mijn intermediairverzekering ook bij ZP Zaken verzekerd zijn?",
-    a: "Dat hoeft niet :  bij ZP Zaken heb je al betere dekking voor een lagere prijs. Je kunt je intermediair laten weten dat je al verzekerd bent via een eigen polis.",
+    a: "Dat hoeft niet: met een eigen polis bij ZP Zaken heb je je BAV en AVB al geregeld, zonder eigen risico en los van je opdrachtgever. Je kunt je intermediair laten weten dat je al verzekerd bent via een eigen polis.",
   },
   {
     q: "Waarom biedt ZP Zaken ook bemiddeling via Onefellow?",
     a: "Omdat een goede zzp'er meer verdient dan alleen een goede opdracht. Onefellow bemiddelt gratis voor jou als zelfstandige :  geen kosten, wel persoonlijk contact.",
   },
   {
-    q: "Hoe kan ZP Zaken zoveel goedkoper zijn?",
-    a: `Wij werken met een mantelovereenkomst voor ${SITE_CONFIG.klantenAantal} zzp'ers. Door de premie te delen over een grote groep blijft de prijs structureel laag. Geen winstmarge voor een tussenpersoon bovenop.`,
+    q: "Hoe houdt ZP Zaken de premie laag?",
+    a: `Wij werken met een collectieve polis bij Hiscox voor meer dan ${SITE_CONFIG.klantenAantalTekst} zzp'ers. Daardoor blijft de premie laag, zonder eigen risico op de BAV + AVB.`,
   },
   {
-    q: "Wat als ik tussen opdrachten zit :  ben ik dan verzekerd?",
+    q: "Wat als ik tussen opdrachten zit, ben ik dan verzekerd?",
     a: "Ja. Jouw polis bij ZP Zaken loopt gewoon door. Je bent dagelijks opzegbaar maar nooit automatisch gestopt. Dat is het fundamentele verschil met een intermediairverzekering.",
   },
 ];
