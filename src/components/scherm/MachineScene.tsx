@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { Component, lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment, Html, Lightformer, useGLTF } from '@react-three/drei';
 import { ArrowDownToLine, BadgeCheck, BookOpen, BrainCircuit, FileCheck2, Mail, Megaphone, Receipt, RefreshCw, ShieldCheck, Headphones } from 'lucide-react';
@@ -8,6 +8,12 @@ import { STATION_IDS, STATION_LABELS, toestandLabel, type Puls, type StationStan
 export { STATION_LABELS, STATION_IDS } from './schermModel';
 export type { Puls } from './schermModel';
 const Effects = lazy(() => import('./SchermEffects'));
+/** Als het figuurmodel niet laadt, blijft de rest van het scherm gewoon zichtbaar. */
+class FiguurVangnet extends Component<{ children: ReactNode }, { fout: boolean }> {
+  state = { fout: false };
+  static getDerivedStateFromError() { return { fout: true }; }
+  render() { return this.state.fout ? null : this.props.children; }
+}
 const ICONS = [ArrowDownToLine, ShieldCheck, FileCheck2, Receipt, RefreshCw, BookOpen, Megaphone, BadgeCheck, BrainCircuit, Mail, Headphones];
 // Three materials resolve the scoped semantic screen palette once on mounting.
 function palette() {
@@ -182,7 +188,7 @@ export default function MachineScene(props: Props) {
     <color attach="background" args={[colors.bg]} /><ambientLight intensity={0.8} /><directionalLight position={[0,15,8]} intensity={2.4} />
     <Environment resolution={64}><Lightformer intensity={2} position={[0,8,0]} rotation-x={Math.PI/2} scale={[15,15,1]} /><Lightformer intensity={1.5} color={colors.blue} position={[-12,3,0]} rotation-y={Math.PI/2} scale={[8,4,1]} /></Environment>
     <Runtime onLow={low} /><CameraRig focus={props.focus} active={props.actief} /><Floor colors={colors} />
-    <Furniture colors={colors} stand={stand} /><Suspense fallback={null}><AgentFigures colors={colors} event={event} stand={stand} /></Suspense>
+    <Furniture colors={colors} stand={stand} /><FiguurVangnet><Suspense fallback={null}><AgentFigures colors={colors} event={event} stand={stand} /></Suspense></FiguurVangnet>
     <Network colors={colors} stand={stand} event={event} />
     <group position={[0,1.6,0]}><Kern colors={colors} stand={stand} event={event} /><mesh rotation-x={Math.PI/2} position-y={-0.5}><torusGeometry args={[1.7,0.04,6,60]} /><meshBasicMaterial color={colors.red.clone().multiplyScalar(2)} toneMapped={false} /></mesh>
       <Html position={[0,2.4,0]} center zIndexRange={[12,0]}><div className="scherm-core"><span>Het brein</span><b>{props.totaalVandaag}</b><small>gebeurtenissen vandaag</small><em>{props.kennisregels} kennisregels</em></div></Html>
