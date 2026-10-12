@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Besluit 12 oktober: gedeelde-dekkingsclaim vervangen in WaaromZpZaken.tsx; overige gevraagde bronnen bevatten geen dergelijke claim. Regressietest toegevoegd, 6 tests geslaagd, desktop/mobiel en build OK; geen bedragen/logica/data gewijzigd, niet gepubliceerd.
 - [x] Foutencontrole 12 oktober deel 2: Waarom ZP Zaken FAQ- en statistiekteksten gecorrigeerd; 3 tests geslaagd, preview en FAQPage-schema gecontroleerd, build OK; niet gepubliceerd.
 - [x] Foutencontrole 12 oktober: telefoonlinks behouden, artikel-CTA en prijsvermelding gecorrigeerd; 18 tests geslaagd, drie artikeltelefoonlinks en alle genoemde teksten in preview gecontroleerd, mobiele nieuwe tekst past; build OK, niet gepubliceerd.
 - [x] Upgrade /scherm: agentkantoor, De stroom, Vandaag, breaking-overlay, browserdemo; privacytests 7/7 en tv-controle 1920x1080/3840x2160 (schaal 2), geen labeloverlap of scroll. Software-rendering is traag; werkelijke tv-framerate niet vastgesteld. Niet gepubliceerd.

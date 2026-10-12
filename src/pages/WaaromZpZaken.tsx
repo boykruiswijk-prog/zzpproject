@@ -66,8 +66,8 @@ const diffBlocks = [
   },
   {
     icon: Users,
-    title: "5.000+ zzp'ers delen de premie:  jij profiteert",
-    text: "ZP Zaken werkt met een mantelovereenkomst. Dat betekent dat het verzekerde bedrag gedeeld wordt over meer dan 5.000 zelfstandigen tegelijk. Daardoor kan de premie structureel laag blijven:  niet als tijdelijke aanbieding, maar als permanent voordeel. Een intermediair koopt individueel in en telt zijn marge bovenop. Dat verschil betaal jij.",
+    title: "Collectieve polis voor 5.000+ zzp'ers: jij profiteert",
+    text: "ZP Zaken werkt met een collectieve polis bij Hiscox voor meer dan 5.000 zzp'ers. Daardoor kan de premie structureel laag blijven: niet als tijdelijke aanbieding, maar als permanent voordeel. Je dekking is per aanspraak: BAV € 5.000.000 en AVB € 2.500.000.",
   },
   {
     icon: KeyRound,
