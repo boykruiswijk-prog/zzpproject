@@ -1,6 +1,6 @@
 # Roadmap
-- [ ] ZP Zaken-faviconset, manifest en prerender-head corrigeren en testen; niet publiceren.
-- [ ] Alle personenfoto’s lokaal en in storage/database read-only inventariseren, inclusief gebruik en teamnamen; geen foto’s wijzigen.
+- [x] ZP Zaken-faviconset, manifest en prerender-head gecorrigeerd; 5 tests geslaagd en vijf bestanden HTTP 200; ongebruikte placeholder verwijderd; niet gepubliceerd.
+- [x] Personenfoto’s lokaal en openbare opslag/database read-only geïnventariseerd, inclusief artikelinhoud/backups, gebruik en teamnamen; rapport en Excel geleverd; geen foto’s gewijzigd. Afgeschermde afbeeldingobjecten alleen metadata, geen visuele beoordeling.
 - [x] AI-zichtbaarheid: zorg- en pensioenteksten geneutraliseerd; artikel-JSON-LD, gewijzigde meta en sitemap-lastmod gebruiken updated_at; regressietest toegevoegd; niet gepubliceerd.
 - [x] Besluit 12 oktober: gedeelde-dekkingsclaim vervangen in WaaromZpZaken.tsx; overige gevraagde bronnen bevatten geen dergelijke claim. Regressietest toegevoegd, 6 tests geslaagd, desktop/mobiel en build OK; geen bedragen/logica/data gewijzigd, niet gepubliceerd.
 - [x] Foutencontrole 12 oktober deel 2: Waarom ZP Zaken FAQ- en statistiekteksten gecorrigeerd; 3 tests geslaagd, preview en FAQPage-schema gecontroleerd, build OK; niet gepubliceerd.
@@ -39,4 +39,4 @@
 - [x] Boy 12 okt 2b: exact-concept-controle schrijft status/nummer terug, cron elk uur werkdag 07-19, knop
 - [x] Boy 12 okt 2c: crm_taken dubbelen voorkomen + bestaande samenvoegen
 - [x] Boy 12 okt 3: IBAN intern tonen via RPC met audit
-- [ ] Na publicatie: exact-concept-controle deployen en één keer draaien, afgesloten leads melden (wacht op akkoord publicatie)
+- [x] Na akkoord publicatie: exact-concept-controle deployed en één keer read-only gedraaid; geen echte leads/planningregels om af te sluiten; tellingen dashboard en scherm gelijk (eerder gerapporteerd).
