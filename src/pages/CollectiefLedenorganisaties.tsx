@@ -83,7 +83,7 @@ const doelgroepen = [
   { icon: Users, title: "Brancheverenigingen", desc: "Collectief voordeel als concreet ledenvoordeel.", color: "hsl(213 60% 45%)" },
   { icon: Shield, title: "Beroepsorganisaties", desc: "Professionele zekerheid voor iedere aangesloten professional.", color: "hsl(250 60% 55%)" },
   { icon: Network, title: "Netwerken voor zzp'ers", desc: "Versterk je netwerk met meetbaar financieel voordeel.", color: "hsl(180 60% 40%)" },
-  { icon: Handshake, title: "Franchise- & ondernemersverenigingen", desc: "Lagere premies voor alle aangesloten ondernemers.", color: "hsl(340 60% 50%)" },
+  { icon: Handshake, title: "Franchise- & ondernemersverenigingen", desc: "Collectieve tarieven voor aangesloten ondernemers.", color: "hsl(340 60% 50%)" },
   { icon: Briefcase, title: "Intermediairs & dienstverleners", desc: "Bied je klanten verzekeringen aan met collectieve tarieven.", color: "hsl(30 70% 50%)" },
   { icon: Building2, title: "Detacheerders", desc: "Zorg dat je gedetacheerden goed en voordelig verzekerd zijn.", color: "hsl(160 50% 40%)" },
 ];
@@ -118,7 +118,7 @@ const stappen = [
 ];
 
 const faqs = [
-  { q: "Is er een minimum aantal leden?", a: "Nee, er is geen strikt minimum. We kijken samen naar de beste aanpak, ongeacht de grootte van je organisatie." },
+  { q: "Is er een minimum aantal leden?", a: "Nee, er is geen strikt minimum. We kijken samen naar een passende aanpak, ongeacht de grootte van je organisatie." },
   { q: "Zit er exclusiviteit aan vast?", a: "Nee, er zijn geen exclusiviteitsverplichtingen. Je leden zijn altijd vrij om hun eigen keuzes te maken." },
   { q: "Hoe snel kan het starten?", a: "Na de kennismaking en akkoord op het voorstel kan de implementatie binnen 2 weken starten." },
   { q: "Wat kost de samenwerking voor onze organisatie?", a: "Niets. De samenwerking is kosteloos voor jouw organisatie. Wij worden vergoed door de verzekeraars." },
@@ -282,7 +282,7 @@ export default function CollectiefLedenorganisaties() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.8 }}
             >
-              Bied jouw leden direct financieel voordeel: lagere premies op zakelijke verzekeringen én snellere betaling van facturen. Persoonlijk, transparant en zonder extra werkdruk.
+              Bied jouw leden direct financieel voordeel: collectieve tarieven op zakelijke verzekeringen én snellere betaling van facturen. Persoonlijk, transparant en zonder extra werkdruk.
             </motion.p>
 
             {/* Animated USP pills */}

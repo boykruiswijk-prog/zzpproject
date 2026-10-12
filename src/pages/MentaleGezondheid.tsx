@@ -33,7 +33,7 @@ export default function MentaleGezondheid() {
         {
           icon: Brain,
           title: "Burn-out preventie",
-          description: "Herken signalen van overbelasting op tijd en leer grenzen stellen. Preventie is altijd beter en goedkoper dan genezen.",
+          description: "Herken signalen van overbelasting op tijd en leer grenzen stellen. Tijdige preventie kan langdurige uitval helpen voorkomen.",
         },
         {
           icon: HeartHandshake,

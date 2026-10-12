@@ -170,7 +170,7 @@ export default function BavZzpVergelijken() {
           <li><strong className="text-foreground">Eigen risico.</strong> Bij De Goudse betaal je € 750 per aanspraak zelf, bij Insify € 250 tot € 2.500. Bij ZP Zaken is er geen eigen risico op BAV + AVB. Voor cyber geldt € 500, of € 1.000 bij cyberfraude.</li>
           <li><strong className="text-foreground">AVB niet inbegrepen.</strong> Bij de meeste aanbieders betaal je de AVB apart. Bij ZP Zaken zitten BAV en AVB in één polis.</li>
         </ul>
-        <p>Heb je weinig risico en vraagt je opdrachtgever geen hoge dekking? Dan kan een goedkopere BAV met lagere dekking voldoende zijn. Wil je hoge dekking, geen eigen risico en BAV en AVB in één keer geregeld? Dan past ZP Zaken beter.</p>
+        <p>Heb je weinig risico en vraagt je opdrachtgever geen hoge dekking? Dan kan een BAV met een beperktere dekking voldoende zijn. Wil je hoge dekking, geen eigen risico en BAV en AVB in één keer geregeld? Bekijk dan de combinatiepolis van ZP Zaken.</p>
       </Sectie>
 
       <Sectie id="waarom-zp-zaken" titel="Waarom zzp'ers voor ZP Zaken kiezen" alt>

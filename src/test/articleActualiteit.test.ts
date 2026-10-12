@@ -1,5 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import { articleSchema } from "@/lib/schema";
 import { SITE_CONFIG } from "@/config/site";
 
@@ -29,15 +30,13 @@ describe("Article actualiteit voor zoekmachines", () => {
   });
 
   it("gebruikt updated_at in client, prerender en sitemap", () => {
-    const detail = Bun.file("src/pages/ArtikelDetail.tsx");
-    const prerender = Bun.file("scripts/prerender.ts");
-    const sitemap = Bun.file("supabase/functions/sitemap/index.ts");
-    return Promise.all([detail.text(), prerender.text(), sitemap.text()]).then(([detailText, prerenderText, sitemapText]) => {
-      expect(detailText).toContain("const updatedAt = article.updated_at || publishedAt");
-      expect(detailText).toContain('<meta property="og:updated_time" content={updatedAt} />');
-      expect(prerenderText).toContain("articleModifiedTime: dateModified");
-      expect(prerenderText).toContain("const lastmod = (a.updated_at || a.published_at");
-      expect(sitemapText).toContain("updated_at ?? (a as any).published_at");
-    });
+    const detailText = readFileSync("src/pages/ArtikelDetail.tsx", "utf8");
+    const prerenderText = readFileSync("scripts/prerender.ts", "utf8");
+    const sitemapText = readFileSync("supabase/functions/sitemap/index.ts", "utf8");
+    expect(detailText).toContain("const updatedAt = article.updated_at || publishedAt");
+    expect(detailText).toContain('<meta property="og:updated_time" content={updatedAt} />');
+    expect(prerenderText).toContain("articleModifiedTime: dateModified");
+    expect(prerenderText).toContain("const lastmod = (a.updated_at || a.published_at");
+    expect(sitemapText).toContain("updated_at ?? (a as any).published_at");
   });
 });
