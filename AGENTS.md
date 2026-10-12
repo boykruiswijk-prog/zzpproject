@@ -23,12 +23,10 @@
 - docs/cloudflare-bulk-redirects.csv wordt bij elke build afgeleid van public/_redirects (cloudflareBulkCsv in vite.config.ts). Waarom: één bron voor redirects.
 
 - Reviewverzoeken alleen via review-verzoeken (cron, schakelaar 'reviewverzoeken_actief', RPC review_kandidaten); afmelden alleen naar review_afmeldingen, nooit suppressed_emails. Waarom: één filter, transactionele mail blijft.
-- Beheer-UI-regels staan in src/components/admin/AGENTS.md, CRM-regels in src/components/admin/crm/AGENTS.md.
+- Beheer-UI-regels: src/components/admin/AGENTS.md; CRM: src/components/admin/crm/AGENTS.md.
 - Article images: leased queue, wake token or MFA supervisor, max 2 AI attempts then category fallback; never a global pause (AI refusal only sets admin notice); crashed jobs resume as fallback. Preserve custom/old assets; build verifies images; keep ArticleImage guard. Why: every article gets an image within minutes.
 - Scripts never import React. Why: avoid prod/dev SSR crashes.
 - Article markdown uses articleMarkdownUrl for every rendering path. Why: preserve telephone links while retaining the default unsafe-protocol filter.
-
-
 
 - Elke wijziging die zichtbaar is op de website of in de admin krijgt bij het publiceren precies één rij in public.wijzigingsmeldingen, in gewone taal voor Ellen (geen technische termen of bestandsnamen); de trigger wijzigingsmelding_mailen en het vangnet (cron) mailen via Edge Function wijziging-mailen. Waarom: Ellen weet altijd wat er veranderd is.
 - /scherm en /tv: data alleen via scherm-data (SCHERM_TOKEN of apparaattoken, alleen sha-256 in scherm_apparaten; koppelen via scherm-koppel); machine_activiteit-triggers laten nooit de actie falen. Waarom: intrekbare toegang per tv.
@@ -36,4 +34,4 @@
 <!-- LOVABLE:BEGIN -->
 - Live scenes/effects are lazy; demo events stay in browser memory. Journey/timeline aggregates use service-only scherm_stromen via scherm-data. Why: site performance and visitor privacy.
 <!-- LOVABLE:END -->
-- Samengevoegde kennisbankartikelen: bron krijgt is_published = false plus een rij in article_samenvoegingen, en directe 301's (kennisbank/, kaal, blog/) in legacyRedirects naar het doel; src/test/kennisbankSamenvoeging.test.ts bewaakt ketens en links. Waarom: nooit verwijderen, geen dubbele content of redirectketens.
+- Samengevoegd artikel: bron is_published=false + rij article_samenvoegingen + directe 301's; bewaakt door kennisbankSamenvoeging.test.ts. Waarom: niets verwijderen, geen ketens.
