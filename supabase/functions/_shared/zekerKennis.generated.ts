@@ -125,7 +125,7 @@ export const ZEKER_KENNIS = {
     {
       "path": "/zorgverzekering",
       "title": "ZZP Zorgverzekering Collectief | ZP Zaken",
-      "intro": "Als lid van het ZP Zaken collectief profiteer je van korting op je zorgverzekering: dezelfde dekking, een lagere premie. In een gesprek rekenen we voor wat de collectieve korting in jouw situatie oplevert."
+      "intro": "Via ZP Zaken kun je als zzp'er deelnemen aan een collectieve zorgverzekering. In een persoonlijk gesprek beantwoorden we je vragen over deelname en de beschikbare pakketten."
     },
     {
       "path": "/mentale-gezondheid",
@@ -372,12 +372,12 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Verzekeringen",
       "vraag": "Wat kost een AOV gemiddeld per maand?",
-      "antwoord": "De premie van een AOV hangt af van je beroep, leeftijd, gewenste uitkering en wachttijd. Gemiddeld betalen zzp'ers tussen de €150 en €400 per maand. Bij ZP Zaken zoeken we de beste prijs-kwaliteitverhouding door verschillende verzekeraars te vergelijken."
+      "antwoord": "De premie van een AOV hangt af van je beroep, leeftijd, gewenste uitkering en wachttijd. Gemiddeld betalen zzp'ers tussen de €150 en €400 per maand. ZP Zaken informeert je over de mogelijkheden bij verschillende verzekeraars."
     },
     {
       "categorie": "Over ZP Zaken",
       "vraag": "Is ZP Zaken onafhankelijk?",
-      "antwoord": "Ja, ZP Zaken is volledig onafhankelijk. Wij zijn niet gebonden aan één verzekeraar en kunnen daarom informeren welke verzekering bij je past. We vergelijken producten van verschillende aanbieders om de beste oplossing voor jou te vinden."
+      "antwoord": "Ja, ZP Zaken is volledig onafhankelijk. Wij zijn niet gebonden aan één verzekeraar en kunnen daarom informeren welke verzekering bij je past. We vergelijken producten van verschillende aanbieders en bespreken de mogelijkheden met je."
     },
     {
       "categorie": "Over ZP Zaken",
