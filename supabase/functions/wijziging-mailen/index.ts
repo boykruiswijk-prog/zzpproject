@@ -4,6 +4,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
 import { COMPANY } from "../_shared/company.ts";
+import { metWerk, werkVan } from "../_shared/machineWerk.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -57,7 +58,7 @@ ${r.wat_moet_ellen_doen?.trim() ? blok("Wat moet je doen", markdownLight(r.wat_m
   return { html, text };
 }
 
-Deno.serve(async (req) => {
+Deno.serve(metWerk({ station: "mail", actie: "wijziging", tekst: "Wijzigingsmelding wordt gemaild", klaarTekst: "Wijzigingsmelding gemaild", foutTekst: "Wijzigingsmelding vraagt aandacht", bron: "wijziging-mailen" }, async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   const admin = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
   const secret = req.headers.get("x-cron-secret") ?? "";
@@ -70,6 +71,7 @@ Deno.serve(async (req) => {
   if (error) return json({ error: error.message }, 500);
 
   const resultaten = [];
+  if ((rijen ?? []).length) await werkVan(req).start();
   for (const r of (rijen ?? []) as Rij[]) {
     // Claim de rij eerst, zodat trigger en vangnet niet dubbel mailen.
     const { data: claim } = await admin.from("wijzigingsmeldingen")
@@ -97,4 +99,4 @@ Deno.serve(async (req) => {
     resultaten.push({ id: r.id, geslaagd });
   }
   return json({ ok: true, verwerkt: resultaten.length, resultaten });
-});
+}));

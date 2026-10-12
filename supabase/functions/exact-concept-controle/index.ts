@@ -10,6 +10,7 @@ import { ensureValidToken, refreshAccessToken } from "../_shared/exactToken.ts";
 import { requireSupervisor } from "../_shared/teamAuth.ts";
 import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
 import { ADMINISTRATIE, EXACT_BOEKING_SOORT, euro, mailEnkel, type Regel } from "../_shared/exactBoekingMelding.ts";
+import { metWerk, werkVan } from "../_shared/machineWerk.ts";
 
 const cors = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret" };
 const json = (d: unknown, s = 200) => new Response(JSON.stringify(d), { status: s, headers: { ...cors, "Content-Type": "application/json" } });
@@ -26,7 +27,7 @@ export function werkdagenSinds(startIso: string, vandaag: string): number {
   return n;
 }
 
-Deno.serve(async (req) => {
+Deno.serve(metWerk({ station: "exact", actie: "exact_sync", tekst: "Exact-concepten worden gecontroleerd", klaarTekst: "Exact-concepten gecontroleerd", foutTekst: "Exact-conceptcontrole vraagt aandacht", bron: "exact-concept-controle" }, async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const body = await req.json().catch(() => ({}));
@@ -38,6 +39,7 @@ Deno.serve(async (req) => {
     const auth = await requireSupervisor(req, admin);
     if (auth instanceof Response) return json({ error: "geen_toegang" }, auth.status);
   }
+  await werkVan(req).start();
   const actie = String(body?.actie ?? "controle");
 
   // Eenmalige testmail op basis van de Logineering-factuur. Schrijft niets naar Exact.
@@ -182,4 +184,4 @@ ${einddatumZonder.length ? `<p><strong>Wat te doen:</strong> kies in Vandaag te 
     metadata: { nieuw_verwijderd: nieuwVerwijderd.map((r) => r.id), lang_open: langOpen.map((r) => r.id), mislukt: mislukt.length, koppeling: kc, einddatum_zonder_opzegging: einddatumZonder.map((r) => r.contract_id) },
   });
   return json({ ...rapport, mail: res });
-});
+}));

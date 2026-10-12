@@ -251,3 +251,17 @@
 .breaking-pop { display: inline-block; animation: breaking-pop 0.9s cubic-bezier(.2,.8,.2,1) both; }
 @keyframes breaking-pop { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .breaking-pop { animation: none; } }
+.scherm-station .st-regel { display: flex; align-items: center; gap: 0.5vh; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 24vh; }
+.scherm-station .st-regel > span:last-child { overflow: hidden; text-overflow: ellipsis; }
+.st-bol { width: 1vh; height: 1vh; border-radius: 9999px; flex-shrink: 0; background: hsl(var(--s-dim)); }
+.st-werk { border-color: hsl(var(--s-groen) / 0.8); box-shadow: 0 0 2.4vh hsl(var(--s-groen) / 0.35); }
+.st-werk .st-bol { background: hsl(var(--s-groen)); box-shadow: 0 0 1vh hsl(var(--s-groen)); animation: st-puls 1.2s ease-in-out infinite; }
+.st-werk small { color: hsl(var(--s-groen)); }
+.st-standby .st-bol { background: hsl(var(--s-blauw)); }
+.st-rust { opacity: 0.72; border-color: hsl(var(--s-lijn)); box-shadow: none; }
+.st-rust > svg, .st-rust > b { color: hsl(var(--s-dim)); }
+.st-storing { border-color: hsl(var(--s-rood)); box-shadow: 0 0 2vh hsl(var(--s-rood) / 0.4); }
+.st-storing .st-bol { background: hsl(var(--s-rood)); box-shadow: 0 0 1vh hsl(var(--s-rood)); }
+.st-storing small { color: hsl(var(--s-rood)); }
+@keyframes st-puls { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.55; } }
+@media (prefers-reduced-motion: reduce) { .st-werk .st-bol { animation: none; } }

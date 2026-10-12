@@ -117,13 +117,27 @@ export function schermActiviteit(a: Ruw) {
     id: String(a.id ?? ''), station,
     actie: ['lead_verzekering_aanvraag','lead_actief','kvk_check','planner_run','exact_sync','wijziging','mail','cron','certificaat','chat','serviceverzoek','bav_aanmelding','artikel'].includes(a.actie) ? String(a.actie) : 'overig',
     tekst: echteTekst(a.tekst, station),
-    status: a.status === 'bezig' || a.status === 'fout' ? a.status as 'bezig' | 'fout' : 'klaar' as const,
+    status: (a.status === 'bezig' || a.status === 'fout' || a.status === 'onbekend' ? a.status : 'klaar') as 'bezig' | 'fout' | 'onbekend' | 'klaar',
     tijd: Number.isFinite(Date.parse(a.tijd)) ? new Date(a.tijd).toISOString() : '',
     echte_aanvraag: echteAanvraag,
     beroepsgroep: echteAanvraag ? groep.beroepsgroep : null,
     provincie: echteAanvraag ? groep.provincie : null,
   };
 }
+
+export type Toestand = 'aan_het_werk' | 'stand_by' | 'rust' | 'storing';
+export const WERK_MINUTEN = 10;
+const amsDag = (d: Date) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Amsterdam' }).format(d);
+/** Toestand per werkplek: lopend of laatste actie < 10 min = aan het werk; laatste fout = storing; vandaag = stand-by; anders rust. */
+export function bepaalToestand(w: { lopend?: unknown; laatst_actief_op?: unknown; laatste_status?: unknown } | undefined, nu: Date): Toestand {
+  if (w?.lopend === true) return 'aan_het_werk';
+  if (w?.laatste_status === 'fout') return 'storing';
+  const t = typeof w?.laatst_actief_op === 'string' ? Date.parse(w.laatst_actief_op) : NaN;
+  if (!Number.isFinite(t)) return 'rust';
+  if (nu.getTime() - t < WERK_MINUTEN * 60_000) return 'aan_het_werk';
+  return amsDag(new Date(t)) === amsDag(nu) ? 'stand_by' : 'rust';
+}
+const iso = (v: unknown) => typeof v === 'string' && Number.isFinite(Date.parse(v)) ? new Date(v).toISOString() : null;
 
 /** AI-team uit marketing_snapshot (bron ai_team): max 10 agents, vaste teksten door de privacyfilter. */
 export function schoonAiTeam(snap: Snap): { naam: string; taak: string; resultaat: string | null; laatste_run: string | null; status: 'klaar' | 'fout' | 'gepland' }[] {
@@ -167,18 +181,25 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
   const totaal = getal(doel.totaal) ?? 0;
   const rest = Math.max(getal(doel.resterende_dagen) ?? 0, 0);
   const tempo = getal(doel.tempo_14d) ?? 0;
-  const stations: Record<string, { vandaag: number; skills: number; laatste_status: string | null }> = {};
+  const stations: Record<string, { vandaag: number; skills: number; laatste_status: string | null; toestand: Toestand; laatst_actief_op: string | null; lopende_tekst: string | null; duur_vandaag_min: number }> = {};
   for (const s of STATIONS) {
     const x = r?.stations?.[s] ?? {};
-    stations[s] = { vandaag: getal(x.vandaag) ?? 0, skills: getal(x.skills) ?? 0, laatste_status: x.laatste_status ? status(x.laatste_status) : null };
+    const w = r?.werkstand?.[s];
+    const tekst = w?.lopende_tekst ? echteTekst(w.lopende_tekst, s) : null;
+    stations[s] = { vandaag: getal(x.vandaag) ?? 0, skills: getal(x.skills) ?? 0, laatste_status: x.laatste_status ? status(x.laatste_status) : null,
+      toestand: bepaalToestand(w, nu), laatst_actief_op: iso(w?.laatst_actief_op), lopende_tekst: tekst, duur_vandaag_min: Math.max(0, Math.round(getal(w?.duur_vandaag_min) ?? 0)) };
   }
+  const perioden = new Map<string, Ruw>((Array.isArray(r?.perioden) ? r.perioden : []).map((p: Ruw) => [String(p?.id ?? ''), p]));
   const kb = r?.kennisbank ?? {};
   const kbs = r?.klantbasis ?? {};
   const sv = r?.service ?? {};
   const gz = r?.gezondheid ?? {};
   return {
     gegenereerd_op: nu.toISOString(),
-    activiteit: (Array.isArray(r?.activiteit) ? r.activiteit : []).filter((a: Ruw) => !a.is_test).slice(0, 40).map(schermActiviteit),
+    activiteit: (Array.isArray(r?.activiteit) ? r.activiteit : []).filter((a: Ruw) => !a.is_test).slice(0, 40).map((a: Ruw) => {
+      const p = perioden.get(String(a.id ?? ''));
+      return { ...schermActiviteit(a), gestart_op: iso(p?.gestart_op), afgerond_op: iso(p?.afgerond_op), agent: p?.agent === true };
+    }),
     stroom: {
       sinds: '2026-10-06',
       sessies: getal(r?.stroom?.sessies),

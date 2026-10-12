@@ -76,8 +76,9 @@ import { saneerFormulier, saneerPagina } from "../_shared/leadVelden.ts";
 import { resolveEnvironment } from "../_shared/environment.ts";
 import { saneerAttributie } from "../_shared/attributie.ts";
 import { normaliseerNlTelefoon } from "../_shared/telefoon.ts";
+import { metWerk, werkVan } from "../_shared/machineWerk.ts";
 
-Deno.serve(async (req) => {
+Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aanvraag wordt verwerkt", klaarTekst: "Aanvraag verwerkt", foutTekst: "Aanvraagverwerking vraagt aandacht", bron: "process-bav-wizard" }, async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -173,6 +174,7 @@ Deno.serve(async (req) => {
       kind: "bav",
     });
     if (!guard.ok) return weiger(guard.status ?? 400, guard.error ?? "Aanvraag geweigerd.", guard.reason ?? "anti_spam");
+    await werkVan(req).start();
 
     const todayStr = new Date().toISOString().split("T")[0];
     if (submission.ingangsdatum < todayStr) {
@@ -452,4 +454,4 @@ Deno.serve(async (req) => {
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
-});
+}));

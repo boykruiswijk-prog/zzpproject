@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 import logo from "@/assets/logo-zp.webp";
 import { supabase } from "@/integrations/supabase/client";
 import type { SchermPayload } from "../../supabase/functions/_shared/schermAnonimiseer";
-import { STATION_LABELS, STATION_IDS, stationToken, type Puls } from "@/components/scherm/schermModel";
+import { STATION_LABELS, STATION_IDS, stationToken, periodeTekst, type Puls } from "@/components/scherm/schermModel";
 import CountUp from '@/components/scherm/CountUp';
 import BreakingMoment from '@/components/scherm/BreakingMoment';
 
@@ -289,7 +289,14 @@ function PaneelVandaag({ d }: { d: SchermPayload }) {
       </svg>
     </div>
     <div><Label>Drukste afdeling</Label><div className="text-[4vh] font-semibold">{d.gebeurtenissen_vandaag ? STATION_LABELS[drukste] : 'Nog geen gebeurtenissen'}</div><span className="text-[2.6vh] text-[hsl(var(--s-dim))]">{d.stations[drukste]?.vandaag ?? 0} gebeurtenissen</span></div>
-    <div className="vandaag-legenda">{STATION_IDS.filter(id => (d.stations[id]?.vandaag ?? 0) > 0).map(id => <span key={id}><i style={{ background: `hsl(${stationToken(id)})` }} />{STATION_LABELS[id]}</span>)}</div>
+    <div className="flex min-h-0 flex-col gap-[0.8vh]"><Label>Werkminuten per medewerker</Label>
+      {(() => { const max = Math.max(1, ...STATION_IDS.map(id => d.stations[id]?.duur_vandaag_min ?? 0)); return STATION_IDS.map(id => { const m = d.stations[id]?.duur_vandaag_min ?? 0; return (
+        <div key={id} className="flex items-center gap-[1vw] text-[1.9vh]" data-werkminuten={id}>
+          <span className="w-[12vw] shrink-0 truncate">{STATION_LABELS[id]}</span>
+          <span className="h-[1.3vh] flex-1 overflow-hidden rounded-full bg-[hsl(var(--s-lijn))]"><span className="block h-full rounded-full" style={{ width: `${(m / max) * 100}%`, background: `hsl(${stationToken(id)})` }} /></span>
+          <span className="w-[5vw] shrink-0 text-right tabular-nums text-[hsl(var(--s-dim))]">{m} min</span>
+        </div>); }); })()}
+    </div>
   </div>;
 }
 function runTijd(iso: string | null, nu: string) {
@@ -487,7 +494,7 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
     let i = 0;
     const t = window.setInterval(() => {
       const station = STATION_IDS[i % STATION_IDS.length];
-      const event: Puls = { id: `demo-${Date.now()}`, station, actie: 'overig', status: 'klaar', tekst: station === 'intake' ? 'Nieuwe aanvraag binnen, Consultant uit Utrecht' : 'Demonstratie: afdeling aan het werk', tijd: new Date().toISOString(), echte_aanvraag: station === 'intake', beroepsgroep: station === 'intake' ? 'Consultant' : null, provincie: station === 'intake' ? 'Utrecht' : null };
+      const event: Puls = { id: `demo-${Date.now()}`, station, actie: 'overig', status: 'klaar', tekst: station === 'intake' ? 'Nieuwe aanvraag binnen, Consultant uit Utrecht' : 'Demonstratie: afdeling aan het werk', tijd: new Date().toISOString(), echte_aanvraag: station === 'intake', beroepsgroep: station === 'intake' ? 'Consultant' : null, provincie: station === 'intake' ? 'Utrecht' : null, gestart_op: null, afgerond_op: null, agent: false };
       setDemoEvent(event); setFocus(event);
       if (station === 'intake') {
         setBreaking({ event, total: data.doel.totaal + 1 });
@@ -498,6 +505,19 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
     }, 10_000);
     return () => clearInterval(t);
   }, [demo, Boolean(data)]);
+
+  // Demo (alleen in de browser): elke 10 seconden schuiven de vier toestanden over de werkplekken.
+  const stationsWeergave = useMemo(() => {
+    if (!data) return {};
+    if (!demo) return data.stations;
+    const volgorde = ['aan_het_werk', 'stand_by', 'rust', 'storing'] as const;
+    const stap = Math.floor(nu.getTime() / 10_000);
+    return Object.fromEntries(STATION_IDS.map((id, i) => {
+      const toestand = volgorde[(i + stap) % 4];
+      const minuten = toestand === 'stand_by' ? 25 : toestand === 'rust' ? 60 * 20 : 2;
+      return [id, { ...data.stations[id], toestand, laatst_actief_op: new Date(nu.getTime() - minuten * 60_000).toISOString(), lopende_tekst: 'Demonstratie: afdeling aan het werk' }];
+    }));
+  }, [data, demo, demo ? Math.floor(nu.getTime() / 10_000) : 0]);
 
   const nieuwePulsen = useMemo(() => [...(data?.activiteit ?? []), ...(demoEvent ? [demoEvent] : [])], [data, demoEvent]);
 
@@ -550,7 +570,7 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
               {data && (
                 <Suspense fallback={null}>
                   <div className={`scherm-scene ${scene === 0 ? 'scene-zichtbaar' : ''}`} aria-hidden={scene !== 0}>
-                    <MachineScene stations={data.stations} totaalVandaag={data.gebeurtenissen_vandaag} kennisregels={data.kennisbank.gepubliceerd} pulsen={nieuwePulsen} focus={focus} actief={scene === 0 && !breaking} adsBeschikbaar={Boolean(data.marketing.microsoft_ads)} />
+                    <MachineScene stations={stationsWeergave} totaalVandaag={data.gebeurtenissen_vandaag} kennisregels={data.kennisbank.gepubliceerd} pulsen={nieuwePulsen} focus={focus} actief={scene === 0 && !breaking} />
                   </div>
                   {scene === 1 && <div className="scherm-scene scene-zichtbaar stroom-laag"><StroomScene data={data} /></div>}
                 </Suspense>
@@ -562,8 +582,8 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
                   <div key={k} className="flex shrink-0 items-center gap-[3vw] pr-[3vw]" aria-hidden={k === 1}>
                     {(data?.activiteit ?? []).slice(0, 14).map((a) => (
                       <span key={`${k}-${a.id}`} className="flex items-center gap-[0.8vw] text-[2.6vh]">
-                        <span className="h-[1.4vh] w-[1.4vh] rounded-full" style={{ background: `hsl(var(${a.status === "fout" ? "--s-rood" : a.status === "bezig" ? "--s-blauw" : "--s-groen"}))` }} />
-                        <span className="tabular-nums text-[hsl(var(--s-dim))]">{tijdKort(a.tijd)}</span>
+                        <span className="h-[1.4vh] w-[1.4vh] rounded-full" style={{ background: `hsl(var(${a.status === "fout" ? "--s-rood" : a.status === "bezig" ? "--s-blauw" : a.status === "onbekend" ? "--s-dim" : "--s-groen"}))` }} />
+                        <span className="tabular-nums text-[hsl(var(--s-dim))]">{periodeTekst(a) ?? tijdKort(a.tijd)}</span>
                         <span className="font-semibold text-[hsl(var(--s-rood))]">{STATION_LABELS[a.station] ?? a.station}</span>
                         <span>{a.tekst}</span>
                       </span>

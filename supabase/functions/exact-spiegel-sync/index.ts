@@ -6,6 +6,7 @@ import { ensureValidToken, refreshAccessToken } from "../_shared/exactToken.ts";
 import { checkConfiguredDivision } from "../_shared/exactDivision.ts";
 import { requireSupervisor } from "../_shared/teamAuth.ts";
 import { exactCodeNorm, exactDatum } from "../_shared/exactCodeMatch.ts";
+import { metWerk, werkVan } from "../_shared/machineWerk.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -21,7 +22,7 @@ const PAUZE_MS = 1300; // ≤ ~46 calls/min, onder de Exact-limiet van 60/min
 const num = (v: unknown) => (v == null || v === "" ? null : Number(v));
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-Deno.serve(async (req) => {
+Deno.serve(metWerk({ station: "exact", actie: "exact_sync", tekst: "Exact-gegevens worden gesynchroniseerd", klaarTekst: "Exact-gegevens gesynchroniseerd", foutTekst: "Exact-synchronisatie vraagt aandacht", bron: "exact-spiegel-sync" }, async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
@@ -34,6 +35,7 @@ Deno.serve(async (req) => {
     const auth = await requireSupervisor(req, admin);
     if (auth instanceof Response) return json({ error: "geen_toegang" }, auth.status);
   }
+  await werkVan(req).start();
 
   let stap: Stap = "probe";
   try { const b = await req.json(); if (STAPPEN.includes(b?.stap)) stap = b.stap; else return json({ error: "onbekende_stap", stappen: STAPPEN }, 400); }
@@ -163,4 +165,4 @@ Deno.serve(async (req) => {
     await admin.from("exact_sync_log").insert({ trigger_type: "spiegel_sync", status: "error", error_message: msg.slice(0, 500), payload: { stap, run_id: runId, calls } });
     return json({ success: false, stap, calls, error: "Spiegel-sync mislukt", detail: msg.slice(0, 300) }, 502);
   }
-});
+}));
