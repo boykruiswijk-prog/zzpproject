@@ -235,7 +235,7 @@ export default function Verzekeringen() {
           Wat kosten verzekeringen voor zzp'ers in 2026?
         </LocalizedLink>
       </p>
-      <LeesMeer voorkeur={["bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "bedrijfsaansprakelijkheidsverzekering-zzp", "wat-kosten-verzekeringen-voor-zzp-ers", "welke-verzekeringen-zzp", "zp-zaken-zorgeloos-zzpen-goedkoopste-bav-avb", "cyberverzekering-zzp"]} />
+      <LeesMeer voorkeur={["bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "bedrijfsaansprakelijkheidsverzekering-zzp", "wat-kosten-verzekeringen-voor-zzp-ers", "welke-verzekeringen-zzp", "cyberverzekering-zzp"]} />
     </Layout>
   );
 }
