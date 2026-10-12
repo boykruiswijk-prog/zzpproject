@@ -5081,6 +5081,7 @@ export type Database = {
         Args: { _bevestigd: boolean; _id: string }
         Returns: boolean
       }
+      bron_rij_voor_lead: { Args: { _id: string }; Returns: number }
       certificaatnummer_voorstel: {
         Args: { _lead_id?: string; _onderneming_id: string }
         Returns: Json
@@ -5342,6 +5343,10 @@ export type Database = {
       lead_afronden: {
         Args: { _lead_id: string; _toelichting?: string }
         Returns: boolean
+      }
+      lead_ingangsdatum_wijzigen: {
+        Args: { _datum: string; _lead_id: string; _toelichting: string }
+        Returns: Json
       }
       log_not_found: {
         Args: { _pad: string; _referrer?: string; _user_agent?: string }
