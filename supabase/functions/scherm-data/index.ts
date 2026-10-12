@@ -63,7 +63,9 @@ Deno.serve(async (req) => {
     if (error) throw new Error(error.message);
     const { data: stromen, error: stroomFout } = await admin.rpc("scherm_stromen");
     if (stroomFout) throw new Error(stroomFout.message);
-    const body = JSON.stringify(bouwSchermPayload({ ...(data ?? {}), ...(stromen ?? {}) }));
+    const { data: werk, error: werkFout } = await admin.rpc("scherm_werkstand");
+    if (werkFout) console.error("scherm_werkstand", werkFout.message);
+    const body = JSON.stringify(bouwSchermPayload({ ...(data ?? {}), ...(stromen ?? {}), ...(werk ?? {}) }));
     cache = { op: Date.now(), body };
     return json(body, 200, { "Cache-Control": "private, max-age=20" });
   } catch (e) {

@@ -778,6 +778,13 @@
       "when": 1791787679650,
       "tag": "0110_wijzigingsmelding_kennisbank_samenvoegen",
       "breakpoints": true
+    },
+    {
+      "idx": 111,
+      "version": "7",
+      "when": 1791788068986,
+      "tag": "0111_machine_werkperiodes",
+      "breakpoints": true
     }
   ]
 }

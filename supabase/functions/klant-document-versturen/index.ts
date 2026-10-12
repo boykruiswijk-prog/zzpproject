@@ -11,6 +11,7 @@ import { haalFactuurPdf } from "../_shared/exactFactuurPdf.ts";
 import { createMailGate } from "../_shared/mail.ts";
 import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
 import { PORTAL_FACTUREN_VANAF } from "../_shared/klantAccounts.ts";
+import { metWerk, werkVan } from "../_shared/machineWerk.ts";
 
 const json = (d: unknown, status = 200) => new Response(JSON.stringify(d), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 const esc = (v: unknown) => String(v ?? "").replace(/[&<>'"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[c] ?? c);
@@ -34,7 +35,7 @@ function aal(token: string): string | null {
 const exactDatum = (v: unknown) => { const ms = Number(String(v ?? "").match(/-?\d+/)?.[0] ?? 0); return ms ? new Date(ms).toISOString().slice(0, 10) : null; };
 const nlDatum = (d: string | null) => d ? d.split("-").reverse().join("-") : "-";
 
-Deno.serve(async (req) => {
+Deno.serve(metWerk({ station: "service", actie: "mail", tekst: "Document wordt naar klant verstuurd", klaarTekst: "Document naar klant verstuurd", foutTekst: "Document versturen vraagt aandacht", bron: "klant-document-versturen" }, async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   const url = Deno.env.get("SUPABASE_URL")!;
   const admin = createClient(url, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
@@ -132,6 +133,7 @@ Deno.serve(async (req) => {
     return json({ voorbeeld: true, aan: ontvanger, adressen, onderwerp: subject, html, bijlage: { naam: bijlage.naam, kb: Math.round(bijlage.bytes.length / 1024) } });
   }
 
+  await werkVan(req).start();
   const gate = createMailGate("klant-document-versturen", req);
   const plan = gate.plan({ to: ontvanger, subject, html });
   const key = Deno.env.get("RESEND_API_KEY") ?? "";
@@ -145,4 +147,4 @@ Deno.serve(async (req) => {
   await userClient.rpc("crm_notitie_toevoegen", { _onderneming_id: ond.id, _persoon_id: null, _soort: "overig", _tekst: tekst, _details: { bron: "klant-document-versturen", soort: b.soort, invoice_id: b.invoice_id ?? null, bijlage: bijlage.naam, ontvanger } });
   await admin.from("activiteiten_log").insert({ actie_type: "document_verstuurd", omschrijving: `${ond.naam}: ${tekst}`, uitgevoerd_door: user.id, uitgevoerd_door_naam: naamTeam, klant_email: ontvanger });
   return json({ ok: true, redirected: plan.redirected });
-});
+}));

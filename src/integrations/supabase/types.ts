@@ -3516,8 +3516,10 @@ export type Database = {
       machine_activiteit: {
         Row: {
           actie: string
+          afgerond_op: string | null
           bron: string | null
           created_at: string
+          gestart_op: string | null
           id: string
           is_test: boolean
           station: string
@@ -3526,8 +3528,10 @@ export type Database = {
         }
         Insert: {
           actie: string
+          afgerond_op?: string | null
           bron?: string | null
           created_at?: string
+          gestart_op?: string | null
           id?: string
           is_test?: boolean
           station: string
@@ -3536,8 +3540,10 @@ export type Database = {
         }
         Update: {
           actie?: string
+          afgerond_op?: string | null
           bron?: string | null
           created_at?: string
+          gestart_op?: string | null
           id?: string
           is_test?: boolean
           station?: string
@@ -5019,8 +5025,11 @@ export type Database = {
       scherm_machine_live: {
         Row: {
           actie: string | null
+          afgerond_op: string | null
           created_at: string | null
+          gestart_op: string | null
           id: string | null
+          is_agent: boolean | null
           is_test: boolean | null
           station: string | null
           status: string | null
@@ -5344,6 +5353,10 @@ export type Database = {
       }
       machine_cron_naam: { Args: { _job: string }; Returns: string }
       machine_cron_verwerken: { Args: never; Returns: number }
+      machine_klaar: {
+        Args: { _id: string; _status: string; _tekst: string }
+        Returns: undefined
+      }
       machine_lead_tekst: {
         Args: {
           _beroep: string
@@ -5364,6 +5377,15 @@ export type Database = {
           _tekst: string
         }
         Returns: undefined
+      }
+      machine_start: {
+        Args: {
+          _actie: string
+          _bron: string
+          _station: string
+          _tekst: string
+        }
+        Returns: string
       }
       mag_crm_beeindigen: { Args: { _uid: string }; Returns: boolean }
       menu_tellers: { Args: never; Returns: Json }
@@ -5460,6 +5482,7 @@ export type Database = {
       }
       scherm_data: { Args: never; Returns: Json }
       scherm_stromen: { Args: never; Returns: Json }
+      scherm_werkstand: { Args: never; Returns: Json }
       service_aanvraag_koppelen: {
         Args: { _aanvraag_id: string; _onderneming_id: string }
         Returns: Json

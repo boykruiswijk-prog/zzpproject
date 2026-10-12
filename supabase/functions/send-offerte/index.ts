@@ -6,6 +6,7 @@ import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import { createMailGate } from "../_shared/mail.ts";
 import { COMPANY } from "../_shared/company.ts";
 import { OFFERTE, offerteHtml } from "../_shared/offerte.ts";
+import { metWerk, werkVan } from "../_shared/machineWerk.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -13,7 +14,7 @@ const cors = {
 };
 const json = (d: unknown, s = 200) => new Response(JSON.stringify(d), { status: s, headers: { ...cors, "Content-Type": "application/json" } });
 
-Deno.serve(async (req) => {
+Deno.serve(metWerk({ station: "intake", actie: "mail", tekst: "Offerte wordt opgesteld", klaarTekst: "Offerte verwerkt", foutTekst: "Offerte vraagt aandacht", bron: "send-offerte" }, async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
   const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const body = await req.json().catch(() => ({}));
@@ -32,6 +33,7 @@ Deno.serve(async (req) => {
   if (!uid) return json({ error: "unauthorized" }, 401);
   const { data: team } = await admin.rpc("is_team_member", { _user_id: uid });
   if (team !== true) return json({ error: "forbidden" }, 403);
+  await werkVan(req).start();
   const { data: prof } = await admin.from("profiles").select("full_name").eq("id", uid).maybeSingle();
   const naamTeamlid = prof?.full_name ?? "teamlid";
 
@@ -71,4 +73,4 @@ Deno.serve(async (req) => {
     await admin.from("activiteiten_log").insert({ actie_type: "offerte_verstuurd", omschrijving: `Offerte verstuurd aan ${to}`, uitgevoerd_door: uid, uitgevoerd_door_naam: naamTeamlid, lead_id, klant_email: to, is_test: lead.is_test });
   }
   return json({ ok: true, productie: gate.isProduction, aan: plan.to });
-});
+}));

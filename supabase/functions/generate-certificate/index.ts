@@ -10,6 +10,7 @@ import {
   magCertificaatBeheren,
 } from "../_shared/certificaatRegels.ts";
 import { brancheVoorSector } from "../_shared/sectorBranche.ts";
+import { metWerk, werkVan } from "../_shared/machineWerk.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,7 +18,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-serve(async (req) => {
+serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certificaat wordt gemaakt", klaarTekst: "Certificaat verwerkt", foutTekst: "Certificaat vraagt aandacht", bron: "generate-certificate" }, async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -60,6 +61,7 @@ serve(async (req) => {
       });
     }
 
+    await werkVan(req).start();
     const body = await req.json();
     const { lead_id, policy_data } = body;
     const actie: "nieuw" | "aanpassen" | "intrekken" | "mailen" | "nummer_overnemen" = body.actie || "nieuw";
@@ -736,7 +738,7 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-});
+}));
 // Handmatig, op verzoek van het team: certificaat-PDF als bijlage naar de klant.
 // deno-lint-ignore no-explicit-any
 async function mailCertificaat(admin: any, req: Request, policy: any, user: { id: string }) {
