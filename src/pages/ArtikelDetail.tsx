@@ -238,15 +238,14 @@ export default function ArtikelDetail() {
   // Eén merknaam achteraan, max 60 tekens; zie formatPageTitle.
   const pageTitle = formatPageTitle(seoTitle);
   const publishedAt = article.published_at || new Date().toISOString();
+  const updatedAt = article.updated_at || publishedAt;
 
   const jsonLdArticle = articleSchema({
     title: seoTitle,
     description: metaDescription,
     slug: article.slug,
     datePublished: publishedAt,
-    // Inhoudelijke controledatum; een cosmetische wijziging (updated_at) mag
-    // niet als inhoudelijke update aan Google worden gemeld.
-    dateModified: (article as any).content_reviewed_at || publishedAt,
+    dateModified: updatedAt,
     image: absoluteArticleImage(article),
     category: article.category,
     wordCount,
@@ -302,7 +301,8 @@ export default function ArtikelDetail() {
         <meta property="og:image:alt" content={article.title} />
         <meta property="og:locale" content="nl_NL" />
         <meta property="article:published_time" content={publishedAt} />
-        <meta property="article:modified_time" content={(article as any).content_reviewed_at || publishedAt} />
+        <meta property="article:modified_time" content={updatedAt} />
+        <meta property="og:updated_time" content={updatedAt} />
         <meta property="article:section" content={article.category} />
         <meta property="article:author" content="ZP Zaken" />
 

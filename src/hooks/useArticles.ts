@@ -13,6 +13,7 @@
    image_url: string | null;
    read_time: string | null;
    published_at: string | null;
+   updated_at: string | null;
    seo_title: string | null;
    seo_description: string | null;
  }

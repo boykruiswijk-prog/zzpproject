@@ -221,6 +221,8 @@ export function buildHtml(
     /** Absolute URL van de deelafbeelding; leeg = algemene og-image. */
     image?: string;
     generatedImage?: boolean;
+    articlePublishedTime?: string;
+    articleModifiedTime?: string;
   },
 ) {
   const { url, tags, ogType } = headFor(
@@ -272,7 +274,14 @@ export function buildHtml(
   const jsonLd = opts.schemas
     .map((s) => `<script type="application/ld+json">${JSON.stringify(s)}</script>`)
     .join("\n    ");
-  html = html.replace("</head>", `  ${tags}\n    ${jsonLd}\n  </head>`);
+  const articleTimes = opts.articlePublishedTime && opts.articleModifiedTime
+    ? [
+        `<meta property="article:published_time" content="${esc(opts.articlePublishedTime)}" data-rh="true">`,
+        `<meta property="article:modified_time" content="${esc(opts.articleModifiedTime)}" data-rh="true">`,
+        `<meta property="og:updated_time" content="${esc(opts.articleModifiedTime)}" data-rh="true">`,
+      ].join("\n    ")
+    : "";
+  html = html.replace("</head>", `  ${tags}\n    ${articleTimes}\n    ${jsonLd}\n  </head>`);
   html = html.replace('<div id="root"></div>', `<div id="root">\n      ${opts.fallback}\n    </div>`);
   return html;
 }
@@ -424,6 +433,7 @@ interface PublishedArticle {
   content: string | null;
   category: string | null;
   published_at: string | null;
+  updated_at: string | null;
   image_url: string | null;
   seo_title: string | null;
   seo_description: string | null;
@@ -612,6 +622,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
     const description = (article.seo_description || samenvatting || alinea).slice(0, 300);
     const titel = article.seo_title || article.title;
     const datePublished = article.published_at || new Date().toISOString();
+    const dateModified = article.updated_at || datePublished;
     // Volledige artikeltekst, veilig omgezet naar HTML met een whitelist van
     // tags en attributen (zie markdownToSafeHtml).
     const bodyHtml = markdownToSafeHtml(resolveFiscaleTokens(article.content || ""));
@@ -633,6 +644,8 @@ export async function prerender(distDir: string, env: Record<string, string> = {
         ogType: "article",
         image: absoluteArticleOgImage(article),
         generatedImage: isGeneratedArticleImage(article),
+        articlePublishedTime: datePublished,
+        articleModifiedTime: dateModified,
         schemas: [
           breadcrumbForPath("/kennisbank") ?? {},
           articleSchema({
@@ -640,7 +653,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
             description,
             slug: article.slug,
             datePublished,
-            dateModified: article.content_reviewed_at || datePublished,
+            dateModified,
             image: absoluteArticleImage(article),
             category: article.category || "Kennisbank",
           }),
@@ -748,7 +761,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
   // 6. Statische sitemap.xml, generated uit dezelfde bron als de pagina's. De
   //    dynamische Edge Function blijft leidend via robots.txt, maar deze versie
   //    werkt ook zonder hosting-rewrites en loopt nooit achter op de build.
-  // lastmod: artikelen uit content_reviewed_at of published_at; pagina's uit de
+  // lastmod: artikelen uit updated_at of published_at; pagina's uit de
   // laatste commit van het paginabestand. Onbekend = geen lastmod (nooit "vandaag").
   const sources = routeSourceFiles(root);
   const sitemapEntries = [
@@ -759,7 +772,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
         lastmod: gitDate(root, sources.get(r.path) ?? ["src/config/seoRoutes.ts"]),
       })),
     ...articles.map((a) => {
-      const lastmod = (a.content_reviewed_at || a.published_at || "").slice(0, 10) || null;
+      const lastmod = (a.updated_at || a.published_at || "").slice(0, 10) || null;
       return { loc: `${SITE_CONFIG.url}/kennisbank/${a.slug}`, lastmod };
     }),
   ] as { loc: string; lastmod: string | null }[];

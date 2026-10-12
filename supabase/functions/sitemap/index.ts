@@ -83,7 +83,7 @@ Deno.serve(async (_req) => {
     for (const a of articles ?? []) {
       const slug = (a as any).slug as string;
       if (!slug) continue;
-      const lastmodRaw = ((a as any).published_at ?? (a as any).updated_at) as string | null;
+      const lastmodRaw = ((a as any).updated_at ?? (a as any).published_at) as string | null;
       const lastmod = lastmodRaw ? String(lastmodRaw).slice(0, 10) : "";
       parts.push(
         `  <url><loc>${escapeXml(`${HOST}/kennisbank/${slug}`)}</loc>` +

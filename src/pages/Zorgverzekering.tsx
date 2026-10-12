@@ -14,7 +14,7 @@ const schema = {
   "@type": "Service",
   "name": "Collectieve Zorgverzekering voor ZZP'ers",
   "provider": { "@type": "Organization", "name": "ZP Zaken", "url": "https://zpzaken.nl" },
-  "description": "Profiteer van een collectieve zorgverzekering als zzp'er via ZP Zaken. Samen sterker, betere dekking voor een lagere premie.",
+  "description": "Collectieve zorgverzekering voor zzp'ers via ZP Zaken. Persoonlijk contact, binnen 24 uur reactie.",
   "areaServed": "NL",
 };
 
@@ -27,7 +27,7 @@ export default function Zorgverzekering() {
       heroImage={teamRoxy}
       badge="Collectief voordeel"
       title={<>Zorgverzekering voor zzp'ers: <span className="text-accent">Collectief voordeel</span></>}
-      subtitle="Als lid van het ZP Zaken collectief profiteer je van korting op je zorgverzekering. Dezelfde dekking, lagere premie."
+      subtitle="Via ZP Zaken kun je als zzp'er deelnemen aan een collectieve zorgverzekering. Persoonlijk contact, binnen 24 uur reactie."
       schema={schema}
       benefits={[
         {
@@ -37,24 +37,24 @@ export default function Zorgverzekering() {
         },
         {
           icon: Users,
-          title: "Collectieve korting",
-          description: "Via het ZP Zaken collectief ontvang je korting op je premie: zonder dat je inlevert op dekking of keuze.",
+          title: "Collectieve deelname",
+          description: "Via het ZP Zaken collectief kun je deelnemen aan een collectieve zorgverzekering en vragen stellen over de beschikbare pakketten.",
         },
         {
           icon: Euro,
-          title: "Bespaar honderden euro's",
-          description: "De collectiviteitskorting kan oplopen tot honderden euro's per jaar. Makkelijk overstappen, wij regelen het voor je.",
+          title: "Persoonlijk contact",
+          description: "We beantwoorden je vragen over deelname en de overstapperiode. Je ontvangt binnen 24 uur een reactie.",
         },
       ]}
       explainers={[
         {
           image: officeCookies,
-          title: "Hoe werkt de collectieve korting?",
-          text: "ZP Zaken heeft als collectief afspraken gemaakt met zorgverzekeraars. Door gebruik te maken van de collectiviteit betaal je minder premie en houd je dezelfde dekking.",
+          title: "Hoe werkt collectieve deelname?",
+          text: "ZP Zaken heeft als collectief afspraken gemaakt met zorgverzekeraars. We informeren je over deelname en de beschikbare pakketten.",
           bullets: [
-            "Korting op basis- en aanvullende verzekering",
-            "Geen inlevering op dekking of keuze",
-            "Eenvoudig overstappen via ZP Zaken",
+            "Basis- en aanvullende verzekeringen",
+            "Informatie over beschikbare pakketten",
+            "Persoonlijk contact over overstappen",
           ],
         },
         {
@@ -78,9 +78,9 @@ export default function Zorgverzekering() {
           ],
         },
       ]}
-      ctaTitle="Bespaar op je zorgverzekering"
-      ctaSubtitle="Ontdek hoeveel je kunt besparen met de collectieve korting van ZP Zaken."
-      ctaButton="Collectieve korting bekijken"
+      ctaTitle="Meer weten over de collectieve zorgverzekering?"
+      ctaSubtitle="Stel je vraag over deelname en de beschikbare pakketten."
+      ctaButton="Informatie aanvragen"
     />
   );
 }

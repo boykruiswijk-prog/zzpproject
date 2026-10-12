@@ -125,7 +125,7 @@ export const ZEKER_KENNIS = {
     {
       "path": "/zorgverzekering",
       "title": "ZZP Zorgverzekering Collectief | ZP Zaken",
-      "intro": "Als lid van het ZP Zaken collectief profiteer je van korting op je zorgverzekering: dezelfde dekking, een lagere premie. In een gesprek rekenen we voor wat de collectieve korting in jouw situatie oplevert."
+      "intro": "Via ZP Zaken kun je als zzp'er deelnemen aan een collectieve zorgverzekering. In een persoonlijk gesprek beantwoorden we je vragen over deelname en de beschikbare pakketten."
     },
     {
       "path": "/mentale-gezondheid",
