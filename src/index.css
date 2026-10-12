@@ -251,7 +251,7 @@
 .breaking-pop { display: inline-block; animation: breaking-pop 0.9s cubic-bezier(.2,.8,.2,1) both; }
 @keyframes breaking-pop { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .breaking-pop { animation: none; } }
-.scherm-station .st-regel { display: flex; align-items: center; gap: 0.5vh; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 13vh; }
+.scherm-station .st-regel { display: flex; align-items: center; gap: 0.5vh; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 24vh; }
 .scherm-station .st-regel > span:last-child { overflow: hidden; text-overflow: ellipsis; }
 .st-bol { width: 1vh; height: 1vh; border-radius: 9999px; flex-shrink: 0; background: hsl(var(--s-dim)); }
 .st-werk { border-color: hsl(var(--s-groen) / 0.8); box-shadow: 0 0 2.4vh hsl(var(--s-groen) / 0.35); }
