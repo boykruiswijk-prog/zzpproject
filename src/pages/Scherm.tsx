@@ -430,6 +430,7 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
   const [verschuiving, setVerschuiving] = useState({ x: 0, y: 0 });
   const fouten = useRef(0);
   const timer = useRef<number>();
+  const laatsteFocus = useRef(0);
 
   useWakeLock();
   useEffect(() => {
@@ -452,7 +453,8 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
       seen.current = new Set(next.activiteit.map(a => a.id));
       if (nieuwe.length) {
         const latest = [...nieuwe].sort((a, b) => Date.parse(b.tijd) - Date.parse(a.tijd))[0];
-        setFocus(latest);
+        // Camera wisselt hooguit eens per 20 seconden.
+        if (Date.now() - laatsteFocus.current >= 20_000) { laatsteFocus.current = Date.now(); setFocus(latest); }
         const intake = [...nieuwe].sort((a, b) => Date.parse(b.tijd) - Date.parse(a.tijd)).find(a => a.echte_aanvraag && Date.now() - Date.parse(a.tijd) < 120_000);
         if (intake) {
           setBreaking({ event: intake, total: next.doel.totaal });
@@ -557,7 +559,13 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
             <span className="h-[1.6vh] w-[1.6vh] rounded-full" style={{ background: `hsl(var(${vers ? "--s-groen" : "--s-oranje"}))`, boxShadow: `0 0 1.2vh hsl(var(${vers ? "--s-groen" : "--s-oranje"}))` }} />
             {vers ? "machine actief" : "wacht op nieuwe data"}
           </div>
-          <div className="ml-auto text-right">
+          {data && (
+            <div className="ml-auto flex items-center gap-[1.5vw] text-[2.4vh] text-[hsl(var(--s-dim))] tabular-nums">
+              <span>Vandaag: <strong className="text-[hsl(var(--s-tekst))]">{data.gebeurtenissen_vandaag}</strong> acties</span>
+              <span>Nu op de site: <strong className="text-[hsl(var(--s-tekst))]">{data.nu_op_site ?? 0}</strong></span>
+            </div>
+          )}
+          <div className={`${data ? '' : 'ml-auto '}text-right`}>
             <div className="text-[4.4vh] font-bold leading-none tabular-nums">{tijd.klok}</div>
             <div className="text-[2.2vh] text-[hsl(var(--s-dim))]">{tijd.datum.charAt(0).toUpperCase() + tijd.datum.slice(1)}</div>
           </div>
