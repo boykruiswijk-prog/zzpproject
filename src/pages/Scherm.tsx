@@ -322,7 +322,7 @@ function PaneelAiTeam({ d }: { d: SchermPayload }) {
         <div className="mt-[0.6vh] text-[2vh] text-[hsl(var(--s-dim))]">sinds 6 oktober, automatisch geschreven en gecontroleerd</div>
       </div>
       {team.length === 0 ? <Gemeten /> : (
-        <div className="flex min-h-0 flex-1 flex-col justify-start gap-[0.9vh]">
+        <div className="flex min-h-0 flex-1 flex-col justify-start gap-[0.5vh]">
           {team.map((a, i) => {
             const t = runTijd(a.laatste_run, d.gegenereerd_op);
             return (

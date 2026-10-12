@@ -169,26 +169,64 @@ export function bepaalToestand(w: { lopend?: unknown; laatst_actief_op?: unknown
 }
 const iso = (v: unknown) => typeof v === 'string' && Number.isFinite(Date.parse(v)) ? new Date(v).toISOString() : null;
 
-/** AI-team uit marketing_snapshot (bron ai_team): max 10 agents, vaste teksten door de privacyfilter. */
+/** Vaste lijst AI-agents op het live-scherm; marketing_snapshot (bron ai_team) vult alleen status en resultaat aan. */
+export const AI_TEAM = [
+  { id: 'ads', naam: 'Ads-bewaking', taak: 'Bewaakt Google en Microsoft Ads 3x per dag', station: 'ads' },
+  { id: 'conversies', naam: 'Conversie-terugmelding', taak: 'Meldt elke ochtend nieuwe klanten terug aan Google', station: 'ads' },
+  { id: 'kwaliteit', naam: 'Kwaliteitscontrole', taak: 'Test elke ochtend site, platform en teksten', station: 'kwaliteit' },
+  { id: 'content', naam: 'Contentmachine', taak: 'Schrijft en verbetert kennisbankartikelen (di en do)', station: 'kennisbank' },
+  { id: 'markt', naam: 'Marktmonitor', taak: 'Volgt prijzen, cyber en AI-zichtbaarheid (ma)', station: 'kwaliteit' },
+  { id: 'rapportage', naam: 'Weekrapportage', taak: 'Meet de voortgang naar 200 aanvragen (ma)', station: 'kwaliteit' },
+  { id: 'beveiliging', naam: 'Beveiliging', taak: 'Controleert beveiliging en toegang (ma)', station: 'kwaliteit' },
+  { id: 'scherm', naam: 'Live-scherm', taak: 'Ververst dit scherm elke 2 uur', station: 'kwaliteit' },
+  { id: 'dagstatus', naam: 'Dagstatus', taak: 'Maakt elke ochtend het statusoverzicht (dagelijks 08:12)', station: 'kwaliteit', ritme: 'elke ochtend 08:12' },
+  { id: 'aanbevelingen', naam: 'Aanbevelingencontrole', taak: 'Beoordeelt de aanbevelingen van Google Ads (ma)', station: 'ads', ritme: 'elke maandag' },
+] as const;
+export type AiAgentId = typeof AI_TEAM[number]['id'];
+
+/** Koppelt een geplande-taaknaam aan een agent-id; specifieke namen vóór de algemene Ads-regel. */
+export function koppelTaak(naam: unknown): AiAgentId | null {
+  const n = typeof naam === 'string' ? naam.trim().toLowerCase() : '';
+  if (!n) return null;
+  if (n.startsWith('dagstatus zp zaken') || n === 'dagstatus') return 'dagstatus';
+  if (n.startsWith('aanbevelingencontrole google ads') || n === 'aanbevelingencontrole') return 'aanbevelingen';
+  const exact = AI_TEAM.find(a => a.naam.toLowerCase() === n || a.id === n);
+  if (exact) return exact.id;
+  if (/\bads\b/.test(n)) return 'ads';
+  return null;
+}
+
 /** Vervangt elk "N van 200" in vrije tekst door het live aantal; aantallen komen nooit uit marketing_snapshot. */
 export function liveDoelTekst(tekst: string, totaal: number): string {
   return tekst.replace(/\b\d+\s+van\s+200\b/g, `${totaal} van 200`);
 }
 
-export function schoonAiTeam(snap: Snap, doelTotaal?: number): { naam: string; taak: string; resultaat: string | null; laatste_run: string | null; status: 'klaar' | 'fout' | 'gepland' }[] {
+type AiRij = { naam: string; taak: string; resultaat: string | null; laatste_run: string | null; status: 'klaar' | 'fout' | 'gepland' };
+/** AI-team: altijd de vaste lijst (gepland zonder run), aangevuld uit de snapshot; daarna onbekende agents tot max 12. */
+export function schoonAiTeam(snap: Snap, doelTotaal?: number): AiRij[] {
   const agents = (snap?.data as Ruw | undefined)?.agents;
   if (!Array.isArray(agents)) return [];
-  return agents.slice(0, 12).filter((a: Ruw) => a && typeof a === 'object').map((a: Ruw) => {
+  const rij = (a: Ruw, basis?: { naam: string; taak: string }): AiRij => {
     const ruw = schoonTekst(a.resultaat, 70);
     const resultaat = doelTotaal == null ? ruw : liveDoelTekst(ruw, doelTotaal);
+    const laatste_run = typeof a.laatste_run === 'string' && Number.isFinite(Date.parse(a.laatste_run)) ? new Date(a.laatste_run).toISOString() : null;
     return {
-      naam: schoonTekst(a.naam, 70),
-      taak: schoonTekst(a.taak, 70),
+      naam: basis ? basis.naam : schoonTekst(a.naam, 70),
+      taak: basis ? basis.taak : schoonTekst(a.taak, 70),
       resultaat: resultaat || null,
-      laatste_run: typeof a.laatste_run === 'string' && Number.isFinite(Date.parse(a.laatste_run)) ? new Date(a.laatste_run).toISOString() : null,
-      status: a.status === 'fout' || a.status === 'gepland' ? a.status : 'klaar' as const,
+      laatste_run,
+      status: a.status === 'fout' ? 'fout' : !laatste_run || a.status === 'gepland' ? 'gepland' : 'klaar',
     };
-  }).filter(a => a.naam);
+  };
+  const geldig = agents.filter((a: Ruw) => a && typeof a === 'object');
+  const perId = new Map<string, Ruw>();
+  const overig: Ruw[] = [];
+  for (const a of geldig) {
+    const id = (AI_TEAM.some(t => t.id === a.id) ? a.id : koppelTaak(a.naam)) as string | null;
+    if (id && !perId.has(id)) perId.set(id, a); else overig.push(a);
+  }
+  const vast = AI_TEAM.map(t => rij(perId.get(t.id) ?? {}, t));
+  return [...vast, ...overig.map(a => rij(a)).filter(a => a.naam)].slice(0, 12);
 }
 
 type WorkerStatus = 'klaar' | 'fout' | 'gepland';
@@ -208,6 +246,17 @@ export function schoonWorkers(w: Ruw | null | undefined): { gepland: Worker[]; o
   }).filter(a => a.naam);
   const uit = { gepland: lijst(w.gepland), op_afroep: lijst(w.op_afroep) };
   return uit.gepland.length || uit.op_afroep.length ? uit : null;
+}
+
+/** Voegt de geplande AI-taken met eigen ritme (afgeleid uit AI_TEAM) toe aan de geplande workers. */
+export function metAgentWorkers(w: { gepland: Worker[]; op_afroep: Worker[] } | null, team: AiRij[]) {
+  const extra: Worker[] = AI_TEAM.filter(t => 'ritme' in t).map(t => {
+    const a = team.find(x => x.naam === t.naam);
+    return { naam: t.naam, ritme: (t as { ritme: string }).ritme, laatste: a?.laatste_run ?? null, status: a?.status ?? 'gepland', vandaag: null, week: null };
+  });
+  if (!w) return null;
+  const namen = new Set(w.gepland.map(x => x.naam));
+  return { ...w, gepland: [...w.gepland, ...extra.filter(x => !namen.has(x.naam))] };
 }
 
 /** Bouwt de publieke payload uit de geaggregeerde RPC-uitvoer; alleen witte-lijstvelden. */
@@ -290,7 +339,7 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
       content_verbeterd: getal(kb.content_verbeterd),
     },
     ai_team: schoonAiTeam(r?.marketing?.ai_team, totaal),
-    workers: schoonWorkers(r?.workers),
+    workers: metAgentWorkers(schoonWorkers(r?.workers), schoonAiTeam(r?.marketing?.ai_team, totaal)),
     marketing: schoonMarketing(r?.marketing),
   };
 }
