@@ -13,11 +13,13 @@ export function vandaagActiviteit(d: SchermPayload) {
   return d.activiteit.filter(a => Number.isFinite(Date.parse(a.tijd)) && dag(a.tijd) === dag(d.gegenereerd_op));
 }
 export type Toestand = 'aan_het_werk' | 'stand_by' | 'rust' | 'storing';
-export type StationStand = { vandaag: number; skills?: number; laatste_status: string | null; toestand?: Toestand; laatst_actief_op?: string | null; lopende_tekst?: string | null; duur_vandaag_min?: number };
+export type StationStand = { vandaag: number; skills?: number; laatste_status: string | null; toestand?: Toestand; laatst_actief_op?: string | null; lopende_tekst?: string | null; duur_vandaag_min?: number; agent_bezig_sinds?: string | null };
 const hhmm = (iso: string) => new Intl.DateTimeFormat('nl-NL', { timeZone: 'Europe/Amsterdam', hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
 const dagHhmm = (iso: string) => `${new Intl.DateTimeFormat('nl-NL', { timeZone: 'Europe/Amsterdam', weekday: 'short' }).format(new Date(iso)).replace(/\./g, '')} ${hhmm(iso)}`;
 /** Label onder de werkplek, per toestand. */
-export function toestandLabel(s: StationStand | undefined): string {
+export function toestandLabel(s: StationStand | undefined, nu = Date.now()): string {
+  const sinds = s?.toestand === 'aan_het_werk' && s.agent_bezig_sinds ? Date.parse(s.agent_bezig_sinds) : NaN;
+  if (Number.isFinite(sinds)) return `aan het werk: bezig sinds ${Math.max(1, Math.floor((nu - sinds) / 60000))} min`;
   const t = s?.laatst_actief_op && Number.isFinite(Date.parse(s.laatst_actief_op)) ? s.laatst_actief_op : null;
   switch (s?.toestand) {
     case 'aan_het_werk': return `aan het werk: ${s.lopende_tekst ?? 'bezig'}`;

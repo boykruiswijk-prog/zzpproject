@@ -56,7 +56,7 @@ Deno.serve(async (req) => {
     }
   }
 
-  if (cache && Date.now() - cache.op < 20_000) return json(cache.body, 200, { "Cache-Control": "private, max-age=20", "X-Cache": "hit" });
+  if (cache && Date.now() - cache.op < 4_000) return json(cache.body, 200, { "Cache-Control": "private, max-age=4", "X-Cache": "hit" });
 
   try {
     const { data, error } = await admin.rpc("scherm_data");
@@ -67,7 +67,7 @@ Deno.serve(async (req) => {
     if (werkFout) console.error("scherm_werkstand", werkFout.message);
     const body = JSON.stringify(bouwSchermPayload({ ...(data ?? {}), ...(stromen ?? {}), ...(werk ?? {}) }));
     cache = { op: Date.now(), body };
-    return json(body, 200, { "Cache-Control": "private, max-age=20" });
+    return json(body, 200, { "Cache-Control": "private, max-age=4" });
   } catch (e) {
     console.error("scherm-data", e instanceof Error ? e.message : "onbekend");
     if (cache) return json(cache.body, 200, { "X-Cache": "stale" });

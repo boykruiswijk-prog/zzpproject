@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.1"
   }
   public: {
     Tables: {
@@ -5357,6 +5357,7 @@ export type Database = {
         Returns: string
       }
       machine_cron_naam: { Args: { _job: string }; Returns: string }
+      machine_cron_station: { Args: { _job: string }; Returns: string }
       machine_cron_verwerken: { Args: never; Returns: number }
       machine_klaar: {
         Args: { _id: string; _status: string; _tekst: string }
@@ -5492,6 +5493,7 @@ export type Database = {
         Args: { _aanvraag_id: string; _onderneming_id: string }
         Returns: Json
       }
+      site_bezoek: { Args: { _categorie: string }; Returns: undefined }
       verberg_review_kaart: { Args: never; Returns: boolean }
       verify_cron_secret: { Args: { p_secret: string }; Returns: boolean }
       verify_dba_certificate: {

@@ -430,6 +430,7 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
   const [verschuiving, setVerschuiving] = useState({ x: 0, y: 0 });
   const fouten = useRef(0);
   const timer = useRef<number>();
+  const laatsteFocus = useRef(0);
 
   useWakeLock();
   useEffect(() => {
@@ -452,7 +453,8 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
       seen.current = new Set(next.activiteit.map(a => a.id));
       if (nieuwe.length) {
         const latest = [...nieuwe].sort((a, b) => Date.parse(b.tijd) - Date.parse(a.tijd))[0];
-        setFocus(latest);
+        // Camera wisselt hooguit eens per 20 seconden.
+        if (Date.now() - laatsteFocus.current >= 20_000) { laatsteFocus.current = Date.now(); setFocus(latest); }
         const intake = [...nieuwe].sort((a, b) => Date.parse(b.tijd) - Date.parse(a.tijd)).find(a => a.echte_aanvraag && Date.now() - Date.parse(a.tijd) < 120_000);
         if (intake) {
           setBreaking({ event: intake, total: next.doel.totaal });
@@ -463,11 +465,11 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
       setData(next);
       setLaatsteOk(Date.now());
       fouten.current = 0;
-      timer.current = window.setTimeout(laad, 15_000);
+      timer.current = window.setTimeout(laad, 5_000);
     } catch {
       fouten.current += 1;
       if (fouten.current >= 6) { window.location.reload(); return; }
-      timer.current = window.setTimeout(laad, Math.min(15_000 * 2 ** fouten.current, 300_000));
+      timer.current = window.setTimeout(laad, Math.min(5_000 * 2 ** fouten.current, 300_000));
     }
   }, [token, tvCode, sessie]);
 
@@ -494,7 +496,7 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
     let i = 0;
     const t = window.setInterval(() => {
       const station = STATION_IDS[i % STATION_IDS.length];
-      const event: Puls = { id: `demo-${Date.now()}`, station, actie: 'overig', status: 'klaar', tekst: station === 'intake' ? 'Nieuwe aanvraag binnen, Consultant uit Utrecht' : 'Demonstratie: afdeling aan het werk', tijd: new Date().toISOString(), echte_aanvraag: station === 'intake', beroepsgroep: station === 'intake' ? 'Consultant' : null, provincie: station === 'intake' ? 'Utrecht' : null, gestart_op: null, afgerond_op: null, agent: false };
+      const event: Puls = { id: `demo-${Date.now()}`, station, actie: 'overig', status: 'klaar', tekst: station === 'intake' ? 'Nieuwe aanvraag binnen, Consultant uit Utrecht' : 'Demonstratie: afdeling aan het werk', tijd: new Date().toISOString(), echte_aanvraag: station === 'intake', beroepsgroep: station === 'intake' ? 'Consultant' : null, provincie: station === 'intake' ? 'Utrecht' : null, gestart_op: null, afgerond_op: null, agent: false, aantal: 1 };
       setDemoEvent(event); setFocus(event);
       if (station === 'intake') {
         setBreaking({ event, total: data.doel.totaal + 1 });
@@ -557,7 +559,13 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
             <span className="h-[1.6vh] w-[1.6vh] rounded-full" style={{ background: `hsl(var(${vers ? "--s-groen" : "--s-oranje"}))`, boxShadow: `0 0 1.2vh hsl(var(${vers ? "--s-groen" : "--s-oranje"}))` }} />
             {vers ? "machine actief" : "wacht op nieuwe data"}
           </div>
-          <div className="ml-auto text-right">
+          {data && (
+            <div className="ml-auto flex items-center gap-[1.5vw] text-[2.4vh] text-[hsl(var(--s-dim))] tabular-nums">
+              <span>Vandaag: <strong className="text-[hsl(var(--s-tekst))]">{data.gebeurtenissen_vandaag}</strong> acties</span>
+              <span>Nu op de site: <strong className="text-[hsl(var(--s-tekst))]">{data.nu_op_site ?? 0}</strong></span>
+            </div>
+          )}
+          <div className={`${data ? '' : 'ml-auto '}text-right`}>
             <div className="text-[4.4vh] font-bold leading-none tabular-nums">{tijd.klok}</div>
             <div className="text-[2.2vh] text-[hsl(var(--s-dim))]">{tijd.datum.charAt(0).toUpperCase() + tijd.datum.slice(1)}</div>
           </div>

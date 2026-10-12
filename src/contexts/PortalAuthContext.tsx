@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { meldSiteBezoek } from "@/lib/siteBezoek";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -12,6 +13,7 @@ interface PortalAuthContextType {
   signOut: () => Promise<void>;
 }
 
+let googleGeteld = false;
 const PortalAuthContext = createContext<PortalAuthContextType | undefined>(undefined);
 
 export function PortalAuthProvider({ children }: { children: ReactNode }) {
@@ -21,6 +23,8 @@ export function PortalAuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      // Inloggen via Google keert terug op /portal: eenmalig tellen.
+      if (_event === "SIGNED_IN" && !googleGeteld && sessionStorage.getItem("zp_portal_google") === "1") { googleGeteld = true; sessionStorage.removeItem("zp_portal_google"); meldSiteBezoek("mijn_zp"); }
       setSession(session);
       setUser(session?.user ?? null);
       setIsLoading(false);
@@ -37,6 +41,7 @@ export function PortalAuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithPassword = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (!error) meldSiteBezoek("mijn_zp");
     return { error };
   };
 
@@ -53,6 +58,7 @@ export function PortalAuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signInWithGoogle = async (redirectTo?: string) => {
+    try { sessionStorage.setItem("zp_portal_google", "1"); } catch { /* geen opslag */ }
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
