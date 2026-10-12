@@ -1,5 +1,17 @@
+// @vitest-environment node
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { __resetUetVoorTest, trackPurchase } from "@/lib/tracking";
+
+const opslag = new Map<string, string>();
+const localStorage = {
+  getItem: (k: string) => opslag.get(k) ?? null,
+  setItem: (k: string, v: string) => void opslag.set(k, v),
+  clear: () => opslag.clear(),
+};
+const loc = { pathname: "/verzekeringen" };
+(globalThis as Record<string, unknown>).localStorage = localStorage;
+(globalThis as Record<string, unknown>).window = { location: loc, localStorage };
+
+const { __resetUetVoorTest, trackPurchase } = await import("@/lib/tracking");
 
 const push = vi.fn();
 const events = () => push.mock.calls.filter((c) => c[0] === "event" && c[1] === "aanvraag_afgerond");
@@ -8,8 +20,7 @@ describe("UET aanvraag_afgerond", () => {
   beforeEach(() => {
     push.mockReset();
     localStorage.clear();
-    window.history.pushState({}, "", "/verzekeringen");
-    (window as unknown as { uetq: unknown }).uetq = { push };
+    ((globalThis as Record<string, unknown>).window as Record<string, unknown>).uetq = { push };
     __resetUetVoorTest(true);
   });
 
