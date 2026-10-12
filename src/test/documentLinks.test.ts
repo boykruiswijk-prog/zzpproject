@@ -28,14 +28,12 @@ describe("documentlinks", () => {
     expect(broken).toEqual([]);
   });
 
-  it("beide korte polisvoorwaardenlinks komen uit bij de branchekaarten", () => {
-    const target = "/documenten#verzekeringsvoorwaarden";
+  it("korte polisvoorwaardenlinks wijzen naar de eigen pagina /voorwaarden", () => {
     const rules = readFileSync("public/_redirects", "utf8");
-    const page = readFileSync("src/pages/Documenten.tsx", "utf8");
-    for (const from of ["voorwaarden", "polisvoorwaarden"]) {
-      expect(legacyRedirects.find((redirect) => redirect.from === from)?.to).toBe(target);
-      expect(rules).toContain(`/${from}    ${target}    301`);
+    expect(legacyRedirects.some((redirect) => redirect.from === "voorwaarden")).toBe(false);
+    for (const from of ["polisvoorwaarden", "verzekeringsvoorwaarden"]) {
+      expect(legacyRedirects.find((redirect) => redirect.from === from)?.to).toBe("/voorwaarden");
+      expect(rules).toContain(`/${from}    /voorwaarden    301`);
     }
-    expect(page).toContain('id="verzekeringsvoorwaarden"');
   });
 });
