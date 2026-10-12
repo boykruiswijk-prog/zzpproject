@@ -13,6 +13,17 @@ export interface LegacyRedirect {
 }
 
 export const legacyRedirects: LegacyRedirect[] = [
+  // Verouderde WordPress-formulieren en -voorwaarden (oude looptijd). Komen in
+  // public/_redirects vóór de wildcard /wp-content/uploads/* en worden door de
+  // prerender niet meegeleverd. Het bestand in storage blijft bestaan.
+  { from: "wp-content/uploads/2021/05/HRM-Finance-Branche-verklaring.pdf", to: "/verzekeringen" },
+  { from: "wp-content/uploads/2021/05/IT-Brancge-verklaring.pdf", to: "/verzekeringen" },
+  { from: "wp-content/uploads/2021/05/PR-Marketing-Branche-verklaring.pdf", to: "/verzekeringen" },
+  { from: "wp-content/uploads/2021/05/Techniek-Overig-Branche-Verklaring.pdf", to: "/verzekeringen" },
+  { from: "wp-content/uploads/2025/03/ZP-Zaken-Slotverklaring.pdf", to: "/documenten/slotverklaring-2026.pdf" },
+  { from: "wp-content/uploads/2025/11/ZP_Slotverklaring.pdf", to: "/documenten/slotverklaring-2026.pdf" },
+  { from: "wp-content/uploads/2023/03/Algemene-Voorwaarden-v1.0-Definitief.pdf", to: "/algemene-voorwaarden" },
+
   // Oude WordPress rubrieken
   { from: "belastingen", to: "/kennisbank" },
   { from: "ondernemen", to: "/kennisbank" },
@@ -662,3 +673,8 @@ export function resolveRedirectTarget(
   if (article.is_published) return `/kennisbank/${article.slug}`;
   return categoryPageFor(article.category);
 }
+
+/** Oude media die niet meer als bestand worden meegeleverd maar doorverwijzen. */
+export const verouderdeMedia = new Set(
+  legacyRedirects.filter((r) => r.from.startsWith("wp-content/uploads/")).map((r) => r.from),
+);

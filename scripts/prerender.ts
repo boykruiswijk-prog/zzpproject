@@ -717,6 +717,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
       const files = await listStorageFiles(base, key, "article-images", "wp-content/uploads/");
       let copied = 0;
       for (const file of files) {
+        if (verouderdeMedia.has(file)) continue; // verwijst door, niet meeleveren
         const res = await fetch(
           `${base}/storage/v1/object/public/article-images/${file
             .split("/")

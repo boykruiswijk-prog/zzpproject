@@ -115,7 +115,10 @@ function redirectsPlugin(env: Record<string, string>): Plugin {
         ? `${env.VITE_SUPABASE_URL}/storage/v1/object/public/${MEDIA_BUCKET}`
         : null;
 
-      const rules = legacyRedirects.map((r) => {
+      const mediaRules = legacyRedirects
+        .filter((r) => r.from.startsWith("wp-content/uploads/"))
+        .map((r) => `/${r.from}    ${r.to}    301  # verouderd formulier`);
+      const rules = legacyRedirects.filter((r) => !r.from.startsWith("wp-content/uploads/")).map((r) => {
         const to = resolveRedirectTarget(r, articles);
         const article = articles.get(r.from);
         const note = !article
@@ -131,6 +134,9 @@ function redirectsPlugin(env: Record<string, string>): Plugin {
         "# Niet handmatig aanpassen.",
         "",
         "# /sitemap.xml is een statisch bestand uit de prerender (geen proxy).",
+        "",
+        "# Verouderde oude formulieren: vóór de media-wildcard.",
+        ...mediaRules,
         "",
         "# Oude WordPress-media staan onder hetzelfde pad in de storage-bucket.",
         ...(storageBase
