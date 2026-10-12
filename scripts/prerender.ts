@@ -26,6 +26,7 @@ import { generateArticleImages } from "./articleImages";
 import { absoluteArticleImage, absoluteArticleOgImage, isGeneratedArticleImage } from "../src/lib/articleImage";
 import {
   legacyRedirects,
+  verouderdeMedia,
   resolveRedirectTarget,
   categoryPageFor,
   type ArticleRedirectInfo,
@@ -686,6 +687,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
     // slug staat op /kennisbank/<slug>, niet op /<slug>; de oude URL heeft dus
     // juist wél een stub nodig.
     if (routePaths.has(routePath)) continue;
+    if (verouderdeMedia.has(redirect.from)) continue; // .pdf-pad: geen stub, Cloudflare geeft de 301
     const to = resolveRedirectTarget(redirect, articleIndex);
     const dir = path.join(distDir, redirect.from);
     fs.mkdirSync(dir, { recursive: true });
@@ -717,6 +719,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
       const files = await listStorageFiles(base, key, "article-images", "wp-content/uploads/");
       let copied = 0;
       for (const file of files) {
+        if (verouderdeMedia.has(file)) continue; // verwijst door, niet meeleveren
         const res = await fetch(
           `${base}/storage/v1/object/public/article-images/${file
             .split("/")
