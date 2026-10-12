@@ -59,7 +59,10 @@ export function installeerUet(pathname: string) {
 }
 
 /** SPA-paginaweergave voor UET bij elke routewissel (alleen als UET geladen is). */
+let eerstePaginaGezien = false;
 export function uetPageView(pathname: string) {
+  // De eerste weergave telt UET zelf via pageLoad.
+  if (!eerstePaginaGezien) { eerstePaginaGezien = true; return; }
   if (!uetGeladen || isNietGemetenPad(pathname)) return;
   uetq()?.push("event", "page_view", { page_path: pathname });
 }
