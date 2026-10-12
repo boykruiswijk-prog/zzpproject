@@ -161,8 +161,8 @@ export default function BavZzpVergelijken() {
         </div>
       </section>
 
-      <Sectie id="goedkoopste" titel="Wat is de goedkoopste BAV voor zzp'ers?">
-        <p>Op papier zijn Knab (vanaf € 27,22 per maand) en De Goudse (voorbeeld € 29,17 per maand, zonder assurantiebelasting) het goedkoopst voor alleen een BAV. Ook als je bij Knab of Insify een losse AVB erbij neemt, kom je op papier lager uit dan {eur(maand.prijs)} per maand.</p>
+      <Sectie id="laagste-premie" titel="Welke BAV voor zzp'ers heeft de laagste premie?">
+        <p>Op papier zijn Knab (vanaf € 27,22 per maand) en De Goudse (voorbeeld € 29,17 per maand, zonder assurantiebelasting) de laagste premie voor alleen een BAV. Ook als je bij Knab of Insify een losse AVB erbij neemt, kom je op papier lager uit dan {eur(maand.prijs)} per maand.</p>
         <p>Meer weten over alle premies? Lees <LocalizedLink to="/kennisbank/wat-kosten-verzekeringen-voor-zzp-ers" className="text-accent underline underline-offset-2">wat verzekeringen voor zzp'ers in 2026 kosten</LocalizedLink>.</p>
         <p>Het verschil zit in wat je ervoor krijgt:</p>
         <ul className="list-disc space-y-2 pl-5">

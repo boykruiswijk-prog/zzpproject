@@ -764,6 +764,20 @@
       "when": 1791745192463,
       "tag": "0108_marketing_snapshot_bron_ai_team",
       "breakpoints": true
+    },
+    {
+      "idx": 109,
+      "version": "7",
+      "when": 1791787471932,
+      "tag": "0109_kennisbank_samenvoegen_20261012",
+      "breakpoints": true
+    },
+    {
+      "idx": 110,
+      "version": "7",
+      "when": 1791787679650,
+      "tag": "0110_wijzigingsmelding_kennisbank_samenvoegen",
+      "breakpoints": true
     }
   ]
 }

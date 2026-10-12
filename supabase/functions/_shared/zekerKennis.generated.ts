@@ -278,6 +278,16 @@ export const ZEKER_KENNIS = {
       "intro": "Als ICT-freelancer schrijf je code, implementeer je systemen of geef je advies. Een fout in je werk kan grote financiele gevolgen hebben voor je opdrachtgever. Beroepsaansprakelijkheidsverzekering (BAV) is in de ICT-sector bij veel opdrachtgevers verplicht en beschermt jou en je klant."
     },
     {
+      "path": "/beroepsaansprakelijkheidsverzekering",
+      "title": "Beroepsaansprakelijkheidsverzekering zzp | ZP Zaken",
+      "intro": "Een beroepsaansprakelijkheidsverzekering beschermt je als een opdrachtgever je aansprakelijk stelt voor schade door een fout in je werk. Bij ZP Zaken kost die vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting."
+    },
+    {
+      "path": "/bav-zzp",
+      "title": "BAV zzp vanaf € 55 per maand | ZP Zaken",
+      "intro": "Een BAV beschermt je bij schade door fouten in je werk, de AVB bij schade aan personen of spullen. Bij ZP Zaken heb je ze samen vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting."
+    },
+    {
       "path": "/zzp-verzekering-consultant",
       "title": "BAV consultant zzp | Verzekering voor adviseurs",
       "intro": "Als consultant neemt je opdrachtgever besluiten op basis van jouw advies. Een fout in je advies of rapport kan veel geld kosten. Een BAV en AVB in één polis beschermen je."

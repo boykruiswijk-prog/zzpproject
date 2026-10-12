@@ -27,7 +27,7 @@ import NotFound from "@/pages/NotFound";
 import { articleImage, absoluteArticleImage, absoluteArticleOgImage, isGeneratedArticleImage, isArticleIllustration } from "@/lib/articleImage";
 import { ArticleImage } from "@/components/kennisbank/ArticleImage";
 
-const BAV_AVB_SLUG = "zp-zaken-zorgeloos-zzpen-goedkoopste-bav-avb";
+const BAV_AVB_SLUG = "bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt";
 
 // Categorie → kleur-classes
 const CATEGORY_STYLES: Record<string, string> = {

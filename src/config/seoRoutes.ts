@@ -27,11 +27,11 @@ export interface SeoRoute {
   intro: string;
 }
 
-const goedkoopstePakket = bavPakketten.reduce((laagste, p) =>
+const laagstePakket = bavPakketten.reduce((laagste, p) =>
   p.prijs < laagste.prijs ? p : laagste,
 );
 
-const goedkoopstePakketMaand = () => {
+const laagstePakketMaand = () => {
   const m = bavPakketten.find((p) => p.periode === "maand")!;
   return `€ ${m.prijs} per maand`;
 };
@@ -39,13 +39,13 @@ const goedkoopstePakketMaand = () => {
 export const seoRoutes: SeoRoute[] = [
   {
     path: "/",
-    title: `BAV & AVB Verzekering ZZP'ers | Vanaf €${goedkoopstePakket.prijs}/maand`,
+    title: `BAV & AVB Verzekering ZZP'ers | Vanaf €${laagstePakket.prijs}/maand`,
     description:
       `Vraag als zzp'er online BAV + AVB in één polis aan, binnen 24 uur geregeld. Geen eigen risico, dagelijks opzegbaar. AFM-vergunning ${SITE_CONFIG.registrations.afm}.`,
     h1: "Verzekeringen voor zzp'ers, direct en onafhankelijk",
     intro:
       `ZP Zaken biedt persoonlijke service voor zelfstandig professionals, met AFM-vergunning ${SITE_CONFIG.registrations.afm}. ` +
-      `De gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering vraag je online aan vanaf ${goedkoopstePakket.prijsLabel.toLowerCase()}, zonder eigen risico en dagelijks opzegbaar. ` +
+      `De gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering vraag je online aan vanaf ${laagstePakket.prijsLabel.toLowerCase()}, zonder eigen risico en dagelijks opzegbaar. ` +
       `Vragen? Bel ${SITE_CONFIG.phone} of mail ${SITE_CONFIG.email}.`,
   },
   {
@@ -62,11 +62,11 @@ export const seoRoutes: SeoRoute[] = [
     path: "/verzekeringen",
     title:
       "BAV + AVB voor ZZP'ers | Online aanvragen",
-    description: `BAV + AVB in één polis, bedacht door ZP Zaken. Geen eigen risico, dagelijks opzegbaar, vanaf € ${goedkoopstePakket.prijs} per maand. Online aanvragen, binnen 24 uur geregeld.`,
+    description: `BAV + AVB in één polis, bedacht door ZP Zaken. Geen eigen risico, dagelijks opzegbaar, vanaf € ${laagstePakket.prijs} per maand. Online aanvragen, binnen 24 uur geregeld.`,
     h1: "BAV & AVB: de combinatiepolis voor zzp'ers",
     intro:
       "ZP Zaken is de bedenker van de BAV + AVB in één polis voor zzp'ers. " +
-      `De combinatiepolis bundelt beroepsaansprakelijkheid (BAV) en bedrijfsaansprakelijkheid (AVB) in één verzekering, vanaf ${goedkoopstePakket.prijsLabel.toLowerCase()}. ` +
+      `De combinatiepolis bundelt beroepsaansprakelijkheid (BAV) en bedrijfsaansprakelijkheid (AVB) in één verzekering, vanaf ${laagstePakket.prijsLabel.toLowerCase()}. ` +
       "Er is geen eigen risico en je kunt dagelijks opzeggen. Aanvragen doe je online in vijf stappen.",
   },
   {
@@ -280,7 +280,7 @@ export const seoRoutes: SeoRoute[] = [
     h1: "BAV zzp vergelijken 2026",
     intro:
       "Vergelijk een beroepsaansprakelijkheidsverzekering (BAV) nooit alleen op de laagste prijs. Kijk ook naar het verzekerd bedrag, het eigen risico, of de AVB erbij zit en hoe snel je kunt opzeggen. " +
-      `ZP Zaken biedt BAV en AVB in één polis via Hiscox, vanaf ${goedkoopstePakketMaand()}, zonder eigen risico.`,
+      `ZP Zaken biedt BAV en AVB in één polis via Hiscox, vanaf ${laagstePakketMaand()}, zonder eigen risico.`,
   },
   {
     path: "/klachtenprocedure",
