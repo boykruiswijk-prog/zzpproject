@@ -10,25 +10,17 @@ export const GA_ID = "G-YY7YJFFEZN";
 export const GOOGLE_ADS_ID = "AW-18497139684";
 /** Google Ads-conversieactie (aanvraag BAV + AVB). Pas hier aan bij een nieuwe conversieactie. */
 export const GOOGLE_ADS_CONVERSIE = "AW-18497139684/rIoQCIid-5IdEOTnj_RE";
-/** Microsoft Advertising UET-tag-ID. Leeg = er wordt niets geladen. */
-export const MS_UET_ID = "";
+/** Microsoft Advertising UET-tag-ID. */
+export const MS_UET_ID = "187280316";
 
 type Uetq = { push: (...a: unknown[]) => void };
 const uetq = (): Uetq | undefined => (typeof window === "undefined" ? undefined : (window as unknown as { uetq?: Uetq }).uetq);
 let uetGeladen = false;
+let uetGeinstalleerd = false;
 
-function zetUetToestemming() {
-  uetq()?.push("consent", "update", { ad_storage: heeftMarketingToestemming() ? "granted" : "denied" });
-}
-
-/** Laadt UET (bat.js) alleen als MS_UET_ID gevuld is en nooit op interne paden; Consent Mode standaard denied. */
-export function installeerUet(pathname: string) {
-  if (!MS_UET_ID || uetGeladen || typeof window === "undefined" || isNietGemetenPad(pathname)) return;
+function laadUet() {
+  if (uetGeladen || typeof document === "undefined") return;
   uetGeladen = true;
-  const w = window as unknown as { uetq?: unknown[] };
-  w.uetq = w.uetq || [];
-  (w.uetq as unknown[]).push("consent", "default", { ad_storage: "denied" });
-  zetUetToestemmingVroeg();
   const s = document.createElement("script");
   s.async = true;
   s.src = "https://bat.bing.com/bat.js";
@@ -36,16 +28,52 @@ export function installeerUet(pathname: string) {
     const UET = (window as unknown as { UET?: new (o: Record<string, unknown>) => Uetq }).UET;
     if (!UET) return;
     const wachtrij = (window as unknown as { uetq?: unknown }).uetq;
-    const inst = new UET({ ti: MS_UET_ID, enableAutoSpaTracking: true, q: wachtrij });
+    const inst = new UET({ ti: MS_UET_ID, q: wachtrij });
     (window as unknown as { uetq: Uetq }).uetq = inst;
     inst.push("pageLoad");
   };
   document.head.appendChild(s);
-  window.addEventListener("zp-cookie-keuze", zetUetToestemming);
 }
 
-function zetUetToestemmingVroeg() {
-  if (heeftMarketingToestemming()) zetUetToestemming();
+function verwerkUetToestemming() {
+  const ja = heeftMarketingToestemming();
+  uetq()?.push("consent", "update", { ad_storage: ja ? "granted" : "denied" });
+  if (ja && !isNietGemetenPad(window.location.pathname)) laadUet();
+}
+
+/**
+ * UET (bat.js) wordt pas geladen na toestemming voor marketingcookies en nooit op interne paden.
+ * Consent Mode: standaard ad_storage denied, update bij elke cookiekeuze.
+ */
+export function installeerUet(pathname: string) {
+  if (!MS_UET_ID || uetGeinstalleerd || typeof window === "undefined") return;
+  uetGeinstalleerd = true;
+  const w = window as unknown as { uetq?: unknown[] };
+  w.uetq = w.uetq || [];
+  (w.uetq as unknown[]).push("consent", "default", { ad_storage: "denied" });
+  window.addEventListener("zp-cookie-keuze", verwerkUetToestemming);
+  if (heeftMarketingToestemming() && !isNietGemetenPad(pathname)) {
+    uetq()?.push("consent", "update", { ad_storage: "granted" });
+    laadUet();
+  }
+}
+
+/** SPA-paginaweergave voor UET bij elke routewissel (alleen als UET geladen is). */
+export function uetPageView(pathname: string) {
+  if (!uetGeladen || isNietGemetenPad(pathname)) return;
+  uetq()?.push("event", "page_view", { page_path: pathname });
+}
+
+/** UET-conversie voor een afgeronde aanvraag; nooit voor testaanvragen of op interne paden. */
+export function uetAanvraagAfgerond(isTest: boolean) {
+  if (isTest || !uetGeladen || typeof window === "undefined" || isNietGemetenPad(window.location.pathname)) return;
+  uetq()?.push("event", "aanvraag_afgerond", { event_category: "aanvraag" });
+}
+
+/** Alleen voor tests. */
+export function __resetUetVoorTest(geladen = false) {
+  uetGeladen = geladen;
+  uetGeinstalleerd = false;
 }
 
 type Params = Record<string, string | number | boolean | undefined | unknown[]>;
@@ -161,6 +189,7 @@ export const trackPurchase = (
   pakketNaam: string,
   value: number,
   userData?: { email?: string; phone_number?: string },
+  isTest = false,
 ) => {
   try {
     const al: string[] = JSON.parse(localStorage.getItem(PURCHASE_KEY) || "[]");
@@ -197,9 +226,7 @@ export const trackPurchase = (
     currency: "EUR",
     transaction_id: transactionId,
   });
-  if (uetGeladen && typeof window !== "undefined" && !isNietGemetenPad(window.location.pathname)) {
-    uetq()?.push("event", "aanvraag_afgerond", { revenue_value: value, currency: "EUR" });
-  }
+  uetAanvraagAfgerond(isTest);
 };
 
 
