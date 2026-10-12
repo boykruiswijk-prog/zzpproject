@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft } from "lucide-react";
+import { serviceAanvraagAfronden, serviceAanvraagNotitie } from "@/lib/serviceAanvraag";
 import {
   ServiceAanvraag,
   ServiceAanvraagDetail,
@@ -40,20 +41,14 @@ export default function ServiceAanvraagDetailPage() {
   }, [id]);
 
   async function saveNotes(rowId: string, notities: string) {
-    const { error } = await supabase
-      .from("klant_service_aanvragen" as any)
-      .update({ notities })
-      .eq("id", rowId);
-    if (error) toast({ title: "Fout", description: error.message, variant: "destructive" });
-    else toast({ title: "Notities opgeslagen" });
+    try { await serviceAanvraagNotitie(rowId, notities); toast({ title: "Notities opgeslagen" }); }
+    catch (e) { toast({ title: "Notities niet opgeslagen", description: (e as Error).message, variant: "destructive" }); }
   }
 
   async function markAfgerond(rowId: string) {
-    const { error } = await supabase
-      .from("klant_service_aanvragen" as any)
-      .update({ status: "afgerond" })
-      .eq("id", rowId);
-    if (error) toast({ title: "Fout", description: error.message, variant: "destructive" });
+    let fout: string | null = null;
+    try { await serviceAanvraagAfronden(rowId); } catch (e) { fout = (e as Error).message; }
+    if (fout) toast({ title: "Niet afgerond", description: fout, variant: "destructive" });
     else {
       toast({ title: "Status bijgewerkt" });
       if (aanvraag) setAanvraag({ ...aanvraag, status: "afgerond" });

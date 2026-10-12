@@ -194,8 +194,8 @@ export function PartnerBronnenBeheer() {
     if (error) toast.error(error.message); else { setNaam(""); setTerm(""); qc.invalidateQueries({ queryKey: ["partner-bronnen"] }); }
   }
   async function wissel(r: any) {
-    const { error } = await (supabase.from as any)("partner_bronnen").update({ actief: !r.actief }).eq("id", r.id);
-    if (error) toast.error(error.message); else qc.invalidateQueries({ queryKey: ["partner-bronnen"] });
+    const { data, error } = await (supabase.from as any)("partner_bronnen").update({ actief: !r.actief }).eq("id", r.id).select("id");
+    if (error) toast.error(error.message); else if (!(data ?? []).length) toast.error("Er is niets bijgewerkt: alleen een supervisor of admin mag partners wijzigen."); else qc.invalidateQueries({ queryKey: ["partner-bronnen"] });
   }
   return (
     <Card><CardHeader><CardTitle className="text-base">Partners en collectieven (geen BAV-nummer overnemen bij omzetting)</CardTitle></CardHeader>

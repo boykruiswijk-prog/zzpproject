@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { serviceAanvraagAfronden, serviceAanvraagNotitie } from "@/lib/serviceAanvraag";
 import { ServiceAanvraag, ServiceAanvraagDetail, ServiceAanvraagDetailHeader } from "@/components/admin/ServiceAanvraagDetail";
 
 /** Oog-knop: opent de volledige melding (alle formuliervelden) met verwerken en koppelen. */
@@ -20,12 +21,12 @@ export function ServiceAanvraagOog({ id, onGewijzigd, label }: { id: string; onG
   useEffect(() => { if (open) laad(); }, [open, id]);
 
   async function saveNotes(rowId: string, notities: string) {
-    const { error } = await supabase.from("klant_service_aanvragen" as any).update({ notities }).eq("id", rowId);
-    if (error) toast({ title: "Fout", description: error.message, variant: "destructive" }); else toast({ title: "Notities opgeslagen" });
+    try { await serviceAanvraagNotitie(rowId, notities); toast({ title: "Notities opgeslagen" }); }
+    catch (e) { toast({ title: "Notities niet opgeslagen", description: (e as Error).message, variant: "destructive" }); }
   }
   async function markAfgerond(rowId: string) {
-    const { error } = await supabase.from("klant_service_aanvragen" as any).update({ status: "afgerond" }).eq("id", rowId);
-    if (error) return toast({ title: "Fout", description: error.message, variant: "destructive" });
+    try { await serviceAanvraagAfronden(rowId); }
+    catch (e) { return toast({ title: "Niet afgerond", description: (e as Error).message, variant: "destructive" }); }
     toast({ title: "Status bijgewerkt" }); laad(); onGewijzigd?.();
   }
 

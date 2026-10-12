@@ -5,7 +5,7 @@ import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Building2, FileText, Euro, Users, TrendingUp, UserX, CalendarClock, AlertTriangle, RefreshCw, LineChart } from "lucide-react";
+import { Building2, FileText, Euro, Users, TrendingUp, UserX, CalendarClock, AlertTriangle, RefreshCw, LineChart, Target, Inbox } from "lucide-react";
 import { formatEuro } from "@/lib/klantContracten";
 
 export type DashboardTellers = {
@@ -16,6 +16,8 @@ export type DashboardTellers = {
   planning_aantal: number | null; planning_bedrag: number | null;
   planning_factureerbaar_aantal: number | null; planning_factureerbaar_bedrag: number | null;
   planning_geblokkeerd_aantal: number | null;
+  /** Uit tel_service_open / tel_aanvragen_doel: dezelfde definitie als het live-scherm. */
+  service_open?: number; aanvragen_doel?: number; aanvragen_doel_van?: number;
 };
 
 /** Eén bron voor alle dashboardtellers: RPC dashboard_tellers (CRM). */
@@ -64,6 +66,8 @@ export function DashboardStats() {
     { title: "Jaarwaarde (ARR)", value: t ? formatEuro(t.arr) : undefined, icon: LineChart, description: "MRR × 12", href: "/admin/klanten" },
     { title: "Leads", value: t ? `${t.leads_week} / ${t.leads_maand}` : undefined, icon: Users, description: `deze week / deze maand · ${t?.leads_totaal ?? 0} totaal`, href: "/admin/leads" },
     { title: "Conversie leads", value: t ? `${conversie}%` : undefined, icon: TrendingUp, description: `${t?.leads_omgezet ?? 0} leads met status actief of klant`, href: "/admin/leads" },
+    { title: "Aanvragen BAV + AVB sinds 6 okt", value: t ? `${t.aanvragen_doel ?? 0} van ${t.aanvragen_doel_van ?? 200}` : undefined, icon: Target, description: "Ontdubbeld per aanvraag, zonder test; zelfde getal als het live-scherm", href: "/admin/leads" },
+    { title: "Serviceverzoeken open", value: t?.service_open, icon: Inbox, description: "Zelfde getal als het live-scherm", href: "/admin/service-aanvragen" },
     { title: "Opzeggingen te koppelen", value: t?.opzeggingen_te_koppelen, icon: UserX, description: `${t?.opzeggingen_te_verwerken ?? 0} gekoppeld, nog te verwerken`, href: "/admin/klanten#opzeggingen", let: (t?.opzeggingen_te_koppelen ?? 0) > 0 },
     // Alleen tonen als de planning-velden gevuld zijn (supervisor/admin).
     ...(t?.planning_aantal != null ? [{ title: "Facturatieplanning (30 dagen)", value: `${t.planning_aantal} · ${formatEuro(t.planning_bedrag ?? 0)}`, icon: CalendarClock, description: `${t.planning_factureerbaar_aantal} factureerbaar (${formatEuro(t.planning_factureerbaar_bedrag ?? 0)}) · ${t.planning_geblokkeerd_aantal} geblokkeerd`, href: "/admin/facturatieplanning" }] : []),

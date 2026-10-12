@@ -170,11 +170,17 @@ export function bepaalToestand(w: { lopend?: unknown; laatst_actief_op?: unknown
 const iso = (v: unknown) => typeof v === 'string' && Number.isFinite(Date.parse(v)) ? new Date(v).toISOString() : null;
 
 /** AI-team uit marketing_snapshot (bron ai_team): max 10 agents, vaste teksten door de privacyfilter. */
-export function schoonAiTeam(snap: Snap): { naam: string; taak: string; resultaat: string | null; laatste_run: string | null; status: 'klaar' | 'fout' | 'gepland' }[] {
+/** Vervangt elk "N van 200" in vrije tekst door het live aantal; aantallen komen nooit uit marketing_snapshot. */
+export function liveDoelTekst(tekst: string, totaal: number): string {
+  return tekst.replace(/\b\d+\s+van\s+200\b/g, `${totaal} van 200`);
+}
+
+export function schoonAiTeam(snap: Snap, doelTotaal?: number): { naam: string; taak: string; resultaat: string | null; laatste_run: string | null; status: 'klaar' | 'fout' | 'gepland' }[] {
   const agents = (snap?.data as Ruw | undefined)?.agents;
   if (!Array.isArray(agents)) return [];
   return agents.slice(0, 12).filter((a: Ruw) => a && typeof a === 'object').map((a: Ruw) => {
-    const resultaat = schoonTekst(a.resultaat, 70);
+    const ruw = schoonTekst(a.resultaat, 70);
+    const resultaat = doelTotaal == null ? ruw : liveDoelTekst(ruw, doelTotaal);
     return {
       naam: schoonTekst(a.naam, 70),
       taak: schoonTekst(a.taak, 70),
@@ -283,7 +289,7 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
       content_nieuw: getal(kb.content_nieuw),
       content_verbeterd: getal(kb.content_verbeterd),
     },
-    ai_team: schoonAiTeam(r?.marketing?.ai_team),
+    ai_team: schoonAiTeam(r?.marketing?.ai_team, totaal),
     workers: schoonWorkers(r?.workers),
     marketing: schoonMarketing(r?.marketing),
   };

@@ -7,11 +7,12 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { formatDateNL } from "@/lib/dateFormat";
-import { CONTRACT_STATUS_LABEL, PRODUCT_LABEL, formatEuro, maskeerIban, periodeBedrag, type Product } from "@/lib/klantContracten";
+import { CONTRACT_STATUS_LABEL, PRODUCT_LABEL, formatEuro, periodeBedrag, type Product } from "@/lib/klantContracten";
 import { OpzeggingenKlant } from "@/components/admin/OpzeggingenKlant";
 import { CertificatenKlant } from "@/components/admin/CertificatenKlant";
 import { KlantCertificaat } from "@/components/admin/KlantCertificaat";
 import { CrmTijdlijn } from "@/components/admin/crm/CrmTijdlijn";
+import { IbanInzien } from "@/components/admin/IbanInzien";
 import { KlantKaart } from "@/components/admin/crm/KlantKaart";
 import { LopendeProducten } from "@/components/admin/crm/LopendeProducten";
 import { ExactRelatieLabel, OndernemingswijzigingKnop, OpvolgerBanner, VoorgangerHistorie, useOpvolging } from "@/components/admin/crm/Opvolging";
@@ -87,7 +88,7 @@ export default function KlantDetail() {
                 {personen.map((p) => <div key={p.id} className="min-w-0"><Link to={`/admin/personen/${p.id}`} className="block truncate font-medium hover:text-primary">{[p.voornaam, p.achternaam].filter(Boolean).join(" ") || p.email_weergave || "—"}</Link><div className="truncate text-muted-foreground" title={p.email_weergave}>{p.email_weergave}</div></div>)}
               </CardContent></Card>
               <Card><CardHeader><CardTitle className="text-base">Mandaat (alleen lezen)</CardTitle></CardHeader><CardContent className="text-sm">
-                {mandaat ? <div className="space-y-1"><div>IBAN {maskeerIban(mandaat.iban)}</div><div className="text-muted-foreground">Kenmerk {mandaat.kenmerk} · ondertekend {formatDateNL(mandaat.ondertekend_op)}</div></div> : <p className="text-muted-foreground">Geen mandaat gevonden.</p>}
+                {mandaat ? <div className="space-y-1"><div className="flex flex-wrap items-center gap-2">IBAN <IbanInzien bron="mandaat" id={ond.id} gemaskeerd={mandaat.iban} /></div><div className="text-muted-foreground">Kenmerk {mandaat.kenmerk} · ondertekend {formatDateNL(mandaat.ondertekend_op)}</div></div> : <p className="text-muted-foreground">Geen mandaat gevonden.</p>}
               </CardContent></Card>
               <Card><CardHeader><CardTitle className="text-base">Leads</CardTitle></CardHeader><CardContent className="text-sm">
                 {leadMatch.length === 0 ? <p className="text-muted-foreground">Geen leads gekoppeld.</p> :

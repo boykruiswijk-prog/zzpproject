@@ -312,6 +312,7 @@ function PaneelAiTeam({ d }: { d: SchermPayload }) {
   return (
     <div className="flex h-full flex-col gap-[1.6vh] overflow-hidden">
       <Kop>Ons AI-team</Kop>
+      <div className="text-[2.2vh] text-[hsl(var(--s-dim))]">Aanvragen BAV + AVB sinds 6 okt: <strong className="tabular-nums text-[hsl(var(--s-tekst))]">{d.doel.totaal} van 200</strong></div>
       <div className="rounded-[1vh] border border-[hsl(var(--s-rood)/0.6)] bg-[hsl(var(--s-rood)/0.1)] p-[1.6vh]">
         <div className="text-[2.6vh] font-semibold text-[hsl(var(--s-tekst))]">Contentmachine</div>
         <div className="mt-[0.6vh] grid grid-cols-2 gap-[1vw]">
@@ -561,7 +562,7 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
           </div>
           {data && (
             <div className="ml-auto flex items-center gap-[1.5vw] text-[2.4vh] text-[hsl(var(--s-dim))] tabular-nums">
-              <span>Vandaag: <strong className="text-[hsl(var(--s-tekst))]">{data.gebeurtenissen_vandaag}</strong> acties</span>
+              <span>Vandaag: <strong className="text-[hsl(var(--s-tekst))]">{data.gebeurtenissen_vandaag}</strong> gebeurtenissen</span>
               <span>Nu op de site: <strong className="text-[hsl(var(--s-tekst))]">{data.nu_op_site ?? 0}</strong></span>
             </div>
           )}

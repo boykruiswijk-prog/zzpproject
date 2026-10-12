@@ -5327,6 +5327,7 @@ export type Database = {
         Returns: boolean
       }
       herbeoordeel_opzeg_credits: { Args: never; Returns: number }
+      iban_inzien: { Args: { _bron: string; _id: string }; Returns: Json }
       importeer_afas_20261001: { Args: never; Returns: Json }
       importeer_certificaten_20261001: { Args: never; Returns: Json }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
@@ -5489,11 +5490,32 @@ export type Database = {
       scherm_data: { Args: never; Returns: Json }
       scherm_stromen: { Args: never; Returns: Json }
       scherm_werkstand: { Args: never; Returns: Json }
+      service_aanvraag_afronden: { Args: { _id: string }; Returns: Json }
       service_aanvraag_koppelen: {
         Args: { _aanvraag_id: string; _onderneming_id: string }
         Returns: Json
       }
+      service_aanvraag_notitie: {
+        Args: { _id: string; _notitie: string }
+        Returns: Json
+      }
+      service_aanvraag_status: {
+        Args: { _id: string; _status: string }
+        Returns: Json
+      }
       site_bezoek: { Args: { _categorie: string }; Returns: undefined }
+      tel_aanvragen_doel: { Args: { _vanaf?: string }; Returns: number }
+      tel_aanvragen_doel_rijen: {
+        Args: { _vanaf?: string }
+        Returns: {
+          dag: string
+          sleutel: string
+        }[]
+      }
+      tel_acties_vandaag: { Args: { _toon_test?: boolean }; Returns: number }
+      tel_contracten: { Args: { _toon_test?: boolean }; Returns: number }
+      tel_klanten: { Args: { _toon_test?: boolean }; Returns: number }
+      tel_service_open: { Args: { _toon_test?: boolean }; Returns: number }
       verberg_review_kaart: { Args: never; Returns: boolean }
       verify_cron_secret: { Args: { p_secret: string }; Returns: boolean }
       verify_dba_certificate: {

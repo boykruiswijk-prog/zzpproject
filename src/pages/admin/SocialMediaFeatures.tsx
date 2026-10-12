@@ -98,7 +98,7 @@ export default function AdminSocialMediaFeatures() {
     };
 
     const { error } = editing
-      ? await supabase.from("social_media_features").update(payload).eq("id", editing.id)
+      ? await supabase.from("social_media_features").update(payload).eq("id", editing.id).select("id").then((r) => r.error || (r.data ?? []).length ? r : { ...r, error: { message: "Er is niets bijgewerkt: alleen een admin mag posts wijzigen." } as any })
       : await supabase.from("social_media_features").insert(payload);
 
     if (error) return toast({ title: "Opslaan mislukt", description: error.message, variant: "destructive" });
@@ -108,8 +108,8 @@ export default function AdminSocialMediaFeatures() {
   };
 
   const toggleActive = async (item: SocialFeature) => {
-    const { error } = await supabase.from("social_media_features").update({ active: !item.active }).eq("id", item.id);
-    if (error) return toast({ title: "Update mislukt", variant: "destructive" });
+    const { data, error } = await supabase.from("social_media_features").update({ active: !item.active }).eq("id", item.id).select("id");
+    if (error || !(data ?? []).length) return toast({ title: "Update mislukt", description: error?.message ?? "Er is niets bijgewerkt: alleen een admin mag posts wijzigen.", variant: "destructive" });
     load();
   };
 
