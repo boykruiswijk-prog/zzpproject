@@ -10,9 +10,9 @@
 - Security-definerfuncties krijgen minimale EXECUTE-rechten; alleen expliciete publieke leesfuncties blijven voor anon beschikbaar. Waarom: privilege-escalatie via RPC voorkomen.
 - Policies met rolfuncties gelden alleen `TO authenticated`; publieke leespolicies gebruiken geen rolfunctie. Controle: scripts/check-anon-kennisbank.mjs.
 - Prerender rendert elke publieke route volledig via src/entry-server.tsx (AppRoutes + vooraf gevulde querydata); oude URL's uit src/config/legacyRedirects.ts (gespiegeld in _shared) en artikel-slugs krijgen noindex-doorverwijspagina's. Waarom: hosting kent geen SSR, 301 of 404.
-- 404's worden alleen via RPC log_not_found vastgelegd (alleen optellen, begrensd). Waarom: monitoring zonder anonieme tabelrechten.
+- 404's alleen via RPC log_not_found (begrensd optellen). Waarom: geen anonieme tabelrechten.
 - Testdata wordt gemarkeerd met kolom is_test (nooit verwijderd); beheeroverzichten filteren is_test standaard weg, alleen admin/supervisor kan via useToonTestrecords tonen. Leadstatuslabels komen uit src/lib/statusLabels.ts. Waarom: herleidbare historie en één bron voor labels.
-- Collectieve aanmeldtellingen alleen in afgeschermd beheer; publiek geen aantallen of voortgang. Waarom: geen misleidende sociale bewijslast.
+- Collectieve aanmeldtellingen alleen in beheer, nooit publiek. Waarom: geen misleidende sociale bewijslast.
 - Opzegregels (toelichting bij "Anders" 3-500 tekens, datum vandaag tot 180 dagen, NL-tijd) staan in src/lib/opzegValidatie.ts, byte-gelijk in _shared/opzegValidatie.ts. Waarom: formulier en server hanteren exact dezelfde regels.
 
 - Opzeggingen worden bij insert gekoppeld door bepaal_opzegging_koppeling (e-mail → contractnummer → KvK/bedrijfsnaam als voorstel); contracten wijzigen alleen via RPC verwerk_opzegging. Waarom: nooit automatisch een contract beëindigen.
@@ -25,8 +25,7 @@
 - Reviewverzoeken alleen via review-verzoeken (cron, schakelaar 'reviewverzoeken_actief', RPC review_kandidaten); afmelden alleen naar review_afmeldingen, nooit suppressed_emails. Waarom: één filter, transactionele mail blijft.
 - Beheer-UI-regels: src/components/admin/AGENTS.md; CRM: src/components/admin/crm/AGENTS.md.
 - Article images: leased queue, wake token or MFA supervisor, max 2 AI attempts then category fallback; never a global pause (AI refusal only sets admin notice); crashed jobs resume as fallback. Preserve custom/old assets; build verifies images; keep ArticleImage guard. Why: every article gets an image within minutes.
-- Scripts never import React. Why: avoid prod/dev SSR crashes.
-- Article markdown uses articleMarkdownUrl for every rendering path. Why: preserve telephone links while retaining the default unsafe-protocol filter.
+- Scripts never import React (SSR crashes); article markdown always uses articleMarkdownUrl (keeps tel: links, filters unsafe protocols).
 
 - Elke wijziging die zichtbaar is op de website of in de admin krijgt bij het publiceren precies één rij in public.wijzigingsmeldingen, in gewone taal voor Ellen (geen technische termen of bestandsnamen); de trigger wijzigingsmelding_mailen en het vangnet (cron) mailen via Edge Function wijziging-mailen. Waarom: Ellen weet altijd wat er veranderd is.
 - /scherm en /tv: data alleen via scherm-data (SCHERM_TOKEN of apparaattoken, alleen sha-256 in scherm_apparaten; koppelen via scherm-koppel); machine_activiteit-triggers laten nooit de actie falen. Waarom: intrekbare toegang per tv.
