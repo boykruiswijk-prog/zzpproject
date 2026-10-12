@@ -139,6 +139,9 @@ export default function Cookies() {
             <p className="text-muted-foreground">
               Cookies kunnen worden ingesteld door de website die je bezoekt (first-party cookies) of door andere partijen zoals adverteerders of analysetools (third-party cookies).
             </p>
+            <p className="text-muted-foreground mt-4">
+              Daarnaast houden we anoniem bij welk type pagina wordt bekeken (bijvoorbeeld de homepage of een kennisbankartikel), zonder cookies en zonder persoonsgegevens. Dit gebruiken we alleen voor ons interne live-overzicht.
+            </p>
           </div>
         </div>
       </section>

@@ -1,4 +1,5 @@
 import { AdminAalGuard } from "@/components/admin/AdminAalGuard";
+import { categorieVoorPad, meldSiteBezoek } from "./lib/siteBezoek";
 import { lazy, Suspense, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -311,7 +312,7 @@ export const AppProviders = ({ client, children }: { client: QueryClient; childr
 /** Houdt de GA-opt-out-vlag synchroon met de route (geen GA4 op admin/portal/mijn-zp). */
 function GaRouteGuard() {
   const { pathname } = useLocation();
-  useEffect(() => { zetGaUitschakeling(pathname); uetPageView(pathname); }, [pathname]);
+  useEffect(() => { zetGaUitschakeling(pathname); uetPageView(pathname); meldSiteBezoek(categorieVoorPad(pathname)); }, [pathname]);
   return null;
 }
 
