@@ -109,13 +109,43 @@ export function echteTekst(t: unknown, station: string): string {
   if (!origineel || schoon !== origineel) return VEILIGE_TEKST[station] ?? VEILIGE_TEKST.kwaliteit;
   return origineel.slice(0, 90);
 }
+export const ACTIES = ['lead_verzekering_aanvraag','lead_actief','kvk_check','planner_run','exact_sync','wijziging','mail','cron','certificaat','chat','serviceverzoek','bav_aanmelding','artikel','artikel_live',
+  'formulier_start','formulier_stap','formulier_af','chat_bericht','artikel_verbeterd','indexnow','contract_status','contract_nieuw','portal_uitnodiging','spamfilter','mail_verzonden','dba_check','screening','collectief','site_bezoek'];
+/** Meervoud voor gegroepeerde sitebezoeken: "3 bezoekers lezen een kennisbankartikel". */
+export const BEZOEK_MEERVOUD: Record<string, string> = {
+  'Bezoeker bekijkt de homepage': 'bezoekers bekijken de homepage',
+  'Bezoeker bekijkt de verzekeringen': 'bezoekers bekijken de verzekeringen',
+  'Bezoeker opent het aanvraagformulier': 'bezoekers openen het aanvraagformulier',
+  'Starter bekijkt het starterspakket': 'starters bekijken het starterspakket',
+  'Bezoeker bekijkt een beroepspagina': 'bezoekers bekijken een beroepspagina',
+  'Bezoeker leest een kennisbankartikel': 'bezoekers lezen een kennisbankartikel',
+  'Bezoeker bekijkt het collectief': 'bezoekers bekijken het collectief',
+  'Bezoeker bekijkt de contactpagina': 'bezoekers bekijken de contactpagina',
+  'Klant logt in op Mijn ZP': 'klanten loggen in op Mijn ZP',
+};
+/** Groepeert opeenvolgende identieke sitebezoeken (zelfde tekst, binnen 1 minuut van de vorige). */
+export function groepeerBezoeken<T extends { actie: string; tekst: string; tijd: string; aantal?: number }>(lijst: T[]): (T & { aantal: number })[] {
+  const uit: (T & { aantal: number; _basis?: string; _laatst?: number })[] = [];
+  for (const a of lijst) {
+    const vorige = uit[uit.length - 1];
+    const t = Date.parse(a.tijd);
+    if (a.actie === 'site_bezoek' && vorige && vorige.actie === 'site_bezoek' && vorige._basis === a.tekst && BEZOEK_MEERVOUD[a.tekst]
+      && Number.isFinite(t) && Number.isFinite(vorige._laatst!) && Math.abs(vorige._laatst! - t) <= 60_000) {
+      vorige.aantal += 1; vorige._laatst = t;
+      vorige.tekst = `${vorige.aantal} ${BEZOEK_MEERVOUD[a.tekst]}`;
+      continue;
+    }
+    uit.push({ ...a, aantal: 1, _basis: a.tekst, _laatst: t });
+  }
+  return uit.map(({ _basis, _laatst, ...r }) => r as T & { aantal: number });
+}
 export function schermActiviteit(a: Ruw) {
   const station = (STATIONS as readonly string[]).includes(a.station) ? a.station : 'kwaliteit';
   const echteAanvraag = a.actie === 'lead_verzekering_aanvraag';
   const groep = intakeGroep(a.tekst);
   return {
     id: String(a.id ?? ''), station,
-    actie: ['lead_verzekering_aanvraag','lead_actief','kvk_check','planner_run','exact_sync','wijziging','mail','cron','certificaat','chat','serviceverzoek','bav_aanmelding','artikel'].includes(a.actie) ? String(a.actie) : 'overig',
+    actie: ACTIES.includes(a.actie) ? String(a.actie) : 'overig',
     tekst: echteTekst(a.tekst, station),
     status: (a.status === 'bezig' || a.status === 'fout' || a.status === 'onbekend' ? a.status : 'klaar') as 'bezig' | 'fout' | 'onbekend' | 'klaar',
     tijd: Number.isFinite(Date.parse(a.tijd)) ? new Date(a.tijd).toISOString() : '',
@@ -181,13 +211,14 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
   const totaal = getal(doel.totaal) ?? 0;
   const rest = Math.max(getal(doel.resterende_dagen) ?? 0, 0);
   const tempo = getal(doel.tempo_14d) ?? 0;
-  const stations: Record<string, { vandaag: number; skills: number; laatste_status: string | null; toestand: Toestand; laatst_actief_op: string | null; lopende_tekst: string | null; duur_vandaag_min: number }> = {};
+  const stations: Record<string, { vandaag: number; skills: number; laatste_status: string | null; toestand: Toestand; laatst_actief_op: string | null; lopende_tekst: string | null; duur_vandaag_min: number; agent_bezig_sinds: string | null }> = {};
   for (const s of STATIONS) {
     const x = r?.stations?.[s] ?? {};
     const w = r?.werkstand?.[s];
     const tekst = w?.lopende_tekst ? echteTekst(w.lopende_tekst, s) : null;
     stations[s] = { vandaag: getal(x.vandaag) ?? 0, skills: getal(x.skills) ?? 0, laatste_status: x.laatste_status ? status(x.laatste_status) : null,
-      toestand: bepaalToestand(w, nu), laatst_actief_op: iso(w?.laatst_actief_op), lopende_tekst: tekst, duur_vandaag_min: Math.max(0, Math.round(getal(w?.duur_vandaag_min) ?? 0)) };
+      toestand: bepaalToestand(w, nu), laatst_actief_op: iso(w?.laatst_actief_op), lopende_tekst: tekst, duur_vandaag_min: Math.max(0, Math.round(getal(w?.duur_vandaag_min) ?? 0)),
+      agent_bezig_sinds: w?.lopend === true ? iso(w?.agent_bezig_sinds) : null };
   }
   const perioden = new Map<string, Ruw>((Array.isArray(r?.perioden) ? r.perioden : []).map((p: Ruw) => [String(p?.id ?? ''), p]));
   const kb = r?.kennisbank ?? {};
@@ -196,10 +227,11 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
   const gz = r?.gezondheid ?? {};
   return {
     gegenereerd_op: nu.toISOString(),
-    activiteit: (Array.isArray(r?.activiteit) ? r.activiteit : []).filter((a: Ruw) => !a.is_test).slice(0, 40).map((a: Ruw) => {
+    activiteit: groepeerBezoeken((Array.isArray(r?.activiteit) ? r.activiteit : []).filter((a: Ruw) => !a.is_test).slice(0, 120).map((a: Ruw) => {
       const p = perioden.get(String(a.id ?? ''));
       return { ...schermActiviteit(a), gestart_op: iso(p?.gestart_op), afgerond_op: iso(p?.afgerond_op), agent: p?.agent === true };
-    }),
+    })).slice(0, 40),
+    nu_op_site: getal(r?.nu_op_site),
     stroom: {
       sinds: '2026-10-06',
       sessies: getal(r?.stroom?.sessies),
