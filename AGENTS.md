@@ -23,7 +23,7 @@
 - docs/cloudflare-bulk-redirects.csv volgt bij elke build uit public/_redirects. Waarom: één bron.
 
 - Reviewverzoeken alleen via review-verzoeken (cron, schakelaar 'reviewverzoeken_actief', RPC review_kandidaten); afmelden alleen naar review_afmeldingen, nooit suppressed_emails. Waarom: één filter, transactionele mail blijft.
-- Beheer-UI-regels: src/components/admin/AGENTS.md; CRM: src/components/admin/crm/AGENTS.md.
+- Beheer-UI: src/components/admin/AGENTS.md (CRM: crm/AGENTS.md).
 - Article images: leased queue, wake token or MFA supervisor, max 2 AI attempts then category fallback; never a global pause (AI refusal only sets admin notice); crashed jobs resume as fallback. Preserve custom/old assets; build verifies images; keep ArticleImage guard. Why: every article gets an image within minutes.
 - Scripts never import React (SSR crashes); article markdown always uses articleMarkdownUrl (keeps tel: links, filters unsafe protocols).
 
