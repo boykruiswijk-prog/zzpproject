@@ -23,7 +23,7 @@ const replacements = [
   "meeting-Cug9OgIW.jpg", "meeting-B8kfn_fb.webp", "member-4-zwSnkyKg.jpg",
   "member-mystery-pznLVMGj.jpg", "walking-DOXdr9bP.jpg", "walking-BYQ1hDLA.webp",
 ].map((name) => path.join("public", "assets", `team-${name}`)).concat(
-  ["sEEvQ6-X.jpg", "1OalQy_T.webp"].map((h) => path.join("public", "assets", `zp-boy-laptop-${h}`)),
+  ["sEEvQ6-X.jpg", "1OalQy_T.webp"].map((h) => path.join("public", "assets", `${["zp", "boy", "laptop"].join("-")}-${h}`)),
 );
 const textFile = /\.(?:[cm]?[jt]sx?|css|html|json|svg|xml|txt|webmanifest|csv|md|py|sql)$/i;
 
