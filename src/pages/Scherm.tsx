@@ -463,11 +463,11 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
       setData(next);
       setLaatsteOk(Date.now());
       fouten.current = 0;
-      timer.current = window.setTimeout(laad, 15_000);
+      timer.current = window.setTimeout(laad, 5_000);
     } catch {
       fouten.current += 1;
       if (fouten.current >= 6) { window.location.reload(); return; }
-      timer.current = window.setTimeout(laad, Math.min(15_000 * 2 ** fouten.current, 300_000));
+      timer.current = window.setTimeout(laad, Math.min(5_000 * 2 ** fouten.current, 300_000));
     }
   }, [token, tvCode, sessie]);
 
