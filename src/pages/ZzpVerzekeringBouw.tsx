@@ -10,7 +10,7 @@ import {
 import { HardHat, Shield, FileCheck } from "lucide-react";
 
 import serviceVerzekeringen from "@/assets/service-verzekeringen.webp";
-import teamMeeting from "@/assets/team-meeting.webp";
+import officeMeetingRoom from "@/assets/office-meeting-room.webp";
 import officeCoffee from "@/assets/office-coffee.webp";
 
 const SEO = seoRoute("/zzp-verzekering-bouw");
@@ -80,7 +80,7 @@ export default function ZzpVerzekeringBouw() {
       ]}
       explainers={[
         {
-          image: teamMeeting,
+          image: officeMeetingRoom,
           title: "BAV en AVB in de juiste verhouding",
           text:
             "In de bouw lopen ontwerp, advies en uitvoering vaak door elkaar. De polisvoorwaarden beschrijven wat onder beroepsaansprakelijkheid en bedrijfsaansprakelijkheid valt. We beantwoorden je vragen over deze voorwaarden.",

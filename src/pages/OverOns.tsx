@@ -16,8 +16,8 @@ import sandraPortrait from "@/assets/team-sandra.webp";
 import boyPortrait from "@/assets/team-member-1.webp";
 import ellenPortrait from "@/assets/ellen-baars-portrait.webp";
 
-import teamWalking from "@/assets/team-walking.webp";
-import teamCheers from "@/assets/team-cheers.webp";
+import officeMeetingRoom from "@/assets/office-meeting-room.webp";
+import officeFlowers from "@/assets/office-flowers.webp";
 import { GoogleReviewsSection } from "@/components/social-proof/GoogleReviewsSection";
 import { SocialFeaturesSection } from "@/components/over-ons/SocialFeaturesSection";
 
@@ -71,7 +71,7 @@ export default function OverOns() {
         title={t("overOns.title")}
         subtitle={t("overOns.subtitle")}
         badge={{ icon: <Heart className="h-4 w-4" />, text: t("overOns.badge") }}
-        backgroundImage={teamWalking}
+        backgroundImage={officeMeetingRoom}
       />
 
       {/* Founder/CEO module */}
@@ -257,7 +257,7 @@ export default function OverOns() {
 
       <section className="section-padding text-primary-foreground relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img loading="lazy" decoding="async" src={teamCheers} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
+          <img loading="lazy" decoding="async" src={officeFlowers} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
         </div>
         <div className="container-wide relative z-10">

@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { TrustBar } from "@/components/shared/TrustBar";
 import { trackCTA, trackPhone } from "@/lib/tracking";
-import teamWalking from "@/assets/team-walking.webp";
+import officeMeetingRoom from "@/assets/office-meeting-room.webp";
 import ellenAvatar from "@/assets/ellen-baars-avatar.webp";
 import { ResponseTimePromise } from "@/components/common/ResponseTimePromise";
 import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
@@ -23,7 +23,7 @@ export function HeroSection() {
   return (
     <section className="relative min-h-[85vh] flex items-center overflow-hidden pb-14">
       <div className="absolute inset-0 z-0">
-        <img decoding="async" fetchpriority="high" src={teamWalking} alt="ZP Zaken" width={1600} height={1067} className="w-full h-full object-cover" />
+        <img decoding="async" fetchpriority="high" src={officeMeetingRoom} alt="ZP Zaken" width={1280} height={1920} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-foreground/95 via-foreground/85 to-foreground/70" />
       </div>
 

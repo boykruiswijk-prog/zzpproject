@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
-import teamMeeting from "@/assets/team-meeting.webp";
+import officeMeetingRoom from "@/assets/office-meeting-room.webp";
 
 interface PageHeroProps {
   title: ReactNode;
@@ -22,7 +22,7 @@ export function PageHero({
   showBackgroundImage = true,
   backgroundImage
 }: PageHeroProps) {
-  const bgImage = backgroundImage || teamMeeting;
+  const bgImage = backgroundImage || officeMeetingRoom;
   
   return (
     <section className="relative min-h-[40vh] flex items-center overflow-hidden">

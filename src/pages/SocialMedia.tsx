@@ -16,8 +16,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import teamWalking from "@/assets/team-walking.webp";
-import teamCheers from "@/assets/team-cheers.webp";
+import officeMeetingRoom from "@/assets/office-meeting-room.webp";
+import officeFlowers from "@/assets/office-flowers.webp";
 
 const SEO = seoRoute("/social-media");
 
@@ -75,7 +75,7 @@ export default function SocialMedia() {
         title={<>Social Media & Zeker Ondernemen als <span className="text-accent">ZZP'er</span></>}
         subtitle="Blijf op de hoogte van ondernemersnieuws, verzekeringen en risico's voor zelfstandigen. Volg ons en onderneem met vertrouwen."
         badge={{ icon: <Share2 className="h-4 w-4" />, text: "Volg ons" }}
-        backgroundImage={teamWalking}
+        backgroundImage={officeMeetingRoom}
       >
         <div className="flex flex-wrap gap-4">
           <Button variant="accent" size="lg" asChild>
@@ -275,7 +275,7 @@ export default function SocialMedia() {
       {/* 7. CTA */}
       <section className="section-padding text-primary-foreground relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img loading="lazy" decoding="async" src={teamCheers} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
+          <img loading="lazy" decoding="async" src={officeFlowers} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
         </div>
         <div className="container-wide relative z-10">

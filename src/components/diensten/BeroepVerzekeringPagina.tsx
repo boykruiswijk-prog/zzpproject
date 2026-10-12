@@ -16,7 +16,7 @@ import { ArrowRight } from "lucide-react";
 import { bavPakketten, formatMiljoenKort, getPakket } from "@/data/bavPakketten";
 
 import serviceVerzekeringen from "@/assets/service-verzekeringen.webp";
-import teamMeeting from "@/assets/team-meeting.webp";
+import officeMeetingRoom from "@/assets/office-meeting-room.webp";
 import officeCoffee from "@/assets/office-coffee.webp";
 
 /** Bedragen uitsluitend uit bavPakketten. */
@@ -61,7 +61,7 @@ export function BeroepVerzekeringPagina(p: Props) {
       faqSchema(p.faqs),
     ],
   };
-  const images = [teamMeeting, officeCoffee];
+  const images = [officeMeetingRoom, officeCoffee];
 
   return (
     <ServicePageTemplate

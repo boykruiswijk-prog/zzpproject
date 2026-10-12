@@ -3,8 +3,8 @@ import { ServicePageTemplate } from "@/components/diensten/ServicePageTemplate";
 import { Heart, Users, Euro } from "lucide-react";
 
 import teamRoxy from "@/assets/team-roxy.webp";
-import officeCookies from "@/assets/zp-boy-laptop.webp";
-import teamMeeting from "@/assets/team-meeting.webp";
+import officeCookies from "@/assets/office-flowers.webp";
+import officeMeetingRoom from "@/assets/office-meeting-room.webp";
 import officeFlowers from "@/assets/office-flowers.webp";
 
 const SEO = seoRoute("/zorgverzekering");
@@ -58,7 +58,7 @@ export default function Zorgverzekering() {
           ],
         },
         {
-          image: teamMeeting,
+          image: officeMeetingRoom,
           title: "Welke verzekeraars zijn beschikbaar?",
           text: "We werken samen met betrouwbare zorgverzekeraars die ruime keuze bieden in pakketten. Zo vind je een verzekering die bij je past.",
           bullets: [

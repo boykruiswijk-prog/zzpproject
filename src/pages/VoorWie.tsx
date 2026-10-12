@@ -6,8 +6,8 @@ import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, HardHat, HeartPulse, Briefcase, Calculator, Scale, Megaphone, Monitor, Users, Shield } from "lucide-react";
-import teamWalking from "@/assets/team-walking.webp";
-import teamCheers from "@/assets/team-cheers.webp";
+import officeMeetingRoom from "@/assets/office-meeting-room.webp";
+import officeFlowers from "@/assets/office-flowers.webp";
 
 const SEO = seoRoute("/voor-wie");
 
@@ -83,7 +83,7 @@ export default function VoorWie() {
         title={<>Voor wie is ZP Zaken?</>}
         subtitle="We verzekeren zelfstandigen met adviserende, ontwerpende of coördinerende rollen,  binnen een groot aantal vakgebieden."
         badge={{ icon: <Users className="h-4 w-4" />, text: "Voor zelfstandig professionals" }}
-        backgroundImage={teamWalking}
+        backgroundImage={officeMeetingRoom}
       />
 
       <section className="section-padding bg-background">
@@ -139,7 +139,7 @@ export default function VoorWie() {
 
       <section className="section-padding text-primary-foreground relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img loading="lazy" decoding="async" src={teamCheers} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
+          <img loading="lazy" decoding="async" src={officeFlowers} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/85" />
         </div>
         <div className="container-wide relative z-10">

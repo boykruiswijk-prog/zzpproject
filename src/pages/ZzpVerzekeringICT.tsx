@@ -14,7 +14,7 @@ import { bavPakketten, formatMiljoenKort } from "@/data/bavPakketten";
 import { LeesMeer } from "@/components/kennisbank/LeesMeer";
 
 import serviceVerzekeringen from "@/assets/service-verzekeringen.webp";
-import teamMeeting from "@/assets/team-meeting.webp";
+import officeMeetingRoom from "@/assets/office-meeting-room.webp";
 import officeCoffee from "@/assets/office-coffee.webp";
 
 const SEO = seoRoute("/zzp-verzekering-ict");
@@ -88,7 +88,7 @@ export default function ZzpVerzekeringICT() {
       ]}
       explainers={[
         {
-          image: teamMeeting,
+          image: officeMeetingRoom,
           title: "De juiste dekking voor jouw ICT-opdrachten",
           text:
             "Of je nu als software-architect, product owner of IT-consultant werkt: de risico's zitten in het werk zelf. Wij kijken naar jouw opdrachten en contracten en bepalen samen welke dekking daar bij hoort.",

@@ -21,7 +21,7 @@ import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
 import { LeesMeer } from "@/components/kennisbank/LeesMeer";
 import { HiscoxTrustStrip } from "@/components/home/HiscoxTrustStrip";
 import teamBoyCalling from "@/assets/team-boy-calling.webp";
-import teamCheers from "@/assets/team-cheers.webp";
+import officeFlowers from "@/assets/office-flowers.webp";
 
 const SEO = seoRoute("/verzekeringen");
 
@@ -206,7 +206,7 @@ export default function Verzekeringen() {
 
       <section className="section-padding text-white relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img loading="lazy" decoding="async" src={teamCheers} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
+          <img loading="lazy" decoding="async" src={officeFlowers} alt="" className="w-full h-full object-cover bg-person" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-accent/95 via-accent/90 to-accent/85" />
         </div>
         <div className="container-wide relative z-10">
