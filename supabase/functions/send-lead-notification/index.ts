@@ -119,6 +119,7 @@ function esc(s: unknown): string {
 
 const LABEL_MAP: Record<string, string> = {
   naam: "Naam",
+  controle: "Controle",
   contact_naam: "Naam",
   email: "E-mail",
   telefoon: "Telefoon",
@@ -139,7 +140,7 @@ function prettyLabel(key: string): string {
   return spaced.charAt(0).toUpperCase() + spaced.slice(1);
 }
 
-export function renderHtml(label: string, fields: Record<string, unknown>, leadId?: string | null, deeplink?: string | null, waarschuwing?: string): string {
+function renderHtml(label: string, fields: Record<string, unknown>, leadId?: string | null, deeplink?: string | null, waarschuwing?: string): string {
   const rows = Object.entries(fields)
     .map(([k, v]) => `<tr><td style="padding:10px 14px;font-weight:600;color:#333;background:#fafafa;border:1px solid #e5e5e5;width:200px">${esc(prettyLabel(k))}</td><td style="padding:10px 14px;border:1px solid #e5e5e5;color:#222;white-space:pre-line">${esc(Array.isArray(v) ? v.join(", ") : v)}</td></tr>`)
     .join("");
@@ -171,7 +172,7 @@ const CUSTOMER_INTRO: Record<string, string> = {
   contact: "Bedankt voor je bericht. We nemen zo spoedig mogelijk, uiterlijk binnen 24 uur, contact met je op.",
 };
 
-export function renderCustomerHtml(type: string, label: string, fields: Record<string, unknown>): string {
+function renderCustomerHtml(type: string, label: string, fields: Record<string, unknown>): string {
   const intro = CUSTOMER_INTRO[type] || "We hebben je aanvraag in goede orde ontvangen en nemen binnen 24 uur contact met je op.";
   const SHOW_KEYS = new Set([
     "naam", "contact_naam", "bedrijfsnaam", "kvk_nummer", "pakket", "gekozen_pakket",
@@ -195,7 +196,7 @@ export function renderCustomerHtml(type: string, label: string, fields: Record<s
   `;
 }
 
-export function renderCustomerText(type: string, fields: Record<string, unknown>): string {
+function renderCustomerText(type: string, fields: Record<string, unknown>): string {
   const intro = CUSTOMER_INTRO[type] || "We hebben je aanvraag in goede orde ontvangen en nemen binnen 24 uur contact met je op.";
   const SHOW_KEYS = new Set(["naam","contact_naam","bedrijfsnaam","kvk_nummer","pakket","gekozen_pakket","dekking","betaalwijze","ingangsdatum","verzekering","premie"]);
   const lines = Object.entries(fields)
@@ -205,7 +206,7 @@ export function renderCustomerText(type: string, fields: Record<string, unknown>
   return `Bevestiging van je aanvraag\n\n${intro}\n\n${lines ? `Samenvatting:\n${lines}\n\n` : ""}Met vriendelijke groet,\nTeam ZP Zaken\n020 - 457 3077\ninfo@zpzaken.nl\n`;
 }
 
-if (import.meta.main) Deno.serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "method_not_allowed" }), {
