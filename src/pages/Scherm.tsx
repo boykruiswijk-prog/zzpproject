@@ -496,7 +496,7 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
     let i = 0;
     const t = window.setInterval(() => {
       const station = STATION_IDS[i % STATION_IDS.length];
-      const event: Puls = { id: `demo-${Date.now()}`, station, actie: 'overig', status: 'klaar', tekst: station === 'intake' ? 'Nieuwe aanvraag binnen, Consultant uit Utrecht' : 'Demonstratie: afdeling aan het werk', tijd: new Date().toISOString(), echte_aanvraag: station === 'intake', beroepsgroep: station === 'intake' ? 'Consultant' : null, provincie: station === 'intake' ? 'Utrecht' : null, gestart_op: null, afgerond_op: null, agent: false };
+      const event: Puls = { id: `demo-${Date.now()}`, station, actie: 'overig', status: 'klaar', tekst: station === 'intake' ? 'Nieuwe aanvraag binnen, Consultant uit Utrecht' : 'Demonstratie: afdeling aan het werk', tijd: new Date().toISOString(), echte_aanvraag: station === 'intake', beroepsgroep: station === 'intake' ? 'Consultant' : null, provincie: station === 'intake' ? 'Utrecht' : null, gestart_op: null, afgerond_op: null, agent: false, aantal: 1 };
       setDemoEvent(event); setFocus(event);
       if (station === 'intake') {
         setBreaking({ event, total: data.doel.totaal + 1 });
