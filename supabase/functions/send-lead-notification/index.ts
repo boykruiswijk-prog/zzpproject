@@ -7,6 +7,7 @@ import { resolveEnvironment } from "../_shared/environment.ts";
 import { getFromAddress } from "../_shared/mail.ts";
 import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
 import { interneMailVelden } from "../_shared/leadVelden.ts";
+import { klantVeiligeTekst } from "../_shared/premieTekst.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -118,6 +119,7 @@ function esc(s: unknown): string {
 
 const LABEL_MAP: Record<string, string> = {
   naam: "Naam",
+  controle: "Controle",
   contact_naam: "Naam",
   email: "E-mail",
   telefoon: "Telefoon",
@@ -178,7 +180,7 @@ function renderCustomerHtml(type: string, label: string, fields: Record<string, 
   ]);
   const visible = Object.entries(fields).filter(([k, v]) => SHOW_KEYS.has(k) && v != null && String(v).trim() !== "" && String(v).trim() !== "-");
   const rows = visible
-    .map(([k, v]) => `<tr><td style="padding:10px 14px;font-weight:600;color:#333;background:#fafafa;border:1px solid #e5e5e5;width:200px">${esc(prettyLabel(k))}</td><td style="padding:10px 14px;border:1px solid #e5e5e5;color:#222">${esc(Array.isArray(v) ? v.join(", ") : v)}</td></tr>`)
+    .map(([k, v]) => `<tr><td style="padding:10px 14px;font-weight:600;color:#333;background:#fafafa;border:1px solid #e5e5e5;width:200px">${esc(prettyLabel(k))}</td><td style="padding:10px 14px;border:1px solid #e5e5e5;color:#222">${esc(klantVeiligeTekst(Array.isArray(v) ? v.join(", ") : v))}</td></tr>`)
     .join("");
   return `
     <div style="font-family:Arial,sans-serif;max-width:640px;color:#222;line-height:1.6">
@@ -199,7 +201,7 @@ function renderCustomerText(type: string, fields: Record<string, unknown>): stri
   const SHOW_KEYS = new Set(["naam","contact_naam","bedrijfsnaam","kvk_nummer","pakket","gekozen_pakket","dekking","betaalwijze","ingangsdatum","verzekering","premie"]);
   const lines = Object.entries(fields)
     .filter(([k, v]) => SHOW_KEYS.has(k) && v != null && String(v).trim() !== "" && String(v).trim() !== "-")
-    .map(([k, v]) => `- ${prettyLabel(k)}: ${Array.isArray(v) ? v.join(", ") : v}`)
+    .map(([k, v]) => `- ${prettyLabel(k)}: ${klantVeiligeTekst(Array.isArray(v) ? v.join(", ") : v)}`)
     .join("\n");
   return `Bevestiging van je aanvraag\n\n${intro}\n\n${lines ? `Samenvatting:\n${lines}\n\n` : ""}Met vriendelijke groet,\nTeam ZP Zaken\n020 - 457 3077\ninfo@zpzaken.nl\n`;
 }
@@ -268,7 +270,7 @@ Deno.serve(async (req) => {
         if (bericht) internFields["Bericht"] = bericht;
         // Extra context van vertrouwde aanroepers (bijv. chatsamenvatting, premie) behouden.
         if (isTrusted) for (const [k, v] of Object.entries(fields)) {
-          if (["samenvatting_chat", "premie", "dekking"].includes(k) && v) internFields[prettyLabel(k)] = v;
+          if (["samenvatting_chat", "premie", "dekking", "controle"].includes(k) && v) internFields[prettyLabel(k)] = v;
         }
       }
     }
