@@ -107,7 +107,7 @@ export default function SocialMedia() {
                 Bij ZP Zaken geloven we dat kennis delen de basis is van goed ondernemerschap. Via onze social media kanalen delen we praktische tips, updates over <strong>beroepsaansprakelijkheid</strong> en <strong>bedrijfsaansprakelijkheid</strong>, en inzichten die je helpen om weloverwogen beslissingen te nemen over je <strong>ondernemersrisico</strong>.
               </p>
               <p>
-                Of je nu net start als zzp'er of al jaren zelfstandig bent: door ons te volgen blijf je altijd een stap voor. Zo kun je focussen op je vak, terwijl wij je helpen de risico's te beperken.
+                Of je nu net start als zzp'er of al jaren zelfstandig bent: door ons te volgen blijf je altijd een stap voor. Zo kun je focussen op wat je het beste doet:  je vak uitoefenen:  terwijl wij je helpen de risico's te beperken.
               </p>
             </div>
           </div>

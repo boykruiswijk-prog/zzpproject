@@ -73,7 +73,7 @@ export default function Verzekeringen() {
         <div className="container-wide">
           <div className="text-center mb-8 max-w-2xl mx-auto">
             <h2 className="mb-3">Liever overleg of een offerte op maat?</h2>
-            <p className="text-muted-foreground">Kies wat bij je situatie past.</p>
+            <p className="text-muted-foreground">Kies wat het beste bij je past.</p>
           </div>
           <ThreeOptionCTA />
         </div>
