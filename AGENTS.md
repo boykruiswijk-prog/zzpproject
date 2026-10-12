@@ -26,6 +26,7 @@
 - Beheer-UI-regels staan in src/components/admin/AGENTS.md, CRM-regels in src/components/admin/crm/AGENTS.md.
 - Article images: leased queue, wake token or MFA supervisor, max 2 AI attempts then category fallback; never a global pause (AI refusal only sets admin notice); crashed jobs resume as fallback. Preserve custom/old assets; build verifies images; keep ArticleImage guard. Why: every article gets an image within minutes.
 - Scripts never import React. Why: avoid prod/dev SSR crashes.
+- Article markdown uses articleMarkdownUrl for every rendering path. Why: preserve telephone links while retaining the default unsafe-protocol filter.
 
 
 
