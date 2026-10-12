@@ -224,8 +224,9 @@
 .stroom-deeltje { fill: hsl(var(--s-groen)); }
 .stroom-stappen { position: absolute; inset: 0; display: grid; gap: 1vw; }
 .stroom-stappen > div { display: flex; flex-direction: column; align-items: center; text-align: center; min-width: 0; }
-.stroom-stappen span { min-height: 4vh; font-size: 1.65vh; font-weight: 600; }
+.stroom-stappen span { min-height: 4.4vh; font-size: min(1.65vh, 1.05vw); line-height: 1.25; font-weight: 600; overflow-wrap: normal; word-break: normal; hyphens: auto; padding: 0 0.2vw; }
 .stroom-stappen b { font-size: 3.6vh; color: hsl(var(--s-tekst)); }
+.stroom-stappen b { font-size: min(3.6vh, 2.4vw); }
 .stroom-stappen small { margin-top: 13vh; font-size: 1.3vh; line-height: 1.4; color: hsl(var(--s-dim)); }
 .stroom-processen { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 2vw; margin-top: auto; }
 .stroom-processen h3 { font-size: 1.8vh; margin-bottom: 1.5vh; }
@@ -265,3 +266,10 @@
 .st-storing small { color: hsl(var(--s-rood)); }
 @keyframes st-puls { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.55; } }
 @media (prefers-reduced-motion: reduce) { .st-werk .st-bol { animation: none; } }
+
+.stroom-paneel .stroom-scene { padding: 0; }
+.stroom-paneel .stroom-rivier { height: 46vh; margin-top: 4vh; }
+.stroom-paneel .stroom-stappen { gap: 0.3vw; }
+.stroom-paneel .stroom-stappen small { font-size: min(1.3vh, 0.9vw); }
+.workers-scene { display: flex; flex-direction: column; gap: 2vh; height: 100%; padding: 9vh 2vw 2vh; color: hsl(var(--s-tekst)); }
+.workers-scene-raster { display: grid; grid-template-columns: 1.1fr 1fr; gap: 2vw; flex: 1; min-height: 0; }
