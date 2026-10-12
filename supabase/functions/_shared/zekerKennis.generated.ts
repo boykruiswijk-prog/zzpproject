@@ -372,12 +372,12 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Verzekeringen",
       "vraag": "Wat kost een AOV gemiddeld per maand?",
-      "antwoord": "De premie van een AOV hangt af van je beroep, leeftijd, gewenste uitkering en wachttijd. Gemiddeld betalen zzp'ers tussen de €150 en €400 per maand. ZP Zaken informeert je over de mogelijkheden bij verschillende verzekeraars."
+      "antwoord": "De premie van een AOV hangt af van je beroep, leeftijd, gewenste uitkering en wachttijd. Gemiddeld betalen zzp'ers tussen de €150 en €400 per maand. Bij ZP Zaken zoeken we de beste prijs-kwaliteitverhouding door verschillende verzekeraars te vergelijken."
     },
     {
       "categorie": "Over ZP Zaken",
       "vraag": "Is ZP Zaken onafhankelijk?",
-      "antwoord": "Ja, ZP Zaken is volledig onafhankelijk. Wij zijn niet gebonden aan één verzekeraar en kunnen daarom informeren welke verzekering bij je past. We vergelijken producten van verschillende aanbieders en bespreken de mogelijkheden met je."
+      "antwoord": "Ja, ZP Zaken is volledig onafhankelijk. Wij zijn niet gebonden aan één verzekeraar en kunnen daarom informeren welke verzekering bij je past. We vergelijken producten van verschillende aanbieders om de beste oplossing voor jou te vinden."
     },
     {
       "categorie": "Over ZP Zaken",
