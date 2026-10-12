@@ -423,7 +423,7 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
 
     return new Response(
       JSON.stringify({
-        success: true,
+        success: true, is_test: isTestLead,
         aanmelding_id: aanmelding?.id ?? null,
         lead_id: lead.id,
         mandaatkenmerk: machtiging.mandaatkenmerk,
@@ -445,7 +445,7 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
     if (leadOpgeslagen) {
       console.error(`process-bav-wizard vervolgstap mislukt na opslaan lead ${leadOpgeslagen.id}: ${message}`);
       return new Response(
-        JSON.stringify({ success: true, aanmelding_id: null, lead_id: leadOpgeslagen.id, mandaatkenmerk: leadOpgeslagen.mandaatkenmerk, vervolgfout: true }),
+        JSON.stringify({ success: true, is_test: isTestLead, aanmelding_id: null, lead_id: leadOpgeslagen.id, mandaatkenmerk: leadOpgeslagen.mandaatkenmerk, vervolgfout: true }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
