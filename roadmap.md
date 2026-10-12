@@ -28,3 +28,5 @@
 - Publiceren: bewust niet uitgevoerd; Boy publiceert zelf.
 - [x] Automatische kennisbankafbeeldingen: generator, frontend/SEO, statische bestanden, tests en documentatie (niet gepubliceerd)
 - [x] Inloop/uitloop-klantwaarheid overal consistent en /voorwaarden-pagina (niet gepubliceerd)
+
+- [x] Kennisbank samenvoegen (4 bronnen), 2 paren onderscheiden, redirects/sitemap/goedkoopste gecontroleerd

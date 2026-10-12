@@ -36,3 +36,4 @@
 <!-- LOVABLE:BEGIN -->
 - Live scenes/effects are lazy; demo events stay in browser memory. Journey/timeline aggregates use service-only scherm_stromen via scherm-data. Why: site performance and visitor privacy.
 <!-- LOVABLE:END -->
+- Samengevoegde kennisbankartikelen: bron krijgt is_published = false plus een rij in article_samenvoegingen, en directe 301's (kennisbank/, kaal, blog/) in legacyRedirects naar het doel; src/test/kennisbankSamenvoeging.test.ts bewaakt ketens en links. Waarom: nooit verwijderen, geen dubbele content of redirectketens.
