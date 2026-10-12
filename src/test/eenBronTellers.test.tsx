@@ -53,7 +53,7 @@ describe("Eén bron voor aantallen", () => {
   it("AI-team gebruikt het live doelaantal, nooit het getal uit marketing_snapshot", () => {
     expect(liveDoelTekst("3 van 200 aanvragen binnen", 5)).toBe("5 van 200 aanvragen binnen");
     const p = bouwSchermPayload({ doel: { totaal: 7 }, marketing: { ai_team: { dag: "2026-10-12", data: { agents: [{ naam: "Groei", taak: "doel", resultaat: "3 van 200 aanvragen", status: "klaar" }] } } } });
-    expect(p.ai_team[0].resultaat).toBe("7 van 200 aanvragen");
+    expect(p.ai_team.find(a => a.naam === "Groei")?.resultaat).toBe("7 van 200 aanvragen");
   });
 });
 
