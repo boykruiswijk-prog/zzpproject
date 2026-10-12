@@ -9,7 +9,7 @@ import CountUp from '@/components/scherm/CountUp';
 import BreakingMoment from '@/components/scherm/BreakingMoment';
 
 const MachineScene = lazy(() => import("@/components/scherm/MachineScene"));
-const StroomScene = lazy(() => import('@/components/scherm/StroomScene'));
+import { StroomTrechter, StroomProcessen } from '@/components/scherm/StroomScene';
 
 const URL_DATA = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scherm-data`;
 const TZ = "Europe/Amsterdam";
@@ -389,7 +389,19 @@ function PaneelWorkers({ d }: { d: SchermPayload }) {
   );
 }
 
-const PANELEN = [PaneelDoel, PaneelGroei, PaneelService, PaneelZichtbaarheid, PaneelAiTeam, PaneelWorkers, PaneelVandaag];
+function PaneelStroom({ d }: { d: SchermPayload }) {
+  return <div className="stroom-paneel h-full"><StroomTrechter data={d} /></div>;
+}
+
+/** Linkerscène 2: AI-team en alle workers naast elkaar, met de processtromen eronder. */
+function WorkersScene({ d }: { d: SchermPayload }) {
+  return <div className="workers-scene">
+    <div className="workers-scene-raster"><div className="min-h-0 min-w-0"><PaneelAiTeam d={d} /></div><div className="min-h-0 min-w-0"><PaneelWorkers d={d} /></div></div>
+    <StroomProcessen data={d} />
+  </div>;
+}
+
+const PANELEN = [PaneelDoel, PaneelGroei, PaneelService, PaneelZichtbaarheid, PaneelStroom, PaneelVandaag];
 
 function useWakeLock() {
   useEffect(() => {
@@ -575,13 +587,13 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
         <main className="flex min-h-0 flex-1">
           <section className="flex w-[62vw] min-w-0 flex-col border-r border-[hsl(var(--s-lijn))]">
             <div className="relative min-h-0 flex-1 overflow-hidden">
-              <div className="scherm-scene-kop"><span>{scene === 0 ? 'Het agentkantoor' : 'De stroom'}</span><small>{scene === 0 ? 'Afdelingen verbonden met het brein' : 'De klantreis en processtromen'}</small></div>
+              <div className="scherm-scene-kop"><span>{scene === 0 ? 'Het agentkantoor' : 'Ons team'}</span><small>{scene === 0 ? 'Afdelingen verbonden met het brein' : 'AI-team, workers en processtromen'}</small></div>
               {data && (
                 <Suspense fallback={null}>
                   <div className={`scherm-scene ${scene === 0 ? 'scene-zichtbaar' : ''}`} aria-hidden={scene !== 0}>
                     <MachineScene stations={stationsWeergave} totaalVandaag={data.gebeurtenissen_vandaag} kennisregels={data.kennisbank.gepubliceerd} pulsen={nieuwePulsen} focus={focus} actief={scene === 0 && !breaking} />
                   </div>
-                  {scene === 1 && <div className="scherm-scene scene-zichtbaar stroom-laag"><StroomScene data={data} /></div>}
+                  {scene === 1 && <div className="scherm-scene scene-zichtbaar stroom-laag"><WorkersScene d={data} /></div>}
                 </Suspense>
               )}
             </div>
