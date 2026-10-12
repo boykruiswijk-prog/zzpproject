@@ -154,6 +154,15 @@ export function productSchema(pakket: Pakket): JsonLd {
 
 export function articleSchema(article: ArticleSchemaInput): JsonLd {
   const url = `${SITE_CONFIG.url}/kennisbank/${article.slug}`;
+  const author = {
+    "@type": "Organization",
+    name: SITE_CONFIG.name,
+    url: SITE_CONFIG.url,
+  };
+  const publisher = {
+    ...author,
+    logo: { "@type": "ImageObject", url: SITE_CONFIG.logo },
+  };
   return {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -162,8 +171,8 @@ export function articleSchema(article: ArticleSchemaInput): JsonLd {
     ...(article.image ? { image: [absolute(article.image)] } : {}),
     datePublished: article.datePublished,
     dateModified: article.dateModified || article.datePublished,
-    author: organizationRef(),
-    publisher: organizationRef(),
+    author,
+    publisher,
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
     ...(article.category ? { articleSection: article.category } : {}),
     ...(article.wordCount ? { wordCount: article.wordCount } : {}),

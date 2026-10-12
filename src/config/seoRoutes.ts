@@ -83,7 +83,7 @@ export const seoRoutes: SeoRoute[] = [
     path: "/pensioen",
     title: "ZZP Pensioen opbouwen | Informatie & Oplossingen | ZP Zaken",
     description:
-      "Als zzp'er zelf je pensioen regelen? ZP Zaken helpt je met de beste pensioenoplossing. Persoonlijk gesprek op maat.",
+      "Als zzp'er zelf je pensioen regelen? ZP Zaken denkt met je mee in een persoonlijk gesprek.",
     h1: "Pensioen voor zzp'ers: regel het nu, profiteer later",
     intro:
       "Als zelfstandige bouw je niet automatisch pensioen op. Er zijn wel fiscaal voordelige manieren om toch voor je oude dag te zorgen. " +
@@ -93,11 +93,11 @@ export const seoRoutes: SeoRoute[] = [
     path: "/zorgverzekering",
     title: "ZZP Zorgverzekering Collectief | ZP Zaken",
     description:
-      "Profiteer van een collectieve zorgverzekering als zzp'er via ZP Zaken. Samen sterker, betere dekking voor een lagere premie.",
+      "Collectieve zorgverzekering voor zzp'ers via ZP Zaken. Persoonlijk contact, binnen 24 uur reactie.",
     h1: "Zorgverzekering voor zzp'ers: collectief voordeel",
     intro:
-      "Als lid van het ZP Zaken collectief profiteer je van korting op je zorgverzekering: dezelfde dekking, een lagere premie. " +
-      "In een gesprek rekenen we voor wat de collectieve korting in jouw situatie oplevert.",
+      "Via ZP Zaken kun je als zzp'er deelnemen aan een collectieve zorgverzekering. " +
+      "In een persoonlijk gesprek beantwoorden we je vragen over deelname en de beschikbare pakketten.",
   },
   {
     path: "/mentale-gezondheid",

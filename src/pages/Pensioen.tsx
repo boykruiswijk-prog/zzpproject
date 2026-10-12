@@ -14,7 +14,7 @@ const schema = {
   "@type": "Service",
   "name": "Pensioen opbouwen voor ZZP'ers",
   "provider": { "@type": "Organization", "name": "ZP Zaken", "url": "https://zpzaken.nl" },
-  "description": "Als zzp'er zelf je pensioen regelen? ZP Zaken helpt je met de beste pensioenoplossing. Persoonlijk gesprek op maat.",
+  "description": "Als zzp'er zelf je pensioen regelen? ZP Zaken denkt met je mee in een persoonlijk gesprek.",
   "areaServed": "NL",
 };
 
