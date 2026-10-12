@@ -3,6 +3,15 @@
 
 # /sitemap.xml is een statisch bestand uit de prerender (geen proxy).
 
+# Verouderde oude formulieren: vóór de media-wildcard.
+/wp-content/uploads/2021/05/HRM-Finance-Branche-verklaring.pdf    /verzekeringen    301  # verouderd formulier
+/wp-content/uploads/2021/05/IT-Brancge-verklaring.pdf    /verzekeringen    301  # verouderd formulier
+/wp-content/uploads/2021/05/PR-Marketing-Branche-verklaring.pdf    /verzekeringen    301  # verouderd formulier
+/wp-content/uploads/2021/05/Techniek-Overig-Branche-Verklaring.pdf    /verzekeringen    301  # verouderd formulier
+/wp-content/uploads/2025/03/ZP-Zaken-Slotverklaring.pdf    /documenten/slotverklaring-2026.pdf    301  # verouderd formulier
+/wp-content/uploads/2025/11/ZP_Slotverklaring.pdf    /documenten/slotverklaring-2026.pdf    301  # verouderd formulier
+/wp-content/uploads/2023/03/Algemene-Voorwaarden-v1.0-Definitief.pdf    /algemene-voorwaarden    301  # verouderd formulier
+
 # Oude WordPress-media staan onder hetzelfde pad in de storage-bucket.
 /wp-content/uploads/*    https://eugkavokktjwpqaqlwsj.supabase.co/storage/v1/object/public/article-images/wp-content/uploads/:splat    301
 

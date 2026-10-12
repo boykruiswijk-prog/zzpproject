@@ -26,6 +26,7 @@ import { generateArticleImages } from "./articleImages";
 import { absoluteArticleImage, absoluteArticleOgImage, isGeneratedArticleImage } from "../src/lib/articleImage";
 import {
   legacyRedirects,
+  verouderdeMedia,
   resolveRedirectTarget,
   categoryPageFor,
   type ArticleRedirectInfo,
