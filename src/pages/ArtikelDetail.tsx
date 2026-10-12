@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import ReactMarkdown from "react-markdown";
+import { articleMarkdownUrl } from "@/lib/articleMarkdownUrl";
 import remarkGfm from "remark-gfm";
 import { formatDateNL } from "@/lib/dateFormat";
 import { toast } from "@/hooks/use-toast";
@@ -112,13 +113,13 @@ function slugHash(s: string) {
 const InlineCTA = ({ aov = false }: { aov?: boolean }) => (
   <div className="not-prose my-8 rounded-lg p-5 bg-accent/5 border-l-4 border-accent">
     <div className="text-xs font-semibold uppercase tracking-wide text-accent mb-1">
-      Direct geregeld
+      Binnen 24 uur geregeld
     </div>
     <h3 className="text-lg font-bold mb-1 text-foreground">
-      Vraag online aan vanaf €55 per maand
+      Vraag online aan vanaf € 55 per maand
     </h3>
     <p className="text-sm text-muted-foreground mb-4">
-      Geen eigen risico. Dagelijks opzegbaar. BAV + AVB gecombineerd.
+      € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting. Geen eigen risico. Dagelijks opzegbaar. BAV + AVB in één polis.
     </p>
     <div className="flex flex-wrap gap-3">
       <Button variant="accent" asChild>
@@ -144,15 +145,15 @@ const renderContentWithCTA = (rawContent: string, aov = false) => {
   const content = resolveFiscaleTokens(rawContent);
   const parts = content.split(/\n\n+/);
   if (parts.length < 3) {
-    return <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>;
+    return <ReactMarkdown urlTransform={articleMarkdownUrl} remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>;
   }
   const before = parts.slice(0, 2).join("\n\n");
   const after = parts.slice(2).join("\n\n");
   return (
     <>
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>{before}</ReactMarkdown>
+      <ReactMarkdown urlTransform={articleMarkdownUrl} remarkPlugins={[remarkGfm]}>{before}</ReactMarkdown>
       <InlineCTA aov={aov} />
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>{after}</ReactMarkdown>
+      <ReactMarkdown urlTransform={articleMarkdownUrl} remarkPlugins={[remarkGfm]}>{after}</ReactMarkdown>
     </>
   );
 };
@@ -425,7 +426,7 @@ export default function ArtikelDetail() {
                   prose-hr:my-12 prose-hr:border-border/60">
                 {toonInlineCTA
                   ? renderContentWithCTA(article.content || "", isAov)
-                  : <ReactMarkdown remarkPlugins={[remarkGfm]}>{resolveFiscaleTokens(article.content || "")}</ReactMarkdown>}
+                  : <ReactMarkdown urlTransform={articleMarkdownUrl} remarkPlugins={[remarkGfm]}>{resolveFiscaleTokens(article.content || "")}</ReactMarkdown>}
               </div>
 
               {/* Zichtbare FAQ: dekt het FAQPage-schema hierboven, zodat schema

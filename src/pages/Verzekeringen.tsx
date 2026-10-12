@@ -139,7 +139,7 @@ export default function Verzekeringen() {
                         <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 px-4 py-2.5 rounded-xl">
                           <Euro className="h-4 w-4 text-accent" />
                           <div>
-                            <span className="text-xs text-muted-foreground">{t("verzekeringenPage.indication")}</span>
+                            {!insurance.canApplyOnline && <span className="text-xs text-muted-foreground">{t("verzekeringenPage.indication")}</span>}
                             <p className="text-sm font-medium text-accent">{insurance.price}</p>
                           </div>
                         </div>

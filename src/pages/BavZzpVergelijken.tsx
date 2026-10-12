@@ -179,7 +179,7 @@ export default function BavZzpVergelijken() {
             [`BAV en AVB in één polis.`, `ZP Zaken bedacht de BAV + AVB in één polis voor zzp'ers en is daarin marktleider. De verzekeraar is Hiscox.`],
             [`Hoge dekking.`, `BAV ${bav} en AVB ${avb} per aanspraak.`],
             [`BAV + AVB: geen eigen risico.`, ``],
-            [`Vaste prijs.`, `Vanaf ${eur(maand.prijs)} per maand, of ${eur(jaar.prijs)} per jaar.`],
+            [`Vaste prijs.`, `${eur(maand.prijs)} per maand of ${eur(jaar.prijs)} per jaar, inclusief kosten en assurantiebelasting.`],
             [`BAV + AVB dagelijks opzegbaar.`, `Cyber heeft een vaste looptijd van 12 maanden.`],
             [`Snel geregeld.`, `Je vraagt online aan, binnen 24 uur geregeld en je krijgt het certificaat in je mailbox.`],
           ].map(([kop, tekst]) => (

@@ -671,6 +671,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                     <div>
                       <h3 data-step-heading tabIndex={-1} className="text-xl font-semibold mb-2 outline-none">{t("home.bavChooseCoverage")}</h3>
                       <p className="text-muted-foreground text-sm">{t("home.bavChooseDesc")}</p>
+                      <p className="text-muted-foreground text-sm">Alle prijzen zijn inclusief kosten en assurantiebelasting.</p>
                     </div>
                     <div className="grid sm:grid-cols-2 gap-4">
                       {bavPakketten.map((pkg) => {
