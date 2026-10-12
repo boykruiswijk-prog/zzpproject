@@ -1,3 +1,5 @@
+import { starterPremieKlanttekst } from "../_shared/premieTekst.ts";
+import { formatDateNL } from "../_shared/dateFormat.ts";
 import { haalKvkProfiel, kvkGeldig, kvkStartdatum, kvkAfwijkingen } from "../_shared/kvk.ts";
 import { normaliseerAdres } from "../_shared/adresNormalisatie.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.39.0";
@@ -397,7 +399,8 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
              ...(cyberGekozen ? { cyber_looptijd: CYBER_LOOPTIJD, cyber_einddatum: cyberJaarEind(submission.ingangsdatum) } : {}),
             betaalwijze: pakket.betaalwijze,
             ingangsdatum: submission.ingangsdatum,
-             premie: starter ? `€${formatPremieBedrag(premium)} startertarief t/m ${starterTotDatum}, daarna €${formatPremieBedrag(pakket.prijs)}; KVK-startdatum ${kvkStart} controleren` : `€${formatPremieBedrag(premium)}`,
+             premie: starter ? starterPremieKlanttekst(premium, pakket.prijs, starterTotDatum) : `€${formatPremieBedrag(premium)}`,
+             ...(starter ? { controle: `KVK-startdatum ${formatDateNL(kvkStart)} controleren` } : {}),
           },
         },
       })

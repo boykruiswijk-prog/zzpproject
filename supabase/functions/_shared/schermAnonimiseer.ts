@@ -295,7 +295,7 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
       certificaat: getal(r?.stroom?.certificaat), klant: getal(r?.stroom?.klant),
     },
     tijdlijn: (Array.isArray(r?.tijdlijn) ? r.tijdlijn : []).filter((a: Ruw) => !a.is_test && STATIONS.includes(a.station) && getal(a.minuut) !== null && a.minuut >= 0 && a.minuut < 1440).map((a: Ruw) => ({ station: String(a.station), minuut: Math.floor(a.minuut), n: Math.max(0, getal(a.n) ?? 0) })),
-    processen: (Array.isArray(r?.processen) ? r.processen : []).filter((a: Ruw) => !a.is_test && STATIONS.includes(a.station)).map((a: Ruw) => ({ station: String(a.station), actie: ['kvk_check','planner_run','exact_sync','wijziging','lead_verzekering_aanvraag','lead_actief','mail'].includes(a.actie) ? a.actie as string : 'overig', status: status(a.status), n: Math.max(0, getal(a.n) ?? 0) })),
+    processen: (Array.isArray(r?.processen) ? r.processen : []).filter((a: Ruw) => !a.is_test && a.actie !== 'cron' && STATIONS.includes(a.station)).map((a: Ruw) => ({ station: String(a.station), actie: ['kvk_check','planner_run','exact_sync','wijziging','lead_verzekering_aanvraag','lead_actief','mail'].includes(a.actie) ? a.actie as string : 'overig', status: status(a.status), n: Math.max(0, getal(a.n) ?? 0) })),
     stations,
     gebeurtenissen_vandaag: getal(r?.gebeurtenissen_vandaag) ?? 0,
     doel: {
