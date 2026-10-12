@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Besluit A9: oud-medewerker en twijfelachtige personenfoto’s verwijderen/vervangen, ongebruikte teammodule opruimen, regressietest en volledige tests, niet publiceren.
 - [x] ZP Zaken-faviconset, manifest en prerender-head gecorrigeerd; 5 tests geslaagd en vijf bestanden HTTP 200; ongebruikte placeholder verwijderd; niet gepubliceerd.
 - [x] Personenfoto’s lokaal en openbare opslag/database read-only geïnventariseerd, inclusief artikelinhoud/backups, gebruik en teamnamen; rapport en Excel geleverd; geen foto’s gewijzigd. Afgeschermde afbeeldingobjecten alleen metadata, geen visuele beoordeling.
 - [x] AI-zichtbaarheid: zorg- en pensioenteksten geneutraliseerd; artikel-JSON-LD, gewijzigde meta en sitemap-lastmod gebruiken updated_at; regressietest toegevoegd; niet gepubliceerd.
