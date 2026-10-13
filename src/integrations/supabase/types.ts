@@ -3171,6 +3171,54 @@ export type Database = {
         }
         Relationships: []
       }
+      kvk_uittreksels: {
+        Row: {
+          concept_id: string
+          geupload_op: string
+          grootte: number
+          id: string
+          is_test: boolean
+          lead_id: string | null
+          mime: string
+          pad: string
+        }
+        Insert: {
+          concept_id: string
+          geupload_op?: string
+          grootte: number
+          id?: string
+          is_test?: boolean
+          lead_id?: string | null
+          mime: string
+          pad: string
+        }
+        Update: {
+          concept_id?: string
+          geupload_op?: string
+          grootte?: number
+          id?: string
+          is_test?: boolean
+          lead_id?: string | null
+          mime?: string
+          pad?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kvk_uittreksels_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "kpi_actieve_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kvk_uittreksels_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_notes: {
         Row: {
           content: string
@@ -5397,6 +5445,10 @@ export type Database = {
         Returns: Json
       }
       kvk_kosten_overzicht: { Args: never; Returns: Json }
+      kvk_uittreksel_datum: {
+        Args: { _datum: string; _lead_id: string }
+        Returns: Json
+      }
       lead_afronden: {
         Args: { _lead_id: string; _toelichting?: string }
         Returns: boolean

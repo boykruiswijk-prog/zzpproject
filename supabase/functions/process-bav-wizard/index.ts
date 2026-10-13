@@ -5,6 +5,7 @@ import { haalKvkProfiel, kvkGeldig, kvkBevraagbaar, kvkStartdatum, kvkAfwijkinge
 import { normaliseerAdres } from "../_shared/adresNormalisatie.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.39.0";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
+import { kvkApiOperationeel, UITTREKSEL_VERPLICHT } from "../_shared/kvkUittreksel.ts";
 import {
   KLANTMELDING_INCASSANT_ONTBREEKT,
   bouwMachtigingData,
@@ -62,6 +63,8 @@ interface BavSubmission {
   lead_id?: string;
   /** Concept-id van de tussentijds opgeslagen halve aanvraag (aanvraag_concepten). */
   concept_id?: string;
+  /** Id uit kvk-uittreksel-upload (verplicht bij startertarief zolang de KVK API niet operationeel is). */
+  kvk_uittreksel_id?: string;
   client_akkoord_op?: string;
   pagina_url?: string;
   opmerkingen?: string;
@@ -238,6 +241,16 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
     // Klant gaf een starterdatum op, maar KVK zegt anders: Ellen beslist.
     const klantClaimtStarter = !!klantStart && isStarter(klantStart, submission.ingangsdatum);
     const starterBesluit = starter || klantClaimtStarter ? starterBesluitKvk(kvkProfiel, submission.ingangsdatum, kvkDatumBron) : null;
+    // A12 aangevuld: zolang de KVK API niet operationeel is, is een KVK-uittreksel verplicht bij het startertarief.
+    let kvkUittreksel: { pad: string; mime: string; grootte: number; geupload_op: string; id: string } | null = null;
+    if (klantClaimtStarter && !(await kvkApiOperationeel(supabase))) {
+      const uid = submission.kvk_uittreksel_id;
+      const { data: u } = typeof uid === "string" && isUuid(uid) && typeof submission.concept_id === "string" && isUuid(submission.concept_id)
+        ? await supabase.from("kvk_uittreksels").select("id,pad,mime,grootte,geupload_op,lead_id").eq("id", uid).eq("concept_id", submission.concept_id).maybeSingle()
+        : { data: null };
+      if (!u || (u.lead_id && u.lead_id !== submission.lead_id)) return weiger(400, UITTREKSEL_VERPLICHT, "kvk_uittreksel", { field: "kvk_uittreksel" });
+      kvkUittreksel = { id: u.id, pad: u.pad, mime: u.mime, grootte: u.grootte, geupload_op: u.geupload_op };
+    }
     const starterAutoLog = starterBesluit?.status === "goedgekeurd"
       ? [{ tijd: new Date().toISOString(), actie: "startertarief_automatisch_goedgekeurd", toelichting: starterBesluit.toelichting, door: "process-bav-wizard" }] : [];
     const starterVelden = { kvk_startdatum: kvkStart, kvk_datum_bron: kvkDatumBron, kvk_gegevens: kvkGegevens, tarief_type: starter ? "starter" : "standaard", starter_tot: starterTotDatum };
@@ -316,6 +329,7 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
         vereist_handmatige_beoordeling: handmatigeAcceptatie || submission.vereist_handmatige_beoordeling === true,
         is_test: isTestLead,
         extra_data: {
+          ...(kvkUittreksel ? { kvk_uittreksel: { pad: kvkUittreksel.pad, mime: kvkUittreksel.mime, grootte: kvkUittreksel.grootte, geupload_op: kvkUittreksel.geupload_op } } : {}),
            ...(cyberWasGekozen ? { cyber: { versie: CYBER_VERSIE, gekozen: cyberGekozen, afgewezen: cyberAfgewezen, antwoorden: cyberToets.antwoorden, redenen: cyberToets.redenen, akkoord: cyberGekozen && submission.cyber_akkoord === true, client_akkoord_op: submission.cyber_client_akkoord_op ?? null } } : {}),
           formulier: saneerFormulier(submission.formulier),
           formulier_naam: typeof submission.formulier_naam === "string" ? submission.formulier_naam.slice(0, 100) : "Online aanvraag BAV + AVB",
@@ -339,6 +353,10 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
 
     if (leadError) throw new Error(`Lead insert: ${leadError.message}`);
     leadOpgeslagen = { id: lead.id, mandaatkenmerk: machtiging.mandaatkenmerk };
+    if (kvkUittreksel) {
+      const { error: uErr } = await supabase.from("kvk_uittreksels").update({ lead_id: lead.id }).eq("id", kvkUittreksel.id).is("lead_id", null);
+      if (uErr) console.error("uittreksel koppelen mislukt:", uErr.message);
+    }
 
     // ── 2. INSERT IN BAV_AANMELDINGEN ──
     const { data: aanmelding, error: dbError } = await supabase
