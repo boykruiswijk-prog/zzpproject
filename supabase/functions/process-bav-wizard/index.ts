@@ -1,3 +1,4 @@
+import { corrigeerIngangsdatum } from "../_shared/ingangsdatum.ts";
 import { starterPremieKlanttekst } from "../_shared/premieTekst.ts";
 import { formatDateNL } from "../_shared/dateFormat.ts";
 import { haalKvkProfiel, kvkGeldig, kvkStartdatum, kvkAfwijkingen } from "../_shared/kvk.ts";
@@ -178,10 +179,12 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
     if (!guard.ok) return weiger(guard.status ?? 400, guard.error ?? "Aanvraag geweigerd.", guard.reason ?? "anti_spam");
     await werkVan(req).start();
 
-    const todayStr = new Date().toISOString().split("T")[0];
-    if (submission.ingangsdatum < todayStr) {
-      return weiger(400, `Online kan de ingangsdatum niet in het verleden liggen. Heb je een vraag, bel ${COMPANY.phoneDisplay}.`, "ingangsdatum");
-    }
+    // Besluit D4: ingangsdatum vroegst de dag na de aanvraag (NL). Niet weigeren, wel corrigeren en vastleggen.
+    const ingangCorrectie = corrigeerIngangsdatum(submission.ingangsdatum);
+    if (ingangCorrectie) submission.ingangsdatum = ingangCorrectie.nieuw;
+    const ingangCorrectieLog = ingangCorrectie
+      ? [{ tijd: new Date().toISOString(), actie: "ingangsdatum_gecorrigeerd", oud: ingangCorrectie.oud, nieuw: ingangCorrectie.nieuw, cyber: true, reden: "vroegst dag na aanvraag", door: "process-bav-wizard" }]
+      : null;
 
     // ── DUPLICATE GUARD: bestaande klant met polis kan geen tweede aanvraag doen ──
     {
@@ -284,6 +287,7 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
         verzekerd_bedrag: pakket.dekking,
         ingangsdatum: submission.ingangsdatum,
         gekozen_pakket: submission.gekozen_pakket,
+        ...(ingangCorrectieLog ? { activatie_log: ingangCorrectieLog } : {}),
          cyber_voorwaarden_versie: cyberGekozen ? CYBER_VERSIE : null,
          cyber_ingangsdatum: cyberGekozen ? submission.ingangsdatum : null,
          cyber_einddatum: cyberGekozen ? cyberJaarEind(submission.ingangsdatum) : null,
