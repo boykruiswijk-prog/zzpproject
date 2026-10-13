@@ -1,33 +1,28 @@
-# Inventarisatie korting en acceptatie (alleen lezen, niets gewijzigd)
+# Inventarisatie BAV-/certificaatnummers (alleen lezen, niets gewijzigd)
 
-## A) Korting
+## 1. Waar een nieuw ZPBAV-nummer automatisch wordt aangemaakt
 
-- **Prijs aanpassen in beheer: dat kan nu niet.** Ik vond geen scherm en geen functie die `bedrag_per_periode`, `afw_prijs` of `org_prijs` van een `klant_contracten`-regel wijzigt.
-  - De enige update vanuit de code is `supabase/functions/factuur-planner/index.ts` r. 274. Die zet alleen `gefactureerd_tm`, `volgende_factuurdatum` en `gefactureerd_tm_bron`.
-  - `src/pages/admin/KlantenContracten.tsx` r. 66 leest `bedrag_per_periode` alleen.
-  - Een prijswijziging wordt dus nergens gelogd, want die kan niet.
-- **Herkomst van de lage prijzen: de AFAS-import van 1 oktober.** Alle 23 lopende regels met een `afw_prijs` lager dan `org_prijs` hebben bron `afas_20261001`. Het zijn er 22 met status actief en 1 met status loopt_af. Ze zijn allemaal op 2026-10-01 aangemaakt.
-  - Vindplaats: `drizzle/migrations/0022_klant_contracten_afas_import.sql`, r. 123-136 (insert) en r. 160 (bij opnieuw importeren).
-  - `bedrag_per_periode` komt uit AFAS-kolom 15, `org_prijs` uit kolom 13 en `afw_prijs` uit kolom 14.
-  - De korting is dus overgenomen uit AFAS, niet in beheer gemaakt.
+Er is één plek waar het nummer echt wordt gemaakt: de trigger `set_certificate_number` op `policies`, die `generate_certificate_number()` aanroept (database, oorspronkelijk `drizzle/migrations/0030_klant_certificaten.sql` r.103-105, nu nieuwer).
+- Bij `certificate_number = 'NIEUW'` wordt meteen een nieuw nummer gemaakt (functie r.58-59, daarna r.75-78: `nextval(policy_cert_seq)`, dan `eerste_vrije_certificaatnummer`, dan `'ZPBAV'||vrij`).
+- Bij een leeg nummer zoekt de trigger eerst een bekend nummer via `certificaatnummer_voorstel_intern` (r.60-71). **Vindt die niets, dan maakt de trigger zonder melding een nieuw nummer aan (r.75-78).**
 
-## B) Acceptatie
+Wie maakt die `policies`-rijen aan (alleen `generate-certificate`):
+- **Lead-route, risico:** `supabase/functions/generate-certificate/index.ts` r.245-248 stuurt `certificate_number: ""` als `bevestig_nieuw_nummer` niet true is. Heeft de lead geen bekend nummer, dan maakt de trigger stilletjes een nieuw ZPBAV-nummer. Je ziet het nummer pas daarna in de melding (`src/pages/admin/LeadDetail.tsx` r.93-113, knop Certificaat genereren met body `{lead_id}`). Hier ziet en bevestigt het team het nummer dus niet vooraf. Er zijn wel twee drempels: een open omzetting blokkeert (r.218-222) en een al bestaand geldig certificaat blokkeert (r.223-227).
+- **Klant-route, veilig:** r.163-212. Is er geen bekend nummer, dan antwoordt de functie met `geen_nummer` (r.187). Een nieuw nummer komt er pas na de knop "Ja, nieuw nummer uitgeven" (`src/components/admin/KlantCertificaat.tsx` r.73-76, r.161-170). Het voorstel staat vooraf in de dialoog (r.156-160).
+- `lead-to-exact-activate` maakt geen nummer aan. Het leest alleen het bestaande nummer (r.691-692, 755-756, 1152-1153) en blokkeert bij een open omzetting.
+- `process-bav-wizard`: ik heb daar geen schrijfactie naar `policies` gevonden.
+- `eerste_vrije_certificaatnummer` mag alleen door `service_role` worden aangeroepen (0030 r.95-96), dus alleen via de trigger.
 
-- **Een apart scherm "acceptatie" bestaat niet.** De route en het menu-item met die naam vond ik niet. Het meest voor de hand liggende scherm is "Aanvragen":
-  - Route: `src/App.tsx` r. 234, `/admin/aanvragen`, getoond met `AdminLeads soort="aanvragen"` (`src/pages/admin/Leads.tsx`).
-  - Tabel: `src/components/admin/LeadTable.tsx`. De gegevens komen uit `src/hooks/useLeads.ts` r. 43: tabel `leads`, met `type = 'verzekering_aanvraag'`.
-  - Menu: `src/components/admin/AdminSidebar.tsx` r. 21.
-  - Detailpagina: `src/pages/admin/LeadDetail.tsx`, via de oog-knop.
-  - Klopt dit met wat Ellen bedoelt? Zo niet, noem dan het scherm.
-- **Statussen:** het hele `lead_status`-overzicht is te kiezen in de statuskeuze (LeadTable r. 302-325, labels uit `src/lib/statusLabels.ts`):
-  - nieuw, in_behandeling, afspraak_gepland, offerte_verstuurd, klant, afgewezen, nieuw_te_beoordelen ("Te beoordelen"), actief, gepauzeerd, opgezegd, afgerond.
-  - "Afgerond" verschijnt alleen als `magAfronden`; "offerte_verstuurd" alleen als de lead die status al heeft.
-- **Kolommen per persoon** (LeadTable r. 239-246):
-  - Naam (met bedrijfsnaam, BAV-nummer en onderwerp), Type (badge), Contact (mail- en bellink), Verzekering, Pakket, Status, Datum.
-  - Bij Acties: oog naar de detailpagina, de testschakelaar, en verwijderen (alleen Boy).
-- **Bestaande vlag, notitie, herinnering of wachtstatus:**
-  - `leads.vereist_handmatige_beoordeling` bestaat. Hij wordt gezet in `src/components/home/BAVApplicationModule.tsx` r. 420 (meer dan 3 medewerkers) en in `src/pages/OffertePage.tsx` r. 188. Hij wordt nergens in beheer getoond, en de vlag staat nu bij 0 leads aan.
-  - Status `nieuw_te_beoordelen` ("Te beoordelen") bestaat. Hij wordt alleen meegeteld als "Nieuw" in `src/components/admin/SupervisorKpiPanel.tsx` r. 176.
-  - Notities: `lead_notes` via `src/components/admin/LeadNotes.tsx`, op LeadDetail r. 20 en 381. In de lijst is er geen icoon voor.
-  - `crm_taken` bestaat, maar alleen met de soorten afas_factuur_opvragen, exact_aanpassen en nieuwe_aanvraag_nodig. Een acceptatietaak bestaat niet.
-  - Een herinneringskolom of wachtstatus voor acceptatie bestaat niet.
+## 2. Waar het team een BAV-nummer kan aanpassen of vastleggen
+
+Alle onderstaande functies (RPC's) vragen de rol supervisor, admin of verzekering:
+- `bav_nummer_bevestigen`: bevestigt een nummer dat de klant zelf heeft opgegeven. Het scherm is het BAV-nummerblok bij de klant; zie `src/components/admin/crm/AGENTS.md`.
+- `bav_nummer_handmatig_bevestigen`: vrij nummer met toelichting van minimaal 3 tekens. Scherm `src/pages/admin/BavNummerNakijken.tsx` r.47.
+- `bav_nummer_override_bevestigen`: een nummer dat al bij een andere klant staat toch koppelen, met reden van minimaal 10 tekens. Scherm `src/components/admin/crm/BavBezetMelding.tsx` r.15 en r.36-44 (de knop is alleen zichtbaar voor dezelfde drie rollen).
+- `omzetting_vastleggen`: neemt het nummer van de voorganger over. Scherm `src/components/admin/crm/Omzetting.tsx` r.93.
+- `policy_nummer_overnemen`: vervangt het nummer op een bestaand certificaat door het overgenomen nummer, met een versieregel en een nieuwe PDF. Dit loopt via `generate-certificate` actie `nummer_overnemen` (index.ts r.115), scherm `Omzetting.tsx` r.79.
+
+Voor de volledigheid: het certificaatnummer op `policies` kan verder niet worden veranderd (guard `guard_policy_nummer_en_status`). "Aanpassen" in `CertificaatBeheer.tsx` wijzigt alleen beroep, certificaathouder, verzekerde en ingangsdatum.
+
+## Mogelijke vervolgstap (alleen na jouw akkoord)
+De lead-route laten werken zoals de klant-route: geen bekend nummer betekent eerst een voorstel en een bevestiging ("Ja, nieuw nummer uitgeven"), en de trigger maakt bij een leeg nummer zonder treffer geen nummer meer aan maar weigert.
