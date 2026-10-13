@@ -37,3 +37,4 @@
 - Live scenes/effects are lazy; demo events stay in browser memory. Journey/timeline aggregates use service-only scherm_stromen via scherm-data. Why: site performance and visitor privacy.
 <!-- LOVABLE:END -->
 - Samengevoegd artikel: bron is_published=false + rij article_samenvoegingen + directe 301's; bewaakt door kennisbankSamenvoeging.test.ts. Waarom: niets verwijderen, geen ketens.
+- /tv: scherm-data geeft bij een fout de cache met X-Cache stale + verouderd_sinds (pagina oranje); scherm_werkstand-fout is een fout; momentopnames tonen 'bijgewerkt om' uit scherm_versheid(); de pagina herlaadt zelf bij een nieuwe build (src/lib/versieControle.ts, elke 10 min). Waarom: een stilstaand scherm moet zichtbaar zijn.
