@@ -64,7 +64,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
     await werkVan(req).start();
     const body = await req.json();
     const { lead_id, policy_data } = body;
-    const actie: "nieuw" | "aanpassen" | "intrekken" | "mailen" | "nummer_overnemen" = body.actie || "nieuw";
+    const actie: "nieuw" | "aanpassen" | "intrekken" | "mailen" | "nummer_overnemen" | "nummer_wijzigen" = body.actie || "nieuw";
     const json = (b: unknown, status = 200) =>
       new Response(JSON.stringify(b), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
@@ -104,7 +104,26 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
         return json({ success: true, policy: { id: bestaand.id, certificate_number: bestaand.certificate_number, status: "ingetrokken" } });
       }
 
-      if (actie === "nummer_overnemen") {
+      if (actie === "nummer_wijzigen") {
+        // A14: BAV-nummer op bestaand certificaat aanpassen via RPC policy_nummer_wijzigen; nieuwe PDF, nooit mail.
+        const nieuwNr = typeof body.nieuw_nummer === "string" ? body.nieuw_nummer : "";
+        const reden = typeof body.reden === "string" ? body.reden.trim() : "";
+        if (reden.length < 10) return json({ error: "Reden is verplicht (minimaal 10 tekens)" }, 400);
+        let oudePdfPad: string | null = null;
+        if (bestaand.pdf_url) {
+          oudePdfPad = `versies/${bestaand.certificate_number}-v${bestaand.versie}-nummer-${Date.now()}.pdf`;
+          const { error: cErr } = await adminClient.storage.from("certificates").copy(bestaand.pdf_url, oudePdfPad);
+          if (cErr) return json({ error: `Oude PDF kon niet bewaard worden: ${cErr.message}` }, 500);
+        }
+        const { error: rErr } = await userClient.rpc("policy_nummer_wijzigen", { _policy_id: bestaand.id, _nieuw_nummer: nieuwNr, _reden: reden, _oude_pdf_pad: oudePdfPad });
+        if (rErr) return json({ error: rErr.message, code: /bestaat al/.test(rErr.message) ? "nummer_bezet" : undefined }, 409);
+        const { data: upd } = await adminClient.from("policies").select("*").eq("id", bestaand.id).single();
+        policy = upd;
+        if (bestaand.lead_id) {
+          const { data: l } = await adminClient.from("leads").select("kvk_nummer").eq("id", bestaand.lead_id).maybeSingle();
+          kvkNummerBron = l?.kvk_nummer ?? null;
+        }
+      } else if (actie === "nummer_overnemen") {
         // Omzetting vastgelegd: nummer vervangen door het overgenomen BAV-nummer en PDF opnieuw maken. Nooit mail.
         let oudePdfPad: string | null = null;
         if (bestaand.pdf_url) {
@@ -242,10 +261,24 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
         };
       }
       kvkNummerBron = data?.kvk ?? null;
+      // A14: gekozen nummer (vooraf getoond en bevestigd) of 'NIEUW' na expliciete bevestiging.
+      let gekozen = "";
+      if (body.bevestig_nieuw_nummer === true) gekozen = "NIEUW";
+      else if (typeof body.certificaatnummer === "string" && body.certificaatnummer.trim()) {
+        gekozen = body.certificaatnummer.trim().toUpperCase().replace(/\s+/g, "");
+        if (gekozen.length < 3 || !/^[A-Z0-9.\-/]+$/.test(gekozen)) return json({ error: "Ongeldig BAV-nummer" }, 400);
+        const { data: vs } = await adminClient.rpc("certificaatnummer_voorstel_intern", { _onderneming_id: null, _lead_id: lead_id || null });
+        const v = vs as { nummer: string | null; onderneming_id: string | null } | null;
+        if (v?.nummer !== gekozen) {
+          if (!v?.onderneming_id) return json({ error: "Koppel de lead eerst aan een klant om een eigen nummer te gebruiken", code: "geen_klant" }, 409);
+          const { data: bev } = await adminClient.from("bav_nummer_bevestigingen").select("id").eq("onderneming_id", v.onderneming_id).eq("nummer", gekozen).limit(1);
+          if (!bev?.length) return json({ error: "Geen bekend BAV-nummer; bevestig eerst een nummer", code: "niet_bevestigd" }, 409);
+        }
+      }
       const { data: ins, error: policyError } = await adminClient.from("policies").insert({
         lead_id: lead_id || null,
-        // Leeg = bekend nummer van de klant (trigger), "NIEUW" = expliciet nieuw nummer.
-        certificate_number: body.bevestig_nieuw_nummer === true ? "NIEUW" : "",
+        // Leeg = bekend nummer van de klant (trigger weigert zonder treffer), "NIEUW" = expliciet nieuw nummer.
+        certificate_number: gekozen,
         certificate_holder: data.certificate_holder,
         insured_name: data.insured_name,
         start_date: data.start_date,
@@ -259,6 +292,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
       }).select().single();
       if (policyError) {
         console.error("Policy insert error:", policyError);
+        if (/Geen bekend BAV-nummer|staat al op een certificaat/.test(policyError.message)) return json({ error: policyError.message, code: "geen_nummer" }, 409);
         return json({ error: "Failed to create policy", details: policyError.message }, 500);
       }
       policy = ins;

@@ -47,3 +47,4 @@
 - [x] Boy 13 okt A10: Circle8-knop voor collectieve opzeggingen (RPC verwerk_opzegging_circle8, UI, tests)
 - [x] Boy 13 okt D4: ingangsdatum vroegst dag na aanvraag (formulieren, server, trigger, RPC, activeren, waarschuwing, tests, wijzigingsmelding)
 - [x] Boy 13 okt A12: KVK API veilig aanzetten (helper, uitschakelaar, cache, limieten, knop beheer, startersoordeel, tests, rooktest, deploy+publiceer, melding Ellen)
+- [x] Boy 13 okt A14: nooit stil een nieuw certificaatnummer, voorstel vooraf bij lead, BAV-nummer aanpassen op certificaat

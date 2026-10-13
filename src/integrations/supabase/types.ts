@@ -5174,6 +5174,10 @@ export type Database = {
         Args: { _nummer: string; _onderneming_id: string; _toelichting: string }
         Returns: Json
       }
+      bav_nummer_bezet_check: {
+        Args: { _nummer: string; _onderneming_id: string }
+        Returns: Json
+      }
       bav_nummer_bezet_door: {
         Args: { _nummer: string; _voor_ond: string }
         Returns: Json
@@ -5594,6 +5598,15 @@ export type Database = {
         Args: { _oude_pdf_pad: string; _policy_id: string }
         Returns: Json
       }
+      policy_nummer_wijzigen: {
+        Args: {
+          _nieuw_nummer: string
+          _oude_pdf_pad?: string
+          _policy_id: string
+          _reden: string
+        }
+        Returns: Json
+      }
       portal_factuur_opvragen: {
         Args: { _toelichting?: string }
         Returns: boolean
@@ -5700,6 +5713,7 @@ export type Database = {
         Args: { _lead_id: string; _toelichting: string }
         Returns: Json
       }
+      volgend_vrij_certificaatnummer_voorbeeld: { Args: never; Returns: string }
       zeker_opschonen: { Args: never; Returns: undefined }
       zeker_zoek_artikelen: {
         Args: { _q: string }
