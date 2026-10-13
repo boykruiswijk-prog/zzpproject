@@ -5,6 +5,7 @@ import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS, statusTitel } from "@/lib/statu
 import { LeadAfrondenKnop, AfrondDialoog, magAfronden } from "@/components/admin/LeadAfronden";
 import { LeadTestSchakelaar } from "@/components/admin/LeadTestSchakelaar";
 import { StartertariefControle } from "@/components/admin/StartertariefControle";
+import { VlagBalk } from "@/components/admin/LeadVlag";
 import { LeadBavNummer } from "@/components/admin/crm/LeadBavNummer";
 import { OmzettingKaart, OmzettingLabel } from "@/components/admin/crm/Omzetting";
 import { teamWaarschuwingHandmatig } from "../../../supabase/functions/_shared/sectorRegels";
@@ -230,6 +231,7 @@ export default function AdminLeadDetail() {
             )}
           </div>
         )}
+        <VlagBalk lead={lead as any} magWijzigen={isSupervisorOrAdmin || isVerzekering} />
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex min-w-0 items-start gap-3 sm:items-center sm:gap-4">

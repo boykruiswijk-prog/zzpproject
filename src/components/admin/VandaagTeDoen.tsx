@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, CalendarClock, ChevronDown, FileWarning, Inbox, MessageCircle, PhoneCall, RefreshCw, ShieldCheck, UserSearch } from "lucide-react";
+import { Flag, AlertTriangle, CalendarClock, ChevronDown, FileWarning, Inbox, MessageCircle, PhoneCall, RefreshCw, ShieldCheck, UserSearch } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -45,6 +45,7 @@ type Acties = Record<string, Categorie> & { voornaam?: string | null; totaal?: n
 const CATEGORIEEN: { key: string; titel: string; icoon: LucideIcon; link: (i: Item) => string; alles: string }[] = [
   { key: "nieuw", titel: "Nieuwe aanvragen en leads", icoon: Inbox, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/leads" },
   { key: "activeren", titel: "Klaar om te activeren", icoon: ShieldCheck, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/leads" },
+  { key: "vlaggen", titel: "Gemarkeerd: vandaag opvolgen", icoon: Flag, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/aanvragen" },
   { key: "starter", titel: "Startertarief controleren", icoon: ShieldCheck, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/leads" },
   { key: "service", titel: "Opzeggingen, pauzes en wijzigingen", icoon: FileWarning, link: (i) => `/admin/service-aanvragen/${i.id}`, alles: "/admin/service-aanvragen" },
   { key: "screening", titel: "Screening-aanvragen", icoon: UserSearch, link: (i) => `/admin/screening-aanvragen/${i.id}`, alles: "/admin/screening-aanvragen" },

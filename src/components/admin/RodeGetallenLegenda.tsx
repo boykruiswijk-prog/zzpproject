@@ -15,6 +15,7 @@ export function RodeGetallenLegenda() {
       <CardHeader className="pb-2"><CardTitle className="text-base">Wat betekenen de rode getallen</CardTitle></CardHeader>
       <CardContent className="space-y-1 text-sm">
         <p className="text-muted-foreground">Een rood getal in het menu is werk dat nu op iemand wacht. Klik erop om de lijst te openen. Grijs betekent: nakijken zonder haast, telt niet mee in het totaal.</p>
+        <p className="text-muted-foreground">Personen die je met een vlag hebt gemarkeerd (later aandacht of actie nodig) tellen niet mee bij Aanvragen en Leads, tot hun opvolgdatum is bereikt. Daarna tellen ze weer mee en staan ze bij Vandaag te doen. Een vlag "Actie nodig" zonder datum telt niet mee; je vindt die onder Gemarkeerd.</p>
         {regels.length === 0 ? <p>Er staat nu niets open.</p> : regels.map((k) => (
           <Link key={k} to={TELLER_DOEL[k]} className="flex items-start gap-2 rounded px-1 py-0.5 hover:bg-secondary">
             <span className={cn("inline-flex min-w-6 justify-center rounded-full px-2 text-xs font-semibold", GRIJZE_TELLERS.has(k) ? "bg-muted text-muted-foreground" : "bg-destructive text-destructive-foreground")}>{t?.[k]}</span>

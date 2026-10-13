@@ -9,10 +9,21 @@ import { resolveEnvironment } from "../_shared/environment.ts";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const json = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
+// Extra verdediging: bucket privé, alleen pdf/jpg/png, max 10 MB. Eén keer per instantie, idempotent; fout laat de upload niet falen.
+let bucketIngesteld = false;
+async function zorgBucketInstelling(admin: ReturnType<typeof createClient>) {
+  if (bucketIngesteld) return;
+  const { error } = await admin.storage.updateBucket("kvk-uittreksels", {
+    public: false, allowedMimeTypes: ["application/pdf", "image/jpeg", "image/png"], fileSizeLimit: UITTREKSEL_MAX_BYTES,
+  });
+  if (error) console.error("bucket-instelling mislukt:", error.message); else bucketIngesteld = true;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ ok: false, error: "method_not_allowed" }, 405);
   const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+  await zorgBucketInstelling(admin);
   let form: FormData;
   try { form = await req.formData(); } catch (_) { return json({ ok: false, error: "Ongeldig verzoek." }, 400); }
   const guard = await guardPublicSubmission(req, admin, { kind: "kvk-uittreksel", hp: form.get("hp") ?? "" });
