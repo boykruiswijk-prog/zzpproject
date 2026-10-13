@@ -3395,6 +3395,11 @@ export type Database = {
           vereist_handmatige_beoordeling: boolean
           verzekerd_bedrag: string | null
           verzekering_type: string | null
+          vlag: string | null
+          vlag_datum: string | null
+          vlag_door: string | null
+          vlag_notitie: string | null
+          vlag_op: string | null
           voornaam: string
         }
         Insert: {
@@ -3488,6 +3493,11 @@ export type Database = {
           vereist_handmatige_beoordeling?: boolean
           verzekerd_bedrag?: string | null
           verzekering_type?: string | null
+          vlag?: string | null
+          vlag_datum?: string | null
+          vlag_door?: string | null
+          vlag_notitie?: string | null
+          vlag_op?: string | null
           voornaam: string
         }
         Update: {
@@ -3581,6 +3591,11 @@ export type Database = {
           vereist_handmatige_beoordeling?: boolean
           verzekerd_bedrag?: string | null
           verzekering_type?: string | null
+          vlag?: string | null
+          vlag_datum?: string | null
+          vlag_door?: string | null
+          vlag_notitie?: string | null
+          vlag_op?: string | null
           voornaam?: string
         }
         Relationships: []
@@ -5457,6 +5472,10 @@ export type Database = {
         Args: { _datum: string; _lead_id: string; _toelichting: string }
         Returns: Json
       }
+      lead_vlag_geparkeerd: {
+        Args: { _datum: string; _vandaag: string; _vlag: string }
+        Returns: boolean
+      }
       log_not_found: {
         Args: { _pad: string; _referrer?: string; _user_agent?: string }
         Returns: undefined
@@ -5644,6 +5663,10 @@ export type Database = {
         Args: { _aanvraag_id: string }
         Returns: Json
       }
+      verwijder_lead_vlag: {
+        Args: { _lead_id: string; _toelichting: string }
+        Returns: Json
+      }
       zeker_opschonen: { Args: never; Returns: undefined }
       zeker_zoek_artikelen: {
         Args: { _q: string }
@@ -5656,6 +5679,15 @@ export type Database = {
       zet_facturatie_actief: { Args: { _aan: boolean }; Returns: boolean }
       zet_lead_test: {
         Args: { _is_test: boolean; _lead_id: string; _reden: string }
+        Returns: Json
+      }
+      zet_lead_vlag: {
+        Args: {
+          _datum: string
+          _lead_id: string
+          _notitie: string
+          _soort: string
+        }
         Returns: Json
       }
       zet_opzeg_credits_actief: { Args: { _aan: boolean }; Returns: boolean }
