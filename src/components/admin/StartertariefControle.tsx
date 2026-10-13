@@ -14,7 +14,7 @@ import { STARTER_VOORWAARDE_TEKST } from "@/lib/starterTarief";
 import { kvkStarterOordeel } from "../../../supabase/functions/_shared/kvk";
 
 type LeadStarter = {
-  id: string; kvk_startdatum?: string | null; tarief_type?: string | null; starter_tot?: string | null;
+  id: string; kvk_startdatum?: string | null; kvk_datum_bron?: string | null; tarief_type?: string | null; starter_tot?: string | null;
   starter_controle_status?: string | null; starter_beoordeeld_op?: string | null; starter_toelichting?: string | null;
   geactiveerd_op?: string | null; kvk_nummer?: string | null; bedrijfsnaam?: string | null;
   extra_data?: Record<string, any> | null; kvk_gegevens?: Record<string, any> | null; ingangsdatum?: string | null;

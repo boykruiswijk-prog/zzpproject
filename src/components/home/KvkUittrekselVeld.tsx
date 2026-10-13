@@ -18,7 +18,7 @@ export function KvkUittrekselVeld({ conceptId, hp, uittrekselId, onChange, fout 
     if (!f) return;
     const kop = new Uint8Array(await f.slice(0, 16).arrayBuffer());
     const c = controleerUittreksel(f.name, f.size, kop);
-    if (!c.ok) { setMelding(c.fout); return; }
+    if (c.ok === false) { setMelding(c.fout); return; }
     setBezig(true);
     const fd = new FormData();
     fd.append("concept_id", conceptId()); fd.append("hp", hp); fd.append("bestand", f);

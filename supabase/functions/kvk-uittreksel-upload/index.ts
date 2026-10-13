@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
   if (bestand.size > UITTREKSEL_MAX_BYTES) return json({ ok: false, error: "Het bestand is groter dan 10 MB." }, 400);
   const bytes = new Uint8Array(await bestand.arrayBuffer());
   const c = controleerUittreksel(bestand.name, bytes.length, bytes.subarray(0, 16));
-  if (!c.ok) return json({ ok: false, error: c.fout }, 400);
+  if (c.ok === false) return json({ ok: false, error: c.fout }, 400);
   const id = crypto.randomUUID();
   const pad = `${id}.${extVoorMime(c.mime)}`;
   const { error: upErr } = await admin.storage.from("kvk-uittreksels").upload(pad, bytes, { contentType: c.mime, upsert: false });
