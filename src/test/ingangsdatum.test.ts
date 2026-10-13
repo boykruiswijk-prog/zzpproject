@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
-import { vroegsteIngangsdatum, ingangsdatumFout, corrigeerIngangsdatum, nlDag } from "@/lib/ingangsdatum";
+import { vroegsteIngangsdatum, ingangsdatumFout, corrigeerIngangsdatum, nlDag, ingangsdatumBlokkeertActivatie, MELDING_INGANG_KLANT_TE_VROEG } from "@/lib/ingangsdatum";
 
 describe("vroegsteIngangsdatum (besluit D4)", () => {
   it("rond middernacht telt de Nederlandse dag", () => {
@@ -41,21 +41,43 @@ describe("formuliervalidatie", () => {
 
 describe("alle plekken gebruiken de gedeelde regel", () => {
   const lees = (p: string) => readFileSync(p, "utf8");
-  it("formulieren zetten min op morgen", () => {
-    for (const p of ["src/components/home/BAVApplicationModule.tsx", "src/pages/OffertePage.tsx", "src/components/verzekeringen/OnlineAanvraagDialog.tsx", "src/components/admin/IngangsdatumAanpassen.tsx"]) {
+  it("formulieren zetten min op morgen, intern geen min", () => {
+    const intern = lees("src/components/admin/IngangsdatumAanpassen.tsx");
+    expect(intern).not.toContain("min={");
+    expect(intern).toContain("Eerder dan de klant mocht kiezen; dekking met terugwerkende kracht, weet je het zeker?");
+    expect(intern).toContain("Intern mag elke datum. De klant kon vroegst kiezen:");
+    for (const p of ["src/components/home/BAVApplicationModule.tsx", "src/pages/OffertePage.tsx", "src/components/verzekeringen/OnlineAanvraagDialog.tsx"]) {
       expect(lees(p), p).toContain("vroegsteIngangsdatum(");
     }
   });
   it("server corrigeert en activeren blokkeert", () => {
     expect(lees("supabase/functions/process-bav-wizard/index.ts")).toContain("corrigeerIngangsdatum(");
     expect(lees("supabase/functions/process-bav-wizard/index.ts")).not.toContain("niet in het verleden liggen");
-    expect(lees("supabase/functions/lead-to-exact-activate/index.ts")).toContain("Pas eerst de ingangsdatum aan (vroegst");
+    expect(lees("supabase/functions/lead-to-exact-activate/index.ts")).toContain("ingangsdatumBlokkeertActivatie(lead)");
+    expect(lees("supabase/functions/lead-to-exact-activate/index.ts")).toContain('"ingangsdatum_gewijzigd"');
   });
   it("database: trigger en RPC-check staan in de migratie", () => {
     const sql = lees("drizzle/migrations/0121_ingangsdatum_vroegst_dag_na_aanvraag.sql");
     expect(sql).toContain("BEFORE INSERT ON public.leads");
     expect(sql).toContain("BEFORE INSERT ON public.bav_aanmeldingen");
-    expect(sql).toContain("vroegst de dag na de aanvraag");
     expect(sql).toContain("Europe/Amsterdam");
+  });
+});
+
+describe("intern vrij (D4 aangevuld)", () => {
+  const lead = { ingangsdatum: "2026-10-12", created_at: "2026-10-12T08:00:00Z" };
+  it("blokkeert alleen een te vroege klantkeuze", () => {
+    expect(ingangsdatumBlokkeertActivatie(lead)).toBe(true);
+    expect(ingangsdatumBlokkeertActivatie({ ...lead, ingangsdatum: "2026-10-13" })).toBe(false);
+  });
+  it("intern gezet (activiteiten_log of activatie_log) blokkeert niet", () => {
+    expect(ingangsdatumBlokkeertActivatie(lead, true)).toBe(false);
+    expect(ingangsdatumBlokkeertActivatie({ ...lead, activatie_log: [{ actie: "ingangsdatum_gewijzigd" }] })).toBe(false);
+  });
+  it("melding", () => expect(MELDING_INGANG_KLANT_TE_VROEG).toBe("Pas eerst de ingangsdatum aan of bevestig hem via Ingangsdatum aanpassen."));
+  it("RPC-weigering verwijderd, INSERT-vangnet blijft", () => {
+    const sql = readFileSync("drizzle/migrations/0123_intern_ingangsdatum_vrij_en_tellers.sql", "utf8");
+    expect(sql).toContain("EXECUTE replace(def, blok, '')");
+    expect(readFileSync("drizzle/migrations/0121_ingangsdatum_vroegst_dag_na_aanvraag.sql", "utf8")).toContain("BEFORE INSERT ON public.leads");
   });
 });
