@@ -17,8 +17,19 @@ export async function nieuweVersieBeschikbaar(huidig: string, ophalen: typeof fe
 
 export const VERSIE_INTERVAL_MS = 10 * 60_000;
 
-/** Start de versiecontrole elke 10 minuten; herlaadt bij een nieuwe build. Geeft een stopfunctie terug. */
-export function startVersieControle(herlaad: () => void = () => window.location.reload(), ophalen: typeof fetch = fetch, huidig = buildKenmerk(document.documentElement.outerHTML)) {
-  const t = setInterval(async () => { if (await nieuweVersieBeschikbaar(huidig, ophalen)) herlaad(); }, VERSIE_INTERVAL_MS);
-  return () => clearInterval(t);
+/** Start de versiecontrole elke 10 minuten; het startkenmerk komt uit dezelfde index.html (niet uit de DOM,
+ *  want later geladen modulepreload-links zouden een herlaadlus geven). Geeft een stopfunctie terug. */
+export function startVersieControle(herlaad: () => void = () => window.location.reload(), ophalen: typeof fetch = fetch) {
+  let huidig = '';
+  let stop = false;
+  const leesStart = async () => {
+    try { const r = await ophalen(`/index.html?v=${Date.now()}`, { cache: 'no-store' }); if (r.ok) huidig = buildKenmerk(await r.text()); } catch { /* later opnieuw */ }
+  };
+  void leesStart();
+  const t = setInterval(async () => {
+    if (stop) return;
+    if (!huidig) { await leesStart(); return; }
+    if (await nieuweVersieBeschikbaar(huidig, ophalen)) herlaad();
+  }, VERSIE_INTERVAL_MS);
+  return () => { stop = true; clearInterval(t); };
 }
