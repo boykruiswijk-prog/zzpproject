@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { formatDateNL } from "@/lib/dateFormat";
+import { ContractKortingKnop, KortingBadge } from "@/components/admin/crm/ContractKorting";
+import { useAuth } from "@/contexts/AuthContext";
 import { CONTRACT_STATUS_LABEL, PRODUCT_LABEL, formatEuro, periodeBedrag, type Product } from "@/lib/klantContracten";
 import { OpzeggingenKlant } from "@/components/admin/OpzeggingenKlant";
 import { CertificatenKlant } from "@/components/admin/CertificatenKlant";
@@ -25,6 +27,7 @@ export default function KlantDetail() {
   const [laden, setLaden] = useState(true);
   const [ond, setOnd] = useState<any>(null);
   const [contracten, setContracten] = useState<any[]>([]);
+  const { isSupervisorOrAdmin } = useAuth();
   const [personen, setPersonen] = useState<any[]>([]);
   const [mandaat, setMandaat] = useState<any>(null);
   const [leadMatch, setLeadMatch] = useState<any[]>([]);
@@ -110,7 +113,7 @@ export default function KlantDetail() {
                     <td className="p-2 tabular-nums">{c.bron_rij}</td>
                     <td className="p-2">{PRODUCT_LABEL[c.product as Product]}<div className="text-xs text-muted-foreground">{c.itemcode} · AFAS-abonnementsnummer (oud systeem) {c.abonnement_nr ?? "—"}</div></td>
                     <td className="p-2">{c.cyclus === "jaar" ? "Jaar" : "Maand"}{Number(c.aantal) !== 1 && ` × ${c.aantal}`}</td>
-                    <td className="p-2 text-right tabular-nums">{formatEuro(periodeBedrag(c))}</td>
+                    <td className="p-2 text-right tabular-nums">{formatEuro(periodeBedrag(c))}<div className="flex flex-col items-end"><KortingBadge c={c} />{isSupervisorOrAdmin && <ContractKortingKnop c={c} onGewijzigd={() => setHerlaad((x) => x + 1)} />}</div></td>
                     <td className="p-2 tabular-nums">{formatDateNL(c.gefactureerd_tm)}</td>
                     <td className="p-2 tabular-nums">{c.status === "vervangen" ? "—" : formatDateNL(c.volgende_factuurdatum)}</td>
                     <td className="p-2"><Badge variant="secondary">{CONTRACT_STATUS_LABEL[c.status] ?? c.status}</Badge></td>

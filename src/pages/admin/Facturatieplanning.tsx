@@ -12,12 +12,13 @@ import { Loader2, Play } from "lucide-react";
 import { formatDateNL, formatDateTimeNL } from "@/lib/dateFormat";
 import { formatEuro } from "@/lib/klantContracten";
 import { useToast } from "@/hooks/use-toast";
+import { pctTekst } from "@/lib/contractKorting";
 import { kiesBavNummer, useBavRijen } from "@/lib/bavNummer";
 
 type Kandidaat = {
   klant_contract_id: string; onderneming_id?: string | null; relatiecode: string | null; klantnaam: string | null; itemcode: string; cyclus: string;
   periode_start: string; periode_eind: string; bedrag: number; achterstallig: boolean;
-  blokkade: string | null; blokkade_soort: string | null;
+  blokkade: string | null; blokkade_soort: string | null; korting_pct?: number | null;
 };
 const PLANNING_LABEL: Record<string, string> = {
   geclaimd: "Geclaimd (wacht op controle)", concept_aangemaakt: "Gefactureerd, wacht op verwerking", verwerkt: "Verwerkt",
@@ -107,7 +108,7 @@ export default function Facturatieplanning() {
       <td className="py-1 pr-2 max-w-[220px] truncate" title={r.klantnaam ?? ""}>{r.klantnaam}</td>
       <td className="py-1 pr-2 whitespace-nowrap">{r.itemcode}</td>
       <td className="py-1 pr-2 whitespace-nowrap">{formatDateNL(r.periode_start)} t/m {formatDateNL(r.periode_eind)}</td>
-      <td className="py-1 pr-2 text-right whitespace-nowrap">{formatEuro(Number(r.bedrag))}</td>
+      <td className="py-1 pr-2 text-right whitespace-nowrap">{formatEuro(Number(r.bedrag))}{r.korting_pct != null && <div className="text-xs text-primary">{pctTekst(r.korting_pct)} korting verwerkt</div>}</td>
       <td className="py-1 max-w-[280px] truncate" title={r.blokkade ?? ""}>
         {r.blokkade ? <span className="text-destructive">{r.blokkade}</span> : <Badge variant="secondary">Klaar</Badge>}
       </td>
@@ -115,7 +116,7 @@ export default function Facturatieplanning() {
   );
   const RegelKaart = ({ r }: { r: Kandidaat }) => (
     <div className="min-w-0 rounded-md border p-3 text-sm">
-      <div className="flex min-w-0 items-start justify-between gap-3"><span className="break-words font-medium">{r.klantnaam || "—"}</span><span className="shrink-0 tabular-nums">{formatEuro(Number(r.bedrag))}</span></div>
+      <div className="flex min-w-0 items-start justify-between gap-3"><span className="break-words font-medium">{r.klantnaam || "—"}</span><span className="shrink-0 tabular-nums">{formatEuro(Number(r.bedrag))}{r.korting_pct != null && <span className="block text-xs text-primary">{pctTekst(r.korting_pct)} korting</span>}</span></div>
       <p className="mt-1 break-words text-muted-foreground">{codeTekst(r)} · {r.itemcode}</p>
       <p className="break-words">{formatDateNL(r.periode_start)} t/m {formatDateNL(r.periode_eind)}</p>
       <div className="mt-2 break-words">{r.blokkade ? <span className="text-destructive">{r.blokkade}</span> : <Badge variant="secondary">Klaar</Badge>}</div>
