@@ -60,6 +60,7 @@ Formaat:
 - Lever het artikel in Markdown: koppen (## en ###), korte alinea's, opsommingen waar dat helpt.
 - Begin met een korte pakkende inleiding die direct de koopintentie erkent, geen H1 (die volgt uit de titel).
 - Sluit af met een duidelijke, uitnodigende volgende stap voor de lezer: een BAV aanvragen bij ZP Zaken of vrijblijvend contact opnemen. Houd het menselijk en niet pusherig, passend bij de menselijke maat van ZP Zaken.
+- Gebruik voor de BAV + AVB uitsluitend de linktekst "Vraag de BAV + AVB online aan" of "Bekijk de BAV + AVB en vraag online aan", met link /verzekeringen. Beloof geen onmiddellijk afsluiten of onmiddellijke dekking.
 - Plaats HELEMAAL ONDERAAN het artikel (na de call-to-action) een aparte alinea onder de kop "## Disclaimer" met exact deze tekst: "Dit artikel is bedoeld als algemene informatie en is geen persoonlijk advies. Aan dit artikel kunnen geen rechten worden ontleend. Wil je weten wat past bij jouw situatie? Neem dan vrijblijvend contact op met ZP Zaken."
 
 Je krijgt een onderwerp aangereikt en levert je antwoord ALLEEN als geldige JSON, zonder omliggende tekst, code fences of uitleg. Het JSON-schema:

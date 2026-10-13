@@ -6,6 +6,13 @@ import { join } from "node:path";
 const verbodenClaims = [
   new RegExp(["verzekerde", "bedrag", "gedeeld"].join("\\s+"), "i"),
   new RegExp(["bedrag", "wordt", "gedeeld"].join("\\s+"), "i"),
+  new RegExp(["sluit", "direct", "af"].join("\\s+"), "i"),
+  new RegExp("\\bBAV\\b[^\\n]*" + ["direct", "af"].join("\\s+") + "\\b", "i"),
+  new RegExp(["beste", "prijs-kwaliteit"].join("\\s+"), "i"),
+  new RegExp(["beste", "oplossing"].join("\\s+"), "i"),
+  new RegExp(["Voordelig", "ste"].join(""), "i"),
+  new RegExp(["met", "korting"].join("\\s+"), "i"),
+  new RegExp(["bespaart", "gemiddeld"].join("\\s+"), "i"),
 ];
 
 function bestandenIn(map: string): string[] {
@@ -20,6 +27,7 @@ describe("Collectieve polis zonder gedeelde-dekkingsclaim", () => {
     const bestanden = [
       ...bestandenIn("src"),
       "public/llms.txt",
+      "public/llms-full.txt",
       "scripts/llmsTxt.ts",
       "scripts/genereer-zeker-kennis.ts",
       "supabase/functions/_shared/zekerKennis.generated.ts",
@@ -32,14 +40,30 @@ describe("Collectieve polis zonder gedeelde-dekkingsclaim", () => {
     expect(overtredingen).toEqual([]);
   });
 
-  it("herkent beide verboden formuleringen ook met hoofdletters en extra witruimte", () => {
+  it("herkent verboden formuleringen ook met hoofdletters en extra witruimte", () => {
     const voorbeelden = [
       ["verzekerde", "bedrag", "gedeeld"].join(" "),
       ["bedrag", "wordt", "gedeeld"].join("\n  ").toUpperCase(),
+      ["sluit", "direct", "af"].join(" "),
+      ["BAV", "direct", "af"].join(" "),
+      ["beste", "prijs-kwaliteit"].join(" "),
+      ["beste", "oplossing"].join(" "),
+      ["Voordelig", "ste"].join(""),
+      ["met", "korting"].join(" "),
+      ["bespaart", "gemiddeld"].join(" "),
     ];
     voorbeelden.forEach((tekst) => {
       expect(verbodenClaims.some((patroon) => patroon.test(tekst))).toBe(true);
     });
+  });
+
+  it("bewaakt de online-aanvraagtekst in beide CTA's en de artikelgenerator", () => {
+    const pagina = readFileSync("src/pages/BavZzpVergelijken.tsx", "utf8");
+    expect(pagina).toContain("Bekijk de verzekering en vraag online aan");
+    expect(pagina.match(/<Ctas\b/g)).toHaveLength(2);
+    const generator = readFileSync("supabase/functions/genereer-artikel/index.ts", "utf8");
+    expect(generator).toContain("Vraag de BAV + AVB online aan");
+    expect(generator).toContain("Bekijk de BAV + AVB en vraag online aan");
   });
 
   it("behoudt de exacte collectieve-polisformulering en dekking per aanspraak", () => {

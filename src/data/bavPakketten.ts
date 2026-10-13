@@ -33,7 +33,7 @@ export const bavPakketten = [
       cyber: null,
     },
     usps: [
-      "Voordeligste optie",
+      "Voordeliger per jaar",
       "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt.",
       "Premie inclusief kosten en assurantiebelasting",
     ],
