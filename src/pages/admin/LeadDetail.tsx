@@ -515,7 +515,7 @@ export default function AdminLeadDetail() {
                       <div>
                         <span className="text-muted-foreground">Eerste factuur:</span>{" "}
                         <span className="font-medium">€ {Number(lead.exact_invoice_amount).toFixed(2).replace('.', ',')}</span>
-                        {lead.gekozen_pakket === "maandelijks" && <span className="text-muted-foreground"> (naar rato) · premie € 55 per maand</span>}
+                        {lead.gekozen_pakket === "maandelijks" && <span className="text-muted-foreground"> · premie € 55 per maand</span>}
                       </div>
                     )}
                     {lead.exact_invoice_created_at && (

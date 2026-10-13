@@ -241,7 +241,7 @@ export function LeadActivationPanel({ lead, magActiveren, fase }: Props) {
                   <p className="font-medium text-green-900">Factuur klaar voor controle in Exact</p>
                   <p className="text-green-800 mt-1">
                     Eerste factuur {formatEuro(Number(lead.exact_invoice_amount))}
-                    {lead.gekozen_pakket === "maandelijks" && <> (naar rato) · premie {formatEuro(55)} per maand</>}
+                    {lead.gekozen_pakket === "maandelijks" && <> · premie {formatEuro(55)} per maand</>}
                     {lead.exact_invoice_created_at && (
                       <> — aangemaakt op {formatDateLongNL(lead.exact_invoice_created_at)}</>
                     )}
