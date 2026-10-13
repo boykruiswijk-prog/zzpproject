@@ -1,5 +1,6 @@
 # Roadmap
-- [ ] Tekstcorrecties 13 oktober: zes genoemde tekstpunten, gepubliceerde artikelen, generatorbronnen, FAQ/llms/Zeker en regressietest; geen publicatie of logica-/prijswijzigingen.
+- [x] Tekstcorrecties 13 oktober: 4 CTA-artikelen + 2 AOV-artikelen bijgewerkt, generatorprompt/vergelijkknoppen/FAQ/productlabel/beroepenlijst gecorrigeerd, llms en Zeker opnieuw gegenereerd; browser en build OK; geen publicatie of logica-/prijswijzigingen.
+- [ ] Uitgebreide teksttest volledig groen: 19/20 relevante tests slagen; PartnersSection.tsx bevat bestaande "met korting"-claim buiten de toegestane teksten, wacht op Boy's opdracht. Standaard testomgeving mist canvas; controle met happy-dom uitgevoerd.
 - [x] Besluit A9: 7 beelden en ongebruikte teammodule verwijderd; kantoorbeelden, regressietest 3/3, browsercontrole en build OK; niet gepubliceerd.
 - [ ] Volledige testset groen: 811/819 geslaagd; 8 fouten in Exact-bedragen, SEO-titels en WordPress-inventaris wachten op aparte opdracht, buiten deze foto-opdracht gehouden.
 - [x] ZP Zaken-faviconset, manifest en prerender-head gecorrigeerd; 5 tests geslaagd en vijf bestanden HTTP 200; ongebruikte placeholder verwijderd; niet gepubliceerd.
