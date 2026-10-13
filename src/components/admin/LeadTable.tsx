@@ -8,6 +8,9 @@ import { useQuery as useBavQuery } from "@tanstack/react-query";
 import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS, statusTitel } from "@/lib/statusLabels";
 import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 import { useState } from "react";
+import { VlagIcoon, VlagKnop } from "@/components/admin/LeadVlag";
+import { filterOpTab, vandaagNL, type VlagTab } from "@/lib/leadVlag";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "react-router-dom";
 import { useLeads, useUpdateLead, useDeleteLead } from "@/hooks/useLeads";
 import { formatDateNL } from "@/lib/dateFormat";
@@ -72,6 +75,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
   const { user, isSupervisorOrAdmin } = useAuth();
   const { toonTest } = useToonTestrecords();
   const [toonAfgerond, setToonAfgerond] = useState(false);
+  const [tab, setTab] = useState<VlagTab>("te_doen");
   const [afronden, setAfronden] = useState<any | null>(null);
   // Verwijderen blijft beperkt tot de gemarkeerde admin-mailbox, EN moet supervisor/admin-rol hebben.
   const canDelete = user?.email === AUTHORIZED_DELETE_EMAIL && isSupervisorOrAdmin;
@@ -101,7 +105,10 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
     return rs.length ? kiesBavNummer(rs) : null;
   };
   const bavZoek = search && /^[\d\s.-]+$/.test(search.trim()) ? search.replace(/\D/g, "") : "";
-  const leads = bavZoek ? (alleLeads ?? []).filter((l) => (bavVoor(l.id)?.nummer ?? "").replace(/\D/g, "").includes(bavZoek)) : alleLeads;
+  const gezocht = bavZoek ? (alleLeads ?? []).filter((l) => (bavVoor(l.id)?.nummer ?? "").replace(/\D/g, "").includes(bavZoek)) : (alleLeads ?? []);
+  const vandaag = vandaagNL();
+  const aantalGemarkeerd = gezocht.filter((l: any) => !!l.vlag).length;
+  const leads = filterOpTab(gezocht as any[], tab, vandaag) as typeof gezocht;
   const updateLead = useUpdateLead();
   const deleteLead = useDeleteLead();
 
@@ -144,6 +151,13 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
 
   return (
     <div className="space-y-4">
+      <Tabs value={tab} onValueChange={(v) => setTab(v as VlagTab)}>
+        <TabsList>
+          <TabsTrigger value="te_doen">Te doen</TabsTrigger>
+          <TabsTrigger value="gemarkeerd">Gemarkeerd ({aantalGemarkeerd})</TabsTrigger>
+          <TabsTrigger value="alle">Alle</TabsTrigger>
+        </TabsList>
+      </Tabs>
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
@@ -257,7 +271,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
               leads?.map((lead) => (
                 <TableRow key={lead.id}>
                   <TableCell className="font-medium">
-                    {lead.voornaam} {lead.achternaam}
+                    <span className="inline-flex flex-wrap items-center gap-2">{lead.voornaam} {lead.achternaam} <VlagIcoon lead={lead as any} /></span>
                     {lead.bedrijfsnaam && (
                       <span className="block text-sm text-muted-foreground">
                         {lead.bedrijfsnaam}
@@ -334,6 +348,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
                           <Eye className="h-4 w-4" />
                         </Link>
                       </Button>
+                      <VlagKnop lead={lead as any} />
                       <LeadTestSchakelaar leadId={lead.id} isTest={!!lead.is_test} naam={`${lead.voornaam} ${lead.achternaam}`} compact />
                       {canDelete && (
                         <Button
