@@ -16,6 +16,8 @@ const LIMITS: Record<string, { max: number; windowMinutes: number }> = {
   "klant-service": { max: 5, windowMinutes: 60 },
   // Tussentijds opslaan van een halve aanvraag: meerdere keren per aanvraag, telt niet mee in het totaalplafond.
   concept: { max: 40, windowMinutes: 60 },
+  // KVK-uittreksel bij startertarief: een paar pogingen per aanvraag, telt niet mee in het totaalplafond.
+  "kvk-uittreksel": { max: 10, windowMinutes: 60 },
 };
 
 /** Totaalplafond per IP over alle formulieren heen. */
@@ -102,7 +104,7 @@ export async function guardPublicSubmission(
       .from("form_rate_limit")
       .select("id", { count: "exact", head: true })
       .eq("ip", ip)
-      .not("kind", "in", "(concept,review-klik,review-afmelden,scherm-code,scherm-koppel)")
+      .not("kind", "in", "(concept,kvk-uittreksel,review-klik,review-afmelden,scherm-code,scherm-koppel)")
       .gte("created_at", sinceGlobal);
 
     if ((totalCount ?? 0) >= GLOBAL_LIMIT.max) {

@@ -1,0 +1,1 @@
+export { UITTREKSEL_MAX_BYTES, UITTREKSEL_LABEL, UITTREKSEL_UITLEG, UITTREKSEL_VERPLICHT, mimeUitInhoud, controleerUittreksel, uittrekselVerplicht } from "../../supabase/functions/_shared/kvkUittreksel";
