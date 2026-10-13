@@ -5489,6 +5489,7 @@ export type Database = {
       }
       scherm_data: { Args: never; Returns: Json }
       scherm_stromen: { Args: never; Returns: Json }
+      scherm_versheid: { Args: never; Returns: Json }
       scherm_werkstand: { Args: never; Returns: Json }
       service_aanvraag_afronden: { Args: { _id: string }; Returns: Json }
       service_aanvraag_koppelen: {
