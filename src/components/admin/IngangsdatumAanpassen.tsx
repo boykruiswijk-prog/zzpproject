@@ -47,9 +47,10 @@ export function IngangsdatumAanpassen({ lead, magWijzigen }: { lead: { id: strin
     const { data, error } = await supabase.rpc("lead_ingangsdatum_wijzigen" as any, { _lead_id: lead.id, _datum: datum, _toelichting: reden });
     setBezig(false);
     if (error) { toast({ title: "Niet opgeslagen", description: error.message, variant: "destructive" }); return; }
-    setUitkomst(data as unknown as Uitkomst);
+    const bevestigd = (data as any)?.bevestigd === true;
+    if (!bevestigd) setUitkomst(data as unknown as Uitkomst);
     setOpen(false); setReden("");
-    toast({ title: "Ingangsdatum aangepast" });
+    toast({ title: bevestigd ? "Ingangsdatum bevestigd" : "Ingangsdatum aangepast" });
     qc.invalidateQueries({ queryKey: ["lead", lead.id] });
     qc.invalidateQueries({ queryKey: ["ingangsdatum-historie", lead.id] });
     qc.invalidateQueries({ queryKey: ["ingangsdatum-intern", lead.id] });
@@ -110,7 +111,7 @@ export function IngangsdatumAanpassen({ lead, magWijzigen }: { lead: { id: strin
           )}
           <Label htmlFor="ingang-reden">Waarom aangepast (verplicht)</Label>
           <Textarea id="ingang-reden" value={reden} maxLength={500} onChange={(e) => setReden(e.target.value)} />
-          <Button disabled={bezig || !datum || datum === lead.ingangsdatum || reden.trim().length < 3} onClick={opslaan}>Opslaan</Button>
+          <Button disabled={bezig || !datum || reden.trim().length < 3} onClick={opslaan}>{datum === lead.ingangsdatum ? "Datum bevestigen" : "Opslaan"}</Button>
         </DialogContent>
       </Dialog>
     </Card>
