@@ -12,6 +12,7 @@ import {
 } from "../_shared/polisProRata.ts";
 import { mandaatkenmerkVoor } from "../_shared/sepaMachtiging.ts";
 import { autoInvitePortalLead } from "../_shared/portalAccess.ts";
+import { eersteMaandPeriode } from "../_shared/klantContractActivatie.ts";
 import { factuurReferentie, kopOmschrijving, regelNotities, regelOmschrijving } from "../_shared/factuurTekst.ts";
 import { landcodeVoor } from "../_shared/landcode.ts";
 import { maandprijsVoorLead, pakketSpecVoorLead, starterContractVelden, starterStatus } from "../_shared/starterActivatie.ts";
@@ -80,6 +81,12 @@ async function captureExactError(label: string, res: Response): Promise<{ summar
   };
   const summary = `${label} ${res.status} ${res.statusText} — ${bodyText.slice(0, 600)}`;
   return { summary, detail };
+}
+
+// deno-lint-ignore no-explicit-any
+function eersteMaandOverride(lead: any, betalingsregel: string) {
+  const { start, eind } = eersteMaandPeriode(String(lead.ingangsdatum));
+  return { amount: maandprijsVoorLead(lead, getMaandprijs(lead.gekozen_pakket)), headerDescription: "BAV-AVB premie", lineDescription: regelOmschrijving("premie", start, eind), lineNotes: betalingsregel, periodStart: start, periodEnd: eind };
 }
 
 // deno-lint-ignore no-explicit-any
@@ -318,9 +325,9 @@ async function createExactInvoice(opts: {
     YourRef: factuurReferentie(lead.certificate_number, lead.exact_relatie_code),
     Description: headerDescription,
     SalesInvoiceLines: [line, ...(cyberBedrag && ingang ? [{ ...line, UnitPrice: cyberBedrag,
-      Description: `${regelOmschrijving("premie", ingang, isMaandPolis(lead.gekozen_pakket) ? lastOfMonth(ingang) : cyberJaarEind(ingang))} Cyber`.slice(0,60),
+      Description: `${regelOmschrijving("premie", ingang, isMaandPolis(lead.gekozen_pakket) ? eersteMaandPeriode(ingang).eind : cyberJaarEind(ingang))} Cyber`.slice(0,60),
       Notes: "Cyber jaarcontract, 12 maanden. Resterende termijnen blijven verschuldigd bij BAV-opzegging.",
-      StartTime: `${ingang}T00:00:00`, EndTime: `${isMaandPolis(lead.gekozen_pakket) ? lastOfMonth(ingang) : cyberJaarEind(ingang)}T00:00:00`,
+      StartTime: `${ingang}T00:00:00`, EndTime: `${isMaandPolis(lead.gekozen_pakket) ? eersteMaandPeriode(ingang).eind : cyberJaarEind(ingang)}T00:00:00`,
     }] : [])],
   };
 
@@ -677,9 +684,13 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
     const startStr = String(lead.ingangsdatum).slice(0, 10);
     let ov: Parameters<typeof createExactInvoice>[0]["override"];
     if (isMaandPolis(lead.gekozen_pakket)) {
-      const endStr = lastOfMonth(startStr);
-      const calc = calcMaandProrata({ maandprijs: maandprijsVoorLead(lead, getMaandprijs(lead.gekozen_pakket)), vanaf_datum: startStr, tot_datum: endStr });
-      ov = { amount: calc.bedrag, headerDescription: "BAV-AVB premie instap", lineDescription: regelOmschrijving("premie", startStr, endStr), lineNotes: regelNotities(calc.dagen, calc.dagprijs), periodStart: startStr, periodEnd: endStr };
+      // Herplaatsen maakt het verwijderde concept exact na: nieuwe regel (volle maand), of de oude naar-rato-regel als het oorspronkelijke bedrag daarbij hoort.
+      ov = eersteMaandOverride(lead, spec.betalingsregel);
+      if (Math.abs(Number(ov.amount) - Number(lead.exact_invoice_amount)) > 0.004) {
+        const endStr = lastOfMonth(startStr);
+        const calc = calcMaandProrata({ maandprijs: maandprijsVoorLead(lead, getMaandprijs(lead.gekozen_pakket)), vanaf_datum: startStr, tot_datum: endStr });
+        ov = { amount: calc.bedrag, headerDescription: "BAV-AVB premie instap", lineDescription: regelOmschrijving("premie", startStr, endStr), lineNotes: regelNotities(calc.dagen, calc.dagprijs), periodStart: startStr, periodEnd: endStr };
+      }
     } else {
       const endStr = String(lead.polis_einddatum ?? calcPolisEinddatum(startStr)).slice(0, 10);
       ov = { amount: spec.bedrag, headerDescription: "BAV-AVB premie instap", lineDescription: regelOmschrijving("premie", startStr, endStr), lineNotes: spec.betalingsregel, periodStart: startStr, periodEnd: endStr };
@@ -735,22 +746,10 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
     if (!itemEnsure.ok) {
       return json({ success: false, error: "item_bootstrap_failed", detail: itemEnsure.detail, http_status: itemEnsure.httpStatus }, 500);
     }
-    // Maandpolis-instap pro-rata override (zelfde regel als initiele activatie)
+    // Maandpolis-instap: volle maand vanaf de ingangsdatum (zelfde regel als initiele activatie)
     let retryOverride: Parameters<typeof createExactInvoice>[0]["override"] = undefined;
     if (isMaandPolis(lead.gekozen_pakket) && lead.ingangsdatum) {
-      const startStr = String(lead.ingangsdatum).slice(0, 10);
-      const endStr = lastOfMonth(startStr);
-      const calc = calcMaandProrata({
-        maandprijs: maandprijsVoorLead(lead, getMaandprijs(lead.gekozen_pakket)),
-        vanaf_datum: startStr, tot_datum: endStr,
-      });
-      retryOverride = {
-        amount: calc.bedrag,
-        headerDescription: `BAV-AVB premie instap`,
-        lineDescription: regelOmschrijving("premie", startStr, endStr),
-        lineNotes: regelNotities(calc.dagen, calc.dagprijs),
-        periodStart: startStr, periodEnd: endStr,
-      };
+      retryOverride = eersteMaandOverride(lead, spec.betalingsregel);
     }
     const { data: policyRef } = await supabase.from("policies").select("certificate_number").eq("lead_id", leadId).eq("status", "geldig").limit(1).maybeSingle();
     lead.certificate_number = policyRef?.certificate_number ?? null;
@@ -773,7 +772,7 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
     const nowIso = new Date().toISOString();
     const entry = {
       timestamp: nowIso,
-      action: factuurLogTekst(invRes.invoiceNumber, invRes.amount ?? spec.bedrag, (() => { const ps = plannerSpec(lead, spec.bedrag, retryOverride); return ps ? { start: ps.periodeStart, eind: ps.periodeEind, naarRato: !!retryOverride } : undefined; })()),
+      action: factuurLogTekst(invRes.invoiceNumber, invRes.amount ?? spec.bedrag, (() => { const ps = plannerSpec(lead, spec.bedrag, retryOverride); return ps ? { start: ps.periodeStart, eind: ps.periodeEind, naarRato: false } : undefined; })()),
       admin_user_id: user.id,
       admin_email: user.email,
       exact_invoice_id: invRes.invoiceId,
@@ -1156,23 +1155,11 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
       logCtx: { lead_id: leadId, admin_user_id: user.id },
     });
 
-    // Maandpolis-instap: pro-rata factuur voor periode vandaag → laatste van die maand.
+    // Maandpolis-instap (D1): volle maand vanaf de ingangsdatum, nooit naar rato.
     // Vervolgperioden komen via de factuurplanner (klant_contracten).
     let override: Parameters<typeof createExactInvoice>[0]["override"] = undefined;
     if (isMaandPolis(lead.gekozen_pakket)) {
-      const startStr = String(lead.ingangsdatum).slice(0, 10);
-      const endStr = lastOfMonth(startStr);
-      const calc = calcMaandProrata({
-        maandprijs: maandprijsVoorLead(lead, getMaandprijs(lead.gekozen_pakket)),
-        vanaf_datum: startStr, tot_datum: endStr,
-      });
-      override = {
-        amount: calc.bedrag,
-        headerDescription: "BAV-AVB premie instap",
-        lineDescription: regelOmschrijving("premie", startStr, endStr),
-        lineNotes: regelNotities(calc.dagen, calc.dagprijs),
-        periodStart: startStr, periodEnd: endStr,
-      };
+      override = eersteMaandOverride(lead, pakketSpec.betalingsregel);
     }
 
     const invRes = itemEnsure.ok
@@ -1213,7 +1200,7 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
 
       // Klant meenemen in de factuurplanner vanaf de tweede periode.
       const ps = plannerSpec(lead, pakketSpec.bedrag, override);
-      if (ps) factuurPeriode = { start: ps.periodeStart, eind: ps.periodeEind, naarRato: !!override };
+      if (ps) factuurPeriode = { start: ps.periodeStart, eind: ps.periodeEind, naarRato: false };
       if (ps) {
         const pr = await zetInPlanner(supabase, lead, exactAccountId, ps);
         if (!pr.ok) await logSync(supabase, { trigger_type: "planner_contract", status: "error", lead_id: leadId, admin_user_id: user.id, error_message: pr.fout });
