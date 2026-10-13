@@ -50,7 +50,7 @@ function Ctas({ center = false }: { center?: boolean }) {
   return (
     <div className={`flex flex-col gap-3 sm:flex-row ${center ? "sm:justify-center" : ""}`}>
       <Button variant="accent" size="lg" asChild>
-        <LocalizedLink to="/verzekeringen#combinatiepolis">Bekijk de verzekering en sluit direct af<ArrowRight className="h-4 w-4" /></LocalizedLink>
+        <LocalizedLink to="/verzekeringen#combinatiepolis">Bekijk de verzekering en vraag online aan<ArrowRight className="h-4 w-4" /></LocalizedLink>
       </Button>
       <Button variant="outline" size="lg" asChild>
         <LocalizedLink to="/offerte">Vraag een offerte aan</LocalizedLink>
