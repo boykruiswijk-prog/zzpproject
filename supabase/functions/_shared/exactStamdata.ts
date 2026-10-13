@@ -1,7 +1,8 @@
 // Logica voor exact-stamdata-bijwerken (eenmalige uitzondering op A5, akkoord Boy 13 okt 2026).
 // Nooit bestaande gegevens in Exact overschrijven of verwijderen.
-// Toegestane schrijfacties (alleen hier gecontroleerd): PUT crm/Accounts(guid'…') met uitsluitend Phone,
-// POST crm/BankAccounts en POST cashflow/DirectDebitMandates. Alles anders gooit een fout.
+// Toegestane schrijfacties (alleen hier gecontroleerd): PUT crm/Accounts(guid'…') met uitsluitend Phone of
+// uitsluitend PaymentConditionSales, POST crm/BankAccounts, POST cashflow/DirectDebitMandates en
+// PUT cashflow/DirectDebitMandates(guid'…') met uitsluitend Main = true. Alles anders gooit een fout.
 // Geen imports: ook getest met vitest (src/test/exactStamdata.test.ts).
 
 // deno-lint-ignore no-explicit-any
@@ -20,7 +21,9 @@ export function controleerSchrijfactie(methode: string, pad: string, body?: Reco
   const sleutels = Object.keys(body ?? {});
   if (methode === "PUT") {
     const m = pad.match(/^crm\/Accounts\(guid'([0-9a-f-]{36})'\)$/i);
-    if (m && guidOk(m[1]) && sleutels.length === 1 && sleutels[0] === "Phone") return;
+    if (m && guidOk(m[1]) && sleutels.length === 1 && (sleutels[0] === "Phone" || sleutels[0] === "PaymentConditionSales")) return;
+    const d = pad.match(/^cashflow\/DirectDebitMandates\(guid'([0-9a-f-]{36})'\)$/i);
+    if (d && guidOk(d[1]) && sleutels.length === 1 && sleutels[0] === "Main" && body?.Main === true) return;
   }
   if (methode === "POST" && (pad === "crm/BankAccounts" || pad === "cashflow/DirectDebitMandates")) return;
   throw new Error(`Niet toegestane Exact-schrijfactie: ${methode} ${pad} [${sleutels.join(",")}]`);
@@ -141,6 +144,7 @@ export function signalen(r: Any): string[] {
     if (!m.Main) s.push(`mandaat ${m.Reference} niet Main`);
   }
   if (mand.length > 0 && actief.length === 0) s.push("geen actief mandaat");
+  if (actief.length === 1 && actief[0].Main === false) s.push(`enige geldige mandaat ${actief[0].Reference} staat niet op Main`);
   const hoofd = (r.bankrekeningen ?? []).find((b: Any) => b.Main);
   for (const m of actief) if (hoofd && m.bankrekening_id && m.bankrekening_id !== hoofd.id) s.push(`mandaat ${m.Reference} verwijst naar andere bankrekening (${m.bankrekening}) dan de hoofdrekening (${hoofd.iban})`);
   for (const f of r.facturen ?? []) if (!isIncasso(f.PaymentCondition)) s.push(`factuur ${f.InvoiceNumber} met betalingsconditie ≠ IN (${f.PaymentCondition ?? "leeg"})`);
@@ -177,4 +181,69 @@ export async function controleerRelatie(ex: Exact, relatiecode: string): Promise
   };
   uit.signalen = signalen(uit);
   return uit;
+}
+
+// ───────────── Betaalconditie en mandaat_main ─────────────
+export const INCASSO_CODE = "IN";
+const geldigMandaat = (m: Any) => { const d = exactDatum(m.CancellationDate); return !d || d > vandaag(); };
+
+/** Controleert in cashflow/PaymentConditions dat 'IN' de incassoconditie is. Gooit als dat niet zeker is. */
+export async function bevestigIncassoCode(ex: Exact): Promise<{ code: string; omschrijving: string; methode: string | null }> {
+  const r = await ex("GET", `cashflow/PaymentConditions?$select=Code,Description,PaymentMethod`);
+  if (!r.ok) throw new Error(kort(r, "GET PaymentConditions"));
+  const c = res(r.data).find((x: Any) => String(x.Code ?? "").trim().toUpperCase() === INCASSO_CODE);
+  if (!c) throw new Error("Betalingsconditie 'IN' bestaat niet in Exact; gestopt");
+  const methode = c.PaymentMethod == null ? null : String(c.PaymentMethod).trim().toUpperCase();
+  // Exact PaymentMethod: B = op rekening, I = incasso, K = contant.
+  if (methode !== null && methode !== "I") throw new Error(`Conditie 'IN' heeft PaymentMethod '${methode}', niet incasso (I); gestopt`);
+  if (methode === null && !/incasso|automatisch|collect/i.test(String(c.Description ?? ""))) throw new Error(`Conditie 'IN' (${c.Description}) is niet zeker incasso; gestopt`);
+  return { code: INCASSO_CODE, omschrijving: String(c.Description ?? ""), methode };
+}
+
+async function leesAccountEnMandaten(ex: Exact, accountId: string) {
+  const a = await ex("GET", `crm/Accounts(guid'${accountId}')?$select=ID,Code,PaymentConditionSales`);
+  if (!a.ok) return { fout: a.status === 404 ? "niet_gevonden" : kort(a, "GET account") };
+  const acc = res(a.data)[0];
+  if (!acc) return { fout: "niet_gevonden" };
+  const m = await ex("GET", `cashflow/DirectDebitMandates?$filter=${encodeURIComponent(`Account eq guid'${accountId}'`)}&$select=ID,Reference,CancellationDate,Main`);
+  if (!m.ok) return { fout: kort(m, "GET mandaten") };
+  const geldig = res(m.data).filter(geldigMandaat);
+  return { conditie: acc.PaymentConditionSales == null ? null : String(acc.PaymentConditionSales).trim(), geldig };
+}
+
+export type BcRij = { relatiecode: string; exact_account_id: string; wacht_op_mandaat?: boolean };
+
+export async function verwerkBetaalconditie(ex: Exact, rij: BcRij, live: boolean): Promise<Patch> {
+  if (!guidOk(rij.exact_account_id)) return { status: "fout", melding: "Ongeldig exact_account_id" };
+  const l = await leesAccountEnMandaten(ex, rij.exact_account_id);
+  if (l.fout === "niet_gevonden") return { status: "niet_gevonden", melding: "Account niet gevonden in Exact" };
+  if (l.fout) return { status: "fout", melding: l.fout };
+  const basis = { conditie_oud: l.conditie };
+  const signaal = l.geldig!.length === 1 && l.geldig![0].Main === false ? " Signaal: enige geldige mandaat staat niet op Main." : "";
+  if ((l.conditie ?? "").toUpperCase() === INCASSO_CODE) return { ...basis, status: "al_incasso", melding: `Conditie staat al op IN.${signaal}`.trim() };
+  if (l.geldig!.length === 0) {
+    if (!live && rij.wacht_op_mandaat) return { ...basis, status: "wacht_op_mandaat", melding: "Machtiging wordt eerst aangemaakt; daarna opnieuw gecontroleerd" };
+    return { ...basis, status: "geen_mandaat", melding: "Geen geldig mandaat; niet aangepast" };
+  }
+  if (!live) return { ...basis, status: "proef_ok", melding: `Zou conditie ${l.conditie ?? "leeg"} → IN zetten.${signaal}` };
+  const p = await ex("PUT", `crm/Accounts(guid'${rij.exact_account_id}')`, { PaymentConditionSales: INCASSO_CODE });
+  if (!p.ok) return { ...basis, status: "fout", melding: kort(p, "PUT betaalconditie") };
+  return { ...basis, status: "bijgewerkt", melding: `Conditie ${l.conditie ?? "leeg"} → IN.${signaal}`.trim() };
+}
+
+export async function verwerkMandaatMain(ex: Exact, rij: BcRij, live: boolean): Promise<Patch> {
+  if (!guidOk(rij.exact_account_id)) return { status: "fout", melding: "Ongeldig exact_account_id" };
+  const l = await leesAccountEnMandaten(ex, rij.exact_account_id);
+  if (l.fout === "niet_gevonden") return { status: "niet_gevonden", melding: "Account niet gevonden in Exact" };
+  if (l.fout) return { status: "fout", melding: l.fout };
+  const g = l.geldig!;
+  if (g.length === 0) return { status: "geen_mandaat", melding: "Geen geldig mandaat" };
+  if (g.length > 1) return { status: "niet_van_toepassing", melding: `${g.length} geldige mandaten; Main niet automatisch gekozen` };
+  const m = g[0];
+  if (m.Main !== false) return { status: "al_main", exact_mandaat_id: m.ID, melding: "Enige geldige mandaat staat al op Main" };
+  if (!guidOk(m.ID)) return { status: "fout", melding: "Ongeldig mandaat-ID" };
+  if (!live) return { status: "proef_ok", exact_mandaat_id: m.ID, melding: `Zou mandaat ${m.Reference} op Main zetten` };
+  const p = await ex("PUT", `cashflow/DirectDebitMandates(guid'${m.ID}')`, { Main: true });
+  if (!p.ok) return { status: "fout", exact_mandaat_id: m.ID, melding: kort(p, "PUT Main") };
+  return { status: "bijgewerkt", exact_mandaat_id: m.ID, melding: `Mandaat ${m.Reference} op Main gezet` };
 }
