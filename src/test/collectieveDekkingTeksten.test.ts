@@ -55,7 +55,7 @@ describe("Collectieve polis zonder gedeelde-dekkingsclaim", () => {
       ["beste", "prijs-kwaliteit"].join(" "),
       ["beste", "oplossing"].join(" "),
       ["Voordelig", "ste"].join(""),
-      ["met", "korting"].join(" "),
+      ["Onze", "combinatiepolis", "bundelt", "ze", "met", "korting"].join(" "),
       ["bespaart", "gemiddeld"].join(" "),
     ];
     voorbeelden.forEach((tekst) => {
