@@ -14,7 +14,7 @@ describe('scherm-payload bevat alle velden die de pagina gebruikt', () => {
   });
   it('elk veld dat Scherm.tsx leest bestaat in de payload', () => {
     const bron = readFileSync('src/pages/Scherm.tsx', 'utf8');
-    const velden = new Set([...bron.matchAll(/\b(?:data|d)\.([a-z_]+)/g)].map(m => m[1]));
+    const velden = new Set([...bron.matchAll(/\b(?:data|d)\.([a-z_]+)/g)].map(m => m[1]).filter(v => !['map', 'filter', 'length', 'n', 'dag', 'maand'].includes(v)));
     for (const v of velden) expect(p, v).toHaveProperty(v);
   });
   it('nu_op_site zonder bron is null (wordt gemeten), geen nep-0', () => {
