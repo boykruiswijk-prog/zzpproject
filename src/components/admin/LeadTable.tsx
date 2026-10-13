@@ -72,7 +72,8 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
-  const { user, isSupervisorOrAdmin } = useAuth();
+  const { user, isSupervisorOrAdmin, isVerzekering } = useAuth();
+  const magVlag = isSupervisorOrAdmin || isVerzekering;
   const { toonTest } = useToonTestrecords();
   const [toonAfgerond, setToonAfgerond] = useState(false);
   const [tab, setTab] = useState<VlagTab>("te_doen");
@@ -217,9 +218,11 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
                 <Link to={`/admin/leads/${lead.id}`} className="block break-words font-medium hover:text-primary">
                   {lead.voornaam} {lead.achternaam}
                 </Link>
+                <VlagIcoon lead={lead as any} />
                 {lead.bedrijfsnaam && <p className="break-words text-sm text-muted-foreground">{lead.bedrijfsnaam}</p>}
                 {bavVoor(lead.id) && <BavNummer keuze={bavVoor(lead.id)} />}
               </div>
+              {magVlag && <VlagKnop lead={lead as any} />}
               <Badge variant="outline">{lead.type === "verzekering_aanvraag" ? "Verzekering" : lead.type === "offerte-aanvraag" ? "Offerte" : "Contact"}</Badge>
             </div>
             <div className="space-y-1 text-sm">
@@ -348,7 +351,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
                           <Eye className="h-4 w-4" />
                         </Link>
                       </Button>
-                      <VlagKnop lead={lead as any} />
+                      {magVlag && <VlagKnop lead={lead as any} />}
                       <LeadTestSchakelaar leadId={lead.id} isTest={!!lead.is_test} naam={`${lead.voornaam} ${lead.achternaam}`} compact />
                       {canDelete && (
                         <Button

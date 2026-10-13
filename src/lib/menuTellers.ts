@@ -13,13 +13,14 @@ export const TELLER_DOEL: Record<TellerSleutel, string> = {
   chat: "/admin/chatgesprekken", klanten: "/admin/klanten#creditnotas",
 };
 
+const gemarkeerd = (x?: number) => (x ? ` (${x} gemarkeerd voor later)` : "");
 const mv = (n: number, een: string, meer: string) => `${n} ${n === 1 ? een : meer}`;
 
 export function tellerUitleg(k: TellerSleutel, t: Tellers): string {
   const n = t[k] ?? 0;
   switch (k) {
-    case "aanvragen": return `${mv(n, "aanvraag wacht", "aanvragen wachten")} op beoordeling of activatie`;
-    case "leads": return `${mv(n, "lead is", "leads zijn")} nog niet opgevolgd`;
+    case "aanvragen": return `${mv(n, "aanvraag wacht", "aanvragen wachten")} op beoordeling of activatie${gemarkeerd(t.aanvragen_gemarkeerd)}`;
+    case "leads": return `${mv(n, "lead is", "leads zijn")} nog niet opgevolgd${gemarkeerd(t.leads_gemarkeerd)}`;
     case "afgehaakt": return `${mv(n, "bezoeker haakte", "bezoekers haakten")} de afgelopen 7 dagen af tijdens het aanvragen`;
     case "opzeggingen": return `${mv(n, "opzegging moet", "opzeggingen moeten")} nog gekoppeld of verwerkt worden`;
     case "credits_akkoord": return `${mv(n, "creditnota wacht", "creditnota's wachten")} op akkoord`;
