@@ -7,7 +7,7 @@ import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { ensureValidToken, refreshAccessToken } from "../_shared/exactToken.ts";
 import { metExactMelding } from "../_shared/exactBoekingMelding.ts";
 import { requireSupervisor } from "../_shared/teamAuth.ts";
-import { beveiligd, type Exact, verwerkMandaat, verwerkTelefoon } from "../_shared/exactStamdata.ts";
+import { beveiligd, controleerRelatie, type Exact, verwerkMandaat, verwerkTelefoon } from "../_shared/exactStamdata.ts";
 
 const json = (b: unknown, s = 200) =>
   new Response(JSON.stringify(b), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -37,15 +37,18 @@ Deno.serve(metExactMelding("exact-stamdata-bijwerken", async (req) => {
   const body: any = await req.json().catch(() => ({}));
   const actie = String(body.actie ?? "");
   const onderdeel = String(body.onderdeel ?? "");
-  if (actie !== "proef" && actie !== "live") return json({ error: "actie moet 'proef' of 'live' zijn" }, 400);
-  if (!["telefoon", "machtigingen", "beide"].includes(onderdeel)) return json({ error: "onderdeel moet 'telefoon', 'machtigingen' of 'beide' zijn" }, 400);
+  if (!["proef", "live", "controle"].includes(actie)) return json({ error: "actie moet 'proef', 'live' of 'controle' zijn" }, 400);
+  const codes: string[] = actie === "controle" && Array.isArray(body.relatiecodes)
+    ? [...new Set(body.relatiecodes.map((c: unknown) => String(c ?? "").trim()).filter((c: string) => /^[A-Za-z0-9-]{1,18}$/.test(c)))] as string[] : [];
+  if (actie === "controle" && (codes.length === 0 || codes.length > 20)) return json({ error: "relatiecodes: 1 t/m 20 geldige codes" }, 400);
+  if (actie !== "controle" && !["telefoon", "machtigingen", "beide"].includes(onderdeel)) return json({ error: "onderdeel moet 'telefoon', 'machtigingen' of 'beide' zijn" }, 400);
   const limitRaw = Number(body.limit ?? 100);
   const limit = Math.max(1, Math.min(500, Number.isFinite(limitRaw) ? Math.floor(limitRaw) : 100));
   const live = actie === "live";
   const start = Date.now();
 
   const { data: run } = await sb.from("exact_stamdata_runs")
-    .insert({ actie, onderdeel, gestart_door: uid, via: cron ? "cron_secret" : "supervisor" }).select("id").single();
+    .insert({ actie, onderdeel: actie === "controle" ? "controle" : onderdeel, gestart_door: uid, via: cron ? "cron_secret" : "supervisor" }).select("id").single();
 
   // Exact-context met tempo 1 call per 1,1 s en één refresh bij 401.
   const { data: cfg } = await sb.from("exact_config").select("*").limit(1).maybeSingle();
@@ -77,6 +80,20 @@ Deno.serve(metExactMelding("exact-stamdata-bijwerken", async (req) => {
   const fouten: { onderdeel: string; relatiecode: string; melding: string }[] = [];
   const tel = (o: string, s: string) => { (aantallen[o] ??= {})[s] = (aantallen[o][s] ?? 0) + 1; };
   let gestopt: string | null = null;
+
+  if (actie === "controle") {
+    // deno-lint-ignore no-explicit-any
+    const uitkomsten: any[] = [];
+    for (const code of codes) {
+      try {
+        const r = await controleerRelatie(ex, code);
+        await sb.from("exact_controle").insert({ relatiecode: code, resultaat: r });
+        uitkomsten.push(r);
+      } catch (e) { gestopt = e instanceof Error ? e.message : String(e); break; }
+    }
+    if (run?.id) await sb.from("exact_stamdata_runs").update({ geeindigd: new Date().toISOString(), aantallen: { controle: uitkomsten.length }, gestopt }).eq("id", run.id);
+    return json({ run_id: run?.id ?? null, actie, resultaten: uitkomsten, ...(gestopt ? { gestopt } : {}) });
+  }
 
   try {
     if (onderdeel !== "machtigingen") {
