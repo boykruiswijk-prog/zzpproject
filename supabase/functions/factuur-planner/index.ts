@@ -119,6 +119,14 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
     }
     if (deel === "boekingen") return json({ boekingen: await get(`salesentry/SalesEntries?$select=EntryNumber,Customer,CustomerName,Journal,EntryDate,AmountDC,Description,YourRef&$filter=${encodeURIComponent(`EntryDate ge datetime'${String(body?.vanaf ?? "2026-09-01")}'`)}`) });
     if (deel === "gl") return json({ gl: await get(`financial/GLAccounts?$select=ID,Code,Description,VATCode&$filter=${encodeURIComponent("Code ge '8000' and Code le '8099'")}`) });
+    // Alleen GET: machtigingen, bankrekeningen en betalingscondities per account. Geen IBAN in het antwoord.
+    if (deel === "machtigingen") {
+      const mand = await get("cashflow/DirectDebitMandates?$select=ID,Account,BankAccount,Type,PaymentType,SignatureDate,CancellationDate,FirstSend,Main", 20000);
+      const bank = await get("crm/BankAccounts?$select=ID,Account,Main,Blocked", 20000);
+      const acc = await get(`crm/Accounts?$select=ID,Code,SalesPaymentCondition,Status&$filter=${encodeURIComponent("IsSales eq true")}`, 20000);
+      const strip = (x: any) => (Array.isArray(x) ? x : { fout: x?.fout, aantal: x?.rows?.length ?? 0 });
+      return json({ mandaten: strip(mand), banken: strip(bank), accounts: strip(acc) });
+    }
     return json({ error: "deel: basis|facturen|regels|itemregels|gl" }, 400);
   }
 
