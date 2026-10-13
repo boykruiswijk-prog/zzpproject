@@ -29,6 +29,8 @@ import ellenAvatar from "@/assets/ellen-baars-avatar.webp";
 import { TrustSignalsStrip } from "@/components/social-proof/TrustSignalsStrip";
 import { bavPakketten, getPakket, type BavPakketId } from "@/data/bavPakketten";
 import { vroegsteIngangsdatum, ingangsdatumFout } from "@/lib/ingangsdatum";
+import { KvkUittrekselVeld } from "@/components/home/KvkUittrekselVeld";
+import { uittrekselVerplicht, UITTREKSEL_VERPLICHT } from "@/lib/kvkUittreksel";
 import { STARTER, STARTER_VOORBEHOUD_TEKST, STARTER_VOORWAARDE_TEKST, isStarter, starterTot } from "@/lib/starterTarief";
 import { checkAcceptance } from "@/data/acceptanceCriteria";
 import { useFormGuard } from "@/lib/antiSpam";
@@ -110,6 +112,12 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
      return () => window.removeEventListener("hashchange", pas);
    }, [routerLocatie.hash, routerLocatie.key]);
    const [startDate, setStartDate] = useState<string>(() => vroegsteIngangsdatum());
+   // A12 aangevuld: tijdelijk verplicht KVK-uittreksel bij startertarief zolang de KVK API niet operationeel is.
+   const [kvkApiOp, setKvkApiOp] = useState<boolean | null>(null);
+   const [uittrekselId, setUittrekselId] = useState<string | null>(null);
+   useEffect(() => {
+     supabase.functions.invoke("kvk-api-status").then(({ data }) => setKvkApiOp(data?.operationeel === true), () => setKvkApiOp(false));
+   }, []);
    const [viaBemiddelaar, setViaBemiddelaar] = useState<boolean | null>(null);
    const [incassoAkkoord, setIncassoAkkoord] = useState(false);
    const [clientAkkoordOp, setClientAkkoordOp] = useState<string | null>(null);
@@ -207,6 +215,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
       if (!formData.bedrijfsnaam.trim()) newErrors.bedrijfsnaam = t("bavApp.valCompanyName");
       if (!formData.kvkNummer.trim()) newErrors.kvkNummer = t("bavApp.valKvk");
       else if (!isValidKvk(formData.kvkNummer)) newErrors.kvkNummer = t("bavApp.valKvkFormat");
+      if (uittrekselVerplicht(!!startDate && isStarter(formData.kvkStartdatum || null, startDate), kvkApiOp) && !uittrekselId) newErrors.kvkUittreksel = UITTREKSEL_VERPLICHT;
       if (formData.kvkStartdatum && (!/^\d{4}-\d{2}-\d{2}$/.test(formData.kvkStartdatum) || formData.kvkStartdatum > new Date().toISOString().slice(0, 10) || formData.kvkStartdatum < "1900-01-01")) newErrors.kvkStartdatum = "Vul een geldige startdatum in die niet in de toekomst ligt";
       if (!verzekeringskaartVoorSector(formData.sector)) newErrors.sector = "Kies je sector";
       if (!formData.beroep.trim()) newErrors.beroep = t("bavApp.valProfession");
@@ -293,6 +302,13 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
   // Halve aanvraag tussentijds bewaren (aanvraag_concepten), zodra er een geldig e-mailadres of
   // telefoonnummer staat. Nooit IBAN, rekeninghouder of SEPA-gegevens. Idempotent op het concept-id.
   const conceptId = useRef<string>("");
+  const zorgConceptId = () => {
+    if (!conceptId.current) {
+      try { conceptId.current = sessionStorage.getItem(CONCEPT_KEY) || crypto.randomUUID(); sessionStorage.setItem(CONCEPT_KEY, conceptId.current); }
+      catch { conceptId.current = crypto.randomUUID(); }
+    }
+    return conceptId.current;
+  };
   const laatsteConcept = useRef("");
   useEffect(() => {
     if (isSubmitted) return;
@@ -377,6 +393,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
            rekeninghouder: formData.rekeninghouder.trim(),
            lead_id: leadId,
            concept_id: conceptId.current || undefined,
+           kvk_uittreksel_id: uittrekselId || undefined,
            client_akkoord_op: clientAkkoordOp,
            pagina_url: window.location.href,
            formulier_naam: "Online aanvraag BAV + AVB",
@@ -489,7 +506,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                 : "Binnen 24 uur geregeld, certificaat in je mailbox. Je ontvangt een bevestiging per e-mail, met je SEPA-machtiging als PDF, en een uitnodiging voor Mijn ZP."}
             </p>
             {submissionResult.starter && (
-              <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">{STARTER_VOORBEHOUD_TEKST}</p>
+              <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">We controleren je inschrijfdatum. {STARTER_VOORBEHOUD_TEKST}</p>
             )}
             {submissionResult.cyber && <p className="mt-4 text-sm text-muted-foreground">{CYBER_LOOPTIJD}</p>}
             {submissionResult.cyberAfgewezen && <p className="mt-4 text-sm text-muted-foreground">{CYBER_AFGEWEZEN}</p>}
@@ -788,6 +805,9 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                         <p className="text-xs text-muted-foreground mt-1">Staat op je KVK-uittreksel. Nodig voor het startertarief.</p>
                         <FieldError message={errors.kvkStartdatum} />
                       </div>
+                      {uittrekselVerplicht(starterVanToepassing, kvkApiOp) && (
+                        <KvkUittrekselVeld conceptId={zorgConceptId} hp={guard.honeypot} uittrekselId={uittrekselId} onChange={setUittrekselId} fout={errors.kvkUittreksel} />
+                      )}
                       {starterVanToepassing && (
                         <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 text-sm" data-testid="starterblok">
                           <p className="font-semibold mb-1">Startertarief van toepassing</p>
