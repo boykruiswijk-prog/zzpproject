@@ -38,7 +38,7 @@ export const ZEKER_KENNIS = {
       },
       "cyber": null,
       "usps": [
-        "Voordeligste optie",
+        "Voordeliger per jaar",
         "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt.",
         "Premie inclusief kosten en assurantiebelasting"
       ]
@@ -362,7 +362,7 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Verzekeringen",
       "vraag": "Kan ik mijn verzekeringen combineren voor korting?",
-      "antwoord": "Ja, bij ZP Zaken bieden we een combinatiepolis aan waarbij je je BAV en AVB kunt bundelen. Je krijgt korting en houdt overzicht met één polis en één premie. Je bespaart gemiddeld 15-20% ten opzichte van losse verzekeringen."
+      "antwoord": "Ja, bij ZP Zaken bieden we een combinatiepolis aan waarbij je je BAV en AVB kunt bundelen. Je houdt overzicht met één polis en één premie."
     },
     {
       "categorie": "Verzekeringen",
@@ -372,12 +372,12 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Verzekeringen",
       "vraag": "Wat kost een AOV gemiddeld per maand?",
-      "antwoord": "De premie van een AOV hangt af van je beroep, leeftijd, gewenste uitkering en wachttijd. Gemiddeld betalen zzp'ers tussen de €150 en €400 per maand. Bij ZP Zaken zoeken we de beste prijs-kwaliteitverhouding door verschillende verzekeraars te vergelijken."
+      "antwoord": "De premie van een AOV hangt af van je beroep, leeftijd, gewenste uitkering en wachttijd. Gemiddeld betalen zzp'ers tussen de €150 en €400 per maand. Bij ZP Zaken vergelijken we AOV's van verschillende verzekeraars en laten we je zien welke mogelijkheden er zijn."
     },
     {
       "categorie": "Over ZP Zaken",
       "vraag": "Is ZP Zaken onafhankelijk?",
-      "antwoord": "Ja, ZP Zaken is volledig onafhankelijk. Wij zijn niet gebonden aan één verzekeraar en kunnen daarom informeren welke verzekering bij je past. We vergelijken producten van verschillende aanbieders om de beste oplossing voor jou te vinden."
+      "antwoord": "Ja, ZP Zaken is volledig onafhankelijk. Wij zijn niet gebonden aan één verzekeraar en geven je eerlijke informatie over de mogelijkheden. We bemiddelen in producten van verschillende aanbieders."
     },
     {
       "categorie": "Over ZP Zaken",
@@ -452,7 +452,7 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Onze verzekering",
       "vraag": "Heb ik een beroeps- en een bedrijfsaansprakelijkheidsverzekering nodig?",
-      "antwoord": "Een BAV dekt schade door fouten in je werk (verkeerd advies, fout ontwerp). Een AVB dekt schade aan personen of spullen. Veel opdrachtgevers vragen om beide verzekeringen. Onze combinatiepolis bundelt ze met korting."
+      "antwoord": "Een BAV dekt schade door fouten in je werk (verkeerd advies, fout ontwerp). Een AVB dekt schade aan personen of spullen. Veel opdrachtgevers vragen om beide verzekeringen. Onze combinatiepolis bundelt ze in één polis."
     },
     {
       "categorie": "Onze verzekering",
