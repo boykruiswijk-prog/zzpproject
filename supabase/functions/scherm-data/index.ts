@@ -1,16 +1,11 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders as basisCors } from "npm:@supabase/supabase-js@2/cors";
-import { bouwSchermPayload } from "../_shared/schermAnonimiseer.ts";
+import { bouwSchermPayload, markeerVerouderd } from "../_shared/schermAnonimiseer.ts";
 import { clientIp } from "../_shared/antiSpam.ts";
 import { requireSupervisor } from "../_shared/teamAuth.ts";
 
 const corsHeaders = { ...basisCors, "Access-Control-Allow-Headers": `${basisCors["Access-Control-Allow-Headers"]}, x-scherm-token, x-scherm-code, x-scherm-apparaat, x-scherm-sessie` };
 let cache: { op: number; body: string } | null = null;
-
-/** Oude cache na een fout: zichtbaar verouderd, zodat het scherm oranje toont. */
-export function markeerVerouderd(body: string, sinds: number) {
-  try { return JSON.stringify({ ...JSON.parse(body), verouderd_sinds: new Date(sinds).toISOString() }); } catch { return body; }
-}
 
 function gelijk(a: string, b: string) {
   if (a.length !== b.length || a.length === 0) return false;

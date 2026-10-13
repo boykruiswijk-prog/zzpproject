@@ -381,4 +381,9 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
   };
 }
 
+/** Oude cache na een fout: zichtbaar verouderd, zodat het scherm oranje toont. */
+export function markeerVerouderd(body: string, sinds: number) {
+  try { return JSON.stringify({ ...JSON.parse(body), verouderd_sinds: new Date(sinds).toISOString() }); } catch { return body; }
+}
+
 export type SchermPayload = ReturnType<typeof bouwSchermPayload>;
