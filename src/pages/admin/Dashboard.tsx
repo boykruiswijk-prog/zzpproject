@@ -1,5 +1,6 @@
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { DashboardStats } from "@/components/admin/DashboardStats";
+import { RodeGetallenLegenda } from "@/components/admin/RodeGetallenLegenda";
 import { DashboardCharts } from "@/components/admin/DashboardCharts";
 import { MFAManagement } from "@/components/admin/MFAManagement";
 import { SupervisorKpiPanel } from "@/components/admin/SupervisorKpiPanel";
@@ -87,6 +88,7 @@ export default function AdminDashboard() {
 
         <VandaagTeDoen />
         <DashboardStats />
+        <RodeGetallenLegenda />
         <MFAManagement />
         <ZekerChatKpi />
         {isSupervisor && <CollectiefAanmeldingenTeller />}
