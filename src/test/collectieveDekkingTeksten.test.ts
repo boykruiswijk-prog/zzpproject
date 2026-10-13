@@ -11,7 +11,13 @@ const verbodenClaims = [
   new RegExp(["beste", "prijs-kwaliteit"].join("\\s+"), "i"),
   new RegExp(["beste", "oplossing"].join("\\s+"), "i"),
   new RegExp(["Voordelig", "ste"].join(""), "i"),
-  new RegExp(["met", "korting"].join("\\s+"), "i"),
+  // "met korting" alleen verboden in verzekeringscontext (BAV/AVB/combinatiepolis/verzekering/polis);
+  // kortingen van partners bij collectieve inkoop zijn toegestaan.
+  new RegExp(
+    ["met", "korting"].join("\\s+") + "[^\\n]*\\b(BAV|AVB|combinatiepolis|verzekering|polis)\\b" +
+      "|\\b(BAV|AVB|combinatiepolis|verzekering|polis)\\b[^\\n]*" + ["met", "korting"].join("\\s+"),
+    "i",
+  ),
   new RegExp(["bespaart", "gemiddeld"].join("\\s+"), "i"),
 ];
 
