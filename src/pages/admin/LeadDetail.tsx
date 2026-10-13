@@ -284,7 +284,7 @@ export default function AdminLeadDetail() {
             <StartertariefControle lead={lead as any} magBeoordelen={isSupervisorOrAdmin || isVerzekering} />
             {lead.type === "verzekering_aanvraag" && <IngangsdatumAanpassen lead={lead as any} magWijzigen={isSupervisorOrAdmin || isVerzekering} />}
             {String(lead.gekozen_pakket ?? "").includes("cyber") && <CyberDatums leadId={lead.id} ingang={lead.cyber_ingangsdatum} eind={lead.cyber_einddatum} nieuwePer={lead.cyber_nieuwe_voorwaarden_per} />}
-            <KvkLeadAfwijkingen lead={lead as any} />
+            <KvkLeadAfwijkingen lead={lead as any} magOphalen={isSupervisorOrAdmin || isVerzekering} />
             <Card className="min-w-0 w-full overflow-hidden">
               <CardHeader>
                 <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
