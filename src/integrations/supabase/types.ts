@@ -3063,6 +3063,51 @@ export type Database = {
           },
         ]
       }
+      kvk_instellingen: {
+        Row: {
+          abonnement_per_maand: number
+          basis_url: string
+          bijgewerkt_op: string
+          dag_limiet: number
+          id: boolean
+          maand_limiet: number
+          prijs_per_bevraging: number
+        }
+        Insert: {
+          abonnement_per_maand?: number
+          basis_url?: string
+          bijgewerkt_op?: string
+          dag_limiet?: number
+          id?: boolean
+          maand_limiet?: number
+          prijs_per_bevraging?: number
+        }
+        Update: {
+          abonnement_per_maand?: number
+          basis_url?: string
+          bijgewerkt_op?: string
+          dag_limiet?: number
+          id?: boolean
+          maand_limiet?: number
+          prijs_per_bevraging?: number
+        }
+        Relationships: []
+      }
+      kvk_opvraag_claim: {
+        Row: {
+          geclaimd_op: string
+          kvk_nummer: string
+        }
+        Insert: {
+          geclaimd_op?: string
+          kvk_nummer: string
+        }
+        Update: {
+          geclaimd_op?: string
+          kvk_nummer?: string
+        }
+        Relationships: []
+      }
       kvk_opvraag_log: {
         Row: {
           bron: string
@@ -3070,6 +3115,7 @@ export type Database = {
           http_status: number | null
           id: string
           ip_hash: string | null
+          kosten_eur: number
           kvk_nummer: string | null
           melding: string | null
           resultaat: string
@@ -3082,6 +3128,7 @@ export type Database = {
           http_status?: number | null
           id?: string
           ip_hash?: string | null
+          kosten_eur?: number
           kvk_nummer?: string | null
           melding?: string | null
           resultaat: string
@@ -3094,6 +3141,7 @@ export type Database = {
           http_status?: number | null
           id?: string
           ip_hash?: string | null
+          kosten_eur?: number
           kvk_nummer?: string | null
           melding?: string | null
           resultaat?: string
@@ -5337,10 +5385,14 @@ export type Database = {
         Args: { _aanvraag_id: string; _onderneming_id: string }
         Returns: Json
       }
+      kvk_betaald_teller: { Args: never; Returns: Json }
+      kvk_claim: { Args: { _kvk: string }; Returns: boolean }
+      kvk_claim_vrijgeven: { Args: { _kvk: string }; Returns: undefined }
       kvk_gegevens_overnemen: {
         Args: { _adres: boolean; _ids: string[]; _naam: boolean }
         Returns: Json
       }
+      kvk_kosten_overzicht: { Args: never; Returns: Json }
       lead_afronden: {
         Args: { _lead_id: string; _toelichting?: string }
         Returns: boolean

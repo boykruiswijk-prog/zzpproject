@@ -30,3 +30,17 @@ export async function requireSupervisor(req: Request, admin: any): Promise<{ use
   if (allowed !== true) return new Response(JSON.stringify({ error: "forbidden" }), { status: 403, headers: { "Content-Type": "application/json" } });
   return { userId: user.id };
 }
+
+/** Supervisor, admin of verzekering, met 2FA. */
+// deno-lint-ignore no-explicit-any
+export async function requireVerzekeringOfSupervisor(req: Request, admin: any): Promise<{ userId: string } | Response> {
+  const r = await requireSupervisor(req, admin);
+  if (!(r instanceof Response) || r.status !== 403) return r;
+  const body = await r.clone().json().catch(() => ({}));
+  if (body?.error !== "forbidden") return r;
+  const userClient = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_ANON_KEY") ?? "", { global: { headers: { Authorization: req.headers.get("Authorization") ?? "" } } });
+  const { data: { user } } = await userClient.auth.getUser();
+  if (!user) return r;
+  const { data: ok } = await admin.rpc("has_role", { _user_id: user.id, _role: "verzekering" });
+  return ok === true ? { userId: user.id } : r;
+}

@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { PartnerBronnenBeheer } from "@/components/admin/crm/Omzetting";
 import { Loader2, CheckCircle2, XCircle, RefreshCw, ExternalLink } from "lucide-react";
+import { KvkKostenBlok } from "@/components/admin/KvkKostenBlok";
 import { ExactEmailImportBlock } from "@/components/admin/ExactEmailImportBlock";
 import { ExactMandaatImportBlock } from "@/components/admin/ExactMandaatImportBlock";
 import { amsterdamDagGrenzen, bepaalExactHealth, herkoppelenVoor } from "@/lib/exactHealth";
@@ -255,6 +256,8 @@ export default function Integraties() {
                 <Button asChild variant="outline"><Link to="/admin/exact-koppeling">Exact-koppeling beheren</Link></Button>
               </CardContent>
             </Card>
+
+            <KvkKostenBlok />
 
             {/* SECTIE 2 — Autorisatie */}
             <Card>

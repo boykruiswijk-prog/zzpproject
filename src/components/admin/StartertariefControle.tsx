@@ -10,12 +10,13 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDateNL } from "@/lib/dateFormat";
 import { STARTER_VOORWAARDE_TEKST } from "@/lib/starterTarief";
+import { kvkStarterOordeel } from "../../../supabase/functions/_shared/kvk";
 
 type LeadStarter = {
   id: string; kvk_startdatum?: string | null; tarief_type?: string | null; starter_tot?: string | null;
   starter_controle_status?: string | null; starter_beoordeeld_op?: string | null; starter_toelichting?: string | null;
   geactiveerd_op?: string | null; kvk_nummer?: string | null; bedrijfsnaam?: string | null;
-  extra_data?: Record<string, any> | null;
+  extra_data?: Record<string, any> | null; kvk_gegevens?: Record<string, any> | null; ingangsdatum?: string | null;
 };
 
 const LABEL: Record<string, string> = { te_controleren: "Startertarief controleren", goedgekeurd: "Startertarief goedgekeurd", afgewezen: "Startertarief afgewezen" };
@@ -26,7 +27,8 @@ export function StartertariefControle({ lead, magBeoordelen }: { lead: LeadStart
   const [toelichting, setToelichting] = useState("");
   const [bezig, setBezig] = useState(false);
   if (!lead.starter_controle_status) return null;
-  const kg = (lead.extra_data?.kvk_gegevens ?? lead.extra_data?.kvk ?? {}) as Record<string, any>;
+  const kg = (lead.kvk_gegevens ?? lead.extra_data?.kvk_gegevens ?? lead.extra_data?.kvk ?? {}) as Record<string, any>;
+  const oordeel = kvkStarterOordeel(kg?.status === "ok" ? kg.profiel : null, lead.ingangsdatum);
   const rechtsvorm: string | null = kg?.rechtsvorm ?? kg?.profiel?.rechtsvorm ?? null;
   const open = lead.starter_controle_status === "te_controleren" && !lead.geactiveerd_op;
 
@@ -51,6 +53,13 @@ export function StartertariefControle({ lead, magBeoordelen }: { lead: LeadStart
         <p>KVK-nummer: <strong>{lead.kvk_nummer || "onbekend"}</strong>{lead.bedrijfsnaam ? <> ({lead.bedrijfsnaam})</> : null}</p>
         <p>Rechtsvorm: <strong>{rechtsvorm || "onbekend"}</strong>{!rechtsvorm && /\b(b\.?v\.?|bv)\b/i.test(lead.bedrijfsnaam ?? "") ? <span className="text-muted-foreground"> (BV: een omzetting van eenmanszaak naar een nieuwe BV telt als starter; leidend is de inschrijvingsdatum van de huidige KVK-inschrijving)</span> : null}</p>
         <p className="text-xs text-muted-foreground">Regel: KVK-inschrijvingsdatum van de huidige inschrijving jonger dan 12 maanden op de ingangsdatum = startertarief, ook na omzetting van eenmanszaak naar BV.</p>
+        {oordeel ? (
+          <div className="rounded-md border border-border p-2">
+            <p className="font-medium">KVK-oordeel (voorstel): <span className={oordeel.voldoet ? "text-emerald-700" : "text-destructive"}>{oordeel.tekst}</span></p>
+            {oordeel.aandacht && <p className="text-xs text-amber-700">Aandachtspunt: {oordeel.aandacht}.</p>}
+            <p className="text-xs text-muted-foreground">Het tarief verandert niet vanzelf; jij beslist met de knoppen hieronder.</p>
+          </div>
+        ) : <p className="text-xs text-muted-foreground">Nog geen KVK-oordeel. Gebruik "KVK-gegevens ophalen" bij KVK-controle.</p>}
         <p>Opgegeven startdatum KVK-inschrijving: <strong>{lead.kvk_startdatum ? formatDateNL(lead.kvk_startdatum) : "onbekend"}</strong></p>
         {lead.tarief_type === "starter" && lead.starter_tot && <p>Startertarief t/m <strong>{formatDateNL(lead.starter_tot)}</strong>, daarna automatisch de gewone prijs.</p>}
         <p className="text-muted-foreground">{STARTER_VOORWAARDE_TEKST}</p>

@@ -1,8 +1,9 @@
+// @vitest-environment node
 import { describe, expect, it } from "vitest";
 import { kvkAfwijkingen, kvkStartdatum, parseKvk } from "../../supabase/functions/_shared/kvk";
 
 describe("KVK-profiel", () => {
-  it("respecteert afgeschermd adres en kiest vroegste datum", () => {
+  it("respecteert afgeschermd adres en kiest de formele registratiedatum", () => {
     const p = parseKvk({
       kvkNummer: "12345678", naam: "Jansen Advies", formeleRegistratiedatum: "20260301", materieleRegistratie: { datumAanvang: "20260215" },
       handelsnamen: [{ naam: "Jansen Advies", volgorde: 0 }], _embedded: { eigenaar: { rechtsvorm: "Eenmanszaak" },
@@ -10,7 +11,7 @@ describe("KVK-profiel", () => {
     }, null);
     expect(p.bezoekadres).toBeNull();
     expect(p.adres_afgeschermd).toBe(true);
-    expect(kvkStartdatum(p)).toBe("2026-02-15");
+    expect(kvkStartdatum(p)).toBe("2026-03-01");
     expect(p.rechtsvorm).toBe("Eenmanszaak");
   });
   it("leest bezoekadres uit vestigingsprofiel", () => {

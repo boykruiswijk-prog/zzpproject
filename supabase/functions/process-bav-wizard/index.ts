@@ -1,7 +1,7 @@
 import { corrigeerIngangsdatum } from "../_shared/ingangsdatum.ts";
 import { starterPremieKlanttekst } from "../_shared/premieTekst.ts";
 import { formatDateNL } from "../_shared/dateFormat.ts";
-import { haalKvkProfiel, kvkGeldig, kvkStartdatum, kvkAfwijkingen } from "../_shared/kvk.ts";
+import { haalKvkProfiel, kvkGeldig, kvkBevraagbaar, kvkStartdatum, kvkAfwijkingen } from "../_shared/kvk.ts";
 import { normaliseerAdres } from "../_shared/adresNormalisatie.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.39.0";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
@@ -207,7 +207,9 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
     const pakket = PAKKET_CONFIG[submission.gekozen_pakket];
     // KVK is leidend voor naam, adres en inschrijvingsdatum. Lukt de KVK-opvraging niet, dan geldt de klantopgave met handmatige controle.
     const kvkNr = String(submission.kvk_nummer ?? "").replace(/\D/g, "");
-    const kvkRes = kvkGeldig(kvkNr) ? await haalKvkProfiel(supabase, kvkNr, { bron: "aanvraag" }) : null;
+    // A12: één bevraging per echte aanvraag; nooit voor testinzendingen of een herhaalde aanvraag (dubbel concept).
+    const kvkRes = kvkBevraagbaar(kvkNr) && resolveEnvironment(req).isProduction && !vorigeLeadId
+      ? await haalKvkProfiel(supabase, kvkNr, { bron: "aanvraag" }) : null;
     const kvkProfiel = kvkRes?.ok ? kvkRes.profiel : null;
     const klantOpgave = { bedrijfsnaam: submission.bedrijfsnaam, straat: adres.straat, huisnummer: adres.huisnummer, postcode: adres.postcode, plaats: adres.plaats, kvk_startdatum: submission.kvk_startdatum ?? null };
     const leadAdres = kvkProfiel?.bezoekadres?.postcode
@@ -293,8 +295,8 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
          cyber_einddatum: cyberGekozen ? cyberJaarEind(submission.ingangsdatum) : null,
         ...starterVelden,
         // Datum uit de KVK API: automatisch bevestigd. Alleen bij klantopgave (API faalde) handmatige controle.
-        starter_controle_status: starter ? (kvkDatumBron === "kvk_api" ? "goedgekeurd" : "te_controleren") : null,
-        ...(starter && kvkDatumBron === "kvk_api" ? { starter_beoordeeld_op: new Date().toISOString(), starter_toelichting: "Automatisch bevestigd via KVK API" } : {}),
+        starter_controle_status: starter ? "te_controleren" : null,
+        ...(starter && kvkDatumBron === "kvk_api" ? { starter_toelichting: "Voorstel: voldoet volgens KVK; Ellen beslist" } : {}),
         opmerkingen: [
           // IBAN wordt bewust NIET in het vrije opmerkingenveld herhaald (alleen in de iban-kolom).
           submission.rekeninghouder ? `Rekeninghouder: ${submission.rekeninghouder}` : null,

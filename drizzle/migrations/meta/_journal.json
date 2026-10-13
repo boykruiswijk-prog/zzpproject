@@ -855,6 +855,13 @@
       "when": 1791888570887,
       "tag": "0121_ingangsdatum_vroegst_dag_na_aanvraag",
       "breakpoints": true
+    },
+    {
+      "idx": 122,
+      "version": "7",
+      "when": 1791889057446,
+      "tag": "0122_kvk_kostenbewaking",
+      "breakpoints": true
     }
   ]
 }
