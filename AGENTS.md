@@ -25,7 +25,6 @@
 - BAV-vergelijking in src/data/bavVergelijking.ts (bron-URL + gecontroleerd_op per aanbieder; ZP-rij uit bavPakketten). Waarom: bijwerken zonder paginacode.
 - docs/cloudflare-bulk-redirects.csv volgt bij elke build uit public/_redirects. Waarom: één bron.
 
-- Reviewverzoeken alleen via review-verzoeken (cron, schakelaar 'reviewverzoeken_actief', RPC review_kandidaten); afmelden alleen naar review_afmeldingen, nooit suppressed_emails. Waarom: één filter, transactionele mail blijft.
 - Submappen hebben eigen AGENTS.md (src/components/admin, crm, supabase/functions); lees die eerst.
 - Scripts never import React (SSR crashes); article markdown always uses articleMarkdownUrl (keeps tel: links, filters unsafe protocols).
 
@@ -36,3 +35,4 @@
 - Live scenes/effects are lazy; demo events stay in browser memory. Journey/timeline aggregates use service-only scherm_stromen via scherm-data. Why: site performance and visitor privacy.
 <!-- LOVABLE:END -->
 - Samengevoegd artikel: bron is_published=false + rij article_samenvoegingen + directe 301's; bewaakt door kennisbankSamenvoeging.test.ts. Waarom: niets verwijderen, geen ketens.
+- Ingangsdatum vroegst dag na aanvraag (NL) via _shared/ingangsdatum.ts plus BEFORE INSERT-triggers aa_ingangsdatum_vroegst. Waarom: een regel (D4).

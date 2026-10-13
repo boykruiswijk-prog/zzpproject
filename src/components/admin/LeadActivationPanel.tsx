@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { formatDateLongNL, formatDateTimeLongNL } from "@/lib/dateFormat";
 import { logActiviteit } from "@/lib/activiteitenLog";
+import { vroegsteIngangsdatum, dagNL } from "@/lib/ingangsdatum";
 
 
 
@@ -75,7 +76,7 @@ export function LeadActivationPanel({ lead, magActiveren, fase }: Props) {
     { label: "Gekozen pakket", ok: !!lead.gekozen_pakket },
     { label: "IBAN (geldig)", ok: isValidIban(lead.iban) },
     { label: "SEPA-akkoord", ok: lead.sepa_akkoord === true },
-    { label: "Ingangsdatum", ok: !!lead.ingangsdatum },
+    { label: lead.ingangsdatum && lead.created_at && lead.ingangsdatum < vroegsteIngangsdatum(lead.created_at) ? `Ingangsdatum: pas eerst aan (vroegst ${dagNL(vroegsteIngangsdatum(lead.created_at))})` : "Ingangsdatum", ok: !!lead.ingangsdatum && !(lead.created_at && String(lead.ingangsdatum).slice(0, 10) < vroegsteIngangsdatum(lead.created_at)) },
   ], [lead]);
 
   const allGreen = checks.every(c => c.ok);

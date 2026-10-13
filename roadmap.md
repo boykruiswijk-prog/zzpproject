@@ -45,3 +45,4 @@
 - [x] Boy 12 okt 3: IBAN intern tonen via RPC met audit
 - [x] Na akkoord publicatie: exact-concept-controle deployed en één keer read-only gedraaid; geen echte leads/planningregels om af te sluiten; tellingen dashboard en scherm gelijk (eerder gerapporteerd).
 - [x] Boy 13 okt A10: Circle8-knop voor collectieve opzeggingen (RPC verwerk_opzegging_circle8, UI, tests)
+- [x] Boy 13 okt D4: ingangsdatum vroegst dag na aanvraag (formulieren, server, trigger, RPC, activeren, waarschuwing, tests, wijzigingsmelding)
