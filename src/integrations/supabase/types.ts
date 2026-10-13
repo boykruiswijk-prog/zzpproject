@@ -2009,6 +2009,45 @@ export type Database = {
         }
         Relationships: []
       }
+      exact_stamdata_runs: {
+        Row: {
+          aantallen: Json
+          actie: string
+          fouten: Json
+          geeindigd: string | null
+          gestart: string
+          gestart_door: string | null
+          gestopt: string | null
+          id: string
+          onderdeel: string
+          via: string | null
+        }
+        Insert: {
+          aantallen?: Json
+          actie: string
+          fouten?: Json
+          geeindigd?: string | null
+          gestart?: string
+          gestart_door?: string | null
+          gestopt?: string | null
+          id?: string
+          onderdeel: string
+          via?: string | null
+        }
+        Update: {
+          aantallen?: Json
+          actie?: string
+          fouten?: Json
+          geeindigd?: string | null
+          gestart?: string
+          gestart_door?: string | null
+          gestopt?: string | null
+          id?: string
+          onderdeel?: string
+          via?: string | null
+        }
+        Relationships: []
+      }
       exact_subscription_mapping: {
         Row: {
           aangemaakt_op: string
@@ -2089,6 +2128,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      exact_telefoon_import: {
+        Row: {
+          created_at: string
+          exact_account_id: string | null
+          exact_telefoon_oud: string | null
+          id: string
+          melding: string | null
+          relatiecode: string
+          status: string
+          telefoon: string
+          verwerkt_op: string | null
+        }
+        Insert: {
+          created_at?: string
+          exact_account_id?: string | null
+          exact_telefoon_oud?: string | null
+          id?: string
+          melding?: string | null
+          relatiecode: string
+          status?: string
+          telefoon: string
+          verwerkt_op?: string | null
+        }
+        Update: {
+          created_at?: string
+          exact_account_id?: string | null
+          exact_telefoon_oud?: string | null
+          id?: string
+          melding?: string | null
+          relatiecode?: string
+          status?: string
+          telefoon?: string
+          verwerkt_op?: string | null
+        }
+        Relationships: []
       }
       exact_tokens: {
         Row: {
@@ -2990,7 +3065,14 @@ export type Database = {
           bron: string
           created_at: string
           eenmalig: boolean
+          exact_account_id: string | null
+          exact_bankrekening_actie: string | null
+          exact_bankrekening_id: string | null
           exact_kenmerk: string | null
+          exact_mandaat_id: string | null
+          exact_melding: string | null
+          exact_status: string | null
+          exact_verwerkt_op: string | null
           iban: string
           id: string
           in_exact: boolean | null
@@ -3005,7 +3087,14 @@ export type Database = {
           bron: string
           created_at?: string
           eenmalig?: boolean
+          exact_account_id?: string | null
+          exact_bankrekening_actie?: string | null
+          exact_bankrekening_id?: string | null
           exact_kenmerk?: string | null
+          exact_mandaat_id?: string | null
+          exact_melding?: string | null
+          exact_status?: string | null
+          exact_verwerkt_op?: string | null
           iban: string
           id?: string
           in_exact?: boolean | null
@@ -3020,7 +3109,14 @@ export type Database = {
           bron?: string
           created_at?: string
           eenmalig?: boolean
+          exact_account_id?: string | null
+          exact_bankrekening_actie?: string | null
+          exact_bankrekening_id?: string | null
           exact_kenmerk?: string | null
+          exact_mandaat_id?: string | null
+          exact_melding?: string | null
+          exact_status?: string | null
+          exact_verwerkt_op?: string | null
           iban?: string
           id?: string
           in_exact?: boolean | null
