@@ -329,6 +329,7 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
         vereist_handmatige_beoordeling: handmatigeAcceptatie || submission.vereist_handmatige_beoordeling === true,
         is_test: isTestLead,
         extra_data: {
+          ...(kvkUittreksel ? { kvk_uittreksel: { pad: kvkUittreksel.pad, mime: kvkUittreksel.mime, grootte: kvkUittreksel.grootte, geupload_op: kvkUittreksel.geupload_op } } : {}),
            ...(cyberWasGekozen ? { cyber: { versie: CYBER_VERSIE, gekozen: cyberGekozen, afgewezen: cyberAfgewezen, antwoorden: cyberToets.antwoorden, redenen: cyberToets.redenen, akkoord: cyberGekozen && submission.cyber_akkoord === true, client_akkoord_op: submission.cyber_client_akkoord_op ?? null } } : {}),
           formulier: saneerFormulier(submission.formulier),
           formulier_naam: typeof submission.formulier_naam === "string" ? submission.formulier_naam.slice(0, 100) : "Online aanvraag BAV + AVB",
@@ -352,6 +353,10 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
 
     if (leadError) throw new Error(`Lead insert: ${leadError.message}`);
     leadOpgeslagen = { id: lead.id, mandaatkenmerk: machtiging.mandaatkenmerk };
+    if (kvkUittreksel) {
+      const { error: uErr } = await supabase.from("kvk_uittreksels").update({ lead_id: lead.id }).eq("id", kvkUittreksel.id).is("lead_id", null);
+      if (uErr) console.error("uittreksel koppelen mislukt:", uErr.message);
+    }
 
     // ── 2. INSERT IN BAV_AANMELDINGEN ──
     const { data: aanmelding, error: dbError } = await supabase
