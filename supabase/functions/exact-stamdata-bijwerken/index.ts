@@ -7,7 +7,7 @@ import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { ensureValidToken, refreshAccessToken } from "../_shared/exactToken.ts";
 import { metExactMelding } from "../_shared/exactBoekingMelding.ts";
 import { requireSupervisor } from "../_shared/teamAuth.ts";
-import { beveiligd, controleerRelatie, type Exact, verwerkMandaat, verwerkTelefoon } from "../_shared/exactStamdata.ts";
+import { beveiligd, bevestigIncassoCode, controleerRelatie, type Exact, verwerkBetaalconditie, verwerkMandaat, verwerkMandaatMain, verwerkTelefoon } from "../_shared/exactStamdata.ts";
 
 const json = (b: unknown, s = 200) =>
   new Response(JSON.stringify(b), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -41,7 +41,9 @@ Deno.serve(metExactMelding("exact-stamdata-bijwerken", async (req) => {
   const codes: string[] = actie === "controle" && Array.isArray(body.relatiecodes)
     ? [...new Set(body.relatiecodes.map((c: unknown) => String(c ?? "").trim()).filter((c: string) => /^[A-Za-z0-9-]{1,18}$/.test(c)))] as string[] : [];
   if (actie === "controle" && (codes.length === 0 || codes.length > 20)) return json({ error: "relatiecodes: 1 t/m 20 geldige codes" }, 400);
-  if (actie !== "controle" && !["telefoon", "machtigingen", "beide"].includes(onderdeel)) return json({ error: "onderdeel moet 'telefoon', 'machtigingen' of 'beide' zijn" }, 400);
+  if (actie !== "controle" && !["telefoon", "machtigingen", "beide", "betaalconditie", "mandaat_main", "alles"].includes(onderdeel)) return json({ error: "onderdeel moet telefoon, machtigingen, beide, betaalconditie, mandaat_main of alles zijn" }, 400);
+  // Volgorde: telefoon, machtigingen, daarna betaalconditie. mandaat_main alleen apart (na akkoord Boy).
+  const delen = onderdeel === "beide" ? ["telefoon", "machtigingen"] : onderdeel === "alles" ? ["telefoon", "machtigingen", "betaalconditie"] : [onderdeel];
   const limitRaw = Number(body.limit ?? 100);
   const limit = Math.max(1, Math.min(500, Number.isFinite(limitRaw) ? Math.floor(limitRaw) : 100));
   const live = actie === "live";
@@ -96,7 +98,7 @@ Deno.serve(metExactMelding("exact-stamdata-bijwerken", async (req) => {
   }
 
   try {
-    if (onderdeel !== "machtigingen") {
+    if (delen.includes("telefoon")) {
       const { data: rows, error } = await sb.from("exact_telefoon_import").select("*")
         .eq("status", live ? "proef_ok" : "nieuw").order("relatiecode").limit(limit);
       if (error) throw new Error(`db: ${error.message}`);
@@ -107,7 +109,7 @@ Deno.serve(metExactMelding("exact-stamdata-bijwerken", async (req) => {
         if (p.status === "fout") fouten.push({ onderdeel: "telefoon", relatiecode: r.relatiecode, melding: String(p.melding ?? "") });
       }
     }
-    if (onderdeel !== "telefoon") {
+    if (delen.includes("machtigingen")) {
       let q = sb.from("klant_mandaten").select("id,relatiecode,iban,kenmerk,ondertekend_op,exact_status")
         .eq("bron", BRON).eq("in_exact", false).order("relatiecode").limit(limit);
       q = live ? q.eq("exact_status", "proef_ok") : q.is("exact_status", null);
@@ -121,6 +123,42 @@ Deno.serve(metExactMelding("exact-stamdata-bijwerken", async (req) => {
         await sb.from("klant_mandaten").update(patch).eq("id", r.id);
         tel("machtigingen", status);
         if (status === "fout") fouten.push({ onderdeel: "machtigingen", relatiecode: r.relatiecode, melding: String(melding ?? "") });
+      }
+    }
+    for (const deel of ["betaalconditie", "mandaat_main"].filter((d) => delen.includes(d))) {
+      if (deel === "betaalconditie") {
+        const ic = await bevestigIncassoCode(ex); // stopt als 'IN' niet zeker incasso is
+        tel("betaalconditie", `incassocode_${ic.code}_${ic.methode ?? "omschrijving"}`);
+      }
+      // Doelgroep: lopend contract, geen test, met exact_account_id.
+      const { data: kc, error: e1 } = await sb.from("klant_contracten")
+        .select("onderneming_id, ondernemingen!inner(id, exact_relatie_code, exact_account_id, is_test)")
+        .in("status", ["actief", "loopt_af", "einddatum_controle"]).eq("is_test", false)
+        .not("ondernemingen.exact_account_id", "is", null).eq("ondernemingen.is_test", false).limit(5000);
+      if (e1) throw new Error(`db: ${e1.message}`);
+      // deno-lint-ignore no-explicit-any
+      const doel = new Map<string, any>();
+      // deno-lint-ignore no-explicit-any
+      for (const k of (kc ?? []) as any[]) { const o = k.ondernemingen; if (o?.exact_relatie_code && o.exact_account_id) doel.set(String(o.exact_relatie_code).trim(), o); }
+      const { data: bestaand } = await sb.from("exact_betaalconditie_import").select("relatiecode,status").eq("onderdeel", deel).limit(10000);
+      const stand = new Map((bestaand ?? []).map((b) => [b.relatiecode, b.status]));
+      const wachtend = new Set<string>();
+      if (deel === "betaalconditie") {
+        const { data: km } = await sb.from("klant_mandaten").select("relatiecode").eq("in_exact", false).eq("exact_status", "proef_ok");
+        for (const r of km ?? []) wachtend.add(String(r.relatiecode).trim());
+      }
+      const teDoen = [...doel.entries()].filter(([code]) => {
+        const st = stand.get(code);
+        if (live) return st === "proef_ok" || (deel === "betaalconditie" && st === "wacht_op_mandaat");
+        return st === undefined || st === "nieuw" || st === "fout";
+      }).slice(0, limit);
+      for (const [code, o] of teDoen) {
+        const rij = { relatiecode: code, exact_account_id: o.exact_account_id, wacht_op_mandaat: wachtend.has(code) };
+        const p = deel === "betaalconditie" ? await verwerkBetaalconditie(ex, rij, live) : await verwerkMandaatMain(ex, rij, live);
+        await sb.from("exact_betaalconditie_import").upsert({ onderdeel: deel, relatiecode: code, onderneming_id: o.id,
+          exact_account_id: o.exact_account_id, ...p, verwerkt_op: new Date().toISOString() }, { onConflict: "onderdeel,relatiecode" });
+        tel(deel, p.status);
+        if (p.status === "fout") fouten.push({ onderdeel: deel, relatiecode: code, melding: String(p.melding ?? "") });
       }
     }
   } catch (e) {
