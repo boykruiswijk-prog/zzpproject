@@ -129,3 +129,52 @@ describe("controle", () => {
     expect(s).toContain("≠ IN");
   });
 });
+
+describe("betaalconditie en mandaat_main", () => {
+  const rij = { relatiecode: "1", exact_account_id: ACC };
+  const mk = (cond: string | null, mand: unknown[]) => nep((c) => c.pad.startsWith("crm/Accounts")
+    ? { results: [{ ID: ACC, PaymentConditionSales: cond }] } : c.methode === "PUT" ? {} : { results: mand });
+  it("geen geldig mandaat: geen PUT", async () => {
+    const { verwerkBetaalconditie } = await import("../../supabase/functions/_shared/exactStamdata");
+    for (const mand of [[], [{ ID: BANK, Reference: "X", CancellationDate: "/Date(1000)/" }]]) {
+      const { calls, ex } = mk("14", mand);
+      expect((await verwerkBetaalconditie(ex, rij, true)).status).toBe("geen_mandaat");
+      expect(calls.some((c) => c.methode === "PUT")).toBe(false);
+    }
+  });
+  it("conditie al IN: geen PUT", async () => {
+    const { verwerkBetaalconditie } = await import("../../supabase/functions/_shared/exactStamdata");
+    const { calls, ex } = mk("IN", [{ ID: BANK, Reference: "X", Main: true }]);
+    expect((await verwerkBetaalconditie(ex, rij, true)).status).toBe("al_incasso");
+    expect(calls.some((c) => c.methode === "PUT")).toBe(false);
+  });
+  it("live met geldig mandaat: PUT alleen PaymentConditionSales", async () => {
+    const { verwerkBetaalconditie } = await import("../../supabase/functions/_shared/exactStamdata");
+    const { calls, ex } = mk("14", [{ ID: BANK, Reference: "X", Main: true }]);
+    expect((await verwerkBetaalconditie(ex, rij, true)).status).toBe("bijgewerkt");
+    expect(calls.filter((c) => c.methode === "PUT").map((c) => c.body)).toEqual([{ PaymentConditionSales: "IN" }]);
+  });
+  it("PUT met een ander veld wordt geweigerd", () => {
+    expect(() => controleerSchrijfactie("PUT", `crm/Accounts(guid'${ACC}')`, { PaymentConditionSales: "IN", Phone: "1" })).toThrow();
+    expect(() => controleerSchrijfactie("PUT", `crm/Accounts(guid'${ACC}')`, { Name: "x" })).toThrow();
+    expect(() => controleerSchrijfactie("PUT", `cashflow/DirectDebitMandates(guid'${BANK}')`, { Main: true, Reference: "x" })).toThrow();
+    expect(() => controleerSchrijfactie("PUT", `cashflow/DirectDebitMandates(guid'${BANK}')`, { Main: false })).toThrow();
+    expect(() => controleerSchrijfactie("PUT", `cashflow/DirectDebitMandates(guid'${BANK}')`, { Main: true })).not.toThrow();
+  });
+  it("incassocode: stopt als IN geen incasso is", async () => {
+    const { bevestigIncassoCode } = await import("../../supabase/functions/_shared/exactStamdata");
+    const a = nep(() => ({ results: [{ Code: "IN", Description: "Incasso", PaymentMethod: "I" }] }));
+    expect((await bevestigIncassoCode(a.ex)).code).toBe("IN");
+    const b = nep(() => ({ results: [{ Code: "IN", Description: "14 dagen", PaymentMethod: "B" }] }));
+    await expect(bevestigIncassoCode(b.ex)).rejects.toThrow();
+  });
+  it("mandaat_main: alleen bij enig geldig mandaat met Main false, PUT alleen Main", async () => {
+    const { verwerkMandaatMain } = await import("../../supabase/functions/_shared/exactStamdata");
+    const { calls, ex } = mk("IN", [{ ID: BANK, Reference: "SR-1", Main: false }]);
+    expect((await verwerkMandaatMain(ex, rij, false)).status).toBe("proef_ok");
+    expect(calls.every((c) => c.methode === "GET")).toBe(true);
+    const l = mk("IN", [{ ID: BANK, Reference: "SR-1", Main: false }]);
+    expect((await verwerkMandaatMain(l.ex, rij, true)).status).toBe("bijgewerkt");
+    expect(l.calls.find((c) => c.methode === "PUT")?.body).toEqual({ Main: true });
+  });
+});

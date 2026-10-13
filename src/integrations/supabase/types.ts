@@ -1793,6 +1793,48 @@ export type Database = {
         }
         Relationships: []
       }
+      exact_betaalconditie_import: {
+        Row: {
+          conditie_oud: string | null
+          created_at: string
+          exact_account_id: string | null
+          exact_mandaat_id: string | null
+          id: string
+          melding: string | null
+          onderdeel: string
+          onderneming_id: string | null
+          relatiecode: string
+          status: string
+          verwerkt_op: string | null
+        }
+        Insert: {
+          conditie_oud?: string | null
+          created_at?: string
+          exact_account_id?: string | null
+          exact_mandaat_id?: string | null
+          id?: string
+          melding?: string | null
+          onderdeel?: string
+          onderneming_id?: string | null
+          relatiecode: string
+          status?: string
+          verwerkt_op?: string | null
+        }
+        Update: {
+          conditie_oud?: string | null
+          created_at?: string
+          exact_account_id?: string | null
+          exact_mandaat_id?: string | null
+          id?: string
+          melding?: string | null
+          onderdeel?: string
+          onderneming_id?: string | null
+          relatiecode?: string
+          status?: string
+          verwerkt_op?: string | null
+        }
+        Relationships: []
+      }
       exact_config: {
         Row: {
           access_token: string | null
