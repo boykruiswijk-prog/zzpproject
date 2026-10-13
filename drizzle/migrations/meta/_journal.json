@@ -883,6 +883,13 @@
       "when": 1791890373214,
       "tag": "0125_kvk_uittreksel_starter",
       "breakpoints": true
+    },
+    {
+      "idx": 126,
+      "version": "7",
+      "when": 1791890558720,
+      "tag": "0126_kvk_uittreksels_geen_anon",
+      "breakpoints": true
     }
   ]
 }
