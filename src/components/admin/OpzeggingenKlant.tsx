@@ -222,7 +222,7 @@ export function OpzeggingenTeKoppelen() {
                 <td className="p-2"><KoppelBadge a={a} /></td>
                 <td className="p-2 min-w-0">{a.onderneming_id ? <Link to={`/admin/klanten/${a.onderneming_id}`} className="block truncate font-medium hover:text-primary">{namen.get(a.onderneming_id) ?? "Klant"}</Link> : <span className="text-muted-foreground">—</span>}
                   {a.details?.bedrijfsnaam && <div className="truncate text-xs text-muted-foreground">Opgegeven: {a.details.bedrijfsnaam}</div>}</td>
-                <td className="p-2"><ServiceAanvraagOog id={a.id} onGewijzigd={laad} label="Bekijken en koppelen" /><div className="mt-1 truncate text-xs text-muted-foreground" title={a.polisnummer}>{a.polisnummer || "geen nummer opgegeven"}</div></td>
+                <td className="p-2"><div className="flex flex-wrap gap-2"><ServiceAanvraagOog id={a.id} onGewijzigd={laad} label="Bekijken en koppelen" /><Circle8Knop aanvraag={{ ...a, type: "opzeggen" }} onVerwerkt={laad} /></div><div className="mt-1 truncate text-xs text-muted-foreground" title={a.polisnummer}>{a.polisnummer || "geen nummer opgegeven"}</div></td>
               </tr>))}</tbody>
           </table>
         )}
