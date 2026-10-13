@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { SchermPayload } from "../../supabase/functions/_shared/schermAnonimiseer";
 import { STATION_LABELS, STATION_IDS, stationToken, periodeTekst, type Puls } from "@/components/scherm/schermModel";
 import CountUp from '@/components/scherm/CountUp';
+import { startVersieControle } from "@/lib/versieControle";
 import BreakingMoment from '@/components/scherm/BreakingMoment';
 
 const MachineScene = lazy(() => import("@/components/scherm/MachineScene"));
@@ -147,6 +148,7 @@ function Staven({ data }: { data: { maand: string; n: number }[] }) {
 
 const Kop = ({ children }: { children: React.ReactNode }) => <h2 className="text-[3.6vh] font-semibold tracking-tight text-[hsl(var(--s-tekst))]">{children}</h2>;
 const Label = ({ children }: { children: React.ReactNode }) => <div className="text-[2.4vh] text-[hsl(var(--s-dim))]">{children}</div>;
+const Bijgewerkt = ({ op }: { op: string | null | undefined }) => op ? <span data-bijgewerkt className="text-[1.7vh] font-normal text-[hsl(var(--s-dim))]">bijgewerkt om {tijdKort(op)}</span> : null;
 const Gemeten = () => <span className="text-[2.6vh] font-normal text-[hsl(var(--s-dim))]">wordt gemeten</span>;
 
 function Stat({ label, waarde, klein = false }: { label: string; waarde: string | null; klein?: boolean }) {
@@ -241,11 +243,11 @@ function PaneelService({ d }: { d: SchermPayload }) {
   );
 }
 
-function AdsBlok({ naam, a }: { naam: string; a: Record<string, number | string | null> | null }) {
+function AdsBlok({ naam, a, op }: { naam: string; a: Record<string, number | string | null> | null; op?: string | null }) {
   const w = (v: unknown, suf = "") => (typeof v === "number" ? `${nf.format(v)}${suf}` : null);
   return (
     <div className="rounded-[1vh] border border-[hsl(var(--s-lijn))] p-[1.6vh]">
-      <div className="text-[2.6vh] font-semibold text-[hsl(var(--s-tekst))]">{naam}</div>
+      <div className="flex items-baseline justify-between text-[2.6vh] font-semibold text-[hsl(var(--s-tekst))]"><span>{naam}</span>{a && <Bijgewerkt op={op} />}</div>
       {!a ? <Gemeten /> : (
         <div className="mt-[1vh] grid grid-cols-4 gap-[0.8vw]">
           {[["Vertoningen", w(a.vertoningen)], ["Klikken", w(a.klikken)], ["Conversies", w(a.conversies)], ["Budget", w(a.budget_pct, "%")]].map(([l, v]) => (
@@ -262,13 +264,14 @@ function PaneelZichtbaarheid({ d }: { d: SchermPayload }) {
   return (
     <div className="flex h-full flex-col gap-[2vh]">
       <Kop>Zichtbaarheid</Kop>
-      <AdsBlok naam="Google Ads" a={m.google_ads} />
-      <AdsBlok naam="Microsoft Ads" a={m.microsoft_ads} />
+      <AdsBlok naam="Google Ads" a={m.google_ads} op={d.bijgewerkt?.google_ads} />
+      <AdsBlok naam="Microsoft Ads" a={m.microsoft_ads} op={d.bijgewerkt?.microsoft_ads} />
       <div className="grid grid-cols-3 gap-[1vw]">
         <Stat klein label="Positie Google" waarde={typeof sc?.positie === "number" ? f(sc.positie, 1) : null} />
         <Stat klein label="Klikken Google" waarde={typeof sc?.klikken === "number" ? nf.format(sc.klikken) : null} />
         <Stat klein label="AI-zichtbaarheid" waarde={typeof ai?.score === "number" ? `${f(ai.score)}%` : null} />
       </div>
+      <div className="flex gap-[1.5vw]">{sc && <span>Google: <Bijgewerkt op={d.bijgewerkt?.search_console} /></span>}{ai && <span>AI: <Bijgewerkt op={d.bijgewerkt?.ai_zichtbaarheid} /></span>}</div>
       <div className="mt-auto">
         <Label>Kennisbank: {d.kennisbank.gepubliceerd} artikelen, {d.kennisbank.nieuw_maand} nieuw deze maand</Label>
         {d.kennisbank.laatste.map((t) => <div key={t} className="truncate text-[2.4vh] text-[hsl(var(--s-tekst))]">{t}</div>)}
@@ -311,7 +314,7 @@ function PaneelAiTeam({ d }: { d: SchermPayload }) {
   const kleur = (s: string) => s === 'fout' ? 'var(--s-rood)' : s === 'gepland' ? 'var(--s-dim)' : 'var(--s-groen)';
   return (
     <div className="flex h-full flex-col gap-[1.6vh] overflow-hidden">
-      <Kop>Ons AI-team</Kop>
+      <div className="flex items-baseline justify-between"><Kop>Ons AI-team</Kop><Bijgewerkt op={d.bijgewerkt?.ai_team} /></div>
       <div className="text-[2.2vh] text-[hsl(var(--s-dim))]">Aanvragen BAV + AVB sinds 6 okt: <strong className="tabular-nums text-[hsl(var(--s-tekst))]">{d.doel.totaal} van 200</strong></div>
       <div className="rounded-[1vh] border border-[hsl(var(--s-rood)/0.6)] bg-[hsl(var(--s-rood)/0.1)] p-[1.6vh]">
         <div className="text-[2.6vh] font-semibold text-[hsl(var(--s-tekst))]">Contentmachine</div>
@@ -446,6 +449,8 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
   const laatsteFocus = useRef(0);
 
   useWakeLock();
+  // Nieuwe build: zelf oppikken (elke 10 minuten index.html vergelijken), niet wachten op 04:30.
+  useEffect(() => startVersieControle(), []);
   useEffect(() => {
     const oudOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -556,7 +561,7 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
   }
 
   const tijd = amsterdamTijd(nu);
-  const vers = laatsteOk > 0 && nu.getTime() - laatsteOk < 120_000;
+  const vers = laatsteOk > 0 && nu.getTime() - laatsteOk < 120_000 && !data?.verouderd_sinds;
   const Huidig = PANELEN[paneel];
 
   return (
@@ -575,7 +580,7 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
           {data && (
             <div className="ml-auto flex items-center gap-[1.5vw] text-[2.4vh] text-[hsl(var(--s-dim))] tabular-nums">
               <span>Vandaag: <strong className="text-[hsl(var(--s-tekst))]">{data.gebeurtenissen_vandaag}</strong> gebeurtenissen</span>
-              <span>Nu op de site: <strong className="text-[hsl(var(--s-tekst))]">{data.nu_op_site ?? 0}</strong></span>
+              <span>Nu op de site: {data.nu_op_site === null ? <Gemeten /> : <strong className="text-[hsl(var(--s-tekst))]">{data.nu_op_site}</strong>}</span>
             </div>
           )}
           <div className={`${data ? '' : 'ml-auto '}text-right`}>
