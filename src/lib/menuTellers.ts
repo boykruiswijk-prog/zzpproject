@@ -1,16 +1,16 @@
 // Uitleg en doorklik per rode teller in het beheermenu. Pure functies, gedeeld door menu en dashboardlegenda.
-export type TellerSleutel = "aanvragen" | "leads" | "service" | "opzeggingen" | "screening" | "afgehaakt" | "chat" | "klanten" | "facturatie" | "bav_nakijken" | "credits_akkoord";
+export type TellerSleutel = "aanvragen" | "leads" | "service" | "opzeggingen" | "screening" | "afgehaakt" | "chat" | "klanten" | "facturatie" | "bav_nakijken" | "credits_akkoord" | "machtigingen";
 export type Tellers = Partial<Record<string, number>>;
 
 /** Tellers die niet meetellen in een groepstotaal (geen directe actie, grijze badge). */
-export const GRIJZE_TELLERS = new Set<TellerSleutel>(["bav_nakijken"]);
+export const GRIJZE_TELLERS = new Set<TellerSleutel>(["bav_nakijken", "machtigingen"]);
 
 export const TELLER_DOEL: Record<TellerSleutel, string> = {
   aanvragen: "/admin/aanvragen", leads: "/admin/leads", afgehaakt: "/admin/afgehaakt",
   opzeggingen: "/admin/opzeggingen", credits_akkoord: "/admin/creditnotas-goedkeuren",
   service: "/admin/service-aanvragen", screening: "/admin/screening-aanvragen",
   bav_nakijken: "/admin/bav-nummer-nakijken", facturatie: "/admin/facturatieplanning",
-  chat: "/admin/chatgesprekken", klanten: "/admin/klanten#creditnotas",
+  chat: "/admin/chatgesprekken", klanten: "/admin/klanten#creditnotas", machtigingen: "/admin/machtigingen-nakijken",
 };
 
 const gemarkeerd = (x?: number) => (x ? ` (${x} gemarkeerd voor later)` : "");
@@ -29,6 +29,7 @@ export function tellerUitleg(k: TellerSleutel, t: Tellers): string {
     case "chat": return `${mv(n, "chatgesprek hoort", "chatgesprekken horen")} bij een nieuwe aanvraag`;
     case "facturatie": return `${mv(n, "factuur of Exact-taak", "facturen of Exact-taken")}: concept nog niet definitief of Exact-aanpassing open`;
     case "bav_nakijken": return `${mv(n, "BAV-nummer", "BAV-nummers")} uit de AFAS-import nog nakijken; geen haast, telt niet mee in het totaal`;
+    case "machtigingen": return `${mv(n, "klant", "klanten")} met een machtiging om na te kijken; geen haast, telt niet mee in het totaal`;
     case "klanten": {
       const c = t.klanten_credits ?? 0, oud = t.klanten_credits_oud ?? 0, tk = t.klanten_taken ?? 0;
       const delen = [] as string[];

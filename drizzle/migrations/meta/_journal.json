@@ -918,6 +918,20 @@
       "when": 1791893513584,
       "tag": "0130_certificaatnummer_nooit_stil",
       "breakpoints": true
+    },
+    {
+      "idx": 131,
+      "version": "7",
+      "when": 1791895885530,
+      "tag": "0131_klant_mandaten",
+      "breakpoints": true
+    },
+    {
+      "idx": 132,
+      "version": "7",
+      "when": 1791895912178,
+      "tag": "0132_machtigingen_nakijken_fix",
+      "breakpoints": true
     }
   ]
 }

@@ -2985,6 +2985,62 @@ export type Database = {
           },
         ]
       }
+      klant_mandaten: {
+        Row: {
+          bron: string
+          created_at: string
+          eenmalig: boolean
+          exact_kenmerk: string | null
+          iban: string
+          id: string
+          in_exact: boolean | null
+          kenmerk: string | null
+          onderneming_id: string
+          ondertekend_op: string | null
+          relatiecode: string
+          vervaldatum: string | null
+          voorkeur_iban: string | null
+        }
+        Insert: {
+          bron: string
+          created_at?: string
+          eenmalig?: boolean
+          exact_kenmerk?: string | null
+          iban: string
+          id?: string
+          in_exact?: boolean | null
+          kenmerk?: string | null
+          onderneming_id: string
+          ondertekend_op?: string | null
+          relatiecode: string
+          vervaldatum?: string | null
+          voorkeur_iban?: string | null
+        }
+        Update: {
+          bron?: string
+          created_at?: string
+          eenmalig?: boolean
+          exact_kenmerk?: string | null
+          iban?: string
+          id?: string
+          in_exact?: boolean | null
+          kenmerk?: string | null
+          onderneming_id?: string
+          ondertekend_op?: string | null
+          relatiecode?: string
+          vervaldatum?: string | null
+          voorkeur_iban?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "klant_mandaten_onderneming_id_fkey"
+            columns: ["onderneming_id"]
+            isOneToOne: false
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       klant_service_aanvragen: {
         Row: {
           achternaam: string
@@ -5095,11 +5151,14 @@ export type Database = {
       }
       klant_mandaat_v: {
         Row: {
+          bron: string | null
           iban: string | null
+          in_exact: boolean | null
           kenmerk: string | null
           ondertekend_op: string | null
           relatiecode: string | null
           status: string | null
+          vervaldatum: string | null
         }
         Relationships: []
       }
@@ -5554,7 +5613,9 @@ export type Database = {
         }
         Returns: string
       }
+      machtigingen_nakijken: { Args: never; Returns: Json }
       mag_crm_beeindigen: { Args: { _uid: string }; Returns: boolean }
+      mandaat_iban_naar_onderneming: { Args: never; Returns: Json }
       menu_tellers: { Args: never; Returns: Json }
       mijn_acties_vandaag: { Args: { _toon_test?: boolean }; Returns: Json }
       mijn_cyber_polissen: { Args: never; Returns: Json }

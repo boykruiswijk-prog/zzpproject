@@ -90,8 +90,15 @@ export default function KlantDetail() {
                 {personen.length === 0 && <p className="text-muted-foreground">Geen e-mailadres bekend.</p>}
                 {personen.map((p) => <div key={p.id} className="min-w-0"><Link to={`/admin/personen/${p.id}`} className="block truncate font-medium hover:text-primary">{[p.voornaam, p.achternaam].filter(Boolean).join(" ") || p.email_weergave || "—"}</Link><div className="truncate text-muted-foreground" title={p.email_weergave}>{p.email_weergave}</div></div>)}
               </CardContent></Card>
-              <Card><CardHeader><CardTitle className="text-base">Mandaat (alleen lezen)</CardTitle></CardHeader><CardContent className="text-sm">
-                {mandaat ? <div className="space-y-1"><div className="flex flex-wrap items-center gap-2">IBAN <IbanInzien bron="mandaat" id={ond.id} gemaskeerd={mandaat.iban} /></div><div className="text-muted-foreground">Kenmerk {mandaat.kenmerk} · ondertekend {formatDateNL(mandaat.ondertekend_op)}</div></div> : <p className="text-muted-foreground">Geen mandaat gevonden.</p>}
+              <Card><CardHeader><CardTitle className="text-base">Incassomachtiging</CardTitle></CardHeader><CardContent className="text-sm">
+                {mandaat ? <div className="space-y-1">
+                  <div className="flex flex-wrap items-center gap-2">IBAN <IbanInzien bron="mandaat" id={ond.id} gemaskeerd={mandaat.iban} kaartMasker knopTekst="Toon volledig" /></div>
+                  <div><span className="text-muted-foreground">Kenmerk</span> {mandaat.kenmerk ?? "-"}</div>
+                  <div><span className="text-muted-foreground">Getekend</span> {formatDateNL(mandaat.ondertekend_op)}</div>
+                  <div><span className="text-muted-foreground">Vervalt</span> {mandaat.vervaldatum ? <span className={mandaat.vervaldatum < new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Amsterdam" }) ? "font-medium text-destructive" : ""}>{formatDateNL(mandaat.vervaldatum)}</span> : "-"}</div>
+                  <div><span className="text-muted-foreground">In Exact</span> {mandaat.in_exact ? "ja" : "nee"}</div>
+                  <div className="text-muted-foreground">Bron {mandaat.bron ?? "-"}</div>
+                </div> : <p className="text-muted-foreground">Geen machtiging bekend</p>}
               </CardContent></Card>
               <Card><CardHeader><CardTitle className="text-base">Leads</CardTitle></CardHeader><CardContent className="text-sm">
                 {leadMatch.length === 0 ? <p className="text-muted-foreground">Geen leads gekoppeld.</p> :

@@ -12,13 +12,19 @@ export function maskeerIbanVol(iban?: string | null): string {
   if (s.length < 8) return s ? "****" : "-";
   return `${s.slice(0, 2)}** **** **** ${s.slice(-4)}`;
 }
+/** Maskeert een IBAN als NL12 ABCD **** 1234 (landcode, controlegetal en bankcode zichtbaar). */
+export function maskeerIbanKaart(iban?: string | null): string {
+  const s = (iban ?? "").replace(/\s/g, "").toUpperCase();
+  if (s.length < 12) return s ? "****" : "-";
+  return `${s.slice(0, 4)} ${s.slice(4, 8)} **** ${s.slice(-4)}`;
+}
 const groepeer = (s: string) => s.replace(/\s/g, "").toUpperCase().replace(/(.{4})/g, "$1 ").trim();
 
 /**
  * Toont een IBAN standaard gemaskeerd. "Toon IBAN" haalt het volledige IBAN op via RPC iban_inzien
  * (alleen supervisor/admin/verzekering met 2FA, elke inzage in sensitive_audit_log).
  */
-export function IbanInzien({ bron, id, gemaskeerd }: { bron: IbanBron; id: string; gemaskeerd?: string | null }) {
+export function IbanInzien({ bron, id, gemaskeerd, kaartMasker = false, knopTekst }: { bron: IbanBron; id: string; gemaskeerd?: string | null; kaartMasker?: boolean; knopTekst?: string }) {
   const { toast } = useToast();
   const [vol, setVol] = useState<{ iban: string | null; oud: string | null; nieuw: string | null } | null>(null);
   const [laden, setLaden] = useState(false);
@@ -52,9 +58,9 @@ export function IbanInzien({ bron, id, gemaskeerd }: { bron: IbanBron; id: strin
   }
   return (
     <span className="inline-flex min-w-0 flex-wrap items-center gap-2">
-      {gemaskeerd !== undefined && <span className="font-mono">{gemaskeerd ? maskeerIbanVol(gemaskeerd) : "-"}</span>}
+      {gemaskeerd !== undefined && <span className="font-mono">{gemaskeerd ? (kaartMasker ? maskeerIbanKaart(gemaskeerd) : maskeerIbanVol(gemaskeerd)) : "-"}</span>}
       <Button type="button" size="sm" variant="outline" className="h-7 gap-1 px-2" onClick={toon} disabled={laden}>
-        {laden ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Eye className="h-3.5 w-3.5" />}{bron === "taak" ? "Toon oud en nieuw IBAN" : "Toon IBAN"}
+        {laden ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Eye className="h-3.5 w-3.5" />}{knopTekst ?? (bron === "taak" ? "Toon oud en nieuw IBAN" : "Toon IBAN")}
       </Button>
     </span>
   );
