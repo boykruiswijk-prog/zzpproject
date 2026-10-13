@@ -13,6 +13,9 @@ import { useToast } from "@/hooks/use-toast";
 import { formatDateNL, formatDateTimeLongNL } from "@/lib/dateFormat";
 import { Download, FileText, Loader2, Mail, Pencil, Ban, AlertTriangle } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
+import { useAuth } from "@/contexts/AuthContext";
+import { NieuwCertificaatDialoog, NummerWijzigenDialoog } from "@/components/admin/CertificaatNummerDialogen";
+import { magNummerWijzigen } from "@/lib/certificaatNummerKeuze";
 
 type Policy = Database["public"]["Tables"]["policies"]["Row"];
 
@@ -46,6 +49,10 @@ export function CertificaatBeheer({ leadId, onNieuw, leadActief, policies, isSup
   const [extraNummer, setExtraNummer] = useState(false);
   const [form, setForm] = useState({ profession: "", certificate_holder: "", insured_name: "", start_date: "" });
   const [reden, setReden] = useState("");
+  const [voorstelOpen, setVoorstelOpen] = useState(false);
+  const [nummerWijzigen, setNummerWijzigen] = useState<Policy | null>(null);
+  const { role } = useAuth();
+  const magNummer = magNummerWijzigen(role);
 
   const geldig = policies.filter((p) => p.status === "geldig");
   const ids = policies.map((p) => p.id);
@@ -63,6 +70,8 @@ export function CertificaatBeheer({ leadId, onNieuw, leadActief, policies, isSup
 
   const nieuw = async (bevestig: boolean) => {
     if (onNieuw) { setExtraNummer(false); onNieuw(bevestig); return; }
+    // A14: eerst het voorgestelde nummer tonen; nooit ongezien een nummer.
+    if (!bevestig && leadId) { setVoorstelOpen(true); return; }
     setBezig("nieuw");
     try {
       const r = await roep({ lead_id: leadId, bevestig_nieuw_nummer: bevestig });
@@ -143,6 +152,7 @@ export function CertificaatBeheer({ leadId, onNieuw, leadActief, policies, isSup
             {!ingetrokken && isSupervisorOrAdmin && (
               <div className="flex flex-wrap gap-2">
                 <Button size="sm" variant="outline" className="min-h-10" onClick={() => openAanpassen(p)}><Pencil className="h-3 w-3 mr-1" />Aanpassen</Button>
+                {magNummer && <Button size="sm" variant="outline" className="min-h-10" onClick={() => setNummerWijzigen(p)}>BAV-nummer aanpassen</Button>}
                 <Button size="sm" variant="outline" className="min-h-10" onClick={() => mail(p)} disabled={bezig === `mail-${p.id}`}>
                   {bezig === `mail-${p.id}` ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Mail className="h-3 w-3 mr-1" />}Certificaat mailen naar klant
                 </Button>
@@ -216,6 +226,9 @@ export function CertificaatBeheer({ leadId, onNieuw, leadActief, policies, isSup
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {leadId && <NieuwCertificaatDialoog leadId={leadId} open={voorstelOpen} onOpenChange={setVoorstelOpen} onKlaar={klaar} />}
+      <NummerWijzigenDialoog policy={nummerWijzigen} onOpenChange={(o) => !o && setNummerWijzigen(null)} onKlaar={klaar} />
 
       <Dialog open={extraNummer} onOpenChange={setExtraNummer}>
         <DialogContent>
