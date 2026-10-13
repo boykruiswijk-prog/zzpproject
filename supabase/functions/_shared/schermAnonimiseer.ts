@@ -201,9 +201,28 @@ export function liveDoelTekst(tekst: string, totaal: number): string {
   return tekst.replace(/\b\d+\s+van\s+200\b/g, `${totaal} van 200`);
 }
 
+/** Tekstvoorvoegsel in machine_activiteit (agent_run/agent_stap) per agent, voor een recentere laatste run. */
+export const AGENT_VOORVOEGSEL: Record<AiAgentId, string[]> = {
+  ads: ['ads-agent'], conversies: ['conversie-agent'], kwaliteit: ['kwaliteitsagent'], content: ['contentagent'],
+  markt: ['marktagent'], rapportage: ['rapportage-agent', 'weekrapportage'], beveiliging: ['beveiligingsagent'],
+  scherm: ['scherm-agent', 'live-scherm'], dagstatus: ['dagstatus'], aanbevelingen: ['aanbevelingen'],
+};
+/** Laatste machine_activiteit-tijd per agent-id uit scherm_versheid().agent_laatst. */
+export function agentLaatst(lijst: unknown): Partial<Record<AiAgentId, string>> {
+  const uit: Partial<Record<AiAgentId, string>> = {};
+  for (const r of Array.isArray(lijst) ? lijst : []) {
+    const k = typeof r?.sleutel === 'string' ? r.sleutel.trim().toLowerCase() : '';
+    const t = iso(r?.tijd);
+    if (!k || !t) continue;
+    const id = (Object.keys(AGENT_VOORVOEGSEL) as AiAgentId[]).find(a => AGENT_VOORVOEGSEL[a].some(v => k.startsWith(v)));
+    if (id && (!uit[id] || Date.parse(t) > Date.parse(uit[id]!))) uit[id] = t;
+  }
+  return uit;
+}
+
 type AiRij = { naam: string; taak: string; resultaat: string | null; laatste_run: string | null; status: 'klaar' | 'fout' | 'gepland' };
 /** AI-team: altijd de vaste lijst (gepland zonder run), aangevuld uit de snapshot; daarna onbekende agents tot max 12. */
-export function schoonAiTeam(snap: Snap, doelTotaal?: number): AiRij[] {
+export function schoonAiTeam(snap: Snap, doelTotaal?: number, recent: Partial<Record<AiAgentId, string>> = {}): AiRij[] {
   const agents = (snap?.data as Ruw | undefined)?.agents;
   if (!Array.isArray(agents)) return [];
   const rij = (a: Ruw, basis?: { naam: string; taak: string }): AiRij => {
@@ -225,7 +244,15 @@ export function schoonAiTeam(snap: Snap, doelTotaal?: number): AiRij[] {
     const id = (AI_TEAM.some(t => t.id === a.id) ? a.id : koppelTaak(a.naam)) as string | null;
     if (id && !perId.has(id)) perId.set(id, a); else overig.push(a);
   }
-  const vast = AI_TEAM.map(t => rij(perId.get(t.id) ?? {}, t));
+  const vast = AI_TEAM.map(t => {
+    const r = rij(perId.get(t.id) ?? {}, t);
+    const m = recent[t.id];
+    if (m && (!r.laatste_run || Date.parse(m) > Date.parse(r.laatste_run))) {
+      r.laatste_run = m;
+      if (r.status === 'gepland') r.status = 'klaar';
+    }
+    return r;
+  });
   return [...vast, ...overig.map(a => rij(a)).filter(a => a.naam)].slice(0, 12);
 }
 
@@ -280,8 +307,18 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
   const kbs = r?.klantbasis ?? {};
   const sv = r?.service ?? {};
   const gz = r?.gezondheid ?? {};
+  const recent = agentLaatst(r?.versheid?.agent_laatst);
+  const team = schoonAiTeam(r?.marketing?.ai_team, totaal, recent);
+  const snapOp = r?.versheid?.snapshot_op ?? {};
   return {
     gegenereerd_op: nu.toISOString(),
+    /** Gezet door scherm-data als de cache wordt teruggegeven na een fout. */
+    verouderd_sinds: null as string | null,
+    /** Tijd van de laatste Scherm-feed (elke 2 uur) per momentopnameblok; null = nog niet gemeten. */
+    bijgewerkt: {
+      google_ads: iso(snapOp.google_ads), microsoft_ads: iso(snapOp.microsoft_ads),
+      search_console: iso(snapOp.search_console), ai_zichtbaarheid: iso(snapOp.ai_zichtbaarheid), ai_team: iso(snapOp.ai_team),
+    },
     activiteit: groepeerBezoeken((Array.isArray(r?.activiteit) ? r.activiteit : []).filter((a: Ruw) => !a.is_test).slice(0, 120).map((a: Ruw) => {
       const p = perioden.get(String(a.id ?? ''));
       return { ...schermActiviteit(a), gestart_op: iso(p?.gestart_op), afgerond_op: iso(p?.afgerond_op), agent: p?.agent === true };
@@ -338,8 +375,8 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
       content_nieuw: getal(kb.content_nieuw),
       content_verbeterd: getal(kb.content_verbeterd),
     },
-    ai_team: schoonAiTeam(r?.marketing?.ai_team, totaal),
-    workers: metAgentWorkers(schoonWorkers(r?.workers), schoonAiTeam(r?.marketing?.ai_team, totaal)),
+    ai_team: team,
+    workers: metAgentWorkers(schoonWorkers(r?.workers), team),
     marketing: schoonMarketing(r?.marketing),
   };
 }

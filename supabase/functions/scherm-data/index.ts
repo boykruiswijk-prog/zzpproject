@@ -7,6 +7,11 @@ import { requireSupervisor } from "../_shared/teamAuth.ts";
 const corsHeaders = { ...basisCors, "Access-Control-Allow-Headers": `${basisCors["Access-Control-Allow-Headers"]}, x-scherm-token, x-scherm-code, x-scherm-apparaat, x-scherm-sessie` };
 let cache: { op: number; body: string } | null = null;
 
+/** Oude cache na een fout: zichtbaar verouderd, zodat het scherm oranje toont. */
+export function markeerVerouderd(body: string, sinds: number) {
+  try { return JSON.stringify({ ...JSON.parse(body), verouderd_sinds: new Date(sinds).toISOString() }); } catch { return body; }
+}
+
 function gelijk(a: string, b: string) {
   if (a.length !== b.length || a.length === 0) return false;
   let v = 0;
@@ -64,13 +69,17 @@ Deno.serve(async (req) => {
     const { data: stromen, error: stroomFout } = await admin.rpc("scherm_stromen");
     if (stroomFout) throw new Error(stroomFout.message);
     const { data: werk, error: werkFout } = await admin.rpc("scherm_werkstand");
-    if (werkFout) console.error("scherm_werkstand", werkFout.message);
-    const body = JSON.stringify(bouwSchermPayload({ ...(data ?? {}), ...(stromen ?? {}), ...(werk ?? {}) }));
+    // Zonder werkstand vallen alle toestanden, werkminuten, nu_op_site en de ticker weg: dat is een fout, geen stille terugval.
+    if (werkFout) throw new Error(`scherm_werkstand: ${werkFout.message}`);
+    const { data: versheid, error: versFout } = await admin.rpc("scherm_versheid");
+    if (versFout) console.error("scherm_versheid", versFout.message);
+    // Volgorde bewust: werkstand levert de actuele activiteit (met cron-runs en perioden) en wint van scherm_data.
+    const body = JSON.stringify(bouwSchermPayload({ ...(data ?? {}), ...(stromen ?? {}), ...(werk ?? {}), versheid: versheid ?? null }));
     cache = { op: Date.now(), body };
     return json(body, 200, { "Cache-Control": "private, max-age=4" });
   } catch (e) {
     console.error("scherm-data", e instanceof Error ? e.message : "onbekend");
-    if (cache) return json(cache.body, 200, { "X-Cache": "stale" });
+    if (cache) return json(markeerVerouderd(cache.body, cache.op), 200, { "X-Cache": "stale" });
     return json(JSON.stringify({ error: "tijdelijk_niet_beschikbaar" }), 503);
   }
 });
