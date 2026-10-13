@@ -1,41 +1,33 @@
-# Inventarisatie opzeggingen (alleen lezen, geen wijzigingen)
+# Inventarisatie korting en acceptatie (alleen lezen, niets gewijzigd)
 
-Dit is een rapport, geen bouwplan. Er wordt niets gewijzigd.
+## A) Korting
 
-## 1. Bestanden
+- **Prijs aanpassen in beheer: dat kan nu niet.** Ik vond geen scherm en geen functie die `bedrag_per_periode`, `afw_prijs` of `org_prijs` van een `klant_contracten`-regel wijzigt.
+  - De enige update vanuit de code is `supabase/functions/factuur-planner/index.ts` r. 274. Die zet alleen `gefactureerd_tm`, `volgende_factuurdatum` en `gefactureerd_tm_bron`.
+  - `src/pages/admin/KlantenContracten.tsx` r. 66 leest `bedrag_per_periode` alleen.
+  - Een prijswijziging wordt dus nergens gelogd, want die kan niet.
+- **Herkomst van de lage prijzen: de AFAS-import van 1 oktober.** Alle 23 lopende regels met een `afw_prijs` lager dan `org_prijs` hebben bron `afas_20261001`. Het zijn er 22 met status actief en 1 met status loopt_af. Ze zijn allemaal op 2026-10-01 aangemaakt.
+  - Vindplaats: `drizzle/migrations/0022_klant_contracten_afas_import.sql`, r. 123-136 (insert) en r. 160 (bij opnieuw importeren).
+  - `bedrag_per_periode` komt uit AFAS-kolom 15, `org_prijs` uit kolom 13 en `afw_prijs` uit kolom 14.
+  - De korting is dus overgenomen uit AFAS, niet in beheer gemaakt.
 
-- `src/components/admin/OpzeggingenKlant.tsx`
-  - `OpzeggingenKlant` (r. 54-187): kaart "Opzeggingen" op de klantpagina, met koppelen en verwerken. Laadt r. 66: `.eq("type", "opzeggen").eq("onderneming_id", ondernemingId).is("gekoppeld_aan", null)`.
-  - `OpzeggingenTeKoppelen` (r. 190-230): lijst "Opzeggingen te koppelen" op /admin/klanten#opzeggingen. r. 197-198: alleen niet verwerkt, `gekoppeld_aan IS NULL`, en `koppeling_status !== "zeker"`.
-- `src/pages/admin/KlantDetail.tsx` r. 11 en 104: toont `OpzeggingenKlant`.
-- `src/components/admin/ServiceAanvraagDetail.tsx` r. 107 (koppelingslabel), r. 111-114: `KoppelZoeker` als de opzegging nog niet verwerkt is.
-- `src/components/admin/KoppelZoeker.tsx` r. 58: `supabase.rpc("koppel_opzegging", ...)`.
-- `src/components/admin/ServiceAanvraagOog.tsx`: de oog-knop die de melding opent (met koppelen).
-- `src/components/admin/DashboardStats.tsx` r. 71: de dashboardtegel "Opzeggingen te koppelen" (tellers komen uit een databasefunctie).
-- Databasefuncties: `koppel_opzegging`, `verwerk_opzegging`, `plan_opzeg_credit`.
+## B) Acceptatie
 
-## 2. Wat "Opzegging verwerken" doet
-
-Front-end, `OpzeggingenKlant.tsx` r. 96:
-`supabase.rpc("verwerk_opzegging", { _aanvraag_id: a.id, _contract_ids: Array.from(gekozen) })`.
-Er wordt geen serverfunctie (edge function) aangeroepen.
-
-Databasefunctie `verwerk_opzegging`:
-- Controles: teamlid; aanvraag bestaat en heeft type 'opzeggen'; nog niet verwerkt; gekoppeld en `koppeling_status = 'zeker'`; minstens één contractregel; geldige opzegdatum van ontvangstdatum tot 180 dagen later.
-- Per gekozen contractregel (moet bij dezelfde klant horen en status actief/loopt_af/einddatum_controle hebben):
-  - `klant_contracten`: `eind_datum = opzegdatum`, `status = 'loopt_af'`, en `afwijkingen` krijgt "opgezegd per DD-MM-YYYY".
-  - `sensitive_audit_log`: een regel met actie 'opzegging_verwerken'.
-  - `plan_opzeg_credit(...)`: maakt of werkt een regel in `factuur_credit_planning` bij en logt een statuswijziging. De status wordt standaard `wacht_op_akkoord` (eerst akkoord van Ellen). Andere mogelijke statussen: `concept_niet_verwerkt`, `geblokkeerd`, `niet_nodig`. Cyber Clear 2026-10-08 wordt nooit tussentijds gecrediteerd.
-- Daarna, in `klant_service_aanvragen`: `opzegging_verwerkt_op = now()`, `opzegging_verwerkt_door = auth.uid()`, en `status` wordt 'afgerond' als die nieuw of in_behandeling was.
-
-Exact en mail:
-- Exact: deze functies schrijven niet naar Exact. Er wordt alleen een creditnota gepland in `factuur_credit_planning`. Een echte creditnota in Exact komt pas na goedkeuring, via de bestaande creditflow.
-- Mail: in deze functies en in de knop zit geen mail naar de klant. Of triggers op `klant_contracten` of `klant_service_aanvragen` mail versturen, heb ik in deze ronde niet gecontroleerd. Dat kan ik als volgende stap nakijken.
-
-## 3. Als koppeling_status 'niet_gekoppeld' is
-
-Verwerken is dan geblokkeerd, op twee plekken:
-- Scherm, `OpzeggingenKlant.tsx` r. 161-163: als `a.koppeling_status !== "zeker"` verschijnt alleen de knop "Koppeling met deze klant bevestigen" (roept `koppel_opzegging` aan, r. 88). De knop "Opzegging verwerken" is dan niet te zien.
-- Server, `verwerk_opzegging`: `IF a.onderneming_id IS NULL OR a.koppeling_status <> 'zeker' THEN RAISE EXCEPTION 'bevestig eerst de koppeling met de klant'`. Ook een directe aanroep van de functie wordt dus geweigerd.
-
-`koppel_opzegging` zet `onderneming_id`, `koppeling_status = 'zeker'`, `koppeling_methode = 'handmatig'` en `koppeling_details.handmatig_door/vorige`, en schrijft een regel 'opzegging_koppelen' in `sensitive_audit_log`. Een opzegging die al verwerkt is, wordt geweigerd.
+- **Een apart scherm "acceptatie" bestaat niet.** De route en het menu-item met die naam vond ik niet. Het meest voor de hand liggende scherm is "Aanvragen":
+  - Route: `src/App.tsx` r. 234, `/admin/aanvragen`, getoond met `AdminLeads soort="aanvragen"` (`src/pages/admin/Leads.tsx`).
+  - Tabel: `src/components/admin/LeadTable.tsx`. De gegevens komen uit `src/hooks/useLeads.ts` r. 43: tabel `leads`, met `type = 'verzekering_aanvraag'`.
+  - Menu: `src/components/admin/AdminSidebar.tsx` r. 21.
+  - Detailpagina: `src/pages/admin/LeadDetail.tsx`, via de oog-knop.
+  - Klopt dit met wat Ellen bedoelt? Zo niet, noem dan het scherm.
+- **Statussen:** het hele `lead_status`-overzicht is te kiezen in de statuskeuze (LeadTable r. 302-325, labels uit `src/lib/statusLabels.ts`):
+  - nieuw, in_behandeling, afspraak_gepland, offerte_verstuurd, klant, afgewezen, nieuw_te_beoordelen ("Te beoordelen"), actief, gepauzeerd, opgezegd, afgerond.
+  - "Afgerond" verschijnt alleen als `magAfronden`; "offerte_verstuurd" alleen als de lead die status al heeft.
+- **Kolommen per persoon** (LeadTable r. 239-246):
+  - Naam (met bedrijfsnaam, BAV-nummer en onderwerp), Type (badge), Contact (mail- en bellink), Verzekering, Pakket, Status, Datum.
+  - Bij Acties: oog naar de detailpagina, de testschakelaar, en verwijderen (alleen Boy).
+- **Bestaande vlag, notitie, herinnering of wachtstatus:**
+  - `leads.vereist_handmatige_beoordeling` bestaat. Hij wordt gezet in `src/components/home/BAVApplicationModule.tsx` r. 420 (meer dan 3 medewerkers) en in `src/pages/OffertePage.tsx` r. 188. Hij wordt nergens in beheer getoond, en de vlag staat nu bij 0 leads aan.
+  - Status `nieuw_te_beoordelen` ("Te beoordelen") bestaat. Hij wordt alleen meegeteld als "Nieuw" in `src/components/admin/SupervisorKpiPanel.tsx` r. 176.
+  - Notities: `lead_notes` via `src/components/admin/LeadNotes.tsx`, op LeadDetail r. 20 en 381. In de lijst is er geen icoon voor.
+  - `crm_taken` bestaat, maar alleen met de soorten afas_factuur_opvragen, exact_aanpassen en nieuwe_aanvraag_nodig. Een acceptatietaak bestaat niet.
+  - Een herinneringskolom of wachtstatus voor acceptatie bestaat niet.
