@@ -36,3 +36,4 @@
 - Live scenes/effects are lazy; demo events stay in browser memory. Journey/timeline aggregates use service-only scherm_stromen via scherm-data. Why: site performance and visitor privacy.
 <!-- LOVABLE:END -->
 - Samengevoegd artikel: bron is_published=false + rij article_samenvoegingen + directe 301's; bewaakt door kennisbankSamenvoeging.test.ts. Waarom: niets verwijderen, geen ketens.
+- Ingangsdatum vroegst dag na aanvraag (NL) alleen via _shared/ingangsdatum.ts (src/lib/ingangsdatum.ts) plus BEFORE INSERT-triggers aa_ingangsdatum_vroegst; server corrigeert, RPC en activeren weigeren. Waarom: een regel overal (D4).
