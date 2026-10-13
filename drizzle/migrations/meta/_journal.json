@@ -932,6 +932,13 @@
       "when": 1791895912178,
       "tag": "0132_machtigingen_nakijken_fix",
       "breakpoints": true
+    },
+    {
+      "idx": 133,
+      "version": "7",
+      "when": 1791896445969,
+      "tag": "0133_cyber_maand_anker",
+      "breakpoints": true
     }
   ]
 }
