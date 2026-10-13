@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any
 // Besluit D4 (Boy 13 okt 2026): de ingangsdatum is nooit de dag van aanvraag of eerder.
 // Vroegst is de dag na de aanvraag, gerekend in Europe/Amsterdam. Puur, zonder afhankelijkheden.
 
@@ -38,3 +39,18 @@ export function corrigeerIngangsdatum(datum: string | null | undefined, aanvraag
   const vroegst = vroegsteIngangsdatum(aanvraagMoment);
   return datum < vroegst ? { oud: datum, nieuw: vroegst } : null;
 }
+
+/** Heeft het team de ingangsdatum intern gezet of bevestigd? (activatie_log-regel 'ingangsdatum_gewijzigd'). */
+export function ingangsdatumInternGezet(activatieLog: unknown, extraLog = false): boolean {
+  if (extraLog) return true;
+  return Array.isArray(activatieLog) && activatieLog.some((r: any) => r?.actie === "ingangsdatum_gewijzigd" || r?.type === "ingangsdatum_gewijzigd");
+}
+
+/** Blokkeert activatie alleen als een te vroege datum nog de klantkeuze is. Intern gezet = vrij. */
+export function ingangsdatumBlokkeertActivatie(lead: { ingangsdatum?: string | null; created_at?: string | null; activatie_log?: unknown }, internGezet = false): boolean {
+  if (!lead.ingangsdatum || !lead.created_at) return false;
+  if (ingangsdatumInternGezet(lead.activatie_log, internGezet)) return false;
+  return String(lead.ingangsdatum).slice(0, 10) < vroegsteIngangsdatum(lead.created_at);
+}
+
+export const MELDING_INGANG_KLANT_TE_VROEG = "Pas eerst de ingangsdatum aan of bevestig hem via Ingangsdatum aanpassen.";

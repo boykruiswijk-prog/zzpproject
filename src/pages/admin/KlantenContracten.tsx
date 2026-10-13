@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Building2, Loader2 } from "lucide-react";
 import { OpzeggingenTeKoppelen } from "@/components/admin/OpzeggingenKlant";
+import { VastgelopenCreditnotas } from "@/components/admin/VastgelopenCreditnotas";
 import { formatDateNL } from "@/lib/dateFormat";
 import { haalAlleBavRijen, kiesBavNummer, type BavRij } from "@/lib/bavNummer";
 import { BavNummer } from "@/components/admin/crm/BavNummer";
@@ -150,6 +151,7 @@ export default function KlantenContracten() {
         <KvkBatch />
         {laden ? <div className="flex justify-center p-12"><Loader2 className="h-6 w-6 animate-spin" /></div> : (
           <>
+            <VastgelopenCreditnotas />
             <OpzeggingenTeKoppelen />
             <div className="grid min-w-0 gap-6 xl:grid-cols-2">
               <Card className="min-w-0 w-full">

@@ -2,10 +2,11 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useAdminTakenCount } from "@/hooks/useAdminTaken";
 import { useMenuTellers } from "@/hooks/useMenuTellers";
+import { TellerBadge } from "@/components/admin/TellerBadge";
+import { CRM_UITLEG, GRIJZE_TELLERS, TELLER_DOEL, groepsDoel, groepsTotaal, groepsUitleg, tellerUitleg } from "@/lib/menuTellers";
 import { Activity, AlertTriangle, BookOpen, Building2, ChevronDown, ConciergeBell, UserMinus, ChevronLeft, CircleDollarSign, FileText, Hash, KeyRound, LayoutDashboard, LogOut, Menu, MessageCircle, Monitor, Plug, SearchX, Settings, Share2, ShieldCheck, UserCog, UserX, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -60,19 +61,19 @@ export function AdminSidebar() {
   const closeMobile = () => setMobileOpen(false);
   const Navigation = ({ mobile = false }: { mobile?: boolean }) => <>
     <nav className={cn("flex-1 space-y-2", mobile ? "overflow-y-auto px-4 pb-4" : "overflow-y-auto p-4")}>
-      <NavLink to="/admin" end onClick={mobile ? closeMobile : undefined} className={linkClass}><LayoutDashboard className="h-5 w-5"/><span className="flex-1">Dashboard</span>{tellers?.facturatie ? <Badge variant="destructive" className="rounded-full px-2" title="Facturatie: zie Vandaag te doen">{tellers.facturatie}</Badge> : null}</NavLink>
+      <NavLink to="/admin" end onClick={mobile ? closeMobile : undefined} className={linkClass}><LayoutDashboard className="h-5 w-5"/><span className="flex-1">Dashboard</span><TellerBadge aantal={tellers?.facturatie ?? 0} uitleg={tellerUitleg("facturatie", tellers ?? {})} naar={TELLER_DOEL.facturatie}/></NavLink>
       {roleAllows(["supervisor"]) && <NavLink to="/admin/schermen" onClick={mobile ? closeMobile : undefined} className={linkClass}><Monitor className="h-5 w-5"/><span className="flex-1">Live-scherm</span></NavLink>}
       {roleAllows(["supervisor", "verzekering"]) && <>
-        <NavLink to="/admin/klanten" onClick={mobile ? closeMobile : undefined} className={linkClass}><Building2 className="h-5 w-5"/><span className="flex-1">Klanten & contracten</span>{tellers?.klanten ? <Badge variant="destructive" className="rounded-full px-2" aria-label={`${tellers.klanten} openstaand`}>{tellers.klanten}</Badge> : null}</NavLink>
-        <NavLink to="/admin/crm" onClick={mobile ? closeMobile : undefined} className={linkClass}><Users className="h-5 w-5"/><span className="flex-1">CRM</span>{takenCount ? <Badge variant="destructive">{takenCount}</Badge> : null}</NavLink>
+        <NavLink to="/admin/klanten" onClick={mobile ? closeMobile : undefined} className={linkClass}><Building2 className="h-5 w-5"/><span className="flex-1">Klanten & contracten</span><TellerBadge aantal={tellers?.klanten ?? 0} uitleg={tellerUitleg("klanten", tellers ?? {})} naar={TELLER_DOEL.klanten}/></NavLink>
+        <NavLink to="/admin/crm" onClick={mobile ? closeMobile : undefined} className={linkClass}><Users className="h-5 w-5"/><span className="flex-1">CRM</span><TellerBadge aantal={takenCount ?? 0} uitleg={CRM_UITLEG(takenCount ?? 0)} naar="/admin/crm"/></NavLink>
       </>}
       {groups.map(group => {
         const items = group.items.filter(item => roleAllows(item.roles));
         if (!items.length || !roleAllows(group.roles)) return null;
         const active = items.some(item => location.pathname === item.to || location.pathname.startsWith(`${item.to}/`));
         return <Collapsible key={group.label} defaultOpen={active || mobile}>
-          <CollapsibleTrigger asChild><Button variant="ghost" className="min-h-10 w-full justify-start gap-3 px-3 text-muted-foreground"><group.icon className="h-5 w-5"/><span className="flex-1 text-left">{group.label}</span>{(() => { const t = items.reduce((n, i) => n + (i.teller ? tellers?.[i.teller] ?? 0 : 0), 0); return t ? <Badge variant="destructive" className="rounded-full px-2">{t}</Badge> : null; })()}<ChevronDown className="h-4 w-4 transition-transform [[data-state=open]_&]:rotate-180"/></Button></CollapsibleTrigger>
-          <CollapsibleContent className="ml-4 space-y-1 border-l pl-2">{items.map(item => <NavLink key={item.to} to={item.to} onClick={mobile ? closeMobile : undefined} className={(p) => cn(linkClass(p), item.sub && "ml-4")}><item.icon className="h-4 w-4"/><span className="flex-1">{item.label}</span>{item.badge && takenCount ? <Badge variant="destructive">{takenCount}</Badge> : null}{item.teller && tellers?.[item.teller] ? <Badge variant="destructive" className="rounded-full px-2" aria-label={`${tellers[item.teller]} openstaand`}>{tellers[item.teller]}</Badge> : null}</NavLink>)}</CollapsibleContent>
+          <CollapsibleTrigger asChild><Button variant="ghost" className="min-h-10 w-full justify-start gap-3 px-3 text-muted-foreground"><group.icon className="h-5 w-5"/><span className="flex-1 text-left">{group.label}</span>{(() => { const ks = items.map(i => i.teller); const t = tellers ?? {}; return <TellerBadge aantal={groepsTotaal(ks, t)} uitleg={`${group.label}: ${groepsUitleg(ks, t)}`} naar={groepsDoel(ks, t)}/>; })()}<ChevronDown className="h-4 w-4 transition-transform [[data-state=open]_&]:rotate-180"/></Button></CollapsibleTrigger>
+          <CollapsibleContent className="ml-4 space-y-1 border-l pl-2">{items.map(item => <NavLink key={item.to} to={item.to} onClick={mobile ? closeMobile : undefined} className={(p) => cn(linkClass(p), item.sub && "ml-4")}><item.icon className="h-4 w-4"/><span className="flex-1">{item.label}</span>{item.badge ? <TellerBadge aantal={takenCount ?? 0} uitleg={CRM_UITLEG(takenCount ?? 0)} naar="/admin/crm"/> : null}{item.teller ? <TellerBadge aantal={tellers?.[item.teller] ?? 0} uitleg={tellerUitleg(item.teller, tellers ?? {})} naar={TELLER_DOEL[item.teller]} grijs={GRIJZE_TELLERS.has(item.teller)}/> : null}</NavLink>)}</CollapsibleContent>
         </Collapsible>;
       })}
       {roleAllows(["supervisor", "verzekering"]) && <NavLink to="/admin/dba-checks" onClick={mobile ? closeMobile : undefined} className={linkClass}><ShieldCheck className="h-5 w-5"/><span>Wet DBA</span></NavLink>}

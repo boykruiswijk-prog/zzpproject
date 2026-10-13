@@ -11,7 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useToast } from "@/hooks/use-toast";
 import { formatDateNL, formatDateTimeLongNL } from "@/lib/dateFormat";
 import { AlertTriangle, Pencil } from "lucide-react";
-import { vroegsteIngangsdatum, dagNL } from "@/lib/ingangsdatum";
+import { vroegsteIngangsdatum, dagNL, ingangsdatumBlokkeertActivatie, MELDING_INGANG_KLANT_TE_VROEG } from "@/lib/ingangsdatum";
+import { useIngangsdatumInternGezet } from "@/hooks/useIngangsdatumIntern";
 
 type Uitkomst = { oud: string | null; nieuw: string; starter_wijziging: string | null; contracten: number; polissen: number; waarschuwingen: string[] };
 
@@ -25,7 +26,9 @@ export function IngangsdatumAanpassen({ lead, magWijzigen }: { lead: { id: strin
   const { toast } = useToast();
   const qc = useQueryClient();
   const vroegst = lead.created_at ? vroegsteIngangsdatum(lead.created_at) : null;
-  const teVroeg = !!(vroegst && lead.ingangsdatum && lead.ingangsdatum.slice(0, 10) < vroegst);
+  const internGezet = useIngangsdatumInternGezet(lead.id);
+  const teVroeg = ingangsdatumBlokkeertActivatie(lead, internGezet);
+  const keuzeEerder = !!(vroegst && datum && datum < vroegst);
 
   const historie = useQuery({
     queryKey: ["ingangsdatum-historie", lead.id],
@@ -49,6 +52,7 @@ export function IngangsdatumAanpassen({ lead, magWijzigen }: { lead: { id: strin
     toast({ title: "Ingangsdatum aangepast" });
     qc.invalidateQueries({ queryKey: ["lead", lead.id] });
     qc.invalidateQueries({ queryKey: ["ingangsdatum-historie", lead.id] });
+    qc.invalidateQueries({ queryKey: ["ingangsdatum-intern", lead.id] });
   }
 
   return (
@@ -67,7 +71,7 @@ export function IngangsdatumAanpassen({ lead, magWijzigen }: { lead: { id: strin
         <p className="text-lg font-semibold">{formatDateNL(lead.ingangsdatum) || "Niet ingevuld"}</p>
         {teVroeg && !lead.geactiveerd_op && (
           <Alert variant="destructive"><AlertTriangle className="h-4 w-4" />
-            <AlertDescription>De ingangsdatum ligt op of voor de aanvraagdag. Pas hem aan naar {dagNL(vroegst!)} of later; activeren kan pas daarna.</AlertDescription>
+            <AlertDescription>De klant koos een datum op of voor de aanvraagdag. {MELDING_INGANG_KLANT_TE_VROEG}</AlertDescription>
           </Alert>
         )}
         {lead.exact_invoice_id && (
@@ -96,12 +100,17 @@ export function IngangsdatumAanpassen({ lead, magWijzigen }: { lead: { id: strin
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader><DialogTitle>Ingangsdatum aanpassen</DialogTitle></DialogHeader>
-          <p className="text-sm text-muted-foreground">{vroegst ? `Vroegst de dag na de aanvraag (${dagNL(vroegst)}); een latere datum mag.` : "Vroegst de dag na de aanvraag; een latere datum mag."} Contract, cyberdatum en certificaatdatum lopen mee. Er gaat geen mail naar de klant en in Exact verandert niets.</p>
+          <p className="text-sm text-muted-foreground">{vroegst ? `Intern mag elke datum. De klant kon vroegst kiezen: ${dagNL(vroegst)} (dag na aanvraag).` : "Intern mag elke datum."} Contract, cyberdatum en certificaatdatum lopen mee. Er gaat geen mail naar de klant en in Exact verandert niets.</p>
           <Label htmlFor="ingang-nieuw">Nieuwe ingangsdatum</Label>
-          <Input id="ingang-nieuw" type="date" min={vroegst ?? undefined} value={datum} onChange={(e) => setDatum(e.target.value)} />
+          <Input id="ingang-nieuw" type="date" value={datum} onChange={(e) => setDatum(e.target.value)} />
+          {keuzeEerder && (
+            <Alert className="border-warning bg-warning/10"><AlertTriangle className="h-4 w-4" />
+              <AlertDescription>Eerder dan de klant mocht kiezen; dekking met terugwerkende kracht, weet je het zeker?</AlertDescription>
+            </Alert>
+          )}
           <Label htmlFor="ingang-reden">Waarom aangepast (verplicht)</Label>
           <Textarea id="ingang-reden" value={reden} maxLength={500} onChange={(e) => setReden(e.target.value)} />
-          <Button disabled={bezig || !datum || (!!vroegst && datum < vroegst) || datum === lead.ingangsdatum || reden.trim().length < 3} onClick={opslaan}>Opslaan</Button>
+          <Button disabled={bezig || !datum || datum === lead.ingangsdatum || reden.trim().length < 3} onClick={opslaan}>Opslaan</Button>
         </DialogContent>
       </Dialog>
     </Card>

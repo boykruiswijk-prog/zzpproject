@@ -8,7 +8,7 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
-import { haalKvkProfiel, kvkBevraagbaar, kvkKolommen, kvkStartdatum, kvkAfwijkingen, KVK_NIET_BESCHIKBAAR } from "../_shared/kvk.ts";
+import { haalKvkProfiel, kvkBevraagbaar, kvkKolommen, kvkStartdatum, kvkAfwijkingen, KVK_NIET_BESCHIKBAAR, starterBesluitKvk } from "../_shared/kvk.ts";
 import { requireSupervisor, requireVerzekeringOfSupervisor } from "../_shared/teamAuth.ts";
 
 const json = (d: unknown, s = 200) => new Response(JSON.stringify(d), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
       if (auth instanceof Response) return doorgeven(auth);
       const id = String(body?.lead_id ?? "");
       if (!UUID.test(id)) return json({ error: "lead_id vereist" }, 400);
-      const { data: lead } = await admin.from("leads").select("id,kvk_nummer,kvk_gegevens,kvk_startdatum,kvk_datum_bron,bedrijfsnaam,adres_straat,adres_huisnummer,adres_postcode,adres_plaats,is_test").eq("id", id).maybeSingle();
+      const { data: lead } = await admin.from("leads").select("id,kvk_nummer,kvk_gegevens,kvk_startdatum,kvk_datum_bron,bedrijfsnaam,adres_straat,adres_huisnummer,adres_postcode,adres_plaats,is_test,ingangsdatum,tarief_type,starter_controle_status,activatie_log").eq("id", id).maybeSingle();
       if (!lead) return json({ error: "aanvraag niet gevonden" }, 404);
       const kvk = String(lead.kvk_nummer ?? "").replace(/\D/g, "");
       if (!kvkBevraagbaar(kvk)) return json({ ok: false, reden: "ongeldig", melding: "Deze aanvraag heeft geen geldig KVK-nummer" });
@@ -52,9 +52,18 @@ Deno.serve(async (req) => {
         uit_cache: r.uit_cache, profiel: p, klant_opgave: klant,
         afwijkingen: kvkAfwijkingen(klant, { bedrijfsnaam: p.naam, ...(p.bezoekadres ?? {}), kvk_startdatum: start }, metAdres),
       };
-      // Tarief blijft ongemoeid: alleen gegevens en (eenmalig) de KVK-startdatum. Ellen beslist met de bestaande knoppen.
+      // Gegevens en (eenmalig) de KVK-startdatum; startertarief alleen automatisch als KVK het bevestigt.
       const upd: Record<string, unknown> = { kvk_gegevens: gegevens };
       if (start && lead.kvk_datum_bron !== "kvk_api") { upd.kvk_startdatum = start; upd.kvk_datum_bron = "kvk_api"; }
+      // Besluit Boy 13 okt 2026: wacht het startertarief op controle en bevestigt KVK het, dan automatisch goedgekeurd.
+      if (lead.tarief_type === "starter" && lead.starter_controle_status === "te_controleren" && start) {
+        const b = starterBesluitKvk(p, lead.ingangsdatum, "kvk_api");
+        if (b.status === "goedgekeurd") {
+          upd.starter_controle_status = "goedgekeurd"; upd.starter_toelichting = b.toelichting;
+          upd.starter_beoordeeld_op = new Date().toISOString(); upd.starter_beoordeeld_door = auth.userId;
+          upd.activatie_log = [...(Array.isArray(lead.activatie_log) ? lead.activatie_log : []), { tijd: new Date().toISOString(), actie: "startertarief_automatisch_goedgekeurd", toelichting: b.toelichting, door: "kvk-basisprofiel" }];
+        }
+      }
       const { error } = await admin.from("leads").update(upd).eq("id", id);
       if (error) return json({ ok: false, reden: "fout", melding: error.message }, 500);
       return json({ ok: true, uit_cache: r.uit_cache, opgehaald_op: gegevens.opgehaald_op });
