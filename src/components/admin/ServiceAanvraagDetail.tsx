@@ -9,7 +9,8 @@ import { PortaltoegangStappen } from "@/components/admin/PortaltoegangStappen";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ServiceHerkomstLabels } from "@/components/admin/ServiceHerkomstLabels";
-const KOPPELING_LABEL: Record<string, string> = { zeker: "Automatisch zeker", voorstel: "Voorstel", niet_gekoppeld: "Niet gekoppeld" };
+import { Circle8Knop } from "@/components/admin/Circle8Knop";
+const KOPPELING_LABEL: Record<string, string> = { zeker: "Automatisch zeker", voorstel: "Voorstel", niet_gekoppeld: "Niet gekoppeld", collectief: "Circle8 (collectief)" };
 
 export type ServiceAanvraag = {
   id: string;
@@ -110,7 +111,10 @@ export function ServiceAanvraagDetail({ aanvraag, onSaveNotes, onMarkAfgerond, o
       </div>
       {opzeg && !aanvraag.opzegging_verwerkt_op && (
         <div className="rounded-md border border-border p-3">
-          <p className="mb-2 font-medium">Koppelen aan klant</p>
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+            <p className="font-medium">Koppelen aan klant</p>
+            <Circle8Knop aanvraag={aanvraag} onVerwerkt={onGekoppeld} />
+          </div>
           <KoppelZoeker aanvraagId={aanvraag.id} kanKoppelen onGekoppeld={onGekoppeld} />
         </div>
       )}

@@ -5532,6 +5532,10 @@ export type Database = {
         Args: { _aanvraag_id: string; _contract_ids: string[] }
         Returns: Json
       }
+      verwerk_opzegging_circle8: {
+        Args: { _aanvraag_id: string }
+        Returns: Json
+      }
       zeker_opschonen: { Args: never; Returns: undefined }
       zeker_zoek_artikelen: {
         Args: { _q: string }
