@@ -1,7 +1,7 @@
 // Lead-to-Exact Fase 1: maakt Account + Contact + BankAccount + SEPA-mandaat
 // aan in Exact divisie 4401707 (ZP Zaken B.V.) op basis van een lead.
 // Doet GEEN factuur — fase 2.
-import { vroegsteIngangsdatum, dagNL } from "../_shared/ingangsdatum.ts";
+import { ingangsdatumBlokkeertActivatie, MELDING_INGANG_KLANT_TE_VROEG } from "../_shared/ingangsdatum.ts";
 import { nieuweCyber, cyberPremie, cyberJaarEind } from "../_shared/cyber.ts";
 import { controleerHandmatigeAcceptatie } from "../_shared/sectorRegels.ts";
 import { getBavGlAccountId } from "../_shared/exactGl.ts";
@@ -396,11 +396,12 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
     .from("leads").select("*").eq("id", leadId).maybeSingle();
   if (leadErr || !lead) return json({ success: false, error: "lead_not_found" }, 404);
 
-  // Besluit D4: niet activeren met een ingangsdatum op of voor de aanvraagdag (NL). Al geactiveerde leads blijven ongemoeid.
+  // Besluit D4 (aangevuld): blokkeer alleen als een te vroege datum nog de klantkeuze is; intern gezet = vrij.
   if (action === "activate" && lead.type === "verzekering_aanvraag" && !lead.geactiveerd_op && lead.ingangsdatum && lead.created_at) {
-    const vroegst = vroegsteIngangsdatum(lead.created_at);
-    if (String(lead.ingangsdatum).slice(0, 10) < vroegst) {
-      return json({ success: false, error: `Pas eerst de ingangsdatum aan (vroegst ${dagNL(vroegst)})`, code: "ingangsdatum_te_vroeg" }, 409);
+    if (ingangsdatumBlokkeertActivatie(lead)) {
+      const { count } = await supabase.from("activiteiten_log").select("id", { count: "exact", head: true })
+        .eq("lead_id", leadId).eq("actie_type", "ingangsdatum_gewijzigd");
+      if (!count) return json({ success: false, error: MELDING_INGANG_KLANT_TE_VROEG, code: "ingangsdatum_te_vroeg" }, 409);
     }
   }
 

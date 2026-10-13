@@ -208,3 +208,19 @@ export function kvkAfwijkingen(klant: Record<string, unknown>, kvk: Record<strin
   const velden = ["bedrijfsnaam", "kvk_startdatum", ...(metAdres ? ["straat", "huisnummer", "postcode", "plaats"] : [])];
   return velden.filter((v) => kvk[v] && klant[v] && norm(klant[v]) !== norm(kvk[v])).map((v) => ({ veld: v, klant: klant[v], kvk: kvk[v] }));
 }
+
+/**
+ * Besluit Boy 13 okt 2026: startertarief automatisch goedgekeurd als de startdatum uit de KVK API komt,
+ * de regel klopt en datum aanvang niet meer dan 30 dagen afwijkt. Anders 'te_controleren' (Ellen beslist).
+ */
+export function starterBesluitKvk(
+  profiel: Pick<KvkProfiel, "datum_inschrijving" | "datum_aanvang"> | null | undefined,
+  ingangsdatum: string | null | undefined,
+  bron: string | null | undefined,
+): { status: "goedgekeurd" | "te_controleren"; toelichting: string | null } {
+  const o = bron === "kvk_api" ? kvkStarterOordeel(profiel, ingangsdatum) : null;
+  if (o && o.voldoet && !o.aandacht) {
+    return { status: "goedgekeurd", toelichting: `Automatisch goedgekeurd op KVK-gegevens (ingeschreven ${nl(o.ingeschreven)})` };
+  }
+  return { status: "te_controleren", toelichting: o ? (o.aandacht ?? o.tekst) : null };
+}

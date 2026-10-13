@@ -1,7 +1,7 @@
 import { corrigeerIngangsdatum } from "../_shared/ingangsdatum.ts";
 import { starterPremieKlanttekst } from "../_shared/premieTekst.ts";
 import { formatDateNL } from "../_shared/dateFormat.ts";
-import { haalKvkProfiel, kvkGeldig, kvkBevraagbaar, kvkStartdatum, kvkAfwijkingen } from "../_shared/kvk.ts";
+import { haalKvkProfiel, kvkGeldig, kvkBevraagbaar, kvkStartdatum, kvkAfwijkingen, starterBesluitKvk } from "../_shared/kvk.ts";
 import { normaliseerAdres } from "../_shared/adresNormalisatie.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.39.0";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
@@ -235,6 +235,11 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
     const starterTotDatum = starter ? starterTot(submission.ingangsdatum) : null;
     const premie = aanvraagPremie(submission.gekozen_pakket, starter);
     const premium = premie.totaal;
+    // Klant gaf een starterdatum op, maar KVK zegt anders: Ellen beslist.
+    const klantClaimtStarter = !!klantStart && isStarter(klantStart, submission.ingangsdatum);
+    const starterBesluit = starter || klantClaimtStarter ? starterBesluitKvk(kvkProfiel, submission.ingangsdatum, kvkDatumBron) : null;
+    const starterAutoLog = starterBesluit?.status === "goedgekeurd"
+      ? [{ tijd: new Date().toISOString(), actie: "startertarief_automatisch_goedgekeurd", toelichting: starterBesluit.toelichting, door: "process-bav-wizard" }] : [];
     const starterVelden = { kvk_startdatum: kvkStart, kvk_datum_bron: kvkDatumBron, kvk_gegevens: kvkGegevens, tarief_type: starter ? "starter" : "standaard", starter_tot: starterTotDatum };
     const volledigeNaam = `${submission.voornaam} ${submission.achternaam}`;
     const branche = brancheVoorSector(submission.sector);
@@ -289,14 +294,15 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
         verzekerd_bedrag: pakket.dekking,
         ingangsdatum: submission.ingangsdatum,
         gekozen_pakket: submission.gekozen_pakket,
-        ...(ingangCorrectieLog ? { activatie_log: ingangCorrectieLog } : {}),
+        ...((ingangCorrectieLog || starterAutoLog.length) ? { activatie_log: [...(ingangCorrectieLog ?? []), ...starterAutoLog] } : {}),
          cyber_voorwaarden_versie: cyberGekozen ? CYBER_VERSIE : null,
          cyber_ingangsdatum: cyberGekozen ? submission.ingangsdatum : null,
          cyber_einddatum: cyberGekozen ? cyberJaarEind(submission.ingangsdatum) : null,
         ...starterVelden,
-        // Datum uit de KVK API: automatisch bevestigd. Alleen bij klantopgave (API faalde) handmatige controle.
-        starter_controle_status: starter ? "te_controleren" : null,
-        ...(starter && kvkDatumBron === "kvk_api" ? { starter_toelichting: "Voorstel: voldoet volgens KVK; Ellen beslist" } : {}),
+        // Besluit Boy 13 okt 2026: KVK bevestigt = automatisch goedgekeurd; anders te_controleren en Ellen beslist.
+        starter_controle_status: starterBesluit?.status ?? null,
+        ...(starterBesluit?.toelichting ? { starter_toelichting: starterBesluit.toelichting } : {}),
+        ...(starterBesluit?.status === "goedgekeurd" ? { starter_beoordeeld_op: new Date().toISOString() } : {}),
         opmerkingen: [
           // IBAN wordt bewust NIET in het vrije opmerkingenveld herhaald (alleen in de iban-kolom).
           submission.rekeninghouder ? `Rekeninghouder: ${submission.rekeninghouder}` : null,

@@ -5165,6 +5165,10 @@ export type Database = {
         Args: { _goedkeuren: boolean; _id: string; _reden: string }
         Returns: Json
       }
+      credit_handmatig_afgehandeld: {
+        Args: { _id: string; _toelichting: string }
+        Returns: Json
+      }
       credit_voorstel: {
         Args: { _contract_id: string; _einddatum: string }
         Returns: Json

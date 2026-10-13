@@ -15,7 +15,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { formatDateLongNL, formatDateTimeLongNL } from "@/lib/dateFormat";
 import { logActiviteit } from "@/lib/activiteitenLog";
-import { vroegsteIngangsdatum, dagNL } from "@/lib/ingangsdatum";
+import { ingangsdatumBlokkeertActivatie, MELDING_INGANG_KLANT_TE_VROEG } from "@/lib/ingangsdatum";
+import { useIngangsdatumInternGezet } from "@/hooks/useIngangsdatumIntern";
 
 
 
@@ -36,6 +37,8 @@ const isValidIban = (i: any) => typeof i === "string" && isValidIbanMod97(i);
 export function LeadActivationPanel({ lead, magActiveren, fase }: Props) {
   const { toast } = useToast();
   const qc = useQueryClient();
+  const internGezet = useIngangsdatumInternGezet(lead.id);
+  const ingangTeVroeg = ingangsdatumBlokkeertActivatie(lead, internGezet);
   const { data: profiles } = useProfiles();
   const [isActivating, setIsActivating] = useState(false);
   const [isRetryingMandate, setIsRetryingMandate] = useState(false);
@@ -76,8 +79,8 @@ export function LeadActivationPanel({ lead, magActiveren, fase }: Props) {
     { label: "Gekozen pakket", ok: !!lead.gekozen_pakket },
     { label: "IBAN (geldig)", ok: isValidIban(lead.iban) },
     { label: "SEPA-akkoord", ok: lead.sepa_akkoord === true },
-    { label: lead.ingangsdatum && lead.created_at && lead.ingangsdatum < vroegsteIngangsdatum(lead.created_at) ? `Ingangsdatum: pas eerst aan (vroegst ${dagNL(vroegsteIngangsdatum(lead.created_at))})` : "Ingangsdatum", ok: !!lead.ingangsdatum && !(lead.created_at && String(lead.ingangsdatum).slice(0, 10) < vroegsteIngangsdatum(lead.created_at)) },
-  ], [lead]);
+    { label: ingangTeVroeg ? `Ingangsdatum: ${MELDING_INGANG_KLANT_TE_VROEG}` : "Ingangsdatum", ok: !!lead.ingangsdatum && !ingangTeVroeg },
+  ], [lead, ingangTeVroeg]);
 
   const allGreen = checks.every(c => c.ok);
   const missing = checks.filter(c => !c.ok).map(c => c.label);
