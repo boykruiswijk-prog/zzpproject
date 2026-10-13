@@ -60,3 +60,5 @@ verify_jwt = false
 
 [functions.wijziging-mailen]
 verify_jwt = false
+  [functions.exact-stamdata-bijwerken]
+    verify_jwt = false
