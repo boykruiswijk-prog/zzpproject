@@ -110,7 +110,7 @@ export function SupervisorKpiPanel() {
   // MRR-indicatie
   const mrrMaand = actief
     .filter((l) => l.betaalritme === "maandelijks")
-    // Eerste maandfactuur is naar rato; MRR rekent met de premie per maand.
+    // Eerste maandfactuur is een volle maand (D1; oude leads soms naar rato); MRR rekent met de premie per maand.
     .reduce((sum, l) => sum + (l.exact_invoice_amount ? 55 : 0), 0);
   const mrrJaar = actief
     .filter((l) => l.betaalritme === "jaarlijks")

@@ -7,6 +7,7 @@ const rol = { isAdmin: false, isSupervisor: false, isVerzekering: false, isMarke
 vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ user: { email: "t@zpzaken.nl" }, signOut: vi.fn(), ...rol }) }));
 vi.mock("@/hooks/useAdminTaken", () => ({ useAdminTakenCount: () => ({ data: 0 }) }));
 vi.mock("@/hooks/useMenuTellers", () => ({ useMenuTellers: () => ({ data: {} }) }));
+vi.mock("@/hooks/useMachtigingenNakijken", () => ({ useMachtigingenNakijken: () => ({ data: { totaal: 0 } }) }));
 
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 
