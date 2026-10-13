@@ -7,4 +7,3 @@
 
 - Serviceaanvragen bijwerken alleen via RPC service_aanvraag_status/afronden/notitie (src/lib/serviceAanvraag.ts), fout bij 0 rijen. Waarom: geen stille RLS-weigering.
 - Volledig IBAN in beheer alleen via RPC iban_inzien (component IbanInzien), standaard gemaskeerd, elke inzage in sensitive_audit_log. Waarom: inzage herleidbaar, naar buiten altijd gemaskeerd.
-- docs/cloudflare-bulk-redirects.csv volgt bij elke build uit public/_redirects. Waarom: één bron.
