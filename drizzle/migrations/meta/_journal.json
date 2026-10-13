@@ -876,6 +876,13 @@
       "when": 1791889674506,
       "tag": "0124_credit_handmatig_naam_fix",
       "breakpoints": true
+    },
+    {
+      "idx": 125,
+      "version": "7",
+      "when": 1791890373214,
+      "tag": "0125_kvk_uittreksel_starter",
+      "breakpoints": true
     }
   ]
 }
