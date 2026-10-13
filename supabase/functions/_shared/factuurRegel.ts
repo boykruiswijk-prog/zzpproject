@@ -11,7 +11,21 @@ export function lidmaatschapNaam(itemcode?: string | null, product?: string | nu
   return LID[String(itemcode ?? "").trim()] ?? LID_PRODUCT[String(product ?? "").trim()] ?? null;
 }
 
-export function factuurRegelTekst(k: { itemcode?: string | null; product?: string | null; periode_start: string; periode_eind: string }): string {
+/** " (30% korting)"; komma als decimaalteken. Leeg zonder korting. */
+export function kortingTekst(pct?: number | string | null): string {
+  const p = Number(pct ?? 0);
+  if (!(p > 0 && p < 100)) return "";
+  return ` (${String(Math.round(p * 100) / 100).replace(".", ",")}% korting)`;
+}
+
+/** Regeltekst met kortingsvermelding achteraan; inkorten gaat ten koste van de periodetekst, nooit van de korting. */
+export function factuurRegelTekst(k: { itemcode?: string | null; product?: string | null; periode_start: string; periode_eind: string; korting_pct?: number | string | null }): string {
+  const kt = kortingTekst(k.korting_pct);
+  const basis = factuurRegelBasis(k);
+  return kt ? `${basis.slice(0, MAX - kt.length).trimEnd()}${kt}` : basis;
+}
+
+function factuurRegelBasis(k: { itemcode?: string | null; product?: string | null; periode_start: string; periode_eind: string }): string {
   if (k.product === "cyber_clear") return `${periodeTekst(k.periode_start, k.periode_eind)} Cyberpremie`.slice(0, MAX);
   const lid = lidmaatschapNaam(k.itemcode, k.product);
   return lid

@@ -2849,6 +2849,12 @@ export type Database = {
           id: string
           is_test: boolean
           itemcode: string
+          korting_door: string | null
+          korting_op: string | null
+          korting_pct: number | null
+          korting_reden: string | null
+          korting_tot: string | null
+          korting_vanaf: string | null
           laatst_gefactureerd_bedrag: number | null
           maandwaarde: number | null
           onderneming_id: string
@@ -2890,6 +2896,12 @@ export type Database = {
           id?: string
           is_test?: boolean
           itemcode: string
+          korting_door?: string | null
+          korting_op?: string | null
+          korting_pct?: number | null
+          korting_reden?: string | null
+          korting_tot?: string | null
+          korting_vanaf?: string | null
           laatst_gefactureerd_bedrag?: number | null
           maandwaarde?: number | null
           onderneming_id: string
@@ -2931,6 +2943,12 @@ export type Database = {
           id?: string
           is_test?: boolean
           itemcode?: string
+          korting_door?: string | null
+          korting_op?: string | null
+          korting_pct?: number | null
+          korting_reden?: string | null
+          korting_tot?: string | null
+          korting_vanaf?: string | null
           laatst_gefactureerd_bedrag?: number | null
           maandwaarde?: number | null
           onderneming_id?: string
@@ -5224,6 +5242,10 @@ export type Database = {
         }
         Returns: number
       }
+      contract_korting_voorbeeld: {
+        Args: { _contract_id: string; _pct: number; _vanaf: string }
+        Returns: Json
+      }
       credit_beoordelen: {
         Args: { _goedkeuren: boolean; _id: string; _reden: string }
         Returns: Json
@@ -5367,6 +5389,7 @@ export type Database = {
           itemcode: string
           klant_contract_id: string
           klantnaam: string
+          korting_pct: number
           onderneming_id: string
           periode_eind: string
           periode_start: string
@@ -5451,6 +5474,12 @@ export type Database = {
       koppel_opzegging: {
         Args: { _aanvraag_id: string; _onderneming_id: string }
         Returns: Json
+      }
+      korting_grens: { Args: { _contract_id: string }; Returns: string }
+      korting_netto: { Args: { _basis: number; _pct: number }; Returns: number }
+      korting_voor_periode: {
+        Args: { _pct: number; _ps: string; _tot: string; _vanaf: string }
+        Returns: number
       }
       kvk_betaald_teller: { Args: never; Returns: Json }
       kvk_claim: { Args: { _kvk: string }; Returns: boolean }
@@ -5663,6 +5692,10 @@ export type Database = {
         Args: { _aanvraag_id: string }
         Returns: Json
       }
+      verwijder_contract_korting: {
+        Args: { _contract_id: string; _toelichting: string }
+        Returns: Json
+      }
       verwijder_lead_vlag: {
         Args: { _lead_id: string; _toelichting: string }
         Returns: Json
@@ -5675,6 +5708,16 @@ export type Database = {
           slug: string
           title: string
         }[]
+      }
+      zet_contract_korting: {
+        Args: {
+          _contract_id: string
+          _pct: number
+          _reden: string
+          _tot: string
+          _vanaf: string
+        }
+        Returns: Json
       }
       zet_facturatie_actief: { Args: { _aan: boolean }; Returns: boolean }
       zet_lead_test: {
