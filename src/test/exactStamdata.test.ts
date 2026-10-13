@@ -107,3 +107,25 @@ describe("allowlist", () => {
     expect(() => controleerSchrijfactie("POST", "crm/BankAccounts", {})).not.toThrow();
   });
 });
+
+describe("controle", () => {
+  it("alleen GET, IBAN gemaskeerd, signalen", async () => {
+    const { controleerRelatie } = await import("../../supabase/functions/_shared/exactStamdata");
+    const { calls, ex } = nep((c) => {
+      if (c.pad.startsWith("crm/Accounts")) return { results: [{ ID: ACC, Code: "  2009277", Name: "X", PaymentConditionSales: "14" }] };
+      if (c.pad.startsWith("crm/BankAccounts")) return { results: [{ ID: BANK, BankAccount: "NL91ABNA0417164300", Main: true }] };
+      if (c.pad.startsWith("cashflow")) return { results: [{ Reference: "SR-2009277", Main: false, BankAccount: "andere", CancellationDate: "/Date(1000)/" }] };
+      if (c.pad.startsWith("salesinvoice")) return { results: [{ InvoiceNumber: 1, PaymentCondition: "14" }] };
+      return { results: [] };
+    });
+    const r = await controleerRelatie(ex, "2009277");
+    expect(calls.every((c) => c.methode === "GET")).toBe(true);
+    expect(JSON.stringify(r)).not.toContain("NL91ABNA0417164300");
+    expect(r.bankrekeningen[0].iban).toBe("NL91…4300");
+    const s = r.signalen.join("|");
+    expect(s).toContain("geen incasso");
+    expect(s).toContain("ingetrokken");
+    expect(s).toContain("niet Main");
+    expect(s).toContain("≠ IN");
+  });
+});
