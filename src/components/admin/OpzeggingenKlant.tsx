@@ -11,11 +11,13 @@ import { formatDateNL } from "@/lib/dateFormat";
 import { PRODUCT_LABEL, type Product } from "@/lib/klantContracten";
 import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 import { ServiceAanvraagOog } from "@/components/admin/ServiceAanvraagOog";
+import { Circle8Knop } from "@/components/admin/Circle8Knop";
 
 export const KOPPELING_LABEL: Record<string, string> = {
   zeker: "Automatisch zeker",
   voorstel: "Voorstel",
   niet_gekoppeld: "Niet gekoppeld",
+  collectief: "Circle8 (collectief)",
 };
 export const METHODE_LABEL: Record<string, string> = {
   email: "op e-mail",
