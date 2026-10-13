@@ -183,7 +183,7 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
     const ingangCorrectie = corrigeerIngangsdatum(submission.ingangsdatum);
     if (ingangCorrectie) submission.ingangsdatum = ingangCorrectie.nieuw;
     const ingangCorrectieLog = ingangCorrectie
-      ? [{ tijd: new Date().toISOString(), actie: "ingangsdatum_gecorrigeerd", oud: ingangCorrectie.oud, nieuw: ingangCorrectie.nieuw, cyber: true, reden: "vroegst dag na aanvraag", door: "process-bav-wizard" }]
+      ? [{ tijd: new Date().toISOString(), actie: "ingangsdatum_gecorrigeerd", oud: ingangCorrectie.oud, nieuw: ingangCorrectie.nieuw, reden: "vroegst dag na aanvraag", door: "process-bav-wizard" }]
       : null;
 
     // ── DUPLICATE GUARD: bestaande klant met polis kan geen tweede aanvraag doen ──
