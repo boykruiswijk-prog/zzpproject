@@ -25,6 +25,7 @@ import { useFormGuard, submitPublicForm, PublicFormError } from "@/lib/antiSpam"
 import { maakFormulier } from "../../../supabase/functions/_shared/leadVelden";
 
 import { HoneypotField } from "@/components/shared/HoneypotField";
+import { vroegsteIngangsdatum, ingangsdatumFout } from "@/lib/ingangsdatum";
 
 interface OnlineAanvraagDialogProps {
   open: boolean;
@@ -109,6 +110,7 @@ export function OnlineAanvraagDialog({
     if (step === 3) {
       if (!formData.dekkingsBedrag) newErrors.dekkingsBedrag = "Selecteer een verzekerd bedrag";
       if (!formData.ingangsdatum) newErrors.ingangsdatum = "Kies een ingangsdatum";
+      else if (ingangsdatumFout(formData.ingangsdatum)) newErrors.ingangsdatum = ingangsdatumFout(formData.ingangsdatum)!;
     }
     
     setErrors(newErrors);
@@ -494,6 +496,7 @@ export function OnlineAanvraagDialog({
               <Input
                 id="ingangsdatum"
                 type="date"
+                min={vroegsteIngangsdatum()}
                 value={formData.ingangsdatum}
                 onChange={(e) => updateFormData("ingangsdatum", e.target.value)}
                 className={errors.ingangsdatum ? "border-destructive" : ""}

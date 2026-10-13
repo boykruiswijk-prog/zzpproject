@@ -38,6 +38,7 @@ import { maakFormulier } from "../../supabase/functions/_shared/leadVelden";
 import { HoneypotField } from "@/components/shared/HoneypotField";
 import { WIZARD_SECTOREN, isHandmatigeAcceptatieSector } from "@/data/sectorVerzekeringskaart";
 import { brancheVoorSector } from "@/data/sectorBranche";
+import { vroegsteIngangsdatum, ingangsdatumFout } from "@/lib/ingangsdatum";
 
 const SEO = seoRoute("/offerte");
 
@@ -123,6 +124,8 @@ export default function OffertePage() {
       e.belangrijkste_opdrachtgever = "Vul de naam van je belangrijkste opdrachtgever in";
     if (!form.omschrijving_werkzaamheden.trim() || form.omschrijving_werkzaamheden.trim().length < 30)
       e.omschrijving_werkzaamheden = "Beschrijf je werkzaamheden in minimaal 30 tekens";
+    const datumFout = ingangsdatumFout(form.gewenste_startdatum);
+    if (datumFout) (e as Record<string, string>).gewenste_startdatum = datumFout;
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -511,10 +514,13 @@ export default function OffertePage() {
                   <Input
                     id="gewenste_startdatum"
                     type="date"
-                    min={new Date().toISOString().split("T")[0]}
+                    min={vroegsteIngangsdatum()}
                     value={form.gewenste_startdatum}
                     onChange={(e) => update("gewenste_startdatum", e.target.value)}
                   />
+                  {(errors as Record<string, string | undefined>).gewenste_startdatum ? (
+                    <p className="mt-1 text-xs text-destructive">{(errors as Record<string, string | undefined>).gewenste_startdatum}</p>
+                  ) : <p className="mt-1 text-xs text-muted-foreground">Vroegst morgen.</p>}
                 </div>
               </div>
             </fieldset>

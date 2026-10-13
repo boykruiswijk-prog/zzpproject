@@ -28,6 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 import ellenAvatar from "@/assets/ellen-baars-avatar.webp";
 import { TrustSignalsStrip } from "@/components/social-proof/TrustSignalsStrip";
 import { bavPakketten, getPakket, type BavPakketId } from "@/data/bavPakketten";
+import { vroegsteIngangsdatum, ingangsdatumFout } from "@/lib/ingangsdatum";
 import { STARTER, STARTER_VOORBEHOUD_TEKST, STARTER_VOORWAARDE_TEKST, isStarter, starterTot } from "@/lib/starterTarief";
 import { checkAcceptance } from "@/data/acceptanceCriteria";
 import { useFormGuard } from "@/lib/antiSpam";
@@ -108,7 +109,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
      window.addEventListener("hashchange", pas);
      return () => window.removeEventListener("hashchange", pas);
    }, [routerLocatie.hash, routerLocatie.key]);
-   const [startDate, setStartDate] = useState<string>("");
+   const [startDate, setStartDate] = useState<string>(() => vroegsteIngangsdatum());
    const [viaBemiddelaar, setViaBemiddelaar] = useState<boolean | null>(null);
    const [incassoAkkoord, setIncassoAkkoord] = useState(false);
    const [clientAkkoordOp, setClientAkkoordOp] = useState<string | null>(null);
@@ -208,14 +209,14 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
 
     if (step === 1) {
       if (heeftCyber && !beoordeelCyber(cyberAntwoorden).volledig) newErrors.cyber = "Beantwoord alle vragen over cyberdekking";
-      const today = new Date().toISOString().split('T')[0];
+      const vroegst = vroegsteIngangsdatum();
       const maxDate = new Date();
       maxDate.setMonth(maxDate.getMonth() + 6);
       const maxStr = maxDate.toISOString().split('T')[0];
       if (!startDate) newErrors.startDate = t("bavApp.valStartDate");
-      else if (startDate < today) {
-        setStartDate(today);
-        newErrors.startDate = `Online kan de ingangsdatum niet in het verleden liggen. Heb je een vraag, bel ${SITE_CONFIG.phoneDisplay}.`;
+      else if (ingangsdatumFout(startDate)) {
+        newErrors.startDate = ingangsdatumFout(startDate)!;
+        setStartDate(vroegst);
       } else if (startDate > maxStr) {
         newErrors.startDate = "Kies een datum binnen 6 maanden. Voor latere ingangsdata neem contact op.";
       }
@@ -746,7 +747,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                         <Input
                           id="startDate"
                           type="date"
-                          min={new Date().toISOString().split('T')[0]}
+                          min={vroegsteIngangsdatum()}
                           max={(() => { const d = new Date(); d.setMonth(d.getMonth() + 6); return d.toISOString().split('T')[0]; })()}
                           value={startDate}
                           onChange={(e) => {
@@ -754,12 +755,12 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                             if (errors.startDate) setErrors(prev => { const n = { ...prev }; delete n.startDate; return n; });
                           }}
                           onBlur={(e) => {
-                            const today = new Date().toISOString().split('T')[0];
                             const max = new Date(); max.setMonth(max.getMonth() + 6);
                             const maxStr = max.toISOString().split('T')[0];
-                            if (e.target.value && e.target.value < today) {
-                              setStartDate(today);
-                              setErrors(prev => ({ ...prev, startDate: `Online kan de ingangsdatum niet in het verleden liggen. Heb je een vraag, bel ${SITE_CONFIG.phoneDisplay}.` }));
+                            const fout = ingangsdatumFout(e.target.value);
+                            if (fout) {
+                              setStartDate(vroegsteIngangsdatum());
+                              setErrors(prev => ({ ...prev, startDate: fout }));
                             } else if (e.target.value && e.target.value > maxStr) {
                               setErrors(prev => ({ ...prev, startDate: "Kies een datum binnen 6 maanden. Voor latere ingangsdata neem contact op." }));
                             }
@@ -769,7 +770,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                        </div>
                        {errors.startDate ? (
                          <p className="text-xs mt-1.5" style={{ color: '#E53E2F' }}>{errors.startDate}</p>
-                       ) : <p className="mt-1.5 text-xs text-muted-foreground">Vanaf deze datum ben je verzekerd. Fouten van voor deze datum zijn niet gedekt.</p>}
+                       ) : <p className="mt-1.5 text-xs text-muted-foreground">Vroegst morgen. Vanaf deze datum ben je verzekerd. Fouten van voor deze datum zijn niet gedekt.</p>}
                      </div>
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div>
