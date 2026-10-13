@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect } from "vitest";
 import { filterOpTab, isGeparkeerd, isOpvolgen, vlagFout, vandaagNL } from "@/lib/leadVlag";
 import { tellerUitleg } from "@/lib/menuTellers";
