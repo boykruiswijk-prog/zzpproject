@@ -31,10 +31,9 @@
 - Scripts never import React (SSR crashes); article markdown always uses articleMarkdownUrl (keeps tel: links, filters unsafe protocols).
 
 - Elke wijziging die zichtbaar is op de website of in de admin krijgt bij het publiceren precies één rij in public.wijzigingsmeldingen, in gewone taal voor Ellen (geen technische termen of bestandsnamen); de trigger wijzigingsmelding_mailen en het vangnet (cron) mailen via Edge Function wijziging-mailen. Waarom: Ellen weet altijd wat er veranderd is.
-- /scherm en /tv: data alleen via scherm-data (SCHERM_TOKEN of apparaattoken, alleen sha-256 in scherm_apparaten; koppelen via scherm-koppel); machine_activiteit-triggers laten nooit de actie falen. Waarom: intrekbare toegang per tv.
+- /scherm en /tv: data alleen via scherm-data (SCHERM_TOKEN of apparaattoken, alleen sha-256 in scherm_apparaten; koppelen via scherm-koppel); machine_activiteit-triggers laten nooit de actie falen; fout = cache met X-Cache stale + verouderd_sinds; pagina herlaadt bij nieuwe build (src/lib/versieControle.ts). Waarom: intrekbare toegang, stilstand zichtbaar.
 
 <!-- LOVABLE:BEGIN -->
 - Live scenes/effects are lazy; demo events stay in browser memory. Journey/timeline aggregates use service-only scherm_stromen via scherm-data. Why: site performance and visitor privacy.
 <!-- LOVABLE:END -->
 - Samengevoegd artikel: bron is_published=false + rij article_samenvoegingen + directe 301's; bewaakt door kennisbankSamenvoeging.test.ts. Waarom: niets verwijderen, geen ketens.
-- /tv: scherm-data geeft bij een fout de cache met X-Cache stale + verouderd_sinds (pagina oranje); scherm_werkstand-fout is een fout; momentopnames tonen 'bijgewerkt om' uit scherm_versheid(); de pagina herlaadt zelf bij een nieuwe build (src/lib/versieControle.ts, elke 10 min). Waarom: een stilstaand scherm moet zichtbaar zijn.
