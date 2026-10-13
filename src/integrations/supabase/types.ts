@@ -1886,6 +1886,27 @@ export type Database = {
         }
         Relationships: []
       }
+      exact_controle: {
+        Row: {
+          gemaakt_op: string
+          id: string
+          relatiecode: string
+          resultaat: Json
+        }
+        Insert: {
+          gemaakt_op?: string
+          id?: string
+          relatiecode: string
+          resultaat: Json
+        }
+        Update: {
+          gemaakt_op?: string
+          id?: string
+          relatiecode?: string
+          resultaat?: Json
+        }
+        Relationships: []
+      }
       exact_email_import: {
         Row: {
           created_at: string | null

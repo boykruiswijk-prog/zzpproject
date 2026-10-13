@@ -120,3 +120,61 @@ export async function verwerkMandaat(ex: Exact, rij: MandaatRij, live: boolean):
   return { ...basis, exact_bankrekening_id: bankId, exact_bankrekening_actie: actie,
     exact_mandaat_id: res(pm.data)[0]?.ID ?? null, status: "bijgewerkt", melding: `Machtiging ${kenmerk} aangemaakt`, _bestaat: true };
 }
+
+// ───────────── Controle (alleen GET) ─────────────
+export const maskIban = (s: unknown) => { const i = normIban(s); return i.length <= 8 ? (i ? "****" : null) : `${i.slice(0, 4)}…${i.slice(-4)}`; };
+export const exactDatum = (v: unknown): string | null => {
+  const m = typeof v === "string" ? v.match(/\/Date\((-?\d+)\)\//) : null;
+  return m ? new Date(Number(m[1])).toISOString().slice(0, 10) : (v ? String(v).slice(0, 10) : null);
+};
+const vandaag = () => new Date().toISOString().slice(0, 10);
+const isIncasso = (c: unknown) => String(c ?? "").trim().toUpperCase() === "IN";
+
+export function signalen(r: Any): string[] {
+  const s: string[] = [];
+  const mand: Any[] = r.mandaten ?? [];
+  const actief = mand.filter((m) => !m.CancellationDate || m.CancellationDate > vandaag());
+  if (mand.length === 0) s.push("geen mandaat in Exact");
+  if (mand.length > 0 && r.account && !isIncasso(r.account.betalingsconditie_code)) s.push(`mandaat bestaat maar SalesPaymentCondition is geen incasso (${r.account.betalingsconditie_code ?? "leeg"})`);
+  for (const m of mand) {
+    if (m.CancellationDate && m.CancellationDate <= vandaag()) s.push(`mandaat ${m.Reference} ingetrokken (CancellationDate ${m.CancellationDate})`);
+    if (!m.Main) s.push(`mandaat ${m.Reference} niet Main`);
+  }
+  if (mand.length > 0 && actief.length === 0) s.push("geen actief mandaat");
+  const hoofd = (r.bankrekeningen ?? []).find((b: Any) => b.Main);
+  for (const m of actief) if (hoofd && m.bankrekening_id && m.bankrekening_id !== hoofd.id) s.push(`mandaat ${m.Reference} verwijst naar andere bankrekening (${m.bankrekening}) dan de hoofdrekening (${hoofd.iban})`);
+  for (const f of r.facturen ?? []) if (!isIncasso(f.PaymentCondition)) s.push(`factuur ${f.InvoiceNumber} met betalingsconditie ≠ IN (${f.PaymentCondition ?? "leeg"})`);
+  if (r.account?.Blocked) s.push("account geblokkeerd");
+  return s;
+}
+
+export async function controleerRelatie(ex: Exact, relatiecode: string): Promise<Any> {
+  const ro: Exact = (m, p, b) => { if (m !== "GET") throw new Error("Controle mag alleen GET doen"); return ex(m, p, b); };
+  const fouten: string[] = [];
+  const r = await ro("GET", `crm/Accounts?$filter=${encodeURIComponent(codeFilter(relatiecode))}&$select=ID,Code,Name,Status,Blocked,PaymentConditionSales,PaymentConditionSalesDescription`);
+  if (!r.ok) return { relatiecode, fouten: [kort(r, "GET account")], signalen: [] };
+  const accs = res(r.data);
+  if (accs.length !== 1 || !guidOk(accs[0].ID)) return { relatiecode, fouten: [accs.length ? `${accs.length} accounts met deze code` : "niet gevonden"], signalen: ["account niet (eenduidig) gevonden"] };
+  const a = accs[0];
+  const id = a.ID;
+  const get = async (pad: string, wat: string) => { const x = await ro("GET", pad); if (!x.ok) { fouten.push(kort(x, wat)); return []; } return res(x.data); };
+  const banks = (await get(`crm/BankAccounts?$filter=${encodeURIComponent(`Account eq guid'${id}'`)}&$select=ID,BankAccount,Main,Blocked`, "GET bankrekeningen"))
+    .map((b: Any) => ({ id: b.ID, iban: maskIban(b.BankAccount), Main: b.Main ?? null, Blocked: b.Blocked ?? null }));
+  const bankMap = new Map(banks.map((b: Any) => [b.id, b.iban]));
+  const mandaten = (await get(`cashflow/DirectDebitMandates?$filter=${encodeURIComponent(`Account eq guid'${id}'`)}&$select=ID,Reference,Type,PaymentType,SignatureDate,CancellationDate,FirstSend,Main,BankAccount`, "GET mandaten"))
+    .map((m: Any) => ({ Reference: m.Reference ?? null, Type: m.Type ?? null, PaymentType: m.PaymentType ?? null,
+      SignatureDate: exactDatum(m.SignatureDate), CancellationDate: exactDatum(m.CancellationDate), FirstSend: m.FirstSend ?? null,
+      Main: m.Main ?? null, bankrekening_id: m.BankAccount ?? null, bankrekening: bankMap.get(m.BankAccount) ?? "onbekende rekening" }));
+  const facturen = (await get(`salesinvoice/SalesInvoices?$filter=${encodeURIComponent(`InvoiceTo eq guid'${id}'`)}&$select=InvoiceNumber,InvoiceDate,PaymentCondition,Status,AmountDC,Journal&$orderby=InvoiceDate desc&$top=10`, "GET facturen"))
+    .map((f: Any) => ({ InvoiceNumber: f.InvoiceNumber, InvoiceDate: exactDatum(f.InvoiceDate), PaymentCondition: f.PaymentCondition ?? null, Status: f.Status ?? null, AmountDC: f.AmountDC ?? null, Journal: f.Journal ?? null }));
+  const open = (await get(`read/financial/ReceivablesList?$filter=${encodeURIComponent(`AccountId eq guid'${id}'`)}&$select=InvoiceNumber,Amount,DueDate`, "GET openstaande posten"))
+    .map((o: Any) => ({ factuurnummer: o.InvoiceNumber ?? null, bedrag: o.Amount ?? null, vervaldatum: exactDatum(o.DueDate) }));
+  const uit: Any = {
+    relatiecode,
+    account: { ID: id, Code: String(a.Code ?? "").trim(), Name: a.Name, Status: a.Status ?? null, Blocked: a.Blocked ?? null,
+      betalingsconditie_code: a.PaymentConditionSales ?? null, betalingsconditie_omschrijving: a.PaymentConditionSalesDescription ?? null },
+    bankrekeningen: banks, mandaten, facturen, openstaande_posten: open, fouten,
+  };
+  uit.signalen = signalen(uit);
+  return uit;
+}
