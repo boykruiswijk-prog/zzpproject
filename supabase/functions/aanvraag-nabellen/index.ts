@@ -1,5 +1,5 @@
 // Elke 10 minuten (cron, x-cron-secret uit Vault): één interne mail per niet-afgeronde aanvraag
-// die 30 minuten stil staat. Nooit een mail naar de bezoeker. Claim via team_gemeld_op voorkomt dubbel mailen.
+// die 30 minuten stil staat (alleen afgelopen 24 uur, geen oude achterstand). Nooit een mail naar de bezoeker. Claim via team_gemeld_op voorkomt dubbel mailen.
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
@@ -22,7 +22,7 @@ Deno.serve(async (req) => {
     .eq("status", "open").eq("is_test", false).is("lead_id", null).is("dubbel_lead_id", null)
     .is("team_gemeld_op", null).is("geanonimiseerd_op", null)
     .or("telefoon.not.is.null,email.not.is.null")
-    .lt("laatst_actief_op", grens).order("laatst_actief_op").limit(25);
+    .lt("laatst_actief_op", grens).gte("laatst_actief_op", new Date(nu.getTime() - 24 * 3600_000).toISOString()).order("laatst_actief_op").limit(25);
   if (error) return json({ error: error.message }, 500);
 
   const resultaten: { id: string; geslaagd: boolean }[] = [];
