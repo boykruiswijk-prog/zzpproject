@@ -103,7 +103,7 @@ export async function submitPublicForm<T extends Record<string, unknown>>(
     if (extra?.bron === "chat-zeker") { trackGenerateLead("terugbel"); trackChatHandoff("terugbelverzoek"); trackTerugbelVerzonden(isTest); }
     else if (/terugbel/i.test(naam)) { trackGenerateLead("terugbel"); trackTerugbelVerzonden(isTest); }
     else if (type === "offerte-aanvraag") trackGenerateLead("offerte");
-    else if (type === "contact") { trackGenerateLead("contact"); trackContactVerzonden(isTest); }
+    else if (type === "contact") { trackGenerateLead("contact"); if (naam === "Contactformulier") trackContactVerzonden(isTest); }
     else trackGenerateLead("aanvraag");
   }
 
