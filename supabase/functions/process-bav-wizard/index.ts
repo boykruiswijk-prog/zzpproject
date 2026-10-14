@@ -1,3 +1,4 @@
+import { isEigenKvk, KVK_EIGEN_NUMMER_MELDING } from "../_shared/kvkInvoer.ts";
 import { corrigeerIngangsdatum } from "../_shared/ingangsdatum.ts";
 import { starterPremieKlanttekst } from "../_shared/premieTekst.ts";
 import { formatDateNL } from "../_shared/dateFormat.ts";
@@ -126,6 +127,9 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
       if (submission?.gekozen_pakket && !PAKKET_CONFIG[submission.gekozen_pakket]) ontbreekt.push("gekozen_pakket(onbekend)");
       return weiger(400, `Aanvraag onvolledig: ${ontbreekt.join(", ")}`, "validatie");
     }
+
+    // Placeholder of nepnummer (alle cijfers gelijk) weigeren; geen 11-proef.
+    if (submission.kvk_nummer && !isEigenKvk(String(submission.kvk_nummer))) return weiger(400, KVK_EIGEN_NUMMER_MELDING, "validatie_kvk");
 
     const cyberWasGekozen = isCyberPakket(submission.gekozen_pakket) || submission.cyber_aangevraagd === true;
     const cyberToets = beoordeelCyber(submission.cyber_antwoorden);
