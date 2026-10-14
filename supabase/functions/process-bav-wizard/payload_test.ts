@@ -28,7 +28,7 @@ const morgen = new Date(Date.now() + 2 * 86_400_000).toISOString().slice(0, 10);
 const geldig = () => ({
   hp: "", ms: 60_000, gekozen_pakket: "maandelijks", cyber_aangevraagd: false, cyber_antwoorden: {}, cyber_akkoord: false, cyber_client_akkoord_op: null,
   betaalwijze: "maandelijks", ingangsdatum: morgen, voornaam: "Test", achternaam: "Agent", email: "test.ads-agent@zpzaken.nl", telefoon: "0612345678",
-  attributie: {}, bedrijfsnaam: "Test Agent BV", kvk_nummer: "34567891", kvk_startdatum: null, beroep: "Consultant", sector: "Consultancy",
+  attributie: {}, bedrijfsnaam: "Test Agent BV", kvk_nummer: "34567891", kvk_startdatum: null, beroep: "Consultant", sector: "ICT",
   // Adres komt nu uit stap 4, maar met dezelfde veldnamen.
   adres_straat: "Tupolevlaan", adres_huisnummer: "41", adres_postcode: "1119 NW", adres_plaats: "Schiphol-Rijk", adres_land: "Nederland",
   iban: "NL91ABNA0417164300", sepa_akkoord: true, rekeninghouder: "Test Agent BV", lead_id: crypto.randomUUID(),
@@ -39,7 +39,7 @@ const post = (body: unknown) => handler!(new Request("http://localhost:8080/func
   method: "POST", headers: { "content-type": "application/json", origin: "http://localhost:8080" }, body: JSON.stringify(body),
 }));
 
-Deno.test("placeholder-KVK wordt geweigerd (400)", async () => {
+Deno.test({ name: "placeholder-KVK wordt geweigerd (400)", sanitizeOps: false, sanitizeResources: false }, async () => {
   for (const kvk of ["12345678", "11111111"]) {
     const res = await post({ ...geldig(), kvk_nummer: kvk });
     const j = await res.json();
@@ -48,7 +48,7 @@ Deno.test("placeholder-KVK wordt geweigerd (400)", async () => {
   }
 });
 
-Deno.test("volledige geldige payload na verhuizing adres wordt geaccepteerd (200)", async () => {
+Deno.test({ name: "volledige geldige payload na verhuizing adres wordt geaccepteerd (200)", sanitizeOps: false, sanitizeResources: false }, async () => {
   const res = await post(geldig());
   const txt = await res.text();
   if (res.status !== 200) console.log(txt.slice(0, 500));
