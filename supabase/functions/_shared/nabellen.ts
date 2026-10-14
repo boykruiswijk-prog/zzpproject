@@ -25,10 +25,16 @@ export type NabelConcept = {
   attributie?: Record<string, unknown> | null;
 };
 
+/** Interne testadressen (@zpzaken.nl) gelden altijd als test: nooit nabellen. */
+export function isInternTestEmail(email: string | null | undefined): boolean {
+  return !!email && email.trim().toLowerCase().endsWith("@zpzaken.nl");
+}
+
 /** Zelfde voorwaarden als de databasequery; dubbele controle vóór het mailen. */
 export function moetNabellen(c: NabelConcept, nu: Date = new Date()): boolean {
   if (c.status !== "open" || c.is_test !== false) return false;
   if (c.lead_id || c.dubbel_lead_id || c.team_gemeld_op || c.geanonimiseerd_op) return false;
+  if (isInternTestEmail(c.email)) return false;
   if (!(c.telefoon?.trim() || c.email?.trim())) return false;
   if (!c.laatst_actief_op) return false;
   return new Date(c.laatst_actief_op).getTime() < nu.getTime() - NABEL_WACHT_MINUTEN * 60_000;
