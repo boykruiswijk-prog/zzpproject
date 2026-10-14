@@ -80,7 +80,7 @@ export function buildLlmsFullTxt(routes: SeoRoute[]): string {
   for (const p of bavPakketten) {
     const d = p.dekkingen;
     const cyberRegels = d.cyber ? [CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD, CYBER_VOORWAARDEN_OPVRAGEN] : [];
-    const productRegels = [...cyberRegels, ...p.usps]
+    const productRegels = [...cyberRegels, ...p.usps.map(metPubliekeCybertekst)]
       .filter((regel, index, regels) => regels.indexOf(regel) === index)
       .map((regel) => `- ${metPunt(regel)}`);
     lines.push(
