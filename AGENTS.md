@@ -36,3 +36,5 @@
 <!-- LOVABLE:END -->
 - Samengevoegd artikel: bron is_published=false + rij article_samenvoegingen + directe 301's; bewaakt door kennisbankSamenvoeging.test.ts. Waarom: niets verwijderen, geen ketens.
 - Ingangsdatum vroegst dag na aanvraag (NL) via _shared/ingangsdatum.ts plus BEFORE INSERT-triggers aa_ingangsdatum_vroegst. Waarom: een regel (D4).
+- Herkomst: sessie gaat voor, daarna 90-dagenrecord zp_attributie_90d (nooit klik-ID's); utm of klik-ID overschrijft, direct bezoek niet. Secundaire conversies (terugbel/contact) alleen vanuit submitPublicForm na succes. Waarom: laatste betaalde klik telt, geen dubbele of test-conversies.
+- Vangregels in legacyRedirects eindigen op /* en komen via geordendeRedirects/zoekLegacyDoel altijd na exacte regels; geen prerender-stub of Cloudflare-regel. Waarom: specifiek gaat voor vangnet.
