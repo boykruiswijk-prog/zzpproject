@@ -61,6 +61,7 @@ export const BRON_TEKST: Record<string, string> = {
   bevestigd: "bevestigd door team",
   klant_certificaat: "bekend certificaat van de klant",
   eerdere_policy: "eerder certificaat van deze klant",
+  eerdere_policy_ingetrokken: "eerder certificaat (ingetrokken)",
   klantopgave: "opgegeven door klant, wordt bij bevestigen vastgelegd",
   nieuw: "nieuw nummer (eerstvolgend vrij)",
 };
