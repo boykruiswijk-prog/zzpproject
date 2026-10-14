@@ -960,6 +960,13 @@
       "when": 1791899566350,
       "tag": "0136_exact_betaalconditie_import",
       "breakpoints": true
+    },
+    {
+      "idx": 137,
+      "version": "7",
+      "when": 1791973995488,
+      "tag": "0137_ingetrokken_certificaat_vervangen",
+      "breakpoints": true
     }
   ]
 }
