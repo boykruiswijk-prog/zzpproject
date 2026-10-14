@@ -65,7 +65,7 @@ export const ZEKER_KENNIS = {
         "Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000)",
         "Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.",
         "Cyber heeft een vaste looptijd van 12 maanden en wordt daarna stilzwijgend met 12 maanden verlengd. Opzeggen kan tegen het einde van de looptijd. Cyber is niet dagelijks opzegbaar en niet pauzeerbaar. Bij maandbetaling betaal je het jaarcontract in 12 termijnen van €27,50. Zeg je de BAV + AVB op, dan loopt cyber door tot het einde van het lopende cyberjaar en blijven de resterende cybertermijnen verschuldigd.",
-        "Wat precies gedekt is, lees je in de polisvoorwaarden.",
+        "De cybervoorwaarden vraag je op via 020 - 457 3077 of via zpzaken.nl/contact.",
         "Premie inclusief kosten en assurantiebelasting"
       ]
     },
@@ -91,7 +91,7 @@ export const ZEKER_KENNIS = {
         "Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000)",
         "Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.",
         "Cyber heeft een vaste looptijd van 12 maanden en wordt daarna stilzwijgend met 12 maanden verlengd. Opzeggen kan tegen het einde van de looptijd. Cyber is niet dagelijks opzegbaar en niet pauzeerbaar. Bij maandbetaling betaal je het jaarcontract in 12 termijnen van €27,50. Zeg je de BAV + AVB op, dan loopt cyber door tot het einde van het lopende cyberjaar en blijven de resterende cybertermijnen verschuldigd.",
-        "Wat precies gedekt is, lees je in de polisvoorwaarden.",
+        "De cybervoorwaarden vraag je op via 020 - 457 3077 of via zpzaken.nl/contact.",
         "Premie inclusief kosten en assurantiebelasting"
       ]
     }
@@ -342,7 +342,7 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Verzekeringen",
       "vraag": "Wat dekt cyber?",
-      "antwoord": "Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000) Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico. Wat precies gedekt is, lees je in de polisvoorwaarden."
+      "antwoord": "Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000) Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico. De cybervoorwaarden vraag je op via 020 - 457 3077 of via zpzaken.nl/contact."
     },
     {
       "categorie": "Verzekeringen",
@@ -361,8 +361,8 @@ export const ZEKER_KENNIS = {
     },
     {
       "categorie": "Verzekeringen",
-      "vraag": "Kan ik mijn verzekeringen combineren voor korting?",
-      "antwoord": "Ja, bij ZP Zaken bieden we een combinatiepolis aan waarbij je je BAV en AVB kunt bundelen. Je houdt overzicht met één polis en één premie."
+      "vraag": "Kan ik mijn BAV en AVB combineren?",
+      "antwoord": "Ja. Bij ZP Zaken zitten je BAV en AVB samen in één combinatiepolis. Je houdt overzicht met één polis en één premie."
     },
     {
       "categorie": "Verzekeringen",
