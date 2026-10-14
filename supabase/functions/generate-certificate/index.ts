@@ -208,6 +208,11 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
       } else if (body.bevestig_nieuw_nummer === true) {
         nummer = "NIEUW";
       }
+      // Vervangt een ingetrokken certificaat met hetzelfde nummer: oude PDF eerst bewaren in versies/.
+      if (nummer && nummer !== "NIEUW") {
+        const b = await bewaarIngetrokkenPdfs(adminClient, nummer, user, "Vervangen door nieuw certificaat met hetzelfde BAV-nummer");
+        if (!b.ok) return json({ error: "Oude PDF bewaren mislukt; er is niets gewijzigd", details: b.error }, 500);
+      }
       const pd = policy_data || {};
       const tekst = (v: unknown) => (typeof v === "string" ? v.trim().slice(0, 200) : "");
       const sector = tekst(pd.sector);
