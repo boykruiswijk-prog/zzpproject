@@ -52,6 +52,7 @@ export type Database = {
           kvk: string | null
           laatst_actief_op: string
           lead_id: string | null
+          max_stap: number | null
           opgevolgd_door: string | null
           opgevolgd_op: string | null
           opvolg_notitie: string | null
@@ -60,6 +61,7 @@ export type Database = {
           sector: string | null
           stap: number
           status: string
+          team_gemeld_op: string | null
           telefoon: string | null
           voornaam: string | null
         }
@@ -76,6 +78,7 @@ export type Database = {
           kvk?: string | null
           laatst_actief_op?: string
           lead_id?: string | null
+          max_stap?: number | null
           opgevolgd_door?: string | null
           opgevolgd_op?: string | null
           opvolg_notitie?: string | null
@@ -84,6 +87,7 @@ export type Database = {
           sector?: string | null
           stap?: number
           status?: string
+          team_gemeld_op?: string | null
           telefoon?: string | null
           voornaam?: string | null
         }
@@ -100,6 +104,7 @@ export type Database = {
           kvk?: string | null
           laatst_actief_op?: string
           lead_id?: string | null
+          max_stap?: number | null
           opgevolgd_door?: string | null
           opgevolgd_op?: string | null
           opvolg_notitie?: string | null
@@ -108,6 +113,7 @@ export type Database = {
           sector?: string | null
           stap?: number
           status?: string
+          team_gemeld_op?: string | null
           telefoon?: string | null
           voornaam?: string | null
         }
@@ -141,6 +147,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      aanvraag_validatiefouten: {
+        Row: {
+          created_at: string
+          formulier: string
+          id: number
+          is_test: boolean
+          stap: number
+          veld: string
+        }
+        Insert: {
+          created_at?: string
+          formulier?: string
+          id?: never
+          is_test?: boolean
+          stap: number
+          veld: string
+        }
+        Update: {
+          created_at?: string
+          formulier?: string
+          id?: never
+          is_test?: boolean
+          stap?: number
+          veld?: string
+        }
+        Relationships: []
       }
       activiteiten_log: {
         Row: {
