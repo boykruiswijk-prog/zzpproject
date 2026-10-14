@@ -1,7 +1,8 @@
 // Herkomst van een bezoeker (alleen first-party). Wordt meegestuurd met publieke
 // formulieren → leads.extra_data.attributie en aanvraag_concepten.attributie.
 //
-// - utm_*, referrer, landingspagina: sessionStorage, eerste bezoek in de sessie (geen toestemming nodig).
+// - utm_*, referrer, landingspagina: sessionStorage, eerste bezoek in de sessie (geen toestemming nodig),
+//   plus 90 dagen in localStorage (zp_attributie_90d); de laatste betaalde klik (utm of klik-ID) gaat voor.
 // - Klik-ID's (gclid, gbraid, wbraid, msclkid): alleen na toestemming marketing-cookies,
 //   in localStorage met een bewaartermijn van 90 dagen. Zonder toestemming blijven ze
 //   alleen in het geheugen van de huidige pagina en worden ze nooit opgeslagen of verstuurd.
@@ -77,6 +78,61 @@ function verwerkCookieKeuze() {
 
 let luisteraar = false;
 
+/** 90-dagenrecord (zonder klik-ID's), naast de sessie. */
+export const LANG_KEY = "zp_attributie_90d";
+export const ATTRIBUTIE_BEWAARDAGEN = 90;
+const UTM = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"] as const;
+
+function advertentieklikVoor(klik: KlikIds): string {
+  return klik.msclkid && !klik.gclid && !klik.gbraid && !klik.wbraid ? "microsoft" : "google";
+}
+
+/** Herkomst van deze binnenkomst (zonder klik-ID's). */
+function binnenkomst(klik: KlikIds | null): Record<string, string> {
+  const q = new URLSearchParams(window.location.search);
+  const a: Record<string, string> = {};
+  for (const k of ATTRIBUTIE_SLEUTELS) {
+    if ((KLIK_ID_SLEUTELS as readonly string[]).includes(k)) continue; // nooit in opslag zonder toestemming
+    const v = q.get(k);
+    if (v) a[k] = v.slice(0, 200);
+  }
+  if (klik) a.advertentieklik = advertentieklikVoor(klik);
+  const ref = document.referrer ? schoneUrl(document.referrer) : "";
+  if (ref && new URL(ref).host !== window.location.host) a.referrer = ref;
+  a.landingspagina = window.location.pathname;
+  a.eerste_bezoek_op = new Date().toISOString();
+  return a;
+}
+
+function leesLangRecord(): Record<string, string> | null {
+  try {
+    const v = localStorage.getItem(LANG_KEY);
+    if (!v) return null;
+    const p = JSON.parse(v) as Record<string, string>;
+    const t = Date.parse(p.opgeslagen_op ?? "");
+    if (!t || Date.now() - t > ATTRIBUTIE_BEWAARDAGEN * 86_400_000) {
+      localStorage.removeItem(LANG_KEY);
+      return null;
+    }
+    const uit: Record<string, string> = {};
+    for (const k of ATTRIBUTIE_SLEUTELS) {
+      if ((KLIK_ID_SLEUTELS as readonly string[]).includes(k)) continue;
+      if (typeof p[k] === "string") uit[k] = p[k];
+    }
+    return Object.keys(uit).length ? uit : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Laatste betaalde klik gaat voor: utm of klik-ID overschrijft; direct/organisch nooit een bestaand record. */
+function werkLangRecordBij(a: Record<string, string>, betaald: boolean) {
+  try {
+    if (!betaald && leesLangRecord()) return;
+    localStorage.setItem(LANG_KEY, JSON.stringify({ ...a, opgeslagen_op: new Date().toISOString() }));
+  } catch { /* geen opslag */ }
+}
+
 export function legAttributieVast(): void {
   if (typeof window === "undefined") return;
   try {
@@ -93,29 +149,21 @@ export function legAttributieVast(): void {
       window.addEventListener("storage", (e) => { if (e.key === CONSENT_KEY) verwerkCookieKeuze(); });
     }
 
+    const nu = binnenkomst(klik);
+    const betaald = !!klik || UTM.some((k) => !!nu[k]);
     const bestaand = sessionStorage.getItem(KEY);
     if (bestaand) {
       // Latere advertentieklik in dezelfde sessie: alleen de kanaalmarkering bijwerken.
       if (klik) {
         const p = JSON.parse(bestaand) as Record<string, string>;
-        p.advertentieklik = klik.msclkid && !klik.gclid && !klik.gbraid && !klik.wbraid ? "microsoft" : "google";
+        p.advertentieklik = advertentieklikVoor(klik);
         sessionStorage.setItem(KEY, JSON.stringify(p));
       }
+      if (betaald) werkLangRecordBij(nu, true);
       return;
     }
-    const q = new URLSearchParams(window.location.search);
-    const a: Record<string, string> = {};
-    for (const k of ATTRIBUTIE_SLEUTELS) {
-      if ((KLIK_ID_SLEUTELS as readonly string[]).includes(k)) continue; // nooit in sessionStorage
-      const v = q.get(k);
-      if (v) a[k] = v.slice(0, 200);
-    }
-    if (klik) a.advertentieklik = klik.msclkid && !klik.gclid && !klik.gbraid && !klik.wbraid ? "microsoft" : "google";
-    const ref = document.referrer ? schoneUrl(document.referrer) : "";
-    if (ref && new URL(ref).host !== window.location.host) a.referrer = ref;
-    a.landingspagina = window.location.pathname;
-    a.eerste_bezoek_op = new Date().toISOString();
-    sessionStorage.setItem(KEY, JSON.stringify(a));
+    sessionStorage.setItem(KEY, JSON.stringify(nu));
+    werkLangRecordBij(nu, betaald);
   } catch {
     /* geen opslag beschikbaar */
   }
@@ -125,7 +173,8 @@ export function leesAttributie(): Attributie | null {
   if (typeof window === "undefined") return null;
   try {
     const v = sessionStorage.getItem(KEY);
-    const basis = v ? (JSON.parse(v) as Record<string, string>) : {};
+    // Sessie gaat voor; anders het 90-dagenrecord (verlopen records worden weggegooid).
+    const basis = v ? (JSON.parse(v) as Record<string, string>) : (leesLangRecord() ?? {});
     // Oude sessies kunnen nog klik-ID's bevatten: altijd weglaten, alleen de toegestane bron gebruiken.
     for (const k of KLIK_ID_SLEUTELS) delete basis[k];
     delete basis.kanaal;

@@ -621,6 +621,27 @@ export const legacyRedirects: LegacyRedirect[] = [
   { from: "en/mijnzp", to: "/mijn-zp/polis" },
   { from: "en/mijn-polis", to: "/mijn-zp/polis" },
   { from: "en/klantenservice", to: "/mijn-zp/polis" },
+  // A16 (14 okt 2026): oude URL's uit Search Console. Vangregels (eindigend op /*)
+  // staan altijd ná de specifieke regels; de generator zet ze ook achteraan.
+  { from: "vergelijken", to: "/bav-zzp-vergelijken" },
+  { from: "vergelijker", to: "/bav-zzp-vergelijken" },
+  { from: "zoekresultaten", to: "/kennisbank" },
+  { from: "checkout", to: "/verzekeringen" },
+  { from: "winkelwagen", to: "/verzekeringen" },
+  { from: "services/bancair-sparen", to: "/diensten" },
+  { from: "services/bav/aanmelden", to: "/verzekeringen#combinatiepolis" },
+  { from: "services/aov", to: "/aov" },
+  { from: "services/faq", to: "/faq" },
+  { from: "services/juridisch-advies", to: "/diensten" },
+  { from: "services/zorg-verzekering", to: "/zorgverzekering" },
+  { from: "financien/pensioengat-reserveringsruimte-berekenen", to: "/pensioen" },
+  { from: "product/screening-pakket-1", to: "/screening" },
+  { from: "product/screening-pakket-2", to: "/screening" },
+  { from: "product/screening-pakket-3", to: "/screening" },
+  { from: "about", to: "/over-ons" },
+  { from: "policies/refund-policy", to: "/algemene-voorwaarden" },
+  { from: "radio/*", to: "/kennisbank" },
+  { from: "services/*", to: "/diensten" },
 ];
 
 /**
@@ -678,3 +699,22 @@ export function resolveRedirectTarget(
 export const verouderdeMedia = new Set(
   legacyRedirects.filter((r) => r.from.startsWith("wp-content/uploads/")).map((r) => r.from),
 );
+
+
+/** Vangregel: bron eindigt op /* en vangt alle onderliggende paden. */
+export const isVangregel = (r: LegacyRedirect) => r.from.endsWith("/*");
+
+/** Specifieke regels eerst, vangregels daarna (volgorde binnen elke groep blijft gelijk). */
+export function geordendeRedirects(lijst: LegacyRedirect[] = legacyRedirects): LegacyRedirect[] {
+  return [...lijst.filter((r) => !isVangregel(r)), ...lijst.filter(isVangregel)];
+}
+
+/** Doel voor een pad (met of zonder slashes, hoofdletterongevoelig): exacte regel gaat voor de vangregel. */
+export function zoekLegacyDoel(pad: string, lijst: LegacyRedirect[] = legacyRedirects): string | null {
+  const p = pad.replace(/^\/+|\/+$/g, "").toLowerCase();
+  if (!p) return null;
+  const exact = lijst.find((r) => !isVangregel(r) && r.from.toLowerCase() === p);
+  if (exact) return exact.to;
+  const vang = lijst.find((r) => isVangregel(r) && p.startsWith(r.from.slice(0, -1).toLowerCase()));
+  return vang ? vang.to : null;
+}

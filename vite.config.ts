@@ -5,6 +5,7 @@ import fs from "fs";
 import { componentTagger } from "lovable-tagger";
 import {
   legacyRedirects,
+  geordendeRedirects,
   resolveRedirectTarget,
   type ArticleRedirectInfo,
 } from "./src/config/legacyRedirects";
@@ -80,6 +81,8 @@ export function cloudflareBulkCsv(redirectLines: string[], host = "zpzaken.nl"):
     const [from, to, status] = line.split(/\s+/);
     if (!from || !to || !status?.startsWith("301")) continue;
     if (from === "/:path/" || from === "/*") continue;
+    // Vangregels (/x/*): Cloudflare-subpad zou botsen met de exacte regel /x/; client-side vangnet doet dit.
+    if (from.endsWith("/*") && from !== "/wp-content/uploads/*") continue;
     if (from === "/wp-content/uploads/*") {
       const doel = to.replace(/:splat$/, "");
       push(`${host}/wp-content/uploads/`, doel, "TRUE,TRUE,TRUE,TRUE");
@@ -118,7 +121,7 @@ function redirectsPlugin(env: Record<string, string>): Plugin {
       const mediaRules = legacyRedirects
         .filter((r) => r.from.startsWith("wp-content/uploads/"))
         .map((r) => `/${r.from}    ${r.to}    301  # verouderd formulier`);
-      const rules = legacyRedirects.filter((r) => !r.from.startsWith("wp-content/uploads/")).map((r) => {
+      const rules = geordendeRedirects(legacyRedirects).filter((r) => !r.from.startsWith("wp-content/uploads/")).map((r) => {
         const to = resolveRedirectTarget(r, articles);
         const article = articles.get(r.from);
         const note = !article

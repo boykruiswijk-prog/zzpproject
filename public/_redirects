@@ -575,6 +575,25 @@
 /en/mijnzp    /mijn-zp/polis    301
 /en/mijn-polis    /mijn-zp/polis    301
 /en/klantenservice    /mijn-zp/polis    301
+/vergelijken    /bav-zzp-vergelijken    301
+/vergelijker    /bav-zzp-vergelijken    301
+/zoekresultaten    /kennisbank    301
+/checkout    /verzekeringen    301
+/winkelwagen    /verzekeringen    301
+/services/bancair-sparen    /diensten    301
+/services/bav/aanmelden    /verzekeringen#combinatiepolis    301
+/services/aov    /aov    301
+/services/faq    /faq    301
+/services/juridisch-advies    /diensten    301
+/services/zorg-verzekering    /zorgverzekering    301
+/financien/pensioengat-reserveringsruimte-berekenen    /pensioen    301
+/product/screening-pakket-1    /screening    301
+/product/screening-pakket-2    /screening    301
+/product/screening-pakket-3    /screening    301
+/about    /over-ons    301
+/policies/refund-policy    /algemene-voorwaarden    301
+/radio/*    /kennisbank    301
+/services/*    /diensten    301
 
 # Pad met afsluitende slash → zelfde pad zonder slash (homepage uitgezonderd).
 /:path/    /:path    301!

@@ -10,6 +10,13 @@ export const GA_ID = "G-YY7YJFFEZN";
 export const GOOGLE_ADS_ID = "AW-18497139684";
 /** Google Ads-conversieactie (aanvraag BAV + AVB). Pas hier aan bij een nieuwe conversieactie. */
 export const GOOGLE_ADS_CONVERSIE = "AW-18497139684/rIoQCIid-5IdEOTnj_RE";
+/**
+ * Secundaire Google Ads-conversies (terugbelverzoek en contactformulier).
+ * Nu leeg: de Ads-bewaking vult de labels in na het aanmaken van de secundaire
+ * conversieacties in Google Ads. Zolang leeg gaat het event naar GOOGLE_ADS_ID.
+ */
+export const GOOGLE_ADS_CONVERSIE_TERUGBEL = "";
+export const GOOGLE_ADS_CONVERSIE_CONTACT = "";
 /** Microsoft Advertising UET-tag-ID. */
 export const MS_UET_ID = "187280316";
 
@@ -232,6 +239,25 @@ export const trackPurchase = (
   uetAanvraagAfgerond(isTest);
 };
 
+
+/** Productie = zpzaken.nl (zelfde regel als de server voor is_test). */
+export function isTestOmgeving(host: string = typeof window === "undefined" ? "" : window.location.hostname): boolean {
+  const h = host.toLowerCase();
+  return !(h === "zpzaken.nl" || h.endsWith(".zpzaken.nl"));
+}
+
+function secundaireConversie(event: string, formulier: string, label: string, isTest: boolean) {
+  if (isTest || typeof window === "undefined" || isNietGemetenPad(window.location.pathname)) return;
+  trackGa(event, { formulier, page: page() });
+  trackGa("conversion", { send_to: label || GOOGLE_ADS_ID });
+}
+
+/** Alleen aanroepen na een geslaagde server-respons. */
+export const trackTerugbelVerzonden = (isTest = isTestOmgeving()) =>
+  secundaireConversie("terugbelverzoek_verzonden", "terugbel", GOOGLE_ADS_CONVERSIE_TERUGBEL, isTest);
+/** Alleen aanroepen na een geslaagde server-respons. */
+export const trackContactVerzonden = (isTest = isTestOmgeving()) =>
+  secundaireConversie("contactformulier_verzonden", "contact", GOOGLE_ADS_CONVERSIE_CONTACT, isTest);
 
 export type LeadFormulier = "offerte" | "contact" | "terugbel" | "aanvraag";
 export const trackGenerateLead = (formulier: LeadFormulier) =>
