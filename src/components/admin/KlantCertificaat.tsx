@@ -31,6 +31,7 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds }: Props) 
   const [geenNummer, setGeenNummer] = useState(false);
   const [voorstel, setVoorstel] = useState<any>(null);
   const [bezig, setBezig] = useState(false);
+  const [vervangt, setVervangt] = useState<string | null>(null);
   const [form, setForm] = useState({ certificate_holder: "", insured_name: "", kvk: "", start_date: "", sector: "", package_type: "" });
 
   const { data: policies = [], refetch } = useQuery({
@@ -65,6 +66,21 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds }: Props) 
       sector,
       package_type: bav ? `BAV & AVB ${bav.cyclus === "jaar" ? "Jaarlijks" : "Maandelijks"}` : "BAV & AVB Jaarlijks",
     });
+    // Vervangt een ingetrokken certificaat (geen geldig): velden van het ingetrokken certificaat overnemen.
+    const ingetrokken = !bevestigNieuw && !policies.some((p: any) => p.status === "geldig")
+      ? policies.find((p: any) => p.status === "ingetrokken") : null;
+    if (ingetrokken) {
+      const sec = WIZARD_SECTOREN.find((x) => brancheVoorSector(x.label) === ingetrokken.profession)?.label;
+      setForm((f) => ({
+        certificate_holder: ingetrokken.certificate_holder ?? f.certificate_holder,
+        insured_name: ingetrokken.insured_name ?? f.insured_name,
+        kvk: f.kvk,
+        start_date: ingetrokken.start_date ?? f.start_date,
+        sector: sec ?? f.sector,
+        package_type: ingetrokken.package_type ?? f.package_type,
+      }));
+    }
+    setVervangt(ingetrokken?.certificate_number ?? null);
     setBevestig(bevestigNieuw);
     setVoorstel(null);
     setGeenNummer(false);
@@ -85,6 +101,7 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds }: Props) 
       case "bevestigd": return `bevestigd${wie}${op}`;
       case "klant_certificaat": return `bekend certificaat van de klant`;
       case "eerdere_policy": return `eerder certificaat van deze klant`;
+      case "eerdere_policy_ingetrokken": return `eerder certificaat (ingetrokken)`;
       default: return "";
     }
   };
@@ -134,7 +151,7 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds }: Props) 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Certificaat genereren</DialogTitle>
+            <DialogTitle>{vervangt ? "Nieuw certificaat maken" : "Certificaat genereren"}</DialogTitle>
             <DialogDescription>Controleer de gegevens. Afgiftedatum wordt vandaag; "Voor gezien" wordt jouw naam.</DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
@@ -153,6 +170,9 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds }: Props) 
             </div>
             <div><Label htmlFor="kc-sd">Ingangsdatum</Label><Input id="kc-sd" type="date" value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} /></div>
           </div>
+          {vervangt && (!voorstel || !voorstel.nummer || voorstel.nummer === vervangt) && (
+            <p className="text-sm font-medium">Vervangt ingetrokken certificaat {vervangt} (zelfde BAV-nummer). Er wordt niets gemaild.</p>
+          )}
           {voorstel?.nummer && !bevestig && (
             <p className="text-sm">Certificaatnummer: <strong>{voorstel.nummer}</strong> ({bronTekst(voorstel)})
               {voorstel.staat_al_op_policy && <span className="block text-destructive">Dit nummer staat al op een certificaat van deze klant. Gebruik "Aanpassen".</span>}
