@@ -725,6 +725,12 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
     // === Save & upload PDF ===
     const pdfBytes = await pdfDoc.save();
     const fileName = `${policy.certificate_number}.pdf`;
+    // Nooit de PDF van een ander (ingetrokken) certificaat overschrijven.
+    const { data: anderePdf } = await adminClient.from("policies").select("id").eq("pdf_url", fileName).neq("id", policy.id).limit(1);
+    if (anderePdf?.length) {
+      return new Response(JSON.stringify({ error: "De PDF van een eerder certificaat met dit nummer is nog niet bewaard; er is niets overschreven" }),
+        { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
 
     const pdfBlob = new Blob([pdfBytes as BlobPart], { type: "application/pdf" });
     const { error: uploadError } = await adminClient.storage
