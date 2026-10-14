@@ -4,7 +4,7 @@
 import { useCallback, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { leesAttributie } from "@/lib/attributie";
-import { trackGenerateLead, trackChatHandoff } from "@/lib/tracking";
+import { trackGenerateLead, trackChatHandoff, trackTerugbelVerzonden, trackContactVerzonden, isTestOmgeving } from "@/lib/tracking";
 
 /** Naam van het onzichtbare veld. Bots vullen 'm, mensen zien 'm niet. */
 export const HONEYPOT_NAME = "website_url";
@@ -97,10 +97,13 @@ export async function submitPublicForm<T extends Record<string, unknown>>(
     const extra = (row as Record<string, unknown>).extra_data as Record<string, unknown> | undefined;
     const naam = String(extra?.formulier_naam ?? "");
     const type = String((row as Record<string, unknown>).type ?? "");
-    if (extra?.bron === "chat-zeker") { trackGenerateLead("terugbel"); trackChatHandoff("terugbelverzoek"); }
-    else if (/terugbel/i.test(naam)) trackGenerateLead("terugbel");
+    // Secundaire conversies: alleen hier, na een geslaagde server-respons; nooit bij testinzendingen.
+    const email = String((row as Record<string, unknown>).email ?? "").toLowerCase();
+    const isTest = isTestOmgeving() || email.endsWith("@zpzaken.nl");
+    if (extra?.bron === "chat-zeker") { trackGenerateLead("terugbel"); trackChatHandoff("terugbelverzoek"); trackTerugbelVerzonden(isTest); }
+    else if (/terugbel/i.test(naam)) { trackGenerateLead("terugbel"); trackTerugbelVerzonden(isTest); }
     else if (type === "offerte-aanvraag") trackGenerateLead("offerte");
-    else if (type === "contact") trackGenerateLead("contact");
+    else if (type === "contact") { trackGenerateLead("contact"); trackContactVerzonden(isTest); }
     else trackGenerateLead("aanvraag");
   }
 
