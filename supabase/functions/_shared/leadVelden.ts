@@ -262,6 +262,7 @@ export function leadWeergave(lead: Rec): LeadWeergave {
     ...attributieRegels(extra.attributie).flatMap(([l, w]) => rij(l, w)),
   ];
   gebruiktExtra.add("attributie");
+  gebruiktExtra.add("herkomst_klant"); // alleen beheer, apart getoond (HerkomstKlant)
   if (extra.sector && extra.branche) gebruiktExtra.add("sector");
 
   const shown = new Set([...contact, ...aanvraag].map((f) => `${f.label}|${f.waarde}`));
