@@ -1,5 +1,5 @@
 import { CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD } from "../../supabase/functions/_shared/cyber";
-import { CYBER_VOORWAARDEN_OPVRAGEN } from "@/config/cyberPubliek";
+import { CYBER_VOORWAARDEN_OPVRAGEN } from "../config/cyberPubliek";
 import { seoRoute } from "@/config/seoRoutes";
 import { ServicePageTemplate } from "@/components/diensten/ServicePageTemplate";
 import { faqSchema } from "@/lib/schema";

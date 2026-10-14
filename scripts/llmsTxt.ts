@@ -1,5 +1,5 @@
 import { CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD, formatPremieBedrag } from "../supabase/functions/_shared/cyber";
-import { CYBER_VOORWAARDEN_OPVRAGEN } from "../src/config/cyberPubliek";
+import { CYBER_VOORWAARDEN_OPVRAGEN, metPubliekeCybertekst } from "../src/config/cyberPubliek";
 // Genereert llms.txt en llms-full.txt tijdens de prerender. Alleen feiten die
 // al op de site staan: bedrijfsgegevens uit site.ts, premies en dekkingen uit
 // bavPakketten.ts, pagina's uit seoRoutes.ts en vragen uit faqItems.ts.
