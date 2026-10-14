@@ -74,6 +74,7 @@ describe("nabellen", () => {
     expect(moetNabellen({ ...basis, team_gemeld_op: "2026-10-14T11:50:00Z" }, nu)).toBe(false);
     expect(moetNabellen({ ...basis, status: "omgezet" }, nu)).toBe(false);
     expect(moetNabellen({ ...basis, telefoon: null, email: null }, nu)).toBe(false);
+    expect(moetNabellen({ ...basis, email: "test.ads-agent@zpzaken.nl" }, nu)).toBe(false);
   });
   it("mail bevat alle gevraagde gegevens", () => {
     const m = bouwNabelMail(basis);
