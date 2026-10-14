@@ -42,6 +42,8 @@ import { LocalizedLink } from "@/components/LocalizedLink";
 import { usePdokAdres } from "@/hooks/usePdokAdres";
 import { AdresGevonden } from "@/components/AdresGevonden";
 import { normaliseerPostcode } from "@/lib/adresNormalisatie";
+import { isEigenKvk, KVK_EIGEN_NUMMER_MELDING, KVK_PLACEHOLDER } from "@/lib/kvkInvoer";
+import { IbanVertrouwen } from "@/components/home/IbanVertrouwen";
 
 const formatBedrag = (n: number) => `€${n.toLocaleString("nl-NL")}`;
 /** Compacte bedragen: 5.000.000 → "€5M", 2.500.000 → "€2,5M". */
@@ -61,7 +63,7 @@ export function zichtbareBavUsps(usps: string[], sector: string): string[] {
 const CONCEPT_KEY = "zp_aanvraag_concept_id";
 const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 const isValidPhone = isNlTelefoon;
-const isValidKvk = (kvk: string) => /^[0-9]{8}$/.test(kvk.trim()) && kvk.trim() !== "00000000";
+const isValidKvk = isEigenKvk;
 // Zelfde mod-97-controle als de server (anders slaagt de stap hier en weigert de server).
 const isValidIban = isValidSepaIban;
 
@@ -129,6 +131,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
    const [cyberAangevraagd, setCyberAangevraagd] = useState(false);
    const [cyberAfgewezen, setCyberAfgewezen] = useState(false);
    const [errors, setErrors] = useState<ValidationErrors>({});
+  const [starterOpen, setStarterOpen] = useState(false);
    const [isSubmitted, setIsSubmitted] = useState(false);
    const [submissionResult, setSubmissionResult] = useState<{ reference: string; mandaatkenmerk?: string; handmatig?: boolean; starter?: boolean; cyber?: boolean; cyberAfgewezen?: boolean } | null>(null);
    const [isSubmitting, setIsSubmitting] = useState(false);
@@ -214,18 +217,14 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
     if (step === 2) {
       if (!formData.bedrijfsnaam.trim()) newErrors.bedrijfsnaam = t("bavApp.valCompanyName");
       if (!formData.kvkNummer.trim()) newErrors.kvkNummer = t("bavApp.valKvk");
-      else if (!isValidKvk(formData.kvkNummer)) newErrors.kvkNummer = t("bavApp.valKvkFormat");
+      else if (!/^[0-9]{8}$/.test(formData.kvkNummer.trim())) newErrors.kvkNummer = t("bavApp.valKvkFormat");
+      else if (!isValidKvk(formData.kvkNummer)) newErrors.kvkNummer = KVK_EIGEN_NUMMER_MELDING;
       if (uittrekselVerplicht(!!startDate && isStarter(formData.kvkStartdatum || null, startDate), kvkApiOp) && !uittrekselId) newErrors.kvkUittreksel = UITTREKSEL_VERPLICHT;
       if (formData.kvkStartdatum && (!/^\d{4}-\d{2}-\d{2}$/.test(formData.kvkStartdatum) || formData.kvkStartdatum > new Date().toISOString().slice(0, 10) || formData.kvkStartdatum < "1900-01-01")) newErrors.kvkStartdatum = "Vul een geldige startdatum in die niet in de toekomst ligt";
       if (!verzekeringskaartVoorSector(formData.sector)) newErrors.sector = "Kies je sector";
       if (!formData.beroep.trim()) newErrors.beroep = t("bavApp.valProfession");
       if (!formData.aantalMedewerkers.trim()) newErrors.aantalMedewerkers = t("bavApp.valEmployees");
       else if (parseInt(formData.aantalMedewerkers) < 0) newErrors.aantalMedewerkers = t("bavApp.valEmployeesInvalid");
-      if (!formData.adresStraat.trim()) newErrors.adresStraat = "Vul de straatnaam in";
-      if (!formData.adresHuisnummer.trim()) newErrors.adresHuisnummer = "Vul het huisnummer in";
-      if (!formData.adresPostcode.trim()) newErrors.adresPostcode = "Vul de postcode in";
-      else if (!/^[1-9][0-9]{3}\s?[A-Za-z]{2}$/.test(formData.adresPostcode.trim())) newErrors.adresPostcode = "Postcode moet formaat 1234 AB hebben";
-      if (!formData.adresPlaats.trim()) newErrors.adresPlaats = "Vul de plaats in";
       // Acceptatie-criteria check op functie tegen afgewezen lijst
       if (formData.functie.trim()) {
         const acc = checkAcceptance(formData.functie);
@@ -241,6 +240,11 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
     }
 
      if (step === 4) {
+      if (!formData.adresStraat.trim()) newErrors.adresStraat = "Vul de straatnaam in";
+      if (!formData.adresHuisnummer.trim()) newErrors.adresHuisnummer = "Vul het huisnummer in";
+      if (!formData.adresPostcode.trim()) newErrors.adresPostcode = "Vul de postcode in";
+      else if (!/^[1-9][0-9]{3}\s?[A-Za-z]{2}$/.test(formData.adresPostcode.trim())) newErrors.adresPostcode = "Postcode moet formaat 1234 AB hebben";
+      if (!formData.adresPlaats.trim()) newErrors.adresPlaats = "Vul de plaats in";
        if (!formData.iban.trim()) newErrors.iban = t("bavApp.valIban");
        else if (!isValidIban(formData.iban)) newErrors.iban = t("bavApp.valIbanInvalid");
        if (!formData.rekeninghouder.trim()) newErrors.rekeninghouder = "Vul de naam van de rekeninghouder in";
@@ -257,6 +261,13 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
 
     setErrors(newErrors);
     for (const veld of Object.keys(newErrors)) trackWizardValidationError(step, veld);
+    if (Object.keys(newErrors).length) {
+      if (newErrors.kvkUittreksel || newErrors.kvkStartdatum) setStarterOpen(true);
+      // Alleen stap en veldnamen, nooit ingevulde waarden.
+      supabase.functions.invoke("submit-public-form", {
+        body: { table: "aanvraag_validatiefouten", hp: guard.honeypot, row: { stap: step, velden: Object.keys(newErrors) } },
+      }).catch(() => { /* loggen mag de aanvraag nooit hinderen */ });
+    }
     return Object.keys(newErrors).length === 0;
   };
 
@@ -796,9 +807,12 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                       </div>
                       <div>
                         <Label htmlFor="kvkNummer">{t("home.bavKvk")} *</Label>
-                        <Input id="kvkNummer" name="kvkNummer" value={formData.kvkNummer} onChange={handleInputChange} maxLength={8} placeholder="12345678" className={cn(errors.kvkNummer && "border-destructive")} />
+                        <Input id="kvkNummer" name="kvkNummer" value={formData.kvkNummer} onChange={handleInputChange} maxLength={8} placeholder={KVK_PLACEHOLDER} className={cn(errors.kvkNummer && "border-destructive")} />
                         <FieldError message={errors.kvkNummer} />
                       </div>
+                      <details className="rounded-lg border border-border p-3" open={starterOpen} onToggle={(e) => setStarterOpen((e.currentTarget as HTMLDetailsElement).open)} data-testid="starter-uitklap">
+                        <summary className="cursor-pointer text-sm font-medium">Ben je korter dan 12 maanden ingeschreven bij de KVK? Dan geldt het startertarief</summary>
+                        <div className="space-y-4 mt-3">
                       <div>
                         <Label htmlFor="kvkStartdatum">Startdatum KVK-inschrijving</Label>
                         <Input id="kvkStartdatum" name="kvkStartdatum" type="date" value={formData.kvkStartdatum} onChange={handleInputChange} max={new Date().toISOString().slice(0, 10)} className={cn(errors.kvkStartdatum && "border-destructive")} />
@@ -816,31 +830,8 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                           <p className="text-muted-foreground mt-1">{STARTER_VOORBEHOUD_TEKST}</p>
                         </div>
                       )}
-                      <div className="grid grid-cols-3 gap-3">
-                        <div className="col-span-2">
-                          <Label htmlFor="adresStraat">Straat *</Label>
-                          <Input id="adresStraat" name="adresStraat" value={formData.adresStraat} onChange={handleInputChange} className={cn(errors.adresStraat && "border-destructive")} />
-                          <FieldError message={errors.adresStraat} />
                         </div>
-                        <div>
-                          <Label htmlFor="adresHuisnummer">Huisnr. *</Label>
-                          <Input id="adresHuisnummer" name="adresHuisnummer" value={formData.adresHuisnummer} onChange={handleInputChange} className={cn(errors.adresHuisnummer && "border-destructive")} />
-                          <FieldError message={errors.adresHuisnummer} />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-3 gap-3">
-                        <div>
-                          <Label htmlFor="adresPostcode">Postcode *</Label>
-                          <Input id="adresPostcode" name="adresPostcode" value={formData.adresPostcode} onChange={handleInputChange} onBlur={() => setFormData(prev => ({ ...prev, adresPostcode: normaliseerPostcode(prev.adresPostcode, prev.adresLand) }))} placeholder="1234 AB" className={cn("uppercase", errors.adresPostcode && "border-destructive")} />
-                          <FieldError message={errors.adresPostcode} />
-                        </div>
-                        <div className="col-span-2">
-                          <Label htmlFor="adresPlaats">Plaats *</Label>
-                          <Input id="adresPlaats" name="adresPlaats" value={formData.adresPlaats} onChange={handleInputChange} className={cn(errors.adresPlaats && "border-destructive")} />
-                          <FieldError message={errors.adresPlaats} />
-                        </div>
-                      </div>
-                      <AdresGevonden adres={pdokAdres} />
+                      </details>
                       <div>
                         <Label htmlFor="sector">Sector *</Label>
                         <select
@@ -960,6 +951,33 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                       <p className="text-muted-foreground text-sm">{t("home.bavIncassoDesc")}</p>
                     </div>
                     <div className="space-y-4">
+                      <p className="text-sm font-medium">Adres van je bedrijf (hoort bij de machtiging)</p>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="col-span-2">
+                          <Label htmlFor="adresStraat">Straat *</Label>
+                          <Input id="adresStraat" name="adresStraat" value={formData.adresStraat} onChange={handleInputChange} className={cn(errors.adresStraat && "border-destructive")} />
+                          <FieldError message={errors.adresStraat} />
+                        </div>
+                        <div>
+                          <Label htmlFor="adresHuisnummer">Huisnr. *</Label>
+                          <Input id="adresHuisnummer" name="adresHuisnummer" value={formData.adresHuisnummer} onChange={handleInputChange} className={cn(errors.adresHuisnummer && "border-destructive")} />
+                          <FieldError message={errors.adresHuisnummer} />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <Label htmlFor="adresPostcode">Postcode *</Label>
+                          <Input id="adresPostcode" name="adresPostcode" value={formData.adresPostcode} onChange={handleInputChange} onBlur={() => setFormData(prev => ({ ...prev, adresPostcode: normaliseerPostcode(prev.adresPostcode, prev.adresLand) }))} placeholder="1234 AB" className={cn("uppercase", errors.adresPostcode && "border-destructive")} />
+                          <FieldError message={errors.adresPostcode} />
+                        </div>
+                        <div className="col-span-2">
+                          <Label htmlFor="adresPlaats">Plaats *</Label>
+                          <Input id="adresPlaats" name="adresPlaats" value={formData.adresPlaats} onChange={handleInputChange} className={cn(errors.adresPlaats && "border-destructive")} />
+                          <FieldError message={errors.adresPlaats} />
+                        </div>
+                      </div>
+                      <AdresGevonden adres={pdokAdres} />
+                      <IbanVertrouwen periode={selectedBavPakket.periode} />
                       <div>
                         <Label htmlFor="iban">{t("home.bavIban")} *</Label>
                         <Input id="iban" name="iban" value={formData.iban} onChange={handleInputChange} placeholder="NL00 BANK 0000 0000 00" className={cn("uppercase tracking-wider", errors.iban && "border-destructive")} />
@@ -975,7 +993,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                         <Label htmlFor="adresLand">Land *</Label>
                         <Input id="adresLand" name="adresLand" value={formData.adresLand} onChange={handleInputChange} className={cn(errors.adresLand && "border-destructive")} />
                         <FieldError message={errors.adresLand} />
-                        <p className="text-xs text-muted-foreground mt-1">Als adres van de rekeninghouder gebruiken we het bedrijfsadres uit stap 2.</p>
+                        <p className="text-xs text-muted-foreground mt-1">Als adres van de rekeninghouder gebruiken we het bedrijfsadres hierboven.</p>
                       </div>
                       <SepaMachtigingBlok
                         data={bouwFrontendMachtiging({
