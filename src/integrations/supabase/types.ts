@@ -5954,6 +5954,10 @@ export type Database = {
         Returns: Json
       }
       zet_facturatie_actief: { Args: { _aan: boolean }; Returns: boolean }
+      zet_herkomst_klant: {
+        Args: { p_keuze: string; p_lead_id: string; p_toelichting: string }
+        Returns: Json
+      }
       zet_lead_test: {
         Args: { _is_test: boolean; _lead_id: string; _reden: string }
         Returns: Json
