@@ -21,5 +21,11 @@ export function bestaandeRoutes(root: string): Set<string> {
 
 export function redirectRouteConflicten(root: string): string[] {
   const routes = bestaandeRoutes(root);
-  return legacyRedirects.map((r) => norm(r.from)).filter((f) => routes.has(f));
+  const exact = legacyRedirects.map((r) => norm(r.from)).filter((f) => routes.has(f));
+  // Een vangregel mag geen bestaande route opslokken (bijv. services/* naast /services/...).
+  const vang = legacyRedirects
+    .filter((r) => r.from.endsWith("/*"))
+    .map((r) => norm(r.from.slice(0, -2)))
+    .filter((pre) => routes.has(pre) || [...routes].some((x) => x.startsWith(`${pre}/`)));
+  return [...exact, ...vang.map((v) => `${v}/*`)];
 }

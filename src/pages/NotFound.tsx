@@ -3,7 +3,7 @@ import { useLocation, Navigate, Link } from "react-router-dom";
 import { SITE_CONFIG } from "@/config/site";
 import { useEffect } from "react";
 import { SEOHead } from "@/components/SEOHead";
-import { legacyRedirects } from "@/config/legacyRedirects";
+import { zoekLegacyDoel } from "@/config/legacyRedirects";
 import { supabase } from "@/integrations/supabase/client";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -19,9 +19,6 @@ declare global {
  * Client-side vangnet voor oude WordPress-URL's. De serverside 301's staan in
  * public/_redirects (gegenereerd uit src/config/legacyRedirects.ts).
  */
-const REDIRECT_MAP: Record<string, string> = Object.fromEntries(
-  legacyRedirects.map(({ from, to }) => [`/${from}`.toLowerCase(), to]),
-);
 
 const popularPages = [
   {
@@ -53,7 +50,7 @@ const popularPages = [
 const NotFound = () => {
   const location = useLocation();
   const normalizedPath = location.pathname.toLowerCase().replace(/\/$/, "") || "/";
-  const redirect = REDIRECT_MAP[normalizedPath];
+  const redirect = zoekLegacyDoel(normalizedPath);
 
   useEffect(() => {
     if (!redirect) {
