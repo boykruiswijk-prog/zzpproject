@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { isEigenKvk, KVK_PLACEHOLDER, OUD_VOORBEELD_KVK } from "@/lib/kvkInvoer";
