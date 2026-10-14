@@ -166,7 +166,7 @@ export function CertificaatBeheer({ leadId, onNieuw, leadActief, policies, isSup
       {geldig.length === 0 ? (
         <Button variant="accent" className="w-full" onClick={() => nieuw(false)} disabled={!!bezig || !leadActief}>
           {bezig === "nieuw" ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <FileText className="h-4 w-4 mr-2" />}
-          Certificaat genereren
+          {policies.some((p) => p.status === "ingetrokken") ? "Nieuw certificaat maken" : "Certificaat genereren"}
         </Button>
       ) : isSupervisorOrAdmin && (
         <Button variant="ghost" size="sm" className="w-full text-muted-foreground" onClick={() => setExtraNummer(true)} disabled={!!bezig || !leadActief}>
@@ -184,7 +184,7 @@ export function CertificaatBeheer({ leadId, onNieuw, leadActief, policies, isSup
                   {formatDateTimeLongNL(v.created_at)} · {v.certificate_number} v{v.versie} · {v.actie} · {v.uitgevoerd_door_email ?? "onbekend"}
                   {v.reden ? ` · ${v.reden}` : ""}
                 </span>
-                {v.oude_pdf_pad && v.actie === "aangepast" && (
+                {v.oude_pdf_pad && (v.actie === "aangepast" || v.actie === "vervangen_door_nieuw") && (
                   <Button size="sm" variant="link" className="h-auto p-0" onClick={() => onDownload(v.oude_pdf_pad!)}>oude PDF</Button>
                 )}
               </li>
@@ -216,7 +216,7 @@ export function CertificaatBeheer({ leadId, onNieuw, leadActief, policies, isSup
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Certificaat {intrekken?.certificate_number} intrekken</DialogTitle>
-            <DialogDescription>Het certificaat blijft bewaard, maar telt niet meer mee en is niet meer zichtbaar voor de klant. Het nummer wordt nooit opnieuw uitgegeven.</DialogDescription>
+            <DialogDescription>Het certificaat blijft bewaard, maar telt niet meer mee en is niet meer zichtbaar voor de klant. Het nummer blijft bij deze klant: daarna kun je een nieuw certificaat met hetzelfde nummer maken. Het wordt nooit aan een andere klant gegeven.</DialogDescription>
           </DialogHeader>
           <Label htmlFor="c-r">Reden (verplicht)</Label>
           <Textarea id="c-r" value={reden} onChange={(e) => setReden(e.target.value)} />
