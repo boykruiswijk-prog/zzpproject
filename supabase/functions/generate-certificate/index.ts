@@ -280,6 +280,17 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
           if (!bev?.length) return json({ error: "Geen bekend BAV-nummer; bevestig eerst een nummer", code: "niet_bevestigd" }, 409);
         }
       }
+      {
+        let teBewaren = gekozen;
+        if (!teBewaren) {
+          const { data: vs2 } = await adminClient.rpc("certificaatnummer_voorstel_intern", { _onderneming_id: null, _lead_id: lead_id || null });
+          teBewaren = (vs2 as any)?.staat_al_op_policy ? "" : ((vs2 as any)?.nummer ?? "");
+        }
+        if (teBewaren && teBewaren !== "NIEUW") {
+          const b = await bewaarIngetrokkenPdfs(adminClient, teBewaren, user, "Vervangen door nieuw certificaat met hetzelfde BAV-nummer");
+          if (!b.ok) return json({ error: "Oude PDF bewaren mislukt; er is niets gewijzigd", details: b.error }, 500);
+        }
+      }
       const { data: ins, error: policyError } = await adminClient.from("policies").insert({
         lead_id: lead_id || null,
         // Leeg = bekend nummer van de klant (trigger weigert zonder treffer), "NIEUW" = expliciet nieuw nummer.
@@ -780,6 +791,31 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
 }));
 // Handmatig, op verzoek van het team: certificaat-PDF als bijlage naar de klant.
 // deno-lint-ignore no-explicit-any
+/**
+ * Ingetrokken certificaten met hetzelfde nummer waarvan de PDF op `${nummer}.pdf` staat:
+ * kopie naar versies/, pad op de ingetrokken rij en in policy_versies. Pas daarna mag de nieuwe PDF erop.
+ */
+async function bewaarIngetrokkenPdfs(admin: any, nummer: string, user: { id: string; email?: string | null }, reden: string) {
+  const pad = `${nummer}.pdf`;
+  const { data: oud, error } = await admin.from("policies").select("id,certificate_number,versie,pdf_url,status")
+    .eq("certificate_number", nummer).eq("status", "ingetrokken").eq("pdf_url", pad);
+  if (error) return { ok: false as const, error: error.message };
+  for (const p of oud || []) {
+    const kopie = `versies/${p.certificate_number}-v${p.versie}-ingetrokken-${Date.now()}.pdf`;
+    const { error: cErr } = await admin.storage.from("certificates").copy(pad, kopie);
+    if (cErr) return { ok: false as const, error: cErr.message };
+    const { error: vErr } = await admin.from("policy_versies").insert({
+      policy_id: p.id, certificate_number: p.certificate_number, versie: p.versie, actie: "vervangen_door_nieuw",
+      oude_waarden: { pdf_url: pad, status: p.status }, nieuwe_waarden: { pdf_url: kopie },
+      oude_pdf_pad: kopie, reden, uitgevoerd_door: user.id, uitgevoerd_door_email: user.email ?? null,
+    });
+    if (vErr) return { ok: false as const, error: vErr.message };
+    const { error: uErr } = await admin.from("policies").update({ pdf_url: kopie }).eq("id", p.id);
+    if (uErr) return { ok: false as const, error: uErr.message };
+  }
+  return { ok: true as const };
+}
+
 async function mailCertificaat(admin: any, req: Request, policy: any, user: { id: string }) {
   if (!policy.pdf_url) return { ok: false as const, error: "Geen PDF beschikbaar" };
   const { data: lead } = policy.lead_id
