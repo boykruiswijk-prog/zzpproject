@@ -1,3 +1,4 @@
+import { schoneVeldnamen } from "../_shared/nabellen.ts";
 // Enige schrijfroute voor publieke formulieren (leads, pilots, nieuwsbrief, suggesties).
 // Beschermd met honeypot, invultijd-check en IP-throttle. De browser mag deze
 // tabellen niet meer direct beschrijven.
@@ -76,11 +77,11 @@ async function bewaarConcept(req: Request, body: any, json: (b: unknown, s?: num
   if (!email && !telefoon) return json({ success: false, error: "Geldig e-mailadres of telefoonnummer nodig." }, 400);
   const stap = Math.min(5, Math.max(1, Math.trunc(Number(row.stap) || 1)));
 
-  const { data: bestaand } = await supabase.from("aanvraag_concepten").select("id, status, geanonimiseerd_op, attributie").eq("id", row.id).maybeSingle();
+  const { data: bestaand } = await supabase.from("aanvraag_concepten").select("id, status, geanonimiseerd_op, attributie, max_stap").eq("id", row.id).maybeSingle();
   if (bestaand && (bestaand.status === "omgezet" || bestaand.geanonimiseerd_op)) return json({ success: true, id: row.id, already: true });
 
   const payload: Record<string, unknown> = {
-    id: row.id, stap, email, telefoon, laatst_actief_op: new Date().toISOString(),
+    id: row.id, stap, max_stap: Math.max(stap, Number(bestaand?.max_stap) || 0), email, telefoon, laatst_actief_op: new Date().toISOString(),
     voornaam: kort(row.voornaam, 100), achternaam: kort(row.achternaam, 100), bedrijfsnaam: kort(row.bedrijfsnaam, 200),
     kvk: kort(row.kvk, 20), pakket: kort(row.pakket, 50), sector: kort(row.sector, 100), pagina: saneerPagina(row.pagina),
   };
@@ -104,6 +105,19 @@ async function bewaarConcept(req: Request, body: any, json: (b: unknown, s?: num
   return json({ success: true, id: row.id });
 }
 
+/** Mislukte validaties per stap en veldnaam; alleen veldnamen, nooit waarden of persoonsgegevens. */
+async function logValidatie(req: Request, body: any, json: (b: unknown, s?: number) => Response): Promise<Response> {
+  if (typeof body?.hp === "string" && body.hp.trim()) return json({ success: false }, 400);
+  const stap = Math.trunc(Number(body?.row?.stap));
+  const velden = schoneVeldnamen(body?.row?.velden);
+  if (!(stap >= 1 && stap <= 5) || !velden.length) return json({ success: false, error: "Ongeldig." }, 400);
+  const supabase = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
+  const is_test = !resolveEnvironment(req).isProduction;
+  const { error } = await supabase.from("aanvraag_validatiefouten").insert(velden.map((veld) => ({ formulier: "bav", stap, veld, is_test })));
+  if (error) console.error("submit-public-form: validatielog mislukt:", error.message);
+  return json({ success: !error });
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -117,6 +131,7 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const table = typeof body?.table === "string" ? body.table : "";
     if (table === "aanvraag_concepten") return await bewaarConcept(req, body, json);
+    if (table === "aanvraag_validatiefouten") return await logValidatie(req, body, json);
     const spec = ALLOWED[table];
     if (!spec) return json({ success: false, error: "Onbekend formulier." }, 400);
 
