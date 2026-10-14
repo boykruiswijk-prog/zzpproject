@@ -429,7 +429,7 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
              ...(cyberGekozen ? { cyber_looptijd: CYBER_LOOPTIJD, cyber_einddatum: cyberJaarEind(submission.ingangsdatum) } : {}),
             betaalwijze: pakket.betaalwijze,
             ingangsdatum: submission.ingangsdatum,
-             premie: starter ? starterPremieKlanttekst(premium, pakket.prijs, starterTotDatum) : `€${formatPremieBedrag(premium)}`,
+             premie: starter ? starterPremieKlanttekst(premium, pakket.prijs, starterTotDatum, pakket.betaalwijze) : `€${formatPremieBedrag(premium)}`,
              ...(starter ? { controle: `KVK-startdatum ${formatDateNL(kvkStart)} controleren` } : {}),
           },
         },

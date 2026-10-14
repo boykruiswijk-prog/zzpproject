@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Boy 14 oktober: uitsluitend starterpremietekst op betaalwijze afstemmen, maand/jaar/cyber testen en process-bav-wizard deployen; geen mails of wijzigingsmelding.
 - [x] Tekstcorrecties 13 oktober: 4 CTA-artikelen + 2 AOV-artikelen bijgewerkt, generatorprompt/vergelijkknoppen/FAQ/productlabel/beroepenlijst gecorrigeerd, llms en Zeker opnieuw gegenereerd; browser en build OK; geen publicatie of logica-/prijswijzigingen.
 - [ ] Uitgebreide teksttest volledig groen: 19/20 relevante tests slagen; OPGELOST 13 okt: patroon beperkt tot verzekeringscontext, test 4/4 groen, genereer-artikel gedeployed. Standaard testomgeving mist canvas; controle met happy-dom uitgevoerd.
 - [x] Besluit A9: 7 beelden en ongebruikte teammodule verwijderd; kantoorbeelden, regressietest 3/3, browsercontrole en build OK; niet gepubliceerd.
