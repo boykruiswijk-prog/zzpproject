@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Mail, Phone } from "lucide-react";
 import { leadWeergave, type FormVeld } from "../../../supabase/functions/_shared/leadVelden";
 
@@ -22,7 +23,7 @@ function Lijst({ velden }: { velden: FormVeld[] }) {
 
 /** Alles wat de bezoeker heeft ingevuld: Contact, Aanvraag, alle velden, bericht. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function LeadIngevuldeGegevens({ lead }: { lead: Record<string, any> }) {
+export function LeadIngevuldeGegevens({ lead, aanvraagExtra }: { lead: Record<string, any>; aanvraagExtra?: ReactNode }) {
   const w = leadWeergave(lead);
   const alle = [...w.formulier, ...w.overig];
   return (
@@ -47,6 +48,7 @@ export function LeadIngevuldeGegevens({ lead }: { lead: Record<string, any> }) {
       <section aria-labelledby="lead-aanvraag" className="border-t pt-4">
         <h4 id="lead-aanvraag" className="mb-3 font-medium">Aanvraag</h4>
         <Lijst velden={w.aanvraag} />
+        {aanvraagExtra}
       </section>
 
       {w.bericht && (

@@ -14,6 +14,7 @@ import { KlantLinkVoorLead } from "@/components/admin/KlantLinkVoorLead";
 import { SepaMachtigingBewijsBlok } from "@/components/admin/SepaMachtigingBewijsBlok";
 import { CertificaatBeheer } from "@/components/admin/CertificaatBeheer";
 import { LeadIngevuldeGegevens } from "@/components/admin/LeadIngevuldeGegevens";
+import { HerkomstKlant } from "@/components/admin/HerkomstKlant";
 import { OfferteVersturen } from "@/components/admin/OfferteVersturen";
 
 import { useParams, useNavigate, Link } from "react-router-dom";
@@ -321,7 +322,7 @@ export default function AdminLeadDetail() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
-                <LeadIngevuldeGegevens lead={lead as any} />
+                <LeadIngevuldeGegevens lead={lead as any} aanvraagExtra={(isTeamMember || isAdmin) ? <HerkomstKlant key={lead.id} leadId={lead.id} extraData={lead.extra_data} /> : null} />
 
                 {/* Beheer: branche en IBAN (bewerkbaar) */}
                 <div className="border-t pt-4">
