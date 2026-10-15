@@ -1,3 +1,4 @@
+import { NETTO_GROEI_LABEL } from "@/lib/nettoGroei";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Navigate } from "react-router-dom";
@@ -206,7 +207,7 @@ function PaneelGroei({ d }: { d: SchermPayload }) {
   );
 }
 
-/** Netto groei sinds 6 okt (tel_netto_groei, zelfde bron als het dashboard). Alleen aantallen. */
+/** Netto groei vanaf NETTO_GROEI_VANAF (tel_netto_groei, zelfde bron als het dashboard). Alleen aantallen. */
 function PaneelNettoGroei({ d }: { d: SchermPayload }) {
   const n = d.netto_groei;
   const pct = (v: number | null | undefined) => (v == null ? "-" : `${String(v).replace(".", ",")}%`);
@@ -227,7 +228,7 @@ function PaneelNettoGroei({ d }: { d: SchermPayload }) {
     <div className="flex h-full flex-col gap-[3vh]" data-testid="paneel-netto-groei">
       <Kop>Netto groei</Kop>
       {rij("Deze week", n.deze_week)}
-      {rij("Sinds 6 okt", n.cumulatief)}
+      {rij(NETTO_GROEI_LABEL, n.cumulatief)}
     </div>
   );
 }

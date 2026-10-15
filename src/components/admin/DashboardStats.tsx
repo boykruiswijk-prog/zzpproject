@@ -7,6 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Building2, FileText, Euro, Users, TrendingUp, UserX, CalendarClock, AlertTriangle, RefreshCw, LineChart, Target, Inbox } from "lucide-react";
 import { formatEuro } from "@/lib/klantContracten";
+import { NETTO_GROEI_LABEL } from "@/lib/nettoGroei";
 
 export type DashboardTellers = {
   klanten: number; contracten_actief: number; mrr: number; arr: number;
@@ -69,7 +70,7 @@ export function DashboardStats() {
     { title: "Leads", value: t ? `${t.leads_week} / ${t.leads_maand}` : undefined, icon: Users, description: `deze week / deze maand · ${t?.leads_totaal ?? 0} totaal`, href: "/admin/leads" },
     { title: "Conversie leads", value: t ? `${conversie}%` : undefined, icon: TrendingUp, description: `${t?.leads_omgezet ?? 0} leads met status actief of klant`, href: "/admin/leads" },
     { title: "Aanvragen BAV + AVB sinds 6 okt", value: t ? `${t.aanvragen_doel ?? 0} van ${t.aanvragen_doel_van ?? 200}` : undefined, icon: Target, description: "Ontdubbeld per aanvraag, zonder test; zelfde getal als het live-scherm", href: "/admin/leads" },
-    { title: "Netto groei sinds 6 okt", value: t?.netto_groei?.cumulatief ? `${t.netto_groei.cumulatief.netto_groei >= 0 ? "+" : ""}${t.netto_groei.cumulatief.netto_groei}` : undefined, icon: TrendingUp, description: t?.netto_groei?.cumulatief ? `${t.netto_groei.cumulatief.instroom} instroom, ${t.netto_groei.cumulatief.beeindigingen} beeindigd · opzegpercentage ${t.netto_groei.cumulatief.opzegpercentage ?? 0}% · zelfde getal als het live-scherm` : "Zelfde getal als het live-scherm", href: "/admin/klanten" },
+    { title: `Netto groei ${NETTO_GROEI_LABEL.toLowerCase()}`, value: t?.netto_groei?.cumulatief ? `${t.netto_groei.cumulatief.netto_groei >= 0 ? "+" : ""}${t.netto_groei.cumulatief.netto_groei}` : undefined, icon: TrendingUp, description: t?.netto_groei?.cumulatief ? `${t.netto_groei.cumulatief.instroom} instroom, ${t.netto_groei.cumulatief.beeindigingen} beeindigd · opzegpercentage ${t.netto_groei.cumulatief.opzegpercentage ?? 0}% · zelfde getal als het live-scherm` : "Zelfde getal als het live-scherm", href: "/admin/klanten" },
     { title: "Serviceverzoeken open", value: t?.service_open, icon: Inbox, description: "Zelfde getal als het live-scherm", href: "/admin/service-aanvragen" },
     { title: "Opzeggingen te koppelen", value: t?.opzeggingen_te_koppelen, icon: UserX, description: `${t?.opzeggingen_te_verwerken ?? 0} gekoppeld, nog te verwerken`, href: "/admin/klanten#opzeggingen", let: (t?.opzeggingen_te_koppelen ?? 0) > 0 },
     // Alleen tonen als de planning-velden gevuld zijn (supervisor/admin).
