@@ -160,11 +160,14 @@ export function redirectStubHtml(from: string, to: string): string {
 <html lang="nl">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="icon" href="/favicon.ico?v=20261015" sizes="48x48" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20261015" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png?v=20261015" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png?v=20261015" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png?v=20261015" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20261015" />
+    <link rel="manifest" href="/site.webmanifest?v=20261015" />
+    <meta name="theme-color" content="#ffffff" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Verplaatst naar ${esc(to)} | ${esc(SITE_CONFIG.name)}</title>
     <meta name="description" content="Deze pagina is verplaatst. Je wordt doorgestuurd naar ${esc(target)}." />
