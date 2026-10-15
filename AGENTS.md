@@ -1,12 +1,12 @@
 # Technische afspraken
-- Evi discovery and robots use only eviPagina.ts; the route always prerenders and internal source is separate from marketing attribution. Why: one publication switch without changing existing pension content or Ads.
+- Evi discovery/robots use eviPagina.ts; always prerender; internal source stays separate from Ads. Why: one publication switch.
 
 - ZP icons (ICO, embedded-PNG SVG, PNG and both manifests) share versioned head links in pages and redirect stubs; static assets precede the unforced SPA fallback. Why: consistent brand and crawler access.
-- ZP brand source: docs/brand/favicon.png.b64 and its existing higher-resolution public/favicon-192x192.png show the same mark; derive icons without redrawing or cropping. Why: preserve the approved logo.
+- Derive ZP icons from docs/brand/favicon.png.b64 or public/favicon-192x192.png, without redrawing/cropping. Why: preserve the approved mark.
 - No former-employee photos; doubtful photos are removed. New people photos need Boy's approval. Why: portrait rights, A9.
 
 - SEPA-tekst staat byte-gelijk in frontend en _shared/sepaMachtiging.ts; bewijs is onveranderbaar.
-- Portal access (create user, link policies, magic link, mail/log) uses _shared/portalAccess.ts; customers read lead fields only via get_mijn_polissen RPC. Why: one access path, no customer SELECT on leads.
+- Portal user/policy linking, magic links and mail/log use _shared/portalAccess.ts; customers read leads only via get_mijn_polissen RPC. Why: one access path, no customer SELECT.
 
 ## Beveiligingsarchitectuur
 
