@@ -5566,6 +5566,7 @@ export type Database = {
         Args: { _contract_id: string; _pct: number; _vanaf: string }
         Returns: Json
       }
+      contract_opzegging: { Args: { _contract_id: string }; Returns: string }
       credit_beoordelen: {
         Args: { _goedkeuren: boolean; _id: string; _reden: string }
         Returns: Json
