@@ -8,7 +8,7 @@ import { useMenuTellers } from "@/hooks/useMenuTellers";
 import { useMachtigingenNakijken } from "@/hooks/useMachtigingenNakijken";
 import { TellerBadge } from "@/components/admin/TellerBadge";
 import { CRM_UITLEG, GRIJZE_TELLERS, TELLER_DOEL, groepsDoel, groepsTotaal, groepsUitleg, tellerUitleg } from "@/lib/menuTellers";
-import { Activity, AlertTriangle, BookOpen, Building2, ChevronDown, ConciergeBell, UserMinus, ChevronLeft, CircleDollarSign, FileText, Hash, KeyRound, Landmark, LayoutDashboard, LogOut, Menu, MessageCircle, Monitor, Plug, SearchX, Settings, Share2, ShieldCheck, UserCog, UserX, Users } from "lucide-react";
+import { Activity, AlertTriangle, BookOpen, Building2, ChevronDown, ConciergeBell, UserMinus, ChevronLeft, CircleDollarSign, FileText, LineChart, Hash, KeyRound, Landmark, LayoutDashboard, LogOut, Menu, MessageCircle, Monitor, Plug, SearchX, Settings, Share2, ShieldCheck, UserCog, UserX, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
