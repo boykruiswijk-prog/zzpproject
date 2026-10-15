@@ -2,6 +2,7 @@
 export const KLANTMAIL_PLACEHOLDERS = [
   "voornaam", "bedrijfsnaam", "bedrag", "polisnummer", "factuurnummer", "factuurdatum",
   "vervaldatum", "betaal_voor", "opschort_datum", "verlengdatum",
+  "product", "iban", "uiterste_datum", "incasso_datum", "royement_datum",
 ] as const;
 export type KlantmailData = Partial<Record<(typeof KLANTMAIL_PLACEHOLDERS)[number], string | number | null>>;
 
@@ -17,6 +18,11 @@ export function vulPlaceholders(tekst: string, data: KlantmailData): string {
   });
 }
 
+/** Prolongatie: productnaam, met " en Cyber" als dezelfde klant op dezelfde verlengdatum ook cyber_clear heeft. */
+export function prolongatieProduct(producten: string[]): string {
+  return producten.includes("cyber_clear") ? "BAV + AVB en Cyber" : "BAV + AVB";
+}
+
 /** Alleen versturen als de schakelaar aan staat en Boy de tekst heeft goedgekeurd. */
 export function schakelaarStaatAan(rij: { actief?: boolean | null; status?: string | null } | null | undefined): boolean {
   return !!rij && rij.actief === true && !!rij.status && rij.status !== "wacht_op_akkoord_boy";
@@ -26,6 +32,7 @@ export const VOORBEELD_DATA: KlantmailData = {
   voornaam: "Sanne", bedrijfsnaam: "Voorbeeld Consultancy BV", bedrag: "€ 55,00", polisnummer: "ZP-000123",
   factuurnummer: "26001234", factuurdatum: "01-11-2026", vervaldatum: "08-11-2026", betaal_voor: "15-11-2026",
   opschort_datum: "29-11-2026", verlengdatum: "01-12-2026",
+  product: "BAV + AVB", iban: "NL25 ABNA 0477 3302 23", uiterste_datum: "14-11-2026", incasso_datum: "01-11-2026", royement_datum: "13-12-2026",
 };
 
 const nl = (iso: string) => { const [y, m, d] = iso.slice(0, 10).split("-"); return `${d}-${m}-${y}`; };

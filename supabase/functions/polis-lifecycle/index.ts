@@ -601,7 +601,7 @@ Deno.serve(metExactMelding("polis-lifecycle", async (req) => {
 
         // ─ Creditnota bij opzegging vanuit actief ─
         // Besluit 15-10-2026: maandpolis per dag opzegbaar, geen creditnota (geen Exact-POST). Opzegging gaat wel door.
-        // D1 jaarpolis, wacht op Boy: crediteren blijft zoals in D1 tot Boy anders besluit.
+        // D1 jaarpolis: wordt bij opzegging gecrediteerd (besluit Boy 15-10-2026).
         const beleid = opzegCreditBeleid({ cyclus: isMaandPolis(lead.gekozen_pakket) ? "maand" : "jaar", product: "bav_avb" });
         let creditResult: any = beleid === "geen_credit_maand"
           ? { skipped: true, reden: "Maandpolis: geen creditnota (besluit 15-10-2026)" }
@@ -611,7 +611,7 @@ Deno.serve(metExactMelding("polis-lifecycle", async (req) => {
         let calc: ReturnType<typeof calculatePauzeCredit> | null = null;
         let eindForMail: string | null = null;
 
-        if (beleid === "credit_jaar_wacht_op_boy" && vanuitActief && lead.exact_account_id) {
+        if (beleid === "credit_jaar" && vanuitActief && lead.exact_account_id) {
           if (!lead.ingangsdatum) return json({ error: "geen_ingangsdatum_op_lead" }, 400);
           const jaarprijs = (nieuweCyber(lead) ? (starterStatus(lead) === "starter" ? 495 : getJaarprijs(basisPakket(lead.gekozen_pakket))) : getJaarprijs(lead.gekozen_pakket));
           const maandCredit = isMaandPolis(lead.gekozen_pakket) ? await maandLifecycleCredit(supabase, lead, today) : null;

@@ -5,6 +5,14 @@ export const STAP_DAG: Record<IncassoStap, number> = { herinnering_1: 0, herinne
 export const STAP_LABEL: Record<IncassoStap, string> = {
   herinnering_1: "Herinnering 1", herinnering_2_aanmaning: "Aanmaning", herinnering_3_opschorting: "Opschorting", royement_voorstel: "Royementsvoorstel",
 };
+/** Uiterste betaaldatum per stap (dagen na mislukt_op): de dag voor de volgende stap. */
+export const UITERSTE_DAG: Record<"herinnering_1" | "herinnering_2_aanmaning" | "herinnering_3_opschorting", number> = {
+  herinnering_1: 13, herinnering_2_aanmaning: 27, herinnering_3_opschorting: 41,
+};
+export function uitersteDatum(misluktOp: string, stap: IncassoStap): string | null {
+  if (stap === "royement_voorstel") return null;
+  return new Date(new Date(`${misluktOp.slice(0, 10)}T00:00:00Z`).getTime() + UITERSTE_DAG[stap] * 86400000).toISOString().slice(0, 10);
+}
 /** Mailsleutel per stap; royementsvoorstel stuurt nooit een mail. */
 export const STAP_MAIL: Record<IncassoStap, string | null> = {
   herinnering_1: "incasso_herinnering_1", herinnering_2_aanmaning: "incasso_herinnering_2_aanmaning",
