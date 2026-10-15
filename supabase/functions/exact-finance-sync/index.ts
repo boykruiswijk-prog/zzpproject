@@ -123,7 +123,10 @@ Deno.serve(async (req) => {
     await upsert("exact_open_posten_cache", or); aantallen.open_posten = or.length;
 
     // 3. Betalingen en afletteringen
-    const b = await haalAlles(`${base}cashflow/Receivables?$filter=InvoiceDate ge ${filterDatum}`, `${base}cashflow/Receivables`);
+    // Exact eist hier een $select; zonder geldige veldenlijst geeft hij 400. Tweede poging met minimale velden.
+    const bsel = "ID,Account,AccountCode,AmountDC,InvoiceDate,InvoiceNumber,DueDate,Status,IsFullyPaid,LastPaymentDate,TransactionIsReversal";
+    const b = await haalAlles(`${base}cashflow/Receivables?$select=${bsel}&$filter=InvoiceDate ge ${filterDatum}`,
+      `${base}cashflow/Receivables?$select=ID,AccountCode,AmountDC,InvoiceNumber,InvoiceDate,DueDate,Status&$filter=InvoiceDate ge ${filterDatum}`);
     endpoints.betalingen = { endpoint: b.url, http: b.status, rijen: b.rijen.length, volledig: b.volledig, fout: b.fout,
       velden: b.rijen[0] ? Object.keys(b.rijen[0]).filter((k) => k !== "__metadata") : [] };
     const br = b.rijen.filter((x) => x.ID).map((x) => ({
