@@ -11,7 +11,6 @@ import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 import { cn } from "@/lib/utils";
 import { haalBavRijen, kiesBavNummer } from "@/lib/bavNummer";
 import { ServiceAanvraagOog } from "@/components/admin/ServiceAanvraagOog";
-import { PRODUCT_LABEL, formatEuro, type Product } from "@/lib/klantContracten";
 import { useToast } from "@/hooks/use-toast";
 
 /** Haalt alleen de status en het factuurnummer op uit Exact (nooit schrijven in Exact) en sluit verwerkte facturen af. */
