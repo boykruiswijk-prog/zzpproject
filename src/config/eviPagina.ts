@@ -1,6 +1,13 @@
-// Eén vlag voor robots, vindbaarheid en links; prerender blijft altijd aan.
+// Eén vlag voor openbare toegang, prerender, robots en links; uit = alleen preview.
 export const EVI_PAGINA_PUBLIEK = false;
 export const EVI_PAGINA_PAD = "/pensioen-opbouwen-zzp";
+export function eviPaginaToegankelijk(hostname: string, publiek: boolean = EVI_PAGINA_PUBLIEK) {
+  const host = hostname.toLowerCase().replace(/\.$/, "");
+  return publiek || host.endsWith(".lovable.app") || host === "localhost" || host === "127.0.0.1";
+}
+export function eviPaginaPrerenderen(publiek: boolean = EVI_PAGINA_PUBLIEK) {
+  return publiek;
+}
 export function eviPaginaRobots(publiek: boolean = EVI_PAGINA_PUBLIEK) {
   return publiek ? "index,follow" : "noindex,nofollow";
 }

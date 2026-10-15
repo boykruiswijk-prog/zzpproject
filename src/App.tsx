@@ -127,8 +127,10 @@ import { PortalAuthProvider } from "@/contexts/PortalAuthContext";
 import { RequirePortalAuth } from "@/components/portal/RequirePortalAuth";
 
 import { legacyRedirects } from "@/config/legacyRedirects";
-import { EVI_PAGINA_PAD, EVI_PAGINA_PUBLIEK } from "@/config/eviPagina";
+import { EVI_PAGINA_PAD, EVI_PAGINA_PUBLIEK, eviPaginaToegankelijk } from "@/config/eviPagina";
 const PensioenOpbouwenZzp = lazy(() => import("./pages/PensioenOpbouwenZzp"));
+const EviPaginaRoute = () => eviPaginaToegankelijk(typeof window === "undefined" ? "" : window.location.hostname)
+  ? <PensioenOpbouwenZzp /> : <NotFound />;
 const PensioenMetEviLink = () => <><Pensioen />{EVI_PAGINA_PUBLIEK && <section className="container-wide py-12"><h2>Pensioen opbouwen als zzp'er</h2><a className="text-accent underline" href={EVI_PAGINA_PAD}>Jaarruimte, lijfrente en pensioen via Evi van Lanschot</a></section>}</>;
 
 /** Alleen deze taalprefixen zijn geldig; al het andere is een 404. */
@@ -218,7 +220,7 @@ export const AppRoutes = () => (
           <Routes>
             {/* Default (NL) routes */}
             <Route path="/">{publicRoutes}</Route>
-            <Route path={EVI_PAGINA_PAD} element={<PensioenOpbouwenZzp />} />
+            <Route path={EVI_PAGINA_PAD} element={<EviPaginaRoute />} />
 
             {/* WordPress legacy redirects — MUST come before /:lang */}
             {legacyRedirects.map(({ from, to }) => (
