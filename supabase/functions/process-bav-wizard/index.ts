@@ -1,3 +1,4 @@
+import { saneerInterneBron } from "../_shared/interneBron.ts";
 import { isEigenKvk, KVK_EIGEN_NUMMER_MELDING } from "../_shared/kvkInvoer.ts";
 import { corrigeerIngangsdatum } from "../_shared/ingangsdatum.ts";
 import { starterPremieKlanttekst } from "../_shared/premieTekst.ts";

@@ -1,3 +1,4 @@
+import { saneerInterneBron } from "../_shared/interneBron.ts";
 import { schoneVeldnamen, isInternTestEmail } from "../_shared/nabellen.ts";
 // Enige schrijfroute voor publieke formulieren (leads, pilots, nieuwsbrief, suggesties).
 // Beschermd met honeypot, invultijd-check en IP-throttle. De browser mag deze

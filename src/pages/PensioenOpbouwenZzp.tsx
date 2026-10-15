@@ -4,7 +4,7 @@ import { CookieConsent } from '@/components/CookieConsent';
 import { SEOHead } from '@/components/SEOHead';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
-import { EVI_BAV_URL, EVI_PAGINA_PAD, EVI_PAGINA_PUBLIEK, eviPaginaRobots } from '@/config/eviPagina';
+import { EVI_BAV_URL, EVI_PAGINA_PAD, eviPaginaRobots } from '@/config/eviPagina';
 import { SITE_CONFIG } from '@/config/site';
 import { bavPakketten } from '@/data/bavPakketten';
 import { fiscaleCijfers } from '@/data/fiscaleCijfers';
@@ -15,7 +15,7 @@ import { EviInteresseFormulier } from '@/components/pensioen/EviInteresseFormuli
 import { BundelVoorwaarden } from '@/components/pensioen/BundelVoorwaarden';
 import { ArrowRight, Check, Phone, ShieldCheck, Plus, Clock, PiggyBank } from 'lucide-react';
 const telefoon=<a href={`tel:${SITE_CONFIG.phone}`} className="inline-flex items-center gap-2 font-medium"><Phone className="h-4 w-4"/>Bel ons: {SITE_CONFIG.phoneDisplay}</a>;
-function EviKnop(){return <Button variant="outline" size="lg" asChild className="h-auto min-h-12 whitespace-normal text-center"><a href="#interesse-evi">Ik wil meer weten over Evi<ArrowRight/></a></Button>;}
+function EviKnop(){return <Button variant="outline" size="lg" asChild className="bg-background text-foreground h-auto min-h-12 whitespace-normal text-center"><a href="#interesse-evi">Ik wil meer weten over Evi<ArrowRight/></a></Button>;}
 function BavKnop(){return <Button variant="accent" size="lg" asChild className="h-auto min-h-12 whitespace-normal text-center"><a href={EVI_BAV_URL}>BAV + AVB per jaar aanvragen<ArrowRight/></a></Button>;}
 export default function PensioenOpbouwenZzp(){
  const jaar=bavPakketten.find(p=>p.id==='jaarlijks'); const maand=bavPakketten.find(p=>p.id==='maandelijks');
