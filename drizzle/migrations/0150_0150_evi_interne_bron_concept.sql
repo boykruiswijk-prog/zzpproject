@@ -1,0 +1,2 @@
+ALTER TABLE public.aanvraag_concepten ADD COLUMN IF NOT EXISTS interne_bron text;
+COMMENT ON COLUMN public.aanvraag_concepten.interne_bron IS 'Interne paginabron, los van advertentieherkomst. F7: evi-pagina. Geen terugvulling.';
