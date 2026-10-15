@@ -247,3 +247,23 @@ export async function verwerkMandaatMain(ex: Exact, rij: BcRij, live: boolean): 
   if (!p.ok) return { status: "fout", exact_mandaat_id: m.ID, melding: kort(p, "PUT Main") };
   return { status: "bijgewerkt", exact_mandaat_id: m.ID, melding: `Mandaat ${m.Reference} op Main gezet` };
 }
+
+// Haalt alle rijen op in blokken (PostgREST levert per verzoek maximaal 1000 rijen, ook bij .limit(5000)).
+export async function alleRijen<T = Any>(
+  maakQuery: (van: number, tot: number) => PromiseLike<{ data: T[] | null; error: Any }>, blok = 1000,
+): Promise<T[]> {
+  const alles: T[] = [];
+  for (let van = 0; ; van += blok) {
+    const { data, error } = await maakQuery(van, van + blok - 1);
+    if (error) throw new Error(`db: ${error.message ?? error}`);
+    alles.push(...(data ?? []));
+    if (!data || data.length < blok) return alles;
+  }
+}
+
+// Unieke ondernemingen (per relatiecode) uit contractrijen met ondernemingen-join.
+export function bouwDoelgroep(kc: Any[]): Map<string, Any> {
+  const doel = new Map<string, Any>();
+  for (const k of kc) { const o = k.ondernemingen; if (o?.exact_relatie_code && o.exact_account_id) doel.set(String(o.exact_relatie_code).trim(), o); }
+  return doel;
+}
