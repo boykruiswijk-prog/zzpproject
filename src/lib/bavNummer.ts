@@ -94,6 +94,8 @@ export function vandaagNL() {
 export type EindStatus = { soort: "lopend" | "loopt_af" | "beeindigd"; datum: string | null };
 export function contractEindStatus(c: { status: string; eind_datum: string | null }): EindStatus {
   if (c.status === "vervangen") return { soort: "beeindigd", datum: c.eind_datum };
+  // D1-aanvulling: stilzwijgend verlengen. Een einddatum alleen telt niet; alleen een opgezegd/beeindigd contract.
+  if (c.status === "actief" || c.status === "einddatum_controle") return { soort: "lopend", datum: null };
   if (c.eind_datum) return { soort: c.eind_datum <= vandaagNL() ? "beeindigd" : "loopt_af", datum: c.eind_datum };
   if (c.status === "loopt_af") return { soort: "beeindigd", datum: null };
   return { soort: "lopend", datum: null };

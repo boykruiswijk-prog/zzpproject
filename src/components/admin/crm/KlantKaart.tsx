@@ -85,7 +85,7 @@ export function KlantKaart({ ondernemingen, personen, leadIds, herlaadSleutel = 
                 <div key={c.id} className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 rounded border border-border p-2">
                   <span className="font-medium">{PRODUCT_LABEL[c.product as Product] ?? c.product}{ond ? ` (${ond})` : ""}</span>
                   <BavNummer keuze={kiesBavNummer(rijen.filter((r) => !r.onderneming_id || r.onderneming_id === c.onderneming_id), { contractId: c.id })} />
-                  <Badge variant={es.soort === "lopend" ? "secondary" : "outline"}>{es.soort === "beeindigd" ? `Beeindigd${es.datum ? ` per ${formatDateNL(es.datum)}` : ""}` : es.soort === "loopt_af" ? `Loopt af per ${formatDateNL(es.datum)}` : "Actief"}</Badge>
+                  <Badge variant={es.soort === "lopend" ? "secondary" : "outline"}>{es.soort === "beeindigd" ? `Beeindigd${es.datum ? ` per ${formatDateNL(es.datum)}` : ""}` : es.soort === "loopt_af" ? `Opgezegd per ${formatDateNL(es.datum)}` : "Actief"}</Badge>
                   <span className="text-xs text-muted-foreground">ingang {formatDateNL(c.begin_datum)} · gefactureerd t/m {formatDateNL(c.gefactureerd_tm)}{es.soort === "lopend" ? ` · volgende factuur ${formatDateNL(c.volgende_factuurdatum)}` : ""}</span>
                   {c.product === "cyber_clear" && <CyberDatums contractId={c.id} ingang={c.cyber_ingangsdatum} eind={c.cyber_einddatum} nieuwePer={c.cyber_nieuwe_voorwaarden_per} onGewijzigd={() => refetch()} />}
                 </div>);
