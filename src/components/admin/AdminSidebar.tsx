@@ -30,8 +30,9 @@ const groups: NavGroup[] = [
     { to: "/admin/bav-nummer-nakijken", icon: Hash, label: "BAV-nummer nakijken", teller: "bav_nakijken", roles: ["supervisor", "verzekering"] },
     { to: "/admin/machtigingen-nakijken", icon: Landmark, label: "Machtigingen nakijken", teller: "machtigingen", roles: ["supervisor", "verzekering"] },
   ]},
-  { label: "Facturatie", icon: CircleDollarSign, roles: ["supervisor"], items: [
+  { label: "Facturatie", icon: CircleDollarSign, roles: ["supervisor", "verzekering"], items: [
     { to: "/admin/facturatieplanning", icon: CircleDollarSign, label: "Facturatieplanning", teller: "facturatie", roles: ["supervisor"] },
+    { to: "/admin/incassos", icon: CircleDollarSign, label: "Incasso's", roles: ["supervisor", "verzekering"] },
     { to: "/admin/exact-reconciliatie", icon: Plug, label: "Exact-reconciliatie", roles: ["supervisor"] },
   ]},
   { label: "Website", icon: Share2, roles: ["supervisor", "marketing", "verzekering"], items: [
@@ -46,6 +47,7 @@ const groups: NavGroup[] = [
     { to: "/admin/team", icon: UserCog, label: "Team & rechten", roles: ["admin"] },
     { to: "/admin/integraties", icon: Plug, label: "Integraties & Exact", roles: ["admin"] },
     { to: "/admin/interne-meldingen", icon: MessageCircle, label: "Interne meldingen", roles: ["admin"] },
+    { to: "/admin/klantmails", icon: MessageCircle, label: "Klantmails", roles: ["admin"] },
     { to: "/admin/activiteitenlog", icon: Activity, label: "Activiteitenlog", roles: ["admin"] },
     { to: "/admin/wp-import", icon: FileText, label: "WordPress-import", roles: ["admin"] },
   ]},
