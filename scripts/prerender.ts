@@ -41,6 +41,7 @@ import {
 
 const LANGS = ["en", "de", "fr"] as const;
 import { buildLlmsTxt, buildLlmsFullTxt } from "./llmsTxt";
+import sitemapLastmod from "../src/config/sitemapLastmod.json";
 
 /** Belangrijkste pagina's in het statische fallback-blok. */
 const FALLBACK_LINKS: Array<{ href: string; label: string }> = [
@@ -369,6 +370,12 @@ function gitDate(root: string, files: string[]): string | null {
   } catch {
     return null;
   }
+}
+
+function laatsteDatum(a: string | null, b: string | null): string | null {
+  if (!a) return b;
+  if (!b) return a;
+  return a > b ? a : b;
 }
 
 /** Route → paginabestand(en), afgeleid uit src/App.tsx, voor de sitemap-lastmod. */
@@ -775,7 +782,12 @@ export async function prerender(distDir: string, env: Record<string, string> = {
       .filter((r) => !isExcluded(r.path))
       .map((r) => ({
         loc: `${SITE_CONFIG.url}${r.path === "/" ? "/" : r.path}`,
-        lastmod: gitDate(root, sources.get(r.path) ?? ["src/config/seoRoutes.ts"]),
+        // Publicatieomgeving heeft soms geen git-historie: dan de vastgelegde
+        // datum van de laatste paginawijziging (src/config/sitemapLastmod.json).
+        lastmod: laatsteDatum(
+          gitDate(root, sources.get(r.path) ?? ["src/config/seoRoutes.ts"]),
+          (sitemapLastmod as Record<string, string>)[r.path] ?? null,
+        ),
       })),
     ...articles.map((a) => {
       const lastmod = (a.updated_at || a.published_at || "").slice(0, 10) || null;

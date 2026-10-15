@@ -34,3 +34,22 @@ describe("A16 doorverwijzingen", () => {
     for (const s of ["services", "services/advies", "services/bav", "services/aov", "radio"]) expect(bron.indexOf(s)).toBeLessThan(bron.indexOf(s.startsWith("radio") ? "radio/*" : "services/*"));
   });
 });
+
+describe("kantoor-tv nooit doorverwezen", () => {
+  it("geen tv-bron in legacyRedirects en _redirects", async () => {
+    const { legacyRedirects } = await import("@/config/legacyRedirects");
+    for (const r of legacyRedirects) expect(["tv", "tv/*", "tv/"]).not.toContain(r.from.replace(/^\//, ""));
+    const fs = await import("fs");
+    const red = fs.readFileSync(new URL("../../public/_redirects", import.meta.url), "utf8");
+    for (const regel of red.split("\n")) expect(regel.trim()).not.toMatch(/^\/tv(\/|\*|\s)/);
+  });
+  it("nieuwe A16-regels uit 15 okt", async () => {
+    const { legacyRedirects } = await import("@/config/legacyRedirects");
+    const doel = (f: string) => legacyRedirects.find((r) => r.from === f)?.to;
+    expect(doel("kerstactiemember")).toBe("/verzekeringen");
+    expect(doel("beroepsaansprakelijkheids")).toBe("/verzekeringen");
+    expect(doel("account/my-account")).toBe("/mijn-zp/polis");
+    expect(doel("factoring")).toBe("/diensten");
+  });
+});
+

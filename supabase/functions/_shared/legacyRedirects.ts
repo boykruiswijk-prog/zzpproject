@@ -1,6 +1,17 @@
 // Spiegelt src/config/legacyRedirects.ts (edge functions kunnen src/ niet importeren).
 // Bij wijzigingen: beide bestanden gelijk houden.
 export const legacyRedirects: { from: string; to: string }[] = [
+  // Verouderde WordPress-formulieren en -voorwaarden (oude looptijd). Komen in
+  // public/_redirects vóór de wildcard /wp-content/uploads/* en worden door de
+  // prerender niet meegeleverd. Het bestand in storage blijft bestaan.
+  { from: "wp-content/uploads/2021/05/HRM-Finance-Branche-verklaring.pdf", to: "/verzekeringen" },
+  { from: "wp-content/uploads/2021/05/IT-Brancge-verklaring.pdf", to: "/verzekeringen" },
+  { from: "wp-content/uploads/2021/05/PR-Marketing-Branche-verklaring.pdf", to: "/verzekeringen" },
+  { from: "wp-content/uploads/2021/05/Techniek-Overig-Branche-Verklaring.pdf", to: "/verzekeringen" },
+  { from: "wp-content/uploads/2025/03/ZP-Zaken-Slotverklaring.pdf", to: "/documenten/slotverklaring-2026.pdf" },
+  { from: "wp-content/uploads/2025/11/ZP_Slotverklaring.pdf", to: "/documenten/slotverklaring-2026.pdf" },
+  { from: "wp-content/uploads/2023/03/Algemene-Voorwaarden-v1.0-Definitief.pdf", to: "/algemene-voorwaarden" },
+
   // Oude WordPress rubrieken
   { from: "belastingen", to: "/kennisbank" },
   { from: "ondernemen", to: "/kennisbank" },
@@ -598,6 +609,32 @@ export const legacyRedirects: { from: string; to: string }[] = [
   { from: "en/mijnzp", to: "/mijn-zp/polis" },
   { from: "en/mijn-polis", to: "/mijn-zp/polis" },
   { from: "en/klantenservice", to: "/mijn-zp/polis" },
+  // A16 (14 okt 2026): oude URL's uit Search Console. Vangregels (eindigend op /*)
+  // staan altijd ná de specifieke regels; de generator zet ze ook achteraan.
+  { from: "vergelijken", to: "/bav-zzp-vergelijken" },
+  { from: "vergelijker", to: "/bav-zzp-vergelijken" },
+  { from: "zoekresultaten", to: "/kennisbank" },
+  { from: "checkout", to: "/verzekeringen" },
+  { from: "winkelwagen", to: "/verzekeringen" },
+  { from: "services/bancair-sparen", to: "/diensten" },
+  { from: "services/bav/aanmelden", to: "/verzekeringen#combinatiepolis" },
+  { from: "services/aov", to: "/aov" },
+  { from: "services/faq", to: "/faq" },
+  { from: "services/juridisch-advies", to: "/diensten" },
+  { from: "services/zorg-verzekering", to: "/zorgverzekering" },
+  { from: "financien/pensioengat-reserveringsruimte-berekenen", to: "/pensioen" },
+  { from: "product/screening-pakket-1", to: "/screening" },
+  { from: "product/screening-pakket-2", to: "/screening" },
+  { from: "product/screening-pakket-3", to: "/screening" },
+  { from: "about", to: "/over-ons" },
+  { from: "policies/refund-policy", to: "/algemene-voorwaarden" },
+  { from: "kerstactiemember", to: "/verzekeringen" },
+  { from: "beroepsaansprakelijkheids", to: "/verzekeringen" },
+  // /mijn-zp zelf verwijst door naar /mijn-zp/polis; direct daarheen, geen keten.
+  { from: "account/my-account", to: "/mijn-zp/polis" },
+  { from: "factoring", to: "/diensten" },
+  { from: "radio/*", to: "/kennisbank" },
+  { from: "services/*", to: "/diensten" },
 ];
 
 export const legacyRedirectMap: Record<string, string> = Object.fromEntries(

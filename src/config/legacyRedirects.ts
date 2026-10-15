@@ -640,6 +640,11 @@ export const legacyRedirects: LegacyRedirect[] = [
   { from: "product/screening-pakket-3", to: "/screening" },
   { from: "about", to: "/over-ons" },
   { from: "policies/refund-policy", to: "/algemene-voorwaarden" },
+  { from: "kerstactiemember", to: "/verzekeringen" },
+  { from: "beroepsaansprakelijkheids", to: "/verzekeringen" },
+  // /mijn-zp zelf verwijst door naar /mijn-zp/polis; direct daarheen, geen keten.
+  { from: "account/my-account", to: "/mijn-zp/polis" },
+  { from: "factoring", to: "/diensten" },
   { from: "radio/*", to: "/kennisbank" },
   { from: "services/*", to: "/diensten" },
 ];

@@ -174,6 +174,21 @@ export const trackBeginCheckout = (pakket: string, sector: string) =>
 export const trackWizardStep = (step: number, step_name: string) =>
   trackGa("wizard_step", { step, step_name, page: page() });
 
+/** Vaste korte namen per stap van de BAV + AVB-aanvraag (geen vrije tekst). */
+export const AANVRAAG_STAP_NAMEN = ["pakket", "bedrijf", "gegevens", "betaling", "controle"] as const;
+
+/** Parameters van aanvraag_stap: alleen stapnummer en vaste stapnaam, nooit persoonsgegevens. */
+export function aanvraagStapParams(stap: number): { stap: number; stap_naam: string } | null {
+  if (!Number.isInteger(stap) || stap < 1 || stap > AANVRAAG_STAP_NAMEN.length) return null;
+  return { stap, stap_naam: AANVRAAG_STAP_NAMEN[stap - 1] };
+}
+
+/** GA4-event bij het bereiken van een stap; via trackGa, dus zelfde consent-route als de andere events. */
+export function trackAanvraagStap(stap: number) {
+  const params = aanvraagStapParams(stap);
+  if (params) trackGa("aanvraag_stap", params);
+}
+
 export const trackWizardValidationError = (step: number, veldnaam: string) =>
   trackGa("wizard_validation_error", { step, veldnaam, page: page() });
 
