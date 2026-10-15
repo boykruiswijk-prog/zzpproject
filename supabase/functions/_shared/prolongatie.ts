@@ -26,3 +26,10 @@ export function prolongatieMails(contracten: { onderneming_id: string; product: 
   }
   return [...groep.values()].map((g) => ({ ...g, mail: g.producten.includes("bav_avb") }));
 }
+
+/** Besluit Boy 15-10-2026 14:00: prolongatiemails pas versturen vanaf deze datum (NL-tijd), geen inhaalslag. */
+export const PROLONGATIE_STARTDATUM = "2026-11-01";
+
+export function prolongatieMagVersturen(vandaagISO: string): boolean {
+  return vandaagISO.slice(0, 10) >= PROLONGATIE_STARTDATUM;
+}
