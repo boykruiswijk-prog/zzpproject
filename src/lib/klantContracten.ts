@@ -17,7 +17,7 @@ export const PRODUCT_LABEL: Record<Product, string> = {
 export const CONTRACT_STATUS_LABEL: Record<string, string> = {
   actief: "Actief",
   loopt_af: "Loopt af",
-  einddatum_controle: "Einddatum controleren",
+  einddatum_controle: "Actief", // stilzwijgend verlengd (D1-aanvulling)
   vervangen: "Vervangen",
 };
 
