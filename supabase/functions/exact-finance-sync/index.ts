@@ -3,7 +3,7 @@
 // Toegang: cron (x-cron-secret uit Vault, dagelijks 05:50 NL) of supervisor/admin met 2FA (knop "Nu verversen").
 //
 // Endpoints:
-//  - facturen:    salesinvoice/SalesInvoices (Type 8020 factuur, 8021 creditnota; Status 50 verwerkt). Bedrag = AmountDC incl. btw.
+//  - facturen:    salesinvoice/SalesInvoices (Type 8020 factuur, 8021 creditnota; Status 50 verwerkt). Bedrag = AmountDC incl. btw; bedrag_excl_btw = AmountFCExclVat (of AmountDC min VATAmountDC).
 //  - open posten: read/financial/ReceivablesList (momentopname van wat nu open staat; alle pagina's of de run telt niet als volledig).
 //  - betalingen:  cashflow/Receivables (IsFullyPaid, LastPaymentDate, Status, TransactionIsReversal voor terugboekingen).
 // Niet gebruikt: cashflow/DirectDebitMandates (geen betaalinformatie). Storno's levert Exact niet als eigen soort; alleen
@@ -100,13 +100,15 @@ Deno.serve(async (req) => {
 
   try {
     // 1. Verkoopfacturen
-    const sel = "InvoiceID,InvoiceNumber,InvoiceTo,InvoiceToName,AmountDC,InvoiceDate,DueDate,Type,Status,Description";
+    const sel = "InvoiceID,InvoiceNumber,InvoiceTo,InvoiceToName,AmountDC,InvoiceDate,DueDate,Type,Status,Description,AmountFCExclVat,VATAmountDC";
     const f = await haalAlles(`${base}salesinvoice/SalesInvoices?$select=${sel}&$filter=InvoiceDate ge ${filterDatum}`,
       `${base}salesinvoice/SalesInvoices?$filter=InvoiceDate ge ${filterDatum}`);
     endpoints.facturen = { endpoint: f.url, http: f.status, rijen: f.rijen.length, volledig: f.volledig, fout: f.fout };
     const fr = f.rijen.filter((x) => x.InvoiceID).map((x) => ({
       exact_id: String(x.InvoiceID), factuurnummer: tekst(x.InvoiceNumber), account_id: tekst(x.InvoiceTo), account_code: null,
-      account_naam: tekst(x.InvoiceToName), bedrag: getal(x.AmountDC), factuurdatum: datum(x.InvoiceDate), vervaldatum: datum(x.DueDate),
+      account_naam: tekst(x.InvoiceToName), bedrag: getal(x.AmountDC),
+      bedrag_excl_btw: getal(x.AmountFCExclVat) ?? (getal(x.AmountDC) != null && getal(x.VATAmountDC) != null ? Math.round((Number(x.AmountDC) - Number(x.VATAmountDC)) * 100) / 100 : null),
+      factuurdatum: datum(x.InvoiceDate), vervaldatum: datum(x.DueDate),
       soort: Number(x.Type) === 8021 || Number(x.AmountDC) < 0 ? "creditnota" : "factuur", exact_type: getal(x.Type), exact_status: getal(x.Status),
       omschrijving: tekst(x.Description), raw: x, opgehaald_op: nu, sync_run_id: runId,
     }));
@@ -115,8 +117,12 @@ Deno.serve(async (req) => {
     // 2. Openstaande posten (momentopname)
     const o = await haalAlles(`${base}read/financial/ReceivablesList`);
     endpoints.open_posten = { endpoint: o.url, http: o.status, rijen: o.rijen.length, volledig: o.volledig, fout: o.fout };
+    // Veldnamen bevestigd met GET-probe 15-10-2026: InvoiceNumber, AccountCode, AccountId, EntryNumber, JournalCode, YourRef.
+    // InvoiceNumber 0 = geen factuur (bankboeking, beginbalans, memoriaal): factuurnummer leeg, entrynummer bewaren.
+    const factNr = (v: any) => { const t = tekst(v); return t && /[1-9]/.test(t) ? t : null; };
     const or = o.rijen.map((x) => ({
-      exact_id: String(x.HID ?? x.Id ?? `${x.EntryNumber}-${x.InvoiceNumber}-${x.AccountCode}`), factuurnummer: tekst(x.InvoiceNumber),
+      exact_id: String(x.HID ?? x.Id ?? `${x.EntryNumber}-${x.InvoiceNumber}-${x.AccountCode}`), factuurnummer: factNr(x.InvoiceNumber),
+      entrynummer: getal(x.EntryNumber) != null ? String(Math.round(Number(x.EntryNumber))) : null,
       account_id: tekst(x.AccountId), account_code: tekst(x.AccountCode), account_naam: tekst(x.AccountName), bedrag: getal(x.Amount),
       factuurdatum: datum(x.InvoiceDate), vervaldatum: datum(x.DueDate), omschrijving: tekst(x.Description), raw: x, opgehaald_op: nu, sync_run_id: runId,
     }));
