@@ -1,5 +1,6 @@
 // Laatste anonimiseringslaag voor het ZP Zaken Live-scherm (bezoekers kijken mee).
 // Pure TypeScript zonder Deno- of npm-imports, zodat vitest dit ook test.
+import { NETTO_GROEI_VANAF } from "./nettoGroei.ts";
 
 export const ADS_BUDGET = 22500;
 export const STATIONS = [
