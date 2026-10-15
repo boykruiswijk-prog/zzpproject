@@ -292,7 +292,7 @@ export function schoonNettoGroei(n: Ruw) {
     opzegpercentage: getal(x.opzegpercentage) }) : null;
   if (!n) return null;
   const weken = Array.isArray(n.weken) ? n.weken : [];
-  return { cumulatief: blok(n.cumulatief), deze_week: blok(weken[weken.length - 1]) };
+  return { vanaf: NETTO_GROEI_VANAF, cumulatief: blok(n.cumulatief), deze_week: blok(weken[weken.length - 1]) };
 }
 
 /** Bouwt de publieke payload uit de geaggregeerde RPC-uitvoer; alleen witte-lijstvelden. */
