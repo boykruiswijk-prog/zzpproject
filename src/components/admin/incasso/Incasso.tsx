@@ -95,13 +95,21 @@ export function BetaaldKnop({ id, onKlaar }: { id: string; onKlaar?: () => void 
   return <Button size="sm" variant="outline" onClick={klik} disabled={bezig}>Betaald</Button>;
 }
 
+/** Royement bevestigen: eerst alleen status en logregel (RPC), daarna de royementsmail via de schakelaar (een per incasso). */
+export async function royementBevestigenEnMailen(id: string): Promise<{ error: string | null; mail: string | null }> {
+  const { error } = await supabase.rpc("bevestig_royement" as any, { _id: id });
+  if (error) return { error: error.message, mail: null };
+  const { data, error: fout } = await supabase.functions.invoke("royement-bevestiging-mail", { body: { incasso_id: id } });
+  return { error: null, mail: fout ? "mail_mislukt" : (data as any)?.mail ?? null };
+}
+
 export function RoyementKnop({ id, onKlaar }: { id: string; onKlaar?: () => void }) {
   const { toast } = useToast();
   async function klik() {
-    if (!window.confirm("Royement bevestigen? Dit zet alleen de status en maakt een logregel; contract en Exact blijven ongewijzigd.")) return;
-    const { error } = await supabase.rpc("bevestig_royement" as any, { _id: id });
-    if (error) return toast({ title: "Niet gelukt", description: error.message, variant: "destructive" });
-    toast({ title: "Royement bevestigd" }); onKlaar?.();
+    if (!window.confirm("Royement bevestigen? Dit zet de status, maakt een logregel en stuurt de klant de royementsbevestiging. Contract en Exact blijven ongewijzigd.")) return;
+    const { error, mail } = await royementBevestigenEnMailen(id);
+    if (error) return toast({ title: "Niet gelukt", description: error, variant: "destructive" });
+    toast({ title: "Royement bevestigd", description: mail === "verzonden" ? "Royementsbevestiging is naar de klant gemaild." : `Royementsmail: ${mail ?? "onbekend"}` }); onKlaar?.();
   }
   return <Button size="sm" variant="destructive" onClick={klik}>Royement bevestigen</Button>;
 }
