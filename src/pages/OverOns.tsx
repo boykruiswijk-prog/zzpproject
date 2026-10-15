@@ -25,7 +25,7 @@ const SEO = seoRoute("/over-ons");
 
 // Team and content data stays in Dutch as it's specific content
 const values = [
-  { icon: Target, title: "Onafhankelijk", description: "We zijn niet gebonden aan één verzekeraar. Onze bemiddeling is gebaseerd op wat het beste bij jou past, niet op commissies." },
+  { icon: Target, title: "Onafhankelijk", description: "We zijn niet gebonden aan één verzekeraar. Onze bemiddeling is gebaseerd op wat bij jou past, niet op commissies." },
   { icon: Eye, title: "Transparant", description: "Geen kleine lettertjes of verborgen kosten. We leggen alles helder uit zodat je weet waar je aan toe bent." },
   { icon: Users, title: "Persoonlijk", description: "Je hebt persoonlijk contact met ons team. Geen callcenters of doorverwijzingen." },
   { icon: Award, title: "Deskundig", description: "Meer dan 13 jaar ervaring in verzekeringen voor zelfstandigen. We kennen de markt en jouw uitdagingen." },

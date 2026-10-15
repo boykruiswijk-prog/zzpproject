@@ -140,10 +140,11 @@ export const YEZZER_URL = "https://www.yezzer.nl/verzekeringen/beroepsaansprakel
 /** Zichtbare FAQ; dezelfde lijst voedt het FAQPage-schema. Bedragen van ZP Zaken uit bavPakketten. */
 export function bavVergelijkingFaq(): { question: string; answer: string }[] {
   const maand = getPakket("maandelijks");
+  const jaar = getPakket("jaarlijks");
   return [
     { question: "Wat is het verschil tussen een BAV en een AVB?", answer: "Een BAV dekt financiële schade bij je klant door een fout in je werk, zoals een verkeerd advies of een fout in software. Een AVB dekt schade aan personen of spullen, bijvoorbeeld als je bij een klant een laptop laat vallen. Veel zzp'ers hebben allebei nodig." },
     { question: "Is een BAV verplicht voor zzp'ers?", answer: "Niet voor iedereen. Voor sommige beroepen is het wettelijk of door een beroepsorganisatie verplicht. Veel opdrachtgevers en bemiddelaars vragen er ook om in hun contract." },
-    { question: "Wat kost een BAV voor een zzp'er?", answer: `De prijzen op de sites van aanbieders beginnen rond € 25 tot € 40 per maand voor alleen een BAV. Je premie hangt af van je beroep, je omzet, het verzekerd bedrag en het eigen risico. Bij ZP Zaken betaal je vanaf ${eur(maand.prijs)} per maand voor BAV en AVB samen.` },
+    { question: "Wat kost een BAV voor een zzp'er?", answer: `De prijzen op de sites van aanbieders beginnen rond € 25 tot € 40 per maand voor alleen een BAV. Je premie hangt af van je beroep, je omzet, het verzekerd bedrag en het eigen risico. Bij ZP Zaken betaal je ${eur(maand.prijs)} per maand of ${eur(jaar.prijs)} per jaar voor BAV en AVB samen, inclusief kosten en assurantiebelasting.` },
     { question: "Welk verzekerd bedrag heb ik nodig?", answer: "Dat hangt af van je werk en wat je opdrachtgever vraagt. Kijk in je contract welk bedrag er staat. Veel goedkope polissen starten bij € 250.000 per aanspraak. Dat is soms te weinig voor grotere opdrachten." },
     { question: "Kan ik mijn BAV dagelijks opzeggen?", answer: "Bij ZP Zaken, Insify en Knab wel. Bij andere aanbieders staat het niet altijd op de productpagina. Check de voorwaarden voordat je afsluit." },
     ...INLOOP_UITLOOP_FAQ,

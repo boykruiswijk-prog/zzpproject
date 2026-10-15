@@ -185,7 +185,7 @@
     "onlineApply": "Online aanvragen, binnen 24 uur geregeld",
     "askAdvice": "Plan een gesprek",
     "didYouKnow": "Goed om te weten:",
-    "taxDeductible": "De premie voor zakelijke verzekeringen is vaak fiscaal aftrekbaar als zakelijke kosten. Dat maakt je verzekering netto een stuk voordeliger!",
+    "taxDeductible": "De premie voor zakelijke verzekeringen is vaak fiscaal aftrekbaar als zakelijke kosten. De premie is in de regel zakelijk aftrekbaar.",
     "ctaTitle": "Niet zeker welke verzekering je nodig hebt?",
     "ctaSubtitle": "Plan een vrijblijvend gesprek. We bekijken samen welke verzekeringen passen bij jouw beroep en situatie, zonder verplichtingen.",
     "ctaButton": "Vrijblijvend gesprek"
@@ -475,13 +475,13 @@
     "title": "Waarom deze premie scherp is",
     "subtitle": "Transparantie over hoe wij werken",
     "reason1": "Volledig online proces",
-    "reason1Desc": "Minder overhead, lagere kosten voor jou",
+    "reason1Desc": "Persoonlijke service zonder overbodige tussenschakels",
     "reason2": "Gericht op kantoorberoepen",
     "reason2Desc": "Duidelijk risicoprofiel = scherpere premie",
     "reason3": "Eén bundelpakket",
     "reason3Desc": "Helder, minder uitzonderingen, minder administratie",
     "disclaimer": "Zo verdienen wij ons geld:",
-    "disclaimerText": "ZP Zaken ontvangt een provisie van de verzekeraar bij het afsluiten van een polis. Je betaalt nooit extra door onze tussenkomst, onze premies zijn gelijk aan of lager dan rechtstreeks."
+    "disclaimerText": "Je betaalt bij ons de premie van de verzekeraar; wij worden betaald via provisie."
   },
   "qualification": {
     "title": "Check in 20 seconden of je in dit pakket past",

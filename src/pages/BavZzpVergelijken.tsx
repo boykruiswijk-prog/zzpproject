@@ -93,7 +93,7 @@ export default function BavZzpVergelijken() {
             <p className="mb-3 text-sm font-medium text-accent">Gecontroleerd op {VERGELIJKING_GECONTROLEERD_LABEL}</p>
             <h1 className="mb-6 text-3xl font-bold md:text-5xl">BAV zzp vergelijken 2026</h1>
             <p className="mb-8 text-lg leading-relaxed text-muted-foreground">
-              Vergelijk een beroepsaansprakelijkheidsverzekering (BAV) nooit alleen op de laagste prijs. Kijk ook naar het verzekerd bedrag, het eigen risico, of de bedrijfsaansprakelijkheidsverzekering (AVB) erbij zit en hoe snel je kunt opzeggen. ZP Zaken biedt BAV en AVB in één polis via Hiscox, vanaf {eur(maand.prijs)} per maand, met {bav} BAV-dekking, {avb} AVB-dekking per aanspraak en geen eigen risico.
+              Vergelijk een beroepsaansprakelijkheidsverzekering (BAV) nooit alleen op de laagste prijs. Kijk ook naar het verzekerd bedrag, het eigen risico, of de bedrijfsaansprakelijkheidsverzekering (AVB) erbij zit en hoe snel je kunt opzeggen. ZP Zaken biedt BAV en AVB in één polis via Hiscox, voor {eur(maand.prijs)} per maand of {eur(jaar.prijs)} per jaar, inclusief kosten en assurantiebelasting, met {bav} BAV-dekking, {avb} AVB-dekking per aanspraak en geen eigen risico.
             </p>
             <Ctas />
           </div>
