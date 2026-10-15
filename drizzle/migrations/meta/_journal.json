@@ -1016,6 +1016,13 @@
       "when": 1792060268085,
       "tag": "0144_0144_klantmails_incasso_prolongatie",
       "breakpoints": true
+    },
+    {
+      "idx": 145,
+      "version": "7",
+      "when": 1792060438026,
+      "tag": "0145_0145_prolongatie_rechten",
+      "breakpoints": true
     }
   ]
 }
