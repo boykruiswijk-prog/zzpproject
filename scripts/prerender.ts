@@ -245,23 +245,23 @@ export function buildHtml(
   let html = template;
   html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(opts.title)}</title>`);
   html = html.replace(
-    /<meta name="description" content="[\s\S]*?" \/>/,
+    /<meta name="description"[^>]*>/,
     `<meta name="description" content="${esc(opts.description)}" data-rh="true" />`,
   );
   html = html.replace(
-    /<meta property="og:title" content="[\s\S]*?" \/>/,
+    /<meta property="og:title"[^>]*>/,
     `<meta property="og:title" content="${esc(opts.title)}" data-rh="true" />`,
   );
   html = html.replace(
-    /<meta property="og:description" content="[\s\S]*?" \/>/,
+    /<meta property="og:description"[^>]*>/,
     `<meta property="og:description" content="${esc(opts.description)}" data-rh="true" />`,
   );
   html = html.replace(
-    /<meta property="og:url" content="[\s\S]*?" \/>/,
+    /<meta property="og:url"[^>]*>/,
     `<meta property="og:url" content="${url}" data-rh="true" />`,
   );
   html = html.replace(
-    /<meta property="og:type" content="[\s\S]*?" \/>/,
+    /<meta property="og:type"[^>]*>/,
     `<meta property="og:type" content="${ogType}" data-rh="true" />`,
   );
   if (opts.image) {

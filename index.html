@@ -65,7 +65,7 @@
     <meta name="twitter:image" content="https://zpzaken.nl/og/zpzaken-og-2026.jpg" data-rh="true" />
 
     <!-- Additional SEO -->
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" data-rh="true" />
     <!-- Elke andere host dan zpzaken.nl: noindex en canonical naar https://zpzaken.nl/<pad>. -->
     <script>
       (function () {
@@ -74,7 +74,10 @@
         var set = function () {
           var m = document.querySelectorAll('meta[name="robots"]');
           if (!m.length) { var n = document.createElement("meta"); n.name = "robots"; document.head.appendChild(n); m = [n]; }
-          for (var i = 0; i < m.length; i++) if (m[i].getAttribute("content") !== "noindex, follow") m[i].setAttribute("content", "noindex, follow");
+          for (var i = 0; i < m.length; i++) {
+            var gewenste = /nofollow/.test(m[i].getAttribute("content") || "") ? "noindex,nofollow" : "noindex, follow";
+            if (m[i].getAttribute("content") !== gewenste) m[i].setAttribute("content", gewenste);
+          }
           var c = document.querySelector('link[rel="canonical"]');
           if (!c) { c = document.createElement("link"); c.rel = "canonical"; document.head.appendChild(c); }
           var p = location.pathname === "/" ? "/" : location.pathname.replace(/\/$/, "");
