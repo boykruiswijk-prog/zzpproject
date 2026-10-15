@@ -15,7 +15,7 @@ export const ATTRIBUTIE_SLEUTELS = [
   "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content",
   "gclid", "gbraid", "wbraid", "msclkid", "referrer", "landingspagina", "eerste_bezoek_op",
   // Alleen "google" of "microsoft": kanaal zonder klik-ID (ook zonder marketingtoestemming).
-  "advertentieklik",
+  "advertentieklik", "herkomst_uit",
 ] as const;
 
 /** Advertentie-klik-ID's: alleen opgeslagen en verstuurd na toestemming marketing-cookies. */
@@ -24,7 +24,7 @@ export type KlikIdSleutel = (typeof KLIK_ID_SLEUTELS)[number];
 
 export type AttributieSleutel = (typeof ATTRIBUTIE_SLEUTELS)[number];
 export type Kanaal = "ai" | "betaald" | "campagne" | "verwijzing" | "direct";
-export type Attributie = Partial<Record<AttributieSleutel, string>> & { kanaal: Kanaal };
+export type Attributie = Partial<Record<AttributieSleutel, string>> & { kanaal: Kanaal; marketing_toestemming?: boolean };
 
 function host(v: string): string {
   try { return new URL(v.includes("://") ? v : `https://${v}`).hostname.toLowerCase(); } catch { return ""; }
@@ -67,11 +67,13 @@ export function saneerAttributie(x: unknown): Attributie | null {
     if (k === "referrer") s = schoneUrl(s);
     if (k === "landingspagina") s = s.startsWith("/") ? s.split(/[?#]/)[0] : "";
     if (k === "advertentieklik") s = s === "google" || s === "microsoft" ? s : "";
+    if (k === "herkomst_uit") s = s === "90d" ? s : "";
     if (k === "eerste_bezoek_op") s = /^\d{4}-\d{2}-\d{2}T[\d:.]+Z$/.test(s) ? s : "";
     if (s) uit[k] = s;
   }
-  if (!Object.keys(uit).length) return null;
-  return { ...uit, kanaal: bepaalKanaal(uit) };
+  const marketing = typeof r.marketing_toestemming === "boolean" ? { marketing_toestemming: r.marketing_toestemming } : {};
+  if (!Object.keys(uit).length && !Object.keys(marketing).length) return null;
+  return { ...uit, ...marketing, kanaal: bepaalKanaal(uit) };
 }
 
 const KANAAL_LABEL: Record<Kanaal, string> = {

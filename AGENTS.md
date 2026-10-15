@@ -20,7 +20,7 @@
 
 - Opzeggingen worden bij insert gekoppeld door bepaal_opzegging_koppeling (e-mail → contractnummer → KvK/bedrijfsnaam als voorstel); contracten wijzigen alleen via RPC verwerk_opzegging. Waarom: nooit automatisch een contract beëindigen.
 - Bezoekersinvoer in leads.extra_data.formulier (geordende lijst) via _shared/leadVelden.ts voor detail, lijst en teammail; preview-inzendingen zijn is_test zonder klantmail. Waarom: één bron.
-- Leadherkomst via _shared/attributie.ts (sessie, anders zp_attributie_90d zonder klik-ID's; utm/klik-ID overschrijft) → leads.extra_data.attributie; GA4 alleen via src/lib/tracking.ts, secundaire conversies alleen in submitPublicForm na succes, tel:/wa.me via één listener, geen GA4 op interne paden. Waarom: één meetbron, geen dubbele of testconversies.
+- Attribution uses the shared validator: direct sessions inherit paid 90-day fields, explicit session sources win, consent is boolean; Ads requires a valid label. Why: consistent attribution without consent bypass.
 - Halve BAV-aanvragen staan in aanvraag_concepten, alleen geschreven via submit-public-form (table "aanvraag_concepten", idempotent op browser-concept-id) en omgezet door process-bav-wizard; nooit bank-/SEPA-velden, na 90 dagen geanonimiseerd (cron), nooit verwijderd. Waarom: opvolging zonder gevoelige gegevens of anon-toegang.
 - BAV-vergelijking in src/data/bavVergelijking.ts (bron-URL + gecontroleerd_op per aanbieder; ZP-rij uit bavPakketten). Waarom: bijwerken zonder paginacode.
 - docs/cloudflare-bulk-redirects.csv volgt bij elke build uit public/_redirects. Waarom: één bron.

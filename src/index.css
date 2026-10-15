@@ -275,5 +275,15 @@
 .stroom-paneel .stroom-rivier { height: 46vh; margin-top: 4vh; }
 .stroom-paneel .stroom-stappen { gap: 0.3vw; }
 .stroom-paneel .stroom-stappen small { font-size: min(1.3vh, 0.9vw); }
-.workers-scene { display: flex; flex-direction: column; gap: 2vh; height: 100%; padding: 9vh 2vw 2vh; color: hsl(var(--s-tekst)); }
-.workers-scene-raster { display: grid; grid-template-columns: 1.1fr 1fr; gap: 2vw; flex: 1; min-height: 0; }
+.workers-paneel > .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1vh; }
+.workers-paneel > .grid > div { min-height: 0; overflow: hidden; }
+.workers-paneel > .grid > div > .flex { font-size: 1.6vh; gap: 0.4vh; }
+.workers-paneel > .grid > div > .flex > span:last-child { font-size: 1.3vh; }
+.workers-paneel > .grid > div > .flex > .text-right { font-size: 1.3vh; }
+.ai-team-paneel > div:first-child { flex-wrap: wrap; gap: 0.5vh; }
+.processen-paneel .stroom-processen { grid-template-columns: minmax(0, 1fr); gap: 5vh; margin-top: 1vh; }
+.processen-paneel .stroom-processen > div { min-width: 0; overflow: hidden; }
+.processen-paneel .stroom-processen h3 { font-size: 2.8vh; }
+.processen-paneel .stroom-proceslijn { gap: 1vh; }
+.processen-paneel .stroom-proceslijn b { font-size: 1.8vh; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.processen-paneel .stroom-proceslijn small { font-size: 1.6vh; }
