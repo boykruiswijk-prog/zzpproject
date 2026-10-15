@@ -32,7 +32,9 @@ Deno.serve(async (req) => {
   const toegang = await cronOfSupervisor(req, admin);
   if (toegang instanceof Response) return json({ error: "geen_toegang" }, toegang.status);
   // Cron draait om 03:50 en 04:50 UTC; alleen het moment dat het 05 uur NL is telt.
-  if (toegang.cron && uurNL() !== 5) return json({ overgeslagen: "niet 05:50 NL" });
+  // Eenmalige run buiten het tijdvak alleen met het cron-secret en expliciet {"nu": true}.
+  const verzoek = await req.json().catch(() => ({}));
+  if (toegang.cron && uurNL() !== 5 && verzoek?.nu !== true) return json({ overgeslagen: "niet 05:50 NL" });
 
   const { data: cfg } = await admin.from("exact_config").select("*").limit(1).maybeSingle();
   if (!cfg?.is_actief || !cfg.divisie_code) return json({ error: "exact_niet_actief" }, 400);
