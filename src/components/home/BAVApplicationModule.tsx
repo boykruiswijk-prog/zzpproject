@@ -5,7 +5,7 @@ import { CYBER_AKKOORD, CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER
 import { useState, useEffect, useRef } from "react";
 import { SepaMachtigingBlok, bouwFrontendMachtiging } from "@/components/shared/SepaMachtigingBlok";
 import { mandaatkenmerkVoor, redenBav } from "@/lib/sepaMachtiging";
-import { trackBeginCheckout, trackWizardStep, trackWizardValidationError, trackAddPaymentInfo, trackPurchase } from "@/lib/tracking";
+import { trackBeginCheckout, trackWizardStep, trackWizardValidationError, trackAanvraagStap, trackAddPaymentInfo, trackPurchase } from "@/lib/tracking";
 import { leesAttributie } from "@/lib/attributie";
 import { isNlTelefoon, normaliseerNlTelefoon } from "../../../supabase/functions/_shared/telefoon";
 import { formatDateNL } from "@/lib/dateFormat";
@@ -352,6 +352,14 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
     }, 1500);
     return () => window.clearTimeout(timer);
   }, [currentStep, formData.email, formData.telefoon, formData.voornaam, formData.achternaam, formData.bedrijfsnaam, formData.kvkNummer, formData.sector, gekozenPakketId, isSubmitted, guard.honeypot]);
+
+  // aanvraag_stap: elke stap hooguit één keer per formulierdoorloop.
+  const gemetenStappen = useRef<Set<number>>(new Set());
+  useEffect(() => {
+    if (isSubmitted || gemetenStappen.current.has(currentStep)) return;
+    gemetenStappen.current.add(currentStep);
+    trackAanvraagStap(currentStep);
+  }, [currentStep, isSubmitted]);
 
   const nextStep = async () => {
     if (!validateStep(currentStep) || currentStep >= TOTAL_STEPS) return;
