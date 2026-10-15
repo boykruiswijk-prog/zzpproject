@@ -28,6 +28,17 @@ export async function klantOntvanger(db: any, ondernemingId: string | null, lead
   return { email: null, voornaam: null };
 }
 
+/** Polisnummer: eerst een geldige policy van de onderneming, anders het nieuwste certificaatnummer uit klant_certificaten. */
+export async function polisnummerVoor(db: any, ondernemingId: string | null): Promise<string | null> {
+  if (!ondernemingId) return null;
+  const { data: pol } = await db.from("policies").select("certificate_number").eq("onderneming_id", ondernemingId).eq("status", "geldig")
+    .not("certificate_number", "is", null).order("created_at", { ascending: false }).limit(1).maybeSingle();
+  if (pol?.certificate_number) return String(pol.certificate_number);
+  const { data: kc } = await db.from("klant_certificaten").select("certificaatnummer").eq("onderneming_id", ondernemingId)
+    .not("certificaatnummer", "is", null).order("aanvraagdatum", { ascending: false, nullsFirst: false }).limit(1).maybeSingle();
+  return kc?.certificaatnummer ? String(kc.certificaatnummer) : null;
+}
+
 /**
  * Verstuurt een nieuwe klantmail alleen als de schakelaar aan staat (vers gelezen) en createMailGate het toelaat.
  * Bij uit: geen mail, wel een logregel 'niet_verzonden_schakelaar_uit'. Geeft de mailstatus terug.

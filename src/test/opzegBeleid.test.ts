@@ -14,7 +14,7 @@ describe("opzegCreditBeleid", () => {
   it("frontend en shared helper zijn byte-gelijk", () => {
     expect(readFileSync("src/lib/opzegBeleid.ts", "utf8")).toBe(readFileSync("supabase/functions/_shared/opzegBeleid.ts", "utf8"));
   });
-  it("migratie plan_opzeg_credit: niet_nodig voor maand en cyber, jaar wacht op Boy", () => {
+  it("migratie plan_opzeg_credit: niet_nodig voor maand en cyber (historische migratietekst)", () => {
     const dir = "drizzle/migrations";
     const sql = readFileSync(`${dir}/${readdirSync(dir).find((f) => f.includes("opzeggen_zonder_credit_maand_cyber"))}`, "utf8");
     expect(sql).toContain("IF k.cyclus = ''maand'' THEN");
