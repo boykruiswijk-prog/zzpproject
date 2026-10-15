@@ -16,7 +16,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useToast } from "@/hooks/use-toast";
 import { formatDateNL } from "@/lib/dateFormat";
 import { VOORBEELD_DATA, vulPlaceholders } from "@/lib/klantmailTekst";
-import { plusDagenISO } from "@/lib/prolongatie";
+import { PROLONGATIE_STARTDATUM, plusDagenISO, prolongatieMagVersturen } from "@/lib/prolongatie";
 
 interface Instelling { sleutel: string; naam: string; moment: string; actief: boolean; status: string; onderwerp: string | null; tekst: string | null; placeholders: string[]; bijgewerkt_op: string; goedgekeurd_op: string | null }
 const vandaag = () => new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Amsterdam" }).format(new Date());
@@ -129,6 +129,7 @@ function MailKaart({ r, teller, onAan, onUit, onOpgeslagen }: { r: Instelling; t
         </div>
       </CardHeader>
       <CardContent className="space-y-3 text-sm">
+        {r.sleutel === "prolongatie_jaarpolis" && !prolongatieMagVersturen(vandaag()) && <p className="font-medium">Verstuurt vanaf {new Intl.DateTimeFormat("nl-NL", { day: "numeric", month: "long", year: "numeric" }).format(new Date(`${PROLONGATIE_STARTDATUM}T12:00:00Z`))}</p>}
         {r.status === "wacht_op_akkoord_boy" && <p className="font-medium text-destructive">Concept, wacht op akkoord Boy</p>}
         {r.status === "goedgekeurd_boy" && r.goedgekeurd_op && <p className="text-muted-foreground">Boy heeft de tekst goedgekeurd op {formatDateNL(r.goedgekeurd_op)}.</p>}
         <p className="text-muted-foreground">Laatste 30 dagen: {teller.verzonden} verstuurd, {teller.uit} niet verstuurd omdat de mail uit stond, {teller.anders} niet verstuurd om een andere reden.</p>
