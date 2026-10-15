@@ -149,7 +149,7 @@ export const ZEKER_KENNIS = {
     },
     {
       "path": "/kennisbank",
-      "title": "Kennisbank voor zzp'ers: verzekeringen, belasting & wetgeving",
+      "title": "Zzp-kennisbank: verzekeren, belasting, wetgeving",
       "intro": "In de kennisbank van ZP Zaken vind je artikelen over de Wet DBA, aansprakelijkheid, belastingen, financiën en ondernemen als zelfstandige. De artikelen zijn geordend in vier categorieën, zodat je snel bij het juiste onderwerp bent."
     },
     {
