@@ -492,6 +492,30 @@ export const fiscaleCijfers = {
     toelichting: "Maximaal bedrag aan niet-benutte jaarruimte uit voorgaande jaren dat je in een jaar mag inhalen.",
     bron: BRON_FISIN_2026,
   },
+  lijfrenteFranchise: {
+    belastingjaar: 2026, waarde: 19172, eenheid: "euro", label: "Franchise jaarruimte lijfrente",
+    toelichting: "Derde pijler; niet de franchise van een werkgeverspensioen.", bron: BRON_FISIN_2026,
+  },
+  aowAlleenstaandJuli: {
+    belastingjaar: 2026, waarde: 1662.16, eenheid: "euro", label: "AOW bruto per maand alleenstaand, juli 2026",
+    bron: { naam: "Rijksoverheid, uitkeringsbedragen per 1 juli 2026", url: "https://www.rijksoverheid.nl/onderwerpen/algemene-ouderdomswet-aow" },
+  },
+  aowSamenwonendJuli: {
+    belastingjaar: 2026, waarde: 1139.39, eenheid: "euro", label: "AOW bruto per persoon per maand samenwonend, juli 2026",
+    bron: { naam: "Rijksoverheid, uitkeringsbedragen per 1 juli 2026", url: "https://www.rijksoverheid.nl/onderwerpen/algemene-ouderdomswet-aow" },
+  },
+  aowLeeftijd: {
+    belastingjaar: 2026, waarde: 67, eenheid: "jaren", label: "AOW-leeftijd 2026 en 2027",
+    bron: { naam: "Rijksoverheid, AOW-leeftijd", url: "https://www.rijksoverheid.nl/onderwerpen/algemene-ouderdomswet-aow/vraag-en-antwoord/wanneer-krijg-ik-aow" },
+  },
+  lijfrenteMinimaleUitkering: {
+    belastingjaar: 2026, waarde: 20, eenheid: "jaren", label: "Minimale duur bancaire oudedagslijfrente vanaf AOW-leeftijd",
+    bron: BRON_FISIN_2026,
+  },
+  revisierente: {
+    belastingjaar: 2026, waarde: 20, eenheid: "procent", label: "Revisierente bij eerdere opname lijfrente",
+    bron: BRON_FISIN_2026,
+  },
 
 
 

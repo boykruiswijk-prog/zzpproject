@@ -2,6 +2,8 @@
 // verify_jwt = false (crawlers moeten er ongehinderd bij kunnen).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
+import { EVI_PAGINA_PAD, EVI_PAGINA_PUBLIEK } from "../_shared/eviPagina.generated.ts";
+
 const HOST = "https://zpzaken.nl";
 
 const STATIC_URLS: Array<{ path: string; changefreq?: string; priority?: string }> = [
@@ -10,6 +12,7 @@ const STATIC_URLS: Array<{ path: string; changefreq?: string; priority?: string 
   { path: "/verzekeringen", changefreq: "monthly", priority: "0.9" },
   { path: "/bav-zzp-vergelijken", changefreq: "monthly", priority: "0.8" },
   { path: "/aov", changefreq: "monthly", priority: "0.8" },
+  ...(EVI_PAGINA_PUBLIEK ? [{ path: EVI_PAGINA_PAD, changefreq: "monthly", priority: "0.8" }] : []),
   { path: "/pensioen", changefreq: "monthly", priority: "0.8" },
   { path: "/zorgverzekering", changefreq: "monthly", priority: "0.8" },
   { path: "/mentale-gezondheid", changefreq: "monthly", priority: "0.7" },

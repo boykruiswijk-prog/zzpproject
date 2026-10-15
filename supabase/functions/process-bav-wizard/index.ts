@@ -1,3 +1,4 @@
+import { saneerInterneBron } from "../_shared/interneBron.ts";
 import { isEigenKvk, KVK_EIGEN_NUMMER_MELDING } from "../_shared/kvkInvoer.ts";
 import { corrigeerIngangsdatum } from "../_shared/ingangsdatum.ts";
 import { starterPremieKlanttekst } from "../_shared/premieTekst.ts";
@@ -77,6 +78,7 @@ interface BavSubmission {
   formulier_naam?: string;
   /** Herkomst van het bezoek (first-party, sessionStorage). */
   attributie?: unknown;
+  interne_bron?: unknown;
 }
 
 import { saneerFormulier, saneerPagina } from "../_shared/leadVelden.ts";
@@ -338,6 +340,7 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
           formulier: saneerFormulier(submission.formulier),
           formulier_naam: typeof submission.formulier_naam === "string" ? submission.formulier_naam.slice(0, 100) : "Online aanvraag BAV + AVB",
           pagina: saneerPagina(submission.pagina_url),
+          ...(saneerInterneBron(submission.interne_bron) ? { interne_bron: saneerInterneBron(submission.interne_bron) } : {}),
           sector: submission.sector,
           ...(saneerAttributie(submission.attributie) ? { attributie: saneerAttributie(submission.attributie) } : {}),
           ...(handmatigeAcceptatie

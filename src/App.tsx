@@ -127,6 +127,9 @@ import { PortalAuthProvider } from "@/contexts/PortalAuthContext";
 import { RequirePortalAuth } from "@/components/portal/RequirePortalAuth";
 
 import { legacyRedirects } from "@/config/legacyRedirects";
+import { EVI_PAGINA_PAD, EVI_PAGINA_PUBLIEK } from "@/config/eviPagina";
+const PensioenOpbouwenZzp = lazy(() => import("./pages/PensioenOpbouwenZzp"));
+const PensioenMetEviLink = () => <><Pensioen />{EVI_PAGINA_PUBLIEK && <section className="container-wide py-12"><h2>Pensioen opbouwen als zzp'er</h2><a className="text-accent underline" href={EVI_PAGINA_PAD}>Jaarruimte, lijfrente en pensioen via Evi van Lanschot</a></section>}</>;
 
 /** Alleen deze taalprefixen zijn geldig; al het andere is een 404. */
 const SUPPORTED_LANGS = ["en", "de", "fr"];
@@ -153,7 +156,7 @@ const publicRoutes = (
     <Route path="verzekeringen" element={<Verzekeringen />} />
     <Route path="bav-zzp-vergelijken" element={<BavZzpVergelijken />} />
     <Route path="aov" element={<AOV />} />
-    <Route path="pensioen" element={<Pensioen />} />
+    <Route path="pensioen" element={<PensioenMetEviLink />} />
     <Route path="zorgverzekering" element={<Zorgverzekering />} />
     <Route path="zzp-verzekering-ict" element={<ZzpVerzekeringICT />} />
     <Route path="zzp-verzekering-zorg" element={<ZzpVerzekeringZorg />} />
@@ -215,6 +218,7 @@ export const AppRoutes = () => (
           <Routes>
             {/* Default (NL) routes */}
             <Route path="/">{publicRoutes}</Route>
+            <Route path={EVI_PAGINA_PAD} element={<PensioenOpbouwenZzp />} />
 
             {/* WordPress legacy redirects — MUST come before /:lang */}
             {legacyRedirects.map(({ from, to }) => (

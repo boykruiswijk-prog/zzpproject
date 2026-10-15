@@ -11,6 +11,9 @@ interface SEOHeadProps {
   ogType?: string;
   ogImage?: string;
   noindex?: boolean;
+  robots?: string;
+  exactTitle?: boolean;
+  suppressBreadcrumb?: boolean;
   children?: React.ReactNode;
 }
 
@@ -24,13 +27,16 @@ export function SEOHead({
   ogType = "website",
   ogImage = SITE_CONFIG.ogImage,
   noindex: noindexProp = false,
+  robots,
+  exactTitle = false,
+  suppressBreadcrumb = false,
   children,
 }: SEOHeadProps) {
   const { pathname } = useLocation();
   // Taalversies /en, /de, /fr worden niet geïndexeerd (alleen Nederlands).
   const noindex = noindexProp || /^\/(en|de|fr)(\/|$)/.test(pathname);
   // Eén merknaam achteraan; zie formatPageTitle.
-  const pageTitle = formatPageTitle(title);
+  const pageTitle = exactTitle ? title : formatPageTitle(title);
 
   // Pad zonder taalprefix (voor de breadcrumb).
   const cleanPath = pathname.replace(/^\/(en|de|fr)(\/|$)/, "/");
@@ -39,7 +45,7 @@ export function SEOHead({
   const canonicalUrl = canonical || `${BASE_URL}${selfPath}`;
   const nlPath = cleanPath === "/" ? "/" : cleanPath.replace(/\/$/, "");
   // BreadcrumbList automatisch per subpagina (nooit op de homepage).
-  const breadcrumb = noindex ? null : breadcrumbForPath(nlPath);
+  const breadcrumb = noindex || suppressBreadcrumb ? null : breadcrumbForPath(nlPath);
 
   return (
     <Helmet>
@@ -49,7 +55,7 @@ export function SEOHead({
       {!noindex && <link rel="canonical" href={canonicalUrl} />}
 
 
-      {noindex && <meta name="robots" content="noindex, follow" />}
+      {(robots || noindex) && <meta name="robots" content={robots || "noindex, follow"} />}
 
       {/* Open Graph */}
       <meta property="og:title" content={pageTitle} />
@@ -60,7 +66,7 @@ export function SEOHead({
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
       <meta property="og:image:type" content="image/jpeg" />
-      <meta property="og:image:alt" content="ZP Zaken – BAV & AVB voor zzp'ers" />
+      <meta property="og:image:alt" content={exactTitle ? "ZP Zaken" : "ZP Zaken – BAV & AVB voor zzp'ers"} />
       <meta property="og:locale" content="nl_NL" />
       <meta property="og:site_name" content={SITE_CONFIG.name} />
 

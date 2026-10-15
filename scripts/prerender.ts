@@ -8,6 +8,7 @@
 // Alle SEO-tekst komt uit src/config/seoRoutes.ts, alle bedrijfsgegevens uit
 // src/config/site.ts en alle premies uit src/data/bavPakketten.ts.
 
+import "./eviEdgeConfig";
 import fs from "fs";
 import path from "path";
 import { execFileSync } from "child_process";
@@ -42,6 +43,7 @@ import {
 const LANGS = ["en", "de", "fr"] as const;
 import { buildLlmsTxt, buildLlmsFullTxt } from "./llmsTxt";
 import sitemapLastmod from "../src/config/sitemapLastmod.json";
+import { EVI_PAGINA_PAD, eviPaginaRobots, eviPaginaVindbaar } from "../src/config/eviPagina";
 
 /** Belangrijkste pagina's in het statische fallback-blok. */
 const FALLBACK_LINKS: Array<{ href: string; label: string }> = [
@@ -243,23 +245,23 @@ export function buildHtml(
   let html = template;
   html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(opts.title)}</title>`);
   html = html.replace(
-    /<meta name="description" content="[\s\S]*?" \/>/,
+    /<meta name="description"[^>]*>/,
     `<meta name="description" content="${esc(opts.description)}" data-rh="true" />`,
   );
   html = html.replace(
-    /<meta property="og:title" content="[\s\S]*?" \/>/,
+    /<meta property="og:title"[^>]*>/,
     `<meta property="og:title" content="${esc(opts.title)}" data-rh="true" />`,
   );
   html = html.replace(
-    /<meta property="og:description" content="[\s\S]*?" \/>/,
+    /<meta property="og:description"[^>]*>/,
     `<meta property="og:description" content="${esc(opts.description)}" data-rh="true" />`,
   );
   html = html.replace(
-    /<meta property="og:url" content="[\s\S]*?" \/>/,
+    /<meta property="og:url"[^>]*>/,
     `<meta property="og:url" content="${url}" data-rh="true" />`,
   );
   html = html.replace(
-    /<meta property="og:type" content="[\s\S]*?" \/>/,
+    /<meta property="og:type"[^>]*>/,
     `<meta property="og:type" content="${ogType}" data-rh="true" />`,
   );
   if (opts.image) {
@@ -292,6 +294,10 @@ export function buildHtml(
     : "";
   html = html.replace("</head>", `  ${tags}\n    ${articleTimes}\n    ${jsonLd}\n  </head>`);
   html = html.replace('<div id="root"></div>', `<div id="root">\n      ${opts.fallback}\n    </div>`);
+  if (opts.routePath === EVI_PAGINA_PAD) {
+    html = html.replace(/<meta name="robots"[^>]*>/g, `<meta name="robots" content="${eviPaginaRobots()}" data-rh="true" />`);
+    html = html.replace(/<meta property="og:image:alt"[^>]*>/, '<meta property="og:image:alt" content="ZP Zaken" data-rh="true" />');
+  }
   return html;
 }
 
@@ -394,6 +400,8 @@ function routeSourceFiles(root: string): Map<string, string[]> {
     const file = imports.get(m[3]);
     if (file && !map.has(routePath)) map.set(routePath, [file]);
   }
+  map.set(EVI_PAGINA_PAD, ["src/pages/PensioenOpbouwenZzp.tsx", "src/data/eviPensioen.ts"]);
+  map.set("/pensioen", ["src/pages/Pensioen.tsx"]);
   return map;
 }
 
@@ -589,13 +597,16 @@ export async function prerender(distDir: string, env: Record<string, string> = {
     const body = await ssrBody(route.path);
     let html = buildHtml(template, {
       routePath: route.path,
-      title: formatPageTitle(route.title),
+      title: route.path === EVI_PAGINA_PAD ? route.title : formatPageTitle(route.title),
       description: route.description,
       ogType: "website",
       image: SITE_CONFIG.ogImage,
       schemas: mergeSchemas(schemasFor(route.path), lastHelmetLd),
       fallback: body ?? renderFallback(route.h1, route.intro, extra),
     });
+    if (route.path === EVI_PAGINA_PAD) {
+      if (!body) throw new Error("[prerender] Evi-pagina vereist volledige statische tekst.");
+    }
     if (route.path === "/") {
       // Hero-beeld (LCP) vroeg laden.
       const assetsDir = path.join(distDir, "assets");
@@ -782,13 +793,13 @@ export async function prerender(distDir: string, env: Record<string, string> = {
   const sources = routeSourceFiles(root);
   const sitemapEntries = [
     ...(seoRoutes as SeoRoute[])
-      .filter((r) => !isExcluded(r.path))
+      .filter((r) => !isExcluded(r.path) && eviPaginaVindbaar(r.path))
       .map((r) => ({
         loc: `${SITE_CONFIG.url}${r.path === "/" ? "/" : r.path}`,
         // Publicatieomgeving heeft soms geen git-historie: dan de vastgelegde
         // datum van de laatste paginawijziging (src/config/sitemapLastmod.json).
         lastmod: laatsteDatum(
-          gitDate(root, sources.get(r.path) ?? ["src/config/seoRoutes.ts"]),
+          sources.has(r.path) ? gitDate(root, sources.get(r.path) ?? []) : null,
           (sitemapLastmod as Record<string, string>)[r.path] ?? null,
         ),
       })),

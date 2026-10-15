@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import logoZp from "@/assets/logo-zp.webp";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { SITE_CONFIG, ADDRESS_ONE_LINE } from "@/config/site";
+import { eviPaginaLinks } from "@/config/eviPagina";
 
 export function Footer() {
   const { t } = useTranslation();
@@ -35,6 +36,7 @@ export function Footer() {
       { href: "/starters", label: "Starterspakket" },
       { href: "/aov", label: "AOV" },
       { href: "/pensioen", label: "Pensioen" },
+        ...eviPaginaLinks(),
       { href: "/zorgverzekering", label: "Zorgverzekering" },
       { href: "/zzp-verzekering-ict", label: "ICT" },
       { href: "/zzp-verzekering-zorg", label: "Zorg" },

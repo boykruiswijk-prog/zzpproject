@@ -1,3 +1,4 @@
+import { saneerInterneBron } from "../_shared/interneBron.ts";
 import { schoneVeldnamen, isInternTestEmail } from "../_shared/nabellen.ts";
 // Enige schrijfroute voor publieke formulieren (leads, pilots, nieuwsbrief, suggesties).
 // Beschermd met honeypot, invultijd-check en IP-throttle. De browser mag deze
@@ -84,6 +85,7 @@ async function bewaarConcept(req: Request, body: any, json: (b: unknown, s?: num
     id: row.id, stap, max_stap: Math.max(stap, Number(bestaand?.max_stap) || 0), email, telefoon, laatst_actief_op: new Date().toISOString(),
     voornaam: kort(row.voornaam, 100), achternaam: kort(row.achternaam, 100), bedrijfsnaam: kort(row.bedrijfsnaam, 200),
     kvk: kort(row.kvk, 20), pakket: kort(row.pakket, 50), sector: kort(row.sector, 100), pagina: saneerPagina(row.pagina),
+    ...(saneerInterneBron(row.interne_bron) ? { interne_bron: saneerInterneBron(row.interne_bron) } : {}),
   };
   if (bestaand) {
     for (const k of Object.keys(payload)) if (payload[k] === null) delete payload[k];

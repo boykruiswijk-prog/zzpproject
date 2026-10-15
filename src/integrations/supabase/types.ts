@@ -48,6 +48,7 @@ export type Database = {
           email: string | null
           geanonimiseerd_op: string | null
           id: string
+          interne_bron: string | null
           is_test: boolean
           kvk: string | null
           laatst_actief_op: string
@@ -74,6 +75,7 @@ export type Database = {
           email?: string | null
           geanonimiseerd_op?: string | null
           id: string
+          interne_bron?: string | null
           is_test?: boolean
           kvk?: string | null
           laatst_actief_op?: string
@@ -100,6 +102,7 @@ export type Database = {
           email?: string | null
           geanonimiseerd_op?: string | null
           id?: string
+          interne_bron?: string | null
           is_test?: boolean
           kvk?: string | null
           laatst_actief_op?: string

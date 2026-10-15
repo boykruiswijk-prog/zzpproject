@@ -1,4 +1,5 @@
 import { leadOnderwerp } from "../../../supabase/functions/_shared/leadVelden";
+import { eviLeadLabel } from "@/lib/interneBron";
 import { AfrondDialoog, magAfronden } from "@/components/admin/LeadAfronden";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LeadTestSchakelaar } from "@/components/admin/LeadTestSchakelaar";
@@ -223,6 +224,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
                 {bavVoor(lead.id) && <BavNummer keuze={bavVoor(lead.id)} />}
               </div>
               {magVlag && <VlagKnop lead={lead as any} />}
+              {eviLeadLabel(lead.extra_data) && <Badge variant="outline">{eviLeadLabel(lead.extra_data)}</Badge>}
               <Badge variant="outline">{lead.type === "verzekering_aanvraag" ? "Verzekering" : lead.type === "offerte-aanvraag" ? "Offerte" : "Contact"}</Badge>
             </div>
             <div className="space-y-1 text-sm">
@@ -288,6 +290,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
                     )}
                   </TableCell>
                   <TableCell>
+                    {eviLeadLabel(lead.extra_data) && <Badge variant="outline">{eviLeadLabel(lead.extra_data)}</Badge>}
                     {lead.type === "offerte-aanvraag" ? (
                       <Badge className="bg-purple-100 text-purple-800 border-purple-300" variant="outline">Offerte</Badge>
                     ) : lead.type === "verzekering_aanvraag" ? (

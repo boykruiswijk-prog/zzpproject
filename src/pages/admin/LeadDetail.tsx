@@ -1,3 +1,4 @@
+import { eviLeadLabel } from "@/lib/interneBron";
 import { KvkLeadAfwijkingen } from "@/components/admin/KvkLeadAfwijkingen";
 import { CyberDatums } from "@/components/admin/CyberDatums";
 import { IngangsdatumAanpassen } from "@/components/admin/IngangsdatumAanpassen";
@@ -233,6 +234,7 @@ export default function AdminLeadDetail() {
           </div>
         )}
         <VlagBalk lead={lead as any} magWijzigen={isSupervisorOrAdmin || isVerzekering} />
+        {eviLeadLabel(lead.extra_data) && <Badge variant="outline">{eviLeadLabel(lead.extra_data)}</Badge>}
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex min-w-0 items-start gap-3 sm:items-center sm:gap-4">

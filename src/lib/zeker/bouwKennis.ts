@@ -6,6 +6,7 @@ import { metPubliekeCybertekst } from "../../config/cyberPubliek";
 import { bavPakketten } from "../../data/bavPakketten";
 import { faqItems } from "../../data/faqItems";
 import { seoRoutes } from "../../config/seoRoutes";
+import { eviPaginaVindbaar } from "../../config/eviPagina";
 import { branches, algemeneBavDocumenten, zpZakenEigenDocumenten } from "../../data/documentenLijst";
 import { WIZARD_SECTOREN, verzekeringskaartVoorSector } from "../../data/sectorVerzekeringskaart";
 import nl from "../../i18n/locales/nl.json";
@@ -37,7 +38,7 @@ export function bouwZekerKennis(): ZekerKennis {
       cyber: p.dekkingen.cyber ? { ...p.dekkingen.cyber } : null,
       usps: p.usps.map(metPubliekeCybertekst),
     })),
-    paginas: seoRoutes.map((r) => ({ path: r.path, title: r.title, intro: r.intro })),
+    paginas: seoRoutes.filter(r => eviPaginaVindbaar(r.path)).map((r) => ({ path: r.path, title: r.title, intro: r.intro })),
     faq: faqItems.flatMap((c) => c.questions.map((q) => ({ categorie: c.category, vraag: q.question, antwoord: q.answer }))),
     sectoren: WIZARD_SECTOREN.map((s) => ({ id: s.id, label: s.label, verzekeringskaart: verzekeringskaartVoorSector(s.id)?.path ?? null })),
     documenten: [...docs.entries()].map(([path, titel]) => ({ titel, path })),

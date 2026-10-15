@@ -1,5 +1,6 @@
 # Roadmap
-- [ ] F7: verborgen Evi-pensioenpagina, lokale rekenhulp, bestaande contactverwerking en interne bronherkenning; prerender/noindex en publieke vlagtakken; tests en mobiele controle. Geen publicatie of inzending.
+- [x] F7 akkoord 18:35 uitgevoerd: additief conceptveld zonder terugvulling, intern label/bron, Hiscox alleen BAV-blok. Geen inzending, klantmail, wijzigingsmelding of publicatie.
+- [x] F7 verborgen pensioenpagina: volledige statische render 77.739 bytes, noindex,nofollow, tien FAQ’s en drie risicowaarschuwingen; desktop/360px zonder horizontale scroll of consolefouten. 18/18 nieuwe tests en 67/67 gerichte tests; suite 1088/1090, twee bestaande Exact-creditnotafouten buiten scope. Automatische build OK.
 - [x] Spoedfavicon 15 oktober: complete versiegebonden ZP-set en tien HTTP-200-paden gecontroleerd; 10/10 icoontests, volledige suite via happy-dom 1069/1071 (twee bestaande Exact-creditnotafouten, financiële logica buiten scope); automatische build OK. Publicatie aangevraagd, geen wijzigingsmelding.
 - [x] Boy 15 oktober: Ads-labels beveiligd, betaalde 90-dagenherkomst en boolean marketingtoestemming door client/server; permanent agentkantoor en negen rechterpanelen getest op 1920×1080; 22/22 gerichte tests, build OK, twee formulierfuncties gedeployed. Website niet gepubliceerd, geen aanvragen of klantmails.
 - [ ] Volledige testsuite voor 15 oktober: 1006/1008 groen; twee bestaande Exact-creditnotatests blokkeren volledig groen. Exact wijzigen is expliciet uitgesloten, dus aparte toestemming nodig.
