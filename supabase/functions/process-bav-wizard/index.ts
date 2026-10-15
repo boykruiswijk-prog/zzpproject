@@ -339,7 +339,7 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
           formulier: saneerFormulier(submission.formulier),
           formulier_naam: typeof submission.formulier_naam === "string" ? submission.formulier_naam.slice(0, 100) : "Online aanvraag BAV + AVB",
           pagina: saneerPagina(submission.pagina_url),
-          ...(submission.interne_bron === "evi-pagina" ? { interne_bron: "evi-pagina" } : {}),
+          ...(saneerInterneBron(submission.interne_bron) ? { interne_bron: saneerInterneBron(submission.interne_bron) } : {}),
           sector: submission.sector,
           ...(saneerAttributie(submission.attributie) ? { attributie: saneerAttributie(submission.attributie) } : {}),
           ...(handmatigeAcceptatie

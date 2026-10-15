@@ -294,6 +294,10 @@ export function buildHtml(
     : "";
   html = html.replace("</head>", `  ${tags}\n    ${articleTimes}\n    ${jsonLd}\n  </head>`);
   html = html.replace('<div id="root"></div>', `<div id="root">\n      ${opts.fallback}\n    </div>`);
+  if (opts.routePath === EVI_PAGINA_PAD) {
+    html = html.replace(/<meta name="robots"[^>]*>/g, `<meta name="robots" content="${eviPaginaRobots()}" data-rh="true" />`);
+    html = html.replace(/<meta property="og:image:alt"[^>]*>/, '<meta property="og:image:alt" content="ZP Zaken" data-rh="true" />');
+  }
   return html;
 }
 
@@ -396,6 +400,8 @@ function routeSourceFiles(root: string): Map<string, string[]> {
     const file = imports.get(m[3]);
     if (file && !map.has(routePath)) map.set(routePath, [file]);
   }
+  map.set(EVI_PAGINA_PAD, ["src/pages/PensioenOpbouwenZzp.tsx", "src/data/eviPensioen.ts"]);
+  map.set("/pensioen", ["src/pages/Pensioen.tsx"]);
   return map;
 }
 
@@ -600,8 +606,6 @@ export async function prerender(distDir: string, env: Record<string, string> = {
     });
     if (route.path === EVI_PAGINA_PAD) {
       if (!body) throw new Error("[prerender] Evi-pagina vereist volledige statische tekst.");
-      html = html.replace(/<meta name="robots"[^>]*>/g, `<meta name="robots" content="${eviPaginaRobots()}" data-rh="true" />`);
-      html = html.replace(/<meta property="og:image:alt"[^>]*>/, '<meta property="og:image:alt" content="ZP Zaken" data-rh="true" />');
     }
     if (route.path === "/") {
       // Hero-beeld (LCP) vroeg laden.
@@ -795,7 +799,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
         // Publicatieomgeving heeft soms geen git-historie: dan de vastgelegde
         // datum van de laatste paginawijziging (src/config/sitemapLastmod.json).
         lastmod: laatsteDatum(
-          gitDate(root, sources.get(r.path) ?? ["src/config/seoRoutes.ts"]),
+          sources.has(r.path) ? gitDate(root, sources.get(r.path) ?? []) : null,
           (sitemapLastmod as Record<string, string>)[r.path] ?? null,
         ),
       })),
