@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { describe, it, expect } from "vitest";
 import inventaris from "./fixtures/wpInventory.json";
 import { legacyRedirects } from "../config/legacyRedirects";
@@ -9,6 +10,8 @@ const appRoutes = new Set([...routes, "", "kennisbank", "offerte"]);
 
 function geldigeBestemming(to: string): boolean {
   const pad = to.split("#")[0].replace(/^\//, "");
+  // Bestaand statisch bestand in public/ (bijv. een pdf) is ook een geldige bestemming.
+  if (/\.[a-z0-9]+$/i.test(pad) && existsSync(`public/${pad}`)) return true;
   return pad === "" || pad === "en" || appRoutes.has(pad) || /^kennisbank\/[a-z0-9-]+$/.test(pad);
 }
 
