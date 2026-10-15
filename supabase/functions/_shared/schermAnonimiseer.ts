@@ -286,6 +286,15 @@ export function metAgentWorkers(w: { gepland: Worker[]; op_afroep: Worker[] } | 
   return { ...w, gepland: [...w.gepland, ...extra.filter(x => !namen.has(x.naam))] };
 }
 
+/** Netto groei (tel_netto_groei): witte lijst van alleen aantallen en een percentage; nooit bedragen of namen. */
+export function schoonNettoGroei(n: Ruw) {
+  const blok = (x: Ruw) => x ? ({ instroom: getal(x.instroom) ?? 0, beeindigingen: getal(x.beeindigingen) ?? 0, netto_groei: getal(x.netto_groei) ?? 0,
+    opzegpercentage: getal(x.opzegpercentage) }) : null;
+  if (!n) return null;
+  const weken = Array.isArray(n.weken) ? n.weken : [];
+  return { cumulatief: blok(n.cumulatief), deze_week: blok(weken[weken.length - 1]) };
+}
+
 /** Bouwt de publieke payload uit de geaggregeerde RPC-uitvoer; alleen witte-lijstvelden. */
 export function bouwSchermPayload(r: Ruw, nu = new Date()) {
   const status = (s: unknown) => (s === "bezig" || s === "fout" ? s : "klaar");
@@ -375,6 +384,7 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
       content_nieuw: getal(kb.content_nieuw),
       content_verbeterd: getal(kb.content_verbeterd),
     },
+    netto_groei: schoonNettoGroei(r?.netto_groei),
     ai_team: team,
     workers: metAgentWorkers(schoonWorkers(r?.workers), team),
     marketing: schoonMarketing(r?.marketing),

@@ -18,6 +18,8 @@ export type DashboardTellers = {
   planning_geblokkeerd_aantal: number | null;
   /** Uit tel_service_open / tel_aanvragen_doel: dezelfde definitie als het live-scherm. */
   service_open?: number; aanvragen_doel?: number; aanvragen_doel_van?: number;
+  /** Uit tel_netto_groei: zelfde bron als het live-scherm (A6). Alleen aantallen. */
+  netto_groei?: { cumulatief?: { instroom: number; beeindigingen: number; netto_groei: number; opzegpercentage: number | null; circle8_opzeggingen: number } };
 };
 
 /** Eén bron voor alle dashboardtellers: RPC dashboard_tellers (CRM). */
@@ -67,6 +69,7 @@ export function DashboardStats() {
     { title: "Leads", value: t ? `${t.leads_week} / ${t.leads_maand}` : undefined, icon: Users, description: `deze week / deze maand · ${t?.leads_totaal ?? 0} totaal`, href: "/admin/leads" },
     { title: "Conversie leads", value: t ? `${conversie}%` : undefined, icon: TrendingUp, description: `${t?.leads_omgezet ?? 0} leads met status actief of klant`, href: "/admin/leads" },
     { title: "Aanvragen BAV + AVB sinds 6 okt", value: t ? `${t.aanvragen_doel ?? 0} van ${t.aanvragen_doel_van ?? 200}` : undefined, icon: Target, description: "Ontdubbeld per aanvraag, zonder test; zelfde getal als het live-scherm", href: "/admin/leads" },
+    { title: "Netto groei sinds 6 okt", value: t?.netto_groei?.cumulatief ? `${t.netto_groei.cumulatief.netto_groei >= 0 ? "+" : ""}${t.netto_groei.cumulatief.netto_groei}` : undefined, icon: TrendingUp, description: t?.netto_groei?.cumulatief ? `${t.netto_groei.cumulatief.instroom} instroom, ${t.netto_groei.cumulatief.beeindigingen} beeindigd · opzegpercentage ${t.netto_groei.cumulatief.opzegpercentage ?? 0}% · zelfde getal als het live-scherm` : "Zelfde getal als het live-scherm", href: "/admin/klanten" },
     { title: "Serviceverzoeken open", value: t?.service_open, icon: Inbox, description: "Zelfde getal als het live-scherm", href: "/admin/service-aanvragen" },
     { title: "Opzeggingen te koppelen", value: t?.opzeggingen_te_koppelen, icon: UserX, description: `${t?.opzeggingen_te_verwerken ?? 0} gekoppeld, nog te verwerken`, href: "/admin/klanten#opzeggingen", let: (t?.opzeggingen_te_koppelen ?? 0) > 0 },
     // Alleen tonen als de planning-velden gevuld zijn (supervisor/admin).
