@@ -62,7 +62,7 @@ export function buildLlmsTxt(routes: SeoRoute[], articles: LlmsArticle[]): strin
     "",
     "## Kennisbank",
     "",
-    ...articles.slice(0, 25).map(
+    ...articles.map(
       (a) =>
         `- [${oneLine(a.title)}](${SITE_CONFIG.url}/kennisbank/${a.slug}): ${oneLine(a.seo_description || a.excerpt || a.title).slice(0, 200)}`,
     ),

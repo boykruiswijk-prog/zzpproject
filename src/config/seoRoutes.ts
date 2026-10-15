@@ -141,7 +141,7 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/kennisbank",
-    title: "Kennisbank voor zzp'ers: verzekeringen, belasting & wetgeving",
+    title: "Kennisbank voor zzp'ers: verzekering, belasting, wetgeving",
     description:
       "Blijf op de hoogte van wet DBA, verzekeringen en regelgeving voor zzp'ers. Praktische artikelen door specialisten met 13+ jaar ervaring.",
     h1: "Kennisbank voor zzp'ers",
