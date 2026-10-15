@@ -820,7 +820,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
   // 7. llms.txt en llms-full.txt uit dezelfde bronnen als de pagina's.
   const publicRoutes = (seoRoutes as SeoRoute[]).filter((r) => !isExcluded(r.path));
   fs.writeFileSync(path.join(distDir, "llms.txt"), buildLlmsTxt(publicRoutes, articles));
-  fs.writeFileSync(path.join(distDir, "llms-full.txt"), buildLlmsFullTxt(publicRoutes));
+  fs.writeFileSync(path.join(distDir, "llms-full.txt"), buildLlmsFullTxt(publicRoutes, articles));
   console.log("[prerender] llms.txt en llms-full.txt geschreven.");
 
   console.log(`[prerender] ${written.length} HTML-bestanden gegenereerd.`);

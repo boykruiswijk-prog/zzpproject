@@ -280,7 +280,7 @@ export const seoRoutes: SeoRoute[] = [
     h1: "BAV zzp vergelijken 2026",
     intro:
       "Vergelijk een beroepsaansprakelijkheidsverzekering (BAV) nooit alleen op de laagste prijs. Kijk ook naar het verzekerd bedrag, het eigen risico, of de AVB erbij zit en hoe snel je kunt opzeggen. " +
-      `ZP Zaken biedt BAV en AVB in één polis via Hiscox, vanaf ${laagstePakketMaand()}, zonder eigen risico.`,
+      `ZP Zaken biedt BAV en AVB in één polis via Hiscox, voor € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting, zonder eigen risico.`,
   },
   {
     path: "/klachtenprocedure",

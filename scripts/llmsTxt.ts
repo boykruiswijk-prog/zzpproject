@@ -75,7 +75,7 @@ export function buildLlmsTxt(routes: SeoRoute[], articles: LlmsArticle[]): strin
   ].join("\n");
 }
 
-export function buildLlmsFullTxt(routes: SeoRoute[]): string {
+export function buildLlmsFullTxt(routes: SeoRoute[], articles: LlmsArticle[] = []): string {
   const lines = [...intro(), "## Producten", ""];
   for (const p of bavPakketten) {
     const d = p.dekkingen;
@@ -98,6 +98,12 @@ export function buildLlmsFullTxt(routes: SeoRoute[]): string {
   lines.push("## Pagina's", "");
   for (const r of routes) {
     lines.push(`### ${oneLine(r.h1 || r.title)}`, "", `URL: ${SITE_CONFIG.url}${r.path === "/" ? "/" : r.path}`, "", oneLine(r.intro || r.description), "");
+  }
+  if (articles.length) {
+    lines.push("## Kennisbank", "");
+    for (const a of articles) {
+      lines.push(`### ${oneLine(a.title)}`, "", `URL: ${SITE_CONFIG.url}/kennisbank/${a.slug}`, "", oneLine(a.seo_description || a.excerpt || a.title), "");
+    }
   }
   lines.push("## Veelgestelde vragen", "");
   for (const cat of faqItems as unknown as Array<{ category?: string; questions: Array<{ question: string; answer: string }> }>) {
