@@ -1,5 +1,6 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { saneerAttributie } from "../../supabase/functions/_shared/attributie";
 
 const maakOpslag = () => {
   const m = new Map<string, string>();
@@ -62,7 +63,7 @@ describe("herkomst 90 dagen", () => {
     bezoek("/?utm_source=google");
     nieuweSessie();
     vi.setSystemTime(new Date("2026-04-02T10:00:00Z"));
-    expect(leesAttributie()).toBeNull();
+    expect(leesAttributie()).toEqual({ marketing_toestemming: false, kanaal: "direct" });
     expect(local.getItem(LANG_KEY)).toBeNull();
   });
 
@@ -83,5 +84,52 @@ describe("herkomst 90 dagen", () => {
     bezoek("/?gclid=abc123");
     expect(leesAttributie()?.gclid).toBe("abc123");
     expect(local.getItem(LANG_KEY)).not.toContain("abc123");
+  });
+
+  it("directe sessie erft betaalde velden maar behoudt eigen binnenkomst", () => {
+    bezoek("/verzekeringen?utm_source=google&utm_medium=cpc&utm_campaign=bav&utm_term=zzp&utm_content=tekst&gclid=niet_opslaan");
+    nieuweSessie();
+    bezoek("/contact");
+    const a = leesAttributie();
+    expect(a).toMatchObject({ utm_source: "google", utm_medium: "cpc", utm_campaign: "bav", utm_term: "zzp", utm_content: "tekst", advertentieklik: "google", kanaal: "betaald", landingspagina: "/contact", herkomst_uit: "90d", marketing_toestemming: false });
+    expect(a?.gclid).toBeUndefined();
+    expect(saneerAttributie(a)).toEqual(a);
+  });
+
+  it("eigen sessie-utm wint van een ouder betaald record", () => {
+    bezoek("/?utm_source=google");
+    nieuweSessie();
+    bezoek("/contact?utm_source=bing");
+    expect(leesAttributie()).toMatchObject({ utm_source: "bing", landingspagina: "/contact" });
+    expect(leesAttributie()?.herkomst_uit).toBeUndefined();
+  });
+
+  it("externe organische verwijzer wint van betaalde historie", () => {
+    bezoek("/?utm_source=google");
+    nieuweSessie();
+    bezoek("/faq", "https://www.google.com/search?q=zzp");
+    expect(leesAttributie()).toMatchObject({ kanaal: "verwijzing", referrer: "https://www.google.com/search" });
+    expect(leesAttributie()?.utm_source).toBeUndefined();
+  });
+
+  it("directe sessie gebruikt geen verlopen betaalde historie", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-01-01T10:00:00Z"));
+    bezoek("/?utm_source=google");
+    nieuweSessie();
+    vi.setSystemTime(new Date("2026-04-02T10:00:00Z"));
+    bezoek("/contact");
+    expect(leesAttributie()?.utm_source).toBeUndefined();
+    expect(leesAttributie()?.kanaal).toBe("direct");
+  });
+
+  it("marketingtoestemming gaat ook zonder herkomst mee en blijft server-side boolean", () => {
+    for (const ja of [false, true]) {
+      toestemming(ja);
+      const a = leesAttributie();
+      expect(a).toEqual({ marketing_toestemming: ja, kanaal: "direct" });
+      expect(saneerAttributie(a)).toEqual(a);
+    }
+    expect(saneerAttributie({ marketing_toestemming: "true" })).toBeNull();
   });
 });

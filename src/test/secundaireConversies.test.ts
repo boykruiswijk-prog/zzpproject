@@ -17,9 +17,9 @@ describe("secundaire conversies", () => {
     t.trackContactVerzonden(false);
     expect(gtag.mock.calls).toEqual([
       ["event", "terugbelverzoek_verzonden", { formulier: "terugbel", page: "/contact" }],
-      ["event", "conversion", { send_to: t.GOOGLE_ADS_CONVERSIE_TERUGBEL || "AW-18497139684" }],
+      ["event", "conversion", { send_to: "AW-18497139684/NMSZCIao65wdEOTnj_RE" }],
       ["event", "contactformulier_verzonden", { formulier: "contact", page: "/contact" }],
-      ["event", "conversion", { send_to: t.GOOGLE_ADS_CONVERSIE_CONTACT || "AW-18497139684" }],
+      ["event", "conversion", { send_to: "AW-18497139684/Z5lyCN2R85wdEOTnj_RE" }],
     ]);
   });
 
@@ -38,9 +38,34 @@ describe("secundaire conversies", () => {
     expect(t.isTestOmgeving("www.zpzaken.nl")).toBe(false);
   });
 
+  it("lege en ongeldige labels geven alleen GA4, nooit een accountconversie", () => {
+    for (const label of ["", "kort", "ongeldig/label", " spaties12345"]) {
+      expect(t.adsSendTo(label)).toBeNull();
+      t.secundaireConversie("contactformulier_verzonden", "contact", label, false);
+    }
+    expect(gtag.mock.calls).toHaveLength(4);
+    expect(gtag.mock.calls.every(c => c[1] === "contactformulier_verzonden")).toBe(true);
+    expect(gtag.mock.calls.some(c => c[2]?.send_to === t.GOOGLE_ADS_ID)).toBe(false);
+  });
+
+  it("tv, scherm, admin en testomgeving versturen niets", () => {
+    for (const pad of ["/tv", "/scherm", "/admin", "/en/tv"]) {
+      loc.pathname = pad;
+      t.trackTerugbelVerzonden(false);
+      t.trackContactVerzonden(false);
+    }
+    loc.pathname = "/contact";
+    loc.hostname = "id-preview--x.lovable.app";
+    t.trackContactVerzonden();
+    t.trackTerugbelVerzonden();
+    loc.hostname = "zpzaken.nl";
+    expect(gtag).not.toHaveBeenCalled();
+  });
+
   it("primaire conversie ongewijzigd", () => {
     expect(t.GOOGLE_ADS_CONVERSIE).toBe("AW-18497139684/rIoQCIid-5IdEOTnj_RE");
     const src = fs.readFileSync(path.resolve(__dirname, "../lib/tracking.ts"), "utf8");
     expect(src).toContain('trackGa("conversion", {\n    send_to: GOOGLE_ADS_CONVERSIE,\n    value,\n    currency: "EUR",\n    transaction_id: transactionId,\n  });');
+    expect(src).toContain('adsSendTo(GOOGLE_ADS_CONVERSIE.split("/")[1] ?? "") === GOOGLE_ADS_CONVERSIE');
   });
 });
