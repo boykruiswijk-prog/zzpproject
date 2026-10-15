@@ -1,5 +1,5 @@
 # Technische afspraken
-- Evi discovery/robots use eviPagina.ts; always prerender; internal source stays separate from Ads. Why: one publication switch.
+- Evi access/discovery/robots use eviPagina.ts; hidden means preview-only, no prerender. Source stays separate from Ads. Why: one switch.
 
 - ZP icons (ICO, embedded-PNG SVG, PNG and both manifests) share versioned head links in pages and redirect stubs; static assets precede the unforced SPA fallback. Why: consistent brand and crawler access.
 - Derive ZP icons from docs/brand/favicon.png.b64 or public/favicon-192x192.png, without redrawing/cropping. Why: preserve the approved mark.

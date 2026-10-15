@@ -1,4 +1,5 @@
 # Roadmap
+- [x] F7 20:18: productie-404 zolang vlag uit, preview zichtbaar/noindex, verborgen prerender overgeslagen; 79/79 gerichte tests, browser met lokaal nagebootste productie-/previewhosts bevestigd, automatische build OK. Geen publicatie/deploy/inzending.
 - [x] F7 akkoord 18:35 uitgevoerd: additief conceptveld zonder terugvulling, intern label/bron, Hiscox alleen BAV-blok. Geen inzending, klantmail, wijzigingsmelding of publicatie.
 - [x] F7 verborgen pensioenpagina: volledige statische render 77.739 bytes, noindex,nofollow, tien FAQ’s en drie risicowaarschuwingen; desktop/360px zonder horizontale scroll of consolefouten. 18/18 nieuwe tests en 67/67 gerichte tests; suite 1088/1090, twee bestaande Exact-creditnotafouten buiten scope. Automatische build OK.
 - [x] Spoedfavicon 15 oktober: complete versiegebonden ZP-set en tien HTTP-200-paden gecontroleerd; 10/10 icoontests, volledige suite via happy-dom 1069/1071 (twee bestaande Exact-creditnotafouten, financiële logica buiten scope); automatische build OK. Publicatie aangevraagd, geen wijzigingsmelding.

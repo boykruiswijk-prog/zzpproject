@@ -43,7 +43,7 @@ import {
 const LANGS = ["en", "de", "fr"] as const;
 import { buildLlmsTxt, buildLlmsFullTxt } from "./llmsTxt";
 import sitemapLastmod from "../src/config/sitemapLastmod.json";
-import { EVI_PAGINA_PAD, eviPaginaRobots, eviPaginaVindbaar } from "../src/config/eviPagina";
+import { EVI_PAGINA_PAD, eviPaginaRobots, eviPaginaVindbaar, eviPaginaPrerenderen } from "../src/config/eviPagina";
 
 /** Belangrijkste pagina's in het statische fallback-blok. */
 const FALLBACK_LINKS: Array<{ href: string; label: string }> = [
@@ -586,6 +586,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
   // 2. Statische routes uit de registry.
   for (const route of seoRoutes as SeoRoute[]) {
     if (isExcluded(route.path)) continue;
+    if (route.path === EVI_PAGINA_PAD && !eviPaginaPrerenderen()) continue;
     let extra = "";
     if (route.path === "/waarom-zp-zaken") {
       extra = renderFaqBlock(waaromFaqs.map((f) => ({ question: f.q, answer: f.a })));
