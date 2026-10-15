@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Spoedfavicon 15 oktober: complete versiegebonden ZP-set, statische paden, regressietests en publicatie zonder wijzigingsmelding.
 - [x] Boy 15 oktober: Ads-labels beveiligd, betaalde 90-dagenherkomst en boolean marketingtoestemming door client/server; permanent agentkantoor en negen rechterpanelen getest op 1920×1080; 22/22 gerichte tests, build OK, twee formulierfuncties gedeployed. Website niet gepubliceerd, geen aanvragen of klantmails.
 - [ ] Volledige testsuite voor 15 oktober: 1006/1008 groen; twee bestaande Exact-creditnotatests blokkeren volledig groen. Exact wijzigen is expliciet uitgesloten, dus aparte toestemming nodig.
 - [x] Tekstcontrole 15 oktober: zes tekstpunten en drie artikelrijen gecorrigeerd; sitemap/llms/Zeker vernieuwd; browser/FAQ-schema en build OK; 82/86 tests groen, vier bestaande SEO-titelafwijkingen buiten opdracht. Niet gepubliceerd, geen klantmails.

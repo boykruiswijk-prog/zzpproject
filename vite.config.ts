@@ -137,6 +137,7 @@ function redirectsPlugin(env: Record<string, string>): Plugin {
         "# Niet handmatig aanpassen.",
         "",
         "# /sitemap.xml is een statisch bestand uit de prerender (geen proxy).",
+        "# Iconen en beide manifesten zijn statische bestanden: hosting serveert ze vóór de SPA-fallback.",
         "",
         "# Verouderde oude formulieren: vóór de media-wildcard.",
         ...mediaRules,

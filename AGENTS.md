@@ -1,6 +1,7 @@
 # Technische afspraken
 
-- ZP icons (ICO, PNG, manifest) share head links in pages and redirect stubs. Why: consistent brand.
+- ZP icons (ICO, embedded-PNG SVG, PNG and both manifests) share versioned head links in pages and redirect stubs; static assets precede the unforced SPA fallback. Why: consistent brand and crawler access.
+- ZP brand source: docs/brand/favicon.png.b64 and its existing higher-resolution public/favicon-192x192.png show the same mark; derive icons without redrawing or cropping. Why: preserve the approved logo.
 - No former-employee photos; doubtful photos are removed. New people photos need Boy's approval. Why: portrait rights, A9.
 
 - SEPA-tekst staat byte-gelijk in frontend en _shared/sepaMachtiging.ts; bewijs is onveranderbaar.

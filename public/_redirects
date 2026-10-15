@@ -2,6 +2,7 @@
 # Niet handmatig aanpassen.
 
 # /sitemap.xml is een statisch bestand uit de prerender (geen proxy).
+# Iconen en beide manifesten zijn statische bestanden: hosting serveert ze vóór de SPA-fallback.
 
 # Verouderde oude formulieren: vóór de media-wildcard.
 /wp-content/uploads/2021/05/HRM-Finance-Branche-verklaring.pdf    /verzekeringen    301  # verouderd formulier
