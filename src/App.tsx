@@ -55,6 +55,7 @@ const AdminScreeningAanvraagDetail = lazy(() => import("./pages/admin/ScreeningA
 const AdminServiceAanvragen = lazy(() => import("./pages/admin/ServiceAanvragen"));
 const AdminCreditnotasGoedkeuren = lazy(() => import("./pages/admin/CreditnotasGoedkeuren"));
 const AdminIncassos = lazy(() => import("./pages/admin/Incassos"));
+const AdminFinancieelOverzicht = lazy(() => import("./pages/admin/FinancieelOverzicht"));
 const AdminKlantmails = lazy(() => import("./pages/admin/Klantmails"));
 const AdminSchermen = lazy(() => import("./pages/admin/Schermen"));
 const AdminBavNummerNakijken = lazy(() => import("./pages/admin/BavNummerNakijken"));
@@ -263,6 +264,7 @@ export const AppRoutes = () => (
             <Route path="/admin/klanten/:id" element={<RoleGuard allow={["verzekering"]}><AdminKlantDetail /></RoleGuard>} />
             <Route path="/admin/personen/:id" element={<RoleGuard allow={["verzekering"]}><AdminPersoonDetail /></RoleGuard>} />
             <Route path="/admin/incassos" element={<RoleGuard allow={["verzekering"]}><AdminIncassos /></RoleGuard>} />
+            <Route path="/admin/financieel-overzicht" element={<RoleGuard allow={[]}><AdminFinancieelOverzicht /></RoleGuard>} />
             <Route path="/admin/klantmails" element={<RoleGuard allow={["admin"]}><AdminKlantmails /></RoleGuard>} />
             <Route path="/admin/facturatieplanning" element={<RoleGuard allow={[]}><AdminFacturatieplanning /></RoleGuard>} />
             <Route path="/admin/exact-reconciliatie" element={<RoleGuard allow={[]}><AdminExactReconciliatie /></RoleGuard>} />

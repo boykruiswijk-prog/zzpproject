@@ -33,6 +33,7 @@ const groups: NavGroup[] = [
   { label: "Facturatie", icon: CircleDollarSign, roles: ["supervisor", "verzekering"], items: [
     { to: "/admin/facturatieplanning", icon: CircleDollarSign, label: "Facturatieplanning", teller: "facturatie", roles: ["supervisor"] },
     { to: "/admin/incassos", icon: CircleDollarSign, label: "Incasso's", roles: ["supervisor", "verzekering"] },
+    { to: "/admin/financieel-overzicht", icon: LineChart, label: "Financieel overzicht", roles: ["supervisor"] },
     { to: "/admin/exact-reconciliatie", icon: Plug, label: "Exact-reconciliatie", roles: ["supervisor"] },
   ]},
   { label: "Website", icon: Share2, roles: ["supervisor", "marketing", "verzekering"], items: [

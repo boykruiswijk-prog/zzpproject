@@ -57,9 +57,33 @@ export default function Incassos() {
               </div>); })}
           </CardContent>
         </Card>
+        <CacheVoorstellen onBevestigd={() => refetch()} />
         <ExactVoorstellen onBevestigd={() => refetch()} />
       </div>
     </AdminLayout>
+  );
+}
+
+/** Uit de financiele cache (exact-finance-sync): vervallen open posten zonder open geval. Alleen voorstel, nooit automatisch. */
+function CacheVoorstellen({ onBevestigd }: { onBevestigd: () => void }) {
+  const { data, error, refetch } = useQuery({
+    queryKey: ["finance-incasso-voorstellen"],
+    retry: false,
+    queryFn: async () => { const { data, error } = await supabase.rpc("finance_incasso_voorstellen" as any); if (error) throw error; return (data ?? []) as any[]; },
+  });
+  if (error) return null; // alleen supervisor/admin
+  return (
+    <Card><CardHeader><CardTitle className="text-base">Mogelijk incasso mislukt ({data?.length ?? 0})</CardTitle></CardHeader>
+      <CardContent className="space-y-2 text-sm">
+        <p className="text-muted-foreground">Open posten in Exact over de vervaldatum, van bekende klanten zonder open geval. Dit is alleen een voorstel; bevestig zelf per regel.</p>
+        {(data ?? []).map((k) => (
+          <div key={`${k.onderneming_id}-${k.factuurnummer}`} className="flex flex-wrap items-center gap-2 rounded-md border p-2">
+            <Link to={`/admin/klanten/${k.onderneming_id}`} className="font-medium text-primary hover:underline">{k.klant}</Link>
+            <span>factuur {k.factuurnummer} · {euroNL(k.bedrag)} · vervallen {formatDateNL(k.vervaldatum)}</span>
+            <span className="ml-auto"><IncassoMisluktKnop ondernemingId={k.onderneming_id} factuurnummer={k.factuurnummer} bedrag={k.bedrag} bron="exact_detectie" label="Bevestig als mislukt" onGemeld={() => { refetch(); onBevestigd(); }} /></span>
+          </div>))}
+      </CardContent>
+    </Card>
   );
 }
 
