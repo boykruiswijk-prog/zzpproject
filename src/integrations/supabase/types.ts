@@ -1868,6 +1868,65 @@ export type Database = {
         }
         Relationships: []
       }
+      exact_betalingen_cache: {
+        Row: {
+          account_code: string | null
+          account_id: string | null
+          bedrag: number | null
+          exact_id: string
+          exact_status: number | null
+          factuurdatum: string | null
+          factuurnummer: string | null
+          is_terugboeking: boolean
+          laatste_betaling: string | null
+          opgehaald_op: string
+          raw: Json
+          sync_run_id: string | null
+          vervaldatum: string | null
+          volledig_betaald: boolean | null
+        }
+        Insert: {
+          account_code?: string | null
+          account_id?: string | null
+          bedrag?: number | null
+          exact_id: string
+          exact_status?: number | null
+          factuurdatum?: string | null
+          factuurnummer?: string | null
+          is_terugboeking?: boolean
+          laatste_betaling?: string | null
+          opgehaald_op?: string
+          raw?: Json
+          sync_run_id?: string | null
+          vervaldatum?: string | null
+          volledig_betaald?: boolean | null
+        }
+        Update: {
+          account_code?: string | null
+          account_id?: string | null
+          bedrag?: number | null
+          exact_id?: string
+          exact_status?: number | null
+          factuurdatum?: string | null
+          factuurnummer?: string | null
+          is_terugboeking?: boolean
+          laatste_betaling?: string | null
+          opgehaald_op?: string
+          raw?: Json
+          sync_run_id?: string | null
+          vervaldatum?: string | null
+          volledig_betaald?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exact_betalingen_cache_sync_run_id_fkey"
+            columns: ["sync_run_id"]
+            isOneToOne: false
+            referencedRelation: "exact_finance_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       exact_config: {
         Row: {
           access_token: string | null
@@ -2030,6 +2089,110 @@ export type Database = {
         }
         Relationships: []
       }
+      exact_facturen_cache: {
+        Row: {
+          account_code: string | null
+          account_id: string | null
+          account_naam: string | null
+          bedrag: number | null
+          exact_id: string
+          exact_status: number | null
+          exact_type: number | null
+          factuurdatum: string | null
+          factuurnummer: string | null
+          omschrijving: string | null
+          opgehaald_op: string
+          raw: Json
+          soort: string
+          sync_run_id: string | null
+          vervaldatum: string | null
+        }
+        Insert: {
+          account_code?: string | null
+          account_id?: string | null
+          account_naam?: string | null
+          bedrag?: number | null
+          exact_id: string
+          exact_status?: number | null
+          exact_type?: number | null
+          factuurdatum?: string | null
+          factuurnummer?: string | null
+          omschrijving?: string | null
+          opgehaald_op?: string
+          raw?: Json
+          soort?: string
+          sync_run_id?: string | null
+          vervaldatum?: string | null
+        }
+        Update: {
+          account_code?: string | null
+          account_id?: string | null
+          account_naam?: string | null
+          bedrag?: number | null
+          exact_id?: string
+          exact_status?: number | null
+          exact_type?: number | null
+          factuurdatum?: string | null
+          factuurnummer?: string | null
+          omschrijving?: string | null
+          opgehaald_op?: string
+          raw?: Json
+          soort?: string
+          sync_run_id?: string | null
+          vervaldatum?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exact_facturen_cache_sync_run_id_fkey"
+            columns: ["sync_run_id"]
+            isOneToOne: false
+            referencedRelation: "exact_finance_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exact_finance_runs: {
+        Row: {
+          aantallen: Json
+          bron: string
+          calls: number
+          endpoints: Json
+          fouten: Json
+          gestart_door: string | null
+          gestart_op: string
+          id: string
+          klaar_op: string | null
+          status: string
+          vanaf: string | null
+        }
+        Insert: {
+          aantallen?: Json
+          bron?: string
+          calls?: number
+          endpoints?: Json
+          fouten?: Json
+          gestart_door?: string | null
+          gestart_op?: string
+          id?: string
+          klaar_op?: string | null
+          status?: string
+          vanaf?: string | null
+        }
+        Update: {
+          aantallen?: Json
+          bron?: string
+          calls?: number
+          endpoints?: Json
+          fouten?: Json
+          gestart_door?: string | null
+          gestart_op?: string
+          id?: string
+          klaar_op?: string | null
+          status?: string
+          vanaf?: string | null
+        }
+        Relationships: []
+      }
       exact_mandaat_import: {
         Row: {
           bankrekening_actie: string | null
@@ -2104,6 +2267,59 @@ export type Database = {
           state?: string
         }
         Relationships: []
+      }
+      exact_open_posten_cache: {
+        Row: {
+          account_code: string | null
+          account_id: string | null
+          account_naam: string | null
+          bedrag: number | null
+          exact_id: string
+          factuurdatum: string | null
+          factuurnummer: string | null
+          omschrijving: string | null
+          opgehaald_op: string
+          raw: Json
+          sync_run_id: string | null
+          vervaldatum: string | null
+        }
+        Insert: {
+          account_code?: string | null
+          account_id?: string | null
+          account_naam?: string | null
+          bedrag?: number | null
+          exact_id: string
+          factuurdatum?: string | null
+          factuurnummer?: string | null
+          omschrijving?: string | null
+          opgehaald_op?: string
+          raw?: Json
+          sync_run_id?: string | null
+          vervaldatum?: string | null
+        }
+        Update: {
+          account_code?: string | null
+          account_id?: string | null
+          account_naam?: string | null
+          bedrag?: number | null
+          exact_id?: string
+          factuurdatum?: string | null
+          factuurnummer?: string | null
+          omschrijving?: string | null
+          opgehaald_op?: string
+          raw?: Json
+          sync_run_id?: string | null
+          vervaldatum?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exact_open_posten_cache_sync_run_id_fkey"
+            columns: ["sync_run_id"]
+            isOneToOne: false
+            referencedRelation: "exact_finance_runs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       exact_stamdata_runs: {
         Row: {
@@ -6003,6 +6219,47 @@ export type Database = {
         Args: { _anker: string; _cyclus: string; _n: number }
         Returns: string
       }
+      finance_aansluiting: {
+        Args: { _tot: string; _van: string }
+        Returns: {
+          aantal: number
+          label: string
+          rijen: Json
+          soort: string
+        }[]
+      }
+      finance_incasso_voorstellen: {
+        Args: never
+        Returns: {
+          bedrag: number
+          factuurdatum: string
+          factuurnummer: string
+          klant: string
+          onderneming_id: string
+          vervaldatum: string
+        }[]
+      }
+      finance_klant: {
+        Args: { _account_code: string; _account_id: string }
+        Returns: string
+      }
+      finance_open_run: { Args: never; Returns: string }
+      finance_overzicht: {
+        Args: { _tot: string; _van: string }
+        Returns: {
+          betaald: number
+          gecrediteerd: number
+          gefactureerd: number
+          geroyeerd: number
+          gestopt: number
+          incasso_mislukt: number
+          incasso_mislukt_bedrag: number
+          klant: string
+          maand: string
+          onderneming_id: string
+          openstaand: number
+        }[]
+      }
       get_artikelbeeld_melding: { Args: never; Returns: string }
       get_exact_config_status: { Args: never; Returns: Json }
       get_exact_koppeling_fout: { Args: never; Returns: string }
@@ -6306,6 +6563,10 @@ export type Database = {
       tel_acties_vandaag: { Args: { _toon_test?: boolean }; Returns: number }
       tel_contracten: { Args: { _toon_test?: boolean }; Returns: number }
       tel_klanten: { Args: { _toon_test?: boolean }; Returns: number }
+      tel_netto_groei: {
+        Args: { _toon_test?: boolean; _vanaf?: string }
+        Returns: Json
+      }
       tel_service_open: { Args: { _toon_test?: boolean }; Returns: number }
       verberg_review_kaart: { Args: never; Returns: boolean }
       verify_cron_secret: { Args: { p_secret: string }; Returns: boolean }
