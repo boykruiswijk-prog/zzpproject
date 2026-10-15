@@ -48,3 +48,23 @@ describe("netto groei (alleen aantallen)", () => {
     expect(paneel).not.toMatch(/euro|€|naam/i);
   });
 });
+
+describe("A7-aanvulling 2: netto groei vanaf 1 okt", () => {
+  const m = readFileSync(`${dir}/${readdirSync(dir).find((f) => f.includes("netto_groei_vanaf_1_okt"))}`, "utf8");
+  it("default _vanaf is 2026-10-01 en aanroepen gebruiken de default", () => {
+    expect(m).toContain("_vanaf date DEFAULT date '2026-10-01'");
+    expect(m).toContain("tel_netto_groei(_toon_test => _toon_test)");
+    expect(m).toContain("tel_netto_groei(_toon_test => false)");
+    expect(m).toMatch(/GRANT EXECUTE ON FUNCTION public\.tel_netto_groei\(date,boolean\) TO authenticated, service_role/);
+    expect(m).not.toMatch(/DELETE|TRUNCATE|DROP/);
+  });
+  it("label en startdatum komen uit een gedeelde constante", async () => {
+    const c = await import("../lib/nettoGroei");
+    expect(c.NETTO_GROEI_VANAF).toBe("2026-10-01");
+    expect(c.NETTO_GROEI_LABEL).toBe("Sinds 1 okt (start platform)");
+    expect(readFileSync("src/pages/Scherm.tsx", "utf8")).toContain("rij(NETTO_GROEI_LABEL");
+    expect(readFileSync("src/components/admin/DashboardStats.tsx", "utf8")).toContain("NETTO_GROEI_LABEL");
+    expect(bouwSchermPayload({ netto_groei: { cumulatief: { instroom: 1 } } }).netto_groei?.vanaf).toBe("2026-10-01");
+    expect(readFileSync("src/pages/Scherm.tsx", "utf8")).not.toContain("Sinds 6 okt");
+  });
+});

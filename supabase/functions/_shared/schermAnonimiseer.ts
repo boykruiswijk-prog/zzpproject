@@ -1,5 +1,6 @@
 // Laatste anonimiseringslaag voor het ZP Zaken Live-scherm (bezoekers kijken mee).
 // Pure TypeScript zonder Deno- of npm-imports, zodat vitest dit ook test.
+import { NETTO_GROEI_VANAF } from "./nettoGroei.ts";
 
 export const ADS_BUDGET = 22500;
 export const STATIONS = [
@@ -292,7 +293,7 @@ export function schoonNettoGroei(n: Ruw) {
     opzegpercentage: getal(x.opzegpercentage) }) : null;
   if (!n) return null;
   const weken = Array.isArray(n.weken) ? n.weken : [];
-  return { cumulatief: blok(n.cumulatief), deze_week: blok(weken[weken.length - 1]) };
+  return { vanaf: NETTO_GROEI_VANAF, cumulatief: blok(n.cumulatief), deze_week: blok(weken[weken.length - 1]) };
 }
 
 /** Bouwt de publieke payload uit de geaggregeerde RPC-uitvoer; alleen witte-lijstvelden. */

@@ -1044,6 +1044,13 @@
       "when": 1792063825020,
       "tag": "0148_0148_finance_aansluiting_correcties",
       "breakpoints": true
+    },
+    {
+      "idx": 149,
+      "version": "7",
+      "when": 1792064749117,
+      "tag": "0149_netto_groei_vanaf_1_okt",
+      "breakpoints": true
     }
   ]
 }
