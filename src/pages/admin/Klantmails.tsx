@@ -1,5 +1,6 @@
-// Klantmails (alleen admin): schakelaars, concepten en tellers. Alle nieuwe klantmails staan uit tot akkoord Boy.
+// Klantmails (alleen admin): schakelaars, teksten, verwachting en tellers. Teksten goedgekeurd door Boy op 15-10-2026.
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminLayout } from "@/components/admin/AdminLayout";
@@ -17,7 +18,7 @@ import { formatDateNL } from "@/lib/dateFormat";
 import { VOORBEELD_DATA, vulPlaceholders } from "@/lib/klantmailTekst";
 import { plusDagenISO } from "@/lib/prolongatie";
 
-interface Instelling { sleutel: string; naam: string; moment: string; actief: boolean; status: string; onderwerp: string | null; tekst: string | null; placeholders: string[]; bijgewerkt_op: string }
+interface Instelling { sleutel: string; naam: string; moment: string; actief: boolean; status: string; onderwerp: string | null; tekst: string | null; placeholders: string[]; bijgewerkt_op: string; goedgekeurd_op: string | null }
 const vandaag = () => new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Amsterdam" }).format(new Date());
 
 function voorbeeld(t: string) { try { return vulPlaceholders(t, VOORBEELD_DATA); } catch (e) { return `Fout in tekst: ${(e as Error).message}`; } }
@@ -29,16 +30,29 @@ export default function Klantmails() {
     queryFn: async () => {
       const { data } = await supabase.from("klantmail_instellingen" as any).select("*").order("sleutel");
       const sinds = new Date(Date.now() - 30 * 86400000).toISOString();
-      const { data: log } = await supabase.from("klantmail_log" as any).select("sleutel,status").gte("created_at", sinds);
-      const tel: Record<string, number> = {};
-      for (const l of (log ?? []) as any[]) if (l.status === "niet_verzonden_schakelaar_uit") tel[l.sleutel] = (tel[l.sleutel] ?? 0) + 1;
-      return { rijen: (data ?? []) as unknown as Instelling[], tel };
+      const { data: log } = await supabase.from("klantmail_log" as any).select("sleutel,status,onderneming_id,details,created_at").gte("created_at", sinds).order("created_at", { ascending: false });
+      const tel: Record<string, { verzonden: number; uit: number; anders: number }> = {};
+      const geenPolis: any[] = [];
+      for (const l of (log ?? []) as any[]) {
+        const t = (tel[l.sleutel] ??= { verzonden: 0, uit: 0, anders: 0 });
+        if (l.status === "verzonden") t.verzonden++; else if (l.status === "niet_verzonden_schakelaar_uit") t.uit++; else t.anders++;
+        if (l.status === "niet_verzonden_tekstfout" && String(l.details?.fout ?? "").includes("{polisnummer}")) geenPolis.push(l);
+      }
+      return { rijen: (data ?? []) as unknown as Instelling[], tel, geenPolis };
+    },
+  });
+  const { data: verwachting } = useQuery({
+    queryKey: ["klantmail-verwachting"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("klantmail_verwachting" as any, { _van: vandaag(), _tot: plusDagenISO(vandaag(), 14) });
+      if (error) throw error;
+      return (data ?? []) as { sleutel: string; aantal: number; toelichting: string }[];
     },
   });
   const { data: prolong } = useQuery({
     queryKey: ["komende-prolongaties"],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("prolongatie_kandidaten" as any, { _van: vandaag(), _tot: plusDagenISO(vandaag(), 30) });
+      const { data, error } = await supabase.rpc("prolongatie_mails" as any, { _van: vandaag(), _tot: plusDagenISO(vandaag(), 30) });
       if (error) throw error;
       return (data ?? []) as any[];
     },
@@ -57,16 +71,27 @@ export default function Klantmails() {
     <AdminLayout>
       <div className="space-y-4">
         <h1 className="text-2xl font-bold">Klantmails</h1>
-        <p className="text-sm text-muted-foreground">Nieuwe klantmails staan standaard uit. Zolang een mail uit staat wordt er niets verstuurd; er komt alleen een logregel. Een gewijzigde tekst zet de mail weer uit en vraagt opnieuw akkoord van Boy.</p>
-        {(data?.rijen ?? []).map((r) => <MailKaart key={r.sleutel} r={r} teller={data?.tel[r.sleutel] ?? 0} onAan={() => setAanzetten(r)} onUit={() => schakel(r, false)} onOpgeslagen={() => refetch()} />)}
+        <p className="text-sm text-muted-foreground">Een mail gaat alleen naar klanten als hij aan staat en Boy de tekst heeft goedgekeurd. Staat een mail uit, dan komt er alleen een logregel. Een gewijzigde tekst zet de mail weer uit en vraagt opnieuw akkoord van Boy.</p>
+        <Card><CardHeader><CardTitle className="text-base">Verwacht de komende 14 dagen</CardTitle></CardHeader>
+          <CardContent className="text-sm"><table className="w-full"><tbody>
+            {(verwachting ?? []).map((v) => (
+              <tr key={v.sleutel} className="border-t"><td className="py-1 pr-2">{data?.rijen.find((r) => r.sleutel === v.sleutel)?.naam ?? v.toelichting}</td>
+                <td className="py-1 pr-2 font-medium">{v.aantal}</td><td className="py-1 text-muted-foreground">{v.toelichting}</td></tr>))}
+          </tbody></table></CardContent></Card>
+        {(data?.geenPolis.length ?? 0) > 0 && <Card><CardHeader><CardTitle className="text-base">Niet verstuurd: geen polisnummer</CardTitle></CardHeader>
+          <CardContent className="space-y-1 text-sm">{data!.geenPolis.map((l, n) => (
+            <p key={n}>{formatDateNL(l.created_at)}: {data!.rijen.find((r) => r.sleutel === l.sleutel)?.naam ?? l.sleutel}, niet verstuurd: geen polisnummer.{" "}
+              {l.onderneming_id && <Link className="underline" to={`/admin/klanten/${l.onderneming_id}`}>Naar de klant</Link>}</p>))}</CardContent></Card>}
+        {(data?.rijen ?? []).map((r) => <MailKaart key={r.sleutel} r={r} teller={data?.tel[r.sleutel] ?? { verzonden: 0, uit: 0, anders: 0 }} onAan={() => setAanzetten(r)} onUit={() => schakel(r, false)} onOpgeslagen={() => refetch()} />)}
 
-        <Card><CardHeader><CardTitle className="text-base">Komende prolongaties (30 dagen): {prolong?.length ?? 0}</CardTitle></CardHeader>
+        <Card><CardHeader><CardTitle className="text-base">Komende prolongaties (30 dagen): {(prolong ?? []).filter((p) => p.mail).length} met mail, {(prolong ?? []).filter((p) => !p.mail).length} geen prolongatiemail (geen BAV-jaarpolis)</CardTitle></CardHeader>
           <CardContent className="text-sm">
-            <p className="mb-2 text-muted-foreground">Jaarpolissen die stilzwijgend verlengen. De prolongatiemail zou 14 dagen voor de verlengdatum uitgaan.</p>
+            <p className="mb-2 text-muted-foreground">Een mail per klant per verlengdatum, 14 dagen vooraf, alleen bij een BAV + AVB-jaarpolis. Bedrag is BAV + AVB plus Cyber op dezelfde datum.</p>
             {(prolong ?? []).length === 0 ? <p className="text-muted-foreground">Geen prolongaties in de komende 30 dagen.</p> : (
               <table className="w-full"><tbody>{(prolong ?? []).map((p) => (
-                <tr key={p.klant_contract_id} className="border-t"><td className="py-1 pr-2">{p.klantnaam}</td><td className="py-1 pr-2">{p.itemcode}</td>
-                  <td className="py-1 pr-2">verlengt {formatDateNL(p.verlengdatum)}</td><td className="py-1 pr-2 text-muted-foreground">mail {formatDateNL(plusDagenISO(p.verlengdatum, -14))}</td></tr>))}</tbody></table>)}
+                <tr key={`${p.onderneming_id}-${p.verlengdatum}`} className="border-t"><td className="py-1 pr-2">{p.klantnaam}</td><td className="py-1 pr-2">{p.mail ? p.product : (p.producten ?? []).join(", ")}</td>
+                  <td className="py-1 pr-2">verlengt {formatDateNL(p.verlengdatum)}</td>
+                  <td className="py-1 pr-2 text-muted-foreground">{p.mail ? `mail ${formatDateNL(plusDagenISO(p.verlengdatum, -14))}, € ${Number(p.bedrag).toFixed(2).replace(".", ",")}` : "geen prolongatiemail (geen BAV-jaarpolis)"}</td></tr>))}</tbody></table>)}
           </CardContent>
         </Card>
       </div>
@@ -83,7 +108,7 @@ export default function Klantmails() {
   );
 }
 
-function MailKaart({ r, teller, onAan, onUit, onOpgeslagen }: { r: Instelling; teller: number; onAan: () => void; onUit: () => void; onOpgeslagen: () => void }) {
+function MailKaart({ r, teller, onAan, onUit, onOpgeslagen }: { r: Instelling; teller: { verzonden: number; uit: number; anders: number }; onAan: () => void; onUit: () => void; onOpgeslagen: () => void }) {
   const { toast } = useToast();
   const [onderwerp, setOnderwerp] = useState(r.onderwerp ?? "");
   const [tekst, setTekst] = useState(r.tekst ?? "");
@@ -105,9 +130,10 @@ function MailKaart({ r, teller, onAan, onUit, onOpgeslagen }: { r: Instelling; t
       </CardHeader>
       <CardContent className="space-y-3 text-sm">
         {r.status === "wacht_op_akkoord_boy" && <p className="font-medium text-destructive">Concept, wacht op akkoord Boy</p>}
-        <p className="text-muted-foreground">Laatste 30 dagen zou deze mail {teller} keer verstuurd zijn (niet verzonden, mail staat uit).</p>
+        {r.status === "goedgekeurd_boy" && r.goedgekeurd_op && <p className="text-muted-foreground">Boy heeft de tekst goedgekeurd op {formatDateNL(r.goedgekeurd_op)}.</p>}
+        <p className="text-muted-foreground">Laatste 30 dagen: {teller.verzonden} verstuurd, {teller.uit} niet verstuurd omdat de mail uit stond, {teller.anders} niet verstuurd om een andere reden.</p>
         <div><Label htmlFor={`o-${r.sleutel}`}>Onderwerp</Label><Input id={`o-${r.sleutel}`} value={onderwerp} onChange={(e) => setOnderwerp(e.target.value)} /></div>
-        <div><Label htmlFor={`t-${r.sleutel}`}>Concepttekst</Label><Textarea id={`t-${r.sleutel}`} rows={10} value={tekst} onChange={(e) => setTekst(e.target.value)} />
+        <div><Label htmlFor={`t-${r.sleutel}`}>{r.status === "wacht_op_akkoord_boy" ? "Concepttekst" : "Tekst"}</Label><Textarea id={`t-${r.sleutel}`} rows={10} value={tekst} onChange={(e) => setTekst(e.target.value)} />
           <p className="mt-1 text-xs text-muted-foreground">Invulvelden: {r.placeholders.map((p) => `{${p}}`).join(" ")}</p></div>
         {gewijzigd && <Button size="sm" onClick={opslaan}>Opslaan</Button>}
         <div className="rounded-md border bg-muted/40 p-3"><p className="mb-1 text-xs font-medium text-muted-foreground">Voorbeeld</p>

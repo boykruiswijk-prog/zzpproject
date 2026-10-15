@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { haalBavRijen, kiesBavNummer } from "@/lib/bavNummer";
 import { ServiceAanvraagOog } from "@/components/admin/ServiceAanvraagOog";
 import { useToast } from "@/hooks/use-toast";
+import { royementBevestigenEnMailen } from "@/components/admin/incasso/Incasso";
 
 /** Haalt alleen de status en het factuurnummer op uit Exact (nooit schrijven in Exact) en sluit verwerkte facturen af. */
 function NuControlerenMetExact({ onKlaar }: { onKlaar: () => void }) {
@@ -40,11 +41,13 @@ function TaakKnop({ label, rpc, args, onKlaar }: { label: string; rpc: string; a
   const { toast } = useToast();
   const [bezig, setBezig] = useState(false);
   async function klik() {
-    if (rpc === "bevestig_royement" && !window.confirm("Royement bevestigen? Dit zet alleen de status; contract en Exact blijven ongewijzigd.")) return;
+    if (rpc === "bevestig_royement" && !window.confirm("Royement bevestigen? Dit zet de status en stuurt de klant de royementsbevestiging. Contract en Exact blijven ongewijzigd.")) return;
     setBezig(true);
-    const { error } = await supabase.rpc(rpc as any, args as any);
+    const error = rpc === "bevestig_royement"
+      ? (await royementBevestigenEnMailen(String(args._id))).error
+      : (await supabase.rpc(rpc as any, args as any)).error?.message ?? null;
     setBezig(false);
-    if (error) return toast({ title: "Niet gelukt", description: error.message, variant: "destructive" });
+    if (error) return toast({ title: "Niet gelukt", description: error, variant: "destructive" });
     toast({ title: label === "Afronden" ? "Taak afgerond" : "Royement bevestigd" });
     onKlaar();
   }

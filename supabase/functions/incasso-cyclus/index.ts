@@ -5,9 +5,10 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { cronOfSupervisor, uurNL, vandaagNL } from "../_shared/cronOfSupervisor.ts";
-import { klantOntvanger, verstuurKlantmail } from "../_shared/klantmailSchakelaar.ts";
-import { STAP_MAIL, type IncassoStap } from "../_shared/incassoCyclus.ts";
-import { datumNL, euro, plusDagen } from "../_shared/klantmailTekst.ts";
+import { klantOntvanger, polisnummerVoor, verstuurKlantmail } from "../_shared/klantmailSchakelaar.ts";
+import { COMPANY } from "../_shared/company.ts";
+import { STAP_MAIL, uitersteDatum, type IncassoStap } from "../_shared/incassoCyclus.ts";
+import { datumNL, euro } from "../_shared/klantmailTekst.ts";
 
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
@@ -31,12 +32,12 @@ Deno.serve(async (req) => {
     if (!s.is_test) {
       const ont = await klantOntvanger(admin, s.onderneming_id, s.lead_id);
       const { data: o } = await admin.from("ondernemingen").select("naam").eq("id", s.onderneming_id).maybeSingle();
-      const { data: pol } = await admin.from("policies").select("certificate_number").eq("onderneming_id", s.onderneming_id).eq("status", "geldig").limit(1).maybeSingle();
-      const { data: fp } = await admin.from("factuur_planning").select("invoice_date").eq("exact_invoice_number", s.factuurnummer).limit(1).maybeSingle();
+      const polisnummer = await polisnummerVoor(admin, s.onderneming_id);
       mailStatus = await verstuurKlantmail(admin, req, "incasso-cyclus", sleutel, ont.email, {
-        voornaam: ont.voornaam, bedrijfsnaam: o?.naam, bedrag: euro(s.bedrag), polisnummer: pol?.certificate_number,
-        factuurnummer: s.factuurnummer, factuurdatum: datumNL(fp?.invoice_date ?? s.mislukt_op),
-        betaal_voor: datumNL(plusDagen(vandaag, 14)), opschort_datum: datumNL(s.opschort_datum),
+        voornaam: ont.voornaam, bedrijfsnaam: o?.naam, bedrag: euro(s.bedrag), polisnummer,
+        factuurnummer: s.factuurnummer, incasso_datum: datumNL(s.mislukt_op),
+        uiterste_datum: datumNL(uitersteDatum(s.mislukt_op, s.stap as IncassoStap)),
+        opschort_datum: datumNL(s.opschort_datum), iban: COMPANY.registrations.iban,
       }, { onderneming_id: s.onderneming_id, lead_id: s.lead_id, incasso_id: s.incasso_id });
     }
     await admin.from("incasso_cyclus_log").update({ mail_status: mailStatus }).eq("id", s.log_id);

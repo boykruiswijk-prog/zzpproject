@@ -2740,6 +2740,7 @@ export type Database = {
           factuur_planning_id: string | null
           factuurnummer: string
           gemeld_door: string | null
+          geroyeerd_op: string | null
           id: string
           is_test: boolean
           klant_contract_id: string | null
@@ -2758,6 +2759,7 @@ export type Database = {
           factuur_planning_id?: string | null
           factuurnummer: string
           gemeld_door?: string | null
+          geroyeerd_op?: string | null
           id?: string
           is_test?: boolean
           klant_contract_id?: string | null
@@ -2776,6 +2778,7 @@ export type Database = {
           factuur_planning_id?: string | null
           factuurnummer?: string
           gemeld_door?: string | null
+          geroyeerd_op?: string | null
           id?: string
           is_test?: boolean
           klant_contract_id?: string | null
@@ -3484,6 +3487,7 @@ export type Database = {
           actief: boolean
           bijgewerkt_door: string | null
           bijgewerkt_op: string
+          goedgekeurd_op: string | null
           moment: string
           naam: string
           onderwerp: string | null
@@ -3496,6 +3500,7 @@ export type Database = {
           actief?: boolean
           bijgewerkt_door?: string | null
           bijgewerkt_op?: string
+          goedgekeurd_op?: string | null
           moment: string
           naam: string
           onderwerp?: string | null
@@ -3508,6 +3513,7 @@ export type Database = {
           actief?: boolean
           bijgewerkt_door?: string | null
           bijgewerkt_op?: string
+          goedgekeurd_op?: string | null
           moment?: string
           naam?: string
           onderwerp?: string | null
@@ -5146,6 +5152,35 @@ export type Database = {
           },
         ]
       }
+      royement_mail_claim: {
+        Row: {
+          created_at: string
+          geclaimd_door: string | null
+          incasso_id: string
+          mail_status: string | null
+        }
+        Insert: {
+          created_at?: string
+          geclaimd_door?: string | null
+          incasso_id: string
+          mail_status?: string | null
+        }
+        Update: {
+          created_at?: string
+          geclaimd_door?: string | null
+          incasso_id?: string
+          mail_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "royement_mail_claim_incasso_id_fkey"
+            columns: ["incasso_id"]
+            isOneToOne: true
+            referencedRelation: "incasso_mislukt"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       scherm_apparaten: {
         Row: {
           gekoppeld_door: string | null
@@ -6012,6 +6047,14 @@ export type Database = {
         Args: { _onderwerp: string; _sleutel: string; _tekst: string }
         Returns: boolean
       }
+      klantmail_verwachting: {
+        Args: { _tot: string; _van: string }
+        Returns: {
+          aantal: number
+          sleutel: string
+          toelichting: string
+        }[]
+      }
       koppel_opzegging: {
         Args: { _aanvraag_id: string; _onderneming_id: string }
         Returns: Json
@@ -6190,6 +6233,19 @@ export type Database = {
           klantnaam: string
           onderneming_id: string
           product: string
+          verlengdatum: string
+        }[]
+      }
+      prolongatie_mails: {
+        Args: { _tot: string; _van: string }
+        Returns: {
+          bedrag: number
+          klant_contract_id: string
+          klantnaam: string
+          mail: boolean
+          onderneming_id: string
+          product: string
+          producten: string[]
           verlengdatum: string
         }[]
       }

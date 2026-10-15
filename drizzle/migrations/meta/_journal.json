@@ -1023,6 +1023,13 @@
       "when": 1792060438026,
       "tag": "0145_0145_prolongatie_rechten",
       "breakpoints": true
+    },
+    {
+      "idx": 146,
+      "version": "7",
+      "when": 1792062125131,
+      "tag": "0146_0146_klantmails_goedgekeurd",
+      "breakpoints": true
     }
   ]
 }
