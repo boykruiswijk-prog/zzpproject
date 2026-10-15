@@ -44,7 +44,7 @@ export async function verstuurKlantmail(db: any, req: Request | null, fnName: st
   const html = tekst.split(/\n{2,}/).map((p) => `<p>${esc(p).replace(/\n/g, "<br/>")}</p>`).join("");
   const plan = createMailGate(fnName, req).plan({ to: ontvanger, subject: onderwerp, html });
   if (!plan.send) { await logKlantmail(db, { sleutel, status: `niet_verzonden_${plan.reason ?? "gate"}`, ontvanger, ...meta }); return "niet_verzonden_gate"; }
-  const key = Deno.env.get("RESEND_API_KEY");
+  const key = (globalThis as any).Deno?.env?.get("RESEND_API_KEY");
   if (!key) { await logKlantmail(db, { sleutel, status: "mislukt", ontvanger, ...meta, details: { fout: "geen mailsleutel" } }); return "mislukt"; }
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
