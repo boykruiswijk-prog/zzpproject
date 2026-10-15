@@ -8,6 +8,7 @@
 // Alle SEO-tekst komt uit src/config/seoRoutes.ts, alle bedrijfsgegevens uit
 // src/config/site.ts en alle premies uit src/data/bavPakketten.ts.
 
+import "./eviEdgeConfig";
 import fs from "fs";
 import path from "path";
 import { execFileSync } from "child_process";
