@@ -186,7 +186,6 @@ Deno.serve(metWerk({ station: "exact", actie: "exact_sync", tekst: "Exact-concep
   const { data: kc } = await admin.rpc("exact_koppeling_controle");
   const testRel: any[] = (kc as any)?.test_relatie ?? []; const dubbel: any[] = (kc as any)?.dubbel_account ?? []; const afwijkNaam: any[] = (kc as any)?.naam_wijkt_af ?? [];
   const koppelingen = testRel.length + dubbel.length + afwijkNaam.length;
-  // Bedrijfsregel 9-10-2026: een einddatum zonder geregistreerde opzegging is altijd een melding.
 
   const rapport = { vandaag, afgesloten, nieuw_verwijderd: nieuwVerwijderd, langer_dan_2_werkdagen_open: langOpen, mislukt_gisteren: mislukt, controle_fouten: fouten, koppeling: kc };
   if (!nieuwVerwijderd.length && !langOpen.length && !mislukt.length && !fouten.length && !koppelingen) return json({ ...rapport, mail: "geen afwijkingen, geen mail" });
