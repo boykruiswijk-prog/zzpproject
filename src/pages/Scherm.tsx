@@ -429,7 +429,8 @@ function PaneelProcessen({ d }: { d: SchermPayload }) {
   </div>;
 }
 
-const PANELEN = [PaneelDoel, PaneelGroei, PaneelNettoGroei, PaneelService, PaneelZichtbaarheid, PaneelStroom, PaneelVandaag, PaneelAiTeam, PaneelWorkers, PaneelProcessen];
+const PANELEN = [PaneelDoel, PaneelGroei, PaneelNettoGroei, PaneelService, PaneelZichtbaarheid, PaneelStroom, PaneelVandaag, PaneelAiTeam, PaneelProcessen];
+// A7-aanvulling (besluit Boy 15-10-2026): PaneelWorkers staat vast links, niet in de carrousel.
 
 function useWakeLock() {
   useEffect(() => {
@@ -623,6 +624,9 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
                   </div>
                 </Suspense>
               )}
+            </div>
+            <div data-testid="workers-vast" className="h-[27vh] shrink-0 overflow-hidden border-t border-[hsl(var(--s-lijn))] px-[2vw] py-[1.5vh]">
+              {data && <PaneelWorkers d={data} />}
             </div>
             <div className="h-[11vh] shrink-0 overflow-hidden border-t border-[hsl(var(--s-lijn))]">
               <div className="scherm-ticker flex h-full items-center gap-[3vw] whitespace-nowrap">

@@ -2095,6 +2095,7 @@ export type Database = {
           account_id: string | null
           account_naam: string | null
           bedrag: number | null
+          bedrag_excl_btw: number | null
           exact_id: string
           exact_status: number | null
           exact_type: number | null
@@ -2112,6 +2113,7 @@ export type Database = {
           account_id?: string | null
           account_naam?: string | null
           bedrag?: number | null
+          bedrag_excl_btw?: number | null
           exact_id: string
           exact_status?: number | null
           exact_type?: number | null
@@ -2129,6 +2131,7 @@ export type Database = {
           account_id?: string | null
           account_naam?: string | null
           bedrag?: number | null
+          bedrag_excl_btw?: number | null
           exact_id?: string
           exact_status?: number | null
           exact_type?: number | null
@@ -2274,6 +2277,7 @@ export type Database = {
           account_id: string | null
           account_naam: string | null
           bedrag: number | null
+          entrynummer: string | null
           exact_id: string
           factuurdatum: string | null
           factuurnummer: string | null
@@ -2288,6 +2292,7 @@ export type Database = {
           account_id?: string | null
           account_naam?: string | null
           bedrag?: number | null
+          entrynummer?: string | null
           exact_id: string
           factuurdatum?: string | null
           factuurnummer?: string | null
@@ -2302,6 +2307,7 @@ export type Database = {
           account_id?: string | null
           account_naam?: string | null
           bedrag?: number | null
+          entrynummer?: string | null
           exact_id?: string
           factuurdatum?: string | null
           factuurnummer?: string | null

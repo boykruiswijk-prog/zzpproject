@@ -1037,6 +1037,13 @@
       "when": 1792063091721,
       "tag": "0147_0147_financieel_overzicht_netto_groei",
       "breakpoints": true
+    },
+    {
+      "idx": 148,
+      "version": "7",
+      "when": 1792063825020,
+      "tag": "0148_0148_finance_aansluiting_correcties",
+      "breakpoints": true
     }
   ]
 }
