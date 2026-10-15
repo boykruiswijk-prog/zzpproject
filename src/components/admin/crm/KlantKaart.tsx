@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { IncassoKlantBlok } from "@/components/admin/incasso/Incasso";
 import { CyberDatums } from "@/components/admin/CyberDatums";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -67,6 +68,7 @@ export function KlantKaart({ ondernemingen, personen, leadIds, herlaadSleutel = 
     <Card className="min-w-0 border-primary/30">
       <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2 pb-2"><CardTitle className="text-base">Klantkaart</CardTitle><div className="flex flex-wrap gap-2"><GegevensWijzigen ondernemingen={ondernemingen} personen={personen} onGewijzigd={() => { refetch(); onGewijzigd?.(); }} />{ondernemingen.map((o) => <PortalUitnodigen key={o.id} ondernemingId={o.id} onVerstuurd={onGewijzigd} />)}{ondernemingen.map((o) => <DocumentVersturen key={`doc-${o.id}`} ondernemingId={o.id} onVerstuurd={() => { refetch(); onGewijzigd?.(); }} />)}</div></CardHeader>
       <CardContent className="space-y-3 text-sm">
+        {ondernemingen.map((o) => <IncassoKlantBlok key={`inc-${o.id}`} ondernemingId={o.id} />)}
         {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : (<>
           <dl className="grid min-w-0 gap-x-6 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
             <Veld label="Persoon">{persoonNaam || "-"}</Veld>

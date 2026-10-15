@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { DekkingOpgeschortBadge } from "@/components/admin/incasso/Incasso";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail } from "lucide-react";
@@ -106,7 +107,7 @@ export function ServiceAanvraagDetail({ aanvraag, onSaveNotes, onMarkAfgerond, o
           {veld("Opmerkingen", d.toelichting ?? d.opmerkingen)}
           {veld("Ontvangen op", formatDateNL(aanvraag.created_at))}
           {opzeg && veld("Koppeling", KOPPELING_LABEL[aanvraag.koppeling_status ?? "niet_gekoppeld"] ?? aanvraag.koppeling_status)}
-          {aanvraag.onderneming_id && <div className="min-w-0"><dt className="text-xs text-muted-foreground">Gekoppelde klant</dt><dd><Link to={`/admin/klanten/${aanvraag.onderneming_id}`} className="text-primary hover:underline">Klant openen</Link></dd></div>}
+          {aanvraag.onderneming_id && <div className="min-w-0"><dt className="text-xs text-muted-foreground">Gekoppelde klant</dt><dd className="flex flex-wrap items-center gap-2"><Link to={`/admin/klanten/${aanvraag.onderneming_id}`} className="text-primary hover:underline">Klant openen</Link><DekkingOpgeschortBadge ondernemingId={aanvraag.onderneming_id} /></dd></div>}
         </dl>
       </div>
       {opzeg && !aanvraag.opzegging_verwerkt_op && (
