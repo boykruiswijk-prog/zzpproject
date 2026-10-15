@@ -178,3 +178,21 @@ describe("betaalconditie en mandaat_main", () => {
     expect(l.calls.find((c) => c.methode === "PUT")?.body).toEqual({ Main: true });
   });
 });
+
+describe("doelgroep gepagineerd", () => {
+  it("meer dan 1000 contracten komen allemaal in de doelgroep", async () => {
+    const { alleRijen, bouwDoelgroep } = await import("../../supabase/functions/_shared/exactStamdata");
+    const rijen = Array.from({ length: 2345 }, (_, i) => ({ id: String(i), ondernemingen: { id: `o${i}`, exact_relatie_code: String(2000000 + i), exact_account_id: ACC } }));
+    const verzoeken: [number, number][] = [];
+    // Nep-PostgREST: nooit meer dan 1000 rijen per verzoek.
+    const kc = await alleRijen(async (van, tot) => { verzoeken.push([van, tot]); return { data: rijen.slice(van, Math.min(tot + 1, van + 1000)), error: null }; });
+    expect(verzoeken.length).toBe(3);
+    const doel = bouwDoelgroep(kc);
+    expect(doel.size).toBe(2345);
+    expect(doel.has("2002344")).toBe(true);
+  });
+  it("databasefout stopt de run", async () => {
+    const { alleRijen } = await import("../../supabase/functions/_shared/exactStamdata");
+    await expect(alleRijen(async () => ({ data: null, error: { message: "x" } }))).rejects.toThrow("db: x");
+  });
+});

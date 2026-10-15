@@ -7,7 +7,7 @@ import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { ensureValidToken, refreshAccessToken } from "../_shared/exactToken.ts";
 import { metExactMelding } from "../_shared/exactBoekingMelding.ts";
 import { requireSupervisor } from "../_shared/teamAuth.ts";
-import { beveiligd, bevestigIncassoCode, controleerRelatie, type Exact, verwerkBetaalconditie, verwerkMandaat, verwerkMandaatMain, verwerkTelefoon } from "../_shared/exactStamdata.ts";
+import { alleRijen, bouwDoelgroep, beveiligd, bevestigIncassoCode, controleerRelatie, type Exact, verwerkBetaalconditie, verwerkMandaat, verwerkMandaatMain, verwerkTelefoon } from "../_shared/exactStamdata.ts";
 
 const json = (b: unknown, s = 200) =>
   new Response(JSON.stringify(b), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -131,21 +131,21 @@ Deno.serve(metExactMelding("exact-stamdata-bijwerken", async (req) => {
         tel("betaalconditie", `incassocode_${ic.code}_${ic.methode ?? "omschrijving"}`);
       }
       // Doelgroep: lopend contract, geen test, met exact_account_id.
-      const { data: kc, error: e1 } = await sb.from("klant_contracten")
-        .select("onderneming_id, ondernemingen!inner(id, exact_relatie_code, exact_account_id, is_test)")
+      // deno-lint-ignore no-explicit-any
+      const kc = await alleRijen<any>((van, tot) => sb.from("klant_contracten")
+        .select("id, onderneming_id, ondernemingen!inner(id, exact_relatie_code, exact_account_id, is_test)")
         .in("status", ["actief", "loopt_af", "einddatum_controle"]).eq("is_test", false)
-        .not("ondernemingen.exact_account_id", "is", null).eq("ondernemingen.is_test", false).limit(5000);
-      if (e1) throw new Error(`db: ${e1.message}`);
-      // deno-lint-ignore no-explicit-any
-      const doel = new Map<string, any>();
-      // deno-lint-ignore no-explicit-any
-      for (const k of (kc ?? []) as any[]) { const o = k.ondernemingen; if (o?.exact_relatie_code && o.exact_account_id) doel.set(String(o.exact_relatie_code).trim(), o); }
-      const { data: bestaand } = await sb.from("exact_betaalconditie_import").select("relatiecode,status").eq("onderdeel", deel).limit(10000);
-      const stand = new Map((bestaand ?? []).map((b) => [b.relatiecode, b.status]));
+        .not("ondernemingen.exact_account_id", "is", null).eq("ondernemingen.is_test", false)
+        .order("id").range(van, tot));
+      const doel = bouwDoelgroep(kc);
+      const bestaand = await alleRijen<{ relatiecode: string; status: string }>((van, tot) => sb.from("exact_betaalconditie_import")
+        .select("relatiecode,status").eq("onderdeel", deel).order("relatiecode").range(van, tot));
+      const stand = new Map(bestaand.map((b) => [b.relatiecode, b.status]));
       const wachtend = new Set<string>();
       if (deel === "betaalconditie") {
-        const { data: km } = await sb.from("klant_mandaten").select("relatiecode").eq("in_exact", false).eq("exact_status", "proef_ok");
-        for (const r of km ?? []) wachtend.add(String(r.relatiecode).trim());
+        const km = await alleRijen<{ id: string; relatiecode: string }>((van, tot) => sb.from("klant_mandaten").select("id,relatiecode")
+          .eq("in_exact", false).eq("exact_status", "proef_ok").order("id").range(van, tot));
+        for (const r of km) wachtend.add(String(r.relatiecode).trim());
       }
       const teDoen = [...doel.entries()].filter(([code]) => {
         const st = stand.get(code);
