@@ -17,6 +17,7 @@ import { PRODUCT_LABEL, type Product } from "@/lib/klantContracten";
 import { uploadBijlagen } from "@/lib/crmBijlagen";
 import { BijlageKiezer } from "./BijlageKiezer";
 import { BavNummer } from "./BavNummer";
+import { OPZEG_GEEN_CREDIT_TEKST, opzegZonderCredit } from "@/lib/opzegBeleid";
 import { contractEindStatus, kiesBavNummer, useBavRijen } from "@/lib/bavNummer";
 
 export const STOP_REDENEN: Record<string, string> = {
@@ -138,7 +139,7 @@ function BeeindigDialoog({ ondernemingId, ondernemingNaam, persoonId, contracten
     const res = data as any;
     if (bestanden.length && user && res?.notitie_id) (await uploadBijlagen(res.notitie_id, bestanden, user.id)).forEach((f) => toast.error(f));
     const credits = (res?.credits ?? []) as any[];
-    const tekst = credits.map((x) => `regel ${x.bron_rij}: ${x.status === "niet_nodig" ? "geen creditnota nodig" : x.status === "te_maken" ? "concept-creditnota klaargezet" : x.status}${x.melding ? ` (${x.melding})` : ""}`).join("; ");
+    const tekst = credits.map((x) => `regel ${x.bron_rij}: ${x.status === "niet_nodig" ? (x.melding ? "geen creditnota" : "geen creditnota nodig") : x.status === "te_maken" ? "concept-creditnota klaargezet" : x.status}${x.melding ? ` (${x.melding})` : ""}`).join("; ");
     toast.success(`Beeindigd.${tekst ? " " + tekst : ""}`, { duration: 8000 });
     if (mail && res?.notitie_id) {
       const { error: mErr } = await supabase.functions.invoke("crm-beeindiging-bevestiging", { body: { notitie_id: res.notitie_id } });
@@ -153,7 +154,7 @@ function BeeindigDialoog({ ondernemingId, ondernemingNaam, persoonId, contracten
       <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Beeindigen bij {ondernemingNaam}</DialogTitle>
-          <DialogDescription>Er wordt niets verwijderd. Contract krijgt een einddatum, polis wordt ingetrokken met reden, te veel gefactureerd wordt alleen als concept-creditnota klaargezet.</DialogDescription>
+          <DialogDescription>Er wordt niets verwijderd. Contract krijgt een einddatum, polis wordt ingetrokken met reden, bij jaarcontracten wordt te veel gefactureerd alleen als concept-creditnota klaargezet; maand en cyber: per dag opzegbaar, geen creditnota.</DialogDescription>
         </DialogHeader>
         {stap === "invoer" ? (
           <div className="space-y-3 text-sm">
@@ -179,7 +180,9 @@ function BeeindigDialoog({ ondernemingId, ondernemingNaam, persoonId, contracten
             <p>Reden: {STOP_REDENEN[reden]}</p>
             <p className="whitespace-pre-wrap">Toelichting: {toelichting}</p>
             {bestanden.length > 0 && <p>Bijlagen: {bestanden.length}</p>}
-            <p>Facturatie stopt na de einddatum. Is er al verder gefactureerd, dan komt er een concept-creditnota klaar ter goedkeuring.</p>
+            {contracten.filter((x) => c.has(x.id)).every((x: any) => opzegZonderCredit(x))
+              ? <p>Facturatie stopt na de einddatum. {OPZEG_GEEN_CREDIT_TEKST}.</p>
+              : <p>Facturatie stopt na de einddatum. Bij jaarcontracten: is er al verder gefactureerd, dan komt er een concept-creditnota klaar ter goedkeuring. {contracten.some((x: any) => c.has(x.id) && opzegZonderCredit(x)) ? `Maand- en cyberregels: ${OPZEG_GEEN_CREDIT_TEKST}.` : ""}</p>}
             <p>Mail aan klant: {mail ? "ja, bevestiging wordt verstuurd" : "nee"}</p>
           </div>
         )}

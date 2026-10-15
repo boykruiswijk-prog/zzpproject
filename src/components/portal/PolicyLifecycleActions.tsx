@@ -294,13 +294,13 @@ export function PolicyLifecycleActions() {
                   <div>
                     <p className="font-medium text-amber-900">Financiële afhandeling</p>
                     <p className="text-amber-800">
-                      {opzegPreview.data?.is_maandpolis ? opzegPreview.data.uitleg : <>
+                      {opzegPreview.data?.is_maandpolis ? "Per dag opzegbaar. Je ontvangt geen creditnota en er worden na de opzegdatum geen nieuwe maandfacturen gemaakt." : <>
                       Geen jaarcontract en dagelijks opzegbaar: je ontvangt een creditnota voor de resterende dagen die je al betaald hebt
                       {opzegPreview.data?.polis_einddatum ? ` tot ${formatDateLongNL(opzegPreview.data.polis_einddatum)}` : ""}.
                       </>}
                     </p>
                     {opzegPreview.isLoading && <p className="text-amber-700 mt-1">Bedrag berekenen…</p>}
-                    {opzegPreview.data && (
+                    {opzegPreview.data && !opzegPreview.data.is_maandpolis && (
                       <p className="mt-2 text-amber-900">
                         <strong>Verwachte creditnota: {eur(opzegPreview.data.credit_bedrag)}</strong>
                         {!opzegPreview.data.is_maandpolis && <span className="text-amber-700"> ({opzegPreview.data.resterende_dagen} dagen × {eur(opzegPreview.data.dagprijs)})</span>}
@@ -348,7 +348,9 @@ export function PolicyLifecycleActions() {
             {opzegVanuitActief && (
               <label className="flex items-start gap-2 text-sm cursor-pointer">
                 <Checkbox checked={opzegAkkoord} onCheckedChange={(v) => setOpzegAkkoord(v === true)} className="mt-0.5" />
-                <span>Ik begrijp dat mijn polis per vandaag eindigt en dat er een creditnota wordt aangemaakt voor de resterende dagen die ik al betaald heb.</span>
+                <span>{opzegPreview.data?.is_maandpolis
+                  ? "Ik begrijp dat mijn polis per vandaag eindigt."
+                  : "Ik begrijp dat mijn polis per vandaag eindigt en dat er een creditnota wordt aangemaakt voor de resterende dagen die ik al betaald heb."}</span>
               </label>
             )}
           </div>
