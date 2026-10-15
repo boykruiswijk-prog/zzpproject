@@ -1,9 +1,12 @@
+// @vitest-environment node
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { aanvraagStapParams, trackAanvraagStap } from "@/lib/tracking";
 
 describe("GA4 aanvraag_stap", () => {
+  let pad = "/";
   beforeEach(() => {
-    window.history.pushState({}, "", "/");
+    pad = "/";
+    (globalThis as unknown as { window: unknown }).window = { get location() { return { pathname: pad }; } };
   });
   it("bevat alleen stap en stap_naam", () => {
     for (let stap = 1; stap <= 5; stap++) {
@@ -24,7 +27,7 @@ describe("GA4 aanvraag_stap", () => {
   it("meet niet op interne paden", () => {
     const gtag = vi.fn();
     (window as unknown as { gtag: unknown }).gtag = gtag;
-    window.history.pushState({}, "", "/admin");
+    pad = "/admin";
     trackAanvraagStap(1);
     expect(gtag).not.toHaveBeenCalled();
   });
