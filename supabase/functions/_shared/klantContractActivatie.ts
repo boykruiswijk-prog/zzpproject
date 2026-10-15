@@ -96,9 +96,9 @@ export async function zetInPlanner(supabase: any, lead: any, exactAccountId: str
       begin_datum: ingang, factureren_vanaf: ingang, gefactureerd_tm: maand ? eersteMaandPeriode(ingang).eind : cyberJaarEind(ingang),
       volgende_factuurdatum: dagErna(maand ? eersteMaandPeriode(ingang).eind : cyberJaarEind(ingang)), gefactureerd_tm_bron: "site_cyber_20261008", status: "actief", facturatie_status: "planner", afwijkingen: [],
       cyber_voorwaarden_versie: CYBER_VERSIE, cyber_ingangsdatum: ingang, cyber_einddatum: lead.cyber_einddatum ?? cyberJaarEind(ingang), is_test: !!lead.is_test,
+      ...(opIngang ? plannerDatumsOpIngang(ingang) : {}),
     }, { onConflict: "bron,bron_rij", ignoreDuplicates: true });
     if (cyberFout) return { ok: false, fout: `cybercontract: ${cyberFout.message}` };
-    void 0;
   }
   return { ok: true, onderneming_id: ond.id, bron_rij: rij.bron_rij };
 }
