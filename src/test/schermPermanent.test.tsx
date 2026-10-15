@@ -31,9 +31,10 @@ describe("permanent agentkantoor", () => {
       expect(screen.getByTestId("agentkantoor")).not.toHaveAttribute("aria-hidden", "true");
       expect(machine).toHaveAttribute("data-actief", "true");
       expect(screen.getByTestId("rapportage-paneel")).toHaveAttribute("data-paneel", String(i % 10));
-      if (i === 6) expect(screen.getByText("Ons AI-team")).toBeInTheDocument();
-      if (i === 7) expect(screen.getByText("Alle workers")).toBeInTheDocument();
-      if (i === 8) expect(screen.getByText("Processtromen")).toBeInTheDocument();
+      if (i === 7) expect(screen.getByText("Ons AI-team")).toBeInTheDocument();
+      if (i === 8) expect(screen.getByText("Alle workers")).toBeInTheDocument();
+      if (i === 9) expect(screen.getByText("Processtromen")).toBeInTheDocument();
+      if (i === 2) expect(screen.getByText("Netto groei")).toBeInTheDocument();
     }
   });
 });
