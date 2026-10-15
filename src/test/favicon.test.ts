@@ -82,7 +82,7 @@ describe("ZP Zaken site-iconen", () => {
     expect(manifest.icons.map((icon: { sizes: string }) => icon.sizes)).toEqual(["192x192", "512x512", "48x48"]);
     for (const icon of manifest.icons) {
       expect(icon.purpose).toBe("any");
-      expect(icon.src).toEndWith(version);
+      expect(icon.src.endsWith(version)).toBe(true);
       expect(fs.existsSync(`public${icon.src.split("?")[0]}`)).toBe(true);
     }
   });
