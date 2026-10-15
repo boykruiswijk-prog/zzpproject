@@ -15,6 +15,7 @@ import { Download, FileText, Loader2, Mail, Pencil, Ban, AlertTriangle } from "l
 import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/contexts/AuthContext";
 import { NieuwCertificaatDialoog, NummerWijzigenDialoog } from "@/components/admin/CertificaatNummerDialogen";
+import { certificaatBeschikbaar, certificaatBeschikbaarVanaf, datumNL } from "@/lib/certificaatBeschikbaar";
 import { magNummerWijzigen } from "@/lib/certificaatNummerKeuze";
 
 type Policy = Database["public"]["Tables"]["policies"]["Row"];
@@ -24,11 +25,16 @@ interface Props {
   /** Eigen genereer-actie (bijv. bestaande klant met voorinvuldialoog). */
   onNieuw?: (bevestigNieuwNummer: boolean) => void;
   leadActief: boolean;
+  /** D7: ingangsdatum voor "Certificaat genereren" (lead). */
+  ingangsdatum?: string | null;
   policies: Policy[];
   isSupervisorOrAdmin: boolean;
   onChanged: () => void;
   onDownload: (pad: string) => void;
 }
+
+/** D7: certificaat pas vanaf 1 maand voor de ingangsdatum. */
+const beschikbaarTekst = (ingang?: string | null) => (ingang ? `Beschikbaar vanaf ${datumNL(certificaatBeschikbaarVanaf(ingang))}` : "");
 
 async function roep(body: Record<string, unknown>) {
   const { data, error } = await supabase.functions.invoke("generate-certificate", { body });
@@ -41,7 +47,7 @@ async function roep(body: Record<string, unknown>) {
   return data;
 }
 
-export function CertificaatBeheer({ leadId, onNieuw, leadActief, policies, isSupervisorOrAdmin, onChanged, onDownload }: Props) {
+export function CertificaatBeheer({ leadId, onNieuw, leadActief, ingangsdatum, policies, isSupervisorOrAdmin, onChanged, onDownload }: Props) {
   const { toast } = useToast();
   const [bezig, setBezig] = useState<string | null>(null);
   const [aanpassen, setAanpassen] = useState<Policy | null>(null);
@@ -143,18 +149,22 @@ export function CertificaatBeheer({ leadId, onNieuw, leadActief, policies, isSup
                 <p className="text-xs text-muted-foreground">Afgifte {formatDateNL(p.issued_date)}</p>
                 {ingetrokken && p.intrek_reden && <p className="text-xs text-muted-foreground">Reden: {p.intrek_reden}</p>}
               </div>
-              {p.pdf_url && (
+              {p.pdf_url && (certificaatBeschikbaar(p.start_date) ? (
                 <Button size="sm" variant="outline" className="min-h-10" onClick={() => onDownload(p.pdf_url!)}>
                   <Download className="h-3 w-3 mr-1" />PDF
                 </Button>
-              )}
+              ) : (
+                <Button size="sm" variant="outline" className="min-h-10" disabled title={beschikbaarTekst(p.start_date)}>
+                  <Download className="h-3 w-3 mr-1" />{beschikbaarTekst(p.start_date)}
+                </Button>
+              ))}
             </div>
             {!ingetrokken && isSupervisorOrAdmin && (
               <div className="flex flex-wrap gap-2">
                 <Button size="sm" variant="outline" className="min-h-10" onClick={() => openAanpassen(p)}><Pencil className="h-3 w-3 mr-1" />Aanpassen</Button>
                 {magNummer && <Button size="sm" variant="outline" className="min-h-10" onClick={() => setNummerWijzigen(p)}>BAV-nummer aanpassen</Button>}
-                <Button size="sm" variant="outline" className="min-h-10" onClick={() => mail(p)} disabled={bezig === `mail-${p.id}`}>
-                  {bezig === `mail-${p.id}` ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Mail className="h-3 w-3 mr-1" />}Certificaat mailen naar klant
+                <Button size="sm" variant="outline" className="min-h-10" onClick={() => mail(p)} disabled={bezig === `mail-${p.id}` || !certificaatBeschikbaar(p.start_date)}>
+                  {bezig === `mail-${p.id}` ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Mail className="h-3 w-3 mr-1" />}{certificaatBeschikbaar(p.start_date) ? "Certificaat mailen naar klant" : `Mailen: ${beschikbaarTekst(p.start_date)}`}
                 </Button>
                 <Button size="sm" variant="outline" className="min-h-10" onClick={() => setIntrekken(p)}><Ban className="h-3 w-3 mr-1" />Intrekken</Button>
               </div>
@@ -164,9 +174,9 @@ export function CertificaatBeheer({ leadId, onNieuw, leadActief, policies, isSup
       })}
 
       {geldig.length === 0 ? (
-        <Button variant="accent" className="w-full" onClick={() => nieuw(false)} disabled={!!bezig || !leadActief}>
+        <Button variant="accent" className="w-full" onClick={() => nieuw(false)} disabled={!!bezig || !leadActief || (!!leadId && !certificaatBeschikbaar(ingangsdatum))}>
           {bezig === "nieuw" ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <FileText className="h-4 w-4 mr-2" />}
-          {policies.some((p) => p.status === "ingetrokken") ? "Nieuw certificaat maken" : "Certificaat genereren"}
+          {leadId && !certificaatBeschikbaar(ingangsdatum) ? beschikbaarTekst(ingangsdatum) : policies.some((p) => p.status === "ingetrokken") ? "Nieuw certificaat maken" : "Certificaat genereren"}
         </Button>
       ) : isSupervisorOrAdmin && (
         <Button variant="ghost" size="sm" className="w-full text-muted-foreground" onClick={() => setExtraNummer(true)} disabled={!!bezig || !leadActief}>

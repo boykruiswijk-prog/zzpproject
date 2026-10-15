@@ -23,6 +23,7 @@ import {
   getJaarprijs, calculatePauzeCredit, calculateHervatFactuur, calcPolisEinddatum, isMaandPolis,
 } from "../_shared/polisProRata.ts";
 import { metExactMelding } from "../_shared/exactBoekingMelding.ts";
+import { opzegCreditBeleid } from "../_shared/opzegBeleid.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -334,6 +335,7 @@ Deno.serve(metExactMelding("polis-lifecycle", async (req) => {
   try {
     switch (action) {
       // ────────── PAUZEREN (B1: creditnota direct) ──────────
+      // Pauze: geen besluit 15-10, ongewijzigd.
       case "pauzeren": {
         if (lead.status !== "klant" && lead.status !== "actief") {
           return json({ error: "ongeldige_status", current: lead.status }, 409);
@@ -598,13 +600,18 @@ Deno.serve(metExactMelding("polis-lifecycle", async (req) => {
         const vanuitActief = lead.status === "actief" || lead.status === "klant";
 
         // ─ Creditnota bij opzegging vanuit actief ─
-        let creditResult: any = wasGepauzeerd
+        // Besluit 15-10-2026: maandpolis per dag opzegbaar, geen creditnota (geen Exact-POST). Opzegging gaat wel door.
+        // D1 jaarpolis, wacht op Boy: crediteren blijft zoals in D1 tot Boy anders besluit.
+        const beleid = opzegCreditBeleid({ cyclus: isMaandPolis(lead.gekozen_pakket) ? "maand" : "jaar", product: "bav_avb" });
+        let creditResult: any = beleid === "geen_credit_maand"
+          ? { skipped: true, reden: "Maandpolis: geen creditnota (besluit 15-10-2026)" }
+          : wasGepauzeerd
           ? { skipped: true, reden: "Al gecrediteerd bij pauze" }
           : { skipped: true, reden: "Geen Exact-account gekoppeld" };
         let calc: ReturnType<typeof calculatePauzeCredit> | null = null;
         let eindForMail: string | null = null;
 
-        if ((vanuitActief || (wasGepauzeerd && isMaandPolis(lead.gekozen_pakket) && !lead.exact_credit_invoice_id_pauze)) && lead.exact_account_id) {
+        if (beleid === "credit_jaar_wacht_op_boy" && vanuitActief && lead.exact_account_id) {
           if (!lead.ingangsdatum) return json({ error: "geen_ingangsdatum_op_lead" }, 400);
           const jaarprijs = (nieuweCyber(lead) ? (starterStatus(lead) === "starter" ? 495 : getJaarprijs(basisPakket(lead.gekozen_pakket))) : getJaarprijs(lead.gekozen_pakket));
           const maandCredit = isMaandPolis(lead.gekozen_pakket) ? await maandLifecycleCredit(supabase, lead, today) : null;

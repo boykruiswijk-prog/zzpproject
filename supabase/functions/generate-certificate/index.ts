@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { certificaatBeschikbaar, certificaatBeschikbaarVanaf, certificaatTeVroegMelding } from "../_shared/certificaatBeschikbaar.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { PDFDocument, rgb, StandardFonts } from "https://esm.sh/pdf-lib@1.17.1";
 import { COMPANY } from "../_shared/company.ts";
@@ -143,6 +144,10 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
           kvkNummerBron = l?.kvk_nummer ?? null;
         }
       } else if (actie === "mailen") {
+        // D7: niet mailen voor 1 maand voor de ingangsdatum.
+        if (!certificaatBeschikbaar(bestaand.start_date)) {
+          return json({ error: certificaatTeVroegMelding(bestaand.start_date), code: "certificaat_te_vroeg", beschikbaar_vanaf: certificaatBeschikbaarVanaf(bestaand.start_date) }, 409);
+        }
         const r = await mailCertificaat(adminClient, req, bestaand, user);
         if (!r.ok) return json({ error: r.error }, 500);
         await adminClient.from("policy_versies").insert({
@@ -266,6 +271,10 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
         };
       }
       kvkNummerBron = data?.kvk ?? null;
+      // D7: certificaat voor een lead niet eerder dan 1 maand voor de ingangsdatum.
+      if (lead_id && data?.start_date && !certificaatBeschikbaar(String(data.start_date))) {
+        return json({ error: certificaatTeVroegMelding(String(data.start_date)), code: "certificaat_te_vroeg", beschikbaar_vanaf: certificaatBeschikbaarVanaf(String(data.start_date)) }, 409);
+      }
       // A14: gekozen nummer (vooraf getoond en bevestigd) of 'NIEUW' na expliciete bevestiging.
       let gekozen = "";
       if (body.bevestig_nieuw_nummer === true) gekozen = "NIEUW";

@@ -184,7 +184,7 @@ export function LeadLifecyclePanel({ lead }: Props) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Polis opzeggen namens klant</DialogTitle>
-            <DialogDescription>Status wordt 'opgezegd'. Bij eerdere pauze wordt creditnota aangemaakt.</DialogDescription>
+            <DialogDescription>Status wordt 'opgezegd'. Maandpolis: per dag opzegbaar, geen creditnota (besluit 15-10-2026). Jaarpolis: creditnota zoals nu.</DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
             <div className="space-y-2">

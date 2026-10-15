@@ -459,6 +459,7 @@ export default function AdminLeadDetail() {
                 <CertificaatBeheer
                   leadId={lead.id}
                   leadActief={lead.status === "actief"}
+                  ingangsdatum={lead.ingangsdatum}
                   policies={policies || []}
                   isSupervisorOrAdmin={magCertificaten}
                   onChanged={() => refetchPolicies()}

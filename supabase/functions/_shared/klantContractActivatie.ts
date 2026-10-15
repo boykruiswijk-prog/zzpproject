@@ -4,6 +4,7 @@
 // deno-lint-ignore-file no-explicit-any
 import { nieuweCyber, CYBER_VERSIE, cyberPremie, cyberJaarEind } from "./cyber.ts";
 import { dagErna, periodeEind } from "./factuurPeriode.ts";
+import { plannerDatumsOpIngang } from "./eersteFactuur.ts";
 
 export const SITE_BRON = "site_activatie";
 
@@ -32,7 +33,8 @@ export interface ContractSpec {
   bedrag_na_starter?: number | null;
 }
 
-export function contractRegelVoorActivatie(lead: any, ondernemingId: string, spec: ContractSpec) {
+/** opIngang (D7): eerste periode nog niet gefactureerd; factuur-planner maakt hem op de ingangsdatum. */
+export function contractRegelVoorActivatie(lead: any, ondernemingId: string, spec: ContractSpec, opIngang = false) {
   return {
     onderneming_id: ondernemingId,
     bron: SITE_BRON,
@@ -48,6 +50,7 @@ export function contractRegelVoorActivatie(lead: any, ondernemingId: string, spe
     factureren_vanaf: spec.periodeStart,
     gefactureerd_tm: spec.periodeEind,
     volgende_factuurdatum: dagErna(spec.periodeEind),
+    ...(opIngang ? plannerDatumsOpIngang(spec.periodeStart) : {}),
     gefactureerd_tm_bron: SITE_BRON,
     status: "actief",
     facturatie_status: "planner",
@@ -60,7 +63,7 @@ export function contractRegelVoorActivatie(lead: any, ondernemingId: string, spe
   };
 }
 
-export async function zetInPlanner(supabase: any, lead: any, exactAccountId: string, spec: ContractSpec) {
+export async function zetInPlanner(supabase: any, lead: any, exactAccountId: string, spec: ContractSpec, opIngang = false) {
   let { data: ond } = await supabase.from("ondernemingen").select("id")
     .eq("exact_account_id", exactAccountId).limit(1).maybeSingle();
   if (!ond && lead.exact_relatie_code) {
@@ -80,7 +83,7 @@ export async function zetInPlanner(supabase: any, lead: any, exactAccountId: str
     if (error) return { ok: false, fout: `onderneming: ${error.message}` };
     ond = data;
   }
-  const rij = contractRegelVoorActivatie(lead, ond.id, spec);
+  const rij = contractRegelVoorActivatie(lead, ond.id, spec, opIngang);
   const { error } = await supabase.from("klant_contracten")
     .upsert(rij, { onConflict: "bron,bron_rij", ignoreDuplicates: true });
   if (error) return { ok: false, fout: `contract: ${error.message}` };
@@ -93,11 +96,13 @@ export async function zetInPlanner(supabase: any, lead: any, exactAccountId: str
       begin_datum: ingang, factureren_vanaf: ingang, gefactureerd_tm: maand ? eersteMaandPeriode(ingang).eind : cyberJaarEind(ingang),
       volgende_factuurdatum: dagErna(maand ? eersteMaandPeriode(ingang).eind : cyberJaarEind(ingang)), gefactureerd_tm_bron: "site_cyber_20261008", status: "actief", facturatie_status: "planner", afwijkingen: [],
       cyber_voorwaarden_versie: CYBER_VERSIE, cyber_ingangsdatum: ingang, cyber_einddatum: lead.cyber_einddatum ?? cyberJaarEind(ingang), is_test: !!lead.is_test,
+      ...(opIngang ? plannerDatumsOpIngang(ingang) : {}),
     }, { onConflict: "bron,bron_rij", ignoreDuplicates: true });
     if (cyberFout) return { ok: false, fout: `cybercontract: ${cyberFout.message}` };
   }
   return { ok: true, onderneming_id: ond.id, bron_rij: rij.bron_rij };
 }
+
 
 const nlDatum = (d: string) => { const [y, m, dd] = d.slice(0, 10).split("-"); return `${dd}-${m}-${y}`; };
 export const euroNL = (n: number) => `€ ${Number(n).toFixed(2).replace(".", ",")}`;

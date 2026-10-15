@@ -16,6 +16,8 @@ import { eersteMaandPeriode } from "../_shared/klantContractActivatie.ts";
 import { factuurReferentie, kopOmschrijving, regelNotities, regelOmschrijving } from "../_shared/factuurTekst.ts";
 import { landcodeVoor } from "../_shared/landcode.ts";
 import { maandprijsVoorLead, pakketSpecVoorLead, starterContractVelden, starterStatus } from "../_shared/starterActivatie.ts";
+import { eersteFactuurViaPlanner, eersteFactuurLogTekst } from "../_shared/eersteFactuur.ts";
+import { vandaagNL as vandaagAmsterdam } from "../_shared/certificaatBeschikbaar.ts";
 import { zetInPlanner, factuurLogTekst, type ContractSpec } from "../_shared/klantContractActivatie.ts";
 import { metExactMelding } from "../_shared/exactBoekingMelding.ts";
 
@@ -1144,9 +1146,22 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
   let factuurPeriode: { start: string; eind: string; naarRato?: boolean } | undefined;
   let exactInvoiceCreatedAt: string | null = null;
   let invoiceWarning: string | null = null;
+  let eersteFactuurGepland: string | null = null;
   const pakketSpec = pakketSpecVoorLead(lead, resolvePakketInvoice(lead.gekozen_pakket));
   if (!pakketSpec) {
     invoiceWarning = `Onbekend pakket "${lead.gekozen_pakket}" — geen factuur aangemaakt.`;
+  } else if (eersteFactuurViaPlanner(lead.ingangsdatum, vandaagAmsterdam())) {
+    // D7: ingangsdatum na vandaag, dus GEEN factuur in Exact bij activatie (minder schrijven).
+    // Contract (en cyberregel) alleen in de planner; factuur-planner maakt de eerste hele periode op de ingangsdatum.
+    const ingangD7 = String(lead.ingangsdatum).slice(0, 10);
+    const ps = plannerSpec(lead, pakketSpec.bedrag, isMaandPolis(lead.gekozen_pakket) ? eersteMaandOverride(lead, pakketSpec.betalingsregel) : undefined);
+    const pr = ps ? await zetInPlanner(supabase, lead, exactAccountId, ps, true) : { ok: false, fout: "geen plannerspec" };
+    if (!pr.ok) {
+      invoiceWarning = `Eerste factuur kon niet worden ingepland: ${pr.fout}. Account staat klaar.`;
+      await logSync(supabase, { trigger_type: "planner_contract", status: "error", lead_id: leadId, admin_user_id: user.id, error_message: pr.fout });
+    } else {
+      eersteFactuurGepland = ingangD7;
+    }
   } else {
     const { data: policyRef } = await supabase.from("policies").select("certificate_number").eq("lead_id", leadId).eq("status", "geldig").limit(1).maybeSingle();
     lead.certificate_number = policyRef?.certificate_number ?? null;
@@ -1240,18 +1255,21 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
         exact_invoice_amount: exactInvoiceAmount,
       }]
     : log1;
+  const log3 = eersteFactuurGepland
+    ? [...log2, { timestamp: new Date().toISOString(), action: eersteFactuurLogTekst(eersteFactuurGepland), admin_user_id: user.id, admin_email: user.email }]
+    : log2;
   const newLog = invoiceWarning
-    ? [...log2, {
+    ? [...log3, {
         timestamp: new Date().toISOString(),
         action: "Factuur-aanmaak gefaald",
         admin_user_id: user.id,
         admin_email: user.email,
         invoice_warning: invoiceWarning,
       }]
-    : log2;
+    : log3;
 
   // Status pas op 'actief' als de factuur daadwerkelijk is aangemaakt.
-  const activationSucceeded = !!exactInvoiceId;
+  const activationSucceeded = !!exactInvoiceId || !!eersteFactuurGepland;
   const leadUpdate: Record<string, unknown> = {
     exact_account_id: exactAccountId,
     exact_relatie_id: exactAccountId,
@@ -1284,6 +1302,15 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
         klant_email: (lead.email ?? "").toLowerCase().trim() || null,
       });
     } catch (_e) { /* logfout mag activatie niet laten falen */ }
+    if (eersteFactuurGepland) {
+      try {
+        await supabase.from("activiteiten_log").insert({
+          actie_type: "eerste_factuur_gepland", omschrijving: eersteFactuurLogTekst(eersteFactuurGepland),
+          uitgevoerd_door: user.id, uitgevoerd_door_naam: user.email ?? null, lead_id: leadId,
+          klant_email: (lead.email ?? "").toLowerCase().trim() || null,
+        });
+      } catch (_e) { /* logfout mag activatie niet laten falen */ }
+    }
   }
 
   // Automatische Mijn ZP-uitnodiging (alleen als er al een polis is en de lead
@@ -1330,6 +1357,7 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
     exact_invoice_number: exactInvoiceNumber,
     exact_invoice_amount: exactInvoiceAmount,
     invoice_warning: invoiceWarning,
+    eerste_factuur_gepland_op: eersteFactuurGepland,
     reused_account: !!reusedAccountId,
     reused_account_name: reusedAccountName,
     reused_bankaccount: bankAccountReused,

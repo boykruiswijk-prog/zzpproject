@@ -40,6 +40,7 @@ type Aanvraag = {
 export type { CreditInfo } from "@/lib/opzegCreditStatus";
 export { CREDIT_STATUS_LABEL, creditStatusTekst } from "@/lib/opzegCreditStatus";
 import { creditStatusTekst, type CreditInfo } from "@/lib/opzegCreditStatus";
+import { OPZEG_GEEN_CREDIT_TEKST, opzegZonderCredit } from "@/lib/opzegBeleid";
 
 const KOLOMMEN = "id,created_at,voornaam,achternaam,email,telefoon,polisnummer,details,notities,koppeling_status,koppeling_methode,koppeling_details,onderneming_id,opzegging_verwerkt_op,opzegging_verwerkt_door,is_test";
 
@@ -152,7 +153,7 @@ export function OpzeggingenKlant({ ondernemingId, contracten, onGewijzigd }: { o
                         ))}
                       </ul>
                     ) : (
-                      <p className="text-muted-foreground">Geen creditnota gepland voor deze opzegging.</p>
+                      <p className="text-muted-foreground">Geen creditnota gepland voor deze opzegging. Maand en cyber: per dag opzegbaar, geen creditnota (besluit 15-10-2026).</p>
                     )}
                   </div>
                 )}
@@ -172,7 +173,7 @@ export function OpzeggingenKlant({ ondernemingId, contracten, onGewijzigd }: { o
                 {lopend.map((c) => (
                   <label key={c.id} className="flex items-center gap-2">
                     <Checkbox checked={gekozen.has(c.id)} onCheckedChange={(v) => { const s = new Set(gekozen); v ? s.add(c.id) : s.delete(c.id); setGekozen(s); }} />
-                    <span>Rij {c.bron_rij} · {PRODUCT_LABEL[c.product as Product] ?? c.product} · {c.cyclus === "jaar" ? "jaar" : "maand"}</span>
+                    <span>Rij {c.bron_rij} · {PRODUCT_LABEL[c.product as Product] ?? c.product} · {c.cyclus === "jaar" ? "jaar" : "maand"}{opzegZonderCredit(c) && <span className="text-muted-foreground"> · {OPZEG_GEEN_CREDIT_TEKST}</span>}</span>
                   </label>
                 ))}
                 <div className="flex flex-wrap gap-2">
