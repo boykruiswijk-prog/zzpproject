@@ -14,6 +14,10 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Building2, Loader2 } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { VlagIcoon, VlagKnop } from "@/components/admin/LeadVlag";
+import { filterOpTab, vandaagNL, type VlagTab } from "@/lib/leadVlag";
+import { useAuth } from "@/contexts/AuthContext";
 import { OpzeggingenTeKoppelen } from "@/components/admin/OpzeggingenKlant";
 import { VastgelopenCreditnotas } from "@/components/admin/VastgelopenCreditnotas";
 import { formatDateNL } from "@/lib/dateFormat";
@@ -24,7 +28,7 @@ import {
   type ContractRegel, type Product,
 } from "@/lib/klantContracten";
 
-type Ond = { id: string; naam: string | null; exact_relatie_code: string | null; afas_contactpersoon: string | null; afwijkingen: string[]; is_test: boolean };
+type Ond = { id: string; naam: string | null; exact_relatie_code: string | null; afas_contactpersoon: string | null; afwijkingen: string[]; is_test: boolean; vlag: string | null; vlag_notitie: string | null; vlag_datum: string | null; vlag_door: string | null; vlag_op: string | null };
 type Rec = { regels: number; relaties: number; mrr: number; arr: number };
 type Reconciliatie = { bron: Rec; crm: Rec; actief: Rec; per_product: { product: Product; regels: number; mrr: number; arr: number }[] };
 type Contract = ContractRegel & { itemcode: string; afwijkingen: string[]; is_test: boolean };
@@ -34,6 +38,13 @@ const maandLabel = (k: string) => { const [y, m] = k.split("-"); return `${MAAND
 
 export default function KlantenContracten() {
   const { toonTest } = useToonTestrecords();
+  const { isSupervisorOrAdmin, isVerzekering } = useAuth();
+  const magVlag = isSupervisorOrAdmin || isVerzekering;
+  const [tab, setTab] = useState<VlagTab>("te_doen");
+  const vlagHerladen = async (id: string) => {
+    const { data } = await supabase.from("ondernemingen").select("vlag,vlag_notitie,vlag_datum,vlag_door,vlag_op").eq("id", id).maybeSingle();
+    if (data) setOnds((xs) => xs.map((x) => (x.id === id ? { ...x, ...data } : x)));
+  };
   const [laden, setLaden] = useState(true);
   const [fout, setFout] = useState<string | null>(null);
   const [onds, setOnds] = useState<Ond[]>([]);
@@ -63,7 +74,7 @@ export default function KlantenContracten() {
     (async () => {
       setLaden(true); setFout(null);
       const [o, k, po, p, m, r, kc] = await Promise.all([
-        fetchAlle<Ond>((a, b) => supabase.from("ondernemingen").select("id,naam,exact_relatie_code,afas_contactpersoon,afwijkingen,is_test").not("exact_relatie_code", "is", null).order("naam").range(a, b)),
+        fetchAlle<Ond>((a, b) => supabase.from("ondernemingen").select("id,naam,exact_relatie_code,afas_contactpersoon,afwijkingen,is_test,vlag,vlag_notitie,vlag_datum,vlag_door,vlag_op").not("exact_relatie_code", "is", null).order("naam").range(a, b)),
         fetchAlle<Contract>((a, b) => supabase.from("klant_contracten").select("id,onderneming_id,cyclus,aantal,bedrag_per_periode,volgende_factuurdatum,eind_datum,status,product,itemcode,afwijkingen,is_test").order("bron_rij").range(a, b)),
         fetchAlle<any>((a, b) => supabase.from("persoon_onderneming").select("persoon_id,onderneming_id").range(a, b)),
         fetchAlle<any>((a, b) => supabase.from("personen").select("id,email_weergave").range(a, b)),
@@ -113,7 +124,10 @@ export default function KlantenContracten() {
     });
   }, [onds, zichtbareContracten, emails, mandaten, toonTest, certs, bav]);
 
-  const gefilterd = rijen.filter((r) => {
+  const vandaag = vandaagNL();
+  const opTab = filterOpTab(rijen.map((r) => ({ ...r, vlag: r.o.vlag, vlag_datum: r.o.vlag_datum })), tab, vandaag);
+  const aantalGemarkeerd = rijen.filter((r) => !!r.o.vlag).length;
+  const gefilterd = opTab.filter((r) => {
     const q = zoek.trim().toLowerCase();
     if (q && !`${r.o.naam ?? ""} ${r.o.exact_relatie_code ?? ""} ${r.certNummers.join(" ")} ${r.bavZoek}`.toLowerCase().includes(q)) return false;
     if (product !== "alle" && !r.producten.includes(product as Product)) return false;
@@ -209,6 +223,13 @@ export default function KlantenContracten() {
 
             <Card>
               <CardContent className="space-y-4 pt-6">
+                <Tabs value={tab} onValueChange={(v) => setTab(v as VlagTab)}>
+                  <TabsList>
+                    <TabsTrigger value="te_doen">Te doen</TabsTrigger>
+                    <TabsTrigger value="gemarkeerd">Gemarkeerd ({aantalGemarkeerd})</TabsTrigger>
+                    <TabsTrigger value="alle">Alle</TabsTrigger>
+                  </TabsList>
+                </Tabs>
                 <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                   <Input placeholder="Zoek op naam, Exact-relatiecode, BAV- of Hiscox-nummer" value={zoek} onChange={(e) => setZoek(e.target.value)} className="w-full sm:w-64" aria-label="Zoeken" />
                   <Select value={product} onValueChange={setProduct}>
@@ -227,9 +248,11 @@ export default function KlantenContracten() {
                 </div>
                 <div className="space-y-3 md:hidden">
                   {gefilterd.map((r) => (
-                    <Link key={r.o.id} to={`/admin/klanten/${r.o.id}`} className="block min-w-0 space-y-2 rounded-md border border-border p-4 hover:bg-muted/30">
+                    <div key={r.o.id} className="relative min-w-0 rounded-md border border-border hover:bg-muted/30">
+                    {magVlag && <div className="absolute right-2 top-2 z-10"><VlagKnop lead={r.o} doel="klant" onGewijzigd={() => vlagHerladen(r.o.id)} /></div>}
+                    <Link to={`/admin/klanten/${r.o.id}`} className="block min-w-0 space-y-2 p-4 pr-12">
                       <div className="flex items-start justify-between gap-2">
-                        <span className="break-words font-medium">{r.o.naam || "—"}</span>
+                        <span className="flex min-w-0 items-center gap-2 break-words font-medium">{r.o.naam || "—"}<VlagIcoon lead={r.o} /></span>
                         {r.afw.length > 0 && <Badge variant="outline" className="shrink-0 border-amber-500 text-amber-700">{r.afw.length} afwijking(en)</Badge>}
                       </div>
                       <p className="text-sm text-muted-foreground">Relatie {r.o.exact_relatie_code ?? "—"} · {r.cs.length} contractregel(s)</p>
@@ -239,6 +262,7 @@ export default function KlantenContracten() {
                         <span>Maand {r.maand ? formatEuro(r.maand) : "—"}</span><span>Jaar {r.jaar ? formatEuro(r.jaar) : "—"}</span>
                       </div>
                     </Link>
+                    </div>
                   ))}
                 </div>
                 <div className="hidden overflow-x-auto md:block">
@@ -250,7 +274,7 @@ export default function KlantenContracten() {
                     </tr></thead>
                     <tbody>{gefilterd.map((r) => (
                       <tr key={r.o.id} className="border-t border-border hover:bg-muted/30">
-                        <td className="p-2 min-w-0"><Link to={`/admin/klanten/${r.o.id}`} className="block truncate font-medium hover:text-primary" title={r.o.naam ?? ""}>{r.o.naam || "—"}</Link></td>
+                        <td className="p-2 min-w-0"><div className="flex min-w-0 items-center gap-1"><Link to={`/admin/klanten/${r.o.id}`} className="block truncate font-medium hover:text-primary" title={r.o.naam ?? ""}>{r.o.naam || "—"}</Link><VlagIcoon lead={r.o} />{magVlag && <VlagKnop lead={r.o} doel="klant" onGewijzigd={() => vlagHerladen(r.o.id)} />}</div></td>
                         <td className="p-2 tabular-nums truncate">{r.o.exact_relatie_code}</td>
                         <td className="p-2 min-w-0"><BavNummer keuze={r.bav} compact /></td>
                         <td className="p-2 min-w-0"><div className="truncate" title={r.o.afas_contactpersoon ?? ""}>{r.o.afas_contactpersoon || "—"}</div><div className="truncate text-xs text-muted-foreground" title={r.mails.join(", ")}>{r.mails[0] ?? "Geen e-mail"}</div></td>
