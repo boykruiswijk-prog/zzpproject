@@ -215,7 +215,7 @@ export const ZEKER_KENNIS = {
     {
       "path": "/bav-zzp-vergelijken",
       "title": "BAV zzp vergelijken 2026: prijs, dekking en eigen risico",
-      "intro": "Vergelijk een beroepsaansprakelijkheidsverzekering (BAV) nooit alleen op de laagste prijs. Kijk ook naar het verzekerd bedrag, het eigen risico, of de AVB erbij zit en hoe snel je kunt opzeggen. ZP Zaken biedt BAV en AVB in één polis via Hiscox, vanaf € 55 per maand, zonder eigen risico."
+      "intro": "Vergelijk een beroepsaansprakelijkheidsverzekering (BAV) nooit alleen op de laagste prijs. Kijk ook naar het verzekerd bedrag, het eigen risico, of de AVB erbij zit en hoe snel je kunt opzeggen. ZP Zaken biedt BAV en AVB in één polis via Hiscox, voor € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting, zonder eigen risico."
     },
     {
       "path": "/klachtenprocedure",

@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Tekstcontrole 15 oktober: zes tekstpunten en drie artikelrijen gecorrigeerd; sitemap/llms/Zeker vernieuwd; browser/FAQ-schema en build OK; 82/86 tests groen, vier bestaande SEO-titelafwijkingen buiten opdracht. Niet gepubliceerd, geen klantmails.
 - [x] Boy 14 oktober: uitsluitend starterpremietekst op betaalwijze afgestemd; maand/jaar/cyber getest, 18/18 tests groen; process-bav-wizard gedeployed; geen mails of wijzigingsmelding.
 - [x] Tekstcorrecties 13 oktober: 4 CTA-artikelen + 2 AOV-artikelen bijgewerkt, generatorprompt/vergelijkknoppen/FAQ/productlabel/beroepenlijst gecorrigeerd, llms en Zeker opnieuw gegenereerd; browser en build OK; geen publicatie of logica-/prijswijzigingen.
 - [ ] Uitgebreide teksttest volledig groen: 19/20 relevante tests slagen; OPGELOST 13 okt: patroon beperkt tot verzekeringscontext, test 4/4 groen, genereer-artikel gedeployed. Standaard testomgeving mist canvas; controle met happy-dom uitgevoerd.
