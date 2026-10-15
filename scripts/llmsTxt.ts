@@ -8,6 +8,7 @@ import { bavPakketten } from "../src/data/bavPakketten";
 import { faqItems } from "../src/data/faqItems";
 import { STARTER } from "../src/lib/starterTarief";
 import type { SeoRoute } from "../src/config/seoRoutes";
+import { eviPaginaVindbaar, EVI_PAGINA_PUBLIEK } from "../src/config/eviPagina";
 
 interface LlmsArticle {
   slug: string;
@@ -48,7 +49,8 @@ function intro(): string[] {
   ];
 }
 
-export function buildLlmsTxt(routes: SeoRoute[], articles: LlmsArticle[]): string {
+export function buildLlmsTxt(routes: SeoRoute[], articles: LlmsArticle[], publiek = EVI_PAGINA_PUBLIEK): string {
+  routes = routes.filter(r => eviPaginaVindbaar(r.path, publiek));
   const byPath = new Map(routes.map((r) => [r.path, r]));
   const kern = KERN.map((p) => byPath.get(p)).filter(Boolean) as SeoRoute[];
   const rest = routes.filter((r) => !KERN.includes(r.path));
@@ -75,7 +77,8 @@ export function buildLlmsTxt(routes: SeoRoute[], articles: LlmsArticle[]): strin
   ].join("\n");
 }
 
-export function buildLlmsFullTxt(routes: SeoRoute[], articles: LlmsArticle[] = []): string {
+export function buildLlmsFullTxt(routes: SeoRoute[], articles: LlmsArticle[] = [], publiek = EVI_PAGINA_PUBLIEK): string {
+  routes = routes.filter(r => eviPaginaVindbaar(r.path, publiek));
   const lines = [...intro(), "## Producten", ""];
   for (const p of bavPakketten) {
     const d = p.dekkingen;

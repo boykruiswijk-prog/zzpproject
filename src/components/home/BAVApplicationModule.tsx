@@ -44,6 +44,7 @@ import { AdresGevonden } from "@/components/AdresGevonden";
 import { normaliseerPostcode } from "@/lib/adresNormalisatie";
 import { isEigenKvk, KVK_EIGEN_NUMMER_MELDING, KVK_PLACEHOLDER } from "@/lib/kvkInvoer";
 import { IbanVertrouwen } from "@/components/home/IbanVertrouwen";
+import { interneBronUitZoek } from "@/lib/interneBron";
 
 const formatBedrag = (n: number) => `€${n.toLocaleString("nl-NL")}`;
 /** Compacte bedragen: 5.000.000 → "€5M", 2.500.000 → "€2,5M". */
@@ -103,6 +104,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
    });
    // Ook na de eerste render reageren op een pakket-link (#combinatiepolis?pakket=<id>); ongeldige id negeren.
    const routerLocatie = useLocation();
+   const interneBron = interneBronUitZoek(routerLocatie.search);
    useEffect(() => {
      const pas = () => {
        const m = window.location.hash.match(/pakket=([\w-]+)/);
@@ -335,6 +337,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
       pakket: gekozenPakketId,
       sector: verzekeringskaartVoorSector(formData.sector)?.sector.label ?? formData.sector,
       pagina: window.location.pathname,
+      interne_bron: interneBron,
     };
     const sleutel = JSON.stringify(row);
     if (sleutel === laatsteConcept.current) return;
@@ -351,7 +354,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
       }).catch(() => { /* tussentijds opslaan mag de aanvraag nooit hinderen */ });
     }, 1500);
     return () => window.clearTimeout(timer);
-  }, [currentStep, formData.email, formData.telefoon, formData.voornaam, formData.achternaam, formData.bedrijfsnaam, formData.kvkNummer, formData.sector, gekozenPakketId, isSubmitted, guard.honeypot]);
+  }, [currentStep, formData.email, formData.telefoon, formData.voornaam, formData.achternaam, formData.bedrijfsnaam, formData.kvkNummer, formData.sector, gekozenPakketId, isSubmitted, guard.honeypot, interneBron]);
 
   // aanvraag_stap: elke stap hooguit één keer per formulierdoorloop.
   const gemetenStappen = useRef<Set<number>>(new Set());
@@ -397,6 +400,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
            email: formData.email,
            telefoon: formData.telefoon ? normaliseerNlTelefoon(formData.telefoon) : null,
            attributie: leesAttributie(),
+           interne_bron: interneBron,
            bedrijfsnaam: formData.bedrijfsnaam,
            kvk_nummer: formData.kvkNummer || null,
            kvk_startdatum: formData.kvkStartdatum || null,

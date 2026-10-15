@@ -12,6 +12,7 @@
 
 import { SITE_CONFIG } from "./site";
 import { bavPakketten } from "../data/bavPakketten";
+import { EVI_SEO } from "../data/eviPensioen";
 
 const LANDING_MAAND = bavPakketten.find((p) => p.id === "maandelijks")!.prijs;
 const LANDING_JAAR = bavPakketten.find((p) => p.id === "jaarlijks")!.prijs;
@@ -37,6 +38,7 @@ const laagstePakketMaand = () => {
 };
 
 export const seoRoutes: SeoRoute[] = [
+  EVI_SEO,
   {
     path: "/",
     title: `BAV & AVB Verzekering ZZP'ers | Vanaf €${laagstePakket.prijs}/maand`,

@@ -1,3 +1,4 @@
+import { eviPaginaLinks } from "../config/eviPagina";
 export interface SearchEntry {
   title: string;
   path: string;
@@ -8,6 +9,7 @@ export interface SearchEntry {
 // Statische zoekindex voor publieke pagina's.
 // Werk dit bij wanneer pagina-inhoud significant wijzigt.
 export const searchIndex: SearchEntry[] = [
+  ...eviPaginaLinks().map(l => ({title:l.label,path:l.href,keywords:"pensioen lijfrente jaarruimte Evi",snippet:"Eigen pensioenopbouw in de derde pijler."})),
   {
     title: "Home | ZP Zaken",
     path: "/",

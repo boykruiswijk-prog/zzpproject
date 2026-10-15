@@ -42,6 +42,7 @@ import {
 const LANGS = ["en", "de", "fr"] as const;
 import { buildLlmsTxt, buildLlmsFullTxt } from "./llmsTxt";
 import sitemapLastmod from "../src/config/sitemapLastmod.json";
+import { EVI_PAGINA_PAD, eviPaginaRobots, eviPaginaVindbaar } from "../src/config/eviPagina";
 
 /** Belangrijkste pagina's in het statische fallback-blok. */
 const FALLBACK_LINKS: Array<{ href: string; label: string }> = [
@@ -589,13 +590,18 @@ export async function prerender(distDir: string, env: Record<string, string> = {
     const body = await ssrBody(route.path);
     let html = buildHtml(template, {
       routePath: route.path,
-      title: formatPageTitle(route.title),
+      title: route.path === EVI_PAGINA_PAD ? route.title : formatPageTitle(route.title),
       description: route.description,
       ogType: "website",
       image: SITE_CONFIG.ogImage,
       schemas: mergeSchemas(schemasFor(route.path), lastHelmetLd),
       fallback: body ?? renderFallback(route.h1, route.intro, extra),
     });
+    if (route.path === EVI_PAGINA_PAD) {
+      if (!body) throw new Error("[prerender] Evi-pagina vereist volledige statische tekst.");
+      html = html.replace(/<meta name="robots"[^>]*>/g, `<meta name="robots" content="${eviPaginaRobots()}" data-rh="true" />`);
+      html = html.replace(/<meta property="og:image:alt"[^>]*>/, '<meta property="og:image:alt" content="ZP Zaken" data-rh="true" />');
+    }
     if (route.path === "/") {
       // Hero-beeld (LCP) vroeg laden.
       const assetsDir = path.join(distDir, "assets");
@@ -782,7 +788,7 @@ export async function prerender(distDir: string, env: Record<string, string> = {
   const sources = routeSourceFiles(root);
   const sitemapEntries = [
     ...(seoRoutes as SeoRoute[])
-      .filter((r) => !isExcluded(r.path))
+      .filter((r) => !isExcluded(r.path) && eviPaginaVindbaar(r.path))
       .map((r) => ({
         loc: `${SITE_CONFIG.url}${r.path === "/" ? "/" : r.path}`,
         // Publicatieomgeving heeft soms geen git-historie: dan de vastgelegde

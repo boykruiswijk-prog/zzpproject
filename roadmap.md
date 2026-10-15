@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] F7 akkoord 18:35: volledig uitvoeren; Hiscox alleen BAV-blok, additief conceptveld zonder terugvulling, bestandenlijst/tests/noindex; Boy verzorgt melding zelf.
 - [ ] F7: verborgen Evi-pensioenpagina, lokale rekenhulp, bestaande contactverwerking en interne bronherkenning; prerender/noindex en publieke vlagtakken; tests en mobiele controle. Geen publicatie of inzending.
 - [x] Spoedfavicon 15 oktober: complete versiegebonden ZP-set en tien HTTP-200-paden gecontroleerd; 10/10 icoontests, volledige suite via happy-dom 1069/1071 (twee bestaande Exact-creditnotafouten, financiële logica buiten scope); automatische build OK. Publicatie aangevraagd, geen wijzigingsmelding.
 - [x] Boy 15 oktober: Ads-labels beveiligd, betaalde 90-dagenherkomst en boolean marketingtoestemming door client/server; permanent agentkantoor en negen rechterpanelen getest op 1920×1080; 22/22 gerichte tests, build OK, twee formulierfuncties gedeployed. Website niet gepubliceerd, geen aanvragen of klantmails.

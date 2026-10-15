@@ -9,6 +9,7 @@ import logoZp from "@/assets/logo-zp.webp";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { SiteSearch } from "@/components/search/SiteSearch";
+import { eviPaginaLinks } from "@/config/eviPagina";
 
 function useNavItems() {
   const { t } = useTranslation();
@@ -19,6 +20,7 @@ function useNavItems() {
       children: [
         { href: "/diensten", label: t("nav.alleDiensten") },
         { href: "/verzekeringen", label: "Verzekeringen" },
+        ...eviPaginaLinks(),
         { href: "/starters", label: "Starterspakket" },
         { href: "/diensten#administratie", label: "Administratie & Boekhouding" },
         { href: "/diensten#juridisch", label: "Juridische Hulp" },

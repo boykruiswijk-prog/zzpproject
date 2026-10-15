@@ -1,4 +1,5 @@
 # Technische afspraken
+- Evi discovery and robots use only eviPagina.ts; the route always prerenders and internal source is separate from marketing attribution. Why: one publication switch without changing existing pension content or Ads.
 
 - ZP icons (ICO, embedded-PNG SVG, PNG and both manifests) share versioned head links in pages and redirect stubs; static assets precede the unforced SPA fallback. Why: consistent brand and crawler access.
 - ZP brand source: docs/brand/favicon.png.b64 and its existing higher-resolution public/favicon-192x192.png show the same mark; derive icons without redrawing or cropping. Why: preserve the approved logo.
