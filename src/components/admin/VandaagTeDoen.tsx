@@ -46,6 +46,7 @@ const CATEGORIEEN: { key: string; titel: string; icoon: LucideIcon; link: (i: It
   { key: "nieuw", titel: "Nieuwe aanvragen en leads", icoon: Inbox, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/leads" },
   { key: "activeren", titel: "Klaar om te activeren", icoon: ShieldCheck, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/leads" },
   { key: "vlaggen", titel: "Gemarkeerd: vandaag opvolgen", icoon: Flag, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/aanvragen" },
+  { key: "klant_vlaggen", titel: "Klant gemarkeerd: vandaag opvolgen", icoon: Flag, link: (i) => `/admin/klanten/${i.id}`, alles: "/admin/klanten" },
   { key: "starter", titel: "Startertarief controleren", icoon: ShieldCheck, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/leads" },
   { key: "service", titel: "Opzeggingen, pauzes en wijzigingen", icoon: FileWarning, link: (i) => `/admin/service-aanvragen/${i.id}`, alles: "/admin/service-aanvragen" },
   { key: "screening", titel: "Screening-aanvragen", icoon: UserSearch, link: (i) => `/admin/screening-aanvragen/${i.id}`, alles: "/admin/screening-aanvragen" },

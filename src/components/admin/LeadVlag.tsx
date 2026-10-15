@@ -10,9 +10,9 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogD
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { VLAG_LABEL, datumNL, isOpvolgen, vandaagNL, verwijderVlag, vlagFout, zetVlag, type VlagSoort } from "@/lib/leadVlag";
+import { VLAG_LABEL, datumNL, isOpvolgen, vandaagNL, verwijderVlagVoor, vlagFout, zetVlagVoor, type VlagDoel, type VlagSoort } from "@/lib/leadVlag";
 
-export type VlagLead = { id: string; vlag?: string | null; vlag_notitie?: string | null; vlag_datum?: string | null; vlag_door?: string | null; vlag_op?: string | null; voornaam?: string | null; achternaam?: string | null };
+export type VlagLead = { id: string; naam?: string | null; vlag?: string | null; vlag_notitie?: string | null; vlag_datum?: string | null; vlag_door?: string | null; vlag_op?: string | null; voornaam?: string | null; achternaam?: string | null };
 
 function useNaam(id?: string | null) {
   return useQuery({
@@ -52,7 +52,7 @@ export function VlagIcoon({ lead, metTekst = false }: { lead: VlagLead; metTekst
 }
 
 /** Dialoog: vlag zetten, aanpassen of verwijderen (met toelichting). */
-export function VlagDialoog({ lead, open, onOpenChange, startVerwijderen = false }: { lead: VlagLead; open: boolean; onOpenChange: (o: boolean) => void; startVerwijderen?: boolean }) {
+export function VlagDialoog({ lead, open, onOpenChange, startVerwijderen = false, doel = "lead", onGewijzigd }: { lead: VlagLead; open: boolean; onOpenChange: (o: boolean) => void; startVerwijderen?: boolean; doel?: VlagDoel; onGewijzigd?: () => void }) {
   const qc = useQueryClient();
   const [soort, setSoort] = useState<VlagSoort | null>((lead.vlag as VlagSoort) ?? null);
   const [notitie, setNotitie] = useState(lead.vlag_notitie ?? "");
@@ -63,16 +63,18 @@ export function VlagDialoog({ lead, open, onOpenChange, startVerwijderen = false
   const fout = verwijderen ? (toelichting.trim().length < 3 || toelichting.trim().length > 500 ? "Toelichting is verplicht (3 tot 500 tekens)." : null) : vlagFout(soort, notitie, datum);
 
   const klaar = () => {
-    qc.invalidateQueries({ queryKey: ["leads"] }); qc.invalidateQueries({ queryKey: ["lead", lead.id] });
-    qc.invalidateQueries({ queryKey: ["menu-tellers"] }); qc.invalidateQueries({ queryKey: ["mijn-acties-vandaag"] });
+    if (doel === "klant") { qc.invalidateQueries({ queryKey: ["klanten"] }); qc.invalidateQueries({ queryKey: ["klant", lead.id] }); qc.invalidateQueries({ queryKey: ["mijn-acties-vandaag"] }); }
+    else { qc.invalidateQueries({ queryKey: ["leads"] }); qc.invalidateQueries({ queryKey: ["lead", lead.id] });
+    qc.invalidateQueries({ queryKey: ["menu-tellers"] }); qc.invalidateQueries({ queryKey: ["mijn-acties-vandaag"] }); }
+    onGewijzigd?.();
     onOpenChange(false);
   };
   const opslaan = async () => {
     if (fout) return;
     setBezig(true);
     try {
-      if (verwijderen) { await verwijderVlag(lead.id, toelichting); toast.success("Vlag verwijderd"); }
-      else { await zetVlag(lead.id, soort!, notitie, datum || null); toast.success("Vlag opgeslagen"); }
+      if (verwijderen) { await verwijderVlagVoor(doel, lead.id, toelichting); toast.success("Vlag verwijderd"); }
+      else { await zetVlagVoor(doel, lead.id, soort!, notitie, datum || null); toast.success("Vlag opgeslagen"); }
       klaar();
     } catch (e) { toast.error((e as Error).message); } finally { setBezig(false); }
   };
@@ -85,13 +87,13 @@ export function VlagDialoog({ lead, open, onOpenChange, startVerwijderen = false
     </button>
   );
 
-  const naam = `${lead.voornaam ?? ""} ${lead.achternaam ?? ""}`.trim();
+  const naam = doel === "klant" ? ((lead as VlagLead & { naam?: string | null }).naam ?? "").trim() : `${lead.voornaam ?? ""} ${lead.achternaam ?? ""}`.trim();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{verwijderen ? "Vlag verwijderen" : lead.vlag ? "Vlag aanpassen" : "Markeren"}{naam ? `: ${naam}` : ""}</DialogTitle>
-          <DialogDescription>De status van de aanvraag verandert niet. Gemarkeerde personen staan onder "Gemarkeerd" en komen op de opvolgdatum vanzelf terug in "Te doen".</DialogDescription>
+          <DialogDescription>{doel === "klant" ? "Er verandert niets aan contract, facturatie of polis. Gemarkeerde klanten staan onder Gemarkeerd en komen op de opvolgdatum vanzelf terug in Te doen." : <>De status van de aanvraag verandert niet. Gemarkeerde personen staan onder "Gemarkeerd" en komen op de opvolgdatum vanzelf terug in "Te doen".</>}</DialogDescription>
         </DialogHeader>
         {verwijderen ? (
           <div className="space-y-2">
@@ -125,7 +127,7 @@ export function VlagDialoog({ lead, open, onOpenChange, startVerwijderen = false
 }
 
 /** Vlagknop voor in de lijst. */
-export function VlagKnop({ lead }: { lead: VlagLead }) {
+export function VlagKnop({ lead, doel = "lead", onGewijzigd }: { lead: VlagLead; doel?: VlagDoel; onGewijzigd?: () => void }) {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -133,13 +135,13 @@ export function VlagKnop({ lead }: { lead: VlagLead }) {
         className={cn(lead.vlag === "later" && "text-warning", lead.vlag === "actie" && "text-destructive")}>
         <Flag className="h-4 w-4" fill={lead.vlag ? "currentColor" : "none"} />
       </Button>
-      {open && <VlagDialoog lead={lead} open onOpenChange={setOpen} />}
+      {open && <VlagDialoog lead={lead} open onOpenChange={setOpen} doel={doel} onGewijzigd={onGewijzigd} />}
     </>
   );
 }
 
 /** Balk bovenaan LeadDetail. */
-export function VlagBalk({ lead, magWijzigen }: { lead: VlagLead; magWijzigen: boolean }) {
+export function VlagBalk({ lead, magWijzigen, doel = "lead", onGewijzigd }: { lead: VlagLead; magWijzigen: boolean; doel?: VlagDoel; onGewijzigd?: () => void }) {
   const door = useNaam(lead.vlag_door);
   const [open, setOpen] = useState<null | "aanpassen" | "verwijderen">(null);
   return (
@@ -150,14 +152,14 @@ export function VlagBalk({ lead, magWijzigen }: { lead: VlagLead; magWijzigen: b
           <VlagIcoon lead={lead} metTekst />
           <span className="min-w-0 flex-1 break-words">{vlagTekst(lead, door).split(" · ").slice(1).join(" · ")}</span>
         </>
-      ) : <span className="min-w-0 flex-1 text-muted-foreground">Geen vlag. Markeer deze persoon als hij later aandacht nodig heeft of als er een actie nodig is.</span>}
+      ) : <span className="min-w-0 flex-1 text-muted-foreground">Geen vlag. Markeer {doel === "klant" ? "deze klant" : "deze persoon"} als hij later aandacht nodig heeft of als er een actie nodig is.</span>}
       {magWijzigen && (
         <div className="flex flex-wrap gap-2">
           <Button size="sm" variant="outline" onClick={() => setOpen("aanpassen")}><Flag className="h-4 w-4" />{lead.vlag ? "Vlag aanpassen" : "Markeren"}</Button>
           {lead.vlag && <Button size="sm" variant="outline" onClick={() => setOpen("verwijderen")}>Vlag verwijderen</Button>}
         </div>
       )}
-      {open && <VlagDialoog key={open} lead={lead} open onOpenChange={(o) => !o && setOpen(null)} startVerwijderen={open === "verwijderen"} />}
+      {open && <VlagDialoog key={open} lead={lead} open onOpenChange={(o) => !o && setOpen(null)} startVerwijderen={open === "verwijderen"} doel={doel} onGewijzigd={onGewijzigd} />}
     </div>
   );
 }

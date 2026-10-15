@@ -48,3 +48,18 @@ export async function verwijderVlag(leadId: string, toelichting: string) {
 }
 
 export const datumNL = (d?: string | null) => (d ? d.split("-").reverse().join("-") : "");
+
+/** Doel van de vlag: aanvraag/lead of bestaande klant (onderneming). */
+export type VlagDoel = "lead" | "klant";
+
+export async function zetVlagVoor(doel: VlagDoel, id: string, soort: VlagSoort, notitie: string, datum: string | null) {
+  if (doel === "lead") return zetVlag(id, soort, notitie, datum);
+  const { error } = await (supabase.rpc as any)("zet_klant_vlag", { _onderneming_id: id, _soort: soort, _notitie: notitie.trim(), _datum: datum || null });
+  if (error) throw new Error(error.message);
+}
+
+export async function verwijderVlagVoor(doel: VlagDoel, id: string, toelichting: string) {
+  if (doel === "lead") return verwijderVlag(id, toelichting);
+  const { error } = await (supabase.rpc as any)("verwijder_klant_vlag", { _onderneming_id: id, _toelichting: toelichting.trim() });
+  if (error) throw new Error(error.message);
+}

@@ -9,6 +9,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { formatDateNL } from "@/lib/dateFormat";
 import { ContractKortingKnop, KortingBadge } from "@/components/admin/crm/ContractKorting";
 import { useAuth } from "@/contexts/AuthContext";
+import { VlagBalk } from "@/components/admin/LeadVlag";
 import { CONTRACT_STATUS_LABEL, PRODUCT_LABEL, formatEuro, periodeBedrag, type Product } from "@/lib/klantContracten";
 import { OpzeggingenKlant } from "@/components/admin/OpzeggingenKlant";
 import { CertificatenKlant } from "@/components/admin/CertificatenKlant";
@@ -27,7 +28,7 @@ export default function KlantDetail() {
   const [laden, setLaden] = useState(true);
   const [ond, setOnd] = useState<any>(null);
   const [contracten, setContracten] = useState<any[]>([]);
-  const { isSupervisorOrAdmin } = useAuth();
+  const { isSupervisorOrAdmin, isVerzekering } = useAuth();
   const [personen, setPersonen] = useState<any[]>([]);
   const [mandaat, setMandaat] = useState<any>(null);
   const [leadMatch, setLeadMatch] = useState<any[]>([]);
@@ -83,6 +84,7 @@ export default function KlantDetail() {
               {ond.afwijkingen?.length > 0 && <div className="mt-2 flex flex-wrap gap-2">{ond.afwijkingen.map((a: string) => <Badge key={a} variant="outline" className="border-amber-500 text-amber-700">{a}</Badge>)}</div>}
               <div className="mt-2"><ExactRelatieLabel ond={ond} heeftVoorganger={voorgangers.length > 0} /></div>
             </div><OndernemingswijzigingKnop ond={ond} onKlaar={() => setHerlaad((x) => x + 1)} /></div>
+            <VlagBalk lead={ond} doel="klant" magWijzigen={isSupervisorOrAdmin || isVerzekering} onGewijzigd={() => setHerlaad((h) => h + 1)} />
             <KlantKaart ondernemingen={[ond]} personen={personen} leadIds={leadMatch.map((l) => l.id)} herlaadSleutel={herlaad} onGewijzigd={() => setHerlaad((h) => h + 1)} />
             <KvkVergelijking ond={ond} onGewijzigd={() => setHerlaad((x) => x + 1)} />
             <div className="grid gap-6 md:grid-cols-3">
