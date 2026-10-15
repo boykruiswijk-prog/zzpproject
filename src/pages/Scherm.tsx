@@ -206,6 +206,32 @@ function PaneelGroei({ d }: { d: SchermPayload }) {
   );
 }
 
+/** Netto groei sinds 6 okt (tel_netto_groei, zelfde bron als het dashboard). Alleen aantallen. */
+function PaneelNettoGroei({ d }: { d: SchermPayload }) {
+  const n = d.netto_groei;
+  const pct = (v: number | null | undefined) => (v == null ? "-" : `${String(v).replace(".", ",")}%`);
+  const plus = (v: number) => `${v > 0 ? "+" : ""}${nf.format(v)}`;
+  if (!n?.cumulatief) return <div className="flex h-full flex-col gap-[3vh]"><Kop>Netto groei</Kop><Gemeten /></div>;
+  const rij = (titel: string, b: NonNullable<typeof n.cumulatief> | null) => (
+    <div className="flex flex-col gap-[1.5vh]">
+      <Label>{titel}</Label>
+      {b ? <div className="grid grid-cols-2 gap-[2vw]">
+        <Stat label="Instroom" waarde={nf.format(b.instroom)} />
+        <Stat label="Beeindigingen" waarde={nf.format(b.beeindigingen)} />
+        <Stat label="Netto groei" waarde={plus(b.netto_groei)} />
+        <Stat label="Opzegpercentage" waarde={pct(b.opzegpercentage)} />
+      </div> : <Gemeten />}
+    </div>
+  );
+  return (
+    <div className="flex h-full flex-col gap-[3vh]" data-testid="paneel-netto-groei">
+      <Kop>Netto groei</Kop>
+      {rij("Deze week", n.deze_week)}
+      {rij("Sinds 6 okt", n.cumulatief)}
+    </div>
+  );
+}
+
 function StatusRegel({ label, ok }: { label: string; ok: boolean | null }) {
   const kleur = ok === null ? "var(--s-dim)" : ok ? "var(--s-groen)" : "var(--s-rood)";
   return (
@@ -403,7 +429,7 @@ function PaneelProcessen({ d }: { d: SchermPayload }) {
   </div>;
 }
 
-const PANELEN = [PaneelDoel, PaneelGroei, PaneelService, PaneelZichtbaarheid, PaneelStroom, PaneelVandaag, PaneelAiTeam, PaneelWorkers, PaneelProcessen];
+const PANELEN = [PaneelDoel, PaneelGroei, PaneelNettoGroei, PaneelService, PaneelZichtbaarheid, PaneelStroom, PaneelVandaag, PaneelAiTeam, PaneelWorkers, PaneelProcessen];
 
 function useWakeLock() {
   useEffect(() => {
