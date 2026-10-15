@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { DekkingOpgeschortBadge } from "@/components/admin/incasso/Incasso";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -73,6 +74,7 @@ export function LopendeProducten({ ondernemingId, ondernemingNaam, leadIds = [],
     <Card>
       <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2">
         <CardTitle className="text-base">{titel ?? `Contracten en polissen: ${ondernemingNaam}`}</CardTitle>
+        <DekkingOpgeschortBadge ondernemingId={ondernemingId} />
         {mag && (lopendC.length + lopendP.length > 1) && <Button size="sm" variant="outline" onClick={() => setDialoog({ c: lopendC.map((c) => c.id), p: lopendP.map((p) => p.id) })}>Alles beeindigen</Button>}
       </CardHeader>
       <CardContent className="space-y-2 text-sm">

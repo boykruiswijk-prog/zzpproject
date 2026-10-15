@@ -1,4 +1,5 @@
 import { useToonTestrecords } from "@/hooks/useToonTestrecords";
+import { IncassoMisluktKnop } from "@/components/admin/incasso/Incasso";
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { AdminLayout } from "@/components/admin/AdminLayout";
@@ -57,7 +58,7 @@ export default function Facturatieplanning() {
     const [c, m, p, r] = await Promise.all([
       supabase.from("facturatie_config").select("facturatie_actief,sleutel_veld").eq("id", 1).maybeSingle(),
       supabase.from("factuur_artikel_mapping").select("*").order("itemcode_patroon"),
-      supabase.from("factuur_planning").select("*").in("status", ["geclaimd", "concept_aangemaakt", "verwijderd_in_exact", "te_laat", "fout"]).order("periode_start"),
+      supabase.from("factuur_planning").select("*, klant_contracten(onderneming_id)").in("status", ["geclaimd", "concept_aangemaakt", "verwijderd_in_exact", "te_laat", "fout"]).order("periode_start"),
       supabase.from("factuur_planner_runs").select("*").order("gestart_op", { ascending: false }).limit(5),
     ]);
     setCfg(c.data as any); setMapping(m.data ?? []); setMeldingen(p.data ?? []); setRuns(r.data ?? []);
@@ -194,7 +195,8 @@ export default function Facturatieplanning() {
                   <td className="py-1 pr-2 whitespace-nowrap">{formatDateNL(p.periode_start)} t/m {formatDateNL(p.periode_eind)}</td>
                   <td className="py-1 pr-2 text-right">{formatEuro(Number(p.bedrag))}</td>
                   <td className="py-1 pr-2">{PLANNING_LABEL[p.status] ?? p.status}</td>
-                  <td className="py-1">{["verwijderd_in_exact", "te_laat", "fout"].includes(p.status) && <Button size="sm" variant="outline" onClick={() => opnieuw(p.id)}>Opnieuw inplannen</Button>}</td>
+                  <td className="py-1">{["verwijderd_in_exact", "te_laat", "fout"].includes(p.status) && <Button size="sm" variant="outline" onClick={() => opnieuw(p.id)}>Opnieuw inplannen</Button>}
+                    {p.exact_invoice_number && (p as any).klant_contracten?.onderneming_id && <IncassoMisluktKnop ondernemingId={(p as any).klant_contracten.onderneming_id} factuurnummer={p.exact_invoice_number} bedrag={Number(p.bedrag)} klantContractId={p.klant_contract_id} factuurPlanningId={p.id} />}</td>
                 </tr>))}</tbody></table></div></>
             )}
           </CardContent>

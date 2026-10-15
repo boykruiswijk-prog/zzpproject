@@ -2695,6 +2695,106 @@ export type Database = {
         }
         Relationships: []
       }
+      incasso_cyclus_log: {
+        Row: {
+          created_at: string
+          id: string
+          incasso_id: string
+          mail_status: string | null
+          stap: string
+          uitgevoerd_op: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          incasso_id: string
+          mail_status?: string | null
+          stap: string
+          uitgevoerd_op: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          incasso_id?: string
+          mail_status?: string | null
+          stap?: string
+          uitgevoerd_op?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incasso_cyclus_log_incasso_id_fkey"
+            columns: ["incasso_id"]
+            isOneToOne: false
+            referencedRelation: "incasso_mislukt"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      incasso_mislukt: {
+        Row: {
+          bedrag: number | null
+          betaald_op: string | null
+          bron: string
+          created_at: string
+          dekking_opgeschort_sinds: string | null
+          factuur_planning_id: string | null
+          factuurnummer: string
+          gemeld_door: string | null
+          id: string
+          is_test: boolean
+          klant_contract_id: string | null
+          lead_id: string | null
+          mislukt_op: string
+          onderneming_id: string
+          reden: string | null
+          status: string
+        }
+        Insert: {
+          bedrag?: number | null
+          betaald_op?: string | null
+          bron?: string
+          created_at?: string
+          dekking_opgeschort_sinds?: string | null
+          factuur_planning_id?: string | null
+          factuurnummer: string
+          gemeld_door?: string | null
+          id?: string
+          is_test?: boolean
+          klant_contract_id?: string | null
+          lead_id?: string | null
+          mislukt_op: string
+          onderneming_id: string
+          reden?: string | null
+          status?: string
+        }
+        Update: {
+          bedrag?: number | null
+          betaald_op?: string | null
+          bron?: string
+          created_at?: string
+          dekking_opgeschort_sinds?: string | null
+          factuur_planning_id?: string | null
+          factuurnummer?: string
+          gemeld_door?: string | null
+          id?: string
+          is_test?: boolean
+          klant_contract_id?: string | null
+          lead_id?: string | null
+          mislukt_op?: string
+          onderneming_id?: string
+          reden?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incasso_mislukt_onderneming_id_fkey"
+            columns: ["onderneming_id"]
+            isOneToOne: false
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       indexnow_log: {
         Row: {
           aantal: number
@@ -3378,6 +3478,84 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      klantmail_instellingen: {
+        Row: {
+          actief: boolean
+          bijgewerkt_door: string | null
+          bijgewerkt_op: string
+          moment: string
+          naam: string
+          onderwerp: string | null
+          placeholders: string[]
+          sleutel: string
+          status: string
+          tekst: string | null
+        }
+        Insert: {
+          actief?: boolean
+          bijgewerkt_door?: string | null
+          bijgewerkt_op?: string
+          moment: string
+          naam: string
+          onderwerp?: string | null
+          placeholders?: string[]
+          sleutel: string
+          status?: string
+          tekst?: string | null
+        }
+        Update: {
+          actief?: boolean
+          bijgewerkt_door?: string | null
+          bijgewerkt_op?: string
+          moment?: string
+          naam?: string
+          onderwerp?: string | null
+          placeholders?: string[]
+          sleutel?: string
+          status?: string
+          tekst?: string | null
+        }
+        Relationships: []
+      }
+      klantmail_log: {
+        Row: {
+          created_at: string
+          details: Json
+          id: string
+          incasso_id: string | null
+          klant_contract_id: string | null
+          lead_id: string | null
+          onderneming_id: string | null
+          ontvanger: string | null
+          sleutel: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          details?: Json
+          id?: string
+          incasso_id?: string | null
+          klant_contract_id?: string | null
+          lead_id?: string | null
+          onderneming_id?: string | null
+          ontvanger?: string | null
+          sleutel: string
+          status: string
+        }
+        Update: {
+          created_at?: string
+          details?: Json
+          id?: string
+          incasso_id?: string | null
+          klant_contract_id?: string | null
+          lead_id?: string | null
+          onderneming_id?: string | null
+          ontvanger?: string | null
+          sleutel?: string
+          status?: string
+        }
+        Relationships: []
       }
       kvk_instellingen: {
         Row: {
@@ -4854,6 +5032,36 @@ export type Database = {
         }
         Relationships: []
       }
+      prolongatie_log: {
+        Row: {
+          created_at: string
+          id: string
+          klant_contract_id: string
+          mail_status: string | null
+          onderneming_id: string | null
+          ontvanger: string | null
+          verlengdatum: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          klant_contract_id: string
+          mail_status?: string | null
+          onderneming_id?: string | null
+          ontvanger?: string | null
+          verlengdatum: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          klant_contract_id?: string
+          mail_status?: string | null
+          onderneming_id?: string | null
+          ontvanger?: string | null
+          verlengdatum?: string
+        }
+        Relationships: []
+      }
       review_afmeldingen: {
         Row: {
           afgemeld_op: string
@@ -5530,6 +5738,10 @@ export type Database = {
         Args: { _bevestigd: boolean; _id: string }
         Returns: boolean
       }
+      bevestig_royement: {
+        Args: { _id: string; _toelichting?: string }
+        Returns: Json
+      }
       bron_rij_voor_lead: { Args: { _id: string }; Returns: number }
       certificaatnummer_voorstel: {
         Args: { _lead_id?: string; _onderneming_id: string }
@@ -5654,6 +5866,7 @@ export type Database = {
         Returns: string
       }
       dashboard_tellers: { Args: { _toon_test?: boolean }; Returns: Json }
+      dekking_opgeschort: { Args: { _onderneming_id: string }; Returns: string }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -5789,9 +6002,16 @@ export type Database = {
       iban_inzien: { Args: { _bron: string; _id: string }; Returns: Json }
       importeer_afas_20261001: { Args: never; Returns: Json }
       importeer_certificaten_20261001: { Args: never; Returns: Json }
+      incasso_betaald: { Args: { _datum?: string; _id: string }; Returns: Json }
+      incasso_cyclus_stap: { Args: { _vandaag: string }; Returns: Json }
+      incasso_welke_stap: { Args: { _dagen: number }; Returns: string }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_supervisor_or_admin: { Args: { _user_id: string }; Returns: boolean }
       is_team_member: { Args: { _user_id: string }; Returns: boolean }
+      klantmail_tekst_opslaan: {
+        Args: { _onderwerp: string; _sleutel: string; _tekst: string }
+        Returns: boolean
+      }
       koppel_opzegging: {
         Args: { _aanvraag_id: string; _onderneming_id: string }
         Returns: Json
@@ -5874,6 +6094,20 @@ export type Database = {
       machtigingen_nakijken: { Args: never; Returns: Json }
       mag_crm_beeindigen: { Args: { _uid: string }; Returns: boolean }
       mandaat_iban_naar_onderneming: { Args: never; Returns: Json }
+      meld_incasso_mislukt: {
+        Args: {
+          _bedrag: number
+          _bron?: string
+          _factuur_planning_id?: string
+          _factuurnummer: string
+          _klant_contract_id?: string
+          _lead_id?: string
+          _mislukt_op: string
+          _onderneming_id: string
+          _reden?: string
+        }
+        Returns: Json
+      }
       menu_tellers: { Args: never; Returns: Json }
       mijn_acties_vandaag: { Args: { _toon_test?: boolean }; Returns: Json }
       mijn_cyber_polissen: { Args: never; Returns: Json }
@@ -5946,6 +6180,18 @@ export type Database = {
           _user_created?: boolean
         }
         Returns: Json
+      }
+      prolongatie_kandidaten: {
+        Args: { _tot: string; _van: string }
+        Returns: {
+          bedrag: number
+          itemcode: string
+          klant_contract_id: string
+          klantnaam: string
+          onderneming_id: string
+          product: string
+          verlengdatum: string
+        }[]
       }
       provincie_uit_postcode: { Args: { _pc: string }; Returns: string }
       read_email_batch: {
@@ -6068,6 +6314,10 @@ export type Database = {
           _onderneming_id: string
           _soort: string
         }
+        Returns: Json
+      }
+      zet_klantmail_actief: {
+        Args: { _actief: boolean; _akkoord_boy?: boolean; _sleutel: string }
         Returns: Json
       }
       zet_lead_test: {
