@@ -23,6 +23,7 @@ import {
   getJaarprijs, calculatePauzeCredit, calculateHervatFactuur, calcPolisEinddatum, isMaandPolis,
 } from "../_shared/polisProRata.ts";
 import { metExactMelding } from "../_shared/exactBoekingMelding.ts";
+import { opzegCreditBeleid } from "../_shared/opzegBeleid.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -334,6 +335,7 @@ Deno.serve(metExactMelding("polis-lifecycle", async (req) => {
   try {
     switch (action) {
       // ────────── PAUZEREN (B1: creditnota direct) ──────────
+      // Pauze: geen besluit 15-10, ongewijzigd.
       case "pauzeren": {
         if (lead.status !== "klant" && lead.status !== "actief") {
           return json({ error: "ongeldige_status", current: lead.status }, 409);
