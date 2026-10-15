@@ -981,6 +981,13 @@
       "when": 1792002692433,
       "tag": "0139_aanvraag_nabellen",
       "breakpoints": true
+    },
+    {
+      "idx": 140,
+      "version": "7",
+      "when": 1792054975720,
+      "tag": "0140_0140_klant_vlag",
+      "breakpoints": true
     }
   ]
 }

@@ -3329,6 +3329,56 @@ export type Database = {
           },
         ]
       }
+      klant_vlag_log: {
+        Row: {
+          actie: string
+          datum: string | null
+          door: string | null
+          door_naam: string | null
+          id: string
+          notitie: string | null
+          onderneming_id: string
+          op: string
+          soort: string | null
+          toelichting: string | null
+          vorige: string | null
+        }
+        Insert: {
+          actie: string
+          datum?: string | null
+          door?: string | null
+          door_naam?: string | null
+          id?: string
+          notitie?: string | null
+          onderneming_id: string
+          op?: string
+          soort?: string | null
+          toelichting?: string | null
+          vorige?: string | null
+        }
+        Update: {
+          actie?: string
+          datum?: string | null
+          door?: string | null
+          door_naam?: string | null
+          id?: string
+          notitie?: string | null
+          onderneming_id?: string
+          op?: string
+          soort?: string | null
+          toelichting?: string | null
+          vorige?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "klant_vlag_log_onderneming_id_fkey"
+            columns: ["onderneming_id"]
+            isOneToOne: false
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       kvk_instellingen: {
         Row: {
           abonnement_per_maand: number
@@ -4234,6 +4284,11 @@ export type Database = {
           sector: string | null
           straat: string | null
           updated_at: string
+          vlag: string | null
+          vlag_datum: string | null
+          vlag_door: string | null
+          vlag_notitie: string | null
+          vlag_op: string | null
         }
         Insert: {
           afas_contactpersoon?: string | null
@@ -4278,6 +4333,11 @@ export type Database = {
           sector?: string | null
           straat?: string | null
           updated_at?: string
+          vlag?: string | null
+          vlag_datum?: string | null
+          vlag_door?: string | null
+          vlag_notitie?: string | null
+          vlag_op?: string | null
         }
         Update: {
           afas_contactpersoon?: string | null
@@ -4322,6 +4382,11 @@ export type Database = {
           sector?: string | null
           straat?: string | null
           updated_at?: string
+          vlag?: string | null
+          vlag_datum?: string | null
+          vlag_door?: string | null
+          vlag_notitie?: string | null
+          vlag_op?: string | null
         }
         Relationships: []
       }
@@ -5962,6 +6027,10 @@ export type Database = {
         Args: { _contract_id: string; _toelichting: string }
         Returns: Json
       }
+      verwijder_klant_vlag: {
+        Args: { _onderneming_id: string; _toelichting: string }
+        Returns: Json
+      }
       verwijder_lead_vlag: {
         Args: { _lead_id: string; _toelichting: string }
         Returns: Json
@@ -5989,6 +6058,15 @@ export type Database = {
       zet_facturatie_actief: { Args: { _aan: boolean }; Returns: boolean }
       zet_herkomst_klant: {
         Args: { p_keuze: string; p_lead_id: string; p_toelichting: string }
+        Returns: Json
+      }
+      zet_klant_vlag: {
+        Args: {
+          _datum: string
+          _notitie: string
+          _onderneming_id: string
+          _soort: string
+        }
         Returns: Json
       }
       zet_lead_test: {
