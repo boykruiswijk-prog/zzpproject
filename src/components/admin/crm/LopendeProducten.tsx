@@ -85,7 +85,7 @@ export function LopendeProducten({ ondernemingId, ondernemingNaam, leadIds = [],
                 <BavNummer keuze={kiesBavNummer(bavRijen, { contractId: c.id })} />
                 <span className="text-xs text-muted-foreground">regel {c.bron_rij} · {c.cyclus} · gefactureerd t/m {formatDateNL(c.gefactureerd_tm)}</span>
                 {es.soort === "beeindigd" ? <Badge variant="outline">Beeindigd{es.datum ? ` per ${formatDateNL(es.datum)}` : ""}</Badge>
-                  : es.soort === "loopt_af" ? <Badge variant="secondary">Loopt af per {formatDateNL(es.datum)}</Badge>
+                  : es.soort === "loopt_af" ? <Badge variant="secondary">Opgezegd per {formatDateNL(es.datum)}</Badge>
                   : <Badge variant="secondary">actief</Badge>}
                 {mag && es.soort === "lopend" && c.status === "actief" && <Button size="sm" variant="destructive" className="ml-auto" onClick={() => setDialoog({ c: [c.id], p: [] })}>Beeindigen</Button>}
                 {!readOnly && isSupervisorOrAdmin && es.soort !== "lopend" && c.eind_datum && <Button size="sm" variant="outline" className="ml-auto" onClick={() => setWijzig(c)}>Einddatum wijzigen</Button>}
