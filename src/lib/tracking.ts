@@ -12,11 +12,13 @@ export const GOOGLE_ADS_ID = "AW-18497139684";
 export const GOOGLE_ADS_CONVERSIE = "AW-18497139684/rIoQCIid-5IdEOTnj_RE";
 /**
  * Secundaire Google Ads-conversies (terugbelverzoek en contactformulier).
- * Nu leeg: de Ads-bewaking vult de labels in na het aanmaken van de secundaire
- * conversieacties in Google Ads. Zolang leeg gaat het event naar GOOGLE_ADS_ID.
+ * Alleen een geldig actielabel mag een Google Ads-conversie opleveren.
  */
-export const GOOGLE_ADS_CONVERSIE_TERUGBEL = "";
-export const GOOGLE_ADS_CONVERSIE_CONTACT = "";
+export const GOOGLE_ADS_CONVERSIE_TERUGBEL = "NMSZCIao65wdEOTnj_RE";
+export const GOOGLE_ADS_CONVERSIE_CONTACT = "Z5lyCN2R85wdEOTnj_RE";
+export function adsSendTo(label: string): string | null {
+  return /^[\w-]{10,}$/.test(label) ? `${GOOGLE_ADS_ID}/${label}` : null;
+}
 /** Microsoft Advertising UET-tag-ID. */
 export const MS_UET_ID = "187280316";
 
@@ -245,7 +247,7 @@ export const trackPurchase = (
       if (typeof gtag === "function") gtag("set", "user_data", data);
     }
   }
-  trackGa("conversion", {
+  if (adsSendTo(GOOGLE_ADS_CONVERSIE.split("/")[1] ?? "") === GOOGLE_ADS_CONVERSIE) trackGa("conversion", {
     send_to: GOOGLE_ADS_CONVERSIE,
     value,
     currency: "EUR",
@@ -261,10 +263,11 @@ export function isTestOmgeving(host: string = typeof window === "undefined" ? ""
   return !(h === "zpzaken.nl" || h.endsWith(".zpzaken.nl"));
 }
 
-function secundaireConversie(event: string, formulier: string, label: string, isTest: boolean) {
+export function secundaireConversie(event: string, formulier: string, label: string, isTest: boolean) {
   if (isTest || typeof window === "undefined" || isNietGemetenPad(window.location.pathname)) return;
   trackGa(event, { formulier, page: page() });
-  trackGa("conversion", { send_to: label || GOOGLE_ADS_ID });
+  const sendTo = adsSendTo(label);
+  if (sendTo) trackGa("conversion", { send_to: sendTo });
 }
 
 /** Alleen aanroepen na een geslaagde server-respons. */

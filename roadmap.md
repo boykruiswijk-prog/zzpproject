@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Boy 15 oktober: geldige Ads-labels, betaalde 90-dagenherkomst en marketingtoestemming; permanent agentkantoor met negen rechterpanelen; tests en tv-controle, betrokken functies deployen. Geen publicatie gevraagd.
 - [x] Tekstcontrole 15 oktober: zes tekstpunten en drie artikelrijen gecorrigeerd; sitemap/llms/Zeker vernieuwd; browser/FAQ-schema en build OK; 82/86 tests groen, vier bestaande SEO-titelafwijkingen buiten opdracht. Niet gepubliceerd, geen klantmails.
 - [x] Boy 14 oktober: uitsluitend starterpremietekst op betaalwijze afgestemd; maand/jaar/cyber getest, 18/18 tests groen; process-bav-wizard gedeployed; geen mails of wijzigingsmelding.
 - [x] Tekstcorrecties 13 oktober: 4 CTA-artikelen + 2 AOV-artikelen bijgewerkt, generatorprompt/vergelijkknoppen/FAQ/productlabel/beroepenlijst gecorrigeerd, llms en Zeker opnieuw gegenereerd; browser en build OK; geen publicatie of logica-/prijswijzigingen.

@@ -171,18 +171,30 @@ export function legAttributieVast(): void {
 
 export function leesAttributie(): Attributie | null {
   if (typeof window === "undefined") return null;
+  const marketing = heeftMarketingToestemming();
   try {
     const v = sessionStorage.getItem(KEY);
-    // Sessie gaat voor; anders het 90-dagenrecord (verlopen records worden weggegooid).
-    const basis = v ? (JSON.parse(v) as Record<string, string>) : (leesLangRecord() ?? {});
+    const lang = leesLangRecord();
+    const basis = v ? (JSON.parse(v) as Record<string, string>) : { ...(lang ?? {}) };
+    const betaald = (a: Record<string, string>) => UTM.some(k => !!a[k]) || !!a.advertentieklik;
+    const extern = (ref: string | undefined) => {
+      try { return !!ref && new URL(ref).host !== window.location.host; } catch { return false; }
+    };
+    // Een directe terugkeer behoudt de laatste betaalde herkomst, niet de oude landingspagina.
+    if (lang && betaald(lang) && (!v || (!betaald(basis) && !extern(basis.referrer)))) {
+      for (const k of [...UTM, "advertentieklik"] as const) {
+        delete basis[k];
+        if (lang[k]) basis[k] = lang[k];
+      }
+      basis.herkomst_uit = "90d";
+    }
     // Oude sessies kunnen nog klik-ID's bevatten: altijd weglaten, alleen de toegestane bron gebruiken.
     for (const k of KLIK_ID_SLEUTELS) delete basis[k];
     delete basis.kanaal;
-    const klik = heeftMarketingToestemming() ? leesKlikIds() : null;
+    const klik = marketing ? leesKlikIds() : null;
     const a = { ...basis, ...(klik ?? {}) };
-    if (!Object.keys(a).length) return null;
-    return { ...a, kanaal: bepaalKanaal(a) } as Attributie;
+    return { ...a, marketing_toestemming: marketing, kanaal: bepaalKanaal(a) } as Attributie;
   } catch {
-    return null;
+    return { marketing_toestemming: marketing, kanaal: "direct" };
   }
 }
