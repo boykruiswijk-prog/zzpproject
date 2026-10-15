@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Download, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { certificaatBeschikbaar, certificaatBeschikbaarVanaf, datumNL } from "@/lib/certificaatBeschikbaar";
 
 export default function PortalPolicy() {
   const { data: policies, isLoading } = usePortalPolicies();
@@ -48,12 +49,14 @@ export default function PortalPolicy() {
                     Certificaat {p.certificate_number}
                   </p>
                 </div>
-                {p.pdf_url && (
+                {p.pdf_url && (certificaatBeschikbaar(p.start_date) ? (
                   <Button variant="outline" size="sm" onClick={() => handleDownload(p.pdf_url!)}>
                     <Download className="h-4 w-4 mr-2" />
                     PDF
                   </Button>
-                )}
+                ) : (
+                  <p className="text-sm text-muted-foreground">Je certificaat is beschikbaar vanaf {datumNL(certificaatBeschikbaarVanaf(p.start_date!))}</p>
+                ))}
               </div>
             </CardHeader>
             <CardContent>
