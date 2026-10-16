@@ -16,7 +16,8 @@ export function publiekeChunks(dist: string): string[] {
   const gezien = new Set<string>();
   const stapel = Object.keys(manifest).filter((k) => manifest[k].isEntry);
   while (stapel.length) {
-    const k = stapel.pop()!;
+    const k = stapel.pop();
+    if (!k) continue;
     if (gezien.has(k) || !manifest[k]) continue;
     gezien.add(k);
     stapel.push(...(manifest[k].imports ?? []), ...(manifest[k].dynamicImports ?? []).filter((d) => !ADMIN.test(d)));
@@ -31,7 +32,8 @@ export function bundelLekken(dist: string) {
     const code = fs.readFileSync(path.join(dist, file), "utf8");
     for (const v of VERBODEN) if (code.includes(v)) fouten.push(`${file}: ${v}`);
     for (const m of code.matchAll(BEDRAG)) {
-      const omgeving = code.slice(Math.max(0, m.index! - 150), m.index! + 150);
+      const index = m.index ?? 0;
+      const omgeving = code.slice(Math.max(0, index - 150), index + 150);
       if (CYBERCONTEXT.test(omgeving)) fouten.push(`${file}: ${m[0]} in cybercontext`);
     }
   }
