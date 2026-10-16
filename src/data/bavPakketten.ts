@@ -1,6 +1,6 @@
 // Single source of truth voor BAV-pakketten. Alle plekken op de site
 // die tarieven of dekkingen tonen importeren uit dit bestand.
-import { CYBER, CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD, CYBER_POLISVOORWAARDEN } from "../../supabase/functions/_shared/cyber";
+import { CYBER, CYBER_DEKKING, CYBER_HULP, CYBER_OPZEGTEKST as CYBER_LOOPTIJD, CYBER_POLISVOORWAARDEN } from "../../supabase/functions/_shared/cyber";
 
 export const bavPakketten = [
   {
@@ -16,7 +16,7 @@ export const bavPakketten = [
       cyber: null,
     },
     usps: [
-      "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt.",
+      "Geen jaarcontract en dagelijks opzegbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota.",
       "Premie inclusief kosten en assurantiebelasting",
     ],
   },
@@ -34,7 +34,7 @@ export const bavPakketten = [
     },
     usps: [
       "Voordeliger per jaar",
-      "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt.",
+      "Geen jaarcontract en dagelijks opzegbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota.",
       "Premie inclusief kosten en assurantiebelasting",
     ],
   },
@@ -51,7 +51,7 @@ export const bavPakketten = [
       cyber: { perSchade: CYBER.perSchade },
     },
     usps: [
-      "BAV + AVB: geen eigen risico, dagelijks opzegbaar en pauzeerbaar. Creditnota voor resterende al betaalde dagen.",
+      "BAV + AVB: geen eigen risico, dagelijks opzegbaar en pauzeerbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota.",
       CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD, CYBER_POLISVOORWAARDEN,
       "Premie inclusief kosten en assurantiebelasting",
     ],
@@ -64,7 +64,7 @@ export const bavPakketten = [
       avb: { perGebeurtenis: 2_500_000, perJaar: 5_000_000 },
       cyber: { perSchade: CYBER.perSchade },
     },
-    usps: ["BAV + AVB: geen eigen risico, dagelijks opzegbaar en pauzeerbaar. Creditnota voor resterende al betaalde dagen.", CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD, CYBER_POLISVOORWAARDEN, "Premie inclusief kosten en assurantiebelasting"],
+    usps: ["BAV + AVB: geen eigen risico, dagelijks opzegbaar en pauzeerbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota.", CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD, CYBER_POLISVOORWAARDEN, "Premie inclusief kosten en assurantiebelasting"],
   },
 ] as const;
 

@@ -1,4 +1,4 @@
-import { CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD } from "../../supabase/functions/_shared/cyber";
+import { CYBER_DEKKING, CYBER_HULP, CYBER_OPZEGTEKST as CYBER_LOOPTIJD } from "../../supabase/functions/_shared/cyber";
 import { CYBER_VOORWAARDEN_OPVRAGEN } from "../config/cyberPubliek";
 import { INLOOP_UITLOOP_FAQ } from "./bavVergelijking";
 // Enige bron van waarheid voor de zichtbare FAQ-content op /faq.
@@ -36,7 +36,7 @@ export const faqItems = [
   {
     category: "Mijn verzekering beheren",
     questions: [
-      { question: "Hoe kan ik mijn verzekering opzeggen?", answer: "Voor de BAV + AVB: geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt. Start de opzeg-wizard op /mijn-zp/opzeggen en geef de reden en gewenste opzegdatum op. Wij verwerken je opzegging binnen 24 uur en sturen je een bevestiging per mail." },
+      { question: "Hoe kan ik mijn verzekering opzeggen?", answer: "Voor de BAV + AVB: geen jaarcontract en dagelijks opzegbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota. Start de opzeg-wizard op /mijn-zp/opzeggen en geef de reden en gewenste opzegdatum op. Wij verwerken je opzegging binnen 24 uur en sturen je een bevestiging per mail." },
       { question: "Hoe pauzeer ik mijn verzekering?", answer: "Heb je tijdelijk geen opdracht of ga je tijdelijk in loondienst? Dan kun je je BAV + AVB eenvoudig pauzeren via de pauzeer-wizard op /mijn-zp/pauzeren. Wij verwerken je pauzering binnen 24 uur. Cyber is niet pauzeerbaar." },
       TIJDELIJK_GEEN_OPDRACHT_FAQ,
       ...INLOOP_UITLOOP_FAQ,
@@ -55,7 +55,7 @@ export const faqItems = [
       { question: "Kan ik mijn beroep altijd verzekeren bij ZP Zaken?", answer: "Wij verzekeren een groot deel van de zakelijke dienstverlening: ICT, consultancy, HR & finance, PR & marketing, coaching en management. Voor andere beroepen overleggen we graag of dekking mogelijk is." },
       { question: "Moet ik doorgeven dat ik nieuwe opdrachten heb?", answer: "Nee. Zolang je werkzaamheden binnen je verzekerde beroep vallen, ben je automatisch gedekt voor nieuwe opdrachten. Verandert de aard van je werk substantieel, geef dit dan even door." },
       { question: "Kunnen mijn andere opdrachten ook onder deze polis?", answer: "Ja, alle zakelijke werkzaamheden binnen het verzekerde beroep vallen onder dezelfde polis, ongeacht hoeveel opdrachtgevers je hebt." },
-      { question: "Hoe lang zit ik aan deze verzekering vast?", answer: "Voor de BAV + AVB: geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt. Geen minimale looptijd en geen opzegtermijn." },
+      { question: "Hoe lang zit ik aan deze verzekering vast?", answer: "Voor de BAV + AVB: geen jaarcontract en dagelijks opzegbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota. Geen minimale looptijd en geen opzegtermijn." },
       { question: "Wat moet ik doen als mijn bedrijf aansprakelijk wordt gesteld?", answer: "Neem direct contact op met ons via 020 - 457 3077 of info@zpzaken.nl. Wij melden de schade bij de verzekeraar en begeleiden je door het proces." },
       { question: "Wanneer begint en eindigt de verzekering?", answer: "De verzekering begint op de door jou gekozen ingangsdatum (maximaal 6 maanden vooruit) en loopt door totdat je opzegt. Dagelijks opzegbaar." },
       { question: "Mijn bedrijfsgegevens veranderen, hoe geef ik dat door?", answer: "Geef een nieuw adres, een nieuwe bedrijfsnaam of nieuwe contactgegevens door via info@zpzaken.nl met je polisnummer. Wij werken je gegevens binnen 24 uur bij. Verandert je KvK-nummer, bijvoorbeeld omdat je van eenmanszaak naar bv gaat? Dan is een nieuwe aanvraag nodig, omdat de polis bij het KvK-nummer hoort." },

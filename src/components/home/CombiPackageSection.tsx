@@ -27,7 +27,7 @@ export function CombiPackageSection() {
             <span className="text-accent">{t("home.allUnderOneRoofAccent")}</span>
           </h2>
           <p className="text-muted-foreground">
-            Kies je pakket. De BAV + AVB is dagelijks opzegbaar; cyber heeft een vaste looptijd van 12 maanden. Alle premies zijn
+            Kies je pakket. De BAV + AVB is dagelijks opzegbaar; cyber is ook dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Alle premies zijn
             inclusief kosten en assurantiebelasting.
           </p>
         </AnimatedSection>
