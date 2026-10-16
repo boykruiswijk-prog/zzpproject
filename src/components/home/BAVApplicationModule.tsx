@@ -1,7 +1,7 @@
 import { isValidIban as isValidSepaIban } from "@/lib/sepaMachtiging";
 import { SITE_CONFIG } from "@/config/site";
 import { CyberVragen } from "@/components/verzekeringen/CyberVragen";
-import { CYBER_AKKOORD, CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER_LOOPTIJD, CYBER_AFGEWEZEN, CYBER_VRAGEN, beoordeelCyber, basisPakket, aanvraagPremie, formatPremieBedrag, type CyberAntwoorden } from "../../../supabase/functions/_shared/cyber";
+import { CYBER_AKKOORD, CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER_OPZEGTEKST as CYBER_LOOPTIJD, CYBER_AFGEWEZEN, CYBER_VRAGEN, beoordeelCyber, basisPakket, aanvraagPremie, formatPremieBedrag, type CyberAntwoorden } from "../../../supabase/functions/_shared/cyber";
 import { useState, useEffect, useRef } from "react";
 import { SepaMachtigingBlok, bouwFrontendMachtiging } from "@/components/shared/SepaMachtigingBlok";
 import { mandaatkenmerkVoor, redenBav } from "@/lib/sepaMachtiging";
@@ -1115,7 +1115,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
 
                 {/* Compacte prijsregel (mobiel), uit bavPakketten */}
                 <p className="mt-8 text-center text-xs font-medium text-muted-foreground sm:hidden" data-testid="bav-prijsregel">
-                  €{formatPremieBedrag(currentPrice)}/{selectedBavPakket.periode === "maand" ? "mnd" : "jr"} · BAV {formatMiljoen(selectedBavPakket.dekkingen.bav.perGebeurtenis)} · AVB {formatMiljoen(selectedBavPakket.dekkingen.avb.perGebeurtenis)} · BAV + AVB dagelijks opzegbaar{heeftCyber ? "; cyber 12 maanden" : ""}
+                  €{formatPremieBedrag(currentPrice)}/{selectedBavPakket.periode === "maand" ? "mnd" : "jr"} · BAV {formatMiljoen(selectedBavPakket.dekkingen.bav.perGebeurtenis)} · AVB {formatMiljoen(selectedBavPakket.dekkingen.avb.perGebeurtenis)} · BAV + AVB dagelijks opzegbaar{heeftCyber ? "; cyber dagelijks opzegbaar, zonder creditnota" : ""}
                 </p>
                 {/* Navigation Buttons */}
                 <div className="flex justify-between mt-3 sm:mt-8 pt-6 border-t border-border">
@@ -1197,7 +1197,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                   </div>
 
                   <ul className="space-y-3">
-                    {(heeftCyber ? [...usps.map((u) => /eigen risico|opzegbaar|pauze/i.test(u) ? `BAV + AVB: ${u}` : u), "Cyber: vaste looptijd 12 maanden, niet pauzeerbaar"] : usps).map((usp) => (
+                    {(heeftCyber ? [...usps.map((u) => /eigen risico|opzegbaar|pauze/i.test(u) ? `BAV + AVB: ${u}` : u), "Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar."] : usps).map((usp) => (
                       <li key={usp} className="flex items-center gap-2 text-sm"><CheckCircle className="h-4 w-4 text-accent flex-shrink-0" /><span className="text-background/90">{usp}</span></li>
                     ))}
                   </ul>

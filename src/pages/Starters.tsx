@@ -1,4 +1,4 @@
-import { CYBER_LOOPTIJD, CYBER_DEKKING, CYBER_HULP } from "../../supabase/functions/_shared/cyber";
+import { CYBER_OPZEGTEKST as CYBER_LOOPTIJD, CYBER_DEKKING, CYBER_HULP } from "../../supabase/functions/_shared/cyber";
 import { CYBER_VOORWAARDEN_OPVRAGEN } from "../config/cyberPubliek";
 import { Award, ShieldCheck, Users } from "lucide-react";
 import { ArrowRight } from "lucide-react";
@@ -25,7 +25,7 @@ export const STARTERS_FAQS = [
   { question: "Wie kan het startertarief krijgen?", answer: `Zzp'ers met een KVK-inschrijving jonger dan 12 maanden op de ingangsdatum van de polis. Wij kijken naar de startdatum op je KVK-uittreksel. ${STARTER_VOORWAARDE_TEKST}` },
   { question: "Wat betaal ik na de eerste 12 maanden?", answer: `Na 12 maanden betaal je automatisch de gewone prijs: € ${STARTER.naMaandprijs} per maand of € ${STARTER.naJaarprijs} per jaar, inclusief kosten en assurantiebelasting. Je hoeft daarvoor niets te doen.` },
   { question: "Is de dekking anders dan bij de gewone BAV + AVB?", answer: `Nee. Het is dezelfde polis met dezelfde dekking en dezelfde voorwaarden: BAV ${BAV} en AVB ${AVB} per aanspraak, verzekerd bij Hiscox.` },
-  { question: "Kan ik tussentijds opzeggen?", answer: "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt. Dit geldt ook bij het startertarief, bij maand- en jaarbetaling." },
+  { question: "Kan ik tussentijds opzeggen?", answer: "Geen jaarcontract en dagelijks opzegbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota. Dit geldt ook bij het startertarief." },
   { question: "Kan ik cyber toevoegen aan het starterspakket?", answer: `Ja. €72,50 per maand of €745 per jaar, inclusief kosten en assurantiebelasting, de eerste 12 maanden; daarna €82,50 per maand of €850 per jaar. Voor een KVK-inschrijving jonger dan 12 maanden, onder voorbehoud van controle. Cyber krijgt geen startkorting. ${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_LOOPTIJD} ${CYBER_VOORWAARDEN_OPVRAGEN}` },
   TIJDELIJK_GEEN_OPDRACHT_FAQ,
   { question: "Hoe controleren jullie mijn KVK-startdatum?", answer: "Je vult de startdatum van je KVK-inschrijving in bij je aanvraag. Een collega controleert die datum voordat je polis ingaat. Klopt de datum niet, dan geldt de gewone prijs en hoor je dat van ons." },

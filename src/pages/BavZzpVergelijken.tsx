@@ -1,4 +1,4 @@
-import { CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD } from "../../supabase/functions/_shared/cyber";
+import { CYBER_DEKKING, CYBER_HULP, CYBER_OPZEGTEKST as CYBER_LOOPTIJD } from "../../supabase/functions/_shared/cyber";
 import { CYBER_VOORWAARDEN_OPVRAGEN } from "../config/cyberPubliek";
 import { seoRoute } from "@/config/seoRoutes";
 import { Layout } from "@/components/layout/Layout";
@@ -181,7 +181,7 @@ export default function BavZzpVergelijken() {
             [`Hoge dekking.`, `BAV ${bav} en AVB ${avb} per aanspraak.`],
             [`BAV + AVB: geen eigen risico.`, ``],
             [`Vaste prijs.`, `${eur(maand.prijs)} per maand of ${eur(jaar.prijs)} per jaar, inclusief kosten en assurantiebelasting.`],
-            [`BAV + AVB dagelijks opzegbaar.`, `Cyber heeft een vaste looptijd van 12 maanden.`],
+            [`BAV + AVB dagelijks opzegbaar.`, `Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug.`],
             [`Snel geregeld.`, `Je vraagt online aan, binnen 24 uur geregeld en je krijgt het certificaat in je mailbox.`],
           ].map(([kop, tekst]) => (
             <li key={kop} className="flex gap-3">

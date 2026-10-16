@@ -41,8 +41,8 @@ const fade = {
 // Tarieven gesynchroniseerd met src/data/bavPakketten.ts (single source of truth).
 // Toont anoniem concurrent-prijzen ter vergelijking; behoud de anonimisering.
 const packages = [
-  { name: "BAV & AVB Maandelijks", price: 55, periode: "maand", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt."] },
-  { name: "BAV & AVB Jaarlijks", price: 600, periode: "jaar", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt.", "Voordeliger per jaar"], popular: true },
+  { name: "BAV & AVB Maandelijks", price: 55, periode: "maand", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Geen jaarcontract en dagelijks opzegbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota."] },
+  { name: "BAV & AVB Jaarlijks", price: 600, periode: "jaar", eventCoverage: "€5.000.000", yearCoverage: "€15.000.000", features: ["BAV + AVB gecombineerd", "Geen eigen risico", "Geen jaarcontract en dagelijks opzegbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota.", "Voordeliger per jaar"], popular: true },
   {
     name: "BAV & AVB Jaarlijks + Cyber",
     price: 850,
@@ -53,7 +53,7 @@ const packages = [
       "BAV + AVB + Cyber",
       "Cyber tot €50.000 per schade, eigen risico €500",
       "Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.",
-      "BAV + AVB: geen eigen risico en dagelijks opzegbaar. Cyber: vaste looptijd van 12 maanden.",
+      "BAV + AVB: geen eigen risico en dagelijks opzegbaar. Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug.",
     ],
   },
 ];
@@ -210,7 +210,7 @@ export default function WaaromZpZaken() {
             ))}
           </div>
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fade} className="text-center">
-             <p className="text-muted-foreground mb-6">BAV + AVB zonder eigen risico en dagelijks opzegbaar. Cyber heeft een eigen risico en een vaste looptijd van 12 maanden. Binnen 24 uur geregeld, certificaat in je mailbox.</p>
+             <p className="text-muted-foreground mb-6">BAV + AVB zonder eigen risico en dagelijks opzegbaar. Cyber heeft een eigen risico en is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Binnen 24 uur geregeld, certificaat in je mailbox.</p>
             <Button variant="accent" size="lg" asChild>
               <LocalizedLink to="/verzekeringen">Sluit nu direct af <ArrowRight className="h-5 w-5" /></LocalizedLink>
             </Button>

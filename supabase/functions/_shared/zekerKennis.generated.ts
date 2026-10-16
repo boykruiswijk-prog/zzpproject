@@ -18,7 +18,7 @@ export const ZEKER_KENNIS = {
       },
       "cyber": null,
       "usps": [
-        "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt.",
+        "Geen jaarcontract en dagelijks opzegbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota.",
         "Premie inclusief kosten en assurantiebelasting"
       ]
     },
@@ -39,7 +39,7 @@ export const ZEKER_KENNIS = {
       "cyber": null,
       "usps": [
         "Voordeliger per jaar",
-        "Geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt.",
+        "Geen jaarcontract en dagelijks opzegbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota.",
         "Premie inclusief kosten en assurantiebelasting"
       ]
     },
@@ -61,10 +61,10 @@ export const ZEKER_KENNIS = {
         "perSchade": 50000
       },
       "usps": [
-        "BAV + AVB: geen eigen risico, dagelijks opzegbaar en pauzeerbaar. Creditnota voor resterende al betaalde dagen.",
+        "BAV + AVB: geen eigen risico, dagelijks opzegbaar en pauzeerbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota.",
         "Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000)",
         "Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.",
-        "Cyber heeft een vaste looptijd van 12 maanden en wordt daarna stilzwijgend met 12 maanden verlengd. Opzeggen kan tegen het einde van de looptijd. Cyber is niet dagelijks opzegbaar en niet pauzeerbaar. Bij maandbetaling betaal je het jaarcontract in 12 termijnen van €27,50. Zeg je de BAV + AVB op, dan loopt cyber door tot het einde van het lopende cyberjaar en blijven de resterende cybertermijnen verschuldigd.",
+        "Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar. Bij maandbetaling: €27,50 per maand.",
         "De cybervoorwaarden vraag je op via 020 - 457 3077 of via zpzaken.nl/contact.",
         "Premie inclusief kosten en assurantiebelasting"
       ]
@@ -87,10 +87,10 @@ export const ZEKER_KENNIS = {
         "perSchade": 50000
       },
       "usps": [
-        "BAV + AVB: geen eigen risico, dagelijks opzegbaar en pauzeerbaar. Creditnota voor resterende al betaalde dagen.",
+        "BAV + AVB: geen eigen risico, dagelijks opzegbaar en pauzeerbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota.",
         "Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000)",
         "Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.",
-        "Cyber heeft een vaste looptijd van 12 maanden en wordt daarna stilzwijgend met 12 maanden verlengd. Opzeggen kan tegen het einde van de looptijd. Cyber is niet dagelijks opzegbaar en niet pauzeerbaar. Bij maandbetaling betaal je het jaarcontract in 12 termijnen van €27,50. Zeg je de BAV + AVB op, dan loopt cyber door tot het einde van het lopende cyberjaar en blijven de resterende cybertermijnen verschuldigd.",
+        "Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar. Bij maandbetaling: €27,50 per maand.",
         "De cybervoorwaarden vraag je op via 020 - 457 3077 of via zpzaken.nl/contact.",
         "Premie inclusief kosten en assurantiebelasting"
       ]
@@ -347,7 +347,7 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Verzekeringen",
       "vraag": "Kan ik cyber dagelijks opzeggen of pauzeren?",
-      "antwoord": "Cyber heeft een vaste looptijd van 12 maanden en wordt daarna stilzwijgend met 12 maanden verlengd. Opzeggen kan tegen het einde van de looptijd. Cyber is niet dagelijks opzegbaar en niet pauzeerbaar. Bij maandbetaling betaal je het jaarcontract in 12 termijnen van €27,50. Zeg je de BAV + AVB op, dan loopt cyber door tot het einde van het lopende cyberjaar en blijven de resterende cybertermijnen verschuldigd."
+      "antwoord": "Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar. Bij maandbetaling: €27,50 per maand."
     },
     {
       "categorie": "Verzekeringen",
@@ -397,7 +397,7 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Mijn verzekering beheren",
       "vraag": "Hoe kan ik mijn verzekering opzeggen?",
-      "antwoord": "Voor de BAV + AVB: geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt. Start de opzeg-wizard op /mijn-zp/opzeggen en geef de reden en gewenste opzegdatum op. Wij verwerken je opzegging binnen 24 uur en sturen je een bevestiging per mail."
+      "antwoord": "Voor de BAV + AVB: geen jaarcontract en dagelijks opzegbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota. Start de opzeg-wizard op /mijn-zp/opzeggen en geef de reden en gewenste opzegdatum op. Wij verwerken je opzegging binnen 24 uur en sturen je een bevestiging per mail."
     },
     {
       "categorie": "Mijn verzekering beheren",
@@ -472,7 +472,7 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Onze verzekering",
       "vraag": "Hoe lang zit ik aan deze verzekering vast?",
-      "antwoord": "Voor de BAV + AVB: geen jaarcontract en dagelijks opzegbaar. Zeg je op, dan krijg je een creditnota voor de dagen die je al betaald hebt. Geen minimale looptijd en geen opzegtermijn."
+      "antwoord": "Voor de BAV + AVB: geen jaarcontract en dagelijks opzegbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota. Geen minimale looptijd en geen opzegtermijn."
     },
     {
       "categorie": "Onze verzekering",

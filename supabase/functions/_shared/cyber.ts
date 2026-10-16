@@ -8,6 +8,8 @@ export const CYBER_HULP = "Hulp bij een cyberincident: kosten in de eerste 72 uu
 export const CYBER_POLISVOORWAARDEN = "Wat precies gedekt is, lees je in de polisvoorwaarden.";
 export const CYBER_INTERNE_JAARLIMIET = "Interne informatie: de gedeelde jaarlimiet voor alle deelnemers aan het ZP Zaken Cyber Collectief is €2.500.000.";
 export const CYBER_LOOPTIJD = "Cyber heeft een vaste looptijd van 12 maanden en wordt daarna stilzwijgend met 12 maanden verlengd. Opzeggen kan tegen het einde van de looptijd. Cyber is niet dagelijks opzegbaar en niet pauzeerbaar. Bij maandbetaling betaal je het jaarcontract in 12 termijnen van €27,50. Zeg je de BAV + AVB op, dan loopt cyber door tot het einde van het lopende cyberjaar en blijven de resterende cybertermijnen verschuldigd.";
+// Publieke tekst D1/E 15-10-2026; bestaand akkoord en mail-/bewijsvelden blijven onveranderd.
+export const CYBER_OPZEGTEKST = "Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar. Bij maandbetaling: €27,50 per maand.";
 export const CYBER_AFGEWEZEN = "Cyberdekking past op dit moment niet bij jouw situatie. Je BAV + AVB sluit je gewoon af; Ellen neemt contact op over een passende oplossing.";
 export function formatPremieBedrag(bedrag: number) {
   return bedrag.toLocaleString("nl-NL", {
