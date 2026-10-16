@@ -56,7 +56,7 @@ describe("Publieke opzeg- en cyberteksten D1/E", () => {
   });
 
   it("gebruikt dezelfde nieuwe voorwaarden voor toestemming en klantuitleg", () => {
-    expect(CYBER_VERSIE).toBe("2026-10-16");
+    expect(CYBER_VERSIE).toBe("2026-10-08");
     expect(CYBER_AKKOORD).toBe("Ik begrijp dat cyber dagelijks opzegbaar is en dat ik al betaalde premie voor cyber bij opzeggen niet terugkrijg. Cyber is niet pauzeerbaar. De BAV + AVB blijft dagelijks opzegbaar.");
     expect(CYBER_LOOPTIJD).toBe(CYBER_OPZEGTEKST);
     expect(CYBER_LOOPTIJD).toBe("Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar. Bij maandbetaling: €27,50 per maand.");
@@ -73,10 +73,13 @@ describe("Publieke opzeg- en cyberteksten D1/E", () => {
   });
 
   it("blijft bestaande afzonderlijke cyberpolissen herkennen zonder bedragen te wijzigen", () => {
-    for (const versie of ["2026-10-08", CYBER_VERSIE]) {
-      expect(nieuweCyber({ cyber_voorwaarden_versie: versie, gekozen_pakket: "maandelijks-cyber" })).toBe(true);
-      expect(nieuweCyber({ extra_data: { cyber: { versie, gekozen: true } } })).toBe(true);
-    }
+    expect(nieuweCyber({ cyber_voorwaarden_versie: CYBER_VERSIE, gekozen_pakket: "maandelijks-cyber" })).toBe(true);
+    expect(nieuweCyber({ extra_data: { cyber: { versie: CYBER_VERSIE, gekozen: true } } })).toBe(true);
+    expect(nieuweCyber({ cyber_voorwaarden_versie: "2026-10-16", gekozen_pakket: "maandelijks-cyber" })).toBe(false);
+    expect(nieuweCyber({ extra_data: { cyber: { versie: "2026-10-16", gekozen: true } } })).toBe(false);
+    const certificaat = readFileSync("supabase/functions/generate-certificate/index.ts", "utf8");
+    expect(certificaat).toContain('const heeftNieuweCyber = policyLead?.cyber_voorwaarden_versie === "2026-10-08";');
+    expect(certificaat).not.toContain('cyber_voorwaarden_versie === "2026-10-16"');
     expect(nieuweCyber({ cyber_voorwaarden_versie: "legacy", gekozen_pakket: "maandelijks-cyber" })).toBe(false);
     expect(aanvraagPremie("maandelijks-cyber", false)).toEqual({ bav: 55, cyber: 27.5, totaal: 82.5, maand: true });
     expect(aanvraagPremie("jaarlijks-cyber", false)).toEqual({ bav: 600, cyber: 250, totaal: 850, maand: false });
