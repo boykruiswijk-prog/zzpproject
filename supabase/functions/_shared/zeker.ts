@@ -1,4 +1,4 @@
-import { CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER_LOOPTIJD } from "./cyber.ts";
+import { CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER_OPZEGTEKST as CYBER_LOOPTIJD } from "./cyber.ts";
 // Pure logica voor chatassistent Zeker (geen Deno-API's, zodat vitest dit kan testen).
 // Systeemprompt, origin-check, rate limit, maskering en geschiedenisopbouw.
 import { ZEKER_KENNIS } from "./zekerKennis.generated.ts";
