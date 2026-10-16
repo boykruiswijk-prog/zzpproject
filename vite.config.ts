@@ -10,6 +10,7 @@ import {
   type ArticleRedirectInfo,
 } from "./src/config/legacyRedirects";
 import { redirectRouteConflicten } from "./scripts/routeConflicts";
+import { bundelLekken } from "./scripts/bundleLeak";
 
 
 /** Storage-bucket waarin de gemigreerde WordPress-media staat. */
@@ -182,6 +183,10 @@ function prerenderPlugin(env: Record<string, string>): Plugin {
     name: "zp-prerender",
     apply: "build",
     async closeBundle() {
+      const { chunks, fouten } = bundelLekken(path.resolve(__dirname, "dist"));
+      if (fouten.length) throw new Error(`[cyberIntern] Interne waarden in publieke chunks: ${fouten.join(", ")}`);
+      console.log(`[cyberIntern] ${chunks.length} publieke chunks gescand, geen interne waarden.`);
+      fs.writeFileSync(path.resolve(__dirname, "dist/cyber-bundle-audit.json"), JSON.stringify({ chunks, fouten }, null, 2));
       const { prerender } = await import("./scripts/prerender");
       await prerender(path.resolve(__dirname, "dist"), env);
     },
@@ -233,6 +238,7 @@ export default defineConfig(({ mode }) => {
   ].filter(Boolean),
 
   build: {
+    manifest: true,
     chunkSizeWarningLimit: 900,
     rollupOptions: {
       output: {

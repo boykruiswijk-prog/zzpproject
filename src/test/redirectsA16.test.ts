@@ -1,6 +1,14 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
 import { geordendeRedirects, isVangregel, legacyRedirects, zoekLegacyDoel } from "@/config/legacyRedirects";
+import { bestaandeRoutes } from "../../scripts/routeConflicts";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
+const nieuwePaden = [
+  ["bedankt-jaarlijks", "/verzekeringen"], ["product/screening-pakket-4", "/screening"],
+  ["post/advies-zzp", "/kennisbank"], ["academy/partners", "/partners"], ["fr/portal/login", "/portal/login"],
+] as const;
 
 const verwacht: Array<[string, string]> = [
   ["/vergelijken", "/bav-zzp-vergelijken"], ["/vergelijker/", "/bav-zzp-vergelijken"],
@@ -19,6 +27,19 @@ const verwacht: Array<[string, string]> = [
 ];
 
 describe("A16 doorverwijzingen", () => {
+  it.each(nieuwePaden)("16 oktober: %s naar %s, inclusief afsluitende slash en 301-uitvoer", (van, naar) => {
+    expect(zoekLegacyDoel(`/${van}`)).toBe(naar);
+    expect(zoekLegacyDoel(`/${van}/`)).toBe(naar);
+    const root = path.resolve(__dirname, "../..");
+    expect(bestaandeRoutes(root).has(naar.slice(1))).toBe(true);
+    expect(readFileSync(path.join(root, "public/_redirects"), "utf8")).toContain(`/${van}    ${naar}    301`);
+    const csv = readFileSync(path.join(root, "docs/cloudflare-bulk-redirects.csv"), "utf8");
+    for (const slash of ["", "/"]) expect(csv).toContain(`zpzaken.nl/${van}${slash},https://zpzaken.nl${naar},301,`);
+  });
+
+  it("laat Evi-paden en /tv ongemoeid", () => {
+    for (const p of ["/zzp-pensioen-via-evi", "/pensioen-opbouwen-zzp", "/tv", "/tv/"]) expect(zoekLegacyDoel(p)).toBeNull();
+  });
   it.each(verwacht)("%s → %s", (van, naar) => expect(zoekLegacyDoel(van)).toBe(naar));
 
   it("geen regel voor /tv en bestaande routes", () => {

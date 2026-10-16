@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useToast } from "@/hooks/use-toast";
 import { formatDateNL } from "@/lib/dateFormat";
 import { Pencil } from "lucide-react";
-import { CYBER_INTERNE_JAARLIMIET } from "../../../supabase/functions/_shared/cyber";
+import { CYBER_INTERNE_JAARLIMIET } from "../../../supabase/functions/_shared/cyberIntern";
 
 export function CyberDatums({ leadId, contractId, ingang, eind, nieuwePer, onGewijzigd }: { leadId?: string; contractId?: string; ingang?: string | null; eind?: string | null; nieuwePer?: string | null; onGewijzigd?: () => void }) {
   const [open, setOpen] = useState(false);

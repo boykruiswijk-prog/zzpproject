@@ -1,12 +1,11 @@
 // Pure versioned cyber rules. Existing leads without this version remain legacy.
 import { plusMaanden } from "./starterTarief.ts";
 export const CYBER_VERSIE = "2026-10-08";
-export const CYBER = { maandprijs: 27.5, jaarprijs: 250, perSchade: 50_000, gedeeldJaarmaximum: 2_500_000, eigenRisico: 500, fraudeEigenRisico: 1000, incident72uur: 15_000 } as const;
+export const CYBER = { maandprijs: 27.5, jaarprijs: 250, perSchade: 50_000, eigenRisico: 500, fraudeEigenRisico: 1000, incident72uur: 15_000 } as const;
 export const CYBER_AKKOORD = "Ik begrijp dat cyber dagelijks opzegbaar is en dat ik al betaalde premie voor cyber bij opzeggen niet terugkrijg. Cyber is niet pauzeerbaar. De BAV + AVB blijft dagelijks opzegbaar.";
 export const CYBER_DEKKING = "Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000)";
 export const CYBER_HULP = "Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.";
 export const CYBER_POLISVOORWAARDEN = "Wat precies gedekt is, lees je in de polisvoorwaarden.";
-export const CYBER_INTERNE_JAARLIMIET = "Interne informatie: de gedeelde jaarlimiet voor alle deelnemers aan het ZP Zaken Cyber Collectief is €2.500.000.";
 // Uniforme klanttekst E-aanvulling 2; opgeslagen bewijs blijft onveranderd.
 export const CYBER_OPZEGTEKST = "Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar. Bij maandbetaling: €27,50 per maand.";
 export const CYBER_LOOPTIJD = CYBER_OPZEGTEKST;

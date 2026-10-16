@@ -645,6 +645,12 @@ export const legacyRedirects: LegacyRedirect[] = [
   // /mijn-zp zelf verwijst door naar /mijn-zp/polis; direct daarheen, geen keten.
   { from: "account/my-account", to: "/mijn-zp/polis" },
   { from: "factoring", to: "/diensten" },
+  // A16 (16 okt 2026): nieuwe paden uit 404-log
+  { from: "bedankt-jaarlijks", to: "/verzekeringen" },
+  { from: "product/screening-pakket-4", to: "/screening" },
+  { from: "post/advies-zzp", to: "/kennisbank" },
+  { from: "academy/partners", to: "/partners" },
+  { from: "fr/portal/login", to: "/portal/login" },
   { from: "radio/*", to: "/kennisbank" },
   { from: "services/*", to: "/diensten" },
 ];
