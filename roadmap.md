@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Interne cyberwaarden uit publieke bundle; vijf A16-301's. Tests en build verifiëren.
 - [x] Cyber-versiecorrectie: versie/herkenning terug naar 2026-10-08 met behoud nieuwe teksten; read-only 0 leads en 0 contracten met 2026-10-16 (ook totaal); 68/68 gerichte tests, build OK en dezelfde zeven functies opnieuw gedeployed zonder aanroep. Geen databasewijziging, mail, Exact of publicatie.
 - [x] E-aanvulling 2: uniforme cybertekst, versie 2026-10-16 met behoud herkenning 2026-10-08; 68/68 gerichte tests (node wegens ontbrekende canvas), build OK, publieke browsercontrole zonder runtimefouten; zeven betrokken functies gedeployed zonder aanroep. Geen records/documenten, mail, Exact-aanroep of frontendpublicatie.
 - [x] Cyber-versieafhankelijke databasefuncties: incompatibele versie teruggedraaid naar 2026-10-08, zonder databasewijziging; read-only geen rijen met 2026-10-16 gevonden.
