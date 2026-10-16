@@ -1,4 +1,4 @@
-import { CYBER_OPZEGTEKST as CYBER_LOOPTIJD, CYBER_DEKKING, CYBER_HULP } from "../../supabase/functions/_shared/cyber";
+import { CYBER_LOOPTIJD, CYBER_DEKKING, CYBER_HULP } from "../../supabase/functions/_shared/cyber";
 import { CYBER_VOORWAARDEN_OPVRAGEN } from "../config/cyberPubliek";
 import { Award, ShieldCheck, Users } from "lucide-react";
 import { ArrowRight } from "lucide-react";
