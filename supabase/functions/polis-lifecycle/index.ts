@@ -290,7 +290,7 @@ Deno.serve(metExactMelding("polis-lifecycle", async (req) => {
   }
 
   const today = todayAmsterdam();
-  const cyberZin = nieuweCyber(lead) ? `<p>${CYBER_LOOPTIJD} Lopend cyberjaar tot ${lead.cyber_einddatum}.</p>` : "";
+  const cyberZin = nieuweCyber(lead) ? `<p>${CYBER_LOOPTIJD}</p>` : "";
   const recipientKlant = lead.email;
   // Omgevingsbepaling + preview-redirect (max. één mail per actie in preview).
   const gate = createMailGate("polis-lifecycle", req);

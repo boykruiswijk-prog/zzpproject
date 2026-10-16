@@ -1,6 +1,6 @@
 // Single source of truth voor BAV-pakketten. Alle plekken op de site
 // die tarieven of dekkingen tonen importeren uit dit bestand.
-import { CYBER, CYBER_DEKKING, CYBER_HULP, CYBER_OPZEGTEKST as CYBER_LOOPTIJD, CYBER_POLISVOORWAARDEN } from "../../supabase/functions/_shared/cyber";
+import { CYBER, CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD, CYBER_POLISVOORWAARDEN } from "../../supabase/functions/_shared/cyber";
 
 export const bavPakketten = [
   {

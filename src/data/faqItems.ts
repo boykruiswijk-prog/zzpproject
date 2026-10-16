@@ -1,4 +1,4 @@
-import { CYBER_DEKKING, CYBER_HULP, CYBER_OPZEGTEKST as CYBER_LOOPTIJD } from "../../supabase/functions/_shared/cyber";
+import { CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD } from "../../supabase/functions/_shared/cyber";
 import { CYBER_VOORWAARDEN_OPVRAGEN } from "../config/cyberPubliek";
 import { INLOOP_UITLOOP_FAQ } from "./bavVergelijking";
 // Enige bron van waarheid voor de zichtbare FAQ-content op /faq.
