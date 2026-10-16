@@ -1,6 +1,6 @@
 // Pure versioned cyber rules. Existing leads without this version remain legacy.
 import { plusMaanden } from "./starterTarief.ts";
-export const CYBER_VERSIE = "2026-10-16";
+export const CYBER_VERSIE = "2026-10-08";
 export const CYBER = { maandprijs: 27.5, jaarprijs: 250, perSchade: 50_000, gedeeldJaarmaximum: 2_500_000, eigenRisico: 500, fraudeEigenRisico: 1000, incident72uur: 15_000 } as const;
 export const CYBER_AKKOORD = "Ik begrijp dat cyber dagelijks opzegbaar is en dat ik al betaalde premie voor cyber bij opzeggen niet terugkrijg. Cyber is niet pauzeerbaar. De BAV + AVB blijft dagelijks opzegbaar.";
 export const CYBER_DEKKING = "Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000)";
@@ -38,10 +38,8 @@ export function isCyberPakket(pakket: string | null | undefined) { return !!pakk
 export function basisPakket(pakket: string) { return pakket.startsWith("maandelijks") ? "maandelijks" : "jaarlijks"; }
 export function nieuweCyber(lead: { extra_data?: unknown; cyber_voorwaarden_versie?: string | null; gekozen_pakket?: string | null }) {
   const extra = lead.extra_data as { cyber?: { versie?: string; gekozen?: boolean } } | null;
-  // Blijf eerdere afzonderlijke cyberdekking herkennen; alleen nieuw bewijs krijgt de nieuwe versie.
-  const ondersteundeVersie = (versie: string | null | undefined) => versie === "2026-10-08" || versie === CYBER_VERSIE;
-  return (ondersteundeVersie(extra?.cyber?.versie) && extra?.cyber?.gekozen === true)
-    || (ondersteundeVersie(lead.cyber_voorwaarden_versie) && isCyberPakket(lead.gekozen_pakket));
+  return (extra?.cyber?.versie === CYBER_VERSIE && extra.cyber.gekozen === true)
+    || (lead.cyber_voorwaarden_versie === CYBER_VERSIE && isCyberPakket(lead.gekozen_pakket));
 }
 export function cyberJaarEind(start: string, vandaag = start) {
   let n = 12;

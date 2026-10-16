@@ -328,7 +328,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
         .eq("id", policy.lead_id).maybeSingle();
       policyLead = leadVoorPolis;
     }
-    const heeftNieuweCyber = policyLead?.cyber_voorwaarden_versie === "2026-10-08" || policyLead?.cyber_voorwaarden_versie === "2026-10-16";
+    const heeftNieuweCyber = policyLead?.cyber_voorwaarden_versie === "2026-10-08";
 
     // === Load the template background image from storage (private bucket) ===
     const { data: templateData, error: templateError } = await adminClient.storage
