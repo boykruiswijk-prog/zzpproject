@@ -667,7 +667,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
     // Contractduur
     y -= 20;
     const contractText = heeftNieuweCyber
-      ? `BAV + AVB doorlopend, zonder minimale looptijd, dagelijks opzegbaar. Cyber 12 maanden, daarna telkens 12 maanden verlengd; lopend cyberjaar t/m ${formatShortDate(policyLead.cyber_einddatum)}.`
+      ? "BAV + AVB doorlopend, zonder minimale looptijd, dagelijks opzegbaar. Cyber: dagelijks opzegbaar."
       : "Doorlopend, zonder minimale looptijd, dagelijks opzegbaar.";
     const contractLines = wrapText(contractText, helvetica, fontSize, maxValueWidth);
     page.drawText("Contractduur:", { x: labelX, y, size: fontSize, font: helvetica, color: gray });

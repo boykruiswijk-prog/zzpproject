@@ -124,7 +124,7 @@ const PAKKET_INVOICE: Record<string, { naam: string; bedrag: number; betalingsre
     bedrag: 600,
     betalingsregel: "Betaling: jaarlijks vooraf via SEPA-incasso",
   },
-  "maandelijks-cyber": { naam: "BAV & AVB Maandelijks + Cyber", bedrag: 660, betalingsregel: "BAV + AVB maandelijks €55; cyber jaarcontract in 12 termijnen van €27,50" },
+  "maandelijks-cyber": { naam: "BAV & AVB Maandelijks + Cyber", bedrag: 660, betalingsregel: "BAV + AVB maandelijks €55; Cyber, dagelijks opzegbaar, €27,50 per maand" },
   "jaarlijks-cyber": {
     naam: "BAV & AVB Jaarlijks + Cyber",
     bedrag: 600,
@@ -328,7 +328,7 @@ async function createExactInvoice(opts: {
     Description: headerDescription,
     SalesInvoiceLines: [line, ...(cyberBedrag && ingang ? [{ ...line, UnitPrice: cyberBedrag,
       Description: `${regelOmschrijving("premie", ingang, isMaandPolis(lead.gekozen_pakket) ? eersteMaandPeriode(ingang).eind : cyberJaarEind(ingang))} Cyber`.slice(0,60),
-      Notes: "Cyber jaarcontract, 12 maanden. Resterende termijnen blijven verschuldigd bij BAV-opzegging.",
+      Notes: "Cyber, dagelijks opzegbaar.",
       StartTime: `${ingang}T00:00:00`, EndTime: `${isMaandPolis(lead.gekozen_pakket) ? eersteMaandPeriode(ingang).eind : cyberJaarEind(ingang)}T00:00:00`,
     }] : [])],
   };

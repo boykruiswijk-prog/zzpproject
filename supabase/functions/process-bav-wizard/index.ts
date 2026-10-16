@@ -139,7 +139,7 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
     const cyberAfgewezen = cyberWasGekozen && !cyberToets.toegestaan;
     if (cyberAfgewezen) submission.gekozen_pakket = basisPakket(submission.gekozen_pakket);
     const cyberGekozen = isCyberPakket(submission.gekozen_pakket);
-    if (cyberGekozen && submission.cyber_akkoord !== true) return weiger(400, "Bevestig de afzonderlijke looptijd van cyber", "cyber_akkoord");
+    if (cyberGekozen && submission.cyber_akkoord !== true) return weiger(400, "Bevestig de voorwaarden van cyber", "cyber_akkoord");
     submission.betaalwijze = PAKKET_CONFIG[submission.gekozen_pakket].betaalwijze;
     // Zorg/bouw: normale flow, intern gemarkeerd voor handmatige acceptatie (klant merkt niets).
     const handmatigeAcceptatie = vereistHandmatigeAcceptatie(submission);
@@ -412,7 +412,7 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
       data: machtiging,
       email: submission.email,
       aanhef: volledigeNaam,
-      bedragOfReden: `${redenBav()} (${pakket.naam}, € ${formatPremieBedrag(premium)} ${pakket.betaalwijze === "maandelijks" ? "per maand" : "per jaar"})${starter ? `. ${STARTER_VOORBEHOUD_TEKST}` : ""}${cyberGekozen ? `. ${CYBER_LOOPTIJD} Lopend cyberjaar tot ${cyberJaarEind(submission.ingangsdatum)}. ${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_POLISVOORWAARDEN}` : ""}`,
+      bedragOfReden: `${redenBav()} (${pakket.naam}, € ${formatPremieBedrag(premium)} ${pakket.betaalwijze === "maandelijks" ? "per maand" : "per jaar"})${starter ? `. ${STARTER_VOORBEHOUD_TEKST}` : ""}${cyberGekozen ? `. ${CYBER_LOOPTIJD} ${CYBER_DEKKING} ${CYBER_HULP} ${CYBER_POLISVOORWAARDEN}` : ""}`,
     });
 
     // ── 3. E-MAIL VIA send-lead-notification ──
@@ -433,7 +433,7 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
             kvk_nummer: submission.kvk_nummer || "-",
             pakket: pakket.naam,
             dekking: pakket.dekking,
-             ...(cyberGekozen ? { cyber_looptijd: CYBER_LOOPTIJD, cyber_einddatum: cyberJaarEind(submission.ingangsdatum) } : {}),
+             ...(cyberGekozen ? { cyber_looptijd: CYBER_LOOPTIJD } : {}),
             betaalwijze: pakket.betaalwijze,
             ingangsdatum: submission.ingangsdatum,
              premie: starter ? starterPremieKlanttekst(premium, pakket.prijs, starterTotDatum, pakket.betaalwijze) : `€${formatPremieBedrag(premium)}`,

@@ -1,15 +1,15 @@
 // Pure versioned cyber rules. Existing leads without this version remain legacy.
 import { plusMaanden } from "./starterTarief.ts";
-export const CYBER_VERSIE = "2026-10-08";
+export const CYBER_VERSIE = "2026-10-16";
 export const CYBER = { maandprijs: 27.5, jaarprijs: 250, perSchade: 50_000, gedeeldJaarmaximum: 2_500_000, eigenRisico: 500, fraudeEigenRisico: 1000, incident72uur: 15_000 } as const;
-export const CYBER_AKKOORD = "Ik begrijp dat de cyberdekking een looptijd heeft van 12 maanden en daarna stilzwijgend met 12 maanden wordt verlengd. De BAV + AVB blijft dagelijks opzegbaar.";
+export const CYBER_AKKOORD = "Ik begrijp dat cyber dagelijks opzegbaar is en dat ik al betaalde premie voor cyber bij opzeggen niet terugkrijg. Cyber is niet pauzeerbaar. De BAV + AVB blijft dagelijks opzegbaar.";
 export const CYBER_DEKKING = "Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000)";
 export const CYBER_HULP = "Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.";
 export const CYBER_POLISVOORWAARDEN = "Wat precies gedekt is, lees je in de polisvoorwaarden.";
 export const CYBER_INTERNE_JAARLIMIET = "Interne informatie: de gedeelde jaarlimiet voor alle deelnemers aan het ZP Zaken Cyber Collectief is €2.500.000.";
-export const CYBER_LOOPTIJD = "Cyber heeft een vaste looptijd van 12 maanden en wordt daarna stilzwijgend met 12 maanden verlengd. Opzeggen kan tegen het einde van de looptijd. Cyber is niet dagelijks opzegbaar en niet pauzeerbaar. Bij maandbetaling betaal je het jaarcontract in 12 termijnen van €27,50. Zeg je de BAV + AVB op, dan loopt cyber door tot het einde van het lopende cyberjaar en blijven de resterende cybertermijnen verschuldigd.";
-// Publieke tekst D1/E 15-10-2026; bestaand akkoord en mail-/bewijsvelden blijven onveranderd.
+// Uniforme klanttekst E-aanvulling 2; opgeslagen bewijs blijft onveranderd.
 export const CYBER_OPZEGTEKST = "Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar. Bij maandbetaling: €27,50 per maand.";
+export const CYBER_LOOPTIJD = CYBER_OPZEGTEKST;
 export const CYBER_AFGEWEZEN = "Cyberdekking past op dit moment niet bij jouw situatie. Je BAV + AVB sluit je gewoon af; Ellen neemt contact op over een passende oplossing.";
 export function formatPremieBedrag(bedrag: number) {
   return bedrag.toLocaleString("nl-NL", {
@@ -38,8 +38,10 @@ export function isCyberPakket(pakket: string | null | undefined) { return !!pakk
 export function basisPakket(pakket: string) { return pakket.startsWith("maandelijks") ? "maandelijks" : "jaarlijks"; }
 export function nieuweCyber(lead: { extra_data?: unknown; cyber_voorwaarden_versie?: string | null; gekozen_pakket?: string | null }) {
   const extra = lead.extra_data as { cyber?: { versie?: string; gekozen?: boolean } } | null;
-  return (extra?.cyber?.versie === CYBER_VERSIE && extra.cyber.gekozen === true)
-    || (lead.cyber_voorwaarden_versie === CYBER_VERSIE && isCyberPakket(lead.gekozen_pakket));
+  // Blijf eerdere afzonderlijke cyberdekking herkennen; alleen nieuw bewijs krijgt de nieuwe versie.
+  const ondersteundeVersie = (versie: string | null | undefined) => versie === "2026-10-08" || versie === CYBER_VERSIE;
+  return (ondersteundeVersie(extra?.cyber?.versie) && extra?.cyber?.gekozen === true)
+    || (ondersteundeVersie(lead.cyber_voorwaarden_versie) && isCyberPakket(lead.gekozen_pakket));
 }
 export function cyberJaarEind(start: string, vandaag = start) {
   let n = 12;
