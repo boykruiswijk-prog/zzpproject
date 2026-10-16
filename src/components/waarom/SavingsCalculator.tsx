@@ -62,7 +62,7 @@ function PackageCards({ value, onChange }: { value: string; onChange: (v: string
               <p className="text-xs font-semibold text-foreground leading-tight">{p.label}</p>
               <p className="text-base font-bold text-accent mt-1">€{p.monthly.toLocaleString("nl-NL")}<span className="text-xs font-normal text-muted-foreground">/mnd</span></p>
               <p className="text-[11px] text-muted-foreground mt-0.5">{p.dekking}</p>
-              <p className="text-[11px] text-accent font-medium mt-1">BAV + AVB dagelijks opzegbaar{p.id.includes("cyber") ? "; cyber 12 maanden" : ""}</p>
+              <p className="text-[11px] text-accent font-medium mt-1">BAV + AVB dagelijks opzegbaar{p.id.includes("cyber") ? "; cyber dagelijks opzegbaar, zonder creditnota" : ""}</p>
             </button>
           );
         })}
