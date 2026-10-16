@@ -186,6 +186,7 @@ function prerenderPlugin(env: Record<string, string>): Plugin {
       const { chunks, fouten } = bundelLekken(path.resolve(__dirname, "dist"));
       if (fouten.length) throw new Error(`[cyberIntern] Interne waarden in publieke chunks: ${fouten.join(", ")}`);
       console.log(`[cyberIntern] ${chunks.length} publieke chunks gescand, geen interne waarden.`);
+      fs.writeFileSync(path.resolve(__dirname, "dist/cyber-bundle-audit.json"), JSON.stringify({ chunks, fouten }, null, 2));
       const { prerender } = await import("./scripts/prerender");
       await prerender(path.resolve(__dirname, "dist"), env);
     },
