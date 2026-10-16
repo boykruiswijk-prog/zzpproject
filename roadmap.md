@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] E-aanvulling 2: uniforme cybertekst voor nieuwe toestemming, mails, certificaten, Exact-omschrijvingen en portaal; regressietests en betrokken functies deployen. Geen bestaande records/documenten, mailverzending, Exact-aanroep of frontendpublicatie.
 - [x] Kwaliteitscontrole 16 oktober: publieke opzeg-/cyberteksten en acht bestaande artikelrijen gecorrigeerd; drie artikeltelefoonlinks en certificaatbenaming bevestigd. Zeker/llms/sitemap vernieuwd; 65/65 gerichte tests, volledig 1104/1106 (twee bestaande Exact-creditnotafouten buiten scope); vijf publieke pagina's browsercontrole zonder runtimefouten, build OK. Beschermde teksten bewaard; geen publicatie, deploy, inzending, Exact-writes of klantmails.
 - [x] F7 20:18: productie-404 zolang vlag uit, preview zichtbaar/noindex, verborgen prerender overgeslagen; 79/79 gerichte tests, browser met lokaal nagebootste productie-/previewhosts bevestigd, automatische build OK. Geen publicatie/deploy/inzending.
 - [x] F7 akkoord 18:35 uitgevoerd: additief conceptveld zonder terugvulling, intern label/bron, Hiscox alleen BAV-blok. Geen inzending, klantmail, wijzigingsmelding of publicatie.
