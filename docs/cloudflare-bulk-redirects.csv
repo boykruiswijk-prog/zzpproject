@@ -1175,3 +1175,13 @@ zpzaken.nl/account/my-account,https://zpzaken.nl/mijn-zp/polis,301,TRUE,TRUE,FAL
 zpzaken.nl/account/my-account/,https://zpzaken.nl/mijn-zp/polis,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/factoring,https://zpzaken.nl/diensten,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/factoring/,https://zpzaken.nl/diensten,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/bedankt-jaarlijks,https://zpzaken.nl/verzekeringen,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/bedankt-jaarlijks/,https://zpzaken.nl/verzekeringen,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/product/screening-pakket-4,https://zpzaken.nl/screening,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/product/screening-pakket-4/,https://zpzaken.nl/screening,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/post/advies-zzp,https://zpzaken.nl/kennisbank,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/post/advies-zzp/,https://zpzaken.nl/kennisbank,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/academy/partners,https://zpzaken.nl/partners,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/academy/partners/,https://zpzaken.nl/partners,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/fr/portal/login,https://zpzaken.nl/portal/login,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/fr/portal/login/,https://zpzaken.nl/portal/login,301,TRUE,TRUE,FALSE,FALSE
