@@ -651,6 +651,11 @@ export const legacyRedirects: LegacyRedirect[] = [
   { from: "post/advies-zzp", to: "/kennisbank" },
   { from: "academy/partners", to: "/partners" },
   { from: "fr/portal/login", to: "/portal/login" },
+  // A16 (17 okt 2026): nieuwe paden uit 404-log
+  { from: "kennisbank/verplichte-aov-zzp", to: "/kennisbank/verplichte-aov-voor-zzp" },
+  { from: "kennisbank/bav-afsluiten-zzp", to: "/kennisbank/bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt" },
+  { from: "de/portal/login", to: "/portal/login" },
+  { from: "academy/contact", to: "/contact" },
   { from: "radio/*", to: "/kennisbank" },
   { from: "services/*", to: "/diensten" },
 ];

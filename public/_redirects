@@ -602,6 +602,10 @@
 /post/advies-zzp    /kennisbank    301
 /academy/partners    /partners    301
 /fr/portal/login    /portal/login    301
+/kennisbank/verplichte-aov-zzp    /kennisbank/verplichte-aov-voor-zzp    301
+/kennisbank/bav-afsluiten-zzp    /kennisbank/bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt    301
+/de/portal/login    /portal/login    301
+/academy/contact    /contact    301
 /radio/*    /kennisbank    301
 /services/*    /diensten    301
 
