@@ -8,6 +8,9 @@ import path from "node:path";
 const nieuwePaden = [
   ["bedankt-jaarlijks", "/verzekeringen"], ["product/screening-pakket-4", "/screening"],
   ["post/advies-zzp", "/kennisbank"], ["academy/partners", "/partners"], ["fr/portal/login", "/portal/login"],
+  ["kennisbank/verplichte-aov-zzp", "/kennisbank/verplichte-aov-voor-zzp"],
+  ["kennisbank/bav-afsluiten-zzp", "/kennisbank/bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt"],
+  ["de/portal/login", "/portal/login"], ["academy/contact", "/contact"],
 ] as const;
 
 const verwacht: Array<[string, string]> = [
