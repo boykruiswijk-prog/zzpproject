@@ -62,3 +62,5 @@
 - [x] Boy 13 okt D4: ingangsdatum vroegst dag na aanvraag (formulieren, server, trigger, RPC, activeren, waarschuwing, tests, wijzigingsmelding)
 - [x] Boy 13 okt A12: KVK API veilig aanzetten (helper, uitschakelaar, cache, limieten, knop beheer, startersoordeel, tests, rooktest, deploy+publiceer, melding Ellen)
 - [x] Boy 13 okt A14: nooit stil een nieuw certificaatnummer, voorstel vooraf bij lead, BAV-nummer aanpassen op certificaat
+
+- [x] F5: KvK-ondernemerspleinzin verwijderd uit artikel alles-over-een-zzp-factuur (17-10)
