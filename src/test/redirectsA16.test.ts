@@ -34,7 +34,9 @@ describe("A16 doorverwijzingen", () => {
     expect(zoekLegacyDoel(`/${van}`)).toBe(naar);
     expect(zoekLegacyDoel(`/${van}/`)).toBe(naar);
     const root = path.resolve(__dirname, "../..");
-    expect(bestaandeRoutes(root).has(naar.slice(1))).toBe(true);
+    // Artikeldoelen staan onder de dynamische kennisbankroute, niet als eigen routerpad.
+    const sitemap = readFileSync(path.join(root, "public/sitemap.xml"), "utf8");
+    expect(bestaandeRoutes(root).has(naar.slice(1)) || sitemap.includes(`<loc>https://zpzaken.nl${naar}</loc>`)).toBe(true);
     expect(readFileSync(path.join(root, "public/_redirects"), "utf8")).toContain(`/${van}    ${naar}    301`);
     const csv = readFileSync(path.join(root, "docs/cloudflare-bulk-redirects.csv"), "utf8");
     for (const slash of ["", "/"]) expect(csv).toContain(`zpzaken.nl/${van}${slash},https://zpzaken.nl${naar},301,`);
