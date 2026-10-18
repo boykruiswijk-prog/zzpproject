@@ -13,22 +13,17 @@ import circle8Logo from "@/assets/partner-circle8.svg";
 import onefellowLogo from "@/assets/partner-onefellow.png";
 import afmLogo from "@/assets/afm-logo.png";
 import hiscoxLogo from "@/assets/partner-hiscox.webp";
-import zorgZekerheidLogo from "@/assets/partner-zorg-zekerheid.webp";
-import brightPensioenLogo from "@/assets/partner-brightpensioen.webp";
-import movirLogo from "@/assets/partner-movir.webp";
-import centraalBeheerLogo from "@/assets/partner-centraal-beheer.webp";
-import sharePeopleLogo from "@/assets/partner-sharepeople.webp";
 
 const SEO = seoRoute("/partners");
 
 // Partner data stays as-is (domain content)
 const partners = [
   { name: "Hiscox", category: "Verzekeringen", description: "Specialist in beroeps- en bedrijfsaansprakelijkheid en cyberdekkingen.", logo: hiscoxLogo, icon: Shield, link: "/diensten#verzekeringen", features: ["Beroepsaansprakelijkheid", "Bedrijfsaansprakelijkheid", "Cyberverzekering"] },
-  { name: "Zorg en Zekerheid", category: "Verzekeringen", description: "Regionale zorgverzekeraar met persoonlijke service en Mirro mentale zorg.", logo: zorgZekerheidLogo, icon: Heart, link: "/diensten#verzekeringen", features: ["Basisverzekering", "Aanvullende dekking", "Mirro mentale zorg"] },
-  { name: "BrightPensioen", category: "Verzekeringen", description: "Coöperatief pensioen met lage kosten en mede-eigenaarschap.", logo: brightPensioenLogo, icon: PiggyBank, link: "/diensten#verzekeringen", features: ["Lage kosten", "Geen winstoogmerk", "Mede-eigenaarschap"] },
-  { name: "Movir", category: "Verzekeringen", description: "100+ jaar specialist in inkomensbescherming voor professionals.", logo: movirLogo, icon: Umbrella, link: "/diensten#verzekeringen", features: ["100+ jaar ervaring", "Maatwerk dekking", "Online of met adviseur"] },
-  { name: "Centraal Beheer", category: "Verzekeringen", description: "Betrouwbare AOV met ledenkorting via ZP Zaken.", logo: centraalBeheerLogo, icon: Shield, link: "/diensten#verzekeringen", features: ["Ledenkorting", "Betrouwbaar", "Uitgebreide dekking"] },
-  { name: "SharePeople", category: "Verzekeringen", description: "Vernieuwend crowdsurance concept: onderling geregeld.", logo: sharePeopleLogo, icon: Users, link: "/contact", features: ["Crowdsurance", "Onderling geregeld", "Transparant"] },
+  { name: "Onze zorgpartner", category: "Verzekeringen", description: "Regionale zorgverzekeraar met persoonlijke service en Mirro mentale zorg.", logo: null, icon: Heart, link: "/diensten#verzekeringen", features: ["Basisverzekering", "Aanvullende dekking", "Mirro mentale zorg"] },
+  { name: "Onze pensioenpartner", category: "Verzekeringen", description: "Coöperatief pensioen met lage kosten en mede-eigenaarschap.", logo: null, icon: PiggyBank, link: "/diensten#verzekeringen", features: ["Lage kosten", "Geen winstoogmerk", "Mede-eigenaarschap"] },
+  { name: "Onze AOV-partner A", category: "Verzekeringen", description: "100+ jaar specialist in inkomensbescherming voor professionals.", logo: null, icon: Umbrella, link: "/diensten#verzekeringen", features: ["100+ jaar ervaring", "Maatwerk dekking", "Online of met persoonlijk contact"] },
+  { name: "Onze AOV-partner B", category: "Verzekeringen", description: "Betrouwbare AOV met ledenkorting via ZP Zaken.", logo: null, icon: Shield, link: "/diensten#verzekeringen", features: ["Ledenkorting", "Betrouwbaar", "Uitgebreide dekking"] },
+  { name: "Onze partner voor inkomensondersteuning", category: "Verzekeringen", description: "Vernieuwend crowdsurance concept: onderling geregeld.", logo: null, icon: Users, link: "/contact", features: ["Crowdsurance", "Onderling geregeld", "Transparant"] },
   { name: "Otentica", category: "Screening", description: "Eenvoudige, snelle en transparante screening voor ondernemers.", logo: otenticaLogo, icon: UserCheck, link: "/diensten#screening", features: ["Snelle verificatie", "Officiële instanties", "In eigen huisstijl"] },
   { name: "ZP Zaken Factoring", category: "Financiering", description: "Factoring en financiering direct via ZP Zaken. Facturen binnen 24 uur uitbetaald, 7 dagen per week. Geen externe partij:  wij regelen het zelf.", logo: zpLogo, icon: Banknote, link: "/diensten", features: ["Uitbetaling binnen 24 uur", "Geautomatiseerde facturering", "Debiteurenbeheer"] },
   { name: "Circle8", category: "Opdrachten", description: "Via Circle8 actief als zzp'er? ZP Zaken verzorgt de BAV (beroepsaansprakelijkheid) en Cyberverzekering voor zzp'ers die werken binnen het Circle8 platform.", logo: circle8Logo, icon: Briefcase, link: "/contact", features: ["BAV verzekering", "Cyberverzekering", "Speciaal voor Circle8 zzp'ers"] },
@@ -83,7 +78,7 @@ export default function Partners() {
             {partners.map((partner) => (
               <div key={partner.name} className="bg-card rounded-2xl shadow-card border border-border/50 overflow-hidden hover:shadow-lg hover:border-accent/30 transition-all">
                 <div className={`p-6 flex items-center justify-center h-32 ${partner.name === "Onefellow" ? "bg-foreground": "bg-secondary/50"}`}>
-                  <img loading="lazy" decoding="async" src={partner.logo} alt={`${partner.name} logo`} className="max-h-16 max-w-[160px] object-contain" />
+                  {partner.logo ? <img loading="lazy" decoding="async" src={partner.logo} alt={`${partner.name} logo`} className="max-h-16 max-w-[160px] object-contain" /> : <partner.icon className="h-12 w-12 text-accent" aria-hidden="true" />}
                 </div>
                 <div className="p-6">
                   <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 px-3 py-1.5 rounded-lg mb-4">

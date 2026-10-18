@@ -66,3 +66,4 @@
 
 - [x] F5: KvK-ondernemerspleinzin verwijderd uit artikel alles-over-een-zzp-factuur (17-10)
 - [x] A16 17-10: 4 nieuwe 301s uit 404-log; /src/assets/team-walking.webp niet in code
+- [x] F1 18-10: aanbiedersnamen neutraal in vergelijking, partnerteksten/logo's en zeven artikelen; llms bijgewerkt, gepubliceerde artikelen teruggelezen zonder namen; 91 gerichte tests geslaagd in node-omgeving, desktop/360px gecontroleerd en build OK; niet gepubliceerd, geen mails of logica gewijzigd.

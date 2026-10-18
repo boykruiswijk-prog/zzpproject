@@ -32,7 +32,7 @@ const POPUP_CONFIGS: Record<string, PopupConfig> = {
   "/aov": {
     badge: "Vragen?",
     title: "Vragen over arbeidsongeschiktheid?",
-    body: "Een AOV is een complexe keuze. Onze partner SharePeople helpt je gratis een passende oplossing vinden.",
+    body: "Een AOV is een complexe keuze. Onze AOV-partner helpt je gratis een passende oplossing vinden.",
     ctas: [
       { label: "Plan een gesprek", href: "/contact", variant: "primary", icon: ArrowRight },
       { label: "Meer informatie", href: "/aov", variant: "secondary" },

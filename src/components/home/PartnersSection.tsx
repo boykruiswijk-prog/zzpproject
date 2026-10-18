@@ -1,41 +1,36 @@
-import { Handshake } from "lucide-react";
+import { Handshake, Heart, PiggyBank, Umbrella, Shield, Users } from "lucide-react";
 import hiscoxLogo from "@/assets/partner-hiscox.webp";
-import zorgZekerheidLogo from "@/assets/partner-zorg-zekerheid.webp";
-import brightPensioenLogo from "@/assets/partner-brightpensioen.webp";
-import movirLogo from "@/assets/partner-movir.webp";
-import centraalBeheerLogo from "@/assets/partner-centraal-beheer.webp";
-import sharePeopleLogo from "@/assets/partner-sharepeople.webp";
 
 const partners = [
   {
     name: "Hiscox",
     description: "Gespecialiseerde risicodrager achter de beroeps- en bedrijfsaansprakelijkheidsverzekeringen en de cyberdekking.",
-    logo: hiscoxLogo,
+    logo: hiscoxLogo, icon: Shield,
   },
   {
-    name: "Zorg en Zekerheid",
-    description: "Elk jaar bieden we met Zorg en Zekerheid een nieuwe zorgdekking aan. Via deze partner is ook Mirro toegankelijk.",
-    logo: zorgZekerheidLogo,
+    name: "Onze zorgpartner",
+    description: "Elk jaar bieden we met onze zorgpartner een nieuwe zorgdekking aan. Via deze partner is ook Mirro toegankelijk.",
+    logo: null, icon: Heart,
   },
   {
-    name: "BrightPensioen",
+    name: "Onze pensioenpartner",
     description: "Coöperatie waar je heel simpel je pensioen kunt opbouwen met lage kosten en zonder winstoogmerk.",
-    logo: brightPensioenLogo,
+    logo: null, icon: PiggyBank,
   },
   {
-    name: "Movir",
-    description: "Voor een uitstekende arbeidsongeschiktheidsverzekering ga je naar Movir. Online of met hulp van een adviseur.",
-    logo: movirLogo,
+    name: "Onze AOV-partner A",
+    description: "Voor een arbeidsongeschiktheidsverzekering verwijzen we je naar onze AOV-partner. Online of met persoonlijk contact.",
+    logo: null, icon: Umbrella,
   },
   {
-    name: "Centraal Beheer",
+    name: "Onze AOV-partner B",
     description: "Prima AOV die je met korting kunt afsluiten als je lid bent bij ZP Zaken.",
-    logo: centraalBeheerLogo,
+    logo: null, icon: Shield,
   },
   {
-    name: "SharePeople",
+    name: "Onze partner voor inkomensondersteuning",
     description: "Geen verzekering maar een crowdsurance oplossing. Alles onderling geregeld.",
-    logo: sharePeopleLogo,
+    logo: null, icon: Users,
   },
 ];
 
@@ -64,11 +59,7 @@ export function PartnersSection() {
               className="bg-card rounded-xl p-6 shadow-card border border-border/50 flex flex-col items-center text-center hover:shadow-lg transition-shadow"
             >
               <div className="h-20 flex items-center justify-center mb-4">
-                <img loading="lazy" decoding="async" 
-                  src={partner.logo} 
-                  alt={`${partner.name} logo`} 
-                  className="max-h-16 max-w-[140px] object-contain"
-                />
+                {partner.logo ? <img loading="lazy" decoding="async" src={partner.logo} alt={`${partner.name} logo`} className="max-h-16 max-w-[140px] object-contain" /> : <partner.icon className="h-12 w-12 text-accent" aria-hidden="true" />}
               </div>
               <h3 className="text-lg font-semibold mb-2">{partner.name}</h3>
               <p className="text-sm text-muted-foreground">{partner.description}</p>
