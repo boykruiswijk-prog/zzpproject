@@ -11,6 +11,7 @@ import {
 } from "./src/config/legacyRedirects";
 import { redirectRouteConflicten } from "./scripts/routeConflicts";
 import { bundelLekken } from "./scripts/bundleLeak";
+import { voegArtikelRedirectsToe } from "./scripts/articleRedirects";
 
 
 /** Storage-bucket waarin de gemigreerde WordPress-media staat. */
@@ -188,7 +189,17 @@ function prerenderPlugin(env: Record<string, string>): Plugin {
       console.log(`[cyberIntern] ${chunks.length} publieke chunks gescand, geen interne waarden.`);
       fs.writeFileSync(path.resolve(__dirname, "dist/cyber-bundle-audit.json"), JSON.stringify({ chunks, fouten }, null, 2));
       const { prerender } = await import("./scripts/prerender");
-      await prerender(path.resolve(__dirname, "dist"), env);
+      await prerender(path.resolve(__dirname, "dist"), env, (redirects) => {
+        const source = path.resolve(__dirname, "public/_redirects");
+        const text = voegArtikelRedirectsToe(fs.readFileSync(source, "utf8"), redirects);
+        // Vite copied public/ before closeBundle: update both source and final output.
+        fs.writeFileSync(source, text);
+        fs.writeFileSync(path.resolve(__dirname, "dist/_redirects"), text);
+        const csvFile = path.resolve(__dirname, "docs/cloudflare-bulk-redirects.csv");
+        const csv = cloudflareBulkCsv(text.split("\n")).join("\n") + "\n";
+        if (!fs.existsSync(csvFile) || fs.readFileSync(csvFile, "utf8") !== csv) fs.writeFileSync(csvFile, csv);
+        console.log(`[redirects] ${redirects.length} root-artikelpaden met beide slashvarianten uit sitemapbron.`);
+      });
     },
   };
 }
