@@ -10,7 +10,7 @@ import { faqSchema, organizationRef } from "@/lib/schema";
 import { getPakket } from "@/data/bavPakketten";
 import {
   bavVergelijking, bavVergelijkingFaq, YEZZER_URL,
-  VERGELIJKING_GECONTROLEERD_OP, VERGELIJKING_GECONTROLEERD_LABEL, type BavAanbieder,
+  VERGELIJKING_GECONTROLEERD_OP, VERGELIJKING_GECONTROLEERD_LABEL, VERGELIJKING_MARKTPRIJS_TOELICHTING, type BavAanbieder,
 } from "@/data/bavVergelijking";
 import { ArrowRight, CheckCircle, ExternalLink, Phone } from "lucide-react";
 
@@ -28,10 +28,9 @@ const KOLOMMEN: { key: keyof BavAanbieder; label: string }[] = [
 
 function BronLink({ a }: { a: BavAanbieder }) {
   if (a.eigen) return <LocalizedLink to={a.bronUrl} className="text-accent underline underline-offset-2">zpzaken.nl/verzekeringen</LocalizedLink>;
-  const host = new URL(a.bronUrl).hostname.replace(/^www\./, "");
   return (
     <a href={a.bronUrl} target="_blank" rel="nofollow noopener" className="inline-flex items-center gap-1 text-accent underline underline-offset-2 break-all">
-      {host}<ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" />
+      Bron {a.aanbieder}<ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" />
     </a>
   );
 }
@@ -156,19 +155,20 @@ export default function BavZzpVergelijken() {
           </ul>
 
           <div className="mx-auto mt-6 max-w-3xl space-y-4 text-sm leading-relaxed text-muted-foreground">
+            <p>{VERGELIJKING_MARKTPRIJS_TOELICHTING}</p>
             <p>Prijzen gecontroleerd op {VERGELIJKING_GECONTROLEERD_LABEL}; je premie hangt af van beroep en omzet. "Niet vermeld" betekent dat we het gegeven niet op de productpagina van de aanbieder konden vinden. Het kan wel in de polisvoorwaarden staan.</p>
-            <p><strong className="text-foreground">Liever veel aanbieders tegelijk zien?</strong> Vergelijkingssite <a href={YEZZER_URL} target="_blank" rel="nofollow noopener" className="text-accent underline underline-offset-2">Yezzer</a> vergelijkt onder meer Hiscox, Markel, AIG, HDI en Liberty en noemt premies vanaf € 20 per maand.</p>
+            <p><strong className="text-foreground">Liever veel aanbieders tegelijk zien?</strong> Een <a href={YEZZER_URL} target="_blank" rel="nofollow noopener" className="text-accent underline underline-offset-2">vergelijkingssite</a> vergelijkt meerdere verzekeraars en noemt premies vanaf € 20 per maand.</p>
           </div>
         </div>
       </section>
 
       <Sectie id="laagste-premie" titel="Welke BAV voor zzp'ers heeft de laagste premie?">
-        <p>Op papier zijn Knab (vanaf € 27,22 per maand) en De Goudse (voorbeeld € 29,17 per maand, zonder assurantiebelasting) de laagste premie voor alleen een BAV. Ook als je bij Knab of Insify een losse AVB erbij neemt, kom je op papier lager uit dan {eur(maand.prijs)} per maand.</p>
+        <p>Op papier zijn Aanbieder B (vanaf € 27,22 per maand) en Aanbieder D (voorbeeld € 29,17 per maand, zonder assurantiebelasting) de laagste premie voor alleen een BAV. Ook als je bij Aanbieder B of Aanbieder A een losse AVB erbij neemt, kom je op papier lager uit dan {eur(maand.prijs)} per maand.</p>
         <p>Meer weten over alle premies? Lees <LocalizedLink to="/kennisbank/wat-kosten-verzekeringen-voor-zzp-ers" className="text-accent underline underline-offset-2">wat verzekeringen voor zzp'ers in 2026 kosten</LocalizedLink>.</p>
         <p>Het verschil zit in wat je ervoor krijgt:</p>
         <ul className="list-disc space-y-2 pl-5">
-          <li><strong className="text-foreground">Lager verzekerd bedrag.</strong> Knab dekt € 250.000 of € 500.000 per claim. De Goudse gaat tot € 1.000.000 per aanspraak. ZP Zaken dekt {bav} BAV per aanspraak.</li>
-          <li><strong className="text-foreground">Eigen risico.</strong> Bij De Goudse betaal je € 750 per aanspraak zelf, bij Insify € 250 tot € 2.500. Bij ZP Zaken is er geen eigen risico op BAV + AVB. Voor cyber geldt € 500, of € 1.000 bij cyberfraude.</li>
+          <li><strong className="text-foreground">Lager verzekerd bedrag.</strong> Aanbieder B dekt € 250.000 of € 500.000 per claim. Aanbieder D gaat tot € 1.000.000 per aanspraak. ZP Zaken dekt {bav} BAV per aanspraak.</li>
+          <li><strong className="text-foreground">Eigen risico.</strong> Bij Aanbieder D betaal je € 750 per aanspraak zelf, bij Aanbieder A € 250 tot € 2.500. Bij ZP Zaken is er geen eigen risico op BAV + AVB. Voor cyber geldt € 500, of € 1.000 bij cyberfraude.</li>
           <li><strong className="text-foreground">AVB niet inbegrepen.</strong> Bij de meeste aanbieders betaal je de AVB apart. Bij ZP Zaken zitten BAV en AVB in één polis.</li>
         </ul>
         <p>Heb je weinig risico en vraagt je opdrachtgever geen hoge dekking? Dan kan een goedkopere BAV met lagere dekking voldoende zijn. Wil je hoge dekking, geen eigen risico en BAV en AVB in één keer geregeld? Dan past ZP Zaken beter.</p>

@@ -22,6 +22,7 @@ export interface BavAanbieder {
 /** Datum van de laatste controle van de hele vergelijking. */
 export const VERGELIJKING_GECONTROLEERD_OP = "2026-10-05";
 export const VERGELIJKING_GECONTROLEERD_LABEL = "5 oktober 2026";
+export const VERGELIJKING_MARKTPRIJS_TOELICHTING = `Namen van andere aanbieders noemen we niet. De prijzen zijn marktprijzen zoals die in ${VERGELIJKING_GECONTROLEERD_LABEL.split(" ").slice(1).join(" ")} openbaar te vinden waren.`;
 
 /** Vaste klantwaarheid inloop/uitloop (besluit directie 9 okt 2026); ook in faqItems en Zeker. */
 export const INLOOP_UITLOOP_FAQ: { question: string; answer: string }[] = [
@@ -37,7 +38,7 @@ function zpZakenRij(): BavAanbieder {
   const d = maand.dekkingen;
   const inclKosten = bavPakketten.every((p) => (p.usps as readonly string[]).includes("Premie inclusief kosten en assurantiebelasting"));
   return {
-    aanbieder: "ZP Zaken (via Hiscox)",
+    aanbieder: "ZP Zaken",
     watJeKrijgt: "BAV + AVB in één polis",
     vanafPrijs: `${eur(maand.prijs)} per maand of ${eur(jaar.prijs)} per jaar${inclKosten ? ", premie incl. kosten en assurantiebelasting" : ""}`,
     verzekerdBedrag: `BAV ${eur(d.bav.perGebeurtenis)} en AVB ${eur(d.avb.perGebeurtenis)} per aanspraak`,
@@ -54,7 +55,7 @@ const C = VERGELIJKING_GECONTROLEERD_OP;
 export const bavVergelijking: BavAanbieder[] = [
   zpZakenRij(),
   {
-    aanbieder: "Insify",
+    aanbieder: "Aanbieder A",
     watJeKrijgt: "Alleen BAV. AVB is een losse verzekering (vanaf € 7,95 per maand)",
     vanafPrijs: "Vanaf € 35,30 per maand",
     verzekerdBedrag: "Zelf kiezen, tot € 2 miljoen per jaar",
@@ -64,9 +65,9 @@ export const bavVergelijking: BavAanbieder[] = [
     gecontroleerd_op: C,
   },
   {
-    aanbieder: "Knab (verzekeraar Alicia)",
+    aanbieder: "Aanbieder B",
     watJeKrijgt: "Alleen BAV. AVB is een losse verzekering (vanaf € 9,08 per maand)",
-    vanafPrijs: "Vanaf € 27,22 per maand, 5% korting met Knab-rekening",
+    vanafPrijs: "Vanaf € 27,22 per maand, 5% korting met een rekening bij deze aanbieder",
     verzekerdBedrag: "€ 250.000 of € 500.000 per claim",
     eigenRisico: "Niet vermeld",
     opzeggen: "Dagelijks",
@@ -74,7 +75,7 @@ export const bavVergelijking: BavAanbieder[] = [
     gecontroleerd_op: C,
   },
   {
-    aanbieder: "Centraal Beheer",
+    aanbieder: "Aanbieder C",
     watJeKrijgt: "BAV, alleen samen met hun AVB",
     vanafPrijs: "Vanaf € 38,56 per maand (zzp-pagina). Algemene BAV-pagina noemt vanaf € 25,20",
     verzekerdBedrag: "€ 250.000 standaard, € 2.500.000 voor onder meer architecten",
@@ -84,7 +85,7 @@ export const bavVergelijking: BavAanbieder[] = [
     gecontroleerd_op: C,
   },
   {
-    aanbieder: "De Goudse",
+    aanbieder: "Aanbieder D",
     watJeKrijgt: "Alleen BAV, via een adviseur. AVB apart",
     vanafPrijs: "Voorbeeld: € 29,17 per maand (jurist, € 125.000 omzet, € 250.000 dekking), zonder assurantiebelasting",
     verzekerdBedrag: "€ 250.000, € 500.000 of € 1.000.000 per aanspraak, per jaar maximaal 2 keer",
@@ -94,7 +95,7 @@ export const bavVergelijking: BavAanbieder[] = [
     gecontroleerd_op: C,
   },
   {
-    aanbieder: "ZZP Nederland (verzekeraar Hiscox)",
+    aanbieder: "Aanbieder E",
     watJeKrijgt: "Alleen BAV. AVB apart",
     vanafPrijs: "Geen vanaf-prijs. Pagina noemt gemiddeld € 20 tot € 100 per maand, 10% ledenkorting",
     verzekerdBedrag: "Niet vermeld",
@@ -104,7 +105,7 @@ export const bavVergelijking: BavAanbieder[] = [
     gecontroleerd_op: C,
   },
   {
-    aanbieder: "Allianz",
+    aanbieder: "Aanbieder F",
     watJeKrijgt: "BAV. AVB kan als uitbreiding",
     vanafPrijs: "Vanaf ongeveer € 375 per jaar",
     verzekerdBedrag: "Niet vermeld",
@@ -114,7 +115,7 @@ export const bavVergelijking: BavAanbieder[] = [
     gecontroleerd_op: C,
   },
   {
-    aanbieder: "Nationale-Nederlanden",
+    aanbieder: "Aanbieder G",
     watJeKrijgt: "BAV, alleen samen met een AVB. Voor juridische en administratieve beroepen",
     vanafPrijs: "Niet vermeld (online berekenen)",
     verzekerdBedrag: "Maximaal € 1.000.000 per aanspraak en € 2.000.000 per jaar",
@@ -124,8 +125,8 @@ export const bavVergelijking: BavAanbieder[] = [
     gecontroleerd_op: C,
   },
   {
-    aanbieder: "Interpolis (via Rabobank)",
-    watJeKrijgt: "BAV, alleen met een zakelijke rekening bij Rabobank. AVB apart",
+    aanbieder: "Aanbieder H",
+    watJeKrijgt: "BAV, alleen met een zakelijke rekening bij de aangesloten bank. AVB apart",
     vanafPrijs: "Niet vermeld (online berekenen)",
     verzekerdBedrag: "Niet vermeld",
     eigenRisico: "Niet vermeld",
@@ -146,7 +147,7 @@ export function bavVergelijkingFaq(): { question: string; answer: string }[] {
     { question: "Is een BAV verplicht voor zzp'ers?", answer: "Niet voor iedereen. Voor sommige beroepen is het wettelijk of door een beroepsorganisatie verplicht. Veel opdrachtgevers en bemiddelaars vragen er ook om in hun contract." },
     { question: "Wat kost een BAV voor een zzp'er?", answer: `De prijzen op de sites van aanbieders beginnen rond € 25 tot € 40 per maand voor alleen een BAV. Je premie hangt af van je beroep, je omzet, het verzekerd bedrag en het eigen risico. Bij ZP Zaken betaal je ${eur(maand.prijs)} per maand of ${eur(jaar.prijs)} per jaar voor BAV en AVB samen, inclusief kosten en assurantiebelasting.` },
     { question: "Welk verzekerd bedrag heb ik nodig?", answer: "Dat hangt af van je werk en wat je opdrachtgever vraagt. Kijk in je contract welk bedrag er staat. Veel goedkope polissen starten bij € 250.000 per aanspraak. Dat is soms te weinig voor grotere opdrachten." },
-    { question: "Kan ik mijn BAV dagelijks opzeggen?", answer: "Bij ZP Zaken, Insify en Knab wel. Bij andere aanbieders staat het niet altijd op de productpagina. Check de voorwaarden voordat je afsluit." },
+    { question: "Kan ik mijn BAV dagelijks opzeggen?", answer: "Bij ZP Zaken, Aanbieder A en Aanbieder B wel. Bij andere aanbieders staat het niet altijd op de productpagina. Check de voorwaarden voordat je afsluit." },
     ...INLOOP_UITLOOP_FAQ,
     { question: "Hoe snel ben ik verzekerd bij ZP Zaken?", answer: "Je vraagt online aan. Het is binnen 24 uur geregeld en je krijgt het certificaat in je mailbox." },
   ];
