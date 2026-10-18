@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] 18 oktober: twee exacte F5-artikelcorrecties met terugleescontrole; structurele root-artikelredirects uit sitemapbron, routeconflicttests; geen publicatie.
 - [x] Interne cyberbron gescheiden, lazy admin-import en manifest/importgraafscan toegevoegd; vijf A16-301's plus CSV gegenereerd, 51 tests geslaagd, vijf exacte browser-eindadressen bevestigd, automatische controle build OK. Evi, /tv, klantenprijzen/teksten/mails/data ongemoeid; geen publicatie/deploy.
 - [ ] Werkelijke productiechunk-scan: dist/assets en .vite/manifest.json zijn niet beschikbaar in deze sandbox; preview-manifest HTTP 401. Scan draait automatisch bij vite build en schrijft dist/cyber-bundle-audit.json met exacte chunklijst. Productietest nu 1 overgeslagen, geen scanresultaat claimen.
 - [x] Cyber-versiecorrectie: versie/herkenning terug naar 2026-10-08 met behoud nieuwe teksten; read-only 0 leads en 0 contracten met 2026-10-16 (ook totaal); 68/68 gerichte tests, build OK en dezelfde zeven functies opnieuw gedeployed zonder aanroep. Geen databasewijziging, mail, Exact of publicatie.
