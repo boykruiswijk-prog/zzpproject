@@ -14,7 +14,7 @@
 - Exact-verwerking voor screening wordt nooit vanuit de openbare formulierfunctie uitgevoerd. Waarom: boekhoudmutaties vereisen een afzonderlijke beveiligde teamactie.
 - Security-definerfuncties krijgen minimale EXECUTE-rechten; alleen expliciete publieke leesfuncties blijven voor anon beschikbaar. Waarom: privilege-escalatie via RPC voorkomen.
 - Policies met rolfuncties gelden alleen `TO authenticated`; publieke leespolicies gebruiken geen rolfunctie. Controle: scripts/check-anon-kennisbank.mjs.
-- Prerender rendert elke publieke route via src/entry-server.tsx; legacyRedirects (vangregels /* altijd na exacte regels, geen stub) en artikel-slugs krijgen noindex-doorverwijspagina's. Waarom: hosting kent geen SSR, 301 of 404.
+- Prerender via entry-server.tsx; root article 301s/stubs share the sitemap list; router/SEO routes, existing redirects and /tv win; wildcards last, no stub. Why: safe WordPress URLs on static hosting.
 - 404's alleen via RPC log_not_found (begrensd optellen). Waarom: geen anonieme tabelrechten.
 - Testdata wordt gemarkeerd met kolom is_test (nooit verwijderd); beheeroverzichten filteren is_test standaard weg, alleen admin/supervisor kan via useToonTestrecords tonen. Leadstatuslabels komen uit src/lib/statusLabels.ts. Waarom: herleidbare historie en één bron voor labels.
 - Collectieve aanmeldtellingen alleen in beheer, nooit publiek. Waarom: geen misleidende sociale bewijslast.

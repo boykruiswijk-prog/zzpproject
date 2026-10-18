@@ -23,6 +23,8 @@ import { waaromFaqs } from "../src/config/waaromFaqs";
 import { formatPageTitle } from "../src/lib/seoTitle";
 import { resolveFiscaleTokens } from "../src/lib/fiscaleTokens";
 import { markdownToSafeHtml } from "./markdownToSafeHtml";
+import { rootArtikelRedirects } from "./articleRedirects";
+import { bestaandeRoutes } from "./routeConflicts";
 import { generateArticleImages } from "./articleImages";
 import { absoluteArticleImage, absoluteArticleOgImage, isGeneratedArticleImage } from "../src/lib/articleImage";
 import {
@@ -513,7 +515,11 @@ async function fetchCategoryList(env: Record<string, string>): Promise<unknown[]
   return res.ok ? ((await res.json()) as unknown[]) : [];
 }
 
-export async function prerender(distDir: string, env: Record<string, string> = {}) {
+export async function prerender(
+  distDir: string,
+  env: Record<string, string> = {},
+  onArticleRedirects?: (redirects: ReturnType<typeof rootArtikelRedirects>) => void,
+) {
   const templatePath = path.join(distDir, "index.html");
   if (!fs.existsSync(templatePath)) {
     console.warn("[prerender] dist/index.html ontbreekt; prerender overgeslagen.");
@@ -549,6 +555,8 @@ export async function prerender(distDir: string, env: Record<string, string> = {
   //     gevuld, zodat artikel- en categoriepagina's direct hun inhoud tonen.
   // Projectmap (waar src/ staat), onafhankelijk van de dist-map.
   const root = fileURLToPath(new URL("..", import.meta.url));
+  const rootRedirects = rootArtikelRedirects(articles, root);
+  onArticleRedirects?.(rootRedirects);
   await generateArticleImages(distDir, root, env, articles);
   const ssr = await loadSsr(root);
   const categoryList = await fetchCategoryList(env).catch(() => []);
@@ -712,15 +720,15 @@ export async function prerender(distDir: string, env: Record<string, string> = {
   const articleIndex = new Map<string, ArticleRedirectInfo>(
     articles.map((a) => [a.slug, { slug: a.slug, category: a.category, is_published: true }]),
   );
-  const routePaths = new Set((seoRoutes as SeoRoute[]).map((r) => r.path));
+  const routePaths = new Set([...bestaandeRoutes(root)].map((p) => `/${p}`));
   let stubs = 0;
   // Oude WordPress-artikel-URL's /<slug>/ en /blog/<slug>/ → /kennisbank/<slug>.
   const legacyFrom = new Set(legacyRedirects.map((r) => r.from));
-  const articleStubs = articles.flatMap((a) =>
-    [a.slug, `blog/${a.slug}`]
+  const articleStubs = [...rootRedirects, ...articles.flatMap((a) =>
+    [`blog/${a.slug}`]
       .filter((from) => !legacyFrom.has(from))
       .map((from) => ({ from, to: `/kennisbank/${a.slug}` })),
-  );
+  )];
   for (const redirect of [...legacyRedirects, ...articleStubs]) {
     const routePath = `/${redirect.from}`;
     // Nooit een bestaande route overschrijven. Let op: een artikel met dezelfde
