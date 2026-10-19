@@ -296,6 +296,12 @@ export function trackAanvraagGestart(conceptId: string, isTest = isTestOmgeving(
   if (uetGeladen) uetq()?.push("event", "aanvraag_gestart", { event_category: "aanvraag" });
 }
 
+/** Interesse pensioen via Evi verstuurd: alleen GA4, bewust geen Ads-label. */
+export function trackEviInteresseVerstuurd(isTest = isTestOmgeving()) {
+  if (isTest) return;
+  trackGa("evi_interesse_verstuurd", { formulier: "evi", page: page() });
+}
+
 export type LeadFormulier = "offerte" | "contact" | "terugbel" | "aanvraag";
 export const trackGenerateLead = (formulier: LeadFormulier) =>
   trackGa("generate_lead", { formulier, page: page(), value: 0, currency: "EUR" });
