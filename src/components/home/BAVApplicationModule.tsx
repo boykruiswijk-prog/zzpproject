@@ -5,7 +5,7 @@ import { CYBER_AKKOORD, CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER
 import { useState, useEffect, useRef } from "react";
 import { SepaMachtigingBlok, bouwFrontendMachtiging } from "@/components/shared/SepaMachtigingBlok";
 import { mandaatkenmerkVoor, redenBav } from "@/lib/sepaMachtiging";
-import { trackBeginCheckout, trackWizardStep, trackWizardValidationError, trackAanvraagStap, trackAddPaymentInfo, trackPurchase } from "@/lib/tracking";
+import { trackBeginCheckout, trackWizardStep, trackWizardValidationError, trackAanvraagStap, trackAddPaymentInfo, trackPurchase, trackAanvraagGestart } from "@/lib/tracking";
 import { leesAttributie } from "@/lib/attributie";
 import { isNlTelefoon, normaliseerNlTelefoon } from "../../../supabase/functions/_shared/telefoon";
 import { formatDateNL } from "@/lib/dateFormat";
@@ -42,7 +42,8 @@ import { LocalizedLink } from "@/components/LocalizedLink";
 import { usePdokAdres } from "@/hooks/usePdokAdres";
 import { AdresGevonden } from "@/components/AdresGevonden";
 import { normaliseerPostcode } from "@/lib/adresNormalisatie";
-import { isEigenKvk, KVK_EIGEN_NUMMER_MELDING, KVK_PLACEHOLDER } from "@/lib/kvkInvoer";
+import { isEigenKvk, KVK_EIGEN_NUMMER_MELDING, KVK_PLACEHOLDER, schoonKvk, kvkFoutmelding } from "@/lib/kvkInvoer";
+import { SNELLE_START_EVENT, type SnelleStartGegevens } from "@/lib/snelleStart";
 import { IbanVertrouwen } from "@/components/home/IbanVertrouwen";
 import { interneBronUitZoek } from "@/lib/interneBron";
 
@@ -89,7 +90,7 @@ function FieldError({ message }: { message?: string }) {
   );
 }
 
-export function BAVApplicationModule({ initialSector = "" }: { initialSector?: string } = {}) {
+export function BAVApplicationModule({ initialSector = "", compactPakketten = false }: { initialSector?: string; compactPakketten?: boolean } = {}) {
    const { t } = useTranslation();
    const { toast } = useToast();
    const [currentStep, setCurrentStep] = useState(1);
@@ -218,8 +219,8 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
 
     if (step === 2) {
       if (!formData.bedrijfsnaam.trim()) newErrors.bedrijfsnaam = t("bavApp.valCompanyName");
-      if (!formData.kvkNummer.trim()) newErrors.kvkNummer = t("bavApp.valKvk");
-      else if (!/^[0-9]{8}$/.test(formData.kvkNummer.trim())) newErrors.kvkNummer = t("bavApp.valKvkFormat");
+      const kvkFout = kvkFoutmelding(formData.kvkNummer);
+      if (kvkFout) newErrors.kvkNummer = kvkFout;
       else if (!isValidKvk(formData.kvkNummer)) newErrors.kvkNummer = KVK_EIGEN_NUMMER_MELDING;
       if (uittrekselVerplicht(!!startDate && isStarter(formData.kvkStartdatum || null, startDate), kvkApiOp) && !uittrekselId) newErrors.kvkUittreksel = UITTREKSEL_VERPLICHT;
       if (formData.kvkStartdatum && (!/^\d{4}-\d{2}-\d{2}$/.test(formData.kvkStartdatum) || formData.kvkStartdatum > new Date().toISOString().slice(0, 10) || formData.kvkStartdatum < "1900-01-01")) newErrors.kvkStartdatum = "Vul een geldige startdatum in die niet in de toekomst ligt";
@@ -277,6 +278,19 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
   // mogelijk om e-mailadressen en KvK-nummers af te tasten. De dubbelcheck
   // gebeurt nu server-side bij het versturen van de aanvraag.
   const wizardRef = useRef<HTMLDivElement>(null);
+  // Snelle start bovenaan beroepspagina's: maandpakket, e-mail en telefoon vooraf ingevuld.
+  useEffect(() => {
+    const h = (e: Event) => {
+      const d = (e as CustomEvent<SnelleStartGegevens>).detail ?? { email: "", telefoon: "" };
+      kiesPakket("maandelijks");
+      setCurrentStep(1);
+      setFormData(prev => ({ ...prev, email: d.email || prev.email, telefoon: d.telefoon || prev.telefoon }));
+      window.setTimeout(() => wizardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+    };
+    window.addEventListener(SNELLE_START_EVENT, h);
+    return () => window.removeEventListener(SNELLE_START_EVENT, h);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const successRef = useRef<HTMLDivElement>(null);
   const successHeadingRef = useRef<HTMLHeadingElement>(null);
   const stapGewisseld = useRef(false);
@@ -333,7 +347,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
       email: emailOk ? formData.email.trim() : "",
       telefoon: telOk ? normaliseerNlTelefoon(formData.telefoon) : "",
       voornaam: formData.voornaam, achternaam: formData.achternaam,
-      bedrijfsnaam: formData.bedrijfsnaam, kvk: formData.kvkNummer,
+      bedrijfsnaam: formData.bedrijfsnaam, kvk: schoonKvk(formData.kvkNummer),
       pakket: gekozenPakketId,
       sector: verzekeringskaartVoorSector(formData.sector)?.sector.label ?? formData.sector,
       pagina: window.location.pathname,
@@ -349,9 +363,11 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
         }
       } catch { if (!conceptId.current) conceptId.current = crypto.randomUUID(); }
       laatsteConcept.current = sleutel;
+      const id = conceptId.current;
       supabase.functions.invoke("submit-public-form", {
-        body: { table: "aanvraag_concepten", hp: guard.honeypot, row: { id: conceptId.current, ...row }, attributie: leesAttributie() },
-      }).catch(() => { /* tussentijds opslaan mag de aanvraag nooit hinderen */ });
+        body: { table: "aanvraag_concepten", hp: guard.honeypot, row: { id, ...row }, attributie: leesAttributie() },
+      }).then(({ error }) => { if (!error) trackAanvraagGestart(id); })
+        .catch(() => { /* tussentijds opslaan mag de aanvraag nooit hinderen */ });
     }, 1500);
     return () => window.clearTimeout(timer);
   }, [currentStep, formData.email, formData.telefoon, formData.voornaam, formData.achternaam, formData.bedrijfsnaam, formData.kvkNummer, formData.sector, gekozenPakketId, isSubmitted, guard.honeypot, interneBron]);
@@ -402,7 +418,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
            attributie: leesAttributie(),
            interne_bron: interneBron,
            bedrijfsnaam: formData.bedrijfsnaam,
-           kvk_nummer: formData.kvkNummer || null,
+           kvk_nummer: schoonKvk(formData.kvkNummer) || null,
            kvk_startdatum: formData.kvkStartdatum || null,
            beroep: formData.beroep || null,
            sector: verzekeringskaartVoorSector(formData.sector)?.sector.label ?? null,
@@ -691,6 +707,20 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                       <p className="text-muted-foreground text-sm">{t("home.bavChooseDesc")}</p>
                       <p className="text-muted-foreground text-sm">Alle prijzen zijn inclusief kosten en assurantiebelasting.</p>
                     </div>
+                    {compactPakketten ? (
+                      <div role="radiogroup" aria-label="Kies je pakket" data-testid="pakket-keuze-compact" className="flex flex-wrap gap-2">
+                        {bavPakketten.map((pkg) => {
+                          const isSelected = gekozenPakketId === pkg.id;
+                          return (
+                            <button key={pkg.id} type="button" role="radio" aria-checked={isSelected} onClick={() => kiesPakket(pkg.id)}
+                              className={cn("rounded-full border px-3 py-1.5 text-sm transition-colors",
+                                isSelected ? "border-accent bg-accent/10 text-accent font-medium" : "border-input hover:border-accent/50")}>
+                              {pkg.name} · €{formatPremieBedrag(pkg.prijs)} / {pkg.periode}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : (
                     <div className="grid sm:grid-cols-2 gap-4">
                       {bavPakketten.map((pkg) => {
                         const isSelected = gekozenPakketId === pkg.id;
@@ -755,7 +785,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                           </Button>
                         );
                       })}
-                    </div>
+                    </div>)}
                     {heeftCyber && <><div className="space-y-2 text-sm text-muted-foreground"><p>{CYBER_HULP}</p><p>{CYBER_LOOPTIJD}</p><p>{CYBER_POLISVOORWAARDEN}</p></div><CyberVragen antwoorden={cyberAntwoorden} onChange={setCyberAntwoorden} /><FieldError message={errors.cyber} /></>}
                     {(cyberAfgewezen || (heeftCyber && beoordeelCyber(cyberAntwoorden).volledig && !beoordeelCyber(cyberAntwoorden).toegestaan)) && <p role="status" className="text-sm text-foreground">{CYBER_AFGEWEZEN}</p>}
                     <div>
@@ -819,7 +849,7 @@ export function BAVApplicationModule({ initialSector = "" }: { initialSector?: s
                       </div>
                       <div>
                         <Label htmlFor="kvkNummer">{t("home.bavKvk")} *</Label>
-                        <Input id="kvkNummer" name="kvkNummer" value={formData.kvkNummer} onChange={handleInputChange} maxLength={8} placeholder={KVK_PLACEHOLDER} className={cn(errors.kvkNummer && "border-destructive")} />
+                        <Input id="kvkNummer" name="kvkNummer" inputMode="numeric" autoComplete="off" value={formData.kvkNummer} onChange={handleInputChange} onBlur={() => setFormData(prev => ({ ...prev, kvkNummer: schoonKvk(prev.kvkNummer) }))} maxLength={40} placeholder={KVK_PLACEHOLDER} className={cn(errors.kvkNummer && "border-destructive")} />
                         <FieldError message={errors.kvkNummer} />
                       </div>
                       <details className="rounded-lg border border-border p-3" open={starterOpen} onToggle={(e) => setStarterOpen((e.currentTarget as HTMLDetailsElement).open)} data-testid="starter-uitklap">
