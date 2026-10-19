@@ -1,4 +1,3 @@
-// @vitest-environment node
 import { describe, expect, it } from "vitest";
 import { bavVergelijking } from "../data/bavVergelijking";
 import { getPakket } from "../data/bavPakketten";

@@ -1,4 +1,3 @@
-// @vitest-environment node
 import { describe,it,expect } from 'vitest';
 import fs from 'node:fs';
 import { EVI_PAGINA_PAD as pad,EVI_PAGINA_PUBLIEK,eviPaginaVindbaar,eviPaginaRobots,eviPaginaLinks,eviPaginaToegankelijk,eviPaginaPrerenderen } from '../config/eviPagina';

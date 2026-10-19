@@ -1,4 +1,3 @@
-// @vitest-environment node
 import { it,expect } from 'vitest';
 import { berekenJaarruimte as j,berekenPensioengat as g } from '../lib/pensioenRekenhulp';
 it('60.000 geeft 12.248 en 1878 teruggave',()=>{const r=j({winst:60000,inleg:5000});expect(r.jaarruimte).toBe(12248);expect(r.teruggave).toBeCloseTo(1878);});
