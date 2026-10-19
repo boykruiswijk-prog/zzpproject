@@ -14,8 +14,8 @@ const EVENT = "zp:terugbel";
 const MOMENTEN = ["Ochtend", "Middag", "Avond"] as const;
 
 /** Opent het compacte terugbelverzoek (overal op de site, één dialog in Layout). */
-export function openTerugbel() {
-  window.dispatchEvent(new Event(EVENT));
+export function openTerugbel(telefoon?: unknown) {
+  window.dispatchEvent(new CustomEvent(EVENT, { detail: typeof telefoon === "string" ? { telefoon } : undefined }));
 }
 
 /** Klikhandler voor links naar /contact: opent de dialog, link blijft crawlbaar. */
@@ -36,7 +36,11 @@ export function TerugbelDialog() {
   const guard = useFormGuard();
 
   useEffect(() => {
-    const h = () => setOpen(true);
+    const h = (e: Event) => {
+      const tel = (e as CustomEvent<{ telefoon?: string } | undefined>).detail?.telefoon;
+      if (tel) setTelefoon(tel);
+      setOpen(true);
+    };
     window.addEventListener(EVENT, h);
     return () => window.removeEventListener(EVENT, h);
   }, []);
