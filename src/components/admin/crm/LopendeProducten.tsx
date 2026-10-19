@@ -20,6 +20,7 @@ import { BijlageKiezer } from "./BijlageKiezer";
 import { BavNummer } from "./BavNummer";
 import { OPZEG_GEEN_CREDIT_TEKST, opzegZonderCredit } from "@/lib/opzegBeleid";
 import { contractEindStatus, kiesBavNummer, useBavRijen } from "@/lib/bavNummer";
+import { controleerAdminMfa, verwerkMfaFout } from "@/lib/adminMfaStap";
 
 export const STOP_REDENEN: Record<string, string> = {
   opzegging_klant: "Opzegging klant",
@@ -132,6 +133,10 @@ function BeeindigDialoog({ ondernemingId, ondernemingNaam, persoonId, contracten
   const geldig = c.size + p.size > 0 && datum && toelichting.trim().length >= 3;
 
   async function uitvoeren() {
+    if (!(await controleerAdminMfa())) {
+      toast.info("Bevestig eerst je tweestapsverificatie. Er is nog niets gewijzigd.");
+      return;
+    }
     setBezig(true);
     const { data, error } = await supabase.rpc("crm_beeindig", {
       _onderneming_id: ondernemingId, _contract_ids: Array.from(c), _policy_ids: Array.from(p),
@@ -144,7 +149,12 @@ function BeeindigDialoog({ ondernemingId, ondernemingNaam, persoonId, contracten
     const tekst = credits.map((x) => `regel ${x.bron_rij}: ${x.status === "niet_nodig" ? (x.melding ? "geen creditnota" : "geen creditnota nodig") : x.status === "te_maken" ? "concept-creditnota klaargezet" : x.status}${x.melding ? ` (${x.melding})` : ""}`).join("; ");
     toast.success(`Beeindigd.${tekst ? " " + tekst : ""}`, { duration: 8000 });
     if (mail && res?.notitie_id) {
-      const { error: mErr } = await supabase.functions.invoke("crm-beeindiging-bevestiging", { body: { notitie_id: res.notitie_id } });
+      const { error: mErr, data: mData } = await supabase.functions.invoke("crm-beeindiging-bevestiging", { body: { notitie_id: res.notitie_id } });
+      if (await verwerkMfaFout(mErr, mData)) {
+        toast.info("De beeindiging is opgeslagen. Bevestig je tweestapsverificatie; de mail is nog niet verstuurd.");
+        setBezig(false);
+        return;
+      }
       if (mErr) toast.error("Bevestiging aan klant niet verstuurd: " + mErr.message); else toast.success("Bevestiging aan klant verstuurd");
     }
     setBezig(false);

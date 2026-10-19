@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { formatDateNL } from "@/lib/dateFormat";
 import { STAP_DAG, STAP_LABEL, volgendeStap, type IncassoStap } from "@/lib/incassoCyclus";
 import { plusDagenISO } from "@/lib/prolongatie";
+import { controleerAdminMfa, verwerkMfaFout } from "@/lib/adminMfaStap";
 
 const vandaag = () => new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Amsterdam" }).format(new Date());
 export const euroNL = (n: number | null | undefined) => (n == null ? "-" : `€ ${Number(n).toFixed(2).replace(".", ",")}`);
@@ -97,9 +98,11 @@ export function BetaaldKnop({ id, onKlaar }: { id: string; onKlaar?: () => void 
 
 /** Royement bevestigen: eerst alleen status en logregel (RPC), daarna de royementsmail via de schakelaar (een per incasso). */
 export async function royementBevestigenEnMailen(id: string): Promise<{ error: string | null; mail: string | null }> {
+  if (!(await controleerAdminMfa())) return { error: "Bevestig eerst je tweestapsverificatie. Er is nog niets gewijzigd.", mail: null };
   const { error } = await supabase.rpc("bevestig_royement" as any, { _id: id });
   if (error) return { error: error.message, mail: null };
   const { data, error: fout } = await supabase.functions.invoke("royement-bevestiging-mail", { body: { incasso_id: id } });
+  if (await verwerkMfaFout(fout, data)) return { error: "Royement is bevestigd. Bevestig je tweestapsverificatie; de mail is nog niet verstuurd.", mail: null };
   return { error: null, mail: fout ? "mail_mislukt" : (data as any)?.mail ?? null };
 }
 
