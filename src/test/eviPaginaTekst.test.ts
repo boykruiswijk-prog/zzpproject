@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe,it,expect } from 'vitest';
 import fs from 'node:fs';
 import { EVI_SEO,EVI_FAQ,eviSchemas,EVI_KORT } from '../data/eviPensioen';

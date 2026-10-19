@@ -1,4 +1,5 @@
 // @vitest-environment node
+// @vitest-environment node
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import fs from "fs";
 import path from "path";
