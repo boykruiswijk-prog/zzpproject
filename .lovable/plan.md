@@ -1,12 +1,17 @@
-# Artikelcorrecties en oude WordPress-adressen
+# Status MFA op interne serverfuncties (besluit Boy 19 okt 2026)
 
-- Vervang uitsluitend de twee opgegeven zinnen in de twee bestaande artikelen en zet hun wijzigingsdatum op nu.
-- Lees de artikelen terug en controleer alle gepubliceerde artikelen op ondernemersplein-links buiten bronregels.
-- Genereer bij iedere build oude artikeladressen met en zonder eindslash uit exact dezelfde gepubliceerde artikellijst als de sitemap.
-- Geef alle bestaande routes en doorverwijzingen voorrang; maak nooit een doorverwijzing voor /tv.
-- Voeg gerichte tests toe en rapporteer gewijzigde bestanden, testuitslag en beschikbare commitinformatie. Niet publiceren.
+## Afgerond
+- MFA-controle toegevoegd aan 24 interne team- en adminfuncties (Exact, gebruikers aanmaken, export, activeren, polis/CRM, verzending, artikelen). Bestaande rolrechten zijn gebleven.
+- 28 bewust publieke of afzonderlijk beveiligde functies (formulieren met spamcontrole, cron-, internal-secret-, webhook-, OAuth-callback- en schermtoegang) staan als uitzondering in de nieuwe inventaristest.
+- Tests: 115/115 gericht groen. Volledige set: 5 oudere fouten bij Exact en redirects, die niets met deze wijziging te maken hebben. Bouwcontrole groen.
 
-## Technische uitvoering
-- Deel de artikelredirectgenerator tussen de prerender en tests; toets conflicten tegen zowel App.tsx als seoRoutes.
-- Houd de bestaande Cloudflare-CSV-generatie consistent met public/_redirects; wijzig de CSV alleen wanneer nieuwe regels dat vereisen.
-- Geen wijzigingen aan andere artikelvelden, klantdata, prijzen, facturatie, SEPA, mails of Exact.
+## Open
+- De nieuwe controles zijn nog niet live: de functies zijn niet gedeployed en er is niets gepubliceerd.
+- De browsercontrole van het admin-dashboard als supervisor met MFA kon niet worden gedaan. De beschikbare sessie heeft geen tweestapsverificatie (aal2).
+
+## Voorstel volgende stap (alleen na uw akkoord)
+1. De 24 aangepaste functies deployen. Er wordt niets publiek gezet en er worden geen functies aangeroepen.
+2. U logt in de preview in met tweestapsverificatie. Daarna controleer ik het dashboard, de export en de Exact-koppelknop in de browser.
+3. Eén gewone wijzigingsmelding voor Ellen, pas bij publicatie.
+
+Geen wijzigingen aan data, prijzen, facturatie, SEPA of klantmails.
