@@ -1,17 +1,25 @@
-# Status MFA op interne serverfuncties (besluit Boy 19 okt 2026)
+# Onderzoek: oude BetterLinks-bestemmingen live (alleen bevinding, niets gewijzigd)
 
-## Afgerond
-- MFA-controle toegevoegd aan 24 interne team- en adminfuncties (Exact, gebruikers aanmaken, export, activeren, polis/CRM, verzending, artikelen). Bestaande rolrechten zijn gebleven.
-- 28 bewust publieke of afzonderlijk beveiligde functies (formulieren met spamcontrole, cron-, internal-secret-, webhook-, OAuth-callback- en schermtoegang) staan als uitzondering in de nieuwe inventaristest.
-- Tests: 115/115 gericht groen. Volledige set: 5 oudere fouten bij Exact en redirects, die niets met deze wijziging te maken hebben. Bouwcontrole groen.
+## Wat live gebeurt (gemeten 19-10 12:27 UTC)
 
-## Open
-- De nieuwe controles zijn nog niet live: de functies zijn niet gedeployed en er is niets gepubliceerd.
-- De browsercontrole van het admin-dashboard als supervisor met MFA kon niet worden gedaan. De beschikbare sessie heeft geen tweestapsverificatie (aal2).
+```text
+/brochure-ict                  -> 301 /wp-content/uploads/2023/09/beroepsaansprakelijkheid-technology-highlights.pdf
+                                  -> 301 storage .../article-images/wp-content/uploads/... (pdf)
+/go/cyberverzekeringskaart-zzp -> 301 /wp-content/uploads/2024/01/Verzekeringskaart-CyberClear-by-Hiscox-2022.pdf
+/go/sharepeople (en met /)     -> 301 /aov
+```
 
-## Voorstel volgende stap (alleen na uw akkoord)
-1. De 24 aangepaste functies deployen. Er wordt niets publiek gezet en er worden geen functies aangeroepen.
-2. U logt in de preview in met tweestapsverificatie. Daarna controleer ik het dashboard, de export en de Exact-koppelknop in de browser.
-3. Eén gewone wijzigingsmelding voor Ellen, pas bij publicatie.
+Alle antwoorden komen van `server: cloudflare`, zonder kenmerken van onze hosting.
 
-Geen wijzigingen aan data, prijzen, facturatie, SEPA of klantmails.
+## Bron
+
+1. **Cloudflare, niet onze code.** Eén regel in onze code, database of functies bevat deze oude bestemmingen niet. `legacyRedirects.ts`, de kopie in de functies, `public/_redirects` en `docs/cloudflare-bulk-redirects.csv` bevatten allemaal de nieuwe 301's (`/documenten#verzekeringsvoorwaarden`, `/voorwaarden`, `/partners`). Cloudflare (Bulk Redirects of Redirect Rules op de zone zpzaken.nl, nog met de oude BetterLinks-lijst) antwoordt vóór onze site, dus onze regels worden nooit bereikt.
+2. **De publicatie is actief, maar niet zichtbaar.** Het Lovable-adres stuurt elk pad door naar zpzaken.nl, waar Cloudflare weer eerst antwoordt. De nieuwe regels zijn dus niet live te bewijzen.
+3. **Tweede stap naar storage.** `/wp-content/uploads/*` stuurt door naar de opslag; dat staat in onze eigen `public/_redirects` (regel 17). Dat is bedoeld en verklaart alleen de laatste stap.
+4. Er zijn geen meldingen in de database (geen tabel met korte links). `wp-import` noemt "sharepeople" alleen als lijst om over te slaan.
+
+## Wat er nodig is (door iemand met toegang tot Cloudflare)
+
+- In Cloudflare, bij zpzaken.nl, bij Rules (Bulk Redirects en Redirect Rules): de oude BetterLinks-regels opzoeken voor deze 37 paden en verwijderen of vervangen. Dat doe je het makkelijkst door de lijst opnieuw te importeren uit `docs/cloudflare-bulk-redirects.csv`.
+- Daarna de Cloudflare-cache legen voor deze paden. Opnieuw meten met `curl -I`: verwacht 301 naar de nieuwe bestemmingen.
+- Er hoeft niets aan de code te veranderen en er is geen nieuwe publicatie nodig.
