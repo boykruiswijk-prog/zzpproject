@@ -277,6 +277,25 @@ export const trackTerugbelVerzonden = (isTest = isTestOmgeving()) =>
 export const trackContactVerzonden = (isTest = isTestOmgeving()) =>
   secundaireConversie("contactformulier_verzonden", "contact", GOOGLE_ADS_CONVERSIE_CONTACT, isTest);
 
+/**
+ * Secundaire conversie "aanvraag gestart": eerste keer dat een aanvraagconcept met e-mail of telefoon is opgeslagen.
+ * Label van de Google Ads-actie "Aanvraag gestart" hier invullen; leeg = alleen GA4-event, geen Ads-conversie.
+ */
+export const GOOGLE_ADS_CONVERSIE_AANVRAAG_GESTART = "";
+const GESTART_KEY = "zp_aanvraag_gestart";
+
+/** Maximaal één keer per concept-id (ook na herladen). Nooit persoonsgegevens in parameters. */
+export function trackAanvraagGestart(conceptId: string, isTest = isTestOmgeving()) {
+  if (!conceptId || isTest || typeof window === "undefined" || isNietGemetenPad(window.location.pathname)) return;
+  try {
+    const al: string[] = JSON.parse(localStorage.getItem(GESTART_KEY) || "[]");
+    if (al.includes(conceptId)) return;
+    localStorage.setItem(GESTART_KEY, JSON.stringify([...al, conceptId].slice(-20)));
+  } catch { /* geen opslag: toch één keer per paginaweergave */ }
+  secundaireConversie("aanvraag_gestart", "aanvraag", GOOGLE_ADS_CONVERSIE_AANVRAAG_GESTART, false);
+  if (uetGeladen) uetq()?.push("event", "aanvraag_gestart", { event_category: "aanvraag" });
+}
+
 export type LeadFormulier = "offerte" | "contact" | "terugbel" | "aanvraag";
 export const trackGenerateLead = (formulier: LeadFormulier) =>
   trackGa("generate_lead", { formulier, page: page(), value: 0, currency: "EUR" });

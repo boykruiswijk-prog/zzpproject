@@ -1,1 +1,1 @@
-export { isEigenKvk, OUD_VOORBEELD_KVK, KVK_EIGEN_NUMMER_MELDING, KVK_PLACEHOLDER } from "../../supabase/functions/_shared/kvkInvoer";
+export { isEigenKvk, schoonKvk, kvkFoutmelding, OUD_VOORBEELD_KVK, KVK_EIGEN_NUMMER_MELDING, KVK_PLACEHOLDER, KVK_FORMAAT_MELDING, KVK_LEEG_MELDING } from "../../supabase/functions/_shared/kvkInvoer";

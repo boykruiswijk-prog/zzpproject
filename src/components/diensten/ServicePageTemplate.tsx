@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
+import { SnelleStart } from "@/components/diensten/SnelleStart";
 import { Button } from "@/components/ui/button";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { ArrowRight, Sparkles, CheckCircle, LucideIcon } from "lucide-react";
@@ -41,7 +42,7 @@ interface ServicePageTemplateProps {
   ctaButton: string;
   children?: ReactNode;
   /** Productpagina-hero: "direct" = prijsregel + Online aanvragen naar ingebed formulier; "terugbel" = wij regelen het. */
-  aanvraag?: "direct" | "terugbel";
+  aanvraag?: "direct" | "terugbel" | "snel";
   schema?: Record<string, unknown>;
 }
 
@@ -87,8 +88,11 @@ export function ServicePageTemplate({
         subtitle={subtitle}
         badge={{ icon: <Sparkles className="h-4 w-4" />, text: badge }}
         backgroundImage={heroImage}
+        compactMobiel={aanvraag === "snel"}
       >
-        {aanvraag === "direct" ? (
+        {aanvraag === "snel" ? (
+          <SnelleStart />
+        ) : aanvraag === "direct" ? (
           <div className="space-y-3">
             <p className="font-semibold text-white">{vanafPrijsregel()}</p>
             <div className="flex flex-col gap-3 sm:flex-row">
