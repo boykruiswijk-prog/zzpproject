@@ -12,6 +12,8 @@ interface PageHeroProps {
   children?: ReactNode;
   showBackgroundImage?: boolean;
   backgroundImage?: string;
+  /** Mobiel: minder ruimte en geen ondertitel, zodat de inhoud boven de vouw staat. */
+  compactMobiel?: boolean;
 }
 
 export function PageHero({ 
@@ -20,7 +22,8 @@ export function PageHero({
   badge, 
   children,
   showBackgroundImage = true,
-  backgroundImage
+  backgroundImage,
+  compactMobiel = false
 }: PageHeroProps) {
   const bgImage = backgroundImage || officeMeetingRoom;
   
@@ -44,7 +47,7 @@ export function PageHero({
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-primary via-primary to-primary/90" />
       )}
 
-      <div className="container-wide relative z-10 py-16 md:py-24">
+      <div className={`container-wide relative z-10 ${compactMobiel ? "py-6" : "py-16"} md:py-24`}>
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -56,7 +59,7 @@ export function PageHero({
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="inline-flex items-center gap-2 bg-primary/20 backdrop-blur-sm border border-primary/30 text-primary-foreground px-4 py-2 rounded-full mb-6"
+              className={`inline-flex items-center gap-2 bg-primary/20 backdrop-blur-sm border border-primary/30 text-primary-foreground px-4 py-2 rounded-full ${compactMobiel ? "mb-3 md:mb-6" : "mb-6"}`}
             >
               {badge.icon}
               <span className="text-sm font-medium">{badge.text}</span>
@@ -67,7 +70,7 @@ export function PageHero({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="mb-6 text-primary-foreground leading-tight"
+            className={`${compactMobiel ? "mb-3 text-2xl md:mb-6 md:text-5xl" : "mb-6"} text-primary-foreground leading-tight`}
           >
             {title}
           </motion.h1>
@@ -77,7 +80,7 @@ export function PageHero({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-lg md:text-xl text-primary-foreground/80 mb-8"
+              className={`text-lg md:text-xl text-primary-foreground/80 mb-8 ${compactMobiel ? "hidden sm:block" : ""}`}
             >
               {subtitle}
             </motion.p>

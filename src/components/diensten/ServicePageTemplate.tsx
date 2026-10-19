@@ -88,6 +88,7 @@ export function ServicePageTemplate({
         subtitle={subtitle}
         badge={{ icon: <Sparkles className="h-4 w-4" />, text: badge }}
         backgroundImage={heroImage}
+        compactMobiel={aanvraag === "snel"}
       >
         {aanvraag === "snel" ? (
           <SnelleStart />
