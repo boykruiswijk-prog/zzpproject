@@ -1,13 +1,13 @@
-import { requireMfa } from "../_shared/teamAuth.ts";
+import { isInternalMachine, requireMfa } from "../_shared/teamAuth.ts";
 // Bevestiging van een handmatige beeindiging aan de klant. Alleen op expliciet verzoek
 // (vinkje in het beheer, standaard uit). Inhoud komt volledig uit de database.
-import { createClient } from "npm:@supabase/supabase-js@2.45.4";
+import { createClient } from "npm:@supabase/supabase-js@2.108.2";
 import { createMailGate } from "../_shared/mail.ts";
 import { COMPANY } from "../_shared/company.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-internal-secret, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 const json = (d: unknown, s = 200) => new Response(JSON.stringify(d), { status: s, headers: { ...cors, "Content-Type": "application/json" } });
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -16,15 +16,17 @@ const nl = (d: string) => { const [y, m, dd] = d.split("-"); return `${dd}-${m}-
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
   const auth = req.headers.get("Authorization") ?? "";
-  if (!auth.startsWith("Bearer ")) return json({ error: "unauthorized" }, 401);
-  const userClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: auth } } });
-  const mfa = await requireMfa(req);
-  if (mfa instanceof Response) return mfa;
-  const { data: mag } = await userClient.rpc("mag_crm_beeindigen", { _uid: (await userClient.auth.getUser()).data.user?.id });
-  if (mag !== true) return json({ error: "forbidden" }, 403);
-  const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+  if (!isInternalMachine(req)) {
+    const mfa = await requireMfa(req);
+    if (mfa instanceof Response) return mfa;
+    const userClient = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_ANON_KEY") ?? "", { global: { headers: { Authorization: auth } } });
+    const { data: mag } = await userClient.rpc("mag_crm_beeindigen", { _uid: mfa.userId });
+    if (mag !== true) return json({ error: "forbidden" }, 403);
+  }
+  const admin = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
 
-  const { notitie_id } = await req.json().catch(() => ({}));
+  const { notitie_id, dry_run } = await req.json().catch(() => ({}));
+  if (dry_run !== undefined && typeof dry_run !== "boolean") return json({ error: "dry_run moet boolean zijn" }, 400);
   if (typeof notitie_id !== "string") return json({ error: "notitie_id ontbreekt" }, 400);
   const { data: n } = await admin.from("crm_notities").select("id,soort,onderneming_id,details,is_test,ingetrokken_op").eq("id", notitie_id).maybeSingle();
   if (!n || n.soort !== "stop" || n.ingetrokken_op) return json({ error: "geen beeindiging" }, 400);
@@ -47,6 +49,7 @@ Deno.serve(async (req) => {
   const gate = createMailGate("crm-beeindiging-bevestiging", req);
   const plan = gate.plan({ to, subject, html });
   const key = Deno.env.get("RESEND_API_KEY");
+  if (dry_run === true) return json({ dry_run: true, would_send: plan.send && Boolean(key), recipient_count: plan.to.length, reason: !plan.send ? plan.reason : !key ? "mailsleutel ontbreekt" : null });
   let status = "failed", err: string | null = null, mid: string | null = null;
   if (!plan.send) { status = "skipped"; err = plan.reason ?? null; }
   else if (!key) err = "RESEND_API_KEY ontbreekt";

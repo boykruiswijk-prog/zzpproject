@@ -1,5 +1,15 @@
-import { createClient } from "npm:@supabase/supabase-js@2";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+import { createClient } from "npm:@supabase/supabase-js@2.108.2";
+import { corsHeaders } from "npm:@supabase/supabase-js@2.108.2/cors";
+
+/** Opt-in machine path only; never trust an unverified JWT role claim. */
+export function isInternalMachine(req: Request): boolean {
+  const internal = Deno.env.get("INTERNAL_FUNCTION_SECRET");
+  const service = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const header = req.headers.get("Authorization") ?? "";
+  const token = header.replace(/^Bearer\s+/i, "").trim();
+  return Boolean((internal && req.headers.get("x-internal-secret") === internal) ||
+    (service && /^Bearer\s+/i.test(header) && token === service));
+}
 
 /** Validate the session and MFA; callers retain their existing role checks. */
 export async function requireMfa(req: Request): Promise<{ userId: string } | Response> {
