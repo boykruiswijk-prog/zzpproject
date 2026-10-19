@@ -56,3 +56,14 @@ describe('rekenhulp naar formulier (droog, geen mail)', () => {
     expect(track).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('Evi-logo', () => {
+  it('bestand is exact het aangeleverde logo en staat twee keer op de pagina', async () => {
+    const { createHash } = await import('node:crypto');
+    const buf = fs.readFileSync('public/images/partners/evi-logo.png');
+    expect(createHash('md5').update(buf).digest('hex')).toBe('9736c3e8db4252243fd36648170ed2ca');
+    expect(buf.readUInt32BE(16)).toBe(610); expect(buf.readUInt32BE(20)).toBe(327);
+    const pagina = fs.readFileSync('src/pages/PensioenOpbouwenZzp.tsx', 'utf8');
+    expect(pagina.match(/evi-logo\.png" alt="Evi van Lanschot" width=\{610\} height=\{327\}/g)).toHaveLength(2);
+  });
+});
