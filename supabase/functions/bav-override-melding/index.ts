@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
 // Interne melding na RPC bav_nummer_override_bevestigen. Alleen teamrollen, alleen interne ontvangers (soort bav_override), nooit naar klanten.
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
@@ -12,6 +13,8 @@ Deno.serve(async (req) => {
   const token = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
   const { data: { user } } = await admin.auth.getUser(token);
   if (!user) return json({ error: "unauthorized" }, 401);
+  const mfa = await requireMfa(req);
+  if (mfa instanceof Response) return mfa;
   const [{ data: sup }, { data: verz }] = await Promise.all([
     admin.rpc("is_supervisor_or_admin", { _user_id: user.id }),
     admin.rpc("has_role", { _user_id: user.id, _role: "verzekering" }),

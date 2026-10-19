@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { certificaatBeschikbaar, certificaatBeschikbaarVanaf, certificaatTeVroegMelding } from "../_shared/certificaatBeschikbaar.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -51,6 +52,8 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
       });
     }
 
+    const mfa = await requireMfa(req);
+    if (mfa instanceof Response) return mfa;
     const { data: isTeam } = await createClient(
       supabaseUrl,
       supabaseServiceKey

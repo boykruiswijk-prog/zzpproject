@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
 import ExcelJS from "npm:exceljs@4.4.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -37,6 +38,8 @@ Deno.serve(async (req) => {
       });
     }
     const admin = createClient(supabaseUrl, serviceKey);
+    const mfa = await requireMfa(req);
+    if (mfa instanceof Response) return mfa;
     const { data: roles } = await admin.from("user_roles").select("role").eq("user_id", user.id);
     const allowed = (roles ?? []).some(({ role }) => ["admin", "supervisor", "verzekering"].includes(role));
     if (!allowed) return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
