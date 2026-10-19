@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
 // deno-lint-ignore-file no-explicit-any
 // wp-import: eenmalige contentmigratie van de oude WordPress-site (zpzaken.nl)
 // naar public.articles. Alleen aanroepbaar door een ingelogd teamlid.
@@ -294,6 +295,8 @@ Deno.serve(async (req) => {
       user = userData?.user ?? null;
       if (!user) return json({ error: "unauthorized" }, 401);
 
+      const mfa = await requireMfa(req);
+      if (mfa instanceof Response) return mfa;
       const { data: isTeam } = await admin.rpc("is_team_member", { _user_id: user.id });
       if (!isTeam) return json({ error: "forbidden" }, 403);
     }

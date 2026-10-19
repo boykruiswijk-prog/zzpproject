@@ -1,4 +1,22 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+
+/** Validate the session and MFA; callers retain their existing role checks. */
+export async function requireMfa(req: Request): Promise<{ userId: string } | Response> {
+  const authHeader = req.headers.get("Authorization") ?? "";
+  const failure = (error: string, status: number) => new Response(JSON.stringify({ error }), {
+    status, headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+  if (!/^Bearer\s+/i.test(authHeader)) return failure("unauthorized", 401);
+  const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+  const client = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_ANON_KEY") ?? "", {
+    global: { headers: { Authorization: `Bearer ${token}` } },
+  });
+  const { data: { user }, error } = await client.auth.getUser();
+  if (error || !user) return failure("unauthorized", 401);
+  if (jwtAal(token) !== "aal2") return failure("mfa_required", 403);
+  return { userId: user.id };
+}
 
 function jwtAal(token: string): string | null {
   const parts = token.split(".");

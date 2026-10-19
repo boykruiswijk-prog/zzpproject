@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
 // H16 — eenmalige bulk: bestaande SEPA-machtigingen uit AFAS naar Exact cashflow/DirectDebitMandates.
 // Toegang: supervisor/admin-JWT of header x-cron-secret (verify_cron_secret).
 //
@@ -64,6 +65,8 @@ Deno.serve(metExactMelding("exact-mandaat-bulk", async (req) => {
     const { data: u } = await supabase.auth.getUser(auth.slice(7));
     uid = u?.user?.id ?? null;
     if (!uid) return json({ error: "unauthorized" }, 401);
+    const mfa = await requireMfa(req);
+    if (mfa instanceof Response) return mfa;
     const { data: sup } = await supabase.rpc("is_supervisor_or_admin", { _user_id: uid });
     if (sup !== true) return json({ error: "forbidden" }, 403);
   }

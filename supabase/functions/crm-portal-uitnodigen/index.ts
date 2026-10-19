@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
 // deno-lint-ignore-file no-explicit-any
 // Individuele uitnodiging voor Mijn ZP vanaf de klantkaart (geen bulk).
 // "voorbeeld": alleen de mail tonen; "versturen": account aanmaken (zonder wachtwoord), magic link mailen,
@@ -21,6 +22,8 @@ Deno.serve(async (req) => {
     const userClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: auth } } });
     const uid = (await userClient.auth.getUser()).data.user?.id;
     if (!uid) return json({ error: "unauthorized" }, 401);
+    const mfa = await requireMfa(req);
+    if (mfa instanceof Response) return mfa;
     const { data: mag } = await userClient.rpc("mag_crm_beeindigen", { _uid: uid });
     if (mag !== true) return json({ error: "forbidden" }, 403);
     const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);

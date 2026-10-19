@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
 // deno-lint-ignore-file no-explicit-any
 // Uitnodiging voor Mijn ZP (K7). Alleen teamleden.
 // Maakt zo nodig een bevestigde auth-gebruiker (zonder wachtwoord) voor het
@@ -29,6 +30,8 @@ Deno.serve(async (req) => {
     if (!userData.user) return json({ error: "Unauthorized" }, 401);
 
     const admin = createClient(SUPABASE_URL, SERVICE);
+    const mfa = await requireMfa(req);
+    if (mfa instanceof Response) return mfa;
     const { data: isTeam } = await admin.rpc("is_team_member", { _user_id: userData.user.id });
     if (!isTeam) return json({ error: "Forbidden" }, 403);
 

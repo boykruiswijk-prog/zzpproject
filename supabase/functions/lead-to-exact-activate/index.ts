@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
 // Lead-to-Exact Fase 1: maakt Account + Contact + BankAccount + SEPA-mandaat
 // aan in Exact divisie 4401707 (ZP Zaken B.V.) op basis van een lead.
 // Doet GEEN factuur — fase 2.
@@ -385,6 +386,8 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
   });
   const { data: { user }, error: userErr } = await userClient.auth.getUser();
   if (userErr || !user) return json({ success: false, error: "unauthorized" }, 401);
+  const mfa = await requireMfa(req);
+  if (mfa instanceof Response) return mfa;
   const { data: roleRows } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
   const allowedRoles = new Set(["admin", "supervisor", "verzekering", "medewerker"]);
   if (!(roleRows ?? []).some((row: { role: string }) => allowedRoles.has(row.role))) {

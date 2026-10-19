@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
 // Verstuurt de vriendelijke afwijsmail naar de klant en logt in lead_notification_log.
 // Volgt exact het patroon van send-lead-notification (Resend + resolveEnvironment).
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
@@ -104,6 +105,8 @@ Deno.serve(async (req) => {
   const { data: userData } = await supabase.auth.getUser(authHeader.slice(7));
   const uid = userData?.user?.id;
   if (!uid) return jsonErr("unauthorized", 401);
+  const mfa = await requireMfa(req);
+  if (mfa instanceof Response) return mfa;
   const { data: isTeam } = await supabase.rpc("is_team_member", { _user_id: uid });
   if (isTeam !== true) return jsonErr("forbidden", 403);
 

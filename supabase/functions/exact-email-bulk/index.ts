@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
 // H15 — eenmalige bulk: e-mailadressen van bestaande relaties naar Exact crm/Accounts.
 // Toegang: supervisor/admin-JWT of header x-cron-secret (verify_cron_secret).
 import { createClient } from "npm:@supabase/supabase-js@2";
@@ -44,6 +45,8 @@ Deno.serve(metExactMelding("exact-email-bulk", async (req) => {
     const { data: u } = await supabase.auth.getUser(auth.slice(7));
     uid = u?.user?.id ?? null;
     if (!uid) return json({ error: "unauthorized" }, 401);
+    const mfa = await requireMfa(req);
+    if (mfa instanceof Response) return mfa;
     const { data: sup } = await supabase.rpc("is_supervisor_or_admin", { _user_id: uid });
     if (sup !== true) return json({ error: "forbidden" }, 403);
   }

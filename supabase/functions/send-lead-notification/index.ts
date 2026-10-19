@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
 // Centrale Edge Function voor lead-notificaties.
 // Verstuurt mail via Resend en logt in lead_notification_log.
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
@@ -83,7 +84,9 @@ async function isTrustedCaller(req: Request): Promise<boolean> {
   const uid = data?.user?.id;
   if (!uid) return false;
   const { data: isTeam } = await supabase.rpc("is_team_member", { _user_id: uid });
-  return isTeam === true;
+  if (isTeam !== true) return false;
+  const mfa = await requireMfa(req);
+  return !(mfa instanceof Response);
 }
 
 // Klantsamenvatting uitsluitend uit het databaserecord (keys uit SHOW_KEYS).

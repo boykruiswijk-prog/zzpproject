@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
  
  const corsHeaders = {
@@ -56,6 +57,8 @@
        });
      }
      const supabase = createClient(supabaseUrl, supabaseServiceKey);
+     const mfa = await requireMfa(req);
+     if (mfa instanceof Response) return mfa;
      const { data: isTeam } = await supabase.rpc('is_team_member', { _user_id: user.id });
      if (!isTeam) {
        return new Response(JSON.stringify({ success: false, error: 'Forbidden' }), {

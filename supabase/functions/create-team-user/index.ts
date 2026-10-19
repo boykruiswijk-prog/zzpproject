@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -22,6 +23,8 @@ Deno.serve(async (req) => {
     const { data: { user } } = await userClient.auth.getUser();
     if (!user) throw new Error("Niet ingelogd");
 
+    const mfa = await requireMfa(req);
+    if (mfa instanceof Response) return mfa;
     const { data: roleRows } = await userClient.from("user_roles").select("role").eq("user_id", user.id);
     const roles = (roleRows ?? []).map((r: any) => r.role);
     if (!roles.includes("admin")) throw new Error("Geen admin-rechten");

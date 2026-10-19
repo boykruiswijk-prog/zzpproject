@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
 // deno-lint-ignore-file no-explicit-any
 // Genereer-artikel: roept de Anthropic API aan en levert een concept-artikel
 // als gestructureerde JSON (title, content, excerpt, seo_title, seo_description, category).
@@ -136,6 +137,8 @@ Deno.serve(async (req) => {
     if (!user) return json({ error: "unauthorized" }, 401);
 
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const mfa = await requireMfa(req);
+    if (mfa instanceof Response) return mfa;
     const { data: isTeam } = await admin.rpc("is_team_member", { _user_id: user.id });
     if (!isTeam) return json({ error: "forbidden" }, 403);
 

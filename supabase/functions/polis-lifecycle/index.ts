@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
 import { nieuweCyber, basisPakket, CYBER_LOOPTIJD } from "../_shared/cyber.ts";
 import { starterStatus } from "../_shared/starterActivatie.ts";
 // Polis-lifecycle: pauzeren / hervatten / opzeggen / heractiveren
@@ -226,6 +227,10 @@ Deno.serve(metExactMelding("polis-lifecycle", async (req) => {
     const { data: roleRows } = await supabase
       .from("user_roles").select("role").eq("user_id", uid);
     const roles = (roleRows ?? []).map((r: any) => r.role);
+    if (roles.some((role: string) => ["admin", "supervisor", "medewerker", "verzekering", "marketing"].includes(role))) {
+      const mfa = await requireMfa(req);
+      if (mfa instanceof Response) return mfa;
+    }
     if (roles.includes("admin")) rol = "admin";
     else if (roles.includes("supervisor")) rol = "supervisor";
     // Functiegroep "verzekering" behandelt polissen → zelfde rechten als medewerker.

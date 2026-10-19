@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { unzipSync } from "https://esm.sh/fflate@0.8.2";
@@ -26,6 +27,8 @@ serve(async (req) => {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    const mfa = await requireMfa(req);
+    if (mfa instanceof Response) return mfa;
     const { data: roleData } = await supabase.from("user_roles").select("role").eq("user_id", user.id).maybeSingle();
     if (!roleData) {
       return new Response(JSON.stringify({ error: "Geen toegang" }), {

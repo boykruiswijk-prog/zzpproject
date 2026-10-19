@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
 // Start de Exact Online OAuth2 flow. Genereert state token, slaat 'm op,
 // en geeft de autorisatie-URL terug aan de admin frontend.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -38,6 +39,8 @@ Deno.serve(async (req) => {
     }
 
     const admin = createClient(SUPABASE_URL, SERVICE_KEY);
+    const mfa = await requireMfa(req);
+    if (mfa instanceof Response) return mfa;
     const { data: isAdmin } = await admin.rpc("has_role", {
       _user_id: userData.user.id,
       _role: "admin",
