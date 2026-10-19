@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
 // deno-lint-ignore-file no-explicit-any
 // Suggereer-onderwerpen: gebruikt Anthropic om 8 koopgerichte BAV-artikelonderwerpen
 // voor te stellen voor een gekozen vakgebied, zonder overlap met bestaande artikelen.
@@ -103,6 +104,8 @@ Deno.serve(async (req) => {
     if (!user) return json({ error: "unauthorized" }, 401);
 
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const mfa = await requireMfa(req);
+    if (mfa instanceof Response) return mfa;
     const { data: isTeam } = await admin.rpc("is_team_member", { _user_id: user.id });
     if (!isTeam) return json({ error: "forbidden" }, 403);
 

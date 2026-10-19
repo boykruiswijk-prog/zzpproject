@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
 // Bevestiging van een handmatige beeindiging aan de klant. Alleen op expliciet verzoek
 // (vinkje in het beheer, standaard uit). Inhoud komt volledig uit de database.
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
@@ -17,6 +18,8 @@ Deno.serve(async (req) => {
   const auth = req.headers.get("Authorization") ?? "";
   if (!auth.startsWith("Bearer ")) return json({ error: "unauthorized" }, 401);
   const userClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: auth } } });
+  const mfa = await requireMfa(req);
+  if (mfa instanceof Response) return mfa;
   const { data: mag } = await userClient.rpc("mag_crm_beeindigen", { _uid: (await userClient.auth.getUser()).data.user?.id });
   if (mag !== true) return json({ error: "forbidden" }, 403);
   const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);

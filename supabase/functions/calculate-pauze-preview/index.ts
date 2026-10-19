@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
 import { nieuweCyber, basisPakket, CYBER_LOOPTIJD } from "../_shared/cyber.ts";
 // Read-only preview voor pauze/hervat/opzeg-modals. Geen Exact-calls.
 // Body: { lead_id, action?: "pauze" | "hervat" | "opzeg" }   (default: "pauze")
@@ -42,6 +43,10 @@ Deno.serve(async (req) => {
 
   // Authz: teamlid (bestaande teamrechten) OF eigenaar van de polis.
   const { data: isTeamMember } = await userClient.rpc("is_team_member", { _user_id: user.id });
+  if (isTeamMember === true) {
+    const mfa = await requireMfa(req);
+    if (mfa instanceof Response) return mfa;
+  }
   if (isTeamMember !== true) {
     const { data: pol } = await supabase
       .from("policies").select("user_id").eq("lead_id", leadId).limit(1).maybeSingle();

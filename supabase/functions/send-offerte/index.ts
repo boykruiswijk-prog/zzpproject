@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
 // Offerte versturen voor een offerteaanvraag (lead). Modus "voorbeeld" geeft alleen de mail terug;
 // modus "versturen" verstuurt via de gedeelde mailroute, logt in email_send_log en zet pas na een
 // geslaagde verzending de status op offerte_verstuurd, met notitie. Testleads alleen naar @zpzaken.nl.
@@ -31,6 +32,10 @@ Deno.serve(metWerk({ station: "intake", actie: "mail", tekst: "Offerte wordt opg
     uid = (await userClient.auth.getUser()).data.user?.id ?? null;
   }
   if (!uid) return json({ error: "unauthorized" }, 401);
+  if (!secret) {
+    const mfa = await requireMfa(req);
+    if (mfa instanceof Response) return mfa;
+  }
   const { data: team } = await admin.rpc("is_team_member", { _user_id: uid });
   if (team !== true) return json({ error: "forbidden" }, 403);
   await werkVan(req).start();

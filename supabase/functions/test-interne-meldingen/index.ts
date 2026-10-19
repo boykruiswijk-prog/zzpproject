@@ -1,3 +1,4 @@
+import { requireMfa } from "../_shared/teamAuth.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { z } from "npm:zod@3.23.8";
 import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
@@ -12,6 +13,8 @@ Deno.serve(async (req) => {
   const auth = req.headers.get("Authorization") ?? "";
   const { data: { user } } = await admin.auth.getUser(auth.replace(/^Bearer\s+/i, ""));
   if (!user) return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  const mfa = await requireMfa(req);
+  if (mfa instanceof Response) return mfa;
   const { data: allowed } = await admin.rpc("is_admin", { _user_id: user.id });
   if (!allowed) return new Response(JSON.stringify({ error: "forbidden" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   const parsed = schema.safeParse(await req.json().catch(() => null));
