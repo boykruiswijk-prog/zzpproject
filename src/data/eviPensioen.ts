@@ -7,7 +7,7 @@ export const EVI_SEO = {
  path: EVI_PAGINA_PAD,
  title: "Pensioen opbouwen als zzp'er in 2026 | Jaarruimte en lijfrente",
  description: "Pensioen opbouwen als zzp'er: zo werkt de jaarruimte in 2026, wat je fiscaal kunt aftrekken en hoe je via Evi van Lanschot belegt voor later. Met rekenhulp.",
- h1: "Pensioen opbouwen als zzp'er: eigen regie, met belastingvoordeel",
+ h1: "Bouw je eigen pensioen op en krijg belasting terug",
  intro: "Als zzp'er bouw je geen pensioen op via een werkgever. Met een lijfrente in de derde pijler regel je dat zelf, en trek je je inleg binnen je jaarruimte af in box 1. ZP Zaken werkt hiervoor samen met Evi van Lanschot."
 };
 export const EVI_RISICO = "Let op: beleggen brengt risico's met zich mee. Je inleg kan minder waard worden.";

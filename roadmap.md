@@ -73,3 +73,5 @@
 - [x] A16 17-10: 4 nieuwe 301s uit 404-log; /src/assets/team-walking.webp niet in code
 - [x] F1 18-10: aanbiedersnamen neutraal in vergelijking, partnerteksten/logo's en zeven artikelen; llms bijgewerkt, gepubliceerde artikelen teruggelezen zonder namen; 91 gerichte tests geslaagd in node-omgeving, desktop/360px gecontroleerd en build OK; niet gepubliceerd, geen mails of logica gewijzigd.
 - [x] Boy 19-10: snelle start op beroeps-/BAV-pagina's, soepeler KvK-veld, conversie aanvraag_gestart (GA4/Ads/UET); niet gepubliceerd
+- [x] F7-aanvulling 19-10: Evi-pagina conversie (rekenhulp in hero, deadline, sticky balk, vertrouwen, korter formulier, event evi_interesse_verstuurd), niet gepubliceerd
+- [ ] Evi-logo: wacht op correcte base64 (md5 aangeleverd bestand 47c95fa4..., verwacht 9736c3e8...)
