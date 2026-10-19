@@ -15,7 +15,7 @@ const uitzonderingen: Record<string, string> = {
   "get-customer-invoices": "Customer JWT with account ownership",
   "get-invoice-pdf": "Customer JWT with invoice ownership",
   "kvk-api-status": "Public boolean availability only",
-  "kvk-uittreksel-upload": "Customer JWT with own application ownership",
+  "kvk-uittreksel-upload": "Public guarded application upload with file and concept validation",
   "login-guard": "Pre-login brute-force protection",
   "mcp": "Public read-only knowledge/services",
   "otentica-webhook": "Provider HMAC signature or provider secret",
@@ -74,7 +74,9 @@ describe("Every internal human function requires MFA (Boy 19-10-2026)", () => {
       if (uitzonderingen[name]) {
         expect(uitzonderingen[name].length).toBeGreaterThan(10);
         // A role guard in an exception signals a newly introduced team path.
-        if (name !== "process-klant-service") {
+        if (name === "process-klant-service") {
+          expect(source).toMatch(/if \(isTeam === true\) return new Response/);
+        } else {
           expect(source).not.toMatch(/is_team_member|is_supervisor_or_admin|mag_crm_beeindigen|\.from\(["']user_roles["']\)/);
         }
       } else if (name === "klant-document-versturen") {
