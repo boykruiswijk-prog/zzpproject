@@ -109,9 +109,9 @@ export default function ZzpVerzekeringICT() {
       ctaTitle="Neem persoonlijk contact op"
       ctaSubtitle="Vertel ons wat je doet en voor wie. Wij regelen de juiste dekking."
       ctaButton="Neem persoonlijk contact op"
-      aanvraag="direct"
+      aanvraag="snel"
     >
-      <BAVApplicationModule initialSector="ict" />
+      <BAVApplicationModule initialSector="ict" compactPakketten />
       <section className="section-padding bg-background">
         <div className="container-wide">
           <div className="max-w-3xl mx-auto">
