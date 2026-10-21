@@ -643,8 +643,22 @@
 /kennisbank/bav-afsluiten-zzp    /kennisbank/bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt    301
 /de/portal/login    /portal/login    301
 /academy/contact    /contact    301
+/factoring/algemene-voorwaarden    /algemene-voorwaarden    301
+/factoring/algemene-voorwaarden/    /algemene-voorwaarden    301
+/pensioen-overzicht    /pensioen    301
+/pensioen-overzicht/    /pensioen    301
+/sitemap-index.xml    /sitemap.xml    301
+/sitemap-index.xml/    /sitemap.xml    301
+/news_sitemap.xml    /sitemap.xml    301
+/news_sitemap.xml/    /sitemap.xml    301
+/news-sitemap.xml    /sitemap.xml    301
+/news-sitemap.xml/    /sitemap.xml    301
+/beroeps-en-bedrijfs-aansprakelijkheidsverzekering-zzp-avb-bav/%23pakket    /verzekeringen    301
+/beroeps-en-bedrijfs-aansprakelijkheidsverzekering-zzp-avb-bav/%23pakket/    /verzekeringen    301
 /radio/*    /kennisbank    301
 /services/*    /diensten    301
+/profile/*    /    301
+/facts/press/*    /kennisbank    301
 
 # Pad met afsluitende slash → zelfde pad zonder slash (homepage uitgezonderd).
 /:path/    /:path    301!
