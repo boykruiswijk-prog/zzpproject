@@ -55,3 +55,17 @@ Deno.test({ name: "volledige geldige payload na verhuizing adres wordt geaccepte
   assertEquals(res.status, 200);
   assertEquals(aanroepen.some((a) => a.includes("api.resend.com")), false);
 });
+
+Deno.test({ name: "realistische invoer (accent, tussenvoegsel, & en +, spaties, buitenland, lange tekst) wordt geaccepteerd", sanitizeOps: false, sanitizeResources: false }, async () => {
+  const res = await post({
+    ...geldig(), lead_id: crypto.randomUUID(),
+    voornaam: "Anne-Marie", achternaam: "van 't Hoff-Çelik", rekeninghouder: "Anne-Marie van 't Hoff-Çelik",
+    bedrijfsnaam: "Hoff & Çelik Consultancy + Partners", kvk_nummer: "6211 7092", iban: "NL91 ABNA 0417 1643 00",
+    adres_straat: "Rue de la Loi", adres_huisnummer: "16", adres_postcode: "B-1000", adres_plaats: "Bruxelles", adres_land: "België",
+    opmerkingen: "Ik werk als interim-manager voor zorg & overheid (> 3 opdrachtgevers). ".repeat(40),
+  });
+  const txt = await res.text();
+  if (res.status !== 200) console.log(txt.slice(0, 500));
+  assertEquals(res.status, 200);
+  assertEquals(aanroepen.some((a) => a.includes("api.resend.com")), false);
+});
