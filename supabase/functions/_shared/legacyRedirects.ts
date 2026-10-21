@@ -672,8 +672,17 @@ export const legacyRedirects: { from: string; to: string }[] = [
   // /mijn-zp zelf verwijst door naar /mijn-zp/polis; direct daarheen, geen keten.
   { from: "account/my-account", to: "/mijn-zp/polis" },
   { from: "factoring", to: "/diensten" },
+  // A16 (21 okt 2026): oude WordPress-paden uit de dagelijkse 404-controle.
+  { from: "factoring/algemene-voorwaarden", to: "/algemene-voorwaarden" },
+  { from: "pensioen-overzicht", to: "/pensioen" },
+  { from: "sitemap-index.xml", to: "/sitemap.xml" },
+  { from: "news_sitemap.xml", to: "/sitemap.xml" },
+  { from: "news-sitemap.xml", to: "/sitemap.xml" },
+  { from: "beroeps-en-bedrijfs-aansprakelijkheidsverzekering-zzp-avb-bav/%23pakket", to: "/verzekeringen" },
   { from: "radio/*", to: "/kennisbank" },
   { from: "services/*", to: "/diensten" },
+  { from: "profile/*", to: "/" },
+  { from: "facts/press/*", to: "/kennisbank" },
 ];
 
 export const legacyRedirectMap: Record<string, string> = Object.fromEntries(

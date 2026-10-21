@@ -695,8 +695,17 @@ export const legacyRedirects: LegacyRedirect[] = [
   { from: "kennisbank/bav-afsluiten-zzp", to: "/kennisbank/bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt" },
   { from: "de/portal/login", to: "/portal/login" },
   { from: "academy/contact", to: "/contact" },
+  // A16 (21 okt 2026): oude WordPress-paden uit de dagelijkse 404-controle.
+  { from: "factoring/algemene-voorwaarden", to: "/algemene-voorwaarden" },
+  { from: "pensioen-overzicht", to: "/pensioen" },
+  { from: "sitemap-index.xml", to: "/sitemap.xml" },
+  { from: "news_sitemap.xml", to: "/sitemap.xml" },
+  { from: "news-sitemap.xml", to: "/sitemap.xml" },
+  { from: "beroeps-en-bedrijfs-aansprakelijkheidsverzekering-zzp-avb-bav/%23pakket", to: "/verzekeringen" },
   { from: "radio/*", to: "/kennisbank" },
   { from: "services/*", to: "/diensten" },
+  { from: "profile/*", to: "/" },
+  { from: "facts/press/*", to: "/kennisbank" },
 ];
 
 /**
