@@ -25,7 +25,7 @@
 - Attribution uses the shared validator: direct sessions inherit paid 90-day fields, explicit session sources win, consent is boolean; Ads requires a valid label. Why: consistent attribution without consent bypass.
 - Halve BAV-aanvragen staan in aanvraag_concepten, alleen geschreven via submit-public-form (table "aanvraag_concepten", idempotent op browser-concept-id) en omgezet door process-bav-wizard; nooit bank-/SEPA-velden, na 90 dagen geanonimiseerd (cron), nooit verwijderd. Waarom: opvolging zonder gevoelige gegevens of anon-toegang.
 - BAV-vergelijking in src/data/bavVergelijking.ts (bron-URL + gecontroleerd_op per aanbieder; ZP-rij uit bavPakketten). Waarom: bijwerken zonder paginacode.
-- docs/cloudflare-bulk-redirects.csv volgt bij elke build uit public/_redirects. Waarom: één bron.
+- CSV follows _redirects at build; profile/* and facts/press/* match subpaths without suffix; new paths get slash variants. Why: one source, no chains.
 
 - Submappen hebben eigen AGENTS.md (src/components/admin, crm, supabase/functions); lees die eerst.
 - Scripts never import React (SSR crashes); markdown uses articleMarkdownUrl (safe tel: links). Both llms generators use published articles. Why: current article discovery.
