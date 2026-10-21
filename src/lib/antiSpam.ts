@@ -5,7 +5,7 @@ import { useCallback, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { leesAttributie } from "@/lib/attributie";
 import { trackGenerateLead, trackChatHandoff, trackTerugbelVerzonden, trackContactVerzonden, isTestOmgeving } from "@/lib/tracking";
-import { publiekeRij, schoonPubliekFormulier } from "@/lib/publiekeTekst";
+import { publiekeRij } from "@/lib/publiekeTekst";
 
 /** Naam van het onzichtbare veld. Bots vullen 'm, mensen zien 'm niet. */
 export const HONEYPOT_NAME = "website_url";
@@ -70,9 +70,8 @@ export async function submitPublicForm<T extends Record<string, unknown>>(
   guard: { honeypot: string; elapsedMs: () => number },
 ): Promise<{ id: string | null }> {
   if (!publiekeRij.safeParse(row).success) throw new PublicFormError("Controleer de ingevulde gegevens.");
-  const cleanedRow = schoonPubliekFormulier(row);
   const { data, error } = await supabase.functions.invoke("submit-public-form", {
-    body: { table, row: cleanedRow, hp: guard.honeypot, ms: guard.elapsedMs(), attributie: table === "leads" ? leesAttributie() : undefined },
+    body: { table, row, hp: guard.honeypot, ms: guard.elapsedMs(), attributie: table === "leads" ? leesAttributie() : undefined },
   });
 
   if (error) {

@@ -4,6 +4,7 @@ import { schoneVeldnamen, isInternTestEmail } from "../_shared/nabellen.ts";
 // Beschermd met honeypot, invultijd-check en IP-throttle. De browser mag deze
 // tabellen niet meer direct beschrijven.
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
 import { normaliseerAdres } from "../_shared/adresNormalisatie.ts";
 import { samenvattingVoorTeam } from "../_shared/zeker.ts";
@@ -13,11 +14,6 @@ import { saneerAttributie } from "../_shared/attributie.ts";
 import { isNlTelefoon, normaliseerNlTelefoon } from "../_shared/telefoon.ts";
 import { gewoneTekst, objectInvoer, valideerPubliekeRij, saneerVrijeTekst, leesBegrensdeBody } from "../_shared/publiekeInvoer.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
 
 /** Per tabel: toegestane kolommen. Al het overige uit de body wordt weggegooid. */
 const ALLOWED: Record<string, { kind: string; columns: string[]; maxLen?: number }> = {
@@ -51,14 +47,14 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 function clean(value: unknown): unknown {
   if (typeof value === "string") {
-    const trimmed = gewoneTekst(value);
+    const trimmed = value.trim();
     return trimmed.length > MAX_TEXT_LEN ? trimmed.slice(0, MAX_TEXT_LEN) : trimmed;
   }
   return value;
 }
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const kort = (v: unknown, max: number) => (typeof v === "string" && v.trim() ? gewoneTekst(v).slice(0, max) : null);
+const kort = (v: unknown, max: number) => (typeof v === "string" && v.trim() ? v.trim().slice(0, max) : null);
 
 /**
  * Halve BAV-aanvraag (aanvraag_concepten). Idempotent op het concept-id uit de browser.
@@ -85,7 +81,7 @@ async function bewaarConcept(req: Request, body: any, json: (b: unknown, s?: num
 
   const payload: Record<string, unknown> = {
     id: row.id, stap, max_stap: Math.max(stap, Number(bestaand?.max_stap) || 0), email, telefoon, laatst_actief_op: new Date().toISOString(),
-    voornaam: kort(row.voornaam, 100), achternaam: kort(row.achternaam, 100), bedrijfsnaam: kort(row.bedrijfsnaam, 200),
+    voornaam: kort(typeof row.voornaam === "string" ? gewoneTekst(row.voornaam) : row.voornaam, 100), achternaam: kort(typeof row.achternaam === "string" ? gewoneTekst(row.achternaam) : row.achternaam, 100), bedrijfsnaam: kort(typeof row.bedrijfsnaam === "string" ? gewoneTekst(row.bedrijfsnaam) : row.bedrijfsnaam, 200),
     kvk: kort(row.kvk, 20), pakket: kort(row.pakket, 50), sector: kort(row.sector, 100), pagina: saneerPagina(row.pagina),
     ...(saneerInterneBron(row.interne_bron) ? { interne_bron: saneerInterneBron(row.interne_bron) } : {}),
   };
@@ -164,7 +160,10 @@ Deno.serve(async (req) => {
     // Alleen toegestane kolommen overnemen.
     const payload: Record<string, unknown> = {};
     for (const col of spec.columns) {
-      if (row[col] !== undefined) payload[col] = col === "extra_data" ? saneerVrijeTekst(row[col]) : clean(row[col]);
+      if (row[col] !== undefined) {
+        const display = ["voornaam", "achternaam", "naam", "bedrijfsnaam", "beroep", "opmerkingen", "suggestie"].includes(col);
+        payload[col] = col === "extra_data" ? saneerVrijeTekst(row[col]) : clean(display && typeof row[col] === "string" ? gewoneTekst(row[col]) : row[col]);
+      }
     }
 
     // Terugbelverzoek vanuit chatassistent Zeker: sessie moet bestaan; samenvatting en

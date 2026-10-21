@@ -6,7 +6,8 @@ import { starterPremieKlanttekst } from "../_shared/premieTekst.ts";
 import { formatDateNL } from "../_shared/dateFormat.ts";
 import { haalKvkProfiel, kvkGeldig, kvkBevraagbaar, kvkStartdatum, kvkAfwijkingen, starterBesluitKvk } from "../_shared/kvk.ts";
 import { normaliseerAdres } from "../_shared/adresNormalisatie.ts";
-import { createClient } from "npm:@supabase/supabase-js@2.39.0";
+import { createClient } from "npm:@supabase/supabase-js@2.108.2";
+import { corsHeaders } from "npm:@supabase/supabase-js@2.108.2/cors";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
 import { kvkApiOperationeel, UITTREKSEL_VERPLICHT } from "../_shared/kvkUittreksel.ts";
 import {
@@ -22,11 +23,6 @@ import { brancheVoorSector } from "../_shared/sectorBranche.ts";
 import { STARTER, STARTER_VOORBEHOUD_TEKST, isStarter, starterTot } from "../_shared/starterTarief.ts";
 import { HANDMATIGE_ACCEPTATIE_REDEN, teamWaarschuwingHandmatig, vereistHandmatigeAcceptatie } from "../_shared/sectorRegels.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
 
 import { CYBER_VERSIE, CYBER_AKKOORD, CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER_LOOPTIJD, CYBER_AFGEWEZEN, beoordeelCyber, basisPakket, isCyberPakket, aanvraagPremie, cyberJaarEind, formatPremieBedrag } from "../_shared/cyber.ts";
 const PAKKET_CONFIG = Object.fromEntries(["maandelijks", "jaarlijks", "jaarlijks-cyber", "maandelijks-cyber"].map(id => {

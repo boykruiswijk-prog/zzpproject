@@ -23,10 +23,12 @@ const validBav = { gekozen_pakket: "maandelijks", betaalwijze: "maandelijks", in
   voornaam: "Test", achternaam: "Test", email: "test@zpzaken.nl", bedrijfsnaam: "Test" };
 
 describe("Publieke invoer zonder writes of mails", () => {
-  it("strips tags and executable content, including encoded angle brackets", () => {
+  it("strips tags and executable content without repeatedly decoding or corrupting comparisons", () => {
     expect(input.gewoneTekst('<b>Test</b><script>alert(1)</script><img src=x onerror=alert(2)>')).toBe("Test");
     expect(input.gewoneTekst('&lt;img src=x onerror=alert(1)&gt;')).not.toContain("<");
-    expect(input.gewoneTekst('Test &amp; Partners')).toBe("Test & Partners");
+    expect(input.gewoneTekst('Test &amp; Partners')).toBe("Test &amp; Partners");
+    expect(input.gewoneTekst('omzet <50000 en >10000')).toBe('omzet <50000 en >10000');
+    expect(input.gewoneTekst(input.gewoneTekst('Test &amp;amp; Partners'))).toBe('Test &amp;amp; Partners');
   });
   it("keeps SEPA evidence and attribution byte-identical while cleaning display text", () => {
     const proof = '<ongewijzigd bewijs>'; const attribution = { gclid: 'Ab-C_123', marketing_toestemming: true };
@@ -43,6 +45,15 @@ describe("Publieke invoer zonder writes of mails", () => {
   });
   it("accepts ordinary BAV input and nullable optional fields", () => {
     expect(input.bavInvoer.safeParse({ ...validBav, telefoon: null, kvk_startdatum: null }).success).toBe(true);
+  });
+  it("preserves email, ordered answers, documents and all consent evidence exactly", () => {
+    const body = { ...validBav, email: "a&amp;b@zpzaken.nl", formulier: [{ label: "Omzet", waarde: "<50000 en >10000" }],
+      getoonde_documenten: ["/voorwaarden?x=1&y=2"], sepa_akkoord: true, iban: null,
+      cyber_client_akkoord_op: null, client_akkoord_op: "2026-10-21T10:00:00Z" };
+    expect(input.bavInvoer.safeParse(body).success).toBe(true);
+    expect(input.saneerBavTekst(body)).toEqual(body);
+    expect(input.saneerVrijeTekst({ ...body, getoonde_tekst: "<bewijs>&amp;", bericht: "<b>Vraag</b>" }))
+      .toEqual({ ...body, getoonde_tekst: "<bewijs>&amp;", bericht: "Vraag" });
   });
   it("rejects object-valued contact fields and oversized email", () => {
     expect(input.valideerPubliekeRij({ voornaam: {} })).toBe(false);
@@ -62,6 +73,8 @@ function boot(name: string, extra: Record<string, unknown> = {}) {
   const env: Record<string, string> = { SUPABASE_URL: 'https://example.test', SUPABASE_SERVICE_ROLE_KEY: 'mock-service',
     SUPABASE_ANON_KEY: 'mock-anon', INTERNAL_FUNCTION_SECRET: 'mock-internal', OTENTICA_WEBHOOK_SECRET: 'mock-provider', LOVABLE_API_KEY: 'mock-mail' };
   const scope: Record<string, unknown> = { ...input, ...retired, ...extra, createClient: () => db,
+    corsHeaders: { "Access-Control-Allow-Origin": "*" }, sdkCorsHeaders: { "Access-Control-Allow-Origin": "*" },
+    requireMfa: async () => ({ userId: 'mock-team' }),
     Deno: { env: { get: (key: string) => env[key] }, serve: (fn: typeof handler) => { handler = fn; } },
     fetch: sideEffect, metWerk: (_: unknown, fn: unknown) => fn,
     aanvraagPremie: () => ({ totaal: 55, maand: true, cyber: false }),
@@ -69,6 +82,7 @@ function boot(name: string, extra: Record<string, unknown> = {}) {
     ZEKER_STANDAARD_GESPREKKEN_PER_DAG: 500, ZEKER_STANDAARD_MODEL: 'mock', ZEKER_MAX_TEKENS: 2000,
     CYBER_DEKKING: '', CYBER_HULP: '', CYBER_POLISVOORWAARDEN: '', legacyRedirectMap: {},
   };
+  if (name === 'otentica-webhook') delete scope.corsHeaders;
   new Function('exports', ...Object.keys(scope), compile(`supabase/functions/${name}/index.ts`))({}, ...Object.values(scope));
   return { call: async (req: Request) => { if (!handler) throw new Error('No handler'); return handler(req); }, sideEffect };
 }

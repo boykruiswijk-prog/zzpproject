@@ -10,11 +10,10 @@ export function gewoneTekst(input: string): string {
     onopentag(name) { if (invisible.has(name)) hidden++; },
     ontext(text) { if (!hidden) output += text; },
     onclosetag(name) { if (invisible.has(name)) hidden = Math.max(0, hidden - 1); },
-  }, { decodeEntities: true });
+  }, { decodeEntities: false });
   parser.write(input);
   parser.end();
-  // Decoded character entities must not reintroduce markup into later mail sinks.
-  return output.replace(/[<>]/g, "").trim();
+  return output.trim();
 }
 
 function bounded(value: unknown, depth = 0): boolean {
@@ -43,7 +42,7 @@ const date = text(10).regex(/^\d{4}-\d{2}-\d{2}$/).refine(v => {
 export const bavInvoer = z.object({
   gekozen_pakket: text(50).min(1), betaalwijze: z.enum(["maandelijks", "jaarlijks"]), ingangsdatum: date,
   voornaam: text(100).trim().min(1), achternaam: text(100).trim().min(1),
-  email: text(255).trim().email(), bedrijfsnaam: text(200).trim().min(1),
+  email: text(255).trim().regex(/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]{2,}$/), bedrijfsnaam: text(200).trim().min(1),
   telefoon: nullableText(30), kvk_nummer: nullableText(30), kvk_startdatum: date.nullable().optional(),
   beroep: nullableText(200), sector: nullableText(200), opmerkingen: nullableText(5000),
   adres_straat: nullableText(200), adres_huisnummer: nullableText(30), adres_postcode: nullableText(20),
@@ -62,16 +61,17 @@ export function saneerBavTekst<T extends Record<string, unknown>>(body: T): T {
   for (const key of ["voornaam", "achternaam", "bedrijfsnaam", "beroep", "sector", "opmerkingen", "formulier_naam"]) {
     if (typeof out[key] === "string") Object.assign(out, { [key]: gewoneTekst(out[key] as string) });
   }
-  if (Array.isArray(out.formulier)) Object.assign(out, { formulier: saneerVrijeTekst(out.formulier) });
+  // The ordered submission is evidence; output renderers escape it without rewriting it.
   return out;
 }
 
 export function saneerVrijeTekst(value: unknown): unknown {
-  if (typeof value === "string") return gewoneTekst(value);
-  if (Array.isArray(value)) return value.map(saneerVrijeTekst);
-  if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([k, v]) =>
-    [k, ["attributie", "sepa_bewijs", "getoonde_documenten", "client_akkoord_op", "toestemming_op"].includes(k) ? v : saneerVrijeTekst(v)]));
-  return value;
+  if (!value || typeof value !== "object" || Array.isArray(value)) return value;
+  const out = { ...value } as Record<string, unknown>;
+  for (const key of ["formulier_naam", "voorkeursmoment", "bericht", "vraag", "opmerkingen"]) {
+    if (typeof out[key] === "string") out[key] = gewoneTekst(out[key] as string);
+  }
+  return out;
 }
 
 export function valideerPubliekeRij(value: unknown): boolean {

@@ -1,5 +1,6 @@
 // Otentica webhook endpoint.
 import { objectInvoer, leesBegrensdeBody } from "../_shared/publiekeInvoer.ts";
+import { corsHeaders as sdkCorsHeaders } from "npm:@supabase/supabase-js@2.108.2/cors";
 //
 // SECURITY: een screeningstatus mag alleen wijzigen als de aanroep aantoonbaar
 // van Otentica komt. Daarom fail-closed verificatie van de afzender:
@@ -11,7 +12,7 @@ import { objectInvoer, leesBegrensdeBody } from "../_shared/publiekeInvoer.ts";
 // gebeurt er niets en volgt 401/503.
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
+  ...sdkCorsHeaders,
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-otentica-signature, x-otentica-secret",
 };
