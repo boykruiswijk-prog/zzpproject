@@ -82,6 +82,7 @@ function boot(name: string, extra: Record<string, unknown> = {}) {
     ZEKER_STANDAARD_GESPREKKEN_PER_DAG: 500, ZEKER_STANDAARD_MODEL: 'mock', ZEKER_MAX_TEKENS: 2000,
     CYBER_DEKKING: '', CYBER_HULP: '', CYBER_POLISVOORWAARDEN: '', legacyRedirectMap: {},
   };
+  if (name === 'otentica-webhook') delete scope.corsHeaders;
   new Function('exports', ...Object.keys(scope), compile(`supabase/functions/${name}/index.ts`))({}, ...Object.values(scope));
   return { call: async (req: Request) => { if (!handler) throw new Error('No handler'); return handler(req); }, sideEffect };
 }
