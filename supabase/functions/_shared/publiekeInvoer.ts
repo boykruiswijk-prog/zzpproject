@@ -13,7 +13,8 @@ export function gewoneTekst(input: string): string {
   }, { decodeEntities: true });
   parser.write(input);
   parser.end();
-  return output.trim();
+  // Decoded character entities must not reintroduce markup into later mail sinks.
+  return output.replace(/[<>]/g, "").trim();
 }
 
 function bounded(value: unknown, depth = 0): boolean {
