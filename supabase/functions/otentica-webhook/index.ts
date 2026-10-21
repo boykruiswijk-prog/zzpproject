@@ -1,4 +1,5 @@
 // Otentica webhook endpoint.
+import { objectInvoer, leesBegrensdeBody } from "../_shared/publiekeInvoer.ts";
 //
 // SECURITY: een screeningstatus mag alleen wijzigen als de aanroep aantoonbaar
 // van Otentica komt. Daarom fail-closed verificatie van de afzender:
@@ -46,6 +47,7 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
+  if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
 
   const secret = Deno.env.get("OTENTICA_WEBHOOK_SECRET") ?? "";
   if (!secret) {
@@ -53,7 +55,8 @@ Deno.serve(async (req) => {
     return json({ error: "webhook_not_configured" }, 503);
   }
 
-  const rawBody = await req.text();
+  let rawBody: string;
+  try { rawBody = await leesBegrensdeBody(req, 64 * 1024); } catch { return json({ error: "payload_too_large" }, 413); }
 
   const headerSignature = (req.headers.get("x-otentica-signature") ?? "")
     .trim()
@@ -74,8 +77,9 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const payload = rawBody ? JSON.parse(rawBody) : {};
-    console.log("Otentica webhook verified:", JSON.stringify(payload));
+    const payload = JSON.parse(rawBody);
+    if (!objectInvoer.safeParse(payload).success) return json({ error: "invalid_payload" }, 400);
+    console.log("Otentica webhook verified: valid object received");
 
     // TODO: verwerking van Otentica callbacks (matchen op otentica_flow_id,
     // otentica_status updaten, rapport-url en webhook-data opslaan).
@@ -83,8 +87,7 @@ Deno.serve(async (req) => {
 
     return json({ received: true });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Onbekende fout";
-    console.error("otentica-webhook error:", message);
-    return json({ received: false, error: message }, 400);
+    console.error("otentica-webhook: invalid payload");
+    return json({ received: false, error: "invalid_payload" }, 400);
   }
 });
