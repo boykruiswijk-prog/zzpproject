@@ -17,6 +17,7 @@
 6. Controleer CSP-bronnen op daadwerkelijk gebruikte diensten. Verwijder alleen aantoonbaar onnodige ruime toestemmingen als browsercontrole aantoont dat dit veilig kan. URL’s, titels, SEO-meta’s, trackingcode en layout blijven gelijk.
 
 ## Controle en oplevering
+- Uitgevoerd: 169/169 gerichte tests, zeven echte Deno-opstartproeven met nul externe effecten, zeven deployments en live weigeringen zonder BOOT_ERROR. Mailwachtrij met geldig niet-bevoorrecht token: 403. Contact en terugbel bevestigen correct met onderschepte inzending; aanvraagprefill blijft werken. Geen echte inzending of mail. Browserchatverzending nog niet bevestigd.
 - Nieuwe tests voor ongeldige typen, HTML, te grote/geneste invoer, geweigerde webhook, geblokkeerde WordPress-import, machine-authenticatie en ontbrekende MFA; concrete asserts op nul writes/verzending vóór weigering.
 - Bestaande MFA-, formulier-, SEPA-, tracking- en klantmailtests, inclusief droge klantmailproeven zonder verzending.
 - Opstartproeven van gewijzigde functies met ongeldige invoer of ontbrekende toegang, zonder klantgegevens aan te maken of mails te versturen.
@@ -29,6 +30,7 @@
 - De ontbrekende live `frame-ancestors`-header blijft een hostingpunt zolang de hosting de bestaande headerinstelling niet toepast. Geen bescherming claimen op basis van alleen het bestand.
 - Volledige live MFA-controle vereist een geldige MFA-sessie; deze ontbreekt momenteel. Alleen gecontroleerde weigeringen en tests met nagebootste sessies zijn beschikbaar.
 - De afhankelijkhedenscan meldt daarnaast kwetsbare pakketten. Geen brede pakketupdates binnen dit gerichte herstel zonder apart gecontroleerde regressietests; neem dit op als resterend risico.
+- Validatietelemetrie heeft nog geen limiet. Bestaande formulierlimieten tellen niet atomisch en laten bij bepaalde fouten door; doorgestuurde IP-headervertrouwen is niet bevestigd. Nieuwe zelfgebouwde limiter alleen na akkoord over dit platformnadeel.
 
 ## Technische aanpak
 - Eén kleine gedeelde validatiemodule met Zod en veilige plaintext-normalisatie, gebruikt bij de betreffende publieke ingangspunten. Bestaande bedrijfregels blijven na validatie ongewijzigd.
