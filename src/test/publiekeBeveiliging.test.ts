@@ -6,7 +6,12 @@ import { z } from "zod";
 import { Parser } from "htmlparser2";
 
 function compile(path: string) {
-  return ts.transpileModule(readFileSync(path, "utf8").replace(/^import .*;?\r?\n/gm, ""), {
+  const source = readFileSync(path, "utf8");
+  const file = ts.createSourceFile(path, source, ts.ScriptTarget.Latest, true);
+  const imports = file.statements.filter(ts.isImportDeclaration);
+  let withoutImports = source;
+  for (const node of [...imports].reverse()) withoutImports = withoutImports.slice(0, node.getFullStart()) + withoutImports.slice(node.end);
+  return ts.transpileModule(withoutImports, {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
   }).outputText;
 }
