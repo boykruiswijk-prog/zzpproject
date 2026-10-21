@@ -83,7 +83,14 @@ export function cloudflareBulkCsv(redirectLines: string[], host = "zpzaken.nl"):
     const [from, to, status] = line.split(/\s+/);
     if (!from || !to || !status?.startsWith("301")) continue;
     if (from === "/:path/" || from === "/*") continue;
-    // Vangregels (/x/*): Cloudflare-subpad zou botsen met de exacte regel /x/; client-side vangnet doet dit.
+    // Deze twee oude namespaces hebben geen huidige routes of exacte prefixregel.
+    // Subpadmatching verwijst direct naar het doel, zonder het oude pad mee te nemen.
+    if (from === "/profile/*" || from === "/facts/press/*") {
+      const target = /^https?:\/\//.test(to) ? to : `https://${host}${to}`;
+      push(`${host}${from.slice(0, -1)}`, target, "TRUE,TRUE,TRUE,FALSE");
+      continue;
+    }
+    // Overige vangregels: behoud het bestaande client-side vangnet.
     if (from.endsWith("/*") && from !== "/wp-content/uploads/*") continue;
     if (from === "/wp-content/uploads/*") {
       const doel = to.replace(/:splat$/, "");
@@ -123,7 +130,7 @@ function redirectsPlugin(env: Record<string, string>): Plugin {
       const mediaRules = legacyRedirects
         .filter((r) => r.from.startsWith("wp-content/uploads/"))
         .map((r) => `/${r.from}    ${r.to}    301  # verouderd formulier`);
-      const rules = geordendeRedirects(legacyRedirects).filter((r) => !r.from.startsWith("wp-content/uploads/")).map((r) => {
+      const rules = geordendeRedirects(legacyRedirects).filter((r) => !r.from.startsWith("wp-content/uploads/")).flatMap((r) => {
         const to = resolveRedirectTarget(r, articles);
         const article = articles.get(r.from);
         const note = !article
@@ -131,7 +138,10 @@ function redirectsPlugin(env: Record<string, string>): Plugin {
           : article.is_published
             ? "  # gepubliceerd artikel"
             : "  # concept → categoriepagina";
-        return `/${r.from}    ${to}    301${note}`;
+        const rule = `/${r.from}    ${to}    301${note}`;
+        // Nieuwe 21-okt-paden krijgen een directe slashvariant, geen slash-redirectketen.
+        const directSlash = ["factoring/algemene-voorwaarden", "pensioen-overzicht", "sitemap-index.xml", "news_sitemap.xml", "news-sitemap.xml", "beroeps-en-bedrijfs-aansprakelijkheidsverzekering-zzp-avb-bav/%23pakket"].includes(r.from);
+        return directSlash ? [rule, `/${r.from}/    ${to}    301${note}`] : [rule];
       });
 
       const lines = [
