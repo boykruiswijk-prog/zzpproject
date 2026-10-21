@@ -151,7 +151,7 @@ async function postSalesInvoice(opts: {
   lineDescription: string;
   lineNotes: string;
   yourRef: string;
-  unitPrice: number; // positief bedrag; exactRegelBedrag zet Quantity 1 (ook voor 8021, zoals werkende creditnota's)
+  unitPrice: number; // positief bedrag; exactRegelBedrag zet Quantity -1 voor 8021
   periodStart?: string; // YYYY-MM-DD — dekkingsperiode regelniveau
   periodEnd?: string;   // YYYY-MM-DD
 }): Promise<
