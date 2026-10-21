@@ -11,6 +11,7 @@ import { saneerFormulier, saneerPagina } from "../_shared/leadVelden.ts";
 import { resolveEnvironment } from "../_shared/environment.ts";
 import { saneerAttributie } from "../_shared/attributie.ts";
 import { isNlTelefoon, normaliseerNlTelefoon } from "../_shared/telefoon.ts";
+import { gewoneTekst, objectInvoer, valideerPubliekeRij, saneerVrijeTekst, leesBegrensdeBody } from "../_shared/publiekeInvoer.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -50,14 +51,14 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 function clean(value: unknown): unknown {
   if (typeof value === "string") {
-    const trimmed = value.trim();
+    const trimmed = gewoneTekst(value);
     return trimmed.length > MAX_TEXT_LEN ? trimmed.slice(0, MAX_TEXT_LEN) : trimmed;
   }
   return value;
 }
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const kort = (v: unknown, max: number) => (typeof v === "string" && v.trim() ? v.trim().slice(0, max) : null);
+const kort = (v: unknown, max: number) => (typeof v === "string" && v.trim() ? gewoneTekst(v).slice(0, max) : null);
 
 /**
  * Halve BAV-aanvraag (aanvraag_concepten). Idempotent op het concept-id uit de browser.
@@ -66,6 +67,7 @@ const kort = (v: unknown, max: number) => (typeof v === "string" && v.trim() ? v
  */
 async function bewaarConcept(req: Request, body: any, json: (b: unknown, s?: number) => Response): Promise<Response> {
   const row = body?.row && typeof body.row === "object" ? body.row as Record<string, unknown> : null;
+  if (!objectInvoer.safeParse(row).success) return json({ success: false, error: "Ongeldige aanvraag." }, 400);
   if (!row || typeof row.id !== "string" || !UUID_RE.test(row.id)) return json({ success: false, error: "Ongeldige aanvraag." }, 400);
   const supabase = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
   const guard = await guardPublicSubmission(req, supabase, { hp: body?.hp, kind: "concept" });
@@ -132,7 +134,12 @@ Deno.serve(async (req) => {
     });
 
   try {
-    const body = await req.json().catch(() => ({}));
+    if (req.method !== "POST") return json({ success: false, error: "Niet toegestaan." }, 405);
+    let raw: string;
+    try { raw = await leesBegrensdeBody(req); } catch { return json({ success: false, error: "Aanvraag te groot." }, 413); }
+    let body: any;
+    try { body = JSON.parse(raw); } catch { return json({ success: false, error: "Ongeldige aanvraag." }, 400); }
+    if (!objectInvoer.safeParse(body).success) return json({ success: false, error: "Ongeldige aanvraag." }, 400);
     const table = typeof body?.table === "string" ? body.table : "";
     if (table === "aanvraag_concepten") return await bewaarConcept(req, body, json);
     if (table === "aanvraag_validatiefouten") return await logValidatie(req, body, json);
@@ -140,7 +147,7 @@ Deno.serve(async (req) => {
     if (!spec) return json({ success: false, error: "Onbekend formulier." }, 400);
 
     const row = body?.row && typeof body.row === "object" ? body.row as Record<string, unknown> : null;
-    if (!row) return json({ success: false, error: "Ongeldige aanvraag." }, 400);
+    if (!row || !valideerPubliekeRij(Object.fromEntries(Object.entries(row).filter(([k]) => spec.columns.includes(k))))) return json({ success: false, error: "Ongeldige aanvraag." }, 400);
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
@@ -157,7 +164,7 @@ Deno.serve(async (req) => {
     // Alleen toegestane kolommen overnemen.
     const payload: Record<string, unknown> = {};
     for (const col of spec.columns) {
-      if (row[col] !== undefined) payload[col] = clean(row[col]);
+      if (row[col] !== undefined) payload[col] = col === "extra_data" ? saneerVrijeTekst(row[col]) : clean(row[col]);
     }
 
     // Terugbelverzoek vanuit chatassistent Zeker: sessie moet bestaan; samenvatting en

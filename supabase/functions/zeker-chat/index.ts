@@ -2,6 +2,7 @@
 // de browser stuurt alleen sessie-id + nieuw bericht. Streaming via SSE.
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import { clientIp } from "../_shared/antiSpam.ts";
+import { gewoneTekst, objectInvoer, leesBegrensdeBody } from "../_shared/publiekeInvoer.ts";
 import { resolveEnvironment } from "../_shared/environment.ts";
 import {
   bouwGeschiedenis, bouwSysteemPrompt, isFrustratie, isToegestaneOrigin, maskeerGevoelig,
@@ -59,7 +60,10 @@ Deno.serve(async (req) => {
   if (!isToegestaneOrigin(origin)) return json({ fout: "niet_toegestaan" }, 403);
 
   let body: any;
-  try { body = await req.json(); } catch { return json({ fout: "ongeldig" }, 400); }
+  let raw: string;
+  try { raw = await leesBegrensdeBody(req, 16 * 1024); } catch { return json({ fout: "te_lang" }, 413); }
+  try { body = JSON.parse(raw); } catch { return json({ fout: "ongeldig" }, 400); }
+  if (!objectInvoer.safeParse(body).success) return json({ fout: "ongeldig" }, 400);
   const taal = normaliseerTaal(body?.taal);
   const actie = String(body?.actie ?? "bericht");
   const sessieId = typeof body?.sessieId === "string" && UUID_RE.test(body.sessieId) ? body.sessieId : null;
@@ -83,7 +87,7 @@ Deno.serve(async (req) => {
 
     if (actie !== "bericht") return json({ fout: "ongeldig" }, 400);
 
-    const ruw = typeof body?.tekst === "string" ? body.tekst.trim() : "";
+    const ruw = typeof body?.tekst === "string" ? gewoneTekst(body.tekst) : "";
     if (!ruw) return json({ fout: "leeg" }, 400);
     if (ruw.length > ZEKER_MAX_TEKENS) return json({ fout: "te_lang", tekst: `Je bericht is te lang (maximaal ${ZEKER_MAX_TEKENS} tekens).` }, 400);
 

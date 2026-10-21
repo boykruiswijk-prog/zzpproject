@@ -1,4 +1,5 @@
 import { requireMfa } from "../_shared/teamAuth.ts";
+import { legacyImportStop } from "../_shared/legacyImportStop.ts";
 // deno-lint-ignore-file no-explicit-any
 // wp-import: eenmalige contentmigratie van de oude WordPress-site (zpzaken.nl)
 // naar public.articles. Alleen aanroepbaar door een ingelogd teamlid.
@@ -271,6 +272,8 @@ async function collectViaHtml(slugs: string[]): Promise<{ items: SourceItem[]; r
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const retired = legacyImportStop(req, corsHeaders);
+  if (retired) return retired;
   try {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;

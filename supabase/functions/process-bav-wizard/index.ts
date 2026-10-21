@@ -1,4 +1,5 @@
 import { saneerInterneBron } from "../_shared/interneBron.ts";
+import { bavInvoer, objectInvoer, saneerBavTekst, leesBegrensdeBody } from "../_shared/publiekeInvoer.ts";
 import { isEigenKvk, KVK_EIGEN_NUMMER_MELDING } from "../_shared/kvkInvoer.ts";
 import { corrigeerIngangsdatum } from "../_shared/ingangsdatum.ts";
 import { starterPremieKlanttekst } from "../_shared/premieTekst.ts";
@@ -110,7 +111,14 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
   let leadOpgeslagen: { id: string; mandaatkenmerk: string } | null = null;
   try {
     const t0 = Date.now();
-    const submission = (await req.json()) as BavSubmission;
+    if (req.method !== "POST") return weiger(405, "Niet toegestaan.", "methode");
+    let raw: string;
+    try { raw = await leesBegrensdeBody(req); } catch { return weiger(413, "Aanvraag te groot.", "validatie"); }
+    let input: unknown;
+    try { input = JSON.parse(raw); } catch { return weiger(400, "Ongeldige aanvraag.", "validatie"); }
+    const parsed = bavInvoer.safeParse(input);
+    if (!objectInvoer.safeParse(input).success || !parsed.success) return weiger(400, "Controleer de ingevulde gegevens.", "validatie");
+    const submission = saneerBavTekst(parsed.data) as BavSubmission;
     submissionVoorFout = submission;
     if (typeof submission.telefoon === "string") submission.telefoon = normaliseerNlTelefoon(submission.telefoon);
 
@@ -169,8 +177,7 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
       : null;
     if (machtigingFout) return weiger(400, machtigingFout, "validatie_machtiging");
 
-    // Herhaalde aanvraag (zelfde e-mail, laatste 24 uur): nooit blokkeren door de IP-limiet,
-    // wel als nieuwe aanvraag vastleggen met verwijzing naar de vorige (niets overschrijven).
+    // Herhaalde aanvraag blijft gekoppeld; een bekend e-mailadres geeft nooit een spamvrijstelling.
     const { data: vorige } = await supabase.from("leads").select("id")
       .eq("type", "verzekering_aanvraag").ilike("email", submission.email.trim().replace(/[\\%_]/g, (c) => `\\${c}`))
       .gte("created_at", new Date(Date.now() - 86_400_000).toISOString())
@@ -180,7 +187,7 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
 
     // Anti-spam: honeypot, invultijd en IP-limiet.
     const guard = await guardPublicSubmission(req, supabase, {
-      throttle: !vorigeLeadId,
+      throttle: true,
       hp: (submission as unknown as Record<string, unknown>).hp,
       ms: (submission as unknown as Record<string, unknown>).ms,
       kind: "bav",

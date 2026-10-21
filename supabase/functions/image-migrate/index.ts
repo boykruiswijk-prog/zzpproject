@@ -1,4 +1,5 @@
 import { requireMfa } from "../_shared/teamAuth.ts";
+import { legacyImportStop } from "../_shared/legacyImportStop.ts";
 // deno-lint-ignore-file no-explicit-any
 // image-migrate: haalt de afbeeldingen (en de PDF's) van de oude WordPress-site
 // naar Supabase storage, zodat de kennisbank na de cutover niet afhankelijk is
@@ -64,6 +65,8 @@ function publicUrl(base: string, path: string) {
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const retired = legacyImportStop(req, corsHeaders);
+  if (retired) return retired;
   try {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
