@@ -73,6 +73,8 @@ function boot(name: string, extra: Record<string, unknown> = {}) {
   const env: Record<string, string> = { SUPABASE_URL: 'https://example.test', SUPABASE_SERVICE_ROLE_KEY: 'mock-service',
     SUPABASE_ANON_KEY: 'mock-anon', INTERNAL_FUNCTION_SECRET: 'mock-internal', OTENTICA_WEBHOOK_SECRET: 'mock-provider', LOVABLE_API_KEY: 'mock-mail' };
   const scope: Record<string, unknown> = { ...input, ...retired, ...extra, createClient: () => db,
+    corsHeaders: { "Access-Control-Allow-Origin": "*" }, sdkCorsHeaders: { "Access-Control-Allow-Origin": "*" },
+    requireMfa: async () => ({ userId: 'mock-team' }),
     Deno: { env: { get: (key: string) => env[key] }, serve: (fn: typeof handler) => { handler = fn; } },
     fetch: sideEffect, metWerk: (_: unknown, fn: unknown) => fn,
     aanvraagPremie: () => ({ totaal: 55, maand: true, cyber: false }),

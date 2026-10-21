@@ -10,12 +10,8 @@ import { legacyImportStop } from "../_shared/legacyImportStop.ts";
 //                    de artikelcontent + image_url
 //
 // Alleen aanroepbaar door een ingelogd teamlid.
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { createClient } from "npm:@supabase/supabase-js@2.108.2";
+import { corsHeaders } from "npm:@supabase/supabase-js@2.108.2/cors";
 const json = (d: unknown, s = 200) =>
   new Response(JSON.stringify(d), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
@@ -65,6 +61,8 @@ function publicUrl(base: string, path: string) {
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const access = await requireMfa(req);
+  if (access instanceof Response) return access;
   const retired = legacyImportStop(req, corsHeaders);
   if (retired) return retired;
   try {

@@ -42,7 +42,7 @@ const date = text(10).regex(/^\d{4}-\d{2}-\d{2}$/).refine(v => {
 export const bavInvoer = z.object({
   gekozen_pakket: text(50).min(1), betaalwijze: z.enum(["maandelijks", "jaarlijks"]), ingangsdatum: date,
   voornaam: text(100).trim().min(1), achternaam: text(100).trim().min(1),
-  email: text(255).trim().email(), bedrijfsnaam: text(200).trim().min(1),
+  email: text(255).trim().regex(/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]{2,}$/), bedrijfsnaam: text(200).trim().min(1),
   telefoon: nullableText(30), kvk_nummer: nullableText(30), kvk_startdatum: date.nullable().optional(),
   beroep: nullableText(200), sector: nullableText(200), opmerkingen: nullableText(5000),
   adres_straat: nullableText(200), adres_huisnummer: nullableText(30), adres_postcode: nullableText(20),

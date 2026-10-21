@@ -6,14 +6,11 @@ import { legacyImportStop } from "../_shared/legacyImportStop.ts";
 //
 // mode = "dryrun"  -> alleen rapport, schrijft niets weg
 // mode = "import"  -> importeert nieuwe slugs met is_published = false
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { createClient } from "npm:@supabase/supabase-js@2.108.2";
+import { corsHeaders } from "npm:@supabase/supabase-js@2.108.2/cors";
 import { htmlToMarkdown, stripHtml } from "./html2md.ts";
 import { legacyRedirectMap } from "../_shared/legacyRedirects.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
 const json = (d: unknown, s = 200) =>
   new Response(JSON.stringify(d), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
@@ -272,6 +269,8 @@ async function collectViaHtml(slugs: string[]): Promise<{ items: SourceItem[]; r
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const access = await requireMfa(req);
+  if (access instanceof Response) return access;
   const retired = legacyImportStop(req, corsHeaders);
   if (retired) return retired;
   try {

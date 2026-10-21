@@ -4,6 +4,7 @@ import { schoneVeldnamen, isInternTestEmail } from "../_shared/nabellen.ts";
 // Beschermd met honeypot, invultijd-check en IP-throttle. De browser mag deze
 // tabellen niet meer direct beschrijven.
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
 import { normaliseerAdres } from "../_shared/adresNormalisatie.ts";
 import { samenvattingVoorTeam } from "../_shared/zeker.ts";
@@ -13,11 +14,6 @@ import { saneerAttributie } from "../_shared/attributie.ts";
 import { isNlTelefoon, normaliseerNlTelefoon } from "../_shared/telefoon.ts";
 import { gewoneTekst, objectInvoer, valideerPubliekeRij, saneerVrijeTekst, leesBegrensdeBody } from "../_shared/publiekeInvoer.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
 
 /** Per tabel: toegestane kolommen. Al het overige uit de body wordt weggegooid. */
 const ALLOWED: Record<string, { kind: string; columns: string[]; maxLen?: number }> = {
