@@ -10,11 +10,10 @@ export function gewoneTekst(input: string): string {
     onopentag(name) { if (invisible.has(name)) hidden++; },
     ontext(text) { if (!hidden) output += text; },
     onclosetag(name) { if (invisible.has(name)) hidden = Math.max(0, hidden - 1); },
-  }, { decodeEntities: true });
+  }, { decodeEntities: false });
   parser.write(input);
   parser.end();
-  // Decoded character entities must not reintroduce markup into later mail sinks.
-  return output.replace(/[<>]/g, "").trim();
+  return output.trim();
 }
 
 function bounded(value: unknown, depth = 0): boolean {

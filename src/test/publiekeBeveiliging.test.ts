@@ -23,10 +23,12 @@ const validBav = { gekozen_pakket: "maandelijks", betaalwijze: "maandelijks", in
   voornaam: "Test", achternaam: "Test", email: "test@zpzaken.nl", bedrijfsnaam: "Test" };
 
 describe("Publieke invoer zonder writes of mails", () => {
-  it("strips tags and executable content, including encoded angle brackets", () => {
+  it("strips tags and executable content without repeatedly decoding or corrupting comparisons", () => {
     expect(input.gewoneTekst('<b>Test</b><script>alert(1)</script><img src=x onerror=alert(2)>')).toBe("Test");
     expect(input.gewoneTekst('&lt;img src=x onerror=alert(1)&gt;')).not.toContain("<");
-    expect(input.gewoneTekst('Test &amp; Partners')).toBe("Test & Partners");
+    expect(input.gewoneTekst('Test &amp; Partners')).toBe("Test &amp; Partners");
+    expect(input.gewoneTekst('omzet <50000 en >10000')).toBe('omzet <50000 en >10000');
+    expect(input.gewoneTekst(input.gewoneTekst('Test &amp;amp; Partners'))).toBe('Test &amp;amp; Partners');
   });
   it("keeps SEPA evidence and attribution byte-identical while cleaning display text", () => {
     const proof = '<ongewijzigd bewijs>'; const attribution = { gclid: 'Ab-C_123', marketing_toestemming: true };
