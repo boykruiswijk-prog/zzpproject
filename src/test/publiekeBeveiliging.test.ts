@@ -46,6 +46,15 @@ describe("Publieke invoer zonder writes of mails", () => {
   it("accepts ordinary BAV input and nullable optional fields", () => {
     expect(input.bavInvoer.safeParse({ ...validBav, telefoon: null, kvk_startdatum: null }).success).toBe(true);
   });
+  it("preserves email, ordered answers, documents and all consent evidence exactly", () => {
+    const body = { ...validBav, email: "a&amp;b@zpzaken.nl", formulier: [{ label: "Omzet", waarde: "<50000 en >10000" }],
+      getoonde_documenten: ["/voorwaarden?x=1&y=2"], sepa_akkoord: true, iban: null,
+      cyber_client_akkoord_op: null, client_akkoord_op: "2026-10-21T10:00:00Z" };
+    expect(input.bavInvoer.safeParse(body).success).toBe(true);
+    expect(input.saneerBavTekst(body)).toEqual(body);
+    expect(input.saneerVrijeTekst({ ...body, getoonde_tekst: "<bewijs>&amp;", bericht: "<b>Vraag</b>" }))
+      .toEqual({ ...body, getoonde_tekst: "<bewijs>&amp;", bericht: "Vraag" });
+  });
   it("rejects object-valued contact fields and oversized email", () => {
     expect(input.valideerPubliekeRij({ voornaam: {} })).toBe(false);
     expect(input.valideerPubliekeRij({ email: 'a'.repeat(256) })).toBe(false);

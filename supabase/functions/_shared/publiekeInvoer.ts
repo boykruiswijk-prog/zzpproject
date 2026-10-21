@@ -61,16 +61,17 @@ export function saneerBavTekst<T extends Record<string, unknown>>(body: T): T {
   for (const key of ["voornaam", "achternaam", "bedrijfsnaam", "beroep", "sector", "opmerkingen", "formulier_naam"]) {
     if (typeof out[key] === "string") Object.assign(out, { [key]: gewoneTekst(out[key] as string) });
   }
-  if (Array.isArray(out.formulier)) Object.assign(out, { formulier: saneerVrijeTekst(out.formulier) });
+  // The ordered submission is evidence; output renderers escape it without rewriting it.
   return out;
 }
 
 export function saneerVrijeTekst(value: unknown): unknown {
-  if (typeof value === "string") return gewoneTekst(value);
-  if (Array.isArray(value)) return value.map(saneerVrijeTekst);
-  if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([k, v]) =>
-    [k, ["attributie", "sepa_bewijs", "getoonde_documenten", "client_akkoord_op", "toestemming_op"].includes(k) ? v : saneerVrijeTekst(v)]));
-  return value;
+  if (!value || typeof value !== "object" || Array.isArray(value)) return value;
+  const out = { ...value } as Record<string, unknown>;
+  for (const key of ["formulier_naam", "voorkeursmoment", "bericht", "vraag", "opmerkingen"]) {
+    if (typeof out[key] === "string") out[key] = gewoneTekst(out[key] as string);
+  }
+  return out;
 }
 
 export function valideerPubliekeRij(value: unknown): boolean {
