@@ -12,9 +12,11 @@ import { TerugbelDialog } from "@/components/shared/TerugbelDialog";
 
 interface LayoutProps {
   children: React.ReactNode;
+  /** Alleen voor pagina's waar wij geen gegevens mogen verzamelen (F9 AOV). */
+  zonderGegevensPopups?: boolean;
 }
 
-export function Layout({ children }: LayoutProps) {
+export function Layout({ children, zonderGegevensPopups = false }: LayoutProps) {
   return (
     <div className="min-h-screen flex flex-col">
       <SiteSchemaMarkup />
@@ -27,12 +29,10 @@ export function Layout({ children }: LayoutProps) {
       </section>
       <Footer />
       <CookieConsent />
-      <StickyMobileCTA />
-      <StickyContactBar />
-      <ExitIntentPopup />
+      {!zonderGegevensPopups && <><StickyMobileCTA /><StickyContactBar /><ExitIntentPopup /></>}
       <WhatsAppFloatingButton />
       <ZekerLauncher />
-      <TerugbelDialog />
+      {!zonderGegevensPopups && <TerugbelDialog />}
     </div>
   );
 }

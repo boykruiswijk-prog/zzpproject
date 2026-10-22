@@ -1,8 +1,10 @@
 // F9: één vlag voor de nieuwe AOV-pagina; uit = nieuwe pagina alleen in de preview, live blijft de huidige /aov.
 export const AOV_NIEUW_PUBLIEK = false;
 export const AOV_PAD = "/aov";
-// TODO: vervangen door de directe Movir-afsluitlink van Tjepkema zodra die er is.
-export const AOV_ADVISEUR_URL = "https://www.tjepkema.nu";
+export const AOV_ADVISEUR_URL = "https://www.wijzijnaov.nl";
+export const AOV_REKENTOOL_URL = "https://movir-aov-exon.smartplatforms.io/frame/0f148d2f-a3e4-4ba2-adb3-384917fde229";
+export const AOV_REKENTOOL_TEKST =
+  "Deze rekentool en de aanvraag zijn van Tjepkema Assurantie & Advies B.V. (WijZijnAOV), AFM-vergunning 12050654. Wat je hier invult gaat rechtstreeks naar de adviseur. ZP Zaken ontvangt deze gegevens niet.";
 export const AOV_AFM_URL =
   "https://www.afm.nl/nl-nl/sector/registers/vergunningenregisters/financiele-dienstverleners/details?id=A6BF9913-6111-F011-998A-7C1E5272931F";
 export const AOV_VERMELDING_VOOR =

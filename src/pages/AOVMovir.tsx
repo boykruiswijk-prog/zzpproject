@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { ArrowRight, ExternalLink, CheckCircle } from "lucide-react";
 import { STARTER_VOORWAARDE_TEKST } from "@/lib/starterTarief";
 import {
-  AOV_ADVISEUR_URL, AOV_AFM_URL, AOV_NIEUW_PUBLIEK, AOV_VERMELDING_AFM, AOV_VERMELDING_NA, AOV_VERMELDING_VOOR,
+  AOV_ADVISEUR_URL, AOV_AFM_URL, AOV_REKENTOOL_TEKST, AOV_REKENTOOL_URL, AOV_NIEUW_PUBLIEK, AOV_VERMELDING_AFM, AOV_VERMELDING_NA, AOV_VERMELDING_VOOR,
 } from "@/config/aovPagina";
 
 export const AOV_SEO = {
@@ -80,9 +81,36 @@ const feiten = [
   "De premie is vaak aftrekbaar in box 1.",
 ];
 
+export function Rekentool() {
+  const [geladen, setGeladen] = useState(false);
+  return (
+    <section id="premie" className="section-padding bg-background scroll-mt-24">
+      <div className="container-wide max-w-5xl">
+        <h2 className="mb-4">Bereken je premie en sluit af bij de adviseur</h2>
+        <p className="text-sm text-muted-foreground leading-relaxed rounded-xl border border-border bg-card p-4 mb-5">{AOV_REKENTOOL_TEKST}</p>
+        {geladen ? (
+          <iframe
+            src={AOV_REKENTOOL_URL}
+            title="Movir Momentum AOV premieberekening van Tjepkema Assurantie & Advies"
+            width="100%"
+            loading="lazy"
+            referrerPolicy="strict-origin-when-cross-origin"
+            className="block w-full border-0 rounded-xl bg-card min-h-[1400px] md:min-h-[1100px]"
+          />
+        ) : (
+          <Button variant="accent" size="lg" onClick={() => setGeladen(true)}>Start de premieberekening <ArrowRight className="h-5 w-5" /></Button>
+        )}
+        <p className="mt-4 text-sm">
+          <a href={AOV_REKENTOOL_URL} target="_blank" rel="noopener" className="underline underline-offset-2 text-muted-foreground">Opent de rekentool niet? Open hem in een nieuw tabblad</a>
+        </p>
+      </div>
+    </section>
+  );
+}
+
 export default function AOVMovir() {
   return (
-    <Layout>
+    <Layout zonderGegevensPopups>
       <SEOHead title={AOV_SEO.title} description={AOV_SEO.description} canonical="https://zpzaken.nl/aov" exactTitle noindex={!AOV_NIEUW_PUBLIEK}>
         <script type="application/ld+json">{JSON.stringify(schema)}</script>
       </SEOHead>
@@ -95,7 +123,7 @@ export default function AOVMovir() {
             Word je ziek of arbeidsongeschikt, dan valt je inkomen als zelfstandige weg. Een AOV keert dan maandelijks uit. Je sluit de Movir Momentum zelf online af of met hulp van een adviseur.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 mb-6">
-            <AdviseurKnop>Bereken je premie bij de adviseur</AdviseurKnop>
+            <Button variant="accent" size="lg" asChild><a href="#premie">Bereken je premie <ArrowRight className="h-5 w-5" /></a></Button>
             <AdviseurKnop variant="outline">Liever persoonlijk advies</AdviseurKnop>
           </div>
           <p className="text-sm text-muted-foreground">
@@ -105,7 +133,9 @@ export default function AOVMovir() {
         </div>
       </section>
 
-      <section className="section-padding bg-background">
+      <Rekentool />
+
+      <section className="section-padding bg-background border-t border-border">
         <div className="container-wide max-w-5xl">
           <h2 className="mb-3">Zelf afsluiten of met advies?</h2>
           <p className="text-muted-foreground mb-8 max-w-2xl">Je kiest zelf hoe je de AOV afsluit. Beide routes lopen via de adviseur.</p>
@@ -184,7 +214,7 @@ export default function AOVMovir() {
       </section>
 
       <div className="md:hidden fixed inset-x-0 bottom-[calc(56px+env(safe-area-inset-bottom))] z-40 border-t border-border bg-background/95 p-3 backdrop-blur">
-        <AdviseurKnop className="w-full">Bereken je premie bij de adviseur</AdviseurKnop>
+        <Button variant="accent" size="lg" asChild className="w-full"><a href="#premie">Bereken je premie bij de adviseur</a></Button>
       </div>
       <div className="md:hidden h-20" aria-hidden="true" />
     </Layout>

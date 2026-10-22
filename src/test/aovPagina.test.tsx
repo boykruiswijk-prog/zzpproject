@@ -2,11 +2,11 @@
 import { describe, it, expect, vi } from "vitest";
 vi.mock("@/components/layout/Layout", () => ({ Layout: ({ children }: { children: React.ReactNode }) => <>{children}</> }));
 import fs from "node:fs";
-import { render } from "@testing-library/react";
+import { render, fireEvent, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AOV_NIEUW_PUBLIEK, AOV_ADVISEUR_URL, aovNieuwTonen } from "../config/aovPagina";
+import { AOV_NIEUW_PUBLIEK, AOV_ADVISEUR_URL, AOV_REKENTOOL_URL, AOV_REKENTOOL_TEKST, aovNieuwTonen } from "../config/aovPagina";
 import AOVMovir, { AOV_SEO, AOV_FAQ } from "../pages/AOVMovir";
 
 const lees = (p: string) => fs.readFileSync(p, "utf8");
@@ -36,7 +36,7 @@ describe("F9 nieuwe AOV-pagina", () => {
     const tekst = container.textContent || "";
     expect(tekst).toContain("Advies en afsluiten van de Movir Momentum AOV lopen via Tjepkema Assurantie & Advies B.V., Middenweg 344, 1097 TZ Amsterdam, AFM-vergunning 12050654. ZP Zaken geeft geen advies en bemiddelt niet in deze verzekering.");
     const links = [...container.querySelectorAll(`a[href="${AOV_ADVISEUR_URL}"]`)];
-    expect(links.length).toBeGreaterThanOrEqual(3);
+    expect(links.length).toBeGreaterThanOrEqual(1);
     for (const a of links) { expect(a.getAttribute("target")).toBe("_blank"); expect(a.getAttribute("rel")).toContain("noopener"); }
     expect(tekst.match(/Michiel Tjepkema/g)?.length).toBe(1);
   });
@@ -52,5 +52,32 @@ describe("F9 nieuwe AOV-pagina", () => {
     expect(AOV_SEO.description.length).toBeLessThanOrEqual(155);
     expect(AOV_FAQ.length).toBeGreaterThanOrEqual(5);
     expect(AOV_FAQ.length).toBeLessThanOrEqual(7);
+  });
+  it("rekentool laadt pas na klik, precies één iframe", () => {
+    const { container } = renderPagina();
+    expect(container.querySelector("iframe")).toBeNull();
+    expect(container.textContent).toContain(AOV_REKENTOOL_TEKST);
+    expect(AOV_REKENTOOL_TEKST).toBe("Deze rekentool en de aanvraag zijn van Tjepkema Assurantie & Advies B.V. (WijZijnAOV), AFM-vergunning 12050654. Wat je hier invult gaat rechtstreeks naar de adviseur. ZP Zaken ontvangt deze gegevens niet.");
+    fireEvent.click(screen.getByRole("button", { name: /Start de premieberekening/ }));
+    const frames = container.querySelectorAll("iframe");
+    expect(frames.length).toBe(1);
+    expect(frames[0].getAttribute("src")).toBe(AOV_REKENTOOL_URL);
+    expect(frames[0].getAttribute("title")).toBe("Movir Momentum AOV premieberekening van Tjepkema Assurantie & Advies");
+    expect(frames[0].hasAttribute("sandbox")).toBe(false);
+    expect(container.querySelectorAll("form, input, textarea, select").length).toBe(0);
+    expect(container.textContent).toContain(AOV_REKENTOOL_TEKST);
+  });
+  it("hero en sticky knop scrollen naar #premie, adviseur is wijzijnaov", () => {
+    const { container } = renderPagina();
+    expect(container.querySelectorAll('a[href="#premie"]').length).toBe(2);
+    expect(AOV_ADVISEUR_URL).toBe("https://www.wijzijnaov.nl");
+  });
+  it("geen terugbel-, vertrek- of sitebalk op deze pagina, CSP staat alleen dit domein extra toe", () => {
+    expect(lees("src/pages/AOVMovir.tsx")).toContain("<Layout zonderGegevensPopups>");
+    const l = lees("src/components/layout/Layout.tsx");
+    expect(l).toContain("{!zonderGegevensPopups && <><StickyMobileCTA /><StickyContactBar /><ExitIntentPopup /></>}");
+    expect(l).toContain("{!zonderGegevensPopups && <TerugbelDialog />}");
+    expect(l).toContain("zonderGegevensPopups = false");
+    expect(lees("index.html")).toContain("frame-src 'self' blob: https://movir-aov-exon.smartplatforms.io ");
   });
 });
