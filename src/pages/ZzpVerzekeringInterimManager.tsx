@@ -10,9 +10,9 @@ import {
 const faqs = [
   { question: "Vraagt een opdrachtgever om een BAV voor interim managers?", answer: "Vaak wel. Veel opdrachtgevers en bureaus vragen om een bewijs van verzekering. Met ons certificaat laat je dat binnen 24 uur zien." },
   { question: "Ben ik als scrum master buiten ICT ook verzekerd?", answer: "Vaak wel. Werk je als scrum master of agile coach buiten de ICT, dan kijken we bij je aanvraag even mee welke dekking past. Twijfel je? Neem contact op." },
-  { question: "Wat kost de verzekering voor een interim manager?", answer: `Vanaf ${PRIJS_MAAND} per maand of ${PRIJS_JAAR} per jaar voor BAV en AVB samen. Zonder eigen risico.` },
+  { question: "Wat kost de verzekering voor een interim manager?", answer: `Vanaf ${PRIJS_MAAND.replace("€", "€ ")} per maand of ${PRIJS_JAAR.replace("€", "€ ")} per jaar, inclusief kosten en assurantiebelasting, voor BAV en AVB samen. Zonder eigen risico.` },
   { question: "Wat als een project door mijn planning te laat is?", answer: "Stelt je opdrachtgever je aansprakelijk, meld het dan bij ons. Of de schade gedekt is, lees je in de polisvoorwaarden. Die zijn leidend." },
-  { question: "Kan ik de polis stoppen tussen twee opdrachten?", answer: "Ja. De polis is dagelijks opzegbaar. Let wel op: zonder polis ben je niet verzekerd." },
+  { question: "Kan ik de polis stoppen tussen twee opdrachten?", answer: "Ja. De BAV + AVB heeft geen jaarcontract en is dagelijks opzegbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota. Let wel op: zonder polis ben je niet verzekerd." },
 ];
 
 export default function ZzpVerzekeringInterimManager() {

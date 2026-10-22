@@ -11,7 +11,7 @@ import { openTerugbel } from "@/components/shared/TerugbelDialog";
 import { isNlTelefoon } from "../../../supabase/functions/_shared/telefoon";
 
 /** Compacte start bovenaan advertentie- en beroepspagina's: opent het bestaande aanvraagformulier. */
-export function SnelleStart() {
+export function SnelleStart({ prijsregel }: { prijsregel?: string } = {}) {
   const [email, setEmail] = useState("");
   const [telefoon, setTelefoon] = useState("");
   const [fout, setFout] = useState<string | null>(null);
@@ -33,7 +33,7 @@ export function SnelleStart() {
 
   return (
     <div className="w-full max-w-xl space-y-3" data-testid="snelle-start">
-      <p className="font-semibold text-white">{vanafPrijsregel()}</p>
+      <p className="font-semibold text-white">{prijsregel ?? vanafPrijsregel()}</p>
       <form onSubmit={aanvragen} noValidate className="rounded-xl bg-card text-card-foreground p-4 shadow-lg space-y-3">
         <div className="grid gap-3 sm:grid-cols-2">
           <div>

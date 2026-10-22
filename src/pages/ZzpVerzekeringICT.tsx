@@ -1,5 +1,6 @@
 import { CYBER_DEKKING, CYBER_HULP, CYBER_LOOPTIJD } from "../../supabase/functions/_shared/cyber";
 import { CYBER_VOORWAARDEN_OPVRAGEN } from "../config/cyberPubliek";
+import { BeroepspaginaTekst } from "@/components/diensten/BeroepspaginaTekst";
 import { seoRoute } from "@/config/seoRoutes";
 import { ServicePageTemplate } from "@/components/diensten/ServicePageTemplate";
 import { faqSchema } from "@/lib/schema";
@@ -120,7 +121,7 @@ export default function ZzpVerzekeringICT() {
               {faqs.map((f, i) => (
                 <AccordionItem key={i} value={`faq-${i}`}>
                   <AccordionTrigger className="text-left">{f.question}</AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground">{f.answer}</AccordionContent>
+                  <AccordionContent className="text-muted-foreground"><BeroepspaginaTekst tekst={f.answer} /></AccordionContent>
                 </AccordionItem>
               ))}
             </Accordion>

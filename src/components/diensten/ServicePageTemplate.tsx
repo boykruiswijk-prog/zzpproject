@@ -12,6 +12,7 @@ import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
 import { openTerugbel, openTerugbelKlik } from "@/components/shared/TerugbelDialog";
 import { scrollNaarAanvraag } from "@/lib/scrollNaarAanvraag";
 import { vanafPrijsregel } from "@/data/bavPakketten";
+import { BeroepspaginaTekst, beroepspaginaPrijsregel, isBeroepspagina } from "./BeroepspaginaTekst";
 import officeFlowers from "@/assets/office-flowers.webp";
 
 interface Benefit {
@@ -72,6 +73,8 @@ export function ServicePageTemplate({
   aanvraag,
   schema,
 }: ServicePageTemplateProps) {
+  const beroepspagina = isBeroepspagina(canonicalPath);
+  const tekst = (t: string) => beroepspagina ? <BeroepspaginaTekst tekst={t} /> : t;
   return (
     <Layout>
       <SEOHead
@@ -91,10 +94,10 @@ export function ServicePageTemplate({
         compactMobiel={aanvraag === "snel"}
       >
         {aanvraag === "snel" ? (
-          <SnelleStart />
+          <SnelleStart prijsregel={beroepspagina ? beroepspaginaPrijsregel() : undefined} />
         ) : aanvraag === "direct" ? (
           <div className="space-y-3">
-            <p className="font-semibold text-white">{vanafPrijsregel()}</p>
+            <p className="font-semibold text-white">{beroepspagina ? beroepspaginaPrijsregel() : vanafPrijsregel()}</p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button variant="accent" size="lg" asChild>
                 <a href="#combinatiepolis" onClick={(e) => scrollNaarAanvraag(e)}>Online aanvragen <ArrowRight className="h-5 w-5" /></a>
@@ -138,7 +141,7 @@ export function ServicePageTemplate({
                   <b.icon className="h-7 w-7 text-accent" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3">{b.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{b.description}</p>
+                <p className="text-muted-foreground leading-relaxed">{tekst(b.description)}</p>
               </motion.div>
             ))}
           </div>
@@ -184,13 +187,13 @@ export function ServicePageTemplate({
                   className={!imageLeft ? "lg:col-start-1 lg:row-start-1" : ""}
                 >
                   <h2 className="text-2xl md:text-3xl font-bold mb-4">{block.title}</h2>
-                  <p className="text-lg text-muted-foreground mb-6 leading-relaxed">{block.text}</p>
+                  <p className="text-lg text-muted-foreground mb-6 leading-relaxed">{tekst(block.text)}</p>
                   {block.bullets && (
                     <ul className="space-y-3">
                       {block.bullets.map((b, j) => (
                         <li key={j} className="flex items-start gap-3">
                           <CheckCircle className="h-5 w-5 text-accent mt-0.5 flex-shrink-0" />
-                          <span>{b}</span>
+                          <span>{tekst(b)}</span>
                         </li>
                       ))}
                     </ul>
