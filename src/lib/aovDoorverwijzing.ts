@@ -46,7 +46,7 @@ export function aovWeek(datum: string): string {
   d.setUTCDate(d.getUTCDate() - (d.getUTCDay() + 6) % 7);
   return d.toISOString().slice(0, 10);
 }
-export function aovWeekTotalen(rijen: AovOverzichtRij[]) {
+export function aovWeekTotalen(rijen: { created_at: string }[]) {
   const weken = new Map<string, number>();
   for (const r of rijen) { const w = aovWeek(r.created_at); weken.set(w, (weken.get(w) || 0) + 1); }
   return [...weken.entries()].sort(([a], [b]) => b.localeCompare(a));
