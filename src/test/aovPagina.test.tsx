@@ -2,7 +2,7 @@
 import { describe, it, expect, vi } from "vitest";
 vi.mock("@/components/layout/Layout", () => ({ Layout: ({ children }: { children: React.ReactNode }) => <>{children}</> }));
 import fs from "node:fs";
-import { render, fireEvent, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -53,17 +53,13 @@ describe("F9 nieuwe AOV-pagina", () => {
     expect(AOV_FAQ.length).toBeGreaterThanOrEqual(5);
     expect(AOV_FAQ.length).toBeLessThanOrEqual(7);
   });
-  it("rekentool laadt pas na klik, precies één iframe", () => {
+  it("rekentool opent extern zonder iframe of eigen invoer", () => {
     const { container } = renderPagina();
     expect(container.querySelector("iframe")).toBeNull();
     expect(container.textContent).toContain(AOV_REKENTOOL_TEKST);
-    expect(AOV_REKENTOOL_TEKST).toBe("Deze rekentool en de aanvraag zijn van Tjepkema Assurantie & Advies B.V. (WijZijnAOV), AFM-vergunning 12050654. Wat je hier invult gaat rechtstreeks naar de adviseur. ZP Zaken ontvangt deze gegevens niet.");
-    fireEvent.click(screen.getByRole("button", { name: /Start de premieberekening/ }));
-    const frames = container.querySelectorAll("iframe");
-    expect(frames.length).toBe(1);
-    expect(frames[0].getAttribute("src")).toBe(AOV_REKENTOOL_URL);
-    expect(frames[0].getAttribute("title")).toBe("Movir Momentum AOV premieberekening van Tjepkema Assurantie & Advies");
-    expect(frames[0].hasAttribute("sandbox")).toBe(false);
+    const link = container.querySelector(`a[href="${AOV_REKENTOOL_URL}"]`);
+    expect(link?.getAttribute("target")).toBe("_blank");
+    expect(link?.getAttribute("rel")).toContain("noopener");
     expect(container.querySelectorAll("form, input, textarea, select").length).toBe(0);
     expect(container.textContent).toContain(AOV_REKENTOOL_TEKST);
   });
@@ -79,6 +75,6 @@ describe("F9 nieuwe AOV-pagina", () => {
     expect(l).toContain("{!zonderGegevensPopups && <><WhatsAppFloatingButton /><ZekerLauncher /></>}");
     expect(l).toContain("{!zonderGegevensPopups && <TerugbelDialog />}");
     expect(l).toContain("zonderGegevensPopups = false");
-    expect(lees("index.html")).toContain("frame-src 'self' blob: https://movir-aov-exon.smartplatforms.io ");
+    expect(lees("index.html")).not.toContain("https://movir-aov-exon.smartplatforms.io");
   });
 });
