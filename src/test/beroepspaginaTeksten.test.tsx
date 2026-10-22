@@ -1,4 +1,8 @@
-import { describe, expect, it } from "vitest";
+// @vitest-environment node
+import { describe, expect, it, vi } from "vitest";
+vi.mock("@/components/diensten/ServicePageTemplate", () => ({ ServicePageTemplate: () => null }));
+vi.mock("@/components/home/BAVApplicationModule", () => ({ BAVApplicationModule: () => null }));
+vi.mock("@/components/kennisbank/LeesMeer", () => ({ LeesMeer: () => null }));
 import { beroepspaginaPrijsregel, isBeroepspagina } from "@/components/diensten/BeroepspaginaTekst";
 import BavZzp from "@/pages/BavZzp";
 import Beroepsaansprakelijkheidsverzekering from "@/pages/Beroepsaansprakelijkheidsverzekering";
