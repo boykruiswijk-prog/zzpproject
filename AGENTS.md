@@ -1,6 +1,7 @@
 # Technische afspraken
 - Application work descriptions share werkzaamheden.ts limits across forms and public handlers; manual approval uses generate-certificate, service-only leg_handmatige_acceptatie_vast (atomic metadata/audit) and immutable SEPA evidence; release checks successful mail logs by lead/evidence and existing invitations before effects, with read-only dry runs restricted to test leads; portal approval is explicit, never a fake Exact ID. Why: reject before writes and release only missing documents after human approval without changing billing.
 - Evi access/discovery/robots use eviPagina.ts; hidden means preview-only, no prerender. Source stays separate from Ads. Why: one switch.
+- New /aov (F9) uses aovPagina.ts: flag off shows AOVMovir only on preview hosts; SSR/prerender, sitemap and llms keep the old AOV page. The AOV page has no forms; all AOV actions link out to the licensed adviser. Why: no AFM licence for income insurance.
 
 - ZP icons (ICO, embedded-PNG SVG, PNG and both manifests) share versioned head links in pages and redirect stubs; static assets precede the unforced SPA fallback. Why: consistent brand and crawler access.
 - Derive ZP icons from docs/brand/favicon.png.b64 or public/favicon-192x192.png, without redrawing/cropping. Why: preserve the approved mark.
