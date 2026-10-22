@@ -92,12 +92,13 @@ export function ServicePageTemplate({
         badge={{ icon: <Sparkles className="h-4 w-4" />, text: badge }}
         backgroundImage={heroImage}
         compactMobiel={aanvraag === "snel"}
+        tekstAfbreken={beroepspagina}
       >
         {aanvraag === "snel" ? (
           <SnelleStart prijsregel={beroepspagina ? beroepspaginaPrijsregel() : undefined} />
         ) : aanvraag === "direct" ? (
           <div className="space-y-3">
-            <p className="font-semibold text-white">{beroepspagina ? beroepspaginaPrijsregel() : vanafPrijsregel()}</p>
+            <p className={`font-semibold text-white ${beroepspagina ? "min-w-0 whitespace-normal break-words" : ""}`}>{beroepspagina ? beroepspaginaPrijsregel() : vanafPrijsregel()}</p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button variant="accent" size="lg" asChild>
                 <a href="#combinatiepolis" onClick={(e) => scrollNaarAanvraag(e)}>Online aanvragen <ArrowRight className="h-5 w-5" /></a>

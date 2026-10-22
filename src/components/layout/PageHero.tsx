@@ -14,6 +14,8 @@ interface PageHeroProps {
   backgroundImage?: string;
   /** Mobiel: minder ruimte en geen ondertitel, zodat de inhoud boven de vouw staat. */
   compactMobiel?: boolean;
+  /** Alleen beroepspagina's: lange koppen en prijsregels binnen de beschikbare breedte afbreken. */
+  tekstAfbreken?: boolean;
 }
 
 export function PageHero({ 
@@ -23,7 +25,8 @@ export function PageHero({
   children,
   showBackgroundImage = true,
   backgroundImage,
-  compactMobiel = false
+  compactMobiel = false,
+  tekstAfbreken = false
 }: PageHeroProps) {
   const bgImage = backgroundImage || officeMeetingRoom;
   
@@ -47,12 +50,12 @@ export function PageHero({
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-primary via-primary to-primary/90" />
       )}
 
-      <div className={`container-wide relative z-10 ${compactMobiel ? "py-6" : "py-16"} md:py-24`}>
+      <div className={`container-wide relative z-10 ${tekstAfbreken ? "min-w-0 w-full" : ""} ${compactMobiel ? "py-6" : "py-16"} md:py-24`}>
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.21, 0.47, 0.32, 0.98] }}
-          className="max-w-3xl"
+          className={`max-w-3xl ${tekstAfbreken ? "min-w-0" : ""}`}
         >
           {badge && (
             <motion.div 
@@ -70,7 +73,7 @@ export function PageHero({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className={`${compactMobiel ? "mb-3 text-2xl md:mb-6 md:text-5xl" : "mb-6"} text-primary-foreground leading-tight`}
+            className={`${compactMobiel ? "mb-3 text-2xl md:mb-6 md:text-5xl" : "mb-6"} text-primary-foreground leading-tight ${tekstAfbreken ? "min-w-0 whitespace-normal [overflow-wrap:anywhere]" : ""}`}
           >
             {title}
           </motion.h1>
@@ -80,7 +83,7 @@ export function PageHero({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className={`text-lg md:text-xl text-primary-foreground/80 mb-8 ${compactMobiel ? "hidden sm:block" : ""}`}
+              className={`text-lg md:text-xl text-primary-foreground/80 mb-8 ${tekstAfbreken ? "min-w-0 whitespace-normal break-words" : ""} ${compactMobiel ? "hidden sm:block" : ""}`}
             >
               {subtitle}
             </motion.p>
