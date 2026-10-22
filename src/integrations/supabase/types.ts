@@ -229,6 +229,57 @@ export type Database = {
           },
         ]
       }
+      aov_aanmeldingen: {
+        Row: {
+          behandeld_door: string | null
+          behandeld_op: string | null
+          bron: string
+          created_at: string
+          doel: string
+          email: string
+          id: string
+          naam: string
+          notitie: string | null
+          status: string
+          telefoon: string | null
+          toestemming_doorgeven: boolean
+          toestemming_tekst: string
+          user_id: string | null
+        }
+        Insert: {
+          behandeld_door?: string | null
+          behandeld_op?: string | null
+          bron: string
+          created_at?: string
+          doel: string
+          email: string
+          id?: string
+          naam: string
+          notitie?: string | null
+          status?: string
+          telefoon?: string | null
+          toestemming_doorgeven: boolean
+          toestemming_tekst: string
+          user_id?: string | null
+        }
+        Update: {
+          behandeld_door?: string | null
+          behandeld_op?: string | null
+          bron?: string
+          created_at?: string
+          doel?: string
+          email?: string
+          id?: string
+          naam?: string
+          notitie?: string | null
+          status?: string
+          telefoon?: string | null
+          toestemming_doorgeven?: boolean
+          toestemming_tekst?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       aov_doorverwijzingen: {
         Row: {
           bron: string
@@ -5984,6 +6035,41 @@ export type Database = {
     Functions: {
       accept_portal_invitation: { Args: { _token: string }; Returns: Json }
       anonimiseer_aanvraag_concepten: { Args: never; Returns: number }
+      aov_aanmelden: {
+        Args: {
+          p_bron: string
+          p_doel: string
+          p_email: string
+          p_honeypot?: string
+          p_naam: string
+          p_telefoon: string
+          p_toestemming: boolean
+          p_toestemming_tekst: string
+        }
+        Returns: string
+      }
+      aov_aanmelding_bijwerken: {
+        Args: { p_id: string; p_notitie: string; p_status: string }
+        Returns: undefined
+      }
+      aov_aanmeldingen_overzicht: {
+        Args: never
+        Returns: {
+          behandeld_op: string
+          bron: string
+          created_at: string
+          doel: string
+          email: string
+          id: string
+          lead_id: string
+          lead_status: string
+          naam: string
+          notitie: string
+          status: string
+          telefoon: string
+          user_id: string
+        }[]
+      }
       aov_doorverwijzingen_overzicht: {
         Args: never
         Returns: {
