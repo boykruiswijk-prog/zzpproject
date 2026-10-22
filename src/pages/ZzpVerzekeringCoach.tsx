@@ -11,8 +11,8 @@ const faqs = [
   { question: "Heb ik als coach een beroepsaansprakelijkheidsverzekering nodig?", answer: "Het is niet verplicht. Wel vragen opdrachtgevers er vaak om, vooral bij coaching via een bedrijf." },
   { question: "Ben ik als trainer ook verzekerd?", answer: "Ja. Ook als trainer kun je deze polis afsluiten. De AVB is voor schade aan personen of spullen, bijvoorbeeld tijdens een training." },
   { question: "Ik ben therapeut of psycholoog. Kan ik deze polis afsluiten?", answer: "Neem eerst contact op. Dat werk valt onder zorg en daarvoor gelden andere regels." },
-  { question: "Wat kost een BAV voor een coach?", answer: `Vanaf ${PRIJS_MAAND} per maand of ${PRIJS_JAAR} per jaar voor BAV en AVB samen, zonder eigen risico.` },
-  { question: "Wat is precies gedekt?", answer: "Wat gedekt is, staat in de polisvoorwaarden. Die zijn leidend. Je vindt ze op de pagina documenten." },
+  { question: "Wat kost een BAV voor een coach?", answer: `Vanaf ${PRIJS_MAAND.replace("€", "€ ")} per maand of ${PRIJS_JAAR.replace("€", "€ ")} per jaar, inclusief kosten en assurantiebelasting, voor BAV en AVB samen, zonder eigen risico.` },
+  { question: "Wat is precies gedekt?", answer: "Wat precies gedekt is, lees je in de polisvoorwaarden. Die zijn leidend." },
 ];
 
 export default function ZzpVerzekeringCoach() {

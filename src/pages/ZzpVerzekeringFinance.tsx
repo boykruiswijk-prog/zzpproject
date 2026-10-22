@@ -11,8 +11,8 @@ const faqs = [
   { question: "Is deze polis geschikt voor een interim controller?", answer: "Ja. Werk je als interim controller, financial controller of business controller, dan kun je deze polis afsluiten." },
   { question: "Ik ben accountant met wettelijke taken. Kan ik deze polis afsluiten?", answer: "Neem eerst contact op. Voor accountants met wettelijke taken gelden aparte eisen. We kijken samen wat past." },
   { question: "Geldt dit ook voor Wft-adviseurs?", answer: "Nee, niet zonder overleg. Voor financieel advies onder de Wft gelden aparte eisen. Neem contact met ons op." },
-  { question: "Wat kost een BAV voor een interim CFO?", answer: `De BAV en AVB samen kosten vanaf ${PRIJS_MAAND} per maand of ${PRIJS_JAAR} per jaar, zonder eigen risico.` },
-  { question: "Wat is gedekt bij een fout in een rapportage?", answer: "Dat hangt af van de situatie. Wat precies gedekt is, staat in de polisvoorwaarden. Die zijn leidend. Je vindt ze op de pagina documenten." },
+  { question: "Wat kost een BAV voor een interim CFO?", answer: `De BAV en AVB samen kosten vanaf ${PRIJS_MAAND.replace("€", "€ ")} per maand of ${PRIJS_JAAR.replace("€", "€ ")} per jaar, inclusief kosten en assurantiebelasting, zonder eigen risico.` },
+  { question: "Wat is gedekt bij een fout in een rapportage?", answer: "Dat hangt af van de situatie. Wat precies gedekt is, lees je in de polisvoorwaarden. Die zijn leidend." },
 ];
 
 export default function ZzpVerzekeringFinance() {

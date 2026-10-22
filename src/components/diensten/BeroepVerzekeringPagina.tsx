@@ -1,3 +1,4 @@
+import { BeroepspaginaTekst } from "./BeroepspaginaTekst";
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import { seoRoute } from "@/config/seoRoutes";
@@ -90,7 +91,7 @@ export function BeroepVerzekeringPagina(p: Props) {
               {p.faqs.map((f, i) => (
                 <AccordionItem key={i} value={`faq-${i}`}>
                   <AccordionTrigger className="text-left">{f.question}</AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground">{f.answer}</AccordionContent>
+                  <AccordionContent className="text-muted-foreground"><BeroepspaginaTekst tekst={f.answer} /></AccordionContent>
                 </AccordionItem>
               ))}
             </Accordion>

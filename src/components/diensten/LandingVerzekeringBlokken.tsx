@@ -1,6 +1,7 @@
 import { CheckCircle, ArrowRight } from "lucide-react";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { bavPakketten } from "@/data/bavPakketten";
+import { BeroepspaginaTekst } from "./BeroepspaginaTekst";
 import { STARTER } from "@/lib/starterTarief";
 
 const PAKKET = bavPakketten[0];
@@ -37,7 +38,7 @@ export function LandingVerzekeringBlokken() {
             {punten.map((p) => (
               <li key={p} className="flex items-start gap-3">
                 <CheckCircle className="h-5 w-5 text-accent mt-0.5 flex-shrink-0" />
-                <span>{p}</span>
+                <span><BeroepspaginaTekst tekst={p} /></span>
               </li>
             ))}
           </ul>
@@ -48,7 +49,7 @@ export function LandingVerzekeringBlokken() {
           <div className="mt-8 rounded-2xl border border-border bg-secondary p-6">
             <h3 className="text-lg font-semibold mb-2">Net begonnen? Het starterspakket</h3>
             <p className="text-muted-foreground">
-              € {STARTER.maandprijs} per maand of € {STARTER.jaarprijs} per jaar de eerste {STARTER.duurMaanden} maanden, daarna € {STARTER.naMaandprijs} per maand of € {STARTER.naJaarprijs} per jaar. Geldt bij een KVK-inschrijving jonger dan 12 maanden.
+              € {STARTER.maandprijs} per maand of € {STARTER.jaarprijs} per jaar de eerste {STARTER.duurMaanden} maanden, daarna € {STARTER.naMaandprijs} per maand of € {STARTER.naJaarprijs} per jaar, inclusief kosten en assurantiebelasting. Geldt bij een KVK-inschrijving jonger dan 12 maanden.
             </p>
             <LocalizedLink to="/starters" className="mt-3 inline-flex items-center gap-1 font-medium text-accent hover:underline">
               Bekijk het starterspakket <ArrowRight className="h-4 w-4" />

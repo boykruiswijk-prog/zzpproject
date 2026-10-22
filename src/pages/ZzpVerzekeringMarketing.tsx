@@ -9,9 +9,9 @@ import {
 
 const faqs = [
   { question: "Heb ik als freelance marketeer een BAV nodig?", answer: "Het is niet verplicht. Wel vragen steeds meer opdrachtgevers erom. En één fout in een campagne kan duur zijn." },
-  { question: "Ben ik verzekerd als ik per ongeluk rechten van een ander schend?", answer: "Dat hangt af van de situatie. Lees de polisvoorwaarden op de pagina documenten, die zijn leidend. Twijfel je? Neem contact op." },
+  { question: "Ben ik verzekerd als ik per ongeluk rechten van een ander schend?", answer: "Dat hangt af van de situatie. Wat precies gedekt is, lees je in de polisvoorwaarden. Die zijn leidend. Twijfel je? Neem contact op." },
   { question: "Kan ik als designer of copywriter deze polis afsluiten?", answer: "Ja. Ook als designer, copywriter of social media specialist kun je deze polis afsluiten." },
-  { question: "Wat kost een BAV voor marketing?", answer: `Vanaf ${PRIJS_MAAND} per maand of ${PRIJS_JAAR} per jaar voor BAV en AVB samen. Zonder eigen risico.` },
+  { question: "Wat kost een BAV voor marketing?", answer: `Vanaf ${PRIJS_MAAND.replace("€", "€ ")} per maand of ${PRIJS_JAAR.replace("€", "€ ")} per jaar, inclusief kosten en assurantiebelasting, voor BAV en AVB samen. Zonder eigen risico.` },
   { question: "Hoe snel kan ik een certificaat sturen naar mijn opdrachtgever?", answer: "Je vraagt online aan. Binnen 24 uur is het geregeld en staat je certificaat in je mailbox." },
 ];
 
