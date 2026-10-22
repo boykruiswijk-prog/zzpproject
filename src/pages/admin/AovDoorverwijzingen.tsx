@@ -16,7 +16,10 @@ export default function AovDoorverwijzingen() {
       const { data, error } = await supabase.rpc("aov_doorverwijzingen_overzicht").range(start, start + 499);
       if (error) throw error;
       const rijen = data ?? [];
-      alles.push(...rijen);
+      for (const rij of rijen) {
+        if (rij.doel !== "advies" && rij.doel !== "rekentool") throw new Error("Onbekend doel");
+        alles.push({ ...rij, doel: rij.doel });
+      }
       if (rijen.length < 500) break;
     }
     return alles;
