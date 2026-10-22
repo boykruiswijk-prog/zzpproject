@@ -26,7 +26,7 @@ describe("handmatige acceptatie", () => {
     const db = { from: (table: string) => {
       const api: any = { select: () => api, eq: () => api, order: () => api, limit: () => api,
         maybeSingle: async () => ({ data: { id: "bewijs", bevestigingsmail_verzonden_op: "2026-10-22" } }),
-        then: (resolve: any) => resolve({ count: table === "lead_notification_log" ? 0 : 1 }) };
+        then: (resolve: any) => resolve({ data: [] }) };
       return api;
     } };
     const result = await verstuurHandmatigeDocumenten(db, new Request("https://example.test"), row, "user", mail);
@@ -54,12 +54,61 @@ describe("handmatige acceptatie", () => {
     const db = { from: (table: string) => {
       const api: any = { select: () => api, eq: () => api, order: () => api, limit: () => api,
         maybeSingle: async () => ({ data: { ...proof, bevestigingsmail_verzonden_op: sent ? "2026-10-22" : null } }),
-        then: (resolve: any) => resolve({ count: table === "lead_notification_log" ? 0 : 1 }) };
+        then: (resolve: any) => resolve({ data: [] }) };
       return api;
     } };
     const result = await verstuurHandmatigeDocumenten(db, new Request("https://example.test"), basis, "user", async () => ({ ok: true }));
     expect(result.sepa).toBe(true);
     expect(verstuurMachtigingBevestiging).toHaveBeenCalledTimes(1);
     expect(verstuurMachtigingBevestiging).toHaveBeenCalledWith(db, expect.anything(), expect.objectContaining({ record: expect.objectContaining({ tekst_hash: "hash", getoonde_tekst: "onveranderlijk" }) }));
+  });
+});
+
+function historieDb({ sepaLog = false, portalLog = false, invitation = false, error = false } = {}) {
+  return { from: (table: string) => {
+    const filters: Record<string, unknown> = {};
+    const api: any = { select: () => api, order: () => api, limit: () => api,
+      eq: (key: string, value: unknown) => { filters[key] = value; return api; },
+      maybeSingle: async () => ({ data: { id: "test-bewijs", bevestigingsmail_verzonden_op: null } }),
+      then: (resolve: any) => resolve({ error: error ? { message: "read failed" } : null,
+        data: table === "portal_invitations" ? (invitation ? [{ id: "test-inv" }] : []) :
+          filters["metadata->>bewijs_id"] ? (sepaLog ? [{ id: "test-sepa-log" }] : []) :
+            (portalLog ? [{ lead_type: "portal_invite", metadata: {} }] : []) }) };
+    return api;
+  } };
+}
+
+describe("oude handmatige aanvragen en veilige droge akkoordroute", () => {
+  it("SEPA-sent-log zonder bijgewerkte bewijstimestamp en eerdere Mijn ZP-mail: alleen certificaat", async () => {
+    vi.clearAllMocks();
+    const mail = vi.fn(async () => ({ ok: true }));
+    await verstuurHandmatigeDocumenten(historieDb({ sepaLog: true, portalLog: true }), new Request("https://example.test"), basis, "user", mail);
+    expect(mail).toHaveBeenCalledTimes(1);
+    expect(verstuurMachtigingBevestiging).not.toHaveBeenCalled();
+    expect(autoInvitePortalLead).not.toHaveBeenCalled();
+  });
+  it("bestaande uitnodiging voorkomt opnieuw uitnodigen", async () => {
+    vi.clearAllMocks();
+    await verstuurHandmatigeDocumenten(historieDb({ sepaLog: true, invitation: true }), new Request("https://example.test"), basis, "user", async () => ({ ok: true }));
+    expect(autoInvitePortalLead).not.toHaveBeenCalled();
+  });
+  it.each([false, true])("droog testlead-akkoord geen SEPA=%s zonder writes of verzending", async geenSepa => {
+    vi.clearAllMocks();
+    const mail = vi.fn(() => { throw new Error("Verzending verboden"); });
+    const row = { ...basis, is_test: true, extra_data: { handmatige_acceptatie: { bevestigd_op: "2026-10-22", geen_sepa_nodig: geenSepa } } };
+    const result = await verstuurHandmatigeDocumenten(historieDb(), new Request("https://example.test"), row, "user", mail, { dryRun: true });
+    expect(result.volgorde).toEqual(geenSepa ? ["certificaat", "mijnZp"] : ["certificaat", "sepa", "mijnZp"]);
+    expect(mail).not.toHaveBeenCalled();
+    expect(verstuurMachtigingBevestiging).not.toHaveBeenCalled();
+    expect(autoInvitePortalLead).not.toHaveBeenCalled();
+    console.log("Droog akkoord testlead:", JSON.stringify(result));
+  });
+  it("mislukte historiecontrole blokkeert vóór certificaat", async () => {
+    const mail = vi.fn();
+    await expect(verstuurHandmatigeDocumenten(historieDb({ error: true }), new Request("https://example.test"), basis, "user", mail)).rejects.toThrow("niets verstuurd");
+    expect(mail).not.toHaveBeenCalled();
+  });
+  it("droge controle op echte lead wordt geweigerd", async () => {
+    await expect(verstuurHandmatigeDocumenten({}, new Request("https://example.test"), basis, "user", vi.fn(), { dryRun: true })).rejects.toThrow("alleen voor testaanvragen");
   });
 });
