@@ -6355,6 +6355,10 @@ export type Database = {
         Args: { _datum: string; _vandaag: string; _vlag: string }
         Returns: boolean
       }
+      leg_handmatige_acceptatie_vast: {
+        Args: { _geen_sepa?: boolean; _lead_id: string; _user_id: string }
+        Returns: Json
+      }
       log_not_found: {
         Args: { _pad: string; _referrer?: string; _user_agent?: string }
         Returns: undefined

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { formatDateLongNL, formatDateTimeLongNL } from "@/lib/dateFormat";
 import { logActiviteit } from "@/lib/activiteitenLog";
+import { handmatigeAanvraag, beoordelingKeuze } from "../../../supabase/functions/_shared/aanvraagBeoordeling";
 import { ingangsdatumBlokkeertActivatie, MELDING_INGANG_KLANT_TE_VROEG } from "@/lib/ingangsdatum";
 import { useIngangsdatumInternGezet } from "@/hooks/useIngangsdatumIntern";
 
@@ -45,7 +46,7 @@ export function LeadActivationPanel({ lead, magActiveren, fase }: Props) {
   const [isRetryingInvoice, setIsRetryingInvoice] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [acceptatieAfgestemd, setAcceptatieAfgestemd] = useState(false);
-  const vereistAcceptatie = !!lead.extra_data?.handmatige_acceptatie;
+  const vereistAcceptatie = handmatigeAanvraag(lead) && !beoordelingKeuze(lead.extra_data).akkoord;
 
   const formatEuro = (n: number | null | undefined) =>
     typeof n === "number" ? `€ ${n.toFixed(2).replace(".", ",")}` : "—";
@@ -77,8 +78,8 @@ export function LeadActivationPanel({ lead, magActiveren, fase }: Props) {
     { label: "Postcode + plaats", ok: !!(lead.adres_postcode && lead.adres_plaats) },
     { label: "Branche", ok: !!lead.branche },
     { label: "Gekozen pakket", ok: !!lead.gekozen_pakket },
-    { label: "IBAN (geldig)", ok: isValidIban(lead.iban) },
-    { label: "SEPA-akkoord", ok: lead.sepa_akkoord === true },
+    { label: "IBAN (geldig)", ok: beoordelingKeuze(lead.extra_data).geenSepa || isValidIban(lead.iban) },
+    { label: "SEPA-akkoord", ok: beoordelingKeuze(lead.extra_data).geenSepa || lead.sepa_akkoord === true },
     { label: ingangTeVroeg ? `Ingangsdatum: ${MELDING_INGANG_KLANT_TE_VROEG}` : "Ingangsdatum", ok: !!lead.ingangsdatum && !ingangTeVroeg },
   ], [lead, ingangTeVroeg]);
 
@@ -185,7 +186,7 @@ export function LeadActivationPanel({ lead, magActiveren, fase }: Props) {
 
   const auditLog: any[] = Array.isArray(lead.activatie_log) ? lead.activatie_log : [];
   const lastEntry = auditLog[auditLog.length - 1];
-  const hasMandateWarning = alreadyActivated && auditLog.some(e => e?.mandate_warning) && !auditLog.some(e => e?.exact_mandate_id);
+  const hasMandateWarning = !beoordelingKeuze(lead.extra_data).geenSepa && alreadyActivated && auditLog.some(e => e?.mandate_warning) && !auditLog.some(e => e?.exact_mandate_id);
   const hasInvoice = !!lead.exact_invoice_id;
   const hasInvoiceWarning = alreadyActivated && !hasInvoice;
 

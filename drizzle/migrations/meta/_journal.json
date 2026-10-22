@@ -1058,6 +1058,13 @@
       "when": 1792089458674,
       "tag": "0150_0150_evi_interne_bron_concept",
       "breakpoints": true
+    },
+    {
+      "idx": 151,
+      "version": "7",
+      "when": 1792663704565,
+      "tag": "0151_handmatige_acceptatie_atomic",
+      "breakpoints": true
     }
   ]
 }

@@ -3,8 +3,11 @@ import { CheckCircle2, ArrowRight, Phone, MessageCircle } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { LocalizedLink } from "@/components/LocalizedLink";
+import { useLocation } from "react-router-dom";
+import { HANDMATIGE_ONTVANGST } from "../../supabase/functions/_shared/aanvraagBeoordeling";
 
 export default function OfferteBedankt() {
+  const { state } = useLocation();
   return (
     <Layout>
       <Helmet>
@@ -19,9 +22,10 @@ export default function OfferteBedankt() {
           </div>
           <h1 className="mb-4">Bedankt! Je offerteaanvraag is verstuurd</h1>
           <p className="text-lg text-muted-foreground mb-8">
-            Een medewerker neemt binnen 24 uur contact met je op met een persoonlijke offerte.
-            Je ontvangt zo ook een bevestiging per e-mail.
+            {state?.handmatig ? HANDMATIGE_ONTVANGST : <>Een medewerker neemt binnen 24 uur contact met je op met een persoonlijke offerte.
+            Je ontvangt zo ook een bevestiging per e-mail.</>}
           </p>
+          {state?.reference && <p className="mb-6">Referentie: {state.reference}</p>}
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-10">
             <Button asChild variant="accent" size="lg">

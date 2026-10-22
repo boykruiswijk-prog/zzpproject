@@ -26,6 +26,11 @@ describe("Automatische Mijn ZP-uitnodiging: precies één keer", () => {
     expect(beslisAutoUitnodiging({ ...basis, exactAccountId: null }).versturen).toBe(false);
     expect(beslisAutoUitnodiging({ ...basis, aantalPolissen: 0 }).versturen).toBe(false);
   });
+  it("expliciet handmatig akkoord geeft portaal vrij zonder fictieve Exact-koppeling", () => {
+    expect(beslisAutoUitnodiging({ ...basis, exactAccountId: null, handmatigGoedgekeurd: true })).toEqual({ versturen: true });
+    expect(beslisAutoUitnodiging({ ...basis, exactAccountId: null, handmatigGoedgekeurd: false }).versturen).toBe(false);
+    expect(beslisAutoUitnodiging({ ...basis, exactAccountId: null, handmatigGoedgekeurd: true, aantalPolissen: 0 }).versturen).toBe(false);
+  });
   it("testleads alleen voor @zpzaken.nl", () => {
     expect(beslisAutoUitnodiging({ ...basis, isTest: true })).toEqual({ versturen: false, reden: "testlead" });
     expect(beslisAutoUitnodiging({ ...basis, isTest: true, email: "boy.kruiswijk+x@ZPZaken.nl" }).versturen).toBe(true);

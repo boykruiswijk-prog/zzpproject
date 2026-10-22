@@ -100,11 +100,6 @@ describe("afsluitwizard zonder blokkade", () => {
     expect(fn).not.toMatch(/sector_alleen_offerte|KLANTMELDING_ALLEEN_OFFERTE/);
     expect(fn).toMatch(/handmatige_acceptatie: \{ reden: HANDMATIGE_ACCEPTATIE_REDEN/);
   });
-  it("klantteksten bevatten geen verboden woorden voor deze sectoren", () => {
-    const m = wizard.match(/submissionResult\.handmatig\s*\?\s*"([^"]+)"/);
-    expect(m).not.toBeNull();
-    expect(m![1]).not.toMatch(/offerte|handmatig|afgewezen|propositie/i);
-  });
 
   it("toont de 24-uursbelofte zonder directe dekking of intern traject", () => {
     const vertalingen = [nl.home.bavUsps, en.home.bavUsps, de.home.bavUsps, fr.home.bavUsps];

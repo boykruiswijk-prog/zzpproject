@@ -1,4 +1,5 @@
 import { requireMfa } from "../_shared/teamAuth.ts";
+import { HANDMATIGE_ONTVANGST, handmatigeAanvraag } from "../_shared/aanvraagBeoordeling.ts";
 // Centrale Edge Function voor lead-notificaties.
 // Verstuurt mail via Resend en logt in lead_notification_log.
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
@@ -175,8 +176,8 @@ const CUSTOMER_INTRO: Record<string, string> = {
   contact: "Bedankt voor je bericht. We nemen zo spoedig mogelijk, uiterlijk binnen 24 uur, contact met je op.",
 };
 
-function renderCustomerHtml(type: string, label: string, fields: Record<string, unknown>): string {
-  const intro = CUSTOMER_INTRO[type] || "We hebben je aanvraag in goede orde ontvangen en nemen binnen 24 uur contact met je op.";
+export function renderCustomerHtml(type: string, label: string, fields: Record<string, unknown>, handmatig = false, reference = ""): string {
+  const intro = handmatig ? HANDMATIGE_ONTVANGST : CUSTOMER_INTRO[type] || "We hebben je aanvraag in goede orde ontvangen en nemen binnen 24 uur contact met je op.";
   const SHOW_KEYS = new Set([
     "naam", "contact_naam", "bedrijfsnaam", "kvk_nummer", "pakket", "gekozen_pakket",
     "dekking", "betaalwijze", "ingangsdatum", "verzekering", "premie",
@@ -190,6 +191,7 @@ function renderCustomerHtml(type: string, label: string, fields: Record<string, 
       <h2 style="color:#222;font-size:18px;font-weight:600;margin:0 0 16px 0">Bevestiging van je aanvraag</h2>
       <p style="margin:0 0 14px 0">Beste relatie,</p>
       <p style="margin:0 0 18px 0">${esc(intro)}</p>
+      ${handmatig ? `<p>Referentie: ${esc(reference)}</p>` : ""}
       ${rows ? `<p style="margin:0 0 8px 0;font-weight:600;color:#333">Samenvatting van je gegevens</p><table style="border-collapse:collapse;width:100%;margin:0 0 18px 0">${rows}</table>` : ""}
       <p style="margin:0 0 14px 0">Heb je tussentijds een vraag? Bel ons gerust op <a href="tel:+31204573077" style="color:#E53E2F;text-decoration:none">020 - 457 3077</a> of mail naar <a href="mailto:info@zpzaken.nl" style="color:#E53E2F;text-decoration:none">info@zpzaken.nl</a>.</p>
       <p style="margin:0 0 24px 0">Met vriendelijke groet,<br/>Team ZP Zaken</p>
@@ -199,14 +201,14 @@ function renderCustomerHtml(type: string, label: string, fields: Record<string, 
   `;
 }
 
-function renderCustomerText(type: string, fields: Record<string, unknown>): string {
-  const intro = CUSTOMER_INTRO[type] || "We hebben je aanvraag in goede orde ontvangen en nemen binnen 24 uur contact met je op.";
+export function renderCustomerText(type: string, fields: Record<string, unknown>, handmatig = false, reference = ""): string {
+  const intro = handmatig ? HANDMATIGE_ONTVANGST : CUSTOMER_INTRO[type] || "We hebben je aanvraag in goede orde ontvangen en nemen binnen 24 uur contact met je op.";
   const SHOW_KEYS = new Set(["naam","contact_naam","bedrijfsnaam","kvk_nummer","pakket","gekozen_pakket","dekking","betaalwijze","ingangsdatum","verzekering","premie"]);
   const lines = Object.entries(fields)
     .filter(([k, v]) => SHOW_KEYS.has(k) && v != null && String(v).trim() !== "" && String(v).trim() !== "-")
     .map(([k, v]) => `- ${prettyLabel(k)}: ${klantVeiligeTekst(Array.isArray(v) ? v.join(", ") : v)}`)
     .join("\n");
-  return `Bevestiging van je aanvraag\n\n${intro}\n\n${lines ? `Samenvatting:\n${lines}\n\n` : ""}Met vriendelijke groet,\nTeam ZP Zaken\n020 - 457 3077\ninfo@zpzaken.nl\n`;
+  return `Bevestiging van je aanvraag\n\n${intro}\n\n${handmatig ? `Referentie: ${reference}\n\n` : ""}${lines ? `Samenvatting:\n${lines}\n\n` : ""}Met vriendelijke groet,\nTeam ZP Zaken\n020 - 457 3077\ninfo@zpzaken.nl\n`;
 }
 
 Deno.serve(async (req) => {
@@ -264,10 +266,12 @@ Deno.serve(async (req) => {
     // Interne mail: volledige veldenlijst uit het leadrecord (e-mail en telefoon bovenaan).
     let internFields: Record<string, unknown> = fields;
     let isTestLead = false;
+    let handmatig = false;
     if (leadId) {
       const { data: leadRec } = await supabase.from("leads").select("*").eq("id", leadId).maybeSingle();
       if (leadRec) {
         isTestLead = (leadRec as any).is_test === true;
+        handmatig = ["bav", "verzekering-aanvraag", "offerte-aanvraag"].includes(type) && handmatigeAanvraag(leadRec);
         const { velden, bericht } = interneMailVelden(leadRec as Record<string, unknown>);
         internFields = Object.fromEntries(velden);
         if (bericht) internFields["Bericht"] = bericht;
@@ -310,8 +314,8 @@ Deno.serve(async (req) => {
             to: [customerRecipient],
             replyTo: "info@zpzaken.nl",
             subject: customerSubject,
-            html: renderCustomerHtml(type, label, customerFields),
-            text: renderCustomerText(type, customerFields),
+            html: renderCustomerHtml(type, label, customerFields, handmatig, leadId?.slice(0, 8).toUpperCase() ?? reference),
+            text: renderCustomerText(type, customerFields, handmatig, leadId?.slice(0, 8).toUpperCase() ?? reference),
           });
           await supabase.from("lead_notification_log").insert({
             lead_type: type, lead_id: leadId ?? null, recipient: customerRecipient, cc: null,

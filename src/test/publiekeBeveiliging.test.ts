@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import ts from "typescript";
 import { z } from "zod";
 import { Parser } from "htmlparser2";
+import { WERKZAAMHEDEN_MAX, WERKZAAMHEDEN_TE_LANG, werkzaamhedenFout } from "../../supabase/functions/_shared/werkzaamheden";
 
 function compile(path: string) {
   const source = readFileSync(path, "utf8");
@@ -16,7 +17,7 @@ function compile(path: string) {
   }).outputText;
 }
 const input: any = {};
-new Function("exports", "z", "Parser", compile("supabase/functions/_shared/publiekeInvoer.ts"))(input, z, Parser);
+new Function("exports", "z", "Parser", "WERKZAAMHEDEN_MAX", "WERKZAAMHEDEN_TE_LANG", compile("supabase/functions/_shared/publiekeInvoer.ts"))(input, z, Parser, WERKZAAMHEDEN_MAX, WERKZAAMHEDEN_TE_LANG);
 const retired: any = {};
 new Function("exports", compile("supabase/functions/_shared/legacyImportStop.ts"))(retired);
 const validBav = { gekozen_pakket: "maandelijks", betaalwijze: "maandelijks", ingangsdatum: "2026-10-22",
@@ -72,7 +73,7 @@ function boot(name: string, extra: Record<string, unknown> = {}) {
   const db: any = { from: sideEffect, rpc: sideEffect, auth: sideEffect };
   const env: Record<string, string> = { SUPABASE_URL: 'https://example.test', SUPABASE_SERVICE_ROLE_KEY: 'mock-service',
     SUPABASE_ANON_KEY: 'mock-anon', INTERNAL_FUNCTION_SECRET: 'mock-internal', OTENTICA_WEBHOOK_SECRET: 'mock-provider', LOVABLE_API_KEY: 'mock-mail' };
-  const scope: Record<string, unknown> = { ...input, ...retired, ...extra, createClient: () => db,
+  const scope: Record<string, unknown> = { ...input, ...retired, werkzaamhedenFout, ...extra, createClient: () => db,
     corsHeaders: { "Access-Control-Allow-Origin": "*" }, sdkCorsHeaders: { "Access-Control-Allow-Origin": "*" },
     requireMfa: async () => ({ userId: 'mock-team' }),
     Deno: { env: { get: (key: string) => env[key] }, serve: (fn: typeof handler) => { handler = fn; } },

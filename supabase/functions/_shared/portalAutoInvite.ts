@@ -6,6 +6,7 @@ export interface AutoInviteInput {
   exactAccountId: string | null | undefined;
   aantalPolissen: number;
   aantalUitnodigingen: number;
+  handmatigGoedgekeurd?: boolean;
 }
 export type AutoInviteBesluit =
   | { versturen: true }
@@ -13,7 +14,7 @@ export type AutoInviteBesluit =
 
 /** Precies één keer per lead: alleen als geactiveerd én polis én nog nooit uitgenodigd. */
 export function beslisAutoUitnodiging(i: AutoInviteInput): AutoInviteBesluit {
-  if (!String(i.exactAccountId ?? "").trim()) return { versturen: false, reden: "niet_geactiveerd" };
+  if (!String(i.exactAccountId ?? "").trim() && i.handmatigGoedgekeurd !== true) return { versturen: false, reden: "niet_geactiveerd" };
   if (i.aantalPolissen < 1) return { versturen: false, reden: "geen_polis" };
   if (i.aantalUitnodigingen > 0) return { versturen: false, reden: "al_uitgenodigd" };
   const email = String(i.email ?? "").trim().toLowerCase();

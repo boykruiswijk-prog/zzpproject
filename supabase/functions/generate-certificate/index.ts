@@ -1,4 +1,7 @@
 import { requireMfa } from "../_shared/teamAuth.ts";
+import { handmatigeAanvraag, beoordelingKeuze } from "../_shared/aanvraagBeoordeling.ts";
+import { verstuurHandmatigeDocumenten } from "../_shared/handmatigeDocumenten.ts";
+import { kortKoppelingTekst } from "../_shared/werkzaamheden.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { certificaatBeschikbaar, certificaatBeschikbaarVanaf, certificaatTeVroegMelding } from "../_shared/certificaatBeschikbaar.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -77,6 +80,17 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
     const isSupAdmin = magCertificaatBeheren((rolRijen || []).map((r: any) => r.role));
 
     let policy: any;
+    let handmatigeLead: any = null;
+    if (lead_id) {
+      const { data: intake, error } = await adminClient.from("leads").select("*").eq("id", lead_id).maybeSingle();
+      if (error || !intake) return json({ error: "Aanvraag niet gevonden" }, 404);
+      if (handmatigeAanvraag(intake)) {
+        if (intake.status === "afgewezen") return json({ error: "Afgewezen aanvragen kunnen niet worden geaccepteerd." }, 409);
+        if (!beoordelingKeuze(intake.extra_data).akkoord && body.handmatige_goedgekeurd !== true) return json({ error: "Keur deze handmatige aanvraag eerst goed.", code: "handmatige_acceptatie_niet_bevestigd" }, 409);
+        if (body.geen_sepa_nodig !== undefined && typeof body.geen_sepa_nodig !== "boolean") return json({ error: "Ongeldige SEPA-keuze." }, 400);
+        handmatigeLead = intake;
+      }
+    }
     let policyLead: any = null;
     let kvkNummerBron: string | null = null;
 
@@ -85,6 +99,13 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
       if (!body.policy_id) return json({ error: "policy_id vereist" }, 400);
       const { data: bestaand } = await adminClient.from("policies").select("*").eq("id", body.policy_id).maybeSingle();
       if (!bestaand) return json({ error: "Certificaat niet gevonden" }, 404);
+      if (bestaand.lead_id && !handmatigeLead) {
+        const { data: gekoppeld } = await adminClient.from("leads").select("*").eq("id", bestaand.lead_id).maybeSingle();
+        if (gekoppeld && handmatigeAanvraag(gekoppeld)) {
+          if (!beoordelingKeuze(gekoppeld.extra_data).akkoord) return json({ error: "Keur de handmatige aanvraag eerst goed.", code: "handmatige_acceptatie_niet_bevestigd" }, 409);
+          handmatigeLead = gekoppeld;
+        }
+      }
       if (bestaand.status !== "geldig") return json({ error: "Dit certificaat is ingetrokken" }, 409);
       const oudeWaarden = {
         profession: bestaand.profession, certificate_holder: bestaand.certificate_holder,
@@ -150,6 +171,12 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
         // D7: niet mailen voor 1 maand voor de ingangsdatum.
         if (!certificaatBeschikbaar(bestaand.start_date)) {
           return json({ error: certificaatTeVroegMelding(bestaand.start_date), code: "certificaat_te_vroeg", beschikbaar_vanaf: certificaatBeschikbaarVanaf(bestaand.start_date) }, 409);
+        }
+        if (handmatigeLead) {
+          try {
+            const documenten = await verstuurHandmatigeDocumenten(adminClient, req, handmatigeLead, user.id, () => mailCertificaat(adminClient, req, bestaand, user));
+            return json({ success: true, handmatige_documenten: documenten, opmerking: documenten.test ? "Testaanvraag: niets verstuurd." : "Klantdocumenten verstuurd; eerder verstuurde documenten zijn overgeslagen." });
+          } catch (e) { return json({ error: e instanceof Error ? e.message : String(e) }, 500); }
         }
         const r = await mailCertificaat(adminClient, req, bestaand, user);
         if (!r.ok) return json({ error: r.error }, 500);
@@ -268,7 +295,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
           certificate_holder: lead.bedrijfsnaam || `${lead.voornaam} ${lead.achternaam}`,
           insured_name: `${lead.voornaam} ${lead.achternaam}`,
           start_date: lead.ingangsdatum || new Date().toISOString().split("T")[0],
-          profession: bepaalHoedanigheid(lead),
+          profession: kortKoppelingTekst(bepaalHoedanigheid(lead), 80),
           package_type: lead.verzekering_type || "BAV & AVB Jaarlijks",
           kvk: lead.kvk_nummer || null,
         };
@@ -302,6 +329,13 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
           const b = await bewaarIngetrokkenPdfs(adminClient, teBewaren, user, "Vervangen door nieuw certificaat met hetzelfde BAV-nummer");
           if (!b.ok) return json({ error: "Oude PDF bewaren mislukt; er is niets gewijzigd", details: b.error }, 500);
         }
+      }
+      if (handmatigeLead && !beoordelingKeuze(handmatigeLead.extra_data).akkoord) {
+        const { data: akkoord, error: akkoordError } = await adminClient.rpc("leg_handmatige_acceptatie_vast", {
+          _lead_id: lead_id, _user_id: user.id, _geen_sepa: body.geen_sepa_nodig === true,
+        });
+        if (akkoordError) return json({ error: "Acceptatie en keuze konden niet worden vastgelegd; niets verstuurd." }, 500);
+        handmatigeLead.extra_data = akkoord;
       }
       const { data: ins, error: policyError } = await adminClient.from("policies").insert({
         lead_id: lead_id || null,
@@ -775,10 +809,15 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
       .update({ pdf_url: fileName })
       .eq("id", policy.id);
 
+    let handmatige_documenten: unknown = null;
+    if (handmatigeLead && actie === "nieuw") {
+      try { handmatige_documenten = await verstuurHandmatigeDocumenten(adminClient, req, handmatigeLead, user.id, () => mailCertificaat(adminClient, req, policy, user)); }
+      catch (e) { handmatige_documenten = { error: e instanceof Error ? e.message : String(e) }; }
+    }
     // Automatische Mijn ZP-uitnodiging (alleen als de lead ook al geactiveerd is
     // en nog nooit is uitgenodigd). Mag het certificaat nooit laten mislukken.
     let portaal_uitnodiging: unknown = null;
-    if (lead_id && actie === "nieuw") {
+    if (lead_id && actie === "nieuw" && !handmatigeLead) {
       portaal_uitnodiging = await autoInvitePortalLead(adminClient, req, lead_id, user.id, "generate-certificate")
         .catch((e) => ({ verstuurd: false, error: String(e) }));
     }
@@ -793,6 +832,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
           pdf_path: fileName,
         },
         portaal_uitnodiging,
+        handmatige_documenten,
       }),
       {
         status: 200,

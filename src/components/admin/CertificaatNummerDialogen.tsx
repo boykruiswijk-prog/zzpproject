@@ -3,18 +3,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Loader2 } from "lucide-react";
 import { BavBezetMelding } from "@/components/admin/crm/BavBezetMelding";
+import { controleerAdminMfa, verwerkMfaFout } from "@/lib/adminMfaStap";
 import { haalBavRijen } from "@/lib/bavNummer";
 import {
   afwijkingNieuwNummer, bepaalKeuze, BRON_TEKST, magBevestigen, magNummerOpslaan, normaliseerNummer, startVoorstel, type Voorstel,
 } from "@/lib/certificaatNummerKeuze";
 
 async function roep(body: Record<string, unknown>) {
+  if (!(await controleerAdminMfa())) throw new Error("Bevestig eerst je tweestapsverificatie.");
   const { data, error } = await supabase.functions.invoke("generate-certificate", { body });
   if (error) {
+    await verwerkMfaFout(error);
     let msg = error.message;
     try { const j = await (error as any).context?.json?.(); if (j?.error) msg = j.error; } catch { /* */ }
     throw new Error(msg);
@@ -24,12 +28,12 @@ async function roep(body: Record<string, unknown>) {
 }
 const rpc = (n: string, a: Record<string, unknown>) => (supabase.rpc as any)(n, a);
 
-type Klaar = { nummer: string; pdf: string | null; melding?: string | null };
+type Klaar = { nummer: string; pdf: string | null; melding?: string | null; handmatig?: boolean };
 
 function KlaarBlok({ k }: { k: Klaar }) {
   return (
     <div className="space-y-2 text-sm" role="status">
-      <p>Nieuw certificaat klaar ({k.nummer}); stuur het de klant zelf als dat nodig is.</p>
+      <p>{k.handmatig ? `Certificaat klaar (${k.nummer}).` : `Nieuw certificaat klaar (${k.nummer}); stuur het de klant zelf als dat nodig is.`}</p>
       {k.melding && <p className="text-destructive">{k.melding}</p>}
       {k.pdf && <a href={k.pdf} target="_blank" rel="noreferrer" className="font-medium text-primary hover:underline">Certificaat downloaden (PDF)</a>}
     </div>
@@ -37,7 +41,8 @@ function KlaarBlok({ k }: { k: Klaar }) {
 }
 
 /** Lead-route: eerst voorstel tonen (bewerkbaar), pas na bevestigen het certificaat maken. */
-export function NieuwCertificaatDialoog({ leadId, open, onOpenChange, onKlaar }: { leadId: string; open: boolean; onOpenChange: (o: boolean) => void; onKlaar: () => void }) {
+export function NieuwCertificaatDialoog({ leadId, open, onOpenChange, onKlaar, handmatigeAcceptatie = false }: { leadId: string; open: boolean; onOpenChange: (o: boolean) => void; onKlaar: () => void; handmatigeAcceptatie?: boolean }) {
+  const [geenSepa, setGeenSepa] = useState(false);
   const [ctx, setCtx] = useState<{ voorstel: Voorstel | null; klantopgave: string | null; voorbeeld: string | null } | null>(null);
   const [nummer, setNummer] = useState("");
   const [toelichting, setToelichting] = useState("");
@@ -48,7 +53,7 @@ export function NieuwCertificaatDialoog({ leadId, open, onOpenChange, onKlaar }:
 
   useEffect(() => {
     if (!open) return;
-    setCtx(null); setKlaar(null); setFout(null); setBezet(null); setToelichting("");
+    setCtx(null); setKlaar(null); setFout(null); setBezet(null); setToelichting(""); setGeenSepa(false);
     (async () => {
       const { data: v } = await rpc("certificaatnummer_voorstel", { _onderneming_id: null, _lead_id: leadId });
       const voorstel = (v ?? null) as Voorstel | null;
@@ -68,7 +73,7 @@ export function NieuwCertificaatDialoog({ leadId, open, onOpenChange, onKlaar }:
 
   const keuze = ctx ? bepaalKeuze(nummer, ctx) : null;
   const ond = ctx?.voorstel?.onderneming_id ?? null;
-  const bron = ctx ? (keuze?.soort === "bekend" ? ctx.voorstel!.bron : keuze?.soort === "klantopgave" ? "klantopgave" : keuze?.soort === "nieuw" ? "nieuw" : null) : null;
+  const bron = ctx ? (keuze?.soort === "bekend" ? ctx.voorstel?.bron : keuze?.soort === "klantopgave" ? "klantopgave" : keuze?.soort === "nieuw" ? "nieuw" : null) : null;
 
   const maak = async (naOverride = false) => {
     if (!ctx || !keuze) return;
@@ -86,9 +91,9 @@ export function NieuwCertificaatDialoog({ leadId, open, onOpenChange, onKlaar }:
           if (error) throw new Error(error.message);
         }
       }
-      const r = await roep(body);
+      const r = await roep({ ...body, ...(handmatigeAcceptatie ? { handmatige_goedgekeurd: true, geen_sepa_nodig: geenSepa } : {}) });
       setBezet(null);
-      setKlaar({ nummer: r.policy.certificate_number, pdf: r.policy.pdf_url, melding: keuze.soort === "nieuw" ? afwijkingNieuwNummer(ctx.voorbeeld, r.policy.certificate_number) : null });
+      setKlaar({ nummer: r.policy.certificate_number, pdf: r.policy.pdf_url, handmatig: handmatigeAcceptatie, melding: r.handmatige_documenten?.error ?? (handmatigeAcceptatie ? (r.handmatige_documenten?.test ? "Testaanvraag: niets verstuurd." : "Aanvraag geaccepteerd; klantdocumenten verstuurd.") : keuze.soort === "nieuw" ? afwijkingNieuwNummer(ctx.voorbeeld, r.policy.certificate_number) : null) });
       onKlaar();
     } catch (e: any) { setFout(e.message); } finally { setBezig(false); }
   };
@@ -97,11 +102,12 @@ export function NieuwCertificaatDialoog({ leadId, open, onOpenChange, onKlaar }:
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Certificaat genereren</DialogTitle>
-          <DialogDescription>Controleer het BAV-nummer. Je kunt het voorstel aanpassen. Er wordt niets gemaild.</DialogDescription>
+          <DialogTitle>{handmatigeAcceptatie ? "Aanvraag accepteren" : "Certificaat genereren"}</DialogTitle>
+          <DialogDescription>{handmatigeAcceptatie ? "Controleer het BAV-nummer. Na akkoord worden het certificaat, de SEPA-machtiging en de uitnodiging voor Mijn ZP verstuurd." : "Controleer het BAV-nummer. Je kunt het voorstel aanpassen. Er wordt niets gemaild."}</DialogDescription>
         </DialogHeader>
         {klaar ? <KlaarBlok k={klaar} /> : !ctx ? <Loader2 className="h-5 w-5 animate-spin" /> : (
           <div className="space-y-3">
+            {handmatigeAcceptatie && <div className="flex items-start gap-2"><Checkbox id="geen-sepa" checked={geenSepa} onCheckedChange={v => setGeenSepa(v === true)} /><Label htmlFor="geen-sepa">Geen SEPA-machtiging nodig (bijvoorbeeld incasso via NN)</Label></div>}
             <div>
               <Label htmlFor="cn-nr">BAV-nummer</Label>
               <Input id="cn-nr" value={nummer} onChange={(e) => { setNummer(e.target.value); setBezet(null); }} />

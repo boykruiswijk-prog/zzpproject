@@ -1,4 +1,5 @@
 import { saneerInterneBron } from "../_shared/interneBron.ts";
+import { werkzaamhedenFout } from "../_shared/werkzaamheden.ts";
 import { bavInvoer, objectInvoer, saneerBavTekst, leesBegrensdeBody } from "../_shared/publiekeInvoer.ts";
 import { isEigenKvk, KVK_EIGEN_NUMMER_MELDING } from "../_shared/kvkInvoer.ts";
 import { corrigeerIngangsdatum } from "../_shared/ingangsdatum.ts";
@@ -105,6 +106,8 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
 
   let submissionVoorFout: BavSubmission | null = null;
   let leadOpgeslagen: { id: string; mandaatkenmerk: string } | null = null;
+  let handmatigeAcceptatie = false;
+  let isTestLead = true;
   try {
     const t0 = Date.now();
     if (req.method !== "POST") return weiger(405, "Niet toegestaan.", "methode");
@@ -112,6 +115,8 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
     try { raw = await leesBegrensdeBody(req); } catch { return weiger(413, "Aanvraag te groot.", "validatie"); }
     let input: unknown;
     try { input = JSON.parse(raw); } catch { return weiger(400, "Ongeldige aanvraag.", "validatie"); }
+    const lengteFout = werkzaamhedenFout(input && typeof input === "object" ? (input as Record<string, unknown>).beroep : null);
+    if (lengteFout) return weiger(400, lengteFout, "werkzaamheden_te_lang", { field: "beroep" });
     const parsed = bavInvoer.safeParse(input);
     if (!objectInvoer.safeParse(input).success || !parsed.success) return weiger(400, "Controleer de ingevulde gegevens.", "validatie");
     const submission = saneerBavTekst(parsed.data) as BavSubmission;
@@ -146,7 +151,7 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
     if (cyberGekozen && submission.cyber_akkoord !== true) return weiger(400, "Bevestig de voorwaarden van cyber", "cyber_akkoord");
     submission.betaalwijze = PAKKET_CONFIG[submission.gekozen_pakket].betaalwijze;
     // Zorg/bouw: normale flow, intern gemarkeerd voor handmatige acceptatie (klant merkt niets).
-    const handmatigeAcceptatie = vereistHandmatigeAcceptatie(submission);
+    handmatigeAcceptatie = vereistHandmatigeAcceptatie(submission) || submission.vereist_handmatige_beoordeling === true;
 
     // SEPA-machtiging: nooit vastleggen zonder incassant-ID.
     if (incassantIdOntbreekt()) {
@@ -271,7 +276,7 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
     // ── 0. BEWIJSRECORD SEPA-MACHTIGING (eerst; faalt dit, dan faalt de aanvraag) ──
     const leadId = submission.lead_id as string;
     // Preview/testomgeving: altijd testrecord, geen klantbevestiging.
-    const isTestLead = !resolveEnvironment(req).isProduction;
+    isTestLead = !resolveEnvironment(req).isProduction;
     const machtiging = bouwMachtigingData({
       type: "doorlopend",
       bronId: leadId,
@@ -408,7 +413,7 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
     // Bewijs, lead en aanmelding staan hierboven al synchroon vast. Fouten worden
     // gelogd in lead_notification_log (verstuurMachtigingBevestiging / send-lead-notification).
     const achtergrond = (async () => {
-    if (!isTestLead) await verstuurMachtigingBevestiging(supabase, req, {
+    if (!isTestLead && !handmatigeAcceptatie) await verstuurMachtigingBevestiging(supabase, req, {
       fnName: "process-bav-wizard",
       leadType: "bav-sepa-machtiging",
       record: bewijs,
@@ -469,7 +474,8 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
         success: true, is_test: isTestLead,
         aanmelding_id: aanmelding?.id ?? null,
         lead_id: lead.id,
-        mandaatkenmerk: machtiging.mandaatkenmerk,
+        handmatige_beoordeling: handmatigeAcceptatie,
+        ...(!handmatigeAcceptatie ? { mandaatkenmerk: machtiging.mandaatkenmerk } : {}),
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
@@ -488,7 +494,7 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
     if (leadOpgeslagen) {
       console.error(`process-bav-wizard vervolgstap mislukt na opslaan lead ${leadOpgeslagen.id}: ${message}`);
       return new Response(
-        JSON.stringify({ success: true, is_test: isTestLead, aanmelding_id: null, lead_id: leadOpgeslagen.id, mandaatkenmerk: leadOpgeslagen.mandaatkenmerk, vervolgfout: true }),
+        JSON.stringify({ success: true, is_test: isTestLead, aanmelding_id: null, lead_id: leadOpgeslagen.id, handmatige_beoordeling: handmatigeAcceptatie, ...(!handmatigeAcceptatie ? { mandaatkenmerk: leadOpgeslagen.mandaatkenmerk } : {}), vervolgfout: true }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }

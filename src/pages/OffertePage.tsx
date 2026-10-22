@@ -39,6 +39,8 @@ import { HoneypotField } from "@/components/shared/HoneypotField";
 import { WIZARD_SECTOREN, isHandmatigeAcceptatieSector } from "@/data/sectorVerzekeringskaart";
 import { brancheVoorSector } from "@/data/sectorBranche";
 import { vroegsteIngangsdatum, ingangsdatumFout } from "@/lib/ingangsdatum";
+import { WerkzaamhedenVeld } from "@/components/shared/WerkzaamhedenVeld";
+import { werkzaamhedenFout } from "../../supabase/functions/_shared/werkzaamheden";
 
 const SEO = seoRoute("/offerte");
 
@@ -124,6 +126,8 @@ export default function OffertePage() {
       e.belangrijkste_opdrachtgever = "Vul de naam van je belangrijkste opdrachtgever in";
     if (!form.omschrijving_werkzaamheden.trim() || form.omschrijving_werkzaamheden.trim().length < 30)
       e.omschrijving_werkzaamheden = "Beschrijf je werkzaamheden in minimaal 30 tekens";
+    const lengteFout = werkzaamhedenFout(form.omschrijving_werkzaamheden);
+    if (lengteFout) e.omschrijving_werkzaamheden = lengteFout;
     const datumFout = ingangsdatumFout(form.gewenste_startdatum);
     if (datumFout) (e as Record<string, string>).gewenste_startdatum = datumFout;
     setErrors(e);
@@ -223,7 +227,7 @@ export default function OffertePage() {
         console.warn("Notification failed", notifErr);
       }
 
-      navigate("/offerte/bedankt");
+      navigate("/offerte/bedankt", { state: { handmatig: vereistHandmatig(form.branche) || form.aantal_medewerkers === "Meer dan 3", reference: ref.toUpperCase() } });
     } catch (err: any) {
       console.error("[Offerte] submit failed", err);
       const code: string = err?.code ?? "";
@@ -465,20 +469,13 @@ export default function OffertePage() {
 
               <div>
                 <Label htmlFor="omschrijving_werkzaamheden">Omschrijving werkzaamheden<Required /></Label>
-                <Textarea
+                <WerkzaamhedenVeld
                   id="omschrijving_werkzaamheden"
-                  rows={5}
                   value={form.omschrijving_werkzaamheden}
-                  onChange={(e) => update("omschrijving_werkzaamheden", e.target.value)}
+                  onChange={(value) => update("omschrijving_werkzaamheden", value)}
                   placeholder="Beschrijf in een paar zinnen wat je doet voor opdrachtgevers"
-                  aria-invalid={!!errors.omschrijving_werkzaamheden}
+                  error={errors.omschrijving_werkzaamheden}
                 />
-                <div className="flex justify-between mt-1">
-                  <FieldError message={errors.omschrijving_werkzaamheden} />
-                  <span className="text-xs text-muted-foreground ml-auto">
-                    {form.omschrijving_werkzaamheden.trim().length} / min 30 tekens
-                  </span>
-                </div>
               </div>
             </fieldset>
 
