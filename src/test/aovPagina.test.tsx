@@ -61,7 +61,7 @@ describe("F9 nieuwe AOV-pagina", () => {
   });
   it("hero en sticky knop scrollen naar #premie, adviseur is wijzijnaov", () => {
     const { container } = renderPagina();
-    expect(container.querySelectorAll('a[href="#premie"]').length).toBe(2);
+    expect(container.querySelectorAll('a[href="#premie"]').length).toBe(3);
     expect(AOV_ADVISEUR_URL).toBe("https://www.wijzijnaov.nl");
   });
   it("geen terugbel-, vertrek- of sitebalk op deze pagina, CSP staat alleen dit domein extra toe", () => {

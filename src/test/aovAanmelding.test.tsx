@@ -28,7 +28,7 @@ beforeEach(() => {
 describe("F9 aanmeldstap AOV", () => {
   it("heeft precies naam, e-mail, telefoon en toestemming (plus onzichtbaar spamveld)", () => {
     const { container } = toon();
-    const namen = [...container.querySelectorAll("input, button[role=checkbox]")].map(e => e.getAttribute("name") || e.id).filter(n => n !== "website_url");
+    const namen = [...container.querySelectorAll("input, button[role=checkbox]")].map(e => e.getAttribute("name") || e.id).filter(n => n !== "website_url"); console.log(namen);
     expect(new Set(namen)).toEqual(new Set(AOV_AANMELD_VELDEN));
     expect(container.querySelectorAll("textarea, select").length).toBe(0);
     const t = (container.textContent || "").toLowerCase();
