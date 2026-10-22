@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+vi.mock("@/components/layout/Layout", () => ({ Layout: ({ children }: { children: React.ReactNode }) => <>{children}</> }));
 import fs from "node:fs";
 import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
