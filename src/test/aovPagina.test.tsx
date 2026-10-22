@@ -76,6 +76,7 @@ describe("F9 nieuwe AOV-pagina", () => {
     expect(lees("src/pages/AOVMovir.tsx")).toContain("<Layout zonderGegevensPopups>");
     const l = lees("src/components/layout/Layout.tsx");
     expect(l).toContain("{!zonderGegevensPopups && <><StickyMobileCTA /><StickyContactBar /><ExitIntentPopup /></>}");
+    expect(l).toContain("{!zonderGegevensPopups && <><WhatsAppFloatingButton /><ZekerLauncher /></>}");
     expect(l).toContain("{!zonderGegevensPopups && <TerugbelDialog />}");
     expect(l).toContain("zonderGegevensPopups = false");
     expect(lees("index.html")).toContain("frame-src 'self' blob: https://movir-aov-exon.smartplatforms.io ");
