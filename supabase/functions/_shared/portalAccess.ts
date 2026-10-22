@@ -8,6 +8,7 @@ import { createMailGate } from "./mail.ts";
 import { safeAppOrigin } from "./company.ts";
 
 import { beslisAutoUitnodiging, claimEnVerstuur } from "./portalAutoInvite.ts";
+import { handmatigeAanvraag, beoordelingKeuze } from "./aanvraagBeoordeling.ts";
 
 export function escapeHtml(str: string): string {
   return String(str)
@@ -166,7 +167,8 @@ export async function invitePortalLead(
   opts: { nieuweKlant?: boolean; automatisch?: boolean } = {},
 ): Promise<InviteOutcome> {
   const { data: lead, error } = await admin
-    .from("leads").select("id, email, voornaam, achternaam").eq("id", leadId).maybeSingle();
+    .from("leads").select("id, email, voornaam, achternaam, vereist_handmatige_beoordeling, extra_data").eq("id", leadId).maybeSingle();
+  if (lead && handmatigeAanvraag(lead) && !beoordelingKeuze(lead.extra_data).akkoord) return { lead_id: leadId, ok: false, error: "Keur de handmatige aanvraag eerst goed voordat je Mijn ZP uitnodigt." };
   if (error) return { lead_id: leadId, ok: false, error: error.message };
   if (!lead) return { lead_id: leadId, ok: false, error: "lead_niet_gevonden" };
   const email = String(lead.email ?? "").trim().toLowerCase();
@@ -208,20 +210,24 @@ export async function invitePortalLead(
  */
 export async function autoInvitePortalLead(
   admin: any, req: Request, leadId: string, invitedBy: string | null, fnName: string,
+  opts: { naHandmatigAkkoord?: boolean } = {},
 ): Promise<{ verstuurd: boolean; reden?: string; error?: string }> {
   try {
     const { data: lead } = await admin.from("leads")
-      .select("id, email, is_test, exact_account_id").eq("id", leadId).maybeSingle();
+      .select("id, email, is_test, exact_account_id, vereist_handmatige_beoordeling, extra_data").eq("id", leadId).maybeSingle();
     if (!lead) return { verstuurd: false, reden: "lead_niet_gevonden" };
+    const handmatig = handmatigeAanvraag(lead);
+    if (handmatig && (!opts.naHandmatigAkkoord || !beoordelingKeuze(lead.extra_data).akkoord)) return { verstuurd: false, reden: "wacht_op_handmatig_akkoord" };
     const [{ count: pol }, { count: inv }] = await Promise.all([
       admin.from("policies").select("id", { count: "exact", head: true }).eq("lead_id", leadId),
       admin.from("portal_invitations").select("id", { count: "exact", head: true }).eq("lead_id", leadId),
     ]);
     const besluit = beslisAutoUitnodiging({
       isTest: !!lead.is_test, email: lead.email, exactAccountId: lead.exact_account_id,
+      handmatigGoedgekeurd: handmatig && opts.naHandmatigAkkoord === true && beoordelingKeuze(lead.extra_data).akkoord,
       aantalPolissen: pol ?? 0, aantalUitnodigingen: inv ?? 0,
     });
-    if (!besluit.versturen) return { verstuurd: false, reden: besluit.reden };
+    if (besluit.versturen === false) return { verstuurd: false, reden: besluit.reden };
     // Race-bescherming: alleen de aanroep die de claim-rij echt invoegt, verstuurt.
     const claimed = await claimEnVerstuur({
       claim: async () => {

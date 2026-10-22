@@ -1,4 +1,5 @@
 import { requireMfa } from "../_shared/teamAuth.ts";
+import { handmatigeAanvraag, beoordelingKeuze } from "../_shared/aanvraagBeoordeling.ts";
 // Lead-to-Exact Fase 1: maakt Account + Contact + BankAccount + SEPA-mandaat
 // aan in Exact divisie 4401707 (ZP Zaken B.V.) op basis van een lead.
 // Doet GEEN factuur — fase 2.
@@ -407,6 +408,11 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
   const { data: lead, error: leadErr } = await supabase
     .from("leads").select("*").eq("id", leadId).maybeSingle();
   if (leadErr || !lead) return json({ success: false, error: "lead_not_found" }, 404);
+  const handmatig = handmatigeAanvraag(lead);
+  const acceptatieKeuze = beoordelingKeuze(lead.extra_data);
+  const geenSepaNodig = handmatig && acceptatieKeuze.akkoord && acceptatieKeuze.geenSepa;
+  if (action === "activate" && handmatig && !acceptatieKeuze.akkoord) return json({ success: false, error: "Keur de handmatige aanvraag eerst goed en maak het certificaat via Goedkeuren.", reason: "handmatige_acceptatie_niet_bevestigd" }, 409);
+  if (action === "retry_mandate" && geenSepaNodig) return json({ success: false, error: "Bij akkoord is vastgelegd dat geen SEPA-machtiging nodig is." }, 409);
 
   // Besluit D4 (aangevuld): blokkeer alleen als een te vroege datum nog de klantkeuze is; intern gezet = vrij.
   if (action === "activate" && lead.type === "verzekering_aanvraag" && !lead.geactiveerd_op && lead.ingangsdatum && lead.created_at) {
@@ -466,9 +472,9 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
 
   // ── Handmatige acceptatie (zorg/bouw): alleen activeren na bewuste bevestiging ──
   if (action === "activate" && !lead.exact_account_id) {
-    const check = controleerHandmatigeAcceptatie(lead.extra_data, body);
+    const check = controleerHandmatigeAcceptatie(lead.extra_data, { ...body, handmatige_acceptatie_bevestigd: acceptatieKeuze.akkoord });
     if (!check.ok) return json({ success: false, error: check.error, reason: "handmatige_acceptatie_niet_bevestigd" }, check.status);
-    if (check.gemarkeerd) {
+    if (check.gemarkeerd && !acceptatieKeuze.akkoord) {
       const extra = (lead.extra_data ?? {}) as Record<string, unknown>;
       const ha = (extra.handmatige_acceptatie ?? {}) as Record<string, unknown>;
       const nieuw = { ...extra, handmatige_acceptatie: { ...ha, bevestigd_door: user.id, bevestigd_op: new Date().toISOString() } };
@@ -845,8 +851,8 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
   if (!lead.adres_plaats) missing.push("adres_plaats");
   if (!lead.branche) missing.push("branche");
   if (!lead.gekozen_pakket) missing.push("gekozen_pakket");
-  if (!lead.iban) missing.push("iban");
-  if (!lead.sepa_akkoord) missing.push("sepa_akkoord");
+  if (!geenSepaNodig && !lead.iban) missing.push("iban");
+  if (!geenSepaNodig && !lead.sepa_akkoord) missing.push("sepa_akkoord");
   if (!lead.ingangsdatum) missing.push("ingangsdatum");
   if (missing.length) {
     return json({ success: false, error: "velden_ontbreken", missing }, 400);
@@ -1010,7 +1016,7 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
   // ── Stap F: BankAccount (idempotent bij reuse) ──
   let exactBankAccountId: string | null = null;
   let bankAccountReused = false;
-  {
+  if (!geenSepaNodig) {
     const ibanClean = String(lead.iban).replace(/\s+/g, "").toUpperCase();
     if (reusedAccountId) {
       // Zoek bestaande bankrekening op relatie met zelfde IBAN.
@@ -1106,7 +1112,7 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
         console.warn("Mandate lookup failed (continuing):", e);
       }
     }
-    if (!exactMandateId) {
+    if (!exactMandateId && !geenSepaNodig) {
       const mandaat = await mandaatGegevens(supabase, leadId, lead.sepa_akkoord_datum);
       const mRes = await fetch(`${baseUrl}/api/v1/${div}/cashflow/DirectDebitMandates`, {
         method: "POST", headers,

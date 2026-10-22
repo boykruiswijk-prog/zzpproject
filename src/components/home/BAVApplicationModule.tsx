@@ -46,6 +46,9 @@ import { isEigenKvk, KVK_EIGEN_NUMMER_MELDING, KVK_PLACEHOLDER, schoonKvk, kvkFo
 import { SNELLE_START_EVENT, type SnelleStartGegevens } from "@/lib/snelleStart";
 import { IbanVertrouwen } from "@/components/home/IbanVertrouwen";
 import { interneBronUitZoek } from "@/lib/interneBron";
+import { WerkzaamhedenVeld } from "@/components/shared/WerkzaamhedenVeld";
+import { werkzaamhedenFout } from "../../../supabase/functions/_shared/werkzaamheden";
+import { HANDMATIGE_ONTVANGST } from "../../../supabase/functions/_shared/aanvraagBeoordeling";
 
 const formatBedrag = (n: number) => `€${n.toLocaleString("nl-NL")}`;
 /** Compacte bedragen: 5.000.000 → "€5M", 2.500.000 → "€2,5M". */
@@ -226,6 +229,8 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
       if (formData.kvkStartdatum && (!/^\d{4}-\d{2}-\d{2}$/.test(formData.kvkStartdatum) || formData.kvkStartdatum > new Date().toISOString().slice(0, 10) || formData.kvkStartdatum < "1900-01-01")) newErrors.kvkStartdatum = "Vul een geldige startdatum in die niet in de toekomst ligt";
       if (!verzekeringskaartVoorSector(formData.sector)) newErrors.sector = "Kies je sector";
       if (!formData.beroep.trim()) newErrors.beroep = t("bavApp.valProfession");
+      const lengteFout = werkzaamhedenFout(formData.beroep);
+      if (lengteFout) newErrors.beroep = lengteFout;
       if (!formData.aantalMedewerkers.trim()) newErrors.aantalMedewerkers = t("bavApp.valEmployees");
       else if (parseInt(formData.aantalMedewerkers) < 0) newErrors.aantalMedewerkers = t("bavApp.valEmployeesInvalid");
       // Acceptatie-criteria check op functie tegen afgewezen lijst
@@ -396,6 +401,8 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
    const starterVanToepassing = !!startDate && isStarter(formData.kvkStartdatum || null, startDate);
    const handleSubmit = async () => {
      if (isSubmitting) return;
+     const lengteFout = werkzaamhedenFout(formData.beroep);
+     if (lengteFout) { setErrors({ beroep: lengteFout }); setCurrentStep(2); return; }
      if (!validateStep(currentStep)) return;
      trackWizardStep(currentStep, steps[currentStep - 1]?.name ?? "");
      setIsSubmitting(true);
@@ -491,7 +498,7 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
           cyberAfgewezen: data.cyber_afgewezen ?? cyberAfgewezen,
           reference: returnedLeadId.slice(0, 8).toUpperCase(),
           mandaatkenmerk: typeof data.mandaatkenmerk === "string" ? data.mandaatkenmerk : undefined,
-          handmatig: isHandmatigeAcceptatieSector(formData.sector),
+          handmatig: data.handmatige_beoordeling === true || isHandmatigeAcceptatieSector(formData.sector) || parseInt(formData.aantalMedewerkers || "0") > 3,
         });
         try { sessionStorage.removeItem(CONCEPT_KEY); } catch { /* geen opslag */ }
         conceptId.current = ""; laatsteConcept.current = "";
@@ -541,7 +548,7 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
               {submissionResult.handmatig
-                ? "We hebben je aanvraag ontvangen. Binnen 24 uur hoor je van ons. Je ontvangt een bevestiging per e-mail, met je SEPA-machtiging als PDF."
+                ? HANDMATIGE_ONTVANGST
                 : "Binnen 24 uur geregeld, certificaat in je mailbox. Je ontvangt een bevestiging per e-mail, met je SEPA-machtiging als PDF, en een uitnodiging voor Mijn ZP."}
             </p>
             {submissionResult.starter && (
@@ -551,7 +558,7 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
             {submissionResult.cyberAfgewezen && <p className="mt-4 text-sm text-muted-foreground">{CYBER_AFGEWEZEN}</p>}
             <div className="mt-6 space-y-1 text-sm">
               <p><span className="font-semibold">Referentie:</span> {submissionResult.reference}</p>
-              {submissionResult.mandaatkenmerk && (
+              {!submissionResult.handmatig && submissionResult.mandaatkenmerk && (
                 <p className="break-all"><span className="font-semibold">Mandaatkenmerk:</span> {submissionResult.mandaatkenmerk}</p>
               )}
             </div>
@@ -890,8 +897,7 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
                       </div>
                       <div>
                         <Label htmlFor="beroep">{t("home.bavProfession")} *</Label>
-                        <Input id="beroep" name="beroep" value={formData.beroep} onChange={handleInputChange} className={cn(errors.beroep && "border-destructive")} />
-                        <FieldError message={errors.beroep} />
+                        <WerkzaamhedenVeld id="beroep" value={formData.beroep} onChange={value => { setFormData(prev => ({ ...prev, beroep: value })); setErrors(prev => ({ ...prev, beroep: "" })); }} error={errors.beroep} />
                       </div>
                       <div>
                         <Label htmlFor="functie">{t("home.bavFunction")} (optioneel)</Label>

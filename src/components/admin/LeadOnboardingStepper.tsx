@@ -5,6 +5,9 @@ import { Check, Loader2, AlertTriangle } from "lucide-react";
 import { useUpdateLead } from "@/hooks/useLeads";
 import { useToast } from "@/hooks/use-toast";
 import { logActiviteit } from "@/lib/activiteitenLog";
+import { NieuwCertificaatDialoog } from "@/components/admin/CertificaatNummerDialogen";
+import { handmatigeAanvraag, beoordelingKeuze } from "../../../supabase/functions/_shared/aanvraagBeoordeling";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
@@ -78,6 +81,10 @@ export function LeadOnboardingStepper({ lead }: Props) {
   const [rejectOpen, setRejectOpen] = useState(false);
   const [rejectKey, setRejectKey] = useState<RejectReasonKey | "">("");
   const [rejectAnders, setRejectAnders] = useState("");
+  const [acceptOpen, setAcceptOpen] = useState(false);
+  const qc = useQueryClient();
+  const handmatig = handmatigeAanvraag(lead);
+  const wachtOpAkkoord = handmatig && !beoordelingKeuze(lead.extra_data).akkoord;
 
   const phaseIndex = PHASES.findIndex(p => p.key === phase);
 
@@ -188,7 +195,7 @@ export function LeadOnboardingStepper({ lead }: Props) {
                     Afwijzen
                   </Button>
                   <Button
-                    onClick={() => setStatus(
+                    onClick={() => wachtOpAkkoord ? setAcceptOpen(true) : setStatus(
                       "offerte_verstuurd",
                       {},
                       "Aanvraag goedgekeurd",
@@ -203,7 +210,7 @@ export function LeadOnboardingStepper({ lead }: Props) {
               )}
 
               {phase === "activeren" && (
-                <p className="text-sm text-muted-foreground">
+                wachtOpAkkoord ? <Button onClick={() => setAcceptOpen(true)}>Handmatige aanvraag goedkeuren</Button> : <p className="text-sm text-muted-foreground">
                   Aanvraag is goedgekeurd. Activeer de polis in het blok{" "}
                   <strong>Polis-activatie</strong> hiernaast zodra de checklist volledig groen is.
                 </p>
@@ -220,6 +227,7 @@ export function LeadOnboardingStepper({ lead }: Props) {
         )}
       </CardContent>
 
+      <NieuwCertificaatDialoog leadId={lead.id} open={acceptOpen} onOpenChange={setAcceptOpen} handmatigeAcceptatie={wachtOpAkkoord} onKlaar={() => { qc.invalidateQueries({ queryKey: ["lead", lead.id] }); qc.invalidateQueries({ queryKey: ["policies", lead.id] }); }} />
       <Dialog open={rejectOpen} onOpenChange={setRejectOpen}>
         <DialogContent>
           <DialogHeader>

@@ -1,4 +1,5 @@
 # Technische afspraken
+- Application work descriptions share werkzaamheden.ts limits across forms and public handlers; manual approval uses generate-certificate, service-only leg_handmatige_acceptatie_vast (atomic metadata/audit) and immutable SEPA evidence; portal approval is explicit, never a fake Exact ID. Why: reject before writes and release documents only after human approval without changing billing.
 - Evi access/discovery/robots use eviPagina.ts; hidden means preview-only, no prerender. Source stays separate from Ads. Why: one switch.
 
 - ZP icons (ICO, embedded-PNG SVG, PNG and both manifests) share versioned head links in pages and redirect stubs; static assets precede the unforced SPA fallback. Why: consistent brand and crawler access.

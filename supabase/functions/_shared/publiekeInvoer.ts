@@ -1,5 +1,6 @@
 import { z } from "npm:zod@3.25.76";
 import { Parser } from "npm:htmlparser2@10.0.0";
+import { WERKZAAMHEDEN_MAX, WERKZAAMHEDEN_TE_LANG } from "./werkzaamheden.ts";
 
 /** Parse HTML as text, discarding executable/invisible element contents. */
 export function gewoneTekst(input: string): string {
@@ -44,7 +45,7 @@ export const bavInvoer = z.object({
   voornaam: text(100).trim().min(1), achternaam: text(100).trim().min(1),
   email: text(255).trim().regex(/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]{2,}$/), bedrijfsnaam: text(200).trim().min(1),
   telefoon: nullableText(30), kvk_nummer: nullableText(30), kvk_startdatum: date.nullable().optional(),
-  beroep: nullableText(200), sector: nullableText(200), opmerkingen: nullableText(5000),
+  beroep: z.string().max(WERKZAAMHEDEN_MAX, WERKZAAMHEDEN_TE_LANG).nullable().optional(), sector: nullableText(200), opmerkingen: nullableText(5000),
   adres_straat: nullableText(200), adres_huisnummer: nullableText(30), adres_postcode: nullableText(20),
   adres_plaats: nullableText(200), adres_land: nullableText(100),
   iban: nullableText(50), rekeninghouder: nullableText(200),

@@ -6,10 +6,12 @@ Deno.env.set("SUPABASE_SERVICE_ROLE_KEY", "mock");
 Deno.env.set("RESEND_API_KEY", "");
 
 const aanroepen: string[] = [];
+const opgeslagen: Record<string, unknown>[] = [];
 globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) => {
   const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
   const method = init?.method ?? (input instanceof Request ? input.method : "GET");
   aanroepen.push(`${method} ${url}`);
+  if (method === "POST" && url.includes("/rest/v1/leads")) opgeslagen.push(JSON.parse(String(init?.body ?? "{}")));
   if (!url.startsWith("http://mock.local")) return new Response("{}", { status: 200, headers: { "content-type": "application/json" } });
   const accept = new Headers(init?.headers).get("accept") ?? "";
   const enkel = accept.includes("vnd.pgrst.object");
@@ -35,9 +37,9 @@ const geldig = () => ({
   client_akkoord_op: new Date().toISOString(), pagina_url: "http://localhost/", formulier_naam: "Online aanvraag BAV + AVB", formulier: [],
   getoonde_documenten: [], vereist_handmatige_beoordeling: false, opmerkingen: null,
 });
-const post = (body: unknown) => handler!(new Request("http://localhost:8080/functions/v1/process-bav-wizard", {
+const post = (body: unknown) => { if (!handler) throw new Error("Handler missing"); return handler(new Request("http://localhost:8080/functions/v1/process-bav-wizard", {
   method: "POST", headers: { "content-type": "application/json", origin: "http://localhost:8080" }, body: JSON.stringify(body),
-}));
+})); };
 
 Deno.test({ name: "placeholder-KVK wordt geweigerd (400)", sanitizeOps: false, sanitizeResources: false }, async () => {
   for (const kvk of ["12345678", "11111111"]) {
@@ -68,4 +70,30 @@ Deno.test({ name: "realistische invoer (accent, tussenvoegsel, & en +, spaties, 
   if (res.status !== 200) console.log(txt.slice(0, 500));
   assertEquals(res.status, 200);
   assertEquals(aanroepen.some((a) => a.includes("api.resend.com")), false);
+});
+
+Deno.test({ name: "werkzaamheden: 50, 999, 1000 volledig opgeslagen; 1500 geweigerd vóór alle writes", sanitizeOps: false, sanitizeResources: false }, async () => {
+  for (const n of [50, 999, 1000, 1500]) {
+    aanroepen.length = 0;
+    const response = await post({ ...geldig(), beroep: "a".repeat(n) });
+    const body = await response.json();
+    assertEquals(response.status, n <= 1000 ? 200 : 400);
+    if (n <= 1000) assertEquals(opgeslagen.at(-1)?.beroep, "a".repeat(n));
+    if (n > 1000) {
+      assertEquals(body.field, "beroep");
+      assertEquals(body.error.includes("maximaal 1.000 tekens"), true);
+      assertEquals(aanroepen.length, 0);
+    }
+  }
+});
+
+Deno.test({ name: "zorg, bouw en andere handmatige markering: ontvangst zonder mandaatkenmerk", sanitizeOps: false, sanitizeResources: false }, async () => {
+  for (const data of [{ sector: "Zorg" }, { sector: "Bouw & techniek" }, { vereist_handmatige_beoordeling: true }]) {
+    const response = await post({ ...geldig(), ...data });
+    const body = await response.json();
+    assertEquals(response.status, 200);
+    assertEquals(body.handmatige_beoordeling, true);
+    assertEquals(body.mandaatkenmerk, undefined);
+    assertEquals(aanroepen.some(a => a.includes("api.resend.com")), false);
+  }
 });

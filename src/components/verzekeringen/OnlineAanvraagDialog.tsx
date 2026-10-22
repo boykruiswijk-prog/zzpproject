@@ -26,6 +26,8 @@ import { maakFormulier } from "../../../supabase/functions/_shared/leadVelden";
 
 import { HoneypotField } from "@/components/shared/HoneypotField";
 import { vroegsteIngangsdatum, ingangsdatumFout } from "@/lib/ingangsdatum";
+import { WerkzaamhedenVeld } from "@/components/shared/WerkzaamhedenVeld";
+import { werkzaamhedenFout } from "../../../supabase/functions/_shared/werkzaamheden";
 
 interface OnlineAanvraagDialogProps {
   open: boolean;
@@ -104,6 +106,8 @@ export function OnlineAanvraagDialog({
       if (!formData.kvkNummer.trim()) newErrors.kvkNummer = "KvK-nummer is verplicht";
       else if (!/^\d{8}$/.test(formData.kvkNummer.replace(/\s/g, ""))) newErrors.kvkNummer = "KvK-nummer moet 8 cijfers zijn";
       if (!formData.beroep.trim()) newErrors.beroep = "Beroep is verplicht";
+      const lengteFout = werkzaamhedenFout(formData.beroep);
+      if (lengteFout) newErrors.beroep = lengteFout;
       if (!formData.jaarOmzet) newErrors.jaarOmzet = "Selecteer je jaaromzet";
     }
     
@@ -419,14 +423,13 @@ export function OnlineAanvraagDialog({
             </div>
             <div className="space-y-2">
               <Label htmlFor="beroep">Beroep / Werkzaamheden *</Label>
-              <Input
+              <WerkzaamhedenVeld
                 id="beroep"
                 value={formData.beroep}
-                onChange={(e) => updateFormData("beroep", e.target.value)}
+                onChange={(value) => updateFormData("beroep", value)}
                 placeholder="ICT Consultant"
-                className={errors.beroep ? "border-destructive" : ""}
+                error={errors.beroep}
               />
-              {errors.beroep && <p className="text-xs text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.beroep}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="jaarOmzet">Geschatte jaaromzet *</Label>

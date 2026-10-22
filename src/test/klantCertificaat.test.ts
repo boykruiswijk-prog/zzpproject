@@ -20,7 +20,7 @@ describe("certificaat voor bestaande klant", () => {
     const src = readFileSync("supabase/functions/generate-certificate/index.ts", "utf8");
     const tak = src.slice(src.indexOf("else if (body.onderneming_id)"), src.indexOf("lead_id or policy_data required"));
     expect(tak).not.toMatch(/mailCertificaat|resend|autoInvite/i);
-    expect(src).toMatch(/if \(lead_id && actie === "nieuw"\)/);
+    expect(src).toMatch(/if \(lead_id && actie === "nieuw" && !handmatigeLead\)/);
   });
 });
 

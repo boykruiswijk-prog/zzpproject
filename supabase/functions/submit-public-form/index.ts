@@ -13,6 +13,7 @@ import { resolveEnvironment } from "../_shared/environment.ts";
 import { saneerAttributie } from "../_shared/attributie.ts";
 import { isNlTelefoon, normaliseerNlTelefoon } from "../_shared/telefoon.ts";
 import { gewoneTekst, objectInvoer, valideerPubliekeRij, saneerVrijeTekst, leesBegrensdeBody } from "../_shared/publiekeInvoer.ts";
+import { werkzaamhedenFout } from "../_shared/werkzaamheden.ts";
 
 
 /** Per tabel: toegestane kolommen. Al het overige uit de body wordt weggegooid. */
@@ -143,6 +144,12 @@ Deno.serve(async (req) => {
     if (!spec) return json({ success: false, error: "Onbekend formulier." }, 400);
 
     const row = body?.row && typeof body.row === "object" ? body.row as Record<string, unknown> : null;
+    if (table === "leads" && row) {
+      const extra = row.extra_data && typeof row.extra_data === "object" ? row.extra_data as Record<string, unknown> : {};
+      const fout = werkzaamhedenFout(row.beroep) || werkzaamhedenFout(extra.omschrijving_werkzaamheden)
+        || (row.type === "offerte-aanvraag" ? werkzaamhedenFout(row.opmerkingen) : null);
+      if (fout) return json({ success: false, error: fout, field: "omschrijving_werkzaamheden" }, 400);
+    }
     if (!row || !valideerPubliekeRij(Object.fromEntries(Object.entries(row).filter(([k]) => spec.columns.includes(k))))) return json({ success: false, error: "Ongeldige aanvraag." }, 400);
 
     const supabase = createClient(
