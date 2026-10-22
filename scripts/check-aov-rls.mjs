@@ -1,0 +1,14 @@
+import fs from "node:fs";
+import assert from "node:assert/strict";
+const config = Object.fromEntries(fs.readFileSync(".env", "utf8").split("\n").filter(s => s.includes("=")).map(s => { const i = s.indexOf("="); return [s.slice(0, i), s.slice(i + 1).replace(/^"|"$/g, "")]; }));
+const url = config.VITE_SUPABASE_URL;
+const key = config.VITE_SUPABASE_PUBLISHABLE_KEY;
+assert.ok(url && key, "Projectconfig ontbreekt");
+const headers = { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" };
+const lees = await fetch(`${url}/rest/v1/aov_doorverwijzingen?select=klik_id`, { headers });
+assert.ok([401, 403].includes(lees.status), "Anon mag niet lezen");
+const vreemd = await fetch(`${url}/rest/v1/aov_doorverwijzingen`, { method: "POST", headers, body: JSON.stringify({ klik_id: crypto.randomUUID(), bron: "test", doel: "advies", user_id: "aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa" }) });
+assert.ok([401, 403].includes(vreemd.status), "Anon mag geen vreemde user_id registreren");
+const naamloos = await fetch(`${url}/rest/v1/aov_doorverwijzingen`, { method: "POST", headers, body: JSON.stringify({ klik_id: crypto.randomUUID(), bron: "test", doel: "advies", user_id: null, klant_ref: "niet-toegestaan" }) });
+assert.ok([401, 403].includes(naamloos.status), "Anon mag geen klantreferentie registreren");
+console.log("3/3 live RLS-controles groen; geen rijen toegevoegd.");
