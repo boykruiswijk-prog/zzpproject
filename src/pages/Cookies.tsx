@@ -5,6 +5,7 @@ import { PageHero } from "@/components/layout/PageHero";
 import { Cookie, Shield, BarChart3, Megaphone, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SITE_CONFIG, ADDRESS_SHORT } from "@/config/site";
+import { aovNieuwTonen } from "@/config/aovPagina";
 
 const SEO = seoRoute("/cookies");
 
@@ -129,6 +130,14 @@ export default function Cookies() {
       </section>
 
       {/* What are cookies */}
+      {aovNieuwTonen(typeof window === "undefined" ? "" : window.location.hostname) && (
+        <section id="aov-doorverwijzingen" className="section-padding bg-background">
+          <div className="container-wide"><div className="max-w-3xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-bold mb-6">Doorklikken naar onze AOV-partner</h2>
+            <p className="text-muted-foreground leading-relaxed">Als je op zpzaken.nl doorklikt naar onze AOV-partner registreren wij de datum, de bron en een klik-code. Als je bent ingelogd in Mijn ZP registreren wij ook dat jij het was, om onze samenwerking met de adviseur te beoordelen. Wij ontvangen niet wat je bij de adviseur invult.</p>
+          </div></div>
+        </section>
+      )}
       <section className="section-padding bg-secondary">
         <div className="container-wide">
           <div className="max-w-3xl mx-auto">

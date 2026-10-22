@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { AovDoorverwijsLink } from "@/components/shared/AovDoorverwijsLink";
 import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -52,9 +52,9 @@ const schema = {
 function AdviseurKnop({ children, variant = "accent" as const, className = "" }: { children: React.ReactNode; variant?: "accent" | "outline" | "heroOutline"; className?: string }) {
   return (
     <Button variant={variant} size="lg" asChild className={className}>
-      <a href={AOV_ADVISEUR_URL} target="_blank" rel="noopener">
+      <AovDoorverwijsLink doel="advies">
         {children} <ExternalLink className="h-4 w-4" aria-hidden="true" />
-      </a>
+      </AovDoorverwijsLink>
     </Button>
   );
 }
@@ -82,27 +82,15 @@ const feiten = [
 ];
 
 export function Rekentool() {
-  const [geladen, setGeladen] = useState(false);
   return (
     <section id="premie" className="section-padding bg-background scroll-mt-24">
       <div className="container-wide max-w-5xl">
         <h2 className="mb-4">Bereken je premie en sluit af bij de adviseur</h2>
+        <p className="text-muted-foreground leading-relaxed mb-4">Bij de adviseur kies je je beroep, het verzekerd bedrag en de eigenrisicotermijn. Je doet een kennis- en ervaringstoets en rondt je aanvraag daar af.</p>
         <p className="text-sm text-muted-foreground leading-relaxed rounded-xl border border-border bg-card p-4 mb-5">{AOV_REKENTOOL_TEKST}</p>
-        {geladen ? (
-          <iframe
-            src={AOV_REKENTOOL_URL}
-            title="Movir Momentum AOV premieberekening van Tjepkema Assurantie & Advies"
-            width="100%"
-            loading="lazy"
-            referrerPolicy="strict-origin-when-cross-origin"
-            className="block w-full border-0 rounded-xl bg-card min-h-[1400px] md:min-h-[1100px]"
-          />
-        ) : (
-          <Button variant="accent" size="lg" onClick={() => setGeladen(true)}>Start de premieberekening <ArrowRight className="h-5 w-5" /></Button>
-        )}
-        <p className="mt-4 text-sm">
-          <a href={AOV_REKENTOOL_URL} target="_blank" rel="noopener" className="underline underline-offset-2 text-muted-foreground">Opent de rekentool niet? Open hem in een nieuw tabblad</a>
-        </p>
+        <Button variant="accent" size="lg" asChild className="h-auto min-h-12 whitespace-normal text-center">
+          <AovDoorverwijsLink doel="rekentool">Naar de rekentool van de adviseur <ExternalLink className="h-4 w-4 shrink-0" aria-hidden="true" /></AovDoorverwijsLink>
+        </Button>
       </div>
     </section>
   );

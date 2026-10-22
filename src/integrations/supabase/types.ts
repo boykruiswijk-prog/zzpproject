@@ -229,6 +229,36 @@ export type Database = {
           },
         ]
       }
+      aov_doorverwijzingen: {
+        Row: {
+          bron: string
+          created_at: string
+          doel: string
+          id: string
+          klant_ref: string | null
+          klik_id: string
+          user_id: string | null
+        }
+        Insert: {
+          bron: string
+          created_at?: string
+          doel: string
+          id?: string
+          klant_ref?: string | null
+          klik_id: string
+          user_id?: string | null
+        }
+        Update: {
+          bron?: string
+          created_at?: string
+          doel?: string
+          id?: string
+          klant_ref?: string | null
+          klik_id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       article_categories: {
         Row: {
           created_at: string
@@ -5954,6 +5984,19 @@ export type Database = {
     Functions: {
       accept_portal_invitation: { Args: { _token: string }; Returns: Json }
       anonimiseer_aanvraag_concepten: { Args: never; Returns: number }
+      aov_doorverwijzingen_overzicht: {
+        Args: never
+        Returns: {
+          bron: string
+          created_at: string
+          doel: string
+          id: string
+          klant_naam: string
+          klant_ref: string
+          klik_id: string
+          user_id: string
+        }[]
+      }
       bav_nummer_bevestigen: {
         Args: { _nummer: string; _onderneming_id: string; _toelichting: string }
         Returns: Json
