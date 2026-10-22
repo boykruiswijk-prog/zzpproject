@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { LeesMeer } from "@/components/kennisbank/LeesMeer";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, ExternalLink, CheckCircle } from "lucide-react";
+import { ArrowRight, CheckCircle } from "lucide-react";
 import { STARTER_VOORWAARDE_TEKST } from "@/lib/starterTarief";
 import {
-  AOV_ADVISEUR_URL, AOV_AFM_URL, AOV_REKENTOOL_TEKST, AOV_REKENTOOL_URL, AOV_NIEUW_PUBLIEK, AOV_VERMELDING_AFM, AOV_VERMELDING_NA, AOV_VERMELDING_VOOR,
+  AOV_ADVISEUR_URL, AOV_AFM_URL, AOV_REKENTOOL_TEKST, AOV_NIEUW_PUBLIEK, AOV_VERMELDING_AFM, AOV_VERMELDING_NA, AOV_VERMELDING_VOOR,
 } from "@/config/aovPagina";
 
 export const AOV_SEO = {
