@@ -133,8 +133,9 @@ export default function Cookies() {
       {aovNieuwTonen(typeof window === "undefined" ? "" : window.location.hostname) && (
         <section id="aov-doorverwijzingen" className="section-padding bg-background">
           <div className="container-wide"><div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold mb-6">Doorklikken naar onze AOV-partner</h2>
-            <p className="text-muted-foreground leading-relaxed">Als je op zpzaken.nl doorklikt naar onze AOV-partner registreren wij de datum, de bron en een klik-code. Als je bent ingelogd in Mijn ZP registreren wij ook dat jij het was, om onze samenwerking met de adviseur te beoordelen. Wij ontvangen niet wat je bij de adviseur invult.</p>
+            <h2 className="text-2xl md:text-3xl font-bold mb-6">Aanmelden en doorklikken naar onze AOV-partner</h2>
+            <p className="text-muted-foreground leading-relaxed mb-4">Meld je je op zpzaken.nl/aov aan voor de AOV, dan bewaart ZP Zaken je naam, e-mailadres, eventueel je telefoonnummer en je toestemming. Met die toestemming geven wij deze gegevens door aan Tjepkema Assurantie & Advies B.V. voor de AOV, en gebruiken wij ze om contact met je te houden over je aanmelding. Bewaartermijn: XXX.</p>
+            <p className="text-muted-foreground leading-relaxed">Bij het doorklikken registreren wij de datum, de bron en een klik-code. Als je bent ingelogd in Mijn ZP registreren wij ook dat jij het was. Wij ontvangen niet wat je bij de adviseur invult.</p>
           </div></div>
         </section>
       )}
