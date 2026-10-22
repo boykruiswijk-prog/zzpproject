@@ -70,7 +70,7 @@ export function AovAanmeldStap({ doel }: { doel: AovDoel }) {
       <div role="status" className="rounded-2xl border border-border bg-card p-6 space-y-3">
         <p className="font-semibold">Je aanmelding staat bij ZP Zaken. De {doel === "rekentool" ? "rekentool" : "website van de adviseur"} is geopend in een nieuw tabblad.</p>
         <p className="text-sm">Lukt het niet? <a href={aovLink(doel, ref)} target="_blank" rel="noopener" className="underline underline-offset-2 text-accent">Open de {doel === "rekentool" ? "rekentool" : "website van de adviseur"} opnieuw</a></p>
-        <p className="text-sm text-muted-foreground">Je polissen bij ZP Zaken vind je in <LocalizedLink to="/mijn-zp" className="underline underline-offset-2">Mijn ZP</LocalizedLink>. Bescherm ook je bedrijf met de <LocalizedLink to="/verzekeringen" className="underline underline-offset-2">BAV + AVB</LocalizedLink>.</p>
+        <p className="text-sm text-muted-foreground">Je polissen bij ZP Zaken vind je in <LocalizedLink to="/mijn-zp/polis" className="underline underline-offset-2">Mijn ZP</LocalizedLink>. Bescherm ook je bedrijf met de <LocalizedLink to="/verzekeringen" className="underline underline-offset-2">BAV + AVB</LocalizedLink>.</p>
       </div>
     );
   }
