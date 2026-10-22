@@ -21,6 +21,11 @@ describe("interne cyberwaarden", () => {
     expect(onverwachteBedragen('cyber:{maximum:2500000}')).toEqual(["2500000"]);
   });
 
+  it("accepteert de publieke AVB-dekking achter het bedrag, zonder cyberbedragen vrij te geven", () => {
+    expect(onverwachteBedragen('"Je bent verzekerd voor € 5.000.000 BAV en € 2.500.000 AVB per aanspraak."')).toEqual([]);
+    expect(onverwachteBedragen('"€ 2.500.000 cyber per aanspraak";cyber:{maximum:2500000}')).toEqual(["2.500.000", "2500000"]);
+  });
+
   it("scant publieke, gedeelde en onbekende chunks, nooit exclusieve admin-chunks", () => {
     const fixture = fs.mkdtempSync(path.join(os.tmpdir(), "cyber-bundle-"));
     try {

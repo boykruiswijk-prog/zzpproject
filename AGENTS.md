@@ -40,3 +40,4 @@
 - Ingangsdatum vroegst dag na aanvraag (NL) via _shared/ingangsdatum.ts plus BEFORE INSERT-triggers aa_ingangsdatum_vroegst. Waarom: een regel (D4).
 
 - BeroepspaginaTekst links policy-condition mentions without changing FAQ strings; beroepspagina price display is opt-in by canonical path, leaving other services and form pricing untouched. Why: consistent landing-page copy with matching JSON-LD and no application changes.
+- Bundle leak checks exempt only explicit public AVB coverage wording, including amount-before-AVB; unlabeled and cyber amounts remain blocked. Why: legitimate coverage copy must not prevent deployment.

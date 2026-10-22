@@ -15,6 +15,7 @@ export function onverwachteBedragen(code: string): string[] {
   const veilig = code
     .replace(/avb:\{perGebeurtenis:(?:2500000|25e5|2_500_000)/g, "avb:{perGebeurtenis:AVB")
     .replace(/AVB € 2\.500\.000/g, "AVB € AVB")
+    .replace(/€ 2\.500\.000 AVB per aanspraak/g, "€ AVB AVB per aanspraak")
     .replace(/€ 250\.000 standaard, € 2\.500\.000 voor onder meer architecten/g, "AVB-vergelijking")
     .replace(/value:"2500000",children:"€2\.500\.000"/g, 'value:"AVB",children:"AVB"');
   return [...veilig.matchAll(BEDRAG)].map((m) => m[0]);
