@@ -51,13 +51,12 @@ export async function verstuurHandmatigeDocumenten(admin: any, req: Request, lea
           mandaatkenmerk: bewijs.mandaatkenmerk, reden: bewijs.reden, debiteurNaam: bewijs.debiteur_naam, debiteurAdres: bewijs.debiteur_adres, iban: bewijs.iban },
         email: lead.email, aanhef: [lead.voornaam, lead.achternaam].filter(Boolean).join(" "), bedragOfReden: bewijs.reden,
       });
-    }
       const { data: verzonden } = await admin.from("sepa_machtiging_bewijs").select("bevestigingsmail_verzonden_op").eq("id", bewijs.id).maybeSingle();
       if (!verzonden?.bevestigingsmail_verzonden_op) throw new Error("Certificaatmail verstuurd, SEPA-mail nog niet. De Mijn ZP-uitnodiging is nog niet verstuurd.");
     }
     sepa = true;
   }
-  const portal = alMijnZp ? { verstuurd: false, reden: "al_uitgenodigd" } : await autoInvitePortalLead(admin, req, lead.id, userId, "generate-certificate", { naHandmatigAkkoord: true });
+  const portal = alMijnZp ? { verstuurd: false, reden: "al_uitgenodigd", error: undefined } : await autoInvitePortalLead(admin, req, lead.id, userId, "generate-certificate", { naHandmatigAkkoord: true });
   if (portal.error) throw new Error(`Certificaat en eventuele SEPA zijn verwerkt; Mijn ZP nog niet: ${portal.error}`);
   return { certificaat: true, sepa, mijnZp: portal.verstuurd || portal.reden === "al_uitgenodigd" || portal.reden === "al_geclaimd" };
 }
