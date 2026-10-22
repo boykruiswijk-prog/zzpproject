@@ -131,6 +131,9 @@ import { EVI_PAGINA_PAD, EVI_PAGINA_PUBLIEK, eviPaginaToegankelijk } from "@/con
 const PensioenOpbouwenZzp = lazy(() => import("./pages/PensioenOpbouwenZzp"));
 const EviPaginaRoute = () => eviPaginaToegankelijk(typeof window === "undefined" ? "" : window.location.hostname)
   ? <PensioenOpbouwenZzp /> : <NotFound />;
+import { aovNieuwTonen } from "@/config/aovPagina";
+const AOVMovir = lazy(() => import("./pages/AOVMovir"));
+const AovRoute = () => aovNieuwTonen(typeof window === "undefined" ? "" : window.location.hostname) ? <AOVMovir /> : <AOV />;
 const PensioenMetEviLink = () => <><Pensioen />{EVI_PAGINA_PUBLIEK && <section className="container-wide py-12"><h2>Pensioen opbouwen als zzp'er</h2><a className="text-accent underline" href={EVI_PAGINA_PAD}>Jaarruimte, lijfrente en pensioen via Evi van Lanschot</a></section>}</>;
 
 /** Alleen deze taalprefixen zijn geldig; al het andere is een 404. */
@@ -157,7 +160,7 @@ const publicRoutes = (
     <Route path="diensten" element={<Diensten />} />
     <Route path="verzekeringen" element={<Verzekeringen />} />
     <Route path="bav-zzp-vergelijken" element={<BavZzpVergelijken />} />
-    <Route path="aov" element={<AOV />} />
+    <Route path="aov" element={<AovRoute />} />
     <Route path="pensioen" element={<PensioenMetEviLink />} />
     <Route path="zorgverzekering" element={<Zorgverzekering />} />
     <Route path="zzp-verzekering-ict" element={<ZzpVerzekeringICT />} />
