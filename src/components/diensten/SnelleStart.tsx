@@ -32,8 +32,8 @@ export function SnelleStart({ prijsregel }: { prijsregel?: string } = {}) {
   }
 
   return (
-    <div className="w-full max-w-xl space-y-3" data-testid="snelle-start">
-      <p className="font-semibold text-white">{prijsregel ?? vanafPrijsregel()}</p>
+    <div className={`w-full max-w-xl space-y-3 ${prijsregel ? "min-w-0" : ""}`} data-testid="snelle-start">
+      <p className={`font-semibold text-white ${prijsregel ? "min-w-0 whitespace-normal break-words" : ""}`}>{prijsregel ?? vanafPrijsregel()}</p>
       <form onSubmit={aanvragen} noValidate className="rounded-xl bg-card text-card-foreground p-4 shadow-lg space-y-3">
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
