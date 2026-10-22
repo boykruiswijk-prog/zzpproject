@@ -23,7 +23,7 @@ export const AOV_FAQ = [
   { q: "Is de premie van een AOV aftrekbaar?", a: "De premie is vaak aftrekbaar in box 1. Of en hoeveel hangt af van je eigen situatie." },
   { q: "Tot welke leeftijd kan ik een AOV afsluiten?", a: "Bij de Movir Momentum kun je afsluiten tot maximaal 66 jaar, bij een looptijd tot 68 jaar. Je kiest zelf een eindleeftijd, bijvoorbeeld gekoppeld aan je pensioenleeftijd." },
   { q: "Komt er een verplichte AOV voor zzp'ers?", a: "Het kabinet wil een verplichte AOV voor zelfstandigen invoeren; dat plan staat in het coalitieakkoord van 30 januari 2026. Het is nog geen wet en de uitwerking kan veranderen." },
-  { q: "Wie is mijn adviseur?", a: "Advies en afsluiten van de Movir Momentum AOV lopen via Tjepkema Assurantie & Advies B.V. Je adviseur: Michiel Tjepkema." },
+  { q: "Wie is mijn adviseur?", a: "Advies en afsluiten van de Movir Momentum AOV lopen via Tjepkema Assurantie & Advies B.V." },
 ];
 
 const schema = {
