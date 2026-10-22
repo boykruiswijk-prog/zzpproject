@@ -135,7 +135,7 @@ export default function AOVMovir() {
 
       <Rekentool />
 
-      <section className="section-padding bg-secondary">
+      <section className="section-padding bg-background border-t border-border">
         <div className="container-wide max-w-5xl">
           <h2 className="mb-3">Zelf afsluiten of met advies?</h2>
           <p className="text-muted-foreground mb-8 max-w-2xl">Je kiest zelf hoe je de AOV afsluit. Beide routes lopen via de adviseur.</p>
