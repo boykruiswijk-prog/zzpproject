@@ -30,8 +30,7 @@ export function Layout({ children, zonderGegevensPopups = false }: LayoutProps) 
       <Footer />
       <CookieConsent />
       {!zonderGegevensPopups && <><StickyMobileCTA /><StickyContactBar /><ExitIntentPopup /></>}
-      <WhatsAppFloatingButton />
-      <ZekerLauncher />
+      {!zonderGegevensPopups && <><WhatsAppFloatingButton /><ZekerLauncher /></>}
       {!zonderGegevensPopups && <TerugbelDialog />}
     </div>
   );
