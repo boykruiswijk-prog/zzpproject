@@ -1,14 +1,16 @@
-import { AovDoorverwijsLink } from "@/components/shared/AovDoorverwijsLink";
+import { useState } from "react";
+import { AovAanmeldStap } from "@/components/shared/AovAanmeldStap";
+import type { AovDoel } from "@/lib/aovDoorverwijzing";
 import { SEOHead } from "@/components/SEOHead";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { LeesMeer } from "@/components/kennisbank/LeesMeer";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, ExternalLink, CheckCircle } from "lucide-react";
+import { ArrowRight, CheckCircle } from "lucide-react";
 import { STARTER_VOORWAARDE_TEKST } from "@/lib/starterTarief";
 import {
-  AOV_ADVISEUR_URL, AOV_AFM_URL, AOV_REKENTOOL_TEKST, AOV_REKENTOOL_URL, AOV_NIEUW_PUBLIEK, AOV_VERMELDING_AFM, AOV_VERMELDING_NA, AOV_VERMELDING_VOOR,
+  AOV_ADVISEUR_URL, AOV_AFM_URL, AOV_REKENTOOL_TEKST, AOV_NIEUW_PUBLIEK, AOV_VERMELDING_AFM, AOV_VERMELDING_NA, AOV_VERMELDING_VOOR,
 } from "@/config/aovPagina";
 
 export const AOV_SEO = {
@@ -49,16 +51,6 @@ const schema = {
   ],
 };
 
-function AdviseurKnop({ children, variant = "accent" as const, className = "" }: { children: React.ReactNode; variant?: "accent" | "outline" | "heroOutline"; className?: string }) {
-  return (
-    <Button variant={variant} size="lg" asChild className={className}>
-      <AovDoorverwijsLink doel="advies">
-        {children} <ExternalLink className="h-4 w-4" aria-hidden="true" />
-      </AovDoorverwijsLink>
-    </Button>
-  );
-}
-
 export function Vermelding({ id }: { id?: string }) {
   return (
     <p id={id} className="text-sm text-muted-foreground leading-relaxed rounded-xl border border-border bg-card p-4">
@@ -81,22 +73,25 @@ const feiten = [
   "De premie is vaak aftrekbaar in box 1.",
 ];
 
-export function Rekentool() {
+export function Rekentool({ doel, setDoel }: { doel: AovDoel; setDoel: (d: AovDoel) => void }) {
   return (
     <section id="premie" className="section-padding bg-background scroll-mt-24">
-      <div className="container-wide max-w-5xl">
+      <div className="container-wide max-w-3xl">
         <h2 className="mb-4">Bereken je premie en sluit af bij de adviseur</h2>
-        <p className="text-muted-foreground leading-relaxed mb-4">Bij de adviseur kies je je beroep, het verzekerd bedrag en de eigenrisicotermijn. Je doet een kennis- en ervaringstoets en rondt je aanvraag daar af.</p>
+        <p className="text-muted-foreground leading-relaxed mb-4">Meld je eerst kort aan bij ZP Zaken. Daarna ga je verder naar de adviseur. Daar kies je je beroep, het verzekerd bedrag en de eigenrisicotermijn, doe je een kennis- en ervaringstoets en rond je je aanvraag af.</p>
         <p className="text-sm text-muted-foreground leading-relaxed rounded-xl border border-border bg-card p-4 mb-5">{AOV_REKENTOOL_TEKST}</p>
-        <Button variant="accent" size="lg" asChild className="h-auto min-h-12 whitespace-normal text-center">
-          <AovDoorverwijsLink doel="rekentool">Naar de rekentool van de adviseur <ExternalLink className="h-4 w-4 shrink-0" aria-hidden="true" /></AovDoorverwijsLink>
-        </Button>
+        <div role="group" aria-label="Kies je route" className="flex flex-wrap gap-2 mb-4">
+          <Button type="button" size="sm" variant={doel === "rekentool" ? "default" : "outline"} aria-pressed={doel === "rekentool"} onClick={() => setDoel("rekentool")}>Rekentool</Button>
+          <Button type="button" size="sm" variant={doel === "advies" ? "default" : "outline"} aria-pressed={doel === "advies"} onClick={() => setDoel("advies")}>Persoonlijk advies</Button>
+        </div>
+        <AovAanmeldStap key={doel} doel={doel} />
       </div>
     </section>
   );
 }
 
 export default function AOVMovir() {
+  const [doel, setDoel] = useState<AovDoel>("rekentool");
   return (
     <Layout zonderGegevensPopups>
       <SEOHead title={AOV_SEO.title} description={AOV_SEO.description} canonical="https://zpzaken.nl/aov" exactTitle noindex={!AOV_NIEUW_PUBLIEK}>
@@ -111,8 +106,8 @@ export default function AOVMovir() {
             Word je ziek of arbeidsongeschikt, dan valt je inkomen als zelfstandige weg. Een AOV keert dan maandelijks uit. Je sluit de Movir Momentum zelf online af of met hulp van een adviseur.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 mb-6">
-            <Button variant="accent" size="lg" asChild><a href="#premie">Bereken je premie <ArrowRight className="h-5 w-5" /></a></Button>
-            <AdviseurKnop variant="outline">Liever persoonlijk advies</AdviseurKnop>
+            <Button variant="accent" size="lg" asChild><a href="#premie" onClick={() => setDoel("rekentool")}>Bereken je premie <ArrowRight className="h-5 w-5" /></a></Button>
+            <Button variant="outline" size="lg" asChild><a href="#premie" onClick={() => setDoel("advies")}>Liever persoonlijk advies</a></Button>
           </div>
           <p className="text-sm text-muted-foreground">
             Advies en afsluiten via Tjepkema Assurantie & Advies B.V. (AFM 12050654). ZP Zaken geeft geen advies.{" "}
@@ -121,7 +116,7 @@ export default function AOVMovir() {
         </div>
       </section>
 
-      <Rekentool />
+      <Rekentool doel={doel} setDoel={setDoel} />
 
       <section className="section-padding bg-background border-t border-border">
         <div className="container-wide max-w-5xl">
@@ -202,7 +197,7 @@ export default function AOVMovir() {
       </section>
 
       <div className="md:hidden fixed inset-x-0 bottom-[calc(56px+env(safe-area-inset-bottom))] z-40 border-t border-border bg-background/95 p-3 backdrop-blur">
-        <Button variant="accent" size="lg" asChild className="w-full"><a href="#premie">Bereken je premie bij de adviseur</a></Button>
+        <Button variant="accent" size="lg" asChild className="w-full"><a href="#premie" onClick={() => setDoel("rekentool")}>Bereken je premie bij de adviseur</a></Button>
       </div>
       <div className="md:hidden h-20" aria-hidden="true" />
     </Layout>

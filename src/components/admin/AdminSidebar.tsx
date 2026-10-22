@@ -50,7 +50,7 @@ const groups: NavGroup[] = [
     { to: "/admin/interne-meldingen", icon: MessageCircle, label: "Interne meldingen", roles: ["admin"] },
     { to: "/admin/klantmails", icon: MessageCircle, label: "Klantmails", roles: ["admin"] },
     { to: "/admin/activiteitenlog", icon: Activity, label: "Activiteitenlog", roles: ["admin"] },
-    { to: "/admin/aov-doorverwijzingen", icon: Share2, label: "AOV-doorverwijzingen", roles: ["admin"] },
+    { to: "/admin/aov-doorverwijzingen", icon: Share2, label: "AOV-aanmeldingen", roles: ["admin"] },
     { to: "/admin/wp-import", icon: FileText, label: "WordPress-import", roles: ["admin"] },
   ]},
 ];

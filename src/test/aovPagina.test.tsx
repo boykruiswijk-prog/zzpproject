@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { describe, it, expect, vi } from "vitest";
 vi.mock("@/components/layout/Layout", () => ({ Layout: ({ children }: { children: React.ReactNode }) => <>{children}</> }));
+vi.mock("@/integrations/supabase/client", () => ({ supabase: { auth: { getSession: () => Promise.resolve({ data: { session: null } }) }, rpc: vi.fn(), from: vi.fn() } }));
 vi.mock("@/components/kennisbank/LeesMeer", () => ({ LeesMeer: () => null }));
 import fs from "node:fs";
 import { render } from "@testing-library/react";
@@ -31,14 +32,10 @@ describe("F9 nieuwe AOV-pagina", () => {
     expect(app).toContain('typeof window === "undefined" ? ""');
     for (const p of ["public/llms.txt", "public/sitemap.xml"]) expect(lees(p)).not.toContain("Movir Momentum");
   });
-  it("geen formulier of invoer, vermelding met AFM-nummer, links naar adviseur", () => {
+  it("vermelding met AFM-nummer, Michiel 1x", () => {
     const { container } = renderPagina();
-    expect(container.querySelectorAll("form, input, textarea, select").length).toBe(0);
     const tekst = container.textContent || "";
     expect(tekst).toContain("Advies en afsluiten van de Movir Momentum AOV lopen via Tjepkema Assurantie & Advies B.V., Middenweg 344, 1097 TZ Amsterdam, AFM-vergunning 12050654. ZP Zaken geeft geen advies en bemiddelt niet in deze verzekering.");
-    const links = [...container.querySelectorAll(`a[href="${AOV_ADVISEUR_URL}"]`)];
-    expect(links.length).toBeGreaterThanOrEqual(1);
-    for (const a of links) { expect(a.getAttribute("target")).toBe("_blank"); expect(a.getAttribute("rel")).toContain("noopener"); }
     expect(tekst.match(/Michiel Tjepkema/g)?.length).toBe(1);
   });
   it("geen verboden woorden", () => {
@@ -54,19 +51,17 @@ describe("F9 nieuwe AOV-pagina", () => {
     expect(AOV_FAQ.length).toBeGreaterThanOrEqual(5);
     expect(AOV_FAQ.length).toBeLessThanOrEqual(7);
   });
-  it("rekentool opent extern zonder iframe of eigen invoer", () => {
+  it("geen iframe; enige invoer is het aanmeldformulier met vaste velden", () => {
     const { container } = renderPagina();
     expect(container.querySelector("iframe")).toBeNull();
     expect(container.textContent).toContain(AOV_REKENTOOL_TEKST);
-    const link = container.querySelector(`a[href="${AOV_REKENTOOL_URL}"]`);
-    expect(link?.getAttribute("target")).toBe("_blank");
-    expect(link?.getAttribute("rel")).toContain("noopener");
-    expect(container.querySelectorAll("form, input, textarea, select").length).toBe(0);
-    expect(container.textContent).toContain(AOV_REKENTOOL_TEKST);
+    expect(container.querySelectorAll("form").length).toBe(1);
+    expect(container.querySelectorAll("textarea, select").length).toBe(0);
+    expect(container.querySelector(`a[href="${AOV_REKENTOOL_URL}"]`)).toBeNull();
   });
   it("hero en sticky knop scrollen naar #premie, adviseur is wijzijnaov", () => {
     const { container } = renderPagina();
-    expect(container.querySelectorAll('a[href="#premie"]').length).toBe(2);
+    expect(container.querySelectorAll('a[href="#premie"]').length).toBe(3);
     expect(AOV_ADVISEUR_URL).toBe("https://www.wijzijnaov.nl");
   });
   it("geen terugbel-, vertrek- of sitebalk op deze pagina, CSP staat alleen dit domein extra toe", () => {

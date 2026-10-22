@@ -46,7 +46,7 @@ export function aovWeek(datum: string): string {
   d.setUTCDate(d.getUTCDate() - (d.getUTCDay() + 6) % 7);
   return d.toISOString().slice(0, 10);
 }
-export function aovWeekTotalen(rijen: AovOverzichtRij[]) {
+export function aovWeekTotalen(rijen: { created_at: string }[]) {
   const weken = new Map<string, number>();
   for (const r of rijen) { const w = aovWeek(r.created_at); weken.set(w, (weken.get(w) || 0) + 1); }
   return [...weken.entries()].sort(([a], [b]) => b.localeCompare(a));
@@ -54,4 +54,29 @@ export function aovWeekTotalen(rijen: AovOverzichtRij[]) {
 export function aovCsv(rijen: AovOverzichtRij[]): string {
   const cel = (v: string) => `"${(/^[=+@\-\t\r]/.test(v) ? "'" + v : v).replace(/"/g, '""')}"`;
   return "\uFEFF" + [["Datum/tijd", "Doel", "Bron", "Klant", "Klantnummer", "Klik_id"], ...rijen.map(r => [r.created_at, r.doel, r.bron, r.user_id ? r.klant_naam || r.klant_ref || r.user_id : "anoniem", r.klant_ref || "", r.klik_id])].map(r => r.map(cel).join(";")).join("\r\n");
+}
+// F9-aanvulling 4: ZP Zaken als aanbrenger. Uitsluitend contactgegevens en toestemming, nooit AOV-inhoud.
+export const AOV_AANMELD_VELDEN = ["naam", "email", "telefoon", "toestemming"] as const;
+export interface AovAanmelding { naam: string; email: string; telefoon: string; toestemming: boolean }
+export function aovAanmeldFouten(a: AovAanmelding): Partial<Record<keyof AovAanmelding, string>> {
+  const f: Partial<Record<keyof AovAanmelding, string>> = {};
+  const naam = a.naam.trim();
+  if (naam.length < 2 || naam.length > 120) f.naam = "Vul je naam in.";
+  const email = a.email.trim();
+  if (email.length > 254 || !/^[^@\s]+@[^@\s]+\.[a-zA-Z]{2,}$/.test(email)) f.email = "Vul een geldig e-mailadres in.";
+  const tel = a.telefoon.trim();
+  if (tel && !/^[0-9+ ()-]{8,20}$/.test(tel)) f.telefoon = "Vul een geldig telefoonnummer in of laat dit veld leeg.";
+  if (a.toestemming !== true) f.toestemming = "Zet het vinkje om verder te gaan.";
+  return f;
+}
+export interface AovAanmeldOverzichtRij { id: string; created_at: string; naam: string; email: string; telefoon: string | null; doel: string; bron: string; user_id: string | null; status: string; notitie: string | null; behandeld_op: string | null; lead_id: string | null; lead_status: string | null }
+export const AOV_STATUSSEN = { nieuw: "Nieuw", doorgegeven: "Doorgegeven", polis: "Polis", geen_polis: "Geen polis" } as const;
+export function aovKopieTekst(r: Pick<AovAanmeldOverzichtRij, "naam" | "email" | "telefoon" | "id">): string {
+  return [`Naam: ${r.naam}`, `E-mail: ${r.email}`, `Telefoon: ${r.telefoon || "-"}`, `Ref: ${r.id}`].join("\n");
+}
+export function aovAanmeldCsv(rijen: AovAanmeldOverzichtRij[]): string {
+  const cel = (v: string) => `"${(/^[=+@\-\t\r]/.test(v) ? "'" + v : v).replace(/"/g, '""')}"`;
+  return "\uFEFF" + [["Datum/tijd", "Naam", "E-mail", "Telefoon", "Doel", "Bron", "Bestaande klant", "Ref", "Status", "Notitie"],
+    ...rijen.map(r => [r.created_at, r.naam, r.email, r.telefoon || "", r.doel, r.bron, r.lead_id ? "ja" : "nee", r.id, r.status, r.notitie || ""])]
+    .map(r => r.map(cel).join(";")).join("\r\n");
 }
