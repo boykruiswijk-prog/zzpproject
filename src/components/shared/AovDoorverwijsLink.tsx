@@ -5,7 +5,7 @@ import { AOV_ADVISEUR_URL, AOV_REKENTOOL_URL } from "@/config/aovPagina";
 import { aovAnalyticsToestemming, aovBron, aovDoorklik, AovDoel } from "@/lib/aovDoorverwijzing";
 import { trackGa } from "@/lib/tracking";
 
-export function AovDoorverwijsLink({ doel, children }: { doel: AovDoel; children: ReactNode }) {
+export function AovDoorverwijsLink({ doel, children, className }: { doel: AovDoel; children: ReactNode; className?: string }) {
   const cache = useQueryClient();
   const klik = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (e.type === "auxclick" && e.button !== 1) return;
@@ -25,5 +25,5 @@ export function AovDoorverwijsLink({ doel, children }: { doel: AovDoel; children
     }, url => { window.open(url, "_blank", "noopener"); });
     if (aovAnalyticsToestemming()) trackGa("aov_doorverwijzing", { doel });
   };
-  return <a href={doel === "rekentool" ? AOV_REKENTOOL_URL : AOV_ADVISEUR_URL} target="_blank" rel="noopener" onClick={klik} onAuxClick={klik}>{children}</a>;
+  return <a className={className} href={doel === "rekentool" ? AOV_REKENTOOL_URL : AOV_ADVISEUR_URL} target="_blank" rel="noopener" onClick={klik} onAuxClick={klik}>{children}</a>;
 }
