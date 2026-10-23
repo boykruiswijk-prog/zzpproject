@@ -289,7 +289,7 @@ export const ZEKER_KENNIS = {
     },
     {
       "path": "/zzp-verzekering-consultant",
-      "title": "BAV consultant zzp | Verzekering voor adviseurs",
+      "title": "Beroepsaansprakelijkheidsverzekering consultant | ZP Zaken",
       "intro": "Als consultant neemt je opdrachtgever besluiten op basis van jouw advies. Een fout in je advies of rapport kan veel geld kosten. Een BAV en AVB in één polis beschermen je."
     },
     {
@@ -330,7 +330,7 @@ export const ZEKER_KENNIS = {
     {
       "path": "/zzp-verzekering-bouw",
       "title": "ZZP Verzekering Bouw | BAV & AVB voor de bouw",
-      "intro": "Als zzp'er in de bouw draag je verantwoordelijkheid voor de kwaliteit van je werk. Een constructiefout of schade aan eigendom kan leiden tot forse schadeclaims. ZP Zaken zorgt voor de juiste dekking met een BAV en AVB."
+      "intro": "Als zzp'er in de bouw draag je verantwoordelijkheid voor de kwaliteit van je werk. Een constructiefout of schade aan eigendom kan leiden tot forse schadeclaims. Met een BAV en AVB in één polis ben je beschermd."
     }
   ],
   "faq": [
