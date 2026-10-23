@@ -75,7 +75,7 @@ SELECT n.label,n.verzoek_id,n.contract_id,n.status,n.geactiveerd_op,n.beoordeeld
   AND n.certificaat_mail_poging=0 AS geen_document_of_verzendclaim,
  (SELECT count(*) FROM public.factuur_planning fp WHERE fp.klant_contract_id=c.id) AS cyber_facturen_echt_gepland,
  (SELECT count(*) FROM public.klantmail_log ml WHERE ml.lead_id=n.lead_id AND ml.created_at>=n.vastgelegd_op) AS klantmail_log_na_snapshot,
- (SELECT count(*) FROM public.activiteiten_log a WHERE a.lead_id=n.lead_id AND a.actie_type='cyber_toevoegen_beoordeeld' AND a.created_at>=n.vastgelegd_op) AS beoordeling_auditregels
+ (SELECT count(*) FROM public.activiteiten_log a WHERE a.lead_id=n.lead_id AND a.actie_type='cyber_toevoegen_beoordeeld' AND a.aangemaakt_op>=n.vastgelegd_op) AS beoordeling_auditregels
 FROM na n LEFT JOIN public.klant_contracten c ON c.id=n.contract_id
 ORDER BY n.label;
 ```
