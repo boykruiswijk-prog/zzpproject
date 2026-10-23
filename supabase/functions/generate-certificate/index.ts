@@ -126,7 +126,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
         const { data: claim, error: cErr } = await adminClient.rpc("cyber_toevoegen_document_claim", { _id: r.id, _lease: cyberLease });
         if (cErr || !claim) return json({ error: "Certificaat wordt al verwerkt. Probeer later opnieuw." }, 409);
         if (bestaand.pdf_url) {
-          const { error: kopieFout } = await adminClient.storage.from("certificates").copy(bestaand.pdf_url, `cyber-toevoegen/${r.id}-vorige.pdf`);
+          const { error: kopieFout } = await adminClient.storage.from("certificates").copy(bestaand.pdf_url, `cyber-toevoegen/${r.id}-${cyberLease}-vorige.pdf`);
           if (kopieFout && !/already exists|Duplicate/i.test(kopieFout.message)) return json({ error: "Vorige certificaatversie bewaren mislukt" }, 500);
         }
         cyberVerzoek = r;
@@ -392,7 +392,8 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
         .eq("id", policy.lead_id).maybeSingle();
       policyLead = leadVoorPolis;
     }
-    const heeftNieuweCyber = !!cyberVerzoek || policyLead?.cyber_voorwaarden_versie === "2026-10-08";
+    const { data: latereCyber } = await adminClient.from("cyber_toevoeg_verzoeken").select("id").eq("policy_id", policy.id).not("geactiveerd_op", "is", null).limit(1);
+    const heeftNieuweCyber = !!cyberVerzoek || !!latereCyber?.length || policyLead?.cyber_voorwaarden_versie === "2026-10-08";
 
     // === Load the template background image from storage (private bucket) ===
     const { data: templateData, error: templateError } = await adminClient.storage
@@ -818,7 +819,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
 
     // === Save & upload PDF ===
     const pdfBytes = await pdfDoc.save();
-    const fileName = cyberVerzoek ? `cyber-toevoegen/${cyberVerzoek.id}.pdf` : `${policy.certificate_number}.pdf`;
+    const fileName = cyberVerzoek ? `cyber-toevoegen/${cyberVerzoek.id}-${cyberLease}.pdf` : `${policy.certificate_number}.pdf`;
     // Nooit de PDF van een ander (ingetrokken) certificaat overschrijven.
     const { data: anderePdf } = await adminClient.from("policies").select("id").eq("pdf_url", fileName).neq("id", policy.id).limit(1);
     if (anderePdf?.length) {
@@ -831,7 +832,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
       .from("certificates")
       .upload(fileName, pdfBlob, {
         contentType: "application/pdf",
-        upsert: true,
+        upsert: !cyberVerzoek,
       });
 
     if (uploadError) {
@@ -853,8 +854,8 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
       .createSignedUrl(fileName, 3600);
 
     if (cyberVerzoek && cyberLease) {
-      const { error: klaarFout } = await adminClient.rpc("cyber_toevoegen_document_klaar", { _id: cyberVerzoek.id, _lease: cyberLease, _pad: fileName });
-      if (klaarFout) return json({ error: klaarFout.message }, 500);
+      const { data: klaar, error: klaarFout } = await adminClient.rpc("cyber_toevoegen_document_klaar", { _id: cyberVerzoek.id, _lease: cyberLease, _pad: fileName });
+      if (klaarFout || !klaar) return json({ error: klaarFout?.message ?? "Verlopen documentclaim" }, 409);
     } else await adminClient
       .from("policies")
       .update({ pdf_url: fileName })
