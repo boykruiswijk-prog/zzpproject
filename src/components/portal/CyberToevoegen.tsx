@@ -72,6 +72,16 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
     } catch (e) { await verwerkMfaFout(e); setFout((e as { message?: string })?.message ?? "Beoordeling kon niet worden opgeslagen."); }
     finally { setBezig(false); }
   }
+  async function mailOpnieuw(id: string) {
+    setBezig(true); setFout("");
+    try {
+      if (!await controleerAdminMfa()) return;
+      const { data, error } = await supabase.functions.invoke("cyber-toevoegen-activeren", { body: { id, akkoord: true, notitie: "Cyberbevestiging handmatig opnieuw versturen", retryMail: true } });
+      if (error || data?.error) throw error ?? new Error(data.error);
+      await laad();
+    } catch (e) { await verwerkMfaFout(e); setFout((e as { message?: string })?.message ?? "Mail kon niet worden verstuurd."); }
+    finally { setBezig(false); }
+  }
   if (!zichtbaar || (geladen && !opties.length && !verzoeken.length && !fout)) return null;
   const gekozen = opties.find((o) => o.policy_id === policyId);
   return <section className="space-y-4 border-t border-border py-6">
@@ -98,6 +108,8 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
     {verzoeken.map((r) => <div key={r.id} className="space-y-3 border-b border-border py-4 text-sm">
       <p className="font-medium">{r.geactiveerd_op ? "Cyber toegevoegd" : CYBER_VERZOEK_STATUS[r.status]}</p><p>Gewenste ingang {formatDateNL(r.gewenste_ingangsdatum)}</p><p className="break-all text-muted-foreground">Referentie {r.id}</p>
       {r.beoordeling_notitie && <p>{r.beoordeling_notitie}</p>}
+      {team && r.geactiveerd_op && (r.mail_status === "mail_mislukt" || r.mail_status === "mislukt") && <div role="alert"><p>Bevestigingsmail niet verstuurd.</p><Button variant="outline" disabled={bezig} onClick={() => mailOpnieuw(r.id)}>Opnieuw versturen</Button></div>}
+      {team && r.geactiveerd_op && (r.mail_status === "mail_onzeker" || r.mail_status === "geclaimd") && <p role="status">Verzending nog niet bevestigd. Controleer eerst de verzendhistorie; niet opnieuw versturen.</p>}
       {team && <><dl className="space-y-3">{CYBER_VRAGEN.map((q) => <div key={q.id}><dt>{q.tekst}</dt><dd className="font-medium">{(r.antwoorden as CyberAntwoorden)[q.id] ? "Ja" : "Nee"}</dd></div>)}</dl><p>Ingediend door: {r.bron === "team" ? "Team namens klant" : "Klant"}</p>{r.notitie && <p>{r.notitie}</p>}</>}
       {team && r.status === "wacht_op_beoordeling" && <><Label htmlFor={`beoordeling-${r.id}`}>Toelichting bij de beoordeling</Label><Textarea id={`beoordeling-${r.id}`} minLength={10} maxLength={1000} value={beoordelingen[r.id] ?? ""} onChange={(e) => setBeoordelingen((b) => ({ ...b, [r.id]: e.target.value }))} /><p className="text-muted-foreground">Akkoord voegt cyber toe en start de aparte cyberfacturatie vanaf de gekozen ingangsdatum. BAV + AVB blijft ongewijzigd.</p><div className="flex gap-2"><Button disabled={bezig} onClick={() => beoordeel(r.id, true)}>Akkoord</Button><Button disabled={bezig} variant="outline" onClick={() => beoordeel(r.id, false)}>Afwijzen</Button></div></>}
     </div>)}

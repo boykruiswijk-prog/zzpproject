@@ -70,6 +70,17 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
   }
   const actie = trigger === "cron" ? "dagrun" : String(body?.actie ?? "proefrun");
 
+  // Explicit single-contract test mode returns before machine activity, credit handling or Exact reads.
+  if (actie === "testcontract_dryrun") {
+    const id = body?.klant_contract_id;
+    const van = body?.van; const tot = body?.tot ?? van;
+    if (typeof id !== "string" || !/^[0-9a-f-]{36}$/i.test(id) || typeof van !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(van) || typeof tot !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(tot)) return json({ error: "Testcontract en geldige datums vereist" }, 400);
+    const { data: kandidaten, error } = await admin.rpc("facturatie_testcontract", { _id: id, _van: van, _tot: tot });
+    if (error) return json({ error: error.message }, 409);
+    const { data: cfg } = await admin.from("exact_config").select("gl_account_ids").limit(1).maybeSingle();
+    return json({ modus: "testcontract_dryrun", schrijft_naar_exact: false, schrijft_naar_database: false, regels: (kandidaten ?? []).map((k: any) => ({ kandidaat: k, payload: bouwFactuurPayload(k, glUitCache(cfg, String(k.gl_code)), "ZPF-TEST000", "Remarks") })) });
+  }
+
   if (actie === "doorrol_preview") {
     const { data, error } = await admin.rpc("doorrol_startstand", { _preview: true });
     if (error) return json({ error: error.message }, 500);

@@ -8,7 +8,6 @@ function createElement(type: string, props: Record<string, unknown> | null, ...c
   const kids = children.flat().filter((c) => c !== null && c !== undefined && c !== false);
   return { type, key: null, props: { ...(props ?? {}), children: kids.length === 0 ? undefined : kids.length === 1 ? kids[0] : kids } };
 }
-import satori from "satori";
 import { Resvg } from "@resvg/resvg-js";
 import postgres from "postgres";
 import { categoryDesign } from "../supabase/functions/artikel-afbeelding/design";
@@ -18,6 +17,8 @@ export interface ImageArticle {
 }
 
 const require = createRequire(import.meta.url);
+// Node's CommonJS export supplies the WASM loader's __dirname in builds and tests alike.
+const satori: typeof import("satori")["default"] = require("satori").default;
 const fonts = ([700, 800] as const).map((weight) => ({
   name: "Plus Jakarta Sans",
   data: fs.readFileSync(require.resolve(`@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-${weight}-normal.woff`)),
