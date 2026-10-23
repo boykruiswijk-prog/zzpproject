@@ -26,7 +26,7 @@ Deno.test("langste realistische cybercertificaat: geen fout, één pagina zonder
 });
 
 Deno.test("lagere inhoud verkleint footer stapsgewijs en behoudt ondermarge", async () => {
-  const result = await renderLokaalCertificaat(true, { ...LANG_CERTIFICAAT, profession: LANG_CERTIFICAAT.profession.repeat(3) });
+  const result = await renderLokaalCertificaat(true, { ...LANG_CERTIFICAAT, profession: LANG_CERTIFICAAT.profession.repeat(4) });
   if (result.footerFontSize < 6 || result.footerFontSize >= 7.5) throw new Error("Expected incremental shrink");
   if (result.footerLayout.bottom < 18) throw new Error("Expected safe bottom margin after shrink");
   if (result.footerStart + result.footerFontSize >= result.y - 2) throw new Error("Footer overlaps content");
