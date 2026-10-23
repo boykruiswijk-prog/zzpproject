@@ -5,7 +5,7 @@ import { kortKoppelingTekst } from "../_shared/werkzaamheden.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { certificaatBeschikbaar, certificaatBeschikbaarVanaf, certificaatTeVroegMelding } from "../_shared/certificaatBeschikbaar.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { PDFDocument, PDFName, PDFString, rgb, StandardFonts } from "https://esm.sh/pdf-lib@1.17.1";
+import { PDFDocument, PDFString, rgb, StandardFonts } from "https://esm.sh/pdf-lib@1.17.1";
 import { COMPANY } from "../_shared/company.ts";
 import { autoInvitePortalLead } from "../_shared/portalAccess.ts";
 import { createMailGate } from "../_shared/mail.ts";
