@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { cyberStapKeuze, cyberAfwijsRedenen } from "@/lib/cyberAfwijzing";
 import { cyberVerzoekFout } from "@/lib/cyberToevoegen";
-import { cyberToevoegenPreview } from "@/config/cyberToevoegen";
+import { CYBER_TOEVOEGEN_PUBLIEK, cyberToevoegenPreview } from "@/config/cyberToevoegen";
 import { CYBER, CYBER_VERSIE, beoordeelCyber, aanvraagPremie } from "../../supabase/functions/_shared/cyber";
 
 const goed = { a: false, b: true, c: true, d: true, e: false, f: false };
@@ -44,9 +44,16 @@ describe("E-aanvulling 3", () => {
     expect(CYBER.maandprijs).toBe(27.5); expect(CYBER.jaarprijs).toBe(250); expect(CYBER_VERSIE).toBe("2026-10-08");
     expect(aanvraagPremie("jaarlijks-cyber", false).totaal).toBe(850);
   });
+  it("publieke vlag blijft false tot activatie en facturatie zijn goedgekeurd", () => {
+    expect(CYBER_TOEVOEGEN_PUBLIEK).toBe(false);
+  });
+  it.each(["zpzaken.nl", "www.zpzaken.nl", "lovable.app", "preview.lovable.app.evil.nl", ""])("latere toevoeging is verborgen op %s", (host) => {
+    expect(cyberToevoegenPreview(host)).toBe(false);
+  });
   it("latere toevoeging blijft preview-only", () => {
     expect(cyberToevoegenPreview("zpzaken.nl")).toBe(false);
     expect(cyberToevoegenPreview("localhost")).toBe(true);
+    expect(cyberToevoegenPreview("127.0.0.1")).toBe(true);
     expect(cyberToevoegenPreview("id-preview.lovable.app")).toBe(true);
   });
 });

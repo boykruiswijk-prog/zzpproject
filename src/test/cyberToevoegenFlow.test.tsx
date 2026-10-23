@@ -2,8 +2,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { CyberToevoegen } from "@/components/portal/CyberToevoegen";
-const mocks = vi.hoisted(() => ({ opties: [{ policy_id: "polis-1", label: "TEST-1", cyclus: "maand" }], rijen: [] as any[], rpc: vi.fn(), mfa: true }));
-vi.mock("@/config/cyberToevoegen", () => ({ cyberToevoegenPreview: () => true }));
+const mocks = vi.hoisted(() => ({ opties: [{ policy_id: "polis-1", label: "TEST-1", cyclus: "maand" }], rijen: [] as any[], rpc: vi.fn(), mfa: true, zichtbaar: true }));
+vi.mock("@/config/cyberToevoegen", () => ({ cyberToevoegenPreview: () => mocks.zichtbaar }));
 vi.mock("@/lib/adminMfaStap", () => ({ controleerAdminMfa: async () => mocks.mfa, verwerkMfaFout: vi.fn() }));
 vi.mock("@/integrations/supabase/client", () => ({ supabase: {
   rpc: mocks.rpc,
@@ -12,13 +12,21 @@ vi.mock("@/integrations/supabase/client", () => ({ supabase: {
 function antwoorden() { for (const [id,v] of Object.entries({ a: false,b: true,c: true,d: true,e: false,f: false })) fireEvent.click(document.getElementById(`cyber-${id}-${v}`) as HTMLElement); }
 describe("Cyberverzoek klant en team", () => {
   beforeEach(() => {
-    cleanup(); mocks.rijen=[]; mocks.opties=[{ policy_id: "polis-1", label: "TEST-1", cyclus: "maand" }]; mocks.mfa=true;
+    cleanup(); mocks.rijen=[]; mocks.opties=[{ policy_id: "polis-1", label: "TEST-1", cyclus: "maand" }]; mocks.mfa=true; mocks.zichtbaar=true;
     mocks.rpc.mockReset(); mocks.rpc.mockImplementation(async (fn: string,args: any) => {
       if (fn === "cyber_toevoegen_opties") return { data: mocks.opties, error: null };
       if (fn === "cyber_toevoegen_aanvragen") { mocks.rijen=[{ id:"verzoek-1",policy_id:"polis-1",status:"wacht_op_beoordeling",gewenste_ingangsdatum:args._ingang,antwoorden:args._antwoorden,bron:args._namens_klant ? "team":"klant" }]; return { data:"verzoek-1",error:null }; }
       if (fn === "cyber_toevoegen_beoordelen") { mocks.rijen[0].status=args._akkoord ? "akkoord_wacht_op_activatie":"afgewezen"; return { data:mocks.rijen[0].status,error:null }; }
       throw new Error("Unexpected activation or financial action");
     });
+  });
+  it.each([false, true])("uitgeschakelde toegang verbergt klant/team (%s) en leest geen verzoeken", async (team) => {
+    mocks.zichtbaar = false;
+    mocks.rijen = [{ id: "verzoek-1", status: "wacht_op_beoordeling" }];
+    const { container } = render(<CyberToevoegen team={team} ondernemingId={team ? "ond-1" : undefined} />);
+    await Promise.resolve();
+    expect(container.childElementCount).toBe(0);
+    expect(mocks.rpc).not.toHaveBeenCalled();
   });
   it("ongeschikte polis heeft geen toevoegenknop", async () => {
     mocks.opties=[]; render(<CyberToevoegen />); await waitFor(() => expect(mocks.rpc).toHaveBeenCalled());
