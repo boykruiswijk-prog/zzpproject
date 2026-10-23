@@ -17,13 +17,14 @@ export function werkVan(req: Request): Werk { return lopend.get(req) ?? { start:
 export function metWerk(cfg: WerkConfig, handler: (req: Request) => Response | Promise<Response>) {
   return async (req: Request): Promise<Response> => {
     let id: string | null = null;
-    let admin: ReturnType<typeof createClient> | null = null;
+    let admin: { rpc: (name: string, args: Record<string, string>) => PromiseLike<unknown> } | null = null;
     const werk: Werk = {
       start: async () => {
         if (id) return;
         try {
-          admin = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
-          const { data } = await admin.rpc("machine_start", { _station: cfg.station, _actie: cfg.actie, _tekst: cfg.tekst, _bron: cfg.bron });
+          const client = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
+          admin = client;
+          const { data } = await client.rpc("machine_start", { _station: cfg.station, _actie: cfg.actie, _tekst: cfg.tekst, _bron: cfg.bron });
           id = typeof data === "string" ? data : null;
         } catch (e) { console.error("machine_start", String((e as Error)?.message ?? e)); }
       },

@@ -4,6 +4,7 @@ import { requireVerzekeringOfSupervisor } from "../_shared/teamAuth.ts";
 import { klantOntvanger, verstuurKlantmail } from "../_shared/klantmailSchakelaar.ts";
 import { cyberToevoegMailData, cyberToevoegSpec } from "../_shared/cyberToevoegenActivatie.ts";
 import { activeerCyberKern } from "../_shared/cyberActivatieKern.ts";
+import { isServiceTestRequest } from "../_shared/cyberTestToegang.ts";
 
 const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 Deno.serve(async (req) => {
@@ -15,13 +16,20 @@ Deno.serve(async (req) => {
     const anon = Deno.env.get("SUPABASE_ANON_KEY");
     if (!url || !key || !anon) return json({ error: "Configuratie ontbreekt" }, 500);
     const admin = createClient(url, key);
-    const auth = await requireVerzekeringOfSupervisor(req, admin);
-    if (auth instanceof Response) return json(await auth.json(), auth.status);
     const body = await req.json();
+    const serviceTest = isServiceTestRequest(req, body.testActivate === true && body.dryRun === true);
+    if (!serviceTest) {
+      const auth = await requireVerzekeringOfSupervisor(req, admin);
+      if (auth instanceof Response) return json(await auth.json(), auth.status);
+    }
     if (typeof body.id !== "string" || !/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(body.id) || typeof body.akkoord !== "boolean" || typeof body.notitie !== "string" || body.notitie.trim().length < 10 || body.notitie.length > 1000 || (body.dryRun !== undefined && typeof body.dryRun !== "boolean") || (body.retryMail !== undefined && typeof body.retryMail !== "boolean")) return json({ error: "Ongeldige beoordeling" }, 400);
     const { data: verzoek, error: leesFout } = await admin.from("cyber_toevoeg_verzoeken").select("*").eq("id", body.id).maybeSingle();
     if (leesFout || !verzoek) return json({ error: "Verzoek niet gevonden" }, 404);
     if (body.dryRun && !verzoek.is_test) return json({ error: "Droge run alleen voor gemarkeerde testaanvraag" }, 403);
+    if (serviceTest) {
+      const kern = await activeerCyberKern(admin, body.id, body.notitie, true);
+      return json({ success: true, test: true, status: kern.status, contract: kern.contract, exact_writes: 0, mails_verstuurd: 0 });
+    }
     if (body.dryRun) {
       if (!body.akkoord) return json({ success: true, test: true, status: "zou_afwijzen", exact_writes: 0, mails_verstuurd: 0 });
       const { data: basis } = await admin.from("klant_contracten").select("cyclus").eq("onderneming_id", verzoek.onderneming_id).eq("product", "bav_avb").in("status", ["actief", "loopt_af"]).order("created_at", { ascending: false }).limit(1).maybeSingle();
