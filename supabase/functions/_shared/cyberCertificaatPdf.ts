@@ -22,7 +22,7 @@ export async function tekenCyberCertificaat(templateBytes: Uint8Array, invoer: C
   const wit = rgb(1, 1, 1);
   // Oude voettekst en de BAV-ondertitel/polisregel van het sjabloon afdekken.
   page.drawRectangle({ x: 0, y: 0, width: pageWidth, height: 140, color: wit });
-  page.drawRectangle({ x: 40, y: 612, width: 352, height: 72, color: wit });
+  page.drawRectangle({ x: 40, y: 622, width: 490, height: 54, color: wit });
 
   const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
@@ -30,7 +30,7 @@ export async function tekenCyberCertificaat(templateBytes: Uint8Array, invoer: C
   const labelX = 56, valueX = 195, fontSize = 9, smallFontSize = 7.5, lineHeight = 12;
   const maxValueWidth = pageWidth - valueX - 40;
 
-  page.drawText(CYBER_CERTIFICAAT_ONDERTITEL, { x: labelX - 11, y: 662, size: 15, font: helveticaBold, color: gray });
+  page.drawText(CYBER_CERTIFICAAT_ONDERTITEL, { x: 60, y: 655, size: 15, font: helveticaBold, color: gray });
 
   const wrapText = (text: string, font: typeof helvetica, size: number, maxWidth: number): string[] => {
     const lines: string[] = [];
