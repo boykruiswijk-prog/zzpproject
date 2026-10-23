@@ -1,5 +1,11 @@
 # E-aanvulling 4: release nog niet vrijgegeven
 
+## Vervolg 23 oktober 10:43: Vault-brug door platform geweigerd
+- Bestaande `email_queue_wake` gebruikt pg_net met de Vault-vermelding `email_queue_service_role_key`; alleen de naam en functiedefinitie bekeken, geen geheime waarde opgevraagd of getoond.
+- Aanmaak van `public.cyber_e4_testactivatie(uuid)` via migratietool geprobeerd: SECURITY DEFINER, eigenaar postgres, uitsluitend postgres/service_role, volledige is_test-polis/lead/ondernemingkoppeling en interne e-mailcontrole, expliciete droge mail/Exact-modus. De migratietool weigert dit met `Agent access to secrets is not allowed`. Dit is geen `approval_required`-antwoord; er is geen beschikbare goedkeuringskaart voor deze weigering. Geen alternatieve route geprobeerd om de beperking te omzeilen.
+- Readback: `{testfunctie_bestaat:false, cyber_testcontracten:0, geactiveerde_testverzoeken:0, actieve_gates:0}`. De functie is niet aangemaakt; geen pg_net-aanroep of resultaat. Jaar/maand-, idempotentie-, BAV-snapshot-, teller-, planner-, opzeg- en echte-polisweigeringbewijs blijven ontbreken.
+- Geen vrijgave, functie-deploy, websitepublicatie, klantmail, Exact-mutatie, datawijziging of Ellen-melding in deze vervolgopdracht. Blokker: het platform moet de beveiligde migratie met interne Vault-referentie toestaan; bestaande team-MFA en geheime waarden blijven beschermd.
+
 ## Actuele vervolguitkomst 23 oktober 10:22-opdracht
 Deze sectie vervangt de eerdere status hieronder waar die afwijkt.
 
