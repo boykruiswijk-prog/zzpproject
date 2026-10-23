@@ -116,6 +116,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
       };
 
       if (actie === "cyber_toevoegen") {
+        if (!isSupAdmin) return json({ error: "Alleen supervisor/admin/verzekering mag cybercertificaten maken" }, 403);
         if (typeof body.cyber_verzoek_id !== "string") return json({ error: "Cyberverzoek vereist" }, 400);
         const { data: r, error: rErr } = await adminClient.from("cyber_toevoeg_verzoeken").select("*").eq("id", body.cyber_verzoek_id).eq("policy_id", bestaand.id).maybeSingle();
         if (rErr || !r?.geactiveerd_op || !r.contract_id) return json({ error: "Cyber is niet geactiveerd voor deze polis" }, 409);
@@ -130,6 +131,13 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
         }
         cyberVerzoek = r;
         policy = bestaand;
+        if (bestaand.lead_id) {
+          const { data: l } = await adminClient.from("leads").select("kvk_nummer").eq("id", bestaand.lead_id).maybeSingle();
+          kvkNummerBron = l?.kvk_nummer ?? null;
+        } else if (bestaand.onderneming_id) {
+          const { data: o } = await adminClient.from("ondernemingen").select("kvk").eq("id", bestaand.onderneming_id).maybeSingle();
+          kvkNummerBron = o?.kvk ?? null;
+        }
       }
 
       if (actie === "intrekken") {

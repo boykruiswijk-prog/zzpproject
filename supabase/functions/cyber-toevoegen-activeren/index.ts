@@ -21,11 +21,22 @@ Deno.serve(async (req) => {
     const { data: verzoek, error: leesFout } = await admin.from("cyber_toevoeg_verzoeken").select("*").eq("id", body.id).maybeSingle();
     if (leesFout || !verzoek) return json({ error: "Verzoek niet gevonden" }, 404);
     if (body.dryRun && !verzoek.is_test) return json({ error: "Droge run alleen voor gemarkeerde testaanvraag" }, 403);
+    if (body.dryRun) {
+      if (!body.akkoord) return json({ success: true, test: true, status: "zou_afwijzen", exact_writes: 0, mails_verstuurd: 0 });
+      const { data: basis } = await admin.from("klant_contracten").select("cyclus").eq("onderneming_id", verzoek.onderneming_id).eq("product", "bav_avb").in("status", ["actief", "loopt_af"]).order("created_at", { ascending: false }).limit(1).maybeSingle();
+      const { data: lead } = await admin.from("leads").select("gekozen_pakket").eq("id", verzoek.lead_id).maybeSingle();
+      const cyclus = basis?.cyclus ?? (lead?.gekozen_pakket === "jaarlijks" ? "jaar" : lead?.gekozen_pakket === "maandelijks" ? "maand" : null);
+      if (cyclus !== "jaar" && cyclus !== "maand") return json({ error: "Betaalwijze BAV ontbreekt" }, 409);
+      const ontvanger = await klantOntvanger(admin, verzoek.onderneming_id, verzoek.lead_id);
+      const mail = await verstuurKlantmail(admin, req, "cyber-toevoegen-activeren", "cyber_toegevoegd", ontvanger.email, cyberToevoegMailData(ontvanger.voornaam, verzoek.gewenste_ingangsdatum, cyclus), {}, { dryRun: true });
+      return json({ success: true, test: true, status: "zou_activeren", planning: cyberToevoegSpec(verzoek.gewenste_ingangsdatum, cyclus), mail, exact_writes: 0, mails_verstuurd: 0, mutations: 0 });
+    }
     const user = createClient(url, anon, { global: { headers: { Authorization: req.headers.get("Authorization") ?? "" } } });
     // One transaction owns approval, contract and billing anchor; never call lead activation or Exact here.
     const { data: status, error } = await user.rpc("cyber_toevoegen_beoordelen", { _id: body.id, _akkoord: body.akkoord, _notitie: body.notitie });
     if (error) return json({ error: error.message }, 409);
     if (!body.akkoord) return json({ success: true, status, mail: "niet_verzonden_afwijzing" });
+    if (status !== "actief") return json({ success: true, status, mail: "niet_verzonden_release_wacht" });
     const { data: actief } = await admin.from("cyber_toevoeg_verzoeken").select("*").eq("id", body.id).single();
     const { data: contract } = await admin.from("klant_contracten").select("*").eq("id", actief.contract_id).single();
     if (!contract) return json({ error: "Cybercontract ontbreekt" }, 500);
