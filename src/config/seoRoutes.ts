@@ -420,7 +420,7 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/zzp-verzekering-consultant",
-    title: "BAV consultant zzp | Verzekering voor adviseurs",
+    title: "Beroepsaansprakelijkheidsverzekering consultant | ZP Zaken",
     description:
       "Beroepsaansprakelijkheidsverzekering voor zzp-consultants. BAV en AVB in één polis via Hiscox, geen eigen risico, online geregeld binnen 24 uur.",
     h1: "ZZP verzekering voor consultants",
@@ -499,7 +499,7 @@ export const seoRoutes: SeoRoute[] = [
     h1: "ZZP Verzekering voor bouwprofessionals",
     intro:
       "Als zzp'er in de bouw draag je verantwoordelijkheid voor de kwaliteit van je werk. Een constructiefout of schade aan eigendom kan leiden tot forse schadeclaims. " +
-      "ZP Zaken zorgt voor de juiste dekking met een BAV en AVB.",
+      "Met een BAV en AVB in één polis ben je beschermd.",
   },
 ];
 

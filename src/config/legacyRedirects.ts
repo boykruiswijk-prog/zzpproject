@@ -126,6 +126,10 @@ export const legacyRedirects: LegacyRedirect[] = [
   { from: "een-aov-bij-movir-aanvragen", to: "/aov" },
   { from: "contact-zpzaken", to: "/contact" },
   { from: "neem-gerust-contact-op", to: "/contact" },
+  // Kwaliteitscontrole 23-10-2026
+  { from: "nieuws/is-beroeps-en-bedrijfsaansprakelijkheid-modeverschijnsel-noodzakelijk-kwaad", to: "/kennisbank/verschil-bav-avb-zzp" },
+  { from: "kerstactienieuw", to: "/verzekeringen" },
+  { from: "kerstactiemember", to: "/verzekeringen" },
 
   // Gangbare WordPress URL-patronen
   { from: "bav-verzekering", to: "/verzekeringen" },
