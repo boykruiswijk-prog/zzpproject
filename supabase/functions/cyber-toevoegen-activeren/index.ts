@@ -6,6 +6,7 @@ import { cyberToevoegMailData, cyberToevoegSpec } from "../_shared/cyberToevoege
 import { activeerCyberKern } from "../_shared/cyberActivatieKern.ts";
 import { isServiceTestRequest } from "../_shared/cyberTestToegang.ts";
 import { mailCertificaat } from "../_shared/certificaatMail.ts";
+import { cyberMailVolgorde } from "../_shared/cyberMailVolgorde.ts";
 
 const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 Deno.serve(async (req) => {
@@ -29,9 +30,20 @@ Deno.serve(async (req) => {
     const { data: verzoek, error: leesFout } = await admin.from("cyber_toevoeg_verzoeken").select("*").eq("id", body.id).maybeSingle();
     if (leesFout || !verzoek) return json({ error: "Verzoek niet gevonden" }, 404);
     if (body.dryRun && !verzoek.is_test) return json({ error: "Droge run alleen voor gemarkeerde testaanvraag" }, 403);
+    const drogeMails = async (cyclus: "jaar" | "maand") => {
+      const { data: policy, error } = await admin.from("policies").select("*").eq("id", verzoek.policy_id).single();
+      if (error || !policy) throw new Error("Testpolis ontbreekt");
+      const ontvanger = await klantOntvanger(admin, verzoek.onderneming_id, verzoek.lead_id);
+      return cyberMailVolgorde(
+        () => mailCertificaat(admin, req, { ...policy, pdf_url: "dry-run-not-downloaded.pdf" }, { id: reviewerId }, { dryRun: true }),
+        () => verstuurKlantmail(admin, req, "cyber-toevoegen-activeren", "cyber_toegevoegd", ontvanger.email, cyberToevoegMailData(ontvanger.voornaam, verzoek.gewenste_ingangsdatum, cyclus), {}, { dryRun: true }),
+      );
+    };
     if (serviceTest) {
       const kern = await activeerCyberKern(admin, body.id, body.notitie, true);
-      return json({ success: true, test: true, status: kern.status, contract: kern.contract, exact_writes: 0, mails_verstuurd: 0 });
+      const cyclus = kern.contract?.cyclus;
+      if (cyclus !== "jaar" && cyclus !== "maand") return json({ error: "Testcontract betaalwijze ontbreekt" }, 409);
+      return json({ success: true, test: true, status: kern.status, contract: kern.contract, mail: await drogeMails(cyclus), exact_writes: 0, mails_verstuurd: 0 });
     }
     if (body.dryRun) {
       if (!body.akkoord) return json({ success: true, test: true, status: "zou_afwijzen", exact_writes: 0, mails_verstuurd: 0 });
@@ -39,8 +51,7 @@ Deno.serve(async (req) => {
       const { data: lead } = await admin.from("leads").select("gekozen_pakket").eq("id", verzoek.lead_id).maybeSingle();
       const cyclus = basis?.cyclus ?? (lead?.gekozen_pakket === "jaarlijks" ? "jaar" : lead?.gekozen_pakket === "maandelijks" ? "maand" : null);
       if (cyclus !== "jaar" && cyclus !== "maand") return json({ error: "Betaalwijze BAV ontbreekt" }, 409);
-      const ontvanger = await klantOntvanger(admin, verzoek.onderneming_id, verzoek.lead_id);
-      const mail = await verstuurKlantmail(admin, req, "cyber-toevoegen-activeren", "cyber_toegevoegd", ontvanger.email, cyberToevoegMailData(ontvanger.voornaam, verzoek.gewenste_ingangsdatum, cyclus), {}, { dryRun: true });
+      const mail = await drogeMails(cyclus);
       return json({ success: true, test: true, status: "zou_activeren", planning: cyberToevoegSpec(verzoek.gewenste_ingangsdatum, cyclus), mail, exact_writes: 0, mails_verstuurd: 0, mutations: 0 });
     }
     const user = createClient(url, anon, { global: { headers: { Authorization: req.headers.get("Authorization") ?? "" } } });
