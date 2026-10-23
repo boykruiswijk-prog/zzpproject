@@ -1,6 +1,7 @@
 import { isValidIban as isValidSepaIban } from "@/lib/sepaMachtiging";
 import { SITE_CONFIG } from "@/config/site";
 import { CyberVragen } from "@/components/verzekeringen/CyberVragen";
+import { CyberAfwijzing } from "@/components/verzekeringen/CyberAfwijzing";
 import { CYBER_AKKOORD, CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER_LOOPTIJD, CYBER_AFGEWEZEN, CYBER_VRAGEN, beoordeelCyber, basisPakket, aanvraagPremie, formatPremieBedrag, type CyberAntwoorden } from "../../../supabase/functions/_shared/cyber";
 import { useState, useEffect, useRef } from "react";
 import { SepaMachtigingBlok, bouwFrontendMachtiging } from "@/components/shared/SepaMachtigingBlok";
@@ -385,9 +386,10 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
     trackAanvraagStap(currentStep);
   }, [currentStep, isSubmitted]);
 
-  const nextStep = async () => {
+  const nextStep = async (zonderCyber = false) => {
     if (!validateStep(currentStep) || currentStep >= TOTAL_STEPS) return;
     if (currentStep === 1 && heeftCyber && !beoordeelCyber(cyberAntwoorden).toegestaan) {
+      if (!zonderCyber) return;
       setCyberAangevraagd(true); setCyberAfgewezen(true); setCyberAkkoordOp(null);
       setGekozenPakketId(basisPakket(gekozenPakketId));
     }
@@ -794,7 +796,7 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
                       })}
                     </div>)}
                     {heeftCyber && <><div className="space-y-2 text-sm text-muted-foreground"><p>{CYBER_HULP}</p><p>{CYBER_LOOPTIJD}</p><p>{CYBER_POLISVOORWAARDEN}</p></div><CyberVragen antwoorden={cyberAntwoorden} onChange={setCyberAntwoorden} /><FieldError message={errors.cyber} /></>}
-                    {(cyberAfgewezen || (heeftCyber && beoordeelCyber(cyberAntwoorden).volledig && !beoordeelCyber(cyberAntwoorden).toegestaan)) && <p role="status" className="text-sm text-foreground">{CYBER_AFGEWEZEN}</p>}
+                    {heeftCyber && <CyberAfwijzing antwoorden={cyberAntwoorden} />}
                     <div>
                        <Label htmlFor="startDate" className="text-sm font-medium mb-2 block">{t("home.bavStartDate")}</Label>
                        <div className="relative">
@@ -1160,10 +1162,10 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
                   ) : <div />}
                   {currentStep < TOTAL_STEPS ? (
                     <Button
-                      onClick={nextStep}
+                      onClick={() => nextStep(currentStep === 1 && heeftCyber && beoordeelCyber(cyberAntwoorden).volledig && !beoordeelCyber(cyberAntwoorden).toegestaan)}
                       disabled={(currentStep === 1 && !!startDate && startDate < new Date().toISOString().split('T')[0])}
                       className="bg-accent hover:bg-accent/90 text-accent-foreground"
-                    >{t("home.bavNext")}<ArrowRight className="h-4 w-4" /></Button>
+                    >{currentStep === 1 && heeftCyber && beoordeelCyber(cyberAntwoorden).volledig && !beoordeelCyber(cyberAntwoorden).toegestaan ? "Verder zonder cyber" : t("home.bavNext")}<ArrowRight className="h-4 w-4" /></Button>
                   ) : (
                     <Button
                       onClick={handleSubmit}

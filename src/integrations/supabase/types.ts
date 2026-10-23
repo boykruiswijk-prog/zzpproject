@@ -1369,6 +1369,101 @@ export type Database = {
           },
         ]
       }
+      cyber_toevoeg_verzoeken: {
+        Row: {
+          aangevraagd_door: string
+          akkoord_op: string
+          akkoord_tekst: string
+          antwoorden: Json
+          beoordeeld_door: string | null
+          beoordeeld_op: string | null
+          beoordeling_notitie: string | null
+          bron: string
+          created_at: string
+          gewenste_ingangsdatum: string
+          id: string
+          is_test: boolean
+          lead_id: string | null
+          notitie: string
+          onderneming_id: string | null
+          policy_id: string
+          status: string
+          user_id: string
+          voorwaarden_versie: string
+        }
+        Insert: {
+          aangevraagd_door: string
+          akkoord_op?: string
+          akkoord_tekst: string
+          antwoorden: Json
+          beoordeeld_door?: string | null
+          beoordeeld_op?: string | null
+          beoordeling_notitie?: string | null
+          bron: string
+          created_at?: string
+          gewenste_ingangsdatum: string
+          id?: string
+          is_test?: boolean
+          lead_id?: string | null
+          notitie?: string
+          onderneming_id?: string | null
+          policy_id: string
+          status?: string
+          user_id: string
+          voorwaarden_versie?: string
+        }
+        Update: {
+          aangevraagd_door?: string
+          akkoord_op?: string
+          akkoord_tekst?: string
+          antwoorden?: Json
+          beoordeeld_door?: string | null
+          beoordeeld_op?: string | null
+          beoordeling_notitie?: string | null
+          bron?: string
+          created_at?: string
+          gewenste_ingangsdatum?: string
+          id?: string
+          is_test?: boolean
+          lead_id?: string | null
+          notitie?: string
+          onderneming_id?: string | null
+          policy_id?: string
+          status?: string
+          user_id?: string
+          voorwaarden_versie?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cyber_toevoeg_verzoeken_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "kpi_actieve_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cyber_toevoeg_verzoeken_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cyber_toevoeg_verzoeken_onderneming_id_fkey"
+            columns: ["onderneming_id"]
+            isOneToOne: false
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cyber_toevoeg_verzoeken_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dba_batches: {
         Row: {
           certified_count: number
@@ -6253,6 +6348,29 @@ export type Database = {
       cyber_term_eind: {
         Args: { _start: string; _vandaag: string }
         Returns: string
+      }
+      cyber_toevoegen_aanvragen: {
+        Args: {
+          _akkoord: boolean
+          _antwoorden: Json
+          _ingang: string
+          _namens_klant?: boolean
+          _notitie?: string
+          _policy_id: string
+        }
+        Returns: string
+      }
+      cyber_toevoegen_beoordelen: {
+        Args: { _akkoord: boolean; _id: string; _notitie: string }
+        Returns: string
+      }
+      cyber_toevoegen_mogelijk: {
+        Args: { _policy_id: string }
+        Returns: boolean
+      }
+      cyber_toevoegen_opties: {
+        Args: { _onderneming_id?: string }
+        Returns: Json
       }
       dashboard_tellers: { Args: { _toon_test?: boolean }; Returns: Json }
       dekking_opgeschort: { Args: { _onderneming_id: string }; Returns: string }

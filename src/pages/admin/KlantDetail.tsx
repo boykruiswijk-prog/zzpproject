@@ -12,6 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { VlagBalk } from "@/components/admin/LeadVlag";
 import { CONTRACT_STATUS_LABEL, PRODUCT_LABEL, formatEuro, periodeBedrag, type Product } from "@/lib/klantContracten";
 import { OpzeggingenKlant } from "@/components/admin/OpzeggingenKlant";
+import { CyberToevoegen } from "@/components/portal/CyberToevoegen";
 import { CertificatenKlant } from "@/components/admin/CertificatenKlant";
 import { KlantCertificaat } from "@/components/admin/KlantCertificaat";
 import { CrmTijdlijn } from "@/components/admin/crm/CrmTijdlijn";
@@ -109,6 +110,7 @@ export default function KlantDetail() {
               </CardContent></Card>
             </div>
             <LopendeProducten ondernemingId={ond.id} ondernemingNaam={ond.naam} leadIds={leadMatch.map((l) => l.id)} onGewijzigd={() => setHerlaad((x) => x + 1)} />
+            {(isSupervisorOrAdmin || isVerzekering) && <CyberToevoegen team ondernemingId={ond.id} />}
             <CrmTijdlijn ondernemingen={[{ id: ond.id, naam: ond.naam }]} personen={personen.map((p) => ({ id: p.id, naam: persoonNaam(p) }))}
               invoerDoel={{ onderneming_id: ond.id }} herlaadSleutel={herlaad} />
             <KlantCertificaat ond={ond} contracten={contracten} personen={personen} leadIds={leadMatch.map((l) => l.id)} />

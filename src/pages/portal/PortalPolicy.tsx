@@ -1,5 +1,6 @@
 import { PortalLayout } from "@/components/portal/PortalLayout";
 import { CyberPolis } from "@/components/portal/CyberPolis";
+import { CyberToevoegen } from "@/components/portal/CyberToevoegen";
 import { formatDateNL } from "@/lib/dateFormat";
 import { usePortalPolicies } from "@/hooks/usePortalData";
 import { PolicyLifecycleActions } from "@/components/portal/PolicyLifecycleActions";
@@ -39,6 +40,7 @@ export default function PortalPolicy() {
         </Card>
       )}
       <div className="space-y-4">
+        <CyberToevoegen />
         {policies?.map((p) => (
           <Card key={p.id}>
             <CardHeader>
