@@ -777,6 +777,35 @@ export function geordendeRedirects(lijst: LegacyRedirect[] = legacyRedirects): L
   return [...lijst.filter((r) => !isVangregel(r)), ...lijst.filter(isVangregel)];
 }
 
+/** Taalprefixen die dezelfde doorverwijzing krijgen als het Nederlandse pad. */
+export const TAALPREFIXES = ["en", "de", "fr"] as const;
+
+/**
+ * Afgeleide regels: een pad met taalprefix /en, /de of /fr waarvan het
+ * Nederlandse pad (zonder prefix) een doorverwijzing heeft, krijgt dezelfde
+ * bestemming. Bestaande routes, al bestaande bronnen en /tv zijn uitgesloten.
+ */
+export function taalprefixRedirects(
+  lijst: LegacyRedirect[] = legacyRedirects,
+  bestaande: ReadonlySet<string> = new Set(),
+): LegacyRedirect[] {
+  const norm = (v: string) => v.replace(/^\/+|\/+$/g, "").toLowerCase();
+  const bronnen = new Set(lijst.map((r) => norm(r.from)));
+  const gezien = new Set<string>();
+  const uit: LegacyRedirect[] = [];
+  for (const r of lijst) {
+    const from = norm(r.from);
+    if (!from || isVangregel(r) || TAALPREFIXES.some((t) => from === t || from.startsWith(`${t}/`))) continue;
+    for (const t of TAALPREFIXES) {
+      const afgeleid = `${t}/${from}`;
+      if (bronnen.has(afgeleid) || gezien.has(afgeleid) || bestaande.has(afgeleid)) continue;
+      gezien.add(afgeleid);
+      uit.push({ from: afgeleid, to: r.to });
+    }
+  }
+  return uit;
+}
+
 /** Doel voor een pad (met of zonder slashes, hoofdletterongevoelig): exacte regel gaat voor de vangregel. */
 export function zoekLegacyDoel(pad: string, lijst: LegacyRedirect[] = legacyRedirects): string | null {
   const p = pad.replace(/^\/+|\/+$/g, "").toLowerCase();
@@ -784,5 +813,9 @@ export function zoekLegacyDoel(pad: string, lijst: LegacyRedirect[] = legacyRedi
   const exact = lijst.find((r) => !isVangregel(r) && r.from.toLowerCase() === p);
   if (exact) return exact.to;
   const vang = lijst.find((r) => isVangregel(r) && p.startsWith(r.from.slice(0, -1).toLowerCase()));
-  return vang ? vang.to : null;
+  if (vang) return vang.to;
+  // Taalprefix: /en, /de of /fr + een Nederlands bronpad krijgt dezelfde bestemming.
+  const taal = TAALPREFIXES.find((t) => p.startsWith(`${t}/`));
+  if (taal) return zoekLegacyDoel(p.slice(taal.length + 1), lijst);
+  return null;
 }
