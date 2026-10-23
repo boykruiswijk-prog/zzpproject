@@ -62,6 +62,7 @@ export default function PortalPolicy() {
               </div>
             </CardHeader>
             <CardContent>
+              <CyberPolis policyId={p.id} leadId={p.lead_id ?? undefined} />
               <dl className="grid sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
                 <div>
                   <dt className="text-muted-foreground">Verzekerde</dt>
