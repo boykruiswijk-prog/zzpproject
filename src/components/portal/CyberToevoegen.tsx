@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { cyberToevoegenPreview } from "@/config/cyberToevoegen";
 import { cyberVerzoekFout, CYBER_VERZOEK_STATUS } from "@/lib/cyberToevoegen";
-import { CYBER, CYBER_AKKOORD, CYBER_OPZEGTEKST, formatPremieBedrag, type CyberAntwoorden } from "../../../supabase/functions/_shared/cyber";
+import { CYBER, CYBER_AKKOORD, CYBER_OPZEGTEKST, CYBER_VRAGEN, formatPremieBedrag, type CyberAntwoorden } from "../../../supabase/functions/_shared/cyber";
 import { CyberVragen } from "@/components/verzekeringen/CyberVragen";
 import { CyberAfwijzing } from "@/components/verzekeringen/CyberAfwijzing";
 import { vroegsteIngangsdatum } from "@/lib/ingangsdatum";
@@ -37,7 +37,7 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
   async function laad() {
     const optiesResultaat = await supabase.rpc("cyber_toevoegen_opties", { _onderneming_id: ondernemingId ?? undefined });
     let query = supabase.from("cyber_toevoeg_verzoeken").select("*").order("created_at", { ascending: false });
-    if (team && ondernemingId) query = query.eq("onderneming_id", ondernemingId);
+    if (team && ondernemingId) query = query.eq("onderneming_id", ondernemingId).eq("is_test", false);
     const verzoekResultaat = await query;
     if (optiesResultaat.error || verzoekResultaat.error) { setFout("Cyberverzoeken konden niet worden geladen. Probeer opnieuw."); return; }
     const rijen = verzoekResultaat.data ?? [];
@@ -97,7 +97,7 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
     {verzoeken.map((r) => <div key={r.id} className="space-y-3 border-b border-border py-4 text-sm">
       <p className="font-medium">{CYBER_VERZOEK_STATUS[r.status]}</p><p>Gewenste ingang {formatDateNL(r.gewenste_ingangsdatum)}</p><p className="break-all text-muted-foreground">Referentie {r.id}</p>
       {r.beoordeling_notitie && <p>{r.beoordeling_notitie}</p>}
-      {team && <><dl className="space-y-1">{Object.entries(r.antwoorden as CyberAntwoorden).map(([k,v]) => <div key={k}>Vraag {k.toUpperCase()}: {v ? "Ja" : "Nee"}</div>)}</dl><p>Ingediend door: {r.bron === "team" ? "Team namens klant" : "Klant"}</p>{r.notitie && <p>{r.notitie}</p>}</>}
+      {team && <><dl className="space-y-3">{CYBER_VRAGEN.map((q) => <div key={q.id}><dt>{q.tekst}</dt><dd className="font-medium">{(r.antwoorden as CyberAntwoorden)[q.id] ? "Ja" : "Nee"}</dd></div>)}</dl><p>Ingediend door: {r.bron === "team" ? "Team namens klant" : "Klant"}</p>{r.notitie && <p>{r.notitie}</p>}</>}
       {team && r.status === "wacht_op_beoordeling" && <><Label htmlFor={`beoordeling-${r.id}`}>Toelichting bij de beoordeling</Label><Textarea id={`beoordeling-${r.id}`} minLength={10} maxLength={1000} value={beoordelingen[r.id] ?? ""} onChange={(e) => setBeoordelingen((b) => ({ ...b, [r.id]: e.target.value }))} /><p className="text-muted-foreground">Akkoord legt alleen de beoordeling vast. Activatie en facturatie voor later toevoegen zijn nog niet beschikbaar.</p><div className="flex gap-2"><Button disabled={bezig} onClick={() => beoordeel(r.id, true)}>Akkoord</Button><Button disabled={bezig} variant="outline" onClick={() => beoordeel(r.id, false)}>Afwijzen</Button></div></>}
     </div>)}
   </section>;
