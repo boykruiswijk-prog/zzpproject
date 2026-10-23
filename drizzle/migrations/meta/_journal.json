@@ -1205,6 +1205,13 @@
       "when": 1792752672360,
       "tag": "0171_cyber_e4_testbewijs_minimale_rechten",
       "breakpoints": true
+    },
+    {
+      "idx": 172,
+      "version": "7",
+      "when": 1792755104204,
+      "tag": "0172_e4_testtokens",
+      "breakpoints": true
     }
   ]
 }

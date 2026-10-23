@@ -1807,6 +1807,24 @@ export type Database = {
           },
         ]
       }
+      e4_testtokens: {
+        Row: {
+          gebruikt_op: string | null
+          token: string
+          verloopt_op: string
+        }
+        Insert: {
+          gebruikt_op?: string | null
+          token?: string
+          verloopt_op?: string
+        }
+        Update: {
+          gebruikt_op?: string | null
+          token?: string
+          verloopt_op?: string
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -6520,6 +6538,10 @@ export type Database = {
         Returns: boolean
       }
       doorrol_startstand: { Args: { _preview?: boolean }; Returns: Json }
+      e4_token_beoordeel: {
+        Args: { _id: string; _token: string }
+        Returns: string
+      }
       eerste_vrije_certificaatnummer: {
         Args: { _start: number }
         Returns: number
