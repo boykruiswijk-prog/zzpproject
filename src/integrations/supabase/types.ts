@@ -1321,6 +1321,21 @@ export type Database = {
           },
         ]
       }
+      cyber_activatie_config: {
+        Row: {
+          actief: boolean
+          id: boolean
+        }
+        Insert: {
+          actief?: boolean
+          id?: boolean
+        }
+        Update: {
+          actief?: boolean
+          id?: boolean
+        }
+        Relationships: []
+      }
       cyber_akkoord_bewijs: {
         Row: {
           akkoord_op: string
