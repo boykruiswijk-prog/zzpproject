@@ -1407,6 +1407,7 @@ export type Database = {
           is_test: boolean
           lead_id: string | null
           mail_claim_op: string | null
+          mail_poging: number
           mail_status: string
           notitie: string
           onderneming_id: string | null
@@ -1437,6 +1438,7 @@ export type Database = {
           is_test?: boolean
           lead_id?: string | null
           mail_claim_op?: string | null
+          mail_poging?: number
           mail_status?: string
           notitie?: string
           onderneming_id?: string | null
@@ -1467,6 +1469,7 @@ export type Database = {
           is_test?: boolean
           lead_id?: string | null
           mail_claim_op?: string | null
+          mail_poging?: number
           mail_status?: string
           notitie?: string
           onderneming_id?: string | null
@@ -6419,6 +6422,10 @@ export type Database = {
         }
         Returns: string
       }
+      cyber_toevoegen_activeren_intern: {
+        Args: { _id: string; _notitie: string; _test?: boolean }
+        Returns: string
+      }
       cyber_toevoegen_beoordelen: {
         Args: { _akkoord: boolean; _id: string; _notitie: string }
         Returns: string
@@ -6435,7 +6442,9 @@ export type Database = {
         Args: { _id: string; _lease: string }
         Returns: Json
       }
-      cyber_toevoegen_mail_claim: { Args: { _id: string }; Returns: boolean }
+      cyber_toevoegen_mail_claim:
+        | { Args: { _id: string }; Returns: boolean }
+        | { Args: { _id: string; _retry?: boolean }; Returns: number }
       cyber_toevoegen_mogelijk: {
         Args: { _policy_id: string }
         Returns: boolean
@@ -6486,6 +6495,32 @@ export type Database = {
       exact_koppeling_controle: { Args: never; Returns: Json }
       facturatie_kandidaten: {
         Args: { _tot: string; _van: string }
+        Returns: {
+          aantal: number
+          achterstallig: boolean
+          bedrag: number
+          bedrag_per_periode: number
+          bestaande_planning_status: string
+          blokkade: string
+          blokkade_soort: string
+          btw_code: string
+          cyclus: string
+          exact_account_id: string
+          exact_item_id: string
+          gl_code: string
+          itemcode: string
+          klant_contract_id: string
+          klantnaam: string
+          korting_pct: number
+          onderneming_id: string
+          periode_eind: string
+          periode_start: string
+          product: string
+          relatiecode: string
+        }[]
+      }
+      facturatie_testcontract: {
+        Args: { _id: string; _tot: string; _van: string }
         Returns: {
           aantal: number
           achterstallig: boolean
