@@ -4,6 +4,7 @@ import { createClient } from "npm:@supabase/supabase-js@2.108.2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2.108.2/cors";
 import { requireSupervisor } from "../_shared/teamAuth.ts";
 import { tekenCyberCertificaat } from "../_shared/cyberCertificaatPdf.ts";
+import { CYBER_JAARMAXIMUM } from "../_shared/cyberCertificaatTeksten.ts";
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -15,6 +16,7 @@ Deno.serve(async (req) => {
     const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const auth = await requireSupervisor(req, admin);
     if (auth instanceof Response) return new Response(auth.body, { status: auth.status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    if (!CYBER_JAARMAXIMUM.trim()) return json({ error: "Jaarmaximum cyber is nog niet ingesteld; certificaat niet gemaakt", code: "jaarmaximum_ontbreekt" }, 409);
     const body = await req.json().catch(() => ({}));
     const policyId = typeof body?.policy_id === "string" && /^[0-9a-f-]{36}$/i.test(body.policy_id) ? body.policy_id : null;
     if (!policyId) return json({ error: "policy_id ontbreekt of is ongeldig" }, 400);
@@ -49,7 +51,7 @@ Deno.serve(async (req) => {
     const { pdfBytes } = await tekenCyberCertificaat(new Uint8Array(await tpl.arrayBuffer()), {
       certificaathouder: policy.certificate_holder, kvk, verzekeringsnemer: policy.insured_name,
       bav_certificaatnummer: policy.certificate_number, cyber_ingangsdatum: ingang, cyber_einddatum: eind,
-      afgiftedatum: new Date().toISOString().slice(0, 10), voor_gezien: profiel?.full_name ?? "ZP Zaken",
+      jaarmaximum: CYBER_JAARMAXIMUM, afgiftedatum: new Date().toISOString().slice(0, 10), voor_gezien: profiel?.full_name ?? "ZP Zaken",
     });
     // Nooit overschrijven: elke afgifte een eigen bestand.
     const pad = `cyber/${policy.certificate_number}-cyber-${Date.now()}.pdf`;
