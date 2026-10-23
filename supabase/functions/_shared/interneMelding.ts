@@ -24,7 +24,8 @@ export async function interneOntvangers(admin: AdminClient, soort = "algemeen"):
   const { data, error } = await admin.from("interne_melding_ontvangers")
     .select("email").eq("actief", true).eq("soort", soort).order("email");
   if (error || !data?.length) return FALLBACK_PER_SOORT[soort] ?? FALLBACK;
-  return [...new Set(data.map((row: { email: string }) => row.email.trim().toLowerCase()).filter(Boolean))];
+  const emails: string[] = data.map((row: { email: string }) => row.email.trim().toLowerCase()).filter(Boolean);
+  return [...new Set(emails)];
 }
 
 async function log(admin: AdminClient, input: InterneMeldingInput, recipient: string, status: "sent" | "failed", id?: string | null, error?: string | null) {

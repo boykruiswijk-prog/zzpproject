@@ -6,6 +6,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { ensureValidToken, refreshAccessToken } from "../_shared/exactToken.ts";
 import { requireSupervisor } from "../_shared/teamAuth.ts";
+import { isServiceTestRequest } from "../_shared/cyberTestToegang.ts";
 import { sendExactAlarm } from "../_shared/exactAlarm.ts";
 import { periodeTekst, regelOmschrijving } from "../_shared/factuurTekst.ts";
 import { planningsSleutel, planningStatusUitExact } from "../_shared/factuurPeriode.ts";
@@ -47,7 +48,10 @@ function samenvatting(rijen: any[]) {
 
 Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuurplanner aan het werk", klaarTekst: "Factuurplanner klaar", foutTekst: "Factuurplanner vraagt aandacht", bron: "factuur-planner" }, metExactMelding("factuur-planner", async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
-  const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+  const url = Deno.env.get("SUPABASE_URL");
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!url || !key) return json({ error: "Configuratie ontbreekt" }, 500);
+  const admin = createClient(url, key);
   const body = await req.json().catch(() => ({}));
 
   // Auth: cron via Vault-secret; anders intern secret of supervisor/admin.
@@ -63,7 +67,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
   } else {
     const intern = Deno.env.get("INTERNAL_FUNCTION_SECRET");
     const gegeven = req.headers.get("x-internal-secret");
-    if (!(intern && gegeven && gegeven === intern)) {
+    if (!(intern && gegeven && gegeven === intern) && !isServiceTestRequest(req, body?.actie === "testcontract_dryrun")) {
       const auth = await requireSupervisor(req, admin);
       if (auth instanceof Response) return json({ error: "geen_toegang" }, auth.status);
     }
@@ -72,6 +76,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
 
   // Explicit single-contract test mode returns before machine activity, credit handling or Exact reads.
   if (actie === "testcontract_dryrun") {
+    if (!isServiceTestRequest(req, true)) return json({ error: "Service-only testmodus" }, 403);
     const id = body?.klant_contract_id;
     const van = body?.van; const tot = body?.tot ?? van;
     if (typeof id !== "string" || !/^[0-9a-f-]{36}$/i.test(id) || typeof van !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(van) || typeof tot !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(tot)) return json({ error: "Testcontract en geldige datums vereist" }, 400);
@@ -100,10 +105,10 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
     const get = async (pad: string, max = 2000): Promise<any> => {
       const rows: any[] = []; let url: string | null = `${baseUrl}/api/v1/${div}/${pad}`;
       while (url && rows.length < max) {
-        let r = await fetch(url, { method: "GET", headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } });
+        let r: Response = await fetch(url, { method: "GET", headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } });
         if (r.status === 401) { token = await refreshAccessToken(admin, cfg); r = await fetch(url, { method: "GET", headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } }); }
         if (!r.ok) return { fout: `HTTP ${r.status}: ${(await r.text()).slice(0, 300)}`, rows };
-        const d = (await r.json())?.d ?? {}; rows.push(...(d.results ?? (Array.isArray(d) ? d : [d])));
+        const d: any = (await r.json())?.d ?? {}; rows.push(...(d.results ?? (Array.isArray(d) ? d : [d])));
         url = d.__next ?? null; await new Promise((s) => setTimeout(s, 1100));
       }
       return rows;

@@ -47,4 +47,13 @@ describe("E4 eigen cyberfacturatie", () => {
       expect(JSON.parse(network.mock.calls[0][1].body).attachments).toEqual([{ filename: "test.pdf", content: "dGVzdA==" }]);
     } finally { vi.unstubAllGlobals(); }
   });
+  it("cyber confirmation has no certificate attachment", async () => {
+    vi.stubGlobal("Deno", { env: { get: (name: string) => name === "RESEND_API_KEY" ? "test-only" : undefined } });
+    const network = vi.fn().mockResolvedValue(new Response("{}", { status: 200 })); vi.stubGlobal("fetch", network);
+    const api: any = { select: () => api, eq: () => api, maybeSingle: async () => ({ data: { actief: true, status: "goedgekeurd_boy", onderwerp: "Cyber", tekst: CYBER_TOEVOEG_MAIL } }), insert: vi.fn() };
+    try {
+      await verstuurKlantmail({ from: () => api }, new Request("https://zpzaken.nl"), "cyber-toevoegen-activeren", "cyber_toegevoegd", "test@zpzaken.nl", cyberToevoegMailData("Test", "2026-11-03", "jaar"), {}, { idempotencyKey: "test-confirmation" });
+      expect(JSON.parse(network.mock.calls[0][1].body).attachments).toBeUndefined();
+    } finally { vi.unstubAllGlobals(); }
+  });
 });
