@@ -16,6 +16,10 @@ Deze route vervangt de geblokkeerde Vault/service-testbrug. Geen Vault-aanroep o
 
 ### Goedkeuren in de preview
 
+Alleen `cyber-toevoegen-activeren` gedeployed; live sessieloos OPTIONS 200 en POST 401. 62 gerichte Vitest-tests en 3 Deno-tests groen, coordinator-typecheck groen. Database-readback: `modus=alleen_test`, `actief=false`, twee open testverzoeken, twee voorsnapshots en nul activaties. De controlequery hieronder is uitgevoerd en levert voor beide verzoeken BAV/polis/planninggelijkheid=true, nul mailclaims en nul verzendlogs.
+
+Browsercontrole: na herstel van een verouderde previewcache laadt de aangemelde route en gaat veilig naar tweestapsverificatie; lokaal geeft `/auth/v1/factors` 500. Daarom is zichtbaarheid achter voltooide MFA nog niet browserbewezen en is niets goedgekeurd. Boy gebruikt zijn eigen geldige MFA-sessie; bij dezelfde fout niet doorgaan of beveiliging omzeilen.
+
 Open als Boy met MFA en zet bij Cyber toevoegen **Toon testrecords** aan. Vul bij ieder verzoek minimaal tien tekens toelichting in en klik **Akkoord**. Geen dryRun-vlag nodig; de server dwingt droge Exact/mail af.
 
 - Jaar: https://id-preview--2e030441-024b-4841-be4b-93d91e428fb6.lovable.app/admin/klanten/e4104723-0000-4000-8000-000000000001
