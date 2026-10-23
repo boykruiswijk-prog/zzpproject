@@ -399,6 +399,8 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
       width: pageWidth,
       height: pageHeight,
     });
+    // Mask the outdated raster footer before drawing content, so low rows remain visible.
+    page.drawRectangle({ x: 0, y: 0, width: pageWidth, height: 140, color: rgb(1, 1, 1) });
 
     // === Embed fonts ===
     const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
@@ -485,10 +487,10 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
       });
 
       // Draw value (supports multiline with \n)
-      const lines = value.split("\n");
       const font = options?.valueFont || (options?.boldValue ? helveticaBold : helvetica);
       const color = options?.valueColor || black;
       const size = options?.valueFontSize || fontSize;
+      const lines = value.split("\n").flatMap((line) => wrapText(line, font, size, pageWidth - valueX - 40));
       lines.forEach((line: string, i: number) => {
         page.drawText(line, {
           x: valueX,
@@ -498,6 +500,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
           color,
         });
       });
+      return (lines.length - 1) * lineHeight;
     };
 
     // =================================================================
@@ -508,7 +511,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
 
     // Certificaathouder: lowered to avoid overlapping with template header
     let y = 590;
-    drawRow("Certificaathouder:", policy.certificate_holder, y);
+    y -= drawRow("Certificaathouder:", policy.certificate_holder, y);
 
     // KvK (alleen tonen als ingevuld op de lead)
     const kvkNummer = typeof kvkNummerBron === "string" ? kvkNummerBron.trim() : "";
@@ -519,7 +522,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
 
     // Verzekeringsnemer:
     y -= 16;
-    drawRow("Verzekeringsnemer:", policy.insured_name, y);
+    y -= drawRow("Verzekeringsnemer:", policy.insured_name, y);
 
     // Certificaatnummer (bold)
     y -= 22;
@@ -535,7 +538,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
 
     // Hoedanigheid
     y -= 20;
-    drawRow("Hoedanigheid:", policy.profession, y);
+    y -= drawRow("Hoedanigheid:", policy.profession, y);
 
     // Verzekerde bedragen section
     y -= 24;
@@ -748,23 +751,27 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
     y -= 20;
     drawRow("Voor gezien ZP Zaken:", policy.issued_by, y);
 
-    // === Cover the complete old raster footer, including its outdated registration ===
-    page.drawRectangle({
-      x: 0,
-      y: 0,
-      width: pageWidth,
-      height: 140,
-      color: rgb(1, 1, 1),
-    });
-
     // === Four left-aligned paragraphs at the same margin and width as the data ===
-    const footerFontSize = smallFontSize;
-    const footerLineHeight = 10.5;
     const footerWidth = pageWidth - labelX - 40;
-    let footerY = 119;
-    if (y < 142) throw new Error("Certificaatinhoud overlapt de voettekst; controleer de tekstlengte.");
-    for (const paragraph of CERTIFICAAT_FOOTER_ALINEAS) {
-      for (const line of wrapText(paragraph, helvetica, footerFontSize, footerWidth)) {
+    const footerStart = Math.min(119, y - 18);
+    let footerFontSize = smallFontSize;
+    const measureFooter = (size: number) => {
+      const paragraphs = CERTIFICAAT_FOOTER_ALINEAS.map((text) => wrapText(text, helvetica, size, footerWidth));
+      const lineHeight = size * 1.4;
+      const paragraphGap = size * (4 / smallFontSize);
+      const lineCount = paragraphs.reduce((total, lines) => total + lines.length, 0);
+      const bottom = footerStart - (lineCount - 1) * lineHeight - (paragraphs.length - 1) * paragraphGap - size * 0.25;
+      return { paragraphs, lineHeight, paragraphGap, bottom };
+    };
+    let footerLayout = measureFooter(footerFontSize);
+    while (footerLayout.bottom < 18 && footerFontSize > 6) {
+      footerFontSize = Math.max(6, footerFontSize - 0.25);
+      footerLayout = measureFooter(footerFontSize);
+    }
+    if (footerLayout.bottom < 18) console.warn("Certificaatvoettekst past niet binnen de ondermarge bij 6 punten; PDF wordt toch gemaakt.");
+    let footerY = footerStart;
+    for (const lines of footerLayout.paragraphs) {
+      for (const line of lines) {
         page.drawText(line, { x: labelX, y: footerY, size: footerFontSize, font: helvetica, color: gray });
         const numberAt = line.indexOf(COMPANY.registrations.afm);
         if (numberAt >= 0) {
@@ -777,11 +784,10 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
           page.node.addAnnot(annotation);
           page.drawLine({ start: { x: linkX, y: footerY - 1 }, end: { x: linkX + linkWidth, y: footerY - 1 }, thickness: 0.4, color: gray });
         }
-        footerY -= footerLineHeight;
+        footerY -= footerLayout.lineHeight;
       }
-      footerY -= 4;
+      footerY -= footerLayout.paragraphGap;
     }
-    if (footerY < 20) throw new Error("Voettekst past niet op één pagina.");
 
     // === Save & upload PDF ===
     const pdfBytes = await pdfDoc.save();
