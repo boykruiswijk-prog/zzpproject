@@ -1,0 +1,52 @@
+// @vitest-environment happy-dom
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { CyberToevoegen } from "@/components/portal/CyberToevoegen";
+const mocks = vi.hoisted(() => ({ opties: [{ policy_id: "polis-1", label: "TEST-1", cyclus: "maand" }], rijen: [] as any[], rpc: vi.fn(), mfa: true }));
+vi.mock("@/config/cyberToevoegen", () => ({ cyberToevoegenPreview: () => true }));
+vi.mock("@/lib/adminMfaStap", () => ({ controleerAdminMfa: async () => mocks.mfa, verwerkMfaFout: vi.fn() }));
+vi.mock("@/integrations/supabase/client", () => ({ supabase: {
+  rpc: mocks.rpc,
+  from: () => { const q = { select: () => q, order: () => q, eq: () => q, then: (r: any) => Promise.resolve({ data: mocks.rijen, error: null }).then(r) }; return q; },
+} }));
+function antwoorden() { for (const [id,v] of Object.entries({ a: false,b: true,c: true,d: true,e: false,f: false })) fireEvent.click(document.getElementById(`cyber-${id}-${v}`) as HTMLElement); }
+describe("Cyberverzoek klant en team", () => {
+  beforeEach(() => {
+    cleanup(); mocks.rijen=[]; mocks.opties=[{ policy_id: "polis-1", label: "TEST-1", cyclus: "maand" }]; mocks.mfa=true;
+    mocks.rpc.mockReset(); mocks.rpc.mockImplementation(async (fn: string,args: any) => {
+      if (fn === "cyber_toevoegen_opties") return { data: mocks.opties, error: null };
+      if (fn === "cyber_toevoegen_aanvragen") { mocks.rijen=[{ id:"verzoek-1",policy_id:"polis-1",status:"wacht_op_beoordeling",gewenste_ingangsdatum:args._ingang,antwoorden:args._antwoorden,bron:args._namens_klant ? "team":"klant" }]; return { data:"verzoek-1",error:null }; }
+      if (fn === "cyber_toevoegen_beoordelen") { mocks.rijen[0].status=args._akkoord ? "akkoord_wacht_op_activatie":"afgewezen"; return { data:mocks.rijen[0].status,error:null }; }
+      throw new Error("Unexpected activation or financial action");
+    });
+  });
+  it("ongeschikte polis heeft geen toevoegenknop", async () => {
+    mocks.opties=[]; render(<CyberToevoegen />); await waitFor(() => expect(mocks.rpc).toHaveBeenCalled());
+    expect(screen.queryByRole("button",{name:"Cyber toevoegen"})).toBeNull();
+  });
+  it("zonder akkoord geen opslag, met akkoord alleen verzoek in beoordeling", async () => {
+    render(<CyberToevoegen />); fireEvent.click(await screen.findByRole("button",{name:"Cyber toevoegen"})); antwoorden();
+    fireEvent.click(screen.getByRole("button",{name:"Verzoek indienen"}));
+    expect(mocks.rpc.mock.calls.filter(([f]) => f === "cyber_toevoegen_aanvragen")).toHaveLength(0);
+    fireEvent.click(document.getElementById("cyber-later-akkoord") as HTMLElement);
+    fireEvent.click(screen.getByRole("button",{name:"Verzoek indienen"}));
+    await screen.findByText("Wacht op handmatige beoordeling");
+    expect(mocks.rijen[0].status).toBe("wacht_op_beoordeling");
+    expect(mocks.rpc.mock.calls.map(([f]) => f)).not.toContain("lead-to-exact-activate");
+  });
+  it("teamnotitie verplicht en MFA vereist vóór opslag", async () => {
+    render(<CyberToevoegen team ondernemingId="ond-1" />); fireEvent.click(await screen.findByRole("button",{name:"Cyber toevoegen"})); antwoorden(); fireEvent.click(document.getElementById("cyber-later-akkoord") as HTMLElement);
+    fireEvent.click(screen.getByRole("button",{name:"Verzoek indienen"})); expect(mocks.rpc.mock.calls.filter(([f]) => f === "cyber_toevoegen_aanvragen")).toHaveLength(0);
+    fireEvent.change(screen.getByLabelText("Notitie namens de klant"),{target:{value:"Klant heeft akkoord gegeven"}}); mocks.mfa=false;
+    fireEvent.click(screen.getByRole("button",{name:"Verzoek indienen"})); await waitFor(() => expect(screen.getByRole("button",{name:"Verzoek indienen"})).not.toBeDisabled());
+    expect(mocks.rpc.mock.calls.filter(([f]) => f === "cyber_toevoegen_aanvragen")).toHaveLength(0);
+  });
+  it.each([true,false])("beoordeling %s activeert niets", async (keuze) => {
+    mocks.rijen=[{ id:"verzoek-1",policy_id:"polis-1",status:"wacht_op_beoordeling",gewenste_ingangsdatum:"2026-10-24",antwoorden:{},bron:"klant" }];
+    render(<CyberToevoegen team ondernemingId="ond-1" />);
+    fireEvent.change(await screen.findByLabelText("Toelichting bij de beoordeling"),{target:{value:"Beoordeling door team vastgelegd"}});
+    fireEvent.click(screen.getByRole("button",{name:keuze ? "Akkoord":"Afwijzen"}));
+    await waitFor(() => expect(mocks.rijen[0].status).toBe(keuze ? "akkoord_wacht_op_activatie":"afgewezen"));
+    expect(mocks.rpc.mock.calls.filter(([f]) => f !== "cyber_toevoegen_opties").map(([f]) => f)).toEqual(["cyber_toevoegen_beoordelen"]);
+  });
+});
