@@ -30,7 +30,7 @@ const faqs = [
   {
     question: "Heb ik naast een BAV ook een AVB nodig?",
     answer:
-      "Een AVB dekt schade aan personen of eigendommen tijdens je werk — los van je professionele handelen. Voor zorgprofessionals die bij cliënten thuis werken is een AVB aan te raden.",
+      "Een AVB dekt schade aan personen of eigendommen tijdens je werk — los van je professionele handelen. Werk je bij cliënten thuis, dan vragen opdrachtgevers vaak ook om een AVB.",
   },
 ];
 
@@ -84,7 +84,7 @@ export default function ZzpVerzekeringZorg() {
           image: officeMeetingRoom,
           title: "Dekking die past bij jouw zorgrol",
           text:
-            "Werk je adviserend, coachend, coördinerend of uitvoerend? Dat maakt verschil voor je risico en dus voor je polis. Wij kijken samen naar je werkzaamheden en opdrachtovereenkomst.",
+            "Werk je adviserend, coachend, coördinerend of uitvoerend? Dat maakt verschil voor je risico en dus voor je polis. Heb je vragen over de aanvraag of de polisvoorwaarden? We beantwoorden ze graag.",
           bullets: [
             "Beroepsaansprakelijkheid voor fouten in je professionele handelen",
             "Bedrijfsaansprakelijkheid voor schade aan personen of eigendommen",

@@ -34,7 +34,7 @@ const faqs = [
   {
     question: "Wat is de minimale dekking voor ICT-freelancers?",
     answer:
-      `Onze combinatiepolis dekt standaard ${BAV_DEKKING} BAV en ${AVB_DEKKING} AVB per aanspraak. Twijfel je over de eis in je contract? Wij kijken gratis mee.`,
+      `Onze combinatiepolis dekt standaard ${BAV_DEKKING} BAV en ${AVB_DEKKING} AVB per aanspraak. Heb je vragen over de aanvraag of de voorwaarden? Neem persoonlijk contact met ons op.`,
   },
   {
     question: "Dekt een BAV ook schade door een datalek?",
@@ -93,7 +93,7 @@ export default function ZzpVerzekeringICT() {
           image: officeMeetingRoom,
           title: "De juiste dekking voor jouw ICT-opdrachten",
           text:
-            "Of je nu als software-architect, product owner of IT-consultant werkt: de risico's zitten in het werk zelf. Wij kijken naar jouw opdrachten en contracten en bepalen samen welke dekking daar bij hoort.",
+            "Of je nu als software-architect, product owner of IT-consultant werkt: de risico's zitten in het werk zelf. Wat precies gedekt is, staat in de polisvoorwaarden.",
           bullets: [
             "Beroepsaansprakelijkheid voor fouten in code, advies of implementatie",
             "Bedrijfsaansprakelijkheid voor schade aan personen of eigendommen",
@@ -108,7 +108,7 @@ export default function ZzpVerzekeringICT() {
         },
       ]}
       ctaTitle="Neem persoonlijk contact op"
-      ctaSubtitle="Vertel ons wat je doet en voor wie. Wij regelen de juiste dekking."
+      ctaSubtitle="Vertel ons wat je doet en voor wie. We helpen je graag met je aanvraag."
       ctaButton="Neem persoonlijk contact op"
       aanvraag="snel"
     >

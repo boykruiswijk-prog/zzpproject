@@ -77,7 +77,7 @@ export function BeroepVerzekeringPagina(p: Props) {
       benefits={p.benefits}
       explainers={p.explainers.map((e, i) => ({ ...e, image: images[i % images.length] }))}
       ctaTitle="Neem persoonlijk contact op"
-      ctaSubtitle="Vertel ons wat je doet en voor wie. Wij regelen de juiste dekking."
+      ctaSubtitle="Vertel ons wat je doet en voor wie. We helpen je graag met je aanvraag."
       ctaButton="Neem persoonlijk contact op"
       aanvraag="snel"
     >

@@ -31,7 +31,7 @@ export default function ZzpVerzekeringCoach() {
       ]}
       explainers={[
         { title: "Begeleiding waarop je klant vertrouwt", text: "Je geeft advies en begeleiding. Je geeft trainingen op locatie. Gaat er iets mis, dan kan een klant je aansprakelijk stellen. Een BAV is voor fouten in je werk, een AVB voor schade aan personen of spullen.", bullets: ["BAV en AVB in één polis via Hiscox", "Voor coaching en training", "Certificaat voor je opdrachtgever"] },
-        { title: "Therapeut of psycholoog?", text: "Werk je als therapeut of psycholoog? Dan valt je werk onder zorg. Neem contact met ons op, dan kijken we samen wat past." },
+        { title: "Therapeut of psycholoog?", text: "Werk je als therapeut of psycholoog? Dan valt je werk onder zorg. Neem dan eerst contact met ons op." },
       ]}
       faqs={faqs}
       leesMeer={["bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "wat-kosten-verzekeringen-voor-zzp-ers", "welke-verzekeringen-zzp", "bedrijfsaansprakelijkheidsverzekering-zzp"]}
