@@ -44,7 +44,7 @@ export async function polisnummerVoor(db: any, ondernemingId: string | null): Pr
  * Bij uit: geen mail, wel een logregel 'niet_verzonden_schakelaar_uit'. Geeft de mailstatus terug.
  */
 export async function verstuurKlantmail(db: any, req: Request | null, fnName: string, sleutel: string,
-  ontvanger: string | null, data: KlantmailData, meta: Record<string, unknown>, options: { dryRun?: boolean } = {}): Promise<string> {
+  ontvanger: string | null, data: KlantmailData, meta: Record<string, unknown>, options: { dryRun?: boolean; idempotencyKey?: string } = {}): Promise<string> {
   const log = (rij: Record<string, unknown>) => options.dryRun ? Promise.resolve() : logKlantmail(db, rij);
   const { mag, rij } = await magKlantmailVersturen(db, sleutel);
   if (!mag) { await log({ sleutel, status: "niet_verzonden_schakelaar_uit", ontvanger, ...meta }); return "niet_verzonden_schakelaar_uit"; }
@@ -60,7 +60,7 @@ export async function verstuurKlantmail(db: any, req: Request | null, fnName: st
   if (!key) { await log({ sleutel, status: "mislukt", ontvanger, ...meta, details: { fout: "geen mailsleutel" } }); return "mislukt"; }
   if (options.dryRun) return "zou_verzenden";
   const res = await fetch("https://api.resend.com/emails", {
-    method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+    method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}`, ...(options.idempotencyKey ? { "Idempotency-Key": options.idempotencyKey } : {}) },
     body: JSON.stringify({ from: plan.from, to: plan.to, bcc: plan.bcc, subject: plan.subject, html: plan.html }),
   });
   await res.text().catch(() => "");

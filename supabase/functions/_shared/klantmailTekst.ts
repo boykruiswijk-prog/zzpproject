@@ -3,6 +3,7 @@ export const KLANTMAIL_PLACEHOLDERS = [
   "voornaam", "bedrijfsnaam", "bedrag", "polisnummer", "factuurnummer", "factuurdatum",
   "vervaldatum", "betaal_voor", "opschort_datum", "verlengdatum",
   "product", "iban", "uiterste_datum", "incasso_datum", "royement_datum",
+  "ingangsdatum", "cyber_premie", "cyber_incasso",
 ] as const;
 export type KlantmailData = Partial<Record<(typeof KLANTMAIL_PLACEHOLDERS)[number], string | number | null>>;
 
