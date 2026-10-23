@@ -26,6 +26,7 @@ export async function tekenCyberCertificaat(templateBytes: Uint8Array, invoer: C
 
   const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+  const helveticaOblique = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
   const black = rgb(0, 0, 0), gray = rgb(0.35, 0.35, 0.35);
   const labelX = 56, valueX = 195, fontSize = 9, smallFontSize = 7.5, lineHeight = 12;
   const maxValueWidth = pageWidth - valueX - 40;
@@ -54,6 +55,12 @@ export async function tekenCyberCertificaat(templateBytes: Uint8Array, invoer: C
   cyberCertificaatRijen(invoer).forEach((rij, i) => {
     if (i > 0) y -= 17;
     y -= drawRow(rij.label, rij.waarde, y, rij.vet);
+    if (rij.notitie) {
+      y -= lineHeight + 1;
+      const lines = wrapText(rij.notitie, helveticaOblique, smallFontSize, maxValueWidth);
+      lines.forEach((l, j) => page.drawText(l, { x: valueX, y: y - j * 10, size: smallFontSize, font: helveticaOblique, color: gray }));
+      y -= (lines.length - 1) * 10;
+    }
   });
   y -= 20;
   drawRow("Afgiftedatum:", langeDatum(invoer.afgiftedatum), y, true);

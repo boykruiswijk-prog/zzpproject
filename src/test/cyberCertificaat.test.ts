@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { cyberCertificaatRijen, cyberEinddatum, CYBER_POLISNUMMER } from "../../supabase/functions/_shared/cyberCertificaatTeksten";
+import { cyberCertificaatRijen, cyberEinddatum, CYBER_POLISNUMMER, CYBER_JAARMAXIMUM } from "../../supabase/functions/_shared/cyberCertificaatTeksten";
 
 const rijen = cyberCertificaatRijen({
   certificaathouder: "Fictief B.V.", kvk: "12345678", verzekeringsnemer: "Test", bav_certificaatnummer: "ZPBAV5193",
@@ -16,7 +16,8 @@ describe("cybercertificaat E5/E5a", () => {
     expect(w("Soort verzekering:")).toBe("CyberClear by Hiscox, ZP Zaken Cyber Collectief");
     expect(w("Polisnummer:")).toBe("HCR3202063");
     expect(w("Ingangsdatum:")).toBe("24-10-2026");
-    expect(w("Verzekerd bedrag:")).toBe("EUR 50.000 per schade en per deelnemer (inclusief kosten).");
+    expect(w("Verzekerd bedrag:")).toBe("EUR 50.000 per schade en per deelnemer (inclusief kosten).\nEUR XXX per verzekeringsjaar voor alle deelnemers samen.");
+    expect(rijen.find((r) => r.label === "Verzekerd bedrag:")?.notitie).toBe("Je neemt deel aan een mantelpolis waarbij het maximaal verzekerde bedrag per jaar wordt gedeeld met alle deelnemers binnen de betreffende mantelpolis.");
     expect(w("Eigen risico:")).toBe("EUR 500 per schade, bij cyberfraude EUR 1.000");
     expect(w("Polisvoorwaarden:")).toBe("CyberClear by Hiscox (HCC-2022/01) en de van toepassing zijnde clausules. De voorwaarden zijn op te vragen via 020 - 457 3077.");
     expect(w("Dekkingsgebied:")).toBe("Europa");
@@ -28,9 +29,14 @@ describe("cybercertificaat E5/E5a", () => {
     expect(cyberEinddatum("2026-10-24")).toBe("2027-10-23");
     expect(cyberEinddatum("2028-03-01")).toBe("2029-02-28");
   });
-  it("noemt nooit een jaarbedrag voor alle deelnemers samen", () => {
-    const alles = rijen.map((r) => r.waarde).join(" ") + readFileSync("supabase/functions/_shared/cyberCertificaatPdf.ts", "utf8");
-    expect(alles).not.toMatch(/per (verzekerings)?jaar|jaarmaximum|jaarlimiet|alle deelnemers|gedeeld/i);
+  it("jaarbedrag alle deelnemers: config leeg, generator weigert dan, voorbeeld toont XXX", () => {
+    expect(CYBER_JAARMAXIMUM).toBe("");
+    const src = readFileSync("supabase/functions/generate-cyber-certificate/index.ts", "utf8");
+    expect(src).toContain('if (!CYBER_JAARMAXIMUM.trim()) return json(');
+    expect(src.indexOf("jaarmaximum_ontbreekt")).toBeLessThan(src.indexOf("tekenCyberCertificaat("));
+    const met = cyberCertificaatRijen({ certificaathouder: "F", verzekeringsnemer: "T", bav_certificaatnummer: "ZPBAV1",
+      cyber_ingangsdatum: "2026-10-24", afgiftedatum: "2026-10-23", voor_gezien: "T", jaarmaximum: "250.000" });
+    expect(met.find((r) => r.label === "Verzekerd bedrag:")?.waarde).toContain("EUR 250.000 per verzekeringsjaar voor alle deelnemers samen.");
   });
   it("BAV-certificaat blijft ongewijzigd", () => {
     const src = readFileSync("supabase/functions/generate-certificate/index.ts", "utf8");

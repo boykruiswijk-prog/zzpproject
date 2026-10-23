@@ -1,12 +1,18 @@
 // Teksten voor het aparte cybercertificaat (register E-aanvulling 5/5a, besluit Boy 23-10-2026).
-// Nooit een jaarbedrag voor alle deelnemers samen noemen (intern, register E).
 import { COMPANY } from "./company.ts";
+import { POLISBLAD_NOTITIE } from "./certificaatRegels.ts";
 
 export const CYBER_CERTIFICAAT_TITEL = "VERZEKERINGSCERTIFICAAT CYBERVERZEKERING";
 export const CYBER_CERTIFICAAT_ONDERTITEL = "CYBERVERZEKERING";
 export const CYBER_POLISNUMMER = "HCR3202063";
 export const CYBER_SOORT = "CyberClear by Hiscox, ZP Zaken Cyber Collectief";
 export const CYBER_VERZEKERD_BEDRAG = "EUR 50.000 per schade en per deelnemer (inclusief kosten).";
+/** Jaarmaximum voor alle deelnemers samen, zonder "EUR" (bijv. "250.000"). Leeg: generator weigert echte klanten. */
+export const CYBER_JAARMAXIMUM = "";
+export const CYBER_JAARMAXIMUM_VOORBEELD = "XXX";
+export function cyberVerzekerdBedrag(jaarmaximum: string): string {
+  return `${CYBER_VERZEKERD_BEDRAG}\nEUR ${jaarmaximum} per verzekeringsjaar voor alle deelnemers samen.`;
+}
 export const CYBER_EIGEN_RISICO = "EUR 500 per schade, bij cyberfraude EUR 1.000";
 export const CYBER_POLISVOORWAARDEN = `CyberClear by Hiscox (HCC-2022/01) en de van toepassing zijnde clausules. De voorwaarden zijn op te vragen via ${COMPANY.phoneDisplay}.`;
 export const CYBER_DEKKINGSGEBIED = "Europa";
@@ -44,9 +50,11 @@ export type CyberCertificaatInvoer = {
   afgiftedatum: string; // ISO
   voor_gezien: string;
   polisnummer?: string;
+  /** Alleen voor fictieve voorbeelden; anders CYBER_JAARMAXIMUM. */
+  jaarmaximum?: string;
 };
 
-export type CyberRij = { label: string; waarde: string; vet?: boolean };
+export type CyberRij = { label: string; waarde: string; vet?: boolean; notitie?: string };
 
 /** Vaste volgorde van de rijen op het cybercertificaat (afgifte/voor gezien apart, lange datum). */
 export function cyberCertificaatRijen(i: CyberCertificaatInvoer): CyberRij[] {
@@ -59,7 +67,7 @@ export function cyberCertificaatRijen(i: CyberCertificaatInvoer): CyberRij[] {
     { label: "Soort verzekering:", waarde: CYBER_SOORT },
     { label: "Polisnummer:", waarde: polis },
     { label: "Ingangsdatum:", waarde: korteDatum(i.cyber_ingangsdatum), vet: true },
-    { label: "Verzekerd bedrag:", waarde: CYBER_VERZEKERD_BEDRAG },
+    { label: "Verzekerd bedrag:", waarde: cyberVerzekerdBedrag(i.jaarmaximum || CYBER_JAARMAXIMUM || CYBER_JAARMAXIMUM_VOORBEELD), notitie: POLISBLAD_NOTITIE },
     { label: "Eigen risico:", waarde: CYBER_EIGEN_RISICO },
     { label: "Polisvoorwaarden:", waarde: CYBER_POLISVOORWAARDEN },
     { label: "Dekkingsgebied:", waarde: CYBER_DEKKINGSGEBIED },
