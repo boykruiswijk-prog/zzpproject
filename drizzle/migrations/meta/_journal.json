@@ -1198,6 +1198,13 @@
       "when": 1792752625151,
       "tag": "0170_cyber_e4_alleen_test_en_bewijs",
       "breakpoints": true
+    },
+    {
+      "idx": 171,
+      "version": "7",
+      "when": 1792752672360,
+      "tag": "0171_cyber_e4_testbewijs_minimale_rechten",
+      "breakpoints": true
     }
   ]
 }
