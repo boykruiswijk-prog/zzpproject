@@ -1114,6 +1114,34 @@
       "when": 1792746834617,
       "tag": "0158_cyber_verzoek_minimale_rechten",
       "breakpoints": true
+    },
+    {
+      "idx": 159,
+      "version": "7",
+      "when": 1792749148418,
+      "tag": "0159_cyber_later_atomic_activation",
+      "breakpoints": true
+    },
+    {
+      "idx": 160,
+      "version": "7",
+      "when": 1792749196192,
+      "tag": "0160_cyber_later_documents_and_cancellation",
+      "breakpoints": true
+    },
+    {
+      "idx": 161,
+      "version": "7",
+      "when": 1792749277918,
+      "tag": "0161_cyber_activation_release_gate",
+      "breakpoints": true
+    },
+    {
+      "idx": 162,
+      "version": "7",
+      "when": 1792749367766,
+      "tag": "0162_cyber_document_immutable_lease",
+      "breakpoints": true
     }
   ]
 }

@@ -30,7 +30,8 @@ describe("certificaatregels", () => {
     expect(src).not.toMatch(/\.remove\(/);
     expect(src).toMatch(/policy_versies/);
     expect(src).toMatch(/storage\.from\("certificates"\)\.copy\(/);
-    expect(src).toMatch(/fileName = `\$\{policy\.certificate_number\}\.pdf`/);
+    expect(src).toContain(': `${policy.certificate_number}.pdf`');
+    expect(src).toContain('`cyber-toevoegen/${cyberVerzoek.id}-${cyberLease}.pdf`');
     expect(src).not.toMatch(/polis blad|in ingeschreven/);
     expect(FOOTER_REGISTER_TEKST).toContain("ZP Zaken B.V. staat als financieel dienstverlener geregistreerd");
     expect(POLISBLAD_NOTITIE).toContain("betreffende mantelpolis");

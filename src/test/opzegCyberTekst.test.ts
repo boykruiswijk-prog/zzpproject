@@ -78,7 +78,8 @@ describe("Publieke opzeg- en cyberteksten D1/E", () => {
     expect(nieuweCyber({ cyber_voorwaarden_versie: "2026-10-16", gekozen_pakket: "maandelijks-cyber" })).toBe(false);
     expect(nieuweCyber({ extra_data: { cyber: { versie: "2026-10-16", gekozen: true } } })).toBe(false);
     const certificaat = readFileSync("supabase/functions/generate-certificate/index.ts", "utf8");
-    expect(certificaat).toContain('const heeftNieuweCyber = policyLead?.cyber_voorwaarden_versie === "2026-10-08";');
+    expect(certificaat).toContain('policyLead?.cyber_voorwaarden_versie === "2026-10-08"');
+    expect(certificaat).toContain('!!latereCyber?.length');
     expect(certificaat).not.toContain('cyber_voorwaarden_versie === "2026-10-16"');
     expect(nieuweCyber({ cyber_voorwaarden_versie: "legacy", gekozen_pakket: "maandelijks-cyber" })).toBe(false);
     expect(aanvraagPremie("maandelijks-cyber", false)).toEqual({ bav: 55, cyber: 27.5, totaal: 82.5, maand: true });

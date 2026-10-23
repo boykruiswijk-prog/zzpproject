@@ -16,7 +16,7 @@ import { ShieldPlus, Loader2 } from "lucide-react";
 import { controleerAdminMfa, verwerkMfaFout } from "@/lib/adminMfaStap";
 
 type Optie = { policy_id: string; label: string; cyclus: string };
-type Verzoek = { id: string; policy_id: string; status: string; gewenste_ingangsdatum: string; beoordeling_notitie: string | null; notitie: string; antwoorden: unknown; bron: string };
+type Verzoek = { id: string; policy_id: string; status: string; geactiveerd_op?: string | null; mail_status?: string; gewenste_ingangsdatum: string; beoordeling_notitie: string | null; notitie: string; antwoorden: unknown; bron: string };
 
 export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?: string; team?: boolean }) {
   const zichtbaar = cyberToevoegenPreview();
@@ -66,8 +66,8 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
     setBezig(true); setFout("");
     try {
       if (!await controleerAdminMfa()) return;
-      const { error } = await supabase.rpc("cyber_toevoegen_beoordelen", { _id: id, _akkoord: keuze, _notitie: beoordelingen[id] ?? "" });
-      if (error) throw error;
+      const { data, error } = await supabase.functions.invoke("cyber-toevoegen-activeren", { body: { id, akkoord: keuze, notitie: beoordelingen[id] ?? "" } });
+      if (error || data?.error) throw error ?? new Error(data.error);
       await laad();
     } catch (e) { await verwerkMfaFout(e); setFout((e as { message?: string })?.message ?? "Beoordeling kon niet worden opgeslagen."); }
     finally { setBezig(false); }
@@ -79,6 +79,7 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
     {opties.length > 0 && <>
       <p className="text-sm">€{formatPremieBedrag(CYBER.jaarprijs)} per jaar of €{formatPremieBedrag(CYBER.maandprijs)} per maand, inclusief kosten en assurantiebelasting.</p>
       <p className="text-sm">{CYBER_OPZEGTEKST.split(" Bij maandbetaling:")[0]}</p>
+      <p className="text-sm">Looptijd 12 maanden vanaf de cyberingangsdatum, daarna stilzwijgend verlengd met 12 maanden.</p>
       {!open && <Button onClick={() => { setPolicyId(opties[0].policy_id); setOpen(true); setFout(""); }}>Cyber toevoegen</Button>}
     </>}
     {resultaat && <p role="status" className="text-sm">{resultaat}</p>}
@@ -91,14 +92,14 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
       <div className="space-y-2"><Label htmlFor="cyber-ingang">Gewenste ingangsdatum</Label><Input id="cyber-ingang" type="date" min={vroegsteIngangsdatum()} required value={datum} onChange={(e) => setDatum(e.target.value)} /></div>
       {team && <div className="space-y-2"><Label htmlFor="cyber-teamnotitie">Notitie namens de klant</Label><Textarea id="cyber-teamnotitie" required minLength={10} maxLength={1000} value={notitie} onChange={(e) => setNotitie(e.target.value)} /></div>}
       <div className="flex items-start gap-3"><Checkbox id="cyber-later-akkoord" checked={akkoord} onCheckedChange={(v) => setAkkoord(v === true)} /><Label htmlFor="cyber-later-akkoord" className="text-sm leading-relaxed">{CYBER_AKKOORD}</Label></div>
-      <p className="text-sm text-muted-foreground">Je verzoek wordt handmatig beoordeeld. Cyber is pas actief na afzonderlijke activatie.</p>
+      <p className="text-sm text-muted-foreground">Je verzoek wordt handmatig beoordeeld. Na akkoord gaat de dekking in op de gekozen ingangsdatum.</p>
       <div className="flex flex-wrap gap-2"><Button type="submit" disabled={bezig}>{bezig && <Loader2 className="h-4 w-4 animate-spin" />}Verzoek indienen</Button><Button type="button" variant="outline" onClick={() => setOpen(false)}>Annuleren</Button></div>
     </form>}
     {verzoeken.map((r) => <div key={r.id} className="space-y-3 border-b border-border py-4 text-sm">
-      <p className="font-medium">{CYBER_VERZOEK_STATUS[r.status]}</p><p>Gewenste ingang {formatDateNL(r.gewenste_ingangsdatum)}</p><p className="break-all text-muted-foreground">Referentie {r.id}</p>
+      <p className="font-medium">{r.geactiveerd_op ? "Cyber toegevoegd" : CYBER_VERZOEK_STATUS[r.status]}</p><p>Gewenste ingang {formatDateNL(r.gewenste_ingangsdatum)}</p><p className="break-all text-muted-foreground">Referentie {r.id}</p>
       {r.beoordeling_notitie && <p>{r.beoordeling_notitie}</p>}
       {team && <><dl className="space-y-3">{CYBER_VRAGEN.map((q) => <div key={q.id}><dt>{q.tekst}</dt><dd className="font-medium">{(r.antwoorden as CyberAntwoorden)[q.id] ? "Ja" : "Nee"}</dd></div>)}</dl><p>Ingediend door: {r.bron === "team" ? "Team namens klant" : "Klant"}</p>{r.notitie && <p>{r.notitie}</p>}</>}
-      {team && r.status === "wacht_op_beoordeling" && <><Label htmlFor={`beoordeling-${r.id}`}>Toelichting bij de beoordeling</Label><Textarea id={`beoordeling-${r.id}`} minLength={10} maxLength={1000} value={beoordelingen[r.id] ?? ""} onChange={(e) => setBeoordelingen((b) => ({ ...b, [r.id]: e.target.value }))} /><p className="text-muted-foreground">Akkoord legt alleen de beoordeling vast. Activatie en facturatie voor later toevoegen zijn nog niet beschikbaar.</p><div className="flex gap-2"><Button disabled={bezig} onClick={() => beoordeel(r.id, true)}>Akkoord</Button><Button disabled={bezig} variant="outline" onClick={() => beoordeel(r.id, false)}>Afwijzen</Button></div></>}
+      {team && r.status === "wacht_op_beoordeling" && <><Label htmlFor={`beoordeling-${r.id}`}>Toelichting bij de beoordeling</Label><Textarea id={`beoordeling-${r.id}`} minLength={10} maxLength={1000} value={beoordelingen[r.id] ?? ""} onChange={(e) => setBeoordelingen((b) => ({ ...b, [r.id]: e.target.value }))} /><p className="text-muted-foreground">Akkoord voegt cyber toe en start de aparte cyberfacturatie vanaf de gekozen ingangsdatum. BAV + AVB blijft ongewijzigd.</p><div className="flex gap-2"><Button disabled={bezig} onClick={() => beoordeel(r.id, true)}>Akkoord</Button><Button disabled={bezig} variant="outline" onClick={() => beoordeel(r.id, false)}>Afwijzen</Button></div></>}
     </div>)}
   </section>;
 }

@@ -1321,6 +1321,21 @@ export type Database = {
           },
         ]
       }
+      cyber_activatie_config: {
+        Row: {
+          actief: boolean
+          id: boolean
+        }
+        Insert: {
+          actief?: boolean
+          id?: boolean
+        }
+        Update: {
+          actief?: boolean
+          id?: boolean
+        }
+        Relationships: []
+      }
       cyber_akkoord_bewijs: {
         Row: {
           akkoord_op: string
@@ -1379,11 +1394,20 @@ export type Database = {
           beoordeeld_op: string | null
           beoordeling_notitie: string | null
           bron: string
+          certificaat_pad: string | null
+          certificaat_versie: number | null
+          contract_id: string | null
           created_at: string
+          document_basis_versie: number | null
+          document_claim: string | null
+          document_claim_op: string | null
+          geactiveerd_op: string | null
           gewenste_ingangsdatum: string
           id: string
           is_test: boolean
           lead_id: string | null
+          mail_claim_op: string | null
+          mail_status: string
           notitie: string
           onderneming_id: string | null
           policy_id: string
@@ -1400,11 +1424,20 @@ export type Database = {
           beoordeeld_op?: string | null
           beoordeling_notitie?: string | null
           bron: string
+          certificaat_pad?: string | null
+          certificaat_versie?: number | null
+          contract_id?: string | null
           created_at?: string
+          document_basis_versie?: number | null
+          document_claim?: string | null
+          document_claim_op?: string | null
+          geactiveerd_op?: string | null
           gewenste_ingangsdatum: string
           id?: string
           is_test?: boolean
           lead_id?: string | null
+          mail_claim_op?: string | null
+          mail_status?: string
           notitie?: string
           onderneming_id?: string | null
           policy_id: string
@@ -1421,11 +1454,20 @@ export type Database = {
           beoordeeld_op?: string | null
           beoordeling_notitie?: string | null
           bron?: string
+          certificaat_pad?: string | null
+          certificaat_versie?: number | null
+          contract_id?: string | null
           created_at?: string
+          document_basis_versie?: number | null
+          document_claim?: string | null
+          document_claim_op?: string | null
+          geactiveerd_op?: string | null
           gewenste_ingangsdatum?: string
           id?: string
           is_test?: boolean
           lead_id?: string | null
+          mail_claim_op?: string | null
+          mail_status?: string
           notitie?: string
           onderneming_id?: string | null
           policy_id?: string
@@ -1434,6 +1476,13 @@ export type Database = {
           voorwaarden_versie?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "cyber_toevoeg_verzoeken_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "klant_contracten"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "cyber_toevoeg_verzoeken_lead_id_fkey"
             columns: ["lead_id"]
@@ -3512,6 +3561,7 @@ export type Database = {
           cyber_ingangsdatum: string | null
           cyber_lead_id: string | null
           cyber_nieuwe_voorwaarden_per: string | null
+          cyber_toevoeg_verzoek_id: string | null
           cyber_voorwaarden_versie: string | null
           cyclus: string
           eind_datum: string | null
@@ -3559,6 +3609,7 @@ export type Database = {
           cyber_ingangsdatum?: string | null
           cyber_lead_id?: string | null
           cyber_nieuwe_voorwaarden_per?: string | null
+          cyber_toevoeg_verzoek_id?: string | null
           cyber_voorwaarden_versie?: string | null
           cyclus: string
           eind_datum?: string | null
@@ -3606,6 +3657,7 @@ export type Database = {
           cyber_ingangsdatum?: string | null
           cyber_lead_id?: string | null
           cyber_nieuwe_voorwaarden_per?: string | null
+          cyber_toevoeg_verzoek_id?: string | null
           cyber_voorwaarden_versie?: string | null
           cyclus?: string
           eind_datum?: string | null
@@ -3649,6 +3701,13 @@ export type Database = {
             columns: ["cyber_lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "klant_contracten_cyber_toevoeg_verzoek_id_fkey"
+            columns: ["cyber_toevoeg_verzoek_id"]
+            isOneToOne: false
+            referencedRelation: "cyber_toevoeg_verzoeken"
             referencedColumns: ["id"]
           },
           {
@@ -6364,6 +6423,19 @@ export type Database = {
         Args: { _akkoord: boolean; _id: string; _notitie: string }
         Returns: string
       }
+      cyber_toevoegen_document_claim: {
+        Args: { _id: string; _lease: string }
+        Returns: boolean
+      }
+      cyber_toevoegen_document_klaar: {
+        Args: { _id: string; _lease: string; _pad: string }
+        Returns: boolean
+      }
+      cyber_toevoegen_document_snapshot: {
+        Args: { _id: string; _lease: string }
+        Returns: Json
+      }
+      cyber_toevoegen_mail_claim: { Args: { _id: string }; Returns: boolean }
       cyber_toevoegen_mogelijk: {
         Args: { _policy_id: string }
         Returns: boolean

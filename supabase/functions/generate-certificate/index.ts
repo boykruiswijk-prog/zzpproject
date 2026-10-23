@@ -71,7 +71,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
     await werkVan(req).start();
     const body = await req.json();
     const { lead_id, policy_data } = body;
-    const actie: "nieuw" | "aanpassen" | "intrekken" | "mailen" | "nummer_overnemen" | "nummer_wijzigen" = body.actie || "nieuw";
+    const actie: "nieuw" | "aanpassen" | "intrekken" | "mailen" | "nummer_overnemen" | "nummer_wijzigen" | "cyber_toevoegen" = body.actie || "nieuw";
     const json = (b: unknown, status = 200) =>
       new Response(JSON.stringify(b), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
@@ -80,6 +80,8 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
     const isSupAdmin = magCertificaatBeheren((rolRijen || []).map((r: any) => r.role));
 
     let policy: any;
+    let cyberVerzoek: any = null;
+    let cyberLease: string | null = null;
     let handmatigeLead: any = null;
     if (lead_id) {
       const { data: intake, error } = await adminClient.from("leads").select("*").eq("id", lead_id).maybeSingle();
@@ -112,6 +114,31 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
         insured_name: bestaand.insured_name, start_date: bestaand.start_date,
         issued_date: bestaand.issued_date, versie: bestaand.versie, status: bestaand.status,
       };
+
+      if (actie === "cyber_toevoegen") {
+        if (!isSupAdmin) return json({ error: "Alleen supervisor/admin/verzekering mag cybercertificaten maken" }, 403);
+        if (typeof body.cyber_verzoek_id !== "string") return json({ error: "Cyberverzoek vereist" }, 400);
+        const { data: r, error: rErr } = await adminClient.from("cyber_toevoeg_verzoeken").select("*").eq("id", body.cyber_verzoek_id).eq("policy_id", bestaand.id).maybeSingle();
+        if (rErr || !r?.geactiveerd_op || !r.contract_id) return json({ error: "Cyber is niet geactiveerd voor deze polis" }, 409);
+        if (r.is_test) return json({ error: "Testpolis: alleen lokaal certificaat renderen" }, 409);
+        if (r.certificaat_pad) return json({ success: true, ongewijzigd: true });
+        cyberLease = crypto.randomUUID();
+        const { data: claim, error: cErr } = await adminClient.rpc("cyber_toevoegen_document_claim", { _id: r.id, _lease: cyberLease });
+        if (cErr || !claim) return json({ error: "Certificaat wordt al verwerkt. Probeer later opnieuw." }, 409);
+        if (bestaand.pdf_url) {
+          const { error: kopieFout } = await adminClient.storage.from("certificates").copy(bestaand.pdf_url, `cyber-toevoegen/${r.id}-${cyberLease}-vorige.pdf`);
+          if (kopieFout && !/already exists|Duplicate/i.test(kopieFout.message)) return json({ error: "Vorige certificaatversie bewaren mislukt" }, 500);
+        }
+        cyberVerzoek = r;
+        policy = bestaand;
+        if (bestaand.lead_id) {
+          const { data: l } = await adminClient.from("leads").select("kvk_nummer").eq("id", bestaand.lead_id).maybeSingle();
+          kvkNummerBron = l?.kvk_nummer ?? null;
+        } else if (bestaand.onderneming_id) {
+          const { data: o } = await adminClient.from("ondernemingen").select("kvk").eq("id", bestaand.onderneming_id).maybeSingle();
+          kvkNummerBron = o?.kvk ?? null;
+        }
+      }
 
       if (actie === "intrekken") {
         const reden = typeof body.reden === "string" ? body.reden.trim() : "";
@@ -186,7 +213,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
           oude_pdf_pad: bestaand.pdf_url, uitgevoerd_door: user.id, uitgevoerd_door_email: user.email,
         });
         return json({ success: true, verzonden_naar: r.to, opmerking: r.opmerking });
-      } else {
+      } else if (actie !== "cyber_toevoegen") {
       // aanpassen: oude PDF als versie bewaren, waarden bijwerken, zelfde nummer opnieuw renderen
       const wijz = schoonAanpassing(body.wijzigingen || {});
       let oudePdfPad: string | null = null;
@@ -365,7 +392,8 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
         .eq("id", policy.lead_id).maybeSingle();
       policyLead = leadVoorPolis;
     }
-    const heeftNieuweCyber = policyLead?.cyber_voorwaarden_versie === "2026-10-08";
+    const { data: latereCyber } = await adminClient.from("cyber_toevoeg_verzoeken").select("id").eq("policy_id", policy.id).not("geactiveerd_op", "is", null).limit(1);
+    const heeftNieuweCyber = !!cyberVerzoek || !!latereCyber?.length || policyLead?.cyber_voorwaarden_versie === "2026-10-08";
 
     // === Load the template background image from storage (private bucket) ===
     const { data: templateData, error: templateError } = await adminClient.storage
@@ -791,7 +819,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
 
     // === Save & upload PDF ===
     const pdfBytes = await pdfDoc.save();
-    const fileName = `${policy.certificate_number}.pdf`;
+    const fileName = cyberVerzoek ? `cyber-toevoegen/${cyberVerzoek.id}-${cyberLease}.pdf` : `${policy.certificate_number}.pdf`;
     // Nooit de PDF van een ander (ingetrokken) certificaat overschrijven.
     const { data: anderePdf } = await adminClient.from("policies").select("id").eq("pdf_url", fileName).neq("id", policy.id).limit(1);
     if (anderePdf?.length) {
@@ -804,7 +832,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
       .from("certificates")
       .upload(fileName, pdfBlob, {
         contentType: "application/pdf",
-        upsert: true,
+        upsert: !cyberVerzoek,
       });
 
     if (uploadError) {
@@ -825,7 +853,10 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
       .from("certificates")
       .createSignedUrl(fileName, 3600);
 
-    await adminClient
+    if (cyberVerzoek && cyberLease) {
+      const { data: klaar, error: klaarFout } = await adminClient.rpc("cyber_toevoegen_document_klaar", { _id: cyberVerzoek.id, _lease: cyberLease, _pad: fileName });
+      if (klaarFout || !klaar) return json({ error: klaarFout?.message ?? "Verlopen documentclaim" }, 409);
+    } else await adminClient
       .from("policies")
       .update({ pdf_url: fileName })
       .eq("id", policy.id);
