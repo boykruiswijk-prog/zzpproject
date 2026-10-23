@@ -22,7 +22,7 @@ export async function tekenCyberCertificaat(templateBytes: Uint8Array, invoer: C
   const wit = rgb(1, 1, 1);
   // Oude voettekst en de BAV-ondertitel/polisregel van het sjabloon afdekken.
   page.drawRectangle({ x: 0, y: 0, width: pageWidth, height: 140, color: wit });
-  page.drawRectangle({ x: 40, y: 622, width: 490, height: 54, color: wit });
+  page.drawRectangle({ x: 40, y: 606, width: 490, height: 70, color: wit });
 
   const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
