@@ -34,4 +34,17 @@ describe("E4 eigen cyberfacturatie", () => {
     expect(network).not.toHaveBeenCalled(); expect(insert).not.toHaveBeenCalled();
     vi.unstubAllGlobals();
   });
+  it.each([[422, "mail_mislukt"], [503, "mail_onzeker"], [200, "verzonden"]])("provider %s classificeert veilig als %s", async (http, expected) => {
+    vi.stubGlobal("Deno", { env: { get: (name: string) => name === "RESEND_API_KEY" ? "test-only" : undefined } });
+    const network = vi.fn().mockResolvedValue(new Response("{}", { status: Number(http) }));
+    vi.stubGlobal("fetch", network);
+    const insert = vi.fn();
+    const api: any = { select: () => api, eq: () => api, maybeSingle: async () => ({ data: { actief: true, status: "goedgekeurd_boy", onderwerp: "Cyber", tekst: CYBER_TOEVOEG_MAIL }, error: null }), insert };
+    try {
+      const result = await verstuurKlantmail({ from: () => api }, new Request("https://zpzaken.nl"), "cyber-toevoegen-activeren", "cyber_toegevoegd", "test@zpzaken.nl", cyberToevoegMailData("Test", "2026-11-03", "jaar"), {}, { classifyDelivery: true, attachments: [{ filename: "test.pdf", content: "dGVzdA==" }], idempotencyKey: "test-attempt-1" });
+      expect(result).toBe(expected);
+      expect(network).toHaveBeenCalledTimes(1);
+      expect(JSON.parse(network.mock.calls[0][1].body).attachments).toEqual([{ filename: "test.pdf", content: "dGVzdA==" }]);
+    } finally { vi.unstubAllGlobals(); }
+  });
 });

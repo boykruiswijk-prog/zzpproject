@@ -33,7 +33,8 @@ describe("root-artikelredirects uit sitemapbron", () => {
     const generated = rootArtikelRedirects(articles, root);
     expect(generated.length).toBeGreaterThan(0);
     for (const redirect of generated) expect(routes.has(redirect.from)).toBe(false);
-    const output = fs.readFileSync(path.join(root, "public/_redirects"), "utf8");
+    // The build inserts this block; source _redirects is intentionally only the base rules.
+    const output = voegArtikelRedirectsToe(fs.readFileSync(path.join(root, "public/_redirects"), "utf8"), generated);
     const block = output.match(/# BEGIN gegenereerde root-artikelredirects([\s\S]*?)# END gegenereerde root-artikelredirects/);
     expect(block).not.toBeNull();
     for (const match of (block?.[1] ?? "").matchAll(/^\/(\S+)\s+/gm)) {

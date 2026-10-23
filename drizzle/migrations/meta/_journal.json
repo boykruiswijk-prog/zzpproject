@@ -1142,6 +1142,41 @@
       "when": 1792749367766,
       "tag": "0162_cyber_document_immutable_lease",
       "breakpoints": true
+    },
+    {
+      "idx": 163,
+      "version": "7",
+      "when": 1792749967517,
+      "tag": "0163_cyber_test_core_and_manual_mail_claim",
+      "breakpoints": true
+    },
+    {
+      "idx": 164,
+      "version": "7",
+      "when": 1792749992799,
+      "tag": "0164_cyber_core_preserve_reviewer_and_retry_signature",
+      "breakpoints": true
+    },
+    {
+      "idx": 165,
+      "version": "7",
+      "when": 1792750062174,
+      "tag": "0165_cyber_human_approval_then_service_core",
+      "breakpoints": true
+    },
+    {
+      "idx": 166,
+      "version": "7",
+      "when": 1792750223557,
+      "tag": "0166_cyber_test_core_fixture_link_guard",
+      "breakpoints": true
+    },
+    {
+      "idx": 167,
+      "version": "7",
+      "when": 1792750323610,
+      "tag": "0167_cyber_service_core_idempotent_real_retry",
+      "breakpoints": true
     }
   ]
 }
