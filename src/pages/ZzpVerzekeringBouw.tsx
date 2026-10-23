@@ -57,7 +57,7 @@ export default function ZzpVerzekeringBouw() {
       heroImage={serviceVerzekeringen}
       badge="Voor bouwprofessionals"
       title={<>ZZP Verzekering voor <span className="text-accent">bouwprofessionals</span></>}
-      subtitle="Als zzp'er in de bouw — aannemer, installateur, architect of constructeur — draag je verantwoordelijkheid voor de kwaliteit van je werk. Een constructiefout of schade aan eigendom kan leiden tot forse schadeclaims. ZP Zaken zorgt voor de juiste dekking."
+      subtitle="Als zzp'er in de bouw — aannemer, installateur, architect of constructeur — draag je verantwoordelijkheid voor de kwaliteit van je werk. Een constructiefout of schade aan eigendom kan leiden tot forse schadeclaims. Met een BAV en AVB in één polis ben je beschermd."
       schema={schema}
       benefits={[
         {
