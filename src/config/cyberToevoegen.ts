@@ -1,5 +1,5 @@
-// E-aanvulling 3 remains preview-only until Boy reviews it.
-export const CYBER_TOEVOEGEN_PUBLIEK = false;
+// E4 vrijgegeven 23-10 na groene testcontrole.
+export const CYBER_TOEVOEGEN_PUBLIEK = true;
 
 export function cyberToevoegenPreview(hostname = typeof window === "undefined" ? "" : window.location.hostname) {
   const host = hostname.toLowerCase().replace(/\.$/, "");
