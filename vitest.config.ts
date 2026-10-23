@@ -9,10 +9,9 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
-    // Keep the CommonJS/WASM renderer in Node rather than Vitest's ESM transform.
-    server: { deps: { external: ["satori", "harfbuzzjs"] } },
   },
   resolve: {
-    alias: { "@": path.resolve(__dirname, "./src") },
+    // Satori's CJS export gives its WASM dependency Node's __dirname without mocking images.
+    alias: { "@": path.resolve(__dirname, "./src"), satori: path.resolve(__dirname, "node_modules/satori/dist/index.cjs") },
   },
 });
