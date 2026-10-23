@@ -28,6 +28,12 @@ export function filterOpTab<T extends MetVlag>(leads: T[], tab: VlagTab, vandaag
   return leads;
 }
 
+/** Alleen aanvragen: een actieve polis is geen open aanvraag. Alle/Gemarkeerd blijven intact. */
+export function filterAanvragenOpTab<T extends MetVlag & { status?: string }>(leads: T[], tab: VlagTab, vandaag: string): T[] {
+  const rijen = filterOpTab(leads, tab, vandaag);
+  return tab === "te_doen" ? rijen.filter((l) => l.status !== "actief") : rijen;
+}
+
 /** Validatie zoals de server: notitie 3-500 tekens, datum verplicht bij 'later'. */
 export function vlagFout(soort: VlagSoort | null, notitie: string, datum: string): string | null {
   if (!soort) return "Kies Later aandacht of Actie nodig.";

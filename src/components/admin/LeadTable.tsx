@@ -10,7 +10,7 @@ import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS, statusTitel } from "@/lib/statu
 import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 import { useState } from "react";
 import { VlagIcoon, VlagKnop } from "@/components/admin/LeadVlag";
-import { filterOpTab, vandaagNL, type VlagTab } from "@/lib/leadVlag";
+import { filterAanvragenOpTab, filterOpTab, vandaagNL, type VlagTab } from "@/lib/leadVlag";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "react-router-dom";
 import { useLeads, useUpdateLead, useDeleteLead } from "@/hooks/useLeads";
@@ -110,7 +110,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
   const gezocht = bavZoek ? (alleLeads ?? []).filter((l) => (bavVoor(l.id)?.nummer ?? "").replace(/\D/g, "").includes(bavZoek)) : (alleLeads ?? []);
   const vandaag = vandaagNL();
   const aantalGemarkeerd = gezocht.filter((l: any) => !!l.vlag).length;
-  const leads = filterOpTab(gezocht as any[], tab, vandaag) as typeof gezocht;
+  const leads = (soort === "aanvragen" ? filterAanvragenOpTab : filterOpTab)(gezocht as any[], tab, vandaag) as typeof gezocht;
   const updateLead = useUpdateLead();
   const deleteLead = useDeleteLead();
 

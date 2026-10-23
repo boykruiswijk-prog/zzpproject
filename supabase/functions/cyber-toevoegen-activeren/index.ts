@@ -7,6 +7,8 @@ import { activeerCyberKern } from "../_shared/cyberActivatieKern.ts";
 import { isServiceTestRequest } from "../_shared/cyberTestToegang.ts";
 import { mailCertificaat } from "../_shared/certificaatMail.ts";
 import { cyberMailVolgorde } from "../_shared/cyberMailVolgorde.ts";
+import { cyberGateBesluit } from "../_shared/cyberAlleenTest.ts";
+import { bouwFactuurPayload, glUitCache } from "../_shared/factuurRegel.ts";
 
 const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 Deno.serve(async (req) => {
@@ -29,6 +31,11 @@ Deno.serve(async (req) => {
     if (typeof body.id !== "string" || !/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(body.id) || typeof body.akkoord !== "boolean" || typeof body.notitie !== "string" || body.notitie.trim().length < 10 || body.notitie.length > 1000 || (body.dryRun !== undefined && typeof body.dryRun !== "boolean") || (body.retryMail !== undefined && typeof body.retryMail !== "boolean") || (body.testActivate !== undefined && typeof body.testActivate !== "boolean") || (serviceTest && body.akkoord !== true)) return json({ error: "Ongeldige beoordeling" }, 400);
     const { data: verzoek, error: leesFout } = await admin.from("cyber_toevoeg_verzoeken").select("*").eq("id", body.id).maybeSingle();
     if (leesFout || !verzoek) return json({ error: "Verzoek niet gevonden" }, 404);
+    const { data: gate, error: gateError } = await admin.from("cyber_activatie_config").select("actief,modus").eq("id", true).maybeSingle();
+    if (gateError) return json({ error: "Releasecontrole kon niet worden gelezen" }, 503);
+    const besluit = cyberGateBesluit(gate, verzoek.is_test === true, !serviceTest && !!reviewerId);
+    if (!besluit.toegestaan) return json({ error: besluit.reden }, 403);
+    if (gate?.modus === "alleen_test" && body.retryMail) return json({ error: "Testmodus verstuurt geen mails" }, 403);
     if (body.dryRun && !verzoek.is_test) return json({ error: "Droge run alleen voor gemarkeerde testaanvraag" }, 403);
     const drogeMails = async (cyclus: "jaar" | "maand") => {
       const { data: policy, error } = await admin.from("policies").select("*").eq("id", verzoek.policy_id).single();
@@ -68,8 +75,17 @@ Deno.serve(async (req) => {
     const mailData = cyberToevoegMailData(ontvanger.voornaam, actief.gewenste_ingangsdatum, contract.cyclus);
     // Test mode is mandatory for test records, irrespective of client input. No document/mail/Exact effects.
     if (actief.is_test) {
-      const mail = await verstuurKlantmail(admin, req, "cyber-toevoegen-activeren", "cyber_toegevoegd", ontvanger.email, mailData, {}, { dryRun: true });
-      return json({ success: true, status: "actief", test: true, exact_writes: 0, mails_verstuurd: 0, contract_id: contract.id, planning: cyberToevoegSpec(actief.gewenste_ingangsdatum, contract.cyclus), mail });
+      // Both actual mail helpers, in their production order, without documents, claims or sends.
+      const mail = await drogeMails(contract.cyclus);
+      const { data: kandidaten, error: plannerError } = await admin.rpc("facturatie_testcontract", { _id: contract.id, _van: contract.begin_datum, _tot: contract.begin_datum });
+      if (plannerError) return json({ error: plannerError.message, actief: true }, 409);
+      const { data: cfg, error: cfgError } = await admin.from("exact_config").select("gl_account_ids").limit(1).maybeSingle();
+      if (cfgError) return json({ error: "Plannerkoppeling kon niet worden gelezen", actief: true }, 409);
+      const planning = (kandidaten ?? []).map((k: any) => ({ kandidaat: k, payload: bouwFactuurPayload(k, glUitCache(cfg, String(k.gl_code)), "ZPF-TEST000", "Remarks") }));
+      const resultaat = { success: true, status: "actief", test: true, exact_writes: 0, mails_verstuurd: 0, contract_id: contract.id, planning, mail, beoordelaar: reviewerId, mailclaims: "niet_geclaimd_droge_modus" };
+      const { error: bewijsError } = await admin.from("cyber_e4_testbewijs").update({ uitkomst: resultaat, gecontroleerd_op: new Date().toISOString() }).eq("verzoek_id", actief.id).select("verzoek_id").single();
+      if (bewijsError) return json({ error: "Testuitkomst kon niet worden vastgelegd", actief: true }, 409);
+      return json(resultaat);
     }
     if (!actief.certificaat_pad) {
       const headers: Record<string, string> = { Authorization: req.headers.get("Authorization") ?? "", "Content-Type": "application/json" };

@@ -14,12 +14,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { ShieldPlus, Loader2 } from "lucide-react";
 import { controleerAdminMfa, verwerkMfaFout } from "@/lib/adminMfaStap";
+import { useToonTestrecords } from "@/hooks/useToonTestrecords";
+import { ToonTestrecordsSchakelaar } from "@/components/admin/ToonTestrecordsSchakelaar";
 
 type Optie = { policy_id: string; label: string; cyclus: string };
-type Verzoek = { id: string; policy_id: string; status: string; geactiveerd_op?: string | null; mail_status?: string; gewenste_ingangsdatum: string; beoordeling_notitie: string | null; notitie: string; antwoorden: unknown; bron: string };
+type Verzoek = { id: string; policy_id: string; status: string; is_test?: boolean; geactiveerd_op?: string | null; mail_status?: string; gewenste_ingangsdatum: string; beoordeling_notitie: string | null; notitie: string; antwoorden: unknown; bron: string };
 
 export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?: string; team?: boolean }) {
   const zichtbaar = cyberToevoegenPreview();
+  const { toonTest } = useToonTestrecords();
   const [opties, setOpties] = useState<Optie[]>([]);
   const [verzoeken, setVerzoeken] = useState<Verzoek[]>([]);
   const [open, setOpen] = useState(false);
@@ -37,7 +40,10 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
   async function laad() {
     const optiesResultaat = await supabase.rpc("cyber_toevoegen_opties", { _onderneming_id: ondernemingId ?? undefined });
     let query = supabase.from("cyber_toevoeg_verzoeken").select("*").order("created_at", { ascending: false });
-    if (team && ondernemingId) query = query.eq("onderneming_id", ondernemingId).eq("is_test", false);
+    if (team && ondernemingId) {
+      query = query.eq("onderneming_id", ondernemingId);
+      if (!toonTest) query = query.eq("is_test", false);
+    }
     const verzoekResultaat = await query;
     if (optiesResultaat.error || verzoekResultaat.error) { setFout("Cyberverzoeken konden niet worden geladen. Probeer opnieuw."); return; }
     const rijen = verzoekResultaat.data ?? [];
@@ -46,7 +52,7 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
     setOpties(o.filter((p) => !rijen.some((r) => r.policy_id === p.policy_id && r.status !== "afgewezen")));
     setGeladen(true);
   }
-  useEffect(() => { if (zichtbaar && (!team || ondernemingId)) void laad(); }, [zichtbaar, ondernemingId, team]);
+  useEffect(() => { if (zichtbaar && (!team || ondernemingId)) void laad(); }, [zichtbaar, ondernemingId, team, toonTest]);
 
   async function indienen(e: React.FormEvent) {
     e.preventDefault();
@@ -82,10 +88,11 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
     } catch (e) { await verwerkMfaFout(e); setFout((e as { message?: string })?.message ?? "Mail kon niet worden verstuurd."); }
     finally { setBezig(false); }
   }
-  if (!zichtbaar || (geladen && !opties.length && !verzoeken.length && !fout)) return null;
+  if (!zichtbaar || (!team && geladen && !opties.length && !verzoeken.length && !fout)) return null;
   const gekozen = opties.find((o) => o.policy_id === policyId);
   return <section className="space-y-4 border-t border-border py-6">
     <h2 className="flex items-center gap-2 text-xl font-semibold"><ShieldPlus className="h-5 w-5 text-accent" />Cyber toevoegen</h2>
+    {team && <ToonTestrecordsSchakelaar />}
     {opties.length > 0 && <>
       <p className="text-sm">€{formatPremieBedrag(CYBER.jaarprijs)} per jaar of €{formatPremieBedrag(CYBER.maandprijs)} per maand, inclusief kosten en assurantiebelasting.</p>
       <p className="text-sm">{CYBER_OPZEGTEKST.split(" Bij maandbetaling:")[0]}</p>
@@ -106,6 +113,7 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
       <div className="flex flex-wrap gap-2"><Button type="submit" disabled={bezig}>{bezig && <Loader2 className="h-4 w-4 animate-spin" />}Verzoek indienen</Button><Button type="button" variant="outline" onClick={() => setOpen(false)}>Annuleren</Button></div>
     </form>}
     {verzoeken.map((r) => <div key={r.id} className="space-y-3 border-b border-border py-4 text-sm">
+      {team && r.is_test && <p className="font-semibold text-destructive">{r.notitie === "TEST E4 jaar" || r.notitie === "TEST E4 maand" ? r.notitie : "TEST"}</p>}
       <p className="font-medium">{r.geactiveerd_op ? "Cyber toegevoegd" : CYBER_VERZOEK_STATUS[r.status]}</p><p>Gewenste ingang {formatDateNL(r.gewenste_ingangsdatum)}</p><p className="break-all text-muted-foreground">Referentie {r.id}</p>
       {r.beoordeling_notitie && <p>{r.beoordeling_notitie}</p>}
       {team && r.geactiveerd_op && (r.mail_status === "mail_mislukt" || r.mail_status === "mislukt") && <div role="alert"><p>Bevestigingsmail niet verstuurd.</p><Button variant="outline" disabled={bezig} onClick={() => mailOpnieuw(r.id)}>Opnieuw versturen</Button></div>}

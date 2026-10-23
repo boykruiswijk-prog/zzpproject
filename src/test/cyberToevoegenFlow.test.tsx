@@ -4,6 +4,8 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { CyberToevoegen } from "@/components/portal/CyberToevoegen";
 const mocks = vi.hoisted(() => ({ opties: [{ policy_id: "polis-1", label: "TEST-1", cyclus: "maand" }], rijen: [] as any[], rpc: vi.fn(), invoke: vi.fn(), mfa: true, zichtbaar: true }));
 vi.mock("@/config/cyberToevoegen", () => ({ cyberToevoegenPreview: () => mocks.zichtbaar }));
+vi.mock("@/hooks/useToonTestrecords", () => ({ useToonTestrecords: () => ({ toonTest: true }) }));
+vi.mock("@/components/admin/ToonTestrecordsSchakelaar", () => ({ ToonTestrecordsSchakelaar: () => null }));
 vi.mock("@/lib/adminMfaStap", () => ({ controleerAdminMfa: async () => mocks.mfa, verwerkMfaFout: vi.fn() }));
 vi.mock("@/integrations/supabase/client", () => ({ supabase: {
   rpc: mocks.rpc,
