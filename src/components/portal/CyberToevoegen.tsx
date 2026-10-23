@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ShieldPlus, Loader2 } from "lucide-react";
 import { controleerAdminMfa, verwerkMfaFout } from "@/lib/adminMfaStap";
 import { useToonTestrecords } from "@/hooks/useToonTestrecords";
+import { ToonTestrecordsSchakelaar } from "@/components/admin/ToonTestrecordsSchakelaar";
 
 type Optie = { policy_id: string; label: string; cyclus: string };
 type Verzoek = { id: string; policy_id: string; status: string; is_test?: boolean; geactiveerd_op?: string | null; mail_status?: string; gewenste_ingangsdatum: string; beoordeling_notitie: string | null; notitie: string; antwoorden: unknown; bron: string };
@@ -87,10 +88,11 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
     } catch (e) { await verwerkMfaFout(e); setFout((e as { message?: string })?.message ?? "Mail kon niet worden verstuurd."); }
     finally { setBezig(false); }
   }
-  if (!zichtbaar || (geladen && !opties.length && !verzoeken.length && !fout)) return null;
+  if (!zichtbaar || (!team && geladen && !opties.length && !verzoeken.length && !fout)) return null;
   const gekozen = opties.find((o) => o.policy_id === policyId);
   return <section className="space-y-4 border-t border-border py-6">
     <h2 className="flex items-center gap-2 text-xl font-semibold"><ShieldPlus className="h-5 w-5 text-accent" />Cyber toevoegen</h2>
+    {team && <ToonTestrecordsSchakelaar />}
     {opties.length > 0 && <>
       <p className="text-sm">€{formatPremieBedrag(CYBER.jaarprijs)} per jaar of €{formatPremieBedrag(CYBER.maandprijs)} per maand, inclusief kosten en assurantiebelasting.</p>
       <p className="text-sm">{CYBER_OPZEGTEKST.split(" Bij maandbetaling:")[0]}</p>
