@@ -1394,6 +1394,8 @@ export type Database = {
           beoordeeld_op: string | null
           beoordeling_notitie: string | null
           bron: string
+          certificaat_mail_poging: number
+          certificaat_mail_status: string
           certificaat_pad: string | null
           certificaat_versie: number | null
           contract_id: string | null
@@ -1425,6 +1427,8 @@ export type Database = {
           beoordeeld_op?: string | null
           beoordeling_notitie?: string | null
           bron: string
+          certificaat_mail_poging?: number
+          certificaat_mail_status?: string
           certificaat_pad?: string | null
           certificaat_versie?: number | null
           contract_id?: string | null
@@ -1456,6 +1460,8 @@ export type Database = {
           beoordeeld_op?: string | null
           beoordeling_notitie?: string | null
           bron?: string
+          certificaat_mail_poging?: number
+          certificaat_mail_status?: string
           certificaat_pad?: string | null
           certificaat_versie?: number | null
           contract_id?: string | null
@@ -6429,6 +6435,10 @@ export type Database = {
       cyber_toevoegen_beoordelen: {
         Args: { _akkoord: boolean; _id: string; _notitie: string }
         Returns: string
+      }
+      cyber_toevoegen_certificaat_mail_claim: {
+        Args: { _id: string; _retry?: boolean }
+        Returns: number
       }
       cyber_toevoegen_document_claim: {
         Args: { _id: string; _lease: string }
