@@ -1325,14 +1325,17 @@ export type Database = {
         Row: {
           actief: boolean
           id: boolean
+          modus: string
         }
         Insert: {
           actief?: boolean
           id?: boolean
+          modus?: string
         }
         Update: {
           actief?: boolean
           id?: boolean
+          modus?: string
         }
         Relationships: []
       }
@@ -1380,6 +1383,53 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: true
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cyber_e4_testbewijs: {
+        Row: {
+          bav_voor: Json
+          gecontroleerd_op: string | null
+          is_test: boolean
+          label: string
+          planning_voor: Json
+          polis_voor: Json
+          telling_voor: Json
+          uitkomst: Json | null
+          vastgelegd_op: string
+          verzoek_id: string
+        }
+        Insert: {
+          bav_voor: Json
+          gecontroleerd_op?: string | null
+          is_test?: boolean
+          label: string
+          planning_voor: Json
+          polis_voor: Json
+          telling_voor: Json
+          uitkomst?: Json | null
+          vastgelegd_op?: string
+          verzoek_id: string
+        }
+        Update: {
+          bav_voor?: Json
+          gecontroleerd_op?: string | null
+          is_test?: boolean
+          label?: string
+          planning_voor?: Json
+          polis_voor?: Json
+          telling_voor?: Json
+          uitkomst?: Json | null
+          vastgelegd_op?: string
+          verzoek_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cyber_e4_testbewijs_verzoek_id_fkey"
+            columns: ["verzoek_id"]
+            isOneToOne: true
+            referencedRelation: "cyber_toevoeg_verzoeken"
             referencedColumns: ["id"]
           },
         ]
