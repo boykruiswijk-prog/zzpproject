@@ -1398,6 +1398,7 @@ export type Database = {
           certificaat_versie: number | null
           contract_id: string | null
           created_at: string
+          document_basis_versie: number | null
           document_claim: string | null
           document_claim_op: string | null
           geactiveerd_op: string | null
@@ -1427,6 +1428,7 @@ export type Database = {
           certificaat_versie?: number | null
           contract_id?: string | null
           created_at?: string
+          document_basis_versie?: number | null
           document_claim?: string | null
           document_claim_op?: string | null
           geactiveerd_op?: string | null
@@ -1456,6 +1458,7 @@ export type Database = {
           certificaat_versie?: number | null
           contract_id?: string | null
           created_at?: string
+          document_basis_versie?: number | null
           document_claim?: string | null
           document_claim_op?: string | null
           geactiveerd_op?: string | null
@@ -6427,6 +6430,10 @@ export type Database = {
       cyber_toevoegen_document_klaar: {
         Args: { _id: string; _lease: string; _pad: string }
         Returns: boolean
+      }
+      cyber_toevoegen_document_snapshot: {
+        Args: { _id: string; _lease: string }
+        Returns: Json
       }
       cyber_toevoegen_mail_claim: { Args: { _id: string }; Returns: boolean }
       cyber_toevoegen_mogelijk: {

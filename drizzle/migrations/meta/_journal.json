@@ -1135,6 +1135,13 @@
       "when": 1792749277918,
       "tag": "0161_cyber_activation_release_gate",
       "breakpoints": true
+    },
+    {
+      "idx": 162,
+      "version": "7",
+      "when": 1792749367766,
+      "tag": "0162_cyber_document_immutable_lease",
+      "breakpoints": true
     }
   ]
 }
