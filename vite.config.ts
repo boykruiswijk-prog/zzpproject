@@ -7,9 +7,10 @@ import {
   legacyRedirects,
   geordendeRedirects,
   resolveRedirectTarget,
+  taalprefixRedirects,
   type ArticleRedirectInfo,
 } from "./src/config/legacyRedirects";
-import { redirectRouteConflicten } from "./scripts/routeConflicts";
+import { redirectRouteConflicten, bestaandeRoutes } from "./scripts/routeConflicts";
 import { bundelLekken } from "./scripts/bundleLeak";
 import { voegArtikelRedirectsToe } from "./scripts/articleRedirects";
 
@@ -144,6 +145,13 @@ function redirectsPlugin(env: Record<string, string>): Plugin {
         return directSlash ? [rule, `/${r.from}/    ${to}    301${note}`] : [rule];
       });
 
+      // Taalprefixen /en, /de, /fr erven de doorverwijzing van het Nederlandse
+      // pad. Bestaande routes en /tv gaan altijd voor.
+      const routes = bestaandeRoutes(__dirname);
+      const taalRules = taalprefixRedirects(legacyRedirects, routes)
+        .filter((r) => r.from !== "tv" && !r.from.startsWith("tv/"))
+        .map((r) => `/${r.from}    ${r.to}    301  # taalprefix`);
+
       const lines = [
         "# Automatisch gegenereerd door vite (zie src/config/legacyRedirects.ts).",
         "# Niet handmatig aanpassen.",
@@ -160,6 +168,9 @@ function redirectsPlugin(env: Record<string, string>): Plugin {
           : ["# WAARSCHUWING: geen VITE_SUPABASE_URL, media-redirect overgeslagen."]),
         "",
         ...rules,
+        "",
+        "# Taalprefixen (/en, /de, /fr) erven de Nederlandse doorverwijzing.",
+        ...taalRules,
         "",
         "# Pad met afsluitende slash → zelfde pad zonder slash (homepage uitgezonderd).",
         "/:path/    /:path    301!",
