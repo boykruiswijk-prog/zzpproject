@@ -1114,6 +1114,13 @@
       "when": 1792746834617,
       "tag": "0158_cyber_verzoek_minimale_rechten",
       "breakpoints": true
+    },
+    {
+      "idx": 159,
+      "version": "7",
+      "when": 1792749148418,
+      "tag": "0159_cyber_later_atomic_activation",
+      "breakpoints": true
     }
   ]
 }
