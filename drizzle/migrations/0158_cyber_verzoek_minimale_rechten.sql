@@ -1,0 +1,9 @@
+REVOKE ALL ON TABLE public.cyber_toevoeg_verzoeken FROM anon;
+REVOKE INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER ON TABLE public.cyber_toevoeg_verzoeken FROM authenticated;
+GRANT SELECT ON TABLE public.cyber_toevoeg_verzoeken TO authenticated;
+GRANT ALL ON TABLE public.cyber_toevoeg_verzoeken TO service_role;
+REVOKE ALL ON FUNCTION public.cyber_toevoegen_mogelijk(uuid) FROM PUBLIC,anon,authenticated;
+REVOKE ALL ON FUNCTION public.cyber_toevoegen_opties(uuid) FROM PUBLIC,anon;
+REVOKE ALL ON FUNCTION public.cyber_toevoegen_aanvragen(uuid,jsonb,date,boolean,text,boolean) FROM PUBLIC,anon;
+REVOKE ALL ON FUNCTION public.cyber_toevoegen_beoordelen(uuid,boolean,text) FROM PUBLIC,anon;
+GRANT EXECUTE ON FUNCTION public.cyber_toevoegen_opties(uuid),public.cyber_toevoegen_aanvragen(uuid,jsonb,date,boolean,text,boolean),public.cyber_toevoegen_beoordelen(uuid,boolean,text) TO authenticated,service_role;
