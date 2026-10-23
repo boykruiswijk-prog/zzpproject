@@ -6538,10 +6538,6 @@ export type Database = {
         Returns: boolean
       }
       doorrol_startstand: { Args: { _preview?: boolean }; Returns: Json }
-      e4_token_beoordeel: {
-        Args: { _id: string; _token: string }
-        Returns: string
-      }
       eerste_vrije_certificaatnummer: {
         Args: { _start: number }
         Returns: number
