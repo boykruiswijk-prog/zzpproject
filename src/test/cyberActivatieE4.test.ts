@@ -13,11 +13,9 @@ describe("E4 eigen cyberfacturatie", () => {
     expect(cyberToevoegSpec("2026-11-03", "maand")).toMatchObject({ itemcode: "102M", aantal: 1, bedrag_per_periode: 27.5, periode_start: "2026-11-03", periode_eind: "2026-12-02", cyber_einddatum: "2027-11-02" });
     expect(cyberToevoegSpec("2026-11-03", "maand", 1).periode_start).toBe("2026-12-03");
   });
-  it("herhaalde payload is identiek en verandert BAV invoer niet", () => {
-    const bav = Object.freeze({ bedrag: 600, ingang: "2026-09-01", volgende: "2027-09-01" });
+  it("herhaalde cyberpayload levert hetzelfde periodevoorstel", () => {
     const a = cyberToevoegSpec("2026-11-03", "jaar");
     expect(cyberToevoegSpec("2026-11-03", "jaar")).toEqual(a);
-    expect(bav).toEqual({ bedrag: 600, ingang: "2026-09-01", volgende: "2027-09-01" });
   });
   it.each(["jaar", "maand"] as const)("maildata %s heeft juiste incasso en ingangsdatum", (cyclus) => {
     const data = cyberToevoegMailData("Test", "2026-11-03", cyclus);
@@ -31,7 +29,8 @@ describe("E4 eigen cyberfacturatie", () => {
     const network = vi.fn(); vi.stubGlobal("fetch", network);
     const insert = vi.fn();
     const api: any = { select: () => api, eq: () => api, maybeSingle: async () => ({ data: { actief: true, status: "goedgekeurd_boy", onderwerp: "Je cyberverzekering is toegevoegd", tekst: CYBER_TOEVOEG_MAIL }, error: null }), insert };
-    await verstuurKlantmail({ from: () => api }, new Request("https://zpzaken.nl"), "cyber-toevoegen-activeren", "cyber_toegevoegd", "test@zpzaken.nl", cyberToevoegMailData("Test", "2026-11-03", "jaar"), {}, { dryRun: true });
+    const status = await verstuurKlantmail({ from: () => api }, new Request("https://zpzaken.nl"), "cyber-toevoegen-activeren", "cyber_toegevoegd", "test@zpzaken.nl", cyberToevoegMailData("Test", "2026-11-03", "jaar"), {}, { dryRun: true });
+    expect(status).toBe("zou_verzenden");
     expect(network).not.toHaveBeenCalled(); expect(insert).not.toHaveBeenCalled();
     vi.unstubAllGlobals();
   });
