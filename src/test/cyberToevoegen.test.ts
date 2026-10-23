@@ -44,16 +44,10 @@ describe("E-aanvulling 3", () => {
     expect(CYBER.maandprijs).toBe(27.5); expect(CYBER.jaarprijs).toBe(250); expect(CYBER_VERSIE).toBe("2026-10-08");
     expect(aanvraagPremie("jaarlijks-cyber", false).totaal).toBe(850);
   });
-  it("publieke vlag blijft false tot activatie en facturatie zijn goedgekeurd", () => {
-    expect(CYBER_TOEVOEGEN_PUBLIEK).toBe(false);
+  it("publieke vlag staat aan na E4-vrijgave", () => {
+    expect(CYBER_TOEVOEGEN_PUBLIEK).toBe(true);
   });
-  it.each(["zpzaken.nl", "www.zpzaken.nl", "lovable.app", "preview.lovable.app.evil.nl", ""])("latere toevoeging is verborgen op %s", (host) => {
-    expect(cyberToevoegenPreview(host)).toBe(false);
-  });
-  it("latere toevoeging blijft preview-only", () => {
-    expect(cyberToevoegenPreview("zpzaken.nl")).toBe(false);
-    expect(cyberToevoegenPreview("localhost")).toBe(true);
-    expect(cyberToevoegenPreview("127.0.0.1")).toBe(true);
-    expect(cyberToevoegenPreview("id-preview.lovable.app")).toBe(true);
+  it.each(["zpzaken.nl", "www.zpzaken.nl", "localhost"])("latere toevoeging zichtbaar op %s", (host) => {
+    expect(cyberToevoegenPreview(host)).toBe(true);
   });
 });
