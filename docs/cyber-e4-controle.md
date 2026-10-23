@@ -1,5 +1,29 @@
 # E-aanvulling 4: release nog niet vrijgegeven
 
+## Actuele vervolguitkomst 23 oktober 10:22-opdracht
+Deze sectie vervangt de eerdere status hieronder waar die afwijkt.
+
+### A. Beperkte deploy en echte databaseproef
+- Alleen `cyber-toevoegen-activeren` en `factuur-planner` gedeployed, na groene lokale boots, droge mailtests en Deno-typecheck. Service-only `testActivate=true` + `dryRun=true` activeert uitsluitend gekoppelde gemarkeerde testrecords via de bestaande service-kern. Testplanner vereist afzonderlijk service-identiteit; geen MFA-/internal-secret-uitzondering voor mensen.
+- De beschikbare `supabase--curl_edge_functions` accepteert geen service-role-selectie: schema heeft uitsluitend path/method/body/headers/query_params; zonder eigen credential injecteert het hoogstens gebruikersauth. Tweemaal aangeroepen op gemarkeerd verzoek `33de661d-d747-4300-a6f8-1c993caac333`: beide HTTP 401 `unauthorized`. Geen service-secret opgehaald, opgeslagen, blootgesteld of vervangen door een onveilig testgeheim. Geen privilegeverruiming.
+- Query-resultaat na deploy: `{cyber_contracten:0, gate_actief:0, geactiveerde_testverzoeken:0, testverzoeken:1}`. Het ene gemarkeerde verzoek blijft `wacht_op_beoordeling`, contract_id null. Er zijn nog geen twee jaar/maand-fixtures geactiveerd. Contract-idempotentie, BAV-snapshots, instroomdelta, plannerpayload en opzeg/readback blijven **ONBEWEZEN**, niet afgevinkt.
+- Service-only certificaatclaimrechten readback: anon=false, authenticated=false, service=true. Testrecords blijven uitgesloten van normale planner/dashboardcode. Echte-polisweigering door releasegate is bronmatig aanwezig maar niet door een geautoriseerde runtime-aanroep bewezen.
+
+### B. Certificaat als aparte mail
+- Bestaande `mailCertificaat` uit `generate-certificate` verplaatst naar `_shared/certificaatMail.ts`; zowel bestaande aanvraag als E4 gebruiken dezelfde template/afzender/ontvanger/PDF-bijlage/logroute. E4 stuurt eerst afzonderlijk certificaat, daarna cyberbevestiging zonder bijlage.
+- Migratie `0168_cyber_separate_certificate_mail_claim.sql` toegepast: onafhankelijke certificaatstatus/poging en service-only atomaire claim; bevestigingsclaim vereist certificaatstatus `verzonden`. Definitieve fouten handmatig herhaalbaar, onzekere verzending niet.
+- Droge test voert beide echte helpers in volgorde uit: certificaat=`zou_verzenden`, bevestiging=`zou_verzenden`; nul fetch/download/log. Certificaatfout stopt bevestiging. Mock-providerproef controleert één PDF-bijlage en idempotency-key; aparte bevestigingspayload heeft geen bijlage.
+- Geen echte mail of documentgeneratie. Gewijzigde `generate-certificate` nog NIET gedeployed: opdracht A stond alleen twee functies toe; gezamenlijke release wacht op A-bewijs.
+
+### C. Planner typecheck
+- Deno-check `factuur-planner/index.ts` en `cyber-toevoegen-activeren/index.ts` volledig groen; vijf oude typefouten opgelost met uitsluitend typeannotaties in plannerpreflight, interne ontvangers en machine-clienttype. Geen prijzen of runtimefacturatieregels gewijzigd.
+- Volledige suite: 1461 geslaagd, 2 eerdere wpInventory-fouten, 1 overgeslagen; nieuwe tests groen. De twee eerdere fouten zijn al bewezen op baseline c78c302c. PDF/cyber-Deno 7/7 groen; automatische previewbuild OK.
+
+### D. Nog geen gezamenlijke release
+- Backend-releasegate uit en `CYBER_TOEVOEGEN_PUBLIEK=false`. Site niet gepubliceerd; `generate-certificate` niet opnieuw gedeployed.
+- Live sessieloze controles na beperkte herdeploy: alle drie functies OPTIONS=200/POST=401. OPTIONS via shell omdat de functietool OPTIONS weigert met `invalid_http_method`.
+- Blokker is concrete service-runtime-uitvoering voor A, niet de menselijke MFA-klik. Ellen doet die later met monitoring. Geen data verwijderd, echte mails/Exact-boeking of Ellen-melding.
+
 ## Gebouwd
 - Aparte cybercontractroute met eigen ingangsdatum en twaalfmaandstermijn; jaar EUR 250, maand EUR 27,50. Geen gecombineerde maandfactuur: een aparte regel/contract via de bestaande planner vermijdt BAV-periodemutaties.
 - Akkoord heeft een vergrendeld verzoek en één uniek gekoppeld contract. Mensen hebben MFA nodig.
@@ -33,7 +57,7 @@
 
 ## Nog nodig vóór vrijgave
 - Managed server-testomgeving die de bestaande service-only kern veilig kan uitvoeren zonder credentials te tonen; daarna jaar/maand-fixtures, planner/telling/idempotentie/BAV-reads en opzegscenario uitvoeren.
-- Certificaat apart verzenden conform nieuwe-aanvraagroute, met afzonderlijke duurzame claim/herstel en droge test van beide mails. Geen nieuwe release zolang dat bewijs ontbreekt.
+- Certificaat aparte route/claims en droge tests zijn nu gebouwd en groen; gezamenlijke deploy blijft afhankelijk van het service-databasebewijs uit A.
 - Menselijke MFA-klik is volgens Boy geen blokkade meer: Ellen doet eerste echte verzoek met monitoring. Dit vervangt niet het ontbrekende service-databasebewijs.
 
 ## Foutenlog: releasevolgorde
