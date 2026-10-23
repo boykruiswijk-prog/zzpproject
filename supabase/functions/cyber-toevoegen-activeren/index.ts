@@ -5,6 +5,7 @@ import { klantOntvanger, verstuurKlantmail } from "../_shared/klantmailSchakelaa
 import { cyberToevoegMailData, cyberToevoegSpec } from "../_shared/cyberToevoegenActivatie.ts";
 import { activeerCyberKern } from "../_shared/cyberActivatieKern.ts";
 import { isServiceTestRequest } from "../_shared/cyberTestToegang.ts";
+import { mailCertificaat } from "../_shared/certificaatMail.ts";
 
 const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 Deno.serve(async (req) => {
@@ -18,9 +19,11 @@ Deno.serve(async (req) => {
     const admin = createClient(url, key);
     const body = await req.json();
     const serviceTest = isServiceTestRequest(req, body.testActivate === true && body.dryRun === true);
+    let reviewerId = "";
     if (!serviceTest) {
       const auth = await requireVerzekeringOfSupervisor(req, admin);
       if (auth instanceof Response) return json(await auth.json(), auth.status);
+      reviewerId = auth.userId;
     }
     if (typeof body.id !== "string" || !/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(body.id) || typeof body.akkoord !== "boolean" || typeof body.notitie !== "string" || body.notitie.trim().length < 10 || body.notitie.length > 1000 || (body.dryRun !== undefined && typeof body.dryRun !== "boolean") || (body.retryMail !== undefined && typeof body.retryMail !== "boolean")) return json({ error: "Ongeldige beoordeling" }, 400);
     const { data: verzoek, error: leesFout } = await admin.from("cyber_toevoeg_verzoeken").select("*").eq("id", body.id).maybeSingle();
@@ -65,20 +68,28 @@ Deno.serve(async (req) => {
       const result = await response.json();
       if (!response.ok) return json({ error: "Cyber is toegevoegd; het certificaat vraagt aandacht. Probeer opnieuw.", details: result.error, actief: true }, 409);
     }
-    // Same attachment shape and sender/gate as the existing certificate mail, in one confirmation.
-    const { data: document } = await admin.from("cyber_toevoeg_verzoeken").select("certificaat_pad").eq("id", actief.id).single();
+    // Existing certificate mail first, independently claimed; confirmation has no attachment.
+    const { data: document } = await admin.from("cyber_toevoeg_verzoeken").select("certificaat_pad,certificaat_mail_status").eq("id", actief.id).single();
     if (!document?.certificaat_pad) return json({ error: "Certificaat ontbreekt; geen mail verstuurd", actief: true }, 409);
-    const { data: file, error: fileError } = await admin.storage.from("certificates").download(document.certificaat_pad);
-    if (fileError || !file) return json({ error: "Certificaat kon niet worden gelezen; geen mail verstuurd", actief: true }, 409);
-    const bytes = new Uint8Array(await file.arrayBuffer());
-    let raw = "";
-    for (let i = 0; i < bytes.length; i += 0x8000) raw += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+    let certificaatStatus = document.certificaat_mail_status;
+    if (certificaatStatus !== "verzonden") {
+      const { data: certClaim, error: certClaimError } = await admin.rpc("cyber_toevoegen_certificaat_mail_claim", { _id: actief.id, _retry: body.retryMail === true });
+      if (certClaimError) return json({ error: certClaimError.message, actief: true }, 500);
+      if (!certClaim) return json({ success: true, status: "actief", mail: "mail_onzeker", certificaat_mail: certificaatStatus });
+      const { data: policy, error: policyError } = await admin.from("policies").select("*").eq("id", actief.policy_id).single();
+      if (policyError || !policy) return json({ error: "Polis kon niet worden gelezen", actief: true }, 409);
+      const cert = await mailCertificaat(admin, req, { ...policy, pdf_url: document.certificaat_pad }, { id: reviewerId }, { idempotencyKey: `cyber-certificaat-${actief.id}-${certClaim}` });
+      certificaatStatus = cert.status;
+      const { error: certSaveError } = await admin.from("cyber_toevoeg_verzoeken").update({ certificaat_mail_status: cert.status, ...(!cert.ok ? { mail_status: cert.status } : {}) }).eq("id", actief.id);
+      if (certSaveError) return json({ error: "Certificaatverzending kon niet worden bevestigd", actief: true }, 409);
+      if (!cert.ok) return json({ success: true, status: "actief", mail: cert.status, certificaat_mail: cert.status });
+    }
     const { data: claim, error: claimError } = await admin.rpc("cyber_toevoegen_mail_claim", { _id: actief.id, _retry: body.retryMail === true });
     if (claimError) return json({ error: claimError.message, actief: true }, 500);
     let mail = actief.mail_status;
     if (claim) {
       try {
-        mail = await verstuurKlantmail(admin, req, "cyber-toevoegen-activeren", "cyber_toegevoegd", ontvanger.email, mailData, { lead_id: actief.lead_id, onderneming_id: actief.onderneming_id, details: { verzoek_id: actief.id, poging: claim } }, { idempotencyKey: `cyber-toegevoegd-${actief.id}-${claim}`, classifyDelivery: true, attachments: [{ filename: "Cyber-certificaat.pdf", content: btoa(raw) }] });
+        mail = await verstuurKlantmail(admin, req, "cyber-toevoegen-activeren", "cyber_toegevoegd", ontvanger.email, mailData, { lead_id: actief.lead_id, onderneming_id: actief.onderneming_id, details: { verzoek_id: actief.id, poging: claim } }, { idempotencyKey: `cyber-toegevoegd-${actief.id}-${claim}`, classifyDelivery: true });
         if (mail === "mislukt") mail = "mail_mislukt";
         await admin.from("cyber_toevoeg_verzoeken").update({ mail_status: mail }).eq("id", actief.id);
       } catch {
