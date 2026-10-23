@@ -16,7 +16,7 @@ export async function mailCertificaat(admin: any, req: Request, policy: any, use
     email = p?.email_weergave?.trim(); voornaam = p?.voornaam;
   }
   if (!email) return { ok: false as const, error: "Geen e-mailadres bij deze lead/klant", status: "mail_mislukt" };
-  const key = Deno.env.get("RESEND_API_KEY");
+  const key = (globalThis as any).Deno?.env.get("RESEND_API_KEY");
   if (!key) return { ok: false as const, error: "Mailinstelling ontbreekt", status: "mail_mislukt" };
   const subject = `Je certificaat ${policy.certificate_number} – ZP Zaken`;
   const html = `<p>Beste ${voornaam || "klant"},</p><p>In de bijlage vind je je certificaat ${policy.certificate_number} voor je beroeps- en bedrijfsaansprakelijkheidsverzekering.</p><p>Met vriendelijke groet,<br/>ZP Zaken<br/>${COMPANY.phoneDisplay} · ${COMPANY.email}</p>`;

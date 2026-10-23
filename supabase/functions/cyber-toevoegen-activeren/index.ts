@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
       if (auth instanceof Response) return json(await auth.json(), auth.status);
       reviewerId = auth.userId;
     }
-    if (typeof body.id !== "string" || !/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(body.id) || typeof body.akkoord !== "boolean" || typeof body.notitie !== "string" || body.notitie.trim().length < 10 || body.notitie.length > 1000 || (body.dryRun !== undefined && typeof body.dryRun !== "boolean") || (body.retryMail !== undefined && typeof body.retryMail !== "boolean")) return json({ error: "Ongeldige beoordeling" }, 400);
+    if (typeof body.id !== "string" || !/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(body.id) || typeof body.akkoord !== "boolean" || typeof body.notitie !== "string" || body.notitie.trim().length < 10 || body.notitie.length > 1000 || (body.dryRun !== undefined && typeof body.dryRun !== "boolean") || (body.retryMail !== undefined && typeof body.retryMail !== "boolean") || (body.testActivate !== undefined && typeof body.testActivate !== "boolean") || (serviceTest && body.akkoord !== true)) return json({ error: "Ongeldige beoordeling" }, 400);
     const { data: verzoek, error: leesFout } = await admin.from("cyber_toevoeg_verzoeken").select("*").eq("id", body.id).maybeSingle();
     if (leesFout || !verzoek) return json({ error: "Verzoek niet gevonden" }, 404);
     if (body.dryRun && !verzoek.is_test) return json({ error: "Droge run alleen voor gemarkeerde testaanvraag" }, 403);
