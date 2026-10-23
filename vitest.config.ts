@@ -9,6 +9,8 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    // Keep the CommonJS/WASM renderer in Node rather than Vitest's ESM transform.
+    server: { deps: { external: ["satori", "harfbuzzjs"] } },
   },
   resolve: {
     alias: { "@": path.resolve(__dirname, "./src") },
