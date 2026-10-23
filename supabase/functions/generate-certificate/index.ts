@@ -5,13 +5,13 @@ import { kortKoppelingTekst } from "../_shared/werkzaamheden.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { certificaatBeschikbaar, certificaatBeschikbaarVanaf, certificaatTeVroegMelding } from "../_shared/certificaatBeschikbaar.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { PDFDocument, rgb, StandardFonts } from "https://esm.sh/pdf-lib@1.17.1";
+import { PDFDocument, PDFString, rgb, StandardFonts } from "https://esm.sh/pdf-lib@1.17.1";
 import { COMPANY } from "../_shared/company.ts";
 import { autoInvitePortalLead } from "../_shared/portalAccess.ts";
 import { createMailGate } from "../_shared/mail.ts";
 import {
   bepaalHoedanigheid, beslisNieuwCertificaat, schoonAanpassing, kiesKlantCertificaatnummer, actiefKlantContract,
-  FOOTER_REGISTER_TEKST, POLISBLAD_NOTITIE,
+  EIGEN_RISICO_TEKST, CERTIFICAAT_FOOTER_ALINEAS, CERTIFICAAT_AFM_URL, POLISBLAD_NOTITIE,
   magCertificaatBeheren,
 } from "../_shared/certificaatRegels.ts";
 import { brancheVoorSector } from "../_shared/sectorBranche.ts";
@@ -420,7 +420,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
     const valueX = 195;
     const fontSize = 9;
     const smallFontSize = 7.5;
-    const lineHeight = 13;
+    const lineHeight = 12;
 
     // Format date short: "08-12-2025"
     const formatShortDate = (dateStr: string) => {
@@ -620,11 +620,11 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
 
     // Eigen risico
     y -= 20;
-    drawRow(
-      "Eigen risico:",
-      heeftNieuweCyber ? "BAV + AVB: geen. Cyber: EUR 500 (fraude EUR 1.000)." : "geen",
-      y
-    );
+    const eigenRisicoLines = wrapText(EIGEN_RISICO_TEKST, helvetica, fontSize, maxValueWidth);
+    // De BAV + AVB-uitleg hierboven geldt niet voor de afzonderlijke cyberdekking.
+    if (heeftNieuweCyber) eigenRisicoLines.push("Cyber: EUR 500 (fraude EUR 1.000).");
+    drawRow("Eigen risico:", eigenRisicoLines.join("\n"), y);
+    y -= (eigenRisicoLines.length - 1) * lineHeight;
 
     // Polisvoorwaarden
     y -= 22;
@@ -748,25 +748,40 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
     y -= 20;
     drawRow("Voor gezien ZP Zaken:", policy.issued_by, y);
 
-    // === Cover template footer with white rectangle ===
+    // === Cover the complete old raster footer, including its outdated registration ===
     page.drawRectangle({
       x: 0,
       y: 0,
       width: pageWidth,
-      height: 120,
+      height: 140,
       color: rgb(1, 1, 1),
     });
 
-    // === Footer text ===
-    const footerText1 = "De verzekeringsmantel van ZP Zaken zijn alleen toegankelijk voor klanten van ZP Zaken en treedt hierbij op geen enkele";
-    const footerText2 = "wijze op als financiële dienstverlener of bemiddelaar zoals gesteld onder de Wft. De verstrekte gegevens zullen strikt";
-    const footerText3 = `vertrouwelijk worden behandeld. ${FOOTER_REGISTER_TEKST} ${COMPANY.registrations.afm}.`;
-    const footerFontSize = 6.5;
-    const footerY = 38;
-
-    page.drawText(footerText1, { x: labelX, y: footerY + 16, size: footerFontSize, font: helvetica, color: gray });
-    page.drawText(footerText2, { x: labelX, y: footerY + 8, size: footerFontSize, font: helvetica, color: gray });
-    page.drawText(footerText3, { x: labelX, y: footerY, size: footerFontSize, font: helvetica, color: gray });
+    // === Four left-aligned paragraphs at the same margin and width as the data ===
+    const footerFontSize = smallFontSize;
+    const footerLineHeight = 10.5;
+    const footerWidth = pageWidth - labelX - 40;
+    let footerY = 119;
+    if (y < 142) throw new Error("Certificaatinhoud overlapt de voettekst; controleer de tekstlengte.");
+    for (const paragraph of CERTIFICAAT_FOOTER_ALINEAS) {
+      for (const line of wrapText(paragraph, helvetica, footerFontSize, footerWidth)) {
+        page.drawText(line, { x: labelX, y: footerY, size: footerFontSize, font: helvetica, color: gray });
+        const numberAt = line.indexOf(COMPANY.registrations.afm);
+        if (numberAt >= 0) {
+          const linkX = labelX + helvetica.widthOfTextAtSize(line.slice(0, numberAt), footerFontSize);
+          const linkWidth = helvetica.widthOfTextAtSize(COMPANY.registrations.afm, footerFontSize);
+          const annotation = pdfDoc.context.register(pdfDoc.context.obj({
+            Type: "Annot", Subtype: "Link", Rect: [linkX, footerY - 2, linkX + linkWidth, footerY + footerFontSize],
+            Border: [0, 0, 0], A: { Type: "Action", S: "URI", URI: PDFString.of(CERTIFICAAT_AFM_URL) },
+          }));
+          page.node.addAnnot(annotation);
+          page.drawLine({ start: { x: linkX, y: footerY - 1 }, end: { x: linkX + linkWidth, y: footerY - 1 }, thickness: 0.4, color: gray });
+        }
+        footerY -= footerLineHeight;
+      }
+      footerY -= 4;
+    }
+    if (footerY < 20) throw new Error("Voettekst past niet op één pagina.");
 
     // === Save & upload PDF ===
     const pdfBytes = await pdfDoc.save();
