@@ -22,8 +22,11 @@ Deno.serve(async (req) => {
     const admin = createClient(url, key);
     const body = await req.json();
     const serviceTest = isServiceTestRequest(req, body.testActivate === true && body.dryRun === true);
+    // TIJDELIJK E4: token-route, alleen gemarkeerde testketen, altijd droog. Wordt na E4 verwijderd.
+    const e4Token = req.headers.get("X-E4-Testtoken");
+    const tokenTest = !serviceTest && typeof e4Token === "string" && /^[0-9a-f-]{36}$/i.test(e4Token);
     let reviewerId = "";
-    if (!serviceTest) {
+    if (!serviceTest && !tokenTest) {
       const auth = await requireVerzekeringOfSupervisor(req, admin);
       if (auth instanceof Response) return json(await auth.json(), auth.status);
       reviewerId = auth.userId;
@@ -33,7 +36,13 @@ Deno.serve(async (req) => {
     if (leesFout || !verzoek) return json({ error: "Verzoek niet gevonden" }, 404);
     const { data: gate, error: gateError } = await admin.from("cyber_activatie_config").select("actief,modus").eq("id", true).maybeSingle();
     if (gateError) return json({ error: "Releasecontrole kon niet worden gelezen" }, 503);
-    const besluit = cyberGateBesluit(gate, verzoek.is_test === true, !serviceTest && !!reviewerId);
+    if (tokenTest) {
+      if (verzoek.is_test !== true || body.akkoord !== true) return json({ error: "Token alleen voor gemarkeerde testverzoeken" }, 403);
+      const { error: tokenError } = await admin.rpc("e4_token_beoordeel", { _token: e4Token, _id: body.id });
+      if (tokenError) return json({ error: tokenError.message }, 403);
+      reviewerId = "00000000-0000-4000-8000-0000000e4e4e";
+    }
+    const besluit = cyberGateBesluit(gate, verzoek.is_test === true, tokenTest || (!serviceTest && !!reviewerId));
     if (!besluit.toegestaan) return json({ error: besluit.reden }, 403);
     if (gate?.modus === "alleen_test" && body.retryMail) return json({ error: "Testmodus verstuurt geen mails" }, 403);
     if (body.dryRun && !verzoek.is_test) return json({ error: "Droge run alleen voor gemarkeerde testaanvraag" }, 403);
@@ -63,7 +72,7 @@ Deno.serve(async (req) => {
     }
     const user = createClient(url, anon, { global: { headers: { Authorization: req.headers.get("Authorization") ?? "" } } });
     // One transaction owns approval, contract and billing anchor; never call lead activation or Exact here.
-    const { data: status, error } = await user.rpc("cyber_toevoegen_beoordelen", { _id: body.id, _akkoord: body.akkoord, _notitie: body.notitie });
+    const { data: status, error } = tokenTest ? { data: "akkoord_wacht_op_activatie", error: null } : await user.rpc("cyber_toevoegen_beoordelen", { _id: body.id, _akkoord: body.akkoord, _notitie: body.notitie });
     if (error) return json({ error: error.message }, 409);
     if (!body.akkoord) return json({ success: true, status, mail: "niet_verzonden_afwijzing" });
     const kern = await activeerCyberKern(admin, body.id, body.notitie, verzoek.is_test === true);
