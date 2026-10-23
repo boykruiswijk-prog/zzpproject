@@ -22,7 +22,14 @@ Deno.test("langste realistische cybercertificaat: geen fout, één pagina zonder
   if (result.footerStart !== Math.min(119, result.y - 18)) throw new Error("Footer must follow content");
   if (result.footerStart + result.footerFontSize >= result.y - 2) throw new Error("Footer overlaps content");
   if (result.footerLayout.bottom < 18) throw new Error("Footer outside bottom margin");
-  if (result.footerFontSize < 6 || result.footerFontSize >= 7.5) throw new Error("Expected safe incremental shrink for long certificate");
+  if (result.footerFontSize < 6 || result.footerFontSize > 7.5) throw new Error("Font size outside safe range");
+});
+
+Deno.test("lagere inhoud verkleint footer stapsgewijs en behoudt ondermarge", async () => {
+  const result = await renderLokaalCertificaat(true, { ...LANG_CERTIFICAAT, profession: LANG_CERTIFICAAT.profession.repeat(3) });
+  if (result.footerFontSize < 6 || result.footerFontSize >= 7.5) throw new Error("Expected incremental shrink");
+  if (result.footerLayout.bottom < 18) throw new Error("Expected safe bottom margin after shrink");
+  if (result.footerStart + result.footerFontSize >= result.y - 2) throw new Error("Footer overlaps content");
 });
 
 Deno.test("ruimtegebrek zelfs bij 6 punten: waarschuwing maar PDF zonder fout", async () => {
