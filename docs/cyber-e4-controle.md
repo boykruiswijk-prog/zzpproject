@@ -154,3 +154,9 @@ Deze sectie vervangt de eerdere status hieronder waar die afwijkt.
 
 ## Foutenlog: releasevolgorde
 Symptoom: verplichte database-/planner-/mailketencontroles onvolledig. Oorzaak: lokale testomgeving mist managed service-identiteit; afzonderlijke certificaatverzending nog niet voltooid. Maatregel: geen deploy of publicatie, beide gates blijven uit; gewone klantmailinstelling staat klaar maar geen coordinator is live vrijgegeven. Volgende controle: veilig service-runtimebewijs en afzonderlijke document/mailclaims, dan gezamenlijk vrijgeven en live verifiëren. Menselijke MFA wordt door Ellen live uitgevoerd, niet vooraf omzeild.
+## Vrijgave 23 oktober 11:37 (E4-testtoken, daarna verwijderd)
+- Tijdelijke tokenroute (0172) gebruikt voor TEST E4 jaar en maand, elk twee keer; gevonden en hersteld: dubbelzinnige alias in testcontrole (0173).
+- Controlequery: per polis 1 contract; jaar 250 / maand 27,50; ingang 2026-10-24, einde 2027-10-23; 102J/102M, GL 8003; tweede aanroep zelfde contract; BAV, BAV-planning en polis byte-gelijk; interne cyberdelta +1, dashboard 0; planner droog correct, alleen blokkade "geen Exact-koppeling" (testdata); 0 Exact-boekingen, 0 mails, 0 klantmail_log, geen mailclaims.
+- Onbekende/echte id met token: 404, niets gewijzigd. Er bestaan nog geen echte cyberverzoeken.
+- 0174: tokens verlopen, tokenfunctie verwijderd, geen tabelrechten; gate actief/publiek. Tokenroute uit code. Vlag true.
+- Gedeployed: cyber-toevoegen-activeren, factuur-planner, generate-certificate (OPTIONS 200 / POST 401). Site gepubliceerd; live chunk bevat vlag aan.
