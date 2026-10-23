@@ -23,7 +23,9 @@ for (const [index, id] of ids.entries()) {
   if (!r?.is_test || !policies[0]?.is_test || !leads[0]?.is_test || !companies[0]?.is_test || !leads[0]?.email?.endsWith("@zpzaken.nl")) throw new Error("Test-only guard rejected fixture");
   const bav = (await read("klant_contracten", "onderneming_id", r.onderneming_id)).filter(x => x.product === "bav_avb");
   const cyclus = index === 0 ? "jaar" : "maand";
-  if (bav.length !== 1 || bav[0].cyclus !== cyclus) throw new Error("Fixture BAV cycle mismatch");
+  if (bav.length !== 1 || !bav[0].is_test || bav[0].cyclus !== cyclus) throw new Error("Fixture BAV cycle/test marking mismatch");
+  const todayNL = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Amsterdam", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+  if (r.gewenste_ingangsdatum > todayNL) throw new Error("Participant fixture must start today or earlier; use an internally dated marked test request");
   const planningBefore = await read("factuur_planning", "klant_contract_id", bav[0].id);
   const { data: countBefore, error: countBeforeError } = await db.rpc("tel_netto_groei", { _toon_test: true, _vanaf: r.gewenste_ingangsdatum });
   if (countBeforeError) throw new Error("Participant count read failed");
