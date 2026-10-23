@@ -65,4 +65,20 @@ describe("Cyberverzoek klant en team", () => {
     expect(mocks.invoke).toHaveBeenCalledWith("cyber-toevoegen-activeren", { body: { id: "verzoek-1", akkoord: keuze, notitie: "Beoordeling door team vastgelegd" } });
     expect(Boolean(mocks.rijen[0].geactiveerd_op)).toBe(keuze);
   });
+  it("definitieve mailfout kan alleen via een MFA-gecontroleerde klik worden herhaald", async () => {
+    mocks.rijen = [{ id: "verzoek-1", status: "akkoord_wacht_op_activatie", geactiveerd_op: "2026-10-23", mail_status: "mail_mislukt", gewenste_ingangsdatum: "2026-10-24", antwoorden: {} }];
+    render(<CyberToevoegen team ondernemingId="ond-1" />);
+    const button = await screen.findByRole("button", { name: "Opnieuw versturen" });
+    expect(mocks.invoke).not.toHaveBeenCalled();
+    fireEvent.click(button);
+    await waitFor(() => expect(mocks.invoke).toHaveBeenCalledTimes(1));
+    expect(mocks.invoke.mock.calls[0][1].body.retryMail).toBe(true);
+  });
+  it("onzekere mail heeft geen herhaalknop", async () => {
+    mocks.rijen = [{ id: "verzoek-1", status: "akkoord_wacht_op_activatie", geactiveerd_op: "2026-10-23", mail_status: "mail_onzeker", gewenste_ingangsdatum: "2026-10-24", antwoorden: {} }];
+    render(<CyberToevoegen team ondernemingId="ond-1" />);
+    await waitFor(() => expect(mocks.rpc).toHaveBeenCalled());
+    expect(screen.queryByRole("button", { name: "Opnieuw versturen" })).toBeNull();
+    expect(mocks.invoke).not.toHaveBeenCalled();
+  });
 });

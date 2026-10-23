@@ -3,6 +3,7 @@ import { corsHeaders } from "npm:@supabase/supabase-js@2.108.2/cors";
 import { requireVerzekeringOfSupervisor } from "../_shared/teamAuth.ts";
 import { klantOntvanger, verstuurKlantmail } from "../_shared/klantmailSchakelaar.ts";
 import { cyberToevoegMailData, cyberToevoegSpec } from "../_shared/cyberToevoegenActivatie.ts";
+import { activeerCyberKern } from "../_shared/cyberActivatieKern.ts";
 
 const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 Deno.serve(async (req) => {
@@ -36,9 +37,10 @@ Deno.serve(async (req) => {
     const { data: status, error } = await user.rpc("cyber_toevoegen_beoordelen", { _id: body.id, _akkoord: body.akkoord, _notitie: body.notitie });
     if (error) return json({ error: error.message }, 409);
     if (!body.akkoord) return json({ success: true, status, mail: "niet_verzonden_afwijzing" });
-    if (status !== "actief") return json({ success: true, status, mail: "niet_verzonden_release_wacht" });
-    const { data: actief } = await admin.from("cyber_toevoeg_verzoeken").select("*").eq("id", body.id).single();
-    const { data: contract } = await admin.from("klant_contracten").select("*").eq("id", actief.contract_id).single();
+    const kern = await activeerCyberKern(admin, body.id, body.notitie, verzoek.is_test === true);
+    if (kern.status !== "actief") return json({ success: true, status: kern.status, mail: "niet_verzonden_release_wacht" });
+    const actief = kern.verzoek;
+    const contract = kern.contract;
     if (!contract) return json({ error: "Cybercontract ontbreekt" }, 500);
     const ontvanger = await klantOntvanger(admin, actief.onderneming_id, actief.lead_id);
     const mailData = cyberToevoegMailData(ontvanger.voornaam, actief.gewenste_ingangsdatum, contract.cyclus);
