@@ -1,4 +1,5 @@
 // Pure regels voor BAV/AVB-certificaten. Gedeeld door generate-certificate en tests.
+import { COMPANY } from "./company.ts";
 
 export interface LeadVoorHoedanigheid {
   branche?: string | null;
@@ -47,9 +48,17 @@ export function schoonAanpassing(input: Record<string, unknown>): Partial<Record
   return uit;
 }
 
-export const FOOTER_REGISTER_TEKST = "ZP Zaken is ingeschreven in het register Wft bij de AFM onder vergunningsnummer:";
+export const EIGEN_RISICO_TEKST = "Eigen risico is niet van toepassing, deze is voor rekening van ZP Zaken";
+export const FOOTER_REGISTER_TEKST = `${COMPANY.legalName} staat als financieel dienstverlener geregistreerd bij de Autoriteit Financiële Markten (AFM) onder vergunningnummer ${COMPANY.registrations.afm}.`;
+export const CERTIFICAAT_FOOTER_ALINEAS = [
+  "De verzekeringsmantels van ZP Zaken zijn uitsluitend toegankelijk voor klanten van ZP Zaken.",
+  "ZP Zaken treedt op als bemiddelaar in verzekeringen en heeft met Hiscox een collectieve verzekeringsovereenkomst gesloten. Hiscox is hierbij de verzekeraar en risicodrager.",
+  FOOTER_REGISTER_TEKST,
+  "De verstrekte persoonsgegevens worden vertrouwelijk behandeld en verwerkt overeenkomstig de geldende privacywetgeving.",
+] as const;
+export const CERTIFICAAT_AFM_URL = "https://www.afm.nl/nl-nl/sector/registers/vergunningenregisters/financiele-dienstverleners/details?id=4634B62A-266C-E511-B380-005056BE011D";
 export const POLISBLAD_NOTITIE =
-  'Waar op het polisblad wordt vermeld "per jaar voor alle leden tezamen" wordt gerefereerd aan het verzekerd bedrag per jaar.';
+  "Je neemt deel aan een mantelpolis waarbij het maximaal verzekerde bedrag per jaar wordt gedeeld met alle deelnemers binnen de betreffende mantelpolis.";
 
 export type KlantNummerBesluit =
   | { soort: "bestaand"; nummer: string }

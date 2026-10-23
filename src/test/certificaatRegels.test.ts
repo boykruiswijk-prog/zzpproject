@@ -32,8 +32,8 @@ describe("certificaatregels", () => {
     expect(src).toMatch(/storage\.from\("certificates"\)\.copy\(/);
     expect(src).toMatch(/fileName = `\$\{policy\.certificate_number\}\.pdf`/);
     expect(src).not.toMatch(/polis blad|in ingeschreven/);
-    expect(FOOTER_REGISTER_TEKST).toContain("ZP Zaken is ingeschreven");
-    expect(POLISBLAD_NOTITIE).toContain("polisblad");
+    expect(FOOTER_REGISTER_TEKST).toContain("ZP Zaken B.V. staat als financieel dienstverlener geregistreerd");
+    expect(POLISBLAD_NOTITIE).toContain("betreffende mantelpolis");
   });
 });
 
