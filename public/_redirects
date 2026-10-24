@@ -101,6 +101,7 @@
 /nieuws/is-beroeps-en-bedrijfsaansprakelijkheid-modeverschijnsel-noodzakelijk-kwaad    /kennisbank/verschil-bav-avb-zzp    301
 /kerstactienieuw    /verzekeringen    301
 /kerstactiemember    /verzekeringen    301
+/fb-nieuwjaarsactie    /verzekeringen    301
 /bav-verzekering    /verzekeringen    301
 /avb-verzekering    /verzekeringen    301
 /bav-avb    /verzekeringen    301
@@ -939,6 +940,9 @@
 /en/kerstactiemember    /verzekeringen    301  # taalprefix
 /de/kerstactiemember    /verzekeringen    301  # taalprefix
 /fr/kerstactiemember    /verzekeringen    301  # taalprefix
+/en/fb-nieuwjaarsactie    /verzekeringen    301  # taalprefix
+/de/fb-nieuwjaarsactie    /verzekeringen    301  # taalprefix
+/fr/fb-nieuwjaarsactie    /verzekeringen    301  # taalprefix
 /en/bav-verzekering    /verzekeringen    301  # taalprefix
 /de/bav-verzekering    /verzekeringen    301  # taalprefix
 /fr/bav-verzekering    /verzekeringen    301  # taalprefix

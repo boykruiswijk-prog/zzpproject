@@ -2,6 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { zoekLegacyDoel, taalprefixRedirects } from "@/config/legacyRedirects";
 
 const oudeZinnen = [
   "We bekijken samen welke verzekeringen passen bij jouw beroep en situatie, zonder verplichtingen.",
@@ -29,6 +30,21 @@ function bronnen(map: string): string[] {
 }
 
 describe("Kwaliteitscontrole 24 oktober D6", () => {
+  it("nieuwjaarsactie gaat met slash en taalprefixen naar verzekeringen; tv blijft uitgesloten", () => {
+    for (const prefix of ["", "/en", "/de", "/fr"]) {
+      for (const slash of ["", "/"]) {
+        expect(zoekLegacyDoel(`${prefix}/fb-nieuwjaarsactie${slash}`)).toBe("/verzekeringen");
+      }
+      expect(zoekLegacyDoel(`${prefix}/tv`)).toBeNull();
+    }
+    const csv = readFileSync(resolve("docs/cloudflare-bulk-redirects.csv"), "utf8");
+    for (const slash of ["", "/"]) {
+      expect(csv).toContain(`zpzaken.nl/fb-nieuwjaarsactie${slash},https://zpzaken.nl/verzekeringen,301,TRUE,TRUE,FALSE,FALSE`);
+    }
+    for (const taal of ["en", "de", "fr"]) {
+      expect(taalprefixRedirects().find((r) => r.from === `${taal}/fb-nieuwjaarsactie`)?.to).toBe("/verzekeringen");
+    }
+  });
   for (const zin of oudeZinnen) {
     it(`oude formulering ontbreekt: ${zin}`, () => {
       const bestanden = [
