@@ -35,7 +35,12 @@ describe("Beroepspagina’s D2/D3/D4", () => {
         expect(tekst).not.toMatch(/polisvoorwaarden.*pagina documenten|vindt ze op de pagina documenten/i);
       }
       for (const faq of faqs) {
-        if (/opzeggen|polis stoppen/.test(faq.question)) expect(faq.answer).toContain(opzeg);
+        if (/opzeggen|polis stoppen/.test(faq.question)) {
+          const verwacht = pagina === BavZzp
+            ? opzeg.replace("Ja.", "Dagelijks opzeggen kan. Uitloopdekking is er niet.")
+            : opzeg;
+          expect(faq.answer).toContain(verwacht);
+        }
       }
     });
   }
