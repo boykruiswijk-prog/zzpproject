@@ -130,6 +130,7 @@ export const legacyRedirects: LegacyRedirect[] = [
   { from: "nieuws/is-beroeps-en-bedrijfsaansprakelijkheid-modeverschijnsel-noodzakelijk-kwaad", to: "/kennisbank/verschil-bav-avb-zzp" },
   { from: "kerstactienieuw", to: "/verzekeringen" },
   { from: "kerstactiemember", to: "/verzekeringen" },
+  { from: "fb-nieuwjaarsactie", to: "/verzekeringen" },
 
   // Gangbare WordPress URL-patronen
   { from: "bav-verzekering", to: "/verzekeringen" },
