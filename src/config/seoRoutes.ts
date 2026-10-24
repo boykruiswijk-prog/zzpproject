@@ -85,11 +85,11 @@ export const seoRoutes: SeoRoute[] = [
     path: "/pensioen",
     title: "ZZP Pensioen opbouwen | Informatie & Oplossingen | ZP Zaken",
     description:
-      "Als zzp'er zelf je pensioen regelen? ZP Zaken denkt met je mee in een persoonlijk gesprek.",
+      "In een persoonlijk gesprek beantwoorden we je vragen over pensioen opbouwen als zzp'er.",
     h1: "Pensioen voor zzp'ers: regel het nu, profiteer later",
     intro:
       "Als zelfstandige bouw je niet automatisch pensioen op. Er zijn wel fiscaal voordelige manieren om toch voor je oude dag te zorgen. " +
-      "ZP Zaken bespreekt in een persoonlijk gesprek welk pensioenplan bij je situatie past.",
+      "In een persoonlijk gesprek beantwoorden we je vragen over pensioen opbouwen als zzp'er.",
   },
   {
     path: "/zorgverzekering",
