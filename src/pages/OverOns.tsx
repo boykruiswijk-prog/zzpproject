@@ -25,7 +25,7 @@ const SEO = seoRoute("/over-ons");
 
 // Team and content data stays in Dutch as it's specific content
 const values = [
-  { icon: Target, title: "Onafhankelijk", description: "We zijn niet gebonden aan één verzekeraar. Onze bemiddeling is gebaseerd op wat bij jou past." },
+  { icon: Target, title: "Onafhankelijk", description: "We zijn niet gebonden aan één verzekeraar. We leggen eerlijk uit wat een verzekering wel en niet dekt." },
   { icon: Eye, title: "Transparant", description: "Geen kleine lettertjes of verborgen kosten. We leggen alles helder uit zodat je weet waar je aan toe bent." },
   { icon: Users, title: "Persoonlijk", description: "Je hebt persoonlijk contact met ons team. Geen callcenters of doorverwijzingen." },
   { icon: Award, title: "Deskundig", description: "Meer dan 13 jaar ervaring in verzekeringen voor zelfstandigen. We kennen de markt en jouw uitdagingen." },
@@ -42,7 +42,7 @@ const facts = [
 const team = [
   { name: "Boy Kruiswijk", role: "Oprichter", image: teamMember1, description: "Ruim 13 jaar geleden bedenker van de unieke polis voor zzp'ers in Nederland. Zijn visie: ondernemers goed en zorgeloos verzekerd." },
   { name: "Roxy Taskin", role: "Backoffice", image: teamMember2, description: "Zorgt ervoor dat alles op de achtergrond soepel verloopt. Van administratie tot klantondersteuning." },
-  { name: "Ellen Baars", role: "Senior Adviseur", image: teamMember3, description: "Met jarenlange ervaring in verzekeringen helpt zij ondernemers met passende bemiddeling voor hun situatie." },
+  { name: "Ellen Baars", role: "Senior Adviseur", image: teamMember3, description: "Met jarenlange ervaring in verzekeringen helpt zij ondernemers met hun vragen en aanvragen." },
   { name: "Gert-Jan Schellingerhout", role: "CEO Onefellow", image: gertjanPortrait, description: "Gert-Jan is CEO van Onefellow en BusinessFellow Group, waar ZP Zaken deel van uitmaakt. Via Onefellow helpt hij zzp'ers aan nieuwe opdrachten, zodat je na een afgeronde klus niet stil hoeft te staan." },
   { name: "Noah Sikkema", role: "Recruiter Onefellow", image: noahPortrait, description: "Noah is recruiter bij Onefellow, onze zusteronderneming voor opdrachten. Zit je klus erop? Dan kijkt Noah graag met je mee naar een nieuwe opdracht die bij je past." },
   { name: "Sandra Jonker - van Nobelen", role: "Financieel & Administratief", image: sandraPortrait, description: "Sandra is onze financiële steunpilaar. Met meer dan 30 jaar ervaring in financiële administratie en salarisverwerking weet zij als geen ander hoe de backoffice van een dienstverlener in elkaar steekt. Na een loopbaan van 24 jaar bij HeadFirst Group brengt Sandra precisie en persoonlijk contact samen.", email: "sandra@zpzaken.nl" },
@@ -88,7 +88,7 @@ export default function OverOns() {
                 "Meer dan 13 jaar geleden zag ik dat zzp'ers niet dezelfde zekerheid kregen als werknemers. Dat moest anders. Ik ontwikkelde de eerste gecombineerde BAV+AVB polis in Nederland, speciaal voor zelfstandig professionals."
               </p>
               <p className="text-lg text-muted-foreground mb-6">
-                Zijn visie: ondernemers goed en zorgeloos verzekerd, met persoonlijk contact en eerlijke informatie. Geen callcenters of verkooppraatjes, we denken met je mee.
+                Zijn visie: ondernemers goed en zorgeloos verzekerd, met persoonlijk contact en eerlijke informatie. Geen callcenters of verkooppraatjes, wel persoonlijk contact.
               </p>
               <div className="flex flex-wrap gap-2">
                 {["13+ jaar ervaring", "Bedenker unieke BAV+AVB polis", "NEN-gecertificeerd", "AFM geregistreerd"].map((tag) => (

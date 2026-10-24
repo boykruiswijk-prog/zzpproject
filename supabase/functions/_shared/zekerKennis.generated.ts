@@ -120,7 +120,7 @@ export const ZEKER_KENNIS = {
     {
       "path": "/pensioen",
       "title": "ZZP Pensioen opbouwen | Informatie & Oplossingen | ZP Zaken",
-      "intro": "Als zelfstandige bouw je niet automatisch pensioen op. Er zijn wel fiscaal voordelige manieren om toch voor je oude dag te zorgen. ZP Zaken bespreekt in een persoonlijk gesprek welk pensioenplan bij je situatie past."
+      "intro": "Als zelfstandige bouw je niet automatisch pensioen op. Er zijn wel fiscaal voordelige manieren om toch voor je oude dag te zorgen. In een persoonlijk gesprek beantwoorden we je vragen over pensioen opbouwen als zzp'er."
     },
     {
       "path": "/zorgverzekering",

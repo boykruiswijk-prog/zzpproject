@@ -91,7 +91,7 @@ export default function ZzpVerzekeringICT() {
       explainers={[
         {
           image: officeMeetingRoom,
-          title: "De juiste dekking voor jouw ICT-opdrachten",
+          title: "Dekking voor je ICT-opdrachten",
           text:
             "Of je nu als software-architect, product owner of IT-consultant werkt: de risico's zitten in het werk zelf. Wat precies gedekt is, staat in de polisvoorwaarden.",
           bullets: [

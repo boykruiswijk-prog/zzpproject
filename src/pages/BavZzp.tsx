@@ -6,9 +6,9 @@ const faqs = [
   { question: "Wat dekt een BAV?", answer: "Een BAV dekt schade die je opdrachtgever lijdt door een fout in je werk als zzp'er. Wat precies gedekt is, staat in de polisvoorwaarden." },
   { question: "Wat is het verschil tussen BAV en AVB?", answer: "De BAV gaat over financiële schade door fouten in je werk, zoals een verkeerde berekening. De AVB gaat over schade aan personen of aan spullen van anderen. Bij ZP Zaken zitten ze samen in één polis. Wat precies gedekt is, staat in de polisvoorwaarden." },
   { question: "Wat kost een BAV voor zzp'ers?", answer: `Vanaf ${PRIJS_MAAND.replace("€", "€ ")} per maand of ${PRIJS_JAAR.replace("€", "€ ")} per jaar, inclusief kosten en assurantiebelasting, voor BAV en AVB samen. Je betaalt geen eigen risico.` },
-  { question: "Is een BAV verplicht?", answer: "Nee, een BAV is niet wettelijk verplicht. Opdrachtgevers eisen het wel vaak in hun contract." },
+  { question: "Is een BAV verplicht?", answer: "Voor de meeste zzp'ers niet. Voor enkele beroepen is een BAV wel wettelijk verplicht, zoals financieel adviseurs, advocaten, accountants, notarissen en architecten. Opdrachtgevers eisen hem ook vaak in hun contract." },
   { question: "Hoe snel heb ik een certificaat?", answer: "Binnen 24 uur geregeld. Je krijgt het certificaat per mail voor je opdrachtgever." },
-  { question: "Kan ik dagelijks opzeggen en is er uitloopdekking?", answer: "Ja. De BAV + AVB heeft geen jaarcontract en is dagelijks opzegbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota. Deze polis heeft geen uitloopdekking: na het einde van je polis vallen nieuwe aanspraken er niet meer onder." },
+  { question: "Kan ik dagelijks opzeggen en is er uitloopdekking?", answer: "Dagelijks opzeggen kan. Uitloopdekking is er niet. De BAV + AVB heeft geen jaarcontract en is dagelijks opzegbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota." },
 ];
 
 export default function BavZzp() {

@@ -200,7 +200,7 @@ export default function Contact() {
                   <p className="font-semibold text-foreground">Ellen Baars</p>
                   <p className="text-sm text-accent mb-3">Senior Adviseur:  ZP Zaken</p>
                   <p className="text-sm text-muted-foreground">
-                    Ik help je graag bij het vinden van de juiste verzekering. Neem gerust contact op:  ik reageer binnen 24 uur.
+                    Ik help je graag met je vragen over je verzekering en je aanvraag. Neem gerust contact op:  ik reageer binnen 24 uur.
                   </p>
                 </div>
               </div>
