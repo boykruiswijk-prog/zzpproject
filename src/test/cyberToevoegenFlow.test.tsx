@@ -23,6 +23,7 @@ describe("Cyberverzoek klant en team", () => {
     });
     mocks.rpc.mockReset(); mocks.rpc.mockImplementation(async (fn: string,args: any) => {
       if (fn === "cyber_toevoegen_opties") return { data: mocks.opties, error: null };
+      if (fn === "cyber_toevoegen_redenen") return { data: [], error: null };
       if (fn === "cyber_toevoegen_aanvragen") { mocks.rijen=[{ id:"verzoek-1",policy_id:"polis-1",status:"wacht_op_beoordeling",gewenste_ingangsdatum:args._ingang,antwoorden:args._antwoorden,bron:args._namens_klant ? "team":"klant" }]; return { data:"verzoek-1",error:null }; }
       if (fn === "cyber_toevoegen_beoordelen") { mocks.rijen[0].status=args._akkoord ? "akkoord_wacht_op_activatie":"afgewezen"; return { data:mocks.rijen[0].status,error:null }; }
       throw new Error("Unexpected activation or financial action");
@@ -63,7 +64,7 @@ describe("Cyberverzoek klant en team", () => {
     fireEvent.change(await screen.findByLabelText("Toelichting bij de beoordeling"),{target:{value:"Beoordeling door team vastgelegd"}});
     fireEvent.click(screen.getByRole("button",{name:keuze ? "Akkoord":"Afwijzen"}));
     await waitFor(() => expect(mocks.rijen[0].status).toBe(keuze ? "akkoord_wacht_op_activatie":"afgewezen"));
-    expect(mocks.rpc.mock.calls.filter(([f]) => f !== "cyber_toevoegen_opties")).toEqual([]);
+    expect(mocks.rpc.mock.calls.filter(([f]) => f !== "cyber_toevoegen_opties" && f !== "cyber_toevoegen_redenen")).toEqual([]);
     expect(mocks.invoke).toHaveBeenCalledWith("cyber-toevoegen-activeren", { body: { id: "verzoek-1", akkoord: keuze, notitie: "Beoordeling door team vastgelegd" } });
     expect(Boolean(mocks.rijen[0].geactiveerd_op)).toBe(keuze);
   });

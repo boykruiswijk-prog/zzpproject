@@ -6531,6 +6531,10 @@ export type Database = {
         Args: { _onderneming_id?: string }
         Returns: Json
       }
+      cyber_toevoegen_redenen: {
+        Args: { _onderneming_id: string }
+        Returns: Json
+      }
       dashboard_tellers: { Args: { _toon_test?: boolean }; Returns: Json }
       dekking_opgeschort: { Args: { _onderneming_id: string }; Returns: string }
       delete_email: {
