@@ -100,7 +100,7 @@ export const ZEKER_KENNIS = {
     {
       "path": "/",
       "title": "BAV & AVB Verzekering ZZP'ers | Vanaf €55/maand",
-      "intro": "ZP Zaken biedt persoonlijke service voor zelfstandig professionals, met AFM-vergunning 12050636. De gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering vraag je online aan vanaf € 55 per maand, zonder eigen risico en dagelijks opzegbaar. Vragen? Bel +31204573077 of mail info@zpzaken.nl."
+      "intro": "ZP Zaken biedt persoonlijke service voor zelfstandig professionals, met AFM-vergunning 12050636. De gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering vraag je online aan vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting, zonder eigen risico en dagelijks opzegbaar. Vragen? Bel +31204573077 of mail info@zpzaken.nl."
     },
     {
       "path": "/diensten",
@@ -110,7 +110,7 @@ export const ZEKER_KENNIS = {
     {
       "path": "/verzekeringen",
       "title": "BAV + AVB voor ZZP'ers | Online aanvragen",
-      "intro": "ZP Zaken is de bedenker van de BAV + AVB in één polis voor zzp'ers. De combinatiepolis bundelt beroepsaansprakelijkheid (BAV) en bedrijfsaansprakelijkheid (AVB) in één verzekering, vanaf € 55 per maand. Er is geen eigen risico en je kunt dagelijks opzeggen. Aanvragen doe je online in vijf stappen."
+      "intro": "ZP Zaken is de bedenker van de BAV + AVB in één polis voor zzp'ers. De combinatiepolis bundelt beroepsaansprakelijkheid (BAV) en bedrijfsaansprakelijkheid (AVB) in één verzekering, vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting. Er is geen eigen risico en je kunt dagelijks opzeggen. Aanvragen doe je online in vijf stappen."
     },
     {
       "path": "/aov",
@@ -140,7 +140,7 @@ export const ZEKER_KENNIS = {
     {
       "path": "/voor-wie",
       "title": "Voor wie? | Bouw, Zorg, ICT, Consultancy en meer",
-      "intro": "ZP Zaken werkt voor zelfstandig professionals in onder andere ICT, consultancy, HR, finance, marketing, coaching en management. Per beroepsgroep leest u welke risico's spelen en welke dekking daarbij hoort."
+      "intro": "ZP Zaken werkt voor zelfstandig professionals in onder andere ICT, consultancy, HR, finance, marketing, coaching en management. Per beroepsgroep lees je welke risico's spelen. Wat precies gedekt is, staat in de polisvoorwaarden."
     },
     {
       "path": "/zo-werken-wij",
@@ -175,7 +175,7 @@ export const ZEKER_KENNIS = {
     {
       "path": "/kennisbank/verzekeringen",
       "title": "Verzekeringen voor zzp'ers | Kennisbank | ZP Zaken",
-      "intro": "Uitleg over aansprakelijkheid, AOV, cyberrisico's, zorgverzekering en wat verzekeringen voor zzp'ers kosten. Zo weet je welke dekking bij jouw werk past."
+      "intro": "Uitleg over aansprakelijkheid, AOV, cyberrisico's, zorgverzekering en wat verzekeringen voor zzp'ers kosten. Zo weet je wat elke verzekering dekt."
     },
     {
       "path": "/over-ons",
@@ -325,7 +325,7 @@ export const ZEKER_KENNIS = {
     {
       "path": "/zzp-verzekering-zorg",
       "title": "ZZP Verzekering Zorg | BAV & AVB voor de zorg",
-      "intro": "Als zorgprofessional werk je met kwetsbare mensen. Een fout of misverstand kan leiden tot schadeclaims. Beroepsaansprakelijkheidsverzekering geeft jou de vrijheid om je werk te doen zonder financieel risico."
+      "intro": "Als zorgprofessional werk je met kwetsbare mensen. Een fout of misverstand kan leiden tot schadeclaims. Een beroepsaansprakelijkheidsverzekering is er voor als een cliënt of opdrachtgever je aansprakelijk stelt voor een fout in je werk."
     },
     {
       "path": "/zzp-verzekering-bouw",
