@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertTriangle, Loader2 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { certificaatBlokkadeReden } from "@/lib/certificaatBlokkade";
 import { CertificaatBeheer } from "@/components/admin/CertificaatBeheer";
 import { WIZARD_SECTOREN } from "@/data/sectorVerzekeringskaart";
 import { brancheVoorSector } from "@/data/sectorBranche";
@@ -42,6 +44,17 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds }: Props) 
       return data || [];
     },
   });
+
+  // Andere klantkaart met hetzelfde KvK-nummer (bijv. aangemaakt bij activatie) waar het contract wel staat.
+  const { data: zelfdeKvk = [] } = useQuery({
+    queryKey: ["klant-zelfde-kvk", ond.id, ond.kvk],
+    enabled: !actief && !!ond.kvk,
+    queryFn: async () => {
+      const { data } = await supabase.from("ondernemingen").select("id,naam").eq("kvk", ond.kvk!).neq("id", ond.id);
+      return data || [];
+    },
+  });
+  const blokkade = certificaatBlokkadeReden(contracten, vandaag);
 
   const openForm = async (bevestigNieuw: boolean) => {
     // Voorkeur: eerder bij de klant gekozen sector, anders branche van een gekoppelde lead.
@@ -138,8 +151,13 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds }: Props) 
     <Card id="klant-certificaat">
       <CardHeader><CardTitle className="text-base">Certificaat (PDF)</CardTitle></CardHeader>
       <CardContent className="space-y-3">
-        {!actief && (
-          <p className="flex items-center gap-2 text-sm text-destructive"><AlertTriangle className="h-4 w-4" />Geen actief verzekeringscontract (opgezegd of afgelopen). Genereren is geblokkeerd.</p>
+        {blokkade && (
+          <div className="space-y-1 text-sm text-destructive">
+            <p className="flex items-center gap-2"><AlertTriangle className="h-4 w-4" />{blokkade}</p>
+            {zelfdeKvk.map((o: any) => (
+              <p key={o.id} className="text-foreground">Zelfde KvK-nummer: <Link className="underline" to={`/admin/klanten/${o.id}`}>{o.naam ?? "andere klantkaart"}</Link></p>
+            ))}
+          </div>
         )}
         {isSupervisorOrAdmin ? (
           <CertificaatBeheer policies={policies} leadActief={!!actief} isSupervisorOrAdmin={isSupervisorOrAdmin}
