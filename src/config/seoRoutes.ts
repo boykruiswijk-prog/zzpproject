@@ -47,7 +47,7 @@ export const seoRoutes: SeoRoute[] = [
     h1: "Verzekeringen voor zzp'ers, direct en onafhankelijk",
     intro:
       `ZP Zaken biedt persoonlijke service voor zelfstandig professionals, met AFM-vergunning ${SITE_CONFIG.registrations.afm}. ` +
-      `De gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering vraag je online aan vanaf ${laagstePakket.prijsLabel.toLowerCase()}, zonder eigen risico en dagelijks opzegbaar. ` +
+      `De gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering vraag je online aan vanaf € ${laagstePakket.prijs} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting, zonder eigen risico en dagelijks opzegbaar. ` +
       `Vragen? Bel ${SITE_CONFIG.phone} of mail ${SITE_CONFIG.email}.`,
   },
   {
@@ -64,11 +64,11 @@ export const seoRoutes: SeoRoute[] = [
     path: "/verzekeringen",
     title:
       "BAV + AVB voor ZZP'ers | Online aanvragen",
-    description: `BAV + AVB in één polis, bedacht door ZP Zaken. Geen eigen risico, dagelijks opzegbaar, vanaf € ${laagstePakket.prijs} per maand. Online aanvragen, binnen 24 uur geregeld.`,
+    description: `BAV + AVB in één polis, bedacht door ZP Zaken. Geen eigen risico, dagelijks opzegbaar, vanaf € ${laagstePakket.prijs} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
     h1: "BAV & AVB: de combinatiepolis voor zzp'ers",
     intro:
       "ZP Zaken is de bedenker van de BAV + AVB in één polis voor zzp'ers. " +
-      `De combinatiepolis bundelt beroepsaansprakelijkheid (BAV) en bedrijfsaansprakelijkheid (AVB) in één verzekering, vanaf ${laagstePakket.prijsLabel.toLowerCase()}. ` +
+      `De combinatiepolis bundelt beroepsaansprakelijkheid (BAV) en bedrijfsaansprakelijkheid (AVB) in één verzekering, vanaf € ${laagstePakket.prijs} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting. ` +
       "Er is geen eigen risico en je kunt dagelijks opzeggen. Aanvragen doe je online in vijf stappen.",
   },
   {
@@ -129,13 +129,13 @@ export const seoRoutes: SeoRoute[] = [
     h1: "Voor wie is ZP Zaken bedoeld?",
     intro:
       "ZP Zaken werkt voor zelfstandig professionals in onder andere ICT, consultancy, HR, finance, marketing, coaching en management. " +
-      "Per beroepsgroep leest u welke risico's spelen en welke dekking daarbij hoort.",
+      "Per beroepsgroep lees je welke risico's spelen. Wat precies gedekt is, staat in de polisvoorwaarden.",
   },
   {
     path: "/zo-werken-wij",
     title: "Zo werken wij | ZP Zaken",
     description:
-      "Persoonlijk gesprek zonder gedoe. We helpen je in drie simpele stappen aan de juiste verzekeringen: eerlijk en op jouw tempo.",
+      "In drie stappen: kennismaking, antwoord op je vragen en je aanvraag geregeld. Op jouw tempo.",
     h1: "Zo werken wij",
     intro:
       "Onze werkwijze bestaat uit drie stappen: een gratis kennismakingsgesprek, een voorstel op maat en het regelen van je polis. " +
@@ -199,7 +199,7 @@ export const seoRoutes: SeoRoute[] = [
     h1: "Verzekeringen voor zzp'ers",
     intro:
       "Uitleg over aansprakelijkheid, AOV, cyberrisico's, zorgverzekering en wat verzekeringen voor zzp'ers kosten. " +
-      "Zo weet je welke dekking bij jouw werk past.",
+      "Zo weet je wat elke verzekering dekt.",
   },
   {
     path: "/over-ons",
@@ -407,14 +407,14 @@ export const seoRoutes: SeoRoute[] = [
   {
     path: "/beroepsaansprakelijkheidsverzekering",
     title: "Beroepsaansprakelijkheidsverzekering zzp | ZP Zaken",
-    description: `Beroepsaansprakelijkheidsverzekering voor zzp'ers: BAV en AVB in één polis via Hiscox, vanaf € ${LANDING_MAAND} per maand. Binnen 24 uur geregeld.`,
+    description: `Beroepsaansprakelijkheidsverzekering voor zzp'ers: BAV en AVB in één polis via Hiscox, vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
     h1: "Beroepsaansprakelijkheidsverzekering voor zzp'ers",
     intro: `Een beroepsaansprakelijkheidsverzekering beschermt je als een opdrachtgever je aansprakelijk stelt voor schade door een fout in je werk. Bij ZP Zaken kost die vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
   },
   {
     path: "/bav-zzp",
     title: `BAV zzp vanaf € ${LANDING_MAAND} per maand | ZP Zaken`,
-    description: `BAV en AVB voor zzp'ers in één polis via Hiscox. Vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, geen eigen risico, binnen 24 uur geregeld.`,
+    description: `BAV en AVB voor zzp'ers in één polis via Hiscox. Vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting, geen eigen risico.`,
     h1: "BAV voor zzp'ers: beroeps- en bedrijfsaansprakelijkheid in één polis",
     intro: `Een BAV beschermt je bij schade door fouten in je werk, de AVB bij schade aan personen of spullen. Bij ZP Zaken heb je ze samen vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
   },
@@ -485,11 +485,11 @@ export const seoRoutes: SeoRoute[] = [
     path: "/zzp-verzekering-zorg",
     title: "ZZP Verzekering Zorg | BAV & AVB voor de zorg",
     description:
-      "ZZP'er in de zorg? ZP Zaken regelt jouw beroepsaansprakelijkheidsverzekering. Beschermd tegen aansprakelijkheid bij medische fouten. Binnen 24 uur.",
+      "ZZP'er in de zorg? ZP Zaken regelt jouw beroepsaansprakelijkheidsverzekering. Aanvragen in de zorg beoordelen we per aanvraag. Binnen 24 uur reactie.",
     h1: "ZZP Verzekering voor zorgprofessionals",
     intro:
       "Als zorgprofessional werk je met kwetsbare mensen. Een fout of misverstand kan leiden tot schadeclaims. " +
-      "Beroepsaansprakelijkheidsverzekering geeft jou de vrijheid om je werk te doen zonder financieel risico.",
+      "Een beroepsaansprakelijkheidsverzekering is er voor als een cliënt of opdrachtgever je aansprakelijk stelt voor een fout in je werk.",
   },
   {
     path: "/zzp-verzekering-bouw",
