@@ -6485,6 +6485,10 @@ export type Database = {
         Args: { _start: string; _vandaag: string }
         Returns: string
       }
+      cyber_terugwerkend_vroegst: {
+        Args: { _policy_id: string }
+        Returns: string
+      }
       cyber_toevoegen_aanvragen: {
         Args: {
           _akkoord: boolean
