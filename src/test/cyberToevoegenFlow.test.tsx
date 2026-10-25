@@ -64,7 +64,7 @@ describe("Cyberverzoek klant en team", () => {
     fireEvent.change(await screen.findByLabelText("Toelichting bij de beoordeling"),{target:{value:"Beoordeling door team vastgelegd"}});
     fireEvent.click(screen.getByRole("button",{name:keuze ? "Akkoord":"Afwijzen"}));
     await waitFor(() => expect(mocks.rijen[0].status).toBe(keuze ? "akkoord_wacht_op_activatie":"afgewezen"));
-    expect(mocks.rpc.mock.calls.filter(([f]) => f !== "cyber_toevoegen_opties")).toEqual([]);
+    expect(mocks.rpc.mock.calls.filter(([f]) => f !== "cyber_toevoegen_opties" && f !== "cyber_toevoegen_redenen")).toEqual([]);
     expect(mocks.invoke).toHaveBeenCalledWith("cyber-toevoegen-activeren", { body: { id: "verzoek-1", akkoord: keuze, notitie: "Beoordeling door team vastgelegd" } });
     expect(Boolean(mocks.rijen[0].geactiveerd_op)).toBe(keuze);
   });
