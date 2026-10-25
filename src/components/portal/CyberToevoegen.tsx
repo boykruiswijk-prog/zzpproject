@@ -35,6 +35,7 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
   const [fout, setFout] = useState("");
   const [geladen, setGeladen] = useState(false);
   const [resultaat, setResultaat] = useState("");
+  const [terugVanaf, setTerugVanaf] = useState<string | null>(null);
   const [redenen, setRedenen] = useState<{ nummer: string; reden: string }[]>([]);
 
   async function laad() {
@@ -56,11 +57,16 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
     }
     setGeladen(true);
   }
+  useEffect(() => {
+    setTerugVanaf(null);
+    if (!team || !policyId) return;
+    void supabase.rpc("cyber_terugwerkend_vroegst" as never, { _policy_id: policyId } as never).then((r) => setTerugVanaf((r.data as unknown as string | null) ?? null));
+  }, [team, policyId]);
   useEffect(() => { if (zichtbaar && (!team || ondernemingId)) void laad(); }, [zichtbaar, ondernemingId, team, toonTest]);
 
   async function indienen(e: React.FormEvent) {
     e.preventDefault();
-    const validatie = cyberVerzoekFout(antwoorden, datum, akkoord, team, notitie);
+    const validatie = cyberVerzoekFout(antwoorden, datum, akkoord, team, notitie, new Date(), team ? terugVanaf : null);
     if (validatie) { setFout(validatie); return; }
     setBezig(true); setFout("");
     try {
@@ -113,7 +119,7 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
       <p className="text-sm text-muted-foreground">Polis {gekozen?.label}. Cyber: {gekozen?.cyclus === "jaar" ? `€${formatPremieBedrag(CYBER.jaarprijs)} per jaar` : `€${formatPremieBedrag(CYBER.maandprijs)} per maand`}, inclusief kosten en assurantiebelasting.</p>
       <CyberVragen antwoorden={antwoorden} onChange={(a) => { setAntwoorden(a); setFout(""); }} />
       <CyberAfwijzing antwoorden={antwoorden} />
-      <div className="space-y-2"><Label htmlFor="cyber-ingang">Gewenste ingangsdatum</Label><Input id="cyber-ingang" type="date" min={vroegsteIngangsdatum()} required value={datum} onChange={(e) => setDatum(e.target.value)} /></div>
+      <div className="space-y-2"><Label htmlFor="cyber-ingang">Gewenste ingangsdatum</Label><Input id="cyber-ingang" type="date" min={(team && terugVanaf) || vroegsteIngangsdatum()} required value={datum} onChange={(e) => setDatum(e.target.value)} />{team && terugVanaf && <p className="text-xs text-muted-foreground">Jij mag hier terugwerkend kiezen, vroegst de ingangsdatum van de BAV + AVB. Leg in de notitie vast waarom.</p>}</div>
       {team && <div className="space-y-2"><Label htmlFor="cyber-teamnotitie">Notitie namens de klant</Label><Textarea id="cyber-teamnotitie" required minLength={10} maxLength={1000} value={notitie} onChange={(e) => setNotitie(e.target.value)} /></div>}
       <div className="flex items-start gap-3"><Checkbox id="cyber-later-akkoord" checked={akkoord} onCheckedChange={(v) => setAkkoord(v === true)} /><Label htmlFor="cyber-later-akkoord" className="text-sm leading-relaxed">{CYBER_AKKOORD}</Label></div>
       <p className="text-sm text-muted-foreground">Je verzoek wordt handmatig beoordeeld. Na akkoord gaat de dekking in op de gekozen ingangsdatum.</p>
