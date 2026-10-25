@@ -25,12 +25,12 @@ const faqs = [
   {
     question: "Wat wordt gedekt bij een medische fout?",
     answer:
-      "Schade die voortvloeit uit fouten in jouw professionele dienstverlening wordt gedekt. Dit omvat letselschade, vermogensschade en juridische kosten. De exacte dekking staat in je polisvoorwaarden.",
+      "Dat hangt af van de situatie. Wat precies gedekt is, staat in de polisvoorwaarden; die zijn leidend. Aanvragen in de zorg beoordelen we per aanvraag.",
   },
   {
     question: "Heb ik naast een BAV ook een AVB nodig?",
     answer:
-      "Een AVB dekt schade aan personen of eigendommen tijdens je werk — los van je professionele handelen. Werk je bij cliënten thuis, dan vragen opdrachtgevers vaak ook om een AVB.",
+      "Een AVB dekt schade aan personen of eigendommen tijdens je werk, los van je professionele handelen. Werk je bij cliënten thuis, dan vragen opdrachtgevers vaak ook om een AVB.",
   },
 ];
 
@@ -57,20 +57,20 @@ export default function ZzpVerzekeringZorg() {
       heroImage={serviceVerzekeringen}
       badge="Voor zorgprofessionals"
       title={<>ZZP Verzekering voor <span className="text-accent">zorgprofessionals</span></>}
-      subtitle="Als zorgprofessional — verpleegkundige, fysiotherapeut, begeleider of specialist — werk je met kwetsbare mensen. Een fout of misverstand kan leiden tot schadeclaims. Beroepsaansprakelijkheidsverzekering geeft jou de vrijheid om je werk te doen zonder financieel risico."
+      subtitle="Als zorgprofessional, verpleegkundige, fysiotherapeut, begeleider of specialist, werk je met kwetsbare mensen. Een fout of misverstand kan leiden tot schadeclaims. Een beroepsaansprakelijkheidsverzekering is er voor als een cliënt of opdrachtgever je aansprakelijk stelt voor een fout in je werk."
       schema={schema}
       benefits={[
         {
           icon: HeartPulse,
-          title: "Bescherming bij medische fouten",
+          title: "Bij een claim over je werk",
           description:
-            "Lichamelijk letsel, verkeerd advies of een behandelingsfout — jouw polis dekt de geleden schade van jouw cliënt of patiënt.",
+            "Stelt een cliënt of opdrachtgever je aansprakelijk, dan meld je dat bij ons. Wat precies gedekt is, staat in de polisvoorwaarden.",
         },
         {
           icon: BadgeCheck,
           title: "Vereist door zorginstellingen",
           description:
-            "Ziekenhuizen, thuiszorgorganisaties en GGZ-instellingen eisen standaard een geldig BAV-certificaat voor zzp-inhuur.",
+            "Zorginstellingen vragen vaak om een geldig verzekeringscertificaat voor zzp-inhuur.",
         },
         {
           icon: Users,
@@ -82,7 +82,7 @@ export default function ZzpVerzekeringZorg() {
       explainers={[
         {
           image: officeMeetingRoom,
-          title: "Dekking die past bij jouw zorgrol",
+          title: "Je rol in de zorg",
           text:
             "Werk je adviserend, coachend, coördinerend of uitvoerend? Dat maakt verschil voor je risico en dus voor je polis. Heb je vragen over de aanvraag of de polisvoorwaarden? We beantwoorden ze graag.",
           bullets: [
