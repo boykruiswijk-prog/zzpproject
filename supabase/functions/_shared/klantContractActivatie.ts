@@ -70,6 +70,15 @@ export async function zetInPlanner(supabase: any, lead: any, exactAccountId: str
     ({ data: ond } = await supabase.from("ondernemingen").select("id")
       .eq("exact_relatie_code", String(lead.exact_relatie_code)).limit(1).maybeSingle());
   }
+  if (!ond && lead.kvk_nummer) {
+    // Bestaande klantkaart met hetzelfde KvK-nummer hergebruiken (geen dubbele kaart zonder contactpersoon).
+    const { data: kvkRijen } = await supabase.from("ondernemingen").select("id")
+      .eq("kvk", String(lead.kvk_nummer)).eq("is_test", !!lead.is_test).is("exact_account_id", null).limit(2);
+    if ((kvkRijen ?? []).length === 1) {
+      const { error: kErr } = await supabase.from("ondernemingen").update({ exact_account_id: exactAccountId, exact_koppeling_status: "gekoppeld" }).eq("id", kvkRijen[0].id).is("exact_account_id", null);
+      if (!kErr) ond = kvkRijen[0];
+    }
+  }
   if (!ond) {
     const { data, error } = await supabase.from("ondernemingen").insert({
       naam: lead.bedrijfsnaam ?? `${lead.voornaam ?? ""} ${lead.achternaam ?? ""}`.trim(),
