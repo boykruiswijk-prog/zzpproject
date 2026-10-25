@@ -15,7 +15,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { ShieldPlus, Loader2 } from "lucide-react";
 import { controleerAdminMfa, verwerkMfaFout } from "@/lib/adminMfaStap";
 import { useToonTestrecords } from "@/hooks/useToonTestrecords";
-import { ToonTestrecordsSchakelaar } from "@/components/admin/ToonTestrecordsSchakelaar";
 
 type Optie = { policy_id: string; label: string; cyclus: string };
 type Verzoek = { id: string; policy_id: string; status: string; is_test?: boolean; geactiveerd_op?: string | null; mail_status?: string; gewenste_ingangsdatum: string; beoordeling_notitie: string | null; notitie: string; antwoorden: unknown; bron: string };
@@ -36,6 +35,7 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
   const [fout, setFout] = useState("");
   const [geladen, setGeladen] = useState(false);
   const [resultaat, setResultaat] = useState("");
+  const [redenen, setRedenen] = useState<{ nummer: string; reden: string }[]>([]);
 
   async function laad() {
     const optiesResultaat = await supabase.rpc("cyber_toevoegen_opties", { _onderneming_id: ondernemingId ?? undefined });
@@ -50,6 +50,10 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
     setVerzoeken(rijen);
     const o = (optiesResultaat.data as unknown as Optie[]) ?? [];
     setOpties(o.filter((p) => !rijen.some((r) => r.policy_id === p.policy_id && r.status !== "afgewezen")));
+    if (team && ondernemingId) {
+      const r = await supabase.rpc("cyber_toevoegen_redenen" as never, { _onderneming_id: ondernemingId } as never);
+      setRedenen(((r.data as unknown) as { nummer: string; reden: string }[]) ?? []);
+    }
     setGeladen(true);
   }
   useEffect(() => { if (zichtbaar && (!team || ondernemingId)) void laad(); }, [zichtbaar, ondernemingId, team, toonTest]);
@@ -92,7 +96,10 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
   const gekozen = opties.find((o) => o.policy_id === policyId);
   return <section className="space-y-4 border-t border-border py-6">
     <h2 className="flex items-center gap-2 text-xl font-semibold"><ShieldPlus className="h-5 w-5 text-accent" />Cyber toevoegen</h2>
-    {team && <ToonTestrecordsSchakelaar />}
+    {team && geladen && !opties.length && !verzoeken.some((r) => r.status !== "afgewezen") && !fout && <div role="status" className="text-sm text-muted-foreground">
+      <p>Bij deze klant kan nu geen cyber worden toegevoegd.</p>
+      {redenen.length ? <ul className="list-disc pl-5">{redenen.map((r) => <li key={r.nummer}>{r.nummer}: {r.reden}</li>)}</ul> : <p>Er staat geen geldig BAV + AVB-certificaat bij deze klantkaart.</p>}
+    </div>}
     {opties.length > 0 && <>
       <p className="text-sm">€{formatPremieBedrag(CYBER.jaarprijs)} per jaar of €{formatPremieBedrag(CYBER.maandprijs)} per maand, inclusief kosten en assurantiebelasting.</p>
       <p className="text-sm">{CYBER_OPZEGTEKST.split(" Bij maandbetaling:")[0]}</p>
