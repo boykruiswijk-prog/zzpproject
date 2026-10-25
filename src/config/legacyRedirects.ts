@@ -809,6 +809,16 @@ export function taalprefixRedirects(
 
 /** Doel voor een pad (met of zonder slashes, hoofdletterongevoelig): exacte regel gaat voor de vangregel. */
 export function zoekLegacyDoel(pad: string, lijst: LegacyRedirect[] = legacyRedirects): string | null {
+  // Gecodeerd vraagteken in het pad (/%3Futm_source=... uit bijv. de GMB-vermelding):
+  // decodeer de query en stuur door naar de homepage, zonder 404.
+  const gecodeerd = pad.match(/^\/?(?:(?:en|de|fr)\/)?%3f(.*)$/i);
+  if (gecodeerd) {
+    try {
+      return "/?" + decodeURIComponent(gecodeerd[1]);
+    } catch {
+      return "/";
+    }
+  }
   const p = pad.replace(/^\/+|\/+$/g, "").toLowerCase();
   if (!p) return null;
   const exact = lijst.find((r) => !isVangregel(r) && r.from.toLowerCase() === p);

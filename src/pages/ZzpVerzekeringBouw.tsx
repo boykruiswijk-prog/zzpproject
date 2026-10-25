@@ -57,32 +57,32 @@ export default function ZzpVerzekeringBouw() {
       heroImage={serviceVerzekeringen}
       badge="Voor bouwprofessionals"
       title={<>ZZP Verzekering voor <span className="text-accent">bouwprofessionals</span></>}
-      subtitle="Als zzp'er in de bouw — aannemer, installateur, architect of constructeur — draag je verantwoordelijkheid voor de kwaliteit van je werk. Een constructiefout of schade aan eigendom kan leiden tot forse schadeclaims. Met een BAV en AVB in één polis ben je beschermd."
+      subtitle="Als zzp'er in de bouw, aannemer, installateur, architect of constructeur, draag je verantwoordelijkheid voor de kwaliteit van je werk. Een constructiefout of schade aan eigendom kan leiden tot forse schadeclaims. Met een BAV en AVB in één polis ben je beschermd."
       schema={schema}
       benefits={[
         {
           icon: HardHat,
           title: "Dekking voor constructie- en ontwerpfouten",
           description:
-            "Schade die later aan het licht komt door een ontwerpfout of constructiefout in jouw werk wordt gedekt door jouw BAV-polis.",
+            "Stelt een opdrachtgever je aansprakelijk voor een ontwerp- of constructiefout, dan meld je dat bij ons. Wat precies gedekt is, staat in de polisvoorwaarden. Na het einde van de verzekering is er geen uitloopdekking.",
         },
         {
           icon: Shield,
           title: "AVB voor schade op de bouwplaats",
           description:
-            "Beschadig je eigendommen van de opdrachtgever of derden op de bouwplaats? Je bedrijfsaansprakelijkheidsverzekering (AVB) dekt dat.",
+            "De AVB is voor schade aan personen of spullen van anderen, bijvoorbeeld op de bouwplaats. Wat precies gedekt is, staat in de polisvoorwaarden.",
         },
         {
           icon: FileCheck,
           title: "Vereist bij aanbestedingen",
           description:
-            "Aanbestedende diensten en grote aannemers eisen standaard een geldig verzekeringscertificaat. ZP Zaken levert die snel aan.",
+            "Aanbestedende diensten en hoofdaannemers vragen vaak om een geldig verzekeringscertificaat. ZP Zaken levert die snel aan.",
         },
       ]}
       explainers={[
         {
           image: officeMeetingRoom,
-          title: "BAV en AVB in de juiste verhouding",
+          title: "BAV en AVB in de bouw",
           text:
             "In de bouw lopen ontwerp, advies en uitvoering vaak door elkaar. De polisvoorwaarden beschrijven wat onder beroepsaansprakelijkheid en bedrijfsaansprakelijkheid valt. We beantwoorden je vragen over deze voorwaarden.",
           bullets: [
