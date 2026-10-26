@@ -57,7 +57,7 @@ describe("Publieke opzeg- en cyberteksten D1/E", () => {
 
   it("gebruikt dezelfde nieuwe voorwaarden voor toestemming en klantuitleg", () => {
     expect(CYBER_VERSIE).toBe("2026-10-08");
-    expect(CYBER_AKKOORD).toBe("Ik begrijp dat cyber dagelijks opzegbaar is en dat ik al betaalde premie voor cyber bij opzeggen niet terugkrijg. Cyber is niet pauzeerbaar. De BAV + AVB blijft dagelijks opzegbaar.");
+    expect(CYBER_AKKOORD).toBe("Ik begrijp dat cyber een looptijd van 12 maanden heeft en daarna stilzwijgend wordt verlengd met 12 maanden. Al betaalde premie voor cyber krijg ik bij opzeggen niet terug. Cyber is niet pauzeerbaar. De BAV + AVB blijft dagelijks opzegbaar.");
     expect(CYBER_LOOPTIJD).toBe(CYBER_OPZEGTEKST);
     expect(CYBER_LOOPTIJD).toBe("Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar. Bij maandbetaling: €27,50 per maand.");
     expect(readFileSync("src/components/home/BAVApplicationModule.tsx", "utf8")).toContain("{CYBER_AKKOORD}</Label>");

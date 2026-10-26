@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ShieldPlus, Loader2 } from "lucide-react";
 import { controleerAdminMfa, verwerkMfaFout } from "@/lib/adminMfaStap";
 import { useToonTestrecords } from "@/hooks/useToonTestrecords";
+import { cyberBeoordelingFout, cyberFunctieFout } from "@/lib/cyberBeoordeling";
 
 type Optie = { policy_id: string; label: string; cyclus: string };
 type Verzoek = { id: string; policy_id: string; status: string; is_test?: boolean; geactiveerd_op?: string | null; mail_status?: string; certificaat_pad?: string | null; gewenste_ingangsdatum: string; beoordeling_notitie: string | null; notitie: string; antwoorden: unknown; bron: string };
@@ -79,11 +80,13 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
     finally { setBezig(false); }
   }
   async function beoordeel(id: string, keuze: boolean) {
+    const validatie = cyberBeoordelingFout(beoordelingen[id] ?? "");
+    if (validatie) { setFout(validatie); return; }
     setBezig(true); setFout("");
     try {
       if (!await controleerAdminMfa()) return;
       const { data, error } = await supabase.functions.invoke("cyber-toevoegen-activeren", { body: { id, akkoord: keuze, notitie: beoordelingen[id] ?? "" } });
-      if (error || data?.error) throw error ?? new Error(data.error);
+      if (error || data?.error) { await verwerkMfaFout(error, data); throw await cyberFunctieFout(error, data); }
       await laad();
     } catch (e) { await verwerkMfaFout(e); setFout((e as { message?: string })?.message ?? "Beoordeling kon niet worden opgeslagen."); }
     finally { setBezig(false); }
@@ -93,7 +96,7 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
     try {
       if (!await controleerAdminMfa()) return;
       const { data, error } = await supabase.functions.invoke("cyber-toevoegen-activeren", { body: { id, akkoord: true, notitie: "Cyberbevestiging handmatig opnieuw versturen", retryMail: true } });
-      if (error || data?.error) throw error ?? new Error(data.error);
+      if (error || data?.error) { await verwerkMfaFout(error, data); throw await cyberFunctieFout(error, data); }
       await laad();
     } catch (e) { await verwerkMfaFout(e); setFout((e as { message?: string })?.message ?? "Mail kon niet worden verstuurd."); }
     finally { setBezig(false); }
@@ -108,7 +111,7 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
     </div>}
     {opties.length > 0 && <>
       <p className="text-sm">€{formatPremieBedrag(CYBER.jaarprijs)} per jaar of €{formatPremieBedrag(CYBER.maandprijs)} per maand, inclusief kosten en assurantiebelasting.</p>
-      <p className="text-sm">{CYBER_OPZEGTEKST.split(" Bij maandbetaling:")[0]}</p>
+      <p className="text-sm">{CYBER_AKKOORD}</p>
       <p className="text-sm">Looptijd 12 maanden vanaf de cyberingangsdatum, daarna stilzwijgend verlengd met 12 maanden.</p>
       {!open && <Button onClick={() => { setPolicyId(opties[0].policy_id); setOpen(true); setFout(""); }}>Cyber toevoegen</Button>}
     </>}
