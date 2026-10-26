@@ -42,6 +42,7 @@ WHERE slug = 'unieke-artikel-slug' AND image_url IS NULL
 - `cdn.higgsfield.ai`
 - `static-public-media.higgsfield.ai`
 - `static.higgsfield.ai`
+- `d8j0ntlcm91z4.cloudfront.net` (exacte Higgsfield-uitvoerhost, besluit Boy 26 oktober)
 
 Exacte hosts, uitsluitend HTTPS/443, geen gebruikersinfo en geen redirects. Geen generieke `*.cloudfront.net`-toegang: die zou ook willekeurige derde partijen toelaten. Een specifieke andere CDN-host kan na verificatie expliciet worden toegevoegd.
 
@@ -65,4 +66,11 @@ Exacte hosts, uitsluitend HTTPS/443, geen gebruikersinfo en geen redirects. Geen
 - Functies artikel-foto en artikel-afbeelding gedeployed. Publicatie aangevraagd; productie cyberartikel HTTP 200 en nieuwe CTA teruggelezen.
 
 ## Grenzen
+### CloudFront-aanvulling Boy 26 oktober
+- Exacte host toegevoegd aan import én SQL-opslagcontrole (migratie 0189); andere CloudFront-hosts blijven geblokkeerd.
+- Opgegeven `hf_20261026_134312_5ccc85c1-d184-44cd-b8ba-bf893f4e54d8.png` live geïmporteerd: `test-f10-cloudfront-boy-20261026`, id `c4a08a11-2b23-4a54-9331-2ad48b05ffd4`, status klaar, 1600x1075 WebP.
+- SHA256: `1e4475bee54b821917081d0844c2092be4b7473acf5428ea4ff9d892b405bcea`.
+- Tweede insert met exact dezelfde URL: `test-f10-cloudfront-boy-dubbel-20261026`, id `d35d3047-00af-4657-9b8b-261494908bda`, status geweigerd, reden **Foto geweigerd: identieke foto bestaat al**, image_url NULL.
+- Beide artikelen blijven `is_test=true`, `is_published=false`. 16 gerichte tests groen, Deno check groen, functie gedeployed en OPTIONS200. Website niet opnieuw gepubliceerd.
+
 SQL-publicaties houden de fotoregistratie aan; een later los ingevoegde afbeelding elders op de site kan een bestaande artikelfoto alsnog hergebruiken. De contentmachine moet alleen eigen gelicentieerde Higgsfield-uitvoer aanleveren en redactioneel op inhoud controleren; de import controleert bestandsveiligheid en beeldgelijkenis, niet beeldrechten of inhoudelijke passendheid.

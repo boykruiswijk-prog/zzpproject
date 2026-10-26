@@ -4,6 +4,11 @@ import { fotoUrl, fotoAfmetingen, hashAfstand, fotoPublicatieGeldig, sha256, MAX
 import { absoluteArticleOgImage } from "../lib/articleImage";
 import { readFileSync, readdirSync } from "node:fs";
 describe("F10 unieke artikelfoto", () => {
+  it("staat uitsluitend de opgegeven CloudFront-host toe, geen wildcard", () => {
+    expect(fotoUrl("https://d8j0ntlcm91z4.cloudfront.net/user_3KH9GxqJs9BYVFo7RIwIPMc7jpN/hf_20261026_134312_5ccc85c1-d184-44cd-b8ba-bf893f4e54d8.png").hostname).toBe("d8j0ntlcm91z4.cloudfront.net");
+    expect(() => fotoUrl("https://d8j0ntlcm91z4.cloudfront.net.evil.test/x.png")).toThrow();
+    expect(() => fotoUrl("https://another.cloudfront.net/x.png")).toThrow();
+  });
   it("weigert identieke SHA256", async () => {
     const a = new Uint8Array([1,2,3]); const existing = [await sha256(a)];
     expect(existing.includes(await sha256(a))).toBe(true);
