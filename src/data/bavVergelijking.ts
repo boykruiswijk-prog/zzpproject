@@ -12,7 +12,8 @@ export interface BavAanbieder {
   verzekerdBedrag: string;
   eigenRisico: string;
   opzeggen: string;
-  bronUrl: string;
+  /** Alleen voor de eigen ZP Zaken-rij; externe aanbieders hebben geen link (register F1). */
+  bronUrl?: string;
   /** ISO-datum waarop de gegevens op de bronpagina zijn gecontroleerd. */
   gecontroleerd_op: string;
   /** Eigen rij van ZP Zaken (andere opmaak, interne bronlink). */

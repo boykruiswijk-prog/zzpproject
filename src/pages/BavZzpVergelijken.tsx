@@ -9,10 +9,10 @@ import { SITE_CONFIG } from "@/config/site";
 import { faqSchema, organizationRef } from "@/lib/schema";
 import { getPakket } from "@/data/bavPakketten";
 import {
-  bavVergelijking, bavVergelijkingFaq, YEZZER_URL,
+  bavVergelijking, bavVergelijkingFaq,
   VERGELIJKING_GECONTROLEERD_OP, VERGELIJKING_GECONTROLEERD_LABEL, VERGELIJKING_MARKTPRIJS_TOELICHTING, type BavAanbieder,
 } from "@/data/bavVergelijking";
-import { ArrowRight, CheckCircle, ExternalLink, Phone } from "lucide-react";
+import { ArrowRight, CheckCircle, Phone } from "lucide-react";
 
 const PAD = "/bav-zzp-vergelijken";
 const SEO = seoRoute(PAD);
@@ -27,12 +27,8 @@ const KOLOMMEN: { key: keyof BavAanbieder; label: string }[] = [
 ];
 
 function BronLink({ a }: { a: BavAanbieder }) {
-  if (a.eigen) return <LocalizedLink to={a.bronUrl} className="text-accent underline underline-offset-2">zpzaken.nl/verzekeringen</LocalizedLink>;
-  return (
-    <a href={a.bronUrl} target="_blank" rel="nofollow noopener" className="inline-flex items-center gap-1 text-accent underline underline-offset-2 break-all">
-      Bron {a.aanbieder}<ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" />
-    </a>
-  );
+  if (a.eigen && a.bronUrl) return <LocalizedLink to={a.bronUrl} className="text-accent underline underline-offset-2">zpzaken.nl/verzekeringen</LocalizedLink>;
+  return <span>Bron: website van de aanbieder, stand oktober 2026</span>;
 }
 
 const Sectie = ({ id, titel, children, alt = false }: { id: string; titel: string; children: React.ReactNode; alt?: boolean }) => (
@@ -157,13 +153,13 @@ export default function BavZzpVergelijken() {
           <div className="mx-auto mt-6 max-w-3xl space-y-4 text-sm leading-relaxed text-muted-foreground">
             <p>{VERGELIJKING_MARKTPRIJS_TOELICHTING}</p>
             <p>Prijzen gecontroleerd op {VERGELIJKING_GECONTROLEERD_LABEL}; je premie hangt af van beroep en omzet. "Niet vermeld" betekent dat we het gegeven niet op de productpagina van de aanbieder konden vinden. Het kan wel in de polisvoorwaarden staan.</p>
-            <p><strong className="text-foreground">Liever veel aanbieders tegelijk zien?</strong> Een <a href={YEZZER_URL} target="_blank" rel="nofollow noopener" className="text-accent underline underline-offset-2">vergelijkingssite</a> vergelijkt meerdere verzekeraars en noemt premies vanaf € 20 per maand.</p>
+            <p><strong className="text-foreground">Liever veel aanbieders tegelijk zien?</strong> Een vergelijkingssite vergelijkt meerdere verzekeraars en noemt premies vanaf € 20 per maand.</p>
           </div>
         </div>
       </section>
 
       <Sectie id="laagste-premie" titel="Welke BAV voor zzp'ers heeft de laagste premie?">
-        <p>Op papier zijn Aanbieder B (vanaf € 27,22 per maand) en Aanbieder D (voorbeeld € 29,17 per maand, zonder assurantiebelasting) de laagste premie voor alleen een BAV. Ook als je bij Aanbieder B of Aanbieder A een losse AVB erbij neemt, kom je op papier lager uit dan {eur(maand.prijs)} per maand.</p>
+        <p>Op papier zijn Aanbieder B (vanaf € 27,22 per maand) en Aanbieder D (voorbeeld € 29,17 per maand, zonder assurantiebelasting) de laagste premie voor alleen een BAV. Ook als je bij Aanbieder B of Aanbieder A een losse AVB erbij neemt, kom je op papier lager uit dan {eur(maand.prijs)} per maand of {eur(jaar.prijs)} per jaar, inclusief kosten en assurantiebelasting.</p>
         <p>Meer weten over alle premies? Lees <LocalizedLink to="/kennisbank/wat-kosten-verzekeringen-voor-zzp-ers" className="text-accent underline underline-offset-2">wat verzekeringen voor zzp'ers in 2026 kosten</LocalizedLink>.</p>
         <p>Het verschil zit in wat je ervoor krijgt:</p>
         <ul className="list-disc space-y-2 pl-5">
