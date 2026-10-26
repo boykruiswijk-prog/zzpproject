@@ -1352,6 +1352,13 @@
       "when": 1793025381619,
       "tag": "0192_admin_zoeken_contract_eigen_nummer",
       "breakpoints": true
+    },
+    {
+      "idx": 193,
+      "version": "7",
+      "when": 1793025599180,
+      "tag": "0193_a19_handmatige_lead_enums",
+      "breakpoints": true
     }
   ]
 }

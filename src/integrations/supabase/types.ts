@@ -7453,7 +7453,14 @@ export type Database = {
         | "supervisor"
         | "verzekering"
         | "marketing"
-      lead_bron: "website" | "telefoon" | "email"
+      lead_bron:
+        | "website"
+        | "telefoon"
+        | "email"
+        | "netwerk"
+        | "partner"
+        | "beurs"
+        | "overig"
       lead_status:
         | "nieuw"
         | "in_behandeling"
@@ -7466,7 +7473,11 @@ export type Database = {
         | "gepauzeerd"
         | "opgezegd"
         | "afgerond"
-      lead_type: "contact" | "verzekering_aanvraag" | "offerte-aanvraag"
+      lead_type:
+        | "contact"
+        | "verzekering_aanvraag"
+        | "offerte-aanvraag"
+        | "handmatig"
       note_type: "notitie" | "follow_up" | "telefoongesprek"
     }
     CompositeTypes: {
@@ -7602,7 +7613,15 @@ export const Constants = {
         "verzekering",
         "marketing",
       ],
-      lead_bron: ["website", "telefoon", "email"],
+      lead_bron: [
+        "website",
+        "telefoon",
+        "email",
+        "netwerk",
+        "partner",
+        "beurs",
+        "overig",
+      ],
       lead_status: [
         "nieuw",
         "in_behandeling",
@@ -7616,7 +7635,12 @@ export const Constants = {
         "opgezegd",
         "afgerond",
       ],
-      lead_type: ["contact", "verzekering_aanvraag", "offerte-aanvraag"],
+      lead_type: [
+        "contact",
+        "verzekering_aanvraag",
+        "offerte-aanvraag",
+        "handmatig",
+      ],
       note_type: ["notitie", "follow_up", "telefoongesprek"],
     },
   },
