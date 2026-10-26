@@ -1,4 +1,4 @@
-import { metPubliekeCybertekst } from "../../config/cyberPubliek";
+import { CYBER_GEBIED_PUBLIEK, metPubliekeCybertekst } from "../../config/cyberPubliek";
 // Bouwt de kennisbasis van chatassistent Zeker uitsluitend uit bestaande sitebronnen.
 // De uitkomst wordt door scripts/genereer-zeker-kennis.ts weggeschreven naar
 // supabase/functions/_shared/zekerKennis.generated.ts; een test borgt dat beide gelijk zijn.
@@ -36,7 +36,7 @@ export function bouwZekerKennis(): ZekerKennis {
       id: p.id, naam: p.name, prijs: p.prijs, periode: p.periode, prijsLabel: p.prijsLabel,
       bav: { ...p.dekkingen.bav }, avb: { ...p.dekkingen.avb },
       cyber: p.dekkingen.cyber ? { ...p.dekkingen.cyber } : null,
-      usps: p.usps.map(metPubliekeCybertekst),
+      usps: [...p.usps.map(metPubliekeCybertekst), ...(p.dekkingen.cyber ? [CYBER_GEBIED_PUBLIEK] : [])],
     })),
     paginas: seoRoutes.filter(r => eviPaginaVindbaar(r.path)).map((r) => ({ path: r.path, title: r.title, intro: r.intro })),
     faq: faqItems.flatMap((c) => c.questions.map((q) => ({ categorie: c.category, vraag: q.question, antwoord: q.answer }))),

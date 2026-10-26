@@ -66,7 +66,8 @@ export const ZEKER_KENNIS = {
         "Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.",
         "Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar. Bij maandbetaling: €27,50 per maand.",
         "De cybervoorwaarden vraag je op via 020 - 457 3077 of via zpzaken.nl/contact.",
-        "Premie inclusief kosten en assurantiebelasting"
+        "Premie inclusief kosten en assurantiebelasting",
+        "Cyberdekkingsgebied: Europa."
       ]
     },
     {
@@ -92,7 +93,8 @@ export const ZEKER_KENNIS = {
         "Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.",
         "Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar. Bij maandbetaling: €27,50 per maand.",
         "De cybervoorwaarden vraag je op via 020 - 457 3077 of via zpzaken.nl/contact.",
-        "Premie inclusief kosten en assurantiebelasting"
+        "Premie inclusief kosten en assurantiebelasting",
+        "Cyberdekkingsgebied: Europa."
       ]
     }
   ],
