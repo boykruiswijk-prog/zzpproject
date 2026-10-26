@@ -1296,6 +1296,13 @@
       "when": 1793021971582,
       "tag": "0184_artikel_foto_machine_status",
       "breakpoints": true
+    },
+    {
+      "idx": 185,
+      "version": "7",
+      "when": 1793022030779,
+      "tag": "0185_artikel_foto_status_wake_retry",
+      "breakpoints": true
     }
   ]
 }
