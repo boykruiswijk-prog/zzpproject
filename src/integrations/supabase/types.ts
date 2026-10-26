@@ -5002,6 +5002,8 @@ export type Database = {
           plaats: string | null
           postcode: string | null
           rechtsvorm: string | null
+          samengevoegd_naar: string | null
+          samengevoegd_op: string | null
           sector: string | null
           straat: string | null
           updated_at: string
@@ -5051,6 +5053,8 @@ export type Database = {
           plaats?: string | null
           postcode?: string | null
           rechtsvorm?: string | null
+          samengevoegd_naar?: string | null
+          samengevoegd_op?: string | null
           sector?: string | null
           straat?: string | null
           updated_at?: string
@@ -5100,6 +5104,8 @@ export type Database = {
           plaats?: string | null
           postcode?: string | null
           rechtsvorm?: string | null
+          samengevoegd_naar?: string | null
+          samengevoegd_op?: string | null
           sector?: string | null
           straat?: string | null
           updated_at?: string
@@ -5109,7 +5115,15 @@ export type Database = {
           vlag_notitie?: string | null
           vlag_op?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ondernemingen_samengevoegd_naar_fkey"
+            columns: ["samengevoegd_naar"]
+            isOneToOne: false
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       partner_bronnen: {
         Row: {

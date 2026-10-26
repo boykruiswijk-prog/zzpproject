@@ -1247,6 +1247,13 @@
       "when": 1793001793921,
       "tag": "0177_a16_cyber_bewijs_telling",
       "breakpoints": true
+    },
+    {
+      "idx": 178,
+      "version": "7",
+      "when": 1793012912365,
+      "tag": "0178_klantkaart_samengevoegd",
+      "breakpoints": true
     }
   ]
 }
