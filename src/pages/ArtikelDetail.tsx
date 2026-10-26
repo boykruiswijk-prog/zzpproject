@@ -119,7 +119,7 @@ const InlineCTA = ({ aov = false, cyber = false }: { aov?: boolean; cyber?: bool
       Vraag online aan vanaf € 55 per maand
     </h3>
     <p className="text-sm text-muted-foreground mb-4">
-      € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting. {cyber ? "BAV + AVB in één polis: geen eigen risico, dagelijks opzegbaar." : "Geen eigen risico. Dagelijks opzegbaar. BAV + AVB in één polis."}
+      € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting. {cyber ? "BAV + AVB: geen eigen risico, dagelijks opzegbaar." : "Geen eigen risico. Dagelijks opzegbaar. BAV + AVB in één polis."}
     </p>
     <div className="flex flex-wrap gap-3">
       <Button variant="accent" asChild>
