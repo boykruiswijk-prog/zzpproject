@@ -1282,6 +1282,13 @@
       "when": 1793019437746,
       "tag": "0182_cyber_register_akkoord_herstel",
       "breakpoints": true
+    },
+    {
+      "idx": 183,
+      "version": "7",
+      "when": 1793021554346,
+      "tag": "0183_artikel_fotos_f10",
+      "breakpoints": true
     }
   ]
 }
