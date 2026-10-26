@@ -93,7 +93,8 @@ Deno.serve(async (req) => {
       if (origin) headers.Origin = origin;
       const response = await fetch(`${url}/functions/v1/generate-certificate`, { method: "POST", headers, body: JSON.stringify({ actie: "cyber_toevoegen", policy_id: actief.policy_id, cyber_verzoek_id: actief.id }) });
       const result = await response.json();
-      if (!response.ok) return json({ error: "Cyber is toegevoegd; het certificaat vraagt aandacht. Probeer opnieuw.", details: result.error, actief: true }, 409);
+      // Activatie, contract en facturatie staan al; certificaat en bevestiging wachten samen tot het team opnieuw start.
+      if (!response.ok) return json({ success: true, status: "actief", contract_id: contract.id, certificaat: "wacht", mail: "wacht_op_certificaat", melding: "Cyber is toegevoegd. Certificaat en bevestigingsmail wachten; start ze later opnieuw.", details: result.error });
     }
     // Existing certificate mail first, independently claimed; confirmation has no attachment.
     const { data: document } = await admin.from("cyber_toevoeg_verzoeken").select("certificaat_pad,certificaat_mail_status").eq("id", actief.id).single();

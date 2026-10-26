@@ -98,7 +98,7 @@ export default function CRM() {
     const [personenRes, poRes, ondRes, kopRes, leadsRes, serviceRes, screeningRes, beslissingRes, certRes] = await Promise.all([
       fetchAlle((a, b) => supabase.from("personen" as any).select("id,genormaliseerd_email,email_weergave,voornaam,achternaam,is_test").range(a, b)),
       fetchAlle((a, b) => supabase.from("persoon_onderneming" as any).select("persoon_id,onderneming_id").range(a, b)),
-      fetchAlle((a, b) => supabase.from("ondernemingen" as any).select("id,kvk,naam,is_test,exact_relatie_code").range(a, b)),
+      fetchAlle((a, b) => supabase.from("ondernemingen" as any).select("id,kvk,naam,is_test,exact_relatie_code,samengevoegd_naar").range(a, b)),
       supabase.from("persoon_bron_koppeling" as any).select("persoon_id,bron_tabel,bron_id"),
       supabase.from("leads").select("id,created_at,voornaam,achternaam,email,telefoon,status,verzekering_type,bedrijfsnaam,opmerkingen,extra_data,is_test"),
       supabase.from("klant_service_aanvragen" as any).select("id,created_at,voornaam,achternaam,email,telefoon,status,type,polisnummer,is_test").is("gekoppeld_aan", null),
@@ -135,6 +135,7 @@ export default function CRM() {
     const ondMap = new Map<string, { kvk: string; naam: string; relatiecode: string | null }>();
     for (const o of (ondRes.data ?? []) as any[]) {
       if (o.is_test && !toonTest) continue;
+      if (o.samengevoegd_naar) continue; // samengevoegde dubbele kaart: nooit tonen
       ondMap.set(o.id, { kvk: o.kvk ?? "", naam: o.naam ?? "", relatiecode: o.exact_relatie_code ?? null });
     }
 

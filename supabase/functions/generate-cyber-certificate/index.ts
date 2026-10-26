@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
     const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const auth = await requireSupervisor(req, admin);
     if (auth instanceof Response) return new Response(auth.body, { status: auth.status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-    if (!CYBER_JAARMAXIMUM.trim()) return json({ error: "Jaarmaximum cyber is nog niet ingesteld; certificaat niet gemaakt", code: "jaarmaximum_ontbreekt" }, 409);
+    if (!CYBER_JAARMAXIMUM.trim()) return json({ error: "Cybercertificaat nog niet beschikbaar: jaarbedrag wordt vastgesteld door Boy", code: "jaarmaximum_ontbreekt" }, 409);
     const body = await req.json().catch(() => ({}));
     const policyId = typeof body?.policy_id === "string" && /^[0-9a-f-]{36}$/i.test(body.policy_id) ? body.policy_id : null;
     if (!policyId) return json({ error: "policy_id ontbreekt of is ongeldig" }, 400);

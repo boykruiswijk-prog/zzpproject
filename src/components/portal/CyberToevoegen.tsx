@@ -17,7 +17,7 @@ import { controleerAdminMfa, verwerkMfaFout } from "@/lib/adminMfaStap";
 import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 
 type Optie = { policy_id: string; label: string; cyclus: string };
-type Verzoek = { id: string; policy_id: string; status: string; is_test?: boolean; geactiveerd_op?: string | null; mail_status?: string; gewenste_ingangsdatum: string; beoordeling_notitie: string | null; notitie: string; antwoorden: unknown; bron: string };
+type Verzoek = { id: string; policy_id: string; status: string; is_test?: boolean; geactiveerd_op?: string | null; mail_status?: string; certificaat_pad?: string | null; gewenste_ingangsdatum: string; beoordeling_notitie: string | null; notitie: string; antwoorden: unknown; bron: string };
 
 export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?: string; team?: boolean }) {
   const zichtbaar = cyberToevoegenPreview();
@@ -129,6 +129,7 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
       {team && r.is_test && <p className="font-semibold text-destructive">{r.notitie === "TEST E4 jaar" || r.notitie === "TEST E4 maand" ? r.notitie : "TEST"}</p>}
       <p className="font-medium">{r.geactiveerd_op ? "Cyber toegevoegd" : CYBER_VERZOEK_STATUS[r.status]}</p><p>Gewenste ingang {formatDateNL(r.gewenste_ingangsdatum)}</p><p className="break-all text-muted-foreground">Referentie {r.id}</p>
       {r.beoordeling_notitie && <p>{r.beoordeling_notitie}</p>}
+      {team && r.geactiveerd_op && !r.certificaat_pad && !r.is_test && <div role="status"><p>Cyber is actief. Certificaat en bevestigingsmail wachten nog (bijvoorbeeld tot het jaarbedrag is vastgesteld).</p><Button variant="outline" disabled={bezig} onClick={() => mailOpnieuw(r.id)}>Certificaat en mail nu maken</Button></div>}
       {team && r.geactiveerd_op && (r.mail_status === "mail_mislukt" || r.mail_status === "mislukt") && <div role="alert"><p>Bevestigingsmail niet verstuurd.</p><Button variant="outline" disabled={bezig} onClick={() => mailOpnieuw(r.id)}>Opnieuw versturen</Button></div>}
       {team && r.geactiveerd_op && (r.mail_status === "mail_onzeker" || r.mail_status === "geclaimd") && <p role="status">Verzending nog niet bevestigd. Controleer eerst de verzendhistorie; niet opnieuw versturen.</p>}
       {team && <><dl className="space-y-3">{CYBER_VRAGEN.map((q) => <div key={q.id}><dt>{q.tekst}</dt><dd className="font-medium">{(r.antwoorden as CyberAntwoorden)[q.id] ? "Ja" : "Nee"}</dd></div>)}</dl><p>Ingediend door: {r.bron === "team" ? "Team namens klant" : "Klant"}</p>{r.notitie && <p>{r.notitie}</p>}</>}
