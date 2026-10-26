@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ImgHTMLAttributes } from "react";
 import { articleImage } from "@/lib/articleImage";
 
 interface Props extends Omit<ImgHTMLAttributes<HTMLImageElement>, "src"> {
-  article: { slug: string; title: string; category?: string | null; image_url?: string | null };
+  article: { slug: string; title: string; category?: string | null; image_url?: string | null; foto_alt?: string | null };
 }
 
 /** Toont de artikelafbeelding; bij een fout nooit een kapot icoon maar een huisstijlblok. */
@@ -27,5 +27,5 @@ export function ArticleImage({ article, className, ...rest }: Props) {
       </div>
     );
   }
-  return <img ref={ref} {...rest} src={articleImage(article)} alt={article.title} className={className} onError={() => setKapot(true)} />;
+  return <img ref={ref} {...rest} src={articleImage(article)} alt={article.foto_alt || article.title} className={className} onError={() => setKapot(true)} />;
 }

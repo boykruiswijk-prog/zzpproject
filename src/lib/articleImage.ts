@@ -19,6 +19,10 @@ export function isArticleIllustration(article: ArticleImageSource): boolean {
   return Boolean(article.image_url?.includes('/article-images/generated/') && article.image_url.endsWith('-illustration.png'));
 }
 
+export function isArticlePhoto(article: ArticleImageSource): boolean {
+  return Boolean(article.image_url?.includes('/article-images/fotos/') && article.image_url.endsWith('.webp'));
+}
+
 export function absoluteArticleImage(article: ArticleImageSource): string {
   return new URL(articleImage(article), `${SITE_CONFIG.url}/`).href;
 }
@@ -26,6 +30,7 @@ export function absoluteArticleImage(article: ArticleImageSource): string {
 /** Paired OG composition exists only for the new AI illustrations. */
 export function absoluteArticleOgImage(article: ArticleImageSource): string {
   const image = absoluteArticleImage(article);
+  if (isArticlePhoto(article)) return image.replace(/\.webp$/, '-og.webp');
   return image.includes('/article-images/generated/') && image.endsWith('-illustration.png')
     ? image.replace(/-illustration\.png$/, '-og.png') : image;
 }
