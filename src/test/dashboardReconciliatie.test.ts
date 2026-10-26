@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { PGlite } from "@electric-sql/pglite";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { beforeAll, afterAll, describe, it, expect } from "vitest";
 import { controleerDashboardOpbouw, conversieAanvragen } from "../../supabase/functions/_shared/dashboardOpbouw";
 import { bouwSchermPayload } from "../../supabase/functions/_shared/schermAnonimiseer";
@@ -16,7 +16,9 @@ beforeAll(async () => {
     CREATE TABLE klant_contracten(id uuid,onderneming_id uuid,product text,status text,is_test boolean default false,begin_datum date,bron text,created_at timestamptz);
     CREATE TABLE activiteiten_log(actie_type text,omschrijving text,lead_id uuid,is_test boolean,uitgevoerd_door uuid);
     CREATE FUNCTION tel_aanvragen_doel(date) RETURNS bigint LANGUAGE sql AS 'select count(*) from public.leads where false';`);
-  const sql=readFileSync("scripts/dashboardReconciliatie.sql","utf8").split("DO $wire$")[0];
+  const migration = readdirSync("drizzle/migrations").find(f=>f.endsWith("dashboard_aanvragen_reconciliatie.sql"));
+  if (!migration) throw new Error("Applied reconciliation migration missing");
+  const sql=readFileSync(`drizzle/migrations/${migration}`,"utf8").split("DO $wire$")[0];
   await db.exec(sql);
   await db.exec(`CREATE OR REPLACE FUNCTION tel_aanvragen_doel(date) RETURNS bigint LANGUAGE sql AS 'select count(*) from public.tel_aanvraag_cohort($1)';`);
   for(let n=1;n<=22;n++) {
@@ -66,5 +68,11 @@ describe("Boy 26-10 sluitende tellingen",()=>{
   await db.query(`INSERT INTO klant_contracten VALUES($1,$2,'bav_avb','actief',false,'2026-10-02','site_activatie','2026-10-01'),($3,$4,'bav_avb','actief',false,'2026-10-01','afas_20261001','2026-10-01'),($5,$2,'bav_avb','actief',false,'2099-12-01','site_activatie','2026-10-01')`,[uuid(122),uuid(120),uuid(123),uuid(121),uuid(124)]);
   const {rows}=await db.query<{i:any}>(`select tel_instroom_opbouw() i`);
   expect(rows[0].i.voor_6_okt).toBe(1); expect(rows[0].i.afas_overzetting).toBe(1); expect(rows[0].i.nog_in_te_gaan).toBe(1);
+ });
+ it("hergebruik van een bestaande contractregel vult de activatiestatus en converted_at",async()=>{
+  await db.query(`UPDATE leads SET status='in_behandeling',geactiveerd_op=null,converted_at=null WHERE id=$1`,[uuid(20)]);
+  await db.query(`UPDATE leads SET geactiveerd_op='2026-10-23T09:16:13Z' WHERE id=$1`,[uuid(20)]);
+  const {rows}=await db.query<{status:string;converted_at:Date}>(`select status,converted_at from leads where id=$1`,[uuid(20)]);
+  expect(rows[0].status).toBe('actief'); expect(new Date(rows[0].converted_at).toISOString()).toBe('2026-10-23T09:16:13.000Z');
  });
 });
