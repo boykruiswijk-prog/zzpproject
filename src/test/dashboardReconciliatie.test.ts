@@ -32,6 +32,13 @@ beforeAll(async () => {
 },30000);
 afterAll(()=>db.close());
 describe("Boy 26-10 sluitende tellingen",()=>{
+ it("later cyberverzoek en cybercontract voegen geen doel of nieuwe klantinstroom toe",async()=>{
+  await db.exec(`CREATE TABLE cyber_toevoeg_verzoeken(id uuid,is_test boolean,status text); INSERT INTO cyber_toevoeg_verzoeken VALUES('00000000-0000-0000-0000-000000000199',false,'wacht_op_beoordeling');`);
+  const voor=(await db.query<{a:any;i:any}>(`select tel_dashboard_opbouw() a,tel_instroom_opbouw() i`)).rows[0];
+  await db.query(`INSERT INTO klant_contracten VALUES($1,null,'cyber_clear','actief',false,'2026-10-23','cyber_toevoegen','2026-10-23')`,[uuid(198)]);
+  const na=(await db.query<{a:any;i:any}>(`select tel_dashboard_opbouw() a,tel_instroom_opbouw() i`)).rows[0];
+  expect(na).toEqual(voor);
+ });
  it("ontdubbelt losse aanmelding op KvK en sluit gekoppelde testlead uit: 21 doel, 19 klant",async()=>{
   const {rows}=await db.query<{opbouw:any}>(`select public.tel_dashboard_opbouw() opbouw`);
   expect(rows[0].opbouw.aanvragen_opbouw).toMatchObject({totaal:21,klant:19,in_behandeling:1,te_beoordelen:1,overig:0});
