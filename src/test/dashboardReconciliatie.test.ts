@@ -20,6 +20,7 @@ beforeAll(async () => {
   if (!migration) throw new Error("Applied reconciliation migration missing");
   const sql=readFileSync(`drizzle/migrations/${migration}`,"utf8").split("DO $wire$")[0];
   await db.exec(sql);
+  await db.exec(readFileSync("drizzle/migrations/0188_cyber_e8_sluitcontrole.sql", "utf8"));
   await db.exec(`CREATE OR REPLACE FUNCTION tel_aanvragen_doel(date) RETURNS bigint LANGUAGE sql AS 'select count(*) from public.tel_aanvraag_cohort($1)';`);
   for(let n=1;n<=22;n++) {
     await db.query(`INSERT INTO leads(id,type,status,kvk_nummer,created_at) VALUES($1,'verzekering_aanvraag',$2,$3,$4)`,
@@ -49,6 +50,9 @@ describe("Boy 26-10 sluitende tellingen",()=>{
  });
  it("SQL controle faalt bij niet sluitende statusopbouw",async()=>{
   await expect(db.query(`select controleer_aanvraag_opbouw($1::jsonb,21)`,[JSON.stringify({totaal:21,klant:18,in_behandeling:1,te_beoordelen:1,overig:0})])).rejects.toThrow(/sluit niet aan/);
+ });
+ it("sluitcontrole weigert later cyber in de doelopbouw",async()=>{
+  await expect(db.query(`select controleer_aanvraag_opbouw($1::jsonb,21)`,[JSON.stringify({totaal:21,klant:19,in_behandeling:1,te_beoordelen:1,overig:0,cyber_toevoegen:1})])).rejects.toThrow(/Later cyber/);
  });
  it("dashboard en schermcontrole falen bij verschillende totaalwaarden",()=>{
   const a={totaal:21,klant:19,in_behandeling:1,te_beoordelen:1,overig:0};
