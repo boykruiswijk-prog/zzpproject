@@ -1359,6 +1359,13 @@
       "when": 1793025599180,
       "tag": "0193_a19_handmatige_lead_enums",
       "breakpoints": true
+    },
+    {
+      "idx": 194,
+      "version": "7",
+      "when": 1793025763275,
+      "tag": "0194_a19_leads_koppeling",
+      "breakpoints": true
     }
   ]
 }
