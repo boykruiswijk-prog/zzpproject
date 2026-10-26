@@ -48,7 +48,7 @@ export const seoRoutes: SeoRoute[] = [
     intro:
       `ZP Zaken biedt persoonlijke service voor zelfstandig professionals, met AFM-vergunning ${SITE_CONFIG.registrations.afm}. ` +
       `De gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering vraag je online aan vanaf € ${laagstePakket.prijs} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting, zonder eigen risico en dagelijks opzegbaar. ` +
-      `Vragen? Bel ${SITE_CONFIG.phone} of mail ${SITE_CONFIG.email}.`,
+      `Vragen? Bel ${SITE_CONFIG.phoneDisplay} of mail ${SITE_CONFIG.email}.`,
   },
   {
     path: "/diensten",
@@ -237,10 +237,10 @@ export const seoRoutes: SeoRoute[] = [
   {
     path: "/contact",
     title: "Contact | Vrijblijvend Gesprek Aanvragen | ZP Zaken",
-    description: `Neem contact op met ZP Zaken. Bel ${SITE_CONFIG.phone}, mail ${SITE_CONFIG.email} of plan een vrijblijvend gesprek.`,
+    description: `Neem contact op met ZP Zaken. Bel ${SITE_CONFIG.phoneDisplay}, mail ${SITE_CONFIG.email} of plan een vrijblijvend gesprek.`,
     h1: "Contact",
     intro:
-      `Je bereikt ZP Zaken op ${SITE_CONFIG.phone} of via ${SITE_CONFIG.email}. ` +
+      `Je bereikt ZP Zaken op ${SITE_CONFIG.phoneDisplay} of via ${SITE_CONFIG.email}. ` +
       `Het kantoor staat aan ${SITE_CONFIG.address.streetAddress}, ${SITE_CONFIG.address.postalCode} ${SITE_CONFIG.address.addressLocality}. ` +
       "Een eerste gesprek is altijd gratis en vrijblijvend.",
   },
@@ -425,7 +425,7 @@ export const seoRoutes: SeoRoute[] = [
       "Beroepsaansprakelijkheidsverzekering voor zzp-consultants. BAV en AVB in één polis via Hiscox, geen eigen risico, online geregeld binnen 24 uur.",
     h1: "ZZP verzekering voor consultants",
     intro:
-      "Als consultant neemt je opdrachtgever besluiten op basis van jouw advies. Een fout in je advies of rapport kan veel geld kosten. Een BAV en AVB in één polis beschermen je.",
+      "Als consultant neemt je opdrachtgever besluiten op basis van jouw advies. Een fout in je advies of rapport kan veel geld kosten. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden.",
   },
   {
     path: "/zzp-verzekering-interim-manager",
@@ -434,7 +434,7 @@ export const seoRoutes: SeoRoute[] = [
       "Verzekering voor zzp interim managers en projectmanagers. BAV en AVB in één polis via Hiscox, geen eigen risico en dagelijks opzegbaar.",
     h1: "ZZP verzekering voor interim managers",
     intro:
-      "Als interim manager of projectmanager neem je besluiten en maak je planningen waar je opdrachtgever op vertrouwt. Een BAV en AVB in één polis beschermen je.",
+      "Als interim manager of projectmanager neem je besluiten en maak je planningen waar je opdrachtgever op vertrouwt. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden.",
   },
   {
     path: "/zzp-verzekering-finance",
@@ -443,13 +443,13 @@ export const seoRoutes: SeoRoute[] = [
       "BAV voor zzp finance professionals zoals interim controllers en CFO's. BAV en AVB in één polis via Hiscox, geen eigen risico, binnen 24 uur geregeld.",
     h1: "ZZP verzekering voor finance professionals",
     intro:
-      "Als interim controller of CFO werk je met cijfers waar je opdrachtgever op stuurt. Een BAV en AVB in één polis beschermen je. Accountant met wettelijke taken of Wft-adviseur? Neem eerst contact op.",
+      "Als interim controller of CFO werk je met cijfers waar je opdrachtgever op stuurt. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden. Accountant met wettelijke taken of Wft-adviseur? Neem eerst contact op.",
   },
   {
     path: "/starters",
     title: "Starterspakket BAV + AVB voor nieuwe zzp'ers | ZP Zaken",
     description:
-      "BAV + AVB voor zzp'ers met een KVK-inschrijving jonger dan 12 maanden: € 45 per maand of € 495 per jaar de eerste 12 maanden, daarna € 55 of € 600.",
+      "BAV + AVB voor zzp'ers met een KVK-inschrijving jonger dan 12 maanden: € 45 per maand of € 495 per jaar de eerste 12 maanden, daarna € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting.",
     h1: "Starterspakket BAV + AVB",
     intro:
       "€ 45 per maand of € 495 per jaar, inclusief kosten en assurantiebelasting, de eerste 12 maanden; daarna € 55 per maand of € 600 per jaar. Voor zzp'ers met een KVK-inschrijving jonger dan 12 maanden.",
@@ -479,7 +479,7 @@ export const seoRoutes: SeoRoute[] = [
       "Beroepsaansprakelijkheidsverzekering voor coaches en trainers. BAV en AVB in één polis via Hiscox, geen eigen risico, online geregeld binnen 24 uur.",
     h1: "ZZP verzekering voor coaches en trainers",
     intro:
-      "Als coach of trainer vertrouwt je klant op jouw begeleiding. Een BAV en AVB in één polis beschermen je. Therapeut of psycholoog? Dat valt onder zorg; neem contact op.",
+      "Als coach of trainer vertrouwt je klant op jouw begeleiding. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden. Therapeut of psycholoog? Dat valt onder zorg; neem contact op.",
   },
   {
     path: "/zzp-verzekering-zorg",
@@ -499,7 +499,7 @@ export const seoRoutes: SeoRoute[] = [
     h1: "ZZP Verzekering voor bouwprofessionals",
     intro:
       "Als zzp'er in de bouw draag je verantwoordelijkheid voor de kwaliteit van je werk. Een constructiefout of schade aan eigendom kan leiden tot forse schadeclaims. " +
-      "Met een BAV en AVB in één polis ben je beschermd.",
+      "Met een BAV en AVB in één polis ben je verzekerd voor aansprakelijkheid, volgens de polisvoorwaarden.",
   },
 ];
 

@@ -22,7 +22,7 @@ export default function ZzpVerzekeringFinance() {
       serviceName="Beroepsaansprakelijkheidsverzekering finance"
       badge="Voor finance professionals"
       title={<>ZZP verzekering voor <span className="text-accent">finance professionals</span></>}
-      subtitle="Als interim controller of CFO werk je met cijfers waar je opdrachtgever op stuurt. Een fout in een rapportage of prognose kan grote gevolgen hebben. Met een BAV en AVB in één polis ben je beschermd."
+      subtitle="Als interim controller of CFO werk je met cijfers waar je opdrachtgever op stuurt. Een fout in een rapportage of prognose kan grote gevolgen hebben. Met een BAV en AVB in één polis ben je verzekerd voor aansprakelijkheid, volgens de polisvoorwaarden."
       sector="management-consultancy"
       benefits={[
         { icon: Calculator, title: "Voor controllers en interim CFO's", description: `Voor financial controllers, business controllers en interim CFO's. Je bent verzekerd voor ${BAV_DEKKING} BAV en ${AVB_DEKKING} AVB per aanspraak.` },

@@ -100,7 +100,7 @@ export const ZEKER_KENNIS = {
     {
       "path": "/",
       "title": "BAV & AVB Verzekering ZZP'ers | Vanaf €55/maand",
-      "intro": "ZP Zaken biedt persoonlijke service voor zelfstandig professionals, met AFM-vergunning 12050636. De gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering vraag je online aan vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting, zonder eigen risico en dagelijks opzegbaar. Vragen? Bel +31204573077 of mail info@zpzaken.nl."
+      "intro": "ZP Zaken biedt persoonlijke service voor zelfstandig professionals, met AFM-vergunning 12050636. De gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering vraag je online aan vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting, zonder eigen risico en dagelijks opzegbaar. Vragen? Bel 020 - 457 3077 of mail info@zpzaken.nl."
     },
     {
       "path": "/diensten",
@@ -195,7 +195,7 @@ export const ZEKER_KENNIS = {
     {
       "path": "/contact",
       "title": "Contact | Vrijblijvend Gesprek Aanvragen | ZP Zaken",
-      "intro": "Je bereikt ZP Zaken op +31204573077 of via info@zpzaken.nl. Het kantoor staat aan Tupolevlaan 41, 1119 NW Schiphol-Rijk. Een eerste gesprek is altijd gratis en vrijblijvend."
+      "intro": "Je bereikt ZP Zaken op 020 - 457 3077 of via info@zpzaken.nl. Het kantoor staat aan Tupolevlaan 41, 1119 NW Schiphol-Rijk. Een eerste gesprek is altijd gratis en vrijblijvend."
     },
     {
       "path": "/cookies",
@@ -290,17 +290,17 @@ export const ZEKER_KENNIS = {
     {
       "path": "/zzp-verzekering-consultant",
       "title": "Beroepsaansprakelijkheidsverzekering consultant | ZP Zaken",
-      "intro": "Als consultant neemt je opdrachtgever besluiten op basis van jouw advies. Een fout in je advies of rapport kan veel geld kosten. Een BAV en AVB in één polis beschermen je."
+      "intro": "Als consultant neemt je opdrachtgever besluiten op basis van jouw advies. Een fout in je advies of rapport kan veel geld kosten. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden."
     },
     {
       "path": "/zzp-verzekering-interim-manager",
       "title": "Verzekering interim manager zzp | BAV en AVB",
-      "intro": "Als interim manager of projectmanager neem je besluiten en maak je planningen waar je opdrachtgever op vertrouwt. Een BAV en AVB in één polis beschermen je."
+      "intro": "Als interim manager of projectmanager neem je besluiten en maak je planningen waar je opdrachtgever op vertrouwt. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden."
     },
     {
       "path": "/zzp-verzekering-finance",
       "title": "BAV zzp finance | Verzekering voor controllers",
-      "intro": "Als interim controller of CFO werk je met cijfers waar je opdrachtgever op stuurt. Een BAV en AVB in één polis beschermen je. Accountant met wettelijke taken of Wft-adviseur? Neem eerst contact op."
+      "intro": "Als interim controller of CFO werk je met cijfers waar je opdrachtgever op stuurt. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden. Accountant met wettelijke taken of Wft-adviseur? Neem eerst contact op."
     },
     {
       "path": "/starters",
@@ -320,7 +320,7 @@ export const ZEKER_KENNIS = {
     {
       "path": "/zzp-verzekering-coach",
       "title": "Beroepsaansprakelijkheidsverzekering coach | ZP Zaken",
-      "intro": "Als coach of trainer vertrouwt je klant op jouw begeleiding. Een BAV en AVB in één polis beschermen je. Therapeut of psycholoog? Dat valt onder zorg; neem contact op."
+      "intro": "Als coach of trainer vertrouwt je klant op jouw begeleiding. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden. Therapeut of psycholoog? Dat valt onder zorg; neem contact op."
     },
     {
       "path": "/zzp-verzekering-zorg",
@@ -330,7 +330,7 @@ export const ZEKER_KENNIS = {
     {
       "path": "/zzp-verzekering-bouw",
       "title": "ZZP Verzekering Bouw | BAV & AVB voor de bouw",
-      "intro": "Als zzp'er in de bouw draag je verantwoordelijkheid voor de kwaliteit van je werk. Een constructiefout of schade aan eigendom kan leiden tot forse schadeclaims. Met een BAV en AVB in één polis ben je beschermd."
+      "intro": "Als zzp'er in de bouw draag je verantwoordelijkheid voor de kwaliteit van je werk. Een constructiefout of schade aan eigendom kan leiden tot forse schadeclaims. Met een BAV en AVB in één polis ben je verzekerd voor aansprakelijkheid, volgens de polisvoorwaarden."
     }
   ],
   "faq": [

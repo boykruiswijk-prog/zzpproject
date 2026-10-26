@@ -89,7 +89,11 @@ export function buildLlmsFullTxt(routes: SeoRoute[], articles: LlmsArticle[] = [
     lines.push(
       `### ${p.name}`,
       "",
-      `- Premie: ${p.prijsLabel} (inclusief kosten en assurantiebelasting).`,
+      `- Premie: ${
+        p.id === "maandelijks" || p.id === "jaarlijks"
+          ? "€ 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting."
+          : `${p.prijsLabel} (inclusief kosten en assurantiebelasting).`
+      }`,
       `- Beroepsaansprakelijkheid (BAV): ${eur(d.bav.perGebeurtenis)} per aanspraak, ${eur(d.bav.perJaar)} per jaar.`,
       `- Bedrijfsaansprakelijkheid (AVB): ${eur(d.avb.perGebeurtenis)} per aanspraak, ${eur(d.avb.perJaar)} per jaar.`,
       ...productRegels,

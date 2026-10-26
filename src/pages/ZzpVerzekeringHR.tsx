@@ -22,7 +22,7 @@ export default function ZzpVerzekeringHR() {
       serviceName="Beroepsaansprakelijkheidsverzekering HR-adviseur"
       badge="Voor HR-professionals"
       title={<>ZZP verzekering voor <span className="text-accent">HR-adviseurs</span></>}
-      subtitle="Als HR-adviseur, recruiter of loopbaanadviseur werk je met mensen en contracten. Een fout in een ontslagadvies of selectie kan je opdrachtgever geld kosten. Een BAV en AVB in één polis beschermen je."
+      subtitle="Als HR-adviseur, recruiter of loopbaanadviseur werk je met mensen en contracten. Een fout in een ontslagadvies of selectie kan je opdrachtgever geld kosten. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden."
       sector="management-consultancy"
       benefits={[
         { icon: Users, title: "Voor HR, P&O en recruitment", description: `Voor HR-adviseurs, P&O'ers, recruiters en loopbaanadviseurs. Verzekerd voor ${BAV_DEKKING} BAV en ${AVB_DEKKING} AVB per aanspraak.` },

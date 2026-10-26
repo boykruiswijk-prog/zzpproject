@@ -12,7 +12,8 @@ export interface BavAanbieder {
   verzekerdBedrag: string;
   eigenRisico: string;
   opzeggen: string;
-  bronUrl: string;
+  /** Alleen voor de eigen ZP Zaken-rij; externe aanbieders hebben geen link (register F1). */
+  bronUrl?: string;
   /** ISO-datum waarop de gegevens op de bronpagina zijn gecontroleerd. */
   gecontroleerd_op: string;
   /** Eigen rij van ZP Zaken (andere opmaak, interne bronlink). */
@@ -61,7 +62,6 @@ export const bavVergelijking: BavAanbieder[] = [
     verzekerdBedrag: "Zelf kiezen, tot € 2 miljoen per jaar",
     eigenRisico: "Zelf kiezen, € 250 tot € 2.500",
     opzeggen: "Dagelijks",
-    bronUrl: "https://www.insify.nl/beroepsaansprakelijkheidsverzekering-bav/zzp/",
     gecontroleerd_op: C,
   },
   {
@@ -71,7 +71,6 @@ export const bavVergelijking: BavAanbieder[] = [
     verzekerdBedrag: "€ 250.000 of € 500.000 per claim",
     eigenRisico: "Niet vermeld",
     opzeggen: "Dagelijks",
-    bronUrl: "https://www.knab.nl/zakelijk/verzekeren/zzp/beroepsaansprakelijkheidsverzekering",
     gecontroleerd_op: C,
   },
   {
@@ -81,7 +80,6 @@ export const bavVergelijking: BavAanbieder[] = [
     verzekerdBedrag: "€ 250.000 standaard, € 2.500.000 voor onder meer architecten",
     eigenRisico: "€ 250 per claim",
     opzeggen: "Niet vermeld",
-    bronUrl: "https://www.centraalbeheer.nl/zakelijk/bedrijfsverzekeringen/bedrijfsaansprakelijkheidsverzekering/beroepsaansprakelijkheidsverzekering/zzp",
     gecontroleerd_op: C,
   },
   {
@@ -91,7 +89,6 @@ export const bavVergelijking: BavAanbieder[] = [
     verzekerdBedrag: "€ 250.000, € 500.000 of € 1.000.000 per aanspraak, per jaar maximaal 2 keer",
     eigenRisico: "€ 750 per aanspraak",
     opzeggen: "Niet vermeld",
-    bronUrl: "https://www.goudse.nl/ondernemer/mijnbedrijf/aansprakelijkheid/beroepsaansprakelijkheidsverzekering-voor-zzp-ers",
     gecontroleerd_op: C,
   },
   {
@@ -101,7 +98,6 @@ export const bavVergelijking: BavAanbieder[] = [
     verzekerdBedrag: "Niet vermeld",
     eigenRisico: "Niet vermeld (geen eigen risico op verdedigingskosten)",
     opzeggen: "Niet vermeld",
-    bronUrl: "https://www.zzp-nederland.nl/verzekeringen-en-advies/zzp-verzekeringen/aansprakelijkheidsverzekering/beroepsaansprakelijkheid",
     gecontroleerd_op: C,
   },
   {
@@ -111,7 +107,6 @@ export const bavVergelijking: BavAanbieder[] = [
     verzekerdBedrag: "Niet vermeld",
     eigenRisico: "Zelf kiezen, bedragen niet vermeld",
     opzeggen: "Niet vermeld",
-    bronUrl: "https://www.allianz.nl/zakelijk/verzekeringen/aansprakelijkheid/beroepsaansprakelijkheidsverzekering.html",
     gecontroleerd_op: C,
   },
   {
@@ -121,7 +116,6 @@ export const bavVergelijking: BavAanbieder[] = [
     verzekerdBedrag: "Maximaal € 1.000.000 per aanspraak en € 2.000.000 per jaar",
     eigenRisico: "€ 125, € 250, € 500 of € 1.000",
     opzeggen: "Op elk moment",
-    bronUrl: "https://www.nn.nl/Zakelijk/Schadeverzekeringen/zzp/beroepsaansprakelijkheidsverzekering.htm",
     gecontroleerd_op: C,
   },
   {
@@ -131,12 +125,10 @@ export const bavVergelijking: BavAanbieder[] = [
     verzekerdBedrag: "Niet vermeld",
     eigenRisico: "Niet vermeld",
     opzeggen: "Niet vermeld",
-    bronUrl: "https://www.rabobank.nl/bedrijven/verzekeren/zzp/beroepsaansprakelijkheidsverzekering-zzp",
     gecontroleerd_op: C,
   },
 ];
 
-export const YEZZER_URL = "https://www.yezzer.nl/verzekeringen/beroepsaansprakelijkheidsverzekering/zzp/vergelijken";
 
 /** Zichtbare FAQ; dezelfde lijst voedt het FAQPage-schema. Bedragen van ZP Zaken uit bavPakketten. */
 export function bavVergelijkingFaq(): { question: string; answer: string }[] {
