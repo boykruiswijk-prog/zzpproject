@@ -218,7 +218,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
       {/* Compacte mobiele lijst */}
       <div className="space-y-3 md:hidden">
         {cyberRijen.map(r => <div key={r.id} className="min-w-0 space-y-2 rounded-lg border border-border p-4"><Badge variant="outline">Cyber toevoegen{r.is_test ? " · TEST" : ""}</Badge><p className="font-medium">{r.klant}</p><p className="text-sm">{r.bav_nummer} · {formatDateNL(r.gewenste_ingangsdatum)} · {r.betaalwijze}</p><p className="break-words text-sm text-muted-foreground">{r.notitie}</p><p className="text-sm">{cyberWerkStap(r)}</p><CyberAanvraag verzoek={r} /></div>)}
-        {leads?.length === 0 ? (
+        {leads?.length === 0 && cyberRijen.length === 0 ? (
           <p className="rounded-lg border p-6 text-center text-sm text-muted-foreground">Geen leads gevonden</p>
         ) : leads?.map((lead) => (
           <div key={lead.id} className="min-w-0 space-y-3 rounded-lg border p-4">
@@ -275,7 +275,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
           </TableHeader>
           <TableBody>
             {cyberRijen.map(r => <TableRow key={r.id}><TableCell className="font-medium">{r.klant}<span className="block text-sm text-muted-foreground">{r.bav_nummer}</span></TableCell><TableCell><Badge variant="outline">Cyber toevoegen{r.is_test ? " · TEST" : ""}</Badge></TableCell><TableCell className="max-w-60 break-words text-sm">{r.notitie}</TableCell><TableCell>Cyber</TableCell><TableCell>{r.betaalwijze === "jaar" ? "Jaarlijks" : "Maandelijks"}</TableCell><TableCell>{cyberWerkStap(r)}</TableCell><TableCell>{formatDateNL(r.gewenste_ingangsdatum)}</TableCell><TableCell><CyberAanvraag verzoek={r} /></TableCell></TableRow>)}
-            {leads?.length === 0 ? (
+            {leads?.length === 0 && cyberRijen.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                   Geen leads gevonden

@@ -19,7 +19,7 @@ const mv = (n: number, een: string, meer: string) => `${n} ${n === 1 ? een : mee
 export function tellerUitleg(k: TellerSleutel, t: Tellers): string {
   const n = t[k] ?? 0;
   switch (k) {
-    case "aanvragen": return `${mv(n, "aanvraag wacht", "aanvragen wachten")} op beoordeling of activatie${gemarkeerd(t.aanvragen_gemarkeerd)}`;
+    case "aanvragen": return `${mv(n, "aanvraag wacht", "aanvragen wachten")} op beoordeling, activatie of certificaatverwerking${gemarkeerd(t.aanvragen_gemarkeerd)}`;
     case "leads": return `${mv(n, "lead is", "leads zijn")} nog niet opgevolgd${gemarkeerd(t.leads_gemarkeerd)}`;
     case "afgehaakt": return `${mv(n, "bezoeker haakte", "bezoekers haakten")} de afgelopen 7 dagen af tijdens het aanvragen`;
     case "opzeggingen": return `${mv(n, "opzegging moet", "opzeggingen moeten")} nog gekoppeld of verwerkt worden`;
