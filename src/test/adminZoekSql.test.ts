@@ -39,4 +39,14 @@ describe('Universeel klant/prospect zoeken',()=>{
  it('testrecords standaard verborgen en expliciet toonbaar',async()=>{expect((await search('verborgen-test')).afgehaakt).toBeUndefined();expect((await search('verborgen-test',true)).afgehaakt[0].id).toBe(id(6));});
  it('weigert menselijke toegang zonder MFA',async()=>{await db.exec(`SET test.aal='aal1'`);await expect(search('vraag')).rejects.toThrow('tweestapscode');await db.exec(`SET test.aal='aal2'`);});
  it('weigert niet-teamleden ook met MFA',async()=>{await db.exec(`SET test.team='no'`);await expect(search('vraag')).rejects.toThrow('Geen toegang');await db.exec(`SET test.team='yes'`);});
+ it('vindt gekoppelde klantkaart op persoonstelefoon en email',async()=>{
+  await db.query(`insert into personen(id,voornaam,genormaliseerd_email,telefoon,is_test) values($1,'Persoon','gekoppeld@zpzaken.nl','0031611112222',false)`,[id(7)]);
+  await db.query(`insert into persoon_onderneming(persoon_id,onderneming_id) values($1,$2)`,[id(7),id(3)]);
+  expect((await search('0611112222')).klanten.some(r=>r.id===id(3))).toBe(true);
+  expect((await search('gekoppeld@')).klanten.some(r=>r.id===id(3))).toBe(true);
+ });
+ it('geen afkapping bij meer dan 1000 klantrecords',async()=>{
+  await db.exec(`insert into klant_contracten(id,onderneming_id,abonnement_nr,is_test) select ('10000000-0000-0000-0000-'||lpad(n::text,12,'0'))::uuid,'${id(3)}','Zoekvolume-'||n,false from generate_series(1,1001) n`);
+  expect((await search('Zoekvolume-')).contracten.length).toBe(1001);
+ });
 });
