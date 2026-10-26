@@ -15,10 +15,17 @@ beforeAll(async()=>{
     CREATE SCHEMA net;CREATE FUNCTION net.http_post(url text,headers jsonb,body jsonb) RETURNS bigint LANGUAGE sql AS 'select 1::bigint';`);
   const name=readdirSync("drizzle/migrations").find(n=>n.endsWith("artikel_fotos_f10.sql"));if(!name)throw new Error("Missing migration");
   await db.exec(readFileSync(`drizzle/migrations/${name}`,"utf8"));
+  const hostMigration=readdirSync("drizzle/migrations").find(n=>n.endsWith("artikel_foto_cloudfront_host.sql"));
+  if(!hostMigration)throw new Error("CloudFront migration ontbreekt");
+  await db.exec(readFileSync(`drizzle/migrations/${hostMigration}`,"utf8"));
   await db.exec(`CREATE TRIGGER old_images AFTER INSERT OR UPDATE ON articles FOR EACH ROW EXECUTE FUNCTION artikel_afbeelding_wekken();`);
 },30000);
 afterAll(()=>db.close());
 describe("F10 database regels",()=>{
+ it("SQL-opslag staat de exacte Higgsfield CloudFront-host toe",async()=>{
+  const {rows}=await db.query<{definition:string}>(`SELECT pg_get_functiondef('artikel_foto_vastleggen(uuid,uuid,jsonb)'::regprocedure) definition`);
+  expect(rows[0].definition).toContain("'d8j0ntlcm91z4.cloudfront.net'");
+ });
  it("blokkeert publicatie zonder foto vanaf 27 oktober",async()=>{
   await expect(db.query(`INSERT INTO articles(id,slug,published_at,is_published) VALUES($1,'nieuw','2026-10-27 00:00:00+01',true)`,[id(1)])).rejects.toThrow("Publicatie geweigerd");
  });
