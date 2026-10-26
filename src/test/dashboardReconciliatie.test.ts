@@ -50,7 +50,7 @@ describe("Boy 26-10 sluitende tellingen",()=>{
  it("nieuw contract op bestaande KvK activeert de aanvraag één keer zonder mail",async()=>{
   await db.query(`INSERT INTO ondernemingen VALUES($1,'90000020',null,false)`,[uuid(100)]);
   await db.query(`INSERT INTO klant_contracten VALUES($1,$2,'bav_avb','actief',false,'2026-10-23','site_activatie','2026-10-23T09:16:13Z')`,[uuid(101),uuid(100)]);
-  const {rows}=await db.query(`select status,converted_at from leads where id=$1`,[uuid(20)]);
+  const {rows}=await db.query<{status:string;converted_at:Date}>(`select status,converted_at from leads where id=$1`,[uuid(20)]);
   expect(rows[0].status).toBe('actief'); expect(new Date(String(rows[0].converted_at)).toISOString()).toBe('2026-10-23T09:16:13.000Z');
   await db.query(`UPDATE klant_contracten SET status='actief' where id=$1`,[uuid(101)]);
   expect((await db.query<{n:number}>(`select count(*)::int n from activiteiten_log where lead_id=$1`,[uuid(20)])).rows[0].n).toBe(1);
@@ -59,7 +59,7 @@ describe("Boy 26-10 sluitende tellingen",()=>{
   await db.query(`INSERT INTO ondernemingen VALUES($1,'90000021',null,false),($2,'90000099',null,false)`,[uuid(110),uuid(111)]);
   await db.query(`INSERT INTO klant_contracten VALUES($1,$2,'bav_avb','actief',false,'2026-10-23','site_activatie','2026-10-23T10:00:00Z')`,[uuid(112),uuid(111)]);
   await db.query(`UPDATE ondernemingen SET samengevoegd_naar=$1 where id=$2`,[uuid(111),uuid(110)]);
-  expect((await db.query(`select status from leads where id=$1`,[uuid(21)])).rows[0].status).toBe('actief');
+  expect((await db.query<{status:string}>(`select status from leads where id=$1`,[uuid(21)])).rows[0].status).toBe('actief');
  });
  it("instroom telt aanvraag vóór 6 okt apart en toekomstige ingang niet als instroom",async()=>{
   await db.query(`INSERT INTO ondernemingen VALUES($1,'90000022',null,false),($2,null,null,false)`,[uuid(120),uuid(121)]);
