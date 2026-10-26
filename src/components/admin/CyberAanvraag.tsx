@@ -11,11 +11,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { controleerAdminMfa } from "@/lib/adminMfaStap";
 import { cyberBeoordelingFout, cyberFunctieFout } from "@/lib/cyberBeoordeling";
 import { formatDateNL } from "@/lib/dateFormat";
+import { CYBER_VRAGEN, type CyberAntwoorden } from "../../../supabase/functions/_shared/cyber";
 
 export interface CyberWerk {
   id: string; klant: string; bav_nummer: string; policy_id: string; onderneming_id: string;
   gewenste_ingangsdatum: string; betaalwijze: string; notitie: string; beoordeling_notitie: string | null;
   status: string; geactiveerd_op: string | null; certificaat_pad: string | null;
+  antwoorden: CyberAntwoorden;
   certificaat_gecontroleerd_pad: string | null; certificaat_gecontroleerd_op: string | null;
   certificaat_mail_status: string; mail_status: string; created_at: string; is_test: boolean; open: boolean;
 }
@@ -73,6 +75,7 @@ export function CyberAanvraag({ verzoek }: { verzoek: CyberWerk }) {
         <Badge variant="outline">{stap}{verzoek.is_test ? " · TEST" : ""}</Badge>
         <dl className="grid grid-cols-2 gap-3 text-sm"><div><dt>BAV + AVB</dt><dd>{verzoek.bav_nummer}</dd></div><div><dt>Gewenste ingang</dt><dd>{formatDateNL(verzoek.gewenste_ingangsdatum)}</dd></div><div><dt>Betaalwijze</dt><dd>{verzoek.betaalwijze === "jaar" ? "Jaarlijks" : "Maandelijks"}</dd></div><div><dt>Notitie</dt><dd className="break-words">{verzoek.notitie || "Geen notitie"}</dd></div></dl>
         {fout && <p role="alert" className="text-sm text-destructive">{fout}</p>}
+        {stap === "Beoordelen" && <dl className="space-y-2 text-sm">{CYBER_VRAGEN.map(v => <div key={v.id}><dt>{v.tekst}</dt><dd className="font-medium">{verzoek.antwoorden?.[v.id] === true ? "Ja" : "Nee"}</dd></div>)}</dl>}
         {stap === "Beoordelen" && <><Label htmlFor={`cyber-beoordeling-${verzoek.id}`}>Toelichting bij beoordeling</Label><Textarea id={`cyber-beoordeling-${verzoek.id}`} minLength={10} maxLength={1000} value={notitie} onChange={e => setNotitie(e.target.value)} /><div className="flex gap-2"><Button disabled={bezig} onClick={() => actie("beoordelen")}>Akkoord</Button><Button variant="outline" disabled={bezig} onClick={() => actie("beoordelen", false)}>Afwijzen</Button></div></>}
         {stap === "Polis activeren" && <Button disabled={bezig} onClick={() => actie("activeren")}>Polis activeren</Button>}
         {stap === "Certificaat aanmaken" && <Button disabled={bezig} onClick={() => actie("certificaat")}>Cybercertificaat aanmaken</Button>}

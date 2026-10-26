@@ -5,10 +5,10 @@ import ts from "typescript";
 import { PGlite } from "@electric-sql/pglite";
 import { CYBER_AKKOORD } from "../../supabase/functions/_shared/cyber";
 
-async function route(actie: string, extra: Record<string, unknown> = {}) {
+async function route(actie: string, extra: Record<string, unknown> = {}, controleOk = true) {
   const calls: string[] = [];
   const verzoek = { id: "00000000-0000-0000-0000-000000000001", status: "akkoord_wacht_op_activatie", is_test: false, geactiveerd_op: null, policy_id: "polis", onderneming_id: "klant", lead_id: "lead", gewenste_ingangsdatum: "2026-10-23", certificaat_pad: "cyber.pdf", certificaat_mail_status: "verzonden", mail_status: "verzonden" };
-  const db = { from: (table: string) => { const q: any = { select: () => q, eq: () => q, maybeSingle: async () => ({ data: table === "cyber_activatie_config" ? { actief: true } : verzoek }), single: async () => ({ data: verzoek }) }; return q; }, rpc: async (name: string) => { calls.push(name); return { data: name === "cyber_certificaat_verzendklaar" ? true : "akkoord_wacht_op_activatie" }; } };
+  const db = { from: (table: string) => { const q: any = { select: () => q, eq: () => q, maybeSingle: async () => ({ data: table === "cyber_activatie_config" ? { actief: true } : verzoek }), single: async () => ({ data: verzoek }) }; return q; }, rpc: async (name: string) => { calls.push(name); return { data: name === "cyber_certificaat_verzendklaar" ? controleOk : name.includes("mail_claim") ? null : "akkoord_wacht_op_activatie" }; } };
   let handler: (r: Request) => Promise<Response> = async () => new Response();
   const source = readFileSync("supabase/functions/cyber-toevoegen-activeren/index.ts", "utf8").replace(/^import .*;\r?\n/gm, "");
   const compiled = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
@@ -19,6 +19,12 @@ async function route(actie: string, extra: Record<string, unknown> = {}) {
   return { response: await r.json(), calls };
 }
 describe("E8 afzonderlijke aanvraagstappen", () => {
+  it("versturen zonder actuele PDF-controle weigert vóór mailclaims", async () => {
+    const r = await route("versturen", {}, false); expect(r.calls).toEqual(["kern", "cyber_certificaat_verzendklaar"]); expect(r.response.error).toBe("Controleer eerst het cybercertificaat");
+  });
+  it("reeds verstuurde mails worden niet nogmaals verstuurd", async () => {
+    const r = await route("versturen"); expect(r.calls).toEqual(["kern", "cyber_certificaat_verzendklaar", "ontvanger", "cyber_toevoegen_mail_claim"]); expect(r.response.mail).toBe("verzonden");
+  });
   it("akkoord beoordeelt alleen, geen activatie/document/klantmail", async () => {
     const r = await route("beoordelen"); expect(r.calls).toEqual(["cyber_toevoegen_beoordelen"]); expect(r.response.mail).toBe("niet_verzonden_beoordeling");
   });
