@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] A16 26 oktober: cyberteksten, nieuw akkoordbewijs, gekoppelde testleadtelling en Lovable-noindex herstellen; testen, gezamenlijk publiceren, live controleren en één Ellen-melding.
 - [x] D6 vervolg 24 oktober: twee artikelalinea’s en updated_at bijgewerkt en teruggelezen; fb-nieuwjaarsactie 301 met slash/taalprefixen toegevoegd; 90/90 gerichte tests groen. Generator gecontroleerd: sitemap/HTML nemen updated_at mee; llms worden opnieuw opgebouwd maar bevatten geen artikeldatums. Niet gepubliceerd.
 - [x] D6 24 oktober: zes publieke tekstcorrecties, bestaande vertalingen/FAQ-schema/Zeker/llms bijgewerkt; 57/57 gerichte publieke teksttests groen. AOV, admin, prijzen en overige logica ongemoeid; niet gepubliceerd.
 - [x] Boy 23 oktober 10:47: Ellen Te doen afgerond; alleen_test ingesteld (actief=false), twee open gemarkeerde jaar/maandverzoeken en onveranderlijke voorsnapshots bevestigd; SELECT-query uitgevoerd en previewlinks in docs. 62 Vitest + 3 Deno-tests/typecheck groen; alleen cyber-toevoegen-activeren gedeployed, live OPTIONS 200/POST 401. Site niet gepubliceerd, geen Vault-omweg/mails/Exact/Ellen-melding. Stop vóór menselijke goedkeuring.
