@@ -50,7 +50,7 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds }: Props) 
     queryKey: ["klant-zelfde-kvk", ond.id, ond.kvk],
     enabled: !actief && !!ond.kvk,
     queryFn: async () => {
-      const { data } = await supabase.from("ondernemingen").select("id,naam").eq("kvk", ond.kvk!).neq("id", ond.id);
+      const { data } = await supabase.from("ondernemingen").select("id,naam").eq("kvk", ond.kvk!).neq("id", ond.id).is("samengevoegd_naar", null);
       return data || [];
     },
   });

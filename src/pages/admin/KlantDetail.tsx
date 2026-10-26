@@ -41,6 +41,8 @@ export default function KlantDetail() {
     (async () => {
       setLaden(true);
       const { data: o } = await supabase.from("ondernemingen").select("*").eq("id", id!).maybeSingle();
+      // Samengevoegde dubbele kaart: direct door naar de kaart waar alles nu staat.
+      if ((o as any)?.samengevoegd_naar) { window.location.replace(`/admin/klanten/${(o as any).samengevoegd_naar}`); return; }
       setOnd(o);
       if (o) {
         const [k, po, m, l] = await Promise.all([
