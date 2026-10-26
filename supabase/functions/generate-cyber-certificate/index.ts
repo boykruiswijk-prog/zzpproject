@@ -2,7 +2,7 @@
 // geeft een tijdelijke link terug. Verstuurt niets en wijzigt geen polis-, contract- of factuurgegevens.
 import { createClient } from "npm:@supabase/supabase-js@2.108.2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2.108.2/cors";
-import { requireSupervisor } from "../_shared/teamAuth.ts";
+import { requireVerzekeringOfSupervisor } from "../_shared/teamAuth.ts";
 import { tekenCyberCertificaat } from "../_shared/cyberCertificaatPdf.ts";
 import { CERTIFICAAT_VOOR_GEZIEN } from "../_shared/certificaatRegels.ts";
 import { CYBER_JAARMAXIMUM, CYBERCERTIFICAAT_LIVE } from "../_shared/cyberCertificaatTeksten.ts";
@@ -15,7 +15,7 @@ Deno.serve(async (req) => {
   if (!/^Bearer\s+/i.test(req.headers.get("Authorization") ?? "")) return json({ error: "Unauthorized" }, 401);
   try {
     const admin = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
-    const auth = await requireSupervisor(req, admin);
+    const auth = await requireVerzekeringOfSupervisor(req, admin);
     if (auth instanceof Response) return new Response(auth.body, { status: auth.status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     if (!CYBER_JAARMAXIMUM.trim()) return json({ error: "Cybercertificaat nog niet beschikbaar: jaarbedrag wordt vastgesteld door Boy", code: "jaarmaximum_ontbreekt" }, 409);
     if (!CYBERCERTIFICAAT_LIVE) return json({ error: "Cybercertificaat wacht op laatste goedkeuring", code: "cybercertificaat_niet_live" }, 409);
