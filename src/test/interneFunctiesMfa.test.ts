@@ -8,6 +8,7 @@ const root = "supabase/functions";
 const uitzonderingen: Record<string, string> = {
   "aanvraag-nabellen": "Vault cron-secret",
   "afgehaakt-samenvatting": "Vault cron-secret",
+  "artikel-foto": "Empty wake processes only SQL-enqueued article photo jobs; no caller input",
   "auth-email-hook": "Verified webhook signature/provider credential",
   "exact-gl-check": "Vault cron-secret only",
   "exact-keepalive": "Vault cron-secret only",
