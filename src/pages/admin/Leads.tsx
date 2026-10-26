@@ -1,6 +1,7 @@
 import { ToonTestrecordsSchakelaar } from "@/components/admin/ToonTestrecordsSchakelaar";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { LeadTable } from "@/components/admin/LeadTable";
+import { HandmatigeLeadToevoegen } from "@/components/admin/HandmatigeLeadToevoegen";
 
 /** Leads: offerte-, contact- en terugbelverzoeken. Aanvragen (afsluitingen) staan op een eigen pagina. */
 export default function AdminLeads({ soort = "leads" }: { soort?: "aanvragen" | "leads" }) {
@@ -13,7 +14,7 @@ export default function AdminLeads({ soort = "leads" }: { soort?: "aanvragen" | 
           <p className="text-muted-foreground">
             {aanvragen ? "BAV + AVB-aanvragen en cyber toevoegen" : "Offerteaanvragen, contact- en terugbelverzoeken"}
           </p>
-          <div className="mt-2"><ToonTestrecordsSchakelaar /></div>
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-3"><ToonTestrecordsSchakelaar /><HandmatigeLeadToevoegen /></div>
         </div>
         <LeadTable key={soort} soort={soort} />
       </div>

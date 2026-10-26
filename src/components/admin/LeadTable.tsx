@@ -209,6 +209,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
           <SelectContent>
             <SelectItem value="all">Alle types</SelectItem>
             {soort !== "aanvragen" && <SelectItem value="contact">Contactverzoek</SelectItem>}
+            {soort !== "aanvragen" && <SelectItem value="handmatig">Handmatige lead</SelectItem>}
             {soort !== "leads" && <SelectItem value="verzekering_aanvraag">Verzekeringsaanvraag</SelectItem>}
             {soort === "aanvragen" && <SelectItem value="cyber_toevoegen">Cyber toevoegen</SelectItem>}
             {soort !== "aanvragen" && <SelectItem value="offerte-aanvraag">Offerteaanvraag</SelectItem>}
@@ -234,7 +235,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
               </div>
               {magVlag && <VlagKnop lead={lead as any} />}
               {eviLeadLabel(lead.extra_data) && <Badge variant="outline">{eviLeadLabel(lead.extra_data)}</Badge>}
-              <Badge variant="outline">{lead.type === "verzekering_aanvraag" ? "Verzekering" : lead.type === "offerte-aanvraag" ? "Offerte" : "Contact"}</Badge>
+              <Badge variant="outline">{lead.type === "verzekering_aanvraag" ? "Verzekering" : lead.type === "handmatig" ? "Handmatig" : lead.type === "offerte-aanvraag" ? "Offerte" : "Contact"}</Badge>
             </div>
             <div className="space-y-1 text-sm">
               {lead.email && <a href={`mailto:${lead.email}`} className="block break-all text-primary hover:underline">{lead.email}</a>}

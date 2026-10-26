@@ -1,4 +1,5 @@
 import { eviLeadLabel } from "@/lib/interneBron";
+import { LeadKlantKoppeling } from "@/components/admin/LeadKlantKoppeling";
 import { KvkLeadAfwijkingen } from "@/components/admin/KvkLeadAfwijkingen";
 import { CyberDatums } from "@/components/admin/CyberDatums";
 import { IngangsdatumAanpassen } from "@/components/admin/IngangsdatumAanpassen";
@@ -256,12 +257,7 @@ export default function AdminLeadDetail() {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            {lead.type !== "verzekering_aanvraag" && lead.status !== "klant" && (
-              <Button variant="accent" onClick={handleMarkAsCustomer}>
-                <UserCheck className="h-4 w-4 mr-2" />
-                Markeer als klant
-              </Button>
-            )}
+            <LeadKlantKoppeling lead={lead} />
             <LeadAfrondenKnop lead={lead as any} />
             <LeadTestSchakelaar leadId={lead.id} isTest={!!lead.is_test} naam={`${lead.voornaam ?? ""} ${lead.achternaam ?? ""}`.trim()} />
             {isSupervisorOrAdmin && (

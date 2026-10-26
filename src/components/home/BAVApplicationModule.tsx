@@ -50,6 +50,7 @@ import { interneBronUitZoek } from "@/lib/interneBron";
 import { WerkzaamhedenVeld } from "@/components/shared/WerkzaamhedenVeld";
 import { werkzaamhedenFout } from "../../../supabase/functions/_shared/werkzaamheden";
 import { HANDMATIGE_ONTVANGST } from "../../../supabase/functions/_shared/aanvraagBeoordeling";
+import { aanvraagVoorinvulling, type LeadVoorinvulling } from "@/lib/handmatigeLead";
 
 const formatBedrag = (n: number) => `€${n.toLocaleString("nl-NL")}`;
 /** Compacte bedragen: 5.000.000 → "€5M", 2.500.000 → "€2,5M". */
@@ -284,6 +285,15 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
   // mogelijk om e-mailadressen en KvK-nummers af te tasten. De dubbelcheck
   // gebeurt nu server-side bij het versturen van de aanvraag.
   const wizardRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const gegevens = (routerLocatie.state as { aanvraagVanLead?: LeadVoorinvulling } | null)?.aanvraagVanLead;
+    if (!gegevens) return;
+    const invulling = aanvraagVoorinvulling(gegevens);
+    // The router-state payload already uses the wizard's field name.
+    setFormData(prev => ({ ...prev, ...invulling, kvkNummer: (gegevens as { kvkNummer?: string }).kvkNummer ?? invulling.kvkNummer }));
+    setCurrentStep(1);
+    window.history.replaceState({ ...window.history.state, usr: null }, "");
+  }, [routerLocatie.key]);
   // Snelle start bovenaan beroepspagina's: maandpakket, e-mail en telefoon vooraf ingevuld.
   useEffect(() => {
     const h = (e: Event) => {

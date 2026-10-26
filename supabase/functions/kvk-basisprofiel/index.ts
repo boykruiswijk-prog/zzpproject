@@ -31,6 +31,15 @@ Deno.serve(async (req) => {
       return json({ sleutel: !!Deno.env.get("KVK_API_KEY"), aan: sch?.enabled === true });
     }
 
+    if (modus === "handmatige_lead") {
+      const auth = await requireVerzekeringOfSupervisor(req, admin);
+      if (auth instanceof Response) return doorgeven(auth);
+      const kvk = String(body?.kvk ?? "").replace(/\s/g, "");
+      if (!kvkBevraagbaar(kvk)) return json({ ok: false, melding: "Vul een geldig KvK-nummer in" }, 400);
+      const r = await haalKvkProfiel(admin, kvk, { bron: "beheer", uid: auth.userId });
+      return json(r.ok ? { ok: true, naam: r.profiel.naam, uit_cache: r.uit_cache } : { ok: false, melding: r.melding });
+    }
+
     if (modus === "lead") {
       const auth = await requireVerzekeringOfSupervisor(req, admin);
       if (auth instanceof Response) return doorgeven(auth);
