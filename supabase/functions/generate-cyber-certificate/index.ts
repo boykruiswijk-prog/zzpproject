@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (!/^Bearer\s+/i.test(req.headers.get("Authorization") ?? "")) return json({ error: "Unauthorized" }, 401);
   try {
-    const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    const admin = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
     const auth = await requireSupervisor(req, admin);
     if (auth instanceof Response) return new Response(auth.body, { status: auth.status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     if (!CYBER_JAARMAXIMUM.trim()) return json({ error: "Cybercertificaat nog niet beschikbaar: jaarbedrag wordt vastgesteld door Boy", code: "jaarmaximum_ontbreekt" }, 409);
@@ -28,6 +28,20 @@ Deno.serve(async (req) => {
     if (!policy) return json({ error: "Certificaat niet gevonden" }, 404);
     if (policy.status !== "geldig") return json({ error: "Alleen bij een geldig BAV + AVB-certificaat" }, 409);
 
+    const verzoekId = typeof body.cyber_verzoek_id === "string" && /^[0-9a-f-]{36}$/i.test(body.cyber_verzoek_id) ? body.cyber_verzoek_id : null;
+    let lease: string | null = null;
+    if (verzoekId) {
+      const { data: r } = await admin.from("cyber_toevoeg_verzoeken").select("*").eq("id", verzoekId).eq("policy_id", policy.id).maybeSingle();
+      if (!r?.geactiveerd_op || !r.contract_id) return json({ error: "Activeer eerst cyber" }, 409);
+      if (r.is_test) return json({ error: "Testpolis: alleen lokaal certificaat renderen" }, 409);
+      if (r.certificaat_pad) {
+        const { data: link } = await admin.storage.from("certificates").createSignedUrl(r.certificaat_pad, 3600);
+        return json({ success: true, pad: r.certificaat_pad, url: link?.signedUrl });
+      }
+      lease = crypto.randomUUID();
+      const claim = await admin.rpc("cyber_toevoegen_document_claim", { _id: verzoekId, _lease: lease });
+      if (claim.error || !claim.data) return json({ error: "Certificaat wordt al verwerkt" }, 409);
+    }
     // Cyberdatums: later toegevoegde cyber (actief contract) gaat voor, anders cyber bij de aanvraag.
     let ingang: string | null = null, eind: string | null = null, kvk: string | null = null;
     const { data: verzoek } = await admin.from("cyber_toevoeg_verzoeken").select("contract_id")
@@ -55,9 +69,13 @@ Deno.serve(async (req) => {
       jaarmaximum: CYBER_JAARMAXIMUM, afgiftedatum: new Date().toISOString().slice(0, 10), voor_gezien: CERTIFICAAT_VOOR_GEZIEN,
     });
     // Nooit overschrijven: elke afgifte een eigen bestand.
-    const pad = `cyber/${policy.certificate_number}-cyber-${Date.now()}.pdf`;
+    const pad = verzoekId && lease ? `cyber-toevoegen/${verzoekId}-${lease}.pdf` : `cyber/${policy.certificate_number}-cyber-${Date.now()}.pdf`;
     const { error: upErr } = await admin.storage.from("certificates").upload(pad, new Blob([pdfBytes as BlobPart], { type: "application/pdf" }), { contentType: "application/pdf", upsert: false });
     if (upErr) return json({ error: "Opslaan mislukt" }, 500);
+    if (verzoekId && lease) {
+      const klaar = await admin.rpc("cyber_aanvraag_document_klaar", { _id: verzoekId, _lease: lease, _pad: pad });
+      if (klaar.error || !klaar.data) return json({ error: "Documentclaim kon niet worden bevestigd" }, 409);
+    }
     const { data: url } = await admin.storage.from("certificates").createSignedUrl(pad, 3600);
     return json({ success: true, pad, url: url?.signedUrl ?? null });
   } catch (e) {
