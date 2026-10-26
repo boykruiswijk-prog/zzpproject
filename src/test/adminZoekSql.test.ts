@@ -19,6 +19,7 @@ beforeAll(async()=>{
  await db.exec(readFileSync('src/test/fixtures/adminZoekSchema.sql','utf8'));
  const sql=readFileSync('scripts/adminZoek.sql','utf8').replace(/CREATE EXTENSION[^;]+;/g,'').replace(/EXECUTE format\('CREATE INDEX[^\n]+?\);/g,'NULL;');
  await db.exec(sql);
+ await db.exec(readFileSync('drizzle/migrations/0191_admin_zoeken_cyber_bav_koppeling.sql','utf8'));
  await db.query(`insert into aanvraag_concepten(id,voornaam,achternaam,telefoon,status,is_test) values($1,'Afgehaakt','Persoon','+31 6 12 34 56 78','open',false)`,[id(1)]);
  await db.query(`insert into leads(id,voornaam,email,type,status,is_test) values($1,'Contact','vraag@zpzaken.nl','contact','nieuw',false)`,[id(2)]);
  await db.query(`insert into ondernemingen(id,naam,kvk,iban,is_test) values($1,'Hoofdkaart','92 65 41 93','NL91 ABNA 0417 1643 00',false)`,[id(3)]);
@@ -48,5 +49,10 @@ describe('Universeel klant/prospect zoeken',()=>{
  it('geen afkapping bij meer dan 1000 klantrecords',async()=>{
   await db.exec(`insert into klant_contracten(id,onderneming_id,abonnement_nr,is_test) select ('10000000-0000-0000-0000-'||lpad(n::text,12,'0'))::uuid,'${id(3)}','Zoekvolume-'||n,false from generate_series(1,1001) n`);
   expect((await search('Zoekvolume-')).contracten.length).toBe(1001);
+ });
+ it('vindt later cyber op BAV-nummer van de gekoppelde klant',async()=>{
+  await db.query(`insert into cyber_toevoeg_verzoeken(id,onderneming_id,status,is_test) values($1,$2,'wacht_op_beoordeling',false)`,[id(8),id(3)]);
+  const r=(await search('ZPBAV5193')).cyber[0];
+  expect(r.id).toBe(id(8));expect(r.link).toBe(`/admin/aanvragen?cyber=${id(8)}`);
  });
 });
