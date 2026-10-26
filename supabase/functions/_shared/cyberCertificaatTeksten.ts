@@ -1,6 +1,6 @@
 // Teksten voor het aparte cybercertificaat (register E-aanvulling 5/5a, besluit Boy 23-10-2026).
 import { COMPANY } from "./company.ts";
-import { POLISBLAD_NOTITIE } from "./certificaatRegels.ts";
+import { CERTIFICAAT_VOOR_GEZIEN, POLISBLAD_NOTITIE } from "./certificaatRegels.ts";
 
 export const CYBER_CERTIFICAAT_TITEL = "VERZEKERINGSCERTIFICAAT CYBERVERZEKERING";
 export const CYBER_CERTIFICAAT_ONDERTITEL = "CYBERVERZEKERING";
@@ -10,12 +10,12 @@ export const CYBER_VERZEKERD_BEDRAG = "EUR 50.000 per schade en per deelnemer (i
 /** Jaarmaximum voor alle deelnemers samen, zonder "EUR" (bijv. "250.000"). Leeg: generator weigert echte klanten. */
 export const CYBER_JAARMAXIMUM = "5.000.000"; // Besluit Boy, register E-aanvulling 5d
 /** Echte klantcertificaten pas na goedkeuring voorbeeld door Boy. */
-export const CYBERCERTIFICAAT_LIVE = false;
+export const CYBERCERTIFICAAT_LIVE = true;
 export const CYBER_JAARMAXIMUM_VOORBEELD = "XXX";
 export function cyberVerzekerdBedrag(jaarmaximum: string): string {
   return `${CYBER_VERZEKERD_BEDRAG}\nEUR ${jaarmaximum} per verzekeringsjaar voor alle deelnemers samen.`;
 }
-export const CYBER_EIGEN_RISICO = "EUR 500 per schade, bij cyberfraude EUR 1.000";
+export const CYBER_EIGEN_RISICO = "EUR 500 per schade";
 export const CYBER_POLISVOORWAARDEN = `CyberClear by Hiscox (HCC-2022/01) en de van toepassing zijnde clausules. De voorwaarden zijn op te vragen via ${COMPANY.phoneDisplay}.`;
 export const CYBER_DEKKINGSGEBIED = "Europa";
 export const CYBER_MELDING_SCHADE = "Meld een schade of incident zo spoedig als redelijkerwijs mogelijk bij de verzekeraar: Hiscox Nederland (Hiscox incident response team), telefoon +31 (0)20 517 0700, e-mail hiscox.claims@hiscox.nl, Postbus 87033, 1080 JA Amsterdam.";
@@ -39,7 +39,7 @@ export function cyberEinddatum(ingang: string): string {
 }
 
 export function cyberContractduur(ingang: string, eind?: string | null): string {
-  return `${korteDatum(ingang)} tot en met ${korteDatum(eind || cyberEinddatum(ingang))}. Daarna stilzwijgend verlengd met 12 maanden. Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar.`;
+  return `${korteDatum(ingang)} tot en met ${korteDatum(eind || cyberEinddatum(ingang))}. Daarna stilzwijgend verlengd met 12 maanden. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar.`;
 }
 
 export type CyberCertificaatInvoer = {

@@ -778,7 +778,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
 
     // Voor gezien ZP Zaken
     y -= 20;
-    drawRow("Voor gezien ZP Zaken:", policy.issued_by, y);
+    drawRow("Voor gezien ZP Zaken:", CERTIFICAAT_VOOR_GEZIEN, y);
 
     // === Four left-aligned paragraphs at the same margin and width as the data ===
     const footerWidth = pageWidth - labelX - 40;

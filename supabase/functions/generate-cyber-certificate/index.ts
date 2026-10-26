@@ -4,6 +4,7 @@ import { createClient } from "npm:@supabase/supabase-js@2.108.2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2.108.2/cors";
 import { requireSupervisor } from "../_shared/teamAuth.ts";
 import { tekenCyberCertificaat } from "../_shared/cyberCertificaatPdf.ts";
+import { CERTIFICAAT_VOOR_GEZIEN } from "../_shared/certificaatRegels.ts";
 import { CYBER_JAARMAXIMUM, CYBERCERTIFICAAT_LIVE } from "../_shared/cyberCertificaatTeksten.ts";
 
 const json = (body: unknown, status = 200) =>
@@ -52,7 +53,7 @@ Deno.serve(async (req) => {
     const { pdfBytes } = await tekenCyberCertificaat(new Uint8Array(await tpl.arrayBuffer()), {
       certificaathouder: policy.certificate_holder, kvk, verzekeringsnemer: policy.insured_name,
       bav_certificaatnummer: policy.certificate_number, cyber_ingangsdatum: ingang, cyber_einddatum: eind,
-      jaarmaximum: CYBER_JAARMAXIMUM, afgiftedatum: new Date().toISOString().slice(0, 10), voor_gezien: profiel?.full_name ?? "ZP Zaken",
+      jaarmaximum: CYBER_JAARMAXIMUM, afgiftedatum: new Date().toISOString().slice(0, 10), voor_gezien: CERTIFICAAT_VOOR_GEZIEN,
     });
     // Nooit overschrijven: elke afgifte een eigen bestand.
     const pad = `cyber/${policy.certificate_number}-cyber-${Date.now()}.pdf`;

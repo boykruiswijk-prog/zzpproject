@@ -92,3 +92,6 @@ export const CERTIFICAAT_ROLLEN = ["admin", "supervisor", "verzekering", "medewe
 export function magCertificaatBeheren(rollen: readonly (string | null | undefined)[]): boolean {
   return rollen.some((r) => !!r && (CERTIFICAAT_ROLLEN as readonly string[]).includes(r));
 }
+
+/** Besluit Boy E-5e: "Voor gezien ZP Zaken" op BAV- en cybercertificaat, ongeacht wie genereert. */
+export const CERTIFICAAT_VOOR_GEZIEN = "Ellen Baars";
