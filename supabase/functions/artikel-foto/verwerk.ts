@@ -11,7 +11,8 @@ async function init() {
 }
 
 export async function fotoHashes(bytes: Uint8Array) {
-  fotoAfmetingen(bytes); await init();
+  // Existing trusted site images may slightly exceed the new-import limit.
+  fotoAfmetingen(bytes, 16_000_000); await init();
   const image = PhotonImage.new_from_byteslice(bytes);
   try {
     const small = resize(image, 32, 32, SamplingFilter.Triangle);

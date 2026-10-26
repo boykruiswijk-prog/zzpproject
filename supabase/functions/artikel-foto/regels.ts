@@ -38,7 +38,7 @@ export async function downloadFoto(url: URL, fetcher: typeof fetch = fetch): Pro
 }
 
 /** Read dimensions before decoding to reject compressed pixel bombs. */
-export function fotoAfmetingen(bytes: Uint8Array): { width: number; height: number } {
+export function fotoAfmetingen(bytes: Uint8Array, maxPixels = MAX_PIXELS): { width: number; height: number } {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   const text = (start: number, n: number) => String.fromCharCode(...bytes.slice(start, start + n));
   let width = 0, height = 0;
@@ -69,7 +69,7 @@ export function fotoAfmetingen(bytes: Uint8Array): { width: number; height: numb
       if (size < 2) break; i += size;
     }
   }
-  if (!width || !height || width * height > MAX_PIXELS || width > 8000 || height > 8000) throw new Error("Ongeldige foto of meer dan 12 miljoen pixels");
+  if (!width || !height || width * height > maxPixels || width > 8000 || height > 8000) throw new Error("Ongeldige foto of meer dan 12 miljoen pixels");
   return { width, height };
 }
 
