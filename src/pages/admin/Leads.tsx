@@ -11,7 +11,7 @@ export default function AdminLeads({ soort = "leads" }: { soort?: "aanvragen" | 
         <div>
           <h1 className="break-words text-2xl font-bold sm:text-3xl">{aanvragen ? "Aanvragen" : "Leads"}</h1>
           <p className="text-muted-foreground">
-            {aanvragen ? "Afsluitingen van verzekeringen via de site" : "Offerteaanvragen, contact- en terugbelverzoeken"}
+            {aanvragen ? "BAV + AVB-aanvragen en cyber toevoegen" : "Offerteaanvragen, contact- en terugbelverzoeken"}
           </p>
           <div className="mt-2"><ToonTestrecordsSchakelaar /></div>
         </div>
