@@ -1331,6 +1331,13 @@
       "when": 1793024654126,
       "tag": "0189_artikel_foto_cloudfront_host",
       "breakpoints": true
+    },
+    {
+      "idx": 190,
+      "version": "7",
+      "when": 1793025252791,
+      "tag": "0190_admin_zoeken_alle_bronnen",
+      "breakpoints": true
     }
   ]
 }
