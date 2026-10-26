@@ -6413,6 +6413,10 @@ export type Database = {
         Returns: Json
       }
       contract_opzegging: { Args: { _contract_id: string }; Returns: string }
+      controleer_aanvraag_opbouw: {
+        Args: { _a: Json; _doel: number }
+        Returns: boolean
+      }
       credit_beoordelen: {
         Args: { _goedkeuren: boolean; _id: string; _reden: string }
         Returns: Json
@@ -6905,6 +6909,7 @@ export type Database = {
         }
         Returns: Json
       }
+      onderneming_hoofdkaart: { Args: { _id: string }; Returns: string }
       onderneming_is_partner: { Args: { _ond: string }; Returns: string }
       overgenomen_certificaatnummer: {
         Args: { _lead_id: string }
@@ -7019,6 +7024,19 @@ export type Database = {
         Returns: Json
       }
       site_bezoek: { Args: { _categorie: string }; Returns: undefined }
+      synchroniseer_aanvraag_contract: {
+        Args: { _onderneming: string; _tijd: string }
+        Returns: undefined
+      }
+      tel_aanvraag_cohort: {
+        Args: { _vanaf?: string }
+        Returns: {
+          dag: string
+          kvk: string
+          sleutel: string
+          statusgroep: string
+        }[]
+      }
       tel_aanvragen_doel: { Args: { _vanaf?: string }; Returns: number }
       tel_aanvragen_doel_rijen: {
         Args: { _vanaf?: string }
@@ -7029,6 +7047,11 @@ export type Database = {
       }
       tel_acties_vandaag: { Args: { _toon_test?: boolean }; Returns: number }
       tel_contracten: { Args: { _toon_test?: boolean }; Returns: number }
+      tel_dashboard_opbouw: { Args: never; Returns: Json }
+      tel_instroom_opbouw: {
+        Args: { _toon_test?: boolean; _vanaf?: string }
+        Returns: Json
+      }
       tel_klanten: { Args: { _toon_test?: boolean }; Returns: number }
       tel_netto_groei: {
         Args: { _toon_test?: boolean; _vanaf?: string }

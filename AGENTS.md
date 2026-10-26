@@ -1,4 +1,5 @@
 # Technische afspraken
+- Dashboard application composition comes from tel_dashboard_opbouw/tel_aanvraag_cohort; the goal and conversion share KvK deduplication, and SQL plus payload validation reject mismatched totals. Lifecycle triggers synchronize only new activation/merge events, never historical bulk repairs. Why: dashboard/screen reconciliation without customer mail or accounting effects.
 - New-application cyber consent SQL is generated from _shared/cyber.ts by scripts/cyberAkkoordSql.ts and parity-tested; historical evidence is immutable. Why: database evidence and the displayed consent cannot drift.
 - Lovable-only robots/canonical enforcement runs in the early head script and survives head updates; never apply it to custom production hosts. Why: exclude duplicate published hosts without deindexing zpzaken.nl.
 - Certificate previews execute the production PDF drawing block locally with a local template and fictitious fields, never the privileged handler; authorization, policy writes and mail stay untouched. Why: inspect identical rendering without customer effects.

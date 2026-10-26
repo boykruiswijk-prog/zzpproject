@@ -1,6 +1,7 @@
 // Laatste anonimiseringslaag voor het ZP Zaken Live-scherm (bezoekers kijken mee).
 // Pure TypeScript zonder Deno- of npm-imports, zodat vitest dit ook test.
 import { NETTO_GROEI_VANAF } from "./nettoGroei.ts";
+import { controleerDashboardOpbouw } from "./dashboardOpbouw.ts";
 
 export const ADS_BUDGET = 22500;
 export const STATIONS = [
@@ -293,7 +294,9 @@ export function schoonNettoGroei(n: Ruw) {
     opzegpercentage: getal(x.opzegpercentage) }) : null;
   if (!n) return null;
   const weken = Array.isArray(n.weken) ? n.weken : [];
-  return { vanaf: NETTO_GROEI_VANAF, cumulatief: blok(n.cumulatief), deze_week: blok(weken[weken.length - 1]) };
+  const i = n.instroom_opbouw;
+  return { vanaf: NETTO_GROEI_VANAF, cumulatief: blok(n.cumulatief), deze_week: blok(weken[weken.length - 1]),
+    ...(i ? { instroom_opbouw: { via_aanvraag: getal(i.via_aanvraag) ?? 0, voor_6_okt: getal(i.voor_6_okt) ?? 0, afas_overzetting: getal(i.afas_overzetting) ?? 0, nog_in_te_gaan: getal(i.nog_in_te_gaan) ?? 0, overig: getal(i.overig) ?? 0 } } : {}) };
 }
 
 /** Bouwt de publieke payload uit de geaggregeerde RPC-uitvoer; alleen witte-lijstvelden. */
@@ -301,6 +304,8 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
   const status = (s: unknown) => (s === "bezig" || s === "fout" ? s : "klaar");
   const doel = r?.doel ?? {};
   const totaal = getal(doel.totaal) ?? 0;
+  controleerDashboardOpbouw(r?.aanvragen_opbouw, totaal);
+  if (r?.aanvragen_opbouw && getal(r?.stroom?.verstuurd) !== totaal) throw new Error("Schermstroom sluit niet aan op het doelaantal");
   const rest = Math.max(getal(doel.resterende_dagen) ?? 0, 0);
   const tempo = getal(doel.tempo_14d) ?? 0;
   const stations: Record<string, { vandaag: number; skills: number; laatste_status: string | null; toestand: Toestand; laatst_actief_op: string | null; lopende_tekst: string | null; duur_vandaag_min: number; agent_bezig_sinds: string | null }> = {};
@@ -386,6 +391,10 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
       content_verbeterd: getal(kb.content_verbeterd),
     },
     netto_groei: schoonNettoGroei(r?.netto_groei),
+    ...(r?.aanvragen_opbouw ? { aanvragen_opbouw: {
+      totaal, klant: getal(r.aanvragen_opbouw.klant) ?? 0, in_behandeling: getal(r.aanvragen_opbouw.in_behandeling) ?? 0,
+      te_beoordelen: getal(r.aanvragen_opbouw.te_beoordelen) ?? 0, overig: getal(r.aanvragen_opbouw.overig) ?? 0,
+    }, telling_controle: true } : {}),
     ai_team: team,
     workers: metAgentWorkers(schoonWorkers(r?.workers), team),
     marketing: schoonMarketing(r?.marketing),
