@@ -1,4 +1,4 @@
-export const FOTO_HOSTS = ["cdn.higgsfield.ai", "static-public-media.higgsfield.ai", "static.higgsfield.ai"] as const;
+export const FOTO_HOSTS = ["cdn.higgsfield.ai", "static-public-media.higgsfield.ai", "static.higgsfield.ai", "d8j0ntlcm91z4.cloudfront.net"] as const;
 export const MAX_BYTES = 15 * 1024 * 1024;
 export const MAX_PIXELS = 12_000_000;
 export const PHASH_AFSTAND = 8;

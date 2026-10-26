@@ -42,6 +42,7 @@ WHERE slug = 'unieke-artikel-slug' AND image_url IS NULL
 - `cdn.higgsfield.ai`
 - `static-public-media.higgsfield.ai`
 - `static.higgsfield.ai`
+- `d8j0ntlcm91z4.cloudfront.net` (exacte Higgsfield-uitvoerhost, besluit Boy 26 oktober)
 
 Exacte hosts, uitsluitend HTTPS/443, geen gebruikersinfo en geen redirects. Geen generieke `*.cloudfront.net`-toegang: die zou ook willekeurige derde partijen toelaten. Een specifieke andere CDN-host kan na verificatie expliciet worden toegevoegd.
 
