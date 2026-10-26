@@ -8,7 +8,9 @@ export const CYBER_POLISNUMMER = "HCR3202063";
 export const CYBER_SOORT = "CyberClear by Hiscox, ZP Zaken Cyber Collectief";
 export const CYBER_VERZEKERD_BEDRAG = "EUR 50.000 per schade en per deelnemer (inclusief kosten).";
 /** Jaarmaximum voor alle deelnemers samen, zonder "EUR" (bijv. "250.000"). Leeg: generator weigert echte klanten. */
-export const CYBER_JAARMAXIMUM = "";
+export const CYBER_JAARMAXIMUM = "5.000.000"; // Besluit Boy, register E-aanvulling 5d
+/** Echte klantcertificaten pas na goedkeuring voorbeeld door Boy. */
+export const CYBERCERTIFICAAT_LIVE = false;
 export const CYBER_JAARMAXIMUM_VOORBEELD = "XXX";
 export function cyberVerzekerdBedrag(jaarmaximum: string): string {
   return `${CYBER_VERZEKERD_BEDRAG}\nEUR ${jaarmaximum} per verzekeringsjaar voor alle deelnemers samen.`;

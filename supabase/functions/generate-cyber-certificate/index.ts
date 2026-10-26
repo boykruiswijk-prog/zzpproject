@@ -4,7 +4,7 @@ import { createClient } from "npm:@supabase/supabase-js@2.108.2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2.108.2/cors";
 import { requireSupervisor } from "../_shared/teamAuth.ts";
 import { tekenCyberCertificaat } from "../_shared/cyberCertificaatPdf.ts";
-import { CYBER_JAARMAXIMUM } from "../_shared/cyberCertificaatTeksten.ts";
+import { CYBER_JAARMAXIMUM, CYBERCERTIFICAAT_LIVE } from "../_shared/cyberCertificaatTeksten.ts";
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -17,6 +17,7 @@ Deno.serve(async (req) => {
     const auth = await requireSupervisor(req, admin);
     if (auth instanceof Response) return new Response(auth.body, { status: auth.status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     if (!CYBER_JAARMAXIMUM.trim()) return json({ error: "Cybercertificaat nog niet beschikbaar: jaarbedrag wordt vastgesteld door Boy", code: "jaarmaximum_ontbreekt" }, 409);
+    if (!CYBERCERTIFICAAT_LIVE) return json({ error: "Cybercertificaat wacht op laatste goedkeuring", code: "cybercertificaat_niet_live" }, 409);
     const body = await req.json().catch(() => ({}));
     const policyId = typeof body?.policy_id === "string" && /^[0-9a-f-]{36}$/i.test(body.policy_id) ? body.policy_id : null;
     if (!policyId) return json({ error: "policy_id ontbreekt of is ongeldig" }, 400);
