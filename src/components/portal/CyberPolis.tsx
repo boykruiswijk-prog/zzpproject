@@ -8,6 +8,6 @@ export function CyberPolis({ leadId, policyId }: { leadId?: string; policyId?: s
   const rijen = (data ?? []).filter((r) => r.policy_id && policyId ? r.policy_id === policyId : !leadId || r.lead_id === leadId);
   return <>{rijen.map((r) => <div key={r.id ?? r.lead_id} className="border-t border-border mt-4 pt-4 space-y-2 text-sm">
     <h3 className="font-semibold">Cyberdekking</h3><p>Ingang {formatDateNL(r.ingang)}</p>
-    <p>{CYBER_DEKKING}</p><p>{CYBER_HULP}</p><p>{CYBER_LOOPTIJD}</p>{r.later_toegevoegd && <p>Looptijd 12 maanden, daarna stilzwijgend verlengd met 12 maanden.</p>}<p>{CYBER_POLISVOORWAARDEN}</p>
+    <p>{CYBER_DEKKING}</p><p>{CYBER_HULP}</p><p>{CYBER_LOOPTIJD}</p><p>{CYBER_POLISVOORWAARDEN}</p>
   </div>)}</>;
 }

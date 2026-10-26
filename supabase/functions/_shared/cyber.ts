@@ -2,7 +2,8 @@
 import { plusMaanden } from "./starterTarief.ts";
 export const CYBER_VERSIE = "2026-10-08";
 export const CYBER = { maandprijs: 27.5, jaarprijs: 250, perSchade: 50_000, eigenRisico: 500, fraudeEigenRisico: 1000, incident72uur: 15_000 } as const;
-export const CYBER_AKKOORD = "Ik begrijp dat cyber een looptijd van 12 maanden heeft en daarna stilzwijgend wordt verlengd met 12 maanden. Al betaalde premie voor cyber krijg ik bij opzeggen niet terug. Cyber is niet pauzeerbaar. De BAV + AVB blijft dagelijks opzegbaar.";
+// Register E (15/16-10), bevestigd 26-10: alleen wijzigen na expliciet registerbesluit.
+export const CYBER_AKKOORD = "Ik begrijp dat cyber dagelijks opzegbaar is en dat ik al betaalde premie voor cyber bij opzeggen niet terugkrijg. Cyber is niet pauzeerbaar. De BAV + AVB blijft dagelijks opzegbaar.";
 export const CYBER_DEKKING = "Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000)";
 export const CYBER_HULP = "Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.";
 export const CYBER_POLISVOORWAARDEN = "Wat precies gedekt is, lees je in de polisvoorwaarden.";

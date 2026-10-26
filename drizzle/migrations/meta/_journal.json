@@ -1275,6 +1275,13 @@
       "when": 1793017534068,
       "tag": "0181_cyber_akkoord_2610_e6_behouden",
       "breakpoints": true
+    },
+    {
+      "idx": 182,
+      "version": "7",
+      "when": 1793019437746,
+      "tag": "0182_cyber_register_akkoord_herstel",
+      "breakpoints": true
     }
   ]
 }
