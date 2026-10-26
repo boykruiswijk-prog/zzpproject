@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { cyberCertificaatRijen, cyberEinddatum, CYBER_POLISNUMMER, CYBER_JAARMAXIMUM } from "../../supabase/functions/_shared/cyberCertificaatTeksten";
+import { cyberCertificaatRijen, cyberEinddatum, CYBER_POLISNUMMER, CYBER_JAARMAXIMUM, CYBERCERTIFICAAT_LIVE } from "../../supabase/functions/_shared/cyberCertificaatTeksten";
 
 const rijen = cyberCertificaatRijen({
   certificaathouder: "Fictief B.V.", kvk: "12345678", verzekeringsnemer: "Test", bav_certificaatnummer: "ZPBAV5193",
@@ -29,8 +29,15 @@ describe("cybercertificaat E5/E5a", () => {
     expect(cyberEinddatum("2026-10-24")).toBe("2027-10-23");
     expect(cyberEinddatum("2028-03-01")).toBe("2029-02-28");
   });
-  it("jaarbedrag alle deelnemers: config leeg, generator weigert dan, voorbeeld toont XXX", () => {
-    expect(CYBER_JAARMAXIMUM).toBe("");
+  it("jaarbedrag 5.000.000 (E-5d), live-vlag uit blokkeert echte klanten vóór tekenen", () => {
+    expect(CYBER_JAARMAXIMUM).toBe("5.000.000");
+    expect(CYBERCERTIFICAAT_LIVE).toBe(false);
+    const std = cyberCertificaatRijen({ certificaathouder: "F", verzekeringsnemer: "T", bav_certificaatnummer: "ZPBAV1",
+      cyber_ingangsdatum: "2026-10-24", afgiftedatum: "2026-10-23", voor_gezien: "T" });
+    expect(std.find((r) => r.label === "Verzekerd bedrag:")?.waarde).toContain("EUR 5.000.000 per verzekeringsjaar voor alle deelnemers samen.");
+    const g = readFileSync("supabase/functions/generate-cyber-certificate/index.ts", "utf8");
+    expect(g).toContain('if (!CYBERCERTIFICAAT_LIVE) return json({ error: "Cybercertificaat wacht op laatste goedkeuring"');
+    expect(g.indexOf("cybercertificaat_niet_live")).toBeLessThan(g.indexOf("tekenCyberCertificaat("));
     const src = readFileSync("supabase/functions/generate-cyber-certificate/index.ts", "utf8");
     expect(src).toContain('if (!CYBER_JAARMAXIMUM.trim()) return json(');
     expect(src.indexOf("jaarmaximum_ontbreekt")).toBeLessThan(src.indexOf("tekenCyberCertificaat("));
