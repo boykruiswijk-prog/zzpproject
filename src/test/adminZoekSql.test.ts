@@ -17,7 +17,7 @@ beforeAll(async()=>{
  CREATE FUNCTION zoek_norm_tel(v text) RETURNS text LANGUAGE sql IMMUTABLE AS $$SELECT CASE WHEN length(d)=9 THEN d END FROM (SELECT CASE WHEN x LIKE '0031%' THEN substr(x,5) WHEN x LIKE '31%' AND length(x)=11 THEN substr(x,3) WHEN x LIKE '0%' THEN substr(x,2) ELSE x END d FROM (SELECT regexp_replace(coalesce(v,''),'\\D','','g') x) a)b$$;
  SET test.aal='aal2';SET test.team='yes';`);
  await db.exec(readFileSync('src/test/fixtures/adminZoekSchema.sql','utf8'));
- const sql=readFileSync('scripts/adminZoek.sql','utf8').replace(/CREATE EXTENSION[^;]+;/g,'').replace(/CREATE INDEX[^;]+;/g,'');
+ const sql=readFileSync('scripts/adminZoek.sql','utf8').replace(/CREATE EXTENSION[^;]+;/g,'').replace(/EXECUTE format\('CREATE INDEX[^\n]+?\);/g,'NULL;');
  await db.exec(sql);
  await db.query(`insert into aanvraag_concepten(id,voornaam,achternaam,telefoon,status,is_test) values($1,'Afgehaakt','Persoon','+31 6 12 34 56 78','open',false)`,[id(1)]);
  await db.query(`insert into leads(id,voornaam,email,type,status,is_test) values($1,'Contact','vraag@zpzaken.nl','contact','nieuw',false)`,[id(2)]);

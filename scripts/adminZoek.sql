@@ -42,28 +42,29 @@ BEGIN
  ), canonical AS (SELECT DISTINCT ON(origin) origin,id FROM maps ORDER BY origin,cardinality(path) DESC), candidates AS (
  SELECT b.*, c.id hoofd_id,o.naam hoofd_naam,o.is_test hoofd_test,l.is_test lead_test,l.voornaam,l.achternaam,l.bedrijfsnaam,l.email lead_email,l.telefoon lead_tel,l.kvk_nummer,o.kvk,o.exact_relatie_code,o.postcode,
  o.naam||' '||coalesce(o.kvk,'')||' '||coalesce(o.exact_relatie_code,'')||' '||coalesce(o.factuur_email,'') gekoppeld_tekst,
- p.telefoon persoon_tel,p.is_test persoon_test,
+ p.telefoon persoon_tel,p.is_test persoon_test,contact.tekst contact_tekst,contact.tels contact_tels,
  EXISTS(SELECT 1 FROM unnest(b.ibans) i WHERE (fulliban AND public.zoek_norm_compact(i)=compact) OR (suffix IS NOT NULL AND right(public.zoek_norm_compact(i),4)=suffix)) iban_match
  FROM public.admin_zoek_bronnen b
  LEFT JOIN public.leads l ON l.id=b.lead_id
  LEFT JOIN canonical c ON c.origin=b.onderneming_id
  LEFT JOIN public.ondernemingen o ON o.id=c.id
  LEFT JOIN public.personen p ON p.id=b.persoon_id
+ LEFT JOIN LATERAL (SELECT string_agg(concat_ws(' ',pp.voornaam,pp.achternaam,pp.genormaliseerd_email),' ') tekst,array_agg(pp.telefoon) tels FROM public.persoon_onderneming po JOIN public.personen pp ON pp.id=po.persoon_id WHERE po.onderneming_id IN (b.onderneming_id,c.id) AND (_met_test OR NOT pp.is_test)) contact ON true
  ), matched AS (
- SELECT *,CASE WHEN iban_match THEN 100 WHEN tel IS NOT NULL AND (tel=public.zoek_norm_tel(lead_tel) OR tel=public.zoek_norm_tel(persoon_tel) OR EXISTS(SELECT 1 FROM unnest(telefoons) t WHERE public.zoek_norm_tel(t)=tel)) THEN 95 ELSE 80 END score
+ SELECT *,CASE WHEN iban_match THEN 100 WHEN tel IS NOT NULL AND (tel=public.zoek_norm_tel(lead_tel) OR tel=public.zoek_norm_tel(persoon_tel) OR EXISTS(SELECT 1 FROM unnest(telefoons||coalesce(contact_tels,ARRAY[]::text[])) t WHERE public.zoek_norm_tel(t)=tel)) THEN 95 ELSE 80 END score
  FROM candidates b
  WHERE (_met_test OR NOT (b.is_test OR coalesce(hoofd_test,false) OR coalesce(lead_test,false) OR coalesce(persoon_test,false)))
  AND (iban_match OR (NOT fulliban AND (
- id::text=q OR strpos(zoektekst,q)>0 OR strpos(lower(coalesce(gekoppeld_tekst,'')),q)>0 OR strpos(lower(concat_ws(' ',voornaam,achternaam,bedrijfsnaam,lead_email)),q)>0
+ id::text=q OR strpos(zoektekst,q)>0 OR strpos(lower(coalesce(contact_tekst,'')),q)>0 OR strpos(lower(coalesce(gekoppeld_tekst,'')),q)>0 OR strpos(lower(concat_ws(' ',voornaam,achternaam,bedrijfsnaam,lead_email)),q)>0
  OR (length(compact)>=3 AND EXISTS(SELECT 1 FROM unnest(nummers||ARRAY[kvk,kvk_nummer,exact_relatie_code,postcode]) n WHERE strpos(public.zoek_norm_compact(n),compact)>0))
- OR (tel IS NOT NULL AND (tel=public.zoek_norm_tel(lead_tel) OR tel=public.zoek_norm_tel(persoon_tel) OR EXISTS(SELECT 1 FROM unnest(telefoons) t WHERE public.zoek_norm_tel(t)=tel)))
+ OR (tel IS NOT NULL AND (tel=public.zoek_norm_tel(lead_tel) OR tel=public.zoek_norm_tel(persoon_tel) OR EXISTS(SELECT 1 FROM unnest(telefoons||coalesce(contact_tels,ARRAY[]::text[])) t WHERE public.zoek_norm_tel(t)=tel)))
  )))
  ), payload AS (
  SELECT groep,score,jsonb_build_object('id',CASE WHEN groep='klanten' THEN coalesce(hoofd_id,id) ELSE id END,'bron_id',id,'bron',bron,'titel',coalesce(nullif(titel,''),nullif(hoofd_naam,''),nullif(concat_ws(' ',voornaam,achternaam),''),nullif(email,''),'Onbekend'),
  'score',score,'redenen',jsonb_build_array(CASE WHEN iban_match THEN 'IBAN '||public.zoek_masker_iban((SELECT i FROM unnest(ibans) i WHERE (fulliban AND public.zoek_norm_compact(i)=compact) OR (suffix IS NOT NULL AND right(public.zoek_norm_compact(i),4)=suffix) LIMIT 1))||' komt overeen' WHEN hoofd_id IS NOT NULL AND hoofd_id<>onderneming_id THEN 'Oude kaart, samengevoegd naar '||hoofd_naam ELSE 'Gevonden in '||bron END),
  'onderneming_id',hoofd_id,'email',coalesce(email,lead_email),'telefoon',coalesce(telefoons[1],lead_tel,persoon_tel),'kvk',coalesce(kvk,kvk_nummer),'exact_relatie_code',exact_relatie_code,'status',status,'type',soort,'is_test',is_test,
  'iban',CASE WHEN iban_match THEN public.zoek_masker_iban((SELECT i FROM unnest(ibans) i WHERE (fulliban AND public.zoek_norm_compact(i)=compact) OR (suffix IS NOT NULL AND right(public.zoek_norm_compact(i),4)=suffix) LIMIT 1)) END,
- 'link',CASE WHEN route='/admin/klanten/' THEN CASE WHEN hoofd_id IS NOT NULL THEN route||hoofd_id WHEN lead_id IS NOT NULL THEN '/admin/leads/'||lead_id ELSE '/admin/zoekrecord/'||bron||'/'||id END WHEN route='/admin/leads/' THEN CASE WHEN lead_id IS NOT NULL THEN route||lead_id ELSE '/admin/zoekrecord/'||bron||'/'||id END WHEN bron='bav_aanmeldingen' AND lead_id IS NOT NULL THEN '/admin/leads/'||lead_id ELSE route||id END,
+ 'link',CASE WHEN route='/admin/klanten/' THEN CASE WHEN hoofd_id IS NOT NULL THEN route||hoofd_id WHEN lead_id IS NOT NULL THEN '/admin/leads/'||lead_id ELSE '/admin/zoekrecord/'||bron||'/'||id END WHEN route='/admin/leads/' THEN CASE WHEN lead_id IS NOT NULL THEN route||lead_id ELSE '/admin/zoekrecord/'||bron||'/'||id END WHEN bron='bav_aanmeldingen' AND lead_id IS NOT NULL THEN '/admin/leads/'||lead_id WHEN bron='aov_aanmeldingen' AND NOT public.is_supervisor_or_admin(me) THEN '/admin/zoekrecord/'||bron||'/'||id ELSE route||id END,
  'lead_link',CASE WHEN lead_id IS NOT NULL THEN '/admin/leads/'||lead_id END) j,iban_match
  FROM matched
  ), groups AS (SELECT groep,jsonb_agg(j ORDER BY score DESC,j->>'titel',j->>'bron_id') items FROM payload GROUP BY groep)
