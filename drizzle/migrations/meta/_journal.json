@@ -1268,6 +1268,13 @@
       "when": 1793017066800,
       "tag": "0180_dashboard_activatie_trigger_rechten",
       "breakpoints": true
+    },
+    {
+      "idx": 181,
+      "version": "7",
+      "when": 1793017534068,
+      "tag": "0181_cyber_akkoord_2610_e6_behouden",
+      "breakpoints": true
     }
   ]
 }
