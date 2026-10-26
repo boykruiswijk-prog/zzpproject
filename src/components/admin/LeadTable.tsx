@@ -13,7 +13,7 @@ import { useState } from "react";
 import { VlagIcoon, VlagKnop } from "@/components/admin/LeadVlag";
 import { filterAanvragenOpTab, filterOpTab, vandaagNL, type VlagTab } from "@/lib/leadVlag";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useLeads, useUpdateLead, useDeleteLead } from "@/hooks/useLeads";
 import { formatDateNL } from "@/lib/dateFormat";
 import {
@@ -78,7 +78,8 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
   const magVlag = isSupervisorOrAdmin || isVerzekering;
   const { toonTest } = useToonTestrecords();
   const [toonAfgerond, setToonAfgerond] = useState(false);
-  const [tab, setTab] = useState<VlagTab>("te_doen");
+  const [params] = useSearchParams();
+  const [tab, setTab] = useState<VlagTab>(params.get("cyber") ? "alle" : "te_doen");
   const cyberQuery = useCyberAanvragen(toonTest, soort === "aanvragen");
   const cyberRijen = (cyberQuery.data ?? []).filter(r => tab !== "gemarkeerd" && (tab === "alle" || r.open) &&
     [r.klant, r.bav_nummer, r.notitie].join(" ").toLowerCase().includes(search.toLowerCase()) &&
@@ -217,7 +218,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
 
       {/* Compacte mobiele lijst */}
       <div className="space-y-3 md:hidden">
-        {cyberRijen.map(r => <div key={r.id} className="min-w-0 space-y-2 rounded-lg border border-border p-4"><Badge variant="outline">Cyber toevoegen{r.is_test ? " · TEST" : ""}</Badge><p className="font-medium">{r.klant}</p><p className="text-sm">{r.bav_nummer} · {formatDateNL(r.gewenste_ingangsdatum)} · {r.betaalwijze}</p><p className="break-words text-sm text-muted-foreground">{r.notitie}</p><p className="text-sm">{cyberWerkStap(r)}</p><CyberAanvraag verzoek={r} /></div>)}
+        {cyberRijen.map(r => <div key={r.id} className="min-w-0 space-y-2 rounded-lg border border-border p-4"><Badge variant="outline">Cyber toevoegen{r.is_test ? " · TEST" : ""}</Badge><p className="font-medium">{r.klant}</p><p className="text-sm">{r.bav_nummer} · {formatDateNL(r.gewenste_ingangsdatum)} · {r.betaalwijze}</p><p className="break-words text-sm text-muted-foreground">{r.notitie}</p><p className="text-sm">{cyberWerkStap(r)}</p><CyberAanvraag verzoek={r} autoOpen={false} /></div>)}
         {leads?.length === 0 && cyberRijen.length === 0 ? (
           <p className="rounded-lg border p-6 text-center text-sm text-muted-foreground">Geen leads gevonden</p>
         ) : leads?.map((lead) => (

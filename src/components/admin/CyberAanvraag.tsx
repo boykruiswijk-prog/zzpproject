@@ -32,9 +32,9 @@ export function cyberWerkStap(r: CyberWerk) {
   if (!r.certificaat_gecontroleerd_op || r.certificaat_gecontroleerd_pad !== r.certificaat_pad) return "Certificaat controleren";
   return "Certificaat versturen";
 }
-export function CyberAanvraag({ verzoek }: { verzoek: CyberWerk }) {
+export function CyberAanvraag({ verzoek, autoOpen = true }: { verzoek: CyberWerk; autoOpen?: boolean }) {
   const [params, setParams] = useSearchParams();
-  const [open, setOpen] = useState(params.get("cyber") === verzoek.id);
+  const [open, setOpen] = useState(autoOpen && params.get("cyber") === verzoek.id);
   const [notitie, setNotitie] = useState(verzoek.beoordeling_notitie ?? "");
   const [pdf, setPdf] = useState<string | null>(null);
   const [bezig, setBezig] = useState(false);
