@@ -110,7 +110,7 @@ function slugHash(s: string) {
   return h;
 }
 
-const InlineCTA = ({ aov = false }: { aov?: boolean }) => (
+const InlineCTA = ({ aov = false, cyber = false }: { aov?: boolean; cyber?: boolean }) => (
   <div className="not-prose my-8 rounded-lg p-5 bg-accent/5 border-l-4 border-accent">
     <div className="text-xs font-semibold uppercase tracking-wide text-accent mb-1">
       Binnen 24 uur geregeld
@@ -119,7 +119,7 @@ const InlineCTA = ({ aov = false }: { aov?: boolean }) => (
       Vraag online aan vanaf € 55 per maand
     </h3>
     <p className="text-sm text-muted-foreground mb-4">
-      € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting. Geen eigen risico. Dagelijks opzegbaar. BAV + AVB in één polis.
+      € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting. {cyber ? "BAV + AVB in één polis: geen eigen risico, dagelijks opzegbaar." : "Geen eigen risico. Dagelijks opzegbaar. BAV + AVB in één polis."}
     </p>
     <div className="flex flex-wrap gap-3">
       <Button variant="accent" asChild>
@@ -139,7 +139,7 @@ const InlineCTA = ({ aov = false }: { aov?: boolean }) => (
   </div>
 );
 
-const renderContentWithCTA = (rawContent: string, aov = false) => {
+const renderContentWithCTA = (rawContent: string, aov = false, cyber = false) => {
   // Fiscale tokens ({{fiscaal:...}}) worden vervangen door de actuele waarden
   // uit src/data/fiscaleCijfers.ts, zodat bedragen nooit verouderen.
   const content = resolveFiscaleTokens(rawContent);
@@ -152,7 +152,7 @@ const renderContentWithCTA = (rawContent: string, aov = false) => {
   return (
     <>
       <ReactMarkdown urlTransform={articleMarkdownUrl} remarkPlugins={[remarkGfm]}>{before}</ReactMarkdown>
-      <InlineCTA aov={aov} />
+      <InlineCTA aov={aov} cyber={cyber} />
       <ReactMarkdown urlTransform={articleMarkdownUrl} remarkPlugins={[remarkGfm]}>{after}</ReactMarkdown>
     </>
   );
@@ -425,7 +425,7 @@ export default function ArtikelDetail() {
                   prose-td:border prose-td:border-border/60 prose-td:px-4 prose-td:py-3
                   prose-hr:my-12 prose-hr:border-border/60">
                 {toonInlineCTA
-                  ? renderContentWithCTA(article.content || "", isAov)
+                  ? renderContentWithCTA(article.content || "", isAov, article.slug === "cyberverzekering-zzp")
                   : <ReactMarkdown urlTransform={articleMarkdownUrl} remarkPlugins={[remarkGfm]}>{resolveFiscaleTokens(article.content || "")}</ReactMarkdown>}
               </div>
 

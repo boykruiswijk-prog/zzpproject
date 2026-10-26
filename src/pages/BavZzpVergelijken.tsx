@@ -177,7 +177,7 @@ export default function BavZzpVergelijken() {
             [`Hoge dekking.`, `BAV ${bav} en AVB ${avb} per aanspraak.`],
             [`BAV + AVB: geen eigen risico.`, ``],
             [`Vaste prijs.`, `${eur(maand.prijs)} per maand of ${eur(jaar.prijs)} per jaar, inclusief kosten en assurantiebelasting.`],
-            [`BAV + AVB dagelijks opzegbaar.`, `Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug.`],
+            [`BAV + AVB dagelijks opzegbaar.`, `Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar.`],
             [`Snel geregeld.`, `Je vraagt online aan, binnen 24 uur geregeld en je krijgt het certificaat in je mailbox.`],
           ].map(([kop, tekst]) => (
             <li key={kop} className="flex gap-3">
