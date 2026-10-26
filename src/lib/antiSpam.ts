@@ -4,7 +4,7 @@
 import { useCallback, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { leesAttributie } from "@/lib/attributie";
-import { trackGenerateLead, trackChatHandoff, trackTerugbelVerzonden, trackContactVerzonden, isTestOmgeving } from "@/lib/tracking";
+import { trackGenerateLead, trackChatHandoff, trackTerugbelVerzonden, trackContactVerzonden, isTestOmgeving, trackOfferteVerzonden } from "@/lib/tracking";
 import { publiekeRij } from "@/lib/publiekeTekst";
 
 /** Naam van het onzichtbare veld. Bots vullen 'm, mensen zien 'm niet. */
