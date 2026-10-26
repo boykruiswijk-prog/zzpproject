@@ -20,8 +20,8 @@ export function handmatigeLeadGegevens(g: HandmatigeLead) {
   return { ...g, email: g.email.trim().toLowerCase(), telefoon: g.telefoon.trim() ? normaliseerNlTelefoon(g.telefoon) : "", kvk: g.kvk.replace(/\s/g, ""), voornaam: g.voornaam.trim(), achternaam: g.achternaam.trim() };
 }
 
-export type LeadVoorinvulling = { voornaam?: string | null; achternaam?: string | null; bedrijfsnaam?: string | null; email?: string | null; telefoon?: string | null; kvk_nummer?: string | null; kvk?: string | null; beroep?: string | null };
+export type LeadVoorinvulling = { voornaam?: string | null; achternaam?: string | null; bedrijfsnaam?: string | null; email?: string | null; telefoon?: string | null; kvk_nummer?: string | null; kvk?: string | null; kvkNummer?: string | null; beroep?: string | null };
 /** No PII in a URL, storage or persistent browser state. Used as router state only. */
 export function aanvraagVoorinvulling(g: LeadVoorinvulling) {
-  return { voornaam: g.voornaam ?? "", achternaam: g.achternaam ?? "", bedrijfsnaam: g.bedrijfsnaam ?? "", email: g.email ?? "", telefoon: g.telefoon ?? "", kvkNummer: g.kvk_nummer ?? g.kvk ?? "", beroep: g.beroep ?? "" };
+  return { voornaam: g.voornaam ?? "", achternaam: g.achternaam ?? "", bedrijfsnaam: g.bedrijfsnaam ?? "", email: g.email ?? "", telefoon: g.telefoon ?? "", kvkNummer: g.kvkNummer ?? g.kvk_nummer ?? g.kvk ?? "", beroep: g.beroep ?? "" };
 }

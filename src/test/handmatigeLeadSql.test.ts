@@ -14,7 +14,7 @@ beforeAll(async()=>{
  CREATE FUNCTION is_team_member(uuid) RETURNS boolean LANGUAGE sql AS $$ SELECT current_setting('test.team',true)='yes' $$;
  CREATE FUNCTION is_supervisor_or_admin(uuid) RETURNS boolean LANGUAGE sql AS $$ SELECT current_setting('test.supervisor',true)='yes' $$;
  CREATE TYPE lead_status AS ENUM('nieuw','klant','actief','gepauzeerd','opgezegd');CREATE TYPE lead_bron AS ENUM('telefoon','email','netwerk','partner','beurs','overig');
- CREATE FUNCTION zoek_norm_tel(v text) RETURNS text LANGUAGE sql AS $$SELECT CASE WHEN length(d)=9 THEN d END FROM (SELECT CASE WHEN x LIKE '0031%' THEN substr(x,5) WHEN x LIKE '31%' AND length(x)=11 THEN substr(x,3) WHEN x LIKE '0%' THEN substr(x,2) ELSE x END d FROM (SELECT regexp_replace(coalesce(v,''),'\D','','g') x) a)b$$;
+ CREATE FUNCTION zoek_norm_tel(v text) RETURNS text LANGUAGE sql AS $$SELECT CASE WHEN length(d)=9 THEN d END FROM (SELECT CASE WHEN x LIKE '0031%' THEN substr(x,5) WHEN x LIKE '31%' AND length(x)=11 THEN substr(x,3) WHEN x LIKE '0%' THEN substr(x,2) ELSE x END d FROM (SELECT regexp_replace(coalesce(v,''),'[^0-9]','','g') x) a)b$$;
  CREATE FUNCTION zoek_norm_compact(v text) RETURNS text LANGUAGE sql AS $$ SELECT regexp_replace(lower(coalesce(v,'')), '[^a-z0-9]', '', 'g') $$;
  SET test.aal='aal2';SET test.team='yes';SET test.supervisor='yes';SET test.email='boy.kruiswijk@zpzaken.nl';`);
  await db.exec(readFileSync('src/test/fixtures/adminZoekSchema.sql','utf8'));
@@ -23,7 +23,7 @@ beforeAll(async()=>{
  CREATE FUNCTION koppel_bronrecord_aan_persoon() RETURNS trigger LANGUAGE plpgsql AS $$BEGIN
   -- Velden per bron
   RAISE EXCEPTION 'Legacy manual customer creation must not run'; RETURN NEW; END$$;
- CREATE TRIGGER trg_leads_koppel_persoon AFTER INSERT ON leads FOR EACH ROW EXECUTE FUNCTION koppel_bronrecord_aan_persoon();
+ CREATE TRIGGER trg_leads_koppel_persoon AFTER INSERT ON leads FOR EACH ROW EXECUTE FUNCTION koppel_bronrecord_aan_persoon('leads');
  CREATE FUNCTION tel_aanvragen_doel(date) RETURNS bigint LANGUAGE sql AS $$SELECT count(*) FROM leads WHERE type='verzekering_aanvraag' AND NOT coalesce(is_test,false)$$;
  CREATE FUNCTION tel_aanvraag_cohort(date) RETURNS TABLE(statusgroep text) LANGUAGE sql AS $$SELECT 'te_beoordelen'::text FROM leads WHERE type='verzekering_aanvraag' AND NOT coalesce(is_test,false)$$;
  CREATE FUNCTION controleer_aanvraag_opbouw(jsonb,bigint) RETURNS void LANGUAGE plpgsql AS $$BEGIN IF ($1->>'totaal')::bigint <> $2 THEN RAISE EXCEPTION 'mismatch'; END IF; END$$;`);

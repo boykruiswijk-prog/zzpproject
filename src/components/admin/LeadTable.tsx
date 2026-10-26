@@ -306,6 +306,8 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
                       <Badge className="bg-purple-100 text-purple-800 border-purple-300" variant="outline">Offerte</Badge>
                     ) : lead.type === "verzekering_aanvraag" ? (
                       <Badge variant="outline">Verzekering</Badge>
+                    ) : lead.type === "handmatig" ? (
+                      <Badge variant="outline">Handmatig · {lead.handmatige_bron}</Badge>
                     ) : (
                       <Badge variant="outline" className="bg-slate-100 text-slate-700">Contact</Badge>
                     )}
