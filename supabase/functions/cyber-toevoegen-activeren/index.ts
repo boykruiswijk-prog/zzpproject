@@ -9,6 +9,7 @@ import { mailCertificaat } from "../_shared/certificaatMail.ts";
 import { cyberMailVolgorde } from "../_shared/cyberMailVolgorde.ts";
 import { cyberGateBesluit } from "../_shared/cyberAlleenTest.ts";
 import { bouwFactuurPayload, glUitCache } from "../_shared/factuurRegel.ts";
+import { beoordelingGeldig, cyberDocumentControle } from "../_shared/cyberBeoordeling.ts";
 
 const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 Deno.serve(async (req) => {
@@ -28,7 +29,7 @@ Deno.serve(async (req) => {
       if (auth instanceof Response) return json(await auth.json(), auth.status);
       reviewerId = auth.userId;
     }
-    if (typeof body.id !== "string" || !/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(body.id) || typeof body.akkoord !== "boolean" || typeof body.notitie !== "string" || body.notitie.trim().length < 10 || body.notitie.length > 1000 || (body.dryRun !== undefined && typeof body.dryRun !== "boolean") || (body.retryMail !== undefined && typeof body.retryMail !== "boolean") || (body.testActivate !== undefined && typeof body.testActivate !== "boolean") || (serviceTest && body.akkoord !== true)) return json({ error: "Ongeldige beoordeling" }, 400);
+    if (!beoordelingGeldig(body) || (body.dryRun !== undefined && typeof body.dryRun !== "boolean") || (body.retryMail !== undefined && typeof body.retryMail !== "boolean") || (body.testActivate !== undefined && typeof body.testActivate !== "boolean") || (serviceTest && body.akkoord !== true)) return json({ error: "Voeg bij de beoordeling een toelichting van 10 tot 1.000 tekens toe.", code: "ongeldige_beoordeling" }, 400);
     const { data: verzoek, error: leesFout } = await admin.from("cyber_toevoeg_verzoeken").select("*").eq("id", body.id).maybeSingle();
     if (leesFout || !verzoek) return json({ error: "Verzoek niet gevonden" }, 404);
     const { data: gate, error: gateError } = await admin.from("cyber_activatie_config").select("actief,modus").eq("id", true).maybeSingle();
@@ -91,10 +92,9 @@ Deno.serve(async (req) => {
       const headers: Record<string, string> = { Authorization: req.headers.get("Authorization") ?? "", "Content-Type": "application/json" };
       const origin = req.headers.get("Origin");
       if (origin) headers.Origin = origin;
-      const response = await fetch(`${url}/functions/v1/generate-certificate`, { method: "POST", headers, body: JSON.stringify({ actie: "cyber_toevoegen", policy_id: actief.policy_id, cyber_verzoek_id: actief.id }) });
-      const result = await response.json();
+      const result = await cyberDocumentControle(() => fetch(`${url}/functions/v1/generate-certificate`, { method: "POST", headers, body: JSON.stringify({ actie: "cyber_toevoegen", policy_id: actief.policy_id, cyber_verzoek_id: actief.id }) }));
       // Activatie, contract en facturatie staan al; certificaat en bevestiging wachten samen tot het team opnieuw start.
-      if (!response.ok) return json({ success: true, status: "actief", contract_id: contract.id, certificaat: "wacht", mail: "wacht_op_certificaat", melding: "Cyber is toegevoegd. Certificaat en bevestigingsmail wachten; start ze later opnieuw.", details: result.error });
+      if (!result.ok) return json({ success: true, status: "actief", contract_id: contract.id, certificaat: "wacht", mail: "wacht_op_certificaat", melding: "Cyber is toegevoegd. Certificaat en bevestigingsmail wachten; start ze later opnieuw.", details: result.error });
     }
     // Existing certificate mail first, independently claimed; confirmation has no attachment.
     const { data: document } = await admin.from("cyber_toevoeg_verzoeken").select("certificaat_pad,certificaat_mail_status").eq("id", actief.id).single();

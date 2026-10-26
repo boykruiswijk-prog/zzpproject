@@ -69,6 +69,14 @@ describe("Cyberverzoek klant en team", () => {
     expect(mocks.invoke).toHaveBeenCalledWith("cyber-toevoegen-activeren", { body: { id: "verzoek-1", akkoord: keuze, notitie: "Beoordeling door team vastgelegd" } });
     expect(Boolean(mocks.rijen[0].geactiveerd_op)).toBe(keuze);
   });
+  it("lege beoordeling stuurt geen akkoordpoging en laat de aanvraag wachten", async () => {
+    mocks.rijen=[{ id:"verzoek-1",policy_id:"polis-1",status:"wacht_op_beoordeling",gewenste_ingangsdatum:"2026-10-23",antwoorden:{},bron:"team",notitie:"Telefonisch contact" }];
+    render(<CyberToevoegen team ondernemingId="ond-1" />);
+    fireEvent.click(await screen.findByRole("button",{name:"Akkoord"}));
+    expect(mocks.invoke).not.toHaveBeenCalled();
+    expect(mocks.rijen[0].status).toBe("wacht_op_beoordeling");
+    expect(screen.getByRole("alert")).toHaveTextContent("10 tot 1.000 tekens");
+  });
   it("definitieve mailfout kan alleen via een MFA-gecontroleerde klik worden herhaald", async () => {
     mocks.rijen = [{ id: "verzoek-1", status: "akkoord_wacht_op_activatie", geactiveerd_op: "2026-10-23", mail_status: "mail_mislukt", gewenste_ingangsdatum: "2026-10-24", antwoorden: {} }];
     render(<CyberToevoegen team ondernemingId="ond-1" />);

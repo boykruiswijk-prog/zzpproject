@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { cyberToevoegenPreview } from "@/config/cyberToevoegen";
 import { cyberVerzoekFout, CYBER_VERZOEK_STATUS } from "@/lib/cyberToevoegen";
-import { CYBER, CYBER_AKKOORD, CYBER_OPZEGTEKST, CYBER_VRAGEN, formatPremieBedrag, type CyberAntwoorden } from "../../../supabase/functions/_shared/cyber";
+import { CYBER, CYBER_AKKOORD, CYBER_VRAGEN, formatPremieBedrag, type CyberAntwoorden } from "../../../supabase/functions/_shared/cyber";
 import { CyberVragen } from "@/components/verzekeringen/CyberVragen";
 import { CyberAfwijzing } from "@/components/verzekeringen/CyberAfwijzing";
 import { vroegsteIngangsdatum } from "@/lib/ingangsdatum";
@@ -87,6 +87,7 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
       if (!await controleerAdminMfa()) return;
       const { data, error } = await supabase.functions.invoke("cyber-toevoegen-activeren", { body: { id, akkoord: keuze, notitie: beoordelingen[id] ?? "" } });
       if (error || data?.error) { await verwerkMfaFout(error, data); throw await cyberFunctieFout(error, data); }
+      if (data?.melding) setResultaat([data.melding, data.details].filter(Boolean).join(" "));
       await laad();
     } catch (e) { await verwerkMfaFout(e); setFout((e as { message?: string })?.message ?? "Beoordeling kon niet worden opgeslagen."); }
     finally { setBezig(false); }
@@ -132,7 +133,7 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
       {team && r.is_test && <p className="font-semibold text-destructive">{r.notitie === "TEST E4 jaar" || r.notitie === "TEST E4 maand" ? r.notitie : "TEST"}</p>}
       <p className="font-medium">{r.geactiveerd_op ? "Cyber toegevoegd" : CYBER_VERZOEK_STATUS[r.status]}</p><p>Gewenste ingang {formatDateNL(r.gewenste_ingangsdatum)}</p><p className="break-all text-muted-foreground">Referentie {r.id}</p>
       {r.beoordeling_notitie && <p>{r.beoordeling_notitie}</p>}
-      {team && r.geactiveerd_op && !r.certificaat_pad && !r.is_test && <div role="status"><p>Cyber is actief. Certificaat en bevestigingsmail wachten nog (bijvoorbeeld tot het jaarbedrag is vastgesteld).</p><Button variant="outline" disabled={bezig} onClick={() => mailOpnieuw(r.id)}>Certificaat en mail nu maken</Button></div>}
+      {team && r.geactiveerd_op && !r.certificaat_pad && !r.is_test && <div role="status"><p>Cyber is actief. Certificaat en bevestigingsmail wachten nog.</p><Button variant="outline" disabled={bezig} onClick={() => mailOpnieuw(r.id)}>Certificaat en mail nu maken</Button></div>}
       {team && r.geactiveerd_op && (r.mail_status === "mail_mislukt" || r.mail_status === "mislukt") && <div role="alert"><p>Bevestigingsmail niet verstuurd.</p><Button variant="outline" disabled={bezig} onClick={() => mailOpnieuw(r.id)}>Opnieuw versturen</Button></div>}
       {team && r.geactiveerd_op && (r.mail_status === "mail_onzeker" || r.mail_status === "geclaimd") && <p role="status">Verzending nog niet bevestigd. Controleer eerst de verzendhistorie; niet opnieuw versturen.</p>}
       {team && <><dl className="space-y-3">{CYBER_VRAGEN.map((q) => <div key={q.id}><dt>{q.tekst}</dt><dd className="font-medium">{(r.antwoorden as CyberAntwoorden)[q.id] ? "Ja" : "Nee"}</dd></div>)}</dl><p>Ingediend door: {r.bron === "team" ? "Team namens klant" : "Klant"}</p>{r.notitie && <p>{r.notitie}</p>}</>}
