@@ -31,12 +31,14 @@ beforeAll(async()=>{
  await db.exec(base.slice(base.indexOf('CREATE OR REPLACE FUNCTION public.tel_dashboard_opbouw()'),base.indexOf('CREATE OR REPLACE FUNCTION public.tel_instroom_opbouw')) .split('REVOKE ALL ON FUNCTION public.tel_dashboard_opbouw')[0]);
  await db.exec(readFileSync('drizzle/migrations/0194_a19_leads_koppeling.sql','utf8').replace('status_voor_koppeling public.lead_status','status_voor_koppeling text'));
  await db.exec(readFileSync('drizzle/migrations/0195_a19_aanvraag_voorinvulling.sql','utf8'));
+ await db.exec(readFileSync('drizzle/migrations/0196_a19_notitie_opslaan_correct.sql','utf8'));
  await db.exec(`INSERT INTO ondernemingen(id,naam,is_test) VALUES('${id(20)}','Klant',false),('${id(21)}','TEST Klant',true);INSERT INTO ondernemingen(id,naam,samengevoegd_naar,is_test) VALUES('${id(22)}','Oude kaart','${id(20)}',false);`);
 },30000);
 afterAll(()=>db.close());
 it('aanmaken eigen type, maker, genormaliseerde telefoon, opvolgdatum en log zonder klantkaart',async()=>{
  const r=await maak(); const l=(await db.query<any>('select * from leads where id=$1',[r.id])).rows[0];
  expect(l.type).toBe('handmatig');expect(l.handmatige_bron).toBe('netwerk');expect(l.aangemaakt_door).toBe(id(99));expect(l.telefoon).toBe('0612345678');expect(new Date(l.vlag_datum).toISOString().slice(0,10)).toBe('2026-10-30');expect((await db.query('select * from activiteiten_log where lead_id=$1',[r.id])).rows.length).toBe(1);expect((await db.query('select * from ondernemingen')).rows.length).toBe(3);
+ expect(l.opmerkingen).toBe('Test zonder mail');
 });
 it.each(['email','telefoon','kvk'])('dubbelcheck vindt %s en slaat niet stilzwijgend op',async veld=>{
  const g={...gegevens,email:'ander@zpzaken.nl',telefoon:'0698765432',kvk:'12345678',[veld]:gegevens[veld as keyof typeof gegevens]};
@@ -67,3 +69,9 @@ it('afgehaakte aanvraag koppelt zonder BAV-lead of doel te maken',async()=>{
  await db.query('insert into aanvraag_concepten(id,voornaam,achternaam,email,is_test) values($1,$2,$3,$4,false)',[id(30),'Afgehaakt','Persoon','concept@zpzaken.nl']);await koppel(id(30),id(20),null,'aanvraag_concepten');expect((await db.query<any>('select * from aanvraag_concepten where id=$1',[id(30)])).rows[0].converted_at).toBeTruthy();
 });
 it('weigert zonder MFA',async()=>{await db.exec(`SET test.aal='aal1'`);await expect(maak()).rejects.toThrow('tweestapscode');await db.exec(`SET test.aal='aal2'`);});
+it('voorinvullen geeft bestaande leadvelden zonder nieuwe aanvraag te maken',async()=>{
+ const l=(await db.query<any>("select * from leads where email='a19@zpzaken.nl' limit 1")).rows[0];
+ const r=(await db.query<any>('select lead_aanvraag_voorinvullen($1,$2) r',['leads',l.id])).rows[0].r;
+ expect(r).toMatchObject({voornaam:'Test',achternaam:'A19',email:'a19@zpzaken.nl',kvkNummer:'92654193'});
+ expect((await db.query<any>("select count(*)::int n from leads where type='verzekering_aanvraag'")).rows[0].n).toBe(0);
+});
