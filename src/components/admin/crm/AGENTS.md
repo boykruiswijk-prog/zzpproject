@@ -1,4 +1,5 @@
 # CRM-afspraken
+- KlantKaart loads fresh contactpersons through laadKlantContactgegevens, resolves merged company IDs, and passes those same records to GegevensWijzigen; person phone/email are authoritative, with lead fallback only when no person exists. Why: edits must be visible after refresh without overwriting historical lead data.
 
 - CRM-notities/beeindigen/ondernemingswijziging alleen via crm_*-RPC's (crm_beeindig hergebruikt plan_opzeg_credit); bijlagen privaat in klant-documenten/notities/<id>/ via signed URL. Waarom: zelfde opzegpad, niets verwijderen, geaudit.
 - BAV-nummer komt uit view crm_bav_nummers via src/lib/bavNummer.ts (BAV-nummer = ZP-certificaat, door team bevestigd via RPC bav_nummer_bevestigen, of bij omzetting overgenomen; AFAS abonnement_nr is bron afas_abonnement en nooit een BAV-nummer, opgave klant alleen apart als onbevestigd; HPI. apart als Hiscox); contractstatus voor weergave via contractEindStatus (actief/einddatum_controle blijft lopend ondanks einddatum; alleen opgezegd contract toont Opgezegd per of beeindigd, alleen contract zonder einddatum krijgt Beeindigen). Waarom: overal hetzelfde nummer en geen dubbele beeindiging.
