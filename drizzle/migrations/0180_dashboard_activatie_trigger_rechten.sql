@@ -1,0 +1,1 @@
+ALTER FUNCTION public.aanvraag_activatie_status() SECURITY DEFINER; COMMENT ON FUNCTION public.aanvraag_activatie_status() IS 'Internal trigger only: preserve existing actor guards while reading merged enterprise and contract evidence; no direct RPC grants.';
