@@ -56,7 +56,7 @@ describe("klantkaart contactbron", () => {
     const invoer = await screen.findByLabelText("Telefoon");
     await waitFor(() => expect(screen.getByLabelText("E-mail")).toHaveValue("contacttest@zpzaken.nl"));
     fireEvent.change(invoer, { target: { value: "0612345678" } });
-    fireEvent.click(screen.getByRole("button", { name: "Opslaan", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: /^Opslaan$/ }));
     const link = await screen.findByRole("link", { name: "0612345678" });
     expect(link).toHaveAttribute("href", "tel:0612345678");
     expect(store.rpc).toHaveBeenCalledTimes(1);
