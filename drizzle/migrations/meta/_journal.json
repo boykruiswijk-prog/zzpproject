@@ -1240,6 +1240,13 @@
       "when": 1792961190118,
       "tag": "0176_cyber_terugwerkend_alleen_ellen",
       "breakpoints": true
+    },
+    {
+      "idx": 177,
+      "version": "7",
+      "when": 1793001793921,
+      "tag": "0177_a16_cyber_bewijs_telling",
+      "breakpoints": true
     }
   ]
 }

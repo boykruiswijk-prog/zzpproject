@@ -7,6 +7,6 @@ export function cyberAkkoordSql(): string {
   const start = source.indexOf("CREATE OR REPLACE FUNCTION public.leg_cyber_aanvraag_vast()");
   const end = source.indexOf("END $$;", start) + "END $$;".length;
   if (start < 0 || end <= start) throw new Error("Cyber trigger source missing");
-  return source.slice(start, end).replace(/v_tekst text:='[^']*'/, `v_tekst text:='${CYBER_AKKOORD.replaceAll("'", "''")}'`) +
+  return source.slice(start, end).replace(/v_tekst text:='[^']*'/, `v_tekst text:='${CYBER_AKKOORD.replace(/'/g, "''")}'`) +
     "\nREVOKE ALL ON FUNCTION public.leg_cyber_aanvraag_vast() FROM PUBLIC, anon, authenticated;\n";
 }
