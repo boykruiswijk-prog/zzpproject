@@ -38,7 +38,7 @@ vi.mock("@/components/admin/incasso/Incasso", () => ({ IncassoKlantBlok: () => n
 vi.mock("@/components/admin/CyberDatums", () => ({ CyberDatums: () => null }));
 vi.mock("@/components/admin/IbanInzien", () => ({ IbanInzien: () => null }));
 
-afterEach(() => { cleanup(); store.personen[0].telefoon = null; store.rpc.mockReset(); });
+afterEach(() => { cleanup(); store.personen[0].telefoon = null; store.personen[0].email_weergave = "contacttest@zpzaken.nl"; store.rpc.mockReset(); });
 
 describe("klantkaart contactbron", () => {
   it("wijzigt telefoon en e-mail op de persoon en toont opgeslagen waarden, ook via een samengevoegde kaart", async () => {
@@ -47,6 +47,7 @@ describe("klantkaart contactbron", () => {
       expect(args._onderneming_id).toBe("nieuw");
       expect(args._persoon_id).toBe("persoon");
       store.personen[0].telefoon = args._wijzigingen.telefoon;
+      store.personen[0].email_weergave = args._wijzigingen.email_weergave;
       return { data: {}, error: null };
     });
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -56,9 +57,11 @@ describe("klantkaart contactbron", () => {
     const invoer = await screen.findByLabelText("Telefoon");
     await waitFor(() => expect(screen.getByLabelText("E-mail")).toHaveValue("contacttest@zpzaken.nl"));
     fireEvent.change(invoer, { target: { value: "0612345678" } });
+    fireEvent.change(screen.getByLabelText("E-mail"), { target: { value: "gewijzigd@zpzaken.nl" } });
     fireEvent.click(screen.getByRole("button", { name: /^Opslaan$/ }));
     const link = await screen.findByRole("link", { name: "0612345678" });
     expect(link).toHaveAttribute("href", "tel:0612345678");
+    expect(await screen.findByRole("link", { name: "gewijzigd@zpzaken.nl" })).toHaveAttribute("href", "mailto:gewijzigd@zpzaken.nl");
     expect(store.rpc).toHaveBeenCalledTimes(1);
     view.unmount();
     client.clear();
@@ -74,6 +77,16 @@ describe("klantkaart contactbron", () => {
 
   it("legacy zonder persoon behoudt leadtelefoon en e-mail", () => {
     expect(klantContactwaarden([], [{ telefoon: "0611111111", email: "legacy@zpzaken.nl" }])).toEqual({ telefoons: ["0611111111"], emails: ["legacy@zpzaken.nl"] });
+  });
+
+  it("leeg gemaakte persoonstelefoon haalt geen oud leadnummer terug", () => {
+    expect(klantContactwaarden(store.personen, [{ telefoon: "0699999999" }]).telefoons).toEqual([]);
+  });
+
+  it("oude en hoofdkaart samen leveren één contactpersoon op", async () => {
+    const contact = await laadKlantContactgegevens(["oud", "nieuw"], []);
+    expect(contact.personen.map((p) => p.id)).toEqual(["persoon"]);
+    expect(contact.canoniek.get("oud")).toBe("nieuw");
   });
 
   it("leest het opgeslagen telefoonnummer ook als de ouderpagina een verouderde persoon zonder telefoon doorgeeft", async () => {
