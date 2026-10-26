@@ -6736,6 +6736,10 @@ export type Database = {
         Returns: Json
       }
       crm_taak_afronden: { Args: { _id: string }; Returns: boolean }
+      cyber_aanvraag_document_klaar: {
+        Args: { _id: string; _lease: string; _pad: string }
+        Returns: boolean
+      }
       cyber_aanvraag_open: {
         Args: { _mail: string; _status: string }
         Returns: boolean
