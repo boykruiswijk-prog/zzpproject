@@ -7217,6 +7217,10 @@ export type Database = {
         Args: { _datum: string; _lead_id: string }
         Returns: Json
       }
+      lead_aanvraag_voorinvullen: {
+        Args: { _bron_id: string; _bron_tabel: string }
+        Returns: Json
+      }
       lead_afronden: {
         Args: { _lead_id: string; _toelichting?: string }
         Returns: boolean
