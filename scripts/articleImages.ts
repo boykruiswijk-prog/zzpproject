@@ -11,9 +11,12 @@ function createElement(type: string, props: Record<string, unknown> | null, ...c
 import { Resvg } from "@resvg/resvg-js";
 import postgres from "postgres";
 import { categoryDesign } from "../supabase/functions/artikel-afbeelding/design";
+import { FOTO_VANAF } from "../supabase/functions/artikel-foto/regels";
+import { isArticlePhoto, absoluteArticleOgImage } from "../src/lib/articleImage";
 
 export interface ImageArticle {
   slug: string; title: string; category: string | null; image_url: string | null;
+  published_at?: string | null;
 }
 
 const require = createRequire(import.meta.url);
@@ -74,6 +77,11 @@ export async function generateArticleImages(distDir: string, root: string, env: 
   const output = path.join(distDir, "images/kennisbank");
   fs.mkdirSync(output, { recursive: true });
   let count = 0;
+  for (const article of published) {
+    if ((!article.published_at || Date.parse(article.published_at) >= Date.parse(FOTO_VANAF)) && !isArticlePhoto(article)) {
+      throw new Error(`[article-images] Nieuw artikel mist gecontroleerde unieke foto: ${article.slug}`);
+    }
+  }
   for (const article of [...published, ...drafts]) {
     if (!article.slug) continue;
     if (!/^[\p{L}\p{N}_-]+$/u.test(article.slug)) throw new Error("[article-images] Ongeldige artikelslug.");
@@ -91,8 +99,14 @@ export async function generateArticleImages(distDir: string, root: string, env: 
         if (!og.ok || !og.headers.get('content-type')?.startsWith('image/')) throw new Error(`[article-images] Deelbeeld ontbreekt: ${article.slug}`);
         fs.writeFileSync(path.join(output, `${article.slug}-og.png`), Buffer.from(await og.arrayBuffer()));
       }
+      if (isArticlePhoto(article)) {
+        const og = await fetch(absoluteArticleOgImage(article));
+        if (!og.ok || !og.headers.get('content-type')?.startsWith('image/webp')) throw new Error(`[article-images] Foto-deelbeeld ontbreekt: ${article.slug}`);
+        fs.writeFileSync(path.join(output, `${article.slug}-og.webp`), Buffer.from(await og.arrayBuffer()));
+      }
       continue;
     }
+    if ((article as ImageArticle & { foto_bron_url?: string | null }).foto_bron_url) continue;
     fs.writeFileSync(path.join(output, `${article.slug}.png`), await renderArticleImage(article, root));
     count++;
   }

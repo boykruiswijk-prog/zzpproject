@@ -3,6 +3,7 @@ import { createClient } from "npm:@supabase/supabase-js@2.108.2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2.108.2/cors";
 import { fotoUrl, downloadFoto, hashAfstand, PHASH_AFSTAND } from "./regels.ts";
 import { verwerkFoto, fotoHashes } from "./verwerk.ts";
+declare const EdgeRuntime: { waitUntil: (promise: Promise<unknown>) => void };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 Deno.serve(async req => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });

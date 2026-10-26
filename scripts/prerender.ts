@@ -26,7 +26,7 @@ import { markdownToSafeHtml } from "./markdownToSafeHtml";
 import { rootArtikelRedirects } from "./articleRedirects";
 import { bestaandeRoutes } from "./routeConflicts";
 import { generateArticleImages } from "./articleImages";
-import { absoluteArticleImage, absoluteArticleOgImage, isGeneratedArticleImage } from "../src/lib/articleImage";
+import { absoluteArticleImage, absoluteArticleOgImage, isGeneratedArticleImage, isArticlePhoto } from "../src/lib/articleImage";
 import {
   legacyRedirects,
   verouderdeMedia,
@@ -234,6 +234,8 @@ export function buildHtml(
     /** Absolute URL van de deelafbeelding; leeg = algemene og-image. */
     image?: string;
     generatedImage?: boolean;
+    photoImage?: boolean;
+    imageAlt?: string | null;
     articlePublishedTime?: string;
     articleModifiedTime?: string;
   },
@@ -275,11 +277,11 @@ export function buildHtml(
       /<meta name="twitter:image"[^>]*>/,
       `<meta name="twitter:image" content="${esc(opts.image)}" data-rh="true" />`,
     );
-    if (opts.generatedImage) {
+    if (opts.generatedImage || opts.photoImage) {
       html = html.replace(/<meta property="og:image:width"[^>]*>/, '<meta property="og:image:width" content="1200" data-rh="true" />');
       html = html.replace(/<meta property="og:image:height"[^>]*>/, '<meta property="og:image:height" content="630" data-rh="true" />');
-      html = html.replace(/<meta property="og:image:type"[^>]*>/, '<meta property="og:image:type" content="image/png" data-rh="true" />');
-      html = html.replace(/<meta property="og:image:alt"[^>]*>/, `<meta property="og:image:alt" content="${esc(opts.title)}" data-rh="true" />`);
+      html = html.replace(/<meta property="og:image:type"[^>]*>/, `<meta property="og:image:type" content="${opts.photoImage ? 'image/webp' : 'image/png'}" data-rh="true" />`);
+      html = html.replace(/<meta property="og:image:alt"[^>]*>/, `<meta property="og:image:alt" content="${esc(opts.imageAlt || opts.title)}" data-rh="true" />`);
     } else if (opts.ogType === "article") {
       html = html.replace(/<meta property="og:image:(?:width|height|type)"[^>]*>/g, "");
     }
@@ -460,6 +462,7 @@ interface PublishedArticle {
   published_at: string | null;
   updated_at: string | null;
   image_url: string | null;
+  foto_alt?: string | null;
   seo_title: string | null;
   seo_description: string | null;
   content_reviewed_at: string | null;
@@ -495,7 +498,7 @@ async function fetchPublishedArticles(env: Record<string, string>): Promise<Publ
   const url =
     `${base}/rest/v1/articles` +
     `?select=*` +
-    `&is_published=eq.true&order=published_at.desc&limit=1000`;
+    `&is_published=eq.true&is_test=eq.false&order=published_at.desc&limit=1000`;
   // Altijd vers uit de database: geen HTTP-cache tussen builds.
   const res = await fetch(url, {
     headers: { apikey: key, Authorization: `Bearer ${key}`, "Cache-Control": "no-cache" },
@@ -679,6 +682,8 @@ export async function prerender(
         ogType: "article",
         image: absoluteArticleOgImage(article),
         generatedImage: isGeneratedArticleImage(article),
+        photoImage: isArticlePhoto(article),
+        imageAlt: article.foto_alt,
         articlePublishedTime: datePublished,
         articleModifiedTime: dateModified,
         schemas: [

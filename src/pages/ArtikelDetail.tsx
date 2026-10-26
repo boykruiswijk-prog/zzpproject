@@ -24,7 +24,7 @@ import { ThreeOptionCTA } from "@/components/shared/ThreeOptionCTA";
 import { resolveFiscaleTokens } from "@/lib/fiscaleTokens";
 import { SITE_CONFIG } from "@/config/site";
 import NotFound from "@/pages/NotFound";
-import { articleImage, absoluteArticleImage, absoluteArticleOgImage, isGeneratedArticleImage, isArticleIllustration } from "@/lib/articleImage";
+import { articleImage, absoluteArticleImage, absoluteArticleOgImage, isGeneratedArticleImage, isArticleIllustration, isArticlePhoto } from "@/lib/articleImage";
 import { ArticleImage } from "@/components/kennisbank/ArticleImage";
 
 const BAV_AVB_SLUG = "bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt";
@@ -295,10 +295,11 @@ export default function ArtikelDetail() {
         <meta property="og:description" content={metaDescription} />
         <meta property="og:url" content={articleUrl} />
         <meta property="og:image" content={ogImage} />
-        {gegenereerd && <meta property="og:image:width" content="1200" />}
-        {gegenereerd && <meta property="og:image:height" content="630" />}
+        {(gegenereerd || isArticlePhoto(article)) && <meta property="og:image:width" content="1200" />}
+        {(gegenereerd || isArticlePhoto(article)) && <meta property="og:image:height" content="630" />}
         {gegenereerd && <meta property="og:image:type" content="image/png" />}
-        <meta property="og:image:alt" content={article.title} />
+        {isArticlePhoto(article) && <meta property="og:image:type" content="image/webp" />}
+        <meta property="og:image:alt" content={article.foto_alt || article.title} />
         <meta property="og:locale" content="nl_NL" />
         <meta property="article:published_time" content={publishedAt} />
         <meta property="article:modified_time" content={updatedAt} />

@@ -76,7 +76,8 @@
        const { data, error } = await supabase
          .from("articles")
          .select("category")
-         .eq("is_published", true);
+         .eq("is_published", true)
+         .eq("is_test", false);
  
        if (error) {
          console.error("Error fetching categories:", error);
