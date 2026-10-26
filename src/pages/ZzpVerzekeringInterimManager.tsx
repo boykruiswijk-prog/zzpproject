@@ -22,7 +22,7 @@ export default function ZzpVerzekeringInterimManager() {
       serviceName="Verzekering interim manager"
       badge="Voor interim managers"
       title={<>ZZP verzekering voor <span className="text-accent">interim managers</span></>}
-      subtitle="Als interim manager of projectmanager neem je besluiten en maak je planningen. Je opdrachtgever vertrouwt daarop. Loopt een project vast door een fout van jou, dan kan je opdrachtgever je aansprakelijk stellen. Een BAV en AVB in één polis beschermen je."
+      subtitle="Als interim manager of projectmanager neem je besluiten en maak je planningen. Je opdrachtgever vertrouwt daarop. Loopt een project vast door een fout van jou, dan kan je opdrachtgever je aansprakelijk stellen. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden."
       sector="management-consultancy"
       benefits={[
         { icon: Users, title: "Voor interim en projectmanagement", description: `Ook voor projectmanagers, programmamanagers en scrum masters buiten ICT. Je bent verzekerd voor ${BAV_DEKKING} BAV en ${AVB_DEKKING} AVB per aanspraak.` },
