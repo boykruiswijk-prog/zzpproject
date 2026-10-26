@@ -24,6 +24,7 @@ describe("DashboardStats", () => {
     rpc.mockResolvedValue({ data: {
       klanten: 849, contracten_actief: 1105, mrr: 42222.47, arr: 506669.64,
       leads_totaal: 4, leads_week: 1, leads_maand: 3, leads_omgezet: 2,
+      aanvragen_doel: 4, aanvragen_opbouw: { totaal: 4, klant: 2, in_behandeling: 1, te_beoordelen: 1, overig: 0 },
       opzeggingen_te_koppelen: 5, opzeggingen_te_verwerken: 1,
       planning_aantal: 71, planning_bedrag: 9793, planning_factureerbaar_aantal: 0,
       planning_factureerbaar_bedrag: 0, planning_geblokkeerd_aantal: 71,
@@ -33,7 +34,7 @@ describe("DashboardStats", () => {
     expect(screen.getByText("1105")).toBeTruthy();
     expect(screen.getByText(/42\.222,47/)).toBeTruthy();
     expect(screen.getByText(/506\.669,64/)).toBeTruthy();
-    expect(screen.getByText("1 / 3")).toBeTruthy();
+    expect(screen.getByText("4")).toBeTruthy();
     expect(screen.getByText("50%")).toBeTruthy();
     expect(screen.getByText("5")).toBeTruthy();
     expect(screen.getByText(/^71 ·/)).toBeTruthy();

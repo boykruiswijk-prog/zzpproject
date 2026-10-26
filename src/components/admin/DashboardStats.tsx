@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Building2, FileText, Euro, Users, TrendingUp, UserX, CalendarClock, AlertTriangle, RefreshCw, LineChart, Target, Inbox } from "lucide-react";
 import { formatEuro } from "@/lib/klantContracten";
 import { NETTO_GROEI_LABEL } from "@/lib/nettoGroei";
+import { controleerDashboardOpbouw, conversieAanvragen, type AanvragenOpbouw, type InstroomOpbouw } from "../../../supabase/functions/_shared/dashboardOpbouw";
 
 export type DashboardTellers = {
   klanten: number; contracten_actief: number; mrr: number; arr: number;
@@ -19,8 +20,10 @@ export type DashboardTellers = {
   planning_geblokkeerd_aantal: number | null;
   /** Uit tel_service_open / tel_aanvragen_doel: dezelfde definitie als het live-scherm. */
   service_open?: number; aanvragen_doel?: number; aanvragen_doel_van?: number;
+  aanvragen_opbouw?: AanvragenOpbouw;
+  leads_opbouw?: { vanaf: string; totaal: number; aanvragen: number; contact: number; offerte: number };
   /** Uit tel_netto_groei: zelfde bron als het live-scherm (A6). Alleen aantallen. */
-  netto_groei?: { cumulatief?: { instroom: number; beeindigingen: number; netto_groei: number; opzegpercentage: number | null; circle8_opzeggingen: number } };
+  netto_groei?: { instroom_opbouw?: InstroomOpbouw; cumulatief?: { instroom: number; beeindigingen: number; netto_groei: number; opzegpercentage: number | null; circle8_opzeggingen: number } };
 };
 
 /** Eén bron voor alle dashboardtellers: RPC dashboard_tellers (CRM). */
@@ -35,7 +38,9 @@ export function useDashboardTellers() {
         throw new Error(error.message || "Onbekende fout");
       }
       if (!data || typeof data !== "object") throw new Error("Lege reactie van de tellers");
-      return data as unknown as DashboardTellers;
+      const tellers = data as unknown as DashboardTellers;
+      controleerDashboardOpbouw(tellers.aanvragen_opbouw, tellers.aanvragen_doel);
+      return tellers;
     },
     refetchInterval: 60_000,
     refetchOnWindowFocus: true,
@@ -61,16 +66,19 @@ export function DashboardStats() {
     );
   }
 
-  const conversie = t && t.leads_totaal > 0 ? Math.round((t.leads_omgezet / t.leads_totaal) * 1000) / 10 : 0;
+  const a = t?.aanvragen_opbouw;
+  const l = t?.leads_opbouw;
+  const i = t?.netto_groei?.instroom_opbouw;
+  const conversie = conversieAanvragen(a);
   const kaarten = [
     { title: "Klanten", value: t?.klanten, icon: Building2, description: "Ondernemingen met een lopend contract", href: "/admin/klanten" },
     { title: "Actieve contractregels", value: t?.contracten_actief, icon: FileText, description: "Status actief of loopt af", href: "/admin/klanten" },
     { title: "Maandwaarde (MRR)", value: t ? formatEuro(t.mrr) : undefined, icon: Euro, description: "Jaarcontracten gedeeld door 12", href: "/admin/klanten" },
     { title: "Jaarwaarde (ARR)", value: t ? formatEuro(t.arr) : undefined, icon: LineChart, description: "MRR × 12", href: "/admin/klanten" },
-    { title: "Leads", value: t ? `${t.leads_week} / ${t.leads_maand}` : undefined, icon: Users, description: `deze week / deze maand · ${t?.leads_totaal ?? 0} totaal`, href: "/admin/leads" },
-    { title: "Conversie leads", value: t ? `${conversie}%` : undefined, icon: TrendingUp, description: `${t?.leads_omgezet ?? 0} leads met status actief of klant`, href: "/admin/leads" },
-    { title: "Aanvragen BAV + AVB sinds 6 okt", value: t ? `${t.aanvragen_doel ?? 0} van ${t.aanvragen_doel_van ?? 200}` : undefined, icon: Target, description: "Ontdubbeld per aanvraag, zonder test; zelfde getal als het live-scherm", href: "/admin/leads" },
-    { title: `Netto groei ${NETTO_GROEI_LABEL.toLowerCase()}`, value: t?.netto_groei?.cumulatief ? `${t.netto_groei.cumulatief.netto_groei >= 0 ? "+" : ""}${t.netto_groei.cumulatief.netto_groei}` : undefined, icon: TrendingUp, description: t?.netto_groei?.cumulatief ? `${t.netto_groei.cumulatief.instroom} instroom, ${t.netto_groei.cumulatief.beeindigingen} beeindigd · opzegpercentage ${t.netto_groei.cumulatief.opzegpercentage ?? 0}% · zelfde getal als het live-scherm` : "Zelfde getal als het live-scherm", href: "/admin/klanten" },
+    { title: "Leads", value: l?.totaal ?? t?.leads_totaal, icon: Users, description: l ? `${l.aanvragen} aanvragen · ${l.contact} contact · ${l.offerte} offerte · sinds ${new Intl.DateTimeFormat("nl-NL", { day: "numeric", month: "short", year: "numeric", timeZone: "Europe/Amsterdam" }).format(new Date(`${l.vanaf}T12:00:00Z`))} t/m vandaag · zonder test` : "Alle ontvangen leads, zonder test", href: "/admin/leads" },
+    { title: "Conversie aanvragen sinds 6 okt", value: a ? `${conversie.toLocaleString("nl-NL")}%` : undefined, icon: TrendingUp, description: a ? `${a.klant} van ${a.totaal} aanvragen klant · ${a.in_behandeling} in behandeling · ${a.te_beoordelen} te beoordelen · ${a.overig} afgewezen/overig · zelfde getal als het live-scherm` : "Zelfde aanvraagset als de doeltegel", href: "/admin/aanvragen" },
+    { title: "Aanvragen BAV + AVB sinds 6 okt", value: t ? `${t.aanvragen_doel ?? 0} van ${t.aanvragen_doel_van ?? 200}` : undefined, icon: Target, description: "6 okt t/m 31 dec · ontdubbeld per KvK, zonder test · zelfde getal als het live-scherm", href: "/admin/aanvragen" },
+    { title: `Netto groei ${NETTO_GROEI_LABEL.toLowerCase()}`, value: t?.netto_groei?.cumulatief ? `${t.netto_groei.cumulatief.netto_groei >= 0 ? "+" : ""}${t.netto_groei.cumulatief.netto_groei}` : undefined, icon: TrendingUp, description: t?.netto_groei?.cumulatief ? `${t.netto_groei.cumulatief.instroom} instroom, ${t.netto_groei.cumulatief.beeindigingen} beëindigd${i ? ` · via aanvraag ${i.via_aanvraag} (waarvan ${i.voor_6_okt} vóór 6 okt aangevraagd) · AFAS-overzetting ${i.afas_overzetting}${i.overig ? ` · overig ${i.overig}` : ""} · nog in te gaan ${i.nog_in_te_gaan} (toekomstige ingangsdatum)` : ""} · zelfde getal als het live-scherm` : "Zelfde getal als het live-scherm", href: "/admin/klanten" },
     { title: "Serviceverzoeken open", value: t?.service_open, icon: Inbox, description: "Zelfde getal als het live-scherm", href: "/admin/service-aanvragen" },
     { title: "Opzeggingen te koppelen", value: t?.opzeggingen_te_koppelen, icon: UserX, description: `${t?.opzeggingen_te_verwerken ?? 0} gekoppeld, nog te verwerken`, href: "/admin/klanten#opzeggingen", let: (t?.opzeggingen_te_koppelen ?? 0) > 0 },
     // Alleen tonen als de planning-velden gevuld zijn (supervisor/admin).
