@@ -1,4 +1,5 @@
 import { leadOnderwerp } from "../../../supabase/functions/_shared/leadVelden";
+import { CyberAanvraag, useCyberAanvragen, cyberWerkStap } from "./CyberAanvraag";
 import { eviLeadLabel } from "@/lib/interneBron";
 import { AfrondDialoog, magAfronden } from "@/components/admin/LeadAfronden";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -12,7 +13,7 @@ import { useState } from "react";
 import { VlagIcoon, VlagKnop } from "@/components/admin/LeadVlag";
 import { filterAanvragenOpTab, filterOpTab, vandaagNL, type VlagTab } from "@/lib/leadVlag";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useLeads, useUpdateLead, useDeleteLead } from "@/hooks/useLeads";
 import { formatDateNL } from "@/lib/dateFormat";
 import {
@@ -77,7 +78,13 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
   const magVlag = isSupervisorOrAdmin || isVerzekering;
   const { toonTest } = useToonTestrecords();
   const [toonAfgerond, setToonAfgerond] = useState(false);
-  const [tab, setTab] = useState<VlagTab>("te_doen");
+  const [params] = useSearchParams();
+  const [tab, setTab] = useState<VlagTab>(params.get("cyber") ? "alle" : "te_doen");
+  const cyberQuery = useCyberAanvragen(toonTest, soort === "aanvragen");
+  const cyberRijen = (cyberQuery.data ?? []).filter(r => tab !== "gemarkeerd" && (tab === "alle" || r.open) &&
+    [r.klant, r.bav_nummer, r.notitie].join(" ").toLowerCase().includes(search.toLowerCase()) &&
+    (typeFilter === "all" || typeFilter === "cyber_toevoegen") &&
+    (statusFilter === "all" || (statusFilter === "actief" ? !!r.geactiveerd_op : statusFilter === "afgewezen" ? r.status === "afgewezen" : r.open && !r.geactiveerd_op)));
   const [afronden, setAfronden] = useState<any | null>(null);
   // Verwijderen blijft beperkt tot de gemarkeerde admin-mailbox, EN moet supervisor/admin-rol hebben.
   const canDelete = user?.email === AUTHORIZED_DELETE_EMAIL && isSupervisorOrAdmin;
@@ -203,6 +210,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
             <SelectItem value="all">Alle types</SelectItem>
             {soort !== "aanvragen" && <SelectItem value="contact">Contactverzoek</SelectItem>}
             {soort !== "leads" && <SelectItem value="verzekering_aanvraag">Verzekeringsaanvraag</SelectItem>}
+            {soort === "aanvragen" && <SelectItem value="cyber_toevoegen">Cyber toevoegen</SelectItem>}
             {soort !== "aanvragen" && <SelectItem value="offerte-aanvraag">Offerteaanvraag</SelectItem>}
           </SelectContent>
         </Select>
@@ -210,7 +218,8 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
 
       {/* Compacte mobiele lijst */}
       <div className="space-y-3 md:hidden">
-        {leads?.length === 0 ? (
+        {cyberRijen.map(r => <div key={r.id} className="min-w-0 space-y-2 rounded-lg border border-border p-4"><Badge variant="outline">Cyber toevoegen{r.is_test ? " · TEST" : ""}</Badge><p className="font-medium">{r.klant}</p><p className="text-sm">{r.bav_nummer} · {formatDateNL(r.gewenste_ingangsdatum)} · {r.betaalwijze}</p><p className="break-words text-sm text-muted-foreground">{r.notitie}</p><p className="text-sm">{cyberWerkStap(r)}</p><CyberAanvraag verzoek={r} autoOpen={false} /></div>)}
+        {leads?.length === 0 && cyberRijen.length === 0 ? (
           <p className="rounded-lg border p-6 text-center text-sm text-muted-foreground">Geen leads gevonden</p>
         ) : leads?.map((lead) => (
           <div key={lead.id} className="min-w-0 space-y-3 rounded-lg border p-4">
@@ -266,7 +275,8 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {leads?.length === 0 ? (
+            {cyberRijen.map(r => <TableRow key={r.id}><TableCell className="font-medium">{r.klant}<span className="block text-sm text-muted-foreground">{r.bav_nummer}</span></TableCell><TableCell><Badge variant="outline">Cyber toevoegen{r.is_test ? " · TEST" : ""}</Badge></TableCell><TableCell className="max-w-60 break-words text-sm">{r.notitie}</TableCell><TableCell>Cyber</TableCell><TableCell>{r.betaalwijze === "jaar" ? "Jaarlijks" : "Maandelijks"}</TableCell><TableCell>{cyberWerkStap(r)}</TableCell><TableCell>{formatDateNL(r.gewenste_ingangsdatum)}</TableCell><TableCell><CyberAanvraag verzoek={r} /></TableCell></TableRow>)}
+            {leads?.length === 0 && cyberRijen.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                   Geen leads gevonden

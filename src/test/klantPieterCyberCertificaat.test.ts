@@ -73,7 +73,7 @@ describe("activatie hergebruikt klantkaart met zelfde KvK", () => {
 describe("akkoord cyber blijft staan als certificaat nog niet kan", () => {
   const src = readFileSync("supabase/functions/cyber-toevoegen-activeren/index.ts", "utf8");
   it("certificaatfout geeft succes met wachtstatus, geen 409 en geen mail", () => {
-    const blok = src.slice(src.indexOf("generate-certificate`"), src.indexOf("Existing certificate mail first"));
+    const blok = src.slice(src.indexOf("generate-cyber-certificate`"), src.indexOf("Existing certificate mail first"));
     expect(blok).toMatch(/success: true, status: "actief".*certificaat: "wacht", mail: "wacht_op_certificaat"/);
     expect(blok).not.toMatch(/409/);
   });

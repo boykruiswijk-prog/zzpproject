@@ -1649,6 +1649,9 @@ export type Database = {
           beoordeeld_op: string | null
           beoordeling_notitie: string | null
           bron: string
+          certificaat_gecontroleerd_door: string | null
+          certificaat_gecontroleerd_op: string | null
+          certificaat_gecontroleerd_pad: string | null
           certificaat_mail_poging: number
           certificaat_mail_status: string
           certificaat_pad: string | null
@@ -1682,6 +1685,9 @@ export type Database = {
           beoordeeld_op?: string | null
           beoordeling_notitie?: string | null
           bron: string
+          certificaat_gecontroleerd_door?: string | null
+          certificaat_gecontroleerd_op?: string | null
+          certificaat_gecontroleerd_pad?: string | null
           certificaat_mail_poging?: number
           certificaat_mail_status?: string
           certificaat_pad?: string | null
@@ -1715,6 +1721,9 @@ export type Database = {
           beoordeeld_op?: string | null
           beoordeling_notitie?: string | null
           bron?: string
+          certificaat_gecontroleerd_door?: string | null
+          certificaat_gecontroleerd_op?: string | null
+          certificaat_gecontroleerd_pad?: string | null
           certificaat_mail_poging?: number
           certificaat_mail_status?: string
           certificaat_pad?: string | null
@@ -6727,6 +6736,26 @@ export type Database = {
         Returns: Json
       }
       crm_taak_afronden: { Args: { _id: string }; Returns: boolean }
+      cyber_aanvraag_document_klaar: {
+        Args: { _id: string; _lease: string; _pad: string }
+        Returns: boolean
+      }
+      cyber_aanvraag_open: {
+        Args: { _mail: string; _status: string }
+        Returns: boolean
+      }
+      cyber_aanvragen_werkvoorraad: {
+        Args: { _toon_test?: boolean }
+        Returns: Json
+      }
+      cyber_certificaat_controleren: {
+        Args: { _id: string; _pad: string }
+        Returns: boolean
+      }
+      cyber_certificaat_verzendklaar: {
+        Args: { _id: string }
+        Returns: boolean
+      }
       cyber_datums_wijzigen: {
         Args: {
           _contract_id: string
@@ -7286,6 +7315,10 @@ export type Database = {
       }
       tel_acties_vandaag: { Args: { _toon_test?: boolean }; Returns: number }
       tel_contracten: { Args: { _toon_test?: boolean }; Returns: number }
+      tel_cyber_aanvragen_open: {
+        Args: { _toon_test?: boolean }
+        Returns: number
+      }
       tel_dashboard_opbouw: { Args: never; Returns: Json }
       tel_instroom_opbouw: {
         Args: { _toon_test?: boolean; _vanaf?: string }

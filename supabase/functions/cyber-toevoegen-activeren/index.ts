@@ -22,6 +22,8 @@ Deno.serve(async (req) => {
     if (!url || !key || !anon) return json({ error: "Configuratie ontbreekt" }, 500);
     const admin = createClient(url, key);
     const body = await req.json();
+    const actie = body.actie ?? "beoordelen";
+    if (!["beoordelen", "activeren", "certificaat", "versturen"].includes(actie)) return json({ error: "Ongeldige cyberstap" }, 400);
     const serviceTest = isServiceTestRequest(req, body.testActivate === true && body.dryRun === true);
     let reviewerId = "";
     if (!serviceTest) {
@@ -64,14 +66,22 @@ Deno.serve(async (req) => {
     }
     const user = createClient(url, anon, { global: { headers: { Authorization: req.headers.get("Authorization") ?? "" } } });
     // One transaction owns approval, contract and billing anchor; never call lead activation or Exact here.
-    const { data: status, error } = await user.rpc("cyber_toevoegen_beoordelen", { _id: body.id, _akkoord: body.akkoord, _notitie: body.notitie });
+    if (actie !== "beoordelen" && !verzoek.geactiveerd_op && verzoek.status !== "akkoord_wacht_op_activatie") return json({ error: "Beoordeel de aanvraag eerst" }, 409);
+    const { data: status, error } = actie === "beoordelen"
+      ? await user.rpc("cyber_toevoegen_beoordelen", { _id: body.id, _akkoord: body.akkoord, _notitie: body.notitie })
+      : { data: verzoek.status, error: null };
     if (error) return json({ error: error.message }, 409);
-    if (!body.akkoord) return json({ success: true, status, mail: "niet_verzonden_afwijzing" });
+    if (!body.akkoord || actie === "beoordelen") return json({ success: true, status, mail: "niet_verzonden_beoordeling" });
     const kern = await activeerCyberKern(admin, body.id, body.notitie, verzoek.is_test === true);
     if (kern.status !== "actief") return json({ success: true, status: kern.status, mail: "niet_verzonden_release_wacht" });
     const actief = kern.verzoek;
     const contract = kern.contract;
     if (!contract) return json({ error: "Cybercontract ontbreekt" }, 500);
+    if (actie === "activeren") return json({ success: true, status: "actief", contract_id: contract.id, mail: "wacht_op_handmatig_versturen", certificaat: actief.certificaat_pad ? "klaar" : "te_maken" });
+    if (actie === "versturen") {
+      const controle = await user.rpc("cyber_certificaat_verzendklaar", { _id: actief.id });
+      if (controle.error || controle.data !== true) return json({ error: controle.error?.message ?? "Controleer eerst het cybercertificaat" }, 409);
+    }
     const ontvanger = await klantOntvanger(admin, actief.onderneming_id, actief.lead_id);
     const mailData = cyberToevoegMailData(ontvanger.voornaam, actief.gewenste_ingangsdatum, contract.cyclus);
     // Test mode is mandatory for test records, irrespective of client input. No document/mail/Exact effects.
@@ -88,14 +98,15 @@ Deno.serve(async (req) => {
       if (bewijsError) return json({ error: "Testuitkomst kon niet worden vastgelegd", actief: true }, 409);
       return json(resultaat);
     }
-    if (!actief.certificaat_pad) {
+    if (actie === "certificaat" && !actief.certificaat_pad) {
       const headers: Record<string, string> = { Authorization: req.headers.get("Authorization") ?? "", "Content-Type": "application/json" };
       const origin = req.headers.get("Origin");
       if (origin) headers.Origin = origin;
-      const result = await cyberDocumentControle(() => fetch(`${url}/functions/v1/generate-certificate`, { method: "POST", headers, body: JSON.stringify({ actie: "cyber_toevoegen", policy_id: actief.policy_id, cyber_verzoek_id: actief.id }) }));
+      const result = await cyberDocumentControle(() => fetch(`${url}/functions/v1/generate-cyber-certificate`, { method: "POST", headers, body: JSON.stringify({ policy_id: actief.policy_id, cyber_verzoek_id: actief.id }) }));
       // Activatie, contract en facturatie staan al; certificaat en bevestiging wachten samen tot het team opnieuw start.
       if (!result.ok) return json({ success: true, status: "actief", contract_id: contract.id, certificaat: "wacht", mail: "wacht_op_certificaat", melding: "Cyber is toegevoegd. Certificaat en bevestigingsmail wachten; start ze later opnieuw.", details: result.error });
     }
+    if (actie === "certificaat") return json({ success: true, status: "actief", certificaat: "klaar", mail: "wacht_op_controle_en_versturen" });
     // Existing certificate mail first, independently claimed; confirmation has no attachment.
     const { data: document } = await admin.from("cyber_toevoeg_verzoeken").select("certificaat_pad,certificaat_mail_status").eq("id", actief.id).single();
     if (!document?.certificaat_pad) return json({ error: "Certificaat ontbreekt; geen mail verstuurd", actief: true }, 409);

@@ -85,21 +85,11 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
     setBezig(true); setFout("");
     try {
       if (!await controleerAdminMfa()) return;
-      const { data, error } = await supabase.functions.invoke("cyber-toevoegen-activeren", { body: { id, akkoord: keuze, notitie: beoordelingen[id] ?? "" } });
+      const { data, error } = await supabase.functions.invoke("cyber-toevoegen-activeren", { body: { id, actie: "beoordelen", akkoord: keuze, notitie: beoordelingen[id] ?? "" } });
       if (error || data?.error) { await verwerkMfaFout(error, data); throw await cyberFunctieFout(error, data); }
       if (data?.melding) setResultaat([data.melding, data.details].filter(Boolean).join(" "));
       await laad();
     } catch (e) { await verwerkMfaFout(e); setFout((e as { message?: string })?.message ?? "Beoordeling kon niet worden opgeslagen."); }
-    finally { setBezig(false); }
-  }
-  async function mailOpnieuw(id: string) {
-    setBezig(true); setFout("");
-    try {
-      if (!await controleerAdminMfa()) return;
-      const { data, error } = await supabase.functions.invoke("cyber-toevoegen-activeren", { body: { id, akkoord: true, notitie: "Cyberbevestiging handmatig opnieuw versturen", retryMail: true } });
-      if (error || data?.error) { await verwerkMfaFout(error, data); throw await cyberFunctieFout(error, data); }
-      await laad();
-    } catch (e) { await verwerkMfaFout(e); setFout((e as { message?: string })?.message ?? "Mail kon niet worden verstuurd."); }
     finally { setBezig(false); }
   }
   if (!zichtbaar || (!team && geladen && !opties.length && !verzoeken.length && !fout)) return null;
@@ -133,11 +123,9 @@ export function CyberToevoegen({ ondernemingId, team = false }: { ondernemingId?
       {team && r.is_test && <p className="font-semibold text-destructive">{r.notitie === "TEST E4 jaar" || r.notitie === "TEST E4 maand" ? r.notitie : "TEST"}</p>}
       <p className="font-medium">{r.geactiveerd_op ? "Cyber toegevoegd" : CYBER_VERZOEK_STATUS[r.status]}</p><p>Gewenste ingang {formatDateNL(r.gewenste_ingangsdatum)}</p><p className="break-all text-muted-foreground">Referentie {r.id}</p>
       {r.beoordeling_notitie && <p>{r.beoordeling_notitie}</p>}
-      {team && r.geactiveerd_op && !r.certificaat_pad && !r.is_test && <div role="status"><p>Cyber is actief. Certificaat en bevestigingsmail wachten nog.</p><Button variant="outline" disabled={bezig} onClick={() => mailOpnieuw(r.id)}>Certificaat en mail nu maken</Button></div>}
-      {team && r.geactiveerd_op && (r.mail_status === "mail_mislukt" || r.mail_status === "mislukt") && <div role="alert"><p>Bevestigingsmail niet verstuurd.</p><Button variant="outline" disabled={bezig} onClick={() => mailOpnieuw(r.id)}>Opnieuw versturen</Button></div>}
-      {team && r.geactiveerd_op && (r.mail_status === "mail_onzeker" || r.mail_status === "geclaimd") && <p role="status">Verzending nog niet bevestigd. Controleer eerst de verzendhistorie; niet opnieuw versturen.</p>}
+      {team && <Button variant="outline" asChild><a href={`/admin/aanvragen?cyber=${r.id}`}>Aanvraagstappen openen</a></Button>}
       {team && <><dl className="space-y-3">{CYBER_VRAGEN.map((q) => <div key={q.id}><dt>{q.tekst}</dt><dd className="font-medium">{(r.antwoorden as CyberAntwoorden)[q.id] ? "Ja" : "Nee"}</dd></div>)}</dl><p>Ingediend door: {r.bron === "team" ? "Team namens klant" : "Klant"}</p>{r.notitie && <p>{r.notitie}</p>}</>}
-      {team && r.status === "wacht_op_beoordeling" && <><Label htmlFor={`beoordeling-${r.id}`}>Toelichting bij de beoordeling</Label><Textarea id={`beoordeling-${r.id}`} minLength={10} maxLength={1000} value={beoordelingen[r.id] ?? ""} onChange={(e) => setBeoordelingen((b) => ({ ...b, [r.id]: e.target.value }))} /><p className="text-muted-foreground">Akkoord voegt cyber toe en start de aparte cyberfacturatie vanaf de gekozen ingangsdatum. BAV + AVB blijft ongewijzigd.</p><div className="flex gap-2"><Button disabled={bezig} onClick={() => beoordeel(r.id, true)}>Akkoord</Button><Button disabled={bezig} variant="outline" onClick={() => beoordeel(r.id, false)}>Afwijzen</Button></div></>}
+      {team && r.status === "wacht_op_beoordeling" && <><Label htmlFor={`beoordeling-${r.id}`}>Toelichting bij de beoordeling</Label><Textarea id={`beoordeling-${r.id}`} minLength={10} maxLength={1000} value={beoordelingen[r.id] ?? ""} onChange={(e) => setBeoordelingen((b) => ({ ...b, [r.id]: e.target.value }))} /><p className="text-muted-foreground">Beoordeel dit verzoek. Activering, certificaatcontrole en verzending volgen afzonderlijk bij Aanvragen. BAV + AVB blijft ongewijzigd.</p><div className="flex gap-2"><Button disabled={bezig} onClick={() => beoordeel(r.id, true)}>Akkoord</Button><Button disabled={bezig} variant="outline" onClick={() => beoordeel(r.id, false)}>Afwijzen</Button></div></>}
     </div>)}
   </section>;
 }

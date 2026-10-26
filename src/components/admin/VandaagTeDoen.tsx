@@ -63,6 +63,7 @@ interface Categorie { verborgen?: boolean; aantal: number; items: Item[]; per_ty
 type Acties = Record<string, Categorie> & { voornaam?: string | null; totaal?: number };
 
 const CATEGORIEEN: { key: string; titel: string; icoon: LucideIcon; link: (i: Item) => string; alles: string }[] = [
+  { key: "cyber_toevoegen", titel: "Cyber toevoegen", icoon: ShieldCheck, link: i => `/admin/aanvragen?cyber=${i.id}`, alles: "/admin/aanvragen" },
   { key: "nieuw", titel: "Nieuwe aanvragen en leads", icoon: Inbox, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/leads" },
   { key: "activeren", titel: "Klaar om te activeren", icoon: ShieldCheck, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/leads" },
   { key: "vlaggen", titel: "Gemarkeerd: vandaag opvolgen", icoon: Flag, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/aanvragen" },

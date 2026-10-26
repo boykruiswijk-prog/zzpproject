@@ -1,0 +1,5 @@
+CREATE OR REPLACE FUNCTION public.controleer_aanvraag_opbouw(_a jsonb,_doel bigint) RETURNS boolean LANGUAGE plpgsql IMMUTABLE SET search_path=public AS $$ BEGIN
+ IF _a IS NULL OR (_a->>'totaal') IS NULL OR (_a->>'klant') IS NULL OR (_a->>'in_behandeling') IS NULL OR (_a->>'te_beoordelen') IS NULL OR (_a->>'overig') IS NULL OR _doel IS NULL OR (_a->>'totaal')::bigint<>_doel OR (_a->>'totaal')::bigint<>(_a->>'klant')::bigint+(_a->>'in_behandeling')::bigint+(_a->>'te_beoordelen')::bigint+(_a->>'overig')::bigint THEN RAISE EXCEPTION 'Aanvraagopbouw sluit niet aan op het doelaantal' USING ERRCODE='23514'; END IF;
+ IF coalesce((_a->>'cyber_toevoegen')::bigint,0)<>0 THEN RAISE EXCEPTION 'Later cyber mag niet meetellen in doel of nieuwe klanten' USING ERRCODE='23514'; END IF; RETURN true;
+END $$;
+REVOKE ALL ON FUNCTION public.controleer_aanvraag_opbouw(jsonb,bigint) FROM PUBLIC,anon; GRANT EXECUTE ON FUNCTION public.controleer_aanvraag_opbouw(jsonb,bigint) TO authenticated,service_role;
