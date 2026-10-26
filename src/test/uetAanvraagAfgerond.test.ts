@@ -41,3 +41,19 @@ describe("UET aanvraag_afgerond", () => {
     expect(events()).toHaveLength(0);
   });
 });
+
+describe("UET secundaire events", () => {
+  beforeEach(() => {
+    push.mockReset();
+    ((globalThis as Record<string, unknown>).window as Record<string, unknown>).uetq = { push };
+    loc.pathname = "/contact";
+  });
+  it("terugbel, contact en offerte sturen een UET-event, test en /admin niet", async () => {
+    const t = await import("@/lib/tracking");
+    t.__resetUetVoorTest(true);
+    t.trackTerugbelVerzonden(false); t.trackContactVerzonden(false); t.trackOfferteVerzonden(false);
+    t.trackOfferteVerzonden(true);
+    loc.pathname = "/admin/leads"; t.trackOfferteVerzonden(false);
+    expect(push.mock.calls.map((c) => c[1])).toEqual(["terugbelverzoek_verzonden", "contactformulier_verzonden", "offerte_verzonden"]);
+  });
+});

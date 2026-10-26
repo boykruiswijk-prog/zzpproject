@@ -4,7 +4,7 @@
 import { useCallback, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { leesAttributie } from "@/lib/attributie";
-import { trackGenerateLead, trackChatHandoff, trackTerugbelVerzonden, trackContactVerzonden, isTestOmgeving } from "@/lib/tracking";
+import { trackGenerateLead, trackChatHandoff, trackTerugbelVerzonden, trackContactVerzonden, isTestOmgeving, trackOfferteVerzonden } from "@/lib/tracking";
 import { publiekeRij } from "@/lib/publiekeTekst";
 
 /** Naam van het onzichtbare veld. Bots vullen 'm, mensen zien 'm niet. */
@@ -104,7 +104,7 @@ export async function submitPublicForm<T extends Record<string, unknown>>(
     const isTest = isTestOmgeving() || email.endsWith("@zpzaken.nl");
     if (extra?.bron === "chat-zeker") { trackGenerateLead("terugbel"); trackChatHandoff("terugbelverzoek"); trackTerugbelVerzonden(isTest); }
     else if (/terugbel/i.test(naam)) { trackGenerateLead("terugbel"); trackTerugbelVerzonden(isTest); }
-    else if (type === "offerte-aanvraag") trackGenerateLead("offerte");
+    else if (type === "offerte-aanvraag") { trackGenerateLead("offerte"); trackOfferteVerzonden(isTest); }
     else if (naam === "Interesse pensioen via Evi") { /* F7: geen conversie-event. */ }
     else if (type === "contact") { trackGenerateLead("contact"); if (naam === "Contactformulier") trackContactVerzonden(isTest); }
     else trackGenerateLead("aanvraag");

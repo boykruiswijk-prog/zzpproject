@@ -263,11 +263,18 @@ export function isTestOmgeving(host: string = typeof window === "undefined" ? ""
   return !(h === "zpzaken.nl" || h.endsWith(".zpzaken.nl"));
 }
 
+/** Secundair UET-event (alleen met geladen UET, dus na marketingtoestemming). */
+export function uetSecundair(event: string, isTest: boolean) {
+  if (isTest || !uetGeladen || typeof window === "undefined" || isNietGemetenPad(window.location.pathname)) return;
+  uetq()?.push("event", event, { event_category: "lead" });
+}
+
 export function secundaireConversie(event: string, formulier: string, label: string, isTest: boolean) {
   if (isTest || typeof window === "undefined" || isNietGemetenPad(window.location.pathname)) return;
   trackGa(event, { formulier, page: page() });
   const sendTo = adsSendTo(label);
   if (sendTo) trackGa("conversion", { send_to: sendTo });
+  uetSecundair(event, isTest);
 }
 
 /** Alleen aanroepen na een geslaagde server-respons. */
@@ -276,6 +283,8 @@ export const trackTerugbelVerzonden = (isTest = isTestOmgeving()) =>
 /** Alleen aanroepen na een geslaagde server-respons. */
 export const trackContactVerzonden = (isTest = isTestOmgeving()) =>
   secundaireConversie("contactformulier_verzonden", "contact", GOOGLE_ADS_CONVERSIE_CONTACT, isTest);
+/** Offerteverzoek: alleen UET-event (geen Google Ads-label ingesteld). */
+export const trackOfferteVerzonden = (isTest = isTestOmgeving()) => uetSecundair("offerte_verzonden", isTest);
 
 /**
  * Secundaire conversie "aanvraag gestart": eerste keer dat een aanvraagconcept met e-mail of telefoon is opgeslagen.
