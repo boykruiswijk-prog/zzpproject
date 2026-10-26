@@ -11,6 +11,7 @@
    source_url: string | null;
    source_name: string | null;
    image_url: string | null;
+   foto_alt?: string | null;
    read_time: string | null;
    published_at: string | null;
    updated_at: string | null;
@@ -26,6 +27,7 @@
          .from("articles")
          .select("*")
          .eq("is_published", true)
+         .eq("is_test", false)
          .order("published_at", { ascending: false });
  
        if (category && category !== "Alle") {
@@ -53,6 +55,7 @@
          .select("*")
          .eq("slug", slug)
          .eq("is_published", true)
+         .eq("is_test", false)
          .maybeSingle();
  
        if (error) {
@@ -73,7 +76,8 @@
        const { data, error } = await supabase
          .from("articles")
          .select("category")
-         .eq("is_published", true);
+         .eq("is_published", true)
+         .eq("is_test", false);
  
        if (error) {
          console.error("Error fetching categories:", error);

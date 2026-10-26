@@ -438,10 +438,14 @@ export type Database = {
           content_reviewed_at: string | null
           created_at: string
           excerpt: string | null
+          foto_alt: string | null
+          foto_bron_url: string | null
+          foto_prompt: string | null
           generated_by_ai: boolean
           id: string
           image_url: string | null
           is_published: boolean | null
+          is_test: boolean
           published_at: string | null
           read_time: string | null
           reviewed_at: string | null
@@ -462,10 +466,14 @@ export type Database = {
           content_reviewed_at?: string | null
           created_at?: string
           excerpt?: string | null
+          foto_alt?: string | null
+          foto_bron_url?: string | null
+          foto_prompt?: string | null
           generated_by_ai?: boolean
           id?: string
           image_url?: string | null
           is_published?: boolean | null
+          is_test?: boolean
           published_at?: string | null
           read_time?: string | null
           reviewed_at?: string | null
@@ -486,10 +494,14 @@ export type Database = {
           content_reviewed_at?: string | null
           created_at?: string
           excerpt?: string | null
+          foto_alt?: string | null
+          foto_bron_url?: string | null
+          foto_prompt?: string | null
           generated_by_ai?: boolean
           id?: string
           image_url?: string | null
           is_published?: boolean | null
+          is_test?: boolean
           published_at?: string | null
           read_time?: string | null
           reviewed_at?: string | null
@@ -736,6 +748,199 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      artikel_foto_inventaris: {
+        Row: {
+          created_at: string
+          phash: unknown
+          sha256: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          phash: unknown
+          sha256: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          phash?: unknown
+          sha256?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      artikel_foto_jobs: {
+        Row: {
+          article_id: string
+          bron_host: string | null
+          bron_url: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          lease: string | null
+          lease_tot: string | null
+          reden: string | null
+          status: string
+        }
+        Insert: {
+          article_id: string
+          bron_host?: string | null
+          bron_url: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          lease?: string | null
+          lease_tot?: string | null
+          reden?: string | null
+          status?: string
+        }
+        Update: {
+          article_id?: string
+          bron_host?: string | null
+          bron_url?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          lease?: string | null
+          lease_tot?: string | null
+          reden?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artikel_foto_jobs_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      artikel_foto_log: {
+        Row: {
+          article_id: string | null
+          bron_host: string | null
+          created_at: string
+          id: string
+          job_id: string | null
+          reden: string | null
+          status: string
+        }
+        Insert: {
+          article_id?: string | null
+          bron_host?: string | null
+          created_at?: string
+          id?: string
+          job_id?: string | null
+          reden?: string | null
+          status: string
+        }
+        Update: {
+          article_id?: string | null
+          bron_host?: string | null
+          created_at?: string
+          id?: string
+          job_id?: string | null
+          reden?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artikel_foto_log_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artikel_foto_log_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "artikel_foto_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      artikel_foto_worker: {
+        Row: {
+          id: boolean
+          lease: string | null
+          lease_tot: string | null
+        }
+        Insert: {
+          id?: boolean
+          lease?: string | null
+          lease_tot?: string | null
+        }
+        Update: {
+          id?: boolean
+          lease?: string | null
+          lease_tot?: string | null
+        }
+        Relationships: []
+      }
+      artikel_fotos: {
+        Row: {
+          article_id: string
+          breedte: number
+          bron_host: string
+          bron_sha256: string
+          bron_url: string
+          created_at: string
+          hoogte: number
+          id: string
+          image_url: string
+          is_test: boolean
+          phash: unknown
+          prompt: string | null
+          sha256: string
+          slug: string
+          storage_pad: string
+        }
+        Insert: {
+          article_id: string
+          breedte: number
+          bron_host: string
+          bron_sha256: string
+          bron_url: string
+          created_at?: string
+          hoogte: number
+          id?: string
+          image_url: string
+          is_test?: boolean
+          phash: unknown
+          prompt?: string | null
+          sha256: string
+          slug: string
+          storage_pad: string
+        }
+        Update: {
+          article_id?: string
+          breedte?: number
+          bron_host?: string
+          bron_sha256?: string
+          bron_url?: string
+          created_at?: string
+          hoogte?: number
+          id?: string
+          image_url?: string
+          is_test?: boolean
+          phash?: unknown
+          prompt?: string | null
+          sha256?: string
+          slug?: string
+          storage_pad?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artikel_fotos_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       bav_aanmeldingen: {
         Row: {
@@ -6327,6 +6532,40 @@ export type Database = {
           klik_id: string
           user_id: string
         }[]
+      }
+      artikel_foto_claim: {
+        Args: { p_lease: string }
+        Returns: {
+          article_id: string
+          bron_host: string | null
+          bron_url: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          lease: string | null
+          lease_tot: string | null
+          reden: string | null
+          status: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "artikel_foto_jobs"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      artikel_foto_dispatch: { Args: never; Returns: undefined }
+      artikel_foto_status: {
+        Args: { p_slug: string }
+        Returns: {
+          image_url: string
+          reden: string
+          status: string
+        }[]
+      }
+      artikel_foto_vastleggen: {
+        Args: { p_foto: Json; p_job: string; p_lease: string }
+        Returns: string
       }
       bav_nummer_bevestigen: {
         Args: { _nummer: string; _onderneming_id: string; _toelichting: string }

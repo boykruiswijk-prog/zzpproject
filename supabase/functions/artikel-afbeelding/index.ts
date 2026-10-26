@@ -66,9 +66,9 @@ Deno.serve(async req => {
   const job = jobs?.[0];
   if (!job) return json({ ok: true, status: 'geen_werk' });
   const afgebroken = job.status === 'running';
-  const { data: article } = await admin.from('articles').select('id,slug,title,category,excerpt,image_url,is_published').eq('id',job.article_id).single();
+   const { data: article } = await admin.from('articles').select('id,slug,title,category,excerpt,image_url,is_published,foto_bron_url').eq('id',job.article_id).single();
   // Explicit replacement jobs only target our generated files; never custom images.
-  if (!article || !article.is_published || (article.image_url && !article.image_url.includes('/article-images/generated/'))) {
+   if (!article || !article.is_published || article.foto_bron_url || (article.image_url && !article.image_url.includes('/article-images/generated/'))) {
    await admin.from('article_image_jobs').update({ status: 'skipped', completed_at: new Date().toISOString() }).eq('article_id',job.article_id);
    return json({ ok: true, status: 'eigen_afbeelding_behouden' });
   }
