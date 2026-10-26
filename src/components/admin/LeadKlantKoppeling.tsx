@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link2, Unlink, FilePlus, Loader2 } from "lucide-react";
 import { zoekUniverseel, type ZoekResultaat } from "./UniverseleZoeker";
-import { aanvraagVoorinvulling, type LeadVoorinvulling } from "@/lib/handmatigeLead";
+import { type LeadVoorinvulling } from "@/lib/handmatigeLead";
 
 type Bron = LeadVoorinvulling & { id: string; gekoppeld_onderneming_id?: string | null; is_test?: boolean };
 export function LeadKlantKoppeling({ lead, bron = "leads", onGewijzigd }: { lead: Bron; bron?: "leads" | "aanvraag_concepten"; onGewijzigd?: () => void }) {
@@ -55,7 +55,7 @@ export function LeadKlantKoppeling({ lead, bron = "leads", onGewijzigd }: { lead
   const magOntkoppelen = isSupervisorOrAdmin || user?.email?.toLowerCase() === "ellen.baars@zpzaken.nl";
   return <>
     {gekoppeld ? <><Button variant="outline" asChild><Link to={`/admin/klanten/${gekoppeld}`}>Klantkaart</Link></Button>{magOntkoppelen && <Button variant="outline" onClick={() => setOpen(true)}><Unlink className="h-4 w-4" />Ontkoppelen</Button>}</> : <Button variant="outline" onClick={() => setOpen(true)}><Link2 className="h-4 w-4" />Koppel aan klant</Button>}
-    {!gekoppeld && <Button variant="outline" onClick={() => nav("/verzekeringen#combinatiepolis", { state: { aanvraagVanLead: aanvraagVoorinvulling(lead) } })}><FilePlus className="h-4 w-4" />Aanvraag starten</Button>}
+    {!gekoppeld && <Button variant="outline" onClick={() => nav("/verzekeringen#combinatiepolis", { state: { aanvraagVanLead: { bron, id: lead.id } } })}><FilePlus className="h-4 w-4" />Aanvraag starten</Button>}
     <Dialog open={open} onOpenChange={setOpen}><DialogContent className="max-h-[85vh] overflow-y-auto"><DialogHeader><DialogTitle>{gekoppeld ? "Lead ontkoppelen" : "Koppel aan klant"}</DialogTitle></DialogHeader>
       <div className="space-y-4">
         {!gekoppeld && <><Input aria-label="Zoek een klantkaart" placeholder="Naam, e-mail, telefoon, KvK of BAV-nummer" value={zoek} onChange={e => { setZoek(e.target.value); setKeuze(null); }} />

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Building2, FileText, Euro, Users, TrendingUp, UserX, CalendarClock, AlertTriangle, RefreshCw, LineChart, Target, Inbox } from "lucide-react";
 import { formatEuro } from "@/lib/klantContracten";
 import { NETTO_GROEI_LABEL } from "@/lib/nettoGroei";
-import { controleerDashboardOpbouw, conversieAanvragen, type AanvragenOpbouw, type InstroomOpbouw } from "../../../supabase/functions/_shared/dashboardOpbouw";
+import { controleerDashboardOpbouw, controleerLeadsOpbouw, conversieAanvragen, type AanvragenOpbouw, type InstroomOpbouw } from "../../../supabase/functions/_shared/dashboardOpbouw";
 
 export type DashboardTellers = {
   klanten: number; contracten_actief: number; mrr: number; arr: number;
@@ -40,6 +40,7 @@ export function useDashboardTellers() {
       if (!data || typeof data !== "object") throw new Error("Lege reactie van de tellers");
       const tellers = data as unknown as DashboardTellers;
       controleerDashboardOpbouw(tellers.aanvragen_opbouw, tellers.aanvragen_doel);
+      controleerLeadsOpbouw(tellers.leads_opbouw);
       return tellers;
     },
     refetchInterval: 60_000,

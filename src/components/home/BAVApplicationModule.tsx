@@ -286,13 +286,18 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
   // gebeurt nu server-side bij het versturen van de aanvraag.
   const wizardRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const gegevens = (routerLocatie.state as { aanvraagVanLead?: LeadVoorinvulling } | null)?.aanvraagVanLead;
-    if (!gegevens) return;
-    const invulling = aanvraagVoorinvulling(gegevens);
-    // The router-state payload already uses the wizard's field name.
-    setFormData(prev => ({ ...prev, ...invulling, kvkNummer: (gegevens as { kvkNummer?: string }).kvkNummer ?? invulling.kvkNummer }));
-    setCurrentStep(1);
-    window.history.replaceState({ ...window.history.state, usr: null }, "");
+    const bron = (routerLocatie.state as { aanvraagVanLead?: { bron: string; id: string } } | null)?.aanvraagVanLead;
+    if (!bron) return;
+    let weg = false;
+    supabase.rpc("lead_aanvraag_voorinvullen", { _bron_tabel: bron.bron, _bron_id: bron.id }).then(({ data, error }) => {
+      if (weg) return;
+      if (error) { toast({ title: "Voorinvullen mislukt", description: error.message, variant: "destructive" }); return; }
+      const invulling = aanvraagVoorinvulling(data as LeadVoorinvulling);
+      setFormData(prev => ({ ...prev, ...invulling }));
+      setCurrentStep(1);
+      window.history.replaceState({ ...window.history.state, usr: null }, "");
+    });
+    return () => { weg = true; };
   }, [routerLocatie.key]);
   // Snelle start bovenaan beroepspagina's: maandpakket, e-mail en telefoon vooraf ingevuld.
   useEffect(() => {
