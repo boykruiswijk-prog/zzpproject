@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
@@ -37,6 +37,8 @@ function bron(a: Concept["attributie"]): string {
 }
 
 export default function Afgehaakt() {
+  const [zoekParams] = useSearchParams();
+  const gekozen = zoekParams.get("record");
   const { user } = useAuth();
   const { toonTest } = useToonTestrecords();
   const qc = useQueryClient();
@@ -50,9 +52,11 @@ export default function Afgehaakt() {
     setLaden(true);
     let q = supabase.from("aanvraag_concepten")
       .select("id,created_at,laatst_actief_op,stap,email,telefoon,voornaam,achternaam,bedrijfsnaam,kvk,pakket,sector,pagina,attributie,status,opvolg_notitie,opgevolgd_op,is_test,dubbel_lead_id")
-      .neq("status", "omgezet").is("geanonimiseerd_op", null)
+      .is("geanonimiseerd_op", null)
       .order("laatst_actief_op", { ascending: false }).limit(300);
     if (!toonTest) q = q.eq("is_test", false);
+    if (gekozen) q = q.eq("id", gekozen);
+    else q = q.neq("status", "omgezet");
     const { data, error } = await q;
     if (error) toast({ title: "Laden mislukt", description: error.message, variant: "destructive" });
     const lijst = (data as unknown as Concept[]) || [];
@@ -65,12 +69,12 @@ export default function Afgehaakt() {
       setAfgerond(kaart);
     }
   };
-  useEffect(() => { void laad(); }, [toonTest]);
+  useEffect(() => { void laad(); }, [toonTest, gekozen]);
 
   const zichtbaar = useMemo(() => {
     const grens = Date.now() - DERTIG_MIN;
-    return rijen.filter((r) => new Date(r.laatst_actief_op).getTime() < grens && (toonOpgevolgd || (r.status === "open" && !r.is_test)));
-  }, [rijen, toonOpgevolgd]);
+    return rijen.filter((r) => gekozen === r.id || (new Date(r.laatst_actief_op).getTime() < grens && (toonOpgevolgd || (r.status === "open" && !r.is_test))));
+  }, [rijen, toonOpgevolgd, gekozen]);
 
   const bewaar = async (r: Concept, extra: Partial<Concept>, titel: string) => {
     const notitie = notities[r.id] ?? r.opvolg_notitie ?? "";

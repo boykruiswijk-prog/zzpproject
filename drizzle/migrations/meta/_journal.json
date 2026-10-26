@@ -1331,6 +1331,27 @@
       "when": 1793024654126,
       "tag": "0189_artikel_foto_cloudfront_host",
       "breakpoints": true
+    },
+    {
+      "idx": 190,
+      "version": "7",
+      "when": 1793025252791,
+      "tag": "0190_admin_zoeken_alle_bronnen",
+      "breakpoints": true
+    },
+    {
+      "idx": 191,
+      "version": "7",
+      "when": 1793025353420,
+      "tag": "0191_admin_zoeken_cyber_bav_koppeling",
+      "breakpoints": true
+    },
+    {
+      "idx": 192,
+      "version": "7",
+      "when": 1793025381619,
+      "tag": "0192_admin_zoeken_contract_eigen_nummer",
+      "breakpoints": true
     }
   ]
 }

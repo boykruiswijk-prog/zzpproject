@@ -6373,6 +6373,27 @@ export type Database = {
       }
     }
     Views: {
+      admin_zoek_bronnen: {
+        Row: {
+          bron: string | null
+          email: string | null
+          groep: string | null
+          ibans: string[] | null
+          id: string | null
+          is_test: boolean | null
+          lead_id: string | null
+          nummers: string[] | null
+          onderneming_id: string | null
+          persoon_id: string | null
+          route: string | null
+          soort: string | null
+          status: string | null
+          telefoons: string[] | null
+          titel: string | null
+          zoektekst: string | null
+        }
+        Relationships: []
+      }
       crm_bav_nummers: {
         Row: {
           bron: string | null
@@ -7418,6 +7439,7 @@ export type Database = {
         Returns: Json
       }
       zoek_masker_iban: { Args: { _t: string }; Returns: string }
+      zoek_norm_compact: { Args: { v: string }; Returns: string }
       zoek_norm_tel: { Args: { _t: string }; Returns: string }
       zoek_universeel: {
         Args: { _met_test?: boolean; _zoek: string }
