@@ -104,7 +104,7 @@ export async function submitPublicForm<T extends Record<string, unknown>>(
     const isTest = isTestOmgeving() || email.endsWith("@zpzaken.nl");
     if (extra?.bron === "chat-zeker") { trackGenerateLead("terugbel"); trackChatHandoff("terugbelverzoek"); trackTerugbelVerzonden(isTest); }
     else if (/terugbel/i.test(naam)) { trackGenerateLead("terugbel"); trackTerugbelVerzonden(isTest); }
-    else if (type === "offerte-aanvraag") trackGenerateLead("offerte");
+    else if (type === "offerte-aanvraag") { trackGenerateLead("offerte"); trackOfferteVerzonden(isTest); }
     else if (naam === "Interesse pensioen via Evi") { /* F7: geen conversie-event. */ }
     else if (type === "contact") { trackGenerateLead("contact"); if (naam === "Contactformulier") trackContactVerzonden(isTest); }
     else trackGenerateLead("aanvraag");
