@@ -20,6 +20,7 @@ beforeAll(async()=>{
  const sql=readFileSync('scripts/adminZoek.sql','utf8').replace(/CREATE EXTENSION[^;]+;/g,'').replace(/EXECUTE format\('CREATE INDEX[^\n]+?\);/g,'NULL;');
  await db.exec(sql);
  await db.exec(readFileSync('drizzle/migrations/0191_admin_zoeken_cyber_bav_koppeling.sql','utf8'));
+ await db.exec(readFileSync('drizzle/migrations/0192_admin_zoeken_contract_eigen_nummer.sql','utf8'));
  await db.query(`insert into aanvraag_concepten(id,voornaam,achternaam,telefoon,status,is_test) values($1,'Afgehaakt','Persoon','+31 6 12 34 56 78','open',false)`,[id(1)]);
  await db.query(`insert into leads(id,voornaam,email,type,status,is_test) values($1,'Contact','vraag@zpzaken.nl','contact','nieuw',false)`,[id(2)]);
  await db.query(`insert into ondernemingen(id,naam,kvk,iban,is_test) values($1,'Hoofdkaart','92 65 41 93','NL91 ABNA 0417 1643 00',false)`,[id(3)]);
