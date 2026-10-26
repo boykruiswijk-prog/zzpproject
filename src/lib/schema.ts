@@ -131,7 +131,11 @@ export function productSchema(pakket: Pakket): JsonLd {
     name: pakket.name,
     description: `Beroeps- en bedrijfsaansprakelijkheidsverzekering voor zzp'ers${
       pakket.dekkingen.cyber ? " inclusief cyberdekking" : ""
-    }. ${pakket.prijsLabel}.`,
+    }. ${
+      pakket.id === "maandelijks" || pakket.id === "jaarlijks"
+        ? "€ 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting."
+        : `${pakket.prijsLabel}.`
+    }`,
     provider: organizationRef(),
     areaServed: "NL",
     offers: {
