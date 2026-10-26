@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Building2, FileText, Euro, Users, TrendingUp, UserX, CalendarClock, AlertTriangle, RefreshCw, LineChart, Target, Inbox } from "lucide-react";
 import { formatEuro } from "@/lib/klantContracten";
 import { NETTO_GROEI_LABEL } from "@/lib/nettoGroei";
-import { controleerDashboardOpbouw, conversieAanvragen, type AanvragenOpbouw, type InstroomOpbouw } from "../../../supabase/functions/_shared/dashboardOpbouw";
+import { controleerDashboardOpbouw, controleerLeadsOpbouw, conversieAanvragen, type AanvragenOpbouw, type InstroomOpbouw } from "../../../supabase/functions/_shared/dashboardOpbouw";
 
 export type DashboardTellers = {
   klanten: number; contracten_actief: number; mrr: number; arr: number;
@@ -21,7 +21,7 @@ export type DashboardTellers = {
   /** Uit tel_service_open / tel_aanvragen_doel: dezelfde definitie als het live-scherm. */
   service_open?: number; aanvragen_doel?: number; aanvragen_doel_van?: number;
   aanvragen_opbouw?: AanvragenOpbouw;
-  leads_opbouw?: { vanaf: string; totaal: number; aanvragen: number; contact: number; offerte: number };
+  leads_opbouw?: { vanaf: string; totaal: number; aanvragen: number; contact: number; offerte: number; handmatig?: number; handmatige_bronnen?: Record<string, number> };
   /** Uit tel_netto_groei: zelfde bron als het live-scherm (A6). Alleen aantallen. */
   netto_groei?: { instroom_opbouw?: InstroomOpbouw; cumulatief?: { instroom: number; beeindigingen: number; netto_groei: number; opzegpercentage: number | null; circle8_opzeggingen: number } };
 };
@@ -40,6 +40,7 @@ export function useDashboardTellers() {
       if (!data || typeof data !== "object") throw new Error("Lege reactie van de tellers");
       const tellers = data as unknown as DashboardTellers;
       controleerDashboardOpbouw(tellers.aanvragen_opbouw, tellers.aanvragen_doel);
+      controleerLeadsOpbouw(tellers.leads_opbouw);
       return tellers;
     },
     refetchInterval: 60_000,
@@ -75,7 +76,7 @@ export function DashboardStats() {
     { title: "Actieve contractregels", value: t?.contracten_actief, icon: FileText, description: "Status actief of loopt af", href: "/admin/klanten" },
     { title: "Maandwaarde (MRR)", value: t ? formatEuro(t.mrr) : undefined, icon: Euro, description: "Jaarcontracten gedeeld door 12", href: "/admin/klanten" },
     { title: "Jaarwaarde (ARR)", value: t ? formatEuro(t.arr) : undefined, icon: LineChart, description: "MRR × 12", href: "/admin/klanten" },
-    { title: "Leads", value: l?.totaal ?? t?.leads_totaal, icon: Users, description: l ? `${l.aanvragen} aanvragen · ${l.contact} contact · ${l.offerte} offerte · sinds ${new Intl.DateTimeFormat("nl-NL", { day: "numeric", month: "short", year: "numeric", timeZone: "Europe/Amsterdam" }).format(new Date(`${l.vanaf}T12:00:00Z`))} t/m vandaag · zonder test` : "Alle ontvangen leads, zonder test", href: "/admin/leads" },
+    { title: "Leads", value: l?.totaal ?? t?.leads_totaal, icon: Users, description: l ? `${l.aanvragen} aanvragen · ${l.contact} contact · ${l.offerte} offerte · handmatig ${l.handmatig ?? 0}${Object.entries(l.handmatige_bronnen ?? {}).length ? ` (${Object.entries(l.handmatige_bronnen ?? {}).map(([bron,n]) => `${bron} ${n}`).join(", ")})` : ""} · sinds ${new Intl.DateTimeFormat("nl-NL", { day: "numeric", month: "short", year: "numeric", timeZone: "Europe/Amsterdam" }).format(new Date(`${l.vanaf}T12:00:00Z`))} t/m vandaag · zonder test` : "Alle ontvangen leads, zonder test", href: "/admin/leads" },
     { title: "Conversie aanvragen sinds 6 okt", value: a ? `${conversie.toLocaleString("nl-NL")}%` : undefined, icon: TrendingUp, description: a ? `${a.klant} van ${a.totaal} aanvragen klant · ${a.in_behandeling} in behandeling · ${a.te_beoordelen} te beoordelen · ${a.overig} afgewezen/overig · zelfde getal als het live-scherm` : "Zelfde aanvraagset als de doeltegel", href: "/admin/aanvragen" },
     { title: "Aanvragen BAV + AVB sinds 6 okt", value: t ? `${t.aanvragen_doel ?? 0} van ${t.aanvragen_doel_van ?? 200}` : undefined, icon: Target, description: "6 okt t/m 31 dec · ontdubbeld per KvK, zonder test · zelfde getal als het live-scherm", href: "/admin/aanvragen" },
     { title: `Netto groei ${NETTO_GROEI_LABEL.toLowerCase()}`, value: t?.netto_groei?.cumulatief ? `${t.netto_groei.cumulatief.netto_groei >= 0 ? "+" : ""}${t.netto_groei.cumulatief.netto_groei}` : undefined, icon: TrendingUp, description: t?.netto_groei?.cumulatief ? `${t.netto_groei.cumulatief.instroom} instroom, ${t.netto_groei.cumulatief.beeindigingen} beëindigd${i ? ` · via aanvraag ${i.via_aanvraag} (waarvan ${i.voor_6_okt} vóór 6 okt aangevraagd) · AFAS-overzetting ${i.afas_overzetting}${i.overig ? ` · overig ${i.overig}` : ""} · nog in te gaan ${i.nog_in_te_gaan} (toekomstige ingangsdatum)` : ""} · zelfde getal als het live-scherm` : "Zelfde getal als het live-scherm", href: "/admin/klanten" },

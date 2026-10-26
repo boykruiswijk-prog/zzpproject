@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { LeadKlantKoppeling } from "@/components/admin/LeadKlantKoppeling";
 import { Helmet } from "react-helmet-async";
 import { Link, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
@@ -21,6 +22,7 @@ interface Concept {
   bedrijfsnaam: string | null; kvk: string | null; pakket: string | null; sector: string | null; pagina: string | null;
   attributie: Record<string, string> | null; status: Status; opvolg_notitie: string | null;
   opgevolgd_op: string | null; is_test: boolean; dubbel_lead_id: string | null;
+  gekoppeld_onderneming_id: string | null;
 }
 
 const STAPNAMEN = ["", "Pakket en contact", "Bedrijf", "Persoonsgegevens", "Betaling", "Controle"];
@@ -51,7 +53,7 @@ export default function Afgehaakt() {
   const laad = async () => {
     setLaden(true);
     let q = supabase.from("aanvraag_concepten")
-      .select("id,created_at,laatst_actief_op,stap,email,telefoon,voornaam,achternaam,bedrijfsnaam,kvk,pakket,sector,pagina,attributie,status,opvolg_notitie,opgevolgd_op,is_test,dubbel_lead_id")
+      .select("id,created_at,laatst_actief_op,stap,email,telefoon,voornaam,achternaam,bedrijfsnaam,kvk,pakket,sector,pagina,attributie,status,opvolg_notitie,opgevolgd_op,is_test,dubbel_lead_id,gekoppeld_onderneming_id")
       .is("geanonimiseerd_op", null)
       .order("laatst_actief_op", { ascending: false }).limit(300);
     if (!toonTest) q = q.eq("is_test", false);
@@ -147,6 +149,7 @@ export default function Afgehaakt() {
                       onChange={(e) => setNotities((n) => ({ ...n, [r.id]: e.target.value }))}
                     />
                     <div className="flex flex-wrap gap-2">
+                      <LeadKlantKoppeling lead={r} bron="aanvraag_concepten" onGewijzigd={() => void laad()} />
                       <Button size="sm" onClick={() => zetStatus(r, "gebeld")}>Gebeld</Button>
                       <Button size="sm" variant="outline" onClick={() => zetStatus(r, "onbereikbaar")}>Onbereikbaar</Button>
                       <Button size="sm" variant="outline" onClick={() => zetStatus(r, "geen_interesse")}>Geen interesse</Button>

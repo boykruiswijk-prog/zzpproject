@@ -1,0 +1,1 @@
+DO $$ DECLARE d text; BEGIN d:=pg_get_functiondef('public.handmatige_lead_toevoegen(jsonb,boolean,boolean)'::regprocedure); IF position('aangemaakt_door,bericht,is_test' IN d)=0 THEN RAISE EXCEPTION 'Notitieveld niet gevonden'; END IF; d:=replace(d,'aangemaakt_door,bericht,is_test','aangemaakt_door,opmerkingen,is_test'); EXECUTE d; END $$;

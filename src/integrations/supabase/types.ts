@@ -43,10 +43,13 @@ export type Database = {
           achternaam: string | null
           attributie: Json | null
           bedrijfsnaam: string | null
+          converted_at: string | null
           created_at: string
           dubbel_lead_id: string | null
           email: string | null
           geanonimiseerd_op: string | null
+          gekoppeld_onderneming_id: string | null
+          gekoppeld_persoon_id: string | null
           id: string
           interne_bron: string | null
           is_test: boolean
@@ -70,10 +73,13 @@ export type Database = {
           achternaam?: string | null
           attributie?: Json | null
           bedrijfsnaam?: string | null
+          converted_at?: string | null
           created_at?: string
           dubbel_lead_id?: string | null
           email?: string | null
           geanonimiseerd_op?: string | null
+          gekoppeld_onderneming_id?: string | null
+          gekoppeld_persoon_id?: string | null
           id: string
           interne_bron?: string | null
           is_test?: boolean
@@ -97,10 +103,13 @@ export type Database = {
           achternaam?: string | null
           attributie?: Json | null
           bedrijfsnaam?: string | null
+          converted_at?: string | null
           created_at?: string
           dubbel_lead_id?: string | null
           email?: string | null
           geanonimiseerd_op?: string | null
+          gekoppeld_onderneming_id?: string | null
+          gekoppeld_persoon_id?: string | null
           id?: string
           interne_bron?: string | null
           is_test?: boolean
@@ -133,6 +142,20 @@ export type Database = {
             columns: ["dubbel_lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aanvraag_concepten_gekoppeld_onderneming_id_fkey"
+            columns: ["gekoppeld_onderneming_id"]
+            isOneToOne: false
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aanvraag_concepten_gekoppeld_persoon_id_fkey"
+            columns: ["gekoppeld_persoon_id"]
+            isOneToOne: false
+            referencedRelation: "personen"
             referencedColumns: ["id"]
           },
           {
@@ -4470,6 +4493,60 @@ export type Database = {
           },
         ]
       }
+      lead_klant_log: {
+        Row: {
+          actie: string
+          bron_id: string
+          bron_tabel: string
+          created_at: string
+          id: string
+          is_test: boolean
+          notitie: string
+          onderneming_id: string
+          persoon_id: string | null
+          uitgevoerd_door: string
+        }
+        Insert: {
+          actie: string
+          bron_id: string
+          bron_tabel: string
+          created_at?: string
+          id?: string
+          is_test?: boolean
+          notitie?: string
+          onderneming_id: string
+          persoon_id?: string | null
+          uitgevoerd_door: string
+        }
+        Update: {
+          actie?: string
+          bron_id?: string
+          bron_tabel?: string
+          created_at?: string
+          id?: string
+          is_test?: boolean
+          notitie?: string
+          onderneming_id?: string
+          persoon_id?: string | null
+          uitgevoerd_door?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_klant_log_onderneming_id_fkey"
+            columns: ["onderneming_id"]
+            isOneToOne: false
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_klant_log_persoon_id_fkey"
+            columns: ["persoon_id"]
+            isOneToOne: false
+            referencedRelation: "personen"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_notes: {
         Row: {
           content: string
@@ -4556,6 +4633,7 @@ export type Database = {
       }
       leads: {
         Row: {
+          aangemaakt_door: string | null
           achternaam: string
           activatie_log: Json
           adres_huisnummer: string | null
@@ -4607,7 +4685,10 @@ export type Database = {
           geactiveerd_door: string | null
           geactiveerd_op: string | null
           geboortedatum: string | null
+          gekoppeld_onderneming_id: string | null
+          gekoppeld_persoon_id: string | null
           gekozen_pakket: string | null
+          handmatige_bron: string | null
           heractivering_datum: string | null
           heractivering_door: string | null
           iban: string | null
@@ -4639,6 +4720,9 @@ export type Database = {
           starter_toelichting: string | null
           starter_tot: string | null
           status: Database["public"]["Enums"]["lead_status"]
+          status_voor_koppeling:
+            | Database["public"]["Enums"]["lead_status"]
+            | null
           tarief_type: string
           telefoon: string | null
           type: Database["public"]["Enums"]["lead_type"]
@@ -4654,6 +4738,7 @@ export type Database = {
           voornaam: string
         }
         Insert: {
+          aangemaakt_door?: string | null
           achternaam: string
           activatie_log?: Json
           adres_huisnummer?: string | null
@@ -4705,7 +4790,10 @@ export type Database = {
           geactiveerd_door?: string | null
           geactiveerd_op?: string | null
           geboortedatum?: string | null
+          gekoppeld_onderneming_id?: string | null
+          gekoppeld_persoon_id?: string | null
           gekozen_pakket?: string | null
+          handmatige_bron?: string | null
           heractivering_datum?: string | null
           heractivering_door?: string | null
           iban?: string | null
@@ -4737,6 +4825,9 @@ export type Database = {
           starter_toelichting?: string | null
           starter_tot?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
+          status_voor_koppeling?:
+            | Database["public"]["Enums"]["lead_status"]
+            | null
           tarief_type?: string
           telefoon?: string | null
           type?: Database["public"]["Enums"]["lead_type"]
@@ -4752,6 +4843,7 @@ export type Database = {
           voornaam: string
         }
         Update: {
+          aangemaakt_door?: string | null
           achternaam?: string
           activatie_log?: Json
           adres_huisnummer?: string | null
@@ -4803,7 +4895,10 @@ export type Database = {
           geactiveerd_door?: string | null
           geactiveerd_op?: string | null
           geboortedatum?: string | null
+          gekoppeld_onderneming_id?: string | null
+          gekoppeld_persoon_id?: string | null
           gekozen_pakket?: string | null
+          handmatige_bron?: string | null
           heractivering_datum?: string | null
           heractivering_door?: string | null
           iban?: string | null
@@ -4835,6 +4930,9 @@ export type Database = {
           starter_toelichting?: string | null
           starter_tot?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
+          status_voor_koppeling?:
+            | Database["public"]["Enums"]["lead_status"]
+            | null
           tarief_type?: string
           telefoon?: string | null
           type?: Database["public"]["Enums"]["lead_type"]
@@ -4849,7 +4947,22 @@ export type Database = {
           vlag_op?: string | null
           voornaam?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "leads_gekoppeld_onderneming_id_fkey"
+            columns: ["gekoppeld_onderneming_id"]
+            isOneToOne: false
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_gekoppeld_persoon_id_fkey"
+            columns: ["gekoppeld_persoon_id"]
+            isOneToOne: false
+            referencedRelation: "personen"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       login_attempts: {
         Row: {
@@ -6513,6 +6626,7 @@ export type Database = {
       }
     }
     Functions: {
+      a19_team: { Args: never; Returns: undefined }
       accept_portal_invitation: { Args: { _token: string }; Returns: Json }
       anonimiseer_aanvraag_concepten: { Args: never; Returns: number }
       aov_aanmelden: {
@@ -7035,6 +7149,19 @@ export type Database = {
       get_pilot_signup_count: { Args: { pilot: string }; Returns: number }
       get_portal_status: { Args: { _lead_id: string }; Returns: Json }
       get_user_role_label: { Args: { _user_id: string }; Returns: string }
+      handmatige_lead_dubbelcheck: {
+        Args: {
+          _email: string
+          _is_test?: boolean
+          _kvk: string
+          _telefoon: string
+        }
+        Returns: Json
+      }
+      handmatige_lead_toevoegen: {
+        Args: { _gegevens: Json; _is_test?: boolean; _toch_nieuw?: boolean }
+        Returns: Json
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -7090,6 +7217,10 @@ export type Database = {
         Args: { _datum: string; _lead_id: string }
         Returns: Json
       }
+      lead_aanvraag_voorinvullen: {
+        Args: { _bron_id: string; _bron_tabel: string }
+        Returns: Json
+      }
       lead_afronden: {
         Args: { _lead_id: string; _toelichting?: string }
         Returns: boolean
@@ -7097,6 +7228,20 @@ export type Database = {
       lead_ingangsdatum_wijzigen: {
         Args: { _datum: string; _lead_id: string; _toelichting: string }
         Returns: Json
+      }
+      lead_klant_koppelen: {
+        Args: {
+          _bron_id: string
+          _bron_tabel: string
+          _notitie?: string
+          _onderneming_id: string
+          _persoon_id?: string
+        }
+        Returns: Json
+      }
+      lead_klant_ontkoppelen: {
+        Args: { _bron_id: string; _bron_tabel: string; _notitie: string }
+        Returns: undefined
       }
       lead_vlag_geparkeerd: {
         Args: { _datum: string; _vandaag: string; _vlag: string }
@@ -7453,7 +7598,14 @@ export type Database = {
         | "supervisor"
         | "verzekering"
         | "marketing"
-      lead_bron: "website" | "telefoon" | "email"
+      lead_bron:
+        | "website"
+        | "telefoon"
+        | "email"
+        | "netwerk"
+        | "partner"
+        | "beurs"
+        | "overig"
       lead_status:
         | "nieuw"
         | "in_behandeling"
@@ -7466,7 +7618,11 @@ export type Database = {
         | "gepauzeerd"
         | "opgezegd"
         | "afgerond"
-      lead_type: "contact" | "verzekering_aanvraag" | "offerte-aanvraag"
+      lead_type:
+        | "contact"
+        | "verzekering_aanvraag"
+        | "offerte-aanvraag"
+        | "handmatig"
       note_type: "notitie" | "follow_up" | "telefoongesprek"
     }
     CompositeTypes: {
@@ -7602,7 +7758,15 @@ export const Constants = {
         "verzekering",
         "marketing",
       ],
-      lead_bron: ["website", "telefoon", "email"],
+      lead_bron: [
+        "website",
+        "telefoon",
+        "email",
+        "netwerk",
+        "partner",
+        "beurs",
+        "overig",
+      ],
       lead_status: [
         "nieuw",
         "in_behandeling",
@@ -7616,7 +7780,12 @@ export const Constants = {
         "opgezegd",
         "afgerond",
       ],
-      lead_type: ["contact", "verzekering_aanvraag", "offerte-aanvraag"],
+      lead_type: [
+        "contact",
+        "verzekering_aanvraag",
+        "offerte-aanvraag",
+        "handmatig",
+      ],
       note_type: ["notitie", "follow_up", "telefoongesprek"],
     },
   },

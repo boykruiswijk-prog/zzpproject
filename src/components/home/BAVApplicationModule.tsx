@@ -50,6 +50,7 @@ import { interneBronUitZoek } from "@/lib/interneBron";
 import { WerkzaamhedenVeld } from "@/components/shared/WerkzaamhedenVeld";
 import { werkzaamhedenFout } from "../../../supabase/functions/_shared/werkzaamheden";
 import { HANDMATIGE_ONTVANGST } from "../../../supabase/functions/_shared/aanvraagBeoordeling";
+import { aanvraagVoorinvulling, type LeadVoorinvulling } from "@/lib/handmatigeLead";
 
 const formatBedrag = (n: number) => `€${n.toLocaleString("nl-NL")}`;
 /** Compacte bedragen: 5.000.000 → "€5M", 2.500.000 → "€2,5M". */
@@ -284,6 +285,20 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
   // mogelijk om e-mailadressen en KvK-nummers af te tasten. De dubbelcheck
   // gebeurt nu server-side bij het versturen van de aanvraag.
   const wizardRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const bron = (routerLocatie.state as { aanvraagVanLead?: { bron: string; id: string } } | null)?.aanvraagVanLead;
+    if (!bron) return;
+    let weg = false;
+    supabase.rpc("lead_aanvraag_voorinvullen", { _bron_tabel: bron.bron, _bron_id: bron.id }).then(({ data, error }) => {
+      if (weg) return;
+      if (error) { toast({ title: "Voorinvullen mislukt", description: error.message, variant: "destructive" }); return; }
+      const invulling = aanvraagVoorinvulling(data as LeadVoorinvulling);
+      setFormData(prev => ({ ...prev, ...invulling }));
+      setCurrentStep(1);
+      window.history.replaceState({ ...window.history.state, usr: null }, "");
+    });
+    return () => { weg = true; };
+  }, [routerLocatie.key]);
   // Snelle start bovenaan beroepspagina's: maandpakket, e-mail en telefoon vooraf ingevuld.
   useEffect(() => {
     const h = (e: Event) => {

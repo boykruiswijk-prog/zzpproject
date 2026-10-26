@@ -1352,6 +1352,34 @@
       "when": 1793025381619,
       "tag": "0192_admin_zoeken_contract_eigen_nummer",
       "breakpoints": true
+    },
+    {
+      "idx": 193,
+      "version": "7",
+      "when": 1793025599180,
+      "tag": "0193_a19_handmatige_lead_enums",
+      "breakpoints": true
+    },
+    {
+      "idx": 194,
+      "version": "7",
+      "when": 1793025763275,
+      "tag": "0194_a19_leads_koppeling",
+      "breakpoints": true
+    },
+    {
+      "idx": 195,
+      "version": "7",
+      "when": 1793025960345,
+      "tag": "0195_a19_aanvraag_voorinvulling",
+      "breakpoints": true
+    },
+    {
+      "idx": 196,
+      "version": "7",
+      "when": 1793026031656,
+      "tag": "0196_a19_notitie_opslaan_correct",
+      "breakpoints": true
     }
   ]
 }
