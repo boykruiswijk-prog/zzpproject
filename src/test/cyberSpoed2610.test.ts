@@ -16,7 +16,6 @@ describe("cyberbeoordeling 26 oktober", () => {
   it("beide nieuwe SQL-bewijsroutes gebruiken hetzelfde akkoord", () => {
     expect(cyberAkkoordSql()).toContain(CYBER_AKKOORD);
     expect(cyberToevoegenAkkoordSql()).toContain(CYBER_AKKOORD);
-    expect(CYBER_AKKOORD).toContain("looptijd van 12 maanden");
-    expect(CYBER_AKKOORD).not.toContain("cyber dagelijks opzegbaar");
+    expect(CYBER_AKKOORD).toBe("Ik begrijp dat cyber dagelijks opzegbaar is en dat ik al betaalde premie voor cyber bij opzeggen niet terugkrijg. Cyber is niet pauzeerbaar. De BAV + AVB blijft dagelijks opzegbaar.");
   });
 });
