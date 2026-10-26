@@ -16,7 +16,7 @@ describe("cybercertificaat E5/E5a", () => {
     expect(w("Soort verzekering:")).toBe("CyberClear by Hiscox, ZP Zaken Cyber Collectief");
     expect(w("Polisnummer:")).toBe("HCR3202063");
     expect(w("Ingangsdatum:")).toBe("24-10-2026");
-    expect(w("Verzekerd bedrag:")).toBe("EUR 50.000 per schade en per deelnemer (inclusief kosten).\nEUR XXX per verzekeringsjaar voor alle deelnemers samen.");
+    expect(w("Verzekerd bedrag:")).toBe("EUR 50.000 per schade en per deelnemer (inclusief kosten).\nEUR 5.000.000 per verzekeringsjaar voor alle deelnemers samen.");
     expect(rijen.find((r) => r.label === "Verzekerd bedrag:")?.notitie).toBe("Je neemt deel aan een mantelpolis waarbij het maximaal verzekerde bedrag per jaar wordt gedeeld met alle deelnemers binnen de betreffende mantelpolis.");
     expect(w("Eigen risico:")).toBe("EUR 500 per schade, bij cyberfraude EUR 1.000");
     expect(w("Polisvoorwaarden:")).toBe("CyberClear by Hiscox (HCC-2022/01) en de van toepassing zijnde clausules. De voorwaarden zijn op te vragen via 020 - 457 3077.");
