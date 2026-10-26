@@ -3,6 +3,7 @@ import { createClient } from "npm:@supabase/supabase-js@2.108.2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2.108.2/cors";
 import { fotoUrl, downloadFoto, hashAfstand, PHASH_AFSTAND } from "./regels.ts";
 import { verwerkFoto, fotoHashes } from "./verwerk.ts";
+import siteInventaris from "./site-inventaris.json" with { type: "json" };
 declare const EdgeRuntime: { waitUntil: (promise: Promise<unknown>) => void };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 Deno.serve(async req => {
@@ -21,6 +22,8 @@ Deno.serve(async req => {
   }
   let host: string | null = null;
   try {
+    const baseline = await admin.from("artikel_foto_inventaris").upsert(siteInventaris, { onConflict: "url", ignoreDuplicates: true });
+    if (baseline.error) throw new Error("Sitefoto-inventaris niet beschikbaar");
     const { data: article, error: articleError } = await admin.from("articles").select("id,slug,image_url,foto_bron_url").eq("id", job.article_id).single();
     if (articleError || !article || article.image_url || article.foto_bron_url !== job.bron_url) throw new Error("Artikel gewijzigd; bestaande afbeelding behouden");
     if (!/^[A-Za-z0-9_-]+$/.test(article.slug)) throw new Error("Ongeldige artikelslug");
