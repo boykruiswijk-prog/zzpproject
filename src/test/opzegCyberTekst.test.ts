@@ -13,7 +13,7 @@ const verboden = [
   "cyber 12 maanden", "Cyber heeft een vaste looptijd van 12 maanden",
 ];
 const verbodenKlantCyber = [
-  "stilzwijgend met 12 maanden", "looptijd van 12 maanden", "niet dagelijks opzegbaar",
+  "stilzwijgend met 12 maanden", "niet dagelijks opzegbaar",
   "jaarcontract in 12 termijnen", "Resterende termijnen blijven verschuldigd",
   "telkens 12 maanden verlengd", "Lopend cyberjaar",
 ];

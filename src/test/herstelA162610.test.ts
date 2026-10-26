@@ -8,7 +8,7 @@ import { CYBER_GEBIED_PUBLIEK } from "../config/cyberPubliek";
 
 describe("A16 cyber evidence and counting rules", () => {
   it("new trigger text equals the authoritative customer consent", () => {
-    const migration = readdirSync("drizzle/migrations").find(p => p.includes("a16_cyber_bewijs_telling"));
+    const migration = readdirSync("drizzle/migrations").find(p => p.includes("cyber_akkoord_2610_e6_behouden"));
     if (!migration) throw new Error("Migration missing");
     expect(readFileSync(`drizzle/migrations/${migration}`, "utf8")).toContain(cyberAkkoordSql());
     expect(cyberAkkoordSql()).toContain(CYBER_AKKOORD);
