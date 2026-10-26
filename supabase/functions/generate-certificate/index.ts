@@ -13,6 +13,7 @@ import {
   bepaalHoedanigheid, beslisNieuwCertificaat, schoonAanpassing, kiesKlantCertificaatnummer, actiefKlantContract,
   EIGEN_RISICO_TEKST, CERTIFICAAT_FOOTER_ALINEAS, CERTIFICAAT_AFM_URL, POLISBLAD_NOTITIE,
   magCertificaatBeheren,
+  CERTIFICAAT_VOOR_GEZIEN,
 } from "../_shared/certificaatRegels.ts";
 import { brancheVoorSector } from "../_shared/sectorBranche.ts";
 import { metWerk, werkVan } from "../_shared/machineWerk.ts";

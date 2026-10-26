@@ -4,7 +4,7 @@ import type { CyberCertificaatInvoer } from "../supabase/functions/_shared/cyber
 
 export const FICTIEF_CYBER: CyberCertificaatInvoer = {
   certificaathouder: "Fictief Voorbeeld B.V.", kvk: "12345678", verzekeringsnemer: "Test Voorbeeld",
-  bav_certificaatnummer: "ZPBAV5193", cyber_ingangsdatum: "2026-10-24", afgiftedatum: "2026-10-23", voor_gezien: "Testmedewerker",
+  bav_certificaatnummer: "ZPBAV5193", cyber_ingangsdatum: "2026-10-24", afgiftedatum: "2026-10-23", voor_gezien: "Ellen Baars",
 };
 export const LANG_CYBER: CyberCertificaatInvoer = {
   ...FICTIEF_CYBER,

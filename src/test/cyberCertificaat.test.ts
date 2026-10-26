@@ -1,6 +1,8 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
+import { CERTIFICAAT_VOOR_GEZIEN } from "../../supabase/functions/_shared/certificaatRegels";
+const g0 = () => readFileSync("supabase/functions/generate-cyber-certificate/index.ts", "utf8");
 import { cyberCertificaatRijen, cyberEinddatum, CYBER_POLISNUMMER, CYBER_JAARMAXIMUM, CYBERCERTIFICAAT_LIVE } from "../../supabase/functions/_shared/cyberCertificaatTeksten";
 
 const rijen = cyberCertificaatRijen({
@@ -18,10 +20,10 @@ describe("cybercertificaat E5/E5a", () => {
     expect(w("Ingangsdatum:")).toBe("24-10-2026");
     expect(w("Verzekerd bedrag:")).toBe("EUR 50.000 per schade en per deelnemer (inclusief kosten).\nEUR 5.000.000 per verzekeringsjaar voor alle deelnemers samen.");
     expect(rijen.find((r) => r.label === "Verzekerd bedrag:")?.notitie).toBe("Je neemt deel aan een mantelpolis waarbij het maximaal verzekerde bedrag per jaar wordt gedeeld met alle deelnemers binnen de betreffende mantelpolis.");
-    expect(w("Eigen risico:")).toBe("EUR 500 per schade, bij cyberfraude EUR 1.000");
+    expect(w("Eigen risico:")).toBe("EUR 500 per schade");
     expect(w("Polisvoorwaarden:")).toBe("CyberClear by Hiscox (HCC-2022/01) en de van toepassing zijnde clausules. De voorwaarden zijn op te vragen via 020 - 457 3077.");
     expect(w("Dekkingsgebied:")).toBe("Europa");
-    expect(w("Contractduur:")).toBe("24-10-2026 tot en met 23-10-2027. Daarna stilzwijgend verlengd met 12 maanden. Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar.");
+    expect(w("Contractduur:")).toBe("24-10-2026 tot en met 23-10-2027. Daarna stilzwijgend verlengd met 12 maanden. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar.");
     expect(w("Prioriteiten:")).toBe("Dit certificaat is gebaseerd op de polisdocumenten onder HCR3202063. Voor zover sprake mocht zijn van tegenstrijdigheden tussen de tekst van dit certificaat en de polisdocumenten, gaan de polisdocumenten voor.");
     expect(w("Melding van schade:")).toBe("Meld een schade of incident zo spoedig als redelijkerwijs mogelijk bij de verzekeraar: Hiscox Nederland (Hiscox incident response team), telefoon +31 (0)20 517 0700, e-mail hiscox.claims@hiscox.nl, Postbus 87033, 1080 JA Amsterdam.");
   });
@@ -29,9 +31,13 @@ describe("cybercertificaat E5/E5a", () => {
     expect(cyberEinddatum("2026-10-24")).toBe("2027-10-23");
     expect(cyberEinddatum("2028-03-01")).toBe("2029-02-28");
   });
-  it("jaarbedrag 5.000.000 (E-5d), live-vlag uit blokkeert echte klanten vóór tekenen", () => {
+  it("jaarbedrag 5.000.000, live-vlag aan (E-5e), Ellen Baars voor gezien; vlag-gate blokkeert echte klanten vóór tekenen", () => {
     expect(CYBER_JAARMAXIMUM).toBe("5.000.000");
-    expect(CYBERCERTIFICAAT_LIVE).toBe(false);
+    expect(CYBERCERTIFICAAT_LIVE).toBe(true);
+    expect(g0()).toContain("voor_gezien: CERTIFICAAT_VOOR_GEZIEN");
+    expect(CERTIFICAAT_VOOR_GEZIEN).toBe("Ellen Baars");
+    const bav = readFileSync("supabase/functions/generate-certificate/index.ts", "utf8");
+    expect(bav).toContain('drawRow("Voor gezien ZP Zaken:", CERTIFICAAT_VOOR_GEZIEN, y);');
     const std = cyberCertificaatRijen({ certificaathouder: "F", verzekeringsnemer: "T", bav_certificaatnummer: "ZPBAV1",
       cyber_ingangsdatum: "2026-10-24", afgiftedatum: "2026-10-23", voor_gezien: "T" });
     expect(std.find((r) => r.label === "Verzekerd bedrag:")?.waarde).toContain("EUR 5.000.000 per verzekeringsjaar voor alle deelnemers samen.");

@@ -47,7 +47,6 @@ Deno.serve(async (req) => {
     }
     if (!ingang) return json({ error: "Geen actieve cyber gevonden bij dit certificaat" }, 409);
 
-    const { data: profiel } = await admin.from("profiles").select("full_name").eq("id", auth.userId).maybeSingle();
     const { data: tpl, error: tplErr } = await admin.storage.from("certificates").download("templates/certificate-template.png");
     if (tplErr || !tpl) return json({ error: "Sjabloon niet beschikbaar" }, 500);
     const { pdfBytes } = await tekenCyberCertificaat(new Uint8Array(await tpl.arrayBuffer()), {
