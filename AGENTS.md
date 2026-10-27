@@ -36,7 +36,7 @@
 
 - Opzeggingen worden bij insert gekoppeld door bepaal_opzegging_koppeling (e-mail → contractnummer → KvK/bedrijfsnaam als voorstel); contracten wijzigen alleen via RPC verwerk_opzegging. Waarom: nooit automatisch een contract beëindigen.
 - Bezoekersinvoer in leads.extra_data.formulier (geordende lijst) via _shared/leadVelden.ts voor detail, lijst en teammail; preview-inzendingen zijn is_test zonder klantmail. Waarom: één bron.
-- Shared attribution validator: paid 90-day inheritance, boolean consent, utm_source=chatgpt/oppref = chatgpt_ads; ad pixels load from tracking.ts after marketing consent only. Why: no consent bypass.
+- Shared attribution validator: paid 90-day inheritance, boolean consent, utm_source=chatgpt/oppref = chatgpt_ads; ad pixels load from tracking.ts after marketing consent only. OpenAI uses measure/page_viewed/contents per SPA navigation and measure/lead_created/customer_action after success, with its official q queue and no customer fields. Why: no consent bypass or dropped pre-load events.
 - Halve BAV-aanvragen staan in aanvraag_concepten, alleen geschreven via submit-public-form (table "aanvraag_concepten", idempotent op browser-concept-id) en omgezet door process-bav-wizard; nooit bank-/SEPA-velden, na 90 dagen geanonimiseerd (cron), nooit verwijderd. Waarom: opvolging zonder gevoelige gegevens of anon-toegang.
 - BAV-vergelijking in src/data/bavVergelijking.ts (bron-URL + gecontroleerd_op per aanbieder; ZP-rij uit bavPakketten). Waarom: bijwerken zonder paginacode.
 - CSV follows _redirects at build; profile/* and facts/press/* match subpaths without suffix; new paths get slash variants. Why: one source, no chains.
