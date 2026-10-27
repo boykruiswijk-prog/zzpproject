@@ -13,6 +13,7 @@ import {
 import { Monitor, ShieldCheck, Clock } from "lucide-react";
 import { BAVApplicationModule } from "@/components/home/BAVApplicationModule";
 import { bavPakketten, formatMiljoenKort } from "@/data/bavPakketten";
+import { Link } from "react-router-dom";
 import { LeesMeer } from "@/components/kennisbank/LeesMeer";
 
 import serviceVerzekeringen from "@/assets/service-verzekeringen.webp";
@@ -26,6 +27,21 @@ const BAV_DEKKING = formatMiljoenKort(PAKKET.dekkingen.bav.perGebeurtenis);
 const AVB_DEKKING = formatMiljoenKort(PAKKET.dekkingen.avb.perGebeurtenis);
 
 const faqs = [
+  {
+    question: "Welke aansprakelijkheidsverzekering heb ik nodig als freelance ICT'er?",
+    answer:
+      "Meestal een BAV voor fouten in je werk, zoals een bug, een verkeerde configuratie of onjuist advies, en een AVB voor schade aan personen of spullen. Bij ZP Zaken zitten beide in één polis, met een verzekerd bedrag per aanspraak. Wat precies gedekt is, lees je in de polisvoorwaarden.",
+  },
+  {
+    question: "Wat kost een BAV voor een ICT-zzp'er?",
+    answer:
+      "Bij ZP Zaken betaal je voor BAV en AVB samen € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting. Ben je korter dan 12 maanden ingeschreven bij de KVK, dan kan het starterspakket gelden: € 45 per maand of € 495 per jaar de eerste 12 maanden, daarna € 55 per maand of € 600 per jaar, onder voorbehoud van controle van je KVK-inschrijving.",
+  },
+  {
+    question: "Hoe snel heb ik een polisbewijs voor mijn opdrachtgever?",
+    answer:
+      "Je vraagt online aan en het is binnen 24 uur geregeld. Je certificaat komt in je mailbox, zodat je het direct aan je opdrachtgever of bureau kunt doorsturen. De dekking gaat in op de ingangsdatum die je zelf kiest, vroegst morgen.",
+  },
   {
     question: "Moet ik als ICT-freelancer verplicht verzekerd zijn?",
     answer:
@@ -65,15 +81,15 @@ export default function ZzpVerzekeringICT() {
       canonicalPath="/zzp-verzekering-ict"
       heroImage={serviceVerzekeringen}
       badge="Voor IT-freelancers"
-      title={<>ZZP Verzekering voor <span className="text-accent">ICT-freelancers</span></>}
-      subtitle="Als ICT-freelancer schrijf je code, implementeer je systemen of geef je advies. Een fout in je werk kan grote financiële gevolgen hebben voor je opdrachtgever. Beroepsaansprakelijkheidsverzekering (BAV) is in de ICT-sector bij veel opdrachtgevers verplicht. Je bent dan verzekerd voor aansprakelijkheid, volgens de polisvoorwaarden."
+      title={<>Aansprakelijkheidsverzekering voor ICT-zzp'ers: <span className="text-accent">BAV en AVB in één polis</span></>}
+      subtitle={SEO.intro}
       schema={schema}
       benefits={[
         {
           icon: Monitor,
           title: "Veelgevraagd door opdrachtgevers",
           description:
-            `De meeste grote ICT-opdrachtgevers eisen een BAV-polis. Bij ons ben je standaard verzekerd voor ${BAV_DEKKING} BAV en ${AVB_DEKKING} AVB per aanspraak.`,
+            `Veel opdrachtgevers en bureaus in de ICT vragen om een BAV en een polisbewijs voordat je start. Bij ons ben je standaard verzekerd voor ${BAV_DEKKING} BAV en ${AVB_DEKKING} AVB per aanspraak.`,
         },
         {
           icon: ShieldCheck,
@@ -125,6 +141,9 @@ export default function ZzpVerzekeringICT() {
                 </AccordionItem>
               ))}
             </Accordion>
+            <p className="mt-6 text-center">
+              <Link to="/kennisbank/bav-ict-zzp-risicos" className="text-accent underline underline-offset-4">Lees meer over de risico's voor ICT-zzp'ers</Link>
+            </p>
           </div>
         </div>
       </section>

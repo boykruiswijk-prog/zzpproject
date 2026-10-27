@@ -396,13 +396,12 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/zzp-verzekering-ict",
-    title: "ZZP Verzekering ICT | BAV & AVB voor IT'ers",
+    title: "Aansprakelijkheidsverzekering ICT zzp: BAV + AVB | ZP Zaken",
     description:
-      "Als ICT-freelancer aansprakelijk voor een softwarefout of datalek? ZP Zaken regelt jouw beroepsaansprakelijkheidsverzekering. Binnen 24 uur geregeld, certificaat in je mailbox.",
-    h1: "ZZP Verzekering voor ICT-freelancers",
+      "Aansprakelijkheidsverzekering voor ICT-zzp'ers: BAV € 5 mln en AVB € 2,5 mln per aanspraak in één polis, geen eigen risico, binnen 24 uur geregeld.",
+    h1: "Aansprakelijkheidsverzekering voor ICT-zzp'ers: BAV en AVB in één polis",
     intro:
-      "Als ICT-freelancer schrijf je code, implementeer je systemen of geef je advies. Een fout in je werk kan grote financiele gevolgen hebben voor je opdrachtgever. " +
-      "Beroepsaansprakelijkheidsverzekering (BAV) is in de ICT-sector bij veel opdrachtgevers verplicht. Je bent dan verzekerd voor aansprakelijkheid, volgens de polisvoorwaarden.",
+      "Als ICT-zzp'er verzeker je met een beroepsaansprakelijkheidsverzekering (BAV) de financiële gevolgen van een fout in je code, configuratie, implementatie of advies, en met een bedrijfsaansprakelijkheidsverzekering (AVB) schade aan personen of spullen. Bij ZP Zaken heb je beide in één polis: BAV € 5 miljoen en AVB € 2,5 miljoen per aanspraak, geen eigen risico, dagelijks opzegbaar en binnen 24 uur geregeld. Wat precies gedekt is, staat in de polisvoorwaarden.",
   },
   {
     path: "/beroepsaansprakelijkheidsverzekering",
