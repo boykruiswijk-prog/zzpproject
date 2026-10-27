@@ -1394,6 +1394,13 @@
       "when": 1793088153153,
       "tag": "0198_exact_taken_overlap_brugvelden",
       "breakpoints": true
+    },
+    {
+      "idx": 199,
+      "version": "7",
+      "when": 1793099513054,
+      "tag": "0199_artikel_hiscox_acceptatie_guard",
+      "breakpoints": true
     }
   ]
 }
