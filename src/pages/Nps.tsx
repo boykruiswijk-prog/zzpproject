@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 type Stand = "laden" | "opgeslagen" | "ongeldig" | "fout";
 
-/** Bedankpagina na klik op een NPS-cijfer. Bewust geen link naar Google-reviews (geen review-gating). */
+/** Bedankpagina na klik op een NPS-cijfer. Bewust geen reviewlink (geen review-gating). */
 export default function Nps() {
   const [params] = useSearchParams();
   const token = params.get("t") ?? "";
