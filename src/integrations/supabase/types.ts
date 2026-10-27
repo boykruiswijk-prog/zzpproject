@@ -6788,6 +6788,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      arr_overzicht: { Args: never; Returns: Json }
       artikel_foto_claim: {
         Args: { p_lease: string }
         Returns: {
