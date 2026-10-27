@@ -27,6 +27,8 @@ export async function tekenCyberCertificaat(templateBytes: Uint8Array, invoer: C
   const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
   const helveticaOblique = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
+  // Benelux-merk ZP ZAKEN (fig.) RE-260811-46010: klein (R) rechtsboven bij het beeldmerk van het sjabloon, ca. 35% van de logohoogte.
+  page.drawText("\u00AE", { x: 178, y: 765, size: 30, font: helvetica, color: rgb(0.2, 0.2, 0.2) });
   const black = rgb(0, 0, 0), gray = rgb(0.35, 0.35, 0.35);
   const labelX = 56, valueX = 195, fontSize = 9, smallFontSize = 7.5, lineHeight = 12;
   const maxValueWidth = pageWidth - valueX - 40;

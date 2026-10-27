@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Phone, ChevronDown, FileText, Pause, FolderDown, Shield, XCircle, LogIn } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import logoZp from "@/assets/logo-zp.webp";
+import { MerkLogo } from "@/components/layout/MerkLogo";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { SiteSearch } from "@/components/search/SiteSearch";
@@ -127,7 +127,7 @@ export function Header() {
     >
       <div className="container-wide flex h-16 items-center justify-between">
         <LocalizedLink to="/" className="flex items-center">
-          <img decoding="async" fetchpriority="high" src={logoZp} alt="ZP Zaken logo" width={161} height={90} className="h-10 w-auto" />
+          <MerkLogo hoogtePx={40} />
         </LocalizedLink>
 
         {/* Desktop Navigation */}

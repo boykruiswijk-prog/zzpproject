@@ -2,7 +2,7 @@
 import ts from "npm:typescript@5.8.3";
 import { PDFDocument, PDFString, rgb, StandardFonts } from "https://esm.sh/pdf-lib@1.17.1";
 import { COMPANY } from "../supabase/functions/_shared/company.ts";
-import { EIGEN_RISICO_TEKST, POLISBLAD_NOTITIE, CERTIFICAAT_FOOTER_ALINEAS, CERTIFICAAT_AFM_URL } from "../supabase/functions/_shared/certificaatRegels.ts";
+import { EIGEN_RISICO_TEKST, POLISBLAD_NOTITIE, CERTIFICAAT_FOOTER_ALINEAS, CERTIFICAAT_AFM_URL, CERTIFICAAT_VOOR_GEZIEN } from "../supabase/functions/_shared/certificaatRegels.ts";
 
 export const LANG_CERTIFICAAT = {
   certificate_holder: "Fictieve Internationale Organisatie voor Digitale Transformatie en Bedrijfsvoering B.V.",
@@ -26,7 +26,7 @@ export async function renderLokaalCertificaat(heeftNieuweCyber = false, override
     ...overrides,
   };
   const dependencies = { PDFDocument, PDFString, rgb, StandardFonts, COMPANY, EIGEN_RISICO_TEKST,
-    POLISBLAD_NOTITIE, CERTIFICAAT_FOOTER_ALINEAS, CERTIFICAAT_AFM_URL, templateBytes, policy,
+    POLISBLAD_NOTITIE, CERTIFICAAT_FOOTER_ALINEAS, CERTIFICAAT_AFM_URL, CERTIFICAAT_VOOR_GEZIEN, templateBytes, policy,
     kvkNummerBron: "12345678", heeftNieuweCyber };
   const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
   // No network, storage, customer records or mail are present in this isolated block.
