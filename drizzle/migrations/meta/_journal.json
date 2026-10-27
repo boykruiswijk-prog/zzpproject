@@ -1401,6 +1401,13 @@
       "when": 1793099513054,
       "tag": "0199_artikel_hiscox_acceptatie_guard",
       "breakpoints": true
+    },
+    {
+      "idx": 200,
+      "version": "7",
+      "when": 1793102309237,
+      "tag": "0200_advertentie_beelden",
+      "breakpoints": true
     }
   ]
 }
