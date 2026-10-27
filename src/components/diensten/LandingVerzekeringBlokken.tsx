@@ -3,6 +3,7 @@ import { LocalizedLink } from "@/components/LocalizedLink";
 import { bavPakketten } from "@/data/bavPakketten";
 import { BeroepspaginaTekst } from "./BeroepspaginaTekst";
 import { STARTER } from "@/lib/starterTarief";
+import type { ReactNode } from "react";
 
 const PAKKET = bavPakketten[0];
 const miljoen = (n: number) => `€ ${(n / 1_000_000).toLocaleString("nl-NL", { maximumFractionDigits: 1 })} miljoen`;
@@ -20,7 +21,7 @@ const BEROEPEN = [
 ];
 
 /** Vaste klantwaarheid, starters en voor wie: gedeeld door de advertentie-landingspagina's. */
-export function LandingVerzekeringBlokken() {
+export function LandingVerzekeringBlokken({ voorWieExtra }: { voorWieExtra?: ReactNode } = {}) {
   const punten = [
     "BAV en AVB in één polis via Hiscox",
     `${BAV_MILJOEN} BAV en ${AVB_MILJOEN} AVB per aanspraak`,
@@ -68,6 +69,7 @@ export function LandingVerzekeringBlokken() {
               </li>
             ))}
           </ul>
+          {voorWieExtra}
         </div>
       </div>
     </section>
