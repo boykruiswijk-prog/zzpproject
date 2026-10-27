@@ -54,6 +54,6 @@
 - Ingangsdatum vroegst dag na aanvraag (NL) via _shared/ingangsdatum.ts plus BEFORE INSERT-triggers aa_ingangsdatum_vroegst. Waarom: een regel (D4).
 
 - BeroepspaginaTekst links policy-condition mentions without changing FAQ strings; beroepspagina price display is opt-in by canonical path, leaving other services and form pricing untouched. Why: consistent landing-page copy with matching JSON-LD and no application changes.
-- Bundle leak checks exempt only explicit public AVB coverage wording, including amount-before-AVB; unlabeled and cyber amounts remain blocked. Why: legitimate coverage copy must not prevent deployment.
+- Bundle leak checks exempt only explicit public AVB coverage wording, including amount-before-AVB; unlabeled and cyber amounts remain blocked. Why: valid coverage copy must deploy.
 - PageHero text wrapping is opt-in for occupational landing pages; other pages retain their existing sizing. Why: long coverage headings must remain readable without changing shared page layouts.
 - Trigger artikel_hiscox_acceptatie_check plus hiscoxAcceptatie.test.ts reject text attributing acceptance to Hiscox. Why: automation cannot publish it.
