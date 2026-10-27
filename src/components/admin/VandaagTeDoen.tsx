@@ -56,7 +56,7 @@ function TaakKnop({ label, rpc, args, onKlaar }: { label: string; rpc: string; a
 
 interface Item {
   bron?: string | null; id: string; naam?: string | null; bedrijfsnaam?: string | null; sinds?: string | null; reden?: string | null; eigen?: boolean | null;
-  onderneming_id?: string; incasso_id?: string; factuurnummer?: string | null;
+  onderneming_id?: string; lead_id?: string; incasso_id?: string; factuurnummer?: string | null;
   contract_id?: string; abonnement_nr?: string | null; product?: string | null; cyclus?: string | null; bedrag?: number | null; eind_datum?: string | null; volgende_factuurdatum?: string | null;
 }
 interface Categorie { verborgen?: boolean; aantal: number; items: Item[]; per_type?: Record<string, number>; handmatig?: number }
@@ -69,6 +69,7 @@ const CATEGORIEEN: { key: string; titel: string; icoon: LucideIcon; link: (i: It
   { key: "vlaggen", titel: "Gemarkeerd: vandaag opvolgen", icoon: Flag, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/aanvragen" },
   { key: "klant_vlaggen", titel: "Klant gemarkeerd: vandaag opvolgen", icoon: Flag, link: (i) => `/admin/klanten/${i.id}`, alles: "/admin/klanten" },
   { key: "incasso", titel: "Klant bellen: incasso mislukt", icoon: PhoneCall, link: (i) => `/admin/klanten/${i.onderneming_id}`, alles: "/admin/incassos" },
+  { key: "nps", titel: "NPS laag: bellen", icoon: PhoneCall, link: (i) => i.onderneming_id ? `/admin/klanten/${i.onderneming_id}` : `/admin/leads/${i.lead_id}`, alles: "/admin" },
   { key: "royement", titel: "Royement bevestigen", icoon: AlertTriangle, link: (i) => `/admin/klanten/${i.onderneming_id}`, alles: "/admin/incassos" },
   { key: "starter", titel: "Startertarief controleren", icoon: ShieldCheck, link: (i) => `/admin/leads/${i.id}`, alles: "/admin/leads" },
   { key: "service", titel: "Opzeggingen, pauzes en wijzigingen", icoon: FileWarning, link: (i) => `/admin/service-aanvragen/${i.id}`, alles: "/admin/service-aanvragen" },
@@ -185,7 +186,7 @@ export function VandaagTeDoen() {
                           </span>
                           <span className="min-w-0 truncate text-xs text-muted-foreground">{[bavTekst(i.id), i.reden, i.factuurnummer ? `factuur ${i.factuurnummer}` : "", i.factuurnummer && i.bedrag != null ? euroNL(i.bedrag) : "", i.sinds ? datum(i.sinds) : ""].filter(Boolean).join(" · ")}</span>
                         </Link>
-                        {c.key === "incasso" && <span className="shrink-0 pr-2"><TaakKnop label="Afronden" rpc="crm_taak_afronden" args={{ _id: i.id }} onKlaar={() => refetch()} /></span>}
+                        {(c.key === "incasso" || c.key === "nps") && <span className="shrink-0 pr-2"><TaakKnop label="Afronden" rpc="crm_taak_afronden" args={{ _id: i.id }} onKlaar={() => refetch()} /></span>}
                         {c.key === "royement" && i.incasso_id && <span className="shrink-0 pr-2"><TaakKnop label="Royement bevestigen" rpc="bevestig_royement" args={{ _id: i.incasso_id }} onKlaar={async () => { await supabase.rpc("crm_taak_afronden", { _id: i.id }); refetch(); }} /></span>}
                         {c.key === "service" && <span className="shrink-0 pr-2"><ServiceAanvraagOog id={i.id} onGewijzigd={() => refetch()} /></span>}
                       </li>
