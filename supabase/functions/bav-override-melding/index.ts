@@ -26,6 +26,8 @@ Deno.serve(async (req) => {
   const { data: log } = await admin.from("sensitive_audit_log").select("id,actie,nieuwe_waarde,details,uitgevoerd_door")
     .eq("id", auditId).eq("actie", "bav_nummer_override").maybeSingle();
   if (!log || log.uitgevoerd_door !== user.id) return json({ error: "niet gevonden" }, 404);
+  // Meldregel A15: NVT is bewust geen BAV-nummer (bijv. lidmaatschap); dubbel NVT is geen fout, dus geen melding.
+  if (/^\s*n\.?\s*v\.?\s*t\.?\s*$/i.test(String(log.nieuwe_waarde ?? ""))) return json({ success: true, overgeslagen: "nvt" });
   const { count } = await admin.from("lead_notification_log").select("id", { count: "exact", head: true }).eq("lead_type", "bav-override").contains("metadata", { audit_id: auditId });
   if ((count ?? 0) > 0) return json({ success: true, al_verzonden: true });
   const d = (log.details ?? {}) as Record<string, unknown>;
