@@ -231,6 +231,8 @@ zpzaken.nl/privacy,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/privacy/,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/privacyverklaring,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/privacyverklaring/,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/privacybeleid,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/privacybeleid/,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/polisvoorwaarden,https://zpzaken.nl/voorwaarden,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/polisvoorwaarden/,https://zpzaken.nl/voorwaarden,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/verzekeringsvoorwaarden,https://zpzaken.nl/voorwaarden,301,TRUE,TRUE,FALSE,FALSE
@@ -1979,6 +1981,12 @@ zpzaken.nl/de/privacyverklaring,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,F
 zpzaken.nl/de/privacyverklaring/,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/fr/privacyverklaring,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/fr/privacyverklaring/,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/en/privacybeleid,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/en/privacybeleid/,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/de/privacybeleid,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/de/privacybeleid/,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/fr/privacybeleid,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/fr/privacybeleid/,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/en/polisvoorwaarden,https://zpzaken.nl/voorwaarden,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/en/polisvoorwaarden/,https://zpzaken.nl/voorwaarden,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/de/polisvoorwaarden,https://zpzaken.nl/voorwaarden,301,TRUE,TRUE,FALSE,FALSE

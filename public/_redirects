@@ -125,6 +125,7 @@
 /wie-zijn-wij    /over-ons    301
 /privacy    /cookies    301
 /privacyverklaring    /cookies    301
+/privacybeleid    /cookies    301
 /polisvoorwaarden    /voorwaarden    301
 /verzekeringsvoorwaarden    /voorwaarden    301
 /disclaimer    /faq    301
@@ -1011,6 +1012,9 @@
 /en/privacyverklaring    /cookies    301  # taalprefix
 /de/privacyverklaring    /cookies    301  # taalprefix
 /fr/privacyverklaring    /cookies    301  # taalprefix
+/en/privacybeleid    /cookies    301  # taalprefix
+/de/privacybeleid    /cookies    301  # taalprefix
+/fr/privacybeleid    /cookies    301  # taalprefix
 /en/polisvoorwaarden    /voorwaarden    301  # taalprefix
 /de/polisvoorwaarden    /voorwaarden    301  # taalprefix
 /fr/polisvoorwaarden    /voorwaarden    301  # taalprefix
