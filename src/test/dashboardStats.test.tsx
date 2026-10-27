@@ -7,6 +7,7 @@ import { MemoryRouter } from "react-router-dom";
 const rpc = vi.fn();
 vi.mock("@/integrations/supabase/client", () => ({ supabase: { rpc: (...a: unknown[]) => rpc(...a) } }));
 vi.mock("@/hooks/useToonTestrecords", () => ({ useToonTestrecords: () => ({ toonTest: false, magSchakelen: true, zet: () => {} }) }));
+vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ isSupervisorOrAdmin: false, isAal2: true, user: { id: "team" } }) }));
 
 import { DashboardStats } from "@/components/admin/DashboardStats";
 
@@ -39,6 +40,7 @@ describe("DashboardStats", () => {
     expect(screen.getByText("5")).toBeTruthy();
     expect(screen.getByText(/^71 ·/)).toBeTruthy();
     expect(rpc).toHaveBeenCalledWith("dashboard_tellers", { _toon_test: false });
+    expect(rpc).not.toHaveBeenCalledWith("arr_overzicht");
   });
 
   it("toont een foutmelding met opnieuw proberen", { timeout: 15000 }, async () => {
