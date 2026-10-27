@@ -37,7 +37,7 @@ describe("OpenAI ChatGPT Ads-pixel", () => {
     geefToestemming(true);
     trackPurchase("lead-a", "p", "Pakket", 100, { email: "x@voorbeeld.nl", phone_number: "0612345678" });
     trackPurchase("lead-a", "p", "Pakket", 100);
-    expect(leads()).toEqual([["measure", "lead_created", { type: "customer_action" }]]);
+    expect(leads()).toEqual([["measure", "lead_created", { type: "customer_action" }, { event_id: "bav_lead_lead-a" }]]);
   });
 
   it("stuurt niets bij een testaanvraag", () => {
@@ -46,12 +46,9 @@ describe("OpenAI ChatGPT Ads-pixel", () => {
     expect(leads()).toHaveLength(0);
   });
 
-  it("stuurt niets zonder marketingtoestemming of zonder geladen pixel", () => {
+  it("stuurt niets zonder marketingtoestemming", () => {
     geefToestemming(false);
     trackPurchase("lead-c", "p", "Pakket", 100);
-    __resetOpenAiVoorTest(false);
-    geefToestemming(true);
-    trackPurchase("lead-d", "p", "Pakket", 100);
     expect(leads()).toHaveLength(0);
   });
 

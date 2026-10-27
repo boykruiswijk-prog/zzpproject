@@ -368,6 +368,17 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
 
     if (leadError) throw new Error(`Lead insert: ${leadError.message}`);
     leadOpgeslagen = { id: lead.id, mandaatkenmerk: machtiging.mandaatkenmerk };
+    // Successful durable application, same point as the browser success conversion.
+    // Independent of PDF/mail tasks; provider failures can never fail an application.
+    if (!isTestLead && saneerAttributie(lead.extra_data?.attributie)?.marketing_toestemming === true) {
+      const conversion = supabase.functions.invoke("openai-conversions", {
+        headers: { "x-internal-secret": Deno.env.get("INTERNAL_FUNCTION_SECRET") ?? "" },
+        body: { aanvraag_id: lead.id },
+      }).then(({ error }) => { if (error) console.warn("openai-conversions dispatch failed"); })
+        .catch(() => console.warn("openai-conversions dispatch failed"));
+      const runtime = (globalThis as unknown as { EdgeRuntime?: { waitUntil: (p: Promise<unknown>) => void } }).EdgeRuntime;
+      if (runtime) runtime.waitUntil(conversion); else await conversion;
+    }
     if (kvkUittreksel) {
       const { error: uErr } = await supabase.from("kvk_uittreksels").update({ lead_id: lead.id }).eq("id", kvkUittreksel.id).is("lead_id", null);
       if (uErr) console.error("uittreksel koppelen mislukt:", uErr.message);

@@ -19,11 +19,11 @@ describe("OpenAI paginaweergaven en wachtrij", () => {
     consent(true);
     installeerOpenAiPixel("/bav-zzp");
     openAiPageView("/bav-zzp", "a");
-    openAiAanvraagAfgerond(false);
+    openAiAanvraagAfgerond(false, "lead-a");
     expect(pixelWindow.oaiq?.q).toEqual([
       ["init", { pixelId: "SxHpKs2V6EgSyfvtYJwquQ" }],
       ["measure", "page_viewed", { type: "contents" }],
-      ["measure", "lead_created", { type: "customer_action" }],
+      ["measure", "lead_created", { type: "customer_action" }, { event_id: "bav_lead_lead-a" }],
     ]);
     expect(document.head.querySelectorAll('script[src*="oaiq"]')).toHaveLength(1);
   });
