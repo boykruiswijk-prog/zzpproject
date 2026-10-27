@@ -164,7 +164,7 @@ export function CookieConsent() {
               <label className="flex items-center justify-between cursor-pointer">
                 <div>
                   <span className="font-medium text-sm">Marketing cookies</span>
-                  <p className="text-xs text-muted-foreground">Voor gepersonaliseerde advertenties</p>
+                  <p className="text-xs text-muted-foreground">Advertentiemeting van Google, Microsoft en ChatGPT Ads</p>
                 </div>
                 <input
                   type="checkbox"

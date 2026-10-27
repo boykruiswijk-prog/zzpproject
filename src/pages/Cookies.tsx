@@ -80,9 +80,16 @@ const cookieDetails = [
     type: "Marketing",
   },
   {
+    name: "OpenAI-pixelcookies (o.a. klikreferentie oppref)",
+    provider: "OpenAI (ChatGPT Ads-pixel)",
+    purpose: "Meten welke advertenties in ChatGPT tot een aanvraag leiden; zonder automatische koppeling van persoonsgegevens",
+    expiry: "Maximaal 90 dagen",
+    type: "Marketing",
+  },
+  {
     name: "zp_klikids",
     provider: "ZP Zaken",
-    purpose: "Bewaart gclid, gbraid, wbraid of msclkid om een aanvraag aan de advertentie te koppelen",
+    purpose: "Bewaart gclid, gbraid, wbraid, msclkid of oppref om een aanvraag aan de advertentie te koppelen",
     expiry: "90 dagen",
     type: "Marketing",
   },
@@ -273,13 +280,13 @@ export default function Cookies() {
       <section id="advertenties" className="section-padding bg-background scroll-mt-24">
         <div className="container-wide">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold mb-6">Advertenties van Google en Microsoft</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-6">Advertenties van Google, Microsoft en ChatGPT</h2>
             <div className="space-y-4 text-muted-foreground">
               <p>
-                Geef je toestemming voor marketingcookies, dan plaatsen Google Ads en Microsoft Advertising cookies. Zo kunnen wij meten welke advertentie tot een aanvraag heeft geleid. Zonder die toestemming plaatsen zij geen advertentiecookies.
+                Geef je toestemming voor marketingcookies, dan plaatsen Google Ads, Microsoft Advertising en OpenAI (de meetpixel van ChatGPT Ads) cookies. Zo kunnen wij meten welke advertentie tot een aanvraag heeft geleid. Zonder die toestemming plaatsen zij geen advertentiecookies en laden we hun meetscripts niet. Bij een afgeronde aanvraag sturen we OpenAI alleen de melding dat er een aanvraag is gedaan, zonder naam, e-mailadres, telefoonnummer of andere persoonsgegevens. Op de beveiligde omgevingen voor klanten en het team meten we nooit.
               </p>
               <p>
-                Kom je via een advertentie op onze website, dan staat er een advertentie-klik-ID in het adres (gclid, gbraid, wbraid of msclkid). Met je toestemming bewaren we dit ID maximaal 90 dagen in je browser. Doe je in die periode een aanvraag, dan koppelen we het ID aan je dossier. Zo weten we welke advertentie tot de aanvraag leidde.
+                Kom je via een advertentie op onze website, dan staat er een advertentie-klik-ID in het adres (gclid, gbraid, wbraid, msclkid of oppref). Met je toestemming bewaren we dit ID maximaal 90 dagen in je browser. Doe je in die periode een aanvraag, dan koppelen we het ID aan je dossier. Zo weten we welke advertentie tot de aanvraag leidde.
               </p>
               <p>
                 Je kunt je toestemming altijd intrekken via de cookie-instellingen onderaan deze pagina. Daarna worden er geen nieuwe klik-ID's of advertentiecookies meer vastgelegd.
