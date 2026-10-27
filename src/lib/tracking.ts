@@ -3,6 +3,7 @@
  * Interne omgevingen (/admin, /portal, /mijn-zp) sturen nooit iets naar GA4.
  */
 import { heeftMarketingToestemming } from "./attributie";
+import { openaiLeadEventId } from "../../supabase/functions/_shared/openaiAdsEvent";
 import { isNlTelefoon, normaliseerNlTelefoon } from "../../supabase/functions/_shared/telefoon";
 
 
@@ -161,11 +162,12 @@ export function openAiPageView(pathname: string, navigatie = pathname) {
 export const OPENAI_LEAD_EVENT = ["measure", "lead_created", { type: "customer_action" }] as const;
 
 /** ChatGPT Ads-conversie; nooit voor testaanvragen, zonder toestemming of op interne paden. */
-export function openAiAanvraagAfgerond(isTest: boolean) {
-  if (isTest || !oaiGeladen || typeof window === "undefined" || isNietGemetenPad(window.location.pathname)) return;
+export function openAiAanvraagAfgerond(isTest: boolean, aanvraagId?: string) {
+  if (isTest || !aanvraagId || typeof window === "undefined" || isNietGemetenPad(window.location.pathname)) return;
   if (!heeftMarketingToestemming()) return;
+  laadOpenAiPixel();
   const [cmd, ev, data] = OPENAI_LEAD_EVENT;
-  oaiq()?.(cmd, ev, { ...data });
+  oaiq()?.(cmd, ev, { ...data }, { event_id: openaiLeadEventId(aanvraagId) });
 }
 
 /** Alleen voor tests. */
@@ -342,7 +344,7 @@ export const trackPurchase = (
     transaction_id: transactionId,
   });
   uetAanvraagAfgerond(isTest);
-  openAiAanvraagAfgerond(isTest);
+  openAiAanvraagAfgerond(isTest, transactionId);
 };
 
 

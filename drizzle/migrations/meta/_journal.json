@@ -1408,6 +1408,20 @@
       "when": 1793102309237,
       "tag": "0200_advertentie_beelden",
       "breakpoints": true
+    },
+    {
+      "idx": 201,
+      "version": "7",
+      "when": 1793103961606,
+      "tag": "0201_openai_ads_conversion_log",
+      "breakpoints": true
+    },
+    {
+      "idx": 202,
+      "version": "7",
+      "when": 1793104102319,
+      "tag": "0202_openai_ads_log_private_grants",
+      "breakpoints": true
     }
   ]
 }
