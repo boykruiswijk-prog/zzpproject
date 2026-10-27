@@ -5491,6 +5491,57 @@ export type Database = {
           },
         ]
       }
+      openai_ads_conversie_log: {
+        Row: {
+          aangemaakt_op: string
+          aanvraag_id: string | null
+          bijgewerkt_op: string
+          event_id: string
+          fout: string | null
+          http_code: number | null
+          id: string
+          status: string
+          validate_only: boolean
+        }
+        Insert: {
+          aangemaakt_op?: string
+          aanvraag_id?: string | null
+          bijgewerkt_op?: string
+          event_id: string
+          fout?: string | null
+          http_code?: number | null
+          id?: string
+          status: string
+          validate_only?: boolean
+        }
+        Update: {
+          aangemaakt_op?: string
+          aanvraag_id?: string | null
+          bijgewerkt_op?: string
+          event_id?: string
+          fout?: string | null
+          http_code?: number | null
+          id?: string
+          status?: string
+          validate_only?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "openai_ads_conversie_log_aanvraag_id_fkey"
+            columns: ["aanvraag_id"]
+            isOneToOne: false
+            referencedRelation: "kpi_actieve_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "openai_ads_conversie_log_aanvraag_id_fkey"
+            columns: ["aanvraag_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       partner_bronnen: {
         Row: {
           aangemaakt_door: string | null
