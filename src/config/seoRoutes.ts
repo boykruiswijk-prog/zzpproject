@@ -413,10 +413,10 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/bav-zzp",
-    title: `BAV zzp vanaf € ${LANDING_MAAND} per maand | ZP Zaken`,
-    description: `BAV en AVB voor zzp'ers in één polis via Hiscox. Vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting, geen eigen risico.`,
-    h1: "BAV voor zzp'ers: beroeps- en bedrijfsaansprakelijkheid in één polis",
-    intro: `Een BAV beschermt je bij schade door fouten in je werk, de AVB bij schade aan personen of spullen. Bij ZP Zaken heb je ze samen vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
+    title: "Aansprakelijkheidsverzekering zzp: BAV + AVB | ZP Zaken",
+    description: `Aansprakelijkheidsverzekering voor zzp'ers: BAV en AVB in één polis, vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
+    h1: "Aansprakelijkheidsverzekering zzp: BAV en AVB in één polis",
+    intro: `Als zzp'er heb je in de regel twee aansprakelijkheidsverzekeringen nodig: een beroepsaansprakelijkheidsverzekering (BAV) voor financiële schade door een fout in je werk en een bedrijfsaansprakelijkheidsverzekering (AVB) voor schade aan personen of spullen. Bij ZP Zaken heb je ze samen in één polis, vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting, zonder eigen risico en binnen 24 uur geregeld.`,
   },
   {
     path: "/zzp-verzekering-consultant",
