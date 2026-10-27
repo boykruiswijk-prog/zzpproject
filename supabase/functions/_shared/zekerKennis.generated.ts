@@ -277,17 +277,17 @@ export const ZEKER_KENNIS = {
     {
       "path": "/zzp-verzekering-ict",
       "title": "ZZP Verzekering ICT | BAV & AVB voor IT'ers",
-      "intro": "Als ICT-freelancer schrijf je code, implementeer je systemen of geef je advies. Een fout in je werk kan grote financiele gevolgen hebben voor je opdrachtgever. Beroepsaansprakelijkheidsverzekering (BAV) is in de ICT-sector bij veel opdrachtgevers verplicht en beschermt jou en je klant."
+      "intro": "Als ICT-freelancer schrijf je code, implementeer je systemen of geef je advies. Een fout in je werk kan grote financiele gevolgen hebben voor je opdrachtgever. Beroepsaansprakelijkheidsverzekering (BAV) is in de ICT-sector bij veel opdrachtgevers verplicht. Je bent dan verzekerd voor aansprakelijkheid, volgens de polisvoorwaarden."
     },
     {
       "path": "/beroepsaansprakelijkheidsverzekering",
       "title": "Beroepsaansprakelijkheidsverzekering zzp | ZP Zaken",
-      "intro": "Een beroepsaansprakelijkheidsverzekering beschermt je als een opdrachtgever je aansprakelijk stelt voor schade door een fout in je werk. Bij ZP Zaken kost die vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting."
+      "intro": "Een beroepsaansprakelijkheidsverzekering verzekert je, volgens de polisvoorwaarden, als een opdrachtgever je aansprakelijk stelt voor schade door een fout in je werk. Bij ZP Zaken kost die vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting."
     },
     {
       "path": "/bav-zzp",
-      "title": "BAV zzp vanaf € 55 per maand | ZP Zaken",
-      "intro": "Een BAV beschermt je bij schade door fouten in je werk, de AVB bij schade aan personen of spullen. Bij ZP Zaken heb je ze samen vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting."
+      "title": "Aansprakelijkheidsverzekering zzp: BAV + AVB | ZP Zaken",
+      "intro": "Als zzp'er heb je in de regel twee aansprakelijkheidsverzekeringen nodig: een beroepsaansprakelijkheidsverzekering (BAV) voor financiële schade door een fout in je werk en een bedrijfsaansprakelijkheidsverzekering (AVB) voor schade aan personen of spullen. Bij ZP Zaken heb je ze samen in één polis, vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting, zonder eigen risico en binnen 24 uur geregeld."
     },
     {
       "path": "/zzp-verzekering-consultant",
@@ -312,12 +312,12 @@ export const ZEKER_KENNIS = {
     {
       "path": "/zzp-verzekering-hr",
       "title": "BAV HR-adviseur zzp | Verzekering voor HR en P&O",
-      "intro": "Als HR-adviseur, recruiter of loopbaanadviseur werk je met mensen en contracten. Een BAV en AVB in één polis beschermen je bij een fout in je advies of selectie."
+      "intro": "Als HR-adviseur, recruiter of loopbaanadviseur werk je met mensen en contracten. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden."
     },
     {
       "path": "/zzp-verzekering-marketing",
       "title": "BAV marketing zzp | Verzekering voor marketeers",
-      "intro": "Als marketeer, copywriter of designer maak je werk dat de wereld in gaat. Een BAV en AVB in één polis beschermen je bij een fout in je werk."
+      "intro": "Als marketeer, copywriter of designer maak je werk dat de wereld in gaat. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden."
     },
     {
       "path": "/zzp-verzekering-coach",

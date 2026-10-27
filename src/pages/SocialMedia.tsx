@@ -58,7 +58,7 @@ const faqs = [
   },
   {
     q: "Waarom is aansprakelijkheid belangrijk voor zzp'ers?",
-    a: "Als zzp'er ben je persoonlijk aansprakelijk voor schade die je veroorzaakt tijdens je werk. Zonder de juiste verzekering kan één fout leiden tot financiële problemen. Een goede aansprakelijkheidsverzekering beschermt je onderneming én je privévermogen."
+    a: "Als zzp'er ben je persoonlijk aansprakelijk voor schade die je veroorzaakt tijdens je werk. Zonder de juiste verzekering kan één fout leiden tot financiële problemen. Een aansprakelijkheidsverzekering verzekert je, volgens de polisvoorwaarden, voor schade waarvoor je aansprakelijk bent."
   },
 ];
 

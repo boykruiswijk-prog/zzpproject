@@ -18,7 +18,7 @@ export default function Beroepsaansprakelijkheidsverzekering() {
       serviceName="Beroepsaansprakelijkheidsverzekering voor zzp'ers"
       badge="Voor zzp'ers"
       title={<>Beroepsaansprakelijkheidsverzekering voor <span className="text-accent">zzp'ers</span></>}
-      subtitle={`Een beroepsaansprakelijkheidsverzekering beschermt je als een opdrachtgever je aansprakelijk stelt voor schade door een fout in je werk. Bij ZP Zaken kost die vanaf ${PRIJS_MAAND.replace("€", "€ ")} per maand of ${PRIJS_JAAR.replace("€", "€ ")} per jaar, inclusief kosten en assurantiebelasting.`}
+      subtitle={`Een beroepsaansprakelijkheidsverzekering verzekert je, volgens de polisvoorwaarden, als een opdrachtgever je aansprakelijk stelt voor schade door een fout in je werk. Bij ZP Zaken kost die vanaf ${PRIJS_MAAND.replace("€", "€ ")} per maand of ${PRIJS_JAAR.replace("€", "€ ")} per jaar, inclusief kosten en assurantiebelasting.`}
       sector=""
       benefits={[
         { icon: ShieldCheck, title: "BAV en AVB in één polis", description: `${BAV_MILJOEN} BAV en ${AVB_MILJOEN} AVB per aanspraak via Hiscox, zonder eigen risico.` },
