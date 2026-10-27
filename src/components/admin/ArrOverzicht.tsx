@@ -52,14 +52,14 @@ export function ArrOverzicht() {
           </div>
           <dl className="grid grid-cols-1 gap-1 text-xs sm:grid-cols-2">
             <div><dt className="text-muted-foreground">Loopt af</dt><dd className="tabular-nums">{formatEuro(data.arr_loopt_af)}</dd></div>
-            <div><dt className="text-muted-foreground">Cyber in actieve ARR</dt><dd className="tabular-nums">{formatEuro(data.arr_cyber)} ({data.aandeel_cyber_pct.toLocaleString("nl-NL")}% )</dd></div>
+            <div><dt className="text-muted-foreground">Cyber in actieve ARR</dt><dd className="tabular-nums">{formatEuro(data.arr_cyber)} ({data.aandeel_cyber_pct.toLocaleString("nl-NL")}%)</dd></div>
             <div><dt className="text-muted-foreground">Gemiddelde ARR per klant</dt><dd className="tabular-nums">{formatEuro(data.gemiddelde_arr_per_klant)}</dd></div>
           </dl>
-          <table className="w-full table-fixed text-right text-xs tabular-nums">
+          <table className="w-full table-fixed text-right text-[11px] tabular-nums sm:text-xs">
             <thead className="text-muted-foreground"><tr><th className="w-1/5 text-left font-medium">Maand</th><th className="font-medium">Nieuw</th><th className="font-medium">Aflopend</th><th className="font-medium">Netto</th></tr></thead>
             <tbody>{data.maanden.map(m => <tr key={m.maand} className="border-t border-border">
               <th className="py-1.5 text-left font-normal">{new Intl.DateTimeFormat("nl-NL", { month: "short", timeZone: "Europe/Amsterdam" }).format(new Date(`${m.maand}T12:00:00Z`))}</th>
-              <td className="break-words">{formatEuro(m.nieuw)}</td><td className="break-words">{formatEuro(m.aflopend)}</td><td className="break-words">{signedEuro(m.netto)}</td>
+              <td className="whitespace-nowrap">{formatEuro(m.nieuw)}</td><td className="whitespace-nowrap">{formatEuro(m.aflopend)}</td><td className="whitespace-nowrap">{signedEuro(m.netto)}</td>
             </tr>)}</tbody>
           </table>
         </>}
