@@ -56,3 +56,4 @@
 - BeroepspaginaTekst links policy-condition mentions without changing FAQ strings; beroepspagina price display is opt-in by canonical path, leaving other services and form pricing untouched. Why: consistent landing-page copy with matching JSON-LD and no application changes.
 - Bundle leak checks exempt only explicit public AVB coverage wording, including amount-before-AVB; unlabeled and cyber amounts remain blocked. Why: legitimate coverage copy must not prevent deployment.
 - PageHero text wrapping is opt-in for occupational landing pages; other pages retain their existing sizing. Why: long coverage headings must remain readable without changing shared page layouts.
+- Articles content is guarded by trigger artikel_hiscox_acceptatie_check (rejects sentences attributing acceptance to Hiscox); mirrored by src/test/hiscoxAcceptatie.test.ts. Why: content automation cannot publish wrong acceptance claims.
