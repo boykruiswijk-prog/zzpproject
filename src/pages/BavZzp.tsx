@@ -4,11 +4,15 @@ import { LandingVerzekeringBlokken, BAV_MILJOEN, AVB_MILJOEN } from "@/component
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { seoRoute } from "@/config/seoRoutes";
 import { STARTER } from "@/lib/starterTarief";
+import { getPakket } from "@/data/bavPakketten";
+
+const dekkingen = getPakket("maandelijks").dekkingen;
+const bedrag = (waarde: number) => `€ ${waarde.toLocaleString("nl-NL")}`;
 
 const faqs = [
   { question: "Wat kost een aansprakelijkheidsverzekering voor een zzp'er?", answer: `Bij ZP Zaken kost de BAV + AVB in één polis ${PRIJS_MAAND.replace("€", "€ ")} per maand of ${PRIJS_JAAR.replace("€", "€ ")} per jaar, inclusief kosten en assurantiebelasting, zonder eigen risico. Ben je net gestart, met een KVK-inschrijving jonger dan 12 maanden? Dan betaal je de eerste ${STARTER.duurMaanden} maanden € ${STARTER.maandprijs} per maand of € ${STARTER.jaarprijs} per jaar, daarna ${PRIJS_MAAND.replace("€", "€ ")} per maand of ${PRIJS_JAAR.replace("€", "€ ")} per jaar, onder voorbehoud van controle van je KVK-inschrijvingsdatum.` },
   { question: "Welke aansprakelijkheidsverzekering heb ik nodig als zzp'er?", answer: "De meeste zzp'ers met een kantoorberoep hebben zowel een BAV als een AVB nodig. De BAV gaat over financiële schade door een fout in je werk, de AVB over schade aan personen of spullen van anderen. Veel opdrachtgevers vragen om allebei. Wat precies gedekt is, staat in de polisvoorwaarden." },
-  { question: "Is een bedrijfsaansprakelijkheidsverzekering bij de BAV inbegrepen?", answer: `Ja. Bij ZP Zaken zitten de BAV (${(Number(BAV_MILJOEN.replace(/[^\d,]/g, "").replace(",", ".")) * 1_000_000).toLocaleString("nl-NL", { style: "currency", currency: "EUR", maximumFractionDigits: 0 })} per aanspraak) en de AVB (${(Number(AVB_MILJOEN.replace(/[^\d,]/g, "").replace(",", ".")) * 1_000_000).toLocaleString("nl-NL", { style: "currency", currency: "EUR", maximumFractionDigits: 0 })} per aanspraak) samen in één polis via Hiscox. Je hebt één premie en één certificaat voor je opdrachtgever.` },
+  { question: "Is een bedrijfsaansprakelijkheidsverzekering bij de BAV inbegrepen?", answer: `Ja. Bij ZP Zaken zitten de BAV (${bedrag(dekkingen.bav.perGebeurtenis)} per aanspraak) en de AVB (${bedrag(dekkingen.avb.perGebeurtenis)} per aanspraak) samen in één polis via Hiscox. Je hebt één premie en één certificaat voor je opdrachtgever.` },
   { question: "Wat dekt een BAV?", answer: "Een BAV dekt schade die je opdrachtgever lijdt door een fout in je werk als zzp'er. Wat precies gedekt is, staat in de polisvoorwaarden." },
   { question: "Wat is het verschil tussen BAV en AVB?", answer: "De BAV gaat over financiële schade door fouten in je werk, zoals een verkeerde berekening. De AVB gaat over schade aan personen of aan spullen van anderen. Bij ZP Zaken zitten ze samen in één polis. Wat precies gedekt is, staat in de polisvoorwaarden." },
   { question: "Wat kost een BAV voor zzp'ers?", answer: `Vanaf ${PRIJS_MAAND.replace("€", "€ ")} per maand of ${PRIJS_JAAR.replace("€", "€ ")} per jaar, inclusief kosten en assurantiebelasting, voor BAV en AVB samen. Je betaalt geen eigen risico.` },
