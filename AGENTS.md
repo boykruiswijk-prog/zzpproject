@@ -57,4 +57,3 @@
 - Bundle leak checks exempt only explicit public AVB coverage wording, including amount-before-AVB; unlabeled and cyber amounts remain blocked. Why: valid coverage copy must deploy.
 - PageHero text wrapping is opt-in for occupational landing pages; other pages retain their existing sizing. Why: long coverage headings must remain readable without changing shared page layouts.
 - Trigger artikel_hiscox_acceptatie_check plus hiscoxAcceptatie.test.ts reject text attributing acceptance to Hiscox. Why: automation cannot publish it.
-- Ad images: SQL insert into advertentie_beelden wakes advertentie-beeld (empty body, host allowlist, cover-crop JPG); output in public article-images/ad-images/ because public buckets are blocked. Why: reusable for Ads agents without a new public bucket.

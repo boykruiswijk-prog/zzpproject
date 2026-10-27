@@ -36,3 +36,4 @@
 - Netto groei alleen via tel_netto_groei (aantallen, bav_avb + cyber_clear), gebruikt door dashboard_tellers en scherm_data. Waarom: A6 een bron, geen bedragen of namen op /tv.
 - Cybercertificaat is een aparte PDF via generate-cyber-certificate (supervisor/admin met MFA, nooit mailen of overschrijven); teksten in _shared/cyberCertificaatTeksten.ts, tekenen in _shared/cyberCertificaatPdf.ts; BAV-certificaat blijft los. Waarom: cyber eigen document zonder BAV-wijziging.
 - Activatie (zetInPlanner) hergebruikt een bestaande klantkaart met hetzelfde KvK-nummer zonder Exact-koppeling als die uniek is, in plaats van een tweede kaart te maken. Waarom: contract, polis en contactpersoon op één kaart.
+- Ad images: SQL insert into advertentie_beelden wakes advertentie-beeld (empty body, host allowlist, cover-crop JPG) into public article-images/ad-images/, since public buckets are blocked. Why: reusable for Ads agents.
