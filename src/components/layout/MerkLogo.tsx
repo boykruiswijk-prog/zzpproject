@@ -20,7 +20,7 @@ export function MerkLogo({ hoogtePx, lazy = false, className }: { hoogtePx: numb
         style={{ height: hoogtePx }}
         className="w-auto object-contain"
       />
-      <span aria-hidden="true" className="-ml-[0.05em] -mt-[0.1em] font-normal leading-none text-foreground">®</span>
+      <span aria-hidden="true" className="-ml-[0.05em] font-normal leading-none text-foreground">®</span>
     </span>
   );
 }
