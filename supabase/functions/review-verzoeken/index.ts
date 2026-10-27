@@ -61,7 +61,7 @@ Deno.serve(async (req) => {
 
   async function verstuur(soort: ReviewSoort, leadId: string, email: string, voornaam: string | null, token: string) {
     const afmeld = await afmeldToken(email);
-    const subject = reviewOnderwerp(soort);
+    const subject = reviewOnderwerp(soort, voornaam);
     const html = reviewHtml({
       soort, voornaam,
       klikUrl: `${FN_BASE}/review-klik?t=${token}`,
