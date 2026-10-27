@@ -33,7 +33,7 @@ const DERTIG_MIN = 30 * 60_000;
 
 function bron(a: Concept["attributie"]): string {
   if (!a) return "Onbekend";
-  const delen = [a.kanaal, a.utm_source, a.utm_campaign].filter(Boolean);
+  const delen = [a.kanaal === "chatgpt_ads" ? "ChatGPT Ads" : a.kanaal, a.utm_source, a.utm_campaign].filter(Boolean);
   if (a.referrer) delen.push(a.referrer.replace(/^https?:\/\//, "").split("/")[0]);
   return delen.join(" · ") || "Onbekend";
 }

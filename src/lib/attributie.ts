@@ -3,12 +3,12 @@
 //
 // - utm_*, referrer, landingspagina: sessionStorage, eerste bezoek in de sessie (geen toestemming nodig),
 //   plus 90 dagen in localStorage (zp_attributie_90d); de laatste betaalde klik (utm of klik-ID) gaat voor.
-// - Klik-ID's (gclid, gbraid, wbraid, msclkid): alleen na toestemming marketing-cookies,
+// - Klik-ID's (gclid, gbraid, wbraid, msclkid, oppref): alleen na toestemming marketing-cookies,
 //   in localStorage met een bewaartermijn van 90 dagen. Zonder toestemming blijven ze
 //   alleen in het geheugen van de huidige pagina en worden ze nooit opgeslagen of verstuurd.
 //   Intrekken van toestemming wist ze direct.
 import {
-  ATTRIBUTIE_SLEUTELS, KLIK_ID_SLEUTELS, bepaalKanaal, schoneUrl,
+  ATTRIBUTIE_SLEUTELS, KLIK_ID_SLEUTELS, KLIK_ID_PATROON, bepaalKanaal, schoneUrl,
   type Attributie, type KlikIdSleutel,
 } from "../../supabase/functions/_shared/attributie";
 
@@ -38,7 +38,7 @@ function klikIdsUitUrl(): KlikIds | null {
   const uit: KlikIds = {};
   for (const k of KLIK_ID_SLEUTELS) {
     const v = q.get(k);
-    if (v && /^[\w-]{1,200}$/.test(v)) uit[k] = v;
+    if (v && KLIK_ID_PATROON.test(v)) uit[k] = v;
   }
   return Object.keys(uit).length ? uit : null;
 }
@@ -84,6 +84,7 @@ export const ATTRIBUTIE_BEWAARDAGEN = 90;
 const UTM = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"] as const;
 
 function advertentieklikVoor(klik: KlikIds): string {
+  if (klik.oppref && !klik.gclid && !klik.gbraid && !klik.wbraid && !klik.msclkid) return "openai";
   return klik.msclkid && !klik.gclid && !klik.gbraid && !klik.wbraid ? "microsoft" : "google";
 }
 

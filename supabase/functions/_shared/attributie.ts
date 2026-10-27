@@ -13,17 +13,23 @@ export const AI_VERWIJZERS = [
 
 export const ATTRIBUTIE_SLEUTELS = [
   "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content",
-  "gclid", "gbraid", "wbraid", "msclkid", "referrer", "landingspagina", "eerste_bezoek_op",
-  // Alleen "google" of "microsoft": kanaal zonder klik-ID (ook zonder marketingtoestemming).
+  "gclid", "gbraid", "wbraid", "msclkid", "oppref", "referrer", "landingspagina", "eerste_bezoek_op",
+  // Alleen "google", "microsoft" of "openai": kanaal zonder klik-ID (ook zonder marketingtoestemming).
   "advertentieklik", "herkomst_uit",
 ] as const;
 
 /** Advertentie-klik-ID's: alleen opgeslagen en verstuurd na toestemming marketing-cookies. */
-export const KLIK_ID_SLEUTELS = ["gclid", "gbraid", "wbraid", "msclkid"] as const;
+export const KLIK_ID_SLEUTELS = ["gclid", "gbraid", "wbraid", "msclkid", "oppref"] as const;
+/** Toegestane tekens per klik-ID (OpenAI oppref kan ook punten en tildes bevatten). */
+export const KLIK_ID_PATROON = /^[\w.~-]{1,300}$/;
+/** ChatGPT Ads: utm_source=chatgpt (exact; organisch ChatGPT gebruikt chatgpt.com), oppref of advertentieklik openai. */
+export function isChatgptAds(a: Partial<Record<string, string>>): boolean {
+  return (a.utm_source ?? "").trim().toLowerCase() === "chatgpt" || !!a.oppref || a.advertentieklik === "openai";
+}
 export type KlikIdSleutel = (typeof KLIK_ID_SLEUTELS)[number];
 
 export type AttributieSleutel = (typeof ATTRIBUTIE_SLEUTELS)[number];
-export type Kanaal = "ai" | "betaald" | "campagne" | "verwijzing" | "direct";
+export type Kanaal = "chatgpt_ads" | "ai" | "betaald" | "campagne" | "verwijzing" | "direct";
 export type Attributie = Partial<Record<AttributieSleutel, string>> & { kanaal: Kanaal; marketing_toestemming?: boolean };
 
 function host(v: string): string {
@@ -38,6 +44,7 @@ export function isAiVerwijzer(v: string | undefined | null): boolean {
 }
 
 export function bepaalKanaal(a: Partial<Record<AttributieSleutel, string>>): Kanaal {
+  if (isChatgptAds(a)) return "chatgpt_ads";
   if (isAiVerwijzer(a.referrer) || isAiVerwijzer(a.utm_source)) return "ai";
   if (a.gclid || a.gbraid || a.wbraid || a.msclkid || a.advertentieklik) return "betaald";
   if (a.utm_source) return "campagne";
@@ -63,10 +70,10 @@ export function saneerAttributie(x: unknown): Attributie | null {
     const v = r[k];
     if (typeof v !== "string") continue;
     let s = v.trim().slice(0, k === "referrer" || k === "landingspagina" ? 300 : 200);
-    if ((KLIK_ID_SLEUTELS as readonly string[]).includes(k)) s = /^[\w-]+$/.test(s) ? s : "";
+    if ((KLIK_ID_SLEUTELS as readonly string[]).includes(k)) s = KLIK_ID_PATROON.test(s) ? s : "";
     if (k === "referrer") s = schoneUrl(s);
     if (k === "landingspagina") s = s.startsWith("/") ? s.split(/[?#]/)[0] : "";
-    if (k === "advertentieklik") s = s === "google" || s === "microsoft" ? s : "";
+    if (k === "advertentieklik") s = s === "google" || s === "microsoft" || s === "openai" ? s : "";
     if (k === "herkomst_uit") s = s === "90d" ? s : "";
     if (k === "eerste_bezoek_op") s = /^\d{4}-\d{2}-\d{2}T[\d:.]+Z$/.test(s) ? s : "";
     if (s) uit[k] = s;
@@ -76,8 +83,8 @@ export function saneerAttributie(x: unknown): Attributie | null {
   return { ...uit, ...marketing, kanaal: bepaalKanaal(uit) };
 }
 
-const KANAAL_LABEL: Record<Kanaal, string> = {
-  ai: "AI-assistent", betaald: "Google Ads", campagne: "Campagne", verwijzing: "Verwijzing", direct: "Direct / onbekend",
+export const KANAAL_LABEL: Record<Kanaal, string> = {
+  chatgpt_ads: "ChatGPT Ads", ai: "AI-assistent", betaald: "Google Ads", campagne: "Campagne", verwijzing: "Verwijzing", direct: "Direct / onbekend",
 };
 
 /** Regels voor de leaddetailpagina (blok Aanvraag) en de teammail. */
@@ -95,6 +102,7 @@ export function attributieRegels(x: unknown): Array<[string, string]> {
     ["Advertentie (utm_content)", a.utm_content ?? ""],
     ["Google Ads-klik", klik],
     ["Microsoft Ads-klik", a.msclkid ? "msclkid" : ""],
+    ["ChatGPT Ads-klik", a.oppref ? "oppref" : ""],
     ["Landingspagina", a.landingspagina ?? ""],
   ] as Array<[string, string]>).filter(([, w]) => !!w);
 }
