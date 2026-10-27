@@ -3103,6 +3103,7 @@ export type Database = {
           bijgewerkt_op: string
           facturatie_actief: boolean
           id: number
+          nps_actief: boolean
           opzeg_credits_actief: boolean
           sleutel_veld: string
           verwerk_termijn_werkdagen: number
@@ -3112,6 +3113,7 @@ export type Database = {
           bijgewerkt_op?: string
           facturatie_actief?: boolean
           id?: number
+          nps_actief?: boolean
           opzeg_credits_actief?: boolean
           sleutel_veld?: string
           verwerk_termijn_werkdagen?: number
@@ -3121,6 +3123,7 @@ export type Database = {
           bijgewerkt_op?: string
           facturatie_actief?: boolean
           id?: number
+          nps_actief?: boolean
           opzeg_credits_actief?: boolean
           sleutel_veld?: string
           verwerk_termijn_werkdagen?: number
@@ -5207,6 +5210,54 @@ export type Database = {
           laatste_referrer?: string | null
           laatste_user_agent?: string | null
           pad?: string
+        }
+        Relationships: []
+      }
+      nps_antwoorden: {
+        Row: {
+          aangemaakt_op: string
+          beantwoord_op: string | null
+          email: string
+          id: string
+          is_test: boolean
+          kanaal: string
+          lead_id: string
+          onderneming_id: string | null
+          score: number | null
+          status: string
+          toelichting: string | null
+          token: string
+          verstuurd_op: string | null
+        }
+        Insert: {
+          aangemaakt_op?: string
+          beantwoord_op?: string | null
+          email: string
+          id?: string
+          is_test?: boolean
+          kanaal?: string
+          lead_id: string
+          onderneming_id?: string | null
+          score?: number | null
+          status?: string
+          toelichting?: string | null
+          token?: string
+          verstuurd_op?: string | null
+        }
+        Update: {
+          aangemaakt_op?: string
+          beantwoord_op?: string | null
+          email?: string
+          id?: string
+          is_test?: boolean
+          kanaal?: string
+          lead_id?: string
+          onderneming_id?: string | null
+          score?: number | null
+          status?: string
+          toelichting?: string | null
+          token?: string
+          verstuurd_op?: string | null
         }
         Relationships: []
       }
@@ -7468,6 +7519,10 @@ export type Database = {
       }
       menu_tellers: { Args: never; Returns: Json }
       mijn_acties_vandaag: { Args: { _toon_test?: boolean }; Returns: Json }
+      mijn_acties_vandaag_basis: {
+        Args: { _toon_test?: boolean }
+        Returns: Json
+      }
       mijn_cyber_polissen: { Args: never; Returns: Json }
       mijn_review_kaart: { Args: never; Returns: Json }
       move_to_dlq: {
@@ -7484,6 +7539,21 @@ export type Database = {
         Returns: Json
       }
       nextval_text: { Args: { seq_name: string }; Returns: string }
+      nps_antwoord_opslaan: {
+        Args: { _score?: number; _toelichting?: string; _token: string }
+        Returns: Json
+      }
+      nps_kandidaten: {
+        Args: { _limit?: number }
+        Returns: {
+          email: string
+          geactiveerd_op: string
+          lead_id: string
+          onderneming_id: string
+          voornaam: string
+        }[]
+      }
+      nps_overzicht: { Args: never; Returns: Json }
       omzetting_kandidaten: { Args: { _lead_id: string }; Returns: Json }
       omzetting_leidend_bav: { Args: { _van: string }; Returns: Json }
       omzetting_vastleggen: {
