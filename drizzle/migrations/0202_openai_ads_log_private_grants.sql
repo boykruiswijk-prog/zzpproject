@@ -1,0 +1,3 @@
+REVOKE ALL ON public.openai_ads_conversie_log FROM anon, authenticated;
+GRANT ALL ON public.openai_ads_conversie_log TO service_role;
+COMMENT ON TABLE public.openai_ads_conversie_log IS 'Service-only OpenAI Ads delivery evidence. Explicitly revoked inherited anon/authenticated grants; RLS enabled with no public policies. No raw provider response, customer fields or automatic retries of uncertain outcomes.';
