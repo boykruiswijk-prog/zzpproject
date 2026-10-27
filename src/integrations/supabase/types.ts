@@ -7000,6 +7000,47 @@ export type Database = {
       exact_code_norm: { Args: { _c: string }; Returns: string }
       exact_koppel_accounts: { Args: never; Returns: Json }
       exact_koppeling_controle: { Args: never; Returns: Json }
+      exact_taak_bewaren: {
+        Args: {
+          _naam: string
+          _ond: string
+          _pers: string
+          _test: boolean
+          _velden: string[]
+        }
+        Returns: string
+      }
+      exact_taak_groep: {
+        Args: { _id: string }
+        Returns: {
+          id: string
+        }[]
+      }
+      exact_taken_open: {
+        Args: { _toon_test?: boolean }
+        Returns: {
+          aangemaakt_door: string | null
+          aangemaakt_door_naam: string | null
+          aangemaakt_op: string
+          afgerond_door: string | null
+          afgerond_op: string | null
+          details: Json
+          id: string
+          is_test: boolean
+          omschrijving: string
+          onderneming_id: string | null
+          persoon_id: string | null
+          soort: string
+          status: string
+          team: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "crm_taken"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       facturatie_kandidaten: {
         Args: { _tot: string; _van: string }
         Returns: {
