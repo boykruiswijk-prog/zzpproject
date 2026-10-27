@@ -1,0 +1,5 @@
+DO $$ DECLARE d text; n text; BEGIN
+ d:=pg_get_functiondef('public.exact_taak_bewaren(uuid,uuid,text[],text,boolean)'::regprocedure);
+ n:=replace(d,'FROM crm_taken t JOIN exact_taak_groep(gekozen) g ON g.id=t.id) s;', 'FROM crm_taken t WHERE t.id IN (SELECT g.id FROM crm_taken seed CROSS JOIN LATERAL exact_taak_groep(seed.id) g WHERE seed.status=''open'' AND seed.soort=''exact_aanpassen'' AND seed.is_test=_test AND seed.team IS NULL AND seed.onderneming_id IS NOT DISTINCT FROM _ond AND (_ond IS NOT NULL OR seed.persoon_id IS NOT DISTINCT FROM _pers) AND EXISTS(SELECT 1 FROM unnest(_velden) f WHERE coalesce(seed.details->''velden'',''[]'') ? f AND (f NOT IN (''voornaam'',''achternaam'') OR seed.persoon_id IS NOT DISTINCT FROM _pers)))) s;');
+ IF n=d THEN RAISE EXCEPTION 'veldenblok niet gevonden'; END IF; EXECUTE n;
+END $$;
