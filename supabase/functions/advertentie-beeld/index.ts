@@ -2,7 +2,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2.108.2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2.108.2/cors";
 import { initPhoton, PhotonImage, resize, crop, SamplingFilter } from "npm:@cf-wasm/photon@0.4.0/others";
-import { fotoUrl, downloadFoto, fotoAfmetingen } from "../artikel-foto/regels.ts";
+import { fotoUrl, downloadFoto, fotoAfmetingen } from "./regels.ts";
 
 const BUCKET = "article-images"; // Public buckets are blocked in this workspace; ads live under ad-images/.
 const MAX_JPG = 5 * 1024 * 1024;
