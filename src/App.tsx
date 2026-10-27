@@ -6,7 +6,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useParams, useLocation } from "react-router-dom";
-import { uetPageView, zetGaUitschakeling } from "@/lib/tracking";
+import { uetPageView, openAiPageView, zetGaUitschakeling } from "@/lib/tracking";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { AuthProvider } from "@/contexts/AuthContext";
 const Index = lazy(() => import("./pages/Index"));
@@ -332,7 +332,8 @@ export const AppProviders = ({ client, children }: { client: QueryClient; childr
 
 /** Houdt de GA-opt-out-vlag synchroon met de route (geen GA4 op admin/portal/mijn-zp). */
 function GaRouteGuard() {
-  const { pathname } = useLocation();
+  const { pathname, key } = useLocation();
+  useEffect(() => { openAiPageView(pathname, key); }, [pathname, key]);
   useEffect(() => { zetGaUitschakeling(pathname); uetPageView(pathname); meldSiteBezoek(categorieVoorPad(pathname)); }, [pathname]);
   return null;
 }

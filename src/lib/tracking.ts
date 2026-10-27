@@ -96,6 +96,7 @@ type Oaiq = ((...a: unknown[]) => void) & { q?: unknown[][] };
 const oaiq = (): Oaiq | undefined => (typeof window === "undefined" ? undefined : (window as unknown as { oaiq?: Oaiq }).oaiq);
 let oaiGeladen = false;
 let oaiGeinstalleerd = false;
+let oaiLaatstePagina: string | null = null;
 
 /** Zelfde stub als de officiële snippet, pas aangeroepen na marketingtoestemming en buiten interne paden. */
 function laadOpenAiPixel() {
@@ -103,8 +104,9 @@ function laadOpenAiPixel() {
   oaiGeladen = true;
   const w = window as unknown as { oaiq?: Oaiq };
   if (!w.oaiq) {
-    const q: Oaiq = (...args: unknown[]) => { q.q!.push(args); };
-    q.q = [];
+    const wachtrij: unknown[][] = [];
+    const q: Oaiq = (...args: unknown[]) => { wachtrij.push(args); };
+    q.q = wachtrij;
     w.oaiq = q;
     const js = document.createElement("script");
     js.async = true;
@@ -112,19 +114,47 @@ function laadOpenAiPixel() {
     const f = document.getElementsByTagName("script")[0];
     if (f?.parentNode) f.parentNode.insertBefore(js, f); else document.head.appendChild(js);
   }
-  w.oaiq!("init", { pixelId: OPENAI_PIXEL_ID });
+  w.oaiq?.("init", { pixelId: OPENAI_PIXEL_ID });
 }
 
 function verwerkOpenAiToestemming() {
-  if (heeftMarketingToestemming() && !isNietGemetenPad(window.location.pathname)) laadOpenAiPixel();
+  if (!heeftMarketingToestemming()) {
+    oaiLaatstePagina = null;
+    return;
+  }
+  openAiPageView(window.location.pathname, oaiHuidigePagina);
 }
 
+let oaiHuidigePagina = "initial";
 /** Pixel laadt pas na toestemming marketingcookies (ook bij een latere keuze) en nooit op interne paden. */
 export function installeerOpenAiPixel(pathname: string) {
   if (!OPENAI_PIXEL_ID || oaiGeinstalleerd || typeof window === "undefined") return;
   oaiGeinstalleerd = true;
   window.addEventListener("zp-cookie-keuze", verwerkOpenAiToestemming);
+  window.addEventListener("storage", (e) => {
+    if (e.key === "zpzaken_cookie_consent") verwerkOpenAiToestemming();
+  });
   if (heeftMarketingToestemming() && !isNietGemetenPad(pathname)) laadOpenAiPixel();
+}
+
+/** Officieel standaardevent, zonder vrije tekst, URL-parameters of klantgegevens. */
+export const OPENAI_PAGE_EVENT = ["measure", "page_viewed", { type: "contents" }] as const;
+
+/** Eén weergave per SPA-navigatie; eerdere geweigerde pagina's worden nooit ingehaald. */
+export function openAiPageView(pathname: string, navigatie = pathname) {
+  oaiHuidigePagina = navigatie;
+  if (typeof window === "undefined" || isNietGemetenPad(pathname) || !heeftMarketingToestemming()) {
+    oaiLaatstePagina = null;
+    return;
+  }
+  const sleutel = `${pathname}:${navigatie}`;
+  if (oaiLaatstePagina === sleutel) return;
+  laadOpenAiPixel();
+  const pixel = oaiq();
+  if (!pixel) return;
+  const [cmd, ev, data] = OPENAI_PAGE_EVENT;
+  pixel(cmd, ev, { ...data });
+  oaiLaatstePagina = sleutel;
 }
 
 /** Exacte trackaanroep bij een afgeronde BAV + AVB-aanvraag (zonder persoonsgegevens). */
@@ -142,6 +172,8 @@ export function openAiAanvraagAfgerond(isTest: boolean) {
 export function __resetOpenAiVoorTest(geladen = false) {
   oaiGeladen = geladen;
   oaiGeinstalleerd = false;
+  oaiLaatstePagina = null;
+  oaiHuidigePagina = "initial";
 }
 
 type Params = Record<string, string | number | boolean | undefined | unknown[]>;
