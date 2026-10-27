@@ -57,3 +57,4 @@
 - Bundle leak checks exempt only explicit public AVB coverage wording, including amount-before-AVB; unlabeled and cyber amounts remain blocked. Why: valid coverage copy must deploy.
 - PageHero text wrapping is opt-in for occupational landing pages; other pages retain their existing sizing. Why: long coverage headings must remain readable without changing shared page layouts.
 - Trigger artikel_hiscox_acceptatie_check plus hiscoxAcceptatie.test.ts reject text attributing acceptance to Hiscox. Why: automation cannot publish it.
+- NPS (A22) loopt alleen via nps-verzoeken (cron, schakelaar facturatie_config.nps_actief) en publieke nps-antwoord -> RPC nps_antwoord_opslaan (lage score = één open crm_taak nps_laag_bellen); mijn_acties_vandaag is een wrapper rond mijn_acties_vandaag_basis. Why: no customer mail without the switch, no review-gating, existing today-list unchanged.
