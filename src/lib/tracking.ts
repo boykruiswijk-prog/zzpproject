@@ -88,6 +88,62 @@ export function __resetUetVoorTest(geladen = false) {
   uetGeinstalleerd = false;
 }
 
+// ── OpenAI (ChatGPT Ads) meetpixel ──
+/** OpenAI Ads-pixel-ID (register B2-aanvulling ChatGPT Ads). Automatic advanced matching staat uit. */
+export const OPENAI_PIXEL_ID = "SxHpKs2V6EgSyfvtYJwquQ";
+export const OPENAI_PIXEL_SRC = "https://bzrcdn.openai.com/sdk/oaiq.min.js";
+type Oaiq = ((...a: unknown[]) => void) & { q?: unknown[][] };
+const oaiq = (): Oaiq | undefined => (typeof window === "undefined" ? undefined : (window as unknown as { oaiq?: Oaiq }).oaiq);
+let oaiGeladen = false;
+let oaiGeinstalleerd = false;
+
+/** Zelfde stub als de officiële snippet, pas aangeroepen na marketingtoestemming en buiten interne paden. */
+function laadOpenAiPixel() {
+  if (oaiGeladen || typeof document === "undefined") return;
+  oaiGeladen = true;
+  const w = window as unknown as { oaiq?: Oaiq };
+  if (!w.oaiq) {
+    const q: Oaiq = (...args: unknown[]) => { q.q!.push(args); };
+    q.q = [];
+    w.oaiq = q;
+    const js = document.createElement("script");
+    js.async = true;
+    js.src = OPENAI_PIXEL_SRC;
+    const f = document.getElementsByTagName("script")[0];
+    if (f?.parentNode) f.parentNode.insertBefore(js, f); else document.head.appendChild(js);
+  }
+  w.oaiq!("init", { pixelId: OPENAI_PIXEL_ID });
+}
+
+function verwerkOpenAiToestemming() {
+  if (heeftMarketingToestemming() && !isNietGemetenPad(window.location.pathname)) laadOpenAiPixel();
+}
+
+/** Pixel laadt pas na toestemming marketingcookies (ook bij een latere keuze) en nooit op interne paden. */
+export function installeerOpenAiPixel(pathname: string) {
+  if (!OPENAI_PIXEL_ID || oaiGeinstalleerd || typeof window === "undefined") return;
+  oaiGeinstalleerd = true;
+  window.addEventListener("zp-cookie-keuze", verwerkOpenAiToestemming);
+  if (heeftMarketingToestemming() && !isNietGemetenPad(pathname)) laadOpenAiPixel();
+}
+
+/** Exacte trackaanroep bij een afgeronde BAV + AVB-aanvraag (zonder persoonsgegevens). */
+export const OPENAI_LEAD_EVENT = ["measure", "lead_created", { type: "customer_action" }] as const;
+
+/** ChatGPT Ads-conversie; nooit voor testaanvragen, zonder toestemming of op interne paden. */
+export function openAiAanvraagAfgerond(isTest: boolean) {
+  if (isTest || !oaiGeladen || typeof window === "undefined" || isNietGemetenPad(window.location.pathname)) return;
+  if (!heeftMarketingToestemming()) return;
+  const [cmd, ev, data] = OPENAI_LEAD_EVENT;
+  oaiq()?.(cmd, ev, { ...data });
+}
+
+/** Alleen voor tests. */
+export function __resetOpenAiVoorTest(geladen = false) {
+  oaiGeladen = geladen;
+  oaiGeinstalleerd = false;
+}
+
 type Params = Record<string, string | number | boolean | undefined | unknown[]>;
 
 /** Paden die nooit gemeten worden (ook met taalprefix). */
@@ -254,6 +310,7 @@ export const trackPurchase = (
     transaction_id: transactionId,
   });
   uetAanvraagAfgerond(isTest);
+  openAiAanvraagAfgerond(isTest);
 };
 
 

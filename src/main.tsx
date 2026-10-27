@@ -5,12 +5,13 @@ import App from "./App.tsx";
 import "./index.css";
 import "./i18n/config";
 import { legAttributieVast } from "./lib/attributie";
-import { installeerContactKlikMeting, installeerUet, zetGaUitschakeling } from "./lib/tracking";
+import { installeerContactKlikMeting, installeerUet, installeerOpenAiPixel, zetGaUitschakeling } from "./lib/tracking";
 
 legAttributieVast();
 installeerContactKlikMeting();
 zetGaUitschakeling(window.location.pathname);
 installeerUet(window.location.pathname);
+installeerOpenAiPixel(window.location.pathname);
 
 
  createRoot(document.getElementById("root")!).render(
