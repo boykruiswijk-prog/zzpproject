@@ -1,6 +1,6 @@
 import { Phone, Mail, MapPin, MessageCircle, Linkedin, Instagram } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import logoZp from "@/assets/logo-zp.webp";
+import { MerkLogo } from "@/components/layout/MerkLogo";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { SITE_CONFIG, ADDRESS_ONE_LINE } from "@/config/site";
 import { eviPaginaLinks } from "@/config/eviPagina";
@@ -62,7 +62,7 @@ export function Footer() {
               className="inline-flex items-center mb-5 rounded-lg bg-background p-2"
               aria-label="Ga naar de homepage"
             >
-              <img loading="lazy" decoding="async" src={logoZp} alt="ZP Zaken logo" width={161} height={90} className="h-8 w-auto object-contain" />
+              <MerkLogo hoogtePx={32} lazy />
             </LocalizedLink>
             <p className="text-background/70 mb-5 max-w-sm text-sm">
               <span className="font-semibold text-background">{SITE_CONFIG.legalName}</span>, {t("footer.description")}
