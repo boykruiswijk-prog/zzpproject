@@ -31,6 +31,7 @@ beforeAll(async () => {
  // Execute the real production change to the write RPC without unrelated dashboard fixtures.
  const patch = migration.slice(migration.indexOf('DO $$'),migration.indexOf(" d:=pg_get_functiondef('public.mijn_acties_vandaag"));
  await db.exec(patch+' END $$;');
+ await db.exec(readFileSync('drizzle/migrations/0198_exact_taken_overlap_brugvelden.sql','utf8'));
 },30000);
 afterAll(() => db.close());
 it('overlap voegt velden samen, bewaart laatste waarden en schrijft een log zonder nieuwe taak',async () => {
@@ -52,6 +53,15 @@ it('deeloverlap werkt ook als bestaande taak niet alle nieuwe velden bevat',asyn
 it('verschillende velden blijven afzonderlijke acties',async()=>{
  await change(3,{naam:'Andere naam'});await change(3,{plaats:'Andere plaats'});
  expect((await db.query('select * from exact_taken_open(true) where onderneming_id=$1',[id(3)])).rows).toHaveLength(2);
+});
+it('nieuwe wijziging die twee groepen verbindt bewaart alle velden en laatste waarden',async()=>{
+ await db.exec(`INSERT INTO ondernemingen(id,naam,straat,plaats,postcode,is_test) VALUES('${id(6)}','Test brug','Oud','Teststad','1234 AB',true);
+ INSERT INTO crm_taken(soort,onderneming_id,details,is_test) VALUES('exact_aanpassen','${id(6)}','{"velden":["naam","plaats"]}',true),('exact_aanpassen','${id(6)}','{"velden":["straat","postcode"]}',true);`);
+ await change(6,{naam:'Nieuwe brug',straat:'Nieuwe straat'});
+ const tasks=(await db.query<any>('select * from exact_taken_open(true) where onderneming_id=$1',[id(6)])).rows;
+ expect(tasks).toHaveLength(1);
+ expect(tasks[0].details.velden).toEqual(['naam','plaats','postcode','straat']);
+ expect(tasks[0].details.laatste_waarden).toEqual({naam:'Nieuwe brug',plaats:'Teststad',postcode:'1234 AB',straat:'Nieuwe straat'});
 });
 it('bestaande dubbelen blijven opgeslagen, eenmaal getoond en samen afgerond met audit per taak',async()=>{
  await db.exec(`INSERT INTO crm_taken(id,soort,onderneming_id,details,is_test) VALUES('${id(10)}','exact_aanpassen','${id(4)}','{"velden":["naam"]}',true),('${id(11)}','exact_aanpassen','${id(4)}','{"velden":["naam","straat"]}',true),('${id(12)}','exact_aanpassen','${id(4)}','{"velden":["straat","plaats"]}',true);`);
