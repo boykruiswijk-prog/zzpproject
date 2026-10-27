@@ -402,14 +402,14 @@ export const seoRoutes: SeoRoute[] = [
     h1: "ZZP Verzekering voor ICT-freelancers",
     intro:
       "Als ICT-freelancer schrijf je code, implementeer je systemen of geef je advies. Een fout in je werk kan grote financiele gevolgen hebben voor je opdrachtgever. " +
-      "Beroepsaansprakelijkheidsverzekering (BAV) is in de ICT-sector bij veel opdrachtgevers verplicht en beschermt jou en je klant.",
+      "Beroepsaansprakelijkheidsverzekering (BAV) is in de ICT-sector bij veel opdrachtgevers verplicht. Je bent dan verzekerd voor aansprakelijkheid, volgens de polisvoorwaarden.",
   },
   {
     path: "/beroepsaansprakelijkheidsverzekering",
     title: "Beroepsaansprakelijkheidsverzekering zzp | ZP Zaken",
     description: `Beroepsaansprakelijkheidsverzekering voor zzp'ers: BAV en AVB in één polis via Hiscox, vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
     h1: "Beroepsaansprakelijkheidsverzekering voor zzp'ers",
-    intro: `Een beroepsaansprakelijkheidsverzekering beschermt je als een opdrachtgever je aansprakelijk stelt voor schade door een fout in je werk. Bij ZP Zaken kost die vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
+    intro: `Een beroepsaansprakelijkheidsverzekering verzekert je, volgens de polisvoorwaarden, als een opdrachtgever je aansprakelijk stelt voor schade door een fout in je werk. Bij ZP Zaken kost die vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
   },
   {
     path: "/bav-zzp",
@@ -461,7 +461,7 @@ export const seoRoutes: SeoRoute[] = [
       "Beroepsaansprakelijkheidsverzekering voor zzp HR-adviseurs, P&O'ers en recruiters. BAV en AVB in één polis, geen eigen risico, dagelijks opzegbaar.",
     h1: "ZZP verzekering voor HR-adviseurs",
     intro:
-      "Als HR-adviseur, recruiter of loopbaanadviseur werk je met mensen en contracten. Een BAV en AVB in één polis beschermen je bij een fout in je advies of selectie.",
+      "Als HR-adviseur, recruiter of loopbaanadviseur werk je met mensen en contracten. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden.",
   },
   {
     path: "/zzp-verzekering-marketing",
@@ -470,7 +470,7 @@ export const seoRoutes: SeoRoute[] = [
       "Beroepsaansprakelijkheidsverzekering voor zzp marketeers, copywriters en designers. BAV en AVB in één polis via Hiscox, geen eigen risico.",
     h1: "ZZP verzekering voor marketeers",
     intro:
-      "Als marketeer, copywriter of designer maak je werk dat de wereld in gaat. Een BAV en AVB in één polis beschermen je bij een fout in je werk.",
+      "Als marketeer, copywriter of designer maak je werk dat de wereld in gaat. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden.",
   },
   {
     path: "/zzp-verzekering-coach",

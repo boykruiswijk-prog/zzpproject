@@ -66,7 +66,7 @@ export default function ZzpVerzekeringICT() {
       heroImage={serviceVerzekeringen}
       badge="Voor IT-freelancers"
       title={<>ZZP Verzekering voor <span className="text-accent">ICT-freelancers</span></>}
-      subtitle="Als ICT-freelancer schrijf je code, implementeer je systemen of geef je advies. Een fout in je werk kan grote financiële gevolgen hebben voor je opdrachtgever. Beroepsaansprakelijkheidsverzekering (BAV) is in de ICT-sector bij veel opdrachtgevers verplicht en beschermt jou én je klant."
+      subtitle="Als ICT-freelancer schrijf je code, implementeer je systemen of geef je advies. Een fout in je werk kan grote financiële gevolgen hebben voor je opdrachtgever. Beroepsaansprakelijkheidsverzekering (BAV) is in de ICT-sector bij veel opdrachtgevers verplicht. Je bent dan verzekerd voor aansprakelijkheid, volgens de polisvoorwaarden."
       schema={schema}
       benefits={[
         {
@@ -77,9 +77,9 @@ export default function ZzpVerzekeringICT() {
         },
         {
           icon: ShieldCheck,
-          title: "Beschermd bij fouten in je werk",
+          title: "Verzekerd bij fouten in je werk",
           description:
-            "Een softwarefout of onjuist advies kan schade geven bij je opdrachtgever. Je BAV beschermt je als je daarvoor aansprakelijk wordt gesteld. De polisvoorwaarden zijn leidend.",
+            "Een softwarefout of onjuist advies kan schade geven bij je opdrachtgever. Je BAV verzekert je als je daarvoor aansprakelijk wordt gesteld, volgens de polisvoorwaarden. De polisvoorwaarden zijn leidend.",
         },
         {
           icon: Clock,

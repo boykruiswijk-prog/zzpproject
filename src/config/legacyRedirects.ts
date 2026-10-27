@@ -156,6 +156,7 @@ export const legacyRedirects: LegacyRedirect[] = [
   { from: "wie-zijn-wij", to: "/over-ons" },
   { from: "privacy", to: "/cookies" },
   { from: "privacyverklaring", to: "/cookies" },
+  { from: "privacybeleid", to: "/cookies" },
    { from: "polisvoorwaarden", to: "/voorwaarden" },
    { from: "verzekeringsvoorwaarden", to: "/voorwaarden" },
   { from: "disclaimer", to: "/faq" },

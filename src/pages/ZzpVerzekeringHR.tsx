@@ -30,7 +30,7 @@ export default function ZzpVerzekeringHR() {
         { icon: Clock, title: "Binnen 24 uur geregeld", description: "Online aanvragen, binnen 24 uur geregeld en je certificaat in je mailbox." },
       ]}
       explainers={[
-        { title: "Advies bij ontslag, contracten en selectie", text: "Je adviseert over ontslag, contracten of een nieuwe medewerker. Gaat er iets mis door een fout in je advies of selectie, dan kan je opdrachtgever schade hebben. Een BAV beschermt je als je daarvoor aansprakelijk wordt gesteld.", bullets: ["BAV en AVB in één polis via Hiscox", "Ook voor recruiters en loopbaanadviseurs", "Certificaat voor je opdrachtgever"] },
+        { title: "Advies bij ontslag, contracten en selectie", text: "Je adviseert over ontslag, contracten of een nieuwe medewerker. Gaat er iets mis door een fout in je advies of selectie, dan kan je opdrachtgever schade hebben. Een BAV verzekert je als je daarvoor aansprakelijk wordt gesteld, volgens de polisvoorwaarden.", bullets: ["BAV en AVB in één polis via Hiscox", "Ook voor recruiters en loopbaanadviseurs", "Certificaat voor je opdrachtgever"] },
         { title: "Persoonlijk contact", text: "We beantwoorden je vragen over de aanvraag en voorwaarden. De polisvoorwaarden zijn leidend." },
       ]}
       faqs={faqs}

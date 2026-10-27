@@ -139,6 +139,7 @@ export const legacyRedirects: { from: string; to: string }[] = [
   { from: "wie-zijn-wij", to: "/over-ons" },
   { from: "privacy", to: "/cookies" },
   { from: "privacyverklaring", to: "/cookies" },
+  { from: "privacybeleid", to: "/cookies" },
    { from: "polisvoorwaarden", to: "/voorwaarden" },
    { from: "verzekeringsvoorwaarden", to: "/voorwaarden" },
   { from: "disclaimer", to: "/faq" },
