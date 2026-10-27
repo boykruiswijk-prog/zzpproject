@@ -252,6 +252,45 @@ export type Database = {
           },
         ]
       }
+      advertentie_beelden: {
+        Row: {
+          breedte: number
+          bron_url: string
+          created_at: string
+          fout: string | null
+          hoogte: number
+          id: string
+          lease: string | null
+          lease_tot: string | null
+          resultaat_url: string | null
+          status: string
+        }
+        Insert: {
+          breedte: number
+          bron_url: string
+          created_at?: string
+          fout?: string | null
+          hoogte: number
+          id?: string
+          lease?: string | null
+          lease_tot?: string | null
+          resultaat_url?: string | null
+          status?: string
+        }
+        Update: {
+          breedte?: number
+          bron_url?: string
+          created_at?: string
+          fout?: string | null
+          hoogte?: number
+          id?: string
+          lease?: string | null
+          lease_tot?: string | null
+          resultaat_url?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       aov_aanmeldingen: {
         Row: {
           behandeld_door: string | null
@@ -6628,6 +6667,27 @@ export type Database = {
     Functions: {
       a19_team: { Args: never; Returns: undefined }
       accept_portal_invitation: { Args: { _token: string }; Returns: Json }
+      advertentie_beeld_claim: {
+        Args: { p_lease: string }
+        Returns: {
+          breedte: number
+          bron_url: string
+          created_at: string
+          fout: string | null
+          hoogte: number
+          id: string
+          lease: string | null
+          lease_tot: string | null
+          resultaat_url: string | null
+          status: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "advertentie_beelden"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       anonimiseer_aanvraag_concepten: { Args: never; Returns: number }
       aov_aanmelden: {
         Args: {
