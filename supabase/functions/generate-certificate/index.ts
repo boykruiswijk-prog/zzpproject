@@ -438,6 +438,8 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
     const helveticaOblique = await pdfDoc.embedFont(
       StandardFonts.HelveticaOblique
     );
+    // Benelux-merk ZP ZAKEN (fig.) RE-260811-46010: klein (R) rechtsboven bij het beeldmerk van het sjabloon, ca. 35% van de logohoogte.
+    page.drawText("\u00AE", { x: 181, y: 765, size: 30, font: helvetica, color: rgb(0.2, 0.2, 0.2) });
 
     const black = rgb(0, 0, 0);
     const gray = rgb(0.35, 0.35, 0.35);
