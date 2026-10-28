@@ -40,7 +40,7 @@ export default function BavZzp() {
       ]}
       faqs={faqs}
       leesMeer={["wat-kosten-verzekeringen-voor-zzp-ers", "welke-verzekeringen-zzp", "bedrijfsaansprakelijkheidsverzekering-zzp"]}
-      extra={<LandingVerzekeringBlokken voorWieExtra={<p className="mt-5 text-sm text-muted-foreground">Twijfel je welke BAV bij je past? Lees <LocalizedLink to="/kennisbank/beste-bav-zzp-2026" className="text-accent underline underline-offset-4">Beste BAV voor zzp'ers in 2026: waar let je op?</LocalizedLink>.</p>} />}
+      extra={<LandingVerzekeringBlokken voorWieExtra={<p className="mt-5 text-sm text-muted-foreground">Wil je weten waar je op let bij het kiezen van een BAV? Lees <LocalizedLink to="/kennisbank/beste-bav-zzp-2026" className="text-accent underline underline-offset-4">Beste BAV voor zzp'ers in 2026: waar let je op?</LocalizedLink>.</p>} />}
     />
   );
 }

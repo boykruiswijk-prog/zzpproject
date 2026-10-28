@@ -22,7 +22,7 @@ export default function ZzpVerzekeringCoach() {
       serviceName="Beroepsaansprakelijkheidsverzekering coach"
       badge="Voor coaches en trainers"
       title={<>ZZP verzekering voor <span className="text-accent">coaches en trainers</span></>}
-      subtitle="Als coach of trainer help je mensen en teams verder. Je klant vertrouwt op jouw begeleiding. Stelt iemand je aansprakelijk voor schade door je werk, dan helpt een BAV en AVB in één polis."
+      subtitle="Als coach of trainer help je mensen en teams verder. Je klant vertrouwt op jouw begeleiding. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden."
       sector="coaches"
       benefits={[
         { icon: HeartHandshake, title: "Voor coaches en trainers", description: `Voor loopbaancoaches, business coaches, teamcoaches en trainers. ${BAV_DEKKING} BAV en ${AVB_DEKKING} AVB per aanspraak.` },
