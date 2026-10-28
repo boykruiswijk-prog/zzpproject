@@ -276,8 +276,8 @@ export const ZEKER_KENNIS = {
     },
     {
       "path": "/zzp-verzekering-ict",
-      "title": "ZZP Verzekering ICT | BAV & AVB voor IT'ers",
-      "intro": "Als ICT-freelancer schrijf je code, implementeer je systemen of geef je advies. Een fout in je werk kan grote financiele gevolgen hebben voor je opdrachtgever. Beroepsaansprakelijkheidsverzekering (BAV) is in de ICT-sector bij veel opdrachtgevers verplicht. Je bent dan verzekerd voor aansprakelijkheid, volgens de polisvoorwaarden."
+      "title": "Aansprakelijkheidsverzekering ICT zzp: BAV + AVB | ZP Zaken",
+      "intro": "Als ICT-zzp'er verzeker je met een beroepsaansprakelijkheidsverzekering (BAV) de financiële gevolgen van een fout in je code, configuratie, implementatie of advies, en met een bedrijfsaansprakelijkheidsverzekering (AVB) schade aan personen of spullen. Bij ZP Zaken heb je beide in één polis: BAV € 5 miljoen en AVB € 2,5 miljoen per aanspraak, geen eigen risico, dagelijks opzegbaar en binnen 24 uur geregeld. Wat precies gedekt is, staat in de polisvoorwaarden."
     },
     {
       "path": "/beroepsaansprakelijkheidsverzekering",
@@ -344,7 +344,7 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Verzekeringen",
       "vraag": "Wat dekt cyber?",
-      "antwoord": "Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000) Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico. De cybervoorwaarden vraag je op via 020 - 457 3077 of via zpzaken.nl/contact."
+      "antwoord": "Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000). Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico. De cybervoorwaarden vraag je op via 020 - 457 3077 of via zpzaken.nl/contact."
     },
     {
       "categorie": "Verzekeringen",
@@ -448,8 +448,8 @@ export const ZEKER_KENNIS = {
     },
     {
       "categorie": "Onze verzekering",
-      "vraag": "Bieden jullie een passende oplossing voor een BV?",
-      "antwoord": "Ja, ook voor een besloten vennootschap (BV) hebben wij passende beroeps- en bedrijfsaansprakelijkheidsverzekeringen. Neem contact op via 020 - 457 3077 voor een persoonlijk gesprek."
+      "vraag": "Kan ik de BAV + AVB ook voor een bv aanvragen?",
+      "antwoord": "Ja, ook voor een besloten vennootschap (bv) kun je de BAV + AVB aanvragen. Heb je vragen? Bel 020 - 457 3077."
     },
     {
       "categorie": "Onze verzekering",
@@ -464,7 +464,7 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Onze verzekering",
       "vraag": "Moet ik doorgeven dat ik nieuwe opdrachten heb?",
-      "antwoord": "Nee. Zolang je werkzaamheden binnen je verzekerde beroep vallen, ben je automatisch gedekt voor nieuwe opdrachten. Verandert de aard van je werk substantieel, geef dit dan even door."
+      "antwoord": "Nee. Zolang je werkzaamheden binnen je verzekerde beroep vallen, vallen nieuwe opdrachten onder dezelfde polis, volgens de polisvoorwaarden. Verandert de aard van je werk substantieel, geef dit dan even door."
     },
     {
       "categorie": "Onze verzekering",
@@ -494,7 +494,7 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Onze verzekering",
       "vraag": "Hoeveel personen zijn er verzekerd met de BAV & AVB verzekering van ZP Zaken?",
-      "antwoord": "Standaard ben je als zzp'er met maximaal 3 medewerkers verzekerd binnen onze polis. Heb je meer medewerkers? Neem contact op voor een passend voorstel."
+      "antwoord": "Standaard ben je als zzp'er met maximaal 3 medewerkers verzekerd binnen onze polis. Heb je meer medewerkers? Neem dan contact met ons op."
     },
     {
       "categorie": "Screening & Administratie",
