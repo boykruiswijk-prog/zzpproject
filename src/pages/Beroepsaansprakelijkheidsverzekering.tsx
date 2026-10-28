@@ -26,7 +26,7 @@ export default function Beroepsaansprakelijkheidsverzekering() {
         { icon: CalendarCheck, title: "Dagelijks opzegbaar", description: "Geen jaarcontract. Je kiest zelf de ingangsdatum en zegt dagelijks op." },
       ]}
       explainers={[
-        { title: "Persoonlijke service", text: "Twijfel je of de polis past bij je opdracht? We beantwoorden je vragen over de aanvraag en de polisvoorwaarden. Bel ons op 020 - 457 3077." },
+        { title: "Persoonlijke service", text: "Vragen over de polis en je opdracht? We beantwoorden je vragen over de aanvraag en de polisvoorwaarden. Bel ons op 020 - 457 3077." },
       ]}
       faqs={faqs}
       leesMeer={["wat-kosten-verzekeringen-voor-zzp-ers", "welke-verzekeringen-zzp", "bedrijfsaansprakelijkheidsverzekering-zzp"]}

@@ -42,6 +42,7 @@
 
 - Submappen hebben eigen AGENTS.md (src/components/admin, crm, supabase/functions); lees die eerst.
 - Scripts never import React (SSR crashes); markdown uses articleMarkdownUrl (safe tel: links). Both llms generators use published articles. Why: current article discovery.
+- Public combined cyber coverage/help uses cyberPubliek.CYBER_DEKKING_EN_HULP; shared contractual constants stay unchanged. Why: consistent punctuation without altering consent, mail or certificate text.
 
 - Elke wijziging die zichtbaar is op de website of in de admin krijgt bij het publiceren precies één rij in public.wijzigingsmeldingen, in gewone taal voor Ellen (geen technische termen of bestandsnamen); de trigger wijzigingsmelding_mailen en het vangnet (cron) mailen via Edge Function wijziging-mailen. Waarom: Ellen weet altijd wat er veranderd is.
 - /scherm en /tv: data alleen via scherm-data (SCHERM_TOKEN of apparaattoken, alleen sha-256 in scherm_apparaten; koppelen via scherm-koppel); machine_activiteit-triggers laten nooit de actie falen; fout = cache met X-Cache stale + verouderd_sinds; pagina herlaadt bij nieuwe build (src/lib/versieControle.ts). Waarom: intrekbare toegang, stilstand zichtbaar.
