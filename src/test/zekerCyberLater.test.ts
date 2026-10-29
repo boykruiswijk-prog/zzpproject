@@ -4,13 +4,8 @@ import { readFileSync } from "node:fs";
 import { bouwSysteemPrompt, ZEKER_CYBER_LATER, ZEKER_CYBER_LATER_ROUTE, ZEKER_VASTE_FEITEN } from "../../supabase/functions/_shared/zeker";
 import { STARTER_VOORWAARDE_TEKST } from "@/lib/starterTarief";
 import { faqItems } from "@/data/faqItems";
+import { ZEKER_CYBER_VRAGEN } from "@/lib/zeker/cyberVragen";
 
-/** Vragen en verwachte kern; de live-controle met het echte model staat in scripts/zekerCyberEval.ts. */
-export const ZEKER_CYBER_VRAGEN = [
-  { vraag: "If I take BAV & AVB can I add Cyber later?", taal: "en", kern: [/\byes\b/i, /later/i, /mijn-zp\/polis|\/contact|tel:/i] },
-  { vraag: "Kan ik cyber later toevoegen aan mijn BAV/AVB?", taal: "nl", kern: [/\bja\b/i, /later|alsnog/i] },
-  { vraag: "Kan ik alleen cyber afsluiten?", taal: "nl", kern: [/\bnee\b/i, /samen met (de )?BAV \+ AVB/i] },
-] as const;
 
 const prompt = bouwSysteemPrompt({ taal: "nl", artikelen: [] });
 
@@ -20,12 +15,12 @@ describe("Zeker: cyber later toevoegen", () => {
     expect(prompt).toContain(ZEKER_CYBER_LATER);
     expect(prompt).toContain(ZEKER_CYBER_LATER_ROUTE);
   });
-  it("route verwijst naar bestaande pagina's: Mijn ZP-polis met de knop Cyber toevoegen, contact en aanvraag", () => {
-    expect(readFileSync("src/App.tsx", "utf8")).toContain('path="mijn-zp/polis"');
-    expect(readFileSync("src/pages/mijn-zp/Certificaat.tsx", "utf8")).toContain("<CyberToevoegen />");
+  it("route verwijst naar bestaande pagina's: Mijn ZP-polispagina met de knop Cyber toevoegen, contact en aanvraag", () => {
+    expect(readFileSync("src/App.tsx", "utf8")).toContain('path="/portal/polis"');
+    expect(readFileSync("src/pages/portal/PortalPolicy.tsx", "utf8")).toContain("<CyberToevoegen />");
     expect(readFileSync("src/components/portal/CyberToevoegen.tsx", "utf8")).toContain(">Cyber toevoegen</Button>");
     expect(readFileSync("src/config/cyberToevoegen.ts", "utf8")).toContain("CYBER_TOEVOEGEN_PUBLIEK = true");
-    expect(ZEKER_CYBER_LATER_ROUTE).toContain("(/mijn-zp/polis)");
+    expect(ZEKER_CYBER_LATER_ROUTE).toContain("(/portal/polis)");
     expect(ZEKER_CYBER_LATER_ROUTE).toContain("(/contact)");
   });
   it("vaste feiten noemen geen eigen prijzen; starterprijs komt uit dezelfde bron als de site", () => {

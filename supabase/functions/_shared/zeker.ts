@@ -166,7 +166,7 @@ ${opts.pagina ? `\nDe bezoeker is in de chat begonnen op pagina ${opts.pagina}.`
 export const ZEKER_CYBER_LATER =
   "Cyber kun je alleen afsluiten samen met BAV + AVB. Heb je al een lopende BAV + AVB-polis, dan kun je Cyber later alsnog toevoegen.";
 export const ZEKER_CYBER_LATER_ROUTE =
-  "Cyber later toevoegen: log in op [Mijn ZP](/mijn-zp/polis) en kies bij je polis de knop Cyber toevoegen. Lukt dat niet, [bel ons](tel:+31204573077) of gebruik het [contactformulier](/contact). Nieuwe klant die meteen Cyber wil: kies bij de [aanvraag](/verzekeringen#combinatiepolis) een pakket met Cyber.";
+  "Cyber later toevoegen: log in op Mijn ZP en open [je polis](/portal/polis); daar staat de knop Cyber toevoegen. Lukt dat niet, [bel ons](tel:+31204573077) of gebruik het [contactformulier](/contact). Nieuwe klant die meteen Cyber wil: kies bij de [aanvraag](/verzekeringen#combinatiepolis) een pakket met Cyber.";
 export const ZEKER_VASTE_FEITEN = [
   ZEKER_CYBER_LATER,
   ZEKER_CYBER_LATER_ROUTE,

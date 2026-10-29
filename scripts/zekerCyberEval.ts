@@ -1,6 +1,6 @@
 // Live-controle Zeker (D-aanvulling Cyber upsell). Gebruik: bun scripts/zekerCyberEval.ts (vereist ANTHROPIC_API_KEY). Geen database, geen mails.
 import { bouwSysteemPrompt, ZEKER_STANDAARD_MODEL } from "../supabase/functions/_shared/zeker";
-import { ZEKER_CYBER_VRAGEN } from "../src/test/zekerCyberLater.test";
+import { ZEKER_CYBER_VRAGEN } from "../src/lib/zeker/cyberVragen";
 
 const verboden = /advies|adviseur|bemiddelaar|tussenperso/i;
 const nlWoorden = /\b(je|kun|kunt|het|een|niet|jouw|wij|ons)\b/gi;
