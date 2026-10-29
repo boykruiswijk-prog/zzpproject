@@ -114,6 +114,11 @@ export const legacyRedirects: { from: string; to: string }[] = [
   { from: "een-aov-bij-movir-aanvragen", to: "/aov" },
   { from: "contact-zpzaken", to: "/contact" },
   { from: "neem-gerust-contact-op", to: "/contact" },
+  // Kwaliteitscontrole 23-10-2026
+  { from: "nieuws/is-beroeps-en-bedrijfsaansprakelijkheid-modeverschijnsel-noodzakelijk-kwaad", to: "/kennisbank/verschil-bav-avb-zzp" },
+  { from: "kerstactienieuw", to: "/verzekeringen" },
+  { from: "kerstactiemember", to: "/verzekeringen" },
+  { from: "fb-nieuwjaarsactie", to: "/verzekeringen" },
 
   // Gangbare WordPress URL-patronen
   { from: "bav-verzekering", to: "/verzekeringen" },
@@ -673,6 +678,17 @@ export const legacyRedirects: { from: string; to: string }[] = [
   // /mijn-zp zelf verwijst door naar /mijn-zp/polis; direct daarheen, geen keten.
   { from: "account/my-account", to: "/mijn-zp/polis" },
   { from: "factoring", to: "/diensten" },
+  // A16 (16 okt 2026): nieuwe paden uit 404-log
+  { from: "bedankt-jaarlijks", to: "/verzekeringen" },
+  { from: "product/screening-pakket-4", to: "/screening" },
+  { from: "post/advies-zzp", to: "/kennisbank" },
+  { from: "academy/partners", to: "/partners" },
+  { from: "fr/portal/login", to: "/portal/login" },
+  // A16 (17 okt 2026): nieuwe paden uit 404-log
+  { from: "kennisbank/verplichte-aov-zzp", to: "/kennisbank/verplichte-aov-voor-zzp" },
+  { from: "kennisbank/bav-afsluiten-zzp", to: "/kennisbank/bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt" },
+  { from: "de/portal/login", to: "/portal/login" },
+  { from: "academy/contact", to: "/contact" },
   // A16 (21 okt 2026): oude WordPress-paden uit de dagelijkse 404-controle.
   { from: "factoring/algemene-voorwaarden", to: "/algemene-voorwaarden" },
   { from: "pensioen-overzicht", to: "/pensioen" },
