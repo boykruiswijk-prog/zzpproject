@@ -3,8 +3,8 @@ import { LeadKlantKoppeling } from "@/components/admin/LeadKlantKoppeling";
 import { KvkLeadAfwijkingen } from "@/components/admin/KvkLeadAfwijkingen";
 import { CyberDatums } from "@/components/admin/CyberDatums";
 import { IngangsdatumAanpassen } from "@/components/admin/IngangsdatumAanpassen";
-import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS, statusTitel } from "@/lib/statusLabels";
-import { LeadAfrondenKnop, AfrondDialoog, magAfronden } from "@/components/admin/LeadAfronden";
+import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS, statusTitel, isUitkomst, type LeadUitkomst } from "@/lib/statusLabels";
+import { LeadAfrondenKnop, AfrondDialoog, magAfronden, leadStatusKeuzes } from "@/components/admin/LeadAfronden";
 import { LeadTestSchakelaar } from "@/components/admin/LeadTestSchakelaar";
 import { StartertariefControle } from "@/components/admin/StartertariefControle";
 import { VlagBalk } from "@/components/admin/LeadVlag";
@@ -172,9 +172,11 @@ export default function AdminLeadDetail() {
 
 
   const [afrondOpen, setAfrondOpen] = useState(false);
+  const [afrondUitkomst, setAfrondUitkomst] = useState<LeadUitkomst | null>(null);
   const handleStatusChange = (newStatus: LeadStatus) => {
     if (!id) return;
-    if (newStatus === "afgerond") { setAfrondOpen(true); return; }
+    if (newStatus === "afgerond") return;
+    if (isUitkomst(newStatus)) { setAfrondUitkomst(newStatus); setAfrondOpen(true); return; }
     const updates: { status: LeadStatus; converted_at?: string | null } = {
       status: newStatus,
     };
@@ -269,7 +271,7 @@ export default function AdminLeadDetail() {
           </div>
         </div>
 
-        <AfrondDialoog lead={lead as any} open={afrondOpen} onOpenChange={setAfrondOpen} />
+        <AfrondDialoog key={afrondUitkomst ?? "kies"} lead={lead as any} uitkomst={afrondUitkomst} open={afrondOpen} onOpenChange={setAfrondOpen} />
         {/* Onboarding-stepper bovenaan */}
         {lead.type === "verzekering_aanvraag" && (
           <LeadOnboardingStepper lead={lead} />
@@ -303,7 +305,7 @@ export default function AdminLeadDetail() {
                             </Badge>
                           </SelectTrigger>
                           <SelectContent>
-                            {Object.entries(statusLabels).filter(([value]) => (value !== "afgerond" || lead.status === "afgerond" || magAfronden(lead as any)) && (value !== "offerte_verstuurd" || lead.status === value)).map(([value, label]) => (
+                            {leadStatusKeuzes(lead as any).map(([value, label]) => (
                               <SelectItem key={value} value={value}>
                                 {label}
                               </SelectItem>

@@ -1,7 +1,8 @@
 import { leadOnderwerp } from "../../../supabase/functions/_shared/leadVelden";
 import { CyberAanvraag, useCyberAanvragen, cyberWerkStap } from "./CyberAanvraag";
 import { eviLeadLabel } from "@/lib/interneBron";
-import { AfrondDialoog, magAfronden } from "@/components/admin/LeadAfronden";
+import { isUitkomst, type LeadUitkomst } from "@/lib/statusLabels";
+import { AfrondDialoog, magAfronden, leadStatusKeuzes } from "@/components/admin/LeadAfronden";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LeadTestSchakelaar } from "@/components/admin/LeadTestSchakelaar";
 import { BavNummer } from "@/components/admin/crm/BavNummer";
@@ -86,6 +87,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
     (typeFilter === "all" || typeFilter === "cyber_toevoegen") &&
     (statusFilter === "all" || (statusFilter === "actief" ? !!r.geactiveerd_op : statusFilter === "afgewezen" ? r.status === "afgewezen" : r.open && !r.geactiveerd_op)));
   const [afronden, setAfronden] = useState<any | null>(null);
+  const [afrondUitkomst, setAfrondUitkomst] = useState<LeadUitkomst | null>(null);
   // Verwijderen blijft beperkt tot de gemarkeerde admin-mailbox, EN moet supervisor/admin-rol hebben.
   const canDelete = user?.email === AUTHORIZED_DELETE_EMAIL && isSupervisorOrAdmin;
 
@@ -122,7 +124,8 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
   const deleteLead = useDeleteLead();
 
   const handleStatusChange = (leadId: string, newStatus: LeadStatus) => {
-    if (newStatus === "afgerond") { setAfronden(leads?.find((l) => l.id === leadId) ?? null); return; }
+    if (newStatus === "afgerond") return;
+    if (isUitkomst(newStatus)) { setAfrondUitkomst(newStatus); setAfronden(leads?.find((l) => l.id === leadId) ?? null); return; }
     const updates: { status: LeadStatus; converted_at?: string | null } = {
       status: newStatus,
     };
@@ -198,7 +201,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
             ))}
           </SelectContent>
         </Select>
-        <label className="flex min-h-10 items-center gap-2 text-sm"><Checkbox checked={toonAfgerond} onCheckedChange={(v) => setToonAfgerond(v === true)} />Toon afgerond</label>
+        <label className="flex min-h-10 items-center gap-2 text-sm"><Checkbox checked={toonAfgerond} onCheckedChange={(v) => setToonAfgerond(v === true)} />Toon afgesloten</label>
         <Select
           value={typeFilter}
           onValueChange={(value) => setTypeFilter(value)}
@@ -247,7 +250,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
                 <SelectTrigger className="min-h-10 w-44">
                   <Badge title={statusTitel(lead.status)} className={statusColors[lead.status]} variant="secondary">{statusLabels[lead.status]}</Badge>
                 </SelectTrigger>
-                <SelectContent>{Object.entries(statusLabels).filter(([value]) => (value !== "afgerond" || lead.status === "afgerond" || magAfronden(lead as any)) && (value !== "offerte_verstuurd" || lead.status === value)).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent>
+                <SelectContent>{leadStatusKeuzes(lead as any).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent>
               </Select>
               <div className="flex items-center gap-1">
                 <Button variant="outline" size="sm" asChild><Link to={`/admin/leads/${lead.id}`}><Eye className="h-4 w-4" />Bekijken</Link></Button>
@@ -349,7 +352,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
                         </Badge>
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.entries(statusLabels).filter(([value]) => (value !== "afgerond" || lead.status === "afgerond" || magAfronden(lead as any)) && (value !== "offerte_verstuurd" || lead.status === value)).map(([value, label]) => (
+                        {leadStatusKeuzes(lead as any).map(([value, label]) => (
                           <SelectItem key={value} value={value}>
                             {label}
                           </SelectItem>
@@ -394,7 +397,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
         </Table>
       </div>
 
-      {afronden && <AfrondDialoog lead={afronden} open onOpenChange={(o) => { if (!o) setAfronden(null); }} />}
+      {afronden && <AfrondDialoog key={`${afronden.id}-${afrondUitkomst}`} lead={afronden} uitkomst={afrondUitkomst} open onOpenChange={(o) => { if (!o) setAfronden(null); }} />}
       {/* Delete confirmation dialog */}
       <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <AlertDialogContent>

@@ -32,7 +32,7 @@ export function useLeads(filters?: {
       if (filters?.status) {
         query = query.eq("status", filters.status);
       } else if (!filters?.toonAfgerond) {
-        query = query.neq("status", "afgerond");
+        query = query.not("status", "in", "(afgerond,klant_geworden,geen_interesse,vraag_beantwoord)");
       }
       if (filters?.verzekeringType) {
         query = query.eq("verzekering_type", filters.verzekeringType);
