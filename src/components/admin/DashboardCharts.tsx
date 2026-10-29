@@ -101,17 +101,16 @@ export function DashboardCharts() {
       </Card>
 
       <Card>
-        <CardHeader><CardTitle>Leads per status</CardTitle></CardHeader>
+        <CardHeader><CardTitle>Leads per status</CardTitle><p className="text-sm text-muted-foreground">Klik op een statusnaam voor de hele balk, of op een kleur voor alleen dat type</p></CardHeader>
         <CardContent>
           <div className="h-64">
             {statusData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={statusData} layout="vertical" onClick={(s: any) => {
-                  if (s?.activeTooltipIndex == null || s?.activeCoordinate == null) return;
-                }}>
+                <BarChart data={statusData} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis type="number" fontSize={12} allowDecimals={false} />
-                  <YAxis dataKey="name" type="category" fontSize={12} width={120} />
+                  <YAxis dataKey="name" type="category" fontSize={12} width={120} className="cursor-pointer"
+                    onClick={(t: any) => { const r = statusData.find((x) => x.name === t?.value); if (r) setKeuze({ grafiek: "leads_status", sleutel: r.sleutel, waarde: r.totaal, titel: `Status: ${r.name} (${r.totaal})` }); }} />
                   <Tooltip content={<StatusTooltip />} cursor={{ fill: "hsl(var(--muted))" }} />
                   <Legend wrapperStyle={{ fontSize: 12 }} />
                   {LEAD_TYPES.map((t) => (
