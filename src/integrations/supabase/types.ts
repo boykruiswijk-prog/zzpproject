@@ -7903,6 +7903,9 @@ export type Database = {
         | "gepauzeerd"
         | "opgezegd"
         | "afgerond"
+        | "klant_geworden"
+        | "geen_interesse"
+        | "vraag_beantwoord"
       lead_type:
         | "contact"
         | "verzekering_aanvraag"
@@ -8064,6 +8067,9 @@ export const Constants = {
         "gepauzeerd",
         "opgezegd",
         "afgerond",
+        "klant_geworden",
+        "geen_interesse",
+        "vraag_beantwoord",
       ],
       lead_type: [
         "contact",

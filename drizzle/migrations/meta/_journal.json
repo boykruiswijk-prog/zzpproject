@@ -1457,6 +1457,13 @@
       "when": 1793270726986,
       "tag": "0207_grafiek_status_type_a23",
       "breakpoints": true
+    },
+    {
+      "idx": 208,
+      "version": "7",
+      "when": 1793270902245,
+      "tag": "0208_lead_status_uitkomsten_enum",
+      "breakpoints": true
     }
   ]
 }
