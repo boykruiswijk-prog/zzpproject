@@ -41,7 +41,7 @@ describe("F9 nieuwe AOV-pagina", () => {
   });
   it("letterlijke geen-vergoedingzin en Movir-logo", () => {
     const { container } = renderPagina();
-    expect(container.textContent).toContain("ZP Zaken ontvangt geen vergoeding van Tjepkema Assurantie & Advies, Movir of Nationale-Nederlanden voor deze doorverwijzing.");
+    expect(container.textContent).toContain("ZP Zaken ontvangt geen vergoeding van onze externe adviseur, Movir of Nationale-Nederlanden voor deze doorverwijzing.");
     expect(container.querySelectorAll('img[alt="Movir"]').length).toBe(2);
     expect(container.querySelectorAll("h1").length).toBe(1);
   });
@@ -49,11 +49,17 @@ describe("F9 nieuwe AOV-pagina", () => {
     expect(AOV_FAQ.length).toBe(6);
     for (const t of [AOV_SEO.title, AOV_SEO.description]) { expect(t).toContain("AOV zzp"); expect(t).toContain("Movir AOV"); }
   });
-  it("vermelding met AFM-nummer, Michiel 1x", () => {
+  it("naam alleen in vermelding en toestemming, verder externe adviseur", () => {
     const { container } = renderPagina();
     const tekst = container.textContent || "";
     expect(tekst).toContain("Advies en afsluiten van de Movir Momentum AOV lopen via Tjepkema Assurantie & Advies B.V., Middenweg 344, 1097 TZ Amsterdam, AFM-vergunning 12050654. ZP Zaken geeft geen advies en bemiddelt niet in deze verzekering.");
-    expect(tekst.match(/Michiel Tjepkema/g)?.length).toBe(1);
+    expect(tekst.match(/Michiel Tjepkema/g)).toBeNull();
+    expect(tekst.match(/Tjepkema(?! Assurantie & Advies B\.V\.)/g)).toBeNull();
+    expect((tekst.match(/Tjepkema/g) || []).length).toBe(2);
+    for (const s of [AOV_SEO.title, AOV_SEO.description, ...AOV_FAQ.map((f) => `${f.q} ${f.a}`)]) {
+      expect(s).not.toContain("Tjepkema");
+      expect(s.toLowerCase()).not.toContain("wijzijnaov");
+    }
   });
   it("geen verboden woorden", () => {
     const { container } = renderPagina();
