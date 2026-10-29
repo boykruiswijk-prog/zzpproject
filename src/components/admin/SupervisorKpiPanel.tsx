@@ -90,6 +90,17 @@ export function SupervisorKpiPanel() {
     },
   });
 
+  // 7. Activaties per maand voor de grafiek (zelfde bron als de doorkliklijst)
+  const [activatieKeuze, setActivatieKeuze] = useState<Doorklik | null>(null);
+  const { data: activatiesGrafiek } = useQuery({
+    queryKey: ["kpi-activaties-grafiek"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("admin_grafiek" as never, { _grafiek: "activaties_maand", _toon_test: false } as never);
+      if (error) throw error;
+      return (data ?? []) as unknown as GrafiekPunt[];
+    },
+  });
+
   // 9. Recente activiteit (alle types)
   const { data: recentLog } = useQuery({
     queryKey: ["kpi-recent-log"],
@@ -328,6 +339,7 @@ export function SupervisorKpiPanel() {
           )}
         </CardContent>
       </Card>
+      <GrafiekLijst keuze={activatieKeuze} onClose={() => setActivatieKeuze(null)} />
     </section>
   );
 }
