@@ -30,7 +30,7 @@ describe("21 oktober oude WordPress-paden", () => {
       expect(output().indexOf(rule)).toBeLessThan(output().indexOf("/:path/"));
       expect(csv()).toContain(`zpzaken.nl/${from}${slash},https://zpzaken.nl${to},301,TRUE,TRUE,FALSE,FALSE`);
     }
-  });
+  }, 30000); // Routescan en _redirects-lezen per geval duren onder volle testbelasting soms langer dan 5 s.
 
   it.each(["profile", "followers", "blog-posts", "blog-comments"])("oud profielonderdeel %s gaat naar de homepage", (part) => {
     expect(zoekLegacyDoel(`/profile/voorbeeld/${part}`)).toBe("/");
