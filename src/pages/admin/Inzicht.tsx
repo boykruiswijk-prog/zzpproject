@@ -11,6 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatEuro } from "@/lib/klantContracten";
+import { GrafiekLijst, KlikTooltip } from "@/components/admin/GrafiekLijst";
+import { bucketBereik, type Doorklik, type GrafiekNaam } from "@/lib/grafiekDoorklik";
 import { conversieAanvragen, type AanvragenOpbouw } from "../../../supabase/functions/_shared/dashboardOpbouw";
 import {
   TEGELS, AANVRAAG_DOEL, PERIODES, periodeStart, groepeer, cumulatiefTegenSchema, schemaWaarde, verandering,
@@ -103,6 +105,7 @@ export default function Inzicht() {
   const [periode, setPeriode] = useState<Periode>("sinds6okt");
   const [groep, setGroep] = useState<Groep>("dag");
   const [alles, setAlles] = useState(false);
+  const [keuze, setKeuze] = useState<Doorklik | null>(null);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["inzicht", tegel],
@@ -171,19 +174,19 @@ export default function Inzicht() {
               {data.bron === "momentopname" && <Badge variant="secondary">Dagelijkse meting om 23:55, loopt sinds {data.meting_vanaf ? datum(data.meting_vanaf) : "vandaag"}</Badge>}
               {tegel !== "arr_maand" && (grafiek.length === 0 ? <p className="text-sm text-muted-foreground">Nog geen gegevens in deze periode.</p> :
                 <div className="h-64"><ResponsiveContainer width="100%" height="100%">
-                  {isAanvraag ? <BarChart data={grafiek}><CartesianGrid strokeDasharray="3 3" className="stroke-border" /><XAxis dataKey="dag" tickFormatter={datum} fontSize={11} /><YAxis allowDecimals={false} fontSize={11} /><Tooltip labelFormatter={(d) => datum(String(d))} formatter={(v) => [v as number, "Aanvragen"]} /><Bar dataKey="waarde" fill={kleur.lijn} /></BarChart>
+                  {isAanvraag ? <BarChart data={grafiek}><CartesianGrid strokeDasharray="3 3" className="stroke-border" /><XAxis dataKey="dag" tickFormatter={datum} fontSize={11} /><YAxis allowDecimals={false} fontSize={11} /><Tooltip content={<KlikTooltip labelFormatter={(d) => groep === "dag" ? datum(d) : `${groep === "week" ? "Week van" : "Maand"} ${groep === "maand" ? maandLabel(d) : datum(d)}`} />} cursor={{ fill: "hsl(var(--muted))" }} /><Bar dataKey="waarde" name="Aanvragen" fill={kleur.lijn} className="cursor-pointer" onClick={(p: any) => { const b = bucketBereik(p.dag, groep, start); setKeuze({ grafiek: "aanvragen", ...b, waarde: p.waarde, titel: `Aanvragen ${b.van === b.tot ? `op ${datum(b.van)}` : `${datum(b.van)} t/m ${datum(b.tot)}`} (${p.waarde})` }); }} /></BarChart>
                   : <LineChart data={grafiek}><CartesianGrid strokeDasharray="3 3" className="stroke-border" /><XAxis dataKey="dag" tickFormatter={datum} fontSize={11} /><YAxis fontSize={11} tickFormatter={(v) => eenheid === "euro" ? `€${Math.round(v / 1000)}k` : String(v)} /><Tooltip labelFormatter={(d) => datum(String(d))} formatter={(v) => [fmt(v as number, eenheid), def.titel]} /><Line type="monotone" dataKey="waarde" stroke={kleur.lijn} dot={grafiek.length < 3} /></LineChart>}
                 </ResponsiveContainer></div>)}
               {isAanvraag && cumulatief.length > 0 && <div>
                 <h2 className="mb-2 text-sm font-medium">Cumulatief tegen de schemalijn</h2>
                 <div className="h-64"><ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={cumulatief}><CartesianGrid strokeDasharray="3 3" className="stroke-border" /><XAxis dataKey="dag" tickFormatter={datum} fontSize={11} /><YAxis fontSize={11} /><Tooltip labelFormatter={(d) => datum(String(d))} /><Legend /><Line name="Aanvragen" dataKey="cumulatief" stroke={kleur.lijn} dot={false} /><Line name="Schema" dataKey="schema" stroke={kleur.schema} strokeDasharray="5 5" dot={false} /></LineChart>
+                  <LineChart data={cumulatief} className="cursor-pointer" onClick={(st: any) => { const p = st?.activePayload?.[0]?.payload; if (p) setKeuze({ grafiek: "aanvragen", tot: p.dag, waarde: p.cumulatief, titel: `Aanvragen t/m ${datum(p.dag)} (${p.cumulatief})` }); }}><CartesianGrid strokeDasharray="3 3" className="stroke-border" /><XAxis dataKey="dag" tickFormatter={datum} fontSize={11} /><YAxis fontSize={11} /><Tooltip content={<KlikTooltip labelFormatter={datum} />} /><Legend /><Line name="Aanvragen" dataKey="cumulatief" stroke={kleur.lijn} dot={false} /><Line name="Schema" dataKey="schema" stroke={kleur.schema} strokeDasharray="5 5" dot={false} /></LineChart>
                 </ResponsiveContainer></div>
               </div>}
               {data.maanden && <div>
                 <h2 className="mb-2 text-sm font-medium">ARR per maand: nieuw, aflopend en netto (uit begin- en einddatums)</h2>
                 <div className="h-64"><ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={data.maanden}><CartesianGrid strokeDasharray="3 3" className="stroke-border" /><XAxis dataKey="maand" tickFormatter={maandLabel} fontSize={11} /><YAxis fontSize={11} tickFormatter={(v) => `€${Math.round(v / 1000)}k`} /><Tooltip labelFormatter={(d) => maandLabel(String(d))} formatter={(v) => formatEuro(v as number)} /><Legend /><Bar name="Nieuw" dataKey="nieuw" fill={kleur.nieuw} /><Bar name="Aflopend" dataKey="aflopend" fill={kleur.af} /><Bar name="Netto" dataKey="netto" fill={kleur.netto} /></BarChart>
+                  <BarChart data={data.maanden}><CartesianGrid strokeDasharray="3 3" className="stroke-border" /><XAxis dataKey="maand" tickFormatter={maandLabel} fontSize={11} /><YAxis fontSize={11} tickFormatter={(v) => `€${Math.round(v / 1000)}k`} /><Tooltip content={<KlikTooltip labelFormatter={maandLabel} valueFormatter={formatEuro} />} cursor={{ fill: "hsl(var(--muted))" }} /><Legend />{([["nieuw", "Nieuw", "arr_nieuw", kleur.nieuw], ["aflopend", "Aflopend", "arr_aflopend", kleur.af], ["netto", "Netto", "arr_netto", kleur.netto]] as [string, string, GrafiekNaam, string][]).map(([k, n, g, f]) => <Bar key={k} name={n} dataKey={k} fill={f} className="cursor-pointer" onClick={(p: any) => setKeuze({ grafiek: g, sleutel: p.maand, waarde: p[k], titel: `${n} ARR ${maandLabel(p.maand)} (${formatEuro(p[k])})` })} />)}</BarChart>
                 </ResponsiveContainer></div>
               </div>}
             </CardContent>
@@ -209,6 +212,7 @@ export default function Inzicht() {
           </Card>
         </>}
       </div>
+      <GrafiekLijst keuze={keuze} onClose={() => setKeuze(null)} />
     </AdminLayout>
   );
 }
