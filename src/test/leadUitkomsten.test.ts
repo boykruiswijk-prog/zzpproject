@@ -3,12 +3,32 @@ import { readFileSync } from "node:fs";
 import {
   LEAD_STATUS_LABELS, LEAD_STATUS_TITELS, LEAD_STATUS_COLORS, LEAD_UITKOMSTEN, AFGESLOTEN_LEAD_STATUSSEN, statusLabel,
 } from "@/lib/statusLabels";
-import { leadStatusKeuzes } from "@/components/admin/LeadAfronden";
+import { leadStatusKeuzes, leadStatusOpties } from "@/components/admin/LeadAfronden";
+import { filterOpTab } from "@/lib/leadVlag";
 
 const enumSql = readFileSync("drizzle/migrations/0208_lead_status_uitkomsten_enum.sql", "utf8");
 const fnSql = readFileSync("drizzle/migrations/0209_lead_status_uitkomsten_functies.sql", "utf8");
 
 describe("A23-aanvulling 3: leaduitkomsten", () => {
+  it.each([
+    ['verzekering_aanvraag',['nieuw_te_beoordelen','in_behandeling','afgewezen','geen_interesse','vraag_beantwoord']],
+    ['offerte-aanvraag',['nieuw','in_behandeling','offerte_verstuurd','klant_geworden','geen_interesse','vraag_beantwoord']],
+    ['contact',['nieuw','in_behandeling','klant_geworden','geen_interesse','vraag_beantwoord']],
+    ['handmatig',['nieuw','in_behandeling','klant_geworden','geen_interesse','vraag_beantwoord']],
+  ])('A23-4 exacte keuzes voor %s', (type, keuzes) => {
+    expect(leadStatusOpties({id:'test',type:type as string,status:'nieuw'})).toEqual(keuzes);
+  });
+  it.each(AFGESLOTEN_LEAD_STATUSSEN)('afgesloten %s zichtbaar in Alle en Toon afgesloten, niet standaard', status => {
+    const rows = [{status,vlag:null}];
+    expect(filterOpTab(rows,'te_doen','2026-10-29')).toEqual([]);
+    expect(filterOpTab(rows,'alle','2026-10-29')).toEqual(rows);
+    expect(filterOpTab(rows,'te_doen','2026-10-29',true)).toEqual(rows);
+  });
+  it.each(['afspraak_gepland','klant','gepauzeerd','afgerond','opgezegd','actief','offerte_verstuurd'])('oude %s zichtbaar maar niet kiesbaar voor contact', status => {
+    const lead = {id:'test',type:'contact',status};
+    expect(leadStatusKeuzes(lead).map(([s]) => s)).toContain(status);
+    expect(leadStatusOpties(lead)).not.toContain(status);
+  });
   it("enum krijgt drie waarden erbij en afgerond blijft bestaan", () => {
     for (const v of ["klant_geworden", "geen_interesse", "vraag_beantwoord"]) expect(enumSql).toContain(`ADD VALUE IF NOT EXISTS '${v}'`);
     expect(enumSql).not.toMatch(/DROP|RENAME|UPDATE/i);
