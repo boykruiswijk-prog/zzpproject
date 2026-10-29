@@ -246,7 +246,7 @@ export const AppRoutes = () => (
             <Route path="/admin/wachtwoord-wijzigen" element={<ChangePasswordPage />} />
             <Route element={<AdminAalGuard />}>
             <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/inzicht/:tegel" element={<AdminInzicht />} />
+            <Route path="/admin/inzicht/:tegel" element={<RoleGuard allow={["verzekering"]}><AdminInzicht /></RoleGuard>} />
             <Route path="/admin/crm" element={<AdminCRM />} />
             <Route path="/admin/activiteiten" element={<RoleGuard allow={[]}><AdminActiviteiten /></RoleGuard>} />
             <Route path="/admin/leads" element={<AdminLeads soort="leads" />} />
