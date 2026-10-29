@@ -379,42 +379,19 @@ const Bolletje = ({ status }: { status: string }) => <span className="h-[15.12px
 
 function PaneelWorkers({ d }: { d: SchermPayload }) {
   const w = d.workers;
-  if (!w) return <div className="flex h-full flex-col gap-[21.6px]"><Kop>Alle workers</Kop><Gemeten /></div>;
-  const aantal = w.gepland.length + w.op_afroep.length;
+  if (!w) return <div className="workers-paneel"><Kop>Alle workers</Kop><Gemeten /></div>;
+  const workers = [...w.gepland.map(a => ({ ...a, groep: 'Gepland' })), ...w.op_afroep.map(a => ({ ...a, groep: 'Op afroep' }))];
   return (
-    <div className="workers-paneel flex h-full min-w-0 flex-col gap-[17.28px] overflow-hidden">
-      <Kop>Alle workers</Kop>
-      <Label>{aantal} workers draaien automatisch</Label>
-      <div className="grid min-h-0 flex-1 grid-cols-2 gap-[26.88px]">
-        <div className="flex min-w-0 flex-col gap-[8.64px]">
-          <div className="text-[25.92px] font-semibold text-[hsl(var(--s-tekst))]">Gepland</div>
-          {w.gepland.length === 0 ? <Gemeten /> : w.gepland.map((a, i) => {
-            const t = runTijd(a.laatste, d.gegenereerd_op);
-            return (
-              <div key={`${a.naam}-${i}`} className="flex min-w-0 items-center gap-[9.6px] text-[19.44px] leading-tight">
-                <Bolletje status={a.status} />
-                <div className="min-w-0 flex-1">
-                  <div className="truncate font-bold text-[hsl(var(--s-tekst))]">{a.naam}</div>
-                  {a.ritme && <div className="truncate text-[17.28px] text-[hsl(var(--s-dim))]">{a.ritme}</div>}
-                </div>
-                {t && <span className="shrink-0 tabular-nums text-[hsl(var(--s-dim))]">{t}</span>}
-              </div>
-            );
-          })}
-        </div>
-        <div className="flex min-w-0 flex-col gap-[8.64px]">
-          <div className="text-[25.92px] font-semibold text-[hsl(var(--s-tekst))]">Op afroep</div>
-          {w.op_afroep.length === 0 ? <Gemeten /> : w.op_afroep.map((a, i) => (
-            <div key={`${a.naam}-${i}`} className="flex min-w-0 items-center gap-[9.6px] text-[19.44px] leading-tight">
-              <Bolletje status={a.status} />
-              <div className="min-w-0 flex-1 truncate font-bold text-[hsl(var(--s-tekst))]">{a.naam}</div>
-              <div className="shrink-0 text-right tabular-nums">
-                <div className="text-[hsl(var(--s-tekst))]">{a.vandaag === null ? 'wordt gemeten' : `${nf.format(a.vandaag)} vandaag`}</div>
-                {a.week !== null && <div className="text-[17.28px] text-[hsl(var(--s-dim))]">{nf.format(a.week)} deze week</div>}
-              </div>
-            </div>
-          ))}
-        </div>
+    <div className="workers-paneel">
+      <div className="workers-kop"><Kop>Alle workers</Kop><Label>{workers.length} workers draaien automatisch</Label></div>
+      <div className="workers-rooster">
+        {workers.map((a, i) => {
+          const t = runTijd(a.laatste, d.gegenereerd_op);
+          return <div key={`${a.groep}-${a.naam}-${i}`} className="worker-regel" data-worker={a.naam}>
+            <div className="worker-naam"><Bolletje status={a.status} /><strong>{a.naam}</strong></div>
+            <div className="worker-info"><span>{a.groep}</span>{a.groep === 'Gepland' ? <>{a.ritme && <span>{a.ritme}</span>}{t && <span>{t}</span>}</> : <><span>{a.vandaag === null ? 'wordt gemeten' : `${nf.format(a.vandaag)} vandaag`}</span>{a.week !== null && <span>{nf.format(a.week)} deze week</span>}</>}</div>
+          </div>;
+        })}
       </div>
     </div>
   );
@@ -630,7 +607,7 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
                 </Suspense>
               )}
             </div>
-            <div data-testid="workers-vast" className="h-[291.6px] shrink-0 overflow-hidden border-t border-[hsl(var(--s-lijn))] px-[38.4px] py-[16.2px]">
+            <div data-testid="workers-vast" className="h-[392px] shrink-0 overflow-hidden border-t border-[hsl(var(--s-lijn))] px-[38.4px] py-[16.2px]">
               {data && <PaneelWorkers d={data} />}
             </div>
             <div className="h-[118.8px] shrink-0 overflow-hidden border-t border-[hsl(var(--s-lijn))]">
