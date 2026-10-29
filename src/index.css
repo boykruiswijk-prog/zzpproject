@@ -175,14 +175,14 @@
   --s-groen: 150 65% 50%;
   --s-oranje: 32 95% 55%;
 }
-.scherm-label { display: flex; align-items: center; gap: 0.6vh; white-space: nowrap; padding: 0.5vh 1vh; border-radius: 0.6vh; background: hsl(225 24% 6% / 0.85); border: 1px solid hsl(222 16% 22%); color: hsl(220 20% 95%); font-size: 2.2vh; transition: opacity 1s; }
-.scherm-label b { color: hsl(5 77% 60%); font-size: 2.6vh; }
+.scherm-label { display: flex; align-items: center; gap: 6.48px; white-space: nowrap; padding: 5.4px 10.8px; border-radius: 6.48px; background: hsl(225 24% 6% / 0.85); border: 1px solid hsl(222 16% 22%); color: hsl(220 20% 95%); font-size: 23.76px; transition: opacity 1s; }
+.scherm-label b { color: hsl(5 77% 60%); font-size: 28.08px; }
 .scherm-label-dim { opacity: 0.45; }
-.scherm-brein { display: flex; flex-direction: column; align-items: center; color: hsl(220 20% 95%); text-shadow: 0 0 2vh hsl(5 77% 54%); white-space: nowrap; }
-.scherm-brein b { font-size: 6vh; line-height: 1; }
-.scherm-brein span { font-size: 2.2vh; color: hsl(220 10% 75%); }
-.scherm-paneel { animation: scherm-in 1.2s ease both; }
-@keyframes scherm-in { from { opacity: 0; transform: translateY(1.5vh); } to { opacity: 1; transform: none; } }
+.scherm-brein { display: flex; flex-direction: column; align-items: center; color: hsl(220 20% 95%); text-shadow: 0 0 21.6px hsl(5 77% 54%); white-space: nowrap; }
+.scherm-brein b { font-size: 64.8px; line-height: 1; }
+.scherm-brein span { font-size: 23.76px; color: hsl(220 10% 75%); }
+.scherm-paneel { animation: scherm-in 0.6s ease both; }
+@keyframes scherm-in { from { opacity: 0; transform: translateY(16.2px); } to { opacity: 1; transform: none; } }
 .scherm-ticker { animation: scherm-ticker 90s linear infinite; width: max-content; }
 @keyframes scherm-ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 .scherm-knipper { animation: scherm-knipper 1.6s ease-in-out infinite; }
@@ -192,104 +192,115 @@
 .scherm { --s-surface: 222 24% 10%; --s-shadow: 0 0% 0%; --s-glass: 222 26% 12%; }
 .scherm-scene { position: absolute; inset: 0; opacity: 0; transition: opacity 1.5s ease; pointer-events: none; }
 .scherm-scene.scene-zichtbaar { opacity: 1; }
-.scherm-scene-kop { position: absolute; z-index: 15; top: 2vh; left: 2vw; display: flex; flex-direction: column; gap: 0.5vh; pointer-events: none; }
-.scherm-scene-kop span { color: hsl(var(--s-tekst)); font-size: 2.4vh; font-weight: 700; }
-.scherm-scene-kop small { color: hsl(var(--s-dim)); font-size: 1.5vh; }
-.scherm-station { position: relative; display: flex; align-items: center; gap: 0.7vh; width: 17vh; padding: 0.9vh; border: 1px solid hsl(var(--s-blauw) / 0.45); border-radius: 6px; color: hsl(var(--s-tekst)); background: hsl(var(--s-glass) / 0.88); box-shadow: 0 0 2vh hsl(var(--s-blauw) / 0.14); }
-.scherm-station > svg { width: 2vh; height: 2vh; flex-shrink: 0; color: hsl(var(--s-blauw)); }
+.scherm-scene-kop { position: absolute; z-index: 15; top: 21.6px; left: 38.4px; display: flex; flex-direction: column; gap: 5.4px; pointer-events: none; }
+.scherm-scene-kop span { color: hsl(var(--s-tekst)); font-size: 25.92px; font-weight: 700; }
+.scherm-scene-kop small { color: hsl(var(--s-dim)); font-size: 17.28px; }
+.scherm-station { position: relative; display: flex; align-items: center; gap: 7.56px; width: 183.6px; padding: 9.72px; border: 1px solid hsl(var(--s-blauw) / 0.45); border-radius: 6px; color: hsl(var(--s-tekst)); background: hsl(var(--s-glass) / 0.88); box-shadow: 0 0 21.6px hsl(var(--s-blauw) / 0.14); }
+.scherm-station > svg { width: 21.6px; height: 21.6px; flex-shrink: 0; color: hsl(var(--s-blauw)); }
 .scherm-station > div { flex: 1; min-width: 0; }
-.scherm-station strong { display: block; font-size: 1.35vh; line-height: 1.3; overflow-wrap: anywhere; }
-.scherm-station small { display: block; margin-top: 0.4vh; font-size: 1vh; color: hsl(var(--s-dim)); white-space: nowrap; }
-.scherm-station > b { font-size: 1.7vh; color: hsl(var(--s-groen)); }
+.scherm-station strong { display: block; font-size: 17.28px; line-height: 1.3; overflow-wrap: anywhere; }
+.scherm-station small { display: block; margin-top: 4.32px; font-size: 17.28px; color: hsl(var(--s-dim)); white-space: nowrap; }
+.scherm-station > b { font-size: 18.36px; color: hsl(var(--s-groen)); }
 .station-dim { opacity: 0.4; border-color: hsl(var(--s-lijn)); box-shadow: none; }
 .station-dim > svg, .station-dim > b { color: hsl(var(--s-dim)); }
-.agent-balloon { position: absolute; bottom: calc(100% + 1vh); left: 0; width: 19vh; padding: 1vh; background: hsl(var(--s-glass)); color: hsl(var(--s-tekst)); border: 1px solid hsl(var(--s-groen) / 0.6); border-radius: 6px; font-size: 1.4vh; line-height: 1.4; animation: scherm-in 0.3s ease; }
-.scherm-core { display: flex; flex-direction: column; align-items: center; width: 18vh; color: hsl(var(--s-tekst)); text-align: center; background: hsl(var(--s-bg) / 0.85); padding: 1vh; border-bottom: 1px solid hsl(var(--s-rood) / 0.4); }
-.scherm-core > span { color: hsl(var(--s-rood)); font-weight: 700; font-size: 1.7vh; }
-.scherm-core > b { font-size: 4.2vh; line-height: 1.2; }
-.scherm-core small, .scherm-core em { font-size: 1.2vh; font-style: normal; color: hsl(var(--s-dim)); }
-.scherm-core em { margin-top: 0.6vh; color: hsl(var(--s-tekst)); }
+.agent-balloon { position: absolute; bottom: calc(100% + 10.8px); left: 0; width: 205.2px; padding: 10.8px; background: hsl(var(--s-glass)); color: hsl(var(--s-tekst)); border: 1px solid hsl(var(--s-groen) / 0.6); border-radius: 6px; font-size: 17.28px; line-height: 1.4; animation: scherm-in 0.3s ease; }
+.scherm-core { display: flex; flex-direction: column; align-items: center; width: 194.4px; color: hsl(var(--s-tekst)); text-align: center; background: hsl(var(--s-bg) / 0.85); padding: 10.8px; border-bottom: 1px solid hsl(var(--s-rood) / 0.4); }
+.scherm-core > span { color: hsl(var(--s-rood)); font-weight: 700; font-size: 18.36px; }
+.scherm-core > b { font-size: 45.36px; line-height: 1.2; }
+.scherm-core small, .scherm-core em { font-size: 17.28px; font-style: normal; color: hsl(var(--s-dim)); }
+.scherm-core em { margin-top: 6.48px; color: hsl(var(--s-tekst)); }
 .scherm-rapport { background: hsl(var(--s-surface) / 0.5); }
-.scherm-paneel { box-shadow: -2vw 0 3vw -3vw hsl(var(--s-rood) / 0.35); }
+.scherm-paneel { box-shadow: -38.4px 0 57.6px -57.6px hsl(var(--s-rood) / 0.35); }
 .scherm-paneel svg circle:last-child { animation: scherm-ring 1.4s ease both; }
 @keyframes scherm-ring { from { stroke-dasharray: 0 264; } }
 .scherm-spark { stroke-dasharray: 1; animation: scherm-draw 2s ease both; }
 @keyframes scherm-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
-.vandaag-tijdlijn { margin-top: 2vh; }
-.vandaag-tijdlijn svg { width: 100%; height: 20vh; overflow: visible; }
+.vandaag-tijdlijn { margin-top: 21.6px; }
+.vandaag-tijdlijn svg { width: 100%; height: 216px; overflow: visible; }
 .vandaag-tijdlijn line { stroke: hsl(var(--s-lijn)); stroke-width: 2; }
-.vandaag-tijdlijn text { fill: hsl(var(--s-dim)); font-size: 16px; }
-.vandaag-legenda { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0.8vh; margin-top: auto; }
-.vandaag-legenda > span { display: flex; gap: 0.6vh; align-items: center; font-size: 1.6vh; color: hsl(var(--s-dim)); }
-.vandaag-legenda i { width: 0.8vh; height: 0.8vh; border-radius: 50%; }
+.vandaag-tijdlijn text { fill: hsl(var(--s-dim)); font-size: 17.28px; }
+.vandaag-legenda { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8.64px; margin-top: auto; }
+.vandaag-legenda > span { display: flex; gap: 6.48px; align-items: center; font-size: 17.28px; color: hsl(var(--s-dim)); }
+.vandaag-legenda i { width: 8.64px; height: 8.64px; border-radius: 50%; }
 .stroom-laag { background: hsl(var(--s-bg)); animation: scherm-fade 1.5s ease both; }
 @keyframes scherm-fade { from { opacity: 0; } to { opacity: 1; } }
-.stroom-scene { display: flex; flex-direction: column; height: 100%; padding: 9vh 2vw 2vh; color: hsl(var(--s-tekst)); }
-.stroom-heading span { color: hsl(var(--s-blauw)); text-transform: uppercase; font-size: 1.6vh; }
-.stroom-heading h2 { font-size: 3.3vh; margin: 0.5vh 0; }
-.stroom-heading p { color: hsl(var(--s-dim)); font-size: 1.6vh; }
-.stroom-rivier { position: relative; height: 32vh; margin: 3vh 0 0; }
+.stroom-scene { display: flex; flex-direction: column; height: 100%; padding: 97.2px 38.4px 21.6px; color: hsl(var(--s-tekst)); }
+.stroom-heading span { color: hsl(var(--s-blauw)); text-transform: uppercase; font-size: 17.28px; }
+.stroom-heading h2 { font-size: 35.64px; margin: 5.4px 0; }
+.stroom-heading p { color: hsl(var(--s-dim)); font-size: 17.28px; }
+.stroom-rivier { position: relative; height: 345.6px; margin: 32.4px 0 0; }
 .stroom-rivier > svg { width: 100%; height: 100%; overflow: visible; }
 .stroom-water { fill: none; stroke: hsl(var(--s-blauw) / 0.28); }
 .stroom-deeltje { fill: hsl(var(--s-groen)); }
-.stroom-stappen { position: absolute; inset: 0; display: grid; gap: 1vw; }
+.stroom-stappen { position: absolute; inset: 0; display: grid; gap: 19.2px; }
 .stroom-stappen > div { display: flex; flex-direction: column; align-items: center; text-align: center; min-width: 0; }
-.stroom-stappen span { min-height: 4.4vh; font-size: min(1.65vh, 1.05vw); line-height: 1.25; font-weight: 600; overflow-wrap: normal; word-break: normal; hyphens: auto; padding: 0 0.2vw; }
-.stroom-stappen b { font-size: 3.6vh; color: hsl(var(--s-tekst)); }
-.stroom-stappen b { font-size: min(3.6vh, 2.4vw); }
-.stroom-stappen small { margin-top: 13vh; font-size: 1.3vh; line-height: 1.4; color: hsl(var(--s-dim)); }
-.stroom-processen { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 2vw; margin-top: auto; }
-.stroom-processen h3 { font-size: 1.8vh; margin-bottom: 1.5vh; }
-.stroom-proceslijn { display: flex; gap: 0.4vw; }
-.stroom-proceslijn > span { display: flex; flex-direction: column; flex: 1; min-width: 0; border-top: 1px solid hsl(var(--s-lijn)); padding-top: 1vh; }
-.stroom-proceslijn i { width: 0.8vh; height: 0.8vh; background: hsl(var(--s-lijn)); border-radius: 50%; margin-bottom: 1vh; }
-.stroom-proceslijn b { font-size: 1.2vh; overflow-wrap: anywhere; }
-.stroom-proceslijn small { font-size: 1.1vh; color: hsl(var(--s-dim)); }
+.stroom-stappen span { min-height: 47.52px; font-size: min(17.82px, 20.16px); line-height: 1.25; font-weight: 600; overflow-wrap: normal; word-break: normal; hyphens: auto; padding: 0 3.84px; }
+.stroom-stappen b { font-size: 38.88px; color: hsl(var(--s-tekst)); }
+.stroom-stappen b { font-size: min(38.88px, 46.08px); }
+.stroom-stappen small { margin-top: 140.4px; font-size: 17.28px; line-height: 1.4; color: hsl(var(--s-dim)); }
+.stroom-processen { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 38.4px; margin-top: auto; }
+.stroom-processen h3 { font-size: 19.44px; margin-bottom: 16.2px; }
+.stroom-proceslijn { display: flex; gap: 7.68px; }
+.stroom-proceslijn > span { display: flex; flex-direction: column; flex: 1; min-width: 0; border-top: 1px solid hsl(var(--s-lijn)); padding-top: 10.8px; }
+.stroom-proceslijn i { width: 8.64px; height: 8.64px; background: hsl(var(--s-lijn)); border-radius: 50%; margin-bottom: 10.8px; }
+.stroom-proceslijn b { font-size: 17.28px; overflow-wrap: anywhere; }
+.stroom-proceslijn small { font-size: 17.28px; color: hsl(var(--s-dim)); }
 .stroom-proceslijn .proces-klaar i { background: hsl(var(--s-groen)); }
-.stroom-proceslijn .proces-bezig i { background: hsl(var(--s-blauw)); box-shadow: 0 0 1vh hsl(var(--s-blauw)); animation: scherm-knipper 1s infinite; }
+.stroom-proceslijn .proces-bezig i { background: hsl(var(--s-blauw)); box-shadow: 0 0 10.8px hsl(var(--s-blauw)); animation: scherm-knipper 1s infinite; }
 .scherm-breaking { position: absolute; z-index: 100; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: hsl(var(--s-bg) / 0.97); color: hsl(var(--s-tekst)); animation: scherm-in 0.6s ease both; overflow: hidden; }
-.breaking-eyebrow { color: hsl(var(--s-rood)); text-transform: uppercase; font-size: 2.2vh; margin-bottom: 2vh; }
-.scherm-breaking h1 { font-size: 7vh; text-align: center; }
-.scherm-breaking p { font-size: 3vh; margin-top: 2vh; }
-.scherm-breaking p span { color: hsl(var(--s-dim)); margin: 0 1vw; }
-.breaking-counter { font-size: 16vh; font-weight: 700; margin-top: 3vh; font-variant-numeric: tabular-nums; }
-.breaking-counter > span { font-size: 7vh; color: hsl(var(--s-dim)); }
+.breaking-eyebrow { color: hsl(var(--s-rood)); text-transform: uppercase; font-size: 23.76px; margin-bottom: 21.6px; }
+.scherm-breaking h1 { font-size: 75.6px; text-align: center; }
+.scherm-breaking p { font-size: 32.4px; margin-top: 21.6px; }
+.scherm-breaking p span { color: hsl(var(--s-dim)); margin: 0 19.2px; }
+.breaking-counter { font-size: 172.8px; font-weight: 700; margin-top: 32.4px; font-variant-numeric: tabular-nums; }
+.breaking-counter > span { font-size: 75.6px; color: hsl(var(--s-dim)); }
 .breaking-particles { position: absolute; inset: 0; pointer-events: none; }
-.breaking-particles i { position: absolute; top: 50%; left: 50%; width: 0.5vh; height: 0.5vh; background: hsl(var(--s-groen)); border-radius: 50%; box-shadow: 0 0 1vh hsl(var(--s-groen)); animation: scherm-burst 2s var(--vertraging) ease-out both; }
+.breaking-particles i { position: absolute; top: 50%; left: 50%; width: 5.4px; height: 5.4px; background: hsl(var(--s-groen)); border-radius: 50%; box-shadow: 0 0 10.8px hsl(var(--s-groen)); animation: scherm-burst 2s var(--vertraging) ease-out both; }
 @keyframes scherm-burst { from { opacity: 1; transform: rotate(var(--hoek)) translateX(0); } to { opacity: 0; transform: rotate(var(--hoek)) translateX(var(--afstand)); } }
-.scherm-demo { position: absolute; z-index: 110; bottom: 0.8vh; right: 1vw; color: hsl(var(--s-dim)); font-size: 1.4vh; }
+.scherm-demo { position: absolute; z-index: 110; bottom: 8.64px; right: 19.2px; color: hsl(var(--s-dim)); font-size: 17.28px; }
 @media (prefers-reduced-motion: reduce) { .scherm *, .scherm *::before, .scherm *::after { animation: none !important; transition: none !important; } }
 .breaking-pop { display: inline-block; animation: breaking-pop 0.9s cubic-bezier(.2,.8,.2,1) both; }
 @keyframes breaking-pop { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .breaking-pop { animation: none; } }
-.scherm-station .st-regel { display: flex; align-items: center; gap: 0.5vh; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 24vh; }
+.scherm-station .st-regel { display: flex; align-items: center; gap: 5.4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 259.2px; }
 .scherm-station .st-regel > span:last-child { overflow: hidden; text-overflow: ellipsis; }
-.st-bol { width: 1vh; height: 1vh; border-radius: 9999px; flex-shrink: 0; background: hsl(var(--s-dim)); }
-.st-werk { border-color: hsl(var(--s-groen) / 0.8); box-shadow: 0 0 2.4vh hsl(var(--s-groen) / 0.35); }
-.st-werk .st-bol { background: hsl(var(--s-groen)); box-shadow: 0 0 1vh hsl(var(--s-groen)); animation: st-puls 1.2s ease-in-out infinite; }
+.st-bol { width: 10.8px; height: 10.8px; border-radius: 9999px; flex-shrink: 0; background: hsl(var(--s-dim)); }
+.st-werk { border-color: hsl(var(--s-groen) / 0.8); box-shadow: 0 0 25.92px hsl(var(--s-groen) / 0.35); }
+.st-werk .st-bol { background: hsl(var(--s-groen)); box-shadow: 0 0 10.8px hsl(var(--s-groen)); animation: st-puls 1.2s ease-in-out infinite; }
 .st-werk small { color: hsl(var(--s-groen)); }
 .st-standby .st-bol { background: hsl(var(--s-blauw)); }
 .st-rust { opacity: 0.72; border-color: hsl(var(--s-lijn)); box-shadow: none; }
 .st-rust > svg, .st-rust > b { color: hsl(var(--s-dim)); }
-.st-storing { border-color: hsl(var(--s-rood)); box-shadow: 0 0 2vh hsl(var(--s-rood) / 0.4); }
-.st-storing .st-bol { background: hsl(var(--s-rood)); box-shadow: 0 0 1vh hsl(var(--s-rood)); }
+.st-storing { border-color: hsl(var(--s-rood)); box-shadow: 0 0 21.6px hsl(var(--s-rood) / 0.4); }
+.st-storing .st-bol { background: hsl(var(--s-rood)); box-shadow: 0 0 10.8px hsl(var(--s-rood)); }
 .st-storing small { color: hsl(var(--s-rood)); }
 @keyframes st-puls { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.55; } }
 @media (prefers-reduced-motion: reduce) { .st-werk .st-bol { animation: none; } }
 
 .stroom-paneel .stroom-scene { padding: 0; }
-.stroom-paneel .stroom-rivier { height: 46vh; margin-top: 4vh; }
-.stroom-paneel .stroom-stappen { gap: 0.3vw; }
-.stroom-paneel .stroom-stappen small { font-size: min(1.3vh, 0.9vw); }
-.workers-paneel > .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1vh; }
+.stroom-paneel .stroom-rivier { height: 496.8px; margin-top: 43.2px; }
+.stroom-paneel .stroom-stappen { gap: 5.76px; }
+.stroom-paneel .stroom-stappen small { font-size: min(14.04px, 17.28px); }
+.workers-paneel > .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10.8px; }
 .workers-paneel > .grid > div { min-height: 0; overflow: hidden; }
-.workers-paneel > .grid > div > .flex { font-size: 1.6vh; gap: 0.4vh; }
-.workers-paneel > .grid > div > .flex > span:last-child { font-size: 1.3vh; }
-.workers-paneel > .grid > div > .flex > .text-right { font-size: 1.3vh; }
-.ai-team-paneel > div:first-child { flex-wrap: wrap; gap: 0.5vh; }
-.processen-paneel .stroom-processen { grid-template-columns: minmax(0, 1fr); gap: 5vh; margin-top: 1vh; }
+.workers-paneel > .grid > div > .flex { font-size: 17.28px; gap: 4.32px; }
+.workers-paneel > .grid > div > .flex > span:last-child { font-size: 17.28px; }
+.workers-paneel > .grid > div > .flex > .text-right { font-size: 17.28px; }
+.ai-team-paneel > div:first-child { flex-wrap: wrap; gap: 5.4px; }
+.processen-paneel .stroom-processen { grid-template-columns: minmax(0, 1fr); gap: 54px; margin-top: 10.8px; }
 .processen-paneel .stroom-processen > div { min-width: 0; overflow: hidden; }
-.processen-paneel .stroom-processen h3 { font-size: 2.8vh; }
-.processen-paneel .stroom-proceslijn { gap: 1vh; }
-.processen-paneel .stroom-proceslijn b { font-size: 1.8vh; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.processen-paneel .stroom-proceslijn small { font-size: 1.6vh; }
+.processen-paneel .stroom-processen h3 { font-size: 30.24px; }
+.processen-paneel .stroom-proceslijn { gap: 10.8px; }
+.processen-paneel .stroom-proceslijn b { font-size: 19.44px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.processen-paneel .stroom-proceslijn small { font-size: 17.28px; }
+
+/* Fixed TV canvas: viewport scaling is applied once by Scherm. */
+.scherm-canvas { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; transform-origin: center; font-size: 17.28px; letter-spacing: 0; }
+.scherm-canvas .scherm-station { width: 220px; }
+.scherm-canvas .scherm-core { width: 228px; }
+.scherm-canvas .scherm-station small { white-space: normal; }
+.scherm-canvas .stroom-stappen span { font-size: 17.82px; overflow-wrap: anywhere; }
+.scherm-canvas .stroom-stappen small { font-size: 17.28px; }
+.scherm-canvas .processen-paneel .stroom-proceslijn b { white-space: normal; overflow: visible; text-overflow: clip; }
+.scherm-canvas .workers-paneel > .grid > div { gap: 4px; }
+.scherm-canvas .workers-paneel > .grid > div > .flex { line-height: 1.15; }

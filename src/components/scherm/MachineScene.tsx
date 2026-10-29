@@ -1,4 +1,5 @@
 import { Component, lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { schermDpr, useSchermViewport } from './schermWeergave';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment, Html, Lightformer, useGLTF } from '@react-three/drei';
 import { ArrowDownToLine, BadgeCheck, BookOpen, BrainCircuit, FileCheck2, Mail, Megaphone, Receipt, RefreshCw, ShieldCheck, Headphones } from 'lucide-react';
@@ -179,12 +180,13 @@ function Runtime({ onLow }: { onLow: ()=>void }) {
   useFrame((_,delta)=>{const s=sample.current;if(s.done)return;s.time+=delta;s.frames++;if(s.time>6){if(s.frames/s.time<28){onLow();setDpr(1);}s.done=true;}});return null;
 }
 export default function MachineScene(props: Props) {
+  const viewport = useSchermViewport();
   const colors=useMemo(palette,[]);const [quality,setQuality]=useState(true);const [event,setEvent]=useState<Puls|null>(null);const history=useRef(new Set<string>());const initial=useRef(true);
   const low=useMemo(()=>()=>setQuality(false),[]);
   useEffect(()=>{const fresh=props.pulsen.filter(p=>!history.current.has(p.id));history.current=new Set(props.pulsen.map(p=>p.id));if(initial.current){initial.current=false;return;}const latest=[...fresh].sort((a,b)=>Date.parse(b.tijd)-Date.parse(a.tijd))[0];if(latest){setEvent(latest);const t=setTimeout(()=>setEvent(null),3000);return()=>clearTimeout(t);}},[props.pulsen]);
   const stand=useRef<Stand>(STATION_IDS.map(()=> 'rust'));stand.current=STATION_IDS.map(id=>props.stations[id]?.toestand??'rust');
   const reduced=useMemo(()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches,[]);
-  return <Canvas orthographic dpr={quality ? [1,1.5] : 1} frameloop={props.actief&&!reduced?'always':'demand'} camera={{position:[0,20,22],zoom:35,near:0.1,far:120}} gl={{antialias:false,powerPreference:'high-performance'}}>
+  return <Canvas orthographic dpr={schermDpr(viewport.breedte, quality)} resize={{ offsetSize: true }} frameloop={props.actief&&!reduced?'always':'demand'} camera={{position:[0,20,22],zoom:35,near:0.1,far:120}} gl={{antialias:false,powerPreference:'high-performance'}}>
     <color attach="background" args={[colors.bg]} /><ambientLight intensity={0.8} /><directionalLight position={[0,15,8]} intensity={2.4} />
     <Environment resolution={64}><Lightformer intensity={2} position={[0,8,0]} rotation-x={Math.PI/2} scale={[15,15,1]} /><Lightformer intensity={1.5} color={colors.blue} position={[-12,3,0]} rotation-y={Math.PI/2} scale={[8,4,1]} /></Environment>
     <Runtime onLow={low} /><CameraRig focus={props.focus} active={props.actief} /><Floor colors={colors} />
