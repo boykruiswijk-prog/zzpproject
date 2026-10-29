@@ -296,11 +296,14 @@
 
 /* Fixed TV canvas: viewport scaling is applied once by Scherm. */
 .scherm-canvas { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; transform-origin: center; font-size: 17.28px; letter-spacing: 0; }
-.scherm-canvas .scherm-station { width: 220px; }
-.scherm-canvas .scherm-core { width: 228px; }
+.scherm-canvas .scherm-station { width: 190px; }
+.scherm-canvas .scherm-core { width: 200px; }
 .scherm-canvas .scherm-station small { white-space: normal; }
 .scherm-canvas .stroom-stappen span { font-size: 17.82px; overflow-wrap: anywhere; }
 .scherm-canvas .stroom-stappen small { font-size: 17.28px; }
 .scherm-canvas .processen-paneel .stroom-proceslijn b { white-space: normal; overflow: visible; text-overflow: clip; }
 .scherm-canvas .workers-paneel > .grid > div { gap: 4px; }
 .scherm-canvas .workers-paneel > .grid > div > .flex { line-height: 1.15; }
+.vandaag-paneel .vandaag-tijdlijn { margin-top: 0; }
+.vandaag-paneel .vandaag-tijdlijn svg { height: 145px; }
+.vandaag-paneel > div:nth-child(4) > div:nth-child(2) { font-size: 34px; }

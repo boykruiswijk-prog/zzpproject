@@ -310,7 +310,7 @@ function PaneelZichtbaarheid({ d }: { d: SchermPayload }) {
 
 function PaneelVandaag({ d }: { d: SchermPayload }) {
   const drukste = STATION_IDS.reduce((best, id) => (d.stations[id]?.vandaag ?? 0) > (d.stations[best]?.vandaag ?? 0) ? id : best, STATION_IDS[0]);
-  return <div className="flex h-full flex-col gap-[32.4px]">
+  return <div className="vandaag-paneel flex h-full flex-col gap-[14px]">
     <Kop>Vandaag</Kop><Stat label="Gebeurtenissen" waarde={nf.format(d.gebeurtenissen_vandaag)} />
     <div className="vandaag-tijdlijn"><Label>Van 0 tot 24 uur</Label>
       <svg viewBox="0 0 600 140" aria-label="Gebeurtenissen per minuut vandaag">
@@ -320,9 +320,9 @@ function PaneelVandaag({ d }: { d: SchermPayload }) {
       </svg>
     </div>
     <div><Label>Drukste afdeling</Label><div className="text-[43.2px] font-semibold">{d.gebeurtenissen_vandaag ? STATION_LABELS[drukste] : 'Nog geen gebeurtenissen'}</div><span className="text-[28.08px] text-[hsl(var(--s-dim))]">{d.stations[drukste]?.vandaag ?? 0} gebeurtenissen</span></div>
-    <div className="flex min-h-0 flex-col gap-[8.64px]"><Label>Werkminuten per medewerker</Label>
+    <div className="flex min-h-0 flex-col gap-[3px]"><Label>Werkminuten per medewerker</Label>
       {(() => { const max = Math.max(1, ...STATION_IDS.map(id => d.stations[id]?.duur_vandaag_min ?? 0)); return STATION_IDS.map(id => { const m = d.stations[id]?.duur_vandaag_min ?? 0; return (
-        <div key={id} className="flex items-center gap-[19.2px] text-[20.52px]" data-werkminuten={id}>
+        <div key={id} className="flex items-center gap-[14px] text-[18px] leading-[24px]" data-werkminuten={id}>
           <span className="w-[230.4px] shrink-0 whitespace-normal">{STATION_LABELS[id]}</span>
           <span className="h-[14.04px] flex-1 overflow-hidden rounded-full bg-[hsl(var(--s-lijn))]"><span className="block h-full rounded-full" style={{ width: `${(m / max) * 100}%`, background: `hsl(${stationToken(id)})` }} /></span>
           <span className="min-w-[96px] shrink-0 text-right tabular-nums text-[hsl(var(--s-dim))]">{m} min</span>
