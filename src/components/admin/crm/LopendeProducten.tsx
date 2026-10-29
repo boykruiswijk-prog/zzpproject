@@ -236,7 +236,7 @@ function EinddatumDialoog({ contract, onSluit, onKlaar }: { contract: any; onSlu
           <DialogDescription>Huidige einddatum {formatDateNL(contract.eind_datum)}. De wijziging wordt vastgelegd in de tijdlijn en het auditlog.</DialogDescription>
         </DialogHeader>
         <div className="space-y-3 text-sm">
-          <div className="space-y-1"><Label htmlFor="nieuwe-dekkingsdag">{DEKKING_LABEL}</Label><Input id="nieuwe-dekkingsdag" type="date" value={datum} onChange={(e) => setDatum(e.target.value)} /><p className="text-xs text-muted-foreground">{DEKKING_HULP}. De dag vóór de verlengdatum is {formatDateNL(standaardLaatsteDekkingsdag(contract, vandaag()))}.</p>
+          <div className="space-y-1"><Label htmlFor="nieuwe-dekkingsdag">{DEKKING_LABEL}</Label><Input id="nieuwe-dekkingsdag" type="date" value={datum} onChange={(e) => setDatum(e.target.value)} /><p className="text-xs text-muted-foreground">{DEKKING_HULP}.</p>
             <CreditVoorbeeld contract={contract} datum={datum} /></div>
           <div><Label>Reden (verplicht)</Label><Textarea value={reden} onChange={(e) => setReden(e.target.value)} rows={3} /></div>
         </div>
