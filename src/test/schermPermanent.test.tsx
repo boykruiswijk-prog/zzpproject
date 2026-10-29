@@ -39,6 +39,18 @@ describe("permanent agentkantoor", () => {
       if (i === 2) expect(screen.getByText("Netto groei")).toBeInTheDocument();
     }
   });
+
+  it("behoudt alle 23 vaste workers inclusief de laatste drie", async () => {
+    const payload = bouwSchermPayload({});
+    const worker = (i: number) => ({ naam: `Worker ${i}`, status: 'klaar' as const, ritme: 'elke werkdag', laatste: null, vandaag: i, week: i * 7 });
+    payload.workers = { gepland: Array.from({length:16}, (_,i) => worker(i)), op_afroep: Array.from({length:7}, (_,i) => worker(i+16)) };
+    vi.stubGlobal('fetch', vi.fn(async () => ({ok:true,status:200,json:async () => payload})));
+    render(<HelmetProvider><Scherm tv /></HelmetProvider>);
+    await act(async () => { await vi.advanceTimersByTimeAsync(0); });
+    const rows = screen.getByTestId('workers-vast').querySelectorAll('[data-worker]');
+    expect(rows).toHaveLength(23);
+    expect(Array.from(rows, row => row.getAttribute('data-worker'))).toEqual(Array.from({length:23}, (_,i) => `Worker ${i}`));
+  });
 });
 
 describe("A7-aanvulling workers vast", () => {

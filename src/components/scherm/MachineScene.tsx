@@ -1,7 +1,7 @@
 import { Component, lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { schermDpr, useSchermViewport } from './schermWeergave';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Environment, Html, Lightformer, useGLTF } from '@react-three/drei';
+import { Environment, Lightformer, useGLTF } from '@react-three/drei';
 import { ArrowDownToLine, BadgeCheck, BookOpen, BrainCircuit, FileCheck2, Mail, Megaphone, Receipt, RefreshCw, ShieldCheck, Headphones } from 'lucide-react';
 import * as THREE from 'three';
 import asset from '@/assets/scherm/agent.glb.asset.json';
@@ -186,19 +186,27 @@ export default function MachineScene(props: Props) {
   useEffect(()=>{const fresh=props.pulsen.filter(p=>!history.current.has(p.id));history.current=new Set(props.pulsen.map(p=>p.id));if(initial.current){initial.current=false;return;}const latest=[...fresh].sort((a,b)=>Date.parse(b.tijd)-Date.parse(a.tijd))[0];if(latest){setEvent(latest);const t=setTimeout(()=>setEvent(null),3000);return()=>clearTimeout(t);}},[props.pulsen]);
   const stand=useRef<Stand>(STATION_IDS.map(()=> 'rust'));stand.current=STATION_IDS.map(id=>props.stations[id]?.toestand??'rust');
   const reduced=useMemo(()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches,[]);
-  return <Canvas orthographic dpr={schermDpr(viewport.breedte, quality)} resize={{ offsetSize: true }} frameloop={props.actief&&!reduced?'always':'demand'} camera={{position:[0,20,22],zoom:35,near:0.1,far:120}} gl={{antialias:false,powerPreference:'high-performance'}}>
+  return <div className="machine-weergave"><Canvas orthographic dpr={schermDpr(viewport.breedte, quality)} resize={{ offsetSize: true }} frameloop={props.actief&&!reduced?'always':'demand'} camera={{position:[0,20,22],zoom:35,near:0.1,far:120}} gl={{antialias:false,powerPreference:'high-performance'}}>
     <color attach="background" args={[colors.bg]} /><ambientLight intensity={0.8} /><directionalLight position={[0,15,8]} intensity={2.4} />
     <Environment resolution={64}><Lightformer intensity={2} position={[0,8,0]} rotation-x={Math.PI/2} scale={[15,15,1]} /><Lightformer intensity={1.5} color={colors.blue} position={[-12,3,0]} rotation-y={Math.PI/2} scale={[8,4,1]} /></Environment>
     <Runtime onLow={low} /><CameraRig focus={props.focus} active={props.actief} /><Floor colors={colors} />
     <Furniture colors={colors} stand={stand} /><FiguurVangnet><Suspense fallback={null}><AgentFigures colors={colors} event={event} stand={stand} /></Suspense></FiguurVangnet>
     <Network colors={colors} stand={stand} event={event} />
     <group position={[0,1.6,0]}><Kern colors={colors} stand={stand} event={event} /><mesh rotation-x={Math.PI/2} position-y={-0.5}><torusGeometry args={[1.7,0.04,6,60]} /><meshBasicMaterial color={colors.red.clone().multiplyScalar(2)} toneMapped={false} /></mesh>
-      <Html position={[0,2.4,0]} center zIndexRange={[12,0]}><div className="scherm-core"><span>Het brein</span><b>{props.totaalVandaag}</b><small>gebeurtenissen vandaag</small><em>{props.kennisregels} kennisregels</em></div></Html>
     </group>
-    {POS.map((p,i)=>{const id=STATION_IDS[i];const Icon=ICONS[i];const st=props.stations[id];const n=st?.vandaag??0;const toestand=st?.toestand??'rust';
-      const klasse={aan_het_werk:'st-werk',stand_by:'st-standby',rust:'st-rust',storing:'st-storing'}[toestand];
-      return <Html key={id} position={[p.x, i === 5 || i === 6 ? 1.9 : 3.8, p.z]} center zIndexRange={[10,0]}><div className={`scherm-station ${klasse}`} data-station={id} data-toestand={toestand}><Icon /><div><strong>{STATION_LABELS[id]}</strong><small className="st-regel"><span className="st-bol" /><span>{toestandLabel(st)}</span></small></div><b>{n}</b>{event?.station===id&&<p className="agent-balloon">{event.tekst}</p>}</div></Html>;
-    })}
     {quality&&!reduced&&props.actief&&<Suspense fallback={null}><Effects /></Suspense>}
-  </Canvas>;
+  </Canvas>
+    <div className="scene-labelrooster" data-testid="scene-labels">
+      {STATION_IDS.map((id, i) => {
+        const Icon = ICONS[i]; const st = props.stations[id]; const toestand = st?.toestand ?? 'rust';
+        const klasse = {aan_het_werk:'st-werk',stand_by:'st-standby',rust:'st-rust',storing:'st-storing'}[toestand];
+        return <div key={id} className={`scherm-station ${klasse}`} data-station={id} data-toestand={toestand}>
+          <div className="scene-labeltitel"><Icon /><strong>{STATION_LABELS[id]}</strong><b>{st?.vandaag ?? 0}</b></div>
+          <small className="st-regel"><span className="st-bol" /><span>{toestandLabel(st)}</span></small>
+          {event?.station === id && <p className="agent-balloon">{event.tekst}</p>}
+        </div>;
+      })}
+      <div className="scherm-core"><span>Het brein</span><b>{props.totaalVandaag}</b><small>gebeurtenissen vandaag</small><em>{props.kennisregels} kennisregels</em></div>
+    </div>
+  </div>;
 }
