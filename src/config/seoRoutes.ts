@@ -298,10 +298,10 @@ export const seoRoutes: SeoRoute[] = [
     path: "/documenten",
     title: "Documenten en downloads | ZP Zaken",
     description:
-      "Bekijk en download polisvoorwaarden, verzekeringskaarten en brochures van ZP Zaken per branche.",
+      "Bekijk en download brochures en overige documenten van ZP Zaken.",
     h1: "Documenten en downloads",
     intro:
-      "Hier vind je de polisvoorwaarden, verzekeringskaarten en brochures per branche. " +
+      "Hier vind je brochures en overige documenten. Polisvoorwaarden: https://zpzaken.nl/voorwaarden. " +
       "Ook het dienstverleningsdocument, de gedragscode en de slotverklaring staan op deze pagina.",
   },
   {
@@ -413,7 +413,7 @@ export const seoRoutes: SeoRoute[] = [
   {
     path: "/bav-zzp",
     title: "Beroepsaansprakelijkheidsverzekering zzp | ZP Zaken",
-    description: `Beroepsaansprakelijkheidsverzekering: aansprakelijkheidsverzekering zzp vanaf € ${LANDING_MAAND} per maand, inclusief kosten en assurantiebelasting.`,
+    description: `Beroepsaansprakelijkheidsverzekering: aansprakelijkheidsverzekering zzp voor € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
     h1: "Aansprakelijkheidsverzekering zzp: beroepsaansprakelijkheidsverzekering (BAV) en AVB in één polis",
     intro: `Een beroepsaansprakelijkheidsverzekering (BAV) is voor financiële schade bij je opdrachtgever door een fout in je werk. Bij ZP Zaken zit hij samen met de bedrijfsaansprakelijkheidsverzekering (AVB) in één polis: BAV € 5.000.000 en AVB € 2.500.000 per aanspraak, geen eigen risico, binnen 24 uur geregeld. Vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
   },

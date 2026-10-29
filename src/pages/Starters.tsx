@@ -67,7 +67,7 @@ export default function Starters() {
         { icon: ShieldCheck, title: "Verzekerd bij Hiscox", description: `BAV ${BAV} en AVB ${AVB} per aanspraak. Zelfde polis, dekking en voorwaarden als de gewone BAV + AVB.` },
       ]}
       explainers={[
-        { image: officeMeetingRoom, title: "Zekerheid vanaf je eerste opdracht", text: "Veel opdrachtgevers vragen om een BAV. Met de BAV + AVB ben je verzekerd als een fout in je werk of een ongeluk op locatie schade veroorzaakt.", bullets: ["Beroepsaansprakelijkheid en bedrijfsaansprakelijkheid in één polis", "Certificaat te delen met je opdrachtgever", "BAV + AVB is dagelijks opzegbaar"] },
+        { image: officeMeetingRoom, title: "Zekerheid vanaf je eerste opdracht", text: "Veel opdrachtgevers vragen om een BAV. Met de BAV + AVB ben je verzekerd voor aansprakelijkheid als een fout in je werk of een ongeluk op locatie schade veroorzaakt, volgens de polisvoorwaarden.", bullets: ["Beroepsaansprakelijkheid en bedrijfsaansprakelijkheid in één polis", "Certificaat te delen met je opdrachtgever", "BAV + AVB is dagelijks opzegbaar"] },
         { image: officeCoffee, title: "Zo werkt het startertarief", text: `${STARTER_VOORWAARDE_TEKST} Je vult bij je aanvraag de startdatum van je KVK-inschrijving in. Wij controleren die datum voordat je polis ingaat.` },
       ]}
       ctaTitle="Vragen over het starterspakket?"
