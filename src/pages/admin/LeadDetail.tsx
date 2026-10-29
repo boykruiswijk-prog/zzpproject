@@ -4,7 +4,7 @@ import { KvkLeadAfwijkingen } from "@/components/admin/KvkLeadAfwijkingen";
 import { CyberDatums } from "@/components/admin/CyberDatums";
 import { IngangsdatumAanpassen } from "@/components/admin/IngangsdatumAanpassen";
 import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS, statusTitel } from "@/lib/statusLabels";
-import { LeadAfrondenKnop, AfrondDialoog, magAfronden } from "@/components/admin/LeadAfronden";
+import { LeadAfrondenKnop, AfrondDialoog, magAfronden, leadStatusKeuzes } from "@/components/admin/LeadAfronden";
 import { LeadTestSchakelaar } from "@/components/admin/LeadTestSchakelaar";
 import { StartertariefControle } from "@/components/admin/StartertariefControle";
 import { VlagBalk } from "@/components/admin/LeadVlag";
@@ -303,7 +303,7 @@ export default function AdminLeadDetail() {
                             </Badge>
                           </SelectTrigger>
                           <SelectContent>
-                            {Object.entries(statusLabels).filter(([value]) => (value !== "afgerond" || lead.status === "afgerond" || magAfronden(lead as any)) && (value !== "offerte_verstuurd" || lead.status === value)).map(([value, label]) => (
+                            {leadStatusKeuzes(lead as any).map(([value, label]) => (
                               <SelectItem key={value} value={value}>
                                 {label}
                               </SelectItem>

@@ -1,7 +1,7 @@
 import { leadOnderwerp } from "../../../supabase/functions/_shared/leadVelden";
 import { CyberAanvraag, useCyberAanvragen, cyberWerkStap } from "./CyberAanvraag";
 import { eviLeadLabel } from "@/lib/interneBron";
-import { AfrondDialoog, magAfronden } from "@/components/admin/LeadAfronden";
+import { AfrondDialoog, magAfronden, leadStatusKeuzes } from "@/components/admin/LeadAfronden";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LeadTestSchakelaar } from "@/components/admin/LeadTestSchakelaar";
 import { BavNummer } from "@/components/admin/crm/BavNummer";
@@ -247,7 +247,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
                 <SelectTrigger className="min-h-10 w-44">
                   <Badge title={statusTitel(lead.status)} className={statusColors[lead.status]} variant="secondary">{statusLabels[lead.status]}</Badge>
                 </SelectTrigger>
-                <SelectContent>{Object.entries(statusLabels).filter(([value]) => (value !== "afgerond" || lead.status === "afgerond" || magAfronden(lead as any)) && (value !== "offerte_verstuurd" || lead.status === value)).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent>
+                <SelectContent>{leadStatusKeuzes(lead as any).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent>
               </Select>
               <div className="flex items-center gap-1">
                 <Button variant="outline" size="sm" asChild><Link to={`/admin/leads/${lead.id}`}><Eye className="h-4 w-4" />Bekijken</Link></Button>
@@ -349,7 +349,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
                         </Badge>
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.entries(statusLabels).filter(([value]) => (value !== "afgerond" || lead.status === "afgerond" || magAfronden(lead as any)) && (value !== "offerte_verstuurd" || lead.status === value)).map(([value, label]) => (
+                        {leadStatusKeuzes(lead as any).map(([value, label]) => (
                           <SelectItem key={value} value={value}>
                             {label}
                           </SelectItem>
