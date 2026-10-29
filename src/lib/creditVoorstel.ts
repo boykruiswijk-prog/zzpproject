@@ -21,3 +21,35 @@ export function verwachtCredit(k: CreditContract, einddatum: string, plannerPeri
 }
 
 export const euro = (n: number) => `€ ${n.toFixed(2).replace(".", ",")}`;
+
+// Besluit Boy 29-10 (C-aanvulling): standaard laatste dag van de dekking bij opzeggen.
+// = dag vóór de eerstvolgende verlengdatum (volgende_factuurdatum - 1). Ligt die verlengdatum al
+// in het verleden, dan de dag vóór de laatst gestarte periode (verankerd op factureren_vanaf ?? begin_datum).
+export type DekkingContract = {
+  cyclus: string | null; volgende_factuurdatum: string | null;
+  begin_datum: string | null; factureren_vanaf: string | null;
+};
+
+function verschuifDagen(iso: string, n: number): string {
+  return new Date(new Date(`${iso.slice(0, 10)}T00:00:00Z`).getTime() + n * 86400000).toISOString().slice(0, 10);
+}
+function plusMaanden(iso: string, n: number): string {
+  const [j, m, d] = iso.slice(0, 10).split("-").map(Number);
+  const doel = new Date(Date.UTC(j, m - 1 + n, 1));
+  const laatste = new Date(Date.UTC(doel.getUTCFullYear(), doel.getUTCMonth() + 1, 0)).getUTCDate();
+  doel.setUTCDate(Math.min(d, laatste));
+  return doel.toISOString().slice(0, 10);
+}
+
+export function standaardLaatsteDekkingsdag(k: DekkingContract, vandaag: string): string {
+  const vfd = k.volgende_factuurdatum?.slice(0, 10);
+  if (vfd && vfd > vandaag) return verschuifDagen(vfd, -1);
+  const anker = (k.factureren_vanaf ?? k.begin_datum)?.slice(0, 10);
+  if (anker && anker <= vandaag) {
+    const stap = k.cyclus === "jaar" ? 12 : 1;
+    let start = anker;
+    for (let n = 1; n < 1000; n++) { const s = plusMaanden(anker, n * stap); if (s > vandaag) break; start = s; }
+    return verschuifDagen(start, -1);
+  }
+  return vfd ? verschuifDagen(vfd, -1) : vandaag;
+}
