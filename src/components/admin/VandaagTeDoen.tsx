@@ -127,7 +127,7 @@ export function VandaagTeDoen() {
             {groet()}{data?.voornaam ? ` ${data.voornaam}` : ""}
           </span>
           <span className="text-sm font-normal text-muted-foreground">
-            Vandaag te doen: <strong className="tabular-nums text-foreground">{data?.totaal ?? (isLoading ? "…" : 0)}</strong>
+            <Link to="/admin/inzicht/vandaag" className="hover:underline">Vandaag te doen: <strong className="tabular-nums text-foreground">{data?.totaal ?? (isLoading ? "…" : 0)}</strong></Link>
           </span>
         </CardTitle>
       </CardHeader>

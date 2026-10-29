@@ -79,6 +79,7 @@ const BavZzpVergelijken = lazy(() => import("./pages/BavZzpVergelijken"));
 const AdminAfgehaakt = lazy(() => import("./pages/admin/Afgehaakt"));
 const AdminZoekRecord = lazy(() => import("./pages/admin/ZoekRecord"));
 const AdminChatgesprekken = lazy(() => import("./pages/admin/Chatgesprekken"));
+const AdminInzicht = lazy(() => import("./pages/admin/Inzicht"));
 const AdminKlantenContracten = lazy(() => import("./pages/admin/KlantenContracten"));
 const AdminKlantDetail = lazy(() => import("./pages/admin/KlantDetail"));
 const AdminPersoonDetail = lazy(() => import("./pages/admin/PersoonDetail"));
@@ -245,6 +246,7 @@ export const AppRoutes = () => (
             <Route path="/admin/wachtwoord-wijzigen" element={<ChangePasswordPage />} />
             <Route element={<AdminAalGuard />}>
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/inzicht/:tegel" element={<AdminInzicht />} />
             <Route path="/admin/crm" element={<AdminCRM />} />
             <Route path="/admin/activiteiten" element={<RoleGuard allow={[]}><AdminActiviteiten /></RoleGuard>} />
             <Route path="/admin/leads" element={<AdminLeads soort="leads" />} />
