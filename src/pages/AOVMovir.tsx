@@ -128,7 +128,7 @@ export default function AOVMovir() {
             </p>
           </div>
           <div className="rounded-3xl border border-border bg-card p-8 shadow-sm">
-            <img src={movirLogo} alt="Movir" width={150} height={100} className="h-16 w-auto mb-6" />
+            <img src={movirLogo} alt="Movir" width={150} height={100} className="h-24 w-auto -ml-4 mb-2" />
             <p className="font-semibold mb-3">Movir Momentum AOV</p>
             <ul className="space-y-2 text-sm text-muted-foreground">
               {["Je stelt hem zelf samen", "Premie berekenen bij Tjepkema", "Advies en afsluiten bij Tjepkema"].map((t) => (
