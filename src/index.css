@@ -313,7 +313,7 @@
 .workers-kop { display: flex; align-items: baseline; gap: 22px; }
 .workers-kop h2 { font-size: 28px; }
 .workers-kop > div { font-size: 19px; }
-.workers-rooster { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); align-content: start; gap: 8px 12px; }
+.workers-rooster { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-content: start; gap: 8px 12px; }
 .worker-regel { min-width: 0; font-size: 17.28px; line-height: 1.15; }
 .worker-naam { display: flex; align-items: baseline; gap: 5px; }
 .worker-naam strong { min-width: 0; overflow-wrap: anywhere; }
@@ -321,7 +321,7 @@
 .worker-info { color: hsl(var(--s-dim)); overflow-wrap: anywhere; }
 .worker-info > span + span::before { content: ' · '; }
 .machine-weergave { position: relative; width: 100%; height: 100%; }
-.scene-labelrooster { position: absolute; z-index: 12; inset: 88px 24px 16px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 10px 16px; align-items: start; pointer-events: none; }
+.scene-labelrooster { position: absolute; z-index: 12; inset: 88px 24px 16px; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 10px 12px; align-items: start; pointer-events: none; }
 .scherm-canvas .scene-labelrooster .scherm-station { display: flex; flex-direction: column; align-items: stretch; gap: 0; width: 100%; padding: 7px; }
 .scene-labeltitel { display: flex; align-items: center; gap: 6px; }
 .scene-labeltitel svg { width: 20px; height: 20px; flex-shrink: 0; }
