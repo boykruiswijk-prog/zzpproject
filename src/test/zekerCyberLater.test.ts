@@ -3,7 +3,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { bouwSysteemPrompt, ZEKER_CYBER_LATER, ZEKER_CYBER_LATER_ROUTE, ZEKER_VASTE_FEITEN } from "../../supabase/functions/_shared/zeker";
 import { STARTER_VOORWAARDE_TEKST } from "@/lib/starterTarief";
-import { faqCategories } from "@/data/faqItems";
+import { faqItems } from "@/data/faqItems";
 
 /** Vragen en verwachte kern; de live-controle met het echte model staat in scripts/zekerCyberEval.ts. */
 export const ZEKER_CYBER_VRAGEN = [
@@ -33,7 +33,7 @@ describe("Zeker: cyber later toevoegen", () => {
     expect(ZEKER_VASTE_FEITEN.join(" ")).toContain(STARTER_VOORWAARDE_TEKST);
   });
   it("site-FAQ zegt hetzelfde: cyber alleen samen met BAV + AVB", () => {
-    const faq = faqCategories.flatMap((c: any) => c.items ?? c.questions ?? []);
+    const faq = faqItems;
     expect(JSON.stringify(faq)).toContain("Cyber kan alleen samen met de BAV + AVB");
     expect(prompt).toContain("Cyber kan alleen samen met de BAV + AVB");
   });
