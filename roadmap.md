@@ -133,3 +133,5 @@
 - [x] F7-aanvulling 19-10: Evi-pagina conversie (rekenhulp in hero, deadline, sticky balk, vertrouwen, korter formulier, event evi_interesse_verstuurd), niet gepubliceerd
 - [x] Evi-logo geplaatst (md5 klopt), contrast gecontroleerd
 - [x] Spoed 26-10: PSL people marketing samengevoegd, cyberakkoord wacht op certificaat zonder te falen.
+
+- [x] A23-aanvulling 2: doorklikken op grafiekelementen (dashboard, supervisor, inzicht); niet gepubliceerd
