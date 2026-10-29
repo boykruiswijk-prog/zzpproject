@@ -6,8 +6,8 @@ import { seoRoutes } from "../config/seoRoutes";
 
 const routes = new Set(seoRoutes.map((r) => r.path.replace(/^\//, "")));
 const redirects = new Map(legacyRedirects.map((r) => [r.from, r.to]));
-// Mijn ZP-pagina's staan niet in seoRoutes (geen index), maar zijn wel routes.
-const appRoutes = new Set([...routes, "", "kennisbank", "offerte", "mijn-zp/polis", "mijn-zp/opzeggen", "mijn-zp/pauzeren", "mijn-zp/certificaat", "mijn-zp/documenten"]);
+// Mijn ZP- en portalloginpagina staan niet in seoRoutes (geen index), maar zijn wel routes.
+const appRoutes = new Set([...routes, "", "kennisbank", "offerte", "mijn-zp/polis", "mijn-zp/opzeggen", "mijn-zp/pauzeren", "mijn-zp/certificaat", "mijn-zp/documenten", "portal/login"]);
 
 function geldigeBestemming(to: string): boolean {
   const pad = to.split("#")[0].replace(/^\//, "");

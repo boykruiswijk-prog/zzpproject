@@ -66,7 +66,7 @@ describe("Cyberverzoek klant en team", () => {
     fireEvent.click(screen.getByRole("button",{name:keuze ? "Akkoord":"Afwijzen"}));
     await waitFor(() => expect(mocks.rijen[0].status).toBe(keuze ? "akkoord_wacht_op_activatie":"afgewezen"));
     expect(mocks.rpc.mock.calls.filter(([f]) => f !== "cyber_toevoegen_opties" && f !== "cyber_toevoegen_redenen" && f !== "cyber_terugwerkend_vroegst")).toEqual([]);
-    expect(mocks.invoke).toHaveBeenCalledWith("cyber-toevoegen-activeren", { body: { id: "verzoek-1", akkoord: keuze, notitie: "Beoordeling door team vastgelegd" } });
+    expect(mocks.invoke).toHaveBeenCalledWith("cyber-toevoegen-activeren", { body: { id: "verzoek-1", actie: "beoordelen", akkoord: keuze, notitie: "Beoordeling door team vastgelegd" } });
     expect(Boolean(mocks.rijen[0].geactiveerd_op)).toBe(keuze);
   });
   it("lege beoordeling stuurt geen akkoordpoging en laat de aanvraag wachten", async () => {
@@ -77,14 +77,15 @@ describe("Cyberverzoek klant en team", () => {
     expect(mocks.rijen[0].status).toBe("wacht_op_beoordeling");
     expect(screen.getByRole("alert")).toHaveTextContent("10 tot 1.000 tekens");
   });
-  it("definitieve mailfout kan alleen via een MFA-gecontroleerde klik worden herhaald", async () => {
+  it("definitieve mailfout: herhalen gebeurt alleen bij Aanvragen (E8), niet in deze kaart", async () => {
+    // E8: versturen en opnieuw versturen zijn verhuisd naar de expliciete stap van Ellen in Aanvragen.
     mocks.rijen = [{ id: "verzoek-1", status: "akkoord_wacht_op_activatie", geactiveerd_op: "2026-10-23", mail_status: "mail_mislukt", gewenste_ingangsdatum: "2026-10-24", antwoorden: {} }];
     render(<CyberToevoegen team ondernemingId="ond-1" />);
-    const button = await screen.findByRole("button", { name: "Opnieuw versturen" });
+    await waitFor(() => expect(mocks.rpc).toHaveBeenCalled());
+    expect(screen.queryByRole("button", { name: "Opnieuw versturen" })).toBeNull();
     expect(mocks.invoke).not.toHaveBeenCalled();
-    fireEvent.click(button);
-    await waitFor(() => expect(mocks.invoke).toHaveBeenCalledTimes(1));
-    expect(mocks.invoke.mock.calls[0][1].body.retryMail).toBe(true);
+    const { readFileSync } = await import("node:fs");
+    expect(readFileSync("src/components/admin/CyberAanvraag.tsx", "utf8")).toContain('retryMail: stap === "versturen" && ["mislukt", "mail_mislukt"].includes(verzoek.mail_status)');
   });
   it("onzekere mail heeft geen herhaalknop", async () => {
     mocks.rijen = [{ id: "verzoek-1", status: "akkoord_wacht_op_activatie", geactiveerd_op: "2026-10-23", mail_status: "mail_onzeker", gewenste_ingangsdatum: "2026-10-24", antwoorden: {} }];

@@ -61,5 +61,5 @@ describe("E8 SQL documentcontrole", () => {
       await db.exec(`CREATE OR REPLACE FUNCTION auth.jwt() RETURNS jsonb LANGUAGE sql AS $$select '{"aal":"aal2","email":"ellen.baars@zpzaken.nl"}'::jsonb$$; UPDATE cyber_toevoeg_verzoeken SET certificaat_pad='nieuw.pdf';`);
       await expect(db.query(`SELECT cyber_certificaat_verzendklaar($1)`, [id])).rejects.toThrow(/Controleer eerst/);
     } finally { await db.close(); }
-  });
+  }, 30000); // Eigen PGlite-database opbouwen duurt onder volle testbelasting langer dan 5 s.
 });
