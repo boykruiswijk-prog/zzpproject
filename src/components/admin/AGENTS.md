@@ -1,4 +1,5 @@
 # Beheer-UI
+- Lead status menus use shared type-specific options; historical current statuses are visible but disabled. Status edits preserve linkage and converted_at; closed rows are opt-in or shown under Alle, never lead work items. Why: closing a question must not unlink a customer or change policy state.
 
 - Aantallen (klanten, contracten, service open, aanvragen doel) alleen via SQL tel_* functies, gedeeld door dashboard_tellers, mijn_acties_vandaag, scherm_data en scherm_stromen; nooit getallen uit marketing_snapshot-tekst. Waarom: dashboard en tv tonen altijd hetzelfde.
 - Admin onder lg: Sheet-menu en kaartlijsten; desktop vaste zijbalk. Waarom: één navigatie.
