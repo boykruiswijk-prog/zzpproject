@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import { LineChart, RefreshCw } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -44,24 +45,24 @@ export function ArrOverzicht() {
             <RefreshCw className="h-4 w-4" /> Opnieuw
           </Button>
         </div> : !data ? <div className="text-2xl font-bold">…</div> : <>
-          <div className="break-words text-2xl font-bold tabular-nums">{formatEuro(data.arr_totaal)}</div>
+          <Link to="/admin/inzicht/arr" className="block break-words text-2xl font-bold tabular-nums hover:underline">{formatEuro(data.arr_totaal)}</Link>
           <div className="text-xs text-muted-foreground">
             <p>{data.aantal_klanten.toLocaleString("nl-NL")} klanten · {data.aantal_contracten.toLocaleString("nl-NL")} actieve contracten</p>
-            <p className="font-medium text-foreground">{signedEuro(data.netto_sinds_1_okt)} netto sinds 1 oktober 2026</p>
+            <p className="font-medium text-foreground"><Link to="/admin/inzicht/arr_maand" className="hover:underline">{signedEuro(data.netto_sinds_1_okt)} netto sinds 1 oktober 2026</Link></p>
             <p>Nieuw minus aflopend · huidige contractwaarden</p>
           </div>
           <dl className="grid grid-cols-1 gap-1 text-xs sm:grid-cols-2">
-            <div><dt className="text-muted-foreground">Loopt af</dt><dd className="tabular-nums">{formatEuro(data.arr_loopt_af)}</dd></div>
+            <div><dt className="text-muted-foreground">Loopt af</dt><dd className="tabular-nums"><Link to="/admin/inzicht/loopt_af" className="hover:underline">{formatEuro(data.arr_loopt_af)}</Link></dd></div>
             <div><dt className="text-muted-foreground">Cyber in actieve ARR</dt><dd className="tabular-nums">{formatEuro(data.arr_cyber)} ({data.aandeel_cyber_pct.toLocaleString("nl-NL")}%)</dd></div>
             <div><dt className="text-muted-foreground">Gemiddelde ARR per klant</dt><dd className="tabular-nums">{formatEuro(data.gemiddelde_arr_per_klant)}</dd></div>
           </dl>
-          <table className="w-full table-fixed text-right text-[11px] tabular-nums sm:text-xs">
+          <Link to="/admin/inzicht/arr_maand" aria-label="Nieuwe ARR per maand bekijken" className="block rounded hover:bg-muted/30"><table className="w-full table-fixed text-right text-[11px] tabular-nums sm:text-xs">
             <thead className="text-muted-foreground"><tr><th className="w-1/5 text-left font-medium">Maand</th><th className="font-medium">Nieuw</th><th className="font-medium">Aflopend</th><th className="font-medium">Netto</th></tr></thead>
             <tbody>{data.maanden.map(m => <tr key={m.maand} className="border-t border-border">
               <th className="py-1.5 text-left font-normal">{new Intl.DateTimeFormat("nl-NL", { month: "short", timeZone: "Europe/Amsterdam" }).format(new Date(`${m.maand}T12:00:00Z`))}</th>
               <td className="whitespace-nowrap">{formatEuro(m.nieuw)}</td><td className="whitespace-nowrap">{formatEuro(m.aflopend)}</td><td className="whitespace-nowrap">{signedEuro(m.netto)}</td>
             </tr>)}</tbody>
-          </table>
+          </table></Link>
         </>}
       </CardContent>
     </Card>

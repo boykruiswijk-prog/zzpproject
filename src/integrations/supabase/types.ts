@@ -252,6 +252,27 @@ export type Database = {
           },
         ]
       }
+      admin_teller_historie: {
+        Row: {
+          dag: string
+          gemeten_op: string
+          teller: string
+          waarde: number
+        }
+        Insert: {
+          dag: string
+          gemeten_op?: string
+          teller: string
+          waarde: number
+        }
+        Update: {
+          dag?: string
+          gemeten_op?: string
+          teller?: string
+          waarde?: number
+        }
+        Relationships: []
+      }
       advertentie_beelden: {
         Row: {
           breedte: number
@@ -6769,6 +6790,10 @@ export type Database = {
     Functions: {
       a19_team: { Args: never; Returns: undefined }
       accept_portal_invitation: { Args: { _token: string }; Returns: Json }
+      admin_teller_momentopname: {
+        Args: { _forceer?: boolean }
+        Returns: number
+      }
       advertentie_beeld_claim: {
         Args: { p_lease: string }
         Returns: {
@@ -7384,6 +7409,7 @@ export type Database = {
       incasso_betaald: { Args: { _datum?: string; _id: string }; Returns: Json }
       incasso_cyclus_stap: { Args: { _vandaag: string }; Returns: Json }
       incasso_welke_stap: { Args: { _dagen: number }; Returns: string }
+      inzicht_tegel: { Args: { _tegel: string }; Returns: Json }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_supervisor_or_admin: { Args: { _user_id: string }; Returns: boolean }
       is_team_member: { Args: { _user_id: string }; Returns: boolean }
