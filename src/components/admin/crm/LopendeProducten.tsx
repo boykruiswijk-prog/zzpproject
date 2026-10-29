@@ -21,6 +21,11 @@ import { BavNummer } from "./BavNummer";
 import { OPZEG_GEEN_CREDIT_TEKST, opzegZonderCredit } from "@/lib/opzegBeleid";
 import { contractEindStatus, kiesBavNummer, useBavRijen } from "@/lib/bavNummer";
 import { controleerAdminMfa, verwerkMfaFout } from "@/lib/adminMfaStap";
+import { standaardLaatsteDekkingsdag } from "@/lib/creditVoorstel";
+import { CreditVoorbeeld } from "./CreditVoorbeeld";
+
+export const DEKKING_LABEL = "Laatste dag van de dekking";
+export const DEKKING_HULP = "De creditnota loopt vanaf de dag erna";
 
 export const STOP_REDENEN: Record<string, string> = {
   opzegging_klant: "Opzegging klant",
@@ -57,7 +62,7 @@ export function LopendeProducten({ ondernemingId, ondernemingNaam, leadIds = [],
       setLaden(true);
       const filt = leadIds.length ? `onderneming_id.eq.${ondernemingId},lead_id.in.(${leadIds.join(",")})` : `onderneming_id.eq.${ondernemingId}`;
       const [k, p] = await Promise.all([
-        supabase.from("klant_contracten").select("id,bron_rij,product,itemcode,cyclus,status,eind_datum,gefactureerd_tm").eq("onderneming_id", ondernemingId).order("bron_rij"),
+        supabase.from("klant_contracten").select("id,bron_rij,product,itemcode,cyclus,status,eind_datum,gefactureerd_tm,volgende_factuurdatum,begin_datum,factureren_vanaf").eq("onderneming_id", ondernemingId).order("bron_rij"),
         supabase.from("policies").select("id,certificate_number,package_type,insured_name,start_date,status,intrek_reden,ingetrokken_op,onderneming_id,lead_id").or(filt).order("created_at"),
       ]);
       setContracten(k.data ?? []); setPolissen(p.data ?? []); setLaden(false);
@@ -122,7 +127,8 @@ function BeeindigDialoog({ ondernemingId, ondernemingNaam, persoonId, contracten
   const { user } = useAuth();
   const [c, setC] = useState<Set<string>>(new Set(start.c));
   const [p, setP] = useState<Set<string>>(new Set(start.p));
-  const [datum, setDatum] = useState(vandaag());
+  const eersteContract = contracten.find((x) => start.c.includes(x.id));
+  const [datum, setDatum] = useState(eersteContract ? standaardLaatsteDekkingsdag(eersteContract, vandaag()) : vandaag());
   const [reden, setReden] = useState("opzegging_klant");
   const [toelichting, setToelichting] = useState("");
   const [bestanden, setBestanden] = useState<File[]>([]);
@@ -174,7 +180,8 @@ function BeeindigDialoog({ ondernemingId, ondernemingNaam, persoonId, contracten
               {contracten.map((x) => <label key={x.id} className="flex items-center gap-2"><Checkbox checked={c.has(x.id)} onCheckedChange={() => wissel(c, setC, x.id)} />Contract regel {x.bron_rij}: {PRODUCT_LABEL[x.product as Product] ?? x.product}</label>)}
               {polissen.map((x) => <label key={x.id} className="flex items-center gap-2"><Checkbox checked={p.has(x.id)} onCheckedChange={() => wissel(p, setP, x.id)} />Polis {x.certificate_number ?? "zonder nummer"}</label>)}
             </div>
-            <div><Label>Einddatum</Label><Input type="date" value={datum} onChange={(e) => setDatum(e.target.value)} /><p className="text-xs text-muted-foreground">Mag in het verleden liggen, bijvoorbeeld bij een eerdere telefonische opzegging.</p></div>
+            <div className="space-y-1"><Label htmlFor="laatste-dekkingsdag">{DEKKING_LABEL}</Label><Input id="laatste-dekkingsdag" type="date" value={datum} onChange={(e) => setDatum(e.target.value)} /><p className="text-xs text-muted-foreground">{DEKKING_HULP}. Standaard de dag vóór de verlengdatum; mag in het verleden liggen, bijvoorbeeld bij een eerdere telefonische opzegging.</p>
+              {contracten.filter((x) => c.has(x.id)).map((x) => <CreditVoorbeeld key={x.id} contract={x} datum={datum} />)}</div>
             <div><Label>Reden</Label>
               <Select value={reden} onValueChange={setReden}><SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>{Object.entries(STOP_REDENEN).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent></Select></div>
@@ -229,7 +236,8 @@ function EinddatumDialoog({ contract, onSluit, onKlaar }: { contract: any; onSlu
           <DialogDescription>Huidige einddatum {formatDateNL(contract.eind_datum)}. De wijziging wordt vastgelegd in de tijdlijn en het auditlog.</DialogDescription>
         </DialogHeader>
         <div className="space-y-3 text-sm">
-          <div><Label>Nieuwe einddatum</Label><Input type="date" value={datum} onChange={(e) => setDatum(e.target.value)} /></div>
+          <div className="space-y-1"><Label htmlFor="nieuwe-dekkingsdag">{DEKKING_LABEL}</Label><Input id="nieuwe-dekkingsdag" type="date" value={datum} onChange={(e) => setDatum(e.target.value)} /><p className="text-xs text-muted-foreground">{DEKKING_HULP}. De dag vóór de verlengdatum is {formatDateNL(standaardLaatsteDekkingsdag(contract, vandaag()))}.</p>
+            <CreditVoorbeeld contract={contract} datum={datum} /></div>
           <div><Label>Reden (verplicht)</Label><Textarea value={reden} onChange={(e) => setReden(e.target.value)} rows={3} /></div>
         </div>
         <DialogFooter className="gap-2">
