@@ -67,3 +67,22 @@ it("zonder tweestapscode blijft afsluiten geweigerd", async () => {
   await expect(db.query("SELECT lead_afsluiten($1,'geen_interesse',NULL)",[id])).rejects.toThrow('geen toegang');
   await db.exec("SET test.aal='aal2'");
 });
+it("Vandaag te doen sluit ook gemarkeerde afgesloten leads uit", async () => {
+  await db.exec(`RESET ROLE;
+    ALTER TABLE leads ADD COLUMN vlag text, ADD COLUMN vlag_datum date;
+    UPDATE leads SET vlag='later',vlag_datum=current_date;
+    CREATE FUNCTION mijn_acties_vandaag_basis(boolean) RETURNS jsonb LANGUAGE sql AS $$
+      SELECT coalesce(jsonb_agg(l.id),'[]'::jsonb) FROM leads l WHERE true AND l.vlag IS NOT NULL AND l.vlag_datum IS NOT NULL AND l.vlag_datum <= vandaag
+    $$;`.replace('<= vandaag','<= current_date'));
+  // Production definition uses a PL/pgSQL local calendar date; keep the exact replacement target.
+  await db.exec(`CREATE OR REPLACE FUNCTION mijn_acties_vandaag_basis(boolean) RETURNS jsonb LANGUAGE plpgsql AS $$
+    DECLARE vandaag date := current_date; r jsonb;
+    BEGIN SELECT coalesce(jsonb_agg(l.id),'[]'::jsonb) INTO r FROM leads l WHERE true AND l.vlag IS NOT NULL AND l.vlag_datum IS NOT NULL AND l.vlag_datum <= vandaag; RETURN r; END $$;`);
+  await db.exec(readFileSync('drizzle/migrations/0214_a23_afgesloten_opvolging.sql','utf8'));
+  for (const status of ['afgerond','klant_geworden','geen_interesse','vraag_beantwoord']) {
+    await db.query('UPDATE leads SET status=$1::lead_status',[status]);
+    expect((await db.query('SELECT mijn_acties_vandaag_basis(false) r')).rows[0]).toEqual({r:[]});
+  }
+  await db.exec("UPDATE leads SET status='in_behandeling'");
+  expect((await db.query('SELECT mijn_acties_vandaag_basis(false) r')).rows[0]).toEqual({r:[id]});
+});
