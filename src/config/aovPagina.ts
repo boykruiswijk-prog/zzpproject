@@ -4,14 +4,14 @@ export const AOV_PAD = "/aov";
 export const AOV_ADVISEUR_URL = "https://www.wijzijnaov.nl";
 export const AOV_REKENTOOL_URL = "https://movir-aov-exon.smartplatforms.io/frame/0f148d2f-a3e4-4ba2-adb3-384917fde229";
 export const AOV_REKENTOOL_TEKST =
-  "De rekentool en de aanvraag zijn van Tjepkema Assurantie & Advies B.V. (WijZijnAOV), AFM-vergunning 12050654. Voordat je verdergaat, leg je bij ZP Zaken je naam, e-mailadres en eventueel telefoonnummer vast. ZP Zaken bewaart die gegevens en je toestemming, geeft ze door aan Tjepkema Assurantie & Advies voor de AOV en gebruikt ze om contact met je te houden over je aanmelding. Wat je bij de adviseur invult, ontvangt ZP Zaken niet.";
+  "De rekentool en de aanvraag zijn van onze externe adviseur. Voordat je verdergaat, leg je bij ZP Zaken je naam, e-mailadres en eventueel telefoonnummer vast. ZP Zaken bewaart die gegevens en je toestemming, geeft ze door aan onze externe adviseur voor de AOV en gebruikt ze om contact met je te houden over je aanmelding. Wat je bij de adviseur invult, ontvangt ZP Zaken niet.";
 /** Byte-gelijk aan de controle in de databasefunctie aov_aanmelden. */
 export const AOV_TOESTEMMING_TEKST =
   "Ik geef ZP Zaken toestemming mijn naam en contactgegevens door te geven aan Tjepkema Assurantie & Advies B.V. (WijZijnAOV), zodat ik de Movir Momentum AOV via hen kan berekenen en afsluiten.";
 export const AOV_TOESTEMMING_UITLEG =
-  "ZP Zaken geeft alleen je contactgegevens door. Advies en afsluiten lopen via Tjepkema Assurantie & Advies B.V., AFM-vergunning 12050654. Wat je daar invult, ontvangt ZP Zaken niet.";
+  "ZP Zaken geeft alleen je contactgegevens door. Advies en afsluiten lopen via onze externe adviseur. Wat je daar invult, ontvangt ZP Zaken niet.";
 export const AOV_GEEN_VERGOEDING =
-  "ZP Zaken ontvangt geen vergoeding van Tjepkema Assurantie & Advies, Movir of Nationale-Nederlanden voor deze doorverwijzing.";
+  "ZP Zaken ontvangt geen vergoeding van onze externe adviseur, Movir of Nationale-Nederlanden voor deze doorverwijzing.";
 /** Leeg zolang de privacyverklaring geen termijn voor contact- en aanvraaggegevens noemt; vlag blijft dan uit. */
 export const AOV_BEWAARTERMIJN = "XXX";
 export const AOV_AFM_URL =

@@ -16,18 +16,18 @@ import {
 } from "@/config/aovPagina";
 
 export const AOV_SEO = {
-  title: "AOV zzp: Movir AOV via Tjepkema berekenen | ZP Zaken",
+  title: "AOV zzp: Movir AOV via onze externe adviseur | ZP Zaken",
   description:
-    "AOV zzp: lees hoe de Movir AOV (Momentum) werkt en bereken je premie bij Tjepkema Assurantie & Advies. ZP Zaken ontvangt geen vergoeding.",
+    "AOV zzp: lees hoe de Movir AOV (Momentum) werkt en bereken je premie via onze externe adviseur. ZP Zaken ontvangt geen vergoeding.",
 };
 
 export const AOV_H1 = "AOV voor zzp'ers: de Movir AOV in gewone taal";
 
 export const AOV_FAQ = [
-  { q: "Wat is een AOV voor zzp'ers?", a: "Een arbeidsongeschiktheidsverzekering (AOV) keert maandelijks uit als je door ziekte of een ongeval niet of minder kunt werken. Als zzp'er heb je geen werkgever die je loon doorbetaalt. Of een AOV bij jou past, hangt af van je situatie; daarover praat je met Tjepkema Assurantie & Advies." },
+  { q: "Wat is een AOV voor zzp'ers?", a: "Een arbeidsongeschiktheidsverzekering (AOV) keert maandelijks uit als je door ziekte of een ongeval niet of minder kunt werken. Als zzp'er heb je geen werkgever die je loon doorbetaalt. Of een AOV bij jou past, hangt af van je situatie; daarover praat je met onze externe adviseur." },
   { q: "Wat is de Movir Momentum AOV?", a: "Een AOV van Movir voor zelfstandigen. Je stelt hem zelf samen: je kiest onder meer het verzekerd bedrag, de eigenrisicotermijn en de eindleeftijd. Movir beoordeelt je aanvraag." },
-  { q: "Hoe sluit ik de Movir AOV af via zpzaken.nl?", a: "Je laat bij ZP Zaken je naam, e-mailadres en eventueel telefoonnummer achter, met toestemming om die door te geven. Daarna ga je in een nieuw tabblad naar de rekentool van Tjepkema Assurantie & Advies. Berekenen, advies en afsluiten lopen volledig via Tjepkema." },
-  { q: "Wat kost een AOV als zzp'er?", a: "Dat verschilt per persoon. De premie hangt af van je leeftijd en beroep, en van je eigen keuzes zoals het verzekerd bedrag en de eigenrisicotermijn. Je ziet je premie in de rekentool van Tjepkema." },
+  { q: "Hoe sluit ik de Movir AOV af via zpzaken.nl?", a: "Je laat bij ZP Zaken je naam, e-mailadres en eventueel telefoonnummer achter, met toestemming om die door te geven. Daarna ga je in een nieuw tabblad naar de rekentool van onze externe adviseur. Berekenen, advies en afsluiten lopen volledig via de externe adviseur." },
+  { q: "Wat kost een AOV als zzp'er?", a: "Dat verschilt per persoon. De premie hangt af van je leeftijd en beroep, en van je eigen keuzes zoals het verzekerd bedrag en de eigenrisicotermijn. Je ziet je premie in de rekentool van onze externe adviseur." },
   { q: "Is de premie van een AOV aftrekbaar?", a: "De premie is vaak aftrekbaar in box 1. Of en hoeveel hangt af van je eigen situatie." },
   { q: "Geeft ZP Zaken advies over de AOV of krijgt ZP Zaken een vergoeding?", a: `Nee. ZP Zaken geeft geen advies en bemiddelt niet in de AOV. ${AOV_GEEN_VERGOEDING}` },
 ];
@@ -70,8 +70,8 @@ const vertrouwen = [
 
 const stappen = [
   { icon: ClipboardList, titel: "Je gegevens bij ZP Zaken", tekst: "Je laat je naam, e-mailadres en eventueel telefoonnummer achter, met toestemming om ze door te geven. Ben je ingelogd in Mijn ZP, dan is dit één klik." },
-  { icon: ExternalLink, titel: "Naar de rekentool van Tjepkema", tekst: "In een nieuw tabblad open je de rekentool van Tjepkema Assurantie & Advies. Daar kies je je beroep, het verzekerd bedrag en de eigenrisicotermijn." },
-  { icon: ShieldCheck, titel: "Advies en afsluiten bij Tjepkema", tekst: "Michiel Tjepkema en zijn team helpen je verder met advies, de berekening en het afsluiten. Wat je daar invult, ontvangt ZP Zaken niet." },
+  { icon: ExternalLink, titel: "Naar de rekentool van onze externe adviseur", tekst: "In een nieuw tabblad open je de rekentool van de externe adviseur. Daar kies je je beroep, het verzekerd bedrag en de eigenrisicotermijn." },
+  { icon: ShieldCheck, titel: "Advies en afsluiten bij de externe adviseur", tekst: "Het team van de externe adviseur helpt je verder met advies, de berekening en het afsluiten. Wat je daar invult, ontvangt ZP Zaken niet." },
 ];
 
 const feiten = [
@@ -93,7 +93,7 @@ function Aanmelden({ doel, setDoel }: { doel: AovDoel; setDoel: (d: AovDoel) => 
         <p className="text-sm text-muted-foreground leading-relaxed rounded-xl border border-border bg-card p-4 mb-5">{AOV_REKENTOOL_TEKST}</p>
         <div role="group" aria-label="Kies je route" className="flex flex-wrap gap-2 mb-4">
           <Button type="button" size="sm" variant={doel === "rekentool" ? "default" : "outline"} aria-pressed={doel === "rekentool"} onClick={() => setDoel("rekentool")}>Rekentool</Button>
-          <Button type="button" size="sm" variant={doel === "advies" ? "default" : "outline"} aria-pressed={doel === "advies"} onClick={() => setDoel("advies")}>Liever persoonlijk contact met Tjepkema</Button>
+          <Button type="button" size="sm" variant={doel === "advies" ? "default" : "outline"} aria-pressed={doel === "advies"} onClick={() => setDoel("advies")}>Liever persoonlijk contact met de externe adviseur</Button>
         </div>
         <AovAanmeldStap key={doel} doel={doel} />
       </div>
@@ -117,7 +117,7 @@ export default function AOVMovir() {
             </p>
             <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-5">{AOV_H1}</h1>
             <p className="text-lg text-muted-foreground mb-8 max-w-xl">
-              Kun je door ziekte of een ongeval niet werken, dan valt je inkomen als zelfstandige weg. Lees hier hoe de Movir Momentum AOV werkt en bereken je premie in een paar minuten bij Tjepkema Assurantie & Advies.
+              Kun je door ziekte of een ongeval niet werken, dan valt je inkomen als zelfstandige weg. Lees hier hoe de Movir Momentum AOV werkt en bereken je premie in een paar minuten via onze externe adviseur.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 mb-5">
               <Button variant="accent" size="lg" asChild><a href="#premie" onClick={() => setDoel("rekentool")}>Bereken je premie <ArrowRight className="h-5 w-5" /></a></Button>
@@ -131,7 +131,7 @@ export default function AOVMovir() {
             <img src={movirLogo} alt="Movir" width={150} height={100} className="h-24 w-auto -ml-4 mb-2" />
             <p className="font-semibold mb-3">Movir Momentum AOV</p>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              {["Je stelt hem zelf samen", "Premie berekenen bij Tjepkema", "Advies en afsluiten bij Tjepkema"].map((t) => (
+              {["Je stelt hem zelf samen", "Premie berekenen bij onze externe adviseur", "Advies en afsluiten bij de externe adviseur"].map((t) => (
                 <li key={t} className="flex items-start gap-2"><CheckCircle className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" aria-hidden="true" />{t}</li>
               ))}
             </ul>
@@ -180,7 +180,7 @@ export default function AOVMovir() {
             {feiten.map((f) => (
               <li key={f} className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-accent mt-0.5 flex-shrink-0" aria-hidden="true" /><span>{f}</span></li>
             ))}
-            <li className="text-sm text-muted-foreground pt-2">Wat precies verzekerd is, staat in de voorwaarden van Movir. Die krijg je bij Tjepkema.</li>
+            <li className="text-sm text-muted-foreground pt-2">Wat precies verzekerd is, staat in de voorwaarden van Movir. Die krijg je bij de externe adviseur.</li>
           </ul>
         </div>
       </section>
@@ -228,7 +228,7 @@ export default function AOVMovir() {
         <div className="container-wide max-w-4xl">
           <h2 className="text-lg font-semibold mb-3">Verplichte vermeldingen</h2>
           <Vermelding id="vermelding" />
-          <p className="mt-3 text-sm text-muted-foreground">Website van Tjepkema: <a href={AOV_ADVISEUR_URL} target="_blank" rel="noopener" className="underline underline-offset-2">wijzijnaov.nl</a></p>
+          <p className="mt-3 text-sm text-muted-foreground">Website van onze externe adviseur: <a href={AOV_ADVISEUR_URL} target="_blank" rel="noopener" className="underline underline-offset-2">wijzijnaov.nl</a></p>
         </div>
       </section>
 
