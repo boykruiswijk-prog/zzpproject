@@ -4,7 +4,8 @@ import { KvkLeadAfwijkingen } from "@/components/admin/KvkLeadAfwijkingen";
 import { CyberDatums } from "@/components/admin/CyberDatums";
 import { IngangsdatumAanpassen } from "@/components/admin/IngangsdatumAanpassen";
 import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS, statusTitel, isUitkomst, type LeadUitkomst } from "@/lib/statusLabels";
-import { LeadAfrondenKnop, AfrondDialoog, magAfronden, leadStatusKeuzes } from "@/components/admin/LeadAfronden";
+import { LeadAfrondenKnop, AfrondDialoog, magAfronden, leadStatusKeuzes, leadStatusOpties } from "@/components/admin/LeadAfronden";
+import { leadStatusFout } from "@/lib/leadStatusFout";
 import { LeadTestSchakelaar } from "@/components/admin/LeadTestSchakelaar";
 import { StartertariefControle } from "@/components/admin/StartertariefControle";
 import { VlagBalk } from "@/components/admin/LeadVlag";
@@ -177,17 +178,8 @@ export default function AdminLeadDetail() {
     if (!id) return;
     if (newStatus === "afgerond") return;
     if (isUitkomst(newStatus)) { setAfrondUitkomst(newStatus); setAfrondOpen(true); return; }
-    const updates: { status: LeadStatus; converted_at?: string | null } = {
-      status: newStatus,
-    };
-    
-    if (newStatus === "klant") {
-      updates.converted_at = new Date().toISOString();
-    } else {
-      updates.converted_at = null;
-    }
-
-    updateLead.mutate({ id, updates });
+    if (!lead || !leadStatusOpties(lead).includes(newStatus)) return;
+    updateLead.mutate({ id, updates: { status: newStatus } }, {onError: error => toast({title: "Status niet gewijzigd", description: leadStatusFout(error), variant: "destructive"})});
   };
 
   const handleDelete = async () => {
@@ -306,7 +298,7 @@ export default function AdminLeadDetail() {
                           </SelectTrigger>
                           <SelectContent>
                             {leadStatusKeuzes(lead as any).map(([value, label]) => (
-                              <SelectItem key={value} value={value}>
+                              <SelectItem key={value} value={value} disabled={!leadStatusOpties(lead).includes(value)}>
                                 {label}
                               </SelectItem>
                             ))}

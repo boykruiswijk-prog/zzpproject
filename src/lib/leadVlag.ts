@@ -1,5 +1,6 @@
 // Vlag in de acceptatie: pure filterlogica (gedeeld met tests) en de twee RPC's.
 import { supabase } from "@/integrations/supabase/client";
+import { AFGESLOTEN_LEAD_STATUSSEN } from "@/lib/statusLabels";
 
 export type VlagSoort = "later" | "actie";
 export type VlagTab = "te_doen" | "gemarkeerd" | "alle";
@@ -22,15 +23,15 @@ export function isOpvolgen(l: MetVlag, vandaag: string): boolean {
   return !!l.vlag && !!l.vlag_datum && l.vlag_datum <= vandaag;
 }
 
-export function filterOpTab<T extends MetVlag>(leads: T[], tab: VlagTab, vandaag: string): T[] {
+export function filterOpTab<T extends MetVlag & { status?: string }>(leads: T[], tab: VlagTab, vandaag: string, toonAfgesloten = false): T[] {
   if (tab === "gemarkeerd") return leads.filter((l) => !!l.vlag);
-  if (tab === "te_doen") return leads.filter((l) => !isGeparkeerd(l, vandaag));
+  if (tab === "te_doen") return leads.filter((l) => !isGeparkeerd(l, vandaag) && (toonAfgesloten || !(AFGESLOTEN_LEAD_STATUSSEN as string[]).includes(l.status ?? "")));
   return leads;
 }
 
 /** Alleen aanvragen: een actieve polis is geen open aanvraag. Alle/Gemarkeerd blijven intact. */
-export function filterAanvragenOpTab<T extends MetVlag & { status?: string }>(leads: T[], tab: VlagTab, vandaag: string): T[] {
-  const rijen = filterOpTab(leads, tab, vandaag);
+export function filterAanvragenOpTab<T extends MetVlag & { status?: string }>(leads: T[], tab: VlagTab, vandaag: string, toonAfgesloten = false): T[] {
+  const rijen = filterOpTab(leads, tab, vandaag, toonAfgesloten);
   return tab === "te_doen" ? rijen.filter((l) => l.status !== "actief") : rijen;
 }
 
