@@ -1464,6 +1464,13 @@
       "when": 1793270902245,
       "tag": "0208_lead_status_uitkomsten_enum",
       "breakpoints": true
+    },
+    {
+      "idx": 209,
+      "version": "7",
+      "when": 1793270969459,
+      "tag": "0209_lead_status_uitkomsten_functies",
+      "breakpoints": true
     }
   ]
 }

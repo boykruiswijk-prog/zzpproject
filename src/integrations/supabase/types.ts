@@ -7491,6 +7491,10 @@ export type Database = {
         Args: { _lead_id: string; _toelichting?: string }
         Returns: boolean
       }
+      lead_afsluiten: {
+        Args: { _lead_id: string; _toelichting?: string; _uitkomst: string }
+        Returns: boolean
+      }
       lead_ingangsdatum_wijzigen: {
         Args: { _datum: string; _lead_id: string; _toelichting: string }
         Returns: Json
