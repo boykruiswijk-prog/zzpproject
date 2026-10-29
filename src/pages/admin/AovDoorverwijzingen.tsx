@@ -11,6 +11,7 @@ import { aovAanmeldCsv, aovKopieTekst, aovWeekTotalen, AovAanmeldOverzichtRij, A
 import { formatDateTimeNL } from "@/lib/dateFormat";
 import { toast } from "@/hooks/use-toast";
 import { Copy, Download, RefreshCw } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 async function haalAlles<T>(rpc: "aov_aanmeldingen_overzicht" | "aov_doorverwijzingen_overzicht"): Promise<T[]> {
   // PostgREST-paginering voorkomt afgekapt weektotaal/export.
@@ -47,6 +48,7 @@ function StatusCel({ rij }: { rij: AovAanmeldOverzichtRij }) {
 }
 
 export default function AovDoorverwijzingen() {
+  const { isAdmin } = useAuth();
   const aanmeldingen = useQuery({ queryKey: ["aov-aanmeldingen"], queryFn: () => haalAlles<AovAanmeldOverzichtRij>("aov_aanmeldingen_overzicht") });
   const kliks = useQuery({ queryKey: ["aov-doorverwijzingen"], queryFn: () => haalAlles<{ created_at: string }>("aov_doorverwijzingen_overzicht") });
   const data = aanmeldingen.data ?? [];
@@ -76,7 +78,7 @@ export default function AovDoorverwijzingen() {
           <TableCell>{r.doel}</TableCell><TableCell className="max-w-xs break-all">{r.bron}</TableCell>
           <TableCell>{r.lead_id ? <a className="underline underline-offset-2" href={`/admin/leads/${r.lead_id}`}>Ja{r.lead_status ? ` (${r.lead_status})` : ""}</a> : "Nee"}</TableCell>
           <TableCell className="font-mono text-xs break-all">{r.id}</TableCell>
-          <TableCell><StatusCel rij={r} /></TableCell>
+          <TableCell>{isAdmin ? <StatusCel rij={r} /> : AOV_STATUSSEN[r.status as keyof typeof AOV_STATUSSEN] ?? r.status}</TableCell>
           <TableCell><Button variant="outline" size="sm" onClick={() => void kopieer(r)}><Copy className="h-4 w-4 mr-2" />Kopieer voor Tjepkema</Button></TableCell>
         </TableRow>)}</TableBody></Table>}
     </>}

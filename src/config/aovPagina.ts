@@ -1,5 +1,5 @@
 // F9: één vlag voor de nieuwe AOV-pagina; uit = nieuwe pagina alleen in de preview, live blijft de huidige /aov.
-export const AOV_NIEUW_PUBLIEK = false;
+export const AOV_NIEUW_PUBLIEK = false; // F9-6: blijft uit tot er een bewaartermijn is (AOV_BEWAARTERMIJN)
 export const AOV_PAD = "/aov";
 export const AOV_ADVISEUR_URL = "https://www.wijzijnaov.nl";
 export const AOV_REKENTOOL_URL = "https://movir-aov-exon.smartplatforms.io/frame/0f148d2f-a3e4-4ba2-adb3-384917fde229";
@@ -10,6 +10,9 @@ export const AOV_TOESTEMMING_TEKST =
   "Ik geef ZP Zaken toestemming mijn naam en contactgegevens door te geven aan Tjepkema Assurantie & Advies B.V. (WijZijnAOV), zodat ik de Movir Momentum AOV via hen kan berekenen en afsluiten.";
 export const AOV_TOESTEMMING_UITLEG =
   "ZP Zaken geeft alleen je contactgegevens door. Advies en afsluiten lopen via Tjepkema Assurantie & Advies B.V., AFM-vergunning 12050654. Wat je daar invult, ontvangt ZP Zaken niet.";
+export const AOV_GEEN_VERGOEDING =
+  "ZP Zaken ontvangt geen vergoeding van Tjepkema Assurantie & Advies, Movir of Nationale-Nederlanden voor deze doorverwijzing.";
+/** Leeg zolang de privacyverklaring geen termijn voor contact- en aanvraaggegevens noemt; vlag blijft dan uit. */
 export const AOV_BEWAARTERMIJN = "XXX";
 export const AOV_AFM_URL =
   "https://www.afm.nl/nl-nl/sector/registers/vergunningenregisters/financiele-dienstverleners/details?id=A6BF9913-6111-F011-998A-7C1E5272931F";

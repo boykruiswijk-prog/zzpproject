@@ -7,42 +7,39 @@ import { Button } from "@/components/ui/button";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { LeesMeer } from "@/components/kennisbank/LeesMeer";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, CheckCircle } from "lucide-react";
+import { ArrowRight, CheckCircle, ClipboardList, ExternalLink, ShieldCheck, Star, Users, CalendarCheck } from "lucide-react";
 import { STARTER_VOORWAARDE_TEKST } from "@/lib/starterTarief";
+import { SITE_CONFIG } from "@/config/site";
+import movirLogo from "@/assets/partner-movir.webp";
 import {
-  AOV_ADVISEUR_URL, AOV_AFM_URL, AOV_REKENTOOL_TEKST, AOV_NIEUW_PUBLIEK, AOV_VERMELDING_AFM, AOV_VERMELDING_NA, AOV_VERMELDING_VOOR,
+  AOV_ADVISEUR_URL, AOV_AFM_URL, AOV_GEEN_VERGOEDING, AOV_REKENTOOL_TEKST, AOV_NIEUW_PUBLIEK, AOV_VERMELDING_AFM, AOV_VERMELDING_NA, AOV_VERMELDING_VOOR,
 } from "@/config/aovPagina";
 
 export const AOV_SEO = {
-  title: "AOV zzp: Movir Momentum afsluiten of met advies | ZP Zaken",
+  title: "AOV zzp: Movir AOV via Tjepkema berekenen | ZP Zaken",
   description:
-    "AOV voor zzp'ers: sluit de Movir Momentum zelf online af of met advies van Tjepkema. Lees wat de premie bepaalt en wat het plan voor een verplichte AOV is.",
+    "AOV zzp: lees hoe de Movir AOV (Momentum) werkt en bereken je premie bij Tjepkema Assurantie & Advies. ZP Zaken ontvangt geen vergoeding.",
 };
 
+export const AOV_H1 = "AOV voor zzp'ers: de Movir AOV in gewone taal";
+
 export const AOV_FAQ = [
-  { q: "Wat kost een AOV als zzp'er?", a: "Dat verschilt per persoon. De premie hangt af van je leeftijd en beroep, en deels van je eigen keuzes zoals het verzekerd bedrag en de eigenrisicotermijn. Je berekent je premie bij de adviseur." },
-  { q: "Wat is een eigenrisicotermijn?", a: "Dat is de periode waarin je bij arbeidsongeschiktheid nog geen uitkering krijgt, bijvoorbeeld 30 dagen of 1 jaar. Kies je een langere termijn, dan is de premie lager, maar start de uitkering later." },
-  { q: "Kan ik de AOV zelf afsluiten of heb ik advies nodig?", a: "Allebei kan. Zonder advies kies je zelf, doe je een kennis- en ervaringstoets en betaal je afsluitkosten; je bent dan zelf verantwoordelijk dat de AOV bij je situatie blijft passen. Met advies kijkt een adviseur mee en betaal je advieskosten." },
+  { q: "Wat is een AOV voor zzp'ers?", a: "Een arbeidsongeschiktheidsverzekering (AOV) keert maandelijks uit als je door ziekte of een ongeval niet of minder kunt werken. Als zzp'er heb je geen werkgever die je loon doorbetaalt. Of een AOV bij jou past, hangt af van je situatie; daarover praat je met Tjepkema Assurantie & Advies." },
+  { q: "Wat is de Movir Momentum AOV?", a: "Een AOV van Movir voor zelfstandigen. Je stelt hem zelf samen: je kiest onder meer het verzekerd bedrag, de eigenrisicotermijn en de eindleeftijd. Movir beoordeelt je aanvraag." },
+  { q: "Hoe sluit ik de Movir AOV af via zpzaken.nl?", a: "Je laat bij ZP Zaken je naam, e-mailadres en eventueel telefoonnummer achter, met toestemming om die door te geven. Daarna ga je in een nieuw tabblad naar de rekentool van Tjepkema Assurantie & Advies. Berekenen, advies en afsluiten lopen volledig via Tjepkema." },
+  { q: "Wat kost een AOV als zzp'er?", a: "Dat verschilt per persoon. De premie hangt af van je leeftijd en beroep, en van je eigen keuzes zoals het verzekerd bedrag en de eigenrisicotermijn. Je ziet je premie in de rekentool van Tjepkema." },
   { q: "Is de premie van een AOV aftrekbaar?", a: "De premie is vaak aftrekbaar in box 1. Of en hoeveel hangt af van je eigen situatie." },
-  { q: "Tot welke leeftijd kan ik een AOV afsluiten?", a: "Bij de Movir Momentum kun je afsluiten tot maximaal 66 jaar, bij een looptijd tot 68 jaar. Je kiest zelf een eindleeftijd, bijvoorbeeld gekoppeld aan je pensioenleeftijd." },
-  { q: "Komt er een verplichte AOV voor zzp'ers?", a: "Het kabinet wil een verplichte AOV voor zelfstandigen invoeren; dat plan staat in het coalitieakkoord van 30 januari 2026. Het is nog geen wet en de uitwerking kan veranderen." },
-  { q: "Wie is mijn adviseur?", a: "Advies en afsluiten van de Movir Momentum AOV lopen via Tjepkema Assurantie & Advies B.V." },
+  { q: "Geeft ZP Zaken advies over de AOV of krijgt ZP Zaken een vergoeding?", a: `Nee. ZP Zaken geeft geen advies en bemiddelt niet in de AOV. ${AOV_GEEN_VERGOEDING}` },
 ];
 
 const schema = {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "Service",
-      name: "Advies en afsluiten Movir Momentum AOV voor zzp'ers",
-      serviceType: "Arbeidsongeschiktheidsverzekering",
-      areaServed: "NL",
-      url: AOV_ADVISEUR_URL,
-      provider: {
-        "@type": "Organization",
-        name: "Tjepkema Assurantie & Advies B.V.",
-        address: { "@type": "PostalAddress", streetAddress: "Middenweg 344", postalCode: "1097 TZ", addressLocality: "Amsterdam", addressCountry: "NL" },
-      },
+      "@type": "WebPage",
+      name: AOV_H1,
+      url: "https://zpzaken.nl/aov",
+      about: [{ "@type": "Thing", name: "AOV zzp" }, { "@type": "Thing", name: "Movir AOV" }],
     },
     {
       "@type": "FAQPage",
@@ -53,36 +50,50 @@ const schema = {
 
 export function Vermelding({ id }: { id?: string }) {
   return (
-    <p id={id} className="text-sm text-muted-foreground leading-relaxed rounded-xl border border-border bg-card p-4">
-      {AOV_VERMELDING_VOOR}
-      <a href={AOV_AFM_URL} target="_blank" rel="noopener" className="underline underline-offset-2 text-foreground">{AOV_VERMELDING_AFM}</a>
-      {AOV_VERMELDING_NA}
-    </p>
+    <div id={id} className="text-sm text-muted-foreground leading-relaxed rounded-xl border border-border bg-card p-4 space-y-2">
+      <p>
+        {AOV_VERMELDING_VOOR}
+        <a href={AOV_AFM_URL} target="_blank" rel="noopener" className="underline underline-offset-2 text-foreground">{AOV_VERMELDING_AFM}</a>
+        {AOV_VERMELDING_NA}
+      </p>
+      <p>{AOV_GEEN_VERGOEDING}</p>
+    </div>
   );
 }
 
+const vertrouwen = [
+  { icon: CalendarCheck, label: "13+ jaar voor zzp'ers" },
+  { icon: Users, label: `${SITE_CONFIG.klantenAantal} zzp'ers` },
+  { icon: Star, label: "5,0/5 Google Reviews" },
+  { icon: ShieldCheck, label: "AFM 12050636" },
+];
+
+const stappen = [
+  { icon: ClipboardList, titel: "Je gegevens bij ZP Zaken", tekst: "Je laat je naam, e-mailadres en eventueel telefoonnummer achter, met toestemming om ze door te geven. Ben je ingelogd in Mijn ZP, dan is dit één klik." },
+  { icon: ExternalLink, titel: "Naar de rekentool van Tjepkema", tekst: "In een nieuw tabblad open je de rekentool van Tjepkema Assurantie & Advies. Daar kies je je beroep, het verzekerd bedrag en de eigenrisicotermijn." },
+  { icon: ShieldCheck, titel: "Advies en afsluiten bij Tjepkema", tekst: "Michiel Tjepkema en zijn team helpen je verder met advies, de berekening en het afsluiten. Wat je daar invult, ontvangt ZP Zaken niet." },
+];
+
 const feiten = [
-  "De premie hangt af van je leeftijd en beroep, en deels van je eigen keuzes.",
   "Je kiest zelf het verzekerd bedrag.",
   "Je kiest een eigenrisicotermijn, bijvoorbeeld 30 dagen of 1 jaar. Langer betekent een lagere premie, maar de uitkering start later.",
-  "Standaard krijg je een uitkering vanaf 25% arbeidsongeschiktheid. Je kunt dat ophogen naar 45%.",
+  "Standaard begint een uitkering vanaf 25% arbeidsongeschiktheid. Je kunt dat ophogen naar 45%.",
   "Je kiest een eindleeftijd, bijvoorbeeld gekoppeld aan je pensioenleeftijd.",
   "Indexatie van het verzekerd bedrag is mogelijk.",
   "Je kiest een contract van 1 of 3 jaar. Bij 3 jaar krijg je 3% korting.",
   "Afsluiten kan tot maximaal 66 jaar, bij een looptijd tot 68 jaar.",
-  "De premie is vaak aftrekbaar in box 1.",
 ];
 
-export function Rekentool({ doel, setDoel }: { doel: AovDoel; setDoel: (d: AovDoel) => void }) {
+function Aanmelden({ doel, setDoel }: { doel: AovDoel; setDoel: (d: AovDoel) => void }) {
   return (
-    <section id="premie" className="section-padding bg-background scroll-mt-24">
+    <section id="premie" className="section-padding bg-secondary scroll-mt-24">
       <div className="container-wide max-w-3xl">
-        <h2 className="mb-4">Bereken je premie en sluit af bij de adviseur</h2>
-        <p className="text-muted-foreground leading-relaxed mb-4">Meld je eerst kort aan bij ZP Zaken. Daarna ga je verder naar de adviseur. Daar kies je je beroep, het verzekerd bedrag en de eigenrisicotermijn, doe je een kennis- en ervaringstoets en rond je je aanvraag af.</p>
+        <p className="text-sm font-semibold uppercase tracking-wide text-accent mb-2">Stap 1</p>
+        <h2 className="mb-4">Meld je aan en ga door naar de rekentool</h2>
         <p className="text-sm text-muted-foreground leading-relaxed rounded-xl border border-border bg-card p-4 mb-5">{AOV_REKENTOOL_TEKST}</p>
         <div role="group" aria-label="Kies je route" className="flex flex-wrap gap-2 mb-4">
           <Button type="button" size="sm" variant={doel === "rekentool" ? "default" : "outline"} aria-pressed={doel === "rekentool"} onClick={() => setDoel("rekentool")}>Rekentool</Button>
-          <Button type="button" size="sm" variant={doel === "advies" ? "default" : "outline"} aria-pressed={doel === "advies"} onClick={() => setDoel("advies")}>Persoonlijk advies</Button>
+          <Button type="button" size="sm" variant={doel === "advies" ? "default" : "outline"} aria-pressed={doel === "advies"} onClick={() => setDoel("advies")}>Liever persoonlijk contact met Tjepkema</Button>
         </div>
         <AovAanmeldStap key={doel} doel={doel} />
       </div>
@@ -98,60 +109,83 @@ export default function AOVMovir() {
         <script type="application/ld+json">{JSON.stringify(schema)}</script>
       </SEOHead>
 
-      <section className="bg-secondary pt-28 pb-14 md:pt-36 md:pb-20">
-        <div className="container-wide max-w-4xl">
-          <p className="text-sm font-medium text-accent mb-3">Je komt van NN? Hier sluit je de Movir Momentum AOV af.</p>
-          <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-5">AOV voor zzp'ers: Movir Momentum online afsluiten of met advies</h1>
-          <p className="text-lg text-muted-foreground mb-8 max-w-2xl">
-            Word je ziek of arbeidsongeschikt, dan valt je inkomen als zelfstandige weg. Een AOV keert dan maandelijks uit. Je sluit de Movir Momentum zelf online af of met hulp van een adviseur.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 mb-6">
-            <Button variant="accent" size="lg" asChild><a href="#premie" onClick={() => setDoel("rekentool")}>Bereken je premie <ArrowRight className="h-5 w-5" /></a></Button>
-            <Button variant="outline" size="lg" asChild><a href="#premie" onClick={() => setDoel("advies")}>Liever persoonlijk advies</a></Button>
+      <section className="relative overflow-hidden bg-secondary pt-28 pb-14 md:pt-36 md:pb-20">
+        <div className="container-wide grid gap-10 md:grid-cols-[1.4fr_1fr] md:items-center">
+          <div>
+            <p className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1 text-sm font-medium mb-5">
+              <span className="h-2 w-2 rounded-full bg-accent" aria-hidden="true" /> AOV zzp
+            </p>
+            <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-5">{AOV_H1}</h1>
+            <p className="text-lg text-muted-foreground mb-8 max-w-xl">
+              Kun je door ziekte of een ongeval niet werken, dan valt je inkomen als zelfstandige weg. Lees hier hoe de Movir Momentum AOV werkt en bereken je premie in een paar minuten bij Tjepkema Assurantie & Advies.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 mb-5">
+              <Button variant="accent" size="lg" asChild><a href="#premie" onClick={() => setDoel("rekentool")}>Bereken je premie <ArrowRight className="h-5 w-5" /></a></Button>
+              <Button variant="outline" size="lg" asChild><a href="#zo-werkt-het">Zo werkt het</a></Button>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              ZP Zaken geeft geen advies over de AOV. <a href="#vermelding" className="underline underline-offset-2">Volledige vermelding</a>
+            </p>
           </div>
-          <p className="text-sm text-muted-foreground">
-            Advies en afsluiten via Tjepkema Assurantie & Advies B.V. (AFM 12050654). ZP Zaken geeft geen advies.{" "}
-            <a href="#adviseur" className="underline underline-offset-2">Volledige vermelding</a>
-          </p>
+          <div className="rounded-3xl border border-border bg-card p-8 shadow-sm">
+            <img src={movirLogo} alt="Movir" width={150} height={100} className="h-24 w-auto -ml-4 mb-2" />
+            <p className="font-semibold mb-3">Movir Momentum AOV</p>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              {["Je stelt hem zelf samen", "Premie berekenen bij Tjepkema", "Advies en afsluiten bij Tjepkema"].map((t) => (
+                <li key={t} className="flex items-start gap-2"><CheckCircle className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" aria-hidden="true" />{t}</li>
+              ))}
+            </ul>
+          </div>
         </div>
       </section>
 
-      <Rekentool doel={doel} setDoel={setDoel} />
+      <section aria-label="Over ZP Zaken" className="border-y border-border bg-background py-5">
+        <ul className="container-wide grid grid-cols-2 gap-4 md:flex md:justify-center md:gap-10 text-sm">
+          {vertrouwen.map((v) => (
+            <li key={v.label} className="inline-flex items-center gap-2 font-medium"><v.icon className="h-4 w-4 text-accent" aria-hidden="true" />{v.label}</li>
+          ))}
+        </ul>
+      </section>
 
-      <section className="section-padding bg-background border-t border-border">
+      <section id="zo-werkt-het" className="section-padding bg-background scroll-mt-24">
         <div className="container-wide max-w-5xl">
-          <h2 className="mb-3">Zelf afsluiten of met advies?</h2>
-          <p className="text-muted-foreground mb-8 max-w-2xl">Je kiest zelf hoe je de AOV afsluit. Beide routes lopen via de adviseur.</p>
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
-            <div className="rounded-2xl border border-border bg-card p-6">
-              <h3 className="text-xl font-semibold mb-3">Zelf online afsluiten (zonder advies)</h3>
-              <p className="text-muted-foreground leading-relaxed mb-4">Je kiest je beroep, het verzekerd bedrag en de eigenrisicotermijn, doet een kennis- en ervaringstoets en rondt af. Je betaalt afsluitkosten en bent zelf verantwoordelijk dat de AOV bij je situatie blijft passen.</p>
-              <p className="text-sm">Afsluitkosten: € XXX</p>
-            </div>
-            <div className="rounded-2xl border border-border bg-card p-6">
-              <h3 className="text-xl font-semibold mb-3">Met advies</h3>
-              <p className="text-muted-foreground leading-relaxed mb-4">Een adviseur kijkt met je mee naar je situatie en je keuzes. Daar horen advieskosten bij.</p>
-              <p className="text-sm">Advieskosten: € XXX</p>
-            </div>
-          </div>
-          <p className="mb-4 font-medium">Je adviseur: Michiel Tjepkema</p>
-          <Vermelding />
+          <h2 className="mb-3">Zo werkt het</h2>
+          <p className="text-muted-foreground mb-8 max-w-2xl">Drie stappen. Alleen de eerste stap is bij ZP Zaken.</p>
+          <ol className="grid gap-6 md:grid-cols-3">
+            {stappen.map((s, i) => (
+              <li key={s.titel} className="rounded-2xl border border-border bg-card p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-accent-foreground font-bold">{i + 1}</span>
+                  <s.icon className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">{s.titel}</h3>
+                <p className="text-muted-foreground leading-relaxed text-sm">{s.tekst}</p>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
-      <section className="section-padding bg-secondary">
-        <div className="container-wide max-w-4xl">
-          <h2 className="mb-3">Hoe werkt de Movir Momentum AOV?</h2>
-          <p className="text-muted-foreground mb-6">Je stelt de verzekering zelf samen. De verzekeraar beoordeelt je aanvraag. Stand oktober 2026, bron movir.nl.</p>
+      <Aanmelden doel={doel} setDoel={setDoel} />
+
+      <section className="section-padding bg-background">
+        <div className="container-wide max-w-5xl grid gap-10 md:grid-cols-[1fr_2fr]">
+          <div>
+            <img src={movirLogo} alt="Movir" width={150} height={100} loading="lazy" className="h-14 w-auto mb-4" />
+            <h2 className="mb-3">Hoe werkt de Movir Momentum AOV?</h2>
+            <p className="text-muted-foreground">Je stelt de verzekering zelf samen. Movir beoordeelt je aanvraag en bepaalt de voorwaarden. Stand oktober 2026, bron movir.nl.</p>
+          </div>
           <ul className="space-y-3">
+            <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-accent mt-0.5 flex-shrink-0" aria-hidden="true" /><span>De premie hangt af van je leeftijd en beroep, en van je eigen keuzes.</span></li>
             {feiten.map((f) => (
               <li key={f} className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-accent mt-0.5 flex-shrink-0" aria-hidden="true" /><span>{f}</span></li>
             ))}
+            <li className="text-sm text-muted-foreground pt-2">Wat precies verzekerd is, staat in de voorwaarden van Movir. Die krijg je bij Tjepkema.</li>
           </ul>
         </div>
       </section>
 
-      <section className="section-padding bg-background">
+      <section className="section-padding bg-secondary">
         <div className="container-wide max-w-4xl">
           <h2 className="mb-3">Komt er een verplichte AOV voor zzp'ers?</h2>
           <p className="text-muted-foreground leading-relaxed mb-4">
@@ -163,7 +197,7 @@ export default function AOVMovir() {
         </div>
       </section>
 
-      <section className="section-padding bg-secondary">
+      <section className="section-padding bg-background">
         <div className="container-wide max-w-3xl">
           <h2 className="mb-6">Veelgestelde vragen over de AOV</h2>
           <Accordion type="single" collapsible className="space-y-3">
@@ -177,7 +211,7 @@ export default function AOVMovir() {
         </div>
       </section>
 
-      <section className="section-padding bg-background">
+      <section className="section-padding bg-secondary">
         <div className="container-wide max-w-4xl rounded-2xl border border-border bg-card p-6 md:p-10">
           <h2 className="mb-3">Bescherm ook je bedrijf</h2>
           <p className="text-muted-foreground leading-relaxed mb-3">BAV + AVB in één polis, € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting, binnen 24 uur geregeld.</p>
@@ -192,12 +226,14 @@ export default function AOVMovir() {
 
       <section className="py-10 bg-background border-t border-border">
         <div className="container-wide max-w-4xl">
-          <Vermelding id="adviseur" />
+          <h2 className="text-lg font-semibold mb-3">Verplichte vermeldingen</h2>
+          <Vermelding id="vermelding" />
+          <p className="mt-3 text-sm text-muted-foreground">Website van Tjepkema: <a href={AOV_ADVISEUR_URL} target="_blank" rel="noopener" className="underline underline-offset-2">wijzijnaov.nl</a></p>
         </div>
       </section>
 
       <div className="md:hidden fixed inset-x-0 bottom-[calc(56px+env(safe-area-inset-bottom))] z-40 border-t border-border bg-background/95 p-3 backdrop-blur">
-        <Button variant="accent" size="lg" asChild className="w-full"><a href="#premie" onClick={() => setDoel("rekentool")}>Bereken je premie bij de adviseur</a></Button>
+        <Button variant="accent" size="lg" asChild className="w-full"><a href="#premie" onClick={() => setDoel("rekentool")}>Bereken je premie</a></Button>
       </div>
       <div className="md:hidden h-20" aria-hidden="true" />
     </Layout>
