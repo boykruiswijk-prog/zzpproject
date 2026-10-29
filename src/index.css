@@ -313,7 +313,7 @@
 .workers-kop { display: flex; align-items: baseline; gap: 22px; }
 .workers-kop h2 { font-size: 28px; }
 .workers-kop > div { font-size: 19px; }
-.workers-rooster { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-content: start; gap: 10px 16px; }
+.workers-rooster { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); align-content: start; gap: 8px 12px; }
 .worker-regel { min-width: 0; font-size: 17.28px; line-height: 1.15; }
 .worker-naam { display: flex; align-items: baseline; gap: 5px; }
 .worker-naam strong { min-width: 0; overflow-wrap: anywhere; }
@@ -331,5 +331,6 @@
 .scene-labelrooster .scherm-station .st-regel > span:last-child { overflow: visible; overflow-wrap: anywhere; }
 .scene-labelrooster .agent-balloon { position: static; margin-top: 4px; width: 100%; padding: 4px; line-height: 1.15; }
 .scherm-canvas .scene-labelrooster .scherm-core { width: 100%; padding: 4px; }
-.scene-labelrooster .scherm-core > b { font-size: 32px; }
+.scene-labelrooster .scherm-core > b { font-size: 28px; line-height: 1; }
+.scene-labelrooster .scherm-core { line-height: 1.1; }
 .scene-labelrooster .scherm-core em { margin-top: 0; }
