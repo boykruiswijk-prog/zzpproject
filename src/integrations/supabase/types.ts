@@ -6790,6 +6790,42 @@ export type Database = {
     Functions: {
       a19_team: { Args: never; Returns: undefined }
       accept_portal_invitation: { Args: { _token: string }; Returns: Json }
+      admin_grafiek: {
+        Args: { _grafiek: string; _toon_test?: boolean }
+        Returns: Json
+      }
+      admin_grafiek_bron: {
+        Args: { _grafiek: string; _toon_test: boolean }
+        Returns: {
+          bedrag: number
+          bedrijfsnaam: string
+          behandelaar: string
+          binnengekomen: string
+          bron: string
+          dag: string
+          email: string
+          id: string
+          link: string
+          naam: string
+          product: string
+          sleutel: string
+          status: string
+        }[]
+      }
+      admin_grafiek_records: {
+        Args: {
+          _grafiek: string
+          _sleutel?: string
+          _toon_test?: boolean
+          _tot?: string
+          _van?: string
+        }
+        Returns: Json
+      }
+      admin_grafiek_toegang: {
+        Args: { _grafiek: string; _toon_test: boolean }
+        Returns: boolean
+      }
       admin_teller_momentopname: {
         Args: { _forceer?: boolean }
         Returns: number

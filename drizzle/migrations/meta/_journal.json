@@ -1443,6 +1443,13 @@
       "when": 1793264795285,
       "tag": "0205_admin_inzicht_a23",
       "breakpoints": true
+    },
+    {
+      "idx": 206,
+      "version": "7",
+      "when": 1793269433840,
+      "tag": "0206_grafiek_doorklik_a23",
+      "breakpoints": true
     }
   ]
 }
