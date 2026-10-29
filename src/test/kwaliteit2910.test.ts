@@ -66,6 +66,6 @@ describe("Kwaliteitscontrole 29 oktober", () => {
     const route = seoRoute("/documenten");
     expect(route.description).not.toContain("polisvoorwaarden");
     expect(route.intro).toContain("Polisvoorwaarden: https://zpzaken.nl/voorwaarden");
-    expect(buildLlmsTxt(seoRoutes, [])).toContain("][https://zpzaken.nl/voorwaarden]".replace("][", "](" ).replace("]", ")"));
+    expect(buildLlmsTxt(seoRoutes, [])).toContain("](https://zpzaken.nl/voorwaarden)");
   });
 });

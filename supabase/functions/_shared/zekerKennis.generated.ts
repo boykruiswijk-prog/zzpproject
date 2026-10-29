@@ -227,7 +227,7 @@ export const ZEKER_KENNIS = {
     {
       "path": "/documenten",
       "title": "Documenten en downloads | ZP Zaken",
-      "intro": "Hier vind je de polisvoorwaarden, verzekeringskaarten en brochures per branche. Ook het dienstverleningsdocument, de gedragscode en de slotverklaring staan op deze pagina."
+      "intro": "Hier vind je brochures en overige documenten. Polisvoorwaarden: https://zpzaken.nl/voorwaarden. Ook het dienstverleningsdocument, de gedragscode en de slotverklaring staan op deze pagina."
     },
     {
       "path": "/voorwaarden",
@@ -286,8 +286,8 @@ export const ZEKER_KENNIS = {
     },
     {
       "path": "/bav-zzp",
-      "title": "Aansprakelijkheidsverzekering zzp: BAV + AVB | ZP Zaken",
-      "intro": "Als zzp'er heb je in de regel twee aansprakelijkheidsverzekeringen nodig: een beroepsaansprakelijkheidsverzekering (BAV) voor financiële schade door een fout in je werk en een bedrijfsaansprakelijkheidsverzekering (AVB) voor schade aan personen of spullen. Bij ZP Zaken heb je ze samen in één polis, vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting, zonder eigen risico en binnen 24 uur geregeld."
+      "title": "Beroepsaansprakelijkheidsverzekering zzp | ZP Zaken",
+      "intro": "Een beroepsaansprakelijkheidsverzekering (BAV) is voor financiële schade bij je opdrachtgever door een fout in je werk. Bij ZP Zaken zit hij samen met de bedrijfsaansprakelijkheidsverzekering (AVB) in één polis: BAV € 5.000.000 en AVB € 2.500.000 per aanspraak, geen eigen risico, binnen 24 uur geregeld. Vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting."
     },
     {
       "path": "/zzp-verzekering-consultant",
