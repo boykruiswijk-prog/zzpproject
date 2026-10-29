@@ -10,6 +10,7 @@ const rpc = vi.fn();
 vi.mock("@/integrations/supabase/client", () => ({ supabase: { rpc: (...a: unknown[]) => rpc(...a) } }));
 vi.mock("@/hooks/useToonTestrecords", () => ({ useToonTestrecords: () => ({ toonTest: false, magSchakelen: true, zet: () => {} }) }));
 vi.mock("@/hooks/use-toast", () => ({ useToast: () => ({ toast: vi.fn() }) }));
+vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ isSupervisorOrAdmin: false, isAal2: true, user: { id: "team" } }) }));
 
 import { DashboardStats } from "@/components/admin/DashboardStats";
 import { IbanInzien, maskeerIbanVol } from "@/components/admin/IbanInzien";
