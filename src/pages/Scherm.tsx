@@ -607,7 +607,7 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
                 </Suspense>
               )}
             </div>
-            <div data-testid="workers-vast" className="h-[392px] shrink-0 overflow-hidden border-t border-[hsl(var(--s-lijn))] px-[38.4px] py-[16.2px]">
+            <div data-testid="workers-vast" className="h-[470px] shrink-0 overflow-hidden border-t border-[hsl(var(--s-lijn))] px-[38.4px] py-[16.2px]">
               {data && <PaneelWorkers d={data} />}
             </div>
             <div className="h-[118.8px] shrink-0 overflow-hidden border-t border-[hsl(var(--s-lijn))]">
