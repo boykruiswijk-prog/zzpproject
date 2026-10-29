@@ -3,7 +3,7 @@
 import { plusDagen, groepSleutel, type Groep } from "@/lib/inzicht";
 
 export type GrafiekNaam =
-  | "leads_dag" | "leads_status" | "leads_verzekering" | "activaties_maand"
+  | "leads_dag" | "leads_status" | "leads_status_type" | "leads_verzekering" | "activaties_maand"
   | "aanvragen" | "arr_nieuw" | "arr_aflopend" | "arr_netto";
 export type GrafiekPunt = { sleutel: string; waarde: number };
 export type GrafiekRecord = {
