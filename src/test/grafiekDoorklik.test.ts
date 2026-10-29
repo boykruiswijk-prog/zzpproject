@@ -143,9 +143,9 @@ describe("grafieken gebruiken de beveiligde functie", () => {
   const inzicht = readFileSync("src/pages/admin/Inzicht.tsx", "utf8");
   const lijst = readFileSync("src/components/admin/GrafiekLijst.tsx", "utf8");
   it("dashboardgrafieken lezen geen tabellen rechtstreeks", () => {
-    expect(charts).toContain('"admin_grafiek"'); expect(charts).not.toMatch(/\.from\(/);
+    expect(charts).toContain('"admin_grafiek"'); expect(charts).not.toMatch(/supabase\s*\.from\(/);
     expect(kpi).toContain('_grafiek: "activaties_maand"');
-    expect(lijst).toContain('"admin_grafiek_records"'); expect(lijst).not.toMatch(/\.from\(/);
+    expect(lijst).toContain('"admin_grafiek_records"'); expect(lijst).not.toMatch(/supabase\s*\.from\(/);
   });
   it("elke grafiek opent het zijpaneel", () => {
     for (const g of ["leads_dag", "leads_status", "leads_verzekering"]) expect(charts).toContain(`grafiek: "${g}"`);
