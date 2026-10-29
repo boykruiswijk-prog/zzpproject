@@ -32,7 +32,7 @@ describe("crm_einddatum_wijzigen herberekent ook wacht_op_akkoord", () => {
   });
   it("status wordt niet gewijzigd en beoordeling blijft leeg", () => {
     const upd = sql.slice(sql.indexOf("UPDATE public.factuur_credit_planning"), sql.indexOf("GET DIAGNOSTICS"));
-    expect(upd).not.toMatch(/SET[^;]*\bstatus\s*=/);
+    expect(upd).not.toMatch(/(SET|,)\s*status\s*=/);
     expect(upd).toContain("beoordeeld_op = CASE WHEN status = 'wacht_op_akkoord' THEN NULL");
     expect(upd).toContain("bedrag = NULL");
     expect(upd).toContain("credit_vanaf = _einddatum + 1");
