@@ -10,6 +10,7 @@ import { formatEuro } from "@/lib/klantContracten";
 import { NETTO_GROEI_LABEL } from "@/lib/nettoGroei";
 import { ArrOverzicht } from "@/components/admin/ArrOverzicht";
 import { NpsOverzicht } from "@/components/admin/NpsOverzicht";
+import { AovOverzicht } from "@/components/admin/AovOverzicht";
 import { controleerDashboardOpbouw, controleerLeadsOpbouw, conversieAanvragen, type AanvragenOpbouw, type InstroomOpbouw } from "../../../supabase/functions/_shared/dashboardOpbouw";
 
 export type DashboardTellers = {
@@ -92,6 +93,7 @@ export function DashboardStats() {
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <ArrOverzicht />
       <NpsOverzicht />
+      <AovOverzicht />
       {kaarten.map((k) => (
         <Link key={k.title} to={k.href} className="block rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
           <Card className={`h-full hover:bg-muted/30 ${k.let ? "border-amber-500" : ""}`}>

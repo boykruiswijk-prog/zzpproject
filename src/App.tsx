@@ -282,7 +282,7 @@ export const AppRoutes = () => (
             <Route path="/admin/incassos" element={<RoleGuard allow={["verzekering"]}><AdminIncassos /></RoleGuard>} />
             <Route path="/admin/financieel-overzicht" element={<RoleGuard allow={[]}><AdminFinancieelOverzicht /></RoleGuard>} />
             <Route path="/admin/klantmails" element={<RoleGuard allow={["admin"]}><AdminKlantmails /></RoleGuard>} />
-            <Route path="/admin/aov-doorverwijzingen" element={<RoleGuard allow={["admin"]}><AdminAovDoorverwijzingen /></RoleGuard>} />
+            <Route path="/admin/aov-doorverwijzingen" element={<RoleGuard allow={["admin", "supervisor", "verzekering"]}><AdminAovDoorverwijzingen /></RoleGuard>} />
             <Route path="/admin/facturatieplanning" element={<RoleGuard allow={[]}><AdminFacturatieplanning /></RoleGuard>} />
             <Route path="/admin/exact-reconciliatie" element={<RoleGuard allow={[]}><AdminExactReconciliatie /></RoleGuard>} />
             <Route path="/admin/chatgesprekken" element={<AdminChatgesprekken />} />
