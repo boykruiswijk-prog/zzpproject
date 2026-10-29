@@ -73,13 +73,12 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/aov",
-    title: "AOV Arbeidsongeschiktheidsverzekering ZZP | ZP Zaken",
+    title: "AOV zzp: Movir AOV via onze externe adviseur | ZP Zaken",
     description:
-      "Bescherm je inkomen als zzp'er bij ziekte. Vraag een AOV aan via ZP Zaken. Persoonlijk contact, binnen 24 uur reactie.",
-    h1: "AOV voor zzp'ers: zeker van je inkomen bij ziekte",
+      "AOV zzp: lees hoe de Movir AOV (Momentum) werkt en bereken je premie via onze externe adviseur. ZP Zaken ontvangt geen vergoeding.",
+    h1: "AOV voor zzp'ers: de Movir AOV in gewone taal",
     intro:
-      "Als zelfstandige ben je zelf verantwoordelijk voor je inkomen bij ziekte of arbeidsongeschiktheid. Een AOV vangt je op wanneer je niet kunt werken. " +
-      "ZP Zaken bespreekt in een persoonlijk gesprek welke AOV bij je beroep, leeftijd en wachttijd past.",
+      "Informatie over de Movir AOV. Na je aanmelding met toestemming verschijnt de rekentool op deze pagina. Berekenen en aanvragen gebeurt via onze externe adviseur. ZP Zaken geeft geen advies en ontvangt geen vergoeding. Wat je in de tool invult, ontvangt ZP Zaken niet.",
   },
   {
     path: "/pensioen",

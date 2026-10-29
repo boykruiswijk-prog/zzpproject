@@ -26,7 +26,7 @@ export const AOV_H1 = "AOV voor zzp'ers: de Movir AOV in gewone taal";
 export const AOV_FAQ = [
   { q: "Wat is een AOV voor zzp'ers?", a: "Een arbeidsongeschiktheidsverzekering (AOV) keert maandelijks uit als je door ziekte of een ongeval niet of minder kunt werken. Als zzp'er heb je geen werkgever die je loon doorbetaalt. Of een AOV bij jou past, hangt af van je situatie; daarover praat je met onze externe adviseur." },
   { q: "Wat is de Movir Momentum AOV?", a: "Een AOV van Movir voor zelfstandigen. Je stelt hem zelf samen: je kiest onder meer het verzekerd bedrag, de eigenrisicotermijn en de eindleeftijd. Movir beoordeelt je aanvraag." },
-  { q: "Hoe sluit ik de Movir AOV af via zpzaken.nl?", a: "Je laat bij ZP Zaken je naam, e-mailadres en eventueel telefoonnummer achter, met toestemming om die door te geven. Daarna ga je in een nieuw tabblad naar de rekentool van onze externe adviseur. Berekenen, advies en afsluiten lopen volledig via de externe adviseur." },
+  { q: "Hoe sluit ik de Movir AOV af via zpzaken.nl?", a: "Je laat bij ZP Zaken je naam, e-mailadres en eventueel telefoonnummer achter, met toestemming om die door te geven. Daarna verschijnt op deze pagina de rekentool en aanvraagstraat van onze externe adviseur. Berekenen en aanvragen gebeurt in die tool; advies en afsluiten lopen volledig via de externe adviseur. Wat je in de tool invult, ontvangt ZP Zaken niet." },
   { q: "Wat kost een AOV als zzp'er?", a: "Dat verschilt per persoon. De premie hangt af van je leeftijd en beroep, en van je eigen keuzes zoals het verzekerd bedrag en de eigenrisicotermijn. Je ziet je premie in de rekentool van onze externe adviseur." },
   { q: "Is de premie van een AOV aftrekbaar?", a: "De premie is vaak aftrekbaar in box 1. Of en hoeveel hangt af van je eigen situatie." },
   { q: "Geeft ZP Zaken advies over de AOV of krijgt ZP Zaken een vergoeding?", a: `Nee. ZP Zaken geeft geen advies en bemiddelt niet in de AOV. ${AOV_GEEN_VERGOEDING}` },
@@ -70,7 +70,7 @@ const vertrouwen = [
 
 const stappen = [
   { icon: ClipboardList, titel: "Je gegevens bij ZP Zaken", tekst: "Je laat je naam, e-mailadres en eventueel telefoonnummer achter, met toestemming om ze door te geven. Ben je ingelogd in Mijn ZP, dan is dit één klik." },
-  { icon: ExternalLink, titel: "Naar de rekentool van onze externe adviseur", tekst: "In een nieuw tabblad open je de rekentool van de externe adviseur. Daar kies je je beroep, het verzekerd bedrag en de eigenrisicotermijn." },
+  { icon: ExternalLink, titel: "De rekentool op deze pagina", tekst: "Na je aanmelding verschijnt hier de rekentool van onze externe adviseur. Daar bereken je je premie en doe je je aanvraag. Je kiest je beroep, het verzekerd bedrag en de eigenrisicotermijn." },
   { icon: ShieldCheck, titel: "Advies en afsluiten bij de externe adviseur", tekst: "Het team van de externe adviseur helpt je verder met advies, de berekening en het afsluiten. Wat je daar invult, ontvangt ZP Zaken niet." },
 ];
 
@@ -87,7 +87,7 @@ const feiten = [
 function Aanmelden({ doel, setDoel }: { doel: AovDoel; setDoel: (d: AovDoel) => void }) {
   return (
     <section id="premie" className="section-padding bg-secondary scroll-mt-24">
-      <div className="container-wide max-w-3xl">
+      <div className="container-wide">
         <p className="text-sm font-semibold uppercase tracking-wide text-accent mb-2">Stap 1</p>
         <h2 className="mb-4">Meld je aan en ga door naar de rekentool</h2>
         <p className="text-sm text-muted-foreground leading-relaxed rounded-xl border border-border bg-card p-4 mb-5">{AOV_REKENTOOL_TEKST}</p>

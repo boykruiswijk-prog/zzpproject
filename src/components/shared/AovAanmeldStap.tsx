@@ -6,10 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { HoneypotField } from "@/components/shared/HoneypotField";
-import { AovDoorverwijsLink } from "@/components/shared/AovDoorverwijsLink";
+import { AovRekentool } from "@/components/shared/AovRekentool";
 import { useFormGuard } from "@/lib/antiSpam";
 import { AOV_TOESTEMMING_TEKST, AOV_TOESTEMMING_UITLEG } from "@/config/aovPagina";
-import { aovAanmeldFouten, aovBron, aovLink, AovDoel, AovAanmelding } from "@/lib/aovDoorverwijzing";
+import { aovAanmeldFouten, aovBron, AovDoel, AovAanmelding } from "@/lib/aovDoorverwijzing";
 import { ArrowRight, ExternalLink } from "lucide-react";
 
 const SERVER_FOUT: Record<string, string> = {
@@ -33,7 +33,8 @@ export function AovAanmeldStap({ doel }: { doel: AovDoel }) {
     void supabase.auth.getSession().then(({ data }) => {
       const u = data.session?.user;
       const naam = typeof u?.user_metadata?.full_name === "string" ? u.user_metadata.full_name : "";
-      if (u?.email && naam.trim().length >= 2) { setW(v => ({ ...v, naam, email: u.email! })); setIngelogd(true); }
+      const email = u?.email;
+      if (email && naam.trim().length >= 2) { setW(v => ({ ...v, naam, email })); setIngelogd(true); }
     }).catch(() => {});
   }, []);
 
@@ -42,9 +43,6 @@ export function AovAanmeldStap({ doel }: { doel: AovDoel }) {
     setFout(null);
     const f = aovAanmeldFouten(w); setFouten(f);
     if (Object.keys(f).length) return;
-    // Tabblad direct openen binnen de klik, anders blokkeert de browser het na het opslaan.
-    const tab = window.open("", "_blank");
-    if (tab) tab.opener = null;
     setBezig(true);
     let landing = null;
     try { landing = JSON.parse(sessionStorage.getItem("zp_attributie") || "null"); } catch { /* geen opslag */ }
@@ -55,21 +53,17 @@ export function AovAanmeldStap({ doel }: { doel: AovDoel }) {
     });
     setBezig(false);
     if (error || !data) {
-      tab?.close();
       const code = Object.keys(SERVER_FOUT).find(k => error?.message?.includes(k));
       setFout(code ? SERVER_FOUT[code] : "Je aanmelding kon niet worden opgeslagen. Probeer het opnieuw.");
       return;
     }
-    const url = aovLink(doel, data);
-    if (tab) tab.location.href = url; else window.open(url, "_blank", "noopener");
     setRef(data);
   };
 
   if (ref) {
     return (
       <div role="status" className="rounded-2xl border border-border bg-card p-6 space-y-3">
-        <p className="font-semibold">Je aanmelding staat bij ZP Zaken. De {doel === "rekentool" ? "rekentool" : "website van de adviseur"} is geopend in een nieuw tabblad.</p>
-        <p className="text-sm">Lukt het niet? <a href={aovLink(doel, ref)} target="_blank" rel="noopener" className="underline underline-offset-2 text-accent">Open de {doel === "rekentool" ? "rekentool" : "website van de adviseur"} opnieuw</a></p>
+        <AovRekentool referentie={ref} />
         <p className="text-sm text-muted-foreground">Je polissen bij ZP Zaken vind je in <LocalizedLink to="/mijn-zp/polis" className="underline underline-offset-2">Mijn ZP</LocalizedLink>. Bescherm ook je bedrijf met de <LocalizedLink to="/verzekeringen" className="underline underline-offset-2">BAV + AVB</LocalizedLink>.</p>
       </div>
     );
@@ -108,11 +102,10 @@ export function AovAanmeldStap({ doel }: { doel: AovDoel }) {
       {fout && (
         <div role="alert" className="rounded-xl border border-destructive/40 bg-destructive/5 p-3 text-sm">
           <p className="text-destructive">{fout}</p>
-          <p className="mt-1 text-muted-foreground"><AovDoorverwijsLink doel={doel} className="underline underline-offset-2">Toch direct naar de {doel === "rekentool" ? "rekentool" : "adviseur"}</AovDoorverwijsLink></p>
         </div>
       )}
       <Button type="submit" variant="accent" size="lg" disabled={bezig} className="h-auto min-h-12 whitespace-normal">
-        {bezig ? "Bezig met opslaan..." : doel === "rekentool" ? "Verder naar de rekentool" : "Verder naar de adviseur"} {doel === "rekentool" ? <ArrowRight className="h-4 w-4" /> : <ExternalLink className="h-4 w-4" aria-hidden="true" />}
+        {bezig ? "Bezig met opslaan..." : doel === "rekentool" ? "Verder naar de rekentool" : "Verder naar de externe adviseur"} {doel === "rekentool" ? <ArrowRight className="h-4 w-4" /> : <ExternalLink className="h-4 w-4" aria-hidden="true" />}
       </Button>
     </form>
   );

@@ -20,7 +20,7 @@ function renderPagina() {
 }
 
 describe("F9 nieuwe AOV-pagina", () => {
-  it("vlag staat uit zonder akkoord Boy", () => expect(AOV_NIEUW_PUBLIEK).toBe(false));
+  it("vlag staat aan na F9-aanvulling 9", () => expect(AOV_NIEUW_PUBLIEK).toBe(true));
   it.each(["zpzaken.nl", "www.zpzaken.nl", "zpzaken.nl.lovable.app.evil.test"])("live %s toont oude pagina", (h) =>
     expect(aovNieuwTonen(h, false)).toBe(false));
   it.each(["id-preview--x.lovable.app", "zzpproject.lovable.app", "localhost"])("preview %s toont nieuwe pagina", (h) =>
@@ -30,12 +30,13 @@ describe("F9 nieuwe AOV-pagina", () => {
     expect(app).toContain('<Route path="aov" element={<AovRoute />} />');
     expect(app).toContain("? <AOVMovir /> : <AOV />");
     expect(app).toContain('typeof window === "undefined" ? ""');
-    for (const p of ["public/llms.txt", "public/sitemap.xml"]) expect(lees(p)).not.toContain("Movir Momentum");
+    expect(aovNieuwTonen("", true)).toBe(true);
+    for (const p of ["public/llms.txt", "public/llms-full.txt"]) { expect(lees(p)).not.toContain("Vraag een AOV aan via ZP Zaken"); expect(lees(p)).toContain("Berekenen en aanvragen"); }
   });
-  it("bewaartermijn ontbreekt in privacyverklaring, dus vlag blijft uit", async () => {
+  it("bewaartermijn volgt F9-aanvulling 9", async () => {
     const { AOV_BEWAARTERMIJN } = await import("../config/aovPagina");
-    expect(AOV_BEWAARTERMIJN).toBe("XXX");
-    expect(AOV_NIEUW_PUBLIEK).toBe(false);
+    expect(AOV_BEWAARTERMIJN).toBe("2 jaar na het laatste contact; daarna verwijderen of anonimiseren");
+    expect(AOV_NIEUW_PUBLIEK).toBe(true);
     const c = lees("src/pages/Cookies.tsx");
     expect(c).toContain("geven wij deze gegevens door aan Tjepkema Assurantie & Advies B.V.");
   });
@@ -94,6 +95,8 @@ describe("F9 nieuwe AOV-pagina", () => {
     expect(l).toContain("{!zonderGegevensPopups && <><WhatsAppFloatingButton /><ZekerLauncher /></>}");
     expect(l).toContain("{!zonderGegevensPopups && <TerugbelDialog />}");
     expect(l).toContain("zonderGegevensPopups = false");
-    expect(lees("index.html")).not.toContain("https://movir-aov-exon.smartplatforms.io");
+    for (const p of ["index.html", "public/_headers"]) {
+      expect(lees(p).match(/frame-src ([^;]+);/)?.[1]).toBe("https://movir-aov-exon.smartplatforms.io");
+    }
   });
 });

@@ -320,8 +320,10 @@ export type Database = {
           created_at: string
           doel: string
           email: string
+          geanonimiseerd_op: string | null
           id: string
           is_test: boolean
+          laatst_contact_op: string
           naam: string
           notitie: string | null
           status: string
@@ -337,8 +339,10 @@ export type Database = {
           created_at?: string
           doel: string
           email: string
+          geanonimiseerd_op?: string | null
           id?: string
           is_test?: boolean
+          laatst_contact_op?: string
           naam: string
           notitie?: string | null
           status?: string
@@ -354,8 +358,10 @@ export type Database = {
           created_at?: string
           doel?: string
           email?: string
+          geanonimiseerd_op?: string | null
           id?: string
           is_test?: boolean
+          laatst_contact_op?: string
           naam?: string
           notitie?: string | null
           status?: string
@@ -371,30 +377,36 @@ export type Database = {
           bron: string
           created_at: string
           doel: string
+          geanonimiseerd_op: string | null
           id: string
           is_test: boolean
           klant_ref: string | null
           klik_id: string
+          laatst_contact_op: string
           user_id: string | null
         }
         Insert: {
           bron: string
           created_at?: string
           doel: string
+          geanonimiseerd_op?: string | null
           id?: string
           is_test?: boolean
           klant_ref?: string | null
           klik_id: string
+          laatst_contact_op?: string
           user_id?: string | null
         }
         Update: {
           bron?: string
           created_at?: string
           doel?: string
+          geanonimiseerd_op?: string | null
           id?: string
           is_test?: boolean
           klant_ref?: string | null
           klik_id?: string
+          laatst_contact_op?: string
           user_id?: string | null
         }
         Relationships: []
@@ -6893,6 +6905,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      aov_anonimiseer_verlopen: { Args: never; Returns: undefined }
       aov_dashboard_lijst: {
         Args: never
         Returns: {

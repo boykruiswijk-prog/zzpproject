@@ -116,8 +116,8 @@ export const ZEKER_KENNIS = {
     },
     {
       "path": "/aov",
-      "title": "AOV Arbeidsongeschiktheidsverzekering ZZP | ZP Zaken",
-      "intro": "Als zelfstandige ben je zelf verantwoordelijk voor je inkomen bij ziekte of arbeidsongeschiktheid. Een AOV vangt je op wanneer je niet kunt werken. ZP Zaken bespreekt in een persoonlijk gesprek welke AOV bij je beroep, leeftijd en wachttijd past."
+      "title": "AOV zzp: Movir AOV via onze externe adviseur | ZP Zaken",
+      "intro": "Informatie over de Movir AOV. Na je aanmelding met toestemming verschijnt de rekentool op deze pagina. Berekenen en aanvragen gebeurt via onze externe adviseur. ZP Zaken geeft geen advies en ontvangt geen vergoeding. Wat je in de tool invult, ontvangt ZP Zaken niet."
     },
     {
       "path": "/pensioen",

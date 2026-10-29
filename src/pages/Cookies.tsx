@@ -5,7 +5,7 @@ import { PageHero } from "@/components/layout/PageHero";
 import { Cookie, Shield, BarChart3, Megaphone, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SITE_CONFIG, ADDRESS_SHORT } from "@/config/site";
-import { aovNieuwTonen } from "@/config/aovPagina";
+import { aovNieuwTonen, AOV_BEWAARTERMIJN } from "@/config/aovPagina";
 
 const SEO = seoRoute("/cookies");
 
@@ -140,9 +140,9 @@ export default function Cookies() {
       {aovNieuwTonen(typeof window === "undefined" ? "" : window.location.hostname) && (
         <section id="aov-doorverwijzingen" className="section-padding bg-background">
           <div className="container-wide"><div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold mb-6">Aanmelden en doorklikken naar onze AOV-partner</h2>
-            <p className="text-muted-foreground leading-relaxed mb-4">Meld je je op zpzaken.nl/aov aan voor de AOV, dan bewaart ZP Zaken je naam, e-mailadres, eventueel je telefoonnummer en je toestemming. Met die toestemming geven wij deze gegevens door aan Tjepkema Assurantie & Advies B.V. voor de AOV, en gebruiken wij ze om contact met je te houden over je aanmelding. Bewaartermijn: XXX.</p>
-            <p className="text-muted-foreground leading-relaxed">Bij het doorklikken registreren wij de datum, de bron en een klik-code. Als je bent ingelogd in Mijn ZP registreren wij ook dat jij het was. Wij ontvangen niet wat je bij de adviseur invult.</p>
+            <h2 className="text-2xl md:text-3xl font-bold mb-6">Aanmelden en berekenen bij onze externe adviseur</h2>
+            <p className="text-muted-foreground leading-relaxed mb-4">Meld je je op zpzaken.nl/aov aan voor de AOV, dan bewaart ZP Zaken je naam, e-mailadres, eventueel je telefoonnummer en je toestemming. Met die toestemming geven wij deze gegevens door aan Tjepkema Assurantie & Advies B.V. voor de AOV, en gebruiken wij ze om contact met je te houden over je aanmelding. Bewaartermijn: {AOV_BEWAARTERMIJN}. Wij anonimiseren de AOV-aanmeldingen en -doorverwijzingen na deze termijn; de tellingen blijven behouden.</p>
+            <p className="text-muted-foreground leading-relaxed">Pas na je geslaagde aanmelding laden wij de rekentool van onze externe adviseur op deze pagina. Daarbij registreren wij de datum, de bron en dezelfde ref-code. Als je bent ingelogd in Mijn ZP registreren wij ook dat jij het was. Wat je in de tool invult, gaat rechtstreeks naar de externe adviseur; ZP Zaken ontvangt dat niet. Je kunt de tool ook in een nieuw tabblad openen.</p>
           </div></div>
         </section>
       )}
