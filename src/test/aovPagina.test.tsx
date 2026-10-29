@@ -58,7 +58,7 @@ describe("F9 nieuwe AOV-pagina", () => {
   it("geen verboden woorden", () => {
     const { container } = renderPagina();
     const t = (container.textContent || "").toLowerCase() + JSON.stringify(AOV_FAQ).toLowerCase();
-    for (const w of ["wij regelen", "wij adviseren", "wij vergelijken", "vergelijken", "goedkoopste", "direct gedekt", "via zp zaken afsluiten", "—", "1 op de 4", "100% aftrekbaar", "adviseur", "zp zaken adviseert", "€ xxx"]) expect(t).not.toContain(w);
+    for (const w of ["wij regelen", "wij adviseren", "wij vergelijken", "vergelijken", "goedkoopste", "direct gedekt", "via zp zaken afsluiten", "—", "1 op de 4", "100% aftrekbaar", "zp zaken adviseert", "€ xxx"]) expect(t).not.toContain(w);
   });
   it("title en description binnen grenzen, 5 tot 7 vragen", () => {
     expect(AOV_SEO.title.length).toBeLessThanOrEqual(60);

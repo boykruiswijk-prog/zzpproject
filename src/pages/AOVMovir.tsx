@@ -228,7 +228,7 @@ export default function AOVMovir() {
         <div className="container-wide max-w-4xl">
           <h2 className="text-lg font-semibold mb-3">Verplichte vermeldingen</h2>
           <Vermelding id="vermelding" />
-          <p className="mt-3 text-sm text-muted-foreground">Website van de adviseur: <a href={AOV_ADVISEUR_URL} target="_blank" rel="noopener" className="underline underline-offset-2">wijzijnaov.nl</a></p>
+          <p className="mt-3 text-sm text-muted-foreground">Website van Tjepkema: <a href={AOV_ADVISEUR_URL} target="_blank" rel="noopener" className="underline underline-offset-2">wijzijnaov.nl</a></p>
         </div>
       </section>
 
