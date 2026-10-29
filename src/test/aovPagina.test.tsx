@@ -32,6 +32,23 @@ describe("F9 nieuwe AOV-pagina", () => {
     expect(app).toContain('typeof window === "undefined" ? ""');
     for (const p of ["public/llms.txt", "public/sitemap.xml"]) expect(lees(p)).not.toContain("Movir Momentum");
   });
+  it("bewaartermijn ontbreekt in privacyverklaring, dus vlag blijft uit", async () => {
+    const { AOV_BEWAARTERMIJN } = await import("../config/aovPagina");
+    expect(AOV_BEWAARTERMIJN).toBe("XXX");
+    expect(AOV_NIEUW_PUBLIEK).toBe(false);
+    const c = lees("src/pages/Cookies.tsx");
+    expect(c).toContain("geven wij deze gegevens door aan Tjepkema Assurantie & Advies B.V.");
+  });
+  it("letterlijke geen-vergoedingzin en Movir-logo", () => {
+    const { container } = renderPagina();
+    expect(container.textContent).toContain("ZP Zaken ontvangt geen vergoeding van Tjepkema Assurantie & Advies, Movir of Nationale-Nederlanden voor deze doorverwijzing.");
+    expect(container.querySelectorAll('img[alt="Movir"]').length).toBe(2);
+    expect(container.querySelectorAll("h1").length).toBe(1);
+  });
+  it("6 FAQ's, SEO op AOV zzp en Movir AOV", () => {
+    expect(AOV_FAQ.length).toBe(6);
+    for (const t of [AOV_SEO.title, AOV_SEO.description]) { expect(t).toContain("AOV zzp"); expect(t).toContain("Movir AOV"); }
+  });
   it("vermelding met AFM-nummer, Michiel 1x", () => {
     const { container } = renderPagina();
     const tekst = container.textContent || "";
@@ -41,7 +58,7 @@ describe("F9 nieuwe AOV-pagina", () => {
   it("geen verboden woorden", () => {
     const { container } = renderPagina();
     const t = (container.textContent || "").toLowerCase() + JSON.stringify(AOV_FAQ).toLowerCase();
-    for (const w of ["wij regelen", "wij adviseren", "wij vergelijken", "vergelijken", "goedkoopste", "direct gedekt", "via zp zaken afsluiten", "—"]) expect(t).not.toContain(w);
+    for (const w of ["wij regelen", "wij adviseren", "wij vergelijken", "vergelijken", "goedkoopste", "direct gedekt", "via zp zaken afsluiten", "—", "1 op de 4", "100% aftrekbaar", "adviseur", "zp zaken adviseert", "€ xxx"]) expect(t).not.toContain(w);
   });
   it("title en description binnen grenzen, 5 tot 7 vragen", () => {
     expect(AOV_SEO.title.length).toBeLessThanOrEqual(60);
@@ -59,9 +76,9 @@ describe("F9 nieuwe AOV-pagina", () => {
     expect(container.querySelectorAll("textarea, select").length).toBe(0);
     expect(container.querySelector(`a[href="${AOV_REKENTOOL_URL}"]`)).toBeNull();
   });
-  it("hero en sticky knop scrollen naar #premie, adviseur is wijzijnaov", () => {
+  it("hero en sticky knop scrollen naar #premie, adviseurssite is wijzijnaov", () => {
     const { container } = renderPagina();
-    expect(container.querySelectorAll('a[href="#premie"]').length).toBe(3);
+    expect(container.querySelectorAll('a[href="#premie"]').length).toBe(2);
     expect(AOV_ADVISEUR_URL).toBe("https://www.wijzijnaov.nl");
   });
   it("geen terugbel-, vertrek- of sitebalk op deze pagina, CSP staat alleen dit domein extra toe", () => {
