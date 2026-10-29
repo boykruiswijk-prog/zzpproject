@@ -47,8 +47,8 @@ const team = [
   { name: "Noah Sikkema", role: "Recruiter Onefellow", image: noahPortrait, description: "Noah is recruiter bij Onefellow, onze zusteronderneming voor opdrachten. Zit je klus erop? Dan kijkt Noah graag met je mee naar een nieuwe opdracht die bij je past." },
   { name: "Sandra Jonker - van Nobelen", role: "Financieel & Administratief", image: sandraPortrait, description: "Sandra is onze financiële steunpilaar. Met meer dan 30 jaar ervaring in financiële administratie en salarisverwerking weet zij als geen ander hoe de backoffice van een dienstverlener in elkaar steekt. Na een loopbaan van 24 jaar bij HeadFirst Group brengt Sandra precisie en persoonlijk contact samen.", email: "sandra@zpzaken.nl" },
   { name: "We groeien!", role: "Nieuw teamlid", image: null, description: "ZP Zaken is op zoek naar versterking. Wil jij onderdeel worden van ons team?" },
-  { name: "Online Sales Adviseur", role: "Sales", image: null, vacancy: true, description: "Wij zijn op zoek naar een gedreven online sales adviseur die zzp'ers helpt de juiste verzekering te vinden. Jij bent het eerste aanspreekpunt voor nieuwe klanten via de website, chat en telefoon. Je werkt vanuit huis of kantoor en combineert commercieel inzicht met oprechte aandacht voor de klant." },
-  { name: "Sales Adviseur Buitendienst", role: "Sales", image: null, vacancy: true, description: "Wij zoeken een energieke buitendienstadviseur die actief op pad gaat om zzp'ers persoonlijk te begeleiden. Jij bouwt relaties op bij netwerkevenementen, bij opdrachtgevers en in het veld. Je combineert zelfstandigheid met de kracht van een sterk merk achter je." },
+  { name: "Online Sales Medewerker", role: "Sales", image: null, vacancy: true, description: "Wij zijn op zoek naar een gedreven online sales medewerker die zzp'ers persoonlijk helpt bij hun aanvraag. Jij bent het eerste aanspreekpunt voor nieuwe klanten via de website, chat en telefoon. Je werkt vanuit huis of kantoor en combineert commercieel inzicht met oprechte aandacht voor de klant." },
+  { name: "Sales Medewerker Buitendienst", role: "Sales", image: null, vacancy: true, description: "Wij zoeken een energieke buitendienstmedewerker die actief op pad gaat om zzp'ers persoonlijk te begeleiden. Jij bouwt relaties op bij netwerkevenementen, bij opdrachtgevers en in het veld. Je combineert zelfstandigheid met de kracht van een sterk merk achter je." },
 ];
 
 const registrations = [
@@ -207,7 +207,7 @@ export default function OverOns() {
               </div>
               <div className="p-6">
                 <p className="text-muted-foreground text-sm mb-4">
-                  Wij zijn op zoek naar versterking! Ben jij de adviseur die ons team compleet maakt?
+                  Wij zijn op zoek naar versterking! Ben jij de collega die ons team compleet maakt?
                 </p>
                 <Button variant="outline" size="sm" asChild>
                   <LocalizedLink to="/contact">

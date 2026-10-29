@@ -134,7 +134,9 @@ export function productSchema(pakket: Pakket): JsonLd {
     }. ${
       pakket.id === "maandelijks" || pakket.id === "jaarlijks"
         ? "€ 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting."
-        : `${pakket.prijsLabel}.`
+        : pakket.dekkingen.cyber
+          ? "€ 82,50 per maand of € 850 per jaar, inclusief kosten en assurantiebelasting."
+          : `${pakket.prijsLabel}.`
     }`,
     provider: organizationRef(),
     areaServed: "NL",
