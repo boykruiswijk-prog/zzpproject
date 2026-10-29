@@ -2,7 +2,8 @@ import { leadOnderwerp } from "../../../supabase/functions/_shared/leadVelden";
 import { CyberAanvraag, useCyberAanvragen, cyberWerkStap } from "./CyberAanvraag";
 import { eviLeadLabel } from "@/lib/interneBron";
 import { isUitkomst, type LeadUitkomst } from "@/lib/statusLabels";
-import { AfrondDialoog, magAfronden, leadStatusKeuzes } from "@/components/admin/LeadAfronden";
+import { AfrondDialoog, magAfronden, leadStatusKeuzes, leadStatusOpties } from "@/components/admin/LeadAfronden";
+import { leadStatusFout } from "@/lib/leadStatusFout";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LeadTestSchakelaar } from "@/components/admin/LeadTestSchakelaar";
 import { BavNummer } from "@/components/admin/crm/BavNummer";
@@ -98,7 +99,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
     status: statusFilter === "all" ? undefined : statusFilter,
     type: typeFilter === "all" ? undefined : typeFilter,
     toonTest,
-    toonAfgerond,
+    toonAfgerond: toonAfgerond || tab === "alle",
   });
 
   const leadIds = (alleLeads ?? []).map((l) => l.id);
@@ -119,24 +120,16 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
   const gezocht = bavZoek ? (alleLeads ?? []).filter((l) => (bavVoor(l.id)?.nummer ?? "").replace(/\D/g, "").includes(bavZoek)) : (alleLeads ?? []);
   const vandaag = vandaagNL();
   const aantalGemarkeerd = gezocht.filter((l: any) => !!l.vlag).length;
-  const leads = (soort === "aanvragen" ? filterAanvragenOpTab : filterOpTab)(gezocht as any[], tab, vandaag) as typeof gezocht;
+  const leads = (soort === "aanvragen" ? filterAanvragenOpTab : filterOpTab)(gezocht as any[], tab, vandaag, toonAfgerond) as typeof gezocht;
   const updateLead = useUpdateLead();
   const deleteLead = useDeleteLead();
 
   const handleStatusChange = (leadId: string, newStatus: LeadStatus) => {
     if (newStatus === "afgerond") return;
     if (isUitkomst(newStatus)) { setAfrondUitkomst(newStatus); setAfronden(leads?.find((l) => l.id === leadId) ?? null); return; }
-    const updates: { status: LeadStatus; converted_at?: string | null } = {
-      status: newStatus,
-    };
-    
-    if (newStatus === "klant") {
-      updates.converted_at = new Date().toISOString();
-    } else {
-      updates.converted_at = null;
-    }
-
-    updateLead.mutate({ id: leadId, updates });
+    const lead = leads.find(l => l.id === leadId);
+    if (!lead || !leadStatusOpties(lead).includes(newStatus)) return;
+    updateLead.mutate({ id: leadId, updates: {status: newStatus} }, {onError: error => toast.error(leadStatusFout(error))});
   };
 
   const handleDeleteConfirm = () => {
@@ -250,7 +243,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
                 <SelectTrigger className="min-h-10 w-44">
                   <Badge title={statusTitel(lead.status)} className={statusColors[lead.status]} variant="secondary">{statusLabels[lead.status]}</Badge>
                 </SelectTrigger>
-                <SelectContent>{leadStatusKeuzes(lead as any).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent>
+                <SelectContent>{leadStatusKeuzes(lead as any).map(([value, label]) => <SelectItem key={value} value={value} disabled={!leadStatusOpties(lead).includes(value)}>{label}</SelectItem>)}</SelectContent>
               </Select>
               <div className="flex items-center gap-1">
                 <Button variant="outline" size="sm" asChild><Link to={`/admin/leads/${lead.id}`}><Eye className="h-4 w-4" />Bekijken</Link></Button>
@@ -353,7 +346,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
                       </SelectTrigger>
                       <SelectContent>
                         {leadStatusKeuzes(lead as any).map(([value, label]) => (
-                          <SelectItem key={value} value={value}>
+                          <SelectItem key={value} value={value} disabled={!leadStatusOpties(lead).includes(value)}>
                             {label}
                           </SelectItem>
                         ))}

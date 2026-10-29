@@ -1492,6 +1492,20 @@
       "when": 1793283982146,
       "tag": "0212_aov_bewaartermijn_f9_9",
       "breakpoints": true
+    },
+    {
+      "idx": 213,
+      "version": "7",
+      "when": 1793284396986,
+      "tag": "0213_a23_gekoppelde_lead_uitkomst",
+      "breakpoints": true
+    },
+    {
+      "idx": 214,
+      "version": "7",
+      "when": 1793284506946,
+      "tag": "0214_a23_afgesloten_opvolging",
+      "breakpoints": true
     }
   ]
 }

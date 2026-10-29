@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CheckCircle2, Loader2, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
+import { leadStatusFout } from "@/lib/leadStatusFout";
 import { LEAD_STATUS_LABELS, LEAD_STATUS_TITELS, LEAD_UITKOMSTEN, AFGESLOTEN_LEAD_STATUSSEN, isUitkomst, type LeadUitkomst } from "@/lib/statusLabels";
 
 type LeadLike = { id: string; type: string; status: string; geactiveerd_op?: string | null };
@@ -24,13 +25,15 @@ const isAfgesloten = (s: string) => (AFGESLOTEN_LEAD_STATUSSEN as string[]).incl
 
 /** Statuskeuzes voor een medewerker: nooit "afgerond" als nieuwe keuze (alleen de huidige waarde blijft zichtbaar),
  *  wel de drie uitkomsten als afsluiten mag. Ook bestaande afgeronde leads kunnen naar een uitkomst. */
+export function leadStatusOpties(l: LeadLike): string[] {
+  const basis = l.type === "verzekering_aanvraag" ? ["nieuw_te_beoordelen", "in_behandeling", "afgewezen"]
+    : l.type === "offerte-aanvraag" ? ["nieuw", "in_behandeling", "offerte_verstuurd"] : ["nieuw", "in_behandeling"];
+  return [...basis, ...(magAfronden(l) ? LEAD_UITKOMSTEN.filter(v => l.type !== "verzekering_aanvraag" || v !== "klant_geworden") : [])];
+}
 export function leadStatusKeuzes(l: LeadLike): [string, string][] {
-  return Object.entries(LEAD_STATUS_LABELS).filter(([v]) => {
-    if (v === "afgerond") return l.status === "afgerond";
-    if (isUitkomst(v)) return v === l.status || magAfronden(l);
-    if (v === "offerte_verstuurd") return l.status === v;
-    return true;
-  });
+  const waarden = leadStatusOpties(l);
+  if (!waarden.includes(l.status)) waarden.unshift(l.status);
+  return waarden.map(v => [v, LEAD_STATUS_LABELS[v as keyof typeof LEAD_STATUS_LABELS] ?? v]);
 }
 
 export function AfrondDialoog({ lead, open, onOpenChange, uitkomst: start }: { lead: LeadLike; open: boolean; onOpenChange: (o: boolean) => void; uitkomst?: LeadUitkomst | null }) {
@@ -44,7 +47,7 @@ export function AfrondDialoog({ lead, open, onOpenChange, uitkomst: start }: { l
     setBezig(true);
     const { error } = await supabase.rpc("lead_afsluiten", { _lead_id: lead.id, _uitkomst: uitkomst, _toelichting: toelichting.trim() || null });
     setBezig(false);
-    if (error) { toast.error(error.message); return; }
+    if (error) { toast.error(leadStatusFout(error)); return; }
     toast.success(`Afgesloten: ${LEAD_STATUS_LABELS[uitkomst]}`);
     setToelichting(""); setGekozen(null); onOpenChange(false);
     qc.invalidateQueries();
@@ -57,7 +60,7 @@ export function AfrondDialoog({ lead, open, onOpenChange, uitkomst: start }: { l
           <DialogDescription>Kies de uitkomst. De lead verdwijnt uit Vandaag te doen en uit de standaard leadlijst. Heropenen kan altijd.</DialogDescription>
         </DialogHeader>
         <div className="space-y-2" role="radiogroup" aria-label="Uitkomst">
-          {LEAD_UITKOMSTEN.map((u) => (
+          {LEAD_UITKOMSTEN.filter(u => lead.type !== "verzekering_aanvraag" || u !== "klant_geworden").map((u) => (
             <label key={u} className="flex cursor-pointer items-start gap-2 rounded border p-2 hover:bg-muted">
               <input type="radio" name="uitkomst" className="mt-1" checked={uitkomst === u} disabled={!!start && start !== u} onChange={() => setGekozen(u)} />
               <span><span className="font-medium">{LEAD_STATUS_LABELS[u]}</span><br /><span className="text-xs text-muted-foreground">{LEAD_STATUS_TITELS[u]}</span></span>
@@ -84,9 +87,9 @@ export function LeadAfrondenKnop({ lead }: { lead: LeadLike }) {
       <>
       <Button variant="outline" size="sm" disabled={bezig} onClick={async () => {
         setBezig(true);
-        const { error } = await supabase.from("leads").update({ status: "in_behandeling" }).eq("id", lead.id);
+        const { error } = await supabase.from("leads").update({ status: "in_behandeling" }).eq("id", lead.id).select("id").single();
         setBezig(false);
-        if (error) toast.error(error.message); else { toast.success("Heropend, status In behandeling"); qc.invalidateQueries(); }
+        if (error) toast.error(leadStatusFout(error)); else { toast.success("Heropend, status In behandeling"); qc.invalidateQueries(); }
       }}><RotateCcw className="mr-1 h-4 w-4" />Heropenen</Button>
       {lead.status === "afgerond" && magAfronden(lead) && (<>
         <Button variant="outline" size="sm" onClick={() => setOpen(true)}><CheckCircle2 className="mr-1 h-4 w-4" />Uitkomst kiezen</Button>
