@@ -321,6 +321,7 @@ export type Database = {
           doel: string
           email: string
           id: string
+          is_test: boolean
           naam: string
           notitie: string | null
           status: string
@@ -337,6 +338,7 @@ export type Database = {
           doel: string
           email: string
           id?: string
+          is_test?: boolean
           naam: string
           notitie?: string | null
           status?: string
@@ -353,6 +355,7 @@ export type Database = {
           doel?: string
           email?: string
           id?: string
+          is_test?: boolean
           naam?: string
           notitie?: string | null
           status?: string
@@ -369,6 +372,7 @@ export type Database = {
           created_at: string
           doel: string
           id: string
+          is_test: boolean
           klant_ref: string | null
           klik_id: string
           user_id: string | null
@@ -378,6 +382,7 @@ export type Database = {
           created_at?: string
           doel: string
           id?: string
+          is_test?: boolean
           klant_ref?: string | null
           klik_id: string
           user_id?: string | null
@@ -387,6 +392,7 @@ export type Database = {
           created_at?: string
           doel?: string
           id?: string
+          is_test?: boolean
           klant_ref?: string | null
           klik_id?: string
           user_id?: string | null
@@ -6887,6 +6893,18 @@ export type Database = {
           user_id: string
         }[]
       }
+      aov_dashboard_lijst: {
+        Args: never
+        Returns: {
+          created_at: string
+          doorgeklikt: boolean
+          email: string
+          id: string
+          ingelogde_klant: boolean
+          naam: string
+          telefoon: string
+        }[]
+      }
       aov_doorverwijzingen_overzicht: {
         Args: never
         Returns: {
@@ -6900,6 +6918,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      aov_team_lezen: { Args: never; Returns: boolean }
       arr_overzicht: { Args: never; Returns: Json }
       artikel_foto_claim: {
         Args: { p_lease: string }
