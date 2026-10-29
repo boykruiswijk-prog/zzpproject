@@ -8,7 +8,7 @@ const m = vi.hoisted(() => ({ rpc: vi.fn(), session: vi.fn(), insert: vi.fn() })
 vi.mock("@/integrations/supabase/client", () => ({ supabase: { auth: { getSession: m.session }, rpc: m.rpc, from: () => ({ insert: m.insert }) } }));
 vi.mock("@/lib/tracking", () => ({ trackGa: vi.fn() }));
 import { AovAanmeldStap } from "@/components/shared/AovAanmeldStap";
-import { AOV_TOESTEMMING_TEKST, AOV_REKENTOOL_URL, AOV_ADVISEUR_URL } from "@/config/aovPagina";
+import { AOV_TOESTEMMING_TEKST, AOV_REKENTOOL_URL, AOV_IFRAME_TEKST } from "@/config/aovPagina";
 import { aovAanmeldFouten, AOV_AANMELD_VELDEN, aovKopieTekst, aovAanmeldCsv } from "@/lib/aovDoorverwijzing";
 
 const ID = "11111111-2222-4333-8444-555555555555";
@@ -41,33 +41,39 @@ describe("F9 aanmeldstap AOV", () => {
     fireEvent.submit(container.querySelector("form")!);
     await waitFor(() => expect(container.textContent).toContain("Zet het vinkje"));
     expect(m.rpc).not.toHaveBeenCalled(); expect(window.open).not.toHaveBeenCalled();
+    expect(container.querySelector("iframe")).toBeNull();
   });
   it("zonder geldig e-mailadres geen opslag en geen doorsturen", async () => {
     const { container } = toon(); vul(container, { email: "jan@" });
     fireEvent.submit(container.querySelector("form")!);
     await waitFor(() => expect(container.textContent).toContain("geldig e-mailadres"));
     expect(m.rpc).not.toHaveBeenCalled(); expect(window.open).not.toHaveBeenCalled();
+    expect(container.querySelector("iframe")).toBeNull();
   });
-  it.each([["rekentool", AOV_REKENTOOL_URL], ["advies", AOV_ADVISEUR_URL]] as const)("%s: opslaan met toestemming en tekst, link met ref = aanmelding-id", async (doel, basis) => {
+  it.each(["rekentool", "advies"] as const)("%s: opslaan met toestemming en tekst, link met ref = aanmelding-id", async (doel) => {
     m.rpc.mockResolvedValue({ data: ID, error: null });
     const { container } = toon(doel); vul(container);
     fireEvent.submit(container.querySelector("form")!);
     await waitFor(() => expect(container.textContent).toContain("Je aanmelding staat bij ZP Zaken."));
     expect(m.rpc).toHaveBeenCalledWith("aov_aanmelden", expect.objectContaining({ p_naam: "Jan Jansen", p_email: "jan@example.nl", p_toestemming: true, p_toestemming_tekst: AOV_TOESTEMMING_TEKST, p_doel: doel, p_bron: "test", p_honeypot: "" }));
-    const url = new URL(tab.location.href);
-    expect(url.origin + url.pathname).toBe(new URL(basis).origin + new URL(basis).pathname);
+    const frame = container.querySelector("iframe");
+    expect(frame).not.toBeNull();
+    const url = new URL(frame?.getAttribute("src") || "");
+    expect(window.open).not.toHaveBeenCalled();
+    expect(container.textContent).toContain(AOV_IFRAME_TEKST);
+    expect(url.origin + url.pathname).toBe(new URL(AOV_REKENTOOL_URL).origin + new URL(AOV_REKENTOOL_URL).pathname);
     expect(url.searchParams.get("ref")).toBe(ID);
     expect(url.searchParams.get("utm_source")).toBe("zpzaken");
-    expect(tab.opener).toBeNull();
     expect(container.querySelector(`a[href*="ref=${ID}"]`)?.getAttribute("rel")).toContain("noopener");
   });
-  it("mislukt opslaan: melding, tabblad dicht, geen doorsturen, wel kleine directe link", async () => {
+  it("mislukt opslaan: geen iframe of externe navigatie", async () => {
     m.rpc.mockResolvedValue({ data: null, error: { message: "offline" } });
     const { container } = toon(); vul(container);
     fireEvent.submit(container.querySelector("form")!);
     await waitFor(() => expect(container.querySelector("[role=alert]")?.textContent).toContain("Probeer het opnieuw"));
-    expect(tab.close).toHaveBeenCalled(); expect(tab.location.href).toBe("");
-    expect(container.textContent).toContain("Toch direct naar de rekentool");
+    expect(window.open).not.toHaveBeenCalled();
+    expect(container.querySelector("iframe")).toBeNull();
+
   });
   it("ingelogd: gegevens uit profiel, alleen vinkje en knop", async () => {
     m.session.mockResolvedValue({ data: { session: { user: { id: "u", email: "klant@example.nl", user_metadata: { full_name: "Klant Een" } } } } });
@@ -75,6 +81,11 @@ describe("F9 aanmeldstap AOV", () => {
     await waitFor(() => expect(container.textContent).toContain("klant@example.nl"));
     expect(container.querySelector("#aov-naam")).toBeNull();
     expect(container.querySelector("#aov-toestemming")).not.toBeNull();
+    expect(container.querySelector("iframe")).toBeNull();
+    m.rpc.mockResolvedValue({data: ID, error: null});
+    fireEvent.click(container.querySelector("#aov-toestemming"));
+    fireEvent.submit(container.querySelector("form"));
+    await waitFor(() => expect(container.querySelector("iframe")?.getAttribute("src")).toContain(ID));
   });
   it("validatie, kopie en CSV bevatten de ref", () => {
     expect(Object.keys(aovAanmeldFouten({ naam: "Jan", email: "jan@example.nl", telefoon: "", toestemming: true }))).toEqual([]);
