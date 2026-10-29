@@ -1,4 +1,7 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { GrafiekLijst, KlikTooltip } from "@/components/admin/GrafiekLijst";
+import type { Doorklik, GrafiekPunt } from "@/lib/grafiekDoorklik";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -87,6 +90,17 @@ export function SupervisorKpiPanel() {
     },
   });
 
+  // 7. Activaties per maand voor de grafiek (zelfde bron als de doorkliklijst)
+  const [activatieKeuze, setActivatieKeuze] = useState<Doorklik | null>(null);
+  const { data: activatiesGrafiek } = useQuery({
+    queryKey: ["kpi-activaties-grafiek"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("admin_grafiek" as never, { _grafiek: "activaties_maand", _toon_test: false } as never);
+      if (error) throw error;
+      return (data ?? []) as unknown as GrafiekPunt[];
+    },
+  });
+
   // 9. Recente activiteit (alle types)
   const { data: recentLog } = useQuery({
     queryKey: ["kpi-recent-log"],
@@ -157,18 +171,14 @@ export function SupervisorKpiPanel() {
       .sort((a, b) => (b.opzeg_datum ?? "").localeCompare(a.opzeg_datum ?? ""))[0]?.opzeg_reden ??
     null;
 
-  // Grafiek: activaties per maand, laatste 6 maanden
+  // Grafiek: activaties per maand (NL-tijd), laatste 6 maanden; telling en lijst uit admin_grafiek_bron
   const bucketMaanden: { key: string; label: string }[] = [];
   for (let i = 5; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
     bucketMaanden.push({ key: monthKey(d), label: monthLabel(monthKey(d)) });
   }
-  const activatiesPerMaand = bucketMaanden.map((b) => {
-    const n = (activaties ?? []).filter(
-      (r: any) => monthKey(new Date(r.aangemaakt_op)) === b.key,
-    ).length;
-    return { maand: b.label, aantal: n };
-  });
+  const perMaand = new Map((activatiesGrafiek ?? []).map((p) => [p.sleutel, p.waarde]));
+  const activatiesPerMaand = bucketMaanden.map((b) => ({ sleutel: b.key, maand: b.label, aantal: perMaand.get(b.key) ?? 0 }));
   const activatiesTotaal = activatiesPerMaand.reduce((s, r) => s + r.aantal, 0);
 
   // Funnel-verdeling
@@ -257,8 +267,9 @@ export function SupervisorKpiPanel() {
                   <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                   <XAxis dataKey="maand" fontSize={12} />
                   <YAxis allowDecimals={false} fontSize={12} />
-                  <Tooltip />
-                  <Bar dataKey="aantal" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                  <Tooltip content={<KlikTooltip />} cursor={{ fill: "hsl(var(--muted))" }} />
+                  <Bar dataKey="aantal" name="Activaties" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} className="cursor-pointer"
+                    onClick={(p: any) => setActivatieKeuze({ grafiek: "activaties_maand", sleutel: p.sleutel, waarde: p.aantal, titel: `Activaties ${p.maand} (${p.aantal})` })} />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -328,6 +339,7 @@ export function SupervisorKpiPanel() {
           )}
         </CardContent>
       </Card>
+      <GrafiekLijst keuze={activatieKeuze} onClose={() => setActivatieKeuze(null)} />
     </section>
   );
 }
