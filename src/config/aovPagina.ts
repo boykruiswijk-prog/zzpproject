@@ -1,8 +1,9 @@
 // F9: één vlag voor de nieuwe AOV-pagina; uit = nieuwe pagina alleen in de preview, live blijft de huidige /aov.
-export const AOV_NIEUW_PUBLIEK = false; // F9-6: blijft uit tot er een bewaartermijn is (AOV_BEWAARTERMIJN)
+export const AOV_NIEUW_PUBLIEK = true; // F9-9: akkoord Boy, publicatie doet Boy na controle.
 export const AOV_PAD = "/aov";
 export const AOV_ADVISEUR_URL = "https://www.wijzijnaov.nl";
 export const AOV_REKENTOOL_URL = "https://movir-aov-exon.smartplatforms.io/frame/0f148d2f-a3e4-4ba2-adb3-384917fde229";
+export const AOV_IFRAME_TEKST = "De rekentool en de aanvraag hieronder zijn van onze externe adviseur, Tjepkema Assurantie & Advies B.V. (AFM-vergunning 12050654). Wat je hieronder invult, gaat rechtstreeks naar hen; ZP Zaken ontvangt dat niet.";
 export const AOV_REKENTOOL_TEKST =
   "De rekentool en de aanvraag zijn van onze externe adviseur. Voordat je verdergaat, leg je bij ZP Zaken je naam, e-mailadres en eventueel telefoonnummer vast. ZP Zaken bewaart die gegevens en je toestemming, geeft ze door aan onze externe adviseur voor de AOV en gebruikt ze om contact met je te houden over je aanmelding. Wat je bij de adviseur invult, ontvangt ZP Zaken niet.";
 /** Byte-gelijk aan de controle in de databasefunctie aov_aanmelden. */
@@ -12,8 +13,8 @@ export const AOV_TOESTEMMING_UITLEG =
   "ZP Zaken geeft alleen je contactgegevens door. Advies en afsluiten lopen via onze externe adviseur. Wat je daar invult, ontvangt ZP Zaken niet.";
 export const AOV_GEEN_VERGOEDING =
   "ZP Zaken ontvangt geen vergoeding van onze externe adviseur, Movir of Nationale-Nederlanden voor deze doorverwijzing.";
-/** Leeg zolang de privacyverklaring geen termijn voor contact- en aanvraaggegevens noemt; vlag blijft dan uit. */
-export const AOV_BEWAARTERMIJN = "XXX";
+/** F9-9: door Boy vastgestelde termijn voor uitsluitend AOV-registraties. */
+export const AOV_BEWAARTERMIJN = "2 jaar na het laatste contact; daarna verwijderen of anonimiseren";
 export const AOV_AFM_URL =
   "https://www.afm.nl/nl-nl/sector/registers/vergunningenregisters/financiele-dienstverleners/details?id=A6BF9913-6111-F011-998A-7C1E5272931F";
 export const AOV_VERMELDING_VOOR =

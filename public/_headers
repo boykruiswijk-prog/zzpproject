@@ -4,7 +4,7 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()
-  Content-Security-Policy: frame-ancestors 'self'
+  Content-Security-Policy: frame-ancestors 'self'; frame-src https://movir-aov-exon.smartplatforms.io;
 
 /favicon.ico
   Cache-Control: public, max-age=86400
