@@ -41,9 +41,9 @@ it("verzekering sluit gekoppelde contactvraag af na herstel, met behoud van kopp
   await db.exec(readFileSync("drizzle/migrations/0213_a23_gekoppelde_lead_uitkomst.sql", "utf8"));
   await db.exec("SET ROLE authenticated");
   await db.query("SELECT lead_afsluiten($1,'vraag_beantwoord',NULL)",[id]);
-  const r = (await db.query("SELECT status,gekoppeld_onderneming_id,gekoppeld_persoon_id,converted_at::text FROM leads")).rows[0];
+  const r = (await db.query<{converted_at:string}>("SELECT status,gekoppeld_onderneming_id,gekoppeld_persoon_id,converted_at::text FROM leads")).rows[0];
   expect(r).toMatchObject({status:"vraag_beantwoord",gekoppeld_onderneming_id:id,gekoppeld_persoon_id:id});
-  expect(String(r.converted_at)).toContain("2026-10-29 12:00:00");
+  expect(r?.converted_at).toContain("2026-10-29 12:00:00");
 });
 it("heropenen en alle drie uitkomsten behouden dezelfde koppeling", async () => {
   for (const status of ['klant_geworden','geen_interesse','vraag_beantwoord']) {
@@ -68,7 +68,7 @@ it("zonder tweestapscode blijft afsluiten geweigerd", async () => {
   await db.exec("SET test.aal='aal2'");
 });
 it("Vandaag te doen sluit ook gemarkeerde afgesloten leads uit", async () => {
-  await db.exec(`RESET ROLE;
+  await db.exec(`RESET ROLE; SET zp.a19_rpc='1';
     ALTER TABLE leads ADD COLUMN vlag text, ADD COLUMN vlag_datum date;
     UPDATE leads SET vlag='later',vlag_datum=current_date;
     CREATE FUNCTION mijn_acties_vandaag_basis(boolean) RETURNS jsonb LANGUAGE sql AS $$
