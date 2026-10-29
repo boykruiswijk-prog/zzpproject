@@ -10,6 +10,9 @@ export const AOV_TOESTEMMING_TEKST =
   "Ik geef ZP Zaken toestemming mijn naam en contactgegevens door te geven aan Tjepkema Assurantie & Advies B.V. (WijZijnAOV), zodat ik de Movir Momentum AOV via hen kan berekenen en afsluiten.";
 export const AOV_TOESTEMMING_UITLEG =
   "ZP Zaken geeft alleen je contactgegevens door. Advies en afsluiten lopen via Tjepkema Assurantie & Advies B.V., AFM-vergunning 12050654. Wat je daar invult, ontvangt ZP Zaken niet.";
+export const AOV_GEEN_VERGOEDING =
+  "ZP Zaken ontvangt geen vergoeding van Tjepkema Assurantie & Advies, Movir of Nationale-Nederlanden voor deze doorverwijzing.";
+/** Leeg zolang de privacyverklaring geen termijn voor contact- en aanvraaggegevens noemt; vlag blijft dan uit. */
 export const AOV_BEWAARTERMIJN = "XXX";
 export const AOV_AFM_URL =
   "https://www.afm.nl/nl-nl/sector/registers/vergunningenregisters/financiele-dienstverleners/details?id=A6BF9913-6111-F011-998A-7C1E5272931F";
