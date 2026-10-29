@@ -6,6 +6,7 @@ const db = new PGlite();
 const id = "00000000-0000-4000-8000-000000000001";
 beforeAll(async () => {
   await db.exec(`CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role; CREATE SCHEMA auth;
+    GRANT USAGE ON SCHEMA auth TO authenticated;
     CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql AS $$SELECT '${id}'::uuid$$;
     CREATE FUNCTION auth.jwt() RETURNS jsonb LANGUAGE sql AS $$SELECT jsonb_build_object('aal',current_setting('test.aal'))$$;
     CREATE FUNCTION is_team_member(uuid) RETURNS boolean LANGUAGE sql AS $$SELECT current_setting('test.role')='verzekering' AND auth.jwt()->>'aal'='aal2'$$;
