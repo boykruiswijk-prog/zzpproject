@@ -18,7 +18,7 @@ beforeAll(async () => {
     CREATE TABLE public.profiles(id uuid, full_name text);
     INSERT INTO public.profiles VALUES ('${u(99)}','Ellen Baars');
     CREATE TABLE public.leads(id uuid, voornaam text, achternaam text, bedrijfsnaam text, email text, verzekering_type text,
-      gekozen_pakket text, status text, created_at timestamptz, bron text, assigned_to uuid, is_test boolean);
+      gekozen_pakket text, status text, created_at timestamptz, bron text, assigned_to uuid, is_test boolean, type text);
     CREATE TABLE public.activiteiten_log(id uuid, lead_id uuid, actie_type text, aangemaakt_op timestamptz);
     CREATE TABLE public.ondernemingen(id uuid, naam text);
     CREATE TABLE public.klant_contracten(id uuid, onderneming_id uuid, product text, status text, maandwaarde numeric,
@@ -26,7 +26,7 @@ beforeAll(async () => {
     CREATE TABLE public.doel_rijen(sleutel uuid, dag date);
     CREATE FUNCTION public.tel_aanvragen_doel_rijen(date) RETURNS TABLE(sleutel uuid, dag date) LANGUAGE sql AS $$SELECT sleutel, dag FROM public.doel_rijen WHERE dag >= $1$$;`);
   // Leads: 22:30 UTC telt in NL als de volgende dag (tijdzonecontrole).
-  await db.exec(`INSERT INTO public.leads VALUES
+  await db.exec(`INSERT INTO public.leads(id,voornaam,achternaam,bedrijfsnaam,email,verzekering_type,gekozen_pakket,status,created_at,bron,assigned_to,is_test) VALUES
     ('${u(1)}','An','Jansen','An BV','an@x.nl','BAV & AVB Maandelijks',null,'actief', date_trunc('day', now()) - interval '2 days' + interval '22 hours 30 minutes','website','${u(99)}',false),
     ('${u(2)}','Bo','Smit','Bo VOF','bo@x.nl','bav_avb',null,'nieuw', now() - interval '1 day','telefoon',null,false),
     ('${u(3)}','Cas','Vos',null,'cas@x.nl','BAV & AVB Maandelijks + Cyber (proef)',null,'actief', now() - interval '1 day','website',null,false),
@@ -44,7 +44,9 @@ beforeAll(async () => {
     ('${u(32)}','${u(22)}','cyber_clear','loopt_af',10,(now() AT TIME ZONE 'Europe/Amsterdam')::date - 400,(now() AT TIME ZONE 'Europe/Amsterdam')::date - 1,false),
     ('${u(33)}','${u(22)}','bav_avb','actief',999,(now() AT TIME ZONE 'Europe/Amsterdam')::date - 2,null,true),
     ('${u(34)}','${u(22)}','bav_avb','vervangen',999,(now() AT TIME ZONE 'Europe/Amsterdam')::date - 2,null,false);`);
+  await db.exec(`UPDATE public.leads SET type = CASE WHEN id='${u(3)}' THEN 'contact' WHEN id='${u(5)}' THEN 'handmatig' ELSE 'verzekering_aanvraag' END`);
   await db.exec(readFileSync("drizzle/migrations/0206_grafiek_doorklik_a23.sql", "utf8"));
+  await db.exec(readFileSync("drizzle/migrations/0207_grafiek_status_type_a23.sql", "utf8"));
 }, 30000);
 afterAll(() => db.close());
 
@@ -54,7 +56,7 @@ const records = async (g: string, s: string | null, van: string | null = null, t
   (await db.query<{ r: GrafiekRecord[] }>("SELECT public.admin_grafiek_records($1,$2,$3::date,$4::date,$5) r", [g, s, van, tot, t])).rows[0].r;
 
 describe("lijstlengte = grafiekwaarde, per grafiek", () => {
-  for (const g of ["leads_dag", "leads_status", "leads_verzekering", "activaties_maand", "aanvragen"]) {
+  for (const g of ["leads_dag", "leads_status", "leads_status_type", "leads_verzekering", "activaties_maand", "aanvragen"]) {
     it(`${g}: elk element heeft exact zoveel regels als zijn waarde`, async () => {
       const punten = await grafiek(g);
       expect(punten.length).toBeGreaterThan(0);
@@ -137,6 +139,23 @@ describe("hulpfuncties", () => {
   });
 });
 
+describe("leads per status gestapeld naar leadtype", () => {
+  it("segmenten splitsen aanvragen en contactvragen en tellen op tot de hele balk", async () => {
+    const seg = await grafiek("leads_status_type");
+    expect(seg.find((p) => p.sleutel === "actief|verzekering_aanvraag")?.waarde).toBe(1);
+    expect(seg.find((p) => p.sleutel === "actief|contact")?.waarde).toBe(1);
+    expect(seg.find((p) => p.sleutel === "afgewezen|handmatig")?.waarde).toBe(1);
+    for (const st of await grafiek("leads_status")) {
+      const som = seg.filter((p) => p.sleutel.startsWith(`${st.sleutel}|`)).reduce((s, p) => s + Number(p.waarde), 0);
+      expect(som).toBe(Number(st.waarde));
+    }
+  });
+  it("segmentlijst bevat exact de leads van status + type", async () => {
+    const r = await records("leads_status_type", "actief|contact");
+    expect(r.map((x) => x.id)).toEqual([u(3)]);
+  });
+});
+
 describe("grafieken gebruiken de beveiligde functie", () => {
   const charts = readFileSync("src/components/admin/DashboardCharts.tsx", "utf8");
   const kpi = readFileSync("src/components/admin/SupervisorKpiPanel.tsx", "utf8");
@@ -148,8 +167,11 @@ describe("grafieken gebruiken de beveiligde functie", () => {
     expect(lijst).toContain('"admin_grafiek_records"'); expect(lijst).not.toMatch(/supabase\s*\.from\(/);
   });
   it("elke grafiek opent het zijpaneel", () => {
-    for (const g of ["leads_dag", "leads_status", "leads_verzekering"]) expect(charts).toContain(`grafiek: "${g}"`);
+    for (const g of ["leads_dag", "leads_status", "leads_status_type", "leads_verzekering"]) expect(charts).toContain(`grafiek: "${g}"`);
     expect(inzicht).toContain('grafiek: "aanvragen"'); expect(inzicht).toContain('"arr_netto"');
     expect(lijst).toContain("Klik voor de lijst");
+  });
+  it("leads per dag gebruikt een rechte lijn die nooit onder 0 zakt", () => {
+    expect(charts).toContain('type="linear"'); expect(charts).not.toContain('type="monotone"');
   });
 });
