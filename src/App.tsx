@@ -131,6 +131,7 @@ import { PortalAuthProvider } from "@/contexts/PortalAuthContext";
 import { RequirePortalAuth } from "@/components/portal/RequirePortalAuth";
 
 import { legacyRedirects } from "@/config/legacyRedirects";
+import { LegacyRedirect } from "@/components/shared/LegacyRedirect";
 import { EVI_PAGINA_PAD, EVI_PAGINA_PUBLIEK, eviPaginaToegankelijk } from "@/config/eviPagina";
 const PensioenOpbouwenZzp = lazy(() => import("./pages/PensioenOpbouwenZzp"));
 const EviPaginaRoute = () => eviPaginaToegankelijk(typeof window === "undefined" ? "" : window.location.hostname)
@@ -232,7 +233,7 @@ export const AppRoutes = () => (
 
             {/* WordPress legacy redirects — MUST come before /:lang */}
             {legacyRedirects.map(({ from, to }) => (
-              <Route key={from} path={`/${from}`} element={<Navigate to={to} replace />} />
+              <Route key={from} path={`/${from}`} element={<LegacyRedirect to={to} />} />
             ))}
             
             {/* Language-prefixed routes */}
