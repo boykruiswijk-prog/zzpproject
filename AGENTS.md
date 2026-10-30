@@ -55,4 +55,4 @@
 - Bundle leak checks exempt only explicit public AVB coverage wording, including amount-before-AVB; unlabeled and cyber amounts remain blocked. Why: valid coverage copy must deploy.
 - PageHero text wrapping is opt-in for occupational landing pages; other pages retain their existing sizing. Why: long coverage headings must remain readable without changing shared page layouts.
 - Trigger artikel_hiscox_acceptatie_check plus hiscoxAcceptatie.test.ts reject text attributing acceptance to Hiscox. Why: automation cannot publish it.
-- A20 afhaakmail: selectie/claim alleen via afhaak_herinnering_kandidaten/_claim; geclaimd = nooit opnieuw. Enhanced conversions: alleen browser-SHA-256 van e-mail. Waarom: geen dubbele mail of leesbare data.
+- A20 afhaakmail: alleen via afhaak_herinnering_kandidaten/_claim, geclaimd nooit opnieuw; enhanced conversions alleen browser-SHA-256 e-mail. Waarom: geen dubbele mail of leesbare data.
