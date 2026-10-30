@@ -8,6 +8,7 @@ import { z } from "npm:zod@3.23.8";
 import { resolveEnvironment } from "../_shared/environment.ts";
 import { getFromAddress } from "../_shared/mail.ts";
 import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
+import { geldigEmail } from "../_shared/geldigEmail.ts";
 import { interneMailVelden } from "../_shared/leadVelden.ts";
 import { klantVeiligeTekst } from "../_shared/premieTekst.ts";
 
@@ -297,12 +298,20 @@ Deno.serve(async (req) => {
     try {
       const internalResults = await verstuurInterneMelding(supabase, req, "send-lead-notification", {
         leadType: type, leadId, subject, html, text,
-        replyTo: isProd ? replyToEmail : undefined,
+        replyTo: isProd ? geldigEmail(replyToEmail) : undefined,
         metadata: fields,
       });
 
-      // Klantbevestigingsmail (alleen als userEmail aanwezig)
-      const customerEmailRaw = (isTrusted ? (userEmail || (fields.email as string | undefined) || "") : (userEmail || "")).trim();
+      // Klantbevestigingsmail alleen bij een geldig e-mailadres; anders overslaan en loggen als 'skipped'.
+      const customerEmailRaw = geldigEmail(isTrusted ? (userEmail || (fields.email as string | undefined)) : userEmail) ?? "";
+      if (!customerEmailRaw && resend && !isTestLead) {
+        await supabase.from("lead_notification_log").insert({
+          lead_type: type, lead_id: leadId ?? null, recipient: "-", cc: null,
+          subject: "Bevestiging van je aanvraag bij ZP Zaken", status: "skipped",
+          error_message: "geen geldig e-mailadres bezoeker",
+          metadata: { ...fields, customer_confirmation: true },
+        });
+      }
       // Testleads krijgen nooit een klantbevestiging.
       if (customerEmailRaw && resend && !isTestLead) {
         const customerRecipient = isProd ? customerEmailRaw : "boy.kruiswijk@zpzaken.nl";

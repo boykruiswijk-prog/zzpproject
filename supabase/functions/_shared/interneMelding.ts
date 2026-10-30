@@ -1,4 +1,5 @@
 import { createMailGate } from "./mail.ts";
+import { geldigEmail } from "./geldigEmail.ts";
 
 // deno-lint-ignore no-explicit-any
 type AdminClient = any;
@@ -54,7 +55,7 @@ async function sendOne(admin: AdminClient, req: Request | null, fnName: string, 
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from: plan.from, to: plan.to, subject: plan.subject, html: plan.html, text: input.text, reply_to: input.replyTo }),
+      body: JSON.stringify({ from: plan.from, to: plan.to, subject: plan.subject, html: plan.html, text: input.text, ...(geldigEmail(input.replyTo) ? { reply_to: geldigEmail(input.replyTo) } : {}) }),
     });
     const body = await response.json().catch(() => ({}));
     if (!response.ok) {
