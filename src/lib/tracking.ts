@@ -299,52 +299,68 @@ export function e164Telefoon(v: string | undefined | null): string {
 
 const PURCHASE_KEY = "zp_purchase_verstuurd";
 
-/** purchase vuurt maximaal één keer per transaction_id (ook na herladen in dezelfde browser). */
+/** Enhanced conversions: genormaliseerd e-mailadres (getrimd, kleine letters). */
+export function normaliseerEmailVoorHash(email: string | undefined | null): string {
+  return (email ?? "").trim().toLowerCase();
+}
+
+/** SHA-256 (hex) van het genormaliseerde e-mailadres, in de browser via crypto.subtle; leeg of geen subtle geeft null. */
+export async function sha256EmailHex(email: string | undefined | null): Promise<string | null> {
+  const n = normaliseerEmailVoorHash(email);
+  const subtle = globalThis.crypto?.subtle;
+  if (!n || !n.includes("@") || !subtle) return null;
+  const buf = await subtle.digest("SHA-256", new TextEncoder().encode(n));
+  return Array.from(new Uint8Array(buf), (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+const PURCHASE_KEY = "zp_purchase_verstuurd";
+
+/**
+ * purchase vuurt maximaal één keer per transaction_id (ook na herladen in dezelfde browser).
+ * Enhanced conversions (C8): alleen bij deze afgeronde BAV + AVB-aanvraag, met marketingtoestemming en
+ * buiten interne paden, eerst gtag('set','user_data',{ sha256_email_address }). Alleen de hash van het
+ * e-mailadres; nooit naam, telefoon, adres of leesbaar e-mailadres naar Google of de dataLayer.
+ */
 export const trackPurchase = (
   transactionId: string,
   pakketId: string,
   pakketNaam: string,
   value: number,
-  userData?: { email?: string; phone_number?: string },
+  userData?: { email?: string },
   isTest = false,
-) => {
+): void | Promise<void> => {
   try {
     const al: string[] = JSON.parse(localStorage.getItem(PURCHASE_KEY) || "[]");
     if (al.includes(transactionId)) return;
     localStorage.setItem(PURCHASE_KEY, JSON.stringify([...al, transactionId].slice(-20)));
   } catch { /* geen opslag: toch één keer versturen */ }
-  trackGa("purchase", {
-    transaction_id: transactionId,
-    value,
-    currency: "EUR",
-    items: [{ item_id: pakketId, item_name: pakketNaam, price: value, quantity: 1 }],
-  });
-  // Enhanced Conversions: alleen met marketingtoestemming en nooit op interne paden.
-  // E-mail en telefoon gaan uitsluitend naar gtag en komen nooit in een log of console.
-  if (
-    typeof window !== "undefined" &&
-    userData &&
-    !isNietGemetenPad(window.location.pathname) &&
-    heeftMarketingToestemming()
-  ) {
-    const email = (userData.email ?? "").trim().toLowerCase();
-    const telefoon = e164Telefoon(userData.phone_number);
-    const data: Record<string, string> = {};
-    if (email) data.email = email;
-    if (telefoon) data.phone_number = telefoon;
-    if (Object.keys(data).length) {
+  const verstuur = (hash: string | null) => {
+    if (hash) {
       const gtag = (window as unknown as { gtag?: (...a: unknown[]) => void }).gtag;
-      if (typeof gtag === "function") gtag("set", "user_data", data);
+      if (typeof gtag === "function") gtag("set", "user_data", { sha256_email_address: hash });
     }
-  }
-  if (adsSendTo(GOOGLE_ADS_CONVERSIE.split("/")[1] ?? "") === GOOGLE_ADS_CONVERSIE) trackGa("conversion", {
-    send_to: GOOGLE_ADS_CONVERSIE,
-    value,
-    currency: "EUR",
-    transaction_id: transactionId,
-  });
-  uetAanvraagAfgerond(isTest);
-  openAiAanvraagAfgerond(isTest, transactionId);
+    trackGa("purchase", {
+      transaction_id: transactionId,
+      value,
+      currency: "EUR",
+      items: [{ item_id: pakketId, item_name: pakketNaam, price: value, quantity: 1 }],
+    });
+    if (adsSendTo(GOOGLE_ADS_CONVERSIE.split("/")[1] ?? "") === GOOGLE_ADS_CONVERSIE) trackGa("conversion", {
+      send_to: GOOGLE_ADS_CONVERSIE,
+      value,
+      currency: "EUR",
+      transaction_id: transactionId,
+    });
+    uetAanvraagAfgerond(isTest);
+    openAiAanvraagAfgerond(isTest, transactionId);
+  };
+  const magHashen =
+    typeof window !== "undefined" &&
+    !!normaliseerEmailVoorHash(userData?.email) &&
+    !isNietGemetenPad(window.location.pathname) &&
+    heeftMarketingToestemming();
+  if (!magHashen) return verstuur(null);
+  return sha256EmailHex(userData?.email).catch(() => null).then(verstuur);
 };
 
 

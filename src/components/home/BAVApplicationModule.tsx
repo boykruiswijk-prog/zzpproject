@@ -520,7 +520,7 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
         try { sessionStorage.removeItem(CONCEPT_KEY); } catch { /* geen opslag */ }
         conceptId.current = ""; laatsteConcept.current = "";
         const conversiePremie = aanvraagPremie(selectedBavPakket.id, starterVanToepassing);
-        trackPurchase(returnedLeadId, selectedBavPakket.id, selectedBavPakket.name, conversiePremie.maand ? conversiePremie.totaal * 12 : conversiePremie.totaal, { email: formData.email, phone_number: formData.telefoon }, data.is_test === true);
+        trackPurchase(returnedLeadId, selectedBavPakket.id, selectedBavPakket.name, conversiePremie.maand ? conversiePremie.totaal * 12 : conversiePremie.totaal, { email: formData.email }, data.is_test === true);
        setIsSubmitted(true);
         setFormData({
           bedrijfsnaam: "", kvkNummer: "", kvkStartdatum: "", sector: "", beroep: "", functie: "", aantalMedewerkers: "",
