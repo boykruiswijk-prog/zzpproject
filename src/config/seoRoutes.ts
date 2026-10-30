@@ -137,7 +137,7 @@ export const seoRoutes: SeoRoute[] = [
       "In drie stappen: kennismaking, antwoord op je vragen en je aanvraag geregeld. Op jouw tempo.",
     h1: "Zo werken wij",
     intro:
-      "Onze werkwijze bestaat uit drie stappen: een gratis kennismakingsgesprek, een voorstel op maat en het regelen van je polis. " +
+      "Onze werkwijze bestaat uit drie stappen: een gratis kennismakingsgesprek, antwoord op je vragen en het regelen van je polis. " +
       "Je bepaalt zelf het tempo en zit nergens aan vast tot je akkoord geeft.",
   },
   {

@@ -16,7 +16,8 @@ export function rootArtikelRedirects(articles: ReadonlyArray<{ slug: string }>, 
     if (!from || from.includes("/") || from === "tv" || routes.has(from) || existing.has(from)
       || prefixes.some((prefix) => from === prefix || from.startsWith(`${prefix}/`)) || seen.has(from)) return [];
     seen.add(from);
-    return [{ from: slug, to: `/kennisbank/${slug}` }];
+    const canonicalSlug = slug.replace(/^\/+|\/+$/g, "");
+    return [{ from: canonicalSlug, to: `/kennisbank/${canonicalSlug}` }];
   });
 }
 

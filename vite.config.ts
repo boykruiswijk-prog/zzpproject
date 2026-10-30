@@ -78,7 +78,11 @@ export function cloudflareBulkCsv(redirectLines: string[], host = "zpzaken.nl"):
     seen.add(sleutel);
     out.push([veld(src), veld(target), "301", flags].join(","));
   };
-  for (const raw of redirectLines) {
+  // De subpadregel deelt de bron met de exacte slashvariant. Laat die regel
+  // voorgaan bij ontdubbelen, anders verdwijnen alle onderliggende nieuwspaden.
+  const nieuwsPattern = /^(?:\/(?:en|de|fr))?\/home\/nieuws\/\*\s/;
+  const orderedLines = [...redirectLines.filter(line => nieuwsPattern.test(line)), ...redirectLines.filter(line => !nieuwsPattern.test(line))];
+  for (const raw of orderedLines) {
     const line = raw.replace(/\s+#.*$/, "").trim();
     if (!line || line.startsWith("#")) continue;
     const [from, to, status] = line.split(/\s+/);
@@ -86,7 +90,7 @@ export function cloudflareBulkCsv(redirectLines: string[], host = "zpzaken.nl"):
     if (from === "/:path/" || from === "/*") continue;
     // Deze twee oude namespaces hebben geen huidige routes of exacte prefixregel.
     // Subpadmatching verwijst direct naar het doel, zonder het oude pad mee te nemen.
-    if (from === "/profile/*" || from === "/facts/press/*") {
+    if (from === "/profile/*" || from === "/facts/press/*" || /^(?:\/(?:en|de|fr))?\/home\/nieuws\/\*$/.test(from)) {
       const target = /^https?:\/\//.test(to) ? to : `https://${host}${to}`;
       push(`${host}${from.slice(0, -1)}`, target, "TRUE,TRUE,TRUE,FALSE");
       continue;
@@ -140,9 +144,8 @@ function redirectsPlugin(env: Record<string, string>): Plugin {
             ? "  # gepubliceerd artikel"
             : "  # concept → categoriepagina";
         const rule = `/${r.from}    ${to}    301${note}`;
-        // Nieuwe 21-okt-paden krijgen een directe slashvariant, geen slash-redirectketen.
-        const directSlash = ["factoring/algemene-voorwaarden", "pensioen-overzicht", "sitemap-index.xml", "news_sitemap.xml", "news-sitemap.xml", "beroeps-en-bedrijfs-aansprakelijkheidsverzekering-zzp-avb-bav/%23pakket"].includes(r.from);
-        return directSlash ? [rule, `/${r.from}/    ${to}    301${note}`] : [rule];
+        // Exacte oude paden krijgen beide varianten direct naar hun einddoel.
+        return r.from.endsWith("/*") ? [rule] : [rule, `/${r.from}/    ${to}    301${note}`];
       });
 
       // Taalprefixen /en, /de, /fr erven de doorverwijzing van het Nederlandse
@@ -150,7 +153,9 @@ function redirectsPlugin(env: Record<string, string>): Plugin {
       const routes = bestaandeRoutes(__dirname);
       const taalRules = taalprefixRedirects(legacyRedirects, routes)
         .filter((r) => r.from !== "tv" && !r.from.startsWith("tv/"))
-        .map((r) => `/${r.from}    ${r.to}    301  # taalprefix`);
+        .flatMap((r) => r.from.endsWith("/*")
+          ? [`/${r.from}    ${r.to}    301  # taalprefix`]
+          : [`/${r.from}    ${r.to}    301  # taalprefix`, `/${r.from}/    ${r.to}    301  # taalprefix`]);
 
       const lines = [
         "# Automatisch gegenereerd door vite (zie src/config/legacyRedirects.ts).",

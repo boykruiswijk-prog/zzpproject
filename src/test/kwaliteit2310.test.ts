@@ -67,9 +67,11 @@ describe("Kwaliteitscontrole 23-10-2026", () => {
     expect(vanaf("en/kerstactienieuw")).toBe("/verzekeringen");
     expect(vanaf("de/kerstactienieuw")).toBe("/verzekeringen");
     expect(vanaf("fr/kerstactienieuw")).toBe("/verzekeringen");
-    // Al bestaande bronnen en vangregels krijgen geen dubbele afgeleide.
+    // Bestaande bronnen blijven uniek. Alleen de expliciete 30-10-nieuwsvangregel erft taalprefixen.
     expect(afgeleid.some((r) => r.from === "en/feed-2")).toBe(false);
-    expect(afgeleid.some((r) => r.from.includes("*"))).toBe(false);
+    expect(afgeleid.filter((r) => r.from.includes("*")).map(r => r.from)).toEqual([
+      "en/home/nieuws/*", "de/home/nieuws/*", "fr/home/nieuws/*",
+    ]);
     // /tv krijgt nooit een doorverwijzing.
     expect(zoekLegacyDoel("/tv")).toBeNull();
     expect(zoekLegacyDoel("/en/tv")).toBeNull();

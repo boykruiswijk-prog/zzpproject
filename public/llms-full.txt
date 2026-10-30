@@ -124,7 +124,7 @@ ZP Zaken werkt voor zelfstandig professionals in onder andere ICT, consultancy, 
 
 URL: https://zpzaken.nl/zo-werken-wij
 
-Onze werkwijze bestaat uit drie stappen: een gratis kennismakingsgesprek, een voorstel op maat en het regelen van je polis. Je bepaalt zelf het tempo en zit nergens aan vast tot je akkoord geeft.
+Onze werkwijze bestaat uit drie stappen: een gratis kennismakingsgesprek, antwoord op je vragen en het regelen van je polis. Je bepaalt zelf het tempo en zit nergens aan vast tot je akkoord geeft.
 
 ### Kennisbank voor zzp'ers
 
@@ -726,9 +726,9 @@ Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000). Hulp
 
 Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar. Bij maandbetaling: €27,50 per maand.
 
-**Wat is een AOV en waarom heb ik die nodig als zzp'er?**
+**Wat is een AOV?**
 
-Een Arbeidsongeschiktheidsverzekering (AOV) beschermt je inkomen als je door ziekte of een ongeval niet meer kunt werken. Als zzp'er heb je geen werkgever die je doorbetaalt bij ziekte, dus een AOV zorgt ervoor dat je financieel niet in de problemen komt. De verzekering keert maandelijks een bedrag uit zolang je arbeidsongeschikt bent.
+Een arbeidsongeschiktheidsverzekering (AOV) geeft je een uitkering als je door ziekte of een ongeval niet of minder kunt werken, volgens de voorwaarden van de verzekeraar. Als zzp'er heb je geen werkgever die je doorbetaalt bij ziekte. Hoe hoog de uitkering is en hoe lang die loopt, staat in de polis die je kiest.
 
 **Wat is het verschil tussen een BAV en een AVB?**
 
@@ -744,7 +744,7 @@ Je BAV + AVB is binnen 24 uur geregeld, certificaat in je mailbox. Werk je in de
 
 **Wat kost een AOV gemiddeld per maand?**
 
-De premie van een AOV hangt af van je beroep, leeftijd, gewenste uitkering en wachttijd. Gemiddeld betalen zzp'ers tussen de €150 en €400 per maand. Bij ZP Zaken vergelijken we AOV's van verschillende verzekeraars en laten we je zien welke mogelijkheden er zijn.
+De premie van een AOV hangt af van je beroep, leeftijd, gewenste uitkering en wachttijd. Gemiddeld betalen zzp'ers tussen de €150 en €400 per maand. ZP Zaken geeft geen advies over de AOV en vergelijkt geen AOV's. Op zpzaken.nl/aov lees je hoe de Movir AOV werkt en bereken je je premie via onze externe adviseur.
 
 ### Over ZP Zaken
 
@@ -754,7 +754,7 @@ Ja, ZP Zaken is volledig onafhankelijk. Wij zijn niet gebonden aan één verzeke
 
 **Wat kost een gesprek bij ZP Zaken?**
 
-Een eerste persoonlijk gesprek bij ZP Zaken is altijd gratis en vrijblijvend. We bespreken je situatie, wensen en mogelijkheden zonder dat je ergens aan vastzit. Pas als je besluit een verzekering af te sluiten, ontvangen wij een vergoeding van de verzekeraar.
+Een eerste persoonlijk gesprek bij ZP Zaken is altijd gratis en vrijblijvend. We beantwoorden je vragen, zonder dat je ergens aan vastzit. Pas als je besluit een verzekering af te sluiten, ontvangen wij een vergoeding van de verzekeraar.
 
 **Hoe kan ik contact opnemen met ZP Zaken?**
 
@@ -826,7 +826,7 @@ Nee. Zolang je werkzaamheden binnen je verzekerde beroep vallen, vallen nieuwe o
 
 **Kunnen mijn andere opdrachten ook onder deze polis?**
 
-Ja, alle zakelijke werkzaamheden binnen het verzekerde beroep vallen onder dezelfde polis, ongeacht hoeveel opdrachtgevers je hebt.
+Alle zakelijke werkzaamheden binnen het verzekerde beroep vallen onder dezelfde polis, volgens de polisvoorwaarden, ongeacht hoeveel opdrachtgevers je hebt.
 
 **Hoe lang zit ik aan deze verzekering vast?**
 
