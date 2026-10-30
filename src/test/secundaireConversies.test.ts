@@ -65,7 +65,7 @@ describe("secundaire conversies", () => {
   it("primaire conversie ongewijzigd", () => {
     expect(t.GOOGLE_ADS_CONVERSIE).toBe("AW-18497139684/rIoQCIid-5IdEOTnj_RE");
     const src = fs.readFileSync(path.resolve(__dirname, "../lib/tracking.ts"), "utf8");
-    expect(src).toContain('trackGa("conversion", {\n    send_to: GOOGLE_ADS_CONVERSIE,\n    value,\n    currency: "EUR",\n    transaction_id: transactionId,\n  });');
+    expect(src).toContain('trackGa("conversion", {\n      send_to: GOOGLE_ADS_CONVERSIE,\n      value,\n      currency: "EUR",\n      transaction_id: transactionId,\n    });');
     expect(src).toContain('adsSendTo(GOOGLE_ADS_CONVERSIE.split("/")[1] ?? "") === GOOGLE_ADS_CONVERSIE');
   });
 });

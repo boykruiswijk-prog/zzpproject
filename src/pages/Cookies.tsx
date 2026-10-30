@@ -129,7 +129,7 @@ export default function Cookies() {
           <div className="max-w-3xl mx-auto">
             <div className="prose prose-lg">
               <p className="text-lg text-muted-foreground leading-relaxed">
-                ZP Zaken B.V. respecteert jouw privacy. Op deze pagina leggen wij uit welke cookies wij gebruiken, waarom we ze gebruiken en hoe je je voorkeuren kunt beheren. Dit cookiebeleid is voor het laatst bijgewerkt op <strong>27 oktober 2026</strong>.
+                ZP Zaken B.V. respecteert jouw privacy. Op deze pagina leggen wij uit welke cookies wij gebruiken, waarom we ze gebruiken en hoe je je voorkeuren kunt beheren. Dit cookiebeleid is voor het laatst bijgewerkt op <strong>30 oktober 2026</strong>.
               </p>
             </div>
           </div>
@@ -287,6 +287,9 @@ export default function Cookies() {
               </p>
               <p>
                 Kom je via een advertentie op onze website, dan staat er een advertentie-klik-ID in het adres (gclid, gbraid, wbraid, msclkid of oppref). Met je toestemming bewaren we dit ID maximaal 90 dagen in je browser. Doe je in die periode een aanvraag, dan koppelen we het ID aan je dossier. Zo weten we welke advertentie tot de aanvraag leidde.
+              </p>
+              <p>
+                Rond je een BAV + AVB-aanvraag af en heb je toestemming gegeven voor marketingcookies, dan delen we je e-mailadres onleesbaar gemaakt met Google (enhanced conversions). Je browser zet het e-mailadres eerst om in een versleutelde hash; Google ontvangt alleen die hash en kan die niet terugrekenen naar je e-mailadres zelf. Zo meten we welke advertenties tot aanvragen leiden. We delen hierbij geen naam, telefoonnummer of adres. De rechtsgrond is dezelfde als voor de Google Ads-meting: je toestemming voor marketingcookies.
               </p>
               <p>
                 Je kunt je toestemming altijd intrekken via de cookie-instellingen onderaan deze pagina. Daarna worden er geen nieuwe klik-ID's of advertentiecookies meer vastgelegd.

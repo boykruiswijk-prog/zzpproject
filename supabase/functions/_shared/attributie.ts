@@ -29,7 +29,7 @@ export function isChatgptAds(a: Partial<Record<string, string>>): boolean {
 export type KlikIdSleutel = (typeof KLIK_ID_SLEUTELS)[number];
 
 export type AttributieSleutel = (typeof ATTRIBUTIE_SLEUTELS)[number];
-export type Kanaal = "chatgpt_ads" | "ai" | "betaald" | "campagne" | "verwijzing" | "direct";
+export type Kanaal = "herinnering" | "chatgpt_ads" | "ai" | "betaald" | "campagne" | "verwijzing" | "direct";
 export type Attributie = Partial<Record<AttributieSleutel, string>> & { kanaal: Kanaal; marketing_toestemming?: boolean };
 
 function host(v: string): string {
@@ -43,7 +43,13 @@ export function isAiVerwijzer(v: string | undefined | null): boolean {
   return !!h && AI_VERWIJZERS.some((d) => h === d || h.endsWith(`.${d}`));
 }
 
+/** A20: terugkeer via de herinneringsmail voor een afgehaakte aanvraag (utm_source=herinnering). */
+export function isHerinnering(a: Partial<Record<string, string>>): boolean {
+  return (a.utm_source ?? "").trim().toLowerCase() === "herinnering";
+}
+
 export function bepaalKanaal(a: Partial<Record<AttributieSleutel, string>>): Kanaal {
+  if (isHerinnering(a)) return "herinnering";
   if (isChatgptAds(a)) return "chatgpt_ads";
   if (isAiVerwijzer(a.referrer) || isAiVerwijzer(a.utm_source)) return "ai";
   if (a.gclid || a.gbraid || a.wbraid || a.msclkid || a.advertentieklik) return "betaald";
@@ -84,7 +90,7 @@ export function saneerAttributie(x: unknown): Attributie | null {
 }
 
 export const KANAAL_LABEL: Record<Kanaal, string> = {
-  chatgpt_ads: "ChatGPT Ads", ai: "AI-assistent", betaald: "Google Ads", campagne: "Campagne", verwijzing: "Verwijzing", direct: "Direct / onbekend",
+  herinnering: "Herinneringsmail", chatgpt_ads: "ChatGPT Ads", ai: "AI-assistent", betaald: "Google Ads", campagne: "Campagne", verwijzing: "Verwijzing", direct: "Direct / onbekend",
 };
 
 /** Regels voor de leaddetailpagina (blok Aanvraag) en de teammail. */
