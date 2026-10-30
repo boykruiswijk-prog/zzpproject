@@ -7,6 +7,7 @@ const root = "supabase/functions";
 // These functions have no privileged human team path. Mixed functions are NOT exempt.
 const uitzonderingen: Record<string, string> = {
   "aanvraag-nabellen": "Vault cron-secret",
+  "afhaak-herinnering": "Vault cron-secret only",
   "advertentie-beeld": "Empty wake processes only SQL-enqueued ad image jobs; no caller input",
   "nps-antwoord": "Individual NPS token from the customer mail",
   "nps-verzoeken": "Vault cron-secret only",
