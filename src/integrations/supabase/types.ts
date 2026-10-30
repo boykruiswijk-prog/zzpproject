@@ -50,6 +50,7 @@ export type Database = {
           geanonimiseerd_op: string | null
           gekoppeld_onderneming_id: string | null
           gekoppeld_persoon_id: string | null
+          herinnering_verstuurd_op: string | null
           id: string
           interne_bron: string | null
           is_test: boolean
@@ -80,6 +81,7 @@ export type Database = {
           geanonimiseerd_op?: string | null
           gekoppeld_onderneming_id?: string | null
           gekoppeld_persoon_id?: string | null
+          herinnering_verstuurd_op?: string | null
           id: string
           interne_bron?: string | null
           is_test?: boolean
@@ -110,6 +112,7 @@ export type Database = {
           geanonimiseerd_op?: string | null
           gekoppeld_onderneming_id?: string | null
           gekoppeld_persoon_id?: string | null
+          herinnering_verstuurd_op?: string | null
           id?: string
           interne_bron?: string | null
           is_test?: boolean
@@ -3141,6 +3144,7 @@ export type Database = {
           bijgewerkt_door: string | null
           bijgewerkt_op: string
           facturatie_actief: boolean
+          herinnering_afhaak_vanaf: string | null
           id: number
           nps_actief: boolean
           opzeg_credits_actief: boolean
@@ -3151,6 +3155,7 @@ export type Database = {
           bijgewerkt_door?: string | null
           bijgewerkt_op?: string
           facturatie_actief?: boolean
+          herinnering_afhaak_vanaf?: string | null
           id?: number
           nps_actief?: boolean
           opzeg_credits_actief?: boolean
@@ -3161,6 +3166,7 @@ export type Database = {
           bijgewerkt_door?: string | null
           bijgewerkt_op?: string
           facturatie_actief?: boolean
+          herinnering_afhaak_vanaf?: string | null
           id?: number
           nps_actief?: boolean
           opzeg_credits_actief?: boolean
@@ -6868,6 +6874,26 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      afhaak_herinnering_claim: {
+        Args: { _id: string; _nu?: string }
+        Returns: boolean
+      }
+      afhaak_herinnering_kandidaten: {
+        Args: { _limit?: number; _nu?: string }
+        Returns: {
+          email: string
+          id: string
+          voornaam: string
+        }[]
+      }
+      afhaak_herinnering_per_dag: {
+        Args: never
+        Returns: {
+          daarna_afgerond: number
+          dag: string
+          verstuurd: number
+        }[]
       }
       anonimiseer_aanvraag_concepten: { Args: never; Returns: number }
       aov_aanmelden: {

@@ -1506,6 +1506,13 @@
       "when": 1793284506946,
       "tag": "0214_a23_afgesloten_opvolging",
       "breakpoints": true
+    },
+    {
+      "idx": 215,
+      "version": "7",
+      "when": 1793380560094,
+      "tag": "0215_a20_afhaak_herinnering",
+      "breakpoints": true
     }
   ]
 }
