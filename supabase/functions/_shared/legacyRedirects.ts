@@ -1,6 +1,12 @@
 // Spiegelt src/config/legacyRedirects.ts (edge functions kunnen src/ niet importeren).
 // Bij wijzigingen: beide bestanden gelijk houden.
 export const legacyRedirects: { from: string; to: string }[] = [
+  // Kwaliteitscontrole 30-10-2026; /aov en /tv blijven bestaande pagina's.
+  { from: "privacy-statement", to: "/cookies" },
+  { from: "control/verzekeringen/zorg-en-zekerheid", to: "/zorgverzekering" },
+  { from: "kopie-van-inschrijven-shift-happens", to: "/" },
+  { from: "zzp-verzekering-interim", to: "/zzp-verzekering-interim-manager" },
+  { from: "src/assets/partner-hiscox.webp", to: "/logos/hiscox.png" },
   // Verouderde WordPress-formulieren en -voorwaarden (oude looptijd). Komen in
   // public/_redirects vóór de wildcard /wp-content/uploads/* en worden door de
   // prerender niet meegeleverd. Het bestand in storage blijft bestaan.
@@ -374,6 +380,7 @@ export const legacyRedirects: { from: string; to: string }[] = [
   { from: "headfirst-bav-inschrijfform", to: "/partners" },
   { from: "het-nk-golftoernooi-voor-zpers-2019-burggolf-de-haverleij", to: "/" },
   { from: "home/nieuws", to: "/kennisbank" },
+  { from: "home/nieuws/*", to: "/kennisbank" },
   { from: "ict-brochure-beroepsaansprakelijkheid", to: "/documenten#verzekeringsvoorwaarden" },
   { from: "ict-polisvoorwaarden-beroepsaansprakelijkheid", to: "/voorwaarden" },
   { from: "infographic-wie-is-de-zper-in-de-zakelijke-dienstverlening", to: "/diensten" },

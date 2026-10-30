@@ -67,12 +67,16 @@ describe("Kwaliteitscontrole 30 oktober", () => {
     const slug = "zijn-internetkosten-aftrekbaar-voor-een-zzp-er";
     const result = rootArtikelRedirects([{ slug: `${slug}/` }], resolve("."));
     expect(result).toEqual([{ from: slug, to: `/kennisbank/${slug}` }]);
+    const gebouwd = voegArtikelRedirectsToe(redirects, result);
+    const gebouwdCsv = cloudflareBulkCsv(gebouwd.split("\n")).join("\n");
+    expect(voegArtikelRedirectsToe(redirects, [])).not.toContain(`/${slug}/    /kennisbank/${slug}    301`);
     const text = voegArtikelRedirectsToe("/:path/ /:path 301!\n/* /index.html 200\n", result);
     for (const slash of ["", "/"]) {
       const rule = `/${slug}${slash}    /kennisbank/${slug}    301`;
       expect(text).toContain(rule);
-      expect(redirects).toContain(rule);
-      expect(csv).toContain(`zpzaken.nl/${slug}${slash},https://zpzaken.nl/kennisbank/${slug},301`);
+      // Zelfde stap als de build (vite.config prerenderPlugin) op de echte bron.
+      expect(gebouwd).toContain(rule);
+      expect(gebouwdCsv).toContain(`zpzaken.nl/${slug}${slash},https://zpzaken.nl/kennisbank/${slug},301`);
     }
   });
   it("ook bestaande legacy-artikelen hebben een directe slashvariant", () => {
