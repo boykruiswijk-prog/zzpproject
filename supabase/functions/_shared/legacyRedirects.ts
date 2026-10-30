@@ -380,6 +380,7 @@ export const legacyRedirects: { from: string; to: string }[] = [
   { from: "headfirst-bav-inschrijfform", to: "/partners" },
   { from: "het-nk-golftoernooi-voor-zpers-2019-burggolf-de-haverleij", to: "/" },
   { from: "home/nieuws", to: "/kennisbank" },
+  { from: "home/nieuws/*", to: "/kennisbank" },
   { from: "ict-brochure-beroepsaansprakelijkheid", to: "/documenten#verzekeringsvoorwaarden" },
   { from: "ict-polisvoorwaarden-beroepsaansprakelijkheid", to: "/voorwaarden" },
   { from: "infographic-wie-is-de-zper-in-de-zakelijke-dienstverlening", to: "/diensten" },
