@@ -33,10 +33,11 @@ describe("OpenAI ChatGPT Ads-pixel", () => {
     expect(OPENAI_PIXEL_ID).toBe("SxHpKs2V6EgSyfvtYJwquQ");
   });
 
-  it("stuurt lead_created als customer_action zonder persoonsgegevens bij een echte aanvraag, één keer", () => {
+  it("stuurt lead_created als customer_action zonder persoonsgegevens bij een echte aanvraag, één keer", async () => {
     geefToestemming(true);
-    trackPurchase("lead-a", "p", "Pakket", 100, { email: "x@voorbeeld.nl", phone_number: "0612345678" });
-    trackPurchase("lead-a", "p", "Pakket", 100);
+    // Met e-mail en toestemming wacht de meting op de SHA-256-hash (enhanced conversions, C8).
+    await trackPurchase("lead-a", "p", "Pakket", 100, { email: "x@voorbeeld.nl" });
+    await trackPurchase("lead-a", "p", "Pakket", 100);
     expect(leads()).toEqual([["measure", "lead_created", { type: "customer_action" }, { event_id: "bav_lead_lead-a" }]]);
   });
 
