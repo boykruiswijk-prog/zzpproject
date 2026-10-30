@@ -313,7 +313,6 @@ export async function sha256EmailHex(email: string | undefined | null): Promise<
   return Array.from(new Uint8Array(buf), (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-const PURCHASE_KEY = "zp_purchase_verstuurd";
 
 /**
  * purchase vuurt maximaal één keer per transaction_id (ook na herladen in dezelfde browser).
