@@ -8,6 +8,7 @@ import { z } from "npm:zod@3.23.8";
 import { resolveEnvironment } from "../_shared/environment.ts";
 import { getFromAddress } from "../_shared/mail.ts";
 import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
+import { geldigEmail } from "../_shared/geldigEmail.ts";
 import { interneMailVelden } from "../_shared/leadVelden.ts";
 import { klantVeiligeTekst } from "../_shared/premieTekst.ts";
 
