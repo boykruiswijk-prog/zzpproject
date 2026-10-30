@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { readFileSync } from "node:fs";
 import { geldigEmail } from "../../supabase/functions/_shared/geldigEmail";
 
+const MELDING = "../../supabase/functions/_shared/interneMelding";
 const fetchMock = vi.fn();
 vi.mock("../../supabase/functions/_shared/mail.ts", () => ({
   createMailGate: () => ({ plan: (p: any) => ({ send: true, from: "ZP <info@zpzaken.nl>", ...p }) }),
@@ -31,7 +32,7 @@ describe("terugbelverzoek zonder e-mailadres", () => {
   });
 
   it("teammail zonder bezoekersadres gaat zonder reply_to", async () => {
-    const { verstuurInterneMelding } = await import("../../supabase/functions/_shared/interneMelding");
+    const { verstuurInterneMelding } = await import(/* @vite-ignore */ MELDING);
     const a = admin();
     const res = await verstuurInterneMelding(a, null, "t", { leadType: "terugbelverzoek-chat", subject: "s", html: "h", replyTo: "" });
     expect(res.every((r) => r.ok)).toBe(true);
@@ -40,7 +41,7 @@ describe("terugbelverzoek zonder e-mailadres", () => {
   });
 
   it("teammail met bezoekersadres zet reply_to", async () => {
-    const { verstuurInterneMelding } = await import("../../supabase/functions/_shared/interneMelding");
+    const { verstuurInterneMelding } = await import(/* @vite-ignore */ MELDING);
     await verstuurInterneMelding(admin(), null, "t", { leadType: "terugbelverzoek-chat", subject: "s", html: "h", replyTo: "klant@voorbeeld.nl" });
     expect(JSON.parse(fetchMock.mock.calls[0][1].body).reply_to).toBe("klant@voorbeeld.nl");
   });
