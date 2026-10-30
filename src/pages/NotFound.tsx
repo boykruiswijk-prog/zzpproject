@@ -1,5 +1,6 @@
 import { openTerugbelKlik } from "@/components/shared/TerugbelDialog";
-import { useLocation, Navigate, Link } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
+import { LegacyRedirect } from "@/components/shared/LegacyRedirect";
 import { SITE_CONFIG } from "@/config/site";
 import { useEffect } from "react";
 import { SEOHead } from "@/components/SEOHead";
@@ -73,7 +74,7 @@ const NotFound = () => {
   }, [location.pathname, redirect]);
 
   if (redirect) {
-    return <Navigate to={redirect} replace />;
+    return <LegacyRedirect to={redirect} />;
   }
 
   return (

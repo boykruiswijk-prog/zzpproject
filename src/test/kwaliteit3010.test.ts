@@ -1,5 +1,6 @@
 // @vitest-environment node
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { isStatischLegacyDoel, navigeerLegacyBestand } from "@/components/shared/LegacyRedirect";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { faqItems } from "@/data/faqItems";
@@ -84,5 +85,28 @@ describe("Kwaliteitscontrole 30 oktober", () => {
   });
   it("Hiscox-doel is een echt gepubliceerd PNG-bestand", () => {
     expect(readFileSync(resolve("public/logos/hiscox.png")).subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
+  });
+  it.each(["png", "jpg", "jpeg", "webp", "svg", "gif", "pdf", "ico", "txt", "xml"])("legacy-bestand .%s gebruikt volledige navigatie, ook met query en fragment", extension => {
+    const replace = vi.fn();
+    for (const suffix of ["", "?download=1#voorbeeld", "#voorbeeld"]) {
+      const to = `/bestanden/voorbeeld.${extension.toUpperCase()}${suffix}`;
+      expect(isStatischLegacyDoel(to)).toBe(true);
+      expect(navigeerLegacyBestand(to, replace)).toBe(true);
+      expect(replace).toHaveBeenLastCalledWith(to);
+    }
+    expect(replace).toHaveBeenCalledTimes(3);
+  });
+  it("gewone pagina's blijven routerdoelen en bestandsnamen in een query zijn geen bestandsdoel", () => {
+    const replace = vi.fn();
+    for (const to of ["/cookies", "/contact?bijlage=logo.png", "/kennisbank/artikel#logo.svg"]) {
+      expect(navigeerLegacyBestand(to, replace)).toBe(false);
+    }
+    expect(replace).not.toHaveBeenCalled();
+  });
+  it("beide legacy-ingangen gebruiken de gedeelde bestandsbewuste doorverwijzing, nooit rechtstreeks Navigate", () => {
+    expect(read("src/App.tsx")).toContain('element={<LegacyRedirect to={to} />}');
+    expect(read("src/App.tsx")).not.toContain('element={<Navigate to={to} replace />}');
+    expect(read("src/pages/NotFound.tsx")).toContain('<LegacyRedirect to={redirect} />');
+    expect(read("src/pages/NotFound.tsx")).not.toContain('<Navigate to={redirect}');
   });
 });
