@@ -20,6 +20,8 @@ describe("UET aanvraag_afgerond", () => {
   beforeEach(() => {
     push.mockReset();
     localStorage.clear();
+    localStorage.setItem("zpzaken_cookie_consent", JSON.stringify({ version: "1.0", marketing: true }));
+    loc.pathname = "/verzekeringen";
     ((globalThis as Record<string, unknown>).window as Record<string, unknown>).uetq = { push };
     __resetUetVoorTest(true);
   });
@@ -40,11 +42,17 @@ describe("UET aanvraag_afgerond", () => {
     trackPurchase("lead-3", "p", "Pakket", 100);
     expect(events()).toHaveLength(0);
   });
+  it("vuurt niet na intrekken van marketingtoestemming, ook als UET al geladen is", () => {
+    localStorage.setItem("zpzaken_cookie_consent", JSON.stringify({ version: "1.0", marketing: false }));
+    trackPurchase("lead-geweigerd", "p", "Pakket", 100);
+    expect(events()).toHaveLength(0);
+  });
 });
 
 describe("UET secundaire events", () => {
   beforeEach(() => {
     push.mockReset();
+    localStorage.setItem("zpzaken_cookie_consent", JSON.stringify({ version: "1.0", marketing: true }));
     ((globalThis as Record<string, unknown>).window as Record<string, unknown>).uetq = { push };
     loc.pathname = "/contact";
   });
