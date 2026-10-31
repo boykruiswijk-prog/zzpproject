@@ -3,7 +3,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 describe("Microsoft UET-installatie", () => {
   beforeEach(() => {
+    vi.restoreAllMocks();
     vi.resetModules(); localStorage.clear();
+    // Bewaar de echte scriptelementen, maar download nooit advertentiecode in unit-tests.
+    const append = document.head.appendChild.bind(document.head);
+    vi.spyOn(document.head, "appendChild").mockImplementation(<T extends Node>(node: T): T => {
+      if (node instanceof HTMLScriptElement) node.type = "application/x-test";
+      return append(node);
+    });
     document.querySelectorAll('script[src="https://bat.bing.com/bat.js"]').forEach(s => s.remove());
     localStorage.setItem("zpzaken_cookie_consent", JSON.stringify({ version: "1.0", marketing: true }));
     window.history.replaceState({}, "", "/verzekeringen");
@@ -34,5 +41,14 @@ describe("Microsoft UET-installatie", () => {
     t.uetAanvraagAfgerond(false);
     expect(construct).toHaveBeenCalledWith(expect.objectContaining({ ti: "187280316" }));
     expect(push.mock.calls).toEqual([["pageLoad"], ["event", "aanvraag_afgerond", { event_category: "aanvraag" }]]);
+  });
+  it("volgt ingetrokken toestemming uit een ander tabblad en blokkeert nieuwe events", async () => {
+    const t = await import("@/lib/tracking");
+    t.installeerUet("/verzekeringen");
+    const push = vi.fn(); Object.assign(window, { uetq: { push } });
+    localStorage.setItem("zpzaken_cookie_consent", JSON.stringify({ version: "1.0", marketing: false }));
+    window.dispatchEvent(new StorageEvent("storage", { key: "zpzaken_cookie_consent" }));
+    t.uetAanvraagAfgerond(false); t.uetSecundair("contactformulier_verzonden", false); t.uetPageView("/contact");
+    expect(push.mock.calls).toEqual([["consent", "update", { ad_storage: "denied" }]]);
   });
 });
