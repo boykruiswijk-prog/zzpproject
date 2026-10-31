@@ -21,7 +21,7 @@ describe("Kwaliteitscontrole 31 oktober", () => {
       for (const slash of ["", "/"]) {
         const path = `/${prefix}${from}${slash}`;
         expect(zoekLegacyDoel(path)).toBe(to);
-        expect(redirects.split("\n")).toContain(`${path}    ${to}    301`);
+        expect(redirects.split("\n").map(line => line.replace(/\s+#.*$/, ""))).toContain(`${path}    ${to}    301`);
         expect(csv.split("\n")).toContain(`zpzaken.nl${path},https://zpzaken.nl${to},301,TRUE,TRUE,FALSE,FALSE`);
       }
     }
