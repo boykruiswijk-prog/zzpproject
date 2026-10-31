@@ -22,8 +22,6 @@
 /sitemap.aspx/    /sitemap.xml    301
 /src/assets/ellen-baars-avatar.webp    /over-ons    301
 /src/assets/ellen-baars-avatar.webp/    /over-ons    301
-/src/assets/team-walking.webp    /over-ons    301
-/src/assets/team-walking.webp/    /over-ons    301
 /privacy-statement    /cookies    301
 /privacy-statement/    /cookies    301
 /control/verzekeringen/zorg-en-zekerheid    /zorgverzekering    301
@@ -1335,12 +1333,6 @@
 /de/src/assets/ellen-baars-avatar.webp/    /over-ons    301  # taalprefix
 /fr/src/assets/ellen-baars-avatar.webp    /over-ons    301  # taalprefix
 /fr/src/assets/ellen-baars-avatar.webp/    /over-ons    301  # taalprefix
-/en/src/assets/team-walking.webp    /over-ons    301  # taalprefix
-/en/src/assets/team-walking.webp/    /over-ons    301  # taalprefix
-/de/src/assets/team-walking.webp    /over-ons    301  # taalprefix
-/de/src/assets/team-walking.webp/    /over-ons    301  # taalprefix
-/fr/src/assets/team-walking.webp    /over-ons    301  # taalprefix
-/fr/src/assets/team-walking.webp/    /over-ons    301  # taalprefix
 /en/privacy-statement    /cookies    301  # taalprefix
 /en/privacy-statement/    /cookies    301  # taalprefix
 /de/privacy-statement    /cookies    301  # taalprefix
