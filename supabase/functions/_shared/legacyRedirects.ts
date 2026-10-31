@@ -1,6 +1,10 @@
 // Spiegelt src/config/legacyRedirects.ts (edge functions kunnen src/ niet importeren).
 // Bij wijzigingen: beide bestanden gelijk houden.
 export const legacyRedirects: { from: string; to: string }[] = [
+  // Kwaliteitscontrole 31-10-2026; bestaande routes en /tv gaan voor.
+  { from: "post/cookie-instellingen-1", to: "/cookies" },
+  { from: "sitemap.aspx", to: "/sitemap.xml" },
+  { from: "src/assets/ellen-baars-avatar.webp", to: "/over-ons" },
   // Kwaliteitscontrole 30-10-2026; /aov en /tv blijven bestaande pagina's.
   { from: "privacy-statement", to: "/cookies" },
   { from: "control/verzekeringen/zorg-en-zekerheid", to: "/zorgverzekering" },

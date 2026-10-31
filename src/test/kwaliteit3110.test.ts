@@ -10,7 +10,6 @@ const doelen = [
   ["post/cookie-instellingen-1", "/cookies"],
   ["sitemap.aspx", "/sitemap.xml"],
   ["src/assets/ellen-baars-avatar.webp", "/over-ons"],
-  ["src/assets/team-walking.webp", "/over-ons"],
   ["zzp-verzekering-interim", "/zzp-verzekering-interim-manager"],
 ] as const;
 
@@ -29,6 +28,16 @@ describe("Kwaliteitscontrole 31 oktober", () => {
 
   it("sitemap.xml is een bestandsdoel en opent buiten de router", () => {
     expect(isStatischLegacyDoel(zoekLegacyDoel("/sitemap.aspx") ?? "")).toBe(true);
+  });
+
+  it("neemt de verwijderde groepsfoto niet opnieuw op in redirects of uitvoer", () => {
+    const oudeFoto = `src/assets/${["team", "walking"].join("-")}.webp`;
+    const server = readFileSync("supabase/functions/_shared/legacyRedirects.ts", "utf8");
+    expect(legacyRedirects.some(r => r.from.includes(oudeFoto))).toBe(false);
+    for (const uitvoer of [redirects, csv, server]) expect(uitvoer).not.toContain(oudeFoto);
+    for (const prefix of ["", "en/", "de/", "fr/"]) {
+      for (const slash of ["", "/"]) expect(zoekLegacyDoel(`/${prefix}${oudeFoto}${slash}`)).toBeNull();
+    }
   });
 
   it("bestaande routes en tv blijven buiten de nieuwe doorverwijzingen", () => {
