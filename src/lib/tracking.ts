@@ -36,12 +36,13 @@ function laadUet() {
   s.src = "https://bat.bing.com/bat.js";
   s.onload = () => {
     const UET = (window as unknown as { UET?: new (o: Record<string, unknown>) => Uetq }).UET;
-    if (!UET) return;
+    if (!UET) { uetGeladen = false; s.remove(); return; }
     const wachtrij = (window as unknown as { uetq?: unknown }).uetq;
     const inst = new UET({ ti: MS_UET_ID, q: wachtrij });
     (window as unknown as { uetq: Uetq }).uetq = inst;
     inst.push("pageLoad");
   };
+  s.onerror = () => { uetGeladen = false; s.remove(); };
   document.head.appendChild(s);
 }
 
@@ -62,6 +63,9 @@ export function installeerUet(pathname: string) {
   w.uetq = w.uetq || [];
   (w.uetq as unknown[]).push("consent", "default", { ad_storage: "denied" });
   window.addEventListener("zp-cookie-keuze", verwerkUetToestemming);
+  window.addEventListener("storage", (e) => {
+    if (e.key === "zpzaken_cookie_consent") verwerkUetToestemming();
+  });
   if (heeftMarketingToestemming() && !isNietGemetenPad(pathname)) {
     uetq()?.push("consent", "update", { ad_storage: "granted" });
     laadUet();
@@ -69,17 +73,24 @@ export function installeerUet(pathname: string) {
 }
 
 /** SPA-paginaweergave voor UET bij elke routewissel (alleen als UET geladen is). */
-let eerstePaginaGezien = false;
+let laatsteUetPagina: string | null = null;
 export function uetPageView(pathname: string) {
-  // De eerste weergave telt UET zelf via pageLoad.
-  if (!eerstePaginaGezien) { eerstePaginaGezien = true; return; }
-  if (!uetGeladen || isNietGemetenPad(pathname)) return;
+  if (typeof window === "undefined" || isNietGemetenPad(pathname) || !heeftMarketingToestemming()) return;
+  // Ook starten na een binnenkomst op een uitgesloten pad of een mislukte scriptdownload.
+  const wasGeladen = uetGeladen;
+  if (!uetGeladen) verwerkUetToestemming();
+  // De eerste weergave telt UET zelf via pageLoad; effect-herhaling telt niet dubbel.
+  if (!wasGeladen || laatsteUetPagina === null || laatsteUetPagina === pathname) {
+    laatsteUetPagina = pathname;
+    return;
+  }
+  laatsteUetPagina = pathname;
   uetq()?.push("event", "page_view", { page_path: pathname });
 }
 
 /** UET-conversie voor een afgeronde aanvraag; nooit voor testaanvragen of op interne paden. */
 export function uetAanvraagAfgerond(isTest: boolean) {
-  if (isTest || !uetGeladen || typeof window === "undefined" || isNietGemetenPad(window.location.pathname)) return;
+  if (isTest || !uetGeladen || typeof window === "undefined" || isNietGemetenPad(window.location.pathname) || !heeftMarketingToestemming()) return;
   uetq()?.push("event", "aanvraag_afgerond", { event_category: "aanvraag" });
 }
 
@@ -87,6 +98,7 @@ export function uetAanvraagAfgerond(isTest: boolean) {
 export function __resetUetVoorTest(geladen = false) {
   uetGeladen = geladen;
   uetGeinstalleerd = false;
+  laatsteUetPagina = null;
 }
 
 // ── OpenAI (ChatGPT Ads) meetpixel ──
@@ -371,7 +383,7 @@ export function isTestOmgeving(host: string = typeof window === "undefined" ? ""
 
 /** Secundair UET-event (alleen met geladen UET, dus na marketingtoestemming). */
 export function uetSecundair(event: string, isTest: boolean) {
-  if (isTest || !uetGeladen || typeof window === "undefined" || isNietGemetenPad(window.location.pathname)) return;
+  if (isTest || !uetGeladen || typeof window === "undefined" || isNietGemetenPad(window.location.pathname) || !heeftMarketingToestemming()) return;
   uetq()?.push("event", event, { event_category: "lead" });
 }
 
@@ -408,7 +420,7 @@ export function trackAanvraagGestart(conceptId: string, isTest = isTestOmgeving(
     localStorage.setItem(GESTART_KEY, JSON.stringify([...al, conceptId].slice(-20)));
   } catch { /* geen opslag: toch één keer per paginaweergave */ }
   secundaireConversie("aanvraag_gestart", "aanvraag", GOOGLE_ADS_CONVERSIE_AANVRAAG_GESTART, false);
-  if (uetGeladen) uetq()?.push("event", "aanvraag_gestart", { event_category: "aanvraag" });
+  if (uetGeladen && heeftMarketingToestemming()) uetq()?.push("event", "aanvraag_gestart", { event_category: "aanvraag" });
 }
 
 /** Interesse pensioen via Evi verstuurd: alleen GA4, bewust geen Ads-label. */

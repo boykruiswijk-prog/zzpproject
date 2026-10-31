@@ -154,12 +154,8 @@ export function legAttributieVast(): void {
     const betaald = !!klik || UTM.some((k) => !!nu[k]);
     const bestaand = sessionStorage.getItem(KEY);
     if (bestaand) {
-      // Latere advertentieklik in dezelfde sessie: alleen de kanaalmarkering bijwerken.
-      if (klik) {
-        const p = JSON.parse(bestaand) as Record<string, string>;
-        p.advertentieklik = advertentieklikVoor(klik);
-        sessionStorage.setItem(KEY, JSON.stringify(p));
-      }
+      // Nieuwe betaalde binnenkomst vervangt ook de oude campagne en verwijzer.
+      if (betaald) sessionStorage.setItem(KEY, JSON.stringify(nu));
       if (betaald) werkLangRecordBij(nu, true);
       return;
     }
