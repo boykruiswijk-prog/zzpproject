@@ -16,6 +16,14 @@
 # Oude WordPress-media staan onder hetzelfde pad in de storage-bucket.
 /wp-content/uploads/*    https://eugkavokktjwpqaqlwsj.supabase.co/storage/v1/object/public/article-images/wp-content/uploads/:splat    301
 
+/post/cookie-instellingen-1    /cookies    301
+/post/cookie-instellingen-1/    /cookies    301
+/sitemap.aspx    /sitemap.xml    301
+/sitemap.aspx/    /sitemap.xml    301
+/src/assets/ellen-baars-avatar.webp    /over-ons    301
+/src/assets/ellen-baars-avatar.webp/    /over-ons    301
+/src/assets/team-walking.webp    /over-ons    301
+/src/assets/team-walking.webp/    /over-ons    301
 /privacy-statement    /cookies    301
 /privacy-statement/    /cookies    301
 /control/verzekeringen/zorg-en-zekerheid    /zorgverzekering    301
@@ -1309,6 +1317,30 @@
 /facts/press/*    /kennisbank    301
 
 # Taalprefixen (/en, /de, /fr) erven de Nederlandse doorverwijzing.
+/en/post/cookie-instellingen-1    /cookies    301  # taalprefix
+/en/post/cookie-instellingen-1/    /cookies    301  # taalprefix
+/de/post/cookie-instellingen-1    /cookies    301  # taalprefix
+/de/post/cookie-instellingen-1/    /cookies    301  # taalprefix
+/fr/post/cookie-instellingen-1    /cookies    301  # taalprefix
+/fr/post/cookie-instellingen-1/    /cookies    301  # taalprefix
+/en/sitemap.aspx    /sitemap.xml    301  # taalprefix
+/en/sitemap.aspx/    /sitemap.xml    301  # taalprefix
+/de/sitemap.aspx    /sitemap.xml    301  # taalprefix
+/de/sitemap.aspx/    /sitemap.xml    301  # taalprefix
+/fr/sitemap.aspx    /sitemap.xml    301  # taalprefix
+/fr/sitemap.aspx/    /sitemap.xml    301  # taalprefix
+/en/src/assets/ellen-baars-avatar.webp    /over-ons    301  # taalprefix
+/en/src/assets/ellen-baars-avatar.webp/    /over-ons    301  # taalprefix
+/de/src/assets/ellen-baars-avatar.webp    /over-ons    301  # taalprefix
+/de/src/assets/ellen-baars-avatar.webp/    /over-ons    301  # taalprefix
+/fr/src/assets/ellen-baars-avatar.webp    /over-ons    301  # taalprefix
+/fr/src/assets/ellen-baars-avatar.webp/    /over-ons    301  # taalprefix
+/en/src/assets/team-walking.webp    /over-ons    301  # taalprefix
+/en/src/assets/team-walking.webp/    /over-ons    301  # taalprefix
+/de/src/assets/team-walking.webp    /over-ons    301  # taalprefix
+/de/src/assets/team-walking.webp/    /over-ons    301  # taalprefix
+/fr/src/assets/team-walking.webp    /over-ons    301  # taalprefix
+/fr/src/assets/team-walking.webp/    /over-ons    301  # taalprefix
 /en/privacy-statement    /cookies    301  # taalprefix
 /en/privacy-statement/    /cookies    301  # taalprefix
 /de/privacy-statement    /cookies    301  # taalprefix
