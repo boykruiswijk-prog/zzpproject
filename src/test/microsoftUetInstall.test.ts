@@ -1,9 +1,16 @@
 // @vitest-environment happy-dom
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+const listeners: Array<{ type: string; listener: EventListenerOrEventListenerObject }> = [];
 
 describe("Microsoft UET-installatie", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    const add = window.addEventListener.bind(window);
+    vi.spyOn(window, "addEventListener").mockImplementation((type, listener, options) => {
+      listeners.push({ type, listener });
+      add(type, listener, options);
+    });
     vi.resetModules(); localStorage.clear();
     // Bewaar de echte scriptelementen, maar download nooit advertentiecode in unit-tests.
     const append = document.head.appendChild.bind(document.head);
@@ -14,6 +21,9 @@ describe("Microsoft UET-installatie", () => {
     document.querySelectorAll('script[src="https://bat.bing.com/bat.js"]').forEach(s => s.remove());
     localStorage.setItem("zpzaken_cookie_consent", JSON.stringify({ version: "1.0", marketing: true }));
     window.history.replaceState({}, "", "/verzekeringen");
+  });
+  afterEach(() => {
+    for (const { type, listener } of listeners.splice(0)) window.removeEventListener(type, listener);
   });
   it("start op een publiek pad na binnenkomst op een uitgesloten pad", async () => {
     const t = await import("@/lib/tracking");
