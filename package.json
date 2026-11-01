@@ -94,6 +94,8 @@
     "@electric-sql/pglite": "^0.5.11",
     "@eslint/js": "^9.32.0",
     "@fontsource/plus-jakarta-sans": "^5.3.0",
+    "@lovable.dev/vite-plugin-dev-server-bridge": "^1.0.2",
+    "@lovable.dev/vite-plugin-hmr-gate": "^1.8.0",
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/typography": "^0.5.16",
     "@testing-library/dom": "^10.4.2",

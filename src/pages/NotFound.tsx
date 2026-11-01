@@ -4,7 +4,7 @@ import { LegacyRedirect } from "@/components/shared/LegacyRedirect";
 import { SITE_CONFIG } from "@/config/site";
 import { useEffect } from "react";
 import { SEOHead } from "@/components/SEOHead";
-import { zoekLegacyDoel } from "@/config/legacyRedirects";
+import { zoekSrcAssetDoel } from "@/lib/srcAssetsRedirect";
 import { supabase } from "@/integrations/supabase/client";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -50,8 +50,7 @@ const popularPages = [
 
 const NotFound = () => {
   const location = useLocation();
-  const normalizedPath = location.pathname.toLowerCase().replace(/\/$/, "") || "/";
-  const redirect = zoekLegacyDoel(normalizedPath);
+  const redirect = zoekSrcAssetDoel(location.pathname);
 
   useEffect(() => {
     if (!redirect) {
@@ -74,6 +73,9 @@ const NotFound = () => {
   }, [location.pathname, redirect]);
 
   if (redirect) {
+    if (redirect.startsWith("/assets/") || redirect.startsWith("/src/assets/")) {
+      return <LegacyRedirect to={redirect} volledig />;
+    }
     return <LegacyRedirect to={redirect} />;
   }
 
