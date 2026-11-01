@@ -234,7 +234,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
   if (kErr) return json({ error: kErr.message }, 500);
   const rijen = (kand ?? []) as any[];
   const sam = samenvatting(rijen);
-  if (actie === "proef_readonly") return json({ modus: "proef", schrijft_naar_exact: false, schrijft_naar_database: false, van, tot, samenvatting: sam });
+  if (actie === "proef_readonly") return json({ modus: "proef", schrijft_naar_exact: false, schrijft_naar_database: false, van, tot, samenvatting: sam, regels: body?.regels === true ? rijen.map((r) => ({ klant_contract_id: r.klant_contract_id, periode_start: r.periode_start, bedrag: r.bedrag, blokkade: r.blokkade })) : undefined });
 
   // Creditnota's bij opzegging: herbeoordelen en bedrag berekenen (alleen database, nooit Exact).
   await admin.rpc("herbeoordeel_opzeg_credits");
