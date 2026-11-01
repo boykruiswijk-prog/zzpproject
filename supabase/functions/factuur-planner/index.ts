@@ -313,7 +313,9 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
 
     // 1) Status open concepten bijwerken (alleen lezen).
     const { data: openPl } = await admin.from("factuur_planning").select("*").in("status", ["concept_aangemaakt", "te_laat", "geclaimd"]).eq("is_test", false);
-    for (const p of (live ? openPl : []) ?? []) {
+    // Volgorde: eerst nieuwe concepten (stap 2), daarna deze leescontrole binnen het resterende tijdsbudget.
+    const statusBijwerken = async () => { for (const p of (live ? openPl : []) ?? []) {
+      if (Date.now() - startMs > RUN_BUDGET_MS) { runDetail.statuscontrole_uitgesteld = true; break; } // alleen lezen; volgende run verder
       let gevonden: any;
       try {
         gevonden = p.exact_invoice_id
@@ -342,7 +344,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
         }
       }
       await admin.from("factuur_planning").update(upd).eq("id", p.id);
-    }
+    } };
 
     // 2) Nieuwe concepten voor niet-geblokkeerde kandidaten (incl. achterstallig).
     // Eerder geblokkeerde regels (bv. grootboek ontbrak) krijgen elke run een nieuwe kans; de oude rij blijft als 'vervangen' staan.
@@ -402,6 +404,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
       aangemaakt++;
     }
     if (uitgesteld) runDetail.uitgesteld = uitgesteld;
+    await statusBijwerken();
 
     if (gestopt) throw new Error("run gestopt na onzekere POST; geen creditnota's");
     // 3) Creditnota's: status bijwerken (lezen) en nieuwe concepten (Type 8021). Testrecords nooit naar Exact.
