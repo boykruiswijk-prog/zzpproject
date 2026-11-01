@@ -117,7 +117,7 @@ describe("mail", () => {
 
 Je was bezig met je aanvraag voor de BAV + AVB bij ZP Zaken, maar die is nog niet afgerond. Misschien kwam er iets tussen, of liep je ergens tegenaan.
 
-Je kunt verder waar je gebleven was: Verder met mijn aanvraag: ${AFHAAK_URL}
+Je kunt je aanvraag hier afmaken: Verder met mijn aanvraag: ${AFHAAK_URL}
 
 Heb je een vraag over de dekking of het formulier? Bel me gerust op 020 - 457 3077 of beantwoord deze mail.
 

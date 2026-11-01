@@ -29,7 +29,7 @@ export function afhaakTekst(voornaam?: string | null): string {
 
 Je was bezig met je aanvraag voor de BAV + AVB bij ZP Zaken, maar die is nog niet afgerond. Misschien kwam er iets tussen, of liep je ergens tegenaan.
 
-Je kunt verder waar je gebleven was: ${AFHAAK_KNOP}: ${AFHAAK_URL}
+Je kunt je aanvraag hier afmaken: ${AFHAAK_KNOP}: ${AFHAAK_URL}
 
 Heb je een vraag over de dekking of het formulier? Bel me gerust op 020 - 457 3077 of beantwoord deze mail.
 
@@ -44,7 +44,7 @@ export function afhaakHtml(voornaam?: string | null): string {
 <p style="margin:0 0 24px;font-size:20px;font-weight:bold;color:#E53E2F">ZP Zaken</p>
 <p style="margin:0 0 16px">${esc(afhaakAanhef(voornaam))}</p>
 <p style="margin:0 0 16px">Je was bezig met je aanvraag voor de BAV + AVB bij ZP Zaken, maar die is nog niet afgerond. Misschien kwam er iets tussen, of liep je ergens tegenaan.</p>
-<p style="margin:0 0 8px">Je kunt verder waar je gebleven was:</p>
+<p style="margin:0 0 8px">Je kunt je aanvraag hier afmaken:</p>
 <p style="margin:0 0 24px"><a href="${esc(AFHAAK_URL)}" style="display:inline-block;background:#E53E2F;color:#ffffff;text-decoration:none;font-weight:bold;padding:12px 20px;border-radius:6px">${AFHAAK_KNOP}</a></p>
 <p style="margin:0 0 16px">Heb je een vraag over de dekking of het formulier? Bel me gerust op 020 - 457 3077 of beantwoord deze mail.</p>
 <p style="margin:0">Met vriendelijke groet,<br>Ellen Baars<br>ZP Zaken</p>
