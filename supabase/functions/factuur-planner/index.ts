@@ -250,6 +250,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
   try {
     if (!cfg?.is_actief || !div) throw new Error("Exact niet actief");
     let token = await ensureValidToken(admin, cfg);
+    const tempo = maakExactTempo();
     const exact = async (pad: string, init: RequestInit = {}) => {
       const method = (init.method ?? "GET").toUpperCase();
       if (method !== "GET" && method !== "POST") throw new Error("methode niet toegestaan");
@@ -258,16 +259,22 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
         const isCredit = String(init.body ?? "").includes('"Type":8021');
         if (isCredit ? v?.opzeg_credits_actief !== true : v?.facturatie_actief !== true) throw new Error("schakelaar uit: POST geweigerd");
       }
-      let r = await fetch(`${baseUrl}/api/v1/${div}/${pad}`, { ...init, headers: { Authorization: `Bearer ${token}`, Accept: "application/json", "Content-Type": "application/json" } });
-      if (r.status === 401) { token = await refreshAccessToken(admin, cfg); r = await fetch(`${baseUrl}/api/v1/${div}/${pad}`, { ...init, headers: { Authorization: `Bearer ${token}`, Accept: "application/json", "Content-Type": "application/json" } }); }
+      // Vast tempo voor elke aanroep; alleen GET wordt bij 429/503 automatisch herhaald.
+      const doe = () => fetch(`${baseUrl}/api/v1/${div}/${pad}`, { ...init, headers: { Authorization: `Bearer ${token}`, Accept: "application/json", "Content-Type": "application/json" } });
+      let r = await tempo(doe, method === "GET");
+      if (r.status === 401) { token = await refreshAccessToken(admin, cfg); r = await tempo(doe, method === "GET"); }
       return r;
     };
     const zoekOpSleutel = async (sleutel: string, veld: string) => {
       const r = await exact(`salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,Status&$filter=${encodeURIComponent(veld === "YourRef" ? `YourRef eq '${sleutel}'` : `substringof('${sleutel}',Remarks) eq true`)}&$top=2`);
+      if (isTijdelijkeStatus(r.status)) throw new ExactTijdelijkError(r.status, "sleutelcontrole");
       if (!r.ok) throw new Error(`sleutelcontrole HTTP ${r.status}`);
       const d = (await r.json())?.d; return (d?.results ?? d ?? []) as any[];
     };
     const sleutelVeld = fcfg?.sleutel_veld === "YourRef" ? "YourRef" : "Remarks";
+    const slaap = (ms: number) => new Promise<void>((s) => setTimeout(s, ms));
+    const startMs = Date.now();
+    const RUN_BUDGET_MS = 330_000; // ruim binnen de looptijdgrens; niet geclaimde regels gaan de volgende run mee
 
     // 1) Status open concepten bijwerken (alleen lezen).
     const { data: openPl } = await admin.from("factuur_planning").select("*").in("status", ["concept_aangemaakt", "te_laat", "geclaimd"]).eq("is_test", false);
