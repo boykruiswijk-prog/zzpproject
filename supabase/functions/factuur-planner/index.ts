@@ -193,6 +193,39 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
       einddatum: eind, credit_vanaf: ber.vanaf, credit_tm: k.gefactureerd_tm, perioden: ber.regels, bedrag: ber.bedrag, blokkade, btw_code: btwCode(m?.btw_code), btw_guard: btwOk ? "ok" : "BTW-code past niet bij grootboek", artikel: m?.exact_item_code, gl_code: m?.gl_code,
       payload, opmerking: "Echte creditsleutel ZPC-xxxxxxxx ontstaat pas bij een opzegging (hash contract+aanvraag)." });
   }
+  // Eenmalige hercontrole 1-11 (C-aanvulling 429): alleen GET naar Exact op de planningssleutel.
+  // Niets gevonden → 'tijdelijk' (gaat de volgende dagrun mee), oude foutmelding in factuur_planning_log. Wel gevonden → niets wijzigen.
+  if (actie === "hercontrole_429") {
+    const { data: cfg } = await admin.from("exact_config").select("*").limit(1).maybeSingle();
+    if (!cfg?.is_actief) return json({ error: "Exact niet actief" }, 400);
+    const { data: fcfg } = await admin.from("facturatie_config").select("sleutel_veld").eq("id", 1).maybeSingle();
+    const veld = fcfg?.sleutel_veld === "YourRef" ? "YourRef" : "Remarks";
+    const baseUrl = cfg.base_url || "https://start.exactonline.nl";
+    const div = String(cfg.divisie_code ?? "").trim();
+    let token = await ensureValidToken(admin, cfg);
+    const tempo = maakExactTempo();
+    const max = Math.min(Math.max(Number(body?.max ?? 40), 1), 60);
+    const { data: rijen } = await admin.from("factuur_planning").select("id,klant_contract_id,planningssleutel,foutmelding,bedrag")
+      .eq("status", "fout").eq("foutmelding", "sleutelcontrole HTTP 429").eq("periode_start", "2026-11-01").eq("is_test", false).order("aangemaakt_op").limit(max);
+    const vrijgegeven: string[] = []; const bestaat: any[] = []; const niet_gecontroleerd: any[] = [];
+    for (const p of rijen ?? []) {
+      const filter = veld === "YourRef" ? `YourRef eq '${p.planningssleutel}'` : `substringof('${p.planningssleutel}',Remarks) eq true`;
+      const doe = () => fetch(`${baseUrl}/api/v1/${div}/salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,Status&$filter=${encodeURIComponent(filter)}&$top=2`, { method: "GET", headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } });
+      let r = await tempo(doe);
+      if (r.status === 401) { token = await refreshAccessToken(admin, cfg); r = await tempo(doe); }
+      if (!r.ok) { niet_gecontroleerd.push({ id: p.id, http: r.status }); continue; }
+      const d = (await r.json())?.d; const gevonden = (d?.results ?? d ?? []) as any[];
+      if (gevonden.length) { bestaat.push({ id: p.id, sleutel: p.planningssleutel, invoice: gevonden[0]?.InvoiceNumber ?? gevonden[0]?.InvoiceID }); continue; }
+      const { data: upd } = await admin.from("factuur_planning").update({ status: "tijdelijk" }).eq("id", p.id).eq("status", "fout").select("id").maybeSingle();
+      if (!upd) continue;
+      await admin.from("factuur_planning_log").insert({ planning_id: p.id, klant_contract_id: p.klant_contract_id, actie: "hercontrole_429",
+        oud: { status: "fout", foutmelding: p.foutmelding }, nieuw: { status: "tijdelijk", sleutel_in_exact: false, gecontroleerd_op: new Date().toISOString() } });
+      vrijgegeven.push(p.id);
+    }
+    const { count: resterend } = await admin.from("factuur_planning").select("id", { count: "exact", head: true }).eq("status", "fout").eq("foutmelding", "sleutelcontrole HTTP 429").eq("periode_start", "2026-11-01");
+    return json({ modus: "alleen GET", schrijft_naar_exact: false, gecontroleerd: (rijen ?? []).length, vrijgegeven: vrijgegeven.length, bestaat, niet_gecontroleerd, resterend_fout_429: resterend });
+  }
+
   const van = ["proefrun", "proef_readonly"].includes(actie) ? String(body?.van ?? vandaag) : vandaag;
   const tot = ["proefrun", "proef_readonly"].includes(actie) ? String(body?.tot ?? van) : vandaag;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(van) || !/^\d{4}-\d{2}-\d{2}$/.test(tot)) return json({ error: "ongeldige datum" }, 400);
