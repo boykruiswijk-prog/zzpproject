@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import path from "node:path";
 import { srcAssetUrls, zoekSrcAssetDoel } from "@/lib/srcAssetsRedirect";
 import { zoekLegacyDoel } from "@/config/legacyRedirects";
+import { navigeerLegacyBestand } from "@/components/shared/LegacyRedirect";
 import { srcAssetBestanden, srcAssetsRedirectPlugin, srcAssetStubDoelen, srcAssetStubHtml } from "../../scripts/srcAssetsRedirects";
 
 const root = process.cwd();
@@ -10,6 +11,11 @@ const bestanden = srcAssetBestanden(root);
 const prefixes = ["", "en/", "de/", "fr/"];
 
 describe("Structurele oude src/assets-adressen", () => {
+  it("opent ook andere bronbestandsoorten met een volledige paginanavigatie", () => {
+    const bezocht: string[] = [];
+    expect(navigeerLegacyBestand("/assets/registry-hash.json", url => bezocht.push(url), true)).toBe(true);
+    expect(bezocht).toEqual(["/assets/registry-hash.json"]);
+  });
   it("neemt ieder bestaand bronbestand op, ook zonder gewone pagina-import", () => {
     expect(bestanden.length).toBeGreaterThan(0);
     expect(Object.keys(srcAssetUrls).sort()).toEqual(bestanden.map(file => `/${file}`).sort());
