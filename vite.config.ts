@@ -13,7 +13,8 @@ import {
 import { redirectRouteConflicten, bestaandeRoutes } from "./scripts/routeConflicts";
 import { bundelLekken } from "./scripts/bundleLeak";
 import { voegArtikelRedirectsToe } from "./scripts/articleRedirects";
-import { srcAssetsRedirectPlugin } from "./scripts/srcAssetsRedirects";
+import { srcAssetBestanden, srcAssetsRedirectPlugin } from "./scripts/srcAssetsRedirects";
+import { zoekLegacyDoel } from "./src/config/legacyRedirects";
 
 
 /** Storage-bucket waarin de gemigreerde WordPress-media staat. */
@@ -253,6 +254,28 @@ function articleImagePreviewPlugin(): Plugin {
   };
 }
 
+/** Preview equivalent of the generated directory stubs on the static host. */
+function srcAssetsPreviewPlugin(): Plugin {
+  return {
+    name: "zp-src-assets-preview",
+    apply: "serve",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const requested = (req.url || "").split("?")[0];
+        const source = requested.replace(/^\/(?:en|de|fr)(?=\/)/, "").replace(/\/+$/, "");
+        if (!source.startsWith("/src/assets/")) return next();
+        const explicit = zoekLegacyDoel(requested);
+        if (!explicit && !srcAssetBestanden(__dirname).includes(source.slice(1))) return next();
+        const target = explicit ?? source;
+        if (requested === target) return next();
+        res.statusCode = 302;
+        res.setHeader("Location", target);
+        res.end();
+      });
+    },
+  };
+}
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
@@ -272,6 +295,7 @@ export default defineConfig(({ mode }) => {
     mode === "development" && componentTagger() as unknown as Plugin,
     redirectsPlugin(env),
     articleImagePreviewPlugin(),
+    srcAssetsPreviewPlugin(),
     srcAssetsRedirectPlugin(__dirname),
     prerenderPlugin(env),
   ].filter(Boolean),
