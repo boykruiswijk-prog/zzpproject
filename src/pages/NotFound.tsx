@@ -73,7 +73,10 @@ const NotFound = () => {
   }, [location.pathname, redirect]);
 
   if (redirect) {
-    return <LegacyRedirect to={redirect} volledig={redirect.startsWith("/assets/") || redirect.startsWith("/src/assets/")} />;
+    if (redirect.startsWith("/assets/") || redirect.startsWith("/src/assets/")) {
+      return <LegacyRedirect to={redirect} volledig />;
+    }
+    return <LegacyRedirect to={redirect} />;
   }
 
   return (

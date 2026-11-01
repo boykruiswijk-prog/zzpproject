@@ -1,6 +1,5 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { Plugin } from "vite";
 import { zoekLegacyDoel } from "../src/config/legacyRedirects";
 
 export function srcAssetBestanden(root: string): string[] {
@@ -26,18 +25,23 @@ export function srcAssetStubHtml(to: string): string {
 }
 
 /** Real directories work for extension paths too, without relying on SPA fallback. */
-export function srcAssetsRedirectPlugin(root: string): Plugin {
+interface AssetEmitter {
+  emitFile(asset: { type: "asset"; name?: string; originalFileName?: string; fileName?: string; source: string | Uint8Array }): string;
+  getFileName(ref: string): string;
+}
+
+export function srcAssetsRedirectPlugin(root: string) {
   const refs = new Map<string, string>();
   return {
     name: "zp-src-assets-redirects",
-    apply: "build",
-    buildStart() {
+    apply: "build" as const,
+    buildStart(this: AssetEmitter) {
       refs.clear();
       for (const bron of srcAssetBestanden(root)) {
         refs.set(bron, this.emitFile({ type: "asset", name: path.basename(bron), originalFileName: bron, source: fs.readFileSync(path.join(root, bron)) }));
       }
     },
-    generateBundle() {
+    generateBundle(this: AssetEmitter) {
       for (const [bron, ref] of refs) {
         for (const { from, to } of srcAssetStubDoelen(bron, `/${this.getFileName(ref)}`)) {
           this.emitFile({ type: "asset", fileName: `${from}/index.html`, source: srcAssetStubHtml(to) });
