@@ -314,7 +314,10 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
     if (live) await admin.from("factuur_planning").update({ status: "vervangen" }).eq("status", "geblokkeerd");
     const glVoor = async (code: string) => await getGlAccountIdVoorCode(admin, cfg, token, code);
     let gestopt = false;
+    let uitgesteld = 0;
     for (const k of live ? rijen.filter((r) => !r.blokkade && r.periode_start <= vandaag) : []) {
+      // Tijdsbudget: niet geclaimde regels krijgen geen rij en gaan vanzelf de volgende run mee.
+      if (Date.now() - startMs > RUN_BUDGET_MS) { uitgesteld++; continue; }
       const sleutel = planningsSleutel(crypto.randomUUID().replace(/-/g, ""));
       const { data: claim, error: cErr } = await admin.from("factuur_planning").insert({
         klant_contract_id: k.klant_contract_id, periode_start: k.periode_start, periode_eind: k.periode_eind,
@@ -323,6 +326,13 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
         planningssleutel: sleutel, status: "geclaimd", invoice_date: k.periode_start,
       }).select("id").single();
       if (cErr) continue; // unieke sleutel: al geclaimd → overslaan
+      // Eerdere 'tijdelijk'-rijen voor dezelfde periode zijn nu vervangen door deze claim.
+      await admin.from("factuur_planning").update({ status: "vervangen", vervangen_door: claim.id })
+        .eq("klant_contract_id", k.klant_contract_id).eq("periode_start", k.periode_start).eq("status", "tijdelijk");
+      const zetTijdelijk = async (msg: string) => {
+        await admin.from("factuur_planning").update({ status: "tijdelijk", foutmelding: msg.slice(0, 300) }).eq("id", claim.id);
+        await admin.from("factuur_planning_log").insert({ planning_id: claim.id, klant_contract_id: k.klant_contract_id, actie: "tijdelijk", nieuw: { status: "tijdelijk", melding: msg.slice(0, 300) } });
+      };
       // Vóór de POST: elke fout blokkeert alleen deze regel; de run gaat door.
       let payload: any;
       try {
@@ -330,13 +340,21 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
         const gl = k.gl_code ? await glVoor(String(k.gl_code)) : null;
         payload = bouwFactuurPayload(k, gl, sleutel, sleutelVeld);
       } catch (e) {
+        if (e instanceof ExactTijdelijkError) { await zetTijdelijk(e.message); uitgesteld++; continue; } // nooit 'fout': volgende run opnieuw
         const status = e instanceof GlNietGevondenError || e instanceof BtwNietPassendError ? "geblokkeerd" : "fout";
         await admin.from("factuur_planning").update({ status, foutmelding: String((e as Error)?.message ?? e).slice(0, 300) }).eq("id", claim.id);
         fouten.push(`${status}: ${String((e as Error)?.message ?? e).slice(0, 160)}`); continue;
       }
-      let r: Response;
-      try { r = await exact("salesinvoice/SalesInvoices", { method: "POST", body: JSON.stringify(payload) }); }
+      let uit: PostUitkomst;
+      try { uit = await postMetSleutel(() => exact("salesinvoice/SalesInvoices", { method: "POST", body: JSON.stringify(payload) }), () => zoekOpSleutel(sleutel, sleutelVeld), slaap); }
       catch (e) { fouten.push(`POST onzeker: ${String(e).slice(0, 160)}`); gestopt = true; break; } // rij blijft "geclaimd"
+      if (uit.soort === "tijdelijk") { await zetTijdelijk(`concept POST HTTP ${uit.httpStatus} (tijdelijk, sleutel niet in Exact)`); uitgesteld++; continue; }
+      if (uit.soort === "bestond") {
+        await admin.from("factuur_planning").update({ status: "concept_aangemaakt", concept_op: new Date().toISOString(), exact_invoice_id: uit.rij.InvoiceID ?? null, exact_status: uit.rij.Status ?? 20 }).eq("id", claim.id);
+        await admin.from("factuur_planning_log").insert({ planning_id: claim.id, klant_contract_id: k.klant_contract_id, actie: "concept_aangemaakt", nieuw: { invoice_id: uit.rij.InvoiceID, sleutel, via: "sleutelcontrole na 429" } });
+        aangemaakt++; continue;
+      }
+      const r = uit.r;
       if (!r.ok) {
         // Onzeker na 5xx: rij blijft "geclaimd"; volgende run beslist via sleutelcontrole. Run stopt.
         if (r.status >= 500) { fouten.push(`POST onzeker HTTP ${r.status}`); gestopt = true; break; }
@@ -348,6 +366,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
       await admin.from("factuur_planning_log").insert({ planning_id: claim.id, klant_contract_id: k.klant_contract_id, actie: "concept_aangemaakt", nieuw: { invoice_id: d.InvoiceID, sleutel } });
       aangemaakt++;
     }
+    if (uitgesteld) runDetail.uitgesteld = uitgesteld;
 
     if (gestopt) throw new Error("run gestopt na onzekere POST; geen creditnota's");
     // 3) Creditnota's: status bijwerken (lezen) en nieuwe concepten (Type 8021). Testrecords nooit naar Exact.
