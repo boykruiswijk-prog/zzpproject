@@ -279,9 +279,16 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
     // 1) Status open concepten bijwerken (alleen lezen).
     const { data: openPl } = await admin.from("factuur_planning").select("*").in("status", ["concept_aangemaakt", "te_laat", "geclaimd"]).eq("is_test", false);
     for (const p of (live ? openPl : []) ?? []) {
-      const gevonden = p.exact_invoice_id
-        ? await (async () => { const r = await exact(`salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,Status,InvoiceDate&$filter=${encodeURIComponent(`InvoiceID eq guid'${p.exact_invoice_id}'`)}`); const d = (await r.json())?.d; return (d?.results ?? d ?? [])[0] ?? null; })()
-        : (await zoekOpSleutel(p.planningssleutel, sleutelVeld))[0] ?? null;
+      let gevonden: any;
+      try {
+        gevonden = p.exact_invoice_id
+          ? await (async () => { const r = await exact(`salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,Status,InvoiceDate&$filter=${encodeURIComponent(`InvoiceID eq guid'${p.exact_invoice_id}'`)}`); if (!r.ok) throw new Error(`statuscontrole HTTP ${r.status}`); const d = (await r.json())?.d; return (d?.results ?? d ?? [])[0] ?? null; })()
+          : (await zoekOpSleutel(p.planningssleutel, sleutelVeld))[0] ?? null;
+      } catch (e) {
+        // Lezen mislukt (bv. 429): status niet aanpassen, volgende run opnieuw.
+        if (!(e instanceof ExactTijdelijkError)) fouten.push(`statuscontrole: ${String((e as Error)?.message ?? e).slice(0, 160)}`);
+        continue;
+      }
       if (p.status === "geclaimd" && !gevonden) continue; // onzeker: nooit opnieuw POST'en zonder sleutelbewijs; blijft staan voor handmatige beoordeling
       const nieuw = planningStatusUitExact(gevonden?.Status, !!gevonden, String(p.concept_op ?? p.aangemaakt_op), vandaag, fcfg?.verwerk_termijn_werkdagen ?? 5);
       const upd: any = { laatst_gecontroleerd_op: new Date().toISOString(), exact_status: gevonden?.Status ?? null };
