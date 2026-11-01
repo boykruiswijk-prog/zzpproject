@@ -268,8 +268,8 @@ export default defineConfig(({ mode }) => {
     force: true,
   },
   plugins: [
-    react() as Plugin[],
-    mode === "development" && componentTagger() as Plugin,
+    react() as unknown as Plugin[],
+    mode === "development" && componentTagger() as unknown as Plugin,
     redirectsPlugin(env),
     articleImagePreviewPlugin(),
     srcAssetsRedirectPlugin(__dirname),
