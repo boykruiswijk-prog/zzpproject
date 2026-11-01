@@ -47,11 +47,10 @@ describe("Structurele oude src/assets-adressen", () => {
   });
 
   it("behoudt expliciete bestemmingen vóór de structurele bestandskaart", () => {
-    for (const [file, doel] of [["ellen-baars-avatar.webp", "/over-ons"], ["partner-hiscox.webp", "/assets/partner-hiscox.webp"]]) {
+    for (const [file, doel] of [["ellen-baars-avatar.webp", "/over-ons"], ["partner-hiscox.webp", "/logos/hiscox.png"]]) {
       const bron = `src/assets/${file}`;
       const expliciet = zoekLegacyDoel(`/${bron}`);
-      expect(expliciet).toBeTruthy();
-      if (doel === "/over-ons") expect(expliciet).toBe(doel);
+      expect(expliciet).toBe(doel);
       for (const prefix of prefixes) {
         expect(zoekSrcAssetDoel(`/${prefix}${bron}/`)).toBe(expliciet);
       }

@@ -11,5 +11,5 @@ export function zoekSrcAssetDoel(pad: string): string | null {
   const expliciet = zoekLegacyDoel(pad);
   if (expliciet) return expliciet;
   const bron = pad.replace(/^\/(?:en|de|fr)(?=\/)/, "").replace(/\/+$/, "");
-  return Object.hasOwn(srcAssetUrls, bron) ? srcAssetUrls[bron] : null;
+  return Object.prototype.hasOwnProperty.call(srcAssetUrls, bron) ? srcAssetUrls[bron] : null;
 }
