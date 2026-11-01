@@ -16,6 +16,7 @@ import { exactRegelBedrag } from "../_shared/factuurTekst.ts";
 import { berekenOpzegCredit, berekenOudSysteemCredit, oudSysteemCreditPayload } from "../_shared/creditOpzegging.ts";
 import { metExactMelding } from "../_shared/exactBoekingMelding.ts";
 import { metWerk, werkVan } from "../_shared/machineWerk.ts";
+import { maakExactTempo, postMetSleutel, ExactTijdelijkError, isTijdelijkeStatus, type PostUitkomst } from "../_shared/exactTempo.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -247,6 +248,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
   const div = String(cfg?.divisie_code ?? "").trim();
   let aangemaakt = 0;
   const fouten: string[] = [];
+  const runDetail: Record<string, unknown> = {};
   try {
     if (!cfg?.is_actief || !div) throw new Error("Exact niet actief");
     let token = await ensureValidToken(admin, cfg);
@@ -371,7 +373,9 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
     if (gestopt) throw new Error("run gestopt na onzekere POST; geen creditnota's");
     // 3) Creditnota's: status bijwerken (lezen) en nieuwe concepten (Type 8021). Testrecords nooit naar Exact.
     for (const c of credits.filter((x) => ["concept_aangemaakt", "te_laat", "geclaimd"].includes(x.status) && !x.is_test)) {
-      const gevonden = (await zoekOpSleutel(c.creditsleutel, "Remarks"))[0] ?? null;
+      let gevonden: any;
+      try { gevonden = (await zoekOpSleutel(c.creditsleutel, "Remarks"))[0] ?? null; }
+      catch (e) { if (e instanceof ExactTijdelijkError) continue; throw e; } // 429: volgende run opnieuw lezen
       if (c.status === "geclaimd" && !gevonden) continue;
       const nieuw = planningStatusUitExact(gevonden?.Status, !!gevonden, String(c.concept_op ?? c.aangemaakt_op), vandaag, fcfg?.verwerk_termijn_werkdagen ?? 5);
       const upd: any = { laatst_gecontroleerd_op: new Date().toISOString(), exact_status: gevonden?.Status ?? null };
@@ -394,6 +398,8 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
         controleerBtw(c._gl, c._btw);
         gl = c._gl ? await glVoor(String(c._gl)) : null;
       } catch (e) {
+        // Exact weigerde tijdelijk vóór de POST: terug naar te_maken, volgende run opnieuw.
+        if (e instanceof ExactTijdelijkError) { await admin.from("factuur_credit_planning").update({ status: "te_maken" }).eq("id", c.id).eq("status", "geclaimd"); continue; }
         // Alleen deze creditnota blokkeren; de rest gaat door.
         const status = e instanceof GlNietGevondenError || e instanceof BtwNietPassendError ? "geblokkeerd" : "fout";
         const msg = String((e as Error)?.message ?? e).slice(0, 300);
@@ -437,7 +443,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
   } catch (e) { fouten.push(String(e).slice(0, 200)); }
 
   await admin.from("factuur_planner_runs").insert({ modus: "live", trigger_type: `${trigger}:${actie}`, aantal_kandidaten: rijen.length,
-    aantal_geblokkeerd: sam.geblokkeerd.aantal, aantal_aangemaakt: aangemaakt, bedrag: sam.klaar.bedrag, status: fouten.length ? "fout" : "ok", detail: { fouten } });
+    aantal_geblokkeerd: sam.geblokkeerd.aantal, aantal_aangemaakt: aangemaakt, bedrag: sam.klaar.bedrag, status: fouten.length ? "fout" : "ok", detail: { fouten, ...runDetail } });
   if (fouten.length) await sendExactAlarm(admin, ALARM, "factuur-planner", null);
-  return json({ modus: "live", aangemaakt, fouten, creditnotas: creditOverzicht });
+  return json({ modus: "live", aangemaakt, fouten, ...runDetail, creditnotas: creditOverzicht });
 }, { verzamel: true })));
