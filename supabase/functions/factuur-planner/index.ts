@@ -16,6 +16,7 @@ import { exactRegelBedrag } from "../_shared/factuurTekst.ts";
 import { berekenOpzegCredit, berekenOudSysteemCredit, oudSysteemCreditPayload } from "../_shared/creditOpzegging.ts";
 import { metExactMelding } from "../_shared/exactBoekingMelding.ts";
 import { metWerk, werkVan } from "../_shared/machineWerk.ts";
+import { maakExactTempo, postMetSleutel, ExactTijdelijkError, isTijdelijkeStatus, type PostUitkomst } from "../_shared/exactTempo.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -192,6 +193,39 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
       einddatum: eind, credit_vanaf: ber.vanaf, credit_tm: k.gefactureerd_tm, perioden: ber.regels, bedrag: ber.bedrag, blokkade, btw_code: btwCode(m?.btw_code), btw_guard: btwOk ? "ok" : "BTW-code past niet bij grootboek", artikel: m?.exact_item_code, gl_code: m?.gl_code,
       payload, opmerking: "Echte creditsleutel ZPC-xxxxxxxx ontstaat pas bij een opzegging (hash contract+aanvraag)." });
   }
+  // Eenmalige hercontrole 1-11 (C-aanvulling 429): alleen GET naar Exact op de planningssleutel.
+  // Niets gevonden → 'tijdelijk' (gaat de volgende dagrun mee), oude foutmelding in factuur_planning_log. Wel gevonden → niets wijzigen.
+  if (actie === "hercontrole_429") {
+    const { data: cfg } = await admin.from("exact_config").select("*").limit(1).maybeSingle();
+    if (!cfg?.is_actief) return json({ error: "Exact niet actief" }, 400);
+    const { data: fcfg } = await admin.from("facturatie_config").select("sleutel_veld").eq("id", 1).maybeSingle();
+    const veld = fcfg?.sleutel_veld === "YourRef" ? "YourRef" : "Remarks";
+    const baseUrl = cfg.base_url || "https://start.exactonline.nl";
+    const div = String(cfg.divisie_code ?? "").trim();
+    let token = await ensureValidToken(admin, cfg);
+    const tempo = maakExactTempo();
+    const max = Math.min(Math.max(Number(body?.max ?? 40), 1), 60);
+    const { data: rijen } = await admin.from("factuur_planning").select("id,klant_contract_id,planningssleutel,foutmelding,bedrag")
+      .eq("status", "fout").eq("foutmelding", "sleutelcontrole HTTP 429").eq("periode_start", "2026-11-01").eq("is_test", false).order("aangemaakt_op").limit(max);
+    const vrijgegeven: string[] = []; const bestaat: any[] = []; const niet_gecontroleerd: any[] = [];
+    for (const p of rijen ?? []) {
+      const filter = veld === "YourRef" ? `YourRef eq '${p.planningssleutel}'` : `substringof('${p.planningssleutel}',Remarks) eq true`;
+      const doe = () => fetch(`${baseUrl}/api/v1/${div}/salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,Status&$filter=${encodeURIComponent(filter)}&$top=2`, { method: "GET", headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } });
+      let r = await tempo(doe);
+      if (r.status === 401) { token = await refreshAccessToken(admin, cfg); r = await tempo(doe); }
+      if (!r.ok) { niet_gecontroleerd.push({ id: p.id, http: r.status }); continue; }
+      const d = (await r.json())?.d; const gevonden = (d?.results ?? d ?? []) as any[];
+      if (gevonden.length) { bestaat.push({ id: p.id, sleutel: p.planningssleutel, invoice: gevonden[0]?.InvoiceNumber ?? gevonden[0]?.InvoiceID }); continue; }
+      const { data: upd } = await admin.from("factuur_planning").update({ status: "tijdelijk" }).eq("id", p.id).eq("status", "fout").select("id").maybeSingle();
+      if (!upd) continue;
+      await admin.from("factuur_planning_log").insert({ planning_id: p.id, klant_contract_id: p.klant_contract_id, actie: "hercontrole_429",
+        oud: { status: "fout", foutmelding: p.foutmelding }, nieuw: { status: "tijdelijk", sleutel_in_exact: false, gecontroleerd_op: new Date().toISOString() } });
+      vrijgegeven.push(p.id);
+    }
+    const { count: resterend } = await admin.from("factuur_planning").select("id", { count: "exact", head: true }).eq("status", "fout").eq("foutmelding", "sleutelcontrole HTTP 429").eq("periode_start", "2026-11-01");
+    return json({ modus: "alleen GET", schrijft_naar_exact: false, gecontroleerd: (rijen ?? []).length, vrijgegeven: vrijgegeven.length, bestaat, niet_gecontroleerd, resterend_fout_429: resterend });
+  }
+
   const van = ["proefrun", "proef_readonly"].includes(actie) ? String(body?.van ?? vandaag) : vandaag;
   const tot = ["proefrun", "proef_readonly"].includes(actie) ? String(body?.tot ?? van) : vandaag;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(van) || !/^\d{4}-\d{2}-\d{2}$/.test(tot)) return json({ error: "ongeldige datum" }, 400);
@@ -200,7 +234,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
   if (kErr) return json({ error: kErr.message }, 500);
   const rijen = (kand ?? []) as any[];
   const sam = samenvatting(rijen);
-  if (actie === "proef_readonly") return json({ modus: "proef", schrijft_naar_exact: false, schrijft_naar_database: false, van, tot, samenvatting: sam });
+  if (actie === "proef_readonly") return json({ modus: "proef", schrijft_naar_exact: false, schrijft_naar_database: false, van, tot, samenvatting: sam, regels: body?.regels === true ? rijen.map((r) => ({ klant_contract_id: r.klant_contract_id, periode_start: r.periode_start, bedrag: r.bedrag, blokkade: r.blokkade })) : undefined });
 
   // Creditnota's bij opzegging: herbeoordelen en bedrag berekenen (alleen database, nooit Exact).
   await admin.rpc("herbeoordeel_opzeg_credits");
@@ -247,9 +281,11 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
   const div = String(cfg?.divisie_code ?? "").trim();
   let aangemaakt = 0;
   const fouten: string[] = [];
+  const runDetail: Record<string, unknown> = {};
   try {
     if (!cfg?.is_actief || !div) throw new Error("Exact niet actief");
     let token = await ensureValidToken(admin, cfg);
+    const tempo = maakExactTempo();
     const exact = async (pad: string, init: RequestInit = {}) => {
       const method = (init.method ?? "GET").toUpperCase();
       if (method !== "GET" && method !== "POST") throw new Error("methode niet toegestaan");
@@ -258,23 +294,38 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
         const isCredit = String(init.body ?? "").includes('"Type":8021');
         if (isCredit ? v?.opzeg_credits_actief !== true : v?.facturatie_actief !== true) throw new Error("schakelaar uit: POST geweigerd");
       }
-      let r = await fetch(`${baseUrl}/api/v1/${div}/${pad}`, { ...init, headers: { Authorization: `Bearer ${token}`, Accept: "application/json", "Content-Type": "application/json" } });
-      if (r.status === 401) { token = await refreshAccessToken(admin, cfg); r = await fetch(`${baseUrl}/api/v1/${div}/${pad}`, { ...init, headers: { Authorization: `Bearer ${token}`, Accept: "application/json", "Content-Type": "application/json" } }); }
+      // Vast tempo voor elke aanroep; alleen GET wordt bij 429/503 automatisch herhaald.
+      const doe = () => fetch(`${baseUrl}/api/v1/${div}/${pad}`, { ...init, headers: { Authorization: `Bearer ${token}`, Accept: "application/json", "Content-Type": "application/json" } });
+      let r = await tempo(doe, method === "GET");
+      if (r.status === 401) { token = await refreshAccessToken(admin, cfg); r = await tempo(doe, method === "GET"); }
       return r;
     };
     const zoekOpSleutel = async (sleutel: string, veld: string) => {
       const r = await exact(`salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,Status&$filter=${encodeURIComponent(veld === "YourRef" ? `YourRef eq '${sleutel}'` : `substringof('${sleutel}',Remarks) eq true`)}&$top=2`);
+      if (isTijdelijkeStatus(r.status)) throw new ExactTijdelijkError(r.status, "sleutelcontrole");
       if (!r.ok) throw new Error(`sleutelcontrole HTTP ${r.status}`);
       const d = (await r.json())?.d; return (d?.results ?? d ?? []) as any[];
     };
     const sleutelVeld = fcfg?.sleutel_veld === "YourRef" ? "YourRef" : "Remarks";
+    const slaap = (ms: number) => new Promise<void>((s) => setTimeout(s, ms));
+    const startMs = Date.now();
+    const RUN_BUDGET_MS = 330_000; // ruim binnen de looptijdgrens; niet geclaimde regels gaan de volgende run mee
 
     // 1) Status open concepten bijwerken (alleen lezen).
     const { data: openPl } = await admin.from("factuur_planning").select("*").in("status", ["concept_aangemaakt", "te_laat", "geclaimd"]).eq("is_test", false);
-    for (const p of (live ? openPl : []) ?? []) {
-      const gevonden = p.exact_invoice_id
-        ? await (async () => { const r = await exact(`salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,Status,InvoiceDate&$filter=${encodeURIComponent(`InvoiceID eq guid'${p.exact_invoice_id}'`)}`); const d = (await r.json())?.d; return (d?.results ?? d ?? [])[0] ?? null; })()
-        : (await zoekOpSleutel(p.planningssleutel, sleutelVeld))[0] ?? null;
+    // Volgorde: eerst nieuwe concepten (stap 2), daarna deze leescontrole binnen het resterende tijdsbudget.
+    const statusBijwerken = async () => { for (const p of (live ? openPl : []) ?? []) {
+      if (Date.now() - startMs > RUN_BUDGET_MS) { runDetail.statuscontrole_uitgesteld = true; break; } // alleen lezen; volgende run verder
+      let gevonden: any;
+      try {
+        gevonden = p.exact_invoice_id
+          ? await (async () => { const r = await exact(`salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,Status,InvoiceDate&$filter=${encodeURIComponent(`InvoiceID eq guid'${p.exact_invoice_id}'`)}`); if (!r.ok) throw new Error(`statuscontrole HTTP ${r.status}`); const d = (await r.json())?.d; return (d?.results ?? d ?? [])[0] ?? null; })()
+          : (await zoekOpSleutel(p.planningssleutel, sleutelVeld))[0] ?? null;
+      } catch (e) {
+        // Lezen mislukt (bv. 429): status niet aanpassen, volgende run opnieuw.
+        if (!(e instanceof ExactTijdelijkError)) fouten.push(`statuscontrole: ${String((e as Error)?.message ?? e).slice(0, 160)}`);
+        continue;
+      }
       if (p.status === "geclaimd" && !gevonden) continue; // onzeker: nooit opnieuw POST'en zonder sleutelbewijs; blijft staan voor handmatige beoordeling
       const nieuw = planningStatusUitExact(gevonden?.Status, !!gevonden, String(p.concept_op ?? p.aangemaakt_op), vandaag, fcfg?.verwerk_termijn_werkdagen ?? 5);
       const upd: any = { laatst_gecontroleerd_op: new Date().toISOString(), exact_status: gevonden?.Status ?? null };
@@ -293,14 +344,17 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
         }
       }
       await admin.from("factuur_planning").update(upd).eq("id", p.id);
-    }
+    } };
 
     // 2) Nieuwe concepten voor niet-geblokkeerde kandidaten (incl. achterstallig).
     // Eerder geblokkeerde regels (bv. grootboek ontbrak) krijgen elke run een nieuwe kans; de oude rij blijft als 'vervangen' staan.
     if (live) await admin.from("factuur_planning").update({ status: "vervangen" }).eq("status", "geblokkeerd");
     const glVoor = async (code: string) => await getGlAccountIdVoorCode(admin, cfg, token, code);
     let gestopt = false;
+    let uitgesteld = 0;
     for (const k of live ? rijen.filter((r) => !r.blokkade && r.periode_start <= vandaag) : []) {
+      // Tijdsbudget: niet geclaimde regels krijgen geen rij en gaan vanzelf de volgende run mee.
+      if (Date.now() - startMs > RUN_BUDGET_MS) { uitgesteld++; continue; }
       const sleutel = planningsSleutel(crypto.randomUUID().replace(/-/g, ""));
       const { data: claim, error: cErr } = await admin.from("factuur_planning").insert({
         klant_contract_id: k.klant_contract_id, periode_start: k.periode_start, periode_eind: k.periode_eind,
@@ -309,6 +363,13 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
         planningssleutel: sleutel, status: "geclaimd", invoice_date: k.periode_start,
       }).select("id").single();
       if (cErr) continue; // unieke sleutel: al geclaimd → overslaan
+      // Eerdere 'tijdelijk'-rijen voor dezelfde periode zijn nu vervangen door deze claim.
+      await admin.from("factuur_planning").update({ status: "vervangen", vervangen_door: claim.id })
+        .eq("klant_contract_id", k.klant_contract_id).eq("periode_start", k.periode_start).eq("status", "tijdelijk");
+      const zetTijdelijk = async (msg: string) => {
+        await admin.from("factuur_planning").update({ status: "tijdelijk", foutmelding: msg.slice(0, 300) }).eq("id", claim.id);
+        await admin.from("factuur_planning_log").insert({ planning_id: claim.id, klant_contract_id: k.klant_contract_id, actie: "tijdelijk", nieuw: { status: "tijdelijk", melding: msg.slice(0, 300) } });
+      };
       // Vóór de POST: elke fout blokkeert alleen deze regel; de run gaat door.
       let payload: any;
       try {
@@ -316,13 +377,21 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
         const gl = k.gl_code ? await glVoor(String(k.gl_code)) : null;
         payload = bouwFactuurPayload(k, gl, sleutel, sleutelVeld);
       } catch (e) {
+        if (e instanceof ExactTijdelijkError) { await zetTijdelijk(e.message); uitgesteld++; continue; } // nooit 'fout': volgende run opnieuw
         const status = e instanceof GlNietGevondenError || e instanceof BtwNietPassendError ? "geblokkeerd" : "fout";
         await admin.from("factuur_planning").update({ status, foutmelding: String((e as Error)?.message ?? e).slice(0, 300) }).eq("id", claim.id);
         fouten.push(`${status}: ${String((e as Error)?.message ?? e).slice(0, 160)}`); continue;
       }
-      let r: Response;
-      try { r = await exact("salesinvoice/SalesInvoices", { method: "POST", body: JSON.stringify(payload) }); }
+      let uit: PostUitkomst;
+      try { uit = await postMetSleutel(() => exact("salesinvoice/SalesInvoices", { method: "POST", body: JSON.stringify(payload) }), () => zoekOpSleutel(sleutel, sleutelVeld), slaap); }
       catch (e) { fouten.push(`POST onzeker: ${String(e).slice(0, 160)}`); gestopt = true; break; } // rij blijft "geclaimd"
+      if (uit.soort === "tijdelijk") { await zetTijdelijk(`concept POST HTTP ${uit.httpStatus} (tijdelijk, sleutel niet in Exact)`); uitgesteld++; continue; }
+      if (uit.soort === "bestond") {
+        await admin.from("factuur_planning").update({ status: "concept_aangemaakt", concept_op: new Date().toISOString(), exact_invoice_id: uit.rij.InvoiceID ?? null, exact_status: uit.rij.Status ?? 20 }).eq("id", claim.id);
+        await admin.from("factuur_planning_log").insert({ planning_id: claim.id, klant_contract_id: k.klant_contract_id, actie: "concept_aangemaakt", nieuw: { invoice_id: uit.rij.InvoiceID, sleutel, via: "sleutelcontrole na 429" } });
+        aangemaakt++; continue;
+      }
+      const r = uit.r;
       if (!r.ok) {
         // Onzeker na 5xx: rij blijft "geclaimd"; volgende run beslist via sleutelcontrole. Run stopt.
         if (r.status >= 500) { fouten.push(`POST onzeker HTTP ${r.status}`); gestopt = true; break; }
@@ -334,11 +403,15 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
       await admin.from("factuur_planning_log").insert({ planning_id: claim.id, klant_contract_id: k.klant_contract_id, actie: "concept_aangemaakt", nieuw: { invoice_id: d.InvoiceID, sleutel } });
       aangemaakt++;
     }
+    if (uitgesteld) runDetail.uitgesteld = uitgesteld;
+    await statusBijwerken();
 
     if (gestopt) throw new Error("run gestopt na onzekere POST; geen creditnota's");
     // 3) Creditnota's: status bijwerken (lezen) en nieuwe concepten (Type 8021). Testrecords nooit naar Exact.
     for (const c of credits.filter((x) => ["concept_aangemaakt", "te_laat", "geclaimd"].includes(x.status) && !x.is_test)) {
-      const gevonden = (await zoekOpSleutel(c.creditsleutel, "Remarks"))[0] ?? null;
+      let gevonden: any;
+      try { gevonden = (await zoekOpSleutel(c.creditsleutel, "Remarks"))[0] ?? null; }
+      catch (e) { if (e instanceof ExactTijdelijkError) continue; throw e; } // 429: volgende run opnieuw lezen
       if (c.status === "geclaimd" && !gevonden) continue;
       const nieuw = planningStatusUitExact(gevonden?.Status, !!gevonden, String(c.concept_op ?? c.aangemaakt_op), vandaag, fcfg?.verwerk_termijn_werkdagen ?? 5);
       const upd: any = { laatst_gecontroleerd_op: new Date().toISOString(), exact_status: gevonden?.Status ?? null };
@@ -361,6 +434,8 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
         controleerBtw(c._gl, c._btw);
         gl = c._gl ? await glVoor(String(c._gl)) : null;
       } catch (e) {
+        // Exact weigerde tijdelijk vóór de POST: terug naar te_maken, volgende run opnieuw.
+        if (e instanceof ExactTijdelijkError) { await admin.from("factuur_credit_planning").update({ status: "te_maken" }).eq("id", c.id).eq("status", "geclaimd"); continue; }
         // Alleen deze creditnota blokkeren; de rest gaat door.
         const status = e instanceof GlNietGevondenError || e instanceof BtwNietPassendError ? "geblokkeerd" : "fout";
         const msg = String((e as Error)?.message ?? e).slice(0, 300);
@@ -404,7 +479,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
   } catch (e) { fouten.push(String(e).slice(0, 200)); }
 
   await admin.from("factuur_planner_runs").insert({ modus: "live", trigger_type: `${trigger}:${actie}`, aantal_kandidaten: rijen.length,
-    aantal_geblokkeerd: sam.geblokkeerd.aantal, aantal_aangemaakt: aangemaakt, bedrag: sam.klaar.bedrag, status: fouten.length ? "fout" : "ok", detail: { fouten } });
+    aantal_geblokkeerd: sam.geblokkeerd.aantal, aantal_aangemaakt: aangemaakt, bedrag: sam.klaar.bedrag, status: fouten.length ? "fout" : "ok", detail: { fouten, ...runDetail } });
   if (fouten.length) await sendExactAlarm(admin, ALARM, "factuur-planner", null);
-  return json({ modus: "live", aangemaakt, fouten, creditnotas: creditOverzicht });
+  return json({ modus: "live", aangemaakt, fouten, ...runDetail, creditnotas: creditOverzicht });
 }, { verzamel: true })));
