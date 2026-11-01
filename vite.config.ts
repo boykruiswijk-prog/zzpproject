@@ -13,6 +13,7 @@ import {
 import { redirectRouteConflicten, bestaandeRoutes } from "./scripts/routeConflicts";
 import { bundelLekken } from "./scripts/bundleLeak";
 import { voegArtikelRedirectsToe } from "./scripts/articleRedirects";
+import { srcAssetsRedirectPlugin } from "./scripts/srcAssetsRedirects";
 
 
 /** Storage-bucket waarin de gemigreerde WordPress-media staat. */
@@ -271,6 +272,7 @@ export default defineConfig(({ mode }) => {
     mode === "development" && componentTagger(),
     redirectsPlugin(env),
     articleImagePreviewPlugin(),
+    srcAssetsRedirectPlugin(__dirname),
     prerenderPlugin(env),
   ].filter(Boolean),
 
