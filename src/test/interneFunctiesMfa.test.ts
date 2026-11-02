@@ -35,6 +35,7 @@ const uitzonderingen: Record<string, string> = {
   "herinnering-afmelden": "Individual unsubscribe token",
   "review-klik": "Individual review token",
   "review-verzoeken": "Vault cron-secret only",
+  "review-bestaande-klanten": "Vault cron-secret or service role only",
   "send-notification": "Internal-secret or restricted recent public lead notification",
   "send-portal-magiclink": "Rate-limited customer login request",
   "sitemap": "Public published article URLs",
