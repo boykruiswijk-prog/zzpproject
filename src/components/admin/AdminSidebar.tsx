@@ -73,6 +73,7 @@ export function AdminSidebar() {
       {roleAllows(["supervisor"]) && <NavLink to="/admin/schermen" onClick={mobile ? closeMobile : undefined} className={linkClass}><Monitor className="h-5 w-5"/><span className="flex-1">Live-scherm</span></NavLink>}
       {roleAllows(["supervisor", "verzekering"]) && <>
         <NavLink to="/admin/klanten" onClick={mobile ? closeMobile : undefined} className={linkClass}><Building2 className="h-5 w-5"/><span className="flex-1">Klanten & contracten</span><TellerBadge aantal={tellers?.klanten ?? 0} uitleg={tellerUitleg("klanten", tellers ?? {})} naar={TELLER_DOEL.klanten}/></NavLink>
+        <NavLink to="/admin/dubbele-klanten" onClick={mobile ? closeMobile : undefined} className={(p) => cn(linkClass(p), "ml-4")}><Copy className="h-4 w-4"/><span className="flex-1">Dubbele klanten</span></NavLink>
         <NavLink to="/admin/crm" onClick={mobile ? closeMobile : undefined} className={linkClass}><Users className="h-5 w-5"/><span className="flex-1">CRM</span><TellerBadge aantal={takenCount ?? 0} uitleg={CRM_UITLEG(takenCount ?? 0)} naar="/admin/crm"/></NavLink>
       </>}
       {groups.map(group => {
