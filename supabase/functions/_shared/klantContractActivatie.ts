@@ -82,7 +82,7 @@ export async function zetInPlanner(supabase: any, lead: any, exactAccountId: str
   if (!ond && lead.kvk_nummer) {
     // Bestaande, niet-samengevoegde klantkaart met hetzelfde KvK-nummer altijd hergebruiken (nooit een tweede kaart).
     const { data: kvkRijen } = await supabase.from("ondernemingen").select("id,exact_account_id,created_at")
-      .eq("kvk", String(lead.kvk_nummer)).eq("is_test", !!lead.is_test).is("samengevoegd_naar", null);
+      .eq("kvk", String(lead.kvk_nummer)).eq("is_test", !!lead.is_test).is("samengevoegd_naar", null).limit(20);
     const gekozen = kiesKaartOpKvk(kvkRijen ?? [], exactAccountId);
     if (gekozen) {
       if (!gekozen.exact_account_id) {

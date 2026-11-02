@@ -11,6 +11,7 @@ function nepSupabase() {
     const api: any = {
       select: () => api,
       eq: (k: string, v: unknown) => { filters.push([k, v]); return api; },
+      is: (k: string, v: unknown) => { filters.push([k, v]); return api; },
       limit: () => api,
       maybeSingle: async () => ({ data: (tabel === "ondernemingen" ? ondernemingen : []).find((r) => filters.every(([k, v]) => r[k] === v)) ?? null }),
       insert: (row: any) => { const r = { id: `ond-${ondernemingen.length + 1}`, ...row }; ondernemingen.push(r); return { select: () => ({ single: async () => ({ data: r, error: null }) }) }; },

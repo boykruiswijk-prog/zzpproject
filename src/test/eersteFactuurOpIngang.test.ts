@@ -8,7 +8,7 @@ import { eersteMaandPeriode, zetInPlanner } from "../../supabase/functions/_shar
 function nepSupabase() {
   const contracten: any[] = [];
   const api: any = {
-    select: () => api, eq: () => api, limit: () => api,
+    select: () => api, eq: () => api, is: () => api, limit: () => api,
     maybeSingle: async () => ({ data: { id: "ond-1" } }),
     upsert: async (row: any) => { contracten.push(row); return { error: null }; },
   };
