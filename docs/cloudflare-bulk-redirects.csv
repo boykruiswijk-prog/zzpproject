@@ -17,6 +17,8 @@ zpzaken.nl/wp-content/uploads/2025/11/ZP_Slotverklaring.pdf/,https://zpzaken.nl/
 zpzaken.nl/wp-content/uploads/2023/03/Algemene-Voorwaarden-v1.0-Definitief.pdf,https://zpzaken.nl/algemene-voorwaarden,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/wp-content/uploads/2023/03/Algemene-Voorwaarden-v1.0-Definitief.pdf/,https://zpzaken.nl/algemene-voorwaarden,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/wp-content/uploads/,https://eugkavokktjwpqaqlwsj.supabase.co/storage/v1/object/public/article-images/wp-content/uploads/,301,TRUE,TRUE,TRUE,TRUE
+zpzaken.nl/en/portal/login,https://zpzaken.nl/portal/login,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/en/portal/login/,https://zpzaken.nl/portal/login,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/post/cookie-instellingen-1,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/post/cookie-instellingen-1/,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/sitemap.aspx,https://zpzaken.nl/sitemap.xml,301,TRUE,TRUE,FALSE,FALSE
@@ -1306,6 +1308,11 @@ zpzaken.nl/news-sitemap.xml,https://zpzaken.nl/sitemap.xml,301,TRUE,TRUE,FALSE,F
 zpzaken.nl/news-sitemap.xml/,https://zpzaken.nl/sitemap.xml,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/beroeps-en-bedrijfs-aansprakelijkheidsverzekering-zzp-avb-bav/%23pakket,https://zpzaken.nl/verzekeringen,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/beroeps-en-bedrijfs-aansprakelijkheidsverzekering-zzp-avb-bav/%23pakket/,https://zpzaken.nl/verzekeringen,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/en/portal/,https://zpzaken.nl/portal/,301,TRUE,TRUE,TRUE,TRUE
+zpzaken.nl/de/portal/,https://zpzaken.nl/portal/,301,TRUE,TRUE,TRUE,TRUE
+zpzaken.nl/fr/portal/,https://zpzaken.nl/portal/,301,TRUE,TRUE,TRUE,TRUE
+zpzaken.nl/de/mijn-zp/,https://zpzaken.nl/mijn-zp/,301,TRUE,TRUE,TRUE,TRUE
+zpzaken.nl/fr/mijn-zp/,https://zpzaken.nl/mijn-zp/,301,TRUE,TRUE,TRUE,TRUE
 zpzaken.nl/profile/,https://zpzaken.nl/,301,TRUE,TRUE,TRUE,FALSE
 zpzaken.nl/facts/press/,https://zpzaken.nl/kennisbank,301,TRUE,TRUE,TRUE,FALSE
 zpzaken.nl/en/post/cookie-instellingen-1,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
@@ -4448,9 +4455,7 @@ zpzaken.nl/de/gegevens-wijzigen/,https://zpzaken.nl/contact,301,TRUE,TRUE,FALSE,
 zpzaken.nl/fr/gegevens-wijzigen,https://zpzaken.nl/contact,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/fr/gegevens-wijzigen/,https://zpzaken.nl/contact,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/de/mijn-zp,https://zpzaken.nl/mijn-zp/polis,301,TRUE,TRUE,FALSE,FALSE
-zpzaken.nl/de/mijn-zp/,https://zpzaken.nl/mijn-zp/polis,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/fr/mijn-zp,https://zpzaken.nl/mijn-zp/polis,301,TRUE,TRUE,FALSE,FALSE
-zpzaken.nl/fr/mijn-zp/,https://zpzaken.nl/mijn-zp/polis,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/de/mijnzp,https://zpzaken.nl/mijn-zp/polis,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/de/mijnzp/,https://zpzaken.nl/mijn-zp/polis,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/fr/mijnzp,https://zpzaken.nl/mijn-zp/polis,301,TRUE,TRUE,FALSE,FALSE
