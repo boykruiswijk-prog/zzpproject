@@ -28,9 +28,9 @@ Alle runs HTTP 200; duur inclusief mails 57,76 / 54,22 / 89,32 seconden. Roxy: d
 - 2 november: 13 concept_aangemaakt, EUR 1215; nul tijdelijk/geclaimd/fout.
 - Nul dubbele planningssleutels; nul dubbele niet-vervangen/niet-tijdelijke contract-perioden. Historische vervangingen behouden.
 - Geen beschikbare factuurkandidaten resterend; vervolgcron verwijderd.
-- Eén standmelding 33f0beb4-95db-42fe-b3cc-9d324862f9bb voor Ellen en Roxy, omdat de ochtendmail ontbreekt.
+- Eén standmelding 33f0beb4-95db-42fe-b3cc-9d324862f9bb voor Ellen en Roxy, omdat de ochtendmail ontbreekt; beiden sent om 06:33:14/15 UTC.
 
 ## Verificatie
-- Volledige suite vóór extra SQL-regressies: 1904 geslaagd, 1 bestaande overgeslagen.
+- Finale volledige suite inclusief SQL-regressies: 1907 geslaagd, 1 bestaande overgeslagen; 181 testbestanden geslaagd.
 - Automatische frontendcontrole build OK; Deno check van factuur-planner schoon.
-- Extra SQL-regressies en finale volledige suite worden in de eindrapportage vermeld.
+- SQL-regressies bevestigen overlapweigering, behouden onderbroken run en uitsluitend service-toegang. Geen dubbele Exact-invoice-ID's in planning.
