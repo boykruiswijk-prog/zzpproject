@@ -7314,6 +7314,7 @@ export type Database = {
         Returns: boolean
       }
       doorrol_startstand: { Args: { _preview?: boolean }; Returns: Json }
+      dubbele_klanten: { Args: never; Returns: Json }
       eerste_vrije_certificaatnummer: {
         Args: { _start: number }
         Returns: number
@@ -7793,6 +7794,20 @@ export type Database = {
       }
       onderneming_hoofdkaart: { Args: { _id: string }; Returns: string }
       onderneming_is_partner: { Args: { _ond: string }; Returns: string }
+      onderneming_samenvoegen: {
+        Args: { _naar: string; _reden?: string; _van: string }
+        Returns: Json
+      }
+      onderneming_samenvoegen_intern: {
+        Args: {
+          _door: string
+          _door_naam: string
+          _naar: string
+          _reden?: string
+          _van: string
+        }
+        Returns: Json
+      }
       overgenomen_certificaatnummer: {
         Args: { _lead_id: string }
         Returns: string

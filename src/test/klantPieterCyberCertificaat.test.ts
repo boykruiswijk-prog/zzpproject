@@ -61,7 +61,7 @@ describe("activatie hergebruikt klantkaart met zelfde KvK", () => {
     return { from: q, contracten, ondernemingen };
   }
   it("geen tweede kaart als er precies één kaart met dit KvK-nummer is", async () => {
-    const sb = nep([{ id: "bestaand", kvk: "92654193", is_test: true, exact_account_id: null }]);
+    const sb = nep([{ id: "bestaand", kvk: "92654193", is_test: true, exact_account_id: null, samengevoegd_naar: null }]);
     const r = await zetInPlanner(sb, { id: "33333333-3333-3333-3333-333333333333", kvk_nummer: "92654193", is_test: true }, "acc-9",
       { cyclus: "jaar", itemcode: "100J", bedrag_per_periode: 600, periodeStart: "2026-10-23", periodeEind: "2027-10-22" });
     expect(r).toMatchObject({ ok: true, onderneming_id: "bestaand" });

@@ -63,20 +63,32 @@ export function contractRegelVoorActivatie(lead: any, ondernemingId: string, spe
   };
 }
 
+/** Kies de bestaande kaart bij hetzelfde KvK: eerst die met dit Exact-account, dan die zonder account, dan de oudste. */
+export function kiesKaartOpKvk(rijen: { id: string; exact_account_id?: string | null; created_at?: string | null }[], exactAccountId: string) {
+  if (!rijen.length) return null;
+  const zelfde = rijen.find((r) => r.exact_account_id === exactAccountId);
+  if (zelfde) return zelfde;
+  const sorteer = [...rijen].sort((a, b) => String(a.created_at ?? "").localeCompare(String(b.created_at ?? "")));
+  return sorteer.find((r) => !r.exact_account_id) ?? sorteer[0];
+}
+
 export async function zetInPlanner(supabase: any, lead: any, exactAccountId: string, spec: ContractSpec, opIngang = false) {
   let { data: ond } = await supabase.from("ondernemingen").select("id")
-    .eq("exact_account_id", exactAccountId).limit(1).maybeSingle();
+    .eq("exact_account_id", exactAccountId).is("samengevoegd_naar", null).limit(1).maybeSingle();
   if (!ond && lead.exact_relatie_code) {
     ({ data: ond } = await supabase.from("ondernemingen").select("id")
-      .eq("exact_relatie_code", String(lead.exact_relatie_code)).limit(1).maybeSingle());
+      .eq("exact_relatie_code", String(lead.exact_relatie_code)).is("samengevoegd_naar", null).limit(1).maybeSingle());
   }
   if (!ond && lead.kvk_nummer) {
-    // Bestaande klantkaart met hetzelfde KvK-nummer hergebruiken (geen dubbele kaart zonder contactpersoon).
-    const { data: kvkRijen } = await supabase.from("ondernemingen").select("id")
-      .eq("kvk", String(lead.kvk_nummer)).eq("is_test", !!lead.is_test).is("exact_account_id", null).limit(2);
-    if ((kvkRijen ?? []).length === 1) {
-      const { error: kErr } = await supabase.from("ondernemingen").update({ exact_account_id: exactAccountId, exact_koppeling_status: "gekoppeld" }).eq("id", kvkRijen[0].id).is("exact_account_id", null);
-      if (!kErr) ond = kvkRijen[0];
+    // Bestaande, niet-samengevoegde klantkaart met hetzelfde KvK-nummer altijd hergebruiken (nooit een tweede kaart).
+    const { data: kvkRijen } = await supabase.from("ondernemingen").select("id,exact_account_id,created_at")
+      .eq("kvk", String(lead.kvk_nummer)).eq("is_test", !!lead.is_test).is("samengevoegd_naar", null).limit(20);
+    const gekozen = kiesKaartOpKvk(kvkRijen ?? [], exactAccountId);
+    if (gekozen) {
+      if (!gekozen.exact_account_id) {
+        await supabase.from("ondernemingen").update({ exact_account_id: exactAccountId, exact_koppeling_status: "gekoppeld" }).eq("id", gekozen.id).is("exact_account_id", null);
+      }
+      ond = { id: gekozen.id };
     }
   }
   if (!ond) {

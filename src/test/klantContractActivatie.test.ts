@@ -11,9 +11,10 @@ function nepSupabase() {
     const api: any = {
       select: () => api,
       eq: (k: string, v: unknown) => { filters.push([k, v]); return api; },
+      is: (k: string, v: unknown) => { filters.push([k, v]); return api; },
       limit: () => api,
       maybeSingle: async () => ({ data: (tabel === "ondernemingen" ? ondernemingen : []).find((r) => filters.every(([k, v]) => r[k] === v)) ?? null }),
-      insert: (row: any) => { const r = { id: `ond-${ondernemingen.length + 1}`, ...row }; ondernemingen.push(r); return { select: () => ({ single: async () => ({ data: r, error: null }) }) }; },
+      insert: (row: any) => { const r = { id: `ond-${ondernemingen.length + 1}`, samengevoegd_naar: null, ...row }; ondernemingen.push(r); return { select: () => ({ single: async () => ({ data: r, error: null }) }) }; },
       upsert: async (row: any) => {
         if ("maandwaarde" in row) return { error: { message: 'cannot insert a non-DEFAULT value into column "maandwaarde"' } };
         if (!contracten.some((c) => c.bron === row.bron && c.bron_rij === row.bron_rij)) contracten.push(row);
