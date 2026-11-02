@@ -7797,6 +7797,16 @@ export type Database = {
         Returns: Json
       }
       mijn_cyber_polissen: { Args: never; Returns: Json }
+      mijn_klant_contracten: {
+        Args: never
+        Returns: {
+          begin_datum: string
+          certificaatnummer: string
+          onderneming_naam: string
+          product: string
+          status: string
+        }[]
+      }
       mijn_review_kaart: { Args: never; Returns: Json }
       move_to_dlq: {
         Args: {
