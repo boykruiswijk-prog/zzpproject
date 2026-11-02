@@ -82,7 +82,7 @@ export function cloudflareBulkCsv(redirectLines: string[], host = "zpzaken.nl"):
   };
   // De subpadregel deelt de bron met de exacte slashvariant. Laat die regel
   // voorgaan bij ontdubbelen, anders verdwijnen alle onderliggende nieuwspaden.
-  const nieuwsPattern = /^(?:\/(?:en|de|fr))?\/home\/nieuws\/\*\s/;
+  const nieuwsPattern = /^(?:(?:\/(?:en|de|fr))?\/home\/nieuws|\/(?:en|de|fr)\/(?:portal|mijn-zp))\/\*\s/;
   const orderedLines = [...redirectLines.filter(line => nieuwsPattern.test(line)), ...redirectLines.filter(line => !nieuwsPattern.test(line))];
   for (const raw of orderedLines) {
     const line = raw.replace(/\s+#.*$/, "").trim();
