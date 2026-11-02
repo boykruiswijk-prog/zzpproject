@@ -90,6 +90,11 @@ export function cloudflareBulkCsv(redirectLines: string[], host = "zpzaken.nl"):
     const [from, to, status] = line.split(/\s+/);
     if (!from || !to || !status?.startsWith("301")) continue;
     if (from === "/:path/" || from === "/*") continue;
+    // Interne taalvarianten behouden het volledige suffix, ook nieuwe subpaden.
+    if (/^\/(en|de|fr)\/(portal|mijn-zp)\/\*$/.test(from)) {
+      push(`${host}${from.slice(0, -1)}`, `https://${host}${to.replace(":splat", "")}`, "TRUE,TRUE,TRUE,TRUE");
+      continue;
+    }
     // Deze twee oude namespaces hebben geen huidige routes of exacte prefixregel.
     // Subpadmatching verwijst direct naar het doel, zonder het oude pad mee te nemen.
     if (from === "/profile/*" || from === "/facts/press/*" || /^(?:\/(?:en|de|fr))?\/home\/nieuws\/\*$/.test(from)) {

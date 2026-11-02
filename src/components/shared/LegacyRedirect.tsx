@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
+import { zoekLegacyDoel } from "@/config/legacyRedirects";
 
 /** Querystrings en fragmenten veranderen het soort bestand niet. */
 export function isStatischLegacyDoel(to: string): boolean {
@@ -13,7 +14,9 @@ export function navigeerLegacyBestand(to: string, replace: (url: string) => void
 }
 
 /** Bestanden moeten door de server worden geleverd, niet door de SPA-router. */
-export function LegacyRedirect({ to, volledig = false }: { to: string; volledig?: boolean }) {
+export function LegacyRedirect({ to: template, volledig = false }: { to: string; volledig?: boolean }) {
+  const location = useLocation();
+  const to = template.includes(":splat") ? (zoekLegacyDoel(location.pathname) ?? template) : template;
   const bestand = volledig || isStatischLegacyDoel(to);
   useEffect(() => {
     if (bestand) navigeerLegacyBestand(to, url => window.location.replace(url), volledig);

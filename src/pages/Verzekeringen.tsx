@@ -153,7 +153,7 @@ export default function Verzekeringen() {
                           </Button>
                         )}
                         <Button variant={insurance.canApplyOnline ? "outline" : "accent"} asChild>
-                          <LocalizedLink to="/contact">{t("verzekeringenPage.askAdvice")}<ArrowRight className="h-4 w-4" /></LocalizedLink>
+                          <LocalizedLink to={insurance.id === "arbeidsongeschiktheid" ? "/aov" : "/contact"}>{t(insurance.id === "arbeidsongeschiktheid" ? "insuranceData.aovCta" : "verzekeringenPage.askAdvice")}<ArrowRight className="h-4 w-4" /></LocalizedLink>
                         </Button>
                         {insurance.isMostChosen && <MiniSocialProof className="ml-2 hidden md:flex" />}
                       </div>
