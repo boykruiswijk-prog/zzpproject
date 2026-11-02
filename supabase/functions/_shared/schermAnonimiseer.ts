@@ -39,6 +39,24 @@ const eerste = (o: Record<string, unknown>, ...k: string[]) => {
 type Snap = { dag?: string; data?: Record<string, unknown> } | undefined;
 
 /** Alleen toegestane marketingcijfers; budget als percentage, nooit euro's of kosten per aanvraag. */
+const BING_PERIODES: Record<string, string> = { "7D": "laatste 7 dagen", "1M": "laatste maand", "3M": "laatste 3 maanden", "6M": "laatste 6 maanden", "12M": "laatste 12 maanden", "1Y": "laatste jaar" };
+/** Alleen neutrale categorieen; zoekvragen, namen of vrije tekst komen nooit op het scherm. */
+export const BING_CATEGORIEEN = ["kosten", "beste keuze", "algemeen", "dekking", "vergelijken", "aanvragen", "voorwaarden", "opzeggen", "schade", "fiscaal"];
+export function schoonBingAi(rijen: unknown) {
+  const lijst = (Array.isArray(rijen) ? rijen : []).filter((r) => r && typeof r === "object" && Number.isFinite(Number((r as Ruw).citaties)))
+    .sort((a: Ruw, b: Ruw) => String(b.datum).localeCompare(String(a.datum)));
+  const [laatste, vorige] = lijst as Ruw[];
+  if (!laatste) return null;
+  const citaties = Number(laatste.citaties);
+  const p = String(laatste.periode ?? "").trim().toUpperCase();
+  // Trend alleen vergelijken bij dezelfde periode, anders is het geen eerlijke vergelijking.
+  const trend = vorige && String(vorige.periode ?? "").trim().toUpperCase() === p
+    ? (citaties > Number(vorige.citaties) ? "omhoog" : citaties < Number(vorige.citaties) ? "omlaag" : "gelijk") : null;
+  const onderwerpen = (Array.isArray(laatste.onderwerpen) ? laatste.onderwerpen : [])
+    .map((o: unknown) => typeof o === "string" ? o.trim().toLowerCase() : "").filter((o: string) => BING_CATEGORIEEN.includes(o));
+  return { datum: typeof laatste.datum === "string" ? laatste.datum.slice(0, 10) : null, citaties, periode: BING_PERIODES[p] ?? null, trend, onderwerpen: [...new Set(onderwerpen)].slice(0, 3) as string[] };
+}
+
 export function schoonMarketing(m: Record<string, Snap> | null | undefined) {
   const uit: Record<string, Record<string, number | string | null> | null> = {};
   const ads = (s: Snap) => {
@@ -403,6 +421,7 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
     ai_team: team,
     workers: metAgentWorkers(schoonWorkers(r?.workers), team),
     marketing: schoonMarketing(r?.marketing),
+    bing_ai: schoonBingAi(r?.bing_ai),
   };
 }
 

@@ -1254,6 +1254,42 @@ export type Database = {
           },
         ]
       }
+      bing_ai_metingen: {
+        Row: {
+          aangemaakt_op: string
+          bron: string
+          citaties: number
+          citaties_7d: number | null
+          datum: string
+          gem_geciteerde_paginas: number | null
+          id: string
+          onderwerpen: string[] | null
+          periode: string
+        }
+        Insert: {
+          aangemaakt_op?: string
+          bron?: string
+          citaties: number
+          citaties_7d?: number | null
+          datum: string
+          gem_geciteerde_paginas?: number | null
+          id?: string
+          onderwerpen?: string[] | null
+          periode: string
+        }
+        Update: {
+          aangemaakt_op?: string
+          bron?: string
+          citaties?: number
+          citaties_7d?: number | null
+          datum?: string
+          gem_geciteerde_paginas?: number | null
+          id?: string
+          onderwerpen?: string[] | null
+          periode?: string
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           acties: Json | null
@@ -7105,6 +7141,17 @@ export type Database = {
       bevestig_royement: {
         Args: { _id: string; _toelichting?: string }
         Returns: Json
+      }
+      bing_ai_bijwerken: {
+        Args: {
+          p_citaties: number
+          p_citaties_7d: number
+          p_datum: string
+          p_gem_paginas: number
+          p_onderwerpen: string[]
+          p_periode: string
+        }
+        Returns: string
       }
       bron_rij_voor_lead: { Args: { _id: string }; Returns: number }
       certificaatnummer_voorstel: {

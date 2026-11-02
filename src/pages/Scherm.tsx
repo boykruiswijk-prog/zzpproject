@@ -299,6 +299,17 @@ function PaneelZichtbaarheid({ d }: { d: SchermPayload }) {
         <Stat klein label="Klikken Google" waarde={typeof sc?.klikken === "number" ? nf.format(sc.klikken) : null} />
         <Stat klein label="AI-zichtbaarheid" waarde={typeof ai?.score === "number" ? `${f(ai.score)}%` : null} />
       </div>
+      {d.bing_ai && (
+        <div data-testid="copilot-citaties">
+          <Label>Copilot-citaties{d.bing_ai.periode ? ` (${d.bing_ai.periode})` : ""}</Label>
+          <div className="flex items-baseline gap-[12px] text-[38.88px] font-bold tabular-nums text-[hsl(var(--s-tekst))]">
+            {nf.format(d.bing_ai.citaties)}
+            {d.bing_ai.trend === "omhoog" && <span aria-label="hoger dan vorige meting" style={{ color: "hsl(var(--s-groen))" }}>▲</span>}
+            {d.bing_ai.trend === "omlaag" && <span aria-label="lager dan vorige meting" style={{ color: "hsl(var(--s-rood))" }}>▼</span>}
+            {d.bing_ai.onderwerpen.length > 0 && <span className="text-[18.36px] font-normal">{d.bing_ai.onderwerpen.join(", ")}</span>}
+          </div>
+        </div>
+      )}
       <div className="flex flex-wrap gap-[16px] text-[18.36px]">{sc && <span>Google: <Bijgewerkt op={d.bijgewerkt?.search_console} /></span>}{ai && <span>AI: <Bijgewerkt op={d.bijgewerkt?.ai_zichtbaarheid} /></span>}</div>
       <div className="mt-auto">
         <Label>Kennisbank: {d.kennisbank.gepubliceerd} artikelen, {d.kennisbank.nieuw_maand} nieuw deze maand</Label>

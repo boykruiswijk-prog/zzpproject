@@ -1562,6 +1562,13 @@
       "when": 1793628013772,
       "tag": "0222_admin_zoek_klant_titel",
       "breakpoints": true
+    },
+    {
+      "idx": 223,
+      "version": "7",
+      "when": 1793628930004,
+      "tag": "0223_bing_ai_metingen",
+      "breakpoints": true
     }
   ]
 }
