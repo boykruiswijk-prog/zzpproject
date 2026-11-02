@@ -150,3 +150,7 @@
 - [x] Beveiliging 2-11: herinnering stap 2+/afmelden/misbruikrem, IBAN-leesrecht, formulieren, create-team-user, eenmalige herinnering (7), Roxy uit wijzigingsmeldingen
 - [x] A16 2-11: conversieonderzoek aanvraagformulier (alleen rapport)
 - [x] Boy 2-11: Bing Copilot-citaties op tv (tabel, functie, tegel, eerste meting, tests, melding)
+
+## 2-11 open
+- [ ] Reviews 3: eenmalig reviewverzoek 100 bestaande klanten (logo, soort, doelgroep, functie, droge run; niet versturen)
+- [ ] A16 formulier: KvK-veld stap 2, IBAN groeperen/controle stap 4, mobiele volgorde stap 4 + scroll naar fout, Functie-veld nooit blokkerend (5 afkeuringen); tests, één melding 'website'
