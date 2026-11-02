@@ -148,3 +148,5 @@
 - [x] A23-aanvulling 2: doorklikken op grafiekelementen (dashboard, supervisor, inzicht); niet gepubliceerd
 
 - [x] Beveiliging 2-11: herinnering stap 2+/afmelden/misbruikrem, IBAN-leesrecht, formulieren, create-team-user, eenmalige herinnering (7), Roxy uit wijzigingsmeldingen
+- [x] A16 2-11: conversieonderzoek aanvraagformulier (alleen rapport)
+- [ ] Boy 2-11: Bing Copilot-citaties op tv (tabel, functie, tegel, eerste meting, tests, melding)
