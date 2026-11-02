@@ -77,7 +77,9 @@ beforeAll(async () => {
   const sql = readFileSync("drizzle/migrations/0221_dubbele_klanten_samenvoegen_functies.sql", "utf8");
   await db.exec(sql.slice(0, sql.indexOf("DO $m$")));
   await db.exec(`INSERT INTO profiles VALUES ('${id(99)}','Ellen Baars');
-    INSERT INTO ondernemingen(id,naam,kvk,created_at) VALUES ('${id(1)}','InnoThermFlo B.V.','72276304','2026-10-12'),('${id(2)}','InnoThermFlo B.V.','72276304','2026-10-13');`);
+    SET app.dubbele_kvk_toegestaan='on';
+    INSERT INTO ondernemingen(id,naam,kvk,created_at) VALUES ('${id(1)}','InnoThermFlo B.V.','72276304','2026-10-12'),('${id(2)}','InnoThermFlo B.V.','72276304','2026-10-13');
+    RESET app.dubbele_kvk_toegestaan;`);
 });
 
 describe("database: dubbele kaarten", () => {
