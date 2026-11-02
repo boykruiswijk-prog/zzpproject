@@ -17,8 +17,12 @@ export async function laadIbanMaskers(bron: IbanMaskerBron, ids: string[]): Prom
   const uniek = Array.from(new Set(ids.filter(Boolean)));
   const kaart = new Map<string, IbanMasker>();
   if (!uniek.length) return kaart;
-  const { data, error } = await (supabase.rpc as any)("iban_maskers", { _bron: bron, _ids: uniek });
-  if (error) return kaart;
+  let data: unknown = null;
+  try {
+    const r = await (supabase.rpc as any)("iban_maskers", { _bron: bron, _ids: uniek });
+    if (r?.error) return kaart;
+    data = r?.data;
+  } catch { return kaart; }
   for (const r of (data ?? []) as { id: string; iban: string | null; geldig: boolean }[]) kaart.set(r.id, { iban: r.iban, geldig: !!r.geldig });
   return kaart;
 }

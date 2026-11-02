@@ -43,6 +43,8 @@ afterEach(() => { cleanup(); store.personen[0].telefoon = null; store.personen[0
 describe("klantkaart contactbron", () => {
   it("wijzigt telefoon en e-mail op de persoon en toont opgeslagen waarden, ook via een samengevoegde kaart", async () => {
     store.rpc.mockImplementation(async (naam, args) => {
+      // Gemaskeerde IBAN-weergave (beveiligingscheck 2-11) leest alleen; geen wijziging.
+      if (naam === "iban_maskers" || naam === "klant_mandaat_overzicht") return { data: [], error: null };
       expect(naam).toBe("crm_gegevens_wijzigen");
       expect(args._onderneming_id).toBe("nieuw");
       expect(args._persoon_id).toBe("persoon");
@@ -62,7 +64,7 @@ describe("klantkaart contactbron", () => {
     const link = await screen.findByRole("link", { name: "0612345678" });
     expect(link).toHaveAttribute("href", "tel:0612345678");
     expect(await screen.findByRole("link", { name: "gewijzigd@zpzaken.nl" })).toHaveAttribute("href", "mailto:gewijzigd@zpzaken.nl");
-    expect(store.rpc).toHaveBeenCalledTimes(1);
+    expect(store.rpc.mock.calls.filter(([naam]) => naam === "crm_gegevens_wijzigen")).toHaveLength(1);
     view.unmount();
     client.clear();
     render(kaart());
