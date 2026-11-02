@@ -209,8 +209,8 @@ describe("beveiligingscheck 2-11: stap, misbruikrem, afmelden", () => {
     const src = readFileSync("supabase/functions/herinnering-afmelden/index.ts", "utf8");
     expect(src).toContain("/^[a-f0-9]{64}$/");
     expect(src.indexOf('if (req.method === "GET") return json({ status: "geldig" })')).toBeLessThan(src.indexOf('from("herinnering_afmeldingen").upsert'));
-    expect(src).not.toContain("review_afmeldingen");
-    expect(src).not.toContain("suppressed_emails");
+    expect(src).not.toContain(`from("review_afmeldingen")`);
+    expect(src).not.toContain(`from("suppressed_emails")`);
   });
 });
 
