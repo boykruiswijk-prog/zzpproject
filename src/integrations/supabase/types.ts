@@ -7891,6 +7891,10 @@ export type Database = {
         Returns: boolean
       }
       portal_user_id_by_email: { Args: { p_email: string }; Returns: string }
+      portal_user_voor_onderneming: {
+        Args: { _onderneming_id: string }
+        Returns: string
+      }
       portaltoegang_afronden: {
         Args: { _aanvraag_id: string; _toelichting?: string }
         Returns: Json

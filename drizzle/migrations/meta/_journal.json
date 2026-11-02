@@ -1576,6 +1576,13 @@
       "when": 1793635101621,
       "tag": "0224_mijn_zp_bestaande_klanten",
       "breakpoints": true
+    },
+    {
+      "idx": 225,
+      "version": "7",
+      "when": 1793635314768,
+      "tag": "0225_polis_onderneming_portal_koppeling",
+      "breakpoints": true
     }
   ]
 }
