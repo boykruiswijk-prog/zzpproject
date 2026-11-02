@@ -23,16 +23,21 @@ export function wachtTijdUit(retryAfter: string | null, poging: number, nu = Dat
   return Math.min(2000 * 2 ** (poging - 1), MAX_WACHT_MS); // 2s, 4s, 8s
 }
 
-export interface TempoOpties { slaap?: (ms: number) => Promise<void>; nu?: () => number; minInterval?: number; maxPogingen?: number }
+export interface TempoOpties { slaap?: (ms: number) => Promise<void>; nu?: () => number; minInterval?: number; maxPogingen?: number; deadline?: number }
 
 /** Geeft een functie die elke Exact-aanroep in vast tempo uitvoert en GET's bij 429/503 herhaalt. */
 export function maakExactTempo(opties: TempoOpties = {}) {
-  const slaap = opties.slaap ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)));
   const nu = opties.nu ?? (() => Date.now());
+  const slaapBasis = opties.slaap ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)));
+  const slaap = async (ms: number) => {
+    if (opties.deadline != null && nu() + ms + 10_000 >= opties.deadline) throw new ExactTijdelijkError(429, "tijdsbudget");
+    await slaapBasis(ms);
+  };
   const min = opties.minInterval ?? EXACT_MIN_INTERVAL_MS;
   const max = opties.maxPogingen ?? EXACT_MAX_POGINGEN;
   let laatste = -Infinity;
   const opTempo = async () => {
+    if (opties.deadline != null && nu() + 10_000 >= opties.deadline) throw new ExactTijdelijkError(429, "tijdsbudget");
     const w = laatste + min - nu();
     if (w > 0) await slaap(w);
     laatste = nu();
@@ -45,7 +50,8 @@ export function maakExactTempo(opties: TempoOpties = {}) {
       if (!isTijdelijkeStatus(r.status) || poging === (herhaal ? max : 1)) return r;
       await slaap(wachtTijdUit(r.headers.get("retry-after"), poging));
     }
-    return r!;
+    if (!r) throw new Error("Exact gaf geen antwoord");
+    return r;
   };
 }
 
