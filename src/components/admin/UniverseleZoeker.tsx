@@ -10,6 +10,8 @@ import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 export type ZoekResultaat = {
   id: string; titel: string | null; score: number; redenen: string[]; link: string; onderneming_id?: string | null;
   contactpersoon?: string | null; email?: string | null; exact_relatie_code?: string | null; bav_nummer?: string | null;
+  /** Alleen voor klanten: naam van de contactpersoon, los van de ondernemingsnaam. */
+  subtitel?: string | null;
   kvk?: string | null; plaats?: string | null; iban?: string | null; status?: string | null; type?: string | null;
   lead_link?: string; aanvraag_link?: string; polisnummer?: string | null; is_test?: boolean; telefoon?: string | null; bron?: string; bron_id?: string;
 };
@@ -107,7 +109,14 @@ export function UniverseleZoekbalk() {
                     <li key={`${r.bron ?? g.key}:${r.bron_id ?? r.id}`}>
                       <Link to={r.link} className="block rounded-md p-2 hover:bg-muted">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-medium">{r.titel || "Onbekend"}</span>
+                          {g.key === "klanten" ? (
+                            <>
+                              <span className="font-semibold">{r.titel || "Onbekend"}</span>
+                              {r.subtitel && <span className="font-normal">{r.subtitel}</span>}
+                            </>
+                          ) : (
+                            <span className="font-medium">{r.titel || "Onbekend"}</span>
+                          )}
                           <Badge variant="outline" className="tabular-nums">{r.score}</Badge>
                           {r.is_test && <Badge variant="secondary">test</Badge>}
                           {!r.onderneming_id && g.key !== "klanten" && <span className="text-xs text-muted-foreground">nog niet gekoppeld aan een klant</span>}
