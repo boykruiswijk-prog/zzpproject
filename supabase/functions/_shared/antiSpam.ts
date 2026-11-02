@@ -23,11 +23,19 @@ const LIMITS: Record<string, { max: number; windowMinutes: number }> = {
 /** Totaalplafond per IP over alle formulieren heen. */
 const GLOBAL_LIMIT = { max: 15, windowMinutes: 60 };
 
+/** Beveiligingscheck 2-11: cf-connecting-ip eerst (gezet door de edge, niet door de bezoeker);
+ * x-forwarded-for alleen als laatste terugval omdat de bezoeker het eerste deel zelf kan meesturen. */
 export function clientIp(req: Request): string {
+  const cf = req.headers.get("cf-connecting-ip")?.trim();
+  if (cf) return cf;
+  const real = req.headers.get("x-real-ip")?.trim();
+  if (real) return real;
   const fwd = req.headers.get("x-forwarded-for") ?? "";
-  const first = fwd.split(",")[0]?.trim();
-  return first || req.headers.get("cf-connecting-ip") || req.headers.get("x-real-ip") || "onbekend";
+  return fwd.split(",")[0]?.trim() || "onbekend";
 }
+
+/** Soorten zonder invultijd: tussentijds opslaan en bestandsupload horen bij een formulier dat zelf wel een invultijd meestuurt. */
+const ZONDER_INVULTIJD = new Set(["concept", "kvk-uittreksel"]);
 
 export interface GuardInput {
   /** Waarde van het honeypot-veld uit de body (moet leeg zijn). */
@@ -65,7 +73,12 @@ export async function guardPublicSubmission(
   }
 
   // 2. Te snel ingevuld
-  const ms = typeof input.ms === "number" ? input.ms : Number(input.ms);
+  // Invultijd verplicht (beveiligingscheck 2-11): ontbreekt die, dan geweigerd.
+  const ms = typeof input.ms === "number" ? input.ms : (typeof input.ms === "string" && input.ms.trim() ? Number(input.ms) : NaN);
+  if (!ZONDER_INVULTIJD.has(input.kind) && !(Number.isFinite(ms) && ms >= 0)) {
+    console.warn(`[antiSpam] invultijd ontbreekt (${input.kind}) — geweigerd`);
+    return { ok: false, status: 400, error: "Aanvraag geweigerd. Vernieuw de pagina en probeer het opnieuw.", reason: "invultijd_ontbreekt" };
+  }
   if (Number.isFinite(ms) && ms >= 0 && ms < MIN_FILL_MS) {
     console.warn(`[antiSpam] te snel verstuurd (${input.kind}, ${ms}ms) — geweigerd`);
     return {
