@@ -1,3 +1,4 @@
+import { laadIbanMaskers, metIbanMasker } from "@/lib/veiligeKolommen";
 import { useQuery } from "@tanstack/react-query";
 import { IncassoKlantBlok } from "@/components/admin/incasso/Incasso";
 import { CyberDatums } from "@/components/admin/CyberDatums";
@@ -32,10 +33,11 @@ export function KlantKaart({ ondernemingen, personen, leadIds, herlaadSleutel = 
     queryKey: ["klantkaart", ondIds.join(","), persIds.join(","), leadIds.join(","), herlaadSleutel],
     queryFn: async () => {
       const codes = ondernemingen.map((o) => o.exact_relatie_code).filter(Boolean) as string[];
+      const ondMaskers = await laadIbanMaskers("onderneming", ondIds);
       const [k, l, m, n, a, tk, contact] = await Promise.all([
         ondIds.length ? supabase.from("klant_contracten").select("id,onderneming_id,product,status,begin_datum,eind_datum,gefactureerd_tm,volgende_factuurdatum,bron_rij,cyber_ingangsdatum,cyber_einddatum,cyber_nieuwe_voorwaarden_per").in("onderneming_id", ondIds).order("bron_rij") : Promise.resolve({ data: [] as any[] }),
-        leadIds.length ? supabase.from("leads").select("id,email,telefoon,iban,status,gekozen_pakket,ingangsdatum,created_at").in("id", leadIds) : Promise.resolve({ data: [] as any[] }),
-        codes.length ? (supabase.from as any)("klant_mandaat_v").select("relatiecode,iban").in("relatiecode", codes) : Promise.resolve({ data: [] as any[] }),
+        leadIds.length ? supabase.from("leads").select("id,email,telefoon,status,gekozen_pakket,ingangsdatum,created_at").in("id", leadIds).then(async (r) => ({ ...r, data: await metIbanMasker("lead", (r.data ?? []) as any[]) })) : Promise.resolve({ data: [] as any[] }),
+        codes.length ? (supabase.rpc as any)("klant_mandaat_overzicht", { _codes: codes }) : Promise.resolve({ data: [] as any[] }),
         ondIds.length + persIds.length ? supabase.from("crm_notities").select("aangemaakt_op,soort,aangemaakt_door_naam").or([ondIds.length ? `onderneming_id.in.(${ondIds.join(",")})` : "", persIds.length ? `persoon_id.in.(${persIds.join(",")})` : ""].filter(Boolean).join(",")).is("ingetrokken_op", null).order("aangemaakt_op", { ascending: false }).limit(1) : Promise.resolve({ data: [] as any[] }),
         ondIds.length ? supabase.from("klant_service_aanvragen").select("id,type,status,created_at").in("onderneming_id", ondIds).is("gekoppeld_aan", null).in("status", ["nieuw", "in_behandeling"]) : Promise.resolve({ data: [] as any[] }),
         ondIds.length + persIds.length ? (supabase.from as any)("crm_taken").select("id,omschrijving,aangemaakt_op,aangemaakt_door_naam,details").eq("status", "open").or([ondIds.length ? `onderneming_id.in.(${ondIds.join(",")})` : "", persIds.length ? `persoon_id.in.(${persIds.join(",")})` : ""].filter(Boolean).join(",")) : Promise.resolve({ data: [] as any[] }),
@@ -45,7 +47,7 @@ export function KlantKaart({ ondernemingen, personen, leadIds, herlaadSleutel = 
       const c = contracten.length ? (await supabase.from("factuur_credit_planning").select("id,status,credit_vanaf,credit_tm,klant_contract_id").in("klant_contract_id", contracten.map((x) => x.id)).in("status", Object.keys(CREDIT_OPEN))).data ?? [] : [];
       let laatsteLead: any = null;
       if (leadIds.length) laatsteLead = (await supabase.from("lead_notes").select("created_at,type").in("lead_id", leadIds).order("created_at", { ascending: false }).limit(1)).data?.[0] ?? null;
-      return { contact, contracten, leads: (l.data ?? []) as any[], mandaten: (m.data ?? []) as any[], laatsteNotitie: (n.data ?? [])[0] ?? null, laatsteLead, open: (a.data ?? []) as any[], taken: ((tk as any).data ?? []) as any[], credits: c as any[] };
+      return { ondMaskers, contact, contracten, leads: (l.data ?? []) as any[], mandaten: (m.data ?? []) as any[], laatsteNotitie: (n.data ?? [])[0] ?? null, laatsteLead, open: (a.data ?? []) as any[], taken: ((tk as any).data ?? []) as any[], credits: c as any[] };
     },
   });
 
@@ -55,7 +57,8 @@ export function KlantKaart({ ondernemingen, personen, leadIds, herlaadSleutel = 
   const { emails, telefoons } = klantContactwaarden(contactpersonen, leads);
   const mandaat = data?.mandaten.find((m) => m.iban);
   const mandaatOnd = mandaat ? ondernemingen.find((o) => o.exact_relatie_code === mandaat.relatiecode) : undefined;
-  const ondIban = ondernemingen.find((o) => o.iban);
+  const ondMet = ondernemingen.map((o) => ({ ...o, iban: data?.ondMaskers.get(o.id)?.iban ?? null }));
+  const ondIban = ondMet.find((o) => o.iban);
   const leadIban = leads.find((l) => l.iban);
   const ibanBron: { bron: IbanBron; id: string; iban: string } | null = mandaat && mandaatOnd ? { bron: "mandaat", id: mandaatOnd.id, iban: mandaat.iban }
     : ondIban ? { bron: "onderneming", id: ondIban.id, iban: ondIban.iban! } : leadIban ? { bron: "lead", id: leadIban.id, iban: leadIban.iban } : null;

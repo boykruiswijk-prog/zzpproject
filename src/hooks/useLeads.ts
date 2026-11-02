@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { LEAD_KOLOMMEN, metIbanMasker } from "@/lib/veiligeKolommen";
 
 type Lead = Database["public"]["Tables"]["leads"]["Row"];
 type LeadInsert = Database["public"]["Tables"]["leads"]["Insert"];
@@ -23,7 +24,7 @@ export function useLeads(filters?: {
     queryFn: async () => {
       let query = supabase
         .from("leads")
-        .select("*")
+        .select(LEAD_KOLOMMEN)
         .order("created_at", { ascending: false });
 
       if (!filters?.toonTest) {
@@ -65,12 +66,15 @@ export function useLead(id: string | undefined) {
       if (!id) return null;
       const { data, error } = await supabase
         .from("leads")
-        .select("*")
+        .select(LEAD_KOLOMMEN)
         .eq("id", id)
         .maybeSingle();
 
       if (error) throw error;
-      return data as Lead | null;
+      if (!data) return null;
+      // IBAN alleen gemaskeerd plus geldigheid; volledig via de knop met logboek.
+      const [metMasker] = await metIbanMasker("lead", [data as unknown as { id: string }]);
+      return metMasker as unknown as Lead & { iban_geldig: boolean };
     },
     enabled: !!id,
   });
@@ -84,7 +88,7 @@ export function useCreateLead() {
       const { data, error } = await supabase
         .from("leads")
         .insert(lead)
-        .select()
+        .select(LEAD_KOLOMMEN)
         .single();
 
       if (error) throw error;
@@ -105,7 +109,7 @@ export function useUpdateLead() {
         .from("leads")
         .update(updates)
         .eq("id", id)
-        .select()
+        .select(LEAD_KOLOMMEN)
         .single();
 
       if (error) throw error;

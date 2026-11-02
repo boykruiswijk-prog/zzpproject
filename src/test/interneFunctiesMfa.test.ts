@@ -32,6 +32,7 @@ const uitzonderingen: Record<string, string> = {
   "process-klant-service": "Public guarded customer request; team users explicitly rejected",
   "process-screening-aanvraag": "Public application with spam guard",
   "review-afmelden": "Individual unsubscribe token",
+  "herinnering-afmelden": "Individual unsubscribe token",
   "review-klik": "Individual review token",
   "review-verzoeken": "Vault cron-secret only",
   "send-notification": "Internal-secret or restricted recent public lead notification",

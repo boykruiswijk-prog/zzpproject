@@ -1,3 +1,4 @@
+import { isTestInzending } from "../_shared/testMarkering.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import { Resend } from "npm:resend@4.0.0";
 import { z } from "npm:zod@3.23.8";
@@ -132,7 +133,7 @@ Deno.serve(async (req) => {
         details: v.details,
          user_id: verifiedUserId,
          geverifieerd: verifiedUserId !== null,
-        is_test: !gate.isProduction,
+        is_test: isTestInzending(v.email),
       })
       .select()
       .single();

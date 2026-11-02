@@ -1,3 +1,4 @@
+import { laadIbanMaskers } from "@/lib/veiligeKolommen";
 import { useEffect, useState } from "react";
 import { Loader2, Lock, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -37,12 +38,12 @@ export function GegevensWijzigen({ ondernemingen, personen, onGewijzigd }: { ond
     if (!open) return;
     (async () => {
       const [o, p] = await Promise.all([
-        ondId ? supabase.from("ondernemingen").select("naam,factuur_email,kvk,rechtsvorm,straat,huisnummer,postcode,plaats,iban").eq("id", ondId).maybeSingle() : Promise.resolve({ data: null }),
+        ondId ? supabase.from("ondernemingen").select("id,naam,factuur_email,kvk,rechtsvorm,straat,huisnummer,postcode,plaats").eq("id", ondId).maybeSingle() : Promise.resolve({ data: null }),
         persId ? supabase.from("personen").select("voornaam,achternaam,email_weergave,telefoon").eq("id", persId).maybeSingle() : Promise.resolve({ data: null }),
       ]);
       const w: Record<string, string> = {};
       for (const v of VELDEN) w[v.key] = String(((v.doel === "ond" ? o.data : p.data) as any)?.[v.key] ?? "");
-      setOud(w); setWaarden(w); setIbanOud((o.data as any)?.iban ?? null); setIban(""); setPdok("");
+      setOud(w); setWaarden(w); setIbanOud(ondId ? (await laadIbanMaskers("onderneming", [ondId])).get(ondId)?.iban ?? null : null); setIban(""); setPdok("");
     })();
   }, [open, ondId, persId]);
 

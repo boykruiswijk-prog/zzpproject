@@ -1,5 +1,6 @@
 // Upload KVK-uittreksel bij startertarief (A12 aangevuld). Alleen schrijven; lezen kan alleen het team via signed URL.
 // Bestandsnaam = uuid, geen klantgegevens. Gebonden aan het concept-id van de aanvraag. Niets wordt verwijderd of overschreven.
+import { appEnvNietProductie } from "../_shared/testMarkering.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
@@ -40,7 +41,7 @@ Deno.serve(async (req) => {
   const pad = `${id}.${extVoorMime(c.mime)}`;
   const { error: upErr } = await admin.storage.from("kvk-uittreksels").upload(pad, bytes, { contentType: c.mime, upsert: false });
   if (upErr) { console.error("uittreksel upload mislukt:", upErr.message); return json({ ok: false, error: "Uploaden lukte niet. Probeer het opnieuw." }, 500); }
-  const { error } = await admin.from("kvk_uittreksels").insert({ id, concept_id: conceptId, pad, mime: c.mime, grootte: bytes.length, is_test: !resolveEnvironment(req).isProduction });
+  const { error } = await admin.from("kvk_uittreksels").insert({ id, concept_id: conceptId, pad, mime: c.mime, grootte: bytes.length, is_test: appEnvNietProductie() });
   if (error) { console.error("uittreksel registreren mislukt:", error.message); return json({ ok: false, error: "Uploaden lukte niet. Probeer het opnieuw." }, 500); }
   return json({ ok: true, uittreksel_id: id });
 });

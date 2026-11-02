@@ -1527,6 +1527,20 @@
       "when": 1793600774943,
       "tag": "0217_factuur_planner_batches",
       "breakpoints": true
+    },
+    {
+      "idx": 218,
+      "version": "7",
+      "when": 1793610977662,
+      "tag": "0218_iban_kolomrechten",
+      "breakpoints": true
+    },
+    {
+      "idx": 219,
+      "version": "7",
+      "when": 1793611307035,
+      "tag": "0219_afhaak_herinnering_beveiliging",
+      "breakpoints": true
     }
   ]
 }

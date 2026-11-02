@@ -1,6 +1,18 @@
 // Spiegelt src/config/legacyRedirects.ts (edge functions kunnen src/ niet importeren).
 // Bij wijzigingen: beide bestanden gelijk houden.
 export const legacyRedirects: { from: string; to: string }[] = [
+  // Interne paden hebben geen taalvariant; suffix behouden, geen /tv-vangregel.
+  { from: "en/portal/login", to: "/portal/login" },
+  { from: "en/portal/*", to: "/portal/:splat" },
+  { from: "de/portal/*", to: "/portal/:splat" },
+  { from: "fr/portal/*", to: "/portal/:splat" },
+  { from: "en/mijn-zp/*", to: "/mijn-zp/:splat" },
+  { from: "de/mijn-zp/*", to: "/mijn-zp/:splat" },
+  { from: "fr/mijn-zp/*", to: "/mijn-zp/:splat" },
+  ...["en", "de", "fr"].flatMap(taal =>
+    ["polis", "certificaat", "pauzeren", "documenten", "opzeggen"].map(pad => ({
+      from: `${taal}/mijn-zp/${pad}`, to: `/mijn-zp/${pad}`,
+    }))),
   // Kwaliteitscontrole 31-10-2026; bestaande routes en /tv gaan voor.
   { from: "post/cookie-instellingen-1", to: "/cookies" },
   { from: "sitemap.aspx", to: "/sitemap.xml" },

@@ -1,3 +1,4 @@
+import { metIbanMasker } from "@/lib/veiligeKolommen";
 import { useEffect, useState } from "react";
 import { IbanInzien } from "@/components/admin/IbanInzien";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,10 +24,10 @@ export function SepaMachtigingBewijsBlok({ bronId }: { bronId: string }) {
     let actief = true;
     supabase
       .from("sepa_machtiging_bewijs")
-      .select("id, mandaatkenmerk, type, akkoord_op, ip_adres, tekst_versie, iban, bevestigingsmail_id, bevestigingsmail_verzonden_op")
+      .select("id, mandaatkenmerk, type, akkoord_op, ip_adres, tekst_versie, bevestigingsmail_id, bevestigingsmail_verzonden_op")
       .eq("bron_id", bronId)
       .order("created_at", { ascending: true })
-      .then(({ data }) => { if (actief) setRows((data as Bewijs[]) ?? []); });
+      .then(async ({ data }) => { const rijen = await metIbanMasker("sepa", (data ?? []) as any[]); if (actief) setRows(rijen as unknown as Bewijs[]); });
     return () => { actief = false; };
   }, [bronId]);
 

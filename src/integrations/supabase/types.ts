@@ -53,6 +53,7 @@ export type Database = {
           herinnering_verstuurd_op: string | null
           id: string
           interne_bron: string | null
+          ip_hash: string | null
           is_test: boolean
           kvk: string | null
           laatst_actief_op: string
@@ -64,6 +65,8 @@ export type Database = {
           pagina: string | null
           pakket: string | null
           sector: string | null
+          spam_signaal: string | null
+          spam_signaal_op: string | null
           stap: number
           status: string
           team_gemeld_op: string | null
@@ -84,6 +87,7 @@ export type Database = {
           herinnering_verstuurd_op?: string | null
           id: string
           interne_bron?: string | null
+          ip_hash?: string | null
           is_test?: boolean
           kvk?: string | null
           laatst_actief_op?: string
@@ -95,6 +99,8 @@ export type Database = {
           pagina?: string | null
           pakket?: string | null
           sector?: string | null
+          spam_signaal?: string | null
+          spam_signaal_op?: string | null
           stap?: number
           status?: string
           team_gemeld_op?: string | null
@@ -115,6 +121,7 @@ export type Database = {
           herinnering_verstuurd_op?: string | null
           id?: string
           interne_bron?: string | null
+          ip_hash?: string | null
           is_test?: boolean
           kvk?: string | null
           laatst_actief_op?: string
@@ -126,6 +133,8 @@ export type Database = {
           pagina?: string | null
           pakket?: string | null
           sector?: string | null
+          spam_signaal?: string | null
+          spam_signaal_op?: string | null
           stap?: number
           status?: string
           team_gemeld_op?: string | null
@@ -3552,6 +3561,42 @@ export type Database = {
         }
         Relationships: []
       }
+      herinnering_afmeld_tokens: {
+        Row: {
+          created_at: string
+          email: string
+          token: string
+          used_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          token: string
+          used_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          token?: string
+          used_at?: string | null
+        }
+        Relationships: []
+      }
+      herinnering_afmeldingen: {
+        Row: {
+          afgemeld_op: string
+          email: string
+        }
+        Insert: {
+          afgemeld_op?: string
+          email: string
+        }
+        Update: {
+          afgemeld_op?: string
+          email?: string
+        }
+        Relationships: []
+      }
       incasso_cyclus_log: {
         Row: {
           created_at: string
@@ -6881,6 +6926,20 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      afhaak_basis_toegestaan: {
+        Args: { _c: Database["public"]["Tables"]["aanvraag_concepten"]["Row"] }
+        Returns: boolean
+      }
+      afhaak_eenmalig_claim: { Args: { _id: string }; Returns: boolean }
+      afhaak_eenmalig_kandidaten: {
+        Args: never
+        Returns: {
+          email: string
+          id: string
+          stap: number
+          voornaam: string
+        }[]
+      }
       afhaak_herinnering_claim: {
         Args: { _id: string; _nu?: string }
         Returns: boolean
@@ -7517,6 +7576,16 @@ export type Database = {
       }
       herbeoordeel_opzeg_credits: { Args: never; Returns: number }
       iban_inzien: { Args: { _bron: string; _id: string }; Returns: Json }
+      iban_maskers: {
+        Args: { _bron: string; _ids: string[] }
+        Returns: {
+          geldig: boolean
+          iban: string
+          id: string
+        }[]
+      }
+      iban_mod97_geldig: { Args: { _t: string }; Returns: boolean }
+      iban_skelet: { Args: { _t: string }; Returns: string }
       importeer_afas_20261001: { Args: never; Returns: Json }
       importeer_certificaten_20261001: { Args: never; Returns: Json }
       incasso_betaald: { Args: { _datum?: string; _id: string }; Returns: Json }
@@ -7526,6 +7595,19 @@ export type Database = {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_supervisor_or_admin: { Args: { _user_id: string }; Returns: boolean }
       is_team_member: { Args: { _user_id: string }; Returns: boolean }
+      klant_mandaat_overzicht: {
+        Args: { _codes?: string[] }
+        Returns: {
+          bron: string
+          iban: string
+          in_exact: boolean
+          kenmerk: string
+          ondertekend_op: string
+          relatiecode: string
+          status: string
+          vervaldatum: string
+        }[]
+      }
       klantmail_tekst_opslaan: {
         Args: { _onderwerp: string; _sleutel: string; _tekst: string }
         Returns: boolean

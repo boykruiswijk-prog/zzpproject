@@ -78,7 +78,7 @@ export default function KlantenContracten() {
         fetchAlle<Contract>((a, b) => supabase.from("klant_contracten").select("id,onderneming_id,cyclus,aantal,bedrag_per_periode,volgende_factuurdatum,eind_datum,status,product,itemcode,afwijkingen,is_test").order("bron_rij").range(a, b)),
         fetchAlle<any>((a, b) => supabase.from("persoon_onderneming").select("persoon_id,onderneming_id").range(a, b)),
         fetchAlle<any>((a, b) => supabase.from("personen").select("id,email_weergave").range(a, b)),
-        fetchAlle<any>((a, b) => supabase.from("klant_mandaat_v").select("relatiecode").range(a, b)),
+        fetchAlle<any>((a, b) => (supabase.rpc as any)("klant_mandaat_overzicht", {}).select("relatiecode").range(a, b)),
         supabase.rpc("get_klant_contracten_reconciliatie"),
         fetchAlle<KlantCertificaat>((a, b) => supabase.from("klant_certificaten" as any).select(CERT_VELDEN).range(a, b)),
       ]);

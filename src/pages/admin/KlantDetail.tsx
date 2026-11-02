@@ -1,3 +1,4 @@
+import { ONDERNEMING_KOLOMMEN } from "@/lib/veiligeKolommen";
 import { useEffect, useState } from "react";
 import { LeadKlantHistorie } from "@/components/admin/LeadKlantHistorie";
 import { Helmet } from "react-helmet-async";
@@ -41,7 +42,7 @@ export default function KlantDetail() {
   useEffect(() => {
     (async () => {
       setLaden(true);
-      const { data: o } = await supabase.from("ondernemingen").select("*").eq("id", id!).maybeSingle();
+      const { data: o } = await supabase.from("ondernemingen").select(ONDERNEMING_KOLOMMEN).eq("id", id!).maybeSingle();
       // Samengevoegde dubbele kaart: direct door naar de kaart waar alles nu staat.
       if ((o as any)?.samengevoegd_naar) { window.location.replace(`/admin/klanten/${(o as any).samengevoegd_naar}`); return; }
       setOnd(o);
@@ -49,7 +50,7 @@ export default function KlantDetail() {
         const [k, po, m, l] = await Promise.all([
           supabase.from("klant_contracten").select("*").eq("onderneming_id", o.id).order("bron_rij"),
           supabase.from("persoon_onderneming").select("persoon_id, personen(id,voornaam,achternaam,email_weergave)").eq("onderneming_id", o.id),
-          o.exact_relatie_code ? supabase.from("klant_mandaat_v").select("*").eq("relatiecode", o.exact_relatie_code).maybeSingle() : Promise.resolve({ data: null }),
+          o.exact_relatie_code ? (supabase.rpc as any)("klant_mandaat_overzicht", { _codes: [o.exact_relatie_code] }).maybeSingle() : Promise.resolve({ data: null }),
           o.exact_relatie_code ? supabase.from("leads").select("id,voornaam,achternaam,status").eq("exact_relatie_code", o.exact_relatie_code) : Promise.resolve({ data: [] }),
         ]);
         setContracten(k.data ?? []);
