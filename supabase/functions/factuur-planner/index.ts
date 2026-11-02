@@ -17,6 +17,8 @@ import { berekenOpzegCredit, berekenOudSysteemCredit, oudSysteemCreditPayload } 
 import { metExactMelding } from "../_shared/exactBoekingMelding.ts";
 import { metWerk, werkVan } from "../_shared/machineWerk.ts";
 import { maakExactTempo, postMetSleutel, ExactTijdelijkError, isTijdelijkeStatus, type PostUitkomst } from "../_shared/exactTempo.ts";
+import { eerlijkePlannerVolgorde, PLANNER_WERK_MS, PLANNER_BATCH_MAX } from "../_shared/plannerBatch.ts";
+import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -64,7 +66,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
     trigger = "cron";
     // Cron draait om 04:00 en 05:00 UTC; alleen de run die om 06:00 Nederlandse tijd valt telt (zomer/winter).
     const uurNL = Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Amsterdam", hour: "2-digit", hour12: false }).format(new Date()));
-    if (uurNL !== 6) return json({ overgeslagen: true, uur_nl: uurNL });
+    if (uurNL !== 6 && body?.vervolg !== true) return json({ overgeslagen: true, uur_nl: uurNL });
   } else {
     const intern = Deno.env.get("INTERNAL_FUNCTION_SECRET");
     const gegeven = req.headers.get("x-internal-secret");
@@ -267,6 +269,30 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
   // Creditnota's bij opzegging hebben een eigen schakelaar (Boy: los van facturatie_actief).
   const liveCredits = actie === "dagrun" && fcfg?.opzeg_credits_actief === true;
 
+  let runId: string | null = null;
+  const startMs = Date.now();
+  let aangemaakt = 0;
+  let verwerkt = 0;
+  let uitgesteld = 0;
+  const fouten: string[] = [];
+  const runDetail: Record<string, unknown> = {};
+  if (live || liveCredits) {
+    const { data, error } = await admin.rpc("factuur_planner_start", { _trigger: `${trigger}:${actie}`, _kandidaten: rijen.length, _geblokkeerd: sam.geblokkeerd.aantal, _bedrag: sam.klaar.bedrag });
+    if (error) return json({ error: error.message }, 500);
+    if (!data) return json({ overgeslagen: true, reden: "planner al bezig" });
+    runId = data;
+    // Arm before work: even an unexpected hard stop has a durable follow-up.
+    const { error: vervolgErr } = await admin.rpc("factuur_planner_vervolg", { _actief: true });
+    if (vervolgErr) return json({ error: vervolgErr.message, run_id: runId }, 500);
+  }
+  const voortgang = async (status = "bezig") => {
+    if (!runId) return;
+    const { error } = await admin.from("factuur_planner_runs").update({ status, bijgewerkt_op: new Date().toISOString(),
+      afgerond_op: status === "bezig" ? null : new Date().toISOString(), aantal_aangemaakt: aangemaakt,
+      detail: { fouten, ...runDetail, verwerkt, tijdelijk: uitgesteld, looptijd_ms: Date.now() - startMs } }).eq("id", runId);
+    if (error) throw new Error(`runregistratie: ${error.message}`);
+  };
+
   if (!live && !liveCredits) {
     await admin.from("factuur_planner_runs").insert({
       modus: "proef", trigger_type: `${trigger}:${actie}`, aantal_kandidaten: rijen.length,
@@ -279,13 +305,10 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
   const { data: cfg } = await admin.from("exact_config").select("*").limit(1).maybeSingle();
   const baseUrl = cfg?.base_url || "https://start.exactonline.nl";
   const div = String(cfg?.divisie_code ?? "").trim();
-  let aangemaakt = 0;
-  const fouten: string[] = [];
-  const runDetail: Record<string, unknown> = {};
   try {
     if (!cfg?.is_actief || !div) throw new Error("Exact niet actief");
     let token = await ensureValidToken(admin, cfg);
-    const tempo = maakExactTempo();
+    const tempo = maakExactTempo({ deadline: startMs + PLANNER_WERK_MS });
     const exact = async (pad: string, init: RequestInit = {}) => {
       const method = (init.method ?? "GET").toUpperCase();
       if (method !== "GET" && method !== "POST") throw new Error("methode niet toegestaan");
@@ -295,7 +318,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
         if (isCredit ? v?.opzeg_credits_actief !== true : v?.facturatie_actief !== true) throw new Error("schakelaar uit: POST geweigerd");
       }
       // Vast tempo voor elke aanroep; alleen GET wordt bij 429/503 automatisch herhaald.
-      const doe = () => fetch(`${baseUrl}/api/v1/${div}/${pad}`, { ...init, headers: { Authorization: `Bearer ${token}`, Accept: "application/json", "Content-Type": "application/json" } });
+      const doe = () => fetch(`${baseUrl}/api/v1/${div}/${pad}`, { ...init, signal: AbortSignal.timeout(10_000), headers: { Authorization: `Bearer ${token}`, Accept: "application/json", "Content-Type": "application/json" } });
       let r = await tempo(doe, method === "GET");
       if (r.status === 401) { token = await refreshAccessToken(admin, cfg); r = await tempo(doe, method === "GET"); }
       return r;
@@ -307,15 +330,17 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
       const d = (await r.json())?.d; return (d?.results ?? d ?? []) as any[];
     };
     const sleutelVeld = fcfg?.sleutel_veld === "YourRef" ? "YourRef" : "Remarks";
-    const slaap = (ms: number) => new Promise<void>((s) => setTimeout(s, ms));
-    const startMs = Date.now();
-    const RUN_BUDGET_MS = 330_000; // ruim binnen de looptijdgrens; niet geclaimde regels gaan de volgende run mee
+    const slaap = async (ms: number) => {
+      if (Date.now() + ms + 10_000 >= startMs + PLANNER_WERK_MS) throw new ExactTijdelijkError(429, "tijdsbudget");
+      await new Promise<void>((s) => setTimeout(s, ms));
+    };
+    const RUN_BUDGET_MS = PLANNER_WERK_MS;
 
     // 1) Status open concepten bijwerken (alleen lezen).
     const { data: openPl } = await admin.from("factuur_planning").select("*").in("status", ["concept_aangemaakt", "te_laat", "geclaimd"]).eq("is_test", false);
     // Volgorde: eerst nieuwe concepten (stap 2), daarna deze leescontrole binnen het resterende tijdsbudget.
     const statusBijwerken = async () => { for (const p of (live ? openPl : []) ?? []) {
-      if (Date.now() - startMs > RUN_BUDGET_MS) { runDetail.statuscontrole_uitgesteld = true; break; } // alleen lezen; volgende run verder
+      if (Date.now() - startMs > RUN_BUDGET_MS - 10_000) { runDetail.statuscontrole_uitgesteld = true; break; } // alleen lezen; volgende run verder
       let gevonden: any;
       try {
         gevonden = p.exact_invoice_id
@@ -351,10 +376,10 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
     if (live) await admin.from("factuur_planning").update({ status: "vervangen" }).eq("status", "geblokkeerd");
     const glVoor = async (code: string) => await getGlAccountIdVoorCode(admin, cfg, token, code);
     let gestopt = false;
-    let uitgesteld = 0;
-    for (const k of live ? rijen.filter((r) => !r.blokkade && r.periode_start <= vandaag) : []) {
+    for (const k of live ? eerlijkePlannerVolgorde(rijen.filter((r) => !r.blokkade && r.periode_start <= vandaag), vandaag) : []) {
       // Tijdsbudget: niet geclaimde regels krijgen geen rij en gaan vanzelf de volgende run mee.
-      if (Date.now() - startMs > RUN_BUDGET_MS) { uitgesteld++; continue; }
+      if (Date.now() - startMs > RUN_BUDGET_MS - 20_000 || verwerkt >= PLANNER_BATCH_MAX) break;
+      await voortgang();
       const sleutel = planningsSleutel(crypto.randomUUID().replace(/-/g, ""));
       const { data: claim, error: cErr } = await admin.from("factuur_planning").insert({
         klant_contract_id: k.klant_contract_id, periode_start: k.periode_start, periode_eind: k.periode_eind,
@@ -363,6 +388,8 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
         planningssleutel: sleutel, status: "geclaimd", invoice_date: k.periode_start,
       }).select("id").single();
       if (cErr) continue; // unieke sleutel: al geclaimd → overslaan
+      verwerkt++;
+      try {
       // Eerdere 'tijdelijk'-rijen voor dezelfde periode zijn nu vervangen door deze claim.
       await admin.from("factuur_planning").update({ status: "vervangen", vervangen_door: claim.id })
         .eq("klant_contract_id", k.klant_contract_id).eq("periode_start", k.periode_start).eq("status", "tijdelijk");
@@ -402,13 +429,16 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
       await admin.from("factuur_planning").update({ status: "concept_aangemaakt", concept_op: new Date().toISOString(), exact_invoice_id: d.InvoiceID ?? null, exact_status: 20 }).eq("id", claim.id);
       await admin.from("factuur_planning_log").insert({ planning_id: claim.id, klant_contract_id: k.klant_contract_id, actie: "concept_aangemaakt", nieuw: { invoice_id: d.InvoiceID, sleutel } });
       aangemaakt++;
+      } finally { await voortgang(); }
     }
     if (uitgesteld) runDetail.uitgesteld = uitgesteld;
-    await statusBijwerken();
+    // Status checks never displace still-unclaimed invoice candidates.
+    if (!live || verwerkt < PLANNER_BATCH_MAX) await statusBijwerken();
 
     if (gestopt) throw new Error("run gestopt na onzekere POST; geen creditnota's");
     // 3) Creditnota's: status bijwerken (lezen) en nieuwe concepten (Type 8021). Testrecords nooit naar Exact.
     for (const c of credits.filter((x) => ["concept_aangemaakt", "te_laat", "geclaimd"].includes(x.status) && !x.is_test)) {
+      if (Date.now() - startMs > RUN_BUDGET_MS - 20_000) break;
       let gevonden: any;
       try { gevonden = (await zoekOpSleutel(c.creditsleutel, "Remarks"))[0] ?? null; }
       catch (e) { if (e instanceof ExactTijdelijkError) continue; throw e; } // 429: volgende run opnieuw lezen
@@ -423,6 +453,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
       await admin.from("factuur_credit_planning").update(upd).eq("id", c.id);
     }
     for (const c of credits.filter((x) => x.status === "te_maken" && !x.is_test && Number(x.bedrag) > 0)) {
+      if (Date.now() - startMs > RUN_BUDGET_MS - 20_000) break;
       const { data: claim } = await admin.from("factuur_credit_planning").update({ status: "geclaimd" }).eq("id", c.id).eq("status", "te_maken").select("id").maybeSingle();
       if (!claim) continue;
       const oud = c.bron === "oud_systeem";
@@ -478,8 +509,19 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
     }
   } catch (e) { fouten.push(String(e).slice(0, 200)); }
 
-  await admin.from("factuur_planner_runs").insert({ modus: "live", trigger_type: `${trigger}:${actie}`, aantal_kandidaten: rijen.length,
-    aantal_geblokkeerd: sam.geblokkeerd.aantal, aantal_aangemaakt: aangemaakt, bedrag: sam.klaar.bedrag, status: fouten.length ? "fout" : "ok", detail: { fouten, ...runDetail } });
+  const { data: rest, error: restErr } = await admin.rpc("facturatie_kandidaten", { _van: van, _tot: tot });
+  const resterend = (rest ?? []).filter((r: any) => !r.blokkade && r.periode_start <= vandaag).length;
+  runDetail.resterend = restErr ? null : resterend;
+  runDetail.kandidaten = sam.klaar.aantal;
+  const creditsRest = liveCredits ? await admin.from("factuur_credit_planning").select("id", { count: "exact", head: true }).eq("status", "te_maken").eq("is_test", false).gt("bedrag", 0) : { count: 0 };
+  await voortgang(fouten.length ? "fout" : resterend ? "gedeeltelijk" : "ok");
+  const mail = await verstuurInterneMelding(admin, req, "factuur-planner:dagstand", { leadType: "factuur-planner-run", soort: "exact_boeking",
+    subject: `Factuurplanner: ${aangemaakt} aangemaakt, ${resterend} resterend`,
+    html: `<p>Deze run: ${sam.klaar.aantal} beschikbare kandidaten, ${aangemaakt} concepten aangemaakt, ${uitgesteld} tijdelijk uitgesteld, ${fouten.length} fouten en ${resterend} resterende kandidaten.</p><p>${resterend ? "De planner vervolgt de resterende regels vandaag automatisch." : "Er zijn geen beschikbare factuurkandidaten meer."}</p><p>Controleer en verwerk de aangemaakte concepten in Exact via Verkoop &gt; Facturen &gt; Verwerken.</p>`,
+    metadata: { run_id: runId, aangemaakt, tijdelijk: uitgesteld, fouten, resterend } });
+  runDetail.mail = mail;
+  await voortgang(fouten.length ? "fout" : resterend ? "gedeeltelijk" : "ok");
+  await admin.rpc("factuur_planner_vervolg", { _actief: !!restErr || resterend > 0 || Number(creditsRest.count ?? 0) > 0 });
   if (fouten.length) await sendExactAlarm(admin, ALARM, "factuur-planner", null);
-  return json({ modus: "live", aangemaakt, fouten, ...runDetail, creditnotas: creditOverzicht });
-}, { verzamel: true })));
+  return json({ modus: "live", run_id: runId, aangemaakt, tijdelijk: uitgesteld, fouten, ...runDetail, creditnotas: creditOverzicht });
+}, { verzamel: true, wachtOpMail: true })));

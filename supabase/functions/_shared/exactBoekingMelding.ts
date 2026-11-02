@@ -240,7 +240,7 @@ async function verstuur(ctx: Ctx) {
 }
 
 /** Omhult een Deno.serve-handler: alle Exact-schrijfacties in deze aanroep krijgen een interne melding. */
-export function metExactMelding(bron: string, handler: (req: Request) => Response | Promise<Response>, opties: { verzamel?: boolean } = {}) {
+export function metExactMelding(bron: string, handler: (req: Request) => Response | Promise<Response>, opties: { verzamel?: boolean; wachtOpMail?: boolean } = {}) {
   installeer();
   return async (req: Request): Promise<Response> => {
     if (req.method === "OPTIONS") return handler(req);
@@ -248,7 +248,7 @@ export function metExactMelding(bron: string, handler: (req: Request) => Respons
     const klaar = () => {
       const p = verstuur(ctx).catch((e) => console.error(`exact-boeking-melding ${bron}:`, String((e as Error)?.message ?? e)));
       const rt = (globalThis as any).EdgeRuntime;
-      if (rt?.waitUntil) rt.waitUntil(p); else return p;
+      if (rt?.waitUntil && !opties.wachtOpMail) rt.waitUntil(p); else return p;
     };
     try {
       const res = await opslag.run(ctx, () => handler(req));
