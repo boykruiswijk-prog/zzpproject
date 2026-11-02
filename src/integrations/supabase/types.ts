@@ -7517,6 +7517,16 @@ export type Database = {
       }
       herbeoordeel_opzeg_credits: { Args: never; Returns: number }
       iban_inzien: { Args: { _bron: string; _id: string }; Returns: Json }
+      iban_maskers: {
+        Args: { _bron: string; _ids: string[] }
+        Returns: {
+          geldig: boolean
+          iban: string
+          id: string
+        }[]
+      }
+      iban_mod97_geldig: { Args: { _t: string }; Returns: boolean }
+      iban_skelet: { Args: { _t: string }; Returns: string }
       importeer_afas_20261001: { Args: never; Returns: Json }
       importeer_certificaten_20261001: { Args: never; Returns: Json }
       incasso_betaald: { Args: { _datum?: string; _id: string }; Returns: Json }
@@ -7526,6 +7536,19 @@ export type Database = {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_supervisor_or_admin: { Args: { _user_id: string }; Returns: boolean }
       is_team_member: { Args: { _user_id: string }; Returns: boolean }
+      klant_mandaat_overzicht: {
+        Args: { _codes?: string[] }
+        Returns: {
+          bron: string
+          iban: string
+          in_exact: boolean
+          kenmerk: string
+          ondertekend_op: string
+          relatiecode: string
+          status: string
+          vervaldatum: string
+        }[]
+      }
       klantmail_tekst_opslaan: {
         Args: { _onderwerp: string; _sleutel: string; _tekst: string }
         Returns: boolean
