@@ -16,7 +16,8 @@ const esc = (s: string) =>
 
 export function reviewOnderwerp(soort: ReviewSoort, voornaam?: string | null): string {
   const naam = (voornaam ?? "").trim();
-  return soort === "review_verzoek" || soort === "review_verzoek_bestaand"
+  if (soort === "review_verzoek_bestaand") return "Zou ik je om een kleine gunst mogen vragen?";
+  return soort === "review_verzoek"
     ? (naam ? `${naam}, mag ik je iets vragen?` : "Mag ik je iets vragen?")
     : "Nog één keer, daarna laat ik je met rust";
 }
@@ -25,8 +26,8 @@ export function reviewHtml(p: { soort: ReviewSoort; voornaam?: string | null; kl
   const naam = (p.voornaam ?? "").trim();
   const aanhef = naam ? `Hoi ${esc(naam)},` : "Hoi,";
   const alinea = p.soort === "review_verzoek_bestaand"
-    ? `Ik ben Ellen van ZP Zaken. Je hebt dit jaar je BAV en AVB bij ons geregeld, fijn dat je voor ons gekozen hebt.</p>
-<p style="margin:0 0 24px">Mag ik je om een kleine gunst vragen? Een korte review op Google helpt andere zzp'ers die op zoek zijn naar een goede BAV. Twee zinnen is genoeg, het kost je een minuut.`
+    ? `Je hebt dit jaar je BAV en AVB bij ZP Zaken geregeld. Fijn dat je voor ons gekozen hebt.</p>
+<p style="margin:0 0 24px">Reviews zijn voor ons enorm belangrijk. Ze zijn ons uithangbord naar andere zzp'ers die op zoek zijn naar een goede BAV, en jouw ervaring helpt hen bij hun keuze. Wil je een korte review op Google achterlaten? Twee zinnen is genoeg, het kost je een minuut.`
     : p.soort === "review_verzoek"
     ? `Ik ben Ellen. Ik heb jouw aanvraag beoordeeld en je BAV en AVB geregeld. Je certificaat heb je inmiddels binnen.</p>
 <p style="margin:0 0 24px">Mag ik je om een kleine gunst vragen? Een korte review op Google helpt andere zzp'ers die net als jij snel een BAV nodig hebben. Twee zinnen is genoeg, het kost je een minuut.`

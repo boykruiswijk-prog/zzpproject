@@ -7,15 +7,20 @@ const html = (soort: any, voornaam: string | null = "Anna") => reviewHtml({ soor
 
 describe("reviewverzoek bestaande klanten: tekst", () => {
   it("onderwerp met en zonder voornaam", () => {
-    expect(reviewOnderwerp("review_verzoek_bestaand", "Anna")).toBe("Anna, mag ik je iets vragen?");
-    expect(reviewOnderwerp("review_verzoek_bestaand", null)).toBe("Mag ik je iets vragen?");
+    expect(reviewOnderwerp("review_verzoek_bestaand", "Anna")).toBe("Zou ik je om een kleine gunst mogen vragen?");
+    expect(reviewOnderwerp("review_verzoek_bestaand", null)).toBe("Zou ik je om een kleine gunst mogen vragen?");
+  });
+  it("zonder voornaam 'Hoi,' en zin 'Ik ben Ellen' vervalt", () => {
+    const h = html("review_verzoek_bestaand", null);
+    expect(h).toContain(">Hoi,</p>");
+    expect(h).not.toContain("Ik ben Ellen");
   });
   it("body exact zoals goedgekeurd", () => {
     const h = html("review_verzoek_bestaand");
     for (const t of [
       "Hoi Anna,",
-      "Ik ben Ellen van ZP Zaken. Je hebt dit jaar je BAV en AVB bij ons geregeld, fijn dat je voor ons gekozen hebt.",
-      "Mag ik je om een kleine gunst vragen? Een korte review op Google helpt andere zzp'ers die op zoek zijn naar een goede BAV. Twee zinnen is genoeg, het kost je een minuut.",
+      "Je hebt dit jaar je BAV en AVB bij ZP Zaken geregeld. Fijn dat je voor ons gekozen hebt.",
+      "Reviews zijn voor ons enorm belangrijk. Ze zijn ons uithangbord naar andere zzp'ers die op zoek zijn naar een goede BAV, en jouw ervaring helpt hen bij hun keuze. Wil je een korte review op Google achterlaten? Twee zinnen is genoeg, het kost je een minuut.",
       ">Schrijf je review op Google</a>",
       "Kan er iets beter? Antwoord dan op deze mail, dan pak ik het persoonlijk op.",
       "Groet,<br>Ellen Baars<br>ZP Zaken | 020 457 3077",
