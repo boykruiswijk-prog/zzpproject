@@ -3,6 +3,7 @@ import { CyberPolis } from "@/components/portal/CyberPolis";
 import { CyberToevoegen } from "@/components/portal/CyberToevoegen";
 import { formatDateNL } from "@/lib/dateFormat";
 import { usePortalPolicies, useMijnKlantContracten } from "@/hooks/usePortalData";
+import { SITE_CONFIG } from "@/config/site";
 import { contractLabel, contractRegel } from "@/lib/klantContractPortaal";
 import { PolicyLifecycleActions } from "@/components/portal/PolicyLifecycleActions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,7 +41,7 @@ export default function PortalPolicy() {
               <CardHeader><CardTitle>{contractLabel(c.product)}</CardTitle></CardHeader>
               <CardContent className="text-sm text-muted-foreground">
                 <p>{contractRegel(c)}{c.onderneming_naam ? ` · ${c.onderneming_naam}` : ""}</p>
-                <p className="mt-2">Je verzekering loopt. Heb je je certificaat nodig of wil je iets wijzigen? Mail naar info@zpzaken.nl, dan regelen we het voor je.</p>
+                <p className="mt-2">Je verzekering loopt. Heb je je certificaat nodig of wil je iets wijzigen? Mail naar {SITE_CONFIG.email}, dan regelen we het voor je.</p>
               </CardContent>
             </Card>
           ))}
