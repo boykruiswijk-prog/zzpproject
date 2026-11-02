@@ -9,7 +9,7 @@ import { guardPublicSubmission } from "../_shared/antiSpam.ts";
 import { normaliseerAdres } from "../_shared/adresNormalisatie.ts";
 import { samenvattingVoorTeam } from "../_shared/zeker.ts";
 import { saneerFormulier, saneerPagina } from "../_shared/leadVelden.ts";
-import { resolveEnvironment } from "../_shared/environment.ts";
+import { isTestInzending, appEnvNietProductie } from "../_shared/testMarkering.ts";
 import { saneerAttributie } from "../_shared/attributie.ts";
 import { isNlTelefoon, normaliseerNlTelefoon } from "../_shared/telefoon.ts";
 import { gewoneTekst, objectInvoer, valideerPubliekeRij, saneerVrijeTekst, leesBegrensdeBody } from "../_shared/publiekeInvoer.ts";
@@ -98,7 +98,7 @@ async function bewaarConcept(req: Request, body: any, json: (b: unknown, s?: num
     }
   } else {
     payload.attributie = saneerAttributie(body?.attributie);
-    payload.is_test = !resolveEnvironment(req).isProduction || isInternTestEmail(email);
+    payload.is_test = isTestInzending(email);
   }
   const { error } = await supabase.from("aanvraag_concepten").upsert(payload, { onConflict: "id" });
   if (error) {
@@ -115,7 +115,7 @@ async function logValidatie(req: Request, body: any, json: (b: unknown, s?: numb
   const velden = schoneVeldnamen(body?.row?.velden);
   if (!(stap >= 1 && stap <= 5) || !velden.length) return json({ success: false, error: "Ongeldig." }, 400);
   const supabase = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
-  const is_test = !resolveEnvironment(req).isProduction;
+  const is_test = appEnvNietProductie();
   const { error } = await supabase.from("aanvraag_validatiefouten").insert(velden.map((veld) => ({ formulier: "bav", stap, veld, is_test })));
   if (error) console.error("submit-public-form: validatielog mislukt:", error.message);
   return json({ success: !error });
@@ -245,7 +245,7 @@ Deno.serve(async (req) => {
       if (attributie) extraUit.attributie = attributie;
       payload.extra_data = extraUit;
       // Inzendingen vanuit preview/testomgeving zijn altijd testrecords (zelfde regel als chat Zeker).
-      payload.is_test = !resolveEnvironment(req).isProduction || isInternTestEmail(email);
+      payload.is_test = isTestInzending(email);
       if (typeof extraUit.adres_postcode === "string") extraUit.adres_postcode = n.postcode || normaliseerAdres({ postcode: extraUit.adres_postcode, land }).postcode;
     }
 

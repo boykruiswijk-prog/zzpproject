@@ -1,3 +1,4 @@
+import { isTestInzending } from "../_shared/testMarkering.ts";
 import { saneerInterneBron } from "../_shared/interneBron.ts";
 import { werkzaamhedenFout } from "../_shared/werkzaamheden.ts";
 import { bavInvoer, objectInvoer, saneerBavTekst, leesBegrensdeBody } from "../_shared/publiekeInvoer.ts";
@@ -276,7 +277,7 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
     // ── 0. BEWIJSRECORD SEPA-MACHTIGING (eerst; faalt dit, dan faalt de aanvraag) ──
     const leadId = submission.lead_id as string;
     // Preview/testomgeving: altijd testrecord, geen klantbevestiging.
-    isTestLead = !resolveEnvironment(req).isProduction;
+    isTestLead = isTestInzending(submission.email as string);
     const machtiging = bouwMachtigingData({
       type: "doorlopend",
       bronId: leadId,
