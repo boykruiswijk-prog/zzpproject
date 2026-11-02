@@ -55,7 +55,7 @@ Deno.serve(async (req) => {
     if (!aanvraagId && body?.modus === "versturen" && email) {
       // Openstaande portaltoegang-aanvraag van dit adres bij deze klant wordt meteen mee afgehandeld.
       const { data: open } = await admin.from("klant_service_aanvragen").select("id")
-        .eq("type", "portaltoegang").eq("onderneming_id", ondId).ilike("email", email).neq("status", "afgerond")
+        .eq("type", "portaltoegang").eq("onderneming_id", ondId).ilike("email", email).eq("status", "nieuw")
         .order("created_at", { ascending: false }).limit(1).maybeSingle();
       if (open?.id) aanvraagId = open.id;
     }
