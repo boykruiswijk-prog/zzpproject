@@ -107,7 +107,14 @@ export function UniverseleZoekbalk() {
                     <li key={`${r.bron ?? g.key}:${r.bron_id ?? r.id}`}>
                       <Link to={r.link} className="block rounded-md p-2 hover:bg-muted">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-medium">{r.titel || "Onbekend"}</span>
+                          {g.key === "klanten" ? (
+                            <>
+                              <span className="font-semibold">{r.titel || "Onbekend"}</span>
+                              {r.subtitel && <span className="font-normal">{r.subtitel}</span>}
+                            </>
+                          ) : (
+                            <span className="font-medium">{r.titel || "Onbekend"}</span>
+                          )}
                           <Badge variant="outline" className="tabular-nums">{r.score}</Badge>
                           {r.is_test && <Badge variant="secondary">test</Badge>}
                           {!r.onderneming_id && g.key !== "klanten" && <span className="text-xs text-muted-foreground">nog niet gekoppeld aan een klant</span>}
