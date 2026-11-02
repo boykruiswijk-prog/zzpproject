@@ -17,7 +17,7 @@ function nep(ondernemingen: any[]) {
       limit: () => ({ ...api, then: (res: any) => res({ data: rows() }) }),
       maybeSingle: async () => ({ data: rows()[0] ?? null }),
       update: (u: any) => { const a: any = { eq: (k: string, v: unknown) => { f.push([k, v]); return a; }, is: (k: string, v: unknown) => { f.push([k, v]); rows().forEach((r) => Object.assign(r, u)); return Promise.resolve({ error: null }); } }; return a; },
-      insert: (row: any) => { const r = { id: "nieuw", ...row }; ondernemingen.push(r); return { select: () => ({ single: async () => ({ data: r, error: null }) }) }; },
+      insert: (row: any) => { const r = { id: "nieuw", samengevoegd_naar: null, ...row }; ondernemingen.push(r); return { select: () => ({ single: async () => ({ data: r, error: null }) }) }; },
       upsert: async (row: any) => { contracten.push(row); return { error: null }; },
     };
     return api;
