@@ -1541,6 +1541,13 @@
       "when": 1793611307035,
       "tag": "0219_afhaak_herinnering_beveiliging",
       "breakpoints": true
+    },
+    {
+      "idx": 220,
+      "version": "7",
+      "when": 1793627322181,
+      "tag": "0220_dubbele_klanten_samenvoegen",
+      "breakpoints": true
     }
   ]
 }
