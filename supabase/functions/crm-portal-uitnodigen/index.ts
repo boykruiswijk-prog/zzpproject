@@ -5,6 +5,7 @@ import { requireMfa } from "../_shared/teamAuth.ts";
 // notitie in de tijdlijn. Ontvanger moet de persoon-e-mail of factuur-e-mail van deze onderneming zijn.
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import { safeAppOrigin } from "../_shared/company.ts";
+import { echteNaam, portalMailLog } from "../_shared/portalMailLog.ts";
 import { buildInviteHtml, ensurePortalUser, generateMagicLink, sendPortalMail } from "../_shared/portalAccess.ts";
 
 const cors = {
@@ -37,13 +38,27 @@ Deno.serve(async (req) => {
     const { data: po } = await admin.from("persoon_onderneming").select("personen(id,voornaam,email_weergave)").eq("onderneming_id", ondId);
     const personen = ((po ?? []) as any[]).map((x) => x.personen).filter(Boolean);
     const opties = [
-      ...personen.filter((p) => p.email_weergave).map((p) => ({ email: String(p.email_weergave).toLowerCase(), soort: "persoon", voornaam: p.voornaam, persoon_id: p.id })),
+      ...personen.filter((p) => p.email_weergave).map((p) => ({ email: String(p.email_weergave).toLowerCase(), soort: "persoon", voornaam: echteNaam(p.voornaam), persoon_id: p.id })),
       ...(o.factuur_email ? [{ email: String(o.factuur_email).toLowerCase(), soort: "factuur", voornaam: null, persoon_id: null }] : []),
     ];
     if (body?.modus === "opties") return json({ ok: true, opties });
 
+    if (body?.modus === "log") {
+      // Laatste portaalmails (uitnodiging/inloglink) naar de adressen van deze klant, met actuele afleverstatus.
+      const adressen = [...new Set(opties.map((x) => x.email))];
+      const rijen = await portalMailLog(admin, adressen);
+      return json({ ok: true, log: rijen });
+    }
+
     // Vanuit een portaltoegang-aanvraag: adres = aanvrager, aanvraag moet aan deze klant gekoppeld zijn.
-    const aanvraagId = body?.aanvraag_id ? String(body.aanvraag_id) : null;
+    let aanvraagId = body?.aanvraag_id ? String(body.aanvraag_id) : null;
+    if (!aanvraagId && body?.modus === "versturen" && email) {
+      // Openstaande portaltoegang-aanvraag van dit adres bij deze klant wordt meteen mee afgehandeld.
+      const { data: open } = await admin.from("klant_service_aanvragen").select("id")
+        .eq("type", "portaltoegang").eq("onderneming_id", ondId).ilike("email", email).neq("status", "afgerond")
+        .order("created_at", { ascending: false }).limit(1).maybeSingle();
+      if (open?.id) aanvraagId = open.id;
+    }
     let aanvraag: any = null;
     if (aanvraagId) {
       if (!UUID.test(aanvraagId)) return json({ error: "aanvraag_id ongeldig" }, 400);
@@ -87,7 +102,7 @@ Deno.serve(async (req) => {
         tekst: `Uitgenodigd voor Mijn ZP op ${email} (${keuze.soort === "factuur" ? "factuur-e-mail" : "persoon-e-mail"}) door ${naam}.${created ? " Account aangemaakt." : ""}`,
         aangemaakt_door: uid, aangemaakt_door_naam: naam, details: { soort: "portal_uitnodiging", email, user_created: created } });
     }
-    return res.sent ? json({ ok: true, aan: res.recipient, user_created: created, ...(vastgelegd ?? {}) })
+    return res.sent ? json({ ok: true, aan: res.recipient, message_id: res.messageId ?? null, user_created: created, ...(vastgelegd ?? {}) })
       : json({ error: res.error ?? "verzenden mislukt", toegang_vastgelegd: !!vastgelegd }, 502);
   } catch (e: any) {
     console.error("crm-portal-uitnodigen", e?.message);
