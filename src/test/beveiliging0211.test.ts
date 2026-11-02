@@ -80,7 +80,7 @@ describe("IBAN: geen leesrecht voor teamrollen", () => {
     const loop = (d: string) => { for (const f of readdirSync(d)) { const p = join(d, f); if (statSync(p).isDirectory()) { if (!["test", "integrations"].includes(f)) loop(p); } else if (/\.tsx?$/.test(f)) bestanden.push(p); } };
     loop("src");
     const fout: string[] = [];
-    const re = /from\("(leads|ondernemingen|screening_aanvragen|bav_aanmeldingen|sepa_machtiging_bewijs|klant_mandaten|exact_mandaat_import|klant_mandaat_v)"\)[\s\S]{0,400}?\.select\((\)|"\*"|"[^"]*\biban\b)/g;
+    const re = /from\("(leads|ondernemingen|screening_aanvragen|bav_aanmeldingen|sepa_machtiging_bewijs|klant_mandaten|exact_mandaat_import|klant_mandaat_v)"\)[^;]{0,400}?\.select\((\)|"\*"|"[^"]*\biban\b)/g;
     for (const p of bestanden) {
       const s = readFileSync(p, "utf8");
       for (const m of s.matchAll(re)) fout.push(`${p}: ${m[0].slice(0, 80)}`);
