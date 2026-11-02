@@ -21,6 +21,10 @@ export const legacyRedirects: LegacyRedirect[] = [
   { from: "en/mijn-zp/*", to: "/mijn-zp/:splat" },
   { from: "de/mijn-zp/*", to: "/mijn-zp/:splat" },
   { from: "fr/mijn-zp/*", to: "/mijn-zp/:splat" },
+  ...["en", "de", "fr"].flatMap(taal =>
+    ["polis", "certificaat", "pauzeren", "documenten", "opzeggen"].map(pad => ({
+      from: `${taal}/mijn-zp/${pad}`, to: `/mijn-zp/${pad}`,
+    }))),
   // Kwaliteitscontrole 31-10-2026; bestaande routes en /tv gaan voor.
   { from: "post/cookie-instellingen-1", to: "/cookies" },
   { from: "sitemap.aspx", to: "/sitemap.xml" },
