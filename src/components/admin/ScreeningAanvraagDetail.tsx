@@ -1,3 +1,4 @@
+import { IbanInzien } from "@/components/admin/IbanInzien";
 import { Badge } from "@/components/ui/badge";
 import { SepaMachtigingBewijsBlok } from "@/components/admin/SepaMachtigingBewijsBlok";
 import { formatDateNL } from "@/lib/dateFormat";
