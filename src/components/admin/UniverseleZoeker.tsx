@@ -10,6 +10,8 @@ import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 export type ZoekResultaat = {
   id: string; titel: string | null; score: number; redenen: string[]; link: string; onderneming_id?: string | null;
   contactpersoon?: string | null; email?: string | null; exact_relatie_code?: string | null; bav_nummer?: string | null;
+  /** Alleen voor klanten: naam van de contactpersoon, los van de ondernemingsnaam. */
+  subtitel?: string | null;
   kvk?: string | null; plaats?: string | null; iban?: string | null; status?: string | null; type?: string | null;
   lead_link?: string; aanvraag_link?: string; polisnummer?: string | null; is_test?: boolean; telefoon?: string | null; bron?: string; bron_id?: string;
 };
