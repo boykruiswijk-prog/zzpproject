@@ -7988,6 +7988,14 @@ export type Database = {
           read_ct: number
         }[]
       }
+      review_crm_notitie: {
+        Args: {
+          p_mail: string
+          p_message_id: string
+          p_review_verzoek_id: string
+        }
+        Returns: boolean
+      }
       review_herinnering_kandidaten: {
         Args: { _limit?: number }
         Returns: {
