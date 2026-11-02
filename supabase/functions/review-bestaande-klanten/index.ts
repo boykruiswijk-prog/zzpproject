@@ -60,13 +60,13 @@ Deno.serve(async (req) => {
       template_name: SOORT, recipient_email: to, status, message_id: messageId, error_message: err,
       metadata: { ...meta, redirected: plan.redirected, preview: !gate.isProduction },
     });
-    return status === "sent";
+    return status === "sent" ? (messageId ?? "") : null;
   }
 
   if (testNaar) {
     if (!testNaarToegestaan(testNaar)) return json({ error: "test_naar alleen voor @zpzaken.nl" }, 400);
     // Niet-werkend testtoken (bestaat niet in review_verzoeken): klik stuurt alleen door naar Google.
-    const sent = await verstuur(testNaar, "Boy", "0".repeat(48), "https://zpzaken.nl/afmelden?token=voorbeeld", { test: true, ronde });
+    const sent = null !== await verstuur(testNaar, "Boy", "0".repeat(48), "https://zpzaken.nl/afmelden?token=voorbeeld", { test: true, ronde });
     return json({ ok: sent, test_naar: testNaar });
   }
 
@@ -110,7 +110,10 @@ Deno.serve(async (req) => {
     if (error || !rij) { res.overgeslagen++; continue; }
     const afmeldUrl = `https://zpzaken.nl/afmelden?token=${await afmeldToken(r.email)}`;
     const okSend = await verstuur(r.email, r.voornaam, rij.token, afmeldUrl, { doelgroep_id: r.id, ronde, onderneming_id: r.onderneming_id });
-    if (okSend) { await admin.from("review_verzoeken").update({ verstuurd_op: new Date().toISOString() }).eq("id", rij.id); res.verstuurd++; }
+    if (okSend !== null) {
+      await admin.from("review_verzoeken").update({ verstuurd_op: new Date().toISOString() }).eq("id", rij.id); res.verstuurd++;
+      await admin.rpc("review_crm_notitie", { p_review_verzoek_id: rij.id, p_mail: "verzoek", p_message_id: okSend || null });
+    }
     else { await admin.from("review_verzoeken").update({ status: "overgeslagen" }).eq("id", rij.id); res.mislukt++; }
   }
   return json({ ok: true, ronde, ...res });

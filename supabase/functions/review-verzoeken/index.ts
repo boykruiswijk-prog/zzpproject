@@ -85,7 +85,7 @@ Deno.serve(async (req) => {
       template_name: soort, recipient_email: email, status, message_id: messageId, error_message: err,
       metadata: { lead_id: leadId, redirected: plan.redirected, preview: !gate.isProduction },
     });
-    return status === "sent";
+    return status === "sent" ? (messageId ?? "") : null;
   }
 
   const res = { verzoek: 0, herinnering: 0, mislukt: 0, preview: !gate.isProduction };
@@ -95,13 +95,16 @@ Deno.serve(async (req) => {
     const { data: rij, error } = await admin.from("review_verzoeken")
       .insert({ lead_id: r.lead_id, email: r.email.trim(), status: "verstuurd" }).select("id, token").single();
     if (error || !rij) { res.mislukt++; continue; }
-    const okSend = await verstuur("review_verzoek", r.lead_id, r.email.trim(), r.voornaam, rij.token);
+    const okSend = null !== await verstuur("review_verzoek", r.lead_id, r.email.trim(), r.voornaam, rij.token);
     if (okSend) { await admin.from("review_verzoeken").update({ verstuurd_op: new Date().toISOString() }).eq("id", rij.id); res.verzoek++; }
     else { await admin.from("review_verzoeken").update({ status: "overgeslagen" }).eq("id", rij.id); res.mislukt++; }
   }
 
   for (const r of (herinner ?? []) as any[]) {
-    const okSend = await verstuur("review_herinnering", r.lead_id, r.email, r.voornaam, r.token);
+    const mid = await verstuur("review_herinnering", r.lead_id, r.email, r.voornaam, r.token);
+    const okSend = mid !== null;
+    // CRM-notitie alleen voor bestaande klanten (doelgroep); uniek per verzoek en mailsoort.
+    if (okSend) await admin.rpc("review_crm_notitie", { p_review_verzoek_id: r.id, p_mail: "herinnering", p_message_id: mid || null });
     // Herinnering is eenmalig: ook bij mislukken niet opnieuw proberen.
     await admin.from("review_verzoeken").update({
       herinnering_op: new Date().toISOString(), ...(okSend ? { status: "herinnerd" } : {}),

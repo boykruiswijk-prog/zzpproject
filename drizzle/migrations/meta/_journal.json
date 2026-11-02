@@ -1590,6 +1590,13 @@
       "when": 1793643823458,
       "tag": "0226_review_bestaande_klanten",
       "breakpoints": true
+    },
+    {
+      "idx": 227,
+      "version": "7",
+      "when": 1793645453312,
+      "tag": "0227_review_crm_notitie",
+      "breakpoints": true
     }
   ]
 }
