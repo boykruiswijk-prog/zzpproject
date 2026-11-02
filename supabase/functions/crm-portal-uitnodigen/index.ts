@@ -83,6 +83,9 @@ Deno.serve(async (req) => {
       return json({ ok: true, voorbeeld: true, aan: email, bekend_bij_klant: !handmatig, klantnaam: o.naam, onderwerp: "Welkom bij Mijn ZP", html: buildInviteHtml("#voorbeeld", keuze.voornaam, origin) });
     }
     const { userId, created } = await ensurePortalUser(admin, email, keuze.voornaam);
+    // Polissen van deze klant zonder online aanvraag (certificaat op de klantkaart) horen bij dit account.
+    const { data: gekoppeld } = await admin.from("policies").update({ user_id: userId })
+      .eq("onderneming_id", ondId).is("lead_id", null).is("user_id", null).select("id");
     let vastgelegd: any = null;
     if (aanvraag) {
       // Contactpersoon, polissen, aanvraagstatus en log in één transactie, uitgevoerd als het teamlid.
@@ -102,7 +105,7 @@ Deno.serve(async (req) => {
         tekst: `Uitgenodigd voor Mijn ZP op ${email} (${keuze.soort === "factuur" ? "factuur-e-mail" : "persoon-e-mail"}) door ${naam}.${created ? " Account aangemaakt." : ""}`,
         aangemaakt_door: uid, aangemaakt_door_naam: naam, details: { soort: "portal_uitnodiging", email, user_created: created } });
     }
-    return res.sent ? json({ ok: true, aan: res.recipient, message_id: res.messageId ?? null, user_created: created, ...(vastgelegd ?? {}) })
+    return res.sent ? json({ ok: true, aan: res.recipient, message_id: res.messageId ?? null, klantpolissen_gekoppeld: gekoppeld?.length ?? 0, user_created: created, ...(vastgelegd ?? {}) })
       : json({ error: res.error ?? "verzenden mislukt", toegang_vastgelegd: !!vastgelegd }, 502);
   } catch (e: any) {
     console.error("crm-portal-uitnodigen", e?.message);

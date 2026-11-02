@@ -48,3 +48,16 @@ describe("afleverstatus portaalmails", () => {
     expect(src).toMatch(/voornaam: echteNaam\(p\.voornaam\)/);
   });
 });
+
+describe("klantpolissen zonder aanvraag horen bij het Mijn ZP-account", () => {
+  it("nieuwe klantpolis krijgt het enige bevestigde account van de onderneming", () => {
+    const sql = readFileSync("drizzle/migrations/0225_polis_onderneming_portal_koppeling.sql", "utf8");
+    expect(sql).toMatch(/count\(DISTINCT u\.id\) = 1/);
+    expect(sql).toMatch(/NEW\.user_id IS NULL AND NEW\.lead_id IS NULL AND NEW\.onderneming_id IS NOT NULL/);
+    expect(sql).toMatch(/email_confirmed_at IS NOT NULL/);
+  });
+  it("uitnodigen koppelt ongekoppelde klantpolissen van die onderneming", () => {
+    const src = readFileSync("supabase/functions/crm-portal-uitnodigen/index.ts", "utf8");
+    expect(src).toMatch(/\.eq\("onderneming_id", ondId\)\.is\("lead_id", null\)\.is\("user_id", null\)/);
+  });
+});
