@@ -27,7 +27,7 @@ export async function resendStatus(id: string, key: string, f: typeof fetch = fe
 
 export async function portalMailLog(admin: any, adressen: string[], f: typeof fetch = fetch) {
   if (!adressen.length) return [];
-  const key = Deno.env.get("RESEND_API_KEY") ?? "";
+  const key = (globalThis as any).Deno?.env?.get("RESEND_API_KEY") ?? "";
   const { data } = await admin.from("lead_notification_log")
     .select("created_at, lead_type, recipient, subject, status, error_message, resend_message_id")
     .in("lead_type", PORTAL_MAIL_TYPES as unknown as string[])
