@@ -1555,6 +1555,13 @@
       "when": 1793627376692,
       "tag": "0221_dubbele_klanten_samenvoegen_functies",
       "breakpoints": true
+    },
+    {
+      "idx": 222,
+      "version": "7",
+      "when": 1793628013772,
+      "tag": "0222_admin_zoek_klant_titel",
+      "breakpoints": true
     }
   ]
 }
