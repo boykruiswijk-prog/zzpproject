@@ -78,7 +78,7 @@ export function LeadActivationPanel({ lead, magActiveren, fase }: Props) {
     { label: "Postcode + plaats", ok: !!(lead.adres_postcode && lead.adres_plaats) },
     { label: "Branche", ok: !!lead.branche },
     { label: "Gekozen pakket", ok: !!lead.gekozen_pakket },
-    { label: "IBAN (geldig)", ok: beoordelingKeuze(lead.extra_data).geenSepa || isValidIban(lead.iban) },
+    { label: "IBAN (geldig)", ok: beoordelingKeuze(lead.extra_data).geenSepa || ((lead as any).iban_geldig ?? isValidIban(lead.iban)) },
     { label: "SEPA-akkoord", ok: beoordelingKeuze(lead.extra_data).geenSepa || lead.sepa_akkoord === true },
     { label: ingangTeVroeg ? `Ingangsdatum: ${MELDING_INGANG_KLANT_TE_VROEG}` : "Ingangsdatum", ok: !!lead.ingangsdatum && !ingangTeVroeg },
   ], [lead, ingangTeVroeg]);

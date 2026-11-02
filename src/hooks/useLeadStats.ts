@@ -17,27 +17,27 @@ export function useLeadStats() {
       // Total leads
       const { count: totalLeads } = await supabase
         .from("leads")
-        .select("*", { count: "exact", head: true })
+        .select("id", { count: "exact", head: true })
         .in("is_test", toonTest ? [true, false] : [false]);
 
       // New leads this week
       const { count: newLeadsWeek } = await supabase
         .from("leads")
-        .select("*", { count: "exact", head: true })
+        .select("id", { count: "exact", head: true })
         .in("is_test", toonTest ? [true, false] : [false])
         .gte("created_at", startOfWeek.toISOString());
 
       // New leads this month
       const { count: newLeadsMonth } = await supabase
         .from("leads")
-        .select("*", { count: "exact", head: true })
+        .select("id", { count: "exact", head: true })
         .in("is_test", toonTest ? [true, false] : [false])
         .gte("created_at", startOfMonth.toISOString());
 
       // Converted leads (status = 'actief' or 'klant')
       const { count: convertedLeads } = await supabase
         .from("leads")
-        .select("*", { count: "exact", head: true })
+        .select("id", { count: "exact", head: true })
         .in("is_test", toonTest ? [true, false] : [false])
         .in("status", ["actief", "klant"]);
 

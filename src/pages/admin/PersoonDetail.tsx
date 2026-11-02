@@ -22,7 +22,7 @@ export default function PersoonDetail() {
       setLaden(true);
       const [p, po, kop] = await Promise.all([
         supabase.from("personen").select("*").eq("id", id!).maybeSingle(),
-        supabase.from("persoon_onderneming").select("onderneming_id, ondernemingen(id,naam,rechtsvorm,kvk,iban,exact_relatie_code)").eq("persoon_id", id!),
+        supabase.from("persoon_onderneming").select("onderneming_id, ondernemingen(id,naam,rechtsvorm,kvk,exact_relatie_code)").eq("persoon_id", id!),
         supabase.from("persoon_bron_koppeling").select("bron_id").eq("bron_tabel", "leads").eq("persoon_id", id!),
       ]);
       setPersoon(p.data);

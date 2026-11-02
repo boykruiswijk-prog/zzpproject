@@ -1,3 +1,4 @@
+import { SCREENING_KOLOMMEN, metIbanMasker } from "@/lib/veiligeKolommen";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
@@ -24,13 +25,13 @@ export default function ScreeningAanvraagDetailPage() {
       setLoading(true);
       const { data, error } = await supabase
         .from("screening_aanvragen")
-        .select("*")
+        .select(SCREENING_KOLOMMEN)
         .eq("id", id)
         .maybeSingle();
       if (error) {
         toast({ title: "Fout bij laden", description: error.message, variant: "destructive" });
       } else {
-        setAanvraag((data as ScreeningAanvraagFull) ?? null);
+        setAanvraag(data ? ((await metIbanMasker("screening", [data as any]))[0] as unknown as ScreeningAanvraagFull) : null);
       }
       setLoading(false);
     })();
