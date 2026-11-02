@@ -152,6 +152,7 @@
 - [x] Boy 2-11: Bing Copilot-citaties op tv (tabel, functie, tegel, eerste meting, tests, melding)
 
 ## 2-11 open
+- [ ] VOORRANG Mijn ZP inlog Martijn/Eric: mails onderzoeken, Eric account/persoon, structurele fix + log, test, één melding admin
 - [ ] Reviews 3: eenmalig reviewverzoek 100 bestaande klanten (logo, soort, doelgroep, functie, droge run; niet versturen)
 - [ ] A16 formulier: KvK-veld stap 2, IBAN groeperen/controle stap 4, mobiele volgorde stap 4 + scroll naar fout, Functie-veld nooit blokkerend (5 afkeuringen); tests, één melding 'website'
 - [ ] A16 AI-zichtbaarheid: sameAs/identifier Organization, FAQPage uit zichtbare FAQ, Product/Offer prijzen, Google-reviewaantal/AggregateRating, compliance-zoektermen /waarom-zp-zaken; tests, één melding 'website'
