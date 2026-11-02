@@ -146,3 +146,5 @@
 - [x] Spoed 26-10: PSL people marketing samengevoegd, cyberakkoord wacht op certificaat zonder te falen.
 
 - [x] A23-aanvulling 2: doorklikken op grafiekelementen (dashboard, supervisor, inzicht); niet gepubliceerd
+
+- [x] Beveiliging 2-11: herinnering stap 2+/afmelden/misbruikrem, IBAN-leesrecht, formulieren, create-team-user, eenmalige herinnering (7), Roxy uit wijzigingsmeldingen
