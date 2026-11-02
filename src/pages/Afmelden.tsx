@@ -7,32 +7,43 @@ import { supabase } from "@/integrations/supabase/client";
 
 type Stand = "laden" | "geldig" | "al_afgemeld" | "ongeldig" | "afgemeld" | "fout";
 
-const FN = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/review-afmelden`;
+const FN_BASIS = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/`;
 
 export default function Afmelden() {
   const [params] = useSearchParams();
   const token = params.get("token") ?? "";
+  // ?soort=herinnering: afmelden voor de herinneringsmail over een niet-afgeronde aanvraag (aparte lijst).
+  const herinnering = params.get("soort") === "herinnering";
+  const fnNaam = herinnering ? "herinnering-afmelden" : "review-afmelden";
   const [stand, setStand] = useState<Stand>("laden");
   const [bezig, setBezig] = useState(false);
 
   useEffect(() => {
     if (!token) { setStand("ongeldig"); return; }
-    fetch(`${FN}?token=${encodeURIComponent(token)}`, {
+    fetch(`${FN_BASIS}${fnNaam}?token=${encodeURIComponent(token)}`, {
       headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
     })
       .then((r) => r.json())
       .then((d) => setStand((d?.status as Stand) ?? "fout"))
       .catch(() => setStand("fout"));
-  }, [token]);
+  }, [token, fnNaam]);
 
   const bevestig = async () => {
     setBezig(true);
-    const { data, error } = await supabase.functions.invoke("review-afmelden", { body: { token } });
+    const { data, error } = await supabase.functions.invoke(fnNaam, { body: { token } });
     setBezig(false);
     setStand(error ? "fout" : ((data?.status as Stand) ?? "fout"));
   };
 
-  const teksten: Record<Stand, string> = {
+  const tekstenHerinnering: Record<Stand, string> = {
+    laden: "Even geduld...",
+    geldig: "Wil je geen herinneringen meer ontvangen over een aanvraag die je niet hebt afgerond?",
+    al_afgemeld: "Je bent al afgemeld. Je ontvangt geen herinneringen meer over een niet-afgeronde aanvraag.",
+    afgemeld: "Je bent afgemeld. Je ontvangt geen herinneringen meer over een niet-afgeronde aanvraag.",
+    ongeldig: "Deze afmeldlink is niet geldig. Neem contact met ons op als je je wilt afmelden.",
+    fout: "Er ging iets mis. Probeer het later opnieuw of neem contact met ons op.",
+  };
+  const tekstenReview: Record<Stand, string> = {
     laden: "Even geduld...",
     geldig: "Wil je geen verzoeken meer ontvangen om een review te schrijven? Mails over je verzekering, certificaat en facturen blijven we gewoon sturen.",
     al_afgemeld: "Je bent al afgemeld. Je ontvangt geen verzoeken meer om een review te schrijven. Mails over je verzekering, certificaat en facturen blijven we gewoon sturen.",
@@ -43,10 +54,10 @@ export default function Afmelden() {
 
   return (
     <Layout>
-      <SEOHead title="Afmelden | ZP Zaken" description="Afmelden voor reviewverzoeken van ZP Zaken." noindex />
+      <SEOHead title="Afmelden | ZP Zaken" description={herinnering ? "Afmelden voor herinneringen van ZP Zaken." : "Afmelden voor reviewverzoeken van ZP Zaken."} noindex />
       <section className="container mx-auto px-4 py-20 max-w-xl text-center space-y-6">
         <h1 className="text-3xl font-bold">Afmelden</h1>
-        <p className="text-muted-foreground">{teksten[stand]}</p>
+        <p className="text-muted-foreground">{(herinnering ? tekstenHerinnering : tekstenReview)[stand]}</p>
         {stand === "geldig" && (
           <Button variant="accent" onClick={bevestig} disabled={bezig}>
             {bezig ? "Bezig..." : "Ja, afmelden"}
