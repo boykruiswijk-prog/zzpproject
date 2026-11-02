@@ -13,6 +13,18 @@ export interface LegacyRedirect {
 }
 
 export const legacyRedirects: LegacyRedirect[] = [
+  // Interne paden hebben geen taalvariant; suffix behouden, geen /tv-vangregel.
+  { from: "en/portal/login", to: "/portal/login" },
+  { from: "en/portal/*", to: "/portal/:splat" },
+  { from: "de/portal/*", to: "/portal/:splat" },
+  { from: "fr/portal/*", to: "/portal/:splat" },
+  { from: "en/mijn-zp/*", to: "/mijn-zp/:splat" },
+  { from: "de/mijn-zp/*", to: "/mijn-zp/:splat" },
+  { from: "fr/mijn-zp/*", to: "/mijn-zp/:splat" },
+  ...["en", "de", "fr"].flatMap(taal =>
+    ["polis", "certificaat", "pauzeren", "documenten", "opzeggen"].map(pad => ({
+      from: `${taal}/mijn-zp/${pad}`, to: `/mijn-zp/${pad}`,
+    }))),
   // Kwaliteitscontrole 31-10-2026; bestaande routes en /tv gaan voor.
   { from: "post/cookie-instellingen-1", to: "/cookies" },
   { from: "sitemap.aspx", to: "/sitemap.xml" },
@@ -836,7 +848,7 @@ export function zoekLegacyDoel(pad: string, lijst: LegacyRedirect[] = legacyRedi
   const exact = lijst.find((r) => !isVangregel(r) && r.from.toLowerCase() === p);
   if (exact) return exact.to;
   const vang = lijst.find((r) => isVangregel(r) && p.startsWith(r.from.slice(0, -1).toLowerCase()));
-  if (vang) return vang.to;
+  if (vang) return vang.to.replace(":splat", pad.replace(/^\/+|\/+$/g, "").slice(vang.from.length - 1));
   // Taalprefix: /en, /de of /fr + een Nederlands bronpad krijgt dezelfde bestemming.
   const taal = TAALPREFIXES.find((t) => p.startsWith(`${t}/`));
   if (taal) return zoekLegacyDoel(p.slice(taal.length + 1), lijst);

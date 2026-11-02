@@ -82,7 +82,7 @@ export function cloudflareBulkCsv(redirectLines: string[], host = "zpzaken.nl"):
   };
   // De subpadregel deelt de bron met de exacte slashvariant. Laat die regel
   // voorgaan bij ontdubbelen, anders verdwijnen alle onderliggende nieuwspaden.
-  const nieuwsPattern = /^(?:\/(?:en|de|fr))?\/home\/nieuws\/\*\s/;
+  const nieuwsPattern = /^(?:(?:\/(?:en|de|fr))?\/home\/nieuws|\/(?:en|de|fr)\/(?:portal|mijn-zp))\/\*\s/;
   const orderedLines = [...redirectLines.filter(line => nieuwsPattern.test(line)), ...redirectLines.filter(line => !nieuwsPattern.test(line))];
   for (const raw of orderedLines) {
     const line = raw.replace(/\s+#.*$/, "").trim();
@@ -90,6 +90,11 @@ export function cloudflareBulkCsv(redirectLines: string[], host = "zpzaken.nl"):
     const [from, to, status] = line.split(/\s+/);
     if (!from || !to || !status?.startsWith("301")) continue;
     if (from === "/:path/" || from === "/*") continue;
+    // Interne taalvarianten behouden het volledige suffix, ook nieuwe subpaden.
+    if (/^\/(en|de|fr)\/(portal|mijn-zp)\/\*$/.test(from)) {
+      push(`${host}${from.slice(0, -1)}`, `https://${host}${to.replace(":splat", "")}`, "TRUE,TRUE,TRUE,TRUE");
+      continue;
+    }
     // Deze twee oude namespaces hebben geen huidige routes of exacte prefixregel.
     // Subpadmatching verwijst direct naar het doel, zonder het oude pad mee te nemen.
     if (from === "/profile/*" || from === "/facts/press/*" || /^(?:\/(?:en|de|fr))?\/home\/nieuws\/\*$/.test(from)) {
