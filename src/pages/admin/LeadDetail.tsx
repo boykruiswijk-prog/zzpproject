@@ -15,6 +15,7 @@ import { teamWaarschuwingHandmatig } from "../../../supabase/functions/_shared/s
 import { useState } from "react";
 import { KlantLinkVoorLead } from "@/components/admin/KlantLinkVoorLead";
 import { SepaMachtigingBewijsBlok } from "@/components/admin/SepaMachtigingBewijsBlok";
+import { LeadIbanVeld } from "@/components/admin/LeadIbanVeld";
 import { CertificaatBeheer } from "@/components/admin/CertificaatBeheer";
 import { LeadIngevuldeGegevens } from "@/components/admin/LeadIngevuldeGegevens";
 import { HerkomstKlant } from "@/components/admin/HerkomstKlant";
@@ -342,30 +343,12 @@ export default function AdminLeadDetail() {
                   </div>
 
                   {/* IBAN - always visible, full width, directly under Branche */}
-                  {(() => {
-                    const ibanLocked = !!lead.geactiveerd_op && !isSupervisorOrAdmin;
-                    return (
-                      <div className="mt-4">
-                        <label className="text-muted-foreground text-sm block mb-1">
-                          IBAN {lead.iban ? "" : "(nog niet ingevuld)"}
-                          {ibanLocked && (
-                            <span className="ml-2 text-xs text-amber-600">
-                              (vergrendeld na activatie — supervisor/admin)
-                            </span>
-                          )}
-                        </label>
-                        <Input
-                          className="max-w-xs"
-                          placeholder="NL00BANK0000000000"
-                          value={lead.iban ?? ""}
-                          disabled={ibanLocked}
-                          onChange={(e) =>
-                            updateLead.mutate({ id, updates: { iban: e.target.value } as any })
-                          }
-                        />
-                      </div>
-                    );
-                  })()}
+                  <LeadIbanVeld
+                    leadId={lead.id}
+                    gemaskeerd={lead.iban ?? null}
+                    locked={!!lead.geactiveerd_op && !isSupervisorOrAdmin}
+                    onOpslaan={(v) => updateLead.mutate({ id, updates: { iban: v } as any })}
+                  />
                 </div>
 
                 {lead.type === "offerte-aanvraag" && <OfferteVersturen leadId={lead.id} verstuurdOp={(lead as any).offerte_verstuurd_op} />}

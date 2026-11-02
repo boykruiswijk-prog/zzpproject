@@ -140,7 +140,7 @@ export function ScreeningAanvraagDetail({ aanvraag }: { aanvraag: ScreeningAanvr
             }
           />
           <Field label="Rekeninghouder" value={aanvraag.rekeninghouder} />
-          <Field label="IBAN" value={aanvraag.iban ? <span className="uppercase tracking-wider">{aanvraag.iban}</span> : "—"} />
+          <Field label="IBAN" value={aanvraag.iban ? <IbanInzien bron="screening" id={aanvraag.id} gemaskeerd={aanvraag.iban} /> : "—"} />
           <Field
             label="Incassostatus"
             value={INCASSO_STATUS_LABELS[aanvraag.incasso_status] ?? aanvraag.incasso_status}
