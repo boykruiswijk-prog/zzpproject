@@ -4,6 +4,7 @@ import { PGlite } from "@electric-sql/pglite";
 import { beforeAll, afterAll, beforeEach, it, expect, describe } from "vitest";
 import { readFileSync } from "node:fs";
 import {
+  afhaakAfmeldUrl, AFHAAK_AFMELD_ZIN,
   AFHAAK_ONDERWERP, AFHAAK_REPLY_TO, AFHAAK_URL, afhaakTekst, afhaakHtml, afhaakResendBody, afhaakAfzender,
 } from "../../supabase/functions/_shared/afhaakHerinnering";
 import { bepaalKanaal, attributieRegels } from "../../supabase/functions/_shared/attributie";
@@ -15,7 +16,7 @@ const uur = (h: number) => new Date(Date.parse(NU) - h * 3600_000).toISOString()
 let n = 0;
 async function concept(p: Record<string, unknown> = {}) {
   const id = `00000000-0000-0000-0000-${String(++n).padStart(12, "0")}`;
-  const r = { id, created_at: uur(5), laatst_actief_op: uur(3), email: `klant${n}@voorbeeld.nl`, voornaam: "Sam", status: "open", is_test: false, ...p };
+  const r = { id, created_at: uur(5), laatst_actief_op: uur(3), email: `klant${n}@voorbeeld.nl`, voornaam: "Sam", status: "open", is_test: false, stap: 2, max_stap: 2, ...p };
   const k = Object.keys(r);
   await db.query(`insert into aanvraag_concepten(${k.join(",")}) values(${k.map((_, i) => `$${i + 1}`).join(",")})`, Object.values(r));
   return id;
@@ -27,15 +28,19 @@ beforeAll(async () => {
   CREATE FUNCTION a19_team() RETURNS void LANGUAGE sql AS $$ SELECT $$;
   CREATE TABLE facturatie_config(id int primary key, herinnering_afhaak_vanaf timestamptz);
   CREATE TABLE aanvraag_concepten(id uuid primary key, created_at timestamptz, laatst_actief_op timestamptz, email text, voornaam text, status text, is_test boolean,
-    geanonimiseerd_op timestamptz, lead_id uuid, converted_at timestamptz, herinnering_verstuurd_op timestamptz);
+    geanonimiseerd_op timestamptz, lead_id uuid, converted_at timestamptz, herinnering_verstuurd_op timestamptz, stap smallint default 1, max_stap smallint);
+  CREATE TABLE ondernemingen(id uuid default gen_random_uuid(), factuur_email text);
+  CREATE TABLE personen(id uuid default gen_random_uuid(), genormaliseerd_email text, email_weergave text);
   CREATE TABLE leads(id uuid default gen_random_uuid(), email text, type text, is_test boolean default false, created_at timestamptz);
   CREATE TABLE lead_notification_log(lead_type text, recipient text, status text, created_at timestamptz);`);
   const sql = readFileSync("drizzle/migrations/0215_a20_afhaak_herinnering.sql", "utf8");
   await db.exec(sql.slice(sql.indexOf("-- FUNCTIES")));
+  // Beveiligingscheck 2-11: stap 2, misbruikrem, afmeldlijst en eenmalige groep.
+  await db.exec(readFileSync("drizzle/migrations/0219_afhaak_herinnering_beveiliging.sql", "utf8"));
 }, 30000);
 afterAll(() => db.close());
 beforeEach(async () => {
-  await db.exec(`DELETE FROM aanvraag_concepten; DELETE FROM leads; DELETE FROM lead_notification_log; DELETE FROM facturatie_config;
+  await db.exec(`DELETE FROM aanvraag_concepten; DELETE FROM leads; DELETE FROM lead_notification_log; DELETE FROM facturatie_config; DELETE FROM herinnering_afmeldingen; DELETE FROM ondernemingen; DELETE FROM personen;
   INSERT INTO facturatie_config VALUES (1, '${VANAF}');`);
 });
 
@@ -151,5 +156,82 @@ describe("kanaal herinnering", () => {
     expect(bepaalKanaal({ utm_source: "herinnering" })).toBe("herinnering");
     expect(attributieRegels({ utm_source: "herinnering", utm_medium: "email" })[0]).toEqual(["Bron", "Herinneringsmail"]);
     expect(bepaalKanaal({ utm_source: "nieuwsbrief" })).toBe("campagne");
+  });
+});
+
+describe("beveiligingscheck 2-11: stap, misbruikrem, afmelden", () => {
+  it("stap 1 (alleen e-mailadres) krijgt nooit een herinnering", async () => {
+    await concept({ stap: 1, max_stap: 1 });
+    await concept({ stap: 1, max_stap: null });
+    expect(await kandidaten()).toEqual([]);
+  });
+  it("teruggegaan naar stap 1 na stap 2 telt als stap 2", async () => {
+    const id = await concept({ stap: 1, max_stap: 3 });
+    expect(await kandidaten()).toEqual([id]);
+  });
+  it("misbruikrem: maximaal 3 herinneringen per uur per IP", async () => {
+    const ids = [];
+    for (let i = 0; i < 5; i++) ids.push(await concept({ ip_hash: "ipA" }));
+    const claim = async (id: string) => (await db.query<{ r: boolean }>("select afhaak_herinnering_claim($1, now()) r", [id])).rows[0].r;
+    // Echte klok voor de rem; venster 2-24 uur ruim genoeg om met de testtijd te rekenen.
+    await db.exec("UPDATE aanvraag_concepten SET laatst_actief_op = now() - interval '3 hours', created_at = now() - interval '5 hours'");
+    await db.exec("UPDATE facturatie_config SET herinnering_afhaak_vanaf = now() - interval '1 day'");
+    const uitslag = [];
+    for (const id of ids) uitslag.push(await claim(id));
+    expect(uitslag).toEqual([true, true, true, false, false]);
+    const ander = await concept({ ip_hash: "ipB", laatst_actief_op: new Date(Date.now() - 3 * 3600_000).toISOString(), created_at: new Date(Date.now() - 5 * 3600_000).toISOString() });
+    expect(await claim(ander)).toBe(true);
+  });
+  it("spamsignaal op dit concept of een ander concept van hetzelfde IP sluit uit", async () => {
+    await concept({ spam_signaal: "honeypot" });
+    expect(await kandidaten()).toEqual([]);
+    await db.exec("DELETE FROM aanvraag_concepten");
+    await concept({ ip_hash: "ipS", spam_signaal: "rate_limited", email: "bot@voorbeeld.nl" });
+    await concept({ ip_hash: "ipS" });
+    expect(await kandidaten()).toEqual([]);
+  });
+  it("afgemeld adres (hoofdletterongevoelig) krijgt geen herinnering meer", async () => {
+    await concept({ email: "Weg@Voorbeeld.nl" });
+    await db.exec("INSERT INTO herinnering_afmeldingen(email) VALUES ('weg@voorbeeld.nl')");
+    expect(await kandidaten()).toEqual([]);
+  });
+  it("afmeldlink: onraadbaar token in de link, zin onderaan, rest van de tekst ongewijzigd", () => {
+    const token = "a".repeat(64);
+    const url = afhaakAfmeldUrl(token);
+    expect(url).toBe(`https://zpzaken.nl/afmelden?soort=herinnering&token=${token}`);
+    expect(afhaakTekst("Sam", url)).toBe(`${afhaakTekst("Sam")}\n\n${AFHAAK_AFMELD_ZIN} Afmelden: ${url}`);
+    expect(afhaakHtml("Sam", url)).toContain(`Wil je deze mail niet meer ontvangen? <a href="${url.replace(/&/g, "&amp;")}"`);
+    expect(afhaakHtml("Sam", url)).toContain(">Afmelden</a>");
+    const b = afhaakResendBody({ from: "ZP Zaken <info@zpzaken.nl>", to: ["x@v.nl"], subject: AFHAAK_ONDERWERP, html: "h", afmeldUrl: url });
+    expect(b.text).toContain(url);
+  });
+  it("herinnering-afmelden accepteert alleen 64 hex-tekens en schrijft pas bij POST", () => {
+    const src = readFileSync("supabase/functions/herinnering-afmelden/index.ts", "utf8");
+    expect(src).toContain("/^[a-f0-9]{64}$/");
+    expect(src.indexOf('if (req.method === "GET") return json({ status: "geldig" })')).toBeLessThan(src.indexOf('from("herinnering_afmeldingen").upsert'));
+    expect(src).not.toContain("review_afmeldingen");
+    expect(src).not.toContain("suppressed_emails");
+  });
+});
+
+describe("eenmalige groep 26-10 t/m 31-10", () => {
+  const eenmalig = async () => (await db.query<{ id: string; stap: number }>("select id, stap from afhaak_eenmalig_kandidaten()")).rows;
+  it("neemt ook stap 1 mee, sluit lead/klant/test/eerder gemaild uit", async () => {
+    const a = await concept({ created_at: "2026-10-27T10:00:00Z", stap: 1, max_stap: 1, email: "a@voorbeeld.nl" });
+    await concept({ created_at: "2026-10-25T10:00:00Z", email: "te-vroeg@voorbeeld.nl" });
+    await concept({ created_at: "2026-11-01T10:00:00Z", email: "te-laat@voorbeeld.nl" });
+    await concept({ created_at: "2026-10-28T10:00:00Z", email: "Lead@voorbeeld.nl" });
+    await db.query("insert into leads(email,type,created_at) values('lead@voorbeeld.nl','contact','2026-01-01')");
+    await concept({ created_at: "2026-10-28T10:00:00Z", email: "klant@voorbeeld.nl" });
+    await db.query("insert into ondernemingen(factuur_email) values('KLANT@voorbeeld.nl')");
+    await concept({ created_at: "2026-10-29T10:00:00Z", email: "test@voorbeeld.nl", is_test: true });
+    await concept({ created_at: "2026-10-29T10:00:00Z", email: "gemaild@voorbeeld.nl" });
+    await db.query("insert into lead_notification_log values('afhaak_herinnering','gemaild@voorbeeld.nl','sent',now())");
+    expect((await eenmalig()).map((r) => r.id)).toEqual([a]);
+    expect(Number((await eenmalig())[0].stap)).toBe(1);
+    const claim = async (id: string) => (await db.query<{ r: boolean }>("select afhaak_eenmalig_claim($1) r", [id])).rows[0].r;
+    expect(await claim(a)).toBe(true);
+    expect(await claim(a)).toBe(false);
+    expect(await eenmalig()).toEqual([]);
   });
 });
