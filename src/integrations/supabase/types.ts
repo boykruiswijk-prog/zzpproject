@@ -53,6 +53,7 @@ export type Database = {
           herinnering_verstuurd_op: string | null
           id: string
           interne_bron: string | null
+          ip_hash: string | null
           is_test: boolean
           kvk: string | null
           laatst_actief_op: string
@@ -64,6 +65,8 @@ export type Database = {
           pagina: string | null
           pakket: string | null
           sector: string | null
+          spam_signaal: string | null
+          spam_signaal_op: string | null
           stap: number
           status: string
           team_gemeld_op: string | null
@@ -84,6 +87,7 @@ export type Database = {
           herinnering_verstuurd_op?: string | null
           id: string
           interne_bron?: string | null
+          ip_hash?: string | null
           is_test?: boolean
           kvk?: string | null
           laatst_actief_op?: string
@@ -95,6 +99,8 @@ export type Database = {
           pagina?: string | null
           pakket?: string | null
           sector?: string | null
+          spam_signaal?: string | null
+          spam_signaal_op?: string | null
           stap?: number
           status?: string
           team_gemeld_op?: string | null
@@ -115,6 +121,7 @@ export type Database = {
           herinnering_verstuurd_op?: string | null
           id?: string
           interne_bron?: string | null
+          ip_hash?: string | null
           is_test?: boolean
           kvk?: string | null
           laatst_actief_op?: string
@@ -126,6 +133,8 @@ export type Database = {
           pagina?: string | null
           pakket?: string | null
           sector?: string | null
+          spam_signaal?: string | null
+          spam_signaal_op?: string | null
           stap?: number
           status?: string
           team_gemeld_op?: string | null
@@ -3552,6 +3561,42 @@ export type Database = {
         }
         Relationships: []
       }
+      herinnering_afmeld_tokens: {
+        Row: {
+          created_at: string
+          email: string
+          token: string
+          used_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          token: string
+          used_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          token?: string
+          used_at?: string | null
+        }
+        Relationships: []
+      }
+      herinnering_afmeldingen: {
+        Row: {
+          afgemeld_op: string
+          email: string
+        }
+        Insert: {
+          afgemeld_op?: string
+          email: string
+        }
+        Update: {
+          afgemeld_op?: string
+          email?: string
+        }
+        Relationships: []
+      }
       incasso_cyclus_log: {
         Row: {
           created_at: string
@@ -6880,6 +6925,20 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      afhaak_basis_toegestaan: {
+        Args: { _c: Database["public"]["Tables"]["aanvraag_concepten"]["Row"] }
+        Returns: boolean
+      }
+      afhaak_eenmalig_claim: { Args: { _id: string }; Returns: boolean }
+      afhaak_eenmalig_kandidaten: {
+        Args: never
+        Returns: {
+          email: string
+          id: string
+          stap: number
+          voornaam: string
+        }[]
       }
       afhaak_herinnering_claim: {
         Args: { _id: string; _nu?: string }
