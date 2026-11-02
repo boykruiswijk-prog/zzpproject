@@ -192,7 +192,7 @@ export default function AdminTeam() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     required
-                    minLength={6}
+                    minLength={12}
                   />
                 </div>
                 <div className="space-y-2">
