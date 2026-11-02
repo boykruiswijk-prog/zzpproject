@@ -68,8 +68,10 @@ Deno.serve(async (req) => {
     if (werkFout) throw new Error(`scherm_werkstand: ${werkFout.message}`);
     const { data: versheid, error: versFout } = await admin.rpc("scherm_versheid");
     if (versFout) console.error("scherm_versheid", versFout.message);
+    const { data: bingAi, error: bingFout } = await admin.from("bing_ai_metingen").select("datum, periode, citaties, onderwerpen").order("datum", { ascending: false }).limit(2);
+    if (bingFout) console.error("bing_ai_metingen", bingFout.message);
     // Volgorde bewust: werkstand levert de actuele activiteit (met cron-runs en perioden) en wint van scherm_data.
-    const body = JSON.stringify(bouwSchermPayload({ ...(data ?? {}), ...(stromen ?? {}), ...(werk ?? {}), versheid: versheid ?? null }));
+    const body = JSON.stringify(bouwSchermPayload({ ...(data ?? {}), ...(stromen ?? {}), ...(werk ?? {}), versheid: versheid ?? null, bing_ai: bingAi ?? [] }));
     cache = { op: Date.now(), body };
     return json(body, 200, { "Cache-Control": "private, max-age=4" });
   } catch (e) {
