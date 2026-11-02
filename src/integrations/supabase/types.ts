@@ -7797,6 +7797,16 @@ export type Database = {
         Returns: Json
       }
       mijn_cyber_polissen: { Args: never; Returns: Json }
+      mijn_klant_contracten: {
+        Args: never
+        Returns: {
+          begin_datum: string
+          certificaatnummer: string
+          onderneming_naam: string
+          product: string
+          status: string
+        }[]
+      }
       mijn_review_kaart: { Args: never; Returns: Json }
       move_to_dlq: {
         Args: {
@@ -7881,6 +7891,10 @@ export type Database = {
         Returns: boolean
       }
       portal_user_id_by_email: { Args: { p_email: string }; Returns: string }
+      portal_user_voor_onderneming: {
+        Args: { _onderneming_id: string }
+        Returns: string
+      }
       portaltoegang_afronden: {
         Args: { _aanvraag_id: string; _toelichting?: string }
         Returns: Json

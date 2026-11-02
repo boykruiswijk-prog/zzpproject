@@ -37,3 +37,17 @@ export function usePortalInvoices() {
 
   });
 }
+
+/** Lopende contracten van bestaande klanten zonder polisrecord (klantkaart), via het bevestigde inlogadres. */
+export function useMijnKlantContracten() {
+  const { user } = usePortalAuth();
+  return useQuery({
+    queryKey: ["mijn-klant-contracten", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("mijn_klant_contracten");
+      if (error) throw error;
+      return (data ?? []) as import("@/lib/klantContractPortaal").KlantContractPortaal[];
+    },
+  });
+}
