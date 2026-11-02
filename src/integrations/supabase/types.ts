@@ -3351,7 +3351,9 @@ export type Database = {
           aantal_aangemaakt: number
           aantal_geblokkeerd: number
           aantal_kandidaten: number
+          afgerond_op: string | null
           bedrag: number
+          bijgewerkt_op: string
           detail: Json
           gestart_op: string
           id: string
@@ -3363,7 +3365,9 @@ export type Database = {
           aantal_aangemaakt?: number
           aantal_geblokkeerd?: number
           aantal_kandidaten?: number
+          afgerond_op?: string | null
           bedrag?: number
+          bijgewerkt_op?: string
           detail?: Json
           gestart_op?: string
           id?: string
@@ -3375,7 +3379,9 @@ export type Database = {
           aantal_aangemaakt?: number
           aantal_geblokkeerd?: number
           aantal_kandidaten?: number
+          afgerond_op?: string | null
           bedrag?: number
+          bijgewerkt_op?: string
           detail?: Json
           gestart_op?: string
           id?: string
@@ -7411,6 +7417,19 @@ export type Database = {
       factuur_periode_start: {
         Args: { _anker: string; _cyclus: string; _n: number }
         Returns: string
+      }
+      factuur_planner_start: {
+        Args: {
+          _bedrag: number
+          _geblokkeerd: number
+          _kandidaten: number
+          _trigger: string
+        }
+        Returns: string
+      }
+      factuur_planner_vervolg: {
+        Args: { _actief: boolean }
+        Returns: undefined
       }
       finance_aansluiting: {
         Args: { _tot: string; _van: string }
