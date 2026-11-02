@@ -6234,6 +6234,39 @@ export type Database = {
         }
         Relationships: []
       }
+      review_bestaand_doelgroep: {
+        Row: {
+          aangemaakt_op: string
+          begin_datum: string
+          email: string
+          id: string
+          onderneming_id: string
+          persoon_id: string
+          ronde: number
+          voornaam: string | null
+        }
+        Insert: {
+          aangemaakt_op?: string
+          begin_datum: string
+          email: string
+          id?: string
+          onderneming_id: string
+          persoon_id: string
+          ronde: number
+          voornaam?: string | null
+        }
+        Update: {
+          aangemaakt_op?: string
+          begin_datum?: string
+          email?: string
+          id?: string
+          onderneming_id?: string
+          persoon_id?: string
+          ronde?: number
+          voornaam?: string | null
+        }
+        Relationships: []
+      }
       review_kaart_verborgen: {
         Row: {
           user_id: string
@@ -6252,11 +6285,12 @@ export type Database = {
       review_verzoeken: {
         Row: {
           created_at: string
+          doelgroep_id: string | null
           email: string
           geklikt_op: string | null
           herinnering_op: string | null
           id: string
-          lead_id: string
+          lead_id: string | null
           platform: string
           status: string
           token: string
@@ -6264,11 +6298,12 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          doelgroep_id?: string | null
           email: string
           geklikt_op?: string | null
           herinnering_op?: string | null
           id?: string
-          lead_id: string
+          lead_id?: string | null
           platform?: string
           status?: string
           token?: string
@@ -6276,17 +6311,25 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          doelgroep_id?: string | null
           email?: string
           geklikt_op?: string | null
           herinnering_op?: string | null
           id?: string
-          lead_id?: string
+          lead_id?: string | null
           platform?: string
           status?: string
           token?: string
           verstuurd_op?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "review_verzoeken_doelgroep_id_fkey"
+            columns: ["doelgroep_id"]
+            isOneToOne: true
+            referencedRelation: "review_bestaand_doelgroep"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "review_verzoeken_lead_id_fkey"
             columns: ["lead_id"]
