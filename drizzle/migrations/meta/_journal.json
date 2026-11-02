@@ -1548,6 +1548,13 @@
       "when": 1793627322181,
       "tag": "0220_dubbele_klanten_samenvoegen",
       "breakpoints": true
+    },
+    {
+      "idx": 221,
+      "version": "7",
+      "when": 1793627376692,
+      "tag": "0221_dubbele_klanten_samenvoegen_functies",
+      "breakpoints": true
     }
   ]
 }
