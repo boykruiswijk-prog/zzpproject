@@ -5,7 +5,7 @@ import { schoneVeldnamen, isInternTestEmail } from "../_shared/nabellen.ts";
 // tabellen niet meer direct beschrijven.
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
-import { guardPublicSubmission } from "../_shared/antiSpam.ts";
+import { guardPublicSubmission, clientIp } from "../_shared/antiSpam.ts";
 import { normaliseerAdres } from "../_shared/adresNormalisatie.ts";
 import { samenvattingVoorTeam } from "../_shared/zeker.ts";
 import { saneerFormulier, saneerPagina } from "../_shared/leadVelden.ts";
@@ -54,6 +54,15 @@ function clean(value: unknown): unknown {
   return value;
 }
 
+/** Gehashte IP (met geheim), alleen voor de misbruikrem van de herinneringsmail. Nooit het IP zelf. */
+async function conceptIpHash(req: Request): Promise<string | null> {
+  const ip = clientIp(req);
+  if (!ip || ip === "onbekend") return null;
+  const pepper = Deno.env.get("INTERNAL_FUNCTION_SECRET") ?? "zp-concept";
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`${pepper}|concept|${ip}`));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const kort = (v: unknown, max: number) => (typeof v === "string" && v.trim() ? v.trim().slice(0, max) : null);
 
@@ -68,7 +77,13 @@ async function bewaarConcept(req: Request, body: any, json: (b: unknown, s?: num
   if (!row || typeof row.id !== "string" || !UUID_RE.test(row.id)) return json({ success: false, error: "Ongeldige aanvraag." }, 400);
   const supabase = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
   const guard = await guardPublicSubmission(req, supabase, { hp: body?.hp, kind: "concept" });
-  if (!guard.ok) return json({ success: false, error: guard.error, reason: guard.reason }, guard.status ?? 400);
+  if (!guard.ok) {
+    // Spamsignaal (honeypot/limiet) op een bestaand concept: nooit een herinneringsmail voor dit concept of dit IP.
+    await supabase.from("aanvraag_concepten").update({ spam_signaal: guard.reason ?? "geweigerd", spam_signaal_op: new Date().toISOString() })
+      .eq("id", row.id).is("spam_signaal", null);
+    return json({ success: false, error: guard.error, reason: guard.reason }, guard.status ?? 400);
+  }
+  const ipHash = await conceptIpHash(req);
 
   const emailRaw = kort(row.email, 255)?.toLowerCase() ?? null;
   const email = emailRaw && EMAIL_RE.test(emailRaw) ? emailRaw : null;
@@ -83,7 +98,7 @@ async function bewaarConcept(req: Request, body: any, json: (b: unknown, s?: num
   const payload: Record<string, unknown> = {
     id: row.id, stap, max_stap: Math.max(stap, Number(bestaand?.max_stap) || 0), email, telefoon, laatst_actief_op: new Date().toISOString(),
     voornaam: kort(typeof row.voornaam === "string" ? gewoneTekst(row.voornaam) : row.voornaam, 100), achternaam: kort(typeof row.achternaam === "string" ? gewoneTekst(row.achternaam) : row.achternaam, 100), bedrijfsnaam: kort(typeof row.bedrijfsnaam === "string" ? gewoneTekst(row.bedrijfsnaam) : row.bedrijfsnaam, 200),
-    kvk: kort(row.kvk, 20), pakket: kort(row.pakket, 50), sector: kort(row.sector, 100), pagina: saneerPagina(row.pagina),
+    ip_hash: ipHash, kvk: kort(row.kvk, 20), pakket: kort(row.pakket, 50), sector: kort(row.sector, 100), pagina: saneerPagina(row.pagina),
     ...(saneerInterneBron(row.interne_bron) ? { interne_bron: saneerInterneBron(row.interne_bron) } : {}),
   };
   if (bestaand) {
