@@ -1,6 +1,7 @@
 import { PortalLayout } from "@/components/portal/PortalLayout";
 import { usePortalAuth } from "@/contexts/PortalAuthContext";
-import { usePortalPolicies } from "@/hooks/usePortalData";
+import { usePortalPolicies, useMijnKlantContracten } from "@/hooks/usePortalData";
+import { contractLabel, contractRegel } from "@/lib/klantContractPortaal";
 import { useCustomerInvoices } from "@/hooks/useCustomerInvoices";
 import { useProfile } from "@/hooks/useProfiles";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +20,8 @@ export default function PortalOverview() {
   const firstName = profile?.full_name?.trim().split(/\s+/)[0] || "";
 
   const activePolicy = policies?.[0];
+  const { data: contracten } = useMijnKlantContracten();
+  const contract = !activePolicy ? contracten?.[0] : undefined;
   const totalInvoices = invoices?.length || 0;
 
   const invoicesLabel =
@@ -48,10 +51,10 @@ export default function PortalOverview() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {activePolicy ? activePolicy.package_type : "-"}
+                {activePolicy ? activePolicy.package_type : contract ? contractLabel(contract.product) : "-"}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                {activePolicy ? `Certificaat ${activePolicy.certificate_number}` : "Nog geen polis gekoppeld"}
+                {activePolicy ? `Certificaat ${activePolicy.certificate_number}` : contract ? contractRegel(contract) : "Nog geen polis gekoppeld"}
               </p>
             </CardContent>
           </Card>

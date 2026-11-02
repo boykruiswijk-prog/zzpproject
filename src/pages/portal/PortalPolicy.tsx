@@ -2,7 +2,8 @@ import { PortalLayout } from "@/components/portal/PortalLayout";
 import { CyberPolis } from "@/components/portal/CyberPolis";
 import { CyberToevoegen } from "@/components/portal/CyberToevoegen";
 import { formatDateNL } from "@/lib/dateFormat";
-import { usePortalPolicies } from "@/hooks/usePortalData";
+import { usePortalPolicies, useMijnKlantContracten } from "@/hooks/usePortalData";
+import { contractLabel, contractRegel } from "@/lib/klantContractPortaal";
 import { PolicyLifecycleActions } from "@/components/portal/PolicyLifecycleActions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ import { certificaatBeschikbaar, certificaatBeschikbaarVanaf, datumNL } from "@/
 export default function PortalPolicy() {
   const { data: policies, isLoading } = usePortalPolicies();
   const { toast } = useToast();
+  const { data: contracten } = useMijnKlantContracten();
 
   const handleDownload = async (path: string) => {
     const { data, error } = await supabase.storage.from("certificates").createSignedUrl(path, 3600);
@@ -31,7 +33,20 @@ export default function PortalPolicy() {
         <PolicyLifecycleActions />
       </div>
       {isLoading && <Loader2 className="h-6 w-6 animate-spin text-accent" />}
-      {!isLoading && (!policies || policies.length === 0) && (
+      {!isLoading && (!policies || policies.length === 0) && (contracten?.length ?? 0) > 0 && (
+        <div className="space-y-4 mb-4">
+          {contracten!.map((c, i) => (
+            <Card key={i}>
+              <CardHeader><CardTitle>{contractLabel(c.product)}</CardTitle></CardHeader>
+              <CardContent className="text-sm text-muted-foreground">
+                <p>{contractRegel(c)}{c.onderneming_naam ? ` · ${c.onderneming_naam}` : ""}</p>
+                <p className="mt-2">Je verzekering loopt. Heb je je certificaat nodig of wil je iets wijzigen? Mail naar info@zpzaken.nl, dan regelen we het voor je.</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+      {!isLoading && (!policies || policies.length === 0) && !(contracten?.length) && (
         <Card>
           <CardContent className="py-12 text-center text-muted-foreground">
             <FileText className="h-12 w-12 mx-auto mb-3 opacity-40" />
