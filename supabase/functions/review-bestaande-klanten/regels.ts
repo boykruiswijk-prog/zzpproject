@@ -9,12 +9,14 @@ export type Body = { dryRun: boolean; ronde: 1 | 2; testNaar: string | null };
 
 export function valideerBody(b: unknown): Body | { error: string } {
   const o = (b ?? {}) as Record<string, unknown>;
-  if (typeof o.dry_run !== "boolean") return { error: "dry_run (true|false) verplicht" };
-  if (o.ronde !== 1 && o.ronde !== 2) return { error: "ronde moet 1 of 2 zijn" };
   let testNaar: string | null = null;
   if (o.test_naar !== undefined && o.test_naar !== null) {
     if (typeof o.test_naar !== "string" || !testNaarToegestaan(o.test_naar)) return { error: "test_naar alleen voor @zpzaken.nl" };
     testNaar = o.test_naar.trim().toLowerCase();
+    // Voorbeeldmail: geen ronde of dry_run nodig, raakt nooit klanten of review_verzoeken.
+    return { dryRun: true, ronde: o.ronde === 2 ? 2 : 1, testNaar };
   }
+  if (typeof o.dry_run !== "boolean") return { error: "dry_run (true|false) verplicht" };
+  if (o.ronde !== 1 && o.ronde !== 2) return { error: "ronde moet 1 of 2 zijn" };
   return { dryRun: o.dry_run, ronde: o.ronde, testNaar };
 }
