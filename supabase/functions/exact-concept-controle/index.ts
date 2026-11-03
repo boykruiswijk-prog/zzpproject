@@ -5,6 +5,7 @@
 // Eén interne ochtendmail (soort exact_boeking) alleen bij afwijkingen. Testrecords overslaan. Nooit klantmail.
 // Toegang: x-cron-secret (Vault, verify_cron_secret) of supervisor/admin met MFA.
 // deno-lint-ignore-file no-explicit-any
+import { werkContractStandBij } from "../_shared/contractStand.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { ensureValidToken, refreshAccessToken } from "../_shared/exactToken.ts";
 import { requireSupervisor } from "../_shared/teamAuth.ts";

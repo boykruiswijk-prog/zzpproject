@@ -3,6 +3,7 @@
 // - AAN → per kandidaat: claim (unieke rij) → Exact GET op sleutel → pas dan POST concept.
 // Geen mails naar klanten; maximaal één alarmmail per dag naar het team.
 // deno-lint-ignore-file no-explicit-any
+import { werkContractStandBij } from "../_shared/contractStand.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { ensureValidToken, refreshAccessToken } from "../_shared/exactToken.ts";
 import { requireSupervisor } from "../_shared/teamAuth.ts";
