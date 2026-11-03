@@ -81,7 +81,7 @@ export default function ZzpVerzekeringICT() {
       canonicalPath="/zzp-verzekering-ict"
       heroImage={serviceVerzekeringen}
       badge="Voor IT-freelancers"
-      title={<>Aansprakelijkheidsverzekering voor ICT-zzp'ers: <span className="text-accent">BAV en AVB in één polis</span></>}
+      title={<>Beroepsaansprakelijkheidsverzekering voor ICT-zzp'ers: <span className="text-accent">BAV en AVB in één polis</span></>}
       subtitle={SEO.intro}
       schema={schema}
       benefits={[

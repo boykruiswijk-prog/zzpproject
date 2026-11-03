@@ -1,4 +1,5 @@
 import { useParams } from "react-router-dom";
+import { ARTIKEL_INTERNE_LINKS } from "@/data/artikelInterneLinks";
 import { useEffect, useMemo, useState } from "react";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { Helmet } from "react-helmet-async";
@@ -450,6 +451,21 @@ export default function ArtikelDetail() {
                     ))}
                   </dl>
                 </section>
+              )}
+
+              {ARTIKEL_INTERNE_LINKS[article.slug] && (
+                <nav aria-labelledby="artikel-verzekering-links" className="mt-12 rounded-xl border border-border/50 p-6">
+                  <h2 id="artikel-verzekering-links" className="text-xl font-bold mb-4">Verder over je aansprakelijkheidsverzekering</h2>
+                  <ul className="space-y-2">
+                    {ARTIKEL_INTERNE_LINKS[article.slug].map((l) => (
+                      <li key={l.to}>
+                        <LocalizedLink to={l.to} className="inline-flex items-center gap-1 font-medium text-accent hover:underline">
+                          {l.label} <ArrowRight className="h-4 w-4" />
+                        </LocalizedLink>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
               )}
 
               {showCommercialCTA ? (

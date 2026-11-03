@@ -34,16 +34,17 @@
   "/creditcontrol": "2026-10-07",
   "/screening": "2026-10-09",
   "/offerte": "2026-10-13",
-  "/zzp-verzekering-ict": "2026-10-14",
+  "/zzp-verzekering-ict": "2026-11-03",
   "/beroepsaansprakelijkheidsverzekering": "2026-10-10",
   "/bav-zzp": "2026-10-10",
-  "/zzp-verzekering-consultant": "2026-10-10",
-  "/zzp-verzekering-interim-manager": "2026-10-10",
+  "/zzp-verzekering-consultant": "2026-11-03",
+  "/zzp-verzekering-interim-manager": "2026-11-03",
   "/zzp-verzekering-finance": "2026-10-10",
   "/starters": "2026-10-14",
   "/zzp-verzekering-hr": "2026-10-09",
-  "/zzp-verzekering-marketing": "2026-10-09",
-  "/zzp-verzekering-coach": "2026-10-09",
+  "/zzp-verzekering-marketing": "2026-11-03",
+  "/zzp-verzekering-coach": "2026-11-03",
   "/zzp-verzekering-zorg": "2026-10-12",
-  "/zzp-verzekering-bouw": "2026-10-12"
+  "/zzp-verzekering-bouw": "2026-11-03",
+  "/bedrijfsaansprakelijkheidsverzekering": "2026-11-03"
 }
