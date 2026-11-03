@@ -236,6 +236,10 @@
 /kerstactiemember/    /verzekeringen    301
 /fb-nieuwjaarsactie    /verzekeringen    301
 /fb-nieuwjaarsactie/    /verzekeringen    301
+/nieuwjaarsactie    /verzekeringen    301
+/nieuwjaarsactie/    /verzekeringen    301
+/academy/weblog    /kennisbank    301
+/academy/weblog/    /kennisbank    301
 /bav-verzekering    /verzekeringen    301
 /bav-verzekering/    /verzekeringen    301
 /avb-verzekering    /verzekeringen    301
@@ -1957,6 +1961,18 @@
 /de/fb-nieuwjaarsactie/    /verzekeringen    301  # taalprefix
 /fr/fb-nieuwjaarsactie    /verzekeringen    301  # taalprefix
 /fr/fb-nieuwjaarsactie/    /verzekeringen    301  # taalprefix
+/en/nieuwjaarsactie    /verzekeringen    301  # taalprefix
+/en/nieuwjaarsactie/    /verzekeringen    301  # taalprefix
+/de/nieuwjaarsactie    /verzekeringen    301  # taalprefix
+/de/nieuwjaarsactie/    /verzekeringen    301  # taalprefix
+/fr/nieuwjaarsactie    /verzekeringen    301  # taalprefix
+/fr/nieuwjaarsactie/    /verzekeringen    301  # taalprefix
+/en/academy/weblog    /kennisbank    301  # taalprefix
+/en/academy/weblog/    /kennisbank    301  # taalprefix
+/de/academy/weblog    /kennisbank    301  # taalprefix
+/de/academy/weblog/    /kennisbank    301  # taalprefix
+/fr/academy/weblog    /kennisbank    301  # taalprefix
+/fr/academy/weblog/    /kennisbank    301  # taalprefix
 /en/bav-verzekering    /verzekeringen    301  # taalprefix
 /en/bav-verzekering/    /verzekeringen    301  # taalprefix
 /de/bav-verzekering    /verzekeringen    301  # taalprefix

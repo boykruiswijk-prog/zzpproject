@@ -33,7 +33,12 @@ describe("Kwaliteitscontrole 24 oktober D6", () => {
   it("nieuwjaarsactie gaat met slash en taalprefixen naar verzekeringen; tv blijft uitgesloten", () => {
     for (const prefix of ["", "/en", "/de", "/fr"]) {
       for (const slash of ["", "/"]) {
-        expect(zoekLegacyDoel(`${prefix}/fb-nieuwjaarsactie${slash}`)).toBe("/verzekeringen");
+        for (const [from, to] of [["fb-nieuwjaarsactie", "/verzekeringen"], ["nieuwjaarsactie", "/verzekeringen"], ["academy/weblog", "/kennisbank"]]) {
+          const path = `${prefix}/${from}${slash}`;
+          expect(zoekLegacyDoel(path)).toBe(to);
+          expect(readFileSync("public/_redirects", "utf8")).toContain(`${path}    ${to}    301`);
+          expect(readFileSync("docs/cloudflare-bulk-redirects.csv", "utf8")).toContain(`zpzaken.nl${path},https://zpzaken.nl${to},301,TRUE,TRUE,FALSE,FALSE`);
+        }
       }
       expect(zoekLegacyDoel(`${prefix}/tv`)).toBeNull();
     }
