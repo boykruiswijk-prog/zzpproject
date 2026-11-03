@@ -1611,6 +1611,13 @@
       "when": 1793693034745,
       "tag": "0229_afhaak_geen_herinnering_reden",
       "breakpoints": true
+    },
+    {
+      "idx": 230,
+      "version": "7",
+      "when": 1793703530477,
+      "tag": "0230_portaltoegang_automatisch",
+      "breakpoints": true
     }
   ]
 }

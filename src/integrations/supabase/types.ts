@@ -7946,6 +7946,18 @@ export type Database = {
         Args: { _aanvraag_id: string; _toelichting?: string }
         Returns: Json
       }
+      portaltoegang_auto_match: { Args: { _email: string }; Returns: Json }
+      portaltoegang_auto_vastleggen: {
+        Args: {
+          _aanvraag_id: string
+          _message_id: string
+          _onderneming_id: string
+          _persoon_id: string
+          _portal_user_id: string
+          _user_created: boolean
+        }
+        Returns: Json
+      }
       portaltoegang_koppelen: {
         Args: { _aanvraag_id: string; _onderneming_id: string }
         Returns: Json
