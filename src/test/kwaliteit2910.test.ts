@@ -52,7 +52,7 @@ describe("Kwaliteitscontrole 29 oktober", () => {
     });
   }
   it("bav-zzp-description bevat maand, jaar en assurantiebelasting", () => {
-    expect(seoRoute("/bav-zzp").description).toBe("Beroepsaansprakelijkheidsverzekering: aansprakelijkheidsverzekering zzp voor € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting.");
+    expect(seoRoute("/bav-zzp").description).toBe("BAV verzekering voor zzp'ers: BAV € 5 mln en AVB € 2,5 mln per aanspraak in één polis, € 55 per maand of € 600 per jaar incl. kosten en assurantiebelasting.");
   });
   it("beide cyberbeschrijvingen geven het volledige tarief zonder andere offerprijzen", () => {
     const cyber = bavPakketten.filter(p => p.dekkingen.cyber);
