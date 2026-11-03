@@ -395,10 +395,10 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/zzp-verzekering-ict",
-    title: "Aansprakelijkheidsverzekering ICT zzp: BAV + AVB | ZP Zaken",
+    title: "Beroepsaansprakelijkheidsverzekering ICT zzp: BAV + AVB | ZP Zaken",
     description:
       "Aansprakelijkheidsverzekering voor ICT-zzp'ers: BAV € 5 mln en AVB € 2,5 mln per aanspraak in één polis, geen eigen risico, binnen 24 uur geregeld.",
-    h1: "Aansprakelijkheidsverzekering voor ICT-zzp'ers: BAV en AVB in één polis",
+    h1: "Beroepsaansprakelijkheidsverzekering voor ICT-zzp'ers: BAV en AVB in één polis",
     intro:
       "Als ICT-zzp'er verzeker je met een beroepsaansprakelijkheidsverzekering (BAV) de financiële gevolgen van een fout in je code, configuratie, implementatie of advies, en met een bedrijfsaansprakelijkheidsverzekering (AVB) schade aan personen of spullen. Bij ZP Zaken heb je beide in één polis: BAV € 5 miljoen en AVB € 2,5 miljoen per aanspraak, geen eigen risico, dagelijks opzegbaar en binnen 24 uur geregeld. Wat precies gedekt is, staat in de polisvoorwaarden.",
   },
@@ -408,6 +408,13 @@ export const seoRoutes: SeoRoute[] = [
     description: `Beroepsaansprakelijkheidsverzekering voor zzp'ers: BAV en AVB in één polis via Hiscox, vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
     h1: "Beroepsaansprakelijkheidsverzekering voor zzp'ers",
     intro: `Een beroepsaansprakelijkheidsverzekering verzekert je, volgens de polisvoorwaarden, als een opdrachtgever je aansprakelijk stelt voor schade door een fout in je werk. Bij ZP Zaken kost die vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
+  },
+  {
+    path: "/bedrijfsaansprakelijkheidsverzekering",
+    title: "Bedrijfsaansprakelijkheidsverzekering zzp (AVB) | ZP Zaken",
+    description: `Bedrijfsaansprakelijkheidsverzekering (AVB) voor zzp'ers, alleen samen met de BAV in één polis via Hiscox: € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
+    h1: "Bedrijfsaansprakelijkheidsverzekering voor zzp'ers",
+    intro: `Een bedrijfsaansprakelijkheidsverzekering (AVB) is er voor schade aan personen of spullen van anderen tijdens je werk. Bij ZP Zaken krijg je de AVB niet los, maar altijd samen met de beroepsaansprakelijkheidsverzekering (BAV) in één polis, voor € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
   },
   {
     path: "/bav-zzp",
@@ -421,16 +428,16 @@ export const seoRoutes: SeoRoute[] = [
     title: "Beroepsaansprakelijkheidsverzekering consultant | ZP Zaken",
     description:
       "Beroepsaansprakelijkheidsverzekering voor zzp-consultants. BAV en AVB in één polis via Hiscox, geen eigen risico, online geregeld binnen 24 uur.",
-    h1: "ZZP verzekering voor consultants",
+    h1: "Beroepsaansprakelijkheidsverzekering voor consultants",
     intro:
       "Als consultant neemt je opdrachtgever besluiten op basis van jouw advies. Een fout in je advies of rapport kan veel geld kosten. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden.",
   },
   {
     path: "/zzp-verzekering-interim-manager",
-    title: "Verzekering interim manager zzp | BAV en AVB",
+    title: "Beroepsaansprakelijkheidsverzekering interim manager | ZP Zaken",
     description:
       "Verzekering voor zzp interim managers en projectmanagers. BAV en AVB in één polis via Hiscox, geen eigen risico en dagelijks opzegbaar.",
-    h1: "ZZP verzekering voor interim managers",
+    h1: "Beroepsaansprakelijkheidsverzekering voor interim managers",
     intro:
       "Als interim manager of projectmanager neem je besluiten en maak je planningen waar je opdrachtgever op vertrouwt. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden.",
   },
@@ -463,10 +470,10 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/zzp-verzekering-marketing",
-    title: "BAV marketing zzp | Verzekering voor marketeers",
+    title: "Beroepsaansprakelijkheidsverzekering marketing zzp | ZP Zaken",
     description:
       "Beroepsaansprakelijkheidsverzekering voor zzp marketeers, copywriters en designers. BAV en AVB in één polis via Hiscox, geen eigen risico.",
-    h1: "ZZP verzekering voor marketeers",
+    h1: "Beroepsaansprakelijkheidsverzekering voor marketeers",
     intro:
       "Als marketeer, copywriter of designer maak je werk dat de wereld in gaat. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden.",
   },
@@ -475,7 +482,7 @@ export const seoRoutes: SeoRoute[] = [
     title: "Beroepsaansprakelijkheidsverzekering coach | ZP Zaken",
     description:
       "Beroepsaansprakelijkheidsverzekering voor coaches en trainers. BAV en AVB in één polis via Hiscox, geen eigen risico, online geregeld binnen 24 uur.",
-    h1: "ZZP verzekering voor coaches en trainers",
+    h1: "Beroepsaansprakelijkheidsverzekering voor coaches en trainers",
     intro:
       "Als coach of trainer vertrouwt je klant op jouw begeleiding. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden. Therapeut of psycholoog? Dat valt onder zorg; neem contact op.",
   },
@@ -491,10 +498,10 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/zzp-verzekering-bouw",
-    title: "ZZP Verzekering Bouw | BAV & AVB voor de bouw",
+    title: "Aansprakelijkheidsverzekering zzp bouw: BAV + AVB | ZP Zaken",
     description:
       "Als ZZP'er in de bouw aansprakelijk voor constructiefouten of schade? ZP Zaken regelt jouw verzekering. Snel, persoonlijk en binnen 24 uur geregeld.",
-    h1: "ZZP Verzekering voor bouwprofessionals",
+    h1: "Aansprakelijkheidsverzekering voor zzp'ers in de bouw",
     intro:
       "Als zzp'er in de bouw draag je verantwoordelijkheid voor de kwaliteit van je werk. Een constructiefout of schade aan eigendom kan leiden tot forse schadeclaims. " +
       "Met een BAV en AVB in één polis ben je verzekerd voor aansprakelijkheid, volgens de polisvoorwaarden.",

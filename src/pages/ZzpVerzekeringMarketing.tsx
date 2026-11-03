@@ -21,7 +21,7 @@ export default function ZzpVerzekeringMarketing() {
       path="/zzp-verzekering-marketing"
       serviceName="Beroepsaansprakelijkheidsverzekering marketing"
       badge="Voor marketing en communicatie"
-      title={<>ZZP verzekering voor <span className="text-accent">marketeers</span></>}
+      title={<>Beroepsaansprakelijkheidsverzekering voor <span className="text-accent">marketeers</span></>}
       subtitle="Als marketeer, copywriter of designer maak je werk dat de wereld in gaat. Een fout in een campagne of een gemiste lancering kan je opdrachtgever geld kosten. Met een BAV en AVB in één polis ben je verzekerd voor aansprakelijkheid, volgens de polisvoorwaarden."
       sector="pr-marketing"
       benefits={[
