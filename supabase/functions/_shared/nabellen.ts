@@ -3,6 +3,8 @@
 
 // Besluit Boy 3-11: de 30-minuten "Nabellen"-mail vervalt; afhakers krijgen een herinneringsmail en
 // het team krijgt pas daarna een melding (bouwHerinneringMelding).
+import { isPlaceholderEmail, isPlaceholderTelefoon } from "./testInvoer.ts";
+
 export const NABEL_WACHT_MINUTEN = 30;
 export const HERINNERING_MELDING_ONDERWERP = "Afgehaakte aanvraag: herinnering verstuurd";
 export const HERINNERING_MELDING_TEKST = "Deze bezoeker heeft een herinneringsmail ontvangen om de aanvraag af te maken. Je hoeft niet te bellen.";
@@ -91,4 +93,65 @@ export function bouwHerinneringMelding(c: NabelConcept, verstuurdOp: string) {
 export function schoneVeldnamen(v: unknown): string[] {
   if (!Array.isArray(v)) return [];
   return [...new Set(v.filter((x): x is string => typeof x === "string" && /^[A-Za-z]{1,40}$/.test(x)))].slice(0, 20);
+}
+
+// Besluit Boy 3-11 09:16: dagelijkse samenvatting als overzicht per afhaker; testinvoer alleen als aantal.
+export const HERINNERING_WACHT_UUR = 2;
+
+export type SamenvattingConcept = NabelConcept & {
+  herinnering_verstuurd_op?: string | null;
+  afhaak_geen_herinnering_reden?: string | null;
+  spam_signaal?: string | null;
+};
+
+export function isSamenvattingTest(c: SamenvattingConcept): boolean {
+  return c.is_test === true || isInternTestEmail(c.email) || c.spam_signaal === "testinvoer"
+    || c.afhaak_geen_herinnering_reden === "test" || c.afhaak_geen_herinnering_reden === "testinvoer"
+    || isPlaceholderEmail(c.email) || isPlaceholderTelefoon(c.telefoon);
+}
+
+export function herinneringStatus(c: SamenvattingConcept): string {
+  if (c.herinnering_verstuurd_op) return `Herinnering verstuurd op ${tijdNL(c.herinnering_verstuurd_op)}`;
+  if (c.afhaak_geen_herinnering_reden) return `Geen herinnering: ${c.afhaak_geen_herinnering_reden}`;
+  const verwacht = c.laatst_actief_op ? new Date(new Date(c.laatst_actief_op).getTime() + HERINNERING_WACHT_UUR * 3600_000).toISOString() : null;
+  return `Geen herinnering: nog niet aan de beurt, verwacht vanaf ${tijdNL(verwacht)}`;
+}
+
+export function bouwAfgehaaktSamenvatting(concepten: SamenvattingConcept[]) {
+  const echt = concepten.filter((c) => !isSamenvattingTest(c))
+    .sort((a, b) => (b.max_stap ?? b.stap ?? 0) - (a.max_stap ?? a.stap ?? 0)
+      || String(b.laatst_actief_op ?? "").localeCompare(String(a.laatst_actief_op ?? "")));
+  const aantalTest = concepten.length - echt.length;
+  if (echt.length === 0) return null;
+  const n = echt.length;
+  const tekst = n === 1 ? "1 nieuwe afgehaakte aanvraag" : `${n} nieuwe afgehaakte aanvragen`;
+  const subject = `Afgehaakte aanvragen: ${tekst} (afgelopen 24 uur)`;
+  const blokken = echt.map((c) => {
+    const naam = [c.voornaam, c.achternaam].filter((x) => x && x.trim()).join(" ") || "-";
+    const link = `${NABEL_ADMIN_LINK}?record=${encodeURIComponent(c.id)}`;
+    const rijen: [string, string][] = [
+      ["Naam", naam],
+      ["Bedrijfsnaam", c.bedrijfsnaam?.trim() || "-"],
+      ["E-mail", c.email?.trim() || "-"],
+      ["Telefoon", c.telefoon?.trim() || "-"],
+      ["Pakket", c.pakket?.trim() || "-"],
+      ["Hoogste stap", `${c.max_stap ?? c.stap ?? "-"} van 5`],
+      ["Laatst actief", tijdNL(c.laatst_actief_op)],
+      ["Herkomst", herkomstTekst(c.attributie)],
+      ["Herinnering", herinneringStatus(c)],
+    ];
+    return { rijen, link };
+  });
+  const voet = `Genegeerde testinvoer: ${aantalTest}`;
+  const html = `<div style="font-family:Arial,sans-serif;font-size:14px;line-height:1.5;color:#1a1a1a;max-width:600px">
+<h2 style="margin:0 0 12px;font-size:18px">${esc(subject)}</h2>
+<p style="margin:0 0 12px">Gesorteerd op hoogste stap, meeste kans eerst.</p>
+${blokken.map((b) => `<div style="border-top:1px solid #ddd;padding:10px 0"><table style="border-collapse:collapse">${b.rijen.map(([k, v]) => `<tr><td style="padding:3px 12px 3px 0;color:#666">${esc(k)}</td><td style="padding:3px 0">${esc(v)}</td></tr>`).join("")}</table>
+<p style="margin:6px 0 0"><a href="${b.link}" style="color:#E53E2F">Open in de admin</a></p></div>`).join("\n")}
+<p style="margin:16px 0 0">${esc(voet)}</p>
+<p style="margin:8px 0 0"><a href="${NABEL_ADMIN_LINK}" style="color:#E53E2F">Bekijk het volledige overzicht</a></p>
+<p style="margin:24px 0 0;font-size:12px;color:#666">Interne melding van ZP Zaken.</p>
+</div>`;
+  const text = [subject, "", ...blokken.flatMap((b) => [...b.rijen.map(([k, v]) => `${k}: ${v}`), `Admin: ${b.link}`, ""]), voet, `Overzicht: ${NABEL_ADMIN_LINK}`].join("\n");
+  return { subject, html, text, aantal: n, aantalTest };
 }
