@@ -14,6 +14,7 @@
 // ontbrekende header nooit stilzwijgend tot preview leidt.
 
 import { resolveEnvironment, type Environment } from "./environment.ts";
+import { metMailKop } from "./mailLayout.ts";
 
 export const PREVIEW_RECIPIENT = "boy.kruiswijk@zpzaken.nl";
 export const DEFAULT_FROM_ADDRESS = "ZP Zaken <info@zpzaken.nl>";
@@ -85,7 +86,7 @@ export function createMailGate(fnName: string, req?: Request | null): MailGate {
           to: originalTo,
           bcc: originalBcc.length ? originalBcc : undefined,
           subject: input.subject,
-          html: input.html,
+          html: metMailKop(input.html),
           redirected: false,
           originalTo,
         };
@@ -124,7 +125,7 @@ export function createMailGate(fnName: string, req?: Request | null): MailGate {
         to: [PREVIEW_RECIPIENT],
         bcc: undefined,
         subject: `[PREVIEW] ${input.subject} (origineel naar ${origineel})`,
-        html: banner + input.html,
+        html: banner + metMailKop(input.html),
         redirected: true,
         originalTo,
       };

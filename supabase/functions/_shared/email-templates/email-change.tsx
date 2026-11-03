@@ -3,6 +3,7 @@
 import * as React from 'npm:react@18.3.1'
 
 import {
+  Img,
   Body,
   Button,
   Container,
@@ -39,6 +40,7 @@ export const EmailChangeEmail = ({
     <Preview>Confirm your email change for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Img src="https://zpzaken.nl/logo.png" alt="ZP Zaken" height="40" style={{ display: 'block', border: 0, height: '40px', width: 'auto', marginBottom: '16px' }} />
         <Heading style={h1}>Confirm your email change</Heading>
         <Text style={text}>
           You requested to change your email address for {siteName} from{' '}

@@ -3,6 +3,7 @@
 import * as React from 'npm:react@18.3.1'
 
 import {
+  Img,
   Body,
   Button,
   Container,
@@ -29,6 +30,7 @@ export const MagicLinkEmail = ({
     <Preview>Your login link for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Img src="https://zpzaken.nl/logo.png" alt="ZP Zaken" height="40" style={{ display: 'block', border: 0, height: '40px', width: 'auto', marginBottom: '16px' }} />
         <Heading style={h1}>Your login link</Heading>
         <Text style={text}>
           Click the button below to log in to {siteName}. This link will expire

@@ -6,6 +6,7 @@ import { Resend } from "npm:resend@4.0.0";
 import { z } from "npm:zod@3.23.8";
 import { resolveEnvironment } from "../_shared/environment.ts";
 import { getFromAddress } from "../_shared/mail.ts";
+import { metMailKop } from "../_shared/mailLayout.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -166,7 +167,7 @@ Deno.serve(async (req) => {
         to: [recipient],
         replyTo: "info@zpzaken.nl",
         subject,
-        html: renderHtml(finalReason),
+        html: metMailKop(renderHtml(finalReason)),
         text: renderText(finalReason),
       });
 

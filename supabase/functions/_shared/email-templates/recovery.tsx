@@ -3,6 +3,7 @@
 import * as React from 'npm:react@18.3.1'
 
 import {
+  Img,
   Body,
   Button,
   Container,
@@ -29,6 +30,7 @@ export const RecoveryEmail = ({
     <Preview>Reset your password for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Img src="https://zpzaken.nl/logo.png" alt="ZP Zaken" height="40" style={{ display: 'block', border: 0, height: '40px', width: 'auto', marginBottom: '16px' }} />
         <Heading style={h1}>Reset your password</Heading>
         <Text style={text}>
           We received a request to reset your password for {siteName}. Click
