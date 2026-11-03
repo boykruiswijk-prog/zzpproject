@@ -165,8 +165,8 @@
 - [x] C. Rapport met bewijs + één Ellen-melding (Roxy verwerkt concepten)
 
 ## Teller admin-menu + persoon met meerdere ondernemingen (Boy 3-11 12:10)
-- [ ] Rode tellers (admin) Portaltoegang + andere Ellen-wachtrijen, live, test
-- [ ] Mijn ZP: polissen alle gekoppelde ondernemingen gegroepeerd, beëindigd als historie
-- [ ] Auto-uitnodiging: minstens één onderneming met actief contract; twijfel blijft bij Ellen
-- [ ] Admin koppelen/ontkoppelen onderneming bij persoon (bestaat?) + audit
-- [ ] Droge run + live over 22 open aanvragen; tests (RLS, meerdere ondernemingen); één Ellen-melding
+- [x] Rode tellers (admin) Portaltoegang + andere Ellen-wachtrijen, live, test
+- [x] Mijn ZP: polissen alle gekoppelde ondernemingen gegroepeerd, beëindigd als historie
+- [x] Auto-uitnodiging: minstens één onderneming met actief contract; twijfel blijft bij Ellen
+- [x] Admin koppelen/ontkoppelen onderneming bij persoon (bestaat?) + audit
+- [x] Droge run + live over 22 open aanvragen; tests (RLS, meerdere ondernemingen); één Ellen-melding
