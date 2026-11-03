@@ -141,6 +141,8 @@ export const legacyRedirects: { from: string; to: string }[] = [
   { from: "kerstactienieuw", to: "/verzekeringen" },
   { from: "kerstactiemember", to: "/verzekeringen" },
   { from: "fb-nieuwjaarsactie", to: "/verzekeringen" },
+  { from: "nieuwjaarsactie", to: "/verzekeringen" },
+  { from: "academy/weblog", to: "/kennisbank" },
 
   // Gangbare WordPress URL-patronen
   { from: "bav-verzekering", to: "/verzekeringen" },
