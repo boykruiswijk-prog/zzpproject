@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 // Automatische Mijn ZP-uitnodiging bij een portaltoegang-aanvraag.
-// Alleen als het adres exact bij één contactpersoon van precies één actieve klant hoort
+// Alleen als het adres exact bij één contactpersoon hoort met minstens één actieve klant (alle ondernemingen worden gekoppeld)
 // (RPC portaltoegang_auto_match). Zelfde mail als de knop "Toegang verlenen".
 // Geen match of twijfel: aanvraag blijft staan voor het team met een reden.
 import { safeAppOrigin } from "./company.ts";
