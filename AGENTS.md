@@ -57,3 +57,4 @@
 - Trigger artikel_hiscox_acceptatie_check plus hiscoxAcceptatie.test.ts reject text attributing acceptance to Hiscox. Why: automation cannot publish it.
 - A20 afhaakmail: alleen via afhaak_herinnering_kandidaten/_claim, geclaimd nooit opnieuw; enhanced conversions alleen browser-SHA-256 e-mail. Waarom: geen dubbele mail of leesbare data.
 - Policies without a lead (policies.onderneming_id) are linked to the onderneming's single confirmed portal account by trigger policies_onderneming_portal_user and at invite; Mijn ZP falls back to RPC mijn_klant_contracten for contracts without a policy. Why: pre-online customers must see their certificate after login.
+- Curated article-to-landing-page links live in src/data/artikelInterneLinks.ts and render in ArtikelDetail, not in article content. Why: reviewable, ships only on publish, prerendered.
