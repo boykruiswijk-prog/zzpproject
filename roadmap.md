@@ -160,6 +160,6 @@
 - [ ] A16 AI-zichtbaarheid: sameAs/identifier Organization, FAQPage uit zichtbare FAQ, Product/Offer prijzen, Google-reviewaantal/AggregateRating, compliance-zoektermen /waarom-zp-zaken; tests, één melding 'website'
 
 ## Facturatie-fix Kinderman + creditnota zonder incasso (Boy 3-11 12:46)
-- [ ] A. Kinderman 5dc438b9: cyclus jaar (starterregels), creditconcept 26700094, jaarfactuurconcept 23-10-2026 t/m 22-10-2027, geen maandfactuur 23-11; gefactureerd_tm-onderzoek (115 op 13-10) rapporteren; d8f380ea op dubbele-klantenlijst
-- [ ] B. Creditnota's krijgen terugbetaal/verrekenconditie (niet IN) + test; bestaande credits nalopen, concepten aanpassen
-- [ ] C. Rapport met bewijs + één Ellen-melding (Roxy verwerkt concepten)
+- [x] A. Kinderman 5dc438b9: cyclus jaar (starterregels), creditconcept 26700094, jaarfactuurconcept 23-10-2026 t/m 22-10-2027, geen maandfactuur 23-11; gefactureerd_tm-onderzoek (115 op 13-10) rapporteren; d8f380ea op dubbele-klantenlijst
+- [x] B. Creditnota's krijgen terugbetaal/verrekenconditie (niet IN) + test; bestaande credits nalopen, concepten aanpassen
+- [x] C. Rapport met bewijs + één Ellen-melding (Roxy verwerkt concepten)
