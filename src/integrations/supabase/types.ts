@@ -7019,6 +7019,10 @@ export type Database = {
           voornaam: string
         }[]
       }
+      afhaak_geen_herinnering_reden: {
+        Args: { _c: Database["public"]["Tables"]["aanvraag_concepten"]["Row"] }
+        Returns: string
+      }
       afhaak_herinnering_claim: {
         Args: { _id: string; _nu?: string }
         Returns: boolean

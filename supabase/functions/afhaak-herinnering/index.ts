@@ -8,6 +8,9 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { createMailGate } from "../_shared/mail.ts";
 import { geldigEmail } from "../_shared/geldigEmail.ts";
+import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
+import { bouwHerinneringMelding, type NabelConcept } from "../_shared/nabellen.ts";
+import { isTestInvoer } from "../_shared/testInvoer.ts";
 import { AFHAAK_LEAD_TYPE, AFHAAK_ONDERWERP, afhaakHtml, afhaakResendBody, afhaakAfmeldUrl } from "../_shared/afhaakHerinnering.ts";
 
 const json = (b: unknown, status = 200) =>
@@ -43,6 +46,8 @@ Deno.serve(async (req) => {
     if (error) return json({ error: error.message }, 500);
     lijst = ((data ?? []) as Kandidaat[]).filter((k) => !!geldigEmail(k.email));
   }
+  // Bekende placeholderinvoer krijgt nooit een herinnering (vangnet naast is_test).
+  lijst = lijst.filter((k) => !isTestInvoer({ email: k.email }));
   // Droge run: alleen id en stap, geen persoonsgegevens.
   if (dryRun) return json({ dry_run: true, eenmalig, aantal: lijst.length, kandidaten: lijst.map((k) => ({ id: k.id, stap: k.stap ?? null })) });
 
@@ -80,7 +85,21 @@ Deno.serve(async (req) => {
       error_message: err, resend_message_id: messageId,
       metadata: { concept_id: k.id, redirected: plan.redirected, preview: !gate.isProduction, ...(eenmalig ? { eenmalig: "2610-3110", stap: k.stap ?? null } : {}) },
     });
-    if (status === "sent") res.verstuurd++; else res.mislukt++;
+    if (status === "sent") {
+      res.verstuurd++;
+      // Besluit Boy 3-11: pas na een verstuurde herinnering één interne melding (geen belverzoek).
+      const { data: c } = await admin.from("aanvraag_concepten")
+        .select("id,status,is_test,lead_id,dubbel_lead_id,telefoon,email,laatst_actief_op,team_gemeld_op,voornaam,achternaam,bedrijfsnaam,pakket,stap,max_stap,attributie,herinnering_verstuurd_op")
+        .eq("id", k.id).maybeSingle();
+      if (c && !isTestInvoer({ email: c.email, telefoon: c.telefoon })) {
+        const m = bouwHerinneringMelding(c as NabelConcept, (c as { herinnering_verstuurd_op?: string }).herinnering_verstuurd_op ?? new Date().toISOString());
+        try {
+          await verstuurInterneMelding(admin, req, "afhaak-herinnering-melding", {
+            leadType: "afhaak_herinnering_melding", subject: m.subject, html: m.html, text: m.text, metadata: { concept_id: k.id },
+          });
+        } catch (e) { console.error("afhaak-herinnering: interne melding mislukt", String(e).slice(0, 200)); }
+      }
+    } else res.mislukt++;
   }
   return json({ ok: true, eenmalig, ...res });
 });

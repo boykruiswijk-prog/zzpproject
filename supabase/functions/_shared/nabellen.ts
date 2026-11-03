@@ -1,8 +1,11 @@
 // Pure regels voor de nabel-melding van niet-afgeronde aanvragen (aanvraag_concepten).
 // Gedeeld met de vitest-tests; geen Deno- of browser-API's.
 
+// Besluit Boy 3-11: de 30-minuten "Nabellen"-mail vervalt; afhakers krijgen een herinneringsmail en
+// het team krijgt pas daarna een melding (bouwHerinneringMelding).
 export const NABEL_WACHT_MINUTEN = 30;
-export const NABEL_ONDERWERP = "Nabellen: aanvraag niet afgerond";
+export const HERINNERING_MELDING_ONDERWERP = "Afgehaakte aanvraag: herinnering verstuurd";
+export const HERINNERING_MELDING_TEKST = "Deze bezoeker heeft een herinneringsmail ontvangen om de aanvraag af te maken. Je hoeft niet te bellen.";
 export const NABEL_ADMIN_LINK = "https://zpzaken.nl/admin/afgehaakt";
 
 export type NabelConcept = {
@@ -59,28 +62,29 @@ export function tijdNL(iso: string | null | undefined): string {
   return new Intl.DateTimeFormat("nl-NL", { timeZone: "Europe/Amsterdam", dateStyle: "short", timeStyle: "short" }).format(new Date(iso));
 }
 
-export function bouwNabelMail(c: NabelConcept) {
+export function bouwHerinneringMelding(c: NabelConcept, verstuurdOp: string) {
   const naam = [c.voornaam, c.achternaam].filter((x) => x && x.trim()).join(" ") || "-";
   const tel = c.telefoon?.trim() || "-";
+  const link = `${NABEL_ADMIN_LINK}?record=${encodeURIComponent(c.id)}`;
   const rijen: [string, string][] = [
     ["Naam", naam],
     ["Bedrijfsnaam", c.bedrijfsnaam?.trim() || "-"],
-    ["Telefoon", tel],
     ["E-mail", c.email?.trim() || "-"],
+    ["Telefoon", tel],
     ["Pakket", c.pakket?.trim() || "-"],
     ["Hoogste stap", `${c.max_stap ?? c.stap ?? "-"} van 5`],
-    ["Laatst actief", tijdNL(c.laatst_actief_op)],
     ["Herkomst", herkomstTekst(c.attributie)],
+    ["Herinnering verstuurd", tijdNL(verstuurdOp)],
   ];
   const html = `<div style="font-family:Arial,sans-serif;font-size:14px;line-height:1.5;color:#1a1a1a;max-width:600px">
-<h2 style="margin:0 0 12px;font-size:18px">${NABEL_ONDERWERP}</h2>
-<p style="margin:0 0 12px">Iemand is met het aanvraagformulier begonnen en heeft het na ${NABEL_WACHT_MINUTEN} minuten niet afgerond. Bel deze persoon vandaag nog.</p>
-<table style="border-collapse:collapse">${rijen.map(([k, v]) => `<tr><td style="padding:3px 12px 3px 0;color:#666">${esc(k)}</td><td style="padding:3px 0">${k === "Telefoon" && v !== "-" ? `<a href="tel:${esc(v.replace(/\s/g, ""))}" style="color:#E53E2F">${esc(v)}</a>` : esc(v)}</td></tr>`).join("")}</table>
-<p style="margin:16px 0 0"><a href="${NABEL_ADMIN_LINK}" style="color:#E53E2F">Open in de admin</a></p>
-<p style="margin:24px 0 0;font-size:12px;color:#666">Interne melding van ZP Zaken. De bezoeker krijgt hierover geen mail.</p>
+<h2 style="margin:0 0 12px;font-size:18px">${HERINNERING_MELDING_ONDERWERP}</h2>
+<p style="margin:0 0 12px">${HERINNERING_MELDING_TEKST}</p>
+<table style="border-collapse:collapse">${rijen.map(([k, v]) => `<tr><td style="padding:3px 12px 3px 0;color:#666">${esc(k)}</td><td style="padding:3px 0">${esc(v)}</td></tr>`).join("")}</table>
+<p style="margin:16px 0 0"><a href="${link}" style="color:#E53E2F">Open in de admin</a></p>
+<p style="margin:24px 0 0;font-size:12px;color:#666">Interne melding van ZP Zaken.</p>
 </div>`;
-  const text = [NABEL_ONDERWERP, "", ...rijen.map(([k, v]) => `${k}: ${v}`), "", `Admin: ${NABEL_ADMIN_LINK}`].join("\n");
-  return { subject: NABEL_ONDERWERP, html, text };
+  const text = [HERINNERING_MELDING_ONDERWERP, "", HERINNERING_MELDING_TEKST, "", ...rijen.map(([k, v]) => `${k}: ${v}`), "", `Admin: ${link}`].join("\n");
+  return { subject: HERINNERING_MELDING_ONDERWERP, html, text };
 }
 
 /** Veldnamen voor de validatielog: alleen letters, nooit waarden. */

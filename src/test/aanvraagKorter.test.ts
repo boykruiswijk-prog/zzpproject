@@ -2,12 +2,13 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { isEigenKvk, KVK_PLACEHOLDER, OUD_VOORBEELD_KVK } from "@/lib/kvkInvoer";
-import { bouwNabelMail, herkomstTekst, moetNabellen, schoneVeldnamen, NABEL_ONDERWERP, type NabelConcept } from "../../supabase/functions/_shared/nabellen";
+import { bouwHerinneringMelding, herkomstTekst, moetNabellen, schoneVeldnamen, HERINNERING_MELDING_ONDERWERP, type NabelConcept } from "../../supabase/functions/_shared/nabellen";
 import { ibanVertrouwenTekst } from "@/components/home/IbanVertrouwen";
 
 const bron = readFileSync("src/components/home/BAVApplicationModule.tsx", "utf8");
 const server = readFileSync("supabase/functions/process-bav-wizard/index.ts", "utf8");
 const nabelFn = readFileSync("supabase/functions/aanvraag-nabellen/index.ts", "utf8");
+const herinnerFn = readFileSync("supabase/functions/afhaak-herinnering/index.ts", "utf8");
 
 describe("KVK-invoer", () => {
   it("weigert placeholder, gelijke cijfers en fout formaat; geen 11-proef", () => {
@@ -76,17 +77,19 @@ describe("nabellen", () => {
     expect(moetNabellen({ ...basis, telefoon: null, email: null }, nu)).toBe(false);
     expect(moetNabellen({ ...basis, email: "test.ads-agent@zpzaken.nl" }, nu)).toBe(false);
   });
-  it("mail bevat alle gevraagde gegevens", () => {
-    const m = bouwNabelMail(basis);
-    expect(m.subject).toBe(NABEL_ONDERWERP);
-    for (const v of ["Jan Jansen", "Jansen BV", "0612345678", "maandelijks", "4 van 5", "bron google", "kanaal betaald", "/admin/afgehaakt"]) expect(m.text).toContain(v);
+  it("melding na herinnering bevat alle gevraagde gegevens", () => {
+    const m = bouwHerinneringMelding({ ...basis, email: "jan@jansen.nl" }, "2026-11-03T09:00:00Z");
+    expect(m.subject).toBe("Afgehaakte aanvraag: herinnering verstuurd");
+    expect(m.subject).toBe(HERINNERING_MELDING_ONDERWERP);
+    for (const v of ["Jan Jansen", "Jansen BV", "jan@jansen.nl", "0612345678", "maandelijks", "4 van 5", "bron google", "03-11-2026, 10:00", "/admin/afgehaakt?record=c1",
+      "Deze bezoeker heeft een herinneringsmail ontvangen om de aanvraag af te maken. Je hoeft niet te bellen."]) expect(m.text).toContain(v);
+    expect(m.text).not.toContain("Nabellen");
     expect(herkomstTekst(null)).toBe("Onbekend");
   });
-  it("functie mailt alleen intern, met claim en cron-secret", () => {
-    expect(nabelFn).toContain("verstuurInterneMelding");
-    expect(nabelFn).toContain("verify_cron_secret");
-    expect(nabelFn).toContain('.is("team_gemeld_op", null)');
-    expect(nabelFn).not.toMatch(/to:\s*c\.email/);
+  it("30-minuten nabelmail vervalt; melding komt pas na verstuurde herinnering", () => {
+    expect(nabelFn).not.toContain("verstuurInterneMelding");
+    expect(herinnerFn).toContain("bouwHerinneringMelding");
+    expect(herinnerFn.indexOf("bouwHerinneringMelding(")).toBeGreaterThan(herinnerFn.indexOf('if (status === "sent")'));
   });
   it("validatielog bewaart alleen veldnamen", () => {
     expect(schoneVeldnamen(["iban", "adresPostcode", "jan@x.nl", "1234 AB", 5])).toEqual(["iban", "adresPostcode"]);

@@ -1,5 +1,6 @@
 import { saneerInterneBron } from "../_shared/interneBron.ts";
 import { schoneVeldnamen, isInternTestEmail } from "../_shared/nabellen.ts";
+import { isTestInvoer } from "../_shared/testInvoer.ts";
 // Enige schrijfroute voor publieke formulieren (leads, pilots, nieuwsbrief, suggesties).
 // Beschermd met honeypot, invultijd-check en IP-throttle. De browser mag deze
 // tabellen niet meer direct beschrijven.
@@ -104,7 +105,7 @@ async function bewaarConcept(req: Request, body: any, json: (b: unknown, s?: num
   if (bestaand) {
     for (const k of Object.keys(payload)) if (payload[k] === null) delete payload[k];
     // Intern testadres markeert het concept alsnog als test (alleen false -> true, nooit terug).
-    if (isInternTestEmail(email)) payload.is_test = true;
+    if (isInternTestEmail(email) || isTestInvoer({ email, telefoon })) payload.is_test = true;
     // Later gegeven toestemming kan klik-ID's toevoegen; bestaande velden blijven staan.
     const nieuw = saneerAttributie(body?.attributie);
     if (nieuw) {
@@ -113,7 +114,7 @@ async function bewaarConcept(req: Request, body: any, json: (b: unknown, s?: num
     }
   } else {
     payload.attributie = saneerAttributie(body?.attributie);
-    payload.is_test = isTestInzending(email);
+    payload.is_test = isTestInzending(email) || isTestInvoer({ email, telefoon });
   }
   const { error } = await supabase.from("aanvraag_concepten").upsert(payload, { onConflict: "id" });
   if (error) {
