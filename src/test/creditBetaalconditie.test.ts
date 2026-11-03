@@ -38,6 +38,11 @@ describe("creditnota's nooit via incasso", () => {
     }
   });
 
+  it("pauze/opzeg-creditnota in polis-lifecycle kiest conditie 07 voor Type 8021", () => {
+    const s = readFileSync(join(FN, "polis-lifecycle/index.ts"), "utf8");
+    expect(s).toContain("PaymentCondition: type === TYPE_SALES_CREDIT ? creditBetaalconditie() : INV_PAYMENT_COND");
+  });
+
   it("gewone factuur behoudt zijn bestaande conditie", () => {
     const src = readFileSync(join(FN, "_shared/factuurRegel.ts"), "utf8");
     expect(src).toContain('PaymentCondition: "IN"');
