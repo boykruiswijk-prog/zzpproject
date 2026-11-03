@@ -27,6 +27,6 @@ describe("dagelijkse afhakerssamenvatting (besluit Boy 3-11)", () => {
   it("herinneringsstatus", () => {
     expect(herinneringStatus(basis({ herinnering_verstuurd_op: "2026-11-03T09:00:00Z" }))).toBe("Herinnering verstuurd op 03-11-2026, 10:00");
     expect(herinneringStatus(basis({ afhaak_geen_herinnering_reden: "afgemeld" }))).toBe("Geen herinnering: afgemeld");
-    expect(herinneringStatus(basis({}))).toBe("Geen herinnering: nog niet aan de beurt, verwacht vanaf 03-11-2026, 09:00");
+    expect(herinneringStatus(basis({}))).toBe("Geen herinnering: nog niet aan de beurt, verwacht vanaf 03-11-2026, 10:00");
   });
 });
