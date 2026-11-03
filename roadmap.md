@@ -170,3 +170,10 @@
 - [x] Auto-uitnodiging: minstens één onderneming met actief contract; twijfel blijft bij Ellen
 - [x] Admin koppelen/ontkoppelen onderneming bij persoon (bestaat?) + audit
 - [x] Droge run + live over 22 open aanvragen; tests (RLS, meerdere ondernemingen); één Ellen-melding
+
+## Volpracht omzetting eenmanszaak -> BV (Boy 3-11 13:13)
+- [x] 1. BV-contract f5402109 facturatie op wacht
+- [x] 2. Oorzaak 'Failed to create policy' + knop Omzetten naar BV (nieuwe versie, audit, Martijn aan beide), E2E op testklant
+- [x] 3. Herkenning bestaande persoon met nieuwe KvK in aanvraag
+- [x] 4. Aanvraag pas afgerond na certificaat verstuurd of handmatige keuze met reden
+- [x] 5. Ellen-melding incl. vraag Mijn ZP-uitnodiging nieuwe klant

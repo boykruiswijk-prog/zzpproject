@@ -23,6 +23,7 @@ import { contractEindStatus, kiesBavNummer, useBavRijen } from "@/lib/bavNummer"
 import { controleerAdminMfa, verwerkMfaFout } from "@/lib/adminMfaStap";
 import { standaardLaatsteDekkingsdag } from "@/lib/creditVoorstel";
 import { CreditVoorbeeld } from "./CreditVoorbeeld";
+import { OmzettenNaarBv } from "./OmzettenNaarBv";
 
 export const DEKKING_LABEL = "Laatste dag van de dekking";
 export const DEKKING_HULP = "De creditnota loopt vanaf de dag erna";
@@ -106,7 +107,7 @@ export function LopendeProducten({ ondernemingId, ondernemingNaam, leadIds = [],
                 <span className="text-xs text-muted-foreground">{p.package_type} · {p.insured_name} · start {formatDateNL(p.start_date)}</span>
                 {p.status === "geldig" ? <Badge variant="secondary">actief</Badge>
                   : <Badge variant="outline" title={p.intrek_reden ?? ""}>Beeindigd{p.ingetrokken_op ? ` per ${formatDateNL(p.ingetrokken_op)}` : ""}</Badge>}
-                {mag && p.status === "geldig" && <Button size="sm" variant="destructive" className="ml-auto" onClick={() => setDialoog({ c: [], p: [p.id] })}>Beeindigen</Button>}
+                {mag && p.status === "geldig" && <span className="ml-auto flex gap-2"><OmzettenNaarBv polis={p} vanNaam={ondernemingNaam} onKlaar={() => { setHerlaad((x) => x + 1); onGewijzigd?.(); }} /><Button size="sm" variant="destructive" onClick={() => setDialoog({ c: [], p: [p.id] })}>Beeindigen</Button></span>}
               </div>))}
           </>
         )}

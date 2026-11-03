@@ -4808,6 +4808,9 @@ export type Database = {
       leads: {
         Row: {
           aangemaakt_door: string | null
+          aanvraag_afgerond_door: string | null
+          aanvraag_afgerond_op: string | null
+          aanvraag_afgerond_reden: string | null
           achternaam: string
           activatie_log: Json
           adres_huisnummer: string | null
@@ -4913,6 +4916,9 @@ export type Database = {
         }
         Insert: {
           aangemaakt_door?: string | null
+          aanvraag_afgerond_door?: string | null
+          aanvraag_afgerond_op?: string | null
+          aanvraag_afgerond_reden?: string | null
           achternaam: string
           activatie_log?: Json
           adres_huisnummer?: string | null
@@ -5018,6 +5024,9 @@ export type Database = {
         }
         Update: {
           aangemaakt_door?: string | null
+          aanvraag_afgerond_door?: string | null
+          aanvraag_afgerond_op?: string | null
+          aanvraag_afgerond_reden?: string | null
           achternaam?: string
           activatie_log?: Json
           adres_huisnummer?: string | null
@@ -6943,6 +6952,11 @@ export type Database = {
     }
     Functions: {
       a19_team: { Args: never; Returns: undefined }
+      aanvraag_handmatig_afronden: {
+        Args: { _lead_id: string; _reden: string }
+        Returns: Json
+      }
+      aanvraag_stappen: { Args: { _lead_id: string }; Returns: Json }
       accept_portal_invitation: { Args: { _token: string }; Returns: Json }
       admin_grafiek: {
         Args: { _grafiek: string; _toon_test?: boolean }
@@ -7171,6 +7185,7 @@ export type Database = {
       }
       bav_nummer_werklijst: { Args: never; Returns: Json }
       bav_sleutel: { Args: { _t: string }; Returns: string }
+      bedrijfsnaam_kern: { Args: { _naam: string }; Returns: string }
       beoordeel_klant_certificaat: {
         Args: { _bevestigen: boolean; _id: string }
         Returns: Json
@@ -7962,6 +7977,17 @@ export type Database = {
         Args: {
           _nieuw_nummer: string
           _oude_pdf_pad?: string
+          _policy_id: string
+          _reden: string
+        }
+        Returns: Json
+      }
+      polis_omzetten: {
+        Args: {
+          _ingangsdatum: string
+          _lead_id: string
+          _naar: string
+          _oude_pdf_pad: string
           _policy_id: string
           _reden: string
         }

@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDateNL } from "@/lib/dateFormat";
+import { OmzettenNaarBv } from "./OmzettenNaarBv";
 
 type BavOptie = { nummer: string; bron: string; datum: string | null; bevestigd?: boolean };
 type Kandidaat = {
@@ -88,6 +89,18 @@ function KandidaatKaart({ leadId, k, eigenOnd, magBeslissen }: { leadId: string;
     herlaadPolissen();
   }
 
+  // Omzetting vastgelegd en de voorganger heeft nog een geldig certificaat met dit nummer: dat certificaat omzetten (geen tweede polis).
+  const { data: voorgangerPolis, refetch: herlaadVoorganger } = useQuery({
+    queryKey: ["omzetting-voorganger-polis", k.onderneming_id, k.beslissing?.bav_nummer],
+    enabled: k.beslissing?.keuze === "omzetting" && !!eigenOnd,
+    queryFn: async () => ((await supabase.from("policies").select("id,certificate_number").eq("onderneming_id", k.onderneming_id).eq("status", "geldig").eq("certificate_number", k.beslissing!.bav_nummer ?? "")).data ?? [])[0] ?? null,
+  });
+  const { data: eigenOndRij } = useQuery({
+    queryKey: ["omzetting-eigen-ond", eigenOnd],
+    enabled: !!eigenOnd && !!voorgangerPolis,
+    queryFn: async () => (await supabase.from("ondernemingen").select("id,naam,kvk").eq("id", eigenOnd!).maybeSingle()).data ?? null,
+  });
+
   async function kies(keuze: "omzetting" | "nieuwe_klant") {
     setBezig(true);
     const { error } = await (supabase.rpc as any)("omzetting_vastleggen", { _lead_id: leadId, _van: k.onderneming_id, _keuze: keuze, _bav_nummer: keuze === "omzetting" ? nummer : null, _toelichting: toelichting });
@@ -103,7 +116,7 @@ function KandidaatKaart({ leadId, k, eigenOnd, magBeslissen }: { leadId: string;
     <Card className="border-primary/40">
       <CardHeader className="pb-2">
         <CardTitle className="flex flex-wrap items-center gap-2 text-base">
-          <Badge variant="outline" className="border-primary text-primary">Mogelijke omzetting</Badge>
+          <Badge variant="outline" className="border-primary text-primary">Bestaande klant: nieuwe onderneming of omzetting?</Badge>
           <span className="break-words">Lijkt op <Link to={`/admin/klanten/${k.onderneming_id}`} className="text-primary hover:underline">{k.naam}</Link>, BAV-nummer {voorstelNummer}, klant sinds {formatDateNL(k.klant_sinds)}</span>
         </CardTitle>
       </CardHeader>
@@ -120,9 +133,15 @@ function KandidaatKaart({ leadId, k, eigenOnd, magBeslissen }: { leadId: string;
         )}
         {k.beslissing ? (
           <p className="rounded-md bg-muted p-2">
-            {k.beslissing.keuze === "omzetting" ? `Omzetting vastgelegd: BAV-nummer ${k.beslissing.bav_nummer} overgenomen` : "Vastgelegd als nieuwe klant"} op {formatDateNL(k.beslissing.beslist_op)}.
+            {k.beslissing.keuze === "omzetting" ? `Omzetting vastgelegd: BAV-nummer ${k.beslissing.bav_nummer} overgenomen` : "Vastgelegd als extra onderneming"} op {formatDateNL(k.beslissing.beslist_op)}.
           </p>
         ) : null}
+        {k.beslissing?.keuze === "omzetting" && voorgangerPolis && eigenOndRij && magBeslissen && (
+          <div className="space-y-2 rounded-md border border-primary/40 p-2 text-xs">
+            <p>Certificaat {voorgangerPolis.certificate_number} staat nog op {k.naam}. Zet het om naar {eigenOndRij.naam} in plaats van een nieuw certificaat te maken.</p>
+            <OmzettenNaarBv polis={voorgangerPolis} vanNaam={k.naam} vasteNaar={eigenOndRij} vasteLeadId={leadId} onKlaar={() => { herlaadVoorganger(); qc.invalidateQueries({ queryKey: ["lead", leadId] }); }} />
+          </div>
+        )}
         {k.beslissing?.keuze === "omzetting" && afwijkend.length > 0 && magBeslissen && (
           <div className="rounded-md border border-amber-500/50 bg-amber-500/10 p-2 text-xs space-y-2">
             <p>Het certificaat staat nog op {afwijkend.map((p) => p.certificate_number).join(", ")}. Dit moet {k.beslissing.bav_nummer} zijn. Het oude nummer blijft zichtbaar als vervangen; er gaat geen mail uit.</p>
@@ -146,8 +165,8 @@ function KandidaatKaart({ leadId, k, eigenOnd, magBeslissen }: { leadId: string;
             <div><Label>Toelichting (optioneel)</Label><Textarea rows={2} value={toelichting} onChange={(e) => setToelichting(e.target.value)} /></div>
             <p className="text-xs text-muted-foreground">Startertarief blijft bij omzetting standaard aan; afwijzen kan in de startertarief-beoordeling. Exact: de BV is een eigen debiteur met een eigen Exact-relatiecode uit de Exact-koppeling (via de gewone activatie); de Exact-relatiecode van de voorganger ({k.exact_relatie_code ?? "onbekend"}) wordt niet overgenomen.</p>
             <div className="flex flex-wrap gap-2">
-              <Button size="sm" disabled={bezig || !nummer || !eigenOnd} onClick={() => kies("omzetting")}>{bezig && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{leidend?.bevestigd === false ? `BAV-nummer ${nummer} bevestigen en omzetting vastleggen` : "Omzetting: BAV-nummer en historie overnemen"}</Button>
-              <Button size="sm" variant="outline" disabled={bezig} onClick={() => kies("nieuwe_klant")}>Nieuwe klant</Button>
+              <Button size="sm" disabled={bezig || !nummer || !eigenOnd} onClick={() => kies("omzetting")}>{bezig && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{leidend?.bevestigd === false ? `BAV-nummer ${nummer} bevestigen en omzetting vastleggen` : "Omzetting"}</Button>
+              <Button size="sm" variant="outline" disabled={bezig} onClick={() => kies("nieuwe_klant")}>Extra onderneming</Button>
             </div>
           </div>
         )}
