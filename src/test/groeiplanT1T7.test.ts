@@ -45,7 +45,7 @@ describe("Groeiplan T1-T7 (3 november)", () => {
       "/zzp-verzekering-consultant": /^Beroepsaansprakelijkheidsverzekering consultant/,
       "/zzp-verzekering-coach": /^Beroepsaansprakelijkheidsverzekering coach/,
       "/zzp-verzekering-marketing": /^Beroepsaansprakelijkheidsverzekering marketing/,
-      "/zzp-verzekering-interim-manager": /^Beroepsaansprakelijkheidsverzekering interim manager/,
+      "/zzp-verzekering-interim-manager": /^Beroepsaansprakelijkheid interim manager/,
       "/zzp-verzekering-bouw": /^Aansprakelijkheidsverzekering zzp bouw/,
     };
     for (const [p, re] of Object.entries(verwacht)) {

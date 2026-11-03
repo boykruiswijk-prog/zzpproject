@@ -276,7 +276,7 @@ export const ZEKER_KENNIS = {
     },
     {
       "path": "/zzp-verzekering-ict",
-      "title": "Beroepsaansprakelijkheidsverzekering ICT zzp: BAV + AVB | ZP Zaken",
+      "title": "Beroepsaansprakelijkheidsverzekering ICT zzp | ZP Zaken",
       "intro": "Als ICT-zzp'er verzeker je met een beroepsaansprakelijkheidsverzekering (BAV) de financiële gevolgen van een fout in je code, configuratie, implementatie of advies, en met een bedrijfsaansprakelijkheidsverzekering (AVB) schade aan personen of spullen. Bij ZP Zaken heb je beide in één polis: BAV € 5 miljoen en AVB € 2,5 miljoen per aanspraak, geen eigen risico, dagelijks opzegbaar en binnen 24 uur geregeld. Wat precies gedekt is, staat in de polisvoorwaarden."
     },
     {
@@ -301,7 +301,7 @@ export const ZEKER_KENNIS = {
     },
     {
       "path": "/zzp-verzekering-interim-manager",
-      "title": "Beroepsaansprakelijkheidsverzekering interim manager | ZP Zaken",
+      "title": "Beroepsaansprakelijkheid interim manager zzp | ZP Zaken",
       "intro": "Als interim manager of projectmanager neem je besluiten en maak je planningen waar je opdrachtgever op vertrouwt. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden."
     },
     {
@@ -321,7 +321,7 @@ export const ZEKER_KENNIS = {
     },
     {
       "path": "/zzp-verzekering-marketing",
-      "title": "Beroepsaansprakelijkheidsverzekering marketing zzp | ZP Zaken",
+      "title": "Beroepsaansprakelijkheidsverzekering marketing | ZP Zaken",
       "intro": "Als marketeer, copywriter of designer maak je werk dat de wereld in gaat. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden."
     },
     {

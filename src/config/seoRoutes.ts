@@ -395,7 +395,7 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/zzp-verzekering-ict",
-    title: "Beroepsaansprakelijkheidsverzekering ICT zzp: BAV + AVB | ZP Zaken",
+    title: "Beroepsaansprakelijkheidsverzekering ICT zzp | ZP Zaken",
     description:
       "Aansprakelijkheidsverzekering voor ICT-zzp'ers: BAV € 5 mln en AVB € 2,5 mln per aanspraak in één polis, geen eigen risico, binnen 24 uur geregeld.",
     h1: "Beroepsaansprakelijkheidsverzekering voor ICT-zzp'ers: BAV en AVB in één polis",
@@ -434,7 +434,7 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/zzp-verzekering-interim-manager",
-    title: "Beroepsaansprakelijkheidsverzekering interim manager | ZP Zaken",
+    title: "Beroepsaansprakelijkheid interim manager zzp | ZP Zaken",
     description:
       "Verzekering voor zzp interim managers en projectmanagers. BAV en AVB in één polis via Hiscox, geen eigen risico en dagelijks opzegbaar.",
     h1: "Beroepsaansprakelijkheidsverzekering voor interim managers",
@@ -470,7 +470,7 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/zzp-verzekering-marketing",
-    title: "Beroepsaansprakelijkheidsverzekering marketing zzp | ZP Zaken",
+    title: "Beroepsaansprakelijkheidsverzekering marketing | ZP Zaken",
     description:
       "Beroepsaansprakelijkheidsverzekering voor zzp marketeers, copywriters en designers. BAV en AVB in één polis via Hiscox, geen eigen risico.",
     h1: "Beroepsaansprakelijkheidsverzekering voor marketeers",
