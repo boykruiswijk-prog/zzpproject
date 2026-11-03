@@ -1618,6 +1618,13 @@
       "when": 1793703530477,
       "tag": "0230_portaltoegang_automatisch",
       "breakpoints": true
+    },
+    {
+      "idx": 231,
+      "version": "7",
+      "when": 1793703756440,
+      "tag": "0231_portaltoegang_auto_notitie_systeem",
+      "breakpoints": true
     }
   ]
 }
