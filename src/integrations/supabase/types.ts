@@ -7854,6 +7854,28 @@ export type Database = {
           status: string
         }[]
       }
+      mijn_klant_contracten_per_onderneming: {
+        Args: never
+        Returns: {
+          begin_datum: string
+          certificaatnummer: string
+          eind_datum: string
+          onderneming_id: string
+          onderneming_naam: string
+          product: string
+          status: string
+        }[]
+      }
+      mijn_ondernemingen: {
+        Args: never
+        Returns: {
+          historie: boolean
+          kvk: string
+          naam: string
+          onderneming_id: string
+          policy_ids: string[]
+        }[]
+      }
       mijn_review_kaart: { Args: never; Returns: Json }
       move_to_dlq: {
         Args: {
@@ -7915,6 +7937,18 @@ export type Database = {
       overgenomen_certificaatnummer: {
         Args: { _lead_id: string }
         Returns: string
+      }
+      persoon_onderneming_koppelen: {
+        Args: { _onderneming_id: string; _persoon_id: string }
+        Returns: Json
+      }
+      persoon_onderneming_ontkoppelen: {
+        Args: { _onderneming_id: string; _persoon_id: string; _reden: string }
+        Returns: Json
+      }
+      persoon_ondernemingen_ids: {
+        Args: { _persoon_id: string }
+        Returns: string[]
       }
       plan_opzeg_credit: {
         Args: { _aanvraag_id: string; _contract_id: string; _einddatum: string }
@@ -8077,6 +8111,7 @@ export type Database = {
         Returns: number
       }
       tel_dashboard_opbouw: { Args: never; Returns: Json }
+      tel_dubbele_klanten: { Args: never; Returns: number }
       tel_instroom_opbouw: {
         Args: { _toon_test?: boolean; _vanaf?: string }
         Returns: Json
@@ -8086,6 +8121,7 @@ export type Database = {
         Args: { _toon_test?: boolean; _vanaf?: string }
         Returns: Json
       }
+      tel_portaltoegang_open: { Args: never; Returns: number }
       tel_service_open: { Args: { _toon_test?: boolean }; Returns: number }
       verberg_review_kaart: { Args: never; Returns: boolean }
       verify_cron_secret: { Args: { p_secret: string }; Returns: boolean }
