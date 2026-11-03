@@ -67,6 +67,27 @@ Deno.serve(metWerk({ station: "exact", actie: "exact_sync", tekst: "Exact-concep
   await werkVan(req).start();
   const actie = String(body?.actie ?? "controle");
 
+  // Alleen GET: betalingscondities en alle creditnota's (Type 8021) met hun conditie. Schrijft niets.
+  if (actie === "betaalcondities_get") {
+    const { data: cfg } = await admin.from("exact_config").select("*").limit(1).maybeSingle();
+    if (!cfg?.is_actief) return json({ error: "Exact niet actief" }, 400);
+    const base = `${cfg.base_url || "https://start.exactonline.nl"}/api/v1/${String(cfg.divisie_code ?? "").trim()}`;
+    let token = await ensureValidToken(admin, cfg);
+    const get = async (pad: string) => {
+      const rows: any[] = []; let url: string | null = `${base}/${pad}`;
+      while (url && rows.length < 5000) {
+        let r = await fetch(url, { headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } });
+        if (r.status === 401) { token = await refreshAccessToken(admin, cfg); r = await fetch(url, { headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } }); }
+        if (!r.ok) return { fout: `HTTP ${r.status}: ${(await r.text()).slice(0, 200)}`, rows };
+        const d: any = (await r.json())?.d ?? {}; rows.push(...(d.results ?? [])); url = d.__next ?? null; await sleep(1100);
+      }
+      return rows;
+    };
+    return json({ alleen_get: true,
+      condities: await get("cashflow/PaymentConditions?$select=Code,Description,PaymentMethod,PaymentDays"),
+      credits: await get(`salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,InvoiceDate,InvoiceToName,Type,Status,PaymentCondition,AmountDC,YourRef,Remarks&$filter=${encodeURIComponent("Type eq 8021")}`) });
+  }
+
   // Eenmalige testmail op basis van de Logineering-factuur. Schrijft niets naar Exact.
   if (actie === "testmail") {
     const { data: l } = await admin.from("leads").select("id,voornaam,achternaam,bedrijfsnaam,exact_account_id,exact_invoice_id,exact_invoice_amount,exact_invoice_created_at,ingangsdatum")
