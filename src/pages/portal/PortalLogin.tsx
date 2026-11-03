@@ -22,6 +22,7 @@ export default function PortalLogin() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [cooldown, setCooldown] = useState(0);
+  const [toegangGevraagd, setToegangGevraagd] = useState(false);
 
   useEffect(() => {
     if (user) navigate(redirect, { replace: true });
@@ -52,8 +53,22 @@ export default function PortalLogin() {
     }
 
     setLoading(false);
+    setToegangGevraagd(false);
     setSent(true);
     setCooldown(THROTTLE_MS / 1000);
+  };
+
+  // Zelfde neutrale route: zonder account maakt de server een toegangsaanvraag (en nodigt bekende klanten direct uit).
+  const vraagToegang = async () => {
+    setLoading(true);
+    try {
+      await supabase.functions.invoke("send-portal-magiclink", { body: { email: email.trim(), redirect } });
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.debug("[portal-login] toegang aanvragen:", err);
+    }
+    setLoading(false);
+    setToegangGevraagd(true);
   };
 
   return (
@@ -74,6 +89,16 @@ export default function PortalLogin() {
               <p className="text-sm text-muted-foreground">
                 Als dit e-mailadres bij ons bekend is, ontvang je binnen enkele minuten een inloglink. Geen mail ontvangen? Gebruik het e-mailadres waarmee je klant bent geworden, of neem contact op via 020 457 3077 of info@zpzaken.nl.
               </p>
+              <div className="rounded-md border border-border p-3 text-sm">
+                {toegangGevraagd ? (
+                  <p className="text-muted-foreground">Bedankt. Hoort dit adres bij een klant van ons, dan ontvang je een uitnodiging per e-mail. Anders nemen we contact met je op.</p>
+                ) : (<>
+                  <p className="mb-2">Heb je nog geen account voor Mijn ZP? Vraag toegang aan, dan sturen we je een uitnodiging.</p>
+                  <Button type="button" variant="accent" className="w-full" disabled={loading} onClick={vraagToegang}>
+                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Toegang aanvragen"}
+                  </Button>
+                </>)}
+              </div>
               <Button
                 type="button"
                 variant="outline"

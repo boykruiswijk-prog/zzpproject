@@ -65,7 +65,7 @@ Deno.serve(async (req) => {
     }
     if (!toegang) {
       // Onbekend of nog niet uitgenodigd: intern een aanvraag "portaltoegang" (geen mail aan de bezoeker).
-      await meldPortaltoegang(admin, email, !!userId).catch((e) => console.error("[send-portal-magiclink] portaltoegang", e?.message));
+      await meldPortaltoegang(admin, email, !!userId, req).catch((e) => console.error("[send-portal-magiclink] portaltoegang", e?.message));
       return NEUTRAL();
     }
 

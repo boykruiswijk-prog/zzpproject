@@ -71,6 +71,13 @@ export function PortaltoegangStappen({ aanvraag, onGewijzigd }: { aanvraag: Serv
 
   return (
     <ol className="space-y-3 text-sm">
+      {d.automatisch && (
+        <li className="rounded-md border border-border bg-muted/40 p-3">
+          {d.automatisch.besluit === "uitgenodigd"
+            ? <p>Automatisch uitgenodigd{d.automatisch.op ? ` op ${formatDateTimeNL(d.automatisch.op)}` : ""}.</p>
+            : <p><span className="font-medium">Niet automatisch uitgenodigd:</span> {d.automatisch.reden}. Beoordeel deze aanvraag zelf.</p>}
+        </li>
+      )}
       <Stap nr={1} klaar={!!aanvraag.geverifieerd || bekend === true} titel="E-mailverificatie">
         {aanvraag.geverifieerd ? <Badge variant="secondary">Geverifieerd</Badge> : (
           <div className="rounded-md border border-amber-500/50 bg-amber-500/5 p-2">
