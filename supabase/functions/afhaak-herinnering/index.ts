@@ -39,9 +39,7 @@ Deno.serve(async (req) => {
     const { data, error } = await admin.rpc("afhaak_eenmalig_kandidaten");
     if (error) return json({ error: error.message }, 500);
     lijst = ((data ?? []) as Kandidaat[]).filter((k) => !!geldigEmail(k.email));
-  }
-  // Bekende placeholderinvoer krijgt nooit een herinnering (vangnet naast is_test).
-  lijst = lijst.filter((k) => !isTestInvoer({ email: k.email })); else {
+  } else {
     const { data: cfg } = await admin.from("facturatie_config").select("herinnering_afhaak_vanaf").eq("id", 1).maybeSingle();
     if (!cfg?.herinnering_afhaak_vanaf) return json({ skipped: "uitgeschakeld" });
     const { data, error } = await admin.rpc("afhaak_herinnering_kandidaten", { _limit: 25 });
