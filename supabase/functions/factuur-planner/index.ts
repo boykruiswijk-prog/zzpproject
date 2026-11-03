@@ -3,6 +3,7 @@
 // - AAN → per kandidaat: claim (unieke rij) → Exact GET op sleutel → pas dan POST concept.
 // Geen mails naar klanten; maximaal één alarmmail per dag naar het team.
 // deno-lint-ignore-file no-explicit-any
+import { werkContractStandBij } from "../_shared/contractStand.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { ensureValidToken, refreshAccessToken } from "../_shared/exactToken.ts";
 import { requireSupervisor } from "../_shared/teamAuth.ts";
@@ -384,14 +385,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
         statussenBijgewerkt++;
         if (nieuw === "verwerkt") upd.verwerkt_op = new Date().toISOString();
         await admin.from("factuur_planning_log").insert({ planning_id: p.id, klant_contract_id: p.klant_contract_id, actie: "status", oud: { status: p.status }, nieuw: { status: nieuw } });
-        if (nieuw === "verwerkt") {
-          const { data: k } = await admin.from("klant_contracten").select("gefactureerd_tm,volgende_factuurdatum").eq("id", p.klant_contract_id).single();
-          const volgende = new Date(new Date(`${p.periode_eind}T00:00:00Z`).getTime() + 86400000).toISOString().slice(0, 10);
-          if (!k?.gefactureerd_tm || k.gefactureerd_tm < p.periode_eind) {
-            await admin.from("klant_contracten").update({ gefactureerd_tm: p.periode_eind, volgende_factuurdatum: volgende, gefactureerd_tm_bron: "planner" }).eq("id", p.klant_contract_id);
-            await admin.from("sensitive_audit_log").insert({ target_table: "klant_contracten", target_id: p.klant_contract_id, actie: "planner_verwerkt", veld: "gefactureerd_tm", oude_waarde: k?.gefactureerd_tm ?? null, nieuwe_waarde: p.periode_eind, details: { planning_id: p.id } });
-          }
-        }
+        if (nieuw === "verwerkt") await werkContractStandBij(admin, p, "factuur-planner");
       }
       await admin.from("factuur_planning").update(upd).eq("id", p.id);
     } };
