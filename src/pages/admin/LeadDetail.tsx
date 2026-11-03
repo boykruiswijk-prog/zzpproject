@@ -11,6 +11,7 @@ import { StartertariefControle } from "@/components/admin/StartertariefControle"
 import { VlagBalk } from "@/components/admin/LeadVlag";
 import { LeadBavNummer } from "@/components/admin/crm/LeadBavNummer";
 import { OmzettingKaart, OmzettingLabel } from "@/components/admin/crm/Omzetting";
+import { AanvraagStappen } from "@/components/admin/AanvraagStappen";
 import { teamWaarschuwingHandmatig } from "../../../supabase/functions/_shared/sectorRegels";
 import { useState } from "react";
 import { KlantLinkVoorLead } from "@/components/admin/KlantLinkVoorLead";
@@ -277,6 +278,7 @@ export default function AdminLeadDetail() {
           {/* Lead info */}
           <div className="min-w-0 space-y-6 lg:col-span-2">
             <OmzettingKaart leadId={lead.id} magBeslissen={isSupervisorOrAdmin || isVerzekering} />
+            {lead.type === "verzekering_aanvraag" && <AanvraagStappen leadId={lead.id} magAfronden={isSupervisorOrAdmin || isVerzekering} />}
             <StartertariefControle lead={lead as any} magBeoordelen={isSupervisorOrAdmin || isVerzekering} />
             {lead.type === "verzekering_aanvraag" && <IngangsdatumAanpassen lead={lead as any} magWijzigen={isSupervisorOrAdmin || isVerzekering} />}
             {String(lead.gekozen_pakket ?? "").includes("cyber") && <CyberDatums leadId={lead.id} ingang={lead.cyber_ingangsdatum} eind={lead.cyber_einddatum} nieuwePer={lead.cyber_nieuwe_voorwaarden_per} />}
