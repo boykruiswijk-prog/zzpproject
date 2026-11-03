@@ -11,7 +11,7 @@
 - Work descriptions share werkzaamheden.ts limits (forms and handlers); manual approval uses generate-certificate, service-only leg_handmatige_acceptatie_vast (atomic audit) and immutable SEPA evidence; release checks mail logs and invitations before effects, dry runs only on test leads; explicit portal approval, never a fake Exact ID. Why: release only missing documents after human approval, billing unchanged.
 - Evi access/discovery/robots use eviPagina.ts; hidden means preview-only, no prerender. Source stays separate from Ads. Why: one switch.
 - AOV uses aovPagina.ts; the tool mounts after consent signup with its ref and accepts bounded height messages only from its own exact-origin frame. CSP allows only that frame host. AOV-only daily retention anonymizes in place; team handling conservatively extends the contact clock. Why: preserve privacy, counts and external input isolation.
-- F9 AOV: contact signup (name, email, optional phone, consent only) goes solely through RPC aov_aanmelden, which validates, rate-limits via form_rate_limit and inserts the matching aov_doorverwijzingen row with the same id as ref; direct referral clicks remain the minimal insert-only exception; admin reads/updates use has_role+aal2 RPCs; no automatic mails. Why: aanbrenger role without AFM income-insurance licence, no AOV content collected.
+- F9 AOV: contact signup (name, email, optional phone, consent) only via RPC aov_aanmelden (validates, form_rate_limit, inserts aov_doorverwijzingen with id = ref); referral clicks stay the minimal insert-only exception; admin uses has_role+aal2 RPCs; no automatic mails. Why: aanbrenger without AFM AOV licence.
 
 - ZP icons (ICO, embedded-PNG SVG, PNG and both manifests) share versioned head links in pages and redirect stubs; static assets precede the unforced SPA fallback. Why: consistent brand and crawler access.
 - Derive ZP icons from docs/brand/favicon.png.b64 or public/favicon-192x192.png, without redrawing/cropping. Why: preserve the approved mark.
@@ -42,7 +42,7 @@
 - Scripts never import React (SSR crashes); markdown uses articleMarkdownUrl (safe tel: links). Both llms generators use published articles. Why: current article discovery.
 - Public combined cyber coverage/help uses cyberPubliek.CYBER_DEKKING_EN_HULP; shared contractual constants stay unchanged. Why: consistent punctuation without altering consent, mail or certificate text.
 
-- Elke wijziging die zichtbaar is op de website of in de admin krijgt bij het publiceren precies één rij in public.wijzigingsmeldingen, in gewone taal voor Ellen (geen technische termen of bestandsnamen); de trigger wijzigingsmelding_mailen en het vangnet (cron) mailen via Edge Function wijziging-mailen. Waarom: Ellen weet altijd wat er veranderd is.
+- Elke zichtbare website/admin-wijziging krijgt bij publiceren precies één rij in public.wijzigingsmeldingen in gewone taal voor Ellen; trigger wijzigingsmelding_mailen plus cron-vangnet mailen via wijziging-mailen. Waarom: Ellen weet wat er veranderd is.
 - /scherm en /tv: data alleen via scherm-data (SCHERM_TOKEN of apparaattoken, alleen sha-256 in scherm_apparaten; koppelen via scherm-koppel); machine_activiteit-triggers laten nooit de actie falen; fout = cache met X-Cache stale + verouderd_sinds; pagina herlaadt bij nieuwe build (src/lib/versieControle.ts). Waarom: intrekbare toegang, stilstand zichtbaar.
 
 <!-- LOVABLE:BEGIN -->
@@ -57,4 +57,4 @@
 - Trigger artikel_hiscox_acceptatie_check plus hiscoxAcceptatie.test.ts reject text attributing acceptance to Hiscox. Why: automation cannot publish it.
 - A20 afhaakmail: alleen via afhaak_herinnering_kandidaten/_claim, geclaimd nooit opnieuw; enhanced conversions alleen browser-SHA-256 e-mail. Waarom: geen dubbele mail of leesbare data.
 - Policies without a lead (policies.onderneming_id) are linked to the onderneming's single confirmed portal account by trigger policies_onderneming_portal_user and at invite; Mijn ZP falls back to RPC mijn_klant_contracten for contracts without a policy. Why: pre-online customers must see their certificate after login.
-- Curated article-to-landing-page links live in src/data/artikelInterneLinks.ts and render in ArtikelDetail, not in article content. Why: reviewable, ships only on publish, prerendered.
+- Article-to-landing links: src/data/artikelInterneLinks.ts, rendered by ArtikelDetail, never article content. Why: ships only on publish.
