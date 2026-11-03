@@ -37,6 +37,15 @@ export async function verwerkPortaltoegangAuto(admin: any, req: Request, aanvraa
   const since = new Date(Date.now() - 24 * 3600_000).toISOString();
   const { count } = await admin.from("lead_notification_log").select("id", { count: "exact", head: true })
     .in("lead_type", ["portal_invite"]).ilike("recipient", email).eq("status", "sent").gte("created_at", since);
+  // Zelfde adres net (10 min) al uitgenodigd: geen tweede mail, aanvraag alleen afronden als dubbel.
+  const kort = new Date(Date.now() - 10 * 60_000).toISOString();
+  const { count: recent } = await admin.from("lead_notification_log").select("id", { count: "exact", head: true })
+    .eq("lead_type", "portal_invite").ilike("recipient", email).eq("status", "sent").gte("created_at", kort);
+  if ((recent ?? 0) > 0) {
+    if (!opts.droog) await admin.from("klant_service_aanvragen").update({ status: "afgerond", behandeld_op: new Date().toISOString(), onderneming_id: m.onderneming_id,
+      details: { ...(a.details ?? {}), automatisch: { besluit: "dubbel", reden: "zelfde adres zojuist al uitgenodigd", op: new Date().toISOString() }, afgerond: { door: null, op: new Date().toISOString(), toelichting: "dubbele aanvraag, uitnodiging al verstuurd" } } }).eq("id", a.id);
+    return { aanvraag_id: aanvraagId, email, besluit: "overgeslagen", reden: "zelfde adres zojuist al uitgenodigd", klant: m.klant };
+  }
   if (!binnenMisbruikrem(count ?? 0)) {
     if (!opts.droog) await zetReden(admin, a, "geen_match", "misbruikrem: al 3 uitnodigingen in 24 uur");
     return { aanvraag_id: aanvraagId, email, besluit: "geen_match", reden: "misbruikrem: al 3 uitnodigingen in 24 uur", klant: m.klant };
