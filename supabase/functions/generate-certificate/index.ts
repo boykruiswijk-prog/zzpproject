@@ -73,7 +73,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
     await werkVan(req).start();
     const body = await req.json();
     const { lead_id, policy_data } = body;
-    const actie: "nieuw" | "aanpassen" | "intrekken" | "mailen" | "nummer_overnemen" | "nummer_wijzigen" | "cyber_toevoegen" = body.actie || "nieuw";
+    const actie: "nieuw" | "aanpassen" | "intrekken" | "mailen" | "nummer_overnemen" | "nummer_wijzigen" | "cyber_toevoegen" | "omzetten" = body.actie || "nieuw";
     const json = (b: unknown, status = 200) =>
       new Response(JSON.stringify(b), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
@@ -177,6 +177,25 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
           const { data: l } = await adminClient.from("leads").select("kvk_nummer").eq("id", bestaand.lead_id).maybeSingle();
           kvkNummerBron = l?.kvk_nummer ?? null;
         }
+      } else if (actie === "omzetten") {
+        // Omzetten naar BV: zelfde polis en BAV-nummer naar de nieuwe onderneming als nieuwe versie; oude PDF bewaard; nooit mail.
+        const naar = typeof body.naar_onderneming_id === "string" ? body.naar_onderneming_id : "";
+        const datum = typeof body.ingangsdatum === "string" && /^\d{4}-\d{2}-\d{2}$/.test(body.ingangsdatum) ? body.ingangsdatum : "";
+        const reden = typeof body.reden === "string" ? body.reden.trim() : "";
+        if (!naar || !datum) return json({ error: "Kies de nieuwe onderneming en de ingangsdatum" }, 400);
+        if (reden.length < 10) return json({ error: "Toelichting is verplicht (minimaal 10 tekens)" }, 400);
+        let oudePdfPad: string | null = null;
+        if (bestaand.pdf_url) {
+          oudePdfPad = `versies/${bestaand.certificate_number}-v${bestaand.versie}-omgezet-${Date.now()}.pdf`;
+          const { error: cErr } = await adminClient.storage.from("certificates").copy(bestaand.pdf_url, oudePdfPad);
+          if (cErr) return json({ error: `Oude PDF kon niet bewaard worden: ${cErr.message}` }, 500);
+        }
+        const { error: rErr } = await userClient.rpc("polis_omzetten", { _policy_id: bestaand.id, _naar: naar, _ingangsdatum: datum, _reden: reden, _lead_id: typeof body.naar_lead_id === "string" ? body.naar_lead_id : null, _oude_pdf_pad: oudePdfPad });
+        if (rErr) return json({ error: rErr.message }, 409);
+        const { data: upd } = await adminClient.from("policies").select("*").eq("id", bestaand.id).single();
+        policy = upd;
+        const { data: o } = await adminClient.from("ondernemingen").select("kvk").eq("id", naar).maybeSingle();
+        kvkNummerBron = o?.kvk ?? null;
       } else if (actie === "nummer_overnemen") {
         // Omzetting vastgelegd: nummer vervangen door het overgenomen BAV-nummer en PDF opnieuw maken. Nooit mail.
         let oudePdfPad: string | null = null;
@@ -384,6 +403,9 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
       if (policyError) {
         console.error("Policy insert error:", policyError);
         if (/Geen bekend BAV-nummer|staat al op een certificaat/.test(policyError.message)) return json({ error: policyError.message, code: "geen_nummer" }, 409);
+        if ((policyError as any).code === "23505" || /policies_certificate_number_geldig_key/.test(policyError.message)) {
+          return json({ error: "Dit BAV-nummer staat al op een geldig certificaat van een andere onderneming. Is dit een omzetting (bijvoorbeeld eenmanszaak naar BV)? Gebruik dan \"Omzetten naar BV\" bij het bestaande certificaat.", code: "nummer_al_geldig" }, 409);
+        }
         return json({ error: "Failed to create policy", details: policyError.message }, 500);
       }
       policy = ins;
