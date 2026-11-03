@@ -26,6 +26,7 @@ const uitzonderingen: Record<string, string> = {
   "mcp": "Public read-only knowledge/services",
   "otentica-webhook": "Provider HMAC signature or provider secret",
   "polis-reminder-cron": "Vault cron-secret only",
+  "portaltoegang-auto": "Vault cron-secret only",
   "portal-invite-login": "Customer invitation token",
   "process-bav-wizard": "Public application with spam guard",
   "process-email-queue": "Service-role machine token only",
