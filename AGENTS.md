@@ -43,7 +43,6 @@
 - Public combined cyber coverage/help uses cyberPubliek.CYBER_DEKKING_EN_HULP; shared contractual constants stay unchanged. Why: consistent punctuation without altering consent, mail or certificate text.
 
 - Elke zichtbare website/admin-wijziging krijgt bij publiceren precies één rij in public.wijzigingsmeldingen in gewone taal voor Ellen; trigger wijzigingsmelding_mailen plus cron-vangnet mailen via wijziging-mailen. Waarom: Ellen weet wat er veranderd is.
-- /scherm en /tv: data alleen via scherm-data (SCHERM_TOKEN of apparaattoken, alleen sha-256 in scherm_apparaten; koppelen via scherm-koppel); machine_activiteit-triggers laten nooit de actie falen; fout = cache met X-Cache stale + verouderd_sinds; pagina herlaadt bij nieuwe build (src/lib/versieControle.ts). Waarom: intrekbare toegang, stilstand zichtbaar.
 
 <!-- LOVABLE:BEGIN -->
 - Live scenes/effects are lazy; demo events stay in browser memory. Journey/timeline aggregates use service-only scherm_stromen via scherm-data. Why: site performance and visitor privacy.
