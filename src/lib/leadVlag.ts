@@ -29,10 +29,10 @@ export function filterOpTab<T extends MetVlag & { status?: string }>(leads: T[],
   return leads;
 }
 
-/** Alleen aanvragen: een actieve polis is geen open aanvraag. Alle/Gemarkeerd blijven intact. */
-export function filterAanvragenOpTab<T extends MetVlag & { status?: string }>(leads: T[], tab: VlagTab, vandaag: string, toonAfgesloten = false): T[] {
+/** Alleen aanvragen: een actieve polis is pas geen open aanvraag als de aanvraag is afgerond (certificaat verstuurd of handmatig met reden). Alle/Gemarkeerd blijven intact. */
+export function filterAanvragenOpTab<T extends MetVlag & { status?: string; aanvraag_afgerond_op?: string | null }>(leads: T[], tab: VlagTab, vandaag: string, toonAfgesloten = false): T[] {
   const rijen = filterOpTab(leads, tab, vandaag, toonAfgesloten);
-  return tab === "te_doen" ? rijen.filter((l) => l.status !== "actief") : rijen;
+  return tab === "te_doen" ? rijen.filter((l) => l.status !== "actief" || !l.aanvraag_afgerond_op) : rijen;
 }
 
 /** Validatie zoals de server: notitie 3-500 tekens, datum verplicht bij 'later'. */
