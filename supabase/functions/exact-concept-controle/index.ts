@@ -171,8 +171,12 @@ Deno.serve(metWerk({ station: "exact", actie: "exact_sync", tekst: "Exact-concep
       nieuwVerwijderd.push(rij);
     } else if (c.status === "bestaat") {
       const verwerkt = isVerwerkt(c);
-      await admin.from("factuur_planning").update({ laatst_gecontroleerd_op: nu, ...(c.exactStatus != null ? { exact_status: c.exactStatus } : {}),
-        ...(verwerkt ? { exact_invoice_number: c.nummer, status: "verwerkt", verwerkt_op: nu } : {}) }).eq("id", p.id).eq("status", "concept_aangemaakt");
+      const { data: bijgewerkt } = await admin.from("factuur_planning").update({ laatst_gecontroleerd_op: nu, ...(c.exactStatus != null ? { exact_status: c.exactStatus } : {}),
+        ...(verwerkt ? { exact_invoice_number: c.nummer, status: "verwerkt", verwerkt_op: nu } : {}) }).eq("id", p.id).eq("status", "concept_aangemaakt").select("id");
+      if (verwerkt && (bijgewerkt ?? []).length) {
+        await admin.from("factuur_planning_log").insert({ planning_id: p.id, klant_contract_id: p.klant_contract_id, actie: "status", oud: { status: "concept_aangemaakt" }, nieuw: { status: "verwerkt", bron: "exact-concept-controle" } });
+        await werkContractStandBij(admin, p, "exact-concept-controle");
+      }
       if (verwerkt) afgesloten.push({ soort: "planning", id: p.id, naam: rij.naam, periode: rij.bedrijf, nummer: c.nummer, status: c.exactStatus });
       if (!verwerkt && !c.nummer && werkdagenSinds(rij.sinds, vandaag) > 2) langOpen.push({ ...rij, werkdagen: werkdagenSinds(rij.sinds, vandaag) });
     } else fouten.push({ ...rij, fout: c.fout });
