@@ -3274,7 +3274,7 @@ export type Database = {
       factuur_credit_planning: {
         Row: {
           aangemaakt_op: string
-          aanvraag_id: string
+          aanvraag_id: string | null
           bedrag: number | null
           beoordeeld_door: string | null
           beoordeeld_door_naam: string | null
@@ -3308,7 +3308,7 @@ export type Database = {
         }
         Insert: {
           aangemaakt_op?: string
-          aanvraag_id: string
+          aanvraag_id?: string | null
           bedrag?: number | null
           beoordeeld_door?: string | null
           beoordeeld_door_naam?: string | null
@@ -3342,7 +3342,7 @@ export type Database = {
         }
         Update: {
           aangemaakt_op?: string
-          aanvraag_id?: string
+          aanvraag_id?: string | null
           bedrag?: number | null
           beoordeeld_door?: string | null
           beoordeeld_door_naam?: string | null
