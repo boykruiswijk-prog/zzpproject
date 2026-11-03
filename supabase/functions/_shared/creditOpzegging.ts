@@ -2,7 +2,8 @@
 // Hergebruikt exact de naar-rato-regel van polis-lifecycle (calculatePauzeCredit):
 // dagprijs = periodebedrag / dagen in de gefactureerde periode, × resterende dagen (inclusief).
 import { calculatePauzeCredit } from "./polisProRata.ts";
-import { exactRegelBedrag } from "./factuurTekst.ts";
+import { exactRegelBedrag, regelOmschrijving } from "./factuurTekst.ts";
+import { creditBetaalconditie } from "./creditBetaalconditie.ts";
 
 export type GefactureerdePeriode = { periode_start: string; periode_eind: string; bedrag: number };
 
@@ -88,11 +89,28 @@ export function oudSysteemCreditPayload(c: {
     return l;
   });
   return {
-    InvoiceTo: c.exact_account_id, OrderedBy: c.exact_account_id, Journal: "70", PaymentCondition: "IN",
+    InvoiceTo: c.exact_account_id, OrderedBy: c.exact_account_id, Journal: "70", PaymentCondition: creditBetaalconditie(),
     Type: 8021, Status: 20, InvoiceDate: nu, OrderDate: nu,
     YourRef: c.creditsleutel,
     Remarks: `${c.creditsleutel} – ${oudSysteemOmschrijving(c.einddatum, c.credit_vanaf, c.credit_tm)}`,
     Description: `Creditnota opzegging per ${nl(c.einddatum)}`.slice(0, 60),
     SalesInvoiceLines: lijnen,
   };
+}
+
+/** Exact-payload voor een plannercreditnota (opzegging of correctie) bij een bestaande factuur. Concept (Status 20), nooit incasso. */
+export function plannerCreditPayload(c: {
+  exact_account_id: string; item: string; btw: string; gl?: string | null; bedrag: number; credit_vanaf: string; credit_tm: string;
+  origineel_factuurnummer: string; creditsleutel: string; vandaag: string; bron?: string | null;
+}) {
+  const omschrijving = c.bron === "correctie"
+    ? `${regelOmschrijving("premie", c.credit_vanaf, c.credit_tm).replace(" BAV-AVB premie", "")} correctie betaalwijze`.slice(0, 60)
+    : regelOmschrijving("restitutie_opzegging", c.credit_vanaf, c.credit_tm);
+  const regel: Record<string, unknown> = { Item: c.item, ...exactRegelBedrag(8021, Number(c.bedrag)), VATCode: c.btw, Description: omschrijving,
+    StartTime: `${c.credit_vanaf}T00:00:00`, EndTime: `${c.credit_tm}T00:00:00` };
+  if (c.gl) regel.GLAccount = c.gl;
+  const nu = `${c.vandaag}T00:00:00`;
+  return { InvoiceTo: c.exact_account_id, OrderedBy: c.exact_account_id, Journal: "70", PaymentCondition: creditBetaalconditie(),
+    Type: 8021, Status: 20, InvoiceDate: nu, OrderDate: nu, YourRef: c.origineel_factuurnummer, Remarks: c.creditsleutel,
+    Description: `Creditnota bij factuur ${c.origineel_factuurnummer}`.slice(0, 60), SalesInvoiceLines: [regel] };
 }

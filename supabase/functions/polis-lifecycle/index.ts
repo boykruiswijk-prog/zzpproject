@@ -1,4 +1,5 @@
 import { requireMfa } from "../_shared/teamAuth.ts";
+import { creditBetaalconditie } from "../_shared/creditBetaalconditie.ts";
 import { nieuweCyber, basisPakket, CYBER_LOOPTIJD } from "../_shared/cyber.ts";
 import { starterStatus } from "../_shared/starterActivatie.ts";
 // Polis-lifecycle: pauzeren / hervatten / opzeggen / heractiveren
@@ -175,7 +176,7 @@ async function postSalesInvoice(opts: {
     InvoiceTo: lead.exact_account_id,
     OrderedBy: lead.exact_account_id,
     Journal: INV_JOURNAL,
-    PaymentCondition: INV_PAYMENT_COND,
+    PaymentCondition: type === TYPE_SALES_CREDIT ? creditBetaalconditie() : INV_PAYMENT_COND,
     Type: type,
     Status: INV_STATUS_CONCEPT,
     InvoiceDate: nowIso,

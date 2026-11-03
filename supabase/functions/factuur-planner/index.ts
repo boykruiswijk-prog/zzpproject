@@ -13,7 +13,7 @@ import { planningsSleutel, planningStatusUitExact } from "../_shared/factuurPeri
 import { getGlAccountIdVoorCode, GlNietGevondenError } from "../_shared/exactGl.ts";
 import { bouwFactuurPayload, glUitCache, btwCode, btwPastBijGrootboek, BtwNietPassendError, controleerBtw } from "../_shared/factuurRegel.ts";
 import { exactRegelBedrag } from "../_shared/factuurTekst.ts";
-import { berekenOpzegCredit, berekenOudSysteemCredit, oudSysteemCreditPayload } from "../_shared/creditOpzegging.ts";
+import { berekenOpzegCredit, berekenOudSysteemCredit, oudSysteemCreditPayload, plannerCreditPayload } from "../_shared/creditOpzegging.ts";
 import { metExactMelding } from "../_shared/exactBoekingMelding.ts";
 import { metWerk, werkVan } from "../_shared/machineWerk.ts";
 import { maakExactTempo, postMetSleutel, ExactTijdelijkError, isTijdelijkeStatus, type PostUitkomst } from "../_shared/exactTempo.ts";
@@ -514,14 +514,8 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
           await admin.from("sensitive_audit_log").insert({ target_table: "klant_contracten", target_id: c.klant_contract_id, actie: "creditnota_concept_aangemaakt", veld: "factuur_credit_planning", nieuwe_waarde: c.creditsleutel, details: { credit_id: c.id, bedrag: c.bedrag, bron: "oud_systeem", invoice_id: d.InvoiceID } });
           continue;
         }
-        const regel: any = { Item: c._item, ...exactRegelBedrag(8021, Number(c.bedrag)), VATCode: c._btw,
-          Description: regelOmschrijving("restitutie_opzegging", c.credit_vanaf, c.credit_tm),
-          StartTime: `${c.credit_vanaf}T00:00:00`, EndTime: `${c.credit_tm}T00:00:00` };
-        if (gl) regel.GLAccount = gl;
-        const nu = `${vandaag}T00:00:00`;
-        const payload: any = { InvoiceTo: c.exact_account_id, OrderedBy: c.exact_account_id, Journal: "70", PaymentCondition: "IN",
-          Type: 8021, Status: 20, InvoiceDate: nu, OrderDate: nu, YourRef: c.origineel_factuurnummer, Remarks: c.creditsleutel,
-          Description: `Creditnota bij factuur ${c.origineel_factuurnummer}`.slice(0, 60), SalesInvoiceLines: [regel] };
+        const payload: any = plannerCreditPayload({ exact_account_id: c.exact_account_id, item: c._item, btw: c._btw, gl, bedrag: Number(c.bedrag),
+          credit_vanaf: c.credit_vanaf, credit_tm: c.credit_tm, origineel_factuurnummer: c.origineel_factuurnummer, creditsleutel: c.creditsleutel, vandaag, bron: c.bron });
         const r = await exact("salesinvoice/SalesInvoices", { method: "POST", body: JSON.stringify(payload) });
         if (!r.ok) {
           if (r.status >= 500) throw new Error(`credit POST onzeker HTTP ${r.status}`);
