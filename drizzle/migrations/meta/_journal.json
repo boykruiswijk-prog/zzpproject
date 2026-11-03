@@ -1597,6 +1597,13 @@
       "when": 1793645453312,
       "tag": "0227_review_crm_notitie",
       "breakpoints": true
+    },
+    {
+      "idx": 228,
+      "version": "7",
+      "when": 1793689042681,
+      "tag": "0228_factuur_planner_vervolg_15min",
+      "breakpoints": true
     }
   ]
 }
