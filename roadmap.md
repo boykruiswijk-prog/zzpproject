@@ -173,7 +173,7 @@
 
 ## Volpracht omzetting eenmanszaak -> BV (Boy 3-11 13:13)
 - [x] 1. BV-contract f5402109 facturatie op wacht
-- [ ] 2. Oorzaak 'Failed to create policy' + knop Omzetten naar BV (nieuwe versie, audit, Martijn aan beide), E2E op testklant
-- [ ] 3. Herkenning bestaande persoon met nieuwe KvK in aanvraag
-- [ ] 4. Aanvraag pas afgerond na certificaat verstuurd of handmatige keuze met reden
-- [ ] 5. Ellen-melding incl. vraag Mijn ZP-uitnodiging nieuwe klant
+- [x] 2. Oorzaak 'Failed to create policy' + knop Omzetten naar BV (nieuwe versie, audit, Martijn aan beide), E2E op testklant
+- [x] 3. Herkenning bestaande persoon met nieuwe KvK in aanvraag
+- [x] 4. Aanvraag pas afgerond na certificaat verstuurd of handmatige keuze met reden
+- [x] 5. Ellen-melding incl. vraag Mijn ZP-uitnodiging nieuwe klant
