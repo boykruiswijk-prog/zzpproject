@@ -276,13 +276,18 @@ export const ZEKER_KENNIS = {
     },
     {
       "path": "/zzp-verzekering-ict",
-      "title": "Aansprakelijkheidsverzekering ICT zzp: BAV + AVB | ZP Zaken",
+      "title": "Beroepsaansprakelijkheidsverzekering ICT zzp: BAV + AVB | ZP Zaken",
       "intro": "Als ICT-zzp'er verzeker je met een beroepsaansprakelijkheidsverzekering (BAV) de financiële gevolgen van een fout in je code, configuratie, implementatie of advies, en met een bedrijfsaansprakelijkheidsverzekering (AVB) schade aan personen of spullen. Bij ZP Zaken heb je beide in één polis: BAV € 5 miljoen en AVB € 2,5 miljoen per aanspraak, geen eigen risico, dagelijks opzegbaar en binnen 24 uur geregeld. Wat precies gedekt is, staat in de polisvoorwaarden."
     },
     {
       "path": "/beroepsaansprakelijkheidsverzekering",
       "title": "Beroepsaansprakelijkheidsverzekering zzp | ZP Zaken",
       "intro": "Een beroepsaansprakelijkheidsverzekering verzekert je, volgens de polisvoorwaarden, als een opdrachtgever je aansprakelijk stelt voor schade door een fout in je werk. Bij ZP Zaken kost die vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting."
+    },
+    {
+      "path": "/bedrijfsaansprakelijkheidsverzekering",
+      "title": "Bedrijfsaansprakelijkheidsverzekering zzp (AVB) | ZP Zaken",
+      "intro": "Een bedrijfsaansprakelijkheidsverzekering (AVB) is er voor schade aan personen of spullen van anderen tijdens je werk. Bij ZP Zaken krijg je de AVB niet los, maar altijd samen met de beroepsaansprakelijkheidsverzekering (BAV) in één polis, voor € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting."
     },
     {
       "path": "/bav-zzp",
@@ -296,7 +301,7 @@ export const ZEKER_KENNIS = {
     },
     {
       "path": "/zzp-verzekering-interim-manager",
-      "title": "Verzekering interim manager zzp | BAV en AVB",
+      "title": "Beroepsaansprakelijkheidsverzekering interim manager | ZP Zaken",
       "intro": "Als interim manager of projectmanager neem je besluiten en maak je planningen waar je opdrachtgever op vertrouwt. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden."
     },
     {
@@ -316,7 +321,7 @@ export const ZEKER_KENNIS = {
     },
     {
       "path": "/zzp-verzekering-marketing",
-      "title": "BAV marketing zzp | Verzekering voor marketeers",
+      "title": "Beroepsaansprakelijkheidsverzekering marketing zzp | ZP Zaken",
       "intro": "Als marketeer, copywriter of designer maak je werk dat de wereld in gaat. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden."
     },
     {
@@ -331,7 +336,7 @@ export const ZEKER_KENNIS = {
     },
     {
       "path": "/zzp-verzekering-bouw",
-      "title": "ZZP Verzekering Bouw | BAV & AVB voor de bouw",
+      "title": "Aansprakelijkheidsverzekering zzp bouw: BAV + AVB | ZP Zaken",
       "intro": "Als zzp'er in de bouw draag je verantwoordelijkheid voor de kwaliteit van je werk. Een constructiefout of schade aan eigendom kan leiden tot forse schadeclaims. Met een BAV en AVB in één polis ben je verzekerd voor aansprakelijkheid, volgens de polisvoorwaarden."
     }
   ],
