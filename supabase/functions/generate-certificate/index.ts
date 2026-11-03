@@ -403,7 +403,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
       if (policyError) {
         console.error("Policy insert error:", policyError);
         if (/Geen bekend BAV-nummer|staat al op een certificaat/.test(policyError.message)) return json({ error: policyError.message, code: "geen_nummer" }, 409);
-        if ((policyError as any).code === "23505" || /policies_certificate_number_geldig_key/.test(policyError.message)) {
+        if ((policyError as any).code === "23505" || /policies_certificate_number_geldig_key|staat op een certificaat van een andere klant/.test(policyError.message)) {
           return json({ error: "Dit BAV-nummer staat al op een geldig certificaat van een andere onderneming. Is dit een omzetting (bijvoorbeeld eenmanszaak naar BV)? Gebruik dan \"Omzetten naar BV\" bij het bestaande certificaat.", code: "nummer_al_geldig" }, 409);
         }
         return json({ error: "Failed to create policy", details: policyError.message }, 500);
