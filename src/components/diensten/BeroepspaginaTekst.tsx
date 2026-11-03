@@ -21,9 +21,11 @@ export function beroepspaginaPrijsregel() {
 
 /** Laat de oorspronkelijke tekst (en daarmee de FAQ-structured data) intact. */
 export function BeroepspaginaTekst({ tekst }: { tekst: string }) {
-  return <>{tekst.split(/(polisvoorwaarden)/gi).map((deel, i) => (
+  return <>{tekst.split(/(polisvoorwaarden|Hoeveel dekking heb je nodig met je BAV\?)/gi).map((deel, i) => (
     /^polisvoorwaarden$/i.test(deel)
       ? <LocalizedLink key={i} to="/voorwaarden" className="underline underline-offset-4">{deel}</LocalizedLink>
+      : deel === "Hoeveel dekking heb je nodig met je BAV?"
+        ? <LocalizedLink key={i} to="/kennisbank/verzekerd-bedrag-bav-zzp" className="underline underline-offset-4">{deel}</LocalizedLink>
       : <Fragment key={i}>{deel}</Fragment>
   ))}</>;
 }

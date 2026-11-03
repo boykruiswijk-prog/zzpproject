@@ -286,8 +286,8 @@ export const ZEKER_KENNIS = {
     },
     {
       "path": "/bav-zzp",
-      "title": "Beroepsaansprakelijkheidsverzekering zzp | ZP Zaken",
-      "intro": "Een beroepsaansprakelijkheidsverzekering (BAV) is voor financiële schade bij je opdrachtgever door een fout in je werk. Bij ZP Zaken zit hij samen met de bedrijfsaansprakelijkheidsverzekering (AVB) in één polis: BAV € 5.000.000 en AVB € 2.500.000 per aanspraak, geen eigen risico, binnen 24 uur geregeld. Vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting."
+      "title": "BAV verzekering zzp: beroepsaansprakelijkheid | ZP Zaken",
+      "intro": "Een BAV verzekering (beroepsaansprakelijkheidsverzekering) voor zzp'ers is voor financiële schade bij je opdrachtgever door een fout in je werk. Bij ZP Zaken zit hij samen met de bedrijfsaansprakelijkheidsverzekering (AVB) in één polis: BAV € 5.000.000 en AVB € 2.500.000 per aanspraak, geen eigen risico, binnen 24 uur geregeld. Vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting."
     },
     {
       "path": "/zzp-verzekering-consultant",
