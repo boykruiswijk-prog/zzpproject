@@ -412,7 +412,7 @@ export const seoRoutes: SeoRoute[] = [
   {
     path: "/bav-zzp",
     title: "BAV verzekering zzp: beroepsaansprakelijkheid | ZP Zaken",
-    description: `BAV verzekering voor zzp'ers: BAV € 5 mln en AVB € 2,5 mln per aanspraak in één polis, € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar incl. kosten en assurantiebelasting.`,
+    description: `BAV verzekering voor zzp'ers: BAV € 5 mln en AVB € 2,5 mln per aanspraak in één polis, € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar inclusief kosten en assurantiebelasting.`,
     h1: "BAV verzekering voor zzp'ers: beroepsaansprakelijkheidsverzekering en AVB in één polis",
     intro: `Een BAV verzekering (beroepsaansprakelijkheidsverzekering) voor zzp'ers is voor financiële schade bij je opdrachtgever door een fout in je werk. Bij ZP Zaken zit hij samen met de bedrijfsaansprakelijkheidsverzekering (AVB) in één polis: BAV € 5.000.000 en AVB € 2.500.000 per aanspraak, geen eigen risico, binnen 24 uur geregeld. Vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
   },
