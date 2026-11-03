@@ -1,5 +1,5 @@
 // Uitleg en doorklik per rode teller in het beheermenu. Pure functies, gedeeld door menu en dashboardlegenda.
-export type TellerSleutel = "aanvragen" | "leads" | "service" | "opzeggingen" | "screening" | "afgehaakt" | "chat" | "klanten" | "facturatie" | "bav_nakijken" | "credits_akkoord" | "machtigingen";
+export type TellerSleutel = "aanvragen" | "leads" | "service" | "opzeggingen" | "screening" | "afgehaakt" | "chat" | "klanten" | "facturatie" | "bav_nakijken" | "credits_akkoord" | "machtigingen" | "portaltoegang" | "dubbele_klanten";
 export type Tellers = Partial<Record<string, number>>;
 
 /** Tellers die niet meetellen in een groepstotaal (geen directe actie, grijze badge). */
@@ -11,6 +11,7 @@ export const TELLER_DOEL: Record<TellerSleutel, string> = {
   service: "/admin/service-aanvragen", screening: "/admin/screening-aanvragen",
   bav_nakijken: "/admin/bav-nummer-nakijken", facturatie: "/admin/facturatieplanning",
   chat: "/admin/chatgesprekken", klanten: "/admin/klanten#creditnotas", machtigingen: "/admin/machtigingen-nakijken",
+  portaltoegang: "/admin/portaltoegang", dubbele_klanten: "/admin/dubbele-klanten",
 };
 
 const gemarkeerd = (x?: number) => (x ? ` (${x} gemarkeerd voor later)` : "");
@@ -30,6 +31,8 @@ export function tellerUitleg(k: TellerSleutel, t: Tellers): string {
     case "facturatie": return `${mv(n, "factuur of Exact-taak", "facturen of Exact-taken")}: concept nog niet definitief of Exact-aanpassing open`;
     case "bav_nakijken": return `${mv(n, "BAV-nummer", "BAV-nummers")} uit de AFAS-import nog nakijken; geen haast, telt niet mee in het totaal`;
     case "machtigingen": return `${mv(n, "klant", "klanten")} met een machtiging om na te kijken; geen haast, telt niet mee in het totaal`;
+    case "portaltoegang": return `${mv(n, "klant wacht", "klanten wachten")} op toegang tot Mijn ZP`;
+    case "dubbele_klanten": return `${mv(n, "KvK-nummer staat", "KvK-nummers staan")} op meer dan een klantkaart`;
     case "klanten": {
       const c = t.klanten_credits ?? 0, oud = t.klanten_credits_oud ?? 0, tk = t.klanten_taken ?? 0;
       const delen = [] as string[];

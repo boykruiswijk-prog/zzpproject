@@ -1639,6 +1639,20 @@
       "when": 1793707475677,
       "tag": "0233_credit_correctie_bron",
       "breakpoints": true
+    },
+    {
+      "idx": 234,
+      "version": "7",
+      "when": 1793708003580,
+      "tag": "0234_portaltoegang_meerdere_ondernemingen_tellers",
+      "breakpoints": true
+    },
+    {
+      "idx": 235,
+      "version": "7",
+      "when": 1793708028994,
+      "tag": "0235_persoon_koppelen_naam_fix",
+      "breakpoints": true
     }
   ]
 }

@@ -8,6 +8,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { CrmTijdlijn } from "@/components/admin/crm/CrmTijdlijn";
 import { KlantKaart } from "@/components/admin/crm/KlantKaart";
 import { LopendeProducten } from "@/components/admin/crm/LopendeProducten";
+import { PersoonOndernemingen } from "@/components/admin/crm/PersoonOndernemingen";
 
 export default function PersoonDetail() {
   const { id } = useParams();
@@ -30,7 +31,7 @@ export default function PersoonDetail() {
       setLeadIds(((kop.data ?? []) as any[]).map((x) => x.bron_id));
       setLaden(false);
     })();
-  }, [id]);
+  }, [id, herlaad]);
 
   const naam = persoon ? [persoon.voornaam, persoon.achternaam].filter(Boolean).join(" ") || persoon.email_weergave || "Persoon" : "Persoon";
 
@@ -46,10 +47,7 @@ export default function PersoonDetail() {
               <p className="break-words text-sm text-muted-foreground">{persoon.email_weergave}{persoon.is_test ? " · testrecord" : ""}</p>
             </div>
             <KlantKaart ondernemingen={onds} personen={[persoon]} leadIds={leadIds} herlaadSleutel={herlaad} onGewijzigd={() => setHerlaad((h) => h + 1)} />
-            <Card><CardHeader><CardTitle className="text-base">Ondernemingen</CardTitle></CardHeader><CardContent className="space-y-1 text-sm">
-              {onds.length === 0 ? <p className="text-muted-foreground">Niet gekoppeld aan een onderneming.</p> :
-                onds.map((o) => <Link key={o.id} to={`/admin/klanten/${o.id}`} className="block truncate font-medium hover:text-primary">{o.naam} <span className="text-xs font-normal text-muted-foreground">{o.rechtsvorm ?? ""} {o.kvk ? `· KvK ${o.kvk}` : ""}</span></Link>)}
-            </CardContent></Card>
+            <PersoonOndernemingen persoonId={persoon.id} ondernemingen={onds} onGewijzigd={() => setHerlaad((h) => h + 1)} />
             {onds.map((o) => <LopendeProducten key={o.id + herlaad} ondernemingId={o.id} ondernemingNaam={o.naam} leadIds={leadIds} persoonId={persoon.id} onGewijzigd={() => setHerlaad((x) => x + 1)} />)}
             <CrmTijdlijn ondernemingen={onds.map((o) => ({ id: o.id, naam: o.naam }))} personen={[{ id: persoon.id, naam }]}
               invoerDoel={{ persoon_id: persoon.id }} herlaadSleutel={herlaad} />

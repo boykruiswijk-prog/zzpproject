@@ -163,3 +163,10 @@
 - [x] A. Kinderman 5dc438b9: cyclus jaar (starterregels), creditconcept 26700094, jaarfactuurconcept 23-10-2026 t/m 22-10-2027, geen maandfactuur 23-11; gefactureerd_tm-onderzoek (115 op 13-10) rapporteren; d8f380ea op dubbele-klantenlijst
 - [x] B. Creditnota's krijgen terugbetaal/verrekenconditie (niet IN) + test; bestaande credits nalopen, concepten aanpassen
 - [x] C. Rapport met bewijs + één Ellen-melding (Roxy verwerkt concepten)
+
+## Teller admin-menu + persoon met meerdere ondernemingen (Boy 3-11 12:10)
+- [x] Rode tellers (admin) Portaltoegang + andere Ellen-wachtrijen, live, test
+- [x] Mijn ZP: polissen alle gekoppelde ondernemingen gegroepeerd, beëindigd als historie
+- [x] Auto-uitnodiging: minstens één onderneming met actief contract; twijfel blijft bij Ellen
+- [x] Admin koppelen/ontkoppelen onderneming bij persoon (bestaat?) + audit
+- [x] Droge run + live over 22 open aanvragen; tests (RLS, meerdere ondernemingen); één Ellen-melding

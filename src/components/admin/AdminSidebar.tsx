@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 type NavRole = "supervisor" | "verzekering" | "marketing" | "admin";
-type Teller = "aanvragen" | "leads" | "service" | "opzeggingen" | "screening" | "afgehaakt" | "chat" | "klanten" | "facturatie" | "bav_nakijken" | "credits_akkoord" | "machtigingen";
+type Teller = "aanvragen" | "leads" | "service" | "opzeggingen" | "screening" | "afgehaakt" | "chat" | "klanten" | "facturatie" | "bav_nakijken" | "credits_akkoord" | "machtigingen" | "portaltoegang";
 type NavItem = { to: string; icon: typeof Users; label: string; end?: boolean; badge?: boolean; teller?: Teller; roles: NavRole[]; sub?: boolean };
 type NavGroup = { label: string; icon: typeof Users; roles: NavRole[]; items: NavItem[] };
 
@@ -26,7 +26,7 @@ const groups: NavGroup[] = [
     { to: "/admin/creditnotas-goedkeuren", icon: CircleDollarSign, label: "Creditnota's ter goedkeuring", teller: "credits_akkoord", roles: ["supervisor", "verzekering"], sub: true },
     { to: "/admin/service-aanvragen", icon: ConciergeBell, label: "Serviceaanvragen", teller: "service", roles: ["supervisor", "verzekering"] },
     { to: "/admin/screening-aanvragen", icon: ShieldCheck, label: "Screeningaanvragen", teller: "screening", roles: ["supervisor", "verzekering"] },
-    { to: "/admin/portaltoegang", icon: KeyRound, label: "Portaltoegang", roles: ["supervisor", "verzekering"] },
+    { to: "/admin/portaltoegang", icon: KeyRound, label: "Portaltoegang", teller: "portaltoegang", roles: ["supervisor", "verzekering"] },
     { to: "/admin/bav-nummer-nakijken", icon: Hash, label: "BAV-nummer nakijken", teller: "bav_nakijken", roles: ["supervisor", "verzekering"] },
     { to: "/admin/machtigingen-nakijken", icon: Landmark, label: "Machtigingen nakijken", teller: "machtigingen", roles: ["supervisor", "verzekering"] },
   ]},
@@ -73,7 +73,7 @@ export function AdminSidebar() {
       {roleAllows(["supervisor"]) && <NavLink to="/admin/schermen" onClick={mobile ? closeMobile : undefined} className={linkClass}><Monitor className="h-5 w-5"/><span className="flex-1">Live-scherm</span></NavLink>}
       {roleAllows(["supervisor", "verzekering"]) && <>
         <NavLink to="/admin/klanten" onClick={mobile ? closeMobile : undefined} className={linkClass}><Building2 className="h-5 w-5"/><span className="flex-1">Klanten & contracten</span><TellerBadge aantal={tellers?.klanten ?? 0} uitleg={tellerUitleg("klanten", tellers ?? {})} naar={TELLER_DOEL.klanten}/></NavLink>
-        <NavLink to="/admin/dubbele-klanten" onClick={mobile ? closeMobile : undefined} className={(p) => cn(linkClass(p), "ml-4")}><Copy className="h-4 w-4"/><span className="flex-1">Dubbele klanten</span></NavLink>
+        <NavLink to="/admin/dubbele-klanten" onClick={mobile ? closeMobile : undefined} className={(p) => cn(linkClass(p), "ml-4")}><Copy className="h-4 w-4"/><span className="flex-1">Dubbele klanten</span><TellerBadge aantal={tellers?.dubbele_klanten ?? 0} uitleg={tellerUitleg("dubbele_klanten", tellers ?? {})} naar={TELLER_DOEL.dubbele_klanten}/></NavLink>
         <NavLink to="/admin/crm" onClick={mobile ? closeMobile : undefined} className={linkClass}><Users className="h-5 w-5"/><span className="flex-1">CRM</span><TellerBadge aantal={takenCount ?? 0} uitleg={CRM_UITLEG(takenCount ?? 0)} naar="/admin/crm"/></NavLink>
       </>}
       {groups.map(group => {

@@ -51,3 +51,21 @@ export function useMijnKlantContracten() {
     },
   });
 }
+
+/** Ondernemingen van de ingelogde persoon (ook beëindigd, als historie) met de eigen polissen per onderneming. */
+export function useMijnOndernemingen() {
+  const { user } = usePortalAuth();
+  return useQuery({
+    queryKey: ["mijn-ondernemingen", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const [o, c] = await Promise.all([supabase.rpc("mijn_ondernemingen"), supabase.rpc("mijn_klant_contracten_per_onderneming")]);
+      if (o.error) throw o.error;
+      if (c.error) throw c.error;
+      return {
+        ondernemingen: (o.data ?? []) as import("@/lib/klantContractPortaal").MijnOnderneming[],
+        contracten: (c.data ?? []) as import("@/lib/klantContractPortaal").KlantContractPerOnderneming[],
+      };
+    },
+  });
+}

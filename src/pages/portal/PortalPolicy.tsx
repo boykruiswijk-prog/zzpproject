@@ -2,9 +2,9 @@ import { PortalLayout } from "@/components/portal/PortalLayout";
 import { CyberPolis } from "@/components/portal/CyberPolis";
 import { CyberToevoegen } from "@/components/portal/CyberToevoegen";
 import { formatDateNL } from "@/lib/dateFormat";
-import { usePortalPolicies, useMijnKlantContracten } from "@/hooks/usePortalData";
+import { usePortalPolicies, useMijnKlantContracten, useMijnOndernemingen } from "@/hooks/usePortalData";
 import { SITE_CONFIG } from "@/config/site";
-import { contractLabel, contractRegel } from "@/lib/klantContractPortaal";
+import { contractLabel, contractRegel, contractRegelMetHistorie, groepeerPerOnderneming } from "@/lib/klantContractPortaal";
 import { PolicyLifecycleActions } from "@/components/portal/PolicyLifecycleActions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,9 @@ export default function PortalPolicy() {
   const { data: policies, isLoading } = usePortalPolicies();
   const { toast } = useToast();
   const { data: contracten } = useMijnKlantContracten();
+  const { data: mijn } = useMijnOndernemingen();
+  const groepen = mijn ? groepeerPerOnderneming(mijn.ondernemingen, policies ?? [], mijn.contracten) : [];
+  const perOnderneming = groepen.filter((g) => g.onderneming).length > 1;
 
   const handleDownload = async (path: string) => {
     const { data, error } = await supabase.storage.from("certificates").createSignedUrl(path, 3600);
@@ -27,37 +30,7 @@ export default function PortalPolicy() {
     window.open(data.signedUrl, "_blank");
   };
 
-  return (
-    <PortalLayout>
-      <h1 className="text-3xl font-bold mb-6">Mijn polis</h1>
-      <div className="mb-6">
-        <PolicyLifecycleActions />
-      </div>
-      {isLoading && <Loader2 className="h-6 w-6 animate-spin text-accent" />}
-      {!isLoading && (!policies || policies.length === 0) && (contracten?.length ?? 0) > 0 && (
-        <div className="space-y-4 mb-4">
-          {contracten!.map((c, i) => (
-            <Card key={i}>
-              <CardHeader><CardTitle>{contractLabel(c.product)}</CardTitle></CardHeader>
-              <CardContent className="text-sm text-muted-foreground">
-                <p>{contractRegel(c)}{c.onderneming_naam ? ` · ${c.onderneming_naam}` : ""}</p>
-                <p className="mt-2">Je verzekering loopt. Heb je je certificaat nodig of wil je iets wijzigen? Mail naar {SITE_CONFIG.email}, dan regelen we het voor je.</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-      {!isLoading && (!policies || policies.length === 0) && !(contracten?.length) && (
-        <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">
-            <FileText className="h-12 w-12 mx-auto mb-3 opacity-40" />
-            <p>Er is nog geen polis aan je account gekoppeld.</p>
-          </CardContent>
-        </Card>
-      )}
-      <div className="space-y-4">
-        <CyberToevoegen />
-        {policies?.map((p) => (
+  const polisKaart = (p: NonNullable<typeof policies>[number]) => (
           <Card key={p.id}>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -123,6 +96,60 @@ export default function PortalPolicy() {
               </dl>
             </CardContent>
           </Card>
+  );
+
+  return (
+    <PortalLayout>
+      <h1 className="text-3xl font-bold mb-6">Mijn polis</h1>
+      <div className="mb-6">
+        <PolicyLifecycleActions />
+      </div>
+      {isLoading && <Loader2 className="h-6 w-6 animate-spin text-accent" />}
+      {!isLoading && !perOnderneming && (!policies || policies.length === 0) && (contracten?.length ?? 0) > 0 && (
+        <div className="space-y-4 mb-4">
+          {contracten!.map((c, i) => (
+            <Card key={i}>
+              <CardHeader><CardTitle>{contractLabel(c.product)}</CardTitle></CardHeader>
+              <CardContent className="text-sm text-muted-foreground">
+                <p>{contractRegel(c)}{c.onderneming_naam ? ` · ${c.onderneming_naam}` : ""}</p>
+                <p className="mt-2">Je verzekering loopt. Heb je je certificaat nodig of wil je iets wijzigen? Mail naar {SITE_CONFIG.email}, dan regelen we het voor je.</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+      {!isLoading && !perOnderneming && (!policies || policies.length === 0) && !(contracten?.length) && (
+        <Card>
+          <CardContent className="py-12 text-center text-muted-foreground">
+            <FileText className="h-12 w-12 mx-auto mb-3 opacity-40" />
+            <p>Er is nog geen polis aan je account gekoppeld.</p>
+          </CardContent>
+        </Card>
+      )}
+      <div className="space-y-4">
+        <CyberToevoegen />
+        {!perOnderneming && policies?.map((p) => polisKaart(p))}
+        {perOnderneming && groepen.map((g, gi) => (
+          <section key={g.onderneming?.onderneming_id ?? `overig-${gi}`} className="space-y-4 pt-2">
+            {g.onderneming && (
+              <h2 className="text-xl font-semibold">
+                {g.onderneming.naam}
+                <span className="ml-2 text-sm font-normal text-muted-foreground">
+                  {g.onderneming.kvk ? `KvK ${g.onderneming.kvk}` : ""}{g.onderneming.historie ? `${g.onderneming.kvk ? " · " : ""}Historie` : ""}
+                </span>
+              </h2>
+            )}
+            {g.polissen.map((p) => polisKaart(p))}
+            {g.polissen.length === 0 && g.contracten.map((c, i) => (
+              <Card key={i}>
+                <CardHeader><CardTitle>{contractLabel(c.product)}</CardTitle></CardHeader>
+                <CardContent className="text-sm text-muted-foreground">
+                  <p>{contractRegelMetHistorie(c)}</p>
+                  {!g.onderneming?.historie && <p className="mt-2">Je verzekering loopt. Heb je je certificaat nodig of wil je iets wijzigen? Mail naar {SITE_CONFIG.email}, dan regelen we het voor je.</p>}
+                </CardContent>
+              </Card>
+            ))}
+          </section>
         ))}
       </div>
     </PortalLayout>
