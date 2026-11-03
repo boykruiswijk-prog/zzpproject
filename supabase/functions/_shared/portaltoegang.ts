@@ -1,6 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 // Loginpoging op Mijn ZP zonder toegang: interne aanvraag "portaltoegang" met mogelijke match.
 // Geen mail naar de bezoeker; maximaal één open aanvraag per adres per 24 uur.
+import { verwerkPortaltoegangAuto } from "./portaltoegangAuto.ts";
 const ALGEMEEN = new Set(["gmail.com", "hotmail.com", "outlook.com", "live.nl", "live.com", "hotmail.nl", "icloud.com", "yahoo.com", "ziggo.nl", "kpnmail.nl", "planet.nl", "xs4all.nl", "home.nl", "me.com", "msn.com", "upcmail.nl"]);
 
 export function domeinVan(email: string): string | null {
@@ -8,11 +9,15 @@ export function domeinVan(email: string): string | null {
   return d && !ALGEMEEN.has(d) ? d : null;
 }
 
-export async function meldPortaltoegang(admin: any, email: string, heeftAccount: boolean) {
+export async function meldPortaltoegang(admin: any, email: string, heeftAccount: boolean, req?: Request) {
   const since = new Date(Date.now() - 24 * 3600_000).toISOString();
-  const { count } = await admin.from("klant_service_aanvragen").select("id", { count: "exact", head: true })
-    .eq("type", "portaltoegang").eq("email", email).gte("created_at", since);
-  if ((count ?? 0) > 0) return;
+  const { data: recent } = await admin.from("klant_service_aanvragen").select("id,status")
+    .eq("type", "portaltoegang").eq("email", email).gte("created_at", since).order("created_at", { ascending: false }).limit(1);
+  if ((recent ?? []).length > 0) {
+    // Al een aanvraag in 24 uur: geen nieuwe, wel (opnieuw) de automatische route op de open aanvraag.
+    if (req && recent[0].status !== "afgerond") await verwerkPortaltoegangAuto(admin, req, recent[0].id);
+    return;
+  }
   const matches: any[] = [];
   const { data: exact } = await admin.from("personen").select("id,voornaam,achternaam,email_weergave").eq("genormaliseerd_email", email).eq("is_test", false).limit(3);
   for (const p of exact ?? []) matches.push({ soort: "persoon_email", persoon_id: p.id, naam: [p.voornaam, p.achternaam].filter(Boolean).join(" "), email: p.email_weergave });
@@ -33,9 +38,11 @@ export async function meldPortaltoegang(admin: any, email: string, heeftAccount:
     }
     ondId = ondId ?? (po ?? [])[0]?.onderneming_id ?? null;
   }
-  await admin.from("klant_service_aanvragen").insert({
+  const { data: nieuw } = await admin.from("klant_service_aanvragen").insert({
     type: "portaltoegang", voornaam: "", achternaam: "", email, telefoon: "", polisnummer: "",
     details: { bron: "portal_login", heeft_account: heeftAccount, mogelijke_match: matches, bedrijfsnaam: matches.find((m) => m.bedrijf)?.bedrijf ?? matches.find((m) => m.soort === "factuur_email")?.naam ?? null },
     status: "nieuw", onderneming_id: ondId, geverifieerd: false,
-  });
+  }).select("id").single();
+  // Automatische uitnodiging als het adres exact bij één actieve klant hoort.
+  if (req && nieuw?.id) await verwerkPortaltoegangAuto(admin, req, nieuw.id);
 }
