@@ -7,6 +7,7 @@ import { Resend } from "npm:resend@4.0.0";
 import { z } from "npm:zod@3.23.8";
 import { resolveEnvironment } from "../_shared/environment.ts";
 import { getFromAddress } from "../_shared/mail.ts";
+import { metMailKop } from "../_shared/mailLayout.ts";
 import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
 import { geldigEmail } from "../_shared/geldigEmail.ts";
 import { interneMailVelden } from "../_shared/leadVelden.ts";
@@ -323,7 +324,7 @@ Deno.serve(async (req) => {
             to: [customerRecipient],
             replyTo: "info@zpzaken.nl",
             subject: customerSubject,
-            html: renderCustomerHtml(type, label, customerFields, handmatig, leadId?.slice(0, 8).toUpperCase() ?? reference),
+            html: metMailKop(renderCustomerHtml(type, label, customerFields, handmatig, leadId?.slice(0, 8).toUpperCase() ?? reference)),
             text: renderCustomerText(type, customerFields, handmatig, leadId?.slice(0, 8).toUpperCase() ?? reference),
           });
           await supabase.from("lead_notification_log").insert({
