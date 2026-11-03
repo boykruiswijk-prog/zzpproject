@@ -41,7 +41,7 @@ export async function meldPortaltoegang(admin: any, email: string, heeftAccount:
   const { data: nieuw } = await admin.from("klant_service_aanvragen").insert({
     type: "portaltoegang", voornaam: "", achternaam: "", email, telefoon: "", polisnummer: "",
     details: { bron: "portal_login", heeft_account: heeftAccount, mogelijke_match: matches, bedrijfsnaam: matches.find((m) => m.bedrijf)?.bedrijf ?? matches.find((m) => m.soort === "factuur_email")?.naam ?? null },
-    status: "nieuw", onderneming_id: ondId, geverifieerd: false,
+    status: "nieuw", onderneming_id: ondId, geverifieerd: false, is_test: email.endsWith("@zpzaken.nl"),
   }).select("id").single();
   // Automatische uitnodiging als het adres exact bij één actieve klant hoort.
   if (req && nieuw?.id) await verwerkPortaltoegangAuto(admin, req, nieuw.id);

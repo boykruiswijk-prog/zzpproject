@@ -27,6 +27,7 @@ export async function verwerkPortaltoegangAuto(admin: any, req: Request, aanvraa
   const email = String(a?.email ?? "").trim().toLowerCase();
   if (!a || a.type !== "portaltoegang") return { aanvraag_id: aanvraagId, email, besluit: "overgeslagen", reden: "geen portaltoegang-aanvraag" };
   if (a.status === "afgerond") return { aanvraag_id: aanvraagId, email, besluit: "overgeslagen", reden: "al afgerond" };
+  if (a.details?.toegang_verleend) return { aanvraag_id: aanvraagId, email, besluit: "overgeslagen", reden: "al uitgenodigd door het team" };
   const { data: m, error } = await admin.rpc("portaltoegang_auto_match", { _email: email });
   if (error) throw new Error(`match mislukt: ${error.message}`);
   if (!m?.match) {
