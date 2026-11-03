@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { binnenMisbruikrem, MAX_UITNODIGINGEN_PER_24U } from "../../supabase/functions/_shared/portaltoegangAuto";
+import { binnenMisbruikrem, MAX_UITNODIGINGEN_PER_24U } from "../../supabase/functions/_shared/portaltoegangRegels";
 
 describe("automatische portaltoegang: misbruikrem", () => {
   it("maximaal 3 uitnodigingen per adres per 24 uur", () => {

@@ -7,12 +7,7 @@ import { safeAppOrigin } from "./company.ts";
 import { buildInviteHtml, ensurePortalUser, generateMagicLink, sendPortalMail } from "./portalAccess.ts";
 import { echteNaam } from "./portalMailLog.ts";
 
-export const MAX_UITNODIGINGEN_PER_24U = 3;
-
-/** Misbruikrem: maximaal 3 portaaluitnodigingen per adres per 24 uur. */
-export function binnenMisbruikrem(aantalLaatste24u: number): boolean {
-  return aantalLaatste24u < MAX_UITNODIGINGEN_PER_24U;
-}
+import { binnenMisbruikrem } from "./portaltoegangRegels.ts";
 
 export interface AutoUitkomst { aanvraag_id: string; email: string; besluit: "uitgenodigd" | "geen_match" | "mislukt" | "overgeslagen"; reden?: string | null; klant?: string | null; message_id?: string | null; user_created?: boolean; polissen_gekoppeld?: number }
 
