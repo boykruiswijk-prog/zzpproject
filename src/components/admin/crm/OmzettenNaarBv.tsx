@@ -12,12 +12,14 @@ import { omzettenInvoerFout } from "@/lib/omzetting";
 type Ond = { id: string; naam: string; kvk: string | null; rechtsvorm?: string | null };
 
 /** Omzetten naar BV: zelfde polis en BAV-nummer naar de nieuwe onderneming als nieuwe versie (generate-certificate actie omzetten). Contracten en facturatie blijven ongewijzigd. */
-export function OmzettenNaarBv({ polis, vanNaam, onKlaar }: { polis: { id: string; certificate_number: string | null }; vanNaam: string; onKlaar: () => void }) {
+export type OmzetOnderneming = Ond;
+
+export function OmzettenNaarBv({ polis, vanNaam, onKlaar, vasteNaar, vasteLeadId }: { polis: { id: string; certificate_number: string | null }; vanNaam: string; onKlaar: () => void; vasteNaar?: Ond | null; vasteLeadId?: string | null }) {
   const [open, setOpen] = useState(false);
   const [term, setTerm] = useState("");
   const [res, setRes] = useState<Ond[]>([]);
-  const [naar, setNaar] = useState<Ond | null>(null);
-  const [leadId, setLeadId] = useState<string | null>(null);
+  const [naar, setNaar] = useState<Ond | null>(vasteNaar ?? null);
+  const [leadId, setLeadId] = useState<string | null>(vasteLeadId ?? null);
   const [datum, setDatum] = useState("");
   const [reden, setReden] = useState("Eenmanszaak -> BV");
   const [bezig, setBezig] = useState(false);
