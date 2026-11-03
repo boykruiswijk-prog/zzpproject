@@ -4,6 +4,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
+import { bouwAfgehaaktSamenvatting, type SamenvattingConcept } from "../_shared/nabellen.ts";
 
 const json = (b: unknown, status = 200) =>
   new Response(JSON.stringify(b), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -24,23 +25,23 @@ Deno.serve(async (req) => {
   if (body?.force !== true && nlUur() !== 9) return json({ skipped: "niet 09:00 NL" });
 
   const nu = Date.now();
-  const { count, error } = await admin.from("aanvraag_concepten")
-    .select("id", { count: "exact", head: true })
-    .eq("status", "open").eq("is_test", false).is("geanonimiseerd_op", null)
+  const { data, error } = await admin.from("aanvraag_concepten")
+    .select("id,status,is_test,lead_id,dubbel_lead_id,telefoon,email,laatst_actief_op,team_gemeld_op,voornaam,achternaam,bedrijfsnaam,pakket,stap,max_stap,attributie,herinnering_verstuurd_op,spam_signaal,afhaak_geen_herinnering_reden")
+    .eq("status", "open").is("geanonimiseerd_op", null)
     .gte("created_at", new Date(nu - 24 * 3600_000).toISOString())
-    .lt("laatst_actief_op", new Date(nu - 30 * 60_000).toISOString());
+    .lt("laatst_actief_op", new Date(nu - 30 * 60_000).toISOString())
+    .limit(500);
   if (error) return json({ error: error.message }, 500);
-  const n = count ?? 0;
-  if (n < 1) return json({ sent: false, aantal: 0 });
+  const mail = bouwAfgehaaktSamenvatting((data ?? []) as SamenvattingConcept[]);
+  // Besluit Boy 3-11: bij 0 echte afhakers geen mail; testinvoer telt niet mee.
+  if (!mail) return json({ sent: false, aantal: 0, testinvoer: (data ?? []).length });
 
-  const link = "https://zpzaken.nl/admin/afgehaakt";
-  const tekst = n === 1 ? "1 nieuwe afgehaakte aanvraag" : `${n} nieuwe afgehaakte aanvragen`;
   const res = await verstuurInterneMelding(admin, req, "afgehaakt-samenvatting", {
     leadType: "afgehaakt-samenvatting",
-    subject: `Afgehaakte aanvragen: ${tekst} (afgelopen 24 uur)`,
-    html: `<p>In de afgelopen 24 uur ${n === 1 ? "is" : "zijn"} er <strong>${tekst}</strong> op de website.</p><p><a href="${link}">Bekijk het overzicht</a></p>`,
-    text: `In de afgelopen 24 uur: ${tekst}. Overzicht: ${link}`,
-    metadata: { aantal: n },
+    subject: mail.subject,
+    html: mail.html,
+    text: mail.text,
+    metadata: { aantal: mail.aantal, testinvoer: mail.aantalTest },
   });
-  return json({ sent: true, aantal: n, res });
+  return json({ sent: true, aantal: mail.aantal, testinvoer: mail.aantalTest, res });
 });
