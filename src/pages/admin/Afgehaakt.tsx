@@ -23,6 +23,7 @@ interface Concept {
   attributie: Record<string, string> | null; status: Status; opvolg_notitie: string | null;
   opgevolgd_op: string | null; is_test: boolean; dubbel_lead_id: string | null;
   gekoppeld_onderneming_id: string | null;
+  herinnering_verstuurd_op?: string | null; afhaak_geen_herinnering_reden?: string | null;
 }
 
 const STAPNAMEN = ["", "Pakket en contact", "Bedrijf", "Persoonsgegevens", "Betaling", "Controle"];
@@ -53,7 +54,7 @@ export default function Afgehaakt() {
   const laad = async () => {
     setLaden(true);
     let q = supabase.from("aanvraag_concepten")
-      .select("id,created_at,laatst_actief_op,stap,email,telefoon,voornaam,achternaam,bedrijfsnaam,kvk,pakket,sector,pagina,attributie,status,opvolg_notitie,opgevolgd_op,is_test,dubbel_lead_id,gekoppeld_onderneming_id")
+      .select("id,created_at,laatst_actief_op,stap,email,telefoon,voornaam,achternaam,bedrijfsnaam,kvk,pakket,sector,pagina,attributie,status,opvolg_notitie,opgevolgd_op,is_test,dubbel_lead_id,gekoppeld_onderneming_id,herinnering_verstuurd_op,afhaak_geen_herinnering_reden")
       .is("geanonimiseerd_op", null)
       .order("laatst_actief_op", { ascending: false }).limit(300);
     if (!toonTest) q = q.eq("is_test", false);
@@ -121,6 +122,8 @@ export default function Afgehaakt() {
                       {r.bedrijfsnaam && <span className="text-sm text-muted-foreground break-words">· {r.bedrijfsnaam}</span>}
                       <Badge variant={r.status === "open" ? "default" : "secondary"}>{STATUSLABEL[r.status]}</Badge>
                       {r.is_test && <Badge variant="outline">Test</Badge>}
+                      {r.herinnering_verstuurd_op ? <Badge variant="outline">Herinnering verstuurd {formatDateTimeNL(r.herinnering_verstuurd_op)}</Badge>
+                        : r.afhaak_geen_herinnering_reden ? <Badge variant="outline">geen herinnering: {r.afhaak_geen_herinnering_reden}</Badge> : null}
                     </div>
                     {leadLink && (
                       <Link to={`/admin/leads/${leadLink}`} className="mb-2 inline-block text-sm font-medium text-primary hover:underline">
