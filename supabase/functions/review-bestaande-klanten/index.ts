@@ -1,6 +1,6 @@
-// Eenmalig reviewverzoek aan 100 bestaande klanten (Reviews 3, akkoord Boy 2-11-2026), in twee rondes van 50.
+// Reviewverzoek bestaande klanten: Reviews 3 (2-11-2026, ronde 1-2) en Reviews 4 (4-11-2026, ronde 3-4), elk 50.
 // Doelgroep is bevroren in review_bestaand_doelgroep. Alleen x-cron-secret (Vault) of service role.
-// Body { dry_run: true|false, ronde: 1|2, test_naar?: "...@zpzaken.nl" }.
+// Body { dry_run: true|false, ronde: 1|2|3|4, test_naar?: "...@zpzaken.nl" }.
 // dry_run: telt en controleert, mailt en schrijft niets. test_naar: één voorbeeldmail, schrijft niets in review_verzoeken.
 // Herinnering na 7 dagen loopt via de bestaande dagelijkse review-verzoeken (review_herinnering_kandidaten).
 import { createClient } from "npm:@supabase/supabase-js@2";
