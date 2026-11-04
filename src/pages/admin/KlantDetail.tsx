@@ -1,3 +1,4 @@
+import { klantPlaats } from "@/lib/klantPlaats";
 import { ONDERNEMING_KOLOMMEN } from "@/lib/veiligeKolommen";
 import { useEffect, useState } from "react";
 import { LeadKlantHistorie } from "@/components/admin/LeadKlantHistorie";
