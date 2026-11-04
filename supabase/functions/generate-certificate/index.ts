@@ -294,6 +294,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
       const heeftGeldig = (bestaande || []).some((p) => p.status === "geldig");
       // Nummerkeuze op één plek: RPC certificaatnummer_voorstel_intern (zelfde logica als de trigger).
       let nummer = "";
+      let voorstelBron = "";
       if (!heeftGeldig) {
         const { data: vs, error: vsErr } = await adminClient.rpc("certificaatnummer_voorstel_intern", { _onderneming_id: ondId, _lead_id: null });
         if (vsErr) return json({ error: "Nummerkeuze mislukt", details: vsErr.message }, 500);
@@ -301,6 +302,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
         if (v?.nummer && v.staat_al_op_policy) {
           return json({ error: `Nummer ${v.nummer} staat al op een certificaat van deze klant. Gebruik "Aanpassen".`, code: "nummer_bezet", bestaand: v.nummer }, 409);
         }
+        voorstelBron = v?.bron ?? "";
         if (v?.nummer) nummer = v.nummer;
         else if (body.bevestig_nieuw_nummer === true) nummer = "NIEUW";
         else return json({ error: "Deze klant heeft nog geen certificaatnummer. Bevestig om een nieuw nummer uit te geven.", code: "geen_nummer" }, 409);
@@ -333,6 +335,24 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
       if (insErr) return json({ error: "Certificaat opslaan mislukt", details: insErr.message }, 500);
       await adminClient.from("ondernemingen").update({ branche: profession, sector }).eq("id", ondId);
       policy = ins;
+      // Nummer overgenomen via een vastgelegde opvolging (rechtsvormwijziging): versie 1 is het certificaat van de voorganger, deze polis is versie 2. Nooit mail.
+      if (voorstelBron === "overgenomen" && nummer !== "NIEUW") {
+        const { data: opv } = await adminClient.from("onderneming_opvolging").select("id,van_onderneming_id,ingangsdatum").eq("naar_onderneming_id", ondId).ilike("bav_nummer", nummer).order("vastgelegd_op", { ascending: false }).limit(1).maybeSingle();
+        if (opv) {
+          const { data: van } = await adminClient.from("ondernemingen").select("naam").eq("id", opv.van_onderneming_id).maybeSingle();
+          const { error: vErr } = await adminClient.from("policy_versies").insert({
+            policy_id: ins.id, certificate_number: nummer, versie: 1, actie: "omgezet",
+            oude_waarden: { onderneming_id: opv.van_onderneming_id, certificate_holder: van?.naam ?? null, bron: "certificaat van de voorganger", status: "vervangen" },
+            nieuwe_waarden: { onderneming_id: ondId, certificate_holder: holder, start_date: start, versie: 2 },
+            oude_pdf_pad: null, reden: `Overgenomen van ${van?.naam ?? "de voorganger"} via opvolging ${String(opv.id).slice(0, 8)}, rechtsvormwijziging per ${opv.ingangsdatum}`,
+            uitgevoerd_door: user.id, uitgevoerd_door_email: user.email,
+          });
+          if (!vErr) {
+            const { data: v2 } = await adminClient.from("policies").update({ versie: 2 }).eq("id", ins.id).select().single();
+            if (v2) policy = v2;
+          }
+        }
+      }
     } else {
       if (!isSupAdmin) return json({ error: "Alleen supervisor/admin/verzekering mag certificaten genereren" }, 403);
       if (!lead_id && !policy_data) return json({ error: "lead_id or policy_data required" }, 400);
