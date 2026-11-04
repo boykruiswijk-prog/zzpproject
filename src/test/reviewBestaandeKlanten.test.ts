@@ -53,8 +53,10 @@ describe("test_naar en invoer", () => {
     expect(testNaarToegestaan("x@zpzaken.nl.evil.com")).toBe(false);
     expect(valideerBody({ dry_run: false, ronde: 1, test_naar: "a@onefellow.nl" })).toEqual({ error: "test_naar alleen voor @zpzaken.nl" });
   });
-  it("ronde 1 of 2 en dry_run verplicht", () => {
-    expect(valideerBody({ dry_run: true, ronde: 3 })).toHaveProperty("error");
+  it("ronde 1 t/m 4 en dry_run verplicht (Reviews 4: ronde 3 en 4)", () => {
+    expect(valideerBody({ dry_run: true, ronde: 5 })).toHaveProperty("error");
+    expect(valideerBody({ dry_run: true, ronde: 3 })).toEqual({ dryRun: true, ronde: 3, testNaar: null });
+    expect(valideerBody({ dry_run: true, ronde: 4 })).toEqual({ dryRun: true, ronde: 4, testNaar: null });
     expect(valideerBody({ ronde: 1 })).toHaveProperty("error");
     expect(valideerBody({ dry_run: true, ronde: 2 })).toEqual({ dryRun: true, ronde: 2, testNaar: null });
     expect(maskeer("anna@voorbeeld.nl")).toBe("a***@voorbeeld.nl");
