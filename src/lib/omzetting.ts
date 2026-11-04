@@ -51,3 +51,20 @@ export function bavKopTekst(nummer: string | null | undefined, open: OpenOmzetti
 export function polisMeenemenMogelijk(soort: string, geldigePolis: { id: string } | null): boolean {
   return soort === "rechtsvormwijziging" && !!geldigePolis;
 }
+
+/** Rechtsvormwijziging waarbij de opvolger geen eigen BAV + AVB-contract heeft: het contract van de voorganger kan mee (server beslist definitief). */
+export type OpenContractMee = { opvolgingId: string; vanId: string; vanNaam: string; ingangsdatum: string };
+type ContractRij = { onderneming_id: string; product: string; status: string; eind_datum: string | null };
+const LOPEND = ["actief", "loopt_af", "einddatum_controle"];
+const dagVoor = (d: string) => { const x = new Date(`${d}T12:00:00Z`); x.setUTCDate(x.getUTCDate() - 1); return x.toISOString().slice(0, 10); };
+
+export function openContractMeenemen(ondernemingId: string, opvolgingen: OpvRij[], contracten: ContractRij[], namen: Record<string, string>): OpenContractMee | null {
+  for (const o of opvolgingen) {
+    if (o.naar_onderneming_id !== ondernemingId || o.soort !== "rechtsvormwijziging") continue;
+    const eigen = contracten.some((c) => c.onderneming_id === ondernemingId && c.product === "bav_avb" && LOPEND.includes(c.status) && (!c.eind_datum || c.eind_datum >= o.ingangsdatum));
+    if (eigen) return null;
+    const mee = contracten.some((c) => c.onderneming_id === o.van_onderneming_id && c.product === "bav_avb" && LOPEND.includes(c.status) && (!c.eind_datum || c.eind_datum >= dagVoor(o.ingangsdatum)));
+    if (mee) return { opvolgingId: o.id, vanId: o.van_onderneming_id, vanNaam: namen[o.van_onderneming_id] ?? "de voorganger", ingangsdatum: o.ingangsdatum };
+  }
+  return null;
+}
