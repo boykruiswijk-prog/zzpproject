@@ -95,7 +95,7 @@ export function opvolgerPayload(opvolger: { naam: string; kvk: string }, voorgan
     Name: opvolger.naam, ChamberOfCommerce: opvolger.kvk, Status: "C", IsSales: true,
     Remarks: `Rechtsopvolger van ${info.voorgangerNaam}${voorganger?.Code ? ` (relatie ${String(voorganger.Code).trim()})` : ""}${info.ingangsdatum ? ` per ${info.ingangsdatum}` : ""}. Aangemaakt via zpzaken.nl.`,
   };
-  for (const k of ["Email", "Phone", "AddressLine1", "Postcode", "City", "Country"]) if (voorganger?.[k]) p[k] = voorganger[k];
+  for (const k of ["Email", "Phone", "AddressLine1", "Postcode", "City", "Country"]) if (String(voorganger?.[k] ?? "").trim()) p[k] = String(voorganger[k]).trim();
   if (!p.Country) p.Country = "NL";
   return p;
 }
