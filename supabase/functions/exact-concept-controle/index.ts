@@ -204,6 +204,12 @@ Deno.serve(metWerk({ station: "exact", actie: "exact_sync", tekst: "Exact-concep
 
   // Koppelingscontrole: eerst relatiespiegel verversen (alleen lezen in Exact), dan in de database controleren.
   if (cron) {
+    // Rechtsopvolgers zonder Exact-relatie: via de vaste relatieroute (eerst lezen, dan koppelen of aanmaken).
+    try {
+      await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/lead-to-exact-activate`, {
+        method: "POST", headers: { "Content-Type": "application/json", "x-cron-secret": cron }, body: JSON.stringify({ action: "opvolgers_relatie", live: true }),
+      });
+    } catch (_) { /* volgende ochtend opnieuw */ }
     try {
       await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/exact-spiegel-sync`, {
         method: "POST", headers: { "Content-Type": "application/json", "x-cron-secret": cron }, body: JSON.stringify({ stap: "accounts" }),

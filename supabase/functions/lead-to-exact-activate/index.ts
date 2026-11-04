@@ -22,6 +22,8 @@ import { eersteFactuurViaPlanner, eersteFactuurLogTekst } from "../_shared/eerst
 import { vandaagNL as vandaagAmsterdam } from "../_shared/certificaatBeschikbaar.ts";
 import { zetInPlanner, factuurLogTekst, type ContractSpec } from "../_shared/klantContractActivatie.ts";
 import { metExactMelding } from "../_shared/exactBoekingMelding.ts";
+import { besluitRelatie, leesRelatie, maakRelatie, opvolgerPayload, zoekRelatiesOpKvk, zoekRelatiesOpNaam } from "../_shared/exactRelatie.ts";
+
 
 // SEPA-mandaat in Exact. Waarden geverifieerd in de Exact Online REST-documentatie:
 // https://start.exactonline.nl/docs/HlpRestAPIResourcesDetails.aspx?name=CashflowDirectDebitMandates
@@ -47,7 +49,7 @@ async function mandaatGegevens(supabase: any, leadId: string, fallbackDatum: str
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, x-cron-secret",
 };
 
 const json = (data: unknown, status = 200) =>
@@ -377,6 +379,16 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
 
   const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
+  // deno-lint-ignore no-explicit-any
+  const vooraf: any = await req.clone().json().catch(() => ({}));
+  const cronSecret = req.headers.get("x-cron-secret");
+  if (vooraf?.action === "opvolgers_relatie" && cronSecret) {
+    const { data: ok } = await supabase.rpc("verify_cron_secret", { p_secret: cronSecret });
+    if (ok !== true) return json({ success: false, error: "unauthorized" }, 401);
+    const uit = await opvolgersRelatie(supabase, { live: vooraf?.live === true, ondernemingId: typeof vooraf?.onderneming_id === "string" ? vooraf.onderneming_id : undefined, door: null });
+    return json({ success: uit.ok, ...uit });
+  }
+
   // ── Auth: alle teamleden, inclusief verzekering ──
   const authHeader = req.headers.get("Authorization") ?? "";
   if (!authHeader.toLowerCase().startsWith("bearer ")) {
@@ -400,6 +412,10 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
   try { body = await req.json(); } catch (_) {}
   const leadId = body?.lead_id;
   const action = body?.action || "activate";
+  if (action === "opvolgers_relatie") {
+    const uit = await opvolgersRelatie(supabase, { live: body?.live === true, ondernemingId: typeof body?.onderneming_id === "string" ? body.onderneming_id : undefined, door: user.id });
+    return json({ success: uit.ok, ...uit });
+  }
   if (!leadId || typeof leadId !== "string") {
     return json({ success: false, error: "lead_id_required" }, 400);
   }
@@ -868,12 +884,7 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
   let reusedAccountName: string | null = null;
   let exactRelatieCode: string | null = null;
   try {
-    const dupRes = await fetch(
-      `${baseUrl}/api/v1/${div}/crm/Accounts?$select=ID,Code,Name,ChamberOfCommerce&$filter=ChamberOfCommerce eq '${kvk}'&$top=1`,
-      { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } },
-    );
-    const dupJson = await dupRes.json().catch(() => ({}));
-    const dupArr = Array.isArray(dupJson?.d?.results) ? dupJson.d.results : Array.isArray(dupJson?.d) ? dupJson.d : [];
+    const dupArr = await zoekRelatiesOpKvk(baseUrl, div, accessToken, kvk);
     if (dupArr.length > 0 && dupArr[0]?.ID) {
       reusedAccountId = dupArr[0].ID;
       reusedAccountName = dupArr[0]?.Name ?? null;
@@ -937,10 +948,9 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
   // ── Stap D: Account aanmaken (skip bij reuse van bestaande relatie) ──
   let exactAccountId: string = reusedAccountId ?? "";
   if (!reusedAccountId) {
-    const accRes = await fetch(`${baseUrl}/api/v1/${div}/crm/Accounts`, {
-      method: "POST", headers, body: JSON.stringify(accountPayload),
-    });
-    if (!accRes.ok) {
+    const acc = await maakRelatie(baseUrl, div, accessToken, accountPayload);
+    if (!acc.ok) {
+      const accRes = acc.res;
       const { summary, detail } = await captureExactError("Accounts POST", accRes);
       await logSync(supabase, {
         trigger_type: "lead_activation", status: "error",
@@ -951,12 +961,8 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
       });
       return json({ success: false, error: "exact_account_create_failed", detail, http_status: accRes.status }, 500);
     }
-    const accData = await accRes.json().catch(() => ({}));
-    exactAccountId = accData?.d?.ID || accData?.ID;
-    if (!exactAccountId) {
-      return json({ success: false, error: "no_account_id_returned", raw: accData }, 500);
-    }
-    exactRelatieCode = String(accData?.d?.Code ?? accData?.Code ?? "").trim() || null;
+    exactAccountId = acc.id;
+    exactRelatieCode = acc.code;
   }
 
   // Exact geeft Code niet altijd terug op POST; lees dan de zojuist aangemaakte relatie terug.
@@ -1378,3 +1384,75 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
       : "Klant succesvol geactiveerd in Exact",
   });
 }));
+
+// ── Rechtsopvolger zonder Exact-relatie (actie opvolgers_relatie) ──
+// Per opvolger eerst alleen lezen (KvK, dan naam; relatie voorganger telt nooit mee).
+// Bestaat er een relatie: koppelen. Anders (alleen live) één Accounts-POST met
+// naam/KvK van de opvolger en contactgegevens van de voorganger. Geen contact,
+// bankrekening, mandaat of factuur.
+// deno-lint-ignore no-explicit-any
+async function opvolgersRelatie(supabase: any, opts: { live: boolean; ondernemingId?: string; door: string | null }) {
+  const { data: config } = await supabase.from("exact_config").select("*").maybeSingle();
+  if (!config?.is_actief || !config.divisie_code) return { ok: false, fout: "exact_niet_actief", resultaten: [] };
+  const baseUrl = config.base_url || "https://start.exactonline.nl";
+  const div = config.divisie_code;
+  const token = await ensureValidToken(supabase, config);
+  let q = supabase.from("onderneming_opvolging")
+    .select("id, ingangsdatum, van:van_onderneming_id(id, naam, exact_account_id, exact_relatie_code), naar:naar_onderneming_id(id, naam, kvk, exact_account_id, is_test, samengevoegd_naar)")
+    .eq("is_test", false);
+  if (opts.ondernemingId) q = q.eq("naar_onderneming_id", opts.ondernemingId);
+  const { data: rijen, error } = await q;
+  if (error) return { ok: false, fout: error.message, resultaten: [] };
+  const resultaten: Record<string, unknown>[] = [];
+  const gezien = new Set<string>();
+  for (const r of rijen ?? []) {
+    const naar = r.naar, van = r.van;
+    if (!naar || gezien.has(naar.id) || naar.exact_account_id || naar.is_test || naar.samengevoegd_naar) continue;
+    gezien.add(naar.id);
+    const { count } = await supabase.from("klant_contracten").select("id", { count: "exact", head: true })
+      .eq("onderneming_id", naar.id).eq("status", "actief");
+    if (!count) { resultaten.push({ onderneming_id: naar.id, naam: naar.naam, uitkomst: "overgeslagen", reden: "geen actief contract" }); continue; }
+    const kvk = String(naar.kvk ?? "").trim();
+    if (!/^\d{8}$/.test(kvk)) { resultaten.push({ onderneming_id: naar.id, naam: naar.naam, uitkomst: "handmatig", reden: "geen geldig KvK-nummer" }); continue; }
+    try {
+      const besluit = besluitRelatie({
+        kvk, naam: naar.naam,
+        kvkTreffers: await zoekRelatiesOpKvk(baseUrl, div, token, kvk),
+        naamTreffers: await zoekRelatiesOpNaam(baseUrl, div, token, naar.naam),
+        uitsluiten: van?.exact_account_id ? [van.exact_account_id] : [],
+      });
+      const basis = { onderneming_id: naar.id, naam: naar.naam, kvk, voorganger: van?.naam ?? null, voorganger_relatie: van?.exact_relatie_code ?? null };
+      if (besluit.soort === "handmatig") { resultaten.push({ ...basis, uitkomst: "handmatig", reden: besluit.reden, kandidaten: besluit.kandidaten }); continue; }
+      let id: string, code: string | null, wijze: string;
+      if (besluit.soort === "koppelen") {
+        id = besluit.relatie.ID; code = String(besluit.relatie.Code ?? "").trim() || null; wijze = `bestaande relatie gekoppeld (${besluit.reden})`;
+        if (!opts.live) { resultaten.push({ ...basis, uitkomst: "zou_koppelen", exact_account_id: id, exact_relatie_code: code, reden: besluit.reden }); continue; }
+      } else {
+        const vg = van?.exact_account_id ? await leesRelatie(baseUrl, div, token, van.exact_account_id) : null;
+        const payload = opvolgerPayload({ naam: naar.naam, kvk }, vg, { voorgangerNaam: van?.naam ?? "voorganger", ingangsdatum: r.ingangsdatum });
+        if (!opts.live) { resultaten.push({ ...basis, uitkomst: "zou_aanmaken", payload }); continue; }
+        // Hercontrole vlak voor de POST: nooit een tweede relatie met dit KvK.
+        const nogmaals = await zoekRelatiesOpKvk(baseUrl, div, token, kvk);
+        if (nogmaals.length) { resultaten.push({ ...basis, uitkomst: "handmatig", reden: "relatie verscheen tijdens de run" }); continue; }
+        const acc = await maakRelatie(baseUrl, div, token, payload);
+        if (!acc.ok) {
+          const tekst = await acc.res.text().catch(() => "");
+          await logSync(supabase, { trigger_type: "opvolger_relatie", status: "error", admin_user_id: opts.door, http_status: acc.res.status, error_message: tekst.slice(0, 600), payload: { onderneming_id: naar.id, request: payload } });
+          resultaten.push({ ...basis, uitkomst: "fout", http_status: acc.res.status });
+          break; // onzekere POST: run stopt, volgende run vindt een eventueel aangemaakte relatie via KvK
+        }
+        id = acc.id; code = acc.code; wijze = "nieuwe relatie aangemaakt";
+      }
+      const { error: upErr } = await supabase.from("ondernemingen").update({
+        exact_account_id: id, exact_relatie_code: code, exact_account_naam: naar.naam, exact_koppeling_status: "gekoppeld",
+      }).eq("id", naar.id).is("exact_account_id", null);
+      if (upErr) { resultaten.push({ ...basis, uitkomst: "fout", reden: upErr.message, exact_account_id: id }); continue; }
+      await logSync(supabase, { trigger_type: "opvolger_relatie", status: "success", admin_user_id: opts.door, exact_account_id: id, http_status: 200, payload: { onderneming_id: naar.id, wijze, exact_relatie_code: code, opvolging_id: r.id } });
+      await supabase.from("activiteiten_log").insert({ actie_type: "exact_relatie_opvolger", omschrijving: `Exact-relatie ${code ?? id} voor ${naar.naam}: ${wijze}`, uitgevoerd_door: opts.door, uitgevoerd_door_naam: opts.door ? null : "automatisch" }).then(() => {}, () => {});
+      resultaten.push({ ...basis, uitkomst: besluit.soort === "koppelen" ? "gekoppeld" : "aangemaakt", exact_account_id: id, exact_relatie_code: code });
+    } catch (e) {
+      resultaten.push({ onderneming_id: naar.id, naam: naar.naam, uitkomst: "fout", reden: e instanceof Error ? e.message : String(e) });
+    }
+  }
+  return { ok: true, live: opts.live, resultaten };
+}
