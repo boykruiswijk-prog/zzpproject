@@ -8,6 +8,7 @@ import { faqItems } from "../../data/faqItems";
 import { seoRoutes } from "../../config/seoRoutes";
 import { eviPaginaVindbaar } from "../../config/eviPagina";
 import { branches, algemeneBavDocumenten, zpZakenEigenDocumenten } from "../../data/documentenLijst";
+import { CYBER_DOCUMENTEN } from "../../data/cyberDocumenten";
 import { WIZARD_SECTOREN, verzekeringskaartVoorSector } from "../../data/sectorVerzekeringskaart";
 import nl from "../../i18n/locales/nl.json";
 
@@ -30,7 +31,7 @@ export function bouwZekerKennis(): ZekerKennis {
   const ci = (nl as unknown as Record<string, Record<string, string>>).collectieveInkoop;
   const docs = new Map<string, string>();
   for (const b of branches) for (const d of b.documenten) docs.set(d.path, `${d.titel} (${b.naam})`);
-  for (const d of [...algemeneBavDocumenten, ...zpZakenEigenDocumenten]) docs.set(d.path, d.titel);
+  for (const d of [...algemeneBavDocumenten, ...zpZakenEigenDocumenten, ...CYBER_DOCUMENTEN]) docs.set(d.path, d.titel);
   return {
     pakketten: bavPakketten.map((p) => ({
       id: p.id, naam: p.name, prijs: p.prijs, periode: p.periode, prijsLabel: p.prijsLabel,
