@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { omzetReden, polisMeenemenMogelijk } from "@/lib/omzetting";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -92,6 +93,15 @@ export function OndernemingswijzigingKnop({ ond, onKlaar }: { ond: Ond; onKlaar?
   const [beeindigen, setBeeindigen] = useState(true);
   const [bestanden, setBestanden] = useState<File[]>([]);
   const [bezig, setBezig] = useState(false);
+  const [geldigePolis, setGeldigePolis] = useState<{ id: string; certificate_number: string | null } | null>(null);
+  const [polisMee, setPolisMee] = useState(true);
+  const meenemen = polisMeenemenMogelijk(soort, geldigePolis) && polisMee;
+
+  useEffect(() => {
+    if (!open) return;
+    supabase.from("policies").select("id,certificate_number").eq("onderneming_id", ond.id).eq("status", "geldig").limit(1)
+      .then(({ data }) => setGeldigePolis(data?.[0] ?? null));
+  }, [open, ond.id]);
 
   useEffect(() => {
     const h = (e: Event) => { if ((e as CustomEvent).detail === ond.id) setOpen(true); };
@@ -115,10 +125,20 @@ export function OndernemingswijzigingKnop({ ond, onKlaar }: { ond: Ond; onKlaar?
     setBezig(true);
     const { data, error } = await supabase.rpc("crm_ondernemingswijziging", {
       _van: ond.id, _naar: modus === "bestaand" ? gekozen?.id ?? null : null, _naam: naam, _kvk: kvk, _rechtsvorm: rechtsvorm,
-      _ingangsdatum: datum, _soort: soort, _toelichting: toelichting, _beeindigen: beeindigen,
+      _ingangsdatum: datum, _soort: soort, _toelichting: toelichting, _beeindigen: beeindigen, _polis_meenemen: meenemen,
     } as any);
     if (error) { setBezig(false); toast.error(error.message); return; }
     const res = data as any;
+    // Rechtsvormwijziging: polis en BAV-nummer in dezelfde stap mee (zelfde route als Omzetten naar BV, nooit mail).
+    if (meenemen && geldigePolis && res?.naar_onderneming_id) {
+      const { data: oz, error: ozErr } = await supabase.functions.invoke("generate-certificate", {
+        body: { actie: "omzetten", policy_id: geldigePolis.id, naar_onderneming_id: res.naar_onderneming_id, ingangsdatum: datum, reden: toelichting.trim().length >= 10 ? toelichting.trim() : omzetReden(res.opvolging_id) },
+      });
+      let melding = (oz as any)?.error as string | undefined;
+      if (ozErr && !melding) { try { melding = (await (ozErr as any)?.context?.json?.())?.error; } catch { /* geen body */ } }
+      if (ozErr || melding) toast.error(`Opvolging vastgelegd, maar polis overnemen mislukte: ${melding ?? ozErr?.message}. Gebruik "Polis overnemen" op de nieuwe kaart.`);
+      else toast.success(`Polis ${geldigePolis.certificate_number} staat nu op de nieuwe onderneming; nieuw certificaat klaar om te controleren. Er is niets gemaild.`);
+    }
     if (bestanden.length && user && res?.notitie_id) (await uploadBijlagen(res.notitie_id, bestanden, user.id)).forEach((f) => toast.error(f));
     setBezig(false); setOpen(false);
     toast.success("Ondernemingswijziging vastgelegd");
@@ -157,12 +177,18 @@ export function OndernemingswijzigingKnop({ ond, onKlaar }: { ond: Ond; onKlaar?
             </div>
             <div><Label>Toelichting</Label><Textarea rows={3} value={toelichting} onChange={(e) => setToelichting(e.target.value)} /></div>
             <BijlageKiezer bestanden={bestanden} onChange={setBestanden} />
-            <p role="note" className="rounded-md border border-primary/40 bg-primary/5 p-3 text-sm">Een polis gaat niet mee naar een nieuw KvK-nummer. De klant moet een nieuwe aanvraag doen. Beëindig de oude polis per de dag vóór de ingangsdatum van de nieuwe polis, zodat er geen gat in de dekking zit en de klant niet dubbel betaalt.</p>
+            {polisMeenemenMogelijk(soort, geldigePolis) && (
+              <label className="flex items-start gap-2 rounded-md border border-primary/40 bg-primary/5 p-3">
+                <Checkbox checked={polisMee} onCheckedChange={(v) => setPolisMee(v === true)} />
+                <span>Polis {geldigePolis?.certificate_number} met hetzelfde BAV-nummer meenemen naar de nieuwe onderneming (omzetting). Er komt een nieuwe certificaatversie op naam van de nieuwe onderneming met deze ingangsdatum; de oude versie blijft bewaard. Er wordt niets gemaild. Bij Vastleggen bevestig je deze omzetting.</span>
+              </label>
+            )}
+            {!meenemen && <p role="note" className="rounded-md border border-primary/40 bg-primary/5 p-3 text-sm">Een polis gaat niet mee naar een nieuw KvK-nummer. De klant moet een nieuwe aanvraag doen. Beëindig de oude polis per de dag vóór de ingangsdatum van de nieuwe polis, zodat er geen gat in de dekking zit en de klant niet dubbel betaalt.</p>}
             <label className="flex items-start gap-2"><Checkbox checked={beeindigen} onCheckedChange={(v) => setBeeindigen(v === true)} />
-              <span>Lopende contracten en polissen van {ond.naam} beeindigen per de dag voor de ingangsdatum (reden ondernemingswijziging). Te veel gefactureerd wordt alleen als concept-creditnota klaargezet.</span></label>
+              <span>Lopende contracten{meenemen ? "" : " en polissen"} van {ond.naam} beeindigen per de dag voor de ingangsdatum (reden ondernemingswijziging). Te veel gefactureerd wordt alleen als concept-creditnota klaargezet.</span></label>
           </div>
           <DialogFooter className="gap-2"><Button variant="outline" onClick={() => setOpen(false)}>Annuleren</Button>
-            <Button onClick={opslaan} disabled={!geldig || bezig}>{bezig && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Vastleggen</Button></DialogFooter>
+            <Button onClick={opslaan} disabled={!geldig || bezig}>{bezig && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{meenemen ? "Vastleggen en polis omzetten" : "Vastleggen"}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
     </>
