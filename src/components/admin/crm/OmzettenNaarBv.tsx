@@ -14,14 +14,14 @@ type Ond = { id: string; naam: string; kvk: string | null; rechtsvorm?: string |
 /** Omzetten naar BV: zelfde polis en BAV-nummer naar de nieuwe onderneming als nieuwe versie (generate-certificate actie omzetten). Contracten en facturatie blijven ongewijzigd. */
 export type OmzetOnderneming = Ond;
 
-export function OmzettenNaarBv({ polis, vanNaam, onKlaar, vasteNaar, vasteLeadId }: { polis: { id: string; certificate_number: string | null }; vanNaam: string; onKlaar: () => void; vasteNaar?: Ond | null; vasteLeadId?: string | null }) {
+export function OmzettenNaarBv({ polis, vanNaam, onKlaar, vasteNaar, vasteLeadId, vasteDatum, vasteReden, knopTekst }: { polis: { id: string; certificate_number: string | null }; vanNaam: string; onKlaar: () => void; vasteNaar?: Ond | null; vasteLeadId?: string | null; vasteDatum?: string; vasteReden?: string; knopTekst?: string }) {
   const [open, setOpen] = useState(false);
   const [term, setTerm] = useState("");
   const [res, setRes] = useState<Ond[]>([]);
   const [naar, setNaar] = useState<Ond | null>(vasteNaar ?? null);
   const [leadId, setLeadId] = useState<string | null>(vasteLeadId ?? null);
-  const [datum, setDatum] = useState("");
-  const [reden, setReden] = useState("Eenmanszaak -> BV");
+  const [datum, setDatum] = useState(vasteDatum ?? "");
+  const [reden, setReden] = useState(vasteReden ?? "Eenmanszaak -> BV");
   const [bezig, setBezig] = useState(false);
 
   const zoek = async () => {
@@ -54,7 +54,7 @@ export function OmzettenNaarBv({ polis, vanNaam, onKlaar, vasteNaar, vasteLeadId
   };
 
   return (<>
-    <Button size="sm" variant="outline" onClick={() => setOpen(true)}>Omzetten naar BV</Button>
+    <Button size="sm" variant="outline" onClick={() => setOpen(true)}>{knopTekst ?? "Omzetten naar BV"}</Button>
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <DialogHeader>

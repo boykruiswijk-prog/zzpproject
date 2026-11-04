@@ -14,6 +14,8 @@ import { certificaatBlokkadeReden } from "@/lib/certificaatBlokkade";
 import { CertificaatBeheer } from "@/components/admin/CertificaatBeheer";
 import { WIZARD_SECTOREN } from "@/data/sectorVerzekeringskaart";
 import { brancheVoorSector } from "@/data/sectorBranche";
+import type { OpenOmzetting } from "@/lib/omzetting";
+import { OpenOmzettingMelding } from "@/components/admin/crm/OpenOmzetting";
 import { actiefKlantContract } from "../../../supabase/functions/_shared/certificaatRegels";
 
 interface Props {
@@ -21,9 +23,12 @@ interface Props {
   contracten: any[];
   personen: any[];
   leadIds: string[];
+  omzetOpen?: OpenOmzetting | null;
+  onOmgezet?: () => void;
 }
 
-export function KlantCertificaat({ ond, contracten, personen, leadIds }: Props) {
+export function KlantCertificaat({ ond, contracten, personen, leadIds, omzetOpen = null, onOmgezet }: Props) {
+  const [omzetMelding, setOmzetMelding] = useState(false);
   const { magCertificaten: isSupervisorOrAdmin } = useAuth();
   const { toast } = useToast();
   const vandaag = new Date().toISOString().split("T")[0];
@@ -161,8 +166,12 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds }: Props) 
         )}
         {isSupervisorOrAdmin ? (
           <CertificaatBeheer policies={policies} leadActief={!!actief} isSupervisorOrAdmin={isSupervisorOrAdmin}
-            onChanged={refetch} onDownload={download} onNieuw={openForm} />
+            onChanged={refetch} onDownload={download} onNieuw={(b: boolean) => (omzetOpen ? setOmzetMelding(true) : openForm(b))} />
         ) : null}
+        {omzetOpen && omzetMelding && (
+          <OpenOmzettingMelding open={omzetOpen} ond={{ id: ond.id, naam: ond.naam ?? "", kvk: ond.kvk }} onKlaar={() => { setOmzetMelding(false); refetch(); onOmgezet?.(); }}
+            tekst={`Nog geen certificaat aanmaken: deze onderneming neemt BAV-nummer${omzetOpen.certificaatnummer ? ` ${omzetOpen.certificaatnummer}` : ""} over van ${omzetOpen.vanNaam} (opvolging per ${omzetOpen.ingangsdatum.split("-").reverse().join("-")}). Neem eerst de polis over; daarna staat het nieuwe certificaat hier klaar.`} />
+        )}
         <p className="text-xs text-muted-foreground">De klant houdt zijn bestaande certificaatnummer. Er wordt niets automatisch gemaild.</p>
       </CardContent>
 

@@ -5462,6 +5462,69 @@ export type Database = {
           },
         ]
       }
+      omzetting_systeem_opdrachten: {
+        Row: {
+          aangemaakt_op: string
+          door: string
+          door_email: string | null
+          door_naam: string | null
+          gebruikt_op: string | null
+          id: string
+          ingangsdatum: string
+          lead_id: string | null
+          naar_onderneming_id: string
+          policy_id: string
+          reden: string
+          token_hash: string
+          verloopt_op: string
+        }
+        Insert: {
+          aangemaakt_op?: string
+          door: string
+          door_email?: string | null
+          door_naam?: string | null
+          gebruikt_op?: string | null
+          id?: string
+          ingangsdatum: string
+          lead_id?: string | null
+          naar_onderneming_id: string
+          policy_id: string
+          reden: string
+          token_hash: string
+          verloopt_op?: string
+        }
+        Update: {
+          aangemaakt_op?: string
+          door?: string
+          door_email?: string | null
+          door_naam?: string | null
+          gebruikt_op?: string | null
+          id?: string
+          ingangsdatum?: string
+          lead_id?: string | null
+          naar_onderneming_id?: string
+          policy_id?: string
+          reden?: string
+          token_hash?: string
+          verloopt_op?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "omzetting_systeem_opdrachten_naar_onderneming_id_fkey"
+            columns: ["naar_onderneming_id"]
+            isOneToOne: false
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "omzetting_systeem_opdrachten_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       onderneming_opvolging: {
         Row: {
           bav_nummer: string | null
@@ -7322,6 +7385,7 @@ export type Database = {
           _kvk: string
           _naam: string
           _naar: string
+          _polis_meenemen?: boolean
           _rechtsvorm: string
           _soort: string
           _toelichting: string
@@ -7926,6 +7990,30 @@ export type Database = {
       nps_overzicht: { Args: never; Returns: Json }
       omzetting_kandidaten: { Args: { _lead_id: string }; Returns: Json }
       omzetting_leidend_bav: { Args: { _van: string }; Returns: Json }
+      omzetting_systeem_claim: {
+        Args: { _token: string }
+        Returns: {
+          aangemaakt_op: string
+          door: string
+          door_email: string | null
+          door_naam: string | null
+          gebruikt_op: string | null
+          id: string
+          ingangsdatum: string
+          lead_id: string | null
+          naar_onderneming_id: string
+          policy_id: string
+          reden: string
+          token_hash: string
+          verloopt_op: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "omzetting_systeem_opdrachten"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       omzetting_vastleggen: {
         Args: {
           _bav_nummer: string
@@ -7987,6 +8075,20 @@ export type Database = {
       }
       polis_omzetten: {
         Args: {
+          _ingangsdatum: string
+          _lead_id: string
+          _naar: string
+          _oude_pdf_pad: string
+          _policy_id: string
+          _reden: string
+        }
+        Returns: Json
+      }
+      polis_omzetten_kern: {
+        Args: {
+          _door: string
+          _door_email: string
+          _door_naam: string
           _ingangsdatum: string
           _lead_id: string
           _naar: string

@@ -31,7 +31,22 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
   }
 
   try {
-    const authHeader = req.headers.get("Authorization");
+    // Eenmalige systeemopdracht (omzetting op vastgelegd besluit): alleen met geldig, ongebruikt token uit omzetting_systeem_opdrachten. Nooit mail.
+    const voorBody = await req.clone().json().catch(() => null);
+    let systeem: any = null;
+    const heeftToken = !!voorBody && typeof voorBody.systeem_token === "string";
+    if (!heeftToken && !req.headers.get("Authorization")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    if (heeftToken) {
+      const { data: opd } = await createClient(supabaseUrl, supabaseServiceKey).rpc("omzetting_systeem_claim", { _token: voorBody.systeem_token });
+      if (!opd?.id) return new Response(JSON.stringify({ error: "Ongeldige of gebruikte systeemopdracht" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      systeem = opd;
+    }
+    const authHeader = systeem ? "systeem" : req.headers.get("Authorization");
     if (!authHeader) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
@@ -39,39 +54,36 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
       });
     }
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-
     const userClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } },
+      global: { headers: { Authorization: systeem ? `Bearer ${supabaseAnonKey}` : authHeader } },
     });
-    const {
-      data: { user },
-      error: authError,
-    } = await userClient.auth.getUser();
-    if (authError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const mfa = await requireMfa(req);
-    if (mfa instanceof Response) return mfa;
-    const { data: isTeam } = await createClient(
-      supabaseUrl,
-      supabaseServiceKey
-    ).rpc("is_team_member", { _user_id: user.id });
-    if (!isTeam) {
-      return new Response(JSON.stringify({ error: "Forbidden" }), {
-        status: 403,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    let user: any;
+    if (systeem) {
+      user = { id: systeem.door, email: systeem.door_email };
+    } else {
+      const { data: { user: u }, error: authError } = await userClient.auth.getUser();
+      if (authError || !u) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      user = u;
+      const mfa = await requireMfa(req);
+      if (mfa instanceof Response) return mfa;
+      const { data: isTeam } = await createClient(supabaseUrl, supabaseServiceKey).rpc("is_team_member", { _user_id: user.id });
+      if (!isTeam) {
+        return new Response(JSON.stringify({ error: "Forbidden" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     await werkVan(req).start();
-    const body = await req.json();
+    const body: any = systeem
+      ? { actie: "omzetten", policy_id: systeem.policy_id, naar_onderneming_id: systeem.naar_onderneming_id, naar_lead_id: systeem.lead_id, ingangsdatum: systeem.ingangsdatum, reden: systeem.reden }
+      : await req.json();
     const { lead_id, policy_data } = body;
     const actie: "nieuw" | "aanpassen" | "intrekken" | "mailen" | "nummer_overnemen" | "nummer_wijzigen" | "cyber_toevoegen" | "omzetten" = body.actie || "nieuw";
     const json = (b: unknown, status = 200) =>
@@ -80,6 +92,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
     const adminClient = createClient(supabaseUrl, supabaseServiceKey);
     const { data: rolRijen } = await adminClient.from("user_roles").select("role").eq("user_id", user.id);
     const isSupAdmin = magCertificaatBeheren((rolRijen || []).map((r: any) => r.role));
+    if (systeem && !isSupAdmin) return json({ error: "Uitvoerder van de systeemopdracht mag geen certificaten beheren" }, 403);
 
     let policy: any;
     let cyberVerzoek: any = null;
@@ -190,7 +203,10 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
           const { error: cErr } = await adminClient.storage.from("certificates").copy(bestaand.pdf_url, oudePdfPad);
           if (cErr) return json({ error: `Oude PDF kon niet bewaard worden: ${cErr.message}` }, 500);
         }
-        const { error: rErr } = await userClient.rpc("polis_omzetten", { _policy_id: bestaand.id, _naar: naar, _ingangsdatum: datum, _reden: reden, _lead_id: typeof body.naar_lead_id === "string" ? body.naar_lead_id : null, _oude_pdf_pad: oudePdfPad });
+        const omzetArgs = { _policy_id: bestaand.id, _naar: naar, _ingangsdatum: datum, _reden: reden, _lead_id: typeof body.naar_lead_id === "string" ? body.naar_lead_id : null, _oude_pdf_pad: oudePdfPad };
+        const { error: rErr } = systeem
+          ? await adminClient.rpc("polis_omzetten_kern", { ...omzetArgs, _door: systeem.door, _door_email: systeem.door_email, _door_naam: systeem.door_naam })
+          : await userClient.rpc("polis_omzetten", omzetArgs);
         if (rErr) return json({ error: rErr.message }, 409);
         const { data: upd } = await adminClient.from("policies").select("*").eq("id", bestaand.id).single();
         policy = upd;

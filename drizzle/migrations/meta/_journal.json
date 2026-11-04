@@ -1674,6 +1674,13 @@
       "when": 1793773289218,
       "tag": "0238_directietafel_coulance_generated_guard",
       "breakpoints": true
+    },
+    {
+      "idx": 239,
+      "version": "7",
+      "when": 1793780899702,
+      "tag": "0239_opvolging_omzetting_samenvoegen",
+      "breakpoints": true
     }
   ]
 }
