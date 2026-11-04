@@ -2,6 +2,7 @@ import { seoRoute } from "@/config/seoRoutes";
 import { SEOHead } from "@/components/SEOHead";
 import { faqSchema } from "@/lib/schema";
 import { faqItems } from "@/data/faqItems";
+import { CyberVoorwaardenTekst } from "@/components/shared/CyberVoorwaardenTekst";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -53,7 +54,7 @@ export default function FAQ() {
                     <AccordionTrigger className="text-left hover:no-underline py-5">
                       <span className="font-medium pr-4">{item.question}</span>
                     </AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground pb-5 leading-relaxed">{item.answer}</AccordionContent>
+                    <AccordionContent className="text-muted-foreground pb-5 leading-relaxed"><CyberVoorwaardenTekst tekst={item.answer} /></AccordionContent>
                   </AccordionItem>
                 ))}
               </Accordion>

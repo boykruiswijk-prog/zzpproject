@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { getPakket, formatMiljoenKort } from "@/data/bavPakketten";
+import { CyberVoorwaardenTekst } from "@/components/shared/CyberVoorwaardenTekst";
 
 const BEROEPSPAGINAS = new Set([
   "/bav-zzp", "/beroepsaansprakelijkheidsverzekering",
@@ -26,6 +27,6 @@ export function BeroepspaginaTekst({ tekst }: { tekst: string }) {
       ? <LocalizedLink key={i} to="/voorwaarden" className="underline underline-offset-4">{deel}</LocalizedLink>
       : deel === "Hoeveel dekking heb je nodig met je BAV?"
         ? <LocalizedLink key={i} to="/kennisbank/verzekerd-bedrag-bav-zzp" className="underline underline-offset-4">{deel}</LocalizedLink>
-      : <Fragment key={i}>{deel}</Fragment>
+      : <Fragment key={i}><CyberVoorwaardenTekst tekst={deel} /></Fragment>
   ))}</>;
 }

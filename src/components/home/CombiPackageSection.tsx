@@ -1,5 +1,6 @@
 import { CYBER_DEKKING, CYBER_HULP, formatPremieBedrag } from "../../../supabase/functions/_shared/cyber";
-import { CYBER_VOORWAARDEN_OPVRAGEN } from "../../config/cyberPubliek";
+import { CYBER_VOORWAARDEN_OPVRAGEN, metPubliekeCybertekst } from "../../config/cyberPubliek";
+import { CyberVoorwaardenTekst } from "@/components/shared/CyberVoorwaardenTekst";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Shield, ArrowRight } from "lucide-react";
@@ -104,7 +105,7 @@ export function CombiPackageSection() {
                         <div className="flex-1 flex flex-col gap-2">
                           <span>{CYBER_DEKKING}</span>
                           <span className="text-xs">
-                            {CYBER_HULP} {CYBER_VOORWAARDEN_OPVRAGEN}
+                            {CYBER_HULP} <CyberVoorwaardenTekst tekst={CYBER_VOORWAARDEN_OPVRAGEN} />
                           </span>
                         </div>
                       </li>
@@ -112,7 +113,7 @@ export function CombiPackageSection() {
                     {pkg.usps.map((u) => (
                       <li key={u} className="flex items-start gap-2">
                         <CheckCircle className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
-                        <span>{u}</span>
+                        <span><CyberVoorwaardenTekst tekst={metPubliekeCybertekst(u)} /></span>
                       </li>
                     ))}
                   </ul>
