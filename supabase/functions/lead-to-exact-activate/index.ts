@@ -120,7 +120,7 @@ async function mandaatGegevens(supabase: any, leadId: string, fallbackDatum: str
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, x-cron-secret",
 };
 
 const json = (data: unknown, status = 200) =>
@@ -450,6 +450,16 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
 
   const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
+  // deno-lint-ignore no-explicit-any
+  const vooraf: any = await req.clone().json().catch(() => ({}));
+  const cronSecret = req.headers.get("x-cron-secret");
+  if (vooraf?.action === "opvolgers_relatie" && cronSecret) {
+    const { data: ok } = await supabase.rpc("verify_cron_secret", { p_secret: cronSecret });
+    if (ok !== true) return json({ success: false, error: "unauthorized" }, 401);
+    const uit = await opvolgersRelatie(supabase, { live: vooraf?.live === true, ondernemingId: typeof vooraf?.onderneming_id === "string" ? vooraf.onderneming_id : undefined, door: null });
+    return json({ success: uit.ok, ...uit });
+  }
+
   // ── Auth: alle teamleden, inclusief verzekering ──
   const authHeader = req.headers.get("Authorization") ?? "";
   if (!authHeader.toLowerCase().startsWith("bearer ")) {
@@ -473,6 +483,10 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
   try { body = await req.json(); } catch (_) {}
   const leadId = body?.lead_id;
   const action = body?.action || "activate";
+  if (action === "opvolgers_relatie") {
+    const uit = await opvolgersRelatie(supabase, { live: body?.live === true, ondernemingId: typeof body?.onderneming_id === "string" ? body.onderneming_id : undefined, door: user.id });
+    return json({ success: uit.ok, ...uit });
+  }
   if (!leadId || typeof leadId !== "string") {
     return json({ success: false, error: "lead_id_required" }, 400);
   }
