@@ -1681,6 +1681,13 @@
       "when": 1793780899702,
       "tag": "0239_opvolging_omzetting_samenvoegen",
       "breakpoints": true
+    },
+    {
+      "idx": 240,
+      "version": "7",
+      "when": 1793784267205,
+      "tag": "0240_gegevens_aanvullen_contract_mee_afhakers",
+      "breakpoints": true
     }
   ]
 }

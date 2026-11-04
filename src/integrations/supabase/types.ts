@@ -41,8 +41,10 @@ export type Database = {
       aanvraag_concepten: {
         Row: {
           achternaam: string | null
+          afgerond_op: string | null
           attributie: Json | null
           bedrijfsnaam: string | null
+          contact_vastgelegd_op: string | null
           converted_at: string | null
           created_at: string
           dubbel_lead_id: string | null
@@ -50,6 +52,7 @@ export type Database = {
           geanonimiseerd_op: string | null
           gekoppeld_onderneming_id: string | null
           gekoppeld_persoon_id: string | null
+          gezien_op: string | null
           herinnering_verstuurd_op: string | null
           id: string
           interne_bron: string | null
@@ -75,8 +78,10 @@ export type Database = {
         }
         Insert: {
           achternaam?: string | null
+          afgerond_op?: string | null
           attributie?: Json | null
           bedrijfsnaam?: string | null
+          contact_vastgelegd_op?: string | null
           converted_at?: string | null
           created_at?: string
           dubbel_lead_id?: string | null
@@ -84,6 +89,7 @@ export type Database = {
           geanonimiseerd_op?: string | null
           gekoppeld_onderneming_id?: string | null
           gekoppeld_persoon_id?: string | null
+          gezien_op?: string | null
           herinnering_verstuurd_op?: string | null
           id: string
           interne_bron?: string | null
@@ -109,8 +115,10 @@ export type Database = {
         }
         Update: {
           achternaam?: string | null
+          afgerond_op?: string | null
           attributie?: Json | null
           bedrijfsnaam?: string | null
+          contact_vastgelegd_op?: string | null
           converted_at?: string | null
           created_at?: string
           dubbel_lead_id?: string | null
@@ -118,6 +126,7 @@ export type Database = {
           geanonimiseerd_op?: string | null
           gekoppeld_onderneming_id?: string | null
           gekoppeld_persoon_id?: string | null
+          gezien_op?: string | null
           herinnering_verstuurd_op?: string | null
           id?: string
           interne_bron?: string | null
@@ -323,6 +332,50 @@ export type Database = {
           status?: string
         }
         Relationships: []
+      }
+      afhaker_contacten: {
+        Row: {
+          concept_id: string
+          crm_notitie_id: string | null
+          door: string
+          door_naam: string | null
+          id: string
+          is_test: boolean
+          op: string
+          soort: string
+          tekst: string
+        }
+        Insert: {
+          concept_id: string
+          crm_notitie_id?: string | null
+          door: string
+          door_naam?: string | null
+          id?: string
+          is_test?: boolean
+          op?: string
+          soort: string
+          tekst: string
+        }
+        Update: {
+          concept_id?: string
+          crm_notitie_id?: string | null
+          door?: string
+          door_naam?: string | null
+          id?: string
+          is_test?: boolean
+          op?: string
+          soort?: string
+          tekst?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "afhaker_contacten_concept_id_fkey"
+            columns: ["concept_id"]
+            isOneToOne: false
+            referencedRelation: "aanvraag_concepten"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       aov_aanmeldingen: {
         Row: {
@@ -5255,6 +5308,24 @@ export type Database = {
         }
         Relationships: []
       }
+      mijn_gegevens_later: {
+        Row: {
+          bijgewerkt_op: string
+          later_tot: string
+          user_id: string
+        }
+        Insert: {
+          bijgewerkt_op?: string
+          later_tot: string
+          user_id: string
+        }
+        Update: {
+          bijgewerkt_op?: string
+          later_tot?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       monthly_invoices_log: {
         Row: {
           bedrag: number
@@ -7123,6 +7194,22 @@ export type Database = {
           verstuurd: number
         }[]
       }
+      afhaker_contact_vastleggen: {
+        Args: { _concept_id: string; _soort: string; _tekst: string }
+        Returns: Json
+      }
+      afhakers_automatisch_afronden: { Args: never; Returns: number }
+      afhakers_gezien: { Args: { _ids: string[] }; Returns: number }
+      afhakers_overzicht: {
+        Args: { _ids: string[] }
+        Returns: {
+          aanvraag_lead_id: string
+          aanvraag_op: string
+          concept_id: string
+          contacten: Json
+          mails: Json
+        }[]
+      }
       anonimiseer_aanvraag_concepten: { Args: never; Returns: number }
       aov_aanmelden: {
         Args: {
@@ -7315,6 +7402,16 @@ export type Database = {
       }
       contract_korting_voorbeeld: {
         Args: { _contract_id: string; _pct: number; _vanaf: string }
+        Returns: Json
+      }
+      contract_meenemen: { Args: { _opvolging_id: string }; Returns: Json }
+      contract_meenemen_kern: {
+        Args: {
+          _door: string
+          _door_email: string
+          _door_naam: string
+          _opvolging_id: string
+        }
         Returns: Json
       }
       contract_opzegging: { Args: { _contract_id: string }; Returns: string }
@@ -7926,6 +8023,12 @@ export type Database = {
         Returns: Json
       }
       mijn_cyber_polissen: { Args: never; Returns: Json }
+      mijn_gegevens_aanvullen: {
+        Args: { _adressen?: Json; _telefoon: string }
+        Returns: Json
+      }
+      mijn_gegevens_later: { Args: never; Returns: string }
+      mijn_gegevens_status: { Args: never; Returns: Json }
       mijn_klant_contracten: {
         Args: never
         Returns: {
@@ -7958,6 +8061,7 @@ export type Database = {
           policy_ids: string[]
         }[]
       }
+      mijn_persoon_ids: { Args: never; Returns: string[] }
       mijn_review_kaart: { Args: never; Returns: Json }
       move_to_dlq: {
         Args: {
@@ -8254,6 +8358,7 @@ export type Database = {
       }
       tel_portaltoegang_open: { Args: never; Returns: number }
       tel_service_open: { Args: { _toon_test?: boolean }; Returns: number }
+      telefoon_normaliseer: { Args: { _v: string }; Returns: string }
       verberg_review_kaart: { Args: never; Returns: boolean }
       verify_cron_secret: { Args: { p_secret: string }; Returns: boolean }
       verify_dba_certificate: {
