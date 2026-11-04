@@ -51,9 +51,9 @@ export default function KlantDetail() {
       if (o) {
         const [k, po, m, l] = await Promise.all([
           supabase.from("klant_contracten").select("*").eq("onderneming_id", o.id).order("bron_rij"),
-          supabase.from("persoon_onderneming").select("persoon_id, personen(id,voornaam,achternaam,email_weergave)").eq("onderneming_id", o.id),
+          supabase.from("persoon_onderneming").select("persoon_id, personen(id,voornaam,achternaam,email_weergave,telefoon)").eq("onderneming_id", o.id),
           o.exact_relatie_code ? (supabase.rpc as any)("klant_mandaat_overzicht", { _codes: [o.exact_relatie_code] }).maybeSingle() : Promise.resolve({ data: null }),
-          o.exact_relatie_code ? supabase.from("leads").select("id,voornaam,achternaam,status").eq("exact_relatie_code", o.exact_relatie_code) : Promise.resolve({ data: [] }),
+          o.exact_relatie_code ? supabase.from("leads").select("id,voornaam,achternaam,status,adres_plaats").eq("exact_relatie_code", o.exact_relatie_code) : Promise.resolve({ data: [] }),
         ]);
         setContracten(k.data ?? []);
         const ps = ((po.data ?? []) as any[]).map((x) => x.personen).filter(Boolean);
@@ -64,7 +64,7 @@ export default function KlantDetail() {
         if (ps.length) {
           const { data: kop } = await supabase.from("persoon_bron_koppeling").select("bron_id").eq("bron_tabel", "leads").in("persoon_id", ps.map((p: any) => p.id));
           const ids = (kop ?? []).map((x) => x.bron_id);
-          if (ids.length) viaPersoon = (await supabase.from("leads").select("id,voornaam,achternaam,status").in("id", ids)).data ?? [];
+          if (ids.length) viaPersoon = (await supabase.from("leads").select("id,voornaam,achternaam,status,adres_plaats").in("id", ids)).data ?? [];
         }
         const alle = new Map<string, any>();
         for (const x of [...viaPersoon, ...((l.data as any[]) ?? [])]) alle.set(x.id, x);
@@ -88,6 +88,7 @@ export default function KlantDetail() {
             <RechtsvoorgangerBanner ondernemingId={ond.id} herlaad={herlaad} />
             <div className="flex flex-wrap items-start justify-between gap-2"><div>
               <h1 className="text-2xl font-bold break-words">{ond.naam}</h1>
+              <p className="break-words text-base font-medium" data-testid="klant-plaats-kvk">{klantPlaats(ond, leadMatch.map((l) => l.adres_plaats))} · KvK {ond.kvk ?? "onbekend"}</p>
               <p className="break-words text-sm text-muted-foreground">Exact-relatiecode {ond.exact_relatie_code ?? "onbekend"} · {bavKopTekst(bavKeuze?.nummer, omzetOpen ?? null)}{bavKeuze?.afas.length ? ` · AFAS-abonnementsnummer (oud systeem) ${bavKeuze.afas.join(", ")}` : ""} · {ond.bron === "afas_20261001" ? "startstand 01-10-2026" : ond.bron ? `bron ${ond.bron}` : ""}</p>
               {ond.afwijkingen?.length > 0 && <div className="mt-2 flex flex-wrap gap-2">{ond.afwijkingen.map((a: string) => <Badge key={a} variant="outline" className="border-amber-500 text-amber-700">{a}</Badge>)}</div>}
               <div className="mt-2"><ExactRelatieLabel ond={ond} heeftVoorganger={voorgangers.length > 0} /></div>
@@ -99,7 +100,7 @@ export default function KlantDetail() {
             <div className="grid gap-6 md:grid-cols-3">
               <Card><CardHeader><CardTitle className="text-base">Contactpersonen</CardTitle></CardHeader><CardContent className="space-y-2 text-sm">
                 {personen.length === 0 && <p className="text-muted-foreground">Geen e-mailadres bekend.</p>}
-                {personen.map((p) => <div key={p.id} className="min-w-0"><Link to={`/admin/personen/${p.id}`} className="block truncate font-medium hover:text-primary">{[p.voornaam, p.achternaam].filter(Boolean).join(" ") || p.email_weergave || "—"}</Link><div className="truncate text-muted-foreground" title={p.email_weergave}>{p.email_weergave}</div></div>)}
+                {personen.map((p) => <div key={p.id} className="min-w-0"><Link to={`/admin/personen/${p.id}`} className="block truncate font-medium hover:text-primary">{[p.voornaam, p.achternaam].filter(Boolean).join(" ") || p.email_weergave || "—"}</Link><div className="truncate text-muted-foreground" title={p.email_weergave}>{p.email_weergave}</div>{p.telefoon && <a href={`tel:${p.telefoon}`} className="block truncate text-muted-foreground hover:text-primary">{p.telefoon}</a>}</div>)}
               </CardContent></Card>
               <Card><CardHeader><CardTitle className="text-base">Incassomachtiging</CardTitle></CardHeader><CardContent className="text-sm">
                 {mandaat ? <div className="space-y-1">
