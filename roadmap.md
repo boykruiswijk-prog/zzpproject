@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Kwaliteit 4 november: inclusief voluit, regressietest eerst rood dan groen, nieuwsintro naar /over-ons en nieuws-vangnet na expliciete regels, gerichte kwaliteitstests en automatische buildcontrole, bestanden/revisie rapporteren; niet publiceren.
 - [x] Boy 4-11 cybervoorwaarden online: beide officiële PDF's exact hash/bytes, /voorwaarden#cyber, opvraagverwijzingen klikbaar, llms/kennis/sitemap bijgewerkt; 2058 tests groen/1 skipped, build OK, desktop/mobiel en FAQ→PDF gecontroleerd. Eén Ellen-melding 8b5e9ad7; rapport docs/cybervoorwaarden-online-20261104.md. Niet gepubliceerd, geen klantmail/prijzen/akkoord gewijzigd.
 - [x] Boy 4-11 De Directietafel: cyber 3-11 zonder premie, BAV maand 55/periode 3-11–2-12, concept 850 bewust vervallen met Exact-id bewaard; facturatie_status ongemoeid. SQL-bewijs docs/directietafel-coulance-20261104.md, 2054 tests groen/1 skipped, build OK, controle uitgerold/start401, één Ellen/Roxy-melding. Geen Exact-write/klantmail/publicatie.
 - [ ] De Directietafel extern: Roxy verwijdert oud Exact-concept 850; Ellen controleert eventuele verzekeraaraanmelding/intrekken. Buiten agentbevoegdheid, opgenomen in melding.
