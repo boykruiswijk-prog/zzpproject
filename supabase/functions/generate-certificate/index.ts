@@ -31,13 +31,17 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
   }
 
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     // Eenmalige systeemopdracht (omzetting op vastgelegd besluit): alleen met geldig, ongebruikt token uit omzetting_systeem_opdrachten. Nooit mail.
     const voorBody = await req.clone().json().catch(() => null);
     let systeem: any = null;
-    if (voorBody && typeof voorBody.systeem_token === "string") {
+    const heeftToken = !!voorBody && typeof voorBody.systeem_token === "string";
+    if (!heeftToken && !req.headers.get("Authorization")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    if (heeftToken) {
       const { data: opd } = await createClient(supabaseUrl, supabaseServiceKey).rpc("omzetting_systeem_claim", { _token: voorBody.systeem_token });
       if (!opd?.id) return new Response(JSON.stringify({ error: "Ongeldige of gebruikte systeemopdracht" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       systeem = opd;
