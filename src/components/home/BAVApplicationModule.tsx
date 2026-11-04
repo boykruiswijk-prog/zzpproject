@@ -2,6 +2,7 @@ import { isValidIban as isValidSepaIban } from "@/lib/sepaMachtiging";
 import { SITE_CONFIG } from "@/config/site";
 import { CyberVragen } from "@/components/verzekeringen/CyberVragen";
 import { CyberAfwijzing } from "@/components/verzekeringen/CyberAfwijzing";
+import { CyberVoorwaardenTekst } from "@/components/shared/CyberVoorwaardenTekst";
 import { CYBER_AKKOORD, CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER_LOOPTIJD, CYBER_AFGEWEZEN, CYBER_VRAGEN, beoordeelCyber, basisPakket, aanvraagPremie, formatPremieBedrag, type CyberAntwoorden } from "../../../supabase/functions/_shared/cyber";
 import { useState, useEffect, useRef } from "react";
 import { SepaMachtigingBlok, bouwFrontendMachtiging } from "@/components/shared/SepaMachtigingBlok";
@@ -810,7 +811,7 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
                         );
                       })}
                     </div>)}
-                    {heeftCyber && <><div className="space-y-2 text-sm text-muted-foreground"><p>{CYBER_HULP}</p><p>{CYBER_LOOPTIJD}</p><p>{CYBER_POLISVOORWAARDEN}</p></div><CyberVragen antwoorden={cyberAntwoorden} onChange={setCyberAntwoorden} /><FieldError message={errors.cyber} /></>}
+                    {heeftCyber && <><div className="space-y-2 text-sm text-muted-foreground"><p>{CYBER_HULP}</p><p>{CYBER_LOOPTIJD}</p><p><CyberVoorwaardenTekst tekst={CYBER_POLISVOORWAARDEN} /></p></div><CyberVragen antwoorden={cyberAntwoorden} onChange={setCyberAntwoorden} /><FieldError message={errors.cyber} /></>}
                     {heeftCyber && <CyberAfwijzing antwoorden={cyberAntwoorden} />}
                     <div>
                        <Label htmlFor="startDate" className="text-sm font-medium mb-2 block">{t("home.bavStartDate")}</Label>
@@ -1230,7 +1231,7 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
                       {selectedBavPakket.dekkingen.cyber && (
                         <div className="flex flex-col gap-0.5">
                           <span className="text-background/70">{CYBER_DEKKING}</span>
-                          <span className="text-xs">{CYBER_HULP} {CYBER_LOOPTIJD} {CYBER_POLISVOORWAARDEN}</span>
+                          <span className="text-xs">{CYBER_HULP} {CYBER_LOOPTIJD} <CyberVoorwaardenTekst tekst={CYBER_POLISVOORWAARDEN} /></span>
                         </div>
                       )}
                     </div>

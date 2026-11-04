@@ -6,6 +6,7 @@ import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { branches, algemeneBavDocumenten, type Document } from "@/data/documentenLijst";
+import { CYBER_DOCUMENTEN } from "@/data/cyberDocumenten";
 
 const SEO = seoRoute("/voorwaarden");
 
@@ -56,6 +57,12 @@ export default function Voorwaarden() {
                 {havbKaart && <li><PdfLink doc={havbKaart} label="Verzekeringskaart bedrijfsaansprakelijkheid (HAVB-08B)" /></li>}
                 {kantoorrisico && <li><PdfLink doc={kantoorrisico} /></li>}
               </ul>
+            </div>
+            <div id="cyber" className="scroll-mt-28 border-t border-border pt-8">
+              <h2 className="text-lg font-bold mb-2">Cyberverzekering (CyberClear by Hiscox)</h2>
+              <p className="text-sm text-muted-foreground mb-2">Versie HCC-2022/01</p>
+              <p className="text-sm mb-4">Cyber sluit je alleen af samen met de BAV + AVB.</p>
+              <ul className="space-y-1">{CYBER_DOCUMENTEN.map((doc) => <li key={doc.id}><PdfLink doc={doc} /></li>)}</ul>
             </div>
             <p className="text-sm text-muted-foreground">Brochures en de documenten van ZP Zaken vind je op <Link to="/documenten" className="text-accent hover:underline">Documenten en downloads</Link>.</p>
           </div>

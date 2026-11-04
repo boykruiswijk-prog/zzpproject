@@ -11,6 +11,7 @@ import { LocalizedLink } from "@/components/LocalizedLink";
 import { formatMiljoenKort, getPakket } from "@/data/bavPakketten";
 import { TIJDELIJK_GEEN_OPDRACHT_FAQ } from "@/data/faqItems";
 import { STARTER, STARTER_VOORWAARDE_TEKST } from "@/lib/starterTarief";
+import { CyberVoorwaardenTekst } from "@/components/shared/CyberVoorwaardenTekst";
 
 import serviceVerzekeringen from "@/assets/service-verzekeringen.webp";
 import officeMeetingRoom from "@/assets/office-meeting-room.webp";
@@ -96,7 +97,7 @@ export default function Starters() {
               {STARTERS_FAQS.map((f, i) => (
                 <AccordionItem key={i} value={`faq-${i}`}>
                   <AccordionTrigger className="text-left">{f.question}</AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground">{f.answer}</AccordionContent>
+                  <AccordionContent className="text-muted-foreground"><CyberVoorwaardenTekst tekst={f.answer} /></AccordionContent>
                 </AccordionItem>
               ))}
             </Accordion>

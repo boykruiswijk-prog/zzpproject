@@ -6,7 +6,7 @@
 - Starterspakket BAV + AVB (https://zpzaken.nl/starters): startertarief € 45 per maand of € 495 per jaar de eerste 12 maanden, daarna € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting. Voor zzp'ers met een KVK-inschrijving jonger dan 12 maanden, onder voorbehoud van controle van de KVK-inschrijvingsdatum. BAV + AVB in één polis, verzekerd bij Hiscox.
 - ZP Zaken maakt deel uit van BusinessFellow Group. Via zusteronderneming Onefellow (onefellow.nl), arbeidsbemiddelaar voor zelfstandige professionals, kunnen klanten van ZP Zaken ook geholpen worden bij het vinden van een nieuwe opdracht.
 - BAV + AVB: geen jaarcontract en dagelijks opzegbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota. Geen minimale looptijd, geen opzegtermijn en geen eigen risico.
-- Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000). Cyberdekkingsgebied: Europa. Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico. Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar. Bij maandbetaling: €27,50 per maand. De cybervoorwaarden vraag je op via 020 - 457 3077 of via zpzaken.nl/contact.
+- Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000). Cyberdekkingsgebied: Europa. Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico. Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar. Bij maandbetaling: €27,50 per maand. De cybervoorwaarden vind je op zpzaken.nl/voorwaarden#cyber.
 - Starter met cyber: €72,50 per maand of €745 per jaar de eerste 12 maanden, daarna €82,50 per maand of €850 per jaar, inclusief kosten en assurantiebelasting. Voor KVK-inschrijving jonger dan 12 maanden, onder voorbehoud van controle; cyber krijgt geen startkorting.
 - Binnen 24 uur geregeld, certificaat in je mailbox.
 - Contact: 020 - 457 3077, info@zpzaken.nl, Tupolevlaan 41, 1119 NW Schiphol-Rijk.
@@ -43,7 +43,7 @@
 - Cyberdekkingsgebied: Europa.
 - Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.
 - Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar. Bij maandbetaling: €27,50 per maand.
-- De cybervoorwaarden vraag je op via 020 - 457 3077 of via zpzaken.nl/contact.
+- De cybervoorwaarden vind je op zpzaken.nl/voorwaarden#cyber.
 - BAV + AVB: geen eigen risico, dagelijks opzegbaar en pauzeerbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota.
 - Premie inclusief kosten en assurantiebelasting.
 - Voor: zzp'ers en zelfstandig professionals in Nederland.
@@ -58,11 +58,17 @@
 - Cyberdekkingsgebied: Europa.
 - Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.
 - Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar. Bij maandbetaling: €27,50 per maand.
-- De cybervoorwaarden vraag je op via 020 - 457 3077 of via zpzaken.nl/contact.
+- De cybervoorwaarden vind je op zpzaken.nl/voorwaarden#cyber.
 - BAV + AVB: geen eigen risico, dagelijks opzegbaar en pauzeerbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota.
 - Premie inclusief kosten en assurantiebelasting.
 - Voor: zzp'ers en zelfstandig professionals in Nederland.
 - Meer informatie: https://zpzaken.nl/verzekeringen
+
+## Cybervoorwaarden
+
+Cyber sluit je alleen af samen met de BAV + AVB. Versie HCC-2022/01: https://zpzaken.nl/voorwaarden#cyber
+- [Verzekeringskaart CyberClear by Hiscox (2022)](https://zpzaken.nl/voorwaarden/verzekeringskaart-cyberclear-hiscox-2022.pdf)
+- [Polisvoorwaarden CyberClear by Hiscox (HCC-2022/01)](https://zpzaken.nl/voorwaarden/polisvoorwaarden-cyberclear-hiscox-hcc-2022-01.pdf)
 
 ## Pagina's
 
@@ -276,23 +282,29 @@ URL: https://zpzaken.nl/offerte
 
 Vraag hier vrijblijvend een offerte aan voor je beroeps- en bedrijfsaansprakelijkheidsverzekering. Je ontvangt binnen 24 uur een reactie van ons team.
 
-### ZZP Verzekering voor ICT-freelancers
+### Beroepsaansprakelijkheidsverzekering voor ICT-zzp'ers: BAV en AVB in één polis
 
 URL: https://zpzaken.nl/zzp-verzekering-ict
 
-Als ICT-freelancer schrijf je code, implementeer je systemen of geef je advies. Een fout in je werk kan grote financiele gevolgen hebben voor je opdrachtgever. Beroepsaansprakelijkheidsverzekering (BAV) is in de ICT-sector bij veel opdrachtgevers verplicht en beschermt jou en je klant.
+Als ICT-zzp'er verzeker je met een beroepsaansprakelijkheidsverzekering (BAV) de financiële gevolgen van een fout in je code, configuratie, implementatie of advies, en met een bedrijfsaansprakelijkheidsverzekering (AVB) schade aan personen of spullen. Bij ZP Zaken heb je beide in één polis: BAV € 5 miljoen en AVB € 2,5 miljoen per aanspraak, geen eigen risico, dagelijks opzegbaar en binnen 24 uur geregeld. Wat precies gedekt is, staat in de polisvoorwaarden.
 
 ### Beroepsaansprakelijkheidsverzekering voor zzp'ers
 
 URL: https://zpzaken.nl/beroepsaansprakelijkheidsverzekering
 
-Een beroepsaansprakelijkheidsverzekering beschermt je als een opdrachtgever je aansprakelijk stelt voor schade door een fout in je werk. Bij ZP Zaken kost die vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting.
+Een beroepsaansprakelijkheidsverzekering verzekert je, volgens de polisvoorwaarden, als een opdrachtgever je aansprakelijk stelt voor schade door een fout in je werk. Bij ZP Zaken kost die vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting.
 
-### BAV voor zzp'ers: beroeps- en bedrijfsaansprakelijkheid in één polis
+### Bedrijfsaansprakelijkheidsverzekering voor zzp'ers
+
+URL: https://zpzaken.nl/bedrijfsaansprakelijkheidsverzekering
+
+Een bedrijfsaansprakelijkheidsverzekering (AVB) is er voor schade aan personen of spullen van anderen tijdens je werk. Bij ZP Zaken krijg je de AVB niet los, maar altijd samen met de beroepsaansprakelijkheidsverzekering (BAV) in één polis, voor € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting.
+
+### BAV verzekering voor zzp'ers: beroepsaansprakelijkheidsverzekering en AVB in één polis
 
 URL: https://zpzaken.nl/bav-zzp
 
-Een BAV beschermt je bij schade door fouten in je werk, de AVB bij schade aan personen of spullen. Bij ZP Zaken heb je ze samen vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting.
+Een BAV verzekering (beroepsaansprakelijkheidsverzekering) voor zzp'ers is voor financiële schade bij je opdrachtgever door een fout in je werk. Bij ZP Zaken zit hij samen met de bedrijfsaansprakelijkheidsverzekering (AVB) in één polis: BAV € 5.000.000 en AVB € 2.500.000 per aanspraak, geen eigen risico, binnen 24 uur geregeld. Vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting.
 
 ### Beroepsaansprakelijkheidsverzekering voor consultants
 
@@ -322,13 +334,13 @@ URL: https://zpzaken.nl/starters
 
 URL: https://zpzaken.nl/zzp-verzekering-hr
 
-Als HR-adviseur, recruiter of loopbaanadviseur werk je met mensen en contracten. Een BAV en AVB in één polis beschermen je bij een fout in je advies of selectie.
+Als HR-adviseur, recruiter of loopbaanadviseur werk je met mensen en contracten. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden.
 
 ### Beroepsaansprakelijkheidsverzekering voor marketeers
 
 URL: https://zpzaken.nl/zzp-verzekering-marketing
 
-Als marketeer, copywriter of designer maak je werk dat de wereld in gaat. Een BAV en AVB in één polis beschermen je bij een fout in je werk.
+Als marketeer, copywriter of designer maak je werk dat de wereld in gaat. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden.
 
 ### Beroepsaansprakelijkheidsverzekering voor coaches en trainers
 
@@ -720,7 +732,7 @@ Cyber kan alleen samen met de BAV + AVB: €82,50 per maand (€55 BAV + AVB en 
 
 **Wat dekt cyber?**
 
-Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000). Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico. De cybervoorwaarden vraag je op via 020 - 457 3077 of via zpzaken.nl/contact.
+Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000). Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico. De cybervoorwaarden vind je op zpzaken.nl/voorwaarden#cyber.
 
 **Kan ik cyber dagelijks opzeggen of pauzeren?**
 

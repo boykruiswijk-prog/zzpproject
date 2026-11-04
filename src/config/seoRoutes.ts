@@ -305,9 +305,9 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/voorwaarden",
-    title: "Polisvoorwaarden BAV en AVB per branche | ZP Zaken",
+    title: "Polisvoorwaarden BAV, AVB en cyber | ZP Zaken",
     description:
-      "Alle polisvoorwaarden en verzekeringskaarten van Hiscox per branche, voor je BAV en AVB via de collectieve polis van ZP Zaken.",
+      "Polisvoorwaarden en verzekeringskaarten van Hiscox voor BAV en AVB per branche, en CyberClear by Hiscox (HCC-2022/01).",
     h1: "Polisvoorwaarden",
     intro:
       "Je bent verzekerd via de collectieve polis van ZP Zaken bij Hiscox. Daarom ontvang je geen eigen polis, maar een verzekeringscertificaat. " +

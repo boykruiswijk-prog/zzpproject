@@ -65,7 +65,7 @@ export const ZEKER_KENNIS = {
         "Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000)",
         "Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.",
         "Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar. Bij maandbetaling: €27,50 per maand.",
-        "De cybervoorwaarden vraag je op via 020 - 457 3077 of via zpzaken.nl/contact.",
+        "De cybervoorwaarden vind je op zpzaken.nl/voorwaarden#cyber.",
         "Premie inclusief kosten en assurantiebelasting",
         "Cyberdekkingsgebied: Europa."
       ]
@@ -92,7 +92,7 @@ export const ZEKER_KENNIS = {
         "Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000)",
         "Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico.",
         "Cyber is dagelijks opzegbaar. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar. Bij maandbetaling: €27,50 per maand.",
-        "De cybervoorwaarden vraag je op via 020 - 457 3077 of via zpzaken.nl/contact.",
+        "De cybervoorwaarden vind je op zpzaken.nl/voorwaarden#cyber.",
         "Premie inclusief kosten en assurantiebelasting",
         "Cyberdekkingsgebied: Europa."
       ]
@@ -231,7 +231,7 @@ export const ZEKER_KENNIS = {
     },
     {
       "path": "/voorwaarden",
-      "title": "Polisvoorwaarden BAV en AVB per branche | ZP Zaken",
+      "title": "Polisvoorwaarden BAV, AVB en cyber | ZP Zaken",
       "intro": "Je bent verzekerd via de collectieve polis van ZP Zaken bij Hiscox. Daarom ontvang je geen eigen polis, maar een verzekeringscertificaat. De voorwaarden hieronder gelden voor jouw dekking."
     },
     {
@@ -349,7 +349,7 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Verzekeringen",
       "vraag": "Wat dekt cyber?",
-      "antwoord": "Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000). Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico. De cybervoorwaarden vraag je op via 020 - 457 3077 of via zpzaken.nl/contact."
+      "antwoord": "Cyber tot €50.000 per schade, eigen risico €500 (cyberfraude €1.000). Hulp bij een cyberincident: kosten in de eerste 72 uur tot €15.000, zonder eigen risico. De cybervoorwaarden vind je op zpzaken.nl/voorwaarden#cyber."
     },
     {
       "categorie": "Verzekeringen",
@@ -635,6 +635,14 @@ export const ZEKER_KENNIS = {
     {
       "titel": "Gedragscode",
       "path": "/documenten/gedragscode"
+    },
+    {
+      "titel": "Verzekeringskaart CyberClear by Hiscox",
+      "path": "/voorwaarden/verzekeringskaart-cyberclear-hiscox-2022.pdf"
+    },
+    {
+      "titel": "Polisvoorwaarden CyberClear by Hiscox",
+      "path": "/voorwaarden/polisvoorwaarden-cyberclear-hiscox-hcc-2022-01.pdf"
     }
   ],
   "collectief": {

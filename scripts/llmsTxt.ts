@@ -9,6 +9,7 @@ import { faqItems } from "../src/data/faqItems";
 import { STARTER } from "../src/lib/starterTarief";
 import type { SeoRoute } from "../src/config/seoRoutes";
 import { eviPaginaVindbaar, EVI_PAGINA_PUBLIEK } from "../src/config/eviPagina";
+import { CYBER_DOCUMENTEN } from "../src/data/cyberDocumenten";
 
 interface LlmsArticle {
   slug: string;
@@ -62,6 +63,11 @@ export function buildLlmsTxt(routes: SeoRoute[], articles: LlmsArticle[], publie
     "",
     ...kern.map(link),
     "",
+    "## Cybervoorwaarden",
+    "",
+    `- [Cyberverzekering (CyberClear by Hiscox)](${SITE_CONFIG.url}/voorwaarden#cyber): HCC-2022/01. Cyber sluit je alleen af samen met de BAV + AVB.`,
+    ...CYBER_DOCUMENTEN.map(d => `- [${d.titel} (${d.productCode})](${SITE_CONFIG.url}${d.path}): officieel PDF-document.`),
+    "",
     "## Kennisbank",
     "",
     ...articles.map(
@@ -102,6 +108,7 @@ export function buildLlmsFullTxt(routes: SeoRoute[], articles: LlmsArticle[] = [
       "",
     );
   }
+  lines.push("## Cybervoorwaarden", "", `Cyber sluit je alleen af samen met de BAV + AVB. Versie HCC-2022/01: ${SITE_CONFIG.url}/voorwaarden#cyber`, ...CYBER_DOCUMENTEN.map(d => `- [${d.titel} (${d.productCode})](${SITE_CONFIG.url}${d.path})`), "");
   lines.push("## Pagina's", "");
   for (const r of routes) {
     lines.push(`### ${oneLine(r.h1 || r.title)}`, "", `URL: ${SITE_CONFIG.url}${r.path === "/" ? "/" : r.path}`, "", oneLine(r.intro || r.description), "");
