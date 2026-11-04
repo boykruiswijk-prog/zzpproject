@@ -17,12 +17,12 @@ import Zorg from "@/pages/ZzpVerzekeringZorg";
 import Bouw from "@/pages/ZzpVerzekeringBouw";
 
 const paginas = [BavZzp, Beroepsaansprakelijkheidsverzekering, Consultant, Interim, Finance, HR, Marketing, Coach, ICT, Zorg, Bouw];
-const prijs = /€\s?55(?:\/mnd| per maand)[^€]*€\s?600 per jaar, (?:incl\.|inclusief) kosten en assurantiebelasting/;
+const prijs = /€\s?55(?:\/mnd| per maand)[^€]*€\s?600 per jaar, inclusief kosten en assurantiebelasting/;
 const opzeg = "Ja. De BAV + AVB heeft geen jaarcontract en is dagelijks opzegbaar. Betaal je per jaar, dan krijg je bij opzeggen een creditnota voor de dagen die je al betaald hebt. Betaal je per maand, dan stopt je verzekering op de opzegdatum, zonder creditnota.";
 
 describe("Beroepspagina’s D2/D3/D4", () => {
   it("hero toont beide bestaande tarieven, kosten en dekking per aanspraak", () => {
-    expect(beroepspaginaPrijsregel()).toBe("Vanaf € 55 per maand of € 600 per jaar, incl. kosten en assurantiebelasting · BAV € 5M · AVB € 2,5M per aanspraak");
+    expect(beroepspaginaPrijsregel()).toBe("Vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting · BAV € 5M · AVB € 2,5M per aanspraak");
   });
   for (const pagina of paginas) {
     it(`${pagina.name}: geen onvolledige vanafprijs in lopende tekst of FAQ`, () => {

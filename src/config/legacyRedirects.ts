@@ -155,6 +155,7 @@ export const legacyRedirects: LegacyRedirect[] = [
   { from: "fb-nieuwjaarsactie", to: "/verzekeringen" },
   { from: "nieuwjaarsactie", to: "/verzekeringen" },
   { from: "academy/weblog", to: "/kennisbank" },
+  { from: "nieuws/even-voorstellen-michel-verheij", to: "/over-ons" },
 
   // Gangbare WordPress URL-patronen
   { from: "bav-verzekering", to: "/verzekeringen" },
@@ -737,6 +738,7 @@ export const legacyRedirects: LegacyRedirect[] = [
   { from: "services/*", to: "/diensten" },
   { from: "profile/*", to: "/" },
   { from: "facts/press/*", to: "/kennisbank" },
+  { from: "nieuws/*", to: "/kennisbank" },
 ];
 
 /**
@@ -822,7 +824,7 @@ export function taalprefixRedirects(
   const uit: LegacyRedirect[] = [];
   for (const r of lijst) {
     const from = norm(r.from);
-    if (!from || (isVangregel(r) && from !== "home/nieuws/*") || TAALPREFIXES.some((t) => from === t || from.startsWith(`${t}/`))) continue;
+    if (!from || (isVangregel(r) && from !== "home/nieuws/*" && from !== "nieuws/*") || TAALPREFIXES.some((t) => from === t || from.startsWith(`${t}/`))) continue;
     for (const t of TAALPREFIXES) {
       const afgeleid = `${t}/${from}`;
       if (bronnen.has(afgeleid) || gezien.has(afgeleid) || bestaande.has(afgeleid)) continue;
