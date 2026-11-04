@@ -868,12 +868,7 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
   let reusedAccountName: string | null = null;
   let exactRelatieCode: string | null = null;
   try {
-    const dupRes = await fetch(
-      `${baseUrl}/api/v1/${div}/crm/Accounts?$select=ID,Code,Name,ChamberOfCommerce&$filter=ChamberOfCommerce eq '${kvk}'&$top=1`,
-      { headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" } },
-    );
-    const dupJson = await dupRes.json().catch(() => ({}));
-    const dupArr = Array.isArray(dupJson?.d?.results) ? dupJson.d.results : Array.isArray(dupJson?.d) ? dupJson.d : [];
+    const dupArr = await zoekRelatiesOpKvk(baseUrl, div, accessToken, kvk);
     if (dupArr.length > 0 && dupArr[0]?.ID) {
       reusedAccountId = dupArr[0].ID;
       reusedAccountName = dupArr[0]?.Name ?? null;
