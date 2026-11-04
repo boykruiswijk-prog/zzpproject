@@ -15,7 +15,7 @@ import { CertificaatBeheer } from "@/components/admin/CertificaatBeheer";
 import { WIZARD_SECTOREN } from "@/data/sectorVerzekeringskaart";
 import { brancheVoorSector } from "@/data/sectorBranche";
 import type { OpenOmzetting } from "@/lib/omzetting";
-import { OpenOmzettingMelding } from "@/components/admin/crm/OpenOmzetting";
+import { OpenOmzettingMelding, useOpenContractMeenemen, ContractMeenemenMelding } from "@/components/admin/crm/OpenOmzetting";
 import { actiefKlantContract } from "../../../supabase/functions/_shared/certificaatRegels";
 
 interface Props {
@@ -59,7 +59,8 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds, omzetOpen
       return data || [];
     },
   });
-  const blokkade = certificaatBlokkadeReden(contracten, vandaag);
+  const { data: contractMee } = useOpenContractMeenemen(actief ? undefined : ond.id);
+  const blokkade = contractMee ? null : certificaatBlokkadeReden(contracten, vandaag);
 
   const openForm = async (bevestigNieuw: boolean) => {
     // Voorkeur: eerder bij de klant gekozen sector, anders branche van een gekoppelde lead.
@@ -156,6 +157,7 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds, omzetOpen
     <Card id="klant-certificaat">
       <CardHeader><CardTitle className="text-base">Certificaat (PDF)</CardTitle></CardHeader>
       <CardContent className="space-y-3">
+        {contractMee && !actief && <ContractMeenemenMelding open={contractMee} onKlaar={() => { refetch(); onOmgezet?.(); }} />}
         {blokkade && (
           <div className="space-y-1 text-sm text-destructive">
             <p className="flex items-center gap-2"><AlertTriangle className="h-4 w-4" />{blokkade}</p>
