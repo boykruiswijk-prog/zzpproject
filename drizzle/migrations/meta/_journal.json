@@ -1688,6 +1688,13 @@
       "when": 1793784267205,
       "tag": "0240_gegevens_aanvullen_contract_mee_afhakers",
       "breakpoints": true
+    },
+    {
+      "idx": 241,
+      "version": "7",
+      "when": 1793784298048,
+      "tag": "0241_fix_array_append_text",
+      "breakpoints": true
     }
   ]
 }
