@@ -77,7 +77,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
     }
 
     await werkVan(req).start();
-    const body = systeem
+    const body: any = systeem
       ? { actie: "omzetten", policy_id: systeem.policy_id, naar_onderneming_id: systeem.naar_onderneming_id, naar_lead_id: systeem.lead_id, ingangsdatum: systeem.ingangsdatum, reden: systeem.reden }
       : await req.json();
     const { lead_id, policy_data } = body;
