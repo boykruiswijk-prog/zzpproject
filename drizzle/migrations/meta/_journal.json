@@ -1667,6 +1667,13 @@
       "when": 1793773023693,
       "tag": "0237_directietafel_coulance_concept_vervallen",
       "breakpoints": true
+    },
+    {
+      "idx": 238,
+      "version": "7",
+      "when": 1793773289218,
+      "tag": "0238_directietafel_coulance_generated_guard",
+      "breakpoints": true
     }
   ]
 }
