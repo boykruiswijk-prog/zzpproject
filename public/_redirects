@@ -240,6 +240,8 @@
 /nieuwjaarsactie/    /verzekeringen    301
 /academy/weblog    /kennisbank    301
 /academy/weblog/    /kennisbank    301
+/nieuws/even-voorstellen-michel-verheij    /over-ons    301
+/nieuws/even-voorstellen-michel-verheij/    /over-ons    301
 /bav-verzekering    /verzekeringen    301
 /bav-verzekering/    /verzekeringen    301
 /avb-verzekering    /verzekeringen    301
@@ -1344,17 +1346,6 @@
 /news-sitemap.xml/    /sitemap.xml    301
 /beroeps-en-bedrijfs-aansprakelijkheidsverzekering-zzp-avb-bav/%23pakket    /verzekeringen    301
 /beroeps-en-bedrijfs-aansprakelijkheidsverzekering-zzp-avb-bav/%23pakket/    /verzekeringen    301
-/en/portal/*    /portal/:splat    301
-/de/portal/*    /portal/:splat    301
-/fr/portal/*    /portal/:splat    301
-/en/mijn-zp/*    /mijn-zp/:splat    301
-/de/mijn-zp/*    /mijn-zp/:splat    301
-/fr/mijn-zp/*    /mijn-zp/:splat    301
-/home/nieuws/*    /kennisbank    301
-/radio/*    /kennisbank    301
-/services/*    /diensten    301
-/profile/*    /    301
-/facts/press/*    /kennisbank    301
 
 # Taalprefixen (/en, /de, /fr) erven de Nederlandse doorverwijzing.
 /en/post/cookie-instellingen-1    /cookies    301  # taalprefix
@@ -1973,6 +1964,12 @@
 /de/academy/weblog/    /kennisbank    301  # taalprefix
 /fr/academy/weblog    /kennisbank    301  # taalprefix
 /fr/academy/weblog/    /kennisbank    301  # taalprefix
+/en/nieuws/even-voorstellen-michel-verheij    /over-ons    301  # taalprefix
+/en/nieuws/even-voorstellen-michel-verheij/    /over-ons    301  # taalprefix
+/de/nieuws/even-voorstellen-michel-verheij    /over-ons    301  # taalprefix
+/de/nieuws/even-voorstellen-michel-verheij/    /over-ons    301  # taalprefix
+/fr/nieuws/even-voorstellen-michel-verheij    /over-ons    301  # taalprefix
+/fr/nieuws/even-voorstellen-michel-verheij/    /over-ons    301  # taalprefix
 /en/bav-verzekering    /verzekeringen    301  # taalprefix
 /en/bav-verzekering/    /verzekeringen    301  # taalprefix
 /de/bav-verzekering    /verzekeringen    301  # taalprefix
@@ -3025,9 +3022,6 @@
 /de/home/nieuws/    /kennisbank    301  # taalprefix
 /fr/home/nieuws    /kennisbank    301  # taalprefix
 /fr/home/nieuws/    /kennisbank    301  # taalprefix
-/en/home/nieuws/*    /kennisbank    301  # taalprefix
-/de/home/nieuws/*    /kennisbank    301  # taalprefix
-/fr/home/nieuws/*    /kennisbank    301  # taalprefix
 /en/ict-brochure-beroepsaansprakelijkheid    /documenten#verzekeringsvoorwaarden    301  # taalprefix
 /en/ict-brochure-beroepsaansprakelijkheid/    /documenten#verzekeringsvoorwaarden    301  # taalprefix
 /de/ict-brochure-beroepsaansprakelijkheid    /documenten#verzekeringsvoorwaarden    301  # taalprefix
@@ -4738,6 +4732,26 @@
 /de/beroeps-en-bedrijfs-aansprakelijkheidsverzekering-zzp-avb-bav/%23pakket/    /verzekeringen    301  # taalprefix
 /fr/beroeps-en-bedrijfs-aansprakelijkheidsverzekering-zzp-avb-bav/%23pakket    /verzekeringen    301  # taalprefix
 /fr/beroeps-en-bedrijfs-aansprakelijkheidsverzekering-zzp-avb-bav/%23pakket/    /verzekeringen    301  # taalprefix
+
+# Vangregels na alle expliciete regels, ook die met taalprefix.
+/en/portal/*    /portal/:splat    301
+/de/portal/*    /portal/:splat    301
+/fr/portal/*    /portal/:splat    301
+/en/mijn-zp/*    /mijn-zp/:splat    301
+/de/mijn-zp/*    /mijn-zp/:splat    301
+/fr/mijn-zp/*    /mijn-zp/:splat    301
+/home/nieuws/*    /kennisbank    301
+/radio/*    /kennisbank    301
+/services/*    /diensten    301
+/profile/*    /    301
+/facts/press/*    /kennisbank    301
+/nieuws/*    /kennisbank    301
+/en/home/nieuws/*    /kennisbank    301  # taalprefix
+/de/home/nieuws/*    /kennisbank    301  # taalprefix
+/fr/home/nieuws/*    /kennisbank    301  # taalprefix
+/en/nieuws/*    /kennisbank    301  # taalprefix
+/de/nieuws/*    /kennisbank    301  # taalprefix
+/fr/nieuws/*    /kennisbank    301  # taalprefix
 
 # Pad met afsluitende slash → zelfde pad zonder slash (homepage uitgezonderd).
 /:path/    /:path    301!
