@@ -22,7 +22,7 @@ export function tellerUitleg(k: TellerSleutel, t: Tellers): string {
   switch (k) {
     case "aanvragen": return `${mv(n, "aanvraag wacht", "aanvragen wachten")} op beoordeling, activatie of certificaatverwerking${gemarkeerd(t.aanvragen_gemarkeerd)}`;
     case "leads": return `${mv(n, "lead is", "leads zijn")} nog niet opgevolgd${gemarkeerd(t.leads_gemarkeerd)}`;
-    case "afgehaakt": return `${mv(n, "bezoeker haakte", "bezoekers haakten")} de afgelopen 7 dagen af tijdens het aanvragen`;
+    case "afgehaakt": return `${mv(n, "afgehaakte aanvraag vraagt", "afgehaakte aanvragen vragen")} nog een handeling (geen herinneringsmail, nog niet gezien)`;
     case "opzeggingen": return `${mv(n, "opzegging moet", "opzeggingen moeten")} nog gekoppeld of verwerkt worden`;
     case "credits_akkoord": return `${mv(n, "creditnota wacht", "creditnota's wachten")} op akkoord`;
     case "service": return `${mv(n, "serviceaanvraag staat", "serviceaanvragen staan")} open`;
