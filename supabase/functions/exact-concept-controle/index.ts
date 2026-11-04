@@ -6,6 +6,7 @@
 // Toegang: x-cron-secret (Vault, verify_cron_secret) of supervisor/admin met MFA.
 // deno-lint-ignore-file no-explicit-any
 import { werkContractStandBij } from "../_shared/contractStand.ts";
+import { conceptMoetGecontroleerdWorden } from "../_shared/conceptControle.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { ensureValidToken, refreshAccessToken } from "../_shared/exactToken.ts";
 import { requireSupervisor } from "../_shared/teamAuth.ts";
@@ -144,9 +145,9 @@ Deno.serve(metWerk({ station: "exact", actie: "exact_sync", tekst: "Exact-concep
   const nieuwVerwijderd: any[] = []; const langOpen: any[] = []; const fouten: any[] = []; const afgesloten: any[] = [];
 
   const { data: leads } = await admin.from("leads")
-    .select("id,voornaam,achternaam,bedrijfsnaam,exact_invoice_id,exact_invoice_amount,exact_invoice_created_at,created_at,exact_invoice_verwijderd_op,exact_invoice_status")
-    .not("exact_invoice_id", "is", null).is("exact_invoice_number", null).eq("is_test", false).limit(300);
-  for (const l of (leads ?? []).filter((x: any) => Number(x.exact_invoice_status ?? 0) !== 50 && !x.exact_invoice_verwijderd_op)) {
+    .select("id,voornaam,achternaam,bedrijfsnaam,exact_invoice_id,exact_invoice_amount,exact_invoice_created_at,created_at,exact_invoice_verwijderd_op,exact_invoice_vervallen_op,exact_invoice_status")
+    .not("exact_invoice_id", "is", null).is("exact_invoice_number", null).is("exact_invoice_vervallen_op", null).eq("is_test", false).limit(300);
+  for (const l of (leads ?? []).filter(conceptMoetGecontroleerdWorden)) {
     const c = await bestaat(l.exact_invoice_id);
     const rij = { naam: `${l.voornaam ?? ""} ${l.achternaam ?? ""}`.trim(), bedrijf: l.bedrijfsnaam, id: l.exact_invoice_id, bedrag: Number(l.exact_invoice_amount), sinds: l.exact_invoice_created_at ?? l.created_at, link: `${SITE}/admin/leads/${l.id}` };
     if (c.status === "verwijderd") {
@@ -199,7 +200,7 @@ Deno.serve(metWerk({ station: "exact", actie: "exact_sync", tekst: "Exact-concep
     }
   }
   const { count: nogOpenVerwijderd } = await admin.from("leads").select("id", { count: "exact", head: true })
-    .not("exact_invoice_verwijderd_op", "is", null).is("exact_invoice_number", null).eq("is_test", false);
+    .not("exact_invoice_verwijderd_op", "is", null).is("exact_invoice_number", null).is("exact_invoice_vervallen_op", null).eq("is_test", false);
 
   // Koppelingscontrole: eerst relatiespiegel verversen (alleen lezen in Exact), dan in de database controleren.
   if (cron) {

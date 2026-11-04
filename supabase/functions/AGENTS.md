@@ -48,3 +48,4 @@
 
 - /scherm en /tv: data alleen via scherm-data (SCHERM_TOKEN of apparaattoken, alleen sha-256 in scherm_apparaten; koppelen via scherm-koppel); machine_activiteit-triggers laten nooit de actie falen; fout = cache met X-Cache stale + verouderd_sinds; pagina herlaadt bij nieuwe build (src/lib/versieControle.ts). Waarom: intrekbare toegang, stilstand zichtbaar.
 - Contractstand (gefactureerd_tm/volgende_factuurdatum) na status verwerkt alleen via _shared/contractStand.ts, gebruikt door factuur-planner en exact-concept-controle; nooit terug in de tijd. Waarom: één factuurstand ongeacht welke controle de verwerking ziet.
+- Bewust vervallen eerste concepten behouden Exact-id met exact_invoice_vervallen_op; conceptControle sluit ze uit van controle, SQL van werktellers. Waarom: nooit verwijderd/verwerkt suggereren of opnieuw maken.
