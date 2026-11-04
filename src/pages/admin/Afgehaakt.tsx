@@ -14,8 +14,11 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Mail, Phone } from "lucide-react";
+import { afrondMoment, mailStatusLabel, CONTACT_SOORTEN } from "@/lib/afhakers";
+import { formatDateNL } from "@/lib/dateFormat";
 
-type Status = "open" | "omgezet" | "gebeld" | "geen_interesse" | "onbereikbaar" | "dubbel";
+type Status = "open" | "omgezet" | "gebeld" | "geen_interesse" | "onbereikbaar" | "dubbel" | "afgerond_na_herinnering";
+type Overzicht = { concept_id: string; mails: { soort: string; op: string; status: string; fout: string | null }[]; contacten: { soort: string; tekst: string; op: string; door: string | null; in_tijdlijn: boolean }[]; aanvraag_lead_id: string | null; aanvraag_op: string | null };
 interface Concept {
   id: string; created_at: string; laatst_actief_op: string; stap: number;
   email: string | null; telefoon: string | null; voornaam: string | null; achternaam: string | null;
@@ -24,11 +27,12 @@ interface Concept {
   opgevolgd_op: string | null; is_test: boolean; dubbel_lead_id: string | null;
   gekoppeld_onderneming_id: string | null;
   herinnering_verstuurd_op?: string | null; afhaak_geen_herinnering_reden?: string | null;
+  gezien_op?: string | null; contact_vastgelegd_op?: string | null; afgerond_op?: string | null;
 }
 
 const STAPNAMEN = ["", "Pakket en contact", "Bedrijf", "Persoonsgegevens", "Betaling", "Controle"];
 const STATUSLABEL: Record<Status, string> = {
-  open: "Open", omgezet: "Omgezet", gebeld: "Gebeld", geen_interesse: "Geen interesse", onbereikbaar: "Onbereikbaar", dubbel: "Dubbel / fout",
+  open: "Open", omgezet: "Omgezet", gebeld: "Gebeld", geen_interesse: "Geen interesse", onbereikbaar: "Onbereikbaar", dubbel: "Dubbel / fout", afgerond_na_herinnering: "Afgerond na herinnering",
 };
 const DERTIG_MIN = 30 * 60_000;
 
@@ -50,11 +54,14 @@ export default function Afgehaakt() {
   const [toonOpgevolgd, setToonOpgevolgd] = useState(false);
   const [notities, setNotities] = useState<Record<string, string>>({});
   const [afgerond, setAfgerond] = useState<Record<string, string>>({});
+  const [overzicht, setOverzicht] = useState<Record<string, Overzicht>>({});
+  const [contactSoort, setContactSoort] = useState<Record<string, string>>({});
+  const [contactTekst, setContactTekst] = useState<Record<string, string>>({});
 
   const laad = async () => {
     setLaden(true);
     let q = supabase.from("aanvraag_concepten")
-      .select("id,created_at,laatst_actief_op,stap,email,telefoon,voornaam,achternaam,bedrijfsnaam,kvk,pakket,sector,pagina,attributie,status,opvolg_notitie,opgevolgd_op,is_test,dubbel_lead_id,gekoppeld_onderneming_id,herinnering_verstuurd_op,afhaak_geen_herinnering_reden")
+      .select("id,created_at,laatst_actief_op,stap,email,telefoon,voornaam,achternaam,bedrijfsnaam,kvk,pakket,sector,pagina,attributie,status,opvolg_notitie,opgevolgd_op,is_test,dubbel_lead_id,gekoppeld_onderneming_id,herinnering_verstuurd_op,afhaak_geen_herinnering_reden,gezien_op,contact_vastgelegd_op,afgerond_op")
       .is("geanonimiseerd_op", null)
       .order("laatst_actief_op", { ascending: false }).limit(300);
     if (!toonTest) q = q.eq("is_test", false);
@@ -70,6 +77,14 @@ export default function Afgehaakt() {
       const kaart: Record<string, string> = {};
       for (const r of (m as { concept_id: string; lead_id: string }[]) || []) kaart[r.concept_id] = r.lead_id;
       setAfgerond(kaart);
+      const { data: ov } = await (supabase.rpc as any)("afhakers_overzicht", { _ids: lijst.map((r) => r.id) });
+      setOverzicht(Object.fromEntries(((ov as Overzicht[]) || []).map((o) => [o.concept_id, o])));
+      // Lijst geopend: open afhakers gelden als gezien en tellen niet meer mee in de teller.
+      const ongezien = lijst.filter((r) => r.status === "open" && !r.gezien_op && Date.now() - new Date(r.laatst_actief_op).getTime() > DERTIG_MIN).map((r) => r.id);
+      if (ongezien.length) {
+        const { error: gErr } = await (supabase.rpc as any)("afhakers_gezien", { _ids: ongezien });
+        if (!gErr) qc.invalidateQueries({ queryKey: ["menu-tellers"] });
+      }
     }
   };
   useEffect(() => { void laad(); }, [toonTest, gekozen]);
@@ -91,6 +106,17 @@ export default function Afgehaakt() {
   const zetStatus = (r: Concept, status: Status) =>
     bewaar(r, status === "open" ? { status, dubbel_lead_id: null } : { status }, `Status: ${STATUSLABEL[status]}`);
   const dubbel = (r: Concept) => bewaar(r, { status: "dubbel", dubbel_lead_id: afgerond[r.id] ?? null }, afgerond[r.id] ? "Afgesloten als dubbel, gekoppeld aan aanvraag" : "Afgesloten als dubbel / fout");
+  const contactVastleggen = async (r: Concept) => {
+    const soort = contactSoort[r.id] ?? "gebeld";
+    const tekst = (contactTekst[r.id] ?? "").trim();
+    if (!tekst) { toast({ title: "Vul een korte toelichting in", variant: "destructive" }); return; }
+    const { data, error } = await (supabase.rpc as any)("afhaker_contact_vastleggen", { _concept_id: r.id, _soort: soort, _tekst: tekst });
+    if (error) { toast({ title: "Vastleggen mislukt", description: error.message, variant: "destructive" }); return; }
+    setContactTekst((t) => ({ ...t, [r.id]: "" }));
+    qc.invalidateQueries({ queryKey: ["menu-tellers"] });
+    toast({ title: "Contact vastgelegd", description: (data as any)?.in_tijdlijn ? "Staat ook in de klanttijdlijn. Deze afhaker wordt niet automatisch afgerond." : "Koppel de afhaker aan een klant om het ook in de klanttijdlijn te zien. Wordt niet automatisch afgerond." });
+    void laad();
+  };
   const heropen = (r: Concept) => bewaar(r, { status: "open", is_test: false, dubbel_lead_id: null }, "Concept heropend");
 
   return (
@@ -105,7 +131,7 @@ export default function Afgehaakt() {
         </CardHeader>
         <CardContent>
           <p className="mb-4 text-sm text-muted-foreground">
-            Bezoekers die het aanvraagformulier begonnen en minstens 30 minuten niets meer deden, zonder de aanvraag af te ronden. Bankgegevens worden nooit bewaard.
+            Bezoekers die het aanvraagformulier begonnen en minstens 30 minuten niets meer deden, zonder de aanvraag af te ronden. Wie een herinneringsmail kreeg, wordt 7 dagen daarna automatisch afgerond als "Afgerond na herinnering", tenzij je contact vastlegt. De teller telt alleen afhakers zonder herinnering die je nog niet hebt gezien. Bankgegevens worden nooit bewaard.
           </p>
           {laden ? <Loader2 className="h-5 w-5 animate-spin" /> : zichtbaar.length === 0 ? (
             <p className="text-sm text-muted-foreground">Geen afgehaakte aanvragen.</p>
@@ -115,6 +141,8 @@ export default function Afgehaakt() {
                 const naam = [r.voornaam, r.achternaam].filter(Boolean).join(" ") || "Naam onbekend";
                 const leadLink = r.dubbel_lead_id ?? afgerond[r.id];
                 const afgesloten = r.status !== "open" || r.is_test;
+                const ov = overzicht[r.id];
+                const afrond = afrondMoment(r.herinnering_verstuurd_op);
                 return (
                   <div key={r.id} className="min-w-0 rounded-lg border border-border bg-card p-4">
                     <div className="mb-2 flex flex-wrap items-center gap-2">
@@ -144,17 +172,33 @@ export default function Afgehaakt() {
                       <dt className="text-muted-foreground">Laatst actief</dt><dd>{formatDateTimeNL(r.laatst_actief_op)}</dd>
                       {r.opgevolgd_op && <><dt className="text-muted-foreground">Opgevolgd</dt><dd>{formatDateTimeNL(r.opgevolgd_op)}</dd></>}
                     </dl>
+                    <div className="mb-3 space-y-1 rounded-md border border-border bg-muted/40 p-2 text-sm">
+                      <p className="font-medium">Mail en vervolg</p>
+                      {(ov?.mails ?? []).length === 0 ? <p className="text-muted-foreground">Geen herinneringsmail{r.afhaak_geen_herinnering_reden ? ` (${r.afhaak_geen_herinnering_reden})` : ""}.</p> : ov!.mails.map((m, i) => (
+                        <p key={i}>{m.soort === "eenmalige herinnering" ? "Eenmalige herinnering" : "Herinneringsmail"} op {formatDateTimeNL(m.op)}: {mailStatusLabel(m.status)}{m.fout ? ` (${m.fout})` : ""}</p>
+                      ))}
+                      <p>{ov?.aanvraag_lead_id ? <>Daarna alsnog aangevraagd op {formatDateTimeNL(ov.aanvraag_op!)}. <Link to={`/admin/leads/${ov.aanvraag_lead_id}`} className="text-primary hover:underline">Bekijk aanvraag</Link></> : "Nog niet alsnog aangevraagd."}</p>
+                      {r.status === "open" && afrond && !r.contact_vastgelegd_op && <p className="text-muted-foreground">Wordt op {formatDateNL(afrond.toISOString())} automatisch afgerond als er geen contact is vastgelegd.</p>}
+                      {r.status === "afgerond_na_herinnering" && r.afgerond_op && <p className="text-muted-foreground">Automatisch afgerond op {formatDateTimeNL(r.afgerond_op)}.</p>}
+                      {(ov?.contacten ?? []).map((c, i) => (
+                        <p key={`c${i}`}><span className="font-medium">{CONTACT_SOORTEN.find((x) => x.waarde === c.soort)?.label ?? c.soort}</span> op {formatDateTimeNL(c.op)}{c.door ? ` door ${c.door}` : ""}: {c.tekst}{c.in_tijdlijn ? " (in klanttijdlijn)" : ""}</p>
+                      ))}
+                    </div>
+                    <div className="mb-2 flex flex-wrap gap-2" role="group" aria-label={`Contact vastleggen bij ${naam}`}>
+                      {CONTACT_SOORTEN.map((s) => (
+                        <Button key={s.waarde} size="sm" type="button" variant={(contactSoort[r.id] ?? "gebeld") === s.waarde ? "default" : "outline"} onClick={() => setContactSoort((x) => ({ ...x, [r.id]: s.waarde }))}>{s.label}</Button>
+                      ))}
+                    </div>
                     <Textarea
-                      aria-label={`Notitie bij ${naam}`}
-                      placeholder="Notitie (optioneel)"
+                      aria-label={`Contact bij ${naam}`}
+                      placeholder="Wat is er besproken of gemaild?"
                       className="mb-2 min-h-[60px]"
-                      value={notities[r.id] ?? r.opvolg_notitie ?? ""}
-                      onChange={(e) => setNotities((n) => ({ ...n, [r.id]: e.target.value }))}
+                      value={contactTekst[r.id] ?? ""}
+                      onChange={(e) => setContactTekst((n) => ({ ...n, [r.id]: e.target.value }))}
                     />
                     <div className="flex flex-wrap gap-2">
                       <LeadKlantKoppeling lead={r} bron="aanvraag_concepten" onGewijzigd={() => void laad()} />
-                      <Button size="sm" onClick={() => zetStatus(r, "gebeld")}>Gebeld</Button>
-                      <Button size="sm" variant="outline" onClick={() => zetStatus(r, "onbereikbaar")}>Onbereikbaar</Button>
+                      <Button size="sm" onClick={() => contactVastleggen(r)}>Contact vastleggen</Button>
                       <Button size="sm" variant="outline" onClick={() => zetStatus(r, "geen_interesse")}>Geen interesse</Button>
                       <Button size="sm" variant="outline" onClick={() => dubbel(r)}>Dubbel / fout</Button>
                       {!r.is_test && <Button size="sm" variant="outline" onClick={() => bewaar(r, { is_test: true }, "Gemarkeerd als test")}>Test</Button>}
