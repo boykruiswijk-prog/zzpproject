@@ -63,6 +63,7 @@ export default function Voorwaarden() {
               <p className="text-sm text-muted-foreground mb-2">Versie HCC-2022/01</p>
               <p className="text-sm mb-4">Cyber sluit je alleen af samen met de BAV + AVB.</p>
               <ul className="space-y-1">{CYBER_DOCUMENTEN.map((doc) => <li key={doc.id}><PdfLink doc={doc} /></li>)}</ul>
+              <p className="mt-3 text-sm text-muted-foreground">Wat precies gedekt is, staat in de polisvoorwaarden. Deze samenvatting is algemene informatie.</p>
             </div>
             <p className="text-sm text-muted-foreground">Brochures en de documenten van ZP Zaken vind je op <Link to="/documenten" className="text-accent hover:underline">Documenten en downloads</Link>.</p>
           </div>
