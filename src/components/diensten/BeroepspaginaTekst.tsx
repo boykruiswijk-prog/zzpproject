@@ -17,7 +17,7 @@ export const isBeroepspagina = (pad: string) => BEROEPSPAGINAS.has(pad);
 export function beroepspaginaPrijsregel() {
   const maand = getPakket("maandelijks");
   const jaar = getPakket("jaarlijks");
-  return `Vanaf € ${maand.prijs} per maand of € ${jaar.prijs} per jaar, incl. kosten en assurantiebelasting · BAV ${formatMiljoenKort(maand.dekkingen.bav.perGebeurtenis).replace("€", "€ ")} · AVB ${formatMiljoenKort(maand.dekkingen.avb.perGebeurtenis).replace("€", "€ ")} per aanspraak`;
+  return `Vanaf € ${maand.prijs} per maand of € ${jaar.prijs} per jaar, inclusief kosten en assurantiebelasting · BAV ${formatMiljoenKort(maand.dekkingen.bav.perGebeurtenis).replace("€", "€ ")} · AVB ${formatMiljoenKort(maand.dekkingen.avb.perGebeurtenis).replace("€", "€ ")} per aanspraak`;
 }
 
 /** Laat de oorspronkelijke tekst (en daarmee de FAQ-structured data) intact. */
