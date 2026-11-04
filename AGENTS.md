@@ -36,7 +36,7 @@
 - Shared attribution validator: paid 90-day inheritance, boolean consent, utm_source=chatgpt/oppref = chatgpt_ads; ad pixels load from tracking.ts after marketing consent only. OpenAI uses measure/page_viewed/contents per SPA navigation and measure/lead_created/customer_action after success, with its official q queue and no customer fields. Why: no consent bypass or dropped pre-load events.
 - Halve BAV-aanvragen staan in aanvraag_concepten, alleen geschreven via submit-public-form (table "aanvraag_concepten", idempotent op browser-concept-id) en omgezet door process-bav-wizard; nooit bank-/SEPA-velden, na 90 dagen geanonimiseerd (cron), nooit verwijderd. Waarom: opvolging zonder gevoelige gegevens of anon-toegang.
 - BAV-vergelijking in src/data/bavVergelijking.ts (bron-URL + gecontroleerd_op per aanbieder; ZP-rij uit bavPakketten). Waarom: bijwerken zonder paginacode.
-- CSV mirrors _redirects, including slash variants and suffix-preserving internal language redirects; src/assets use hashed stubs and glob fallback, explicit rules first. Why: no false 404s.
+- CSV mirrors _redirects, including slash variants and suffix-preserving internal language redirects; news fallbacks include language prefixes, after all explicit rules in generated output. src/assets use hashed stubs and glob fallback. Why: preserve specific destinations without false 404s.
 
 - Submappen hebben eigen AGENTS.md (src/components/admin, crm, supabase/functions); lees die eerst.
 - Scripts never import React (SSR crashes); markdown uses articleMarkdownUrl (safe tel: links). Both llms generators use published articles. Why: current article discovery.
