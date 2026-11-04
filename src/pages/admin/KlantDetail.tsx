@@ -26,6 +26,8 @@ import { ExactRelatieLabel, OndernemingswijzigingKnop, OpvolgerBanner, Voorgange
 import { RechtsvoorgangerBanner } from "@/components/admin/crm/Omzetting";
 import { KvkVergelijking } from "@/components/admin/KvkGegevens";
 import { kiesBavNummer, useBavRijen } from "@/lib/bavNummer";
+import { bavKopTekst } from "@/lib/omzetting";
+import { OpenOmzettingMelding, useOpenOmzetting } from "@/components/admin/crm/OpenOmzetting";
 export default function KlantDetail() {
   const { id } = useParams();
   const [laden, setLaden] = useState(true);
@@ -74,6 +76,7 @@ export default function KlantDetail() {
 
   const { data: bavRijen } = useBavRijen(id ? [id] : []);
   const bavKeuze = kiesBavNummer(bavRijen ?? []);
+  const { data: omzetOpen } = useOpenOmzetting(id, herlaad);
   return (
     <AdminLayout>
       <Helmet><title>{ond?.naam ?? "Klant"} | ZP Zaken beheer</title></Helmet>
@@ -85,10 +88,11 @@ export default function KlantDetail() {
             <RechtsvoorgangerBanner ondernemingId={ond.id} herlaad={herlaad} />
             <div className="flex flex-wrap items-start justify-between gap-2"><div>
               <h1 className="text-2xl font-bold break-words">{ond.naam}</h1>
-              <p className="break-words text-sm text-muted-foreground">Exact-relatiecode {ond.exact_relatie_code ?? "onbekend"} · {bavKeuze?.nummer ? `BAV-nummer ${bavKeuze.nummer}` : "BAV-nummer onbekend"}{bavKeuze?.afas.length ? ` · AFAS-abonnementsnummer (oud systeem) ${bavKeuze.afas.join(", ")}` : ""} · {ond.bron === "afas_20261001" ? "startstand 01-10-2026" : ond.bron ? `bron ${ond.bron}` : ""}</p>
+              <p className="break-words text-sm text-muted-foreground">Exact-relatiecode {ond.exact_relatie_code ?? "onbekend"} · {bavKopTekst(bavKeuze?.nummer, omzetOpen ?? null)}{bavKeuze?.afas.length ? ` · AFAS-abonnementsnummer (oud systeem) ${bavKeuze.afas.join(", ")}` : ""} · {ond.bron === "afas_20261001" ? "startstand 01-10-2026" : ond.bron ? `bron ${ond.bron}` : ""}</p>
               {ond.afwijkingen?.length > 0 && <div className="mt-2 flex flex-wrap gap-2">{ond.afwijkingen.map((a: string) => <Badge key={a} variant="outline" className="border-amber-500 text-amber-700">{a}</Badge>)}</div>}
               <div className="mt-2"><ExactRelatieLabel ond={ond} heeftVoorganger={voorgangers.length > 0} /></div>
             </div><OndernemingswijzigingKnop ond={ond} onKlaar={() => setHerlaad((x) => x + 1)} /></div>
+            {omzetOpen && (isSupervisorOrAdmin || isVerzekering) && <OpenOmzettingMelding open={omzetOpen} ond={ond} onKlaar={() => setHerlaad((x) => x + 1)} />}
             <VlagBalk lead={ond} doel="klant" magWijzigen={isSupervisorOrAdmin || isVerzekering} onGewijzigd={() => setHerlaad((h) => h + 1)} />
             <KlantKaart ondernemingen={[ond]} personen={personen} leadIds={leadMatch.map((l) => l.id)} herlaadSleutel={herlaad} onGewijzigd={() => setHerlaad((h) => h + 1)} />
             <KvkVergelijking ond={ond} onGewijzigd={() => setHerlaad((x) => x + 1)} />
@@ -117,7 +121,7 @@ export default function KlantDetail() {
             {(isSupervisorOrAdmin || isVerzekering) && <CyberToevoegen team ondernemingId={ond.id} />}
             <CrmTijdlijn ondernemingen={[{ id: ond.id, naam: ond.naam }]} personen={personen.map((p) => ({ id: p.id, naam: persoonNaam(p) }))}
               invoerDoel={{ onderneming_id: ond.id }} herlaadSleutel={herlaad} />
-            <KlantCertificaat ond={ond} contracten={contracten} personen={personen} leadIds={leadMatch.map((l) => l.id)} />
+            <KlantCertificaat omzetOpen={omzetOpen ?? null} onOmgezet={() => setHerlaad((x) => x + 1)} ond={ond} contracten={contracten} personen={personen} leadIds={leadMatch.map((l) => l.id)} />
             <CertificatenKlant ondernemingId={ond.id} />
             <OpzeggingenKlant ondernemingId={ond.id} contracten={contracten} onGewijzigd={() => setHerlaad((x) => x + 1)} />
             <Card><CardHeader><CardTitle className="text-base">Contractregels en planning</CardTitle></CardHeader><CardContent className="overflow-x-auto">
