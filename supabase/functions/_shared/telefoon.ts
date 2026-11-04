@@ -13,3 +13,15 @@ export function normaliseerNlTelefoon(v: string): string {
   if (!isNlTelefoon(s)) return (v ?? "").trim();
   return s.replace(/^(\+31|0031)/, "0");
 }
+
+/** NL of internationaal nummer (+ of 00, 8 tot 15 cijfers); zelfde regel als SQL telefoon_normaliseer. */
+export function normaliseerTelefoon(v: string): string | null {
+  const s = (v ?? "").replace(/[\s().-]/g, "");
+  if (/^(\+31|0031|0)[1-9][0-9]{8}$/.test(s)) return s.replace(/^(\+31|0031)/, "0");
+  if (/^(\+|00)[1-9][0-9]{7,14}$/.test(s)) return s.replace(/^00/, "+");
+  return null;
+}
+
+export function isGeldigTelefoon(v: string): boolean {
+  return normaliseerTelefoon(v) !== null;
+}

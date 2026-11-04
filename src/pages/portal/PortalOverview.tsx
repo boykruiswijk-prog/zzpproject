@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ReviewKaart } from "@/components/portal/ReviewKaart";
+import { GegevensCompleet } from "@/components/portal/GegevensCompleet";
 import { FileText, Receipt, Briefcase, ArrowRight } from "lucide-react";
 
 export default function PortalOverview() {
@@ -42,6 +43,10 @@ export default function PortalOverview() {
             Hier vind je een overzicht van je polis, documenten en facturen.
           </p>
         </div>
+
+        <GegevensCompleet />
+
+
 
         <div className="grid sm:grid-cols-2 gap-4">
           <Card>

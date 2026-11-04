@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { openOmzetting, type OpenOmzetting } from "@/lib/omzetting";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { openOmzetting, openContractMeenemen, type OpenOmzetting, type OpenContractMee } from "@/lib/omzetting";
 import { OmzettenNaarBv } from "./OmzettenNaarBv";
 
 type Ond = { id: string; naam: string; kvk: string | null; rechtsvorm?: string | null };
@@ -33,6 +35,48 @@ export function OpenOmzettingMelding({ open, ond, onKlaar, tekst }: { open: Open
       <span className="min-w-0 flex-1 break-words">{tekst ?? `BAV-nummer${open.certificaatnummer ? ` ${open.certificaatnummer}` : ""} wordt overgenomen van ${open.vanNaam}. De polis staat nog op ${open.vanNaam}; neem hem over om hier een certificaat te hebben.`}</span>
       <OmzettenNaarBv polis={{ id: open.policyId, certificate_number: open.certificaatnummer }} vanNaam={open.vanNaam} vasteNaar={ond}
         vasteDatum={open.ingangsdatum} vasteReden={open.reden} knopTekst="Polis overnemen" onKlaar={onKlaar} />
+    </div>
+  );
+}
+
+/** Opvolging waarvan het BAV + AVB-contract nog bij de voorganger staat en de opvolger geen eigen contract heeft. */
+export function useOpenContractMeenemen(ondernemingId: string | undefined, herlaad = 0) {
+  return useQuery({
+    queryKey: ["open-contract-mee", ondernemingId, herlaad],
+    enabled: !!ondernemingId,
+    queryFn: async (): Promise<OpenContractMee | null> => {
+      const { data: opv } = await supabase.from("onderneming_opvolging").select("id,van_onderneming_id,naar_onderneming_id,soort,ingangsdatum").eq("naar_onderneming_id", ondernemingId!);
+      const vanIds = (opv ?? []).map((o) => o.van_onderneming_id);
+      if (!vanIds.length) return null;
+      const [{ data: kc }, { data: ond }] = await Promise.all([
+        supabase.from("klant_contracten").select("onderneming_id,product,status,eind_datum").in("onderneming_id", [ondernemingId!, ...vanIds]),
+        supabase.from("ondernemingen").select("id,naam").in("id", vanIds),
+      ]);
+      return openContractMeenemen(ondernemingId!, (opv ?? []) as any, (kc ?? []) as any, Object.fromEntries((ond ?? []).map((o) => [o.id, o.naam])));
+    },
+  });
+}
+
+/** Knop: contract van de voorganger meenemen (RPC contract_meenemen; geen dubbele factuur, geen creditnota, nooit mail). */
+export function ContractMeenemenMelding({ open, onKlaar }: { open: OpenContractMee; onKlaar: () => void }) {
+  const [bevestig, setBevestig] = useState(false);
+  const [bezig, setBezig] = useState(false);
+  const [fout, setFout] = useState<string | null>(null);
+  const datum = open.ingangsdatum.split("-").reverse().join("-");
+  const doe = async () => {
+    setBezig(true); setFout(null);
+    const { error } = await (supabase.rpc as any)("contract_meenemen", { _opvolging_id: open.opvolgingId });
+    setBezig(false);
+    if (error) { setFout(error.message); return; }
+    onKlaar();
+  };
+  return (
+    <div role="alert" className="space-y-2 rounded-md border border-primary/40 bg-primary/5 p-3 text-sm text-foreground">
+      <p>Het BAV + AVB-contract staat nog op {open.vanNaam} (rechtsvormwijziging per {datum}). Neem het contract over; al gefactureerde perioden blijven staan, er komt geen creditnota en de volgende factuur gaat naar deze onderneming.</p>
+      {!bevestig ? <Button size="sm" onClick={() => setBevestig(true)}>Contract overnemen van {open.vanNaam}</Button> : (
+        <div className="flex flex-wrap gap-2"><Button size="sm" onClick={doe} disabled={bezig}>{bezig ? "Bezig..." : "Ja, contract overnemen"}</Button><Button size="sm" variant="ghost" onClick={() => setBevestig(false)}>Annuleren</Button></div>
+      )}
+      {fout && <p className="text-destructive">{fout}</p>}
     </div>
   );
 }
