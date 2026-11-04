@@ -932,10 +932,9 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
   // ── Stap D: Account aanmaken (skip bij reuse van bestaande relatie) ──
   let exactAccountId: string = reusedAccountId ?? "";
   if (!reusedAccountId) {
-    const accRes = await fetch(`${baseUrl}/api/v1/${div}/crm/Accounts`, {
-      method: "POST", headers, body: JSON.stringify(accountPayload),
-    });
-    if (!accRes.ok) {
+    const acc = await maakRelatie(baseUrl, div, accessToken, accountPayload);
+    if (!acc.ok) {
+      const accRes = acc.res;
       const { summary, detail } = await captureExactError("Accounts POST", accRes);
       await logSync(supabase, {
         trigger_type: "lead_activation", status: "error",
@@ -946,12 +945,8 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
       });
       return json({ success: false, error: "exact_account_create_failed", detail, http_status: accRes.status }, 500);
     }
-    const accData = await accRes.json().catch(() => ({}));
-    exactAccountId = accData?.d?.ID || accData?.ID;
-    if (!exactAccountId) {
-      return json({ success: false, error: "no_account_id_returned", raw: accData }, 500);
-    }
-    exactRelatieCode = String(accData?.d?.Code ?? accData?.Code ?? "").trim() || null;
+    exactAccountId = acc.id;
+    exactRelatieCode = acc.code;
   }
 
   // Exact geeft Code niet altijd terug op POST; lees dan de zojuist aangemaakte relatie terug.
