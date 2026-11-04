@@ -143,6 +143,7 @@ export const legacyRedirects: { from: string; to: string }[] = [
   { from: "fb-nieuwjaarsactie", to: "/verzekeringen" },
   { from: "nieuwjaarsactie", to: "/verzekeringen" },
   { from: "academy/weblog", to: "/kennisbank" },
+  { from: "nieuws/even-voorstellen-michel-verheij", to: "/over-ons" },
 
   // Gangbare WordPress URL-patronen
   { from: "bav-verzekering", to: "/verzekeringen" },
@@ -725,6 +726,7 @@ export const legacyRedirects: { from: string; to: string }[] = [
   { from: "services/*", to: "/diensten" },
   { from: "profile/*", to: "/" },
   { from: "facts/press/*", to: "/kennisbank" },
+  { from: "nieuws/*", to: "/kennisbank" },
 ];
 
 export const legacyRedirectMap: Record<string, string> = Object.fromEntries(
