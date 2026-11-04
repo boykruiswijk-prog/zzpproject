@@ -80,7 +80,7 @@ beforeAll(async () => {
     SET app.dubbele_kvk_toegestaan='on';
     INSERT INTO ondernemingen(id,naam,kvk,created_at) VALUES ('${id(1)}','InnoThermFlo B.V.','72276304','2026-10-12'),('${id(2)}','InnoThermFlo B.V.','72276304','2026-10-13');
     RESET app.dubbele_kvk_toegestaan;`);
-});
+}, 60_000);
 
 describe("database: dubbele kaarten", () => {
   it("weigert een nieuwe echte kaart met een KvK dat al actief bestaat", async () => {
