@@ -1716,6 +1716,13 @@
       "when": 1793875127525,
       "tag": "0244_robots_lasso_puls",
       "breakpoints": true
+    },
+    {
+      "idx": 245,
+      "version": "7",
+      "when": 1793876793827,
+      "tag": "0245_scherm_cron_schema",
+      "breakpoints": true
     }
   ]
 }
