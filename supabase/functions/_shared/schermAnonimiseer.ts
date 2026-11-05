@@ -201,6 +201,8 @@ export const AI_TEAM = [
   { id: 'scherm', naam: 'Live-scherm', taak: 'Ververst dit scherm elke 2 uur', station: 'kwaliteit' },
   { id: 'dagstatus', naam: 'Dagstatus', taak: 'Maakt elke ochtend het statusoverzicht (dagelijks 08:12)', station: 'kwaliteit', ritme: 'elke ochtend 08:12' },
   { id: 'aanbevelingen', naam: 'Aanbevelingencontrole', taak: 'Beoordeelt de aanbevelingen van Google Ads (ma)', station: 'ads', ritme: 'elke maandag' },
+  { id: 'concurrentie', naam: 'Concurrentiemonitor', taak: 'Scant dagelijks de markt en de concurrentie', station: 'kwaliteit' },
+  { id: 'updates', naam: 'Updatebewaker', taak: 'Houdt alle software dagelijks up-to-date', station: 'kwaliteit' },
 ] as const;
 export type AiAgentId = typeof AI_TEAM[number]['id'];
 
@@ -226,6 +228,7 @@ export const AGENT_VOORVOEGSEL: Record<AiAgentId, string[]> = {
   ads: ['ads-agent'], conversies: ['conversie-agent'], kwaliteit: ['kwaliteitsagent'], content: ['contentagent'],
   markt: ['marktagent'], rapportage: ['rapportage-agent', 'weekrapportage'], beveiliging: ['beveiligingsagent'],
   scherm: ['scherm-agent', 'live-scherm'], dagstatus: ['dagstatus'], aanbevelingen: ['aanbevelingen'],
+  concurrentie: ['concurrentiemonitor', 'concurrentie-agent'], updates: ['updatebewaker', 'updates-agent'],
 };
 /** Laatste machine_activiteit-tijd per agent-id uit scherm_versheid().agent_laatst. */
 export function agentLaatst(lijst: unknown): Partial<Record<AiAgentId, string>> {
@@ -241,7 +244,7 @@ export function agentLaatst(lijst: unknown): Partial<Record<AiAgentId, string>> 
 }
 
 type AiRij = { naam: string; taak: string; resultaat: string | null; laatste_run: string | null; status: 'klaar' | 'fout' | 'gepland' };
-/** AI-team: altijd de vaste lijst (gepland zonder run), aangevuld uit de snapshot; daarna onbekende agents tot max 12. */
+/** AI-team: altijd de vaste lijst (gepland zonder run), aangevuld uit de snapshot; daarna onbekende agents (veiligheidsgrens 24, geen vaste teamgrootte). */
 export function schoonAiTeam(snap: Snap, doelTotaal?: number, recent: Partial<Record<AiAgentId, string>> = {}): AiRij[] {
   const agents = (snap?.data as Ruw | undefined)?.agents;
   if (!Array.isArray(agents)) return [];
@@ -273,7 +276,7 @@ export function schoonAiTeam(snap: Snap, doelTotaal?: number, recent: Partial<Re
     }
     return r;
   });
-  return [...vast, ...overig.map(a => rij(a)).filter(a => a.naam)].slice(0, 12);
+  return [...vast, ...overig.map(a => rij(a)).filter(a => a.naam)].slice(0, 24);
 }
 
 type WorkerStatus = 'klaar' | 'fout' | 'gepland';
