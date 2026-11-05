@@ -72,8 +72,10 @@ Deno.serve(async (req) => {
     if (bingFout) console.error("bing_ai_metingen", bingFout.message);
     const { data: hartslagStatus, error: hsFout } = await admin.rpc("hartslag_status");
     if (hsFout) console.error("hartslag_status", hsFout.message);
+    const { data: cronSchema, error: csFout } = await admin.rpc("scherm_cron_schema");
+    if (csFout) console.error("scherm_cron_schema", csFout.message);
     // Volgorde bewust: werkstand levert de actuele activiteit (met cron-runs en perioden) en wint van scherm_data.
-    const body = JSON.stringify(bouwSchermPayload({ ...(data ?? {}), ...(stromen ?? {}), ...(werk ?? {}), versheid: versheid ?? null, bing_ai: bingAi ?? [], hartslag_status: hartslagStatus ?? [] }));
+    const body = JSON.stringify(bouwSchermPayload({ ...(data ?? {}), ...(stromen ?? {}), ...(werk ?? {}), versheid: versheid ?? null, bing_ai: bingAi ?? [], hartslag_status: hartslagStatus ?? [], cron_schema: cronSchema ?? [] }));
     cache = { op: Date.now(), body };
     return json(body, 200, { "Cache-Control": "private, max-age=4" });
   } catch (e) {
