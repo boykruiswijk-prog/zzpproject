@@ -405,8 +405,8 @@ export const seoRoutes: SeoRoute[] = [
   {
     path: "/beroepsaansprakelijkheidsverzekering",
     title: "Beroepsaansprakelijkheidsverzekering zzp | ZP Zaken",
-    description: `Beroepsaansprakelijkheidsverzekering voor zzp'ers: BAV en AVB in één polis via Hiscox, vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
-    h1: "Beroepsaansprakelijkheidsverzekering voor zzp'ers",
+    description: `Beroepsaansprakelijkheidsverzekering zzp: BAV en AVB in één polis, € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
+    h1: "Beroepsaansprakelijkheidsverzekering zzp: wat kost het en hoe regel je het?",
     intro: `Een beroepsaansprakelijkheidsverzekering verzekert je, volgens de polisvoorwaarden, als een opdrachtgever je aansprakelijk stelt voor schade door een fout in je werk. Bij ZP Zaken kost die vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
   },
   {

@@ -30,6 +30,8 @@ export const PRIJS_JAAR = `€${getPakket("jaarlijks").prijs}`;
 export interface Faq {
   question: string;
   answer: string;
+  /** Opt-in links: exacte tekst in het antwoord naar pad. */
+  links?: Record<string, string>;
 }
 
 interface Props {
@@ -91,7 +93,7 @@ export function BeroepVerzekeringPagina(p: Props) {
               {p.faqs.map((f, i) => (
                 <AccordionItem key={i} value={`faq-${i}`}>
                   <AccordionTrigger className="text-left">{f.question}</AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground"><BeroepspaginaTekst tekst={f.answer} /></AccordionContent>
+                  <AccordionContent className="text-muted-foreground"><BeroepspaginaTekst tekst={f.answer} links={f.links} /></AccordionContent>
                 </AccordionItem>
               ))}
             </Accordion>

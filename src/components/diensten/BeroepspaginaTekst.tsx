@@ -20,13 +20,18 @@ export function beroepspaginaPrijsregel() {
   return `Vanaf € ${maand.prijs} per maand of € ${jaar.prijs} per jaar, inclusief kosten en assurantiebelasting · BAV ${formatMiljoenKort(maand.dekkingen.bav.perGebeurtenis).replace("€", "€ ")} · AVB ${formatMiljoenKort(maand.dekkingen.avb.perGebeurtenis).replace("€", "€ ")} per aanspraak`;
 }
 
-/** Laat de oorspronkelijke tekst (en daarmee de FAQ-structured data) intact. */
-export function BeroepspaginaTekst({ tekst }: { tekst: string }) {
-  return <>{tekst.split(/(polisvoorwaarden|Hoeveel dekking heb je nodig met je BAV\?)/gi).map((deel, i) => (
-    /^polisvoorwaarden$/i.test(deel)
+/** Laat de oorspronkelijke tekst (en daarmee de FAQ-structured data) intact. Extra links zijn opt-in per FAQ. */
+export function BeroepspaginaTekst({ tekst, links }: { tekst: string; links?: Record<string, string> }) {
+  const extra = Object.keys(links ?? {});
+  const esc = (t: string) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const patroon = new RegExp(`(${["polisvoorwaarden", esc("Hoeveel dekking heb je nodig met je BAV?"), ...extra.map(esc)].join("|")})`, "gi");
+  return <>{tekst.split(patroon).map((deel, i) => (
+    links && deel in links
+      ? <LocalizedLink key={i} to={links[deel]} className="underline underline-offset-4">{deel}</LocalizedLink>
+      : /^polisvoorwaarden$/i.test(deel)
       ? <LocalizedLink key={i} to="/voorwaarden" className="underline underline-offset-4">{deel}</LocalizedLink>
       : deel === "Hoeveel dekking heb je nodig met je BAV?"
         ? <LocalizedLink key={i} to="/kennisbank/verzekerd-bedrag-bav-zzp" className="underline underline-offset-4">{deel}</LocalizedLink>
-      : <Fragment key={i}><CyberVoorwaardenTekst tekst={deel} /></Fragment>
+        : <Fragment key={i}><CyberVoorwaardenTekst tekst={deel} /></Fragment>
   ))}</>;
 }
