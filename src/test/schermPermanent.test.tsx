@@ -23,7 +23,7 @@ describe("permanent agentkantoor", () => {
     await act(async () => { await vi.advanceTimersByTimeAsync(0); });
     expect(screen.getByTestId("machine")).toHaveAttribute("data-actief", "true");
     expect(screen.getByTestId("rapportage-paneel")).toHaveAttribute("data-paneel", "0");
-    expect(screen.getByTestId("paneel-puntjes").children).toHaveLength(9);
+    expect(screen.getByTestId("paneel-puntjes").children).toHaveLength(10);
     expect(screen.getByTestId("workers-vast")).toHaveTextContent("Alle workers");
     const machine = screen.getByTestId("machine");
     for (let i = 1; i <= 9; i++) {
