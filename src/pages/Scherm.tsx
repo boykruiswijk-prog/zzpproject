@@ -373,7 +373,12 @@ function PaneelAiTeam({ d }: { d: SchermPayload }) {
               <div key={`${a.naam}-${i}`} className="min-w-0 leading-tight">
                 <div className={`flex items-center gap-[11.52px] ${compact ? 'text-[18.36px]' : 'text-[20.52px]'}`}>
                   <span className="h-[15.12px] w-[15.12px] shrink-0 rounded-full" style={{ background: `hsl(${kleur(a.status)})`, boxShadow: `0 0 10.8px hsl(${kleur(a.status)})` }} />
-                  <span className="max-w-[40%] shrink-0 truncate font-bold text-[hsl(var(--s-tekst))]">{a.naam}</span>
+                  {a.robotnaam ? (
+                    <span className="flex max-w-[40%] shrink-0 flex-col leading-none" data-testid="robotnaam">
+                      <span className={`truncate font-bold text-[hsl(var(--s-tekst))] ${compact ? 'text-[22.68px]' : 'text-[25.92px]'}`}>{a.robotnaam}</span>
+                      <span className={`truncate text-[hsl(var(--s-dim))] ${compact ? 'text-[14.04px]' : 'text-[16.2px]'}`}>{a.naam}</span>
+                    </span>
+                  ) : <span className="max-w-[40%] shrink-0 truncate font-bold text-[hsl(var(--s-tekst))]">{a.naam}</span>}
                   <span className="min-w-0 truncate text-[hsl(var(--s-dim))]">{a.taak}</span>
                   {t && <span className="ml-auto shrink-0 tabular-nums text-[hsl(var(--s-dim))]">{t}</span>}
                 </div>

@@ -200,14 +200,22 @@ export const AI_TEAM = [
   { id: 'beveiliging', naam: 'Beveiliging', taak: 'Controleert beveiliging en toegang (ma)', station: 'kwaliteit' },
   { id: 'scherm', naam: 'Live-scherm', taak: 'Ververst dit scherm elke 2 uur', station: 'kwaliteit' },
   { id: 'dagstatus', naam: 'Dagstatus', taak: 'Maakt elke ochtend het statusoverzicht (dagelijks 08:12)', station: 'kwaliteit', ritme: 'elke ochtend 08:12' },
-  { id: 'aanbevelingen', naam: 'Aanbevelingencontrole', taak: 'Beoordeelt de aanbevelingen van Google Ads (ma)', station: 'ads', ritme: 'elke maandag' },
+  { id: 'botcoach', naam: 'Botcoach', taak: 'Daagt elke ochtend alle robots uit', station: 'kwaliteit' },
   { id: 'concurrentie', naam: 'Concurrentiemonitor', taak: 'Scant dagelijks de markt en de concurrentie', station: 'kwaliteit' },
   { id: 'updates', naam: 'Updatebewaker', taak: 'Houdt alle software dagelijks up-to-date', station: 'kwaliteit' },
 ] as const;
 export type AiAgentId = typeof AI_TEAM[number]['id'];
 
+/** Register A29: vaste robotnaam per agent-id, enige bron; de feed kan deze nooit overschrijven. */
+export const ROBOTNAMEN: Record<AiAgentId, string> = {
+  ads: 'Turbo', conversies: 'Echo', kwaliteit: 'Loep', content: 'Pen', markt: 'Radar', rapportage: 'Teller',
+  beveiliging: 'Slot', scherm: 'Pixel', dagstatus: 'Kompas', botcoach: 'Coach', concurrentie: 'Scout', updates: 'Patch',
+};
+/** Gestopte agents (Aanbevelingencontrole per 18 okt): nooit meer op het scherm, ook niet als de feed ze stuurt. */
+export const GESTOPTE_AGENTS = ['aanbevelingen'] as const;
+
 /** Koppelt een geplande-taaknaam aan een agent-id; specifieke namen vóór de algemene Ads-regel. */
-export function koppelTaak(naam: unknown): AiAgentId | null {
+export function koppelTaak(naam: unknown): AiAgentId | 'aanbevelingen' | null {
   const n = typeof naam === 'string' ? naam.trim().toLowerCase() : '';
   if (!n) return null;
   if (n.startsWith('dagstatus zp zaken') || n === 'dagstatus') return 'dagstatus';
@@ -227,7 +235,7 @@ export function liveDoelTekst(tekst: string, totaal: number): string {
 export const AGENT_VOORVOEGSEL: Record<AiAgentId, string[]> = {
   ads: ['ads-agent'], conversies: ['conversie-agent'], kwaliteit: ['kwaliteitsagent'], content: ['contentagent'],
   markt: ['marktagent'], rapportage: ['rapportage-agent', 'weekrapportage'], beveiliging: ['beveiligingsagent'],
-  scherm: ['scherm-agent', 'live-scherm'], dagstatus: ['dagstatus'], aanbevelingen: ['aanbevelingen'],
+  scherm: ['scherm-agent', 'live-scherm'], dagstatus: ['dagstatus'], botcoach: ['botcoach'],
   concurrentie: ['concurrentiemonitor', 'concurrentie-agent'], updates: ['updatebewaker', 'updates-agent'],
 };
 /** Laatste machine_activiteit-tijd per agent-id uit scherm_versheid().agent_laatst. */
@@ -243,16 +251,17 @@ export function agentLaatst(lijst: unknown): Partial<Record<AiAgentId, string>> 
   return uit;
 }
 
-type AiRij = { naam: string; taak: string; resultaat: string | null; laatste_run: string | null; status: 'klaar' | 'fout' | 'gepland' };
+type AiRij = { robotnaam: string | null; naam: string; taak: string; resultaat: string | null; laatste_run: string | null; status: 'klaar' | 'fout' | 'gepland' };
 /** AI-team: altijd de vaste lijst (gepland zonder run), aangevuld uit de snapshot; daarna onbekende agents (veiligheidsgrens 24, geen vaste teamgrootte). */
 export function schoonAiTeam(snap: Snap, doelTotaal?: number, recent: Partial<Record<AiAgentId, string>> = {}): AiRij[] {
   const agents = (snap?.data as Ruw | undefined)?.agents;
   if (!Array.isArray(agents)) return [];
-  const rij = (a: Ruw, basis?: { naam: string; taak: string }): AiRij => {
+  const rij = (a: Ruw, basis?: { id: AiAgentId; naam: string; taak: string }): AiRij => {
     const ruw = schoonTekst(a.resultaat, 70);
     const resultaat = doelTotaal == null ? ruw : liveDoelTekst(ruw, doelTotaal);
     const laatste_run = typeof a.laatste_run === 'string' && Number.isFinite(Date.parse(a.laatste_run)) ? new Date(a.laatste_run).toISOString() : null;
     return {
+      robotnaam: basis ? ROBOTNAMEN[basis.id] : null,
       naam: basis ? basis.naam : schoonTekst(a.naam, 70),
       taak: basis ? basis.taak : schoonTekst(a.taak, 70),
       resultaat: resultaat || null,
@@ -264,7 +273,8 @@ export function schoonAiTeam(snap: Snap, doelTotaal?: number, recent: Partial<Re
   const perId = new Map<string, Ruw>();
   const overig: Ruw[] = [];
   for (const a of geldig) {
-    const id = (AI_TEAM.some(t => t.id === a.id) ? a.id : koppelTaak(a.naam)) as string | null;
+    const id = (AI_TEAM.some(t => t.id === a.id) || (GESTOPTE_AGENTS as readonly string[]).includes(a.id) ? a.id : koppelTaak(a.naam)) as string | null;
+    if (id && (GESTOPTE_AGENTS as readonly string[]).includes(id)) continue;
     if (id && !perId.has(id)) perId.set(id, a); else overig.push(a);
   }
   const vast = AI_TEAM.map(t => {
