@@ -21,7 +21,7 @@ export const faqItems = [
       { question: "Wat is het verschil tussen een BAV en een AVB?", answer: "Een Beroepsaansprakelijkheidsverzekering (BAV) dekt schade die ontstaat door fouten in je werk, zoals verkeerd advies of een fout in een ontwerp. Een Aansprakelijkheidsverzekering Bedrijven (AVB) dekt schade aan personen of spullen die je per ongeluk veroorzaakt tijdens je werk, zoals een laptop die je laat vallen bij een klant. Veel zzp'ers hebben beide verzekeringen nodig." },
       { question: "Kan ik mijn BAV en AVB combineren?", answer: "Ja. Bij ZP Zaken zitten je BAV en AVB samen in één combinatiepolis. Je houdt overzicht met één polis en één premie." },
       { question: "Hoe snel kan ik een verzekering afsluiten?", answer: "Je BAV + AVB is binnen 24 uur geregeld, certificaat in je mailbox. Werk je in de zorg of bouw? Binnen 24 uur hoor je van ons." },
-      { question: "Wat kost een AOV gemiddeld per maand?", answer: "De premie van een AOV hangt af van je beroep, je leeftijd, de hoogte van de uitkering en de wachttijd. ZP Zaken geeft geen advies over de AOV en vergelijkt geen AOV's. Op zpzaken.nl/aov lees je hoe de Movir AOV werkt en bereken je je premie via onze externe adviseur." },
+      { question: "Wat kost een AOV gemiddeld per maand?", answer: "De premie van een AOV hangt af van je beroep, je leeftijd, de hoogte van de uitkering en de wachttijd. ZP Zaken geeft geen advies over de AOV en vergelijkt geen AOV's. Op zpzaken.nl/aov lees je hoe de AOV werkt en bereken je je premie via onze externe adviseur." },
     ]
   },
   {

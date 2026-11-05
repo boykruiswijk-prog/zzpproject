@@ -379,7 +379,7 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Verzekeringen",
       "vraag": "Wat kost een AOV gemiddeld per maand?",
-      "antwoord": "De premie van een AOV hangt af van je beroep, je leeftijd, de hoogte van de uitkering en de wachttijd. ZP Zaken geeft geen advies over de AOV en vergelijkt geen AOV's. Op zpzaken.nl/aov lees je hoe de Movir AOV werkt en bereken je je premie via onze externe adviseur."
+      "antwoord": "De premie van een AOV hangt af van je beroep, je leeftijd, de hoogte van de uitkering en de wachttijd. ZP Zaken geeft geen advies over de AOV en vergelijkt geen AOV's. Op zpzaken.nl/aov lees je hoe de AOV werkt en bereken je je premie via onze externe adviseur."
     },
     {
       "categorie": "Over ZP Zaken",
