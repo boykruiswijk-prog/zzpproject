@@ -26,10 +26,10 @@ type Props = { stations: Record<string, StationStand>; totaalVandaag: number; ke
 
 /** A8-correctie: vaste plek per poppetje op de vloer [x, z]; kolommen 4,8 breed, rijen 5,5 diep. Brein in het midden. */
 export const POPPETJE_PLEK: Record<string, [number, number]> = {
-  Echo: [-9.8, -12.2], Lasso: [-4.9, -12.2], Turbo: [4.9, -12.2], Loep: [9.8, -12.2],
-  Pen: [-9.8, -5.2], Teller: [-4.9, -5.2], Kompas: [4.9, -5.2],
-  Slot: [-9.8, 1.8], Patch: [-4.9, 1.8], Coach: [0, 1.8], Radar: [4.9, 1.8], Scout: [9.8, 1.8],
-  Pixel: [-9.8, 8.8], Puls: [-4.9, 8.8], Spoor: [4.9, 8.8], Baken: [9.8, 8.8],
+  Echo: [-9.8, -12.6], Lasso: [-4.9, -12.6], Turbo: [4.9, -12.6], Loep: [9.8, -12.6],
+  Pen: [-9.8, -5.1], Teller: [-4.9, -5.1], Kompas: [4.9, -5.1],
+  Slot: [-9.8, 2.4], Patch: [-4.9, 2.4], Coach: [0, 2.4], Radar: [4.9, 2.4], Scout: [9.8, 2.4],
+  Pixel: [-9.8, 9.9], Puls: [-4.9, 9.9], Spoor: [4.9, 9.9], Baken: [9.8, 9.9],
 };
 /** Afdelingslabel boven de eerste robot van elke groep. */
 export const AFDELING_TAG: Record<string, { titel: string; robot: string; station?: string }> = {
@@ -43,8 +43,8 @@ export const AFDELING_TAG: Record<string, { titel: string; robot: string; statio
 };
 /** Machine-afdelingen zonder AI-robot: klein label met bestaande status. */
 export const MACHINE_AFDELINGEN = ['acceptatie', 'certificaten', 'facturatie', 'exact', 'assistent', 'mail', 'service'] as const;
-const KERN = new THREE.Vector3(0, 0, -9.4);
-const S = 1.35; // poppetje en bureau groter, herkenbaar op 3-4 meter
+const KERN = new THREE.Vector3(0, 0, -9.6);
+const S = 1.25; // poppetje en bureau groter, herkenbaar op 3-4 meter
 
 /** Resultaatregel: privacygefilterd door schermAnonimiseer, hier alleen ingekort op 40 tekens. */
 export function resultaatKort(t: string | null | undefined, max = 40): string {
@@ -218,7 +218,7 @@ export default function MachineScene(props: Props) {
     </Canvas>
     <div className="machine-afdelingen" data-testid="scene-labels">
       {MACHINE_AFDELINGEN.map(id => { const st = props.stations[id]; const t = st?.toestand ?? 'rust';
-        return <div key={id} className={`machine-chip ${klasse(t)}`} data-station={id} data-toestand={t} title={toestandLabel(st)}><span className="st-bol" /><strong>{STATION_LABELS[id]}</strong><small>{toestandKort(st)}</small><b>{st?.vandaag ?? 0}</b></div>; })}
+        return <div key={id} className={`machine-chip ${klasse(t)}`} data-station={id} data-toestand={t} title={toestandLabel(st)}><span className="st-bol" /><strong>{STATION_LABELS[id]}</strong><b>{st?.vandaag ?? 0}</b></div>; })}
     </div>
   </div>;
 }
