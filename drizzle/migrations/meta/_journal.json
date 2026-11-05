@@ -1765,6 +1765,13 @@
       "when": 1793891807060,
       "tag": "0251_bezoekers_bijwerken",
       "breakpoints": true
+    },
+    {
+      "idx": 252,
+      "version": "7",
+      "when": 1793891826133,
+      "tag": "0252_bezoekers_naam_hague_fix",
+      "breakpoints": true
     }
   ]
 }
