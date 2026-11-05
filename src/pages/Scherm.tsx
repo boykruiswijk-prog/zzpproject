@@ -331,12 +331,12 @@ function PaneelVandaag({ d }: { d: SchermPayload }) {
       </svg>
     </div>
     <div><Label>Drukste afdeling</Label><div className="text-[43.2px] font-semibold">{d.gebeurtenissen_vandaag ? STATION_LABELS[drukste] : 'Nog geen gebeurtenissen'}</div><span className="text-[28.08px] text-[hsl(var(--s-dim))]">{d.stations[drukste]?.vandaag ?? 0} gebeurtenissen</span></div>
-    <div className="flex min-h-0 flex-col gap-[3px]"><Label>Werkminuten per medewerker</Label>
+    <div className="grid min-h-0 grid-cols-2 gap-x-[16px] gap-y-[2px]"><div className="col-span-2"><Label>Werkminuten per afdeling</Label></div>
       {(() => { const max = Math.max(1, ...STATION_IDS.map(id => d.stations[id]?.duur_vandaag_min ?? 0)); return STATION_IDS.map(id => { const m = d.stations[id]?.duur_vandaag_min ?? 0; return (
-        <div key={id} className="flex items-center gap-[14px] text-[18px] leading-[24px]" data-werkminuten={id}>
-          <span className="w-[230.4px] shrink-0 whitespace-normal">{STATION_LABELS[id]}</span>
-          <span className="h-[14.04px] flex-1 overflow-hidden rounded-full bg-[hsl(var(--s-lijn))]"><span className="block h-full rounded-full" style={{ width: `${(m / max) * 100}%`, background: `hsl(${stationToken(id)})` }} /></span>
-          <span className="min-w-[96px] shrink-0 text-right tabular-nums text-[hsl(var(--s-dim))]">{m} min</span>
+        <div key={id} className="flex min-w-0 items-center gap-[8px] text-[16px] leading-[22px]" data-werkminuten={id}>
+          <span className="h-[10px] w-[10px] shrink-0 rounded-full" style={{ background: `hsl(${stationToken(id)})`, opacity: m ? 1 : 0.35 }} />
+          <span className="min-w-0 flex-1 truncate">{STATION_LABELS[id]}</span>
+          <span className="shrink-0 text-right tabular-nums text-[hsl(var(--s-dim))]">{m} min</span>
         </div>); }); })()}
     </div>
   </div>;
@@ -354,7 +354,7 @@ function PaneelAiTeam({ d }: { d: SchermPayload }) {
   const compact = team.length > 10;
   // Vanaf 13 robots twee kolommen, zodat 16 leesbaar passen op 1920x1080.
   const tweeKolommen = team.length > 12;
-  const kleur = (s: string) => s === 'fout' ? 'var(--s-rood)' : s === 'gepland' ? 'var(--s-dim)' : 'var(--s-groen)';
+  const kleur = (s: string) => s === 'fout' ? 'var(--s-rood)' : s === 'gepland' ? 'var(--s-dim)' : s === 'bezig' ? 'var(--s-blauw)' : 'var(--s-groen)';
   return (
     <div className="ai-team-paneel flex h-full min-w-0 flex-col gap-[17.28px] overflow-hidden">
       <div className="flex items-baseline justify-between"><Kop>Ons AI-team</Kop><Bijgewerkt op={d.bijgewerkt?.ai_team} /></div>
@@ -398,21 +398,13 @@ const workerKleur = (s: string) => s === 'fout' ? 'var(--s-rood)' : s === 'gepla
 const Bolletje = ({ status }: { status: string }) => <span className="h-[15.12px] w-[15.12px] shrink-0 rounded-full" style={{ background: `hsl(${workerKleur(status)})`, boxShadow: `0 0 10.8px hsl(${workerKleur(status)})` }} />;
 
 function PaneelWorkers({ d }: { d: SchermPayload }) {
-  const w = d.workers;
-  if (!w) return <div className="workers-paneel"><Kop>Alle workers</Kop><Gemeten /></div>;
-  const workers = [...w.gepland.map(a => ({ ...a, groep: 'Gepland' })), ...w.op_afroep.map(a => ({ ...a, groep: 'Op afroep' }))];
+  if (!d.workers) return <div className="workers-strook"><strong>Alle workers</strong><Gemeten /></div>;
+  const s = workersSamenvatting(d.workers, d.gegenereerd_op);
   return (
-    <div className="workers-paneel">
-      <div className="workers-kop"><Kop>Alle workers</Kop><Label>{workers.length} workers draaien automatisch</Label></div>
-      <div className="workers-rooster">
-        {workers.map((a, i) => {
-          const t = runTijd(a.laatste, d.gegenereerd_op);
-          return <div key={`${a.groep}-${a.naam}-${i}`} className="worker-regel" data-worker={a.naam}>
-            <div className="worker-naam"><Bolletje status={a.status} /><strong>{a.naam}</strong></div>
-            <div className="worker-info"><span>{a.groep}</span>{a.groep === 'Gepland' ? <>{a.ritme && <span>{a.ritme}</span>}{t && <span>{t}</span>}</> : <><span>{a.vandaag === null ? 'wordt gemeten' : `${nf.format(a.vandaag)} vandaag`}</span>{a.week !== null && <span>{nf.format(a.week)} deze week</span>}</>}</div>
-          </div>;
-        })}
-      </div>
+    <div className="workers-strook" data-testid="workers-samenvatting">
+      <span><strong>Alle workers</strong> {s.totaal}: <strong>{s.goed}</strong> goed, <strong>{s.bezig}</strong> bezig, <strong className={s.fout.length ? 'ws-fout' : ''}>{s.fout.length}</strong> fout</span>
+      {s.volgende.length > 0 && <span data-testid="workers-volgende">Straks: {s.volgende.map(v => <span key={v.naam} className="mr-[14px]"><strong>{v.tijd}</strong> {v.naam}</span>)}</span>}
+      {s.fout.length > 0 && <span className="ws-fout" data-testid="workers-fout">Fout: {s.fout.join(', ')}</span>}
     </div>
   );
 }
@@ -616,21 +608,21 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
         </header>
 
         <main className="flex min-h-0 flex-1">
-          <section className="flex w-[1190.4px] min-w-0 flex-col border-r border-[hsl(var(--s-lijn))]">
+          <section className="flex w-[1290px] min-w-0 flex-col border-r border-[hsl(var(--s-lijn))]">
             <div className="relative min-h-0 flex-1 overflow-hidden">
               <div className="scherm-scene-kop"><span>Het agentkantoor</span><small>Afdelingen verbonden met het brein</small></div>
               {data && (
                 <Suspense fallback={null}>
                   <div className="scherm-scene scene-zichtbaar" data-testid="agentkantoor">
-                    <MachineScene stations={stationsWeergave} totaalVandaag={data.gebeurtenissen_vandaag} kennisregels={data.kennisbank.gepubliceerd} pulsen={nieuwePulsen} focus={focus} actief={!breaking} />
+                    <MachineScene stations={stationsWeergave} totaalVandaag={data.gebeurtenissen_vandaag} kennisregels={data.kennisbank.gepubliceerd} pulsen={nieuwePulsen} focus={focus} actief={!breaking} robots={data.ai_team} />
                   </div>
                 </Suspense>
               )}
             </div>
-            <div data-testid="workers-vast" className="h-[470px] shrink-0 overflow-hidden border-t border-[hsl(var(--s-lijn))] px-[24px] py-[12px]">
+            <div data-testid="workers-vast" className="h-[60px] shrink-0 overflow-hidden border-t border-[hsl(var(--s-lijn))] px-[24px]">
               {data && <PaneelWorkers d={data} />}
             </div>
-            <div className="h-[118.8px] shrink-0 overflow-hidden border-t border-[hsl(var(--s-lijn))]">
+            <div className="h-[84px] shrink-0 overflow-hidden border-t border-[hsl(var(--s-lijn))]">
               <div className="scherm-ticker flex h-full items-center gap-[57.6px] whitespace-nowrap">
                 {[0, 1].map((k) => (
                   <div key={k} className="flex shrink-0 items-center gap-[57.6px] pr-[57.6px]" aria-hidden={k === 1}>
@@ -648,7 +640,7 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
             </div>
           </section>
 
-          <aside className="scherm-rapport flex w-[729.6px] min-w-0 flex-col px-[38.4px] py-[32.4px]">
+          <aside className="scherm-rapport flex w-[630px] min-w-0 flex-col px-[28px] py-[26px]">
             <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
               {data ? (
                 <div key={paneel} data-testid="rapportage-paneel" data-paneel={paneel} className="scherm-paneel absolute inset-0 overflow-hidden"><Huidig d={data} /></div>
