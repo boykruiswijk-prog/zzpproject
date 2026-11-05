@@ -26,14 +26,14 @@ export default function BezoekersKaart({ b }: { b: BezoekersPayload | null }) {
         <span className="text-[54px] font-bold leading-none tabular-nums text-[hsl(var(--s-tekst))]" data-testid="bezoekers-totaal">{b ? nf.format(b.totaal) : "-"}</span>
       </div>
       {!b && <div className="text-[23.76px] text-[hsl(var(--s-dim))]">Wacht op de koppeling met Google Analytics</div>}
-      <div className="flex min-h-0 flex-1 gap-[18px]">
-        <svg viewBox="0 0 590 690" className="h-full min-h-0 w-[58%] shrink-0" role="img" aria-label="Kaart van Nederland met bezoekers per plaats">
+      <div className="relative min-h-0 flex-1">
+        <svg viewBox="0 0 590 690" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMaxYMid meet" role="img" aria-label="Kaart van Nederland met bezoekers per plaats">
           {NL_PROVINCIES.map((p) => <path key={p.naam} d={p.d} className="bk-provincie" />)}
           {punten.map((p) => <path key={`b-${p.plaats}-${vuur[p.plaats] ?? 0}`} d={boogPad(p)} className="bk-boog" pathLength={1} />)}
           {punten.map((p) => <circle key={`s-${p.plaats}`} cx={p.x} cy={p.y} r={p.r} className="bk-stip" />)}
           <circle cx={kantoor.x} cy={kantoor.y} r={9} className="bk-kantoor" />
         </svg>
-        <ol className="flex min-w-0 flex-1 flex-col justify-center gap-[14px]" data-testid="bezoekers-top5">
+        <ol className="absolute left-0 top-0 flex w-[230px] flex-col gap-[10px]" data-testid="bezoekers-top5">
           {top.map((p, i) => (
             <li key={p.plaats} className="flex min-w-0 items-baseline gap-[10px] text-[25.92px]">
               <span className="w-[26px] shrink-0 text-[hsl(var(--s-dim))]">{i + 1}</span>
