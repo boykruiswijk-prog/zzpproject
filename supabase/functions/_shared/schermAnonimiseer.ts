@@ -228,6 +228,7 @@ export const AGENT_VOORVOEGSEL: Record<AiAgentId, string[]> = {
   ads: ['ads-agent'], conversies: ['conversie-agent'], kwaliteit: ['kwaliteitsagent'], content: ['contentagent'],
   markt: ['marktagent'], rapportage: ['rapportage-agent', 'weekrapportage'], beveiliging: ['beveiligingsagent'],
   scherm: ['scherm-agent', 'live-scherm'], dagstatus: ['dagstatus'], aanbevelingen: ['aanbevelingen'],
+  concurrentie: ['concurrentiemonitor', 'concurrentie-agent'], updates: ['updatebewaker', 'updates-agent'],
 };
 /** Laatste machine_activiteit-tijd per agent-id uit scherm_versheid().agent_laatst. */
 export function agentLaatst(lijst: unknown): Partial<Record<AiAgentId, string>> {
