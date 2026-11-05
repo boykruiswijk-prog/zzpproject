@@ -367,3 +367,5 @@
 .workers-strook { display: flex; height: 100%; align-items: center; gap: 18px; font-size: 18px; color: hsl(var(--s-dim)); white-space: nowrap; overflow: hidden; }
 .workers-strook strong { color: hsl(var(--s-tekst)); }
 .workers-strook .ws-fout { color: hsl(var(--s-rood)); font-weight: 600; }
+.werktuin-rooster .scherm-station .st-regel .werktuin-aantal { margin-left: auto; padding-left: 8px; flex-shrink: 0; font-size: 22px; color: hsl(var(--s-groen)); }
+.scherm-canvas .werktuin-rooster .scherm-station { padding: 8px 10px; }

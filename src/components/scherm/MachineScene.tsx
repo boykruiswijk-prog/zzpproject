@@ -44,6 +44,8 @@ export function toestandKort(s: StationStand | undefined): string {
     default: return t ? `rust sinds ${hm(t)}` : 'rust';
   }
 }
+/** Zachte afbreekpunten zodat lange afdelingsnamen netjes over twee regels lopen, nooit afgekapt. */
+const WERKTUIN_TITEL: Record<string, string> = { kwaliteit: 'Kwaliteits\u00ADcontrole', service: 'Klant\u00ADservice', kennisbank: 'Kennisbank en content' };
 const HOEK_LABELS: Record<string, string> = { onderhoud: 'Onderhoud', markt: 'Markt en AI' };
 const plaats = (id: string) => { const [c, r, w, h] = WERKTUIN_PLAATS[id]; return { gridColumn: `${c} / span ${w}`, gridRow: `${r} / span ${h}` }; };
 function RobotChips({ robots, kolommen }: { robots: WerktuinRobot[]; kolommen: number }) {
@@ -233,8 +235,8 @@ export default function MachineScene(props: Props) {
         const klasse = {aan_het_werk:'st-werk',stand_by:'st-standby',rust:'st-rust',storing:'st-storing'}[toestand];
         const robots = (props.robots ?? []).filter(r => r.werkplek === id && r.robotnaam);
         return <div key={id} className={`scherm-station ${klasse}`} data-station={id} data-toestand={toestand} style={plaats(id)}>
-          <div className="scene-labeltitel"><strong>{STATION_LABELS[id]}</strong><b>{st?.vandaag ?? 0}</b></div>
-          <small className="st-regel" title={toestandLabel(st)}><span className="st-bol" /><span>{toestandKort(st)}</span></small>
+          <div className="scene-labeltitel"><strong>{WERKTUIN_TITEL[id] ?? STATION_LABELS[id]}</strong></div>
+          <small className="st-regel" title={toestandLabel(st)}><span className="st-bol" /><span>{toestandKort(st)}</span><b className="werktuin-aantal">{st?.vandaag ?? 0}</b></small>
           {event?.station === id && <p className="agent-balloon">{event.tekst}</p>}
           <RobotChips robots={robots} kolommen={WERKTUIN_PLAATS[id][2]} />
         </div>;
