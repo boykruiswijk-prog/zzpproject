@@ -24,7 +24,27 @@ function palette() {
   return { bg: read('--s-bg'), floor: read('--s-surface'), desk: read('--s-lijn'), figure: read('--s-tekst'), dim: read('--s-dim'), red: read('--s-rood'), blue: read('--s-blauw'), green: read('--s-groen'), orange: read('--s-oranje') };
 }
 type Colors = ReturnType<typeof palette>;
-type Props = { stations: Record<string, StationStand>; totaalVandaag: number; kennisregels: number; pulsen: Puls[]; focus: Puls | null; actief: boolean };
+export type WerktuinRobot = { robotnaam: string | null; naam: string; status: string; werkplek: string | null; nu_tekst: string | null };
+type Props = { stations: Record<string, StationStand>; totaalVandaag: number; kennisregels: number; pulsen: Puls[]; focus: Puls | null; actief: boolean; robots?: WerktuinRobot[] };
+/** A8-aanvulling: vaste plek per tegel in het 5x4-rooster [kolom, rij, kolombreedte, rijhoogte]; brein midden onder de 3D-kern. */
+export const WERKTUIN_PLAATS: Record<string, [number, number, number, number]> = {
+  intake: [1, 1, 2, 1], acceptatie: [3, 1, 1, 1], certificaten: [4, 1, 1, 1], facturatie: [5, 1, 1, 1],
+  exact: [1, 2, 1, 1], kennisbank: [2, 2, 1, 1], brein: [3, 2, 1, 2], ads: [4, 2, 1, 1], kwaliteit: [5, 2, 1, 1],
+  assistent: [1, 3, 1, 1], mail: [5, 3, 1, 1],
+  service: [1, 4, 1, 1], onderhoud: [2, 4, 2, 1], markt: [4, 4, 2, 1],
+};
+const HOEK_LABELS: Record<string, string> = { onderhoud: 'Onderhoud', markt: 'Markt en AI' };
+const plaats = (id: string) => { const [c, r, w, h] = WERKTUIN_PLAATS[id]; return { gridColumn: `${c} / span ${w}`, gridRow: `${r} / span ${h}` }; };
+function RobotChips({ robots, kolommen }: { robots: WerktuinRobot[]; kolommen: number }) {
+  if (!robots.length) return null;
+  return <div className="werktuin-robots" style={{ gridTemplateColumns: `repeat(${kolommen}, minmax(0, 1fr))` }}>
+    {robots.map(r => <div key={r.robotnaam} className={`werktuin-robot rb-${r.status}`} data-robot={r.robotnaam} data-status={r.status}>
+      <div className="werktuin-robot-kop"><span className="st-bol" /><strong>{r.robotnaam}</strong></div>
+      <small>{r.naam}</small>
+      {r.status === 'bezig' && r.nu_tekst && <em>{r.nu_tekst}</em>}
+    </div>)}
+  </div>;
+}
 const POS = STATION_IDS.map((_, i) => { const a = i / STATION_IDS.length * Math.PI * 2 - Math.PI / 2; return new THREE.Vector3(Math.cos(a) * 8.5, 0, Math.sin(a) * 7); });
 const AGENTS = STATION_IDS.flatMap((_, i) => Array.from({ length: 1 + i % 3 }, (_, j) => ({ station: i, offset: (j - (i % 3) / 2) * 0.72 })));
 
@@ -196,17 +216,25 @@ export default function MachineScene(props: Props) {
     </group>
     {quality&&!reduced&&props.actief&&<Suspense fallback={null}><Effects /></Suspense>}
   </Canvas>
-    <div className="scene-labelrooster" data-testid="scene-labels">
+    <div className="scene-labelrooster werktuin-rooster" data-testid="scene-labels">
       {STATION_IDS.map((id, i) => {
         const Icon = ICONS[i]; const st = props.stations[id]; const toestand = st?.toestand ?? 'rust';
         const klasse = {aan_het_werk:'st-werk',stand_by:'st-standby',rust:'st-rust',storing:'st-storing'}[toestand];
-        return <div key={id} className={`scherm-station ${klasse}`} data-station={id} data-toestand={toestand}>
+        const robots = (props.robots ?? []).filter(r => r.werkplek === id && r.robotnaam);
+        return <div key={id} className={`scherm-station ${klasse}`} data-station={id} data-toestand={toestand} style={plaats(id)}>
           <div className="scene-labeltitel"><Icon /><strong>{STATION_LABELS[id]}</strong><b>{st?.vandaag ?? 0}</b></div>
           <small className="st-regel"><span className="st-bol" /><span>{toestandLabel(st)}</span></small>
           {event?.station === id && <p className="agent-balloon">{event.tekst}</p>}
+          <RobotChips robots={robots} kolommen={WERKTUIN_PLAATS[id][2]} />
         </div>;
       })}
-      <div className="scherm-core"><span>Het brein</span><b>{props.totaalVandaag}</b><small>gebeurtenissen vandaag</small><em>{props.kennisregels} kennisregels</em></div>
+      {(['onderhoud', 'markt'] as const).map(h => <div key={h} className="scherm-station werktuin-hoek" data-hoek={h} style={plaats(h)}>
+        <div className="scene-labeltitel"><strong>{HOEK_LABELS[h]}</strong></div>
+        <RobotChips robots={(props.robots ?? []).filter(r => r.werkplek === h && r.robotnaam)} kolommen={2} />
+      </div>)}
+      <div className="scherm-core werktuin-brein" data-hoek="brein" style={plaats('brein')}><span>Het brein</span><b>{props.totaalVandaag}</b><small>gebeurtenissen vandaag</small><em>{props.kennisregels} kennisregels</em>
+        <RobotChips robots={(props.robots ?? []).filter(r => r.werkplek === 'brein' && r.robotnaam)} kolommen={1} />
+      </div>
     </div>
   </div>;
 }
