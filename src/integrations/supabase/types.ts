@@ -3650,6 +3650,30 @@ export type Database = {
         }
         Relationships: []
       }
+      hartslag_metingen: {
+        Row: {
+          gemeten_op: string
+          id: number
+          ok: boolean
+          onderdeel: string
+          reden: string | null
+        }
+        Insert: {
+          gemeten_op?: string
+          id?: number
+          ok: boolean
+          onderdeel: string
+          reden?: string | null
+        }
+        Update: {
+          gemeten_op?: string
+          id?: number
+          ok?: boolean
+          onderdeel?: string
+          reden?: string | null
+        }
+        Relationships: []
+      }
       herinnering_afmeld_tokens: {
         Row: {
           created_at: string
@@ -5871,6 +5895,27 @@ export type Database = {
           },
         ]
       }
+      opvolg_signalen: {
+        Row: {
+          item_id: string
+          item_soort: string
+          signaal_1_op: string | null
+          signaal_2_op: string | null
+        }
+        Insert: {
+          item_id: string
+          item_soort: string
+          signaal_1_op?: string | null
+          signaal_2_op?: string | null
+        }
+        Update: {
+          item_id?: string
+          item_soort?: string
+          signaal_1_op?: string | null
+          signaal_2_op?: string | null
+        }
+        Relationships: []
+      }
       partner_bronnen: {
         Row: {
           aangemaakt_door: string | null
@@ -7837,6 +7882,8 @@ export type Database = {
         Args: { _gegevens: Json; _is_test?: boolean; _toch_nieuw?: boolean }
         Returns: Json
       }
+      hartslag_opruimen: { Args: never; Returns: number }
+      hartslag_status: { Args: never; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -8144,6 +8191,31 @@ export type Database = {
         }
         Returns: Json
       }
+      opvolg_open_basis: {
+        Args: never
+        Returns: {
+          aangemaakt_op: string
+          item_id: string
+          item_soort: string
+          naam: string
+          pakket: string
+          stap: number
+        }[]
+      }
+      opvolg_overzicht: {
+        Args: never
+        Returns: {
+          aangemaakt_op: string
+          item_id: string
+          item_soort: string
+          naam: string
+          pakket: string
+          signaal_1_op: string
+          signaal_2_op: string
+          stap: number
+        }[]
+      }
+      opvolger_ronde: { Args: never; Returns: Json }
       overgenomen_certificaatnummer: {
         Args: { _lead_id: string }
         Returns: string
