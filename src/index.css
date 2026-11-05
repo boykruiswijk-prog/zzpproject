@@ -410,3 +410,11 @@
 .machine-chip small { grid-column: 1 / 3; font-size: 14px; color: hsl(var(--s-dim)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .machine-chip b { grid-column: 3; font-size: 19px; color: hsl(var(--s-groen)); }
 @media (prefers-reduced-motion: reduce) { .poppetje-label.rb-bezig { animation: none; } }
+
+/* A8 Bezoekerskaart */
+.bk-provincie { fill: hsl(var(--s-glass) / 0.9); stroke: hsl(var(--s-blauw) / 0.45); stroke-width: 1.4; }
+.bk-stip { fill: hsl(var(--s-rood) / 0.85); filter: drop-shadow(0 0 6px hsl(var(--s-rood))); }
+.bk-kantoor { fill: hsl(var(--s-tekst)); filter: drop-shadow(0 0 10px hsl(var(--s-blauw))); }
+.bk-boog { fill: none; stroke: hsl(var(--s-rood)); stroke-width: 2.4; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; opacity: .85; filter: drop-shadow(0 0 5px hsl(var(--s-rood))); animation: bk-vuur 2.4s ease-out forwards; }
+@keyframes bk-vuur { 0% { stroke-dashoffset: 1; opacity: 1; } 70% { stroke-dashoffset: 0; opacity: 1; } 100% { stroke-dashoffset: 0; opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .bk-boog { animation: none; stroke-dashoffset: 0; opacity: .4; } }
