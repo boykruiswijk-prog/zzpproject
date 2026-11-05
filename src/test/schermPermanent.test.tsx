@@ -40,16 +40,20 @@ describe("permanent agentkantoor", () => {
     }
   });
 
-  it("behoudt alle 23 vaste workers inclusief de laatste drie", async () => {
+  it("toont alleen een samenvatting van de workers, niet alle regels (A8-aanvulling)", async () => {
     const payload = bouwSchermPayload({});
-    const worker = (i: number) => ({ naam: `Worker ${i}`, status: 'klaar' as const, ritme: 'elke werkdag', laatste: null, vandaag: i, week: i * 7 });
-    payload.workers = { gepland: Array.from({length:16}, (_,i) => worker(i)), op_afroep: Array.from({length:7}, (_,i) => worker(i+16)) };
+    const nu = Date.parse(payload.gegenereerd_op);
+    const worker = (i: number) => ({ naam: `Worker ${i}`, status: (i === 3 ? 'fout' : 'klaar') as 'fout' | 'klaar', ritme: 'elke werkdag', laatste: i === 5 ? new Date(nu - 60_000).toISOString() : null, vandaag: i, week: i * 7, volgende: new Date(nu + (20 - i) * 60_000).toISOString() });
+    payload.workers = { gepland: Array.from({length:18}, (_,i) => worker(i)), op_afroep: Array.from({length:7}, (_,i) => ({ ...worker(i+18), volgende: null })) };
     vi.stubGlobal('fetch', vi.fn(async () => ({ok:true,status:200,json:async () => payload})));
     render(<HelmetProvider><Scherm tv /></HelmetProvider>);
     await act(async () => { await vi.advanceTimersByTimeAsync(0); });
-    const rows = screen.getByTestId('workers-vast').querySelectorAll('[data-worker]');
-    expect(rows).toHaveLength(23);
-    expect(Array.from(rows, row => row.getAttribute('data-worker'))).toEqual(Array.from({length:23}, (_,i) => `Worker ${i}`));
+    const strook = screen.getByTestId('workers-vast');
+    expect(strook.querySelectorAll('[data-worker]')).toHaveLength(0);
+    expect(strook).toHaveTextContent('Alle workers 25: 23 goed, 1 bezig, 1 fout');
+    expect(screen.getByTestId('workers-volgende').textContent).toMatch(/Worker 17.*Worker 16.*Worker 15/);
+    expect(screen.getByTestId('workers-volgende')).not.toHaveTextContent('Worker 14');
+    expect(screen.getByTestId('workers-fout')).toHaveTextContent('Fout: Worker 3');
   });
 });
 

@@ -35,3 +35,15 @@ export function periodeTekst(a: { gestart_op?: string | null; afgerond_op?: stri
   if (!Number.isFinite(van) || !Number.isFinite(tot) || tot < van) return null;
   return `${hhmm(a.gestart_op)}-${hhmm(a.afgerond_op)} (${Math.max(1, Math.round((tot - van) / 60000))} min)`;
 }
+
+/** A8-aanvulling: compacte samenvatting van alle workers (geen volledige lijst meer). Bezig = activiteit binnen 10 minuten. */
+export function workersSamenvatting(w: SchermPayload['workers'], nuIso: string) {
+  const alle = w ? [...w.gepland, ...w.op_afroep] : [];
+  const nu = Date.parse(nuIso);
+  const bezig = alle.filter(a => a.status !== 'fout' && a.laatste && nu - Date.parse(a.laatste) >= 0 && nu - Date.parse(a.laatste) < 10 * 60_000).length;
+  const fout = alle.filter(a => a.status === 'fout');
+  const volgende = (w?.gepland ?? []).filter(a => a.volgende && Date.parse(a.volgende) > nu)
+    .sort((a, b) => Date.parse(a.volgende!) - Date.parse(b.volgende!)).slice(0, 3)
+    .map(a => ({ naam: a.naam, tijd: hhmm(a.volgende!) }));
+  return { totaal: alle.length, goed: alle.length - bezig - fout.length, bezig, fout: fout.map(a => a.naam), volgende };
+}

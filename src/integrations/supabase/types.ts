@@ -8372,6 +8372,7 @@ export type Database = {
           voornaam: string
         }[]
       }
+      scherm_cron_schema: { Args: never; Returns: Json }
       scherm_data: { Args: never; Returns: Json }
       scherm_stromen: { Args: never; Returns: Json }
       scherm_versheid: { Args: never; Returns: Json }
