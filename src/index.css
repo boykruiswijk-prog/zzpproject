@@ -387,7 +387,7 @@
 .poppetje-kop { display: flex; align-items: center; justify-content: center; gap: 8px; }
 .poppetje-kop strong { font-size: 28px; line-height: 1.05; font-weight: 800; color: hsl(var(--s-tekst)); white-space: nowrap; }
 .poppetje-label small { display: block; font-size: 15px; line-height: 1.2; color: hsl(var(--s-dim)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.poppetje-label em { display: block; font-style: normal; font-size: 15px; text-align: center; line-height: 1.2; color: hsl(var(--s-tekst)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.poppetje-label em { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; min-height: 2.3em; font-style: normal; font-size: 15px; text-align: center; line-height: 1.15; color: hsl(var(--s-tekst)); overflow: hidden; }
 .poppetje-label .st-bol, .afdeling-tag .st-bol, .machine-chip .st-bol { width: 13px; height: 13px; flex-shrink: 0; border-radius: 999px; background: hsl(var(--s-groen)); }
 .poppetje-label.rb-gepland .st-bol { background: hsl(var(--s-dim)); }
 .poppetje-label.rb-fout { border-color: hsl(var(--s-rood)); }

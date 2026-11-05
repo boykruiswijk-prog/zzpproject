@@ -27,9 +27,9 @@ type Props = { stations: Record<string, StationStand>; totaalVandaag: number; ke
 /** A8-correctie: vaste plek per poppetje op de vloer [x, z]; kolommen 4,8 breed, rijen 5,5 diep. Brein in het midden. */
 export const POPPETJE_PLEK: Record<string, [number, number]> = {
   Echo: [-9.8, -12.6], Lasso: [-4.9, -12.6], Turbo: [4.9, -12.6], Loep: [9.8, -12.6],
-  Pen: [-9.8, -5.1], Teller: [-4.9, -5.1], Kompas: [4.9, -5.1],
-  Slot: [-9.8, 2.4], Patch: [-4.9, 2.4], Coach: [0, 2.4], Radar: [4.9, 2.4], Scout: [9.8, 2.4],
-  Pixel: [-9.8, 9.9], Puls: [-4.9, 9.9], Spoor: [4.9, 9.9], Baken: [9.8, 9.9],
+  Pen: [-9.8, -5.4], Teller: [-4.9, -5.4], Kompas: [4.9, -5.4],
+  Slot: [-9.8, 1.8], Patch: [-4.9, 1.8], Coach: [0, 1.8], Radar: [4.9, 1.8], Scout: [9.8, 1.8],
+  Pixel: [-9.8, 9.0], Puls: [-4.9, 9.0], Spoor: [4.9, 9.0], Baken: [9.8, 9.0],
 };
 /** Afdelingslabel boven de eerste robot van elke groep. */
 export const AFDELING_TAG: Record<string, { titel: string; robot: string; station?: string }> = {
