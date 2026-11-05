@@ -19,7 +19,7 @@ export type InterneMeldingInput = {
   soort?: string;
 };
 
-const FALLBACK_PER_SOORT: Record<string, string[]> = { exact_boeking: ["roxy@onefellow.nl"], bav_override: [BOY], afas_factuur: ["sandra@onefellow.nl"] };
+const FALLBACK_PER_SOORT: Record<string, string[]> = { exact_boeking: ["roxy@onefellow.nl"], bav_override: [BOY], afas_factuur: ["sandra@onefellow.nl"], opvolger: ["ellen.baars@zpzaken.nl", "info@zpzaken.nl"] };
 
 export async function interneOntvangers(admin: AdminClient, soort = "algemeen"): Promise<string[]> {
   const { data, error } = await admin.from("interne_melding_ontvangers")
