@@ -377,7 +377,7 @@ function PaneelAiTeam({ d }: { d: SchermPayload }) {
                   <span className="min-w-0 truncate text-[hsl(var(--s-dim))]">{a.taak}</span>
                   {t && <span className="ml-auto shrink-0 tabular-nums text-[hsl(var(--s-dim))]">{t}</span>}
                 </div>
-                {a.resultaat && <div className={`truncate pl-[21.6px] ${compact ? 'text-[16.2px]' : 'text-[18.36px]'} text-[hsl(var(--s-tekst))]">{a.resultaat}</div>}
+                {a.resultaat && <div className={`truncate pl-[21.6px] ${compact ? 'text-[16.2px]' : 'text-[18.36px]'} text-[hsl(var(--s-tekst))]`}>{a.resultaat}</div>}
               </div>
             );
           })}
