@@ -333,9 +333,11 @@ function Dagomzet({ d }: { d: SchermPayload }) {
   }, [aantal]);
   return (
     <div data-testid="dagomzet" className={`scherm-dagomzet${licht ? " scherm-dagomzet-licht" : ""}`}>
-      <div className="scherm-dagomzet-titel">Dagomzet</div>
+      <div className="scherm-dagomzet-tekst">
+        <div className="scherm-dagomzet-titel">Dagomzet</div>
+        <div className="scherm-dagomzet-sub">nieuwe jaarpremie uit {nf.format(aantal)} {aantal === 1 ? "aanvraag" : "aanvragen"} vandaag</div>
+      </div>
       <div className="scherm-dagomzet-bedrag tabular-nums" data-testid="dagomzet-bedrag">{euro.format(bedrag)}</div>
-      <div className="scherm-dagomzet-sub">nieuwe jaarpremie uit {nf.format(aantal)} {aantal === 1 ? "aanvraag" : "aanvragen"} vandaag</div>
     </div>
   );
 }
