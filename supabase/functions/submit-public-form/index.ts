@@ -152,6 +152,8 @@ Deno.serve(async (req) => {
     try { raw = await leesBegrensdeBody(req); } catch { return json({ success: false, error: "Aanvraag te groot." }, 413); }
     let body: any;
     try { body = JSON.parse(raw); } catch { return json({ success: false, error: "Ongeldige aanvraag." }, 400); }
+    // Hartslag-ping (A31): alleen bereikbaarheid, vóór elke database- of mailstap. Maakt nooit iets aan.
+    if (body && typeof body === "object" && body.ping === true && Object.keys(body).length === 1) return json({ success: true, ping: true });
     if (!objectInvoer.safeParse(body).success) return json({ success: false, error: "Ongeldige aanvraag." }, 400);
     const table = typeof body?.table === "string" ? body.table : "";
     if (table === "aanvraag_concepten") return await bewaarConcept(req, body, json);

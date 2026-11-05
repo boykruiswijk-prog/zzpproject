@@ -1709,6 +1709,13 @@
       "when": 1793860773548,
       "tag": "0243_artikel_aov_aanbieders_check",
       "breakpoints": true
+    },
+    {
+      "idx": 244,
+      "version": "7",
+      "when": 1793875127525,
+      "tag": "0244_robots_lasso_puls",
+      "breakpoints": true
     }
   ]
 }

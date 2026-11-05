@@ -8,7 +8,7 @@ import { useMenuTellers } from "@/hooks/useMenuTellers";
 import { useMachtigingenNakijken } from "@/hooks/useMachtigingenNakijken";
 import { TellerBadge } from "@/components/admin/TellerBadge";
 import { CRM_UITLEG, GRIJZE_TELLERS, TELLER_DOEL, groepsDoel, groepsTotaal, groepsUitleg, tellerUitleg } from "@/lib/menuTellers";
-import { Activity, AlertTriangle, BookOpen, Building2, ChevronDown, ConciergeBell, Copy, UserMinus, ChevronLeft, CircleDollarSign, FileText, LineChart, Hash, KeyRound, Landmark, LayoutDashboard, LogOut, Menu, MessageCircle, Monitor, Plug, SearchX, Settings, Share2, ShieldCheck, UserCog, UserX, Users } from "lucide-react";
+import { Activity, AlertTriangle, BookOpen, Building2, ChevronDown, ConciergeBell, Copy, UserMinus, ChevronLeft, CircleDollarSign, FileText, LineChart, Hash, KeyRound, Landmark, LayoutDashboard, LogOut, Menu, MessageCircle, Monitor, Plug, SearchX, Settings, Share2, ShieldCheck, UserCog, UserX, Users, Timer } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
@@ -21,6 +21,7 @@ const groups: NavGroup[] = [
   { label: "Klanten", icon: Users, roles: ["supervisor", "verzekering"], items: [
     { to: "/admin/leads", icon: Users, label: "Leads", teller: "leads", roles: ["supervisor", "verzekering"] },
     { to: "/admin/aanvragen", icon: FileText, label: "Aanvragen", teller: "aanvragen", roles: ["supervisor", "verzekering"] },
+    { to: "/admin/opvolgen", icon: Timer, label: "Opvolgen", roles: ["supervisor", "verzekering"], sub: true },
     { to: "/admin/afgehaakt", icon: UserX, label: "Afgehaakte aanvragen", teller: "afgehaakt", roles: ["supervisor", "verzekering"], sub: true },
     { to: "/admin/opzeggingen", icon: UserMinus, label: "Opzeggingen", teller: "opzeggingen", roles: ["supervisor", "verzekering"] },
     { to: "/admin/creditnotas-goedkeuren", icon: CircleDollarSign, label: "Creditnota's ter goedkeuring", teller: "credits_akkoord", roles: ["supervisor", "verzekering"], sub: true },
