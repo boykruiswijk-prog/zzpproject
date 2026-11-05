@@ -369,3 +369,5 @@
 .workers-strook .ws-fout { color: hsl(var(--s-rood)); font-weight: 600; }
 .werktuin-rooster .scherm-station .st-regel .werktuin-aantal { margin-left: auto; padding-left: 8px; flex-shrink: 0; font-size: 22px; color: hsl(var(--s-groen)); }
 .scherm-canvas .werktuin-rooster .scherm-station { padding: 8px 10px; }
+.werktuin-robots { align-content: end; align-items: end; }
+.workers-strook { flex-wrap: wrap; align-content: center; row-gap: 2px; line-height: 22px; }
