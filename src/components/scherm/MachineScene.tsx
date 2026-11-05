@@ -26,10 +26,10 @@ type Props = { stations: Record<string, StationStand>; totaalVandaag: number; ke
 
 /** A8-correctie: vaste plek per poppetje op de vloer [x, z]; kolommen 4,8 breed, rijen 5,5 diep. Brein in het midden. */
 export const POPPETJE_PLEK: Record<string, [number, number]> = {
-  Echo: [-9.6, -9], Lasso: [-4.8, -9], Turbo: [4.8, -9], Loep: [9.6, -9],
-  Pen: [-9.6, -3.5], Teller: [-4.8, -3.5], Kompas: [4.8, -3.5],
-  Slot: [-9.6, 2], Patch: [-4.8, 2], Coach: [0, 2], Radar: [4.8, 2], Scout: [9.6, 2],
-  Pixel: [-9.6, 7.5], Puls: [-4.8, 7.5], Spoor: [4.8, 7.5], Baken: [9.6, 7.5],
+  Echo: [-9.8, -11], Lasso: [-4.9, -11], Turbo: [4.9, -11], Loep: [9.8, -11],
+  Pen: [-9.8, -4.5], Teller: [-4.9, -4.5], Kompas: [4.9, -4.5],
+  Slot: [-9.8, 2], Patch: [-4.9, 2], Coach: [0, 2], Radar: [4.9, 2], Scout: [9.8, 2],
+  Pixel: [-9.8, 8.5], Puls: [-4.9, 8.5], Spoor: [4.9, 8.5], Baken: [9.8, 8.5],
 };
 /** Afdelingslabel boven de eerste robot van elke groep. */
 export const AFDELING_TAG: Record<string, { titel: string; robot: string; station?: string }> = {
@@ -43,8 +43,8 @@ export const AFDELING_TAG: Record<string, { titel: string; robot: string; statio
 };
 /** Machine-afdelingen zonder AI-robot: klein label met bestaande status. */
 export const MACHINE_AFDELINGEN = ['acceptatie', 'certificaten', 'facturatie', 'exact', 'assistent', 'mail', 'service'] as const;
-const KERN = new THREE.Vector3(0, 0, -6.2);
-const S = 1.7; // poppetje en bureau groter, herkenbaar op 3-4 meter
+const KERN = new THREE.Vector3(0, 0, -8.2);
+const S = 1.35; // poppetje en bureau groter, herkenbaar op 3-4 meter
 
 /** Resultaatregel: privacygefilterd door schermAnonimiseer, hier alleen ingekort op 40 tekens. */
 export function resultaatKort(t: string | null | undefined, max = 40): string {
@@ -207,15 +207,13 @@ export default function MachineScene(props: Props) {
       </Html>
       {robots.map((r, i) => { const p = plekken[i]; return <Html key={r.robotnaam} position={[p.x, 0, p.z + 1.75 * S]} center zIndexRange={[20, 10]} className="poppetje-html">
         <div className={`poppetje-label rb-${r.status}`} data-robot={r.robotnaam} data-status={r.status}>
+          {(() => { const tag = Object.entries(AFDELING_TAG).find(([k, a]) => k !== 'brein' && a.robot === r.robotnaam); if (!tag) return null; const [k, a] = tag; const st = a.station ? props.stations[a.station] : undefined; const n = robots.filter(x => x.werkplek === k).length;
+            return <div className={`afdeling-tag ${st ? klasse(st.toestand) : ''}`} data-afdeling={k}>{st && <span className="st-bol" />}<strong>{a.titel}</strong><b>{st ? st.vandaag : n}</b></div>; })()}
           <div className="poppetje-kop"><span className="st-bol" /><strong>{r.robotnaam}</strong></div>
           <small>{r.naam}</small>
           <em data-testid="poppetje-resultaat">{resultaatKort(r.status === 'bezig' && r.nu_tekst ? r.nu_tekst : r.resultaat) || 'nog geen resultaat'}</em>
         </div>
       </Html>; })}
-      {Object.entries(AFDELING_TAG).filter(([k]) => k !== 'brein').map(([k, a]) => { const pl = POPPETJE_PLEK[a.robot]; const st = a.station ? props.stations[a.station] : undefined; const n = robots.filter(r => r.werkplek === k).length;
-        return <Html key={k} position={[pl[0] - 2.1, 0, pl[1] - 2.1 * S]} zIndexRange={[20, 10]} className="poppetje-html">
-          <div className={`afdeling-tag ${st ? klasse(st.toestand) : ''}`} data-afdeling={k}>{st && <span className="st-bol" />}<strong>{a.titel}</strong><b>{st ? st.vandaag : n}</b></div>
-        </Html>; })}
       {quality && !reduced && props.actief && <Suspense fallback={null}><Effects /></Suspense>}
     </Canvas>
     <div className="machine-afdelingen" data-testid="scene-labels">
