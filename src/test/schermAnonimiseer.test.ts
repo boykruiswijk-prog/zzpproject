@@ -22,6 +22,14 @@ describe("scherm-data anonimisering", () => {
       expect(out).not.toContain(verboden);
     }
   });
+  it("A8-aanvulling: het enige bedrag is het dagomzettotaal (dag, bedrag, aantal)", () => {
+    const p = bouwSchermPayload({ ...ruw, dagomzet: { dag: "2026-11-05", bedrag: 1260, aantal: 2, naam: "Piet", regels: [{ pakket: "jaarlijks", bedrag: 600 }] } });
+    expect(p.dagomzet).toEqual({ dag: "2026-11-05", bedrag: 1260, aantal: 2 });
+    const { dagomzet, ...rest } = p as Record<string, unknown>;
+    expect(dagomzet).toBeTruthy();
+    for (const verboden of ["€", "99999", "1260"]) expect(JSON.stringify(rest)).not.toContain(verboden);
+    expect(bouwSchermPayload(ruw).dagomzet).toBeNull();
+  });
   it("maakt ads-budget procentueel en laat kosten per aanvraag weg", () => {
     const m = schoonMarketing(ruw.marketing);
     expect(m.google_ads?.budget_pct).toBeNull();
