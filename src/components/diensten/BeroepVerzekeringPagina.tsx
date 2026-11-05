@@ -1,4 +1,5 @@
 import { BeroepspaginaTekst } from "./BeroepspaginaTekst";
+import { WaarLetJeOpBav } from "./WaarLetJeOpBav";
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import { seoRoute } from "@/config/seoRoutes";
@@ -47,6 +48,8 @@ interface Props {
   leesMeer: string[];
   /** Extra blok boven de aanvraagwizard (advertentie-landingspagina's). */
   extra?: ReactNode;
+  /** Toon het blok "Waar let je op bij een BAV?" direct na de snelle start. */
+  waarLetJeOp?: boolean;
 }
 
 export function BeroepVerzekeringPagina(p: Props) {
@@ -82,6 +85,7 @@ export function BeroepVerzekeringPagina(p: Props) {
       ctaSubtitle="Vertel ons wat je doet en voor wie. We helpen je graag met je aanvraag."
       ctaButton="Neem persoonlijk contact op"
       aanvraag="snel"
+      naHero={p.waarLetJeOp ? <WaarLetJeOpBav /> : undefined}
     >
       {p.extra}
       <BAVApplicationModule initialSector={p.sector} compactPakketten />

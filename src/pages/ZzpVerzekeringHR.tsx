@@ -18,6 +18,7 @@ const faqs = [
 export default function ZzpVerzekeringHR() {
   return (
     <BeroepVerzekeringPagina
+      waarLetJeOp
       path="/zzp-verzekering-hr"
       serviceName="Beroepsaansprakelijkheidsverzekering HR-adviseur"
       badge="Voor HR-professionals"

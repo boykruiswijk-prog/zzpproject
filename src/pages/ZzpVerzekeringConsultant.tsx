@@ -20,6 +20,7 @@ const faqs = [
 export default function ZzpVerzekeringConsultant() {
   return (
     <BeroepVerzekeringPagina
+      waarLetJeOp
       path="/zzp-verzekering-consultant"
       serviceName="Beroepsaansprakelijkheidsverzekering consultant"
       badge="Voor consultants"

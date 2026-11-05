@@ -18,6 +18,7 @@ const faqs = [
 export default function ZzpVerzekeringFinance() {
   return (
     <BeroepVerzekeringPagina
+      waarLetJeOp
       path="/zzp-verzekering-finance"
       serviceName="Beroepsaansprakelijkheidsverzekering finance"
       badge="Voor finance professionals"

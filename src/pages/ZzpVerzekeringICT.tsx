@@ -1,3 +1,4 @@
+import { WaarLetJeOpBav } from "@/components/diensten/WaarLetJeOpBav";
 import { CYBER_LOOPTIJD } from "../../supabase/functions/_shared/cyber";
 import { CYBER_DEKKING_EN_HULP, CYBER_VOORWAARDEN_OPVRAGEN } from "../config/cyberPubliek";
 import { BeroepspaginaTekst } from "@/components/diensten/BeroepspaginaTekst";
@@ -127,6 +128,7 @@ export default function ZzpVerzekeringICT() {
       ctaSubtitle="Vertel ons wat je doet en voor wie. We helpen je graag met je aanvraag."
       ctaButton="Neem persoonlijk contact op"
       aanvraag="snel"
+      naHero={<WaarLetJeOpBav />}
     >
       <BAVApplicationModule initialSector="ict" compactPakketten />
       <section className="section-padding bg-background">

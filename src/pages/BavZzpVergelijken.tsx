@@ -14,6 +14,8 @@ import {
   VERGELIJKING_GECONTROLEERD_OP, VERGELIJKING_GECONTROLEERD_LABEL, VERGELIJKING_MARKTPRIJS_TOELICHTING, type BavAanbieder,
 } from "@/data/bavVergelijking";
 import { ArrowRight, CheckCircle, Phone } from "lucide-react";
+import { WaarLetJeOpBav } from "@/components/diensten/WaarLetJeOpBav";
+import { WAAR_LET_JE_OP_PUNTEN, waarLetJeOpFaq } from "@/data/waarLetJeOpBav";
 
 const PAD = "/bav-zzp-vergelijken";
 const SEO = seoRoute(PAD);
@@ -61,7 +63,7 @@ export default function BavZzpVergelijken() {
   const jaar = getPakket("jaarlijks");
   const bav = eur(maand.dekkingen.bav.perGebeurtenis);
   const avb = eur(maand.dekkingen.avb.perGebeurtenis);
-  const faq = bavVergelijkingFaq();
+  const faq = [waarLetJeOpFaq(), ...bavVergelijkingFaq()];
   const url = `${SITE_CONFIG.url}${PAD}`;
   const article = {
     "@context": "https://schema.org",
@@ -95,6 +97,37 @@ export default function BavZzpVergelijken() {
           </div>
         </div>
       </section>
+
+
+      <section id="waar-je-op-let" className="section-padding scroll-mt-24 bg-background" data-blok="waar-let-je-op-tabel">
+        <div className="container-wide">
+          <div className="mx-auto max-w-4xl">
+            <h2 className="mb-6 text-2xl font-bold md:text-3xl">Vier punten naast elkaar</h2>
+            <div className="overflow-x-auto rounded-2xl border bg-card">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-secondary">
+                  <tr>
+                    <th scope="col" className="p-4 font-semibold">Waar je op let</th>
+                    <th scope="col" className="p-4 font-semibold">Wat je vaak ziet bij goedkope pakketten</th>
+                    <th scope="col" className="p-4 font-semibold">Bij ZP Zaken</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {WAAR_LET_JE_OP_PUNTEN.map((p) => (
+                    <tr key={p.titel} className="border-t">
+                      <th scope="row" className="p-4 font-medium text-foreground">{p.titel}</th>
+                      <td className="p-4 text-muted-foreground">{p.vaakKort}</td>
+                      <td className="p-4 font-medium text-foreground">{p.bijZpZaken}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <WaarLetJeOpBav />
 
       <Sectie id="cyber" titel="Cyber bij je BAV + AVB"><p>Met cyber betaal je €82,50 per maand of €850 per jaar, inclusief kosten en assurantiebelasting. Cyber is niet los af te sluiten.</p><p>{CYBER_DEKKING_EN_HULP}</p><p>{CYBER_LOOPTIJD}</p><p><CyberVoorwaardenTekst tekst={CYBER_VOORWAARDEN_OPVRAGEN} /></p></Sectie>
       <Sectie id="waar-op-letten" titel="Waar let je op bij het vergelijken">
