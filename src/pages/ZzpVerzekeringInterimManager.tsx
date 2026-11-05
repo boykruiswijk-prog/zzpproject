@@ -18,6 +18,7 @@ const faqs = [
 export default function ZzpVerzekeringInterimManager() {
   return (
     <BeroepVerzekeringPagina
+      waarLetJeOp
       path="/zzp-verzekering-interim-manager"
       serviceName="Verzekering interim manager"
       badge="Voor interim managers"

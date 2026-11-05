@@ -1,3 +1,4 @@
+import { WaarLetJeOpBav } from "@/components/diensten/WaarLetJeOpBav";
 import { CYBER_LOOPTIJD } from "../../supabase/functions/_shared/cyber";
 import { CYBER_DEKKING_EN_HULP, CYBER_VOORWAARDEN_OPVRAGEN } from "../config/cyberPubliek";
 import { Award, ShieldCheck, Users } from "lucide-react";
@@ -89,6 +90,7 @@ export default function Starters() {
           </div>
         </div>
       </section>
+      <WaarLetJeOpBav />
       <section className="section-padding bg-background">
         <div className="container-wide">
           <div className="max-w-3xl mx-auto">

@@ -42,6 +42,8 @@ interface ServicePageTemplateProps {
   ctaSubtitle: string;
   ctaButton: string;
   children?: ReactNode;
+  /** Optioneel blok direct na de hero (snelle start). */
+  naHero?: ReactNode;
   /** Productpagina-hero: "direct" = prijsregel + Online aanvragen naar ingebed formulier; "terugbel" = wij regelen het. */
   aanvraag?: "direct" | "terugbel" | "snel";
   schema?: Record<string, unknown>;
@@ -70,6 +72,7 @@ export function ServicePageTemplate({
   ctaSubtitle,
   ctaButton,
   children,
+  naHero,
   aanvraag,
   schema,
 }: ServicePageTemplateProps) {
@@ -123,6 +126,8 @@ export function ServicePageTemplate({
           </Button>
         )}
       </PageHero>
+
+      {naHero}
 
       {/* Benefits - 3 columns */}
       <section className="section-padding bg-secondary">

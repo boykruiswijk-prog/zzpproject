@@ -18,6 +18,7 @@ const faqs = [
 export default function Beroepsaansprakelijkheidsverzekering() {
   return (
     <BeroepVerzekeringPagina
+      waarLetJeOp
       path="/beroepsaansprakelijkheidsverzekering"
       serviceName="Beroepsaansprakelijkheidsverzekering voor zzp'ers"
       badge="Voor zzp'ers"

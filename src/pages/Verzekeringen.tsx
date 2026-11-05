@@ -1,3 +1,4 @@
+import { WaarLetJeOpBav } from "@/components/diensten/WaarLetJeOpBav";
 import { openTerugbelKlik } from "@/components/shared/TerugbelDialog";
 import { seoRoute } from "@/config/seoRoutes";
 import { SEOHead } from "@/components/SEOHead";
@@ -67,6 +68,8 @@ export default function Verzekeringen() {
 
       {/* BAV Wizard */}
       <BAVApplicationModule />
+
+      <WaarLetJeOpBav />
 
       {/* Drie-keuze CTA */}
       <section className="section-padding bg-secondary border-y border-border">

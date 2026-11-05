@@ -18,6 +18,7 @@ const faqs = [
 export default function ZzpVerzekeringMarketing() {
   return (
     <BeroepVerzekeringPagina
+      waarLetJeOp
       path="/zzp-verzekering-marketing"
       serviceName="Beroepsaansprakelijkheidsverzekering marketing"
       badge="Voor marketing en communicatie"

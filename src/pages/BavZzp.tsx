@@ -29,6 +29,7 @@ const faqs = [
 export default function BavZzp() {
   return (
     <BeroepVerzekeringPagina
+      waarLetJeOp
       path="/bav-zzp"
       serviceName="BAV en AVB voor zzp'ers"
       badge="BAV + AVB"

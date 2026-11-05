@@ -18,6 +18,7 @@ const faqs = [
 export default function ZzpVerzekeringCoach() {
   return (
     <BeroepVerzekeringPagina
+      waarLetJeOp
       path="/zzp-verzekering-coach"
       serviceName="Beroepsaansprakelijkheidsverzekering coach"
       badge="Voor coaches en trainers"
