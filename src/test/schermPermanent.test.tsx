@@ -18,7 +18,7 @@ describe("permanent agentkantoor", () => {
   });
   afterEach(() => { cleanup(); vi.useRealTimers(); vi.unstubAllGlobals(); });
 
-  it("houdt MachineScene actief bij alle paneelwissels terwijl alle negen rapporten draaien", async () => {
+  it("houdt MachineScene actief bij alle paneelwissels terwijl alle tien rapporten draaien", async () => {
     render(<HelmetProvider><Scherm tv /></HelmetProvider>);
     await act(async () => { await vi.advanceTimersByTimeAsync(0); });
     expect(screen.getByTestId("machine")).toHaveAttribute("data-actief", "true");
@@ -26,12 +26,12 @@ describe("permanent agentkantoor", () => {
     expect(screen.getByTestId("paneel-puntjes").children).toHaveLength(10);
     expect(screen.getByTestId("workers-vast")).toHaveTextContent("Alle workers");
     const machine = screen.getByTestId("machine");
-    for (let i = 1; i <= 9; i++) {
+    for (let i = 1; i <= 10; i++) {
       await act(async () => { await vi.advanceTimersByTimeAsync(6_000); });
       expect(screen.getByTestId("machine")).toBe(machine);
       expect(screen.getByTestId("agentkantoor")).not.toHaveAttribute("aria-hidden", "true");
       expect(machine).toHaveAttribute("data-actief", "true");
-      expect(screen.getByTestId("rapportage-paneel")).toHaveAttribute("data-paneel", String(i % 9));
+      expect(screen.getByTestId("rapportage-paneel")).toHaveAttribute("data-paneel", String(i % 10));
       if (i === 7) expect(screen.getByText("Ons AI-team")).toBeInTheDocument();
       expect(screen.getByTestId("workers-vast")).toHaveTextContent("Alle workers");
       expect(screen.getByTestId("rapportage-paneel")).not.toHaveTextContent("Alle workers");

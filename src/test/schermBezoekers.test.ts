@@ -13,8 +13,8 @@ describe("Bezoekerskaart A8", () => {
     ]);
     expect(p).toEqual([
       { plaats: "Amsterdam", provincie: "Noord-Holland", aantal: 7 },
-      { plaats: "onbekend", provincie: "onbekend", aantal: 3 },
       { plaats: "buitenland", provincie: "buitenland", aantal: 3 },
+      { plaats: "onbekend", provincie: "onbekend", aantal: 3 },
     ]);
   });
 
