@@ -1758,6 +1758,13 @@
       "when": 1793882522445,
       "tag": "0250_scherm_bezoekers",
       "breakpoints": true
+    },
+    {
+      "idx": 251,
+      "version": "7",
+      "when": 1793891807060,
+      "tag": "0251_bezoekers_bijwerken",
+      "breakpoints": true
     }
   ]
 }

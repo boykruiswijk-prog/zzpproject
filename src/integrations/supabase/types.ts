@@ -7432,6 +7432,14 @@ export type Database = {
         Args: { _id: string; _toelichting?: string }
         Returns: Json
       }
+      bezoekers_bijwerken: {
+        Args: { p_dag: string; p_rijen: Json }
+        Returns: number
+      }
+      bezoekers_ga4_naam: {
+        Args: { _naam: string; _soort: string }
+        Returns: string
+      }
       bing_ai_bijwerken: {
         Args: {
           p_citaties: number
