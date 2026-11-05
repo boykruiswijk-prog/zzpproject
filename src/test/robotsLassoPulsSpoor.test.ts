@@ -46,7 +46,7 @@ describe("A31 Puls / Hartslag", () => {
     const src = readFileSync("supabase/functions/submit-public-form/index.ts", "utf8");
     const ping = src.indexOf("body.ping === true");
     expect(ping).toBeGreaterThan(0);
-    expect(ping).toBeLessThan(src.indexOf("bewaarConcept(req"));
+    expect(ping).toBeLessThan(src.indexOf("return await bewaarConcept(req"));
     expect(ping).toBeLessThan(src.indexOf("createClient(", src.indexOf("Deno.serve(")));
     expect(hartslagFn).toContain("JSON.stringify({ ping: true })");
   });
