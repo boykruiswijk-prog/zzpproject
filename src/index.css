@@ -383,21 +383,21 @@
 
 /* A8-correctie 'Scherm werktuin': poppetjes zijn het hoofdbeeld; compacte labels eronder, kleine afdelingslabels. */
 .poppetje-html { pointer-events: none; }
-.poppetje-label { position: relative; width: 218px; padding: 4px 10px 5px; border-radius: 8px; background: hsl(var(--s-bg) / 0.82); border: 1px solid hsl(var(--s-lijn)); text-align: center; }
+.poppetje-label { position: relative; width: 196px; padding: 4px 10px 5px; border-radius: 8px; background: hsl(var(--s-bg) / 0.82); border: 1px solid hsl(var(--s-lijn)); text-align: center; }
 .poppetje-kop { display: flex; align-items: center; justify-content: center; gap: 8px; }
 .poppetje-kop strong { font-size: 28px; line-height: 1.05; font-weight: 800; color: hsl(var(--s-tekst)); white-space: nowrap; }
-.poppetje-label small { display: block; font-size: 16px; line-height: 1.2; color: hsl(var(--s-dim)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.poppetje-label em { display: block; font-style: normal; font-size: 17px; text-align: center; line-height: 1.2; color: hsl(var(--s-tekst)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.poppetje-label small { display: block; font-size: 15px; line-height: 1.2; color: hsl(var(--s-dim)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.poppetje-label em { display: block; font-style: normal; font-size: 15px; text-align: center; line-height: 1.2; color: hsl(var(--s-tekst)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .poppetje-label .st-bol, .afdeling-tag .st-bol, .machine-chip .st-bol { width: 13px; height: 13px; flex-shrink: 0; border-radius: 999px; background: hsl(var(--s-groen)); }
 .poppetje-label.rb-gepland .st-bol { background: hsl(var(--s-dim)); }
 .poppetje-label.rb-fout { border-color: hsl(var(--s-rood)); }
 .poppetje-label.rb-fout .st-bol { background: hsl(var(--s-rood)); box-shadow: 0 0 10px hsl(var(--s-rood)); }
 .poppetje-label.rb-bezig { border-color: hsl(var(--s-blauw)); animation: werktuin-puls 2.4s ease-in-out infinite; }
 .poppetje-label.rb-bezig .st-bol { background: hsl(var(--s-blauw)); box-shadow: 0 0 10px hsl(var(--s-blauw)); }
-.poppetje-label .afdeling-tag { position: absolute; left: 50%; bottom: calc(100% + 66px); transform: translateX(-50%); }
-.afdeling-tag { display: flex; align-items: center; gap: 8px; white-space: nowrap; padding: 3px 10px; border-radius: 999px; border: 1px solid hsl(var(--s-rood) / 0.5); background: hsl(var(--s-bg) / 0.7); }
-.afdeling-tag strong { font-size: 18px; color: hsl(var(--s-tekst)); }
-.afdeling-tag b { font-size: 18px; color: hsl(var(--s-groen)); }
+.poppetje-label .afdeling-tag { position: absolute; left: 50%; bottom: calc(100% + 60px); transform: translateX(-50%); }
+.afdeling-tag { display: flex; align-items: center; gap: 6px; white-space: nowrap; padding: 2px 9px; border-radius: 999px; border: 1px solid hsl(var(--s-rood) / 0.5); background: hsl(var(--s-bg) / 0.7); }
+.afdeling-tag strong { font-size: 16px; color: hsl(var(--s-tekst)); }
+.afdeling-tag b { font-size: 16px; color: hsl(var(--s-groen)); }
 .afdeling-tag.st-rust .st-bol, .machine-chip.st-rust .st-bol { background: hsl(var(--s-dim)); }
 .afdeling-tag.st-werk .st-bol, .machine-chip.st-werk .st-bol { background: hsl(var(--s-blauw)); box-shadow: 0 0 10px hsl(var(--s-blauw)); }
 .afdeling-tag.st-storing .st-bol, .machine-chip.st-storing .st-bol { background: hsl(var(--s-rood)); }
