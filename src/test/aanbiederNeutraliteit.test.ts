@@ -12,6 +12,11 @@ describe("F1 vaste vergelijking en ongewijzigde marktgegevens", () => {
     expect(bavVergelijking[0].aanbieder).toBe("ZP Zaken");
   });
 
+  it("vergelijkingstekst noemt geen adviseur (C8, geen tussenpersoon)", () => {
+    expect(bavVergelijking.some((a) => JSON.stringify(a).includes("via een adviseur"))).toBe(false);
+    expect(bavVergelijking[3].watJeKrijgt).toBe("Alleen BAV, via een andere partij. AVB apart");
+  });
+
   it("behoudt standdatum en bestaande marktprijzen", () => {
     expect(bavVergelijking.every(a => a.gecontroleerd_op === "2026-10-05")).toBe(true);
     expect(bavVergelijking[1].vanafPrijs).toContain("€ 35,30");

@@ -84,7 +84,7 @@ export const bavVergelijking: BavAanbieder[] = [
   },
   {
     aanbieder: "Aanbieder D",
-    watJeKrijgt: "Alleen BAV, via een adviseur. AVB apart",
+    watJeKrijgt: "Alleen BAV, via een andere partij. AVB apart",
     vanafPrijs: "Voorbeeld: € 29,17 per maand (jurist, € 125.000 omzet, € 250.000 dekking), zonder assurantiebelasting",
     verzekerdBedrag: "€ 250.000, € 500.000 of € 1.000.000 per aanspraak, per jaar maximaal 2 keer",
     eigenRisico: "€ 750 per aanspraak",

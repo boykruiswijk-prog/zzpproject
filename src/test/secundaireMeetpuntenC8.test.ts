@@ -55,4 +55,14 @@ describe("C8 secundaire meetpunten", () => {
     t.trackAanvraagGestart("c-2", true);
     expect(adsConversies()).toHaveLength(1);
   });
+
+  it("aanvraag gestart stuurt UET precies één aanvraag_gestart-event", () => {
+    loc.pathname = "/verzekeringen";
+    t.trackAanvraagGestart("c-u-1", false);
+    expect(uetEvents("aanvraag_gestart")).toHaveLength(1);
+    t.trackAanvraagGestart("c-u-2", false);
+    expect(uetEvents("aanvraag_gestart")).toHaveLength(2);
+    t.trackAanvraagGestart("c-u-1", false);
+    expect(uetEvents("aanvraag_gestart")).toHaveLength(2);
+  });
 });
