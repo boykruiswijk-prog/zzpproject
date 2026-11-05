@@ -386,7 +386,7 @@
 .teamfoto { display: flex; flex-direction: column; }
 .machine-afdelingen { display: grid; grid-template-columns: 1.25fr repeat(8, minmax(0, 1fr)); gap: 6px; padding: 8px 12px; border-bottom: 1px solid hsl(var(--s-lijn)); }
 .machine-chip { min-width: 0; padding: 4px 8px; border-radius: 8px; border: 1px solid hsl(var(--s-lijn)); background: hsl(var(--s-surface)); }
-.machine-chip strong { display: block; font-size: 15px; line-height: 1.2; color: hsl(var(--s-tekst)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.machine-chip strong { display: block; min-height: 2.4em; font-size: 14px; line-height: 1.2; color: hsl(var(--s-tekst)); overflow-wrap: anywhere; }
 .machine-chip small { display: flex; align-items: center; gap: 5px; font-size: 13px; line-height: 1.3; color: hsl(var(--s-dim)); white-space: nowrap; overflow: hidden; }
 .machine-chip small b { margin-left: auto; font-size: 16px; color: hsl(var(--s-groen)); }
 .brein-chip { border-color: hsl(var(--s-rood) / 0.6); }
@@ -412,8 +412,8 @@
 .rf-antenne { fill: hsl(var(--s-dim)); }
 .rf-been { fill: hsl(var(--s-lijn)); }
 .rf-naam { fill: hsl(var(--s-tekst)); font-weight: 800; letter-spacing: .3px; paint-order: stroke; stroke: hsl(var(--s-bg) / .35); stroke-width: 2px; }
-.poppetje-functie { display: flex; align-items: center; justify-content: center; gap: 6px; max-width: 100%; margin-top: 2px; font-size: 15px; line-height: 1.2; color: hsl(var(--s-dim)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.poppetje em { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; margin-top: 3px; font-style: normal; font-size: 15px; line-height: 1.2; color: hsl(var(--s-tekst)); overflow: hidden; overflow-wrap: anywhere; }
+.poppetje-functie { display: flex; align-items: center; justify-content: center; gap: 6px; max-width: 100%; margin-top: 2px; font-size: 14px; line-height: 1.2; color: hsl(var(--s-dim)); overflow-wrap: anywhere; }
+.poppetje em { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; margin-top: 3px; font-style: normal; font-size: 15px; line-height: 1.2; color: hsl(var(--s-tekst)); overflow: hidden; overflow-wrap: anywhere; }
 .poppetje.rb-gepland .st-bol { background: hsl(var(--s-dim)); }
 .poppetje.rb-fout .st-bol { background: hsl(var(--s-rood)); box-shadow: 0 0 8px hsl(var(--s-rood)); }
 .poppetje.rb-fout .rf-oog { fill: hsl(var(--s-rood)); }
