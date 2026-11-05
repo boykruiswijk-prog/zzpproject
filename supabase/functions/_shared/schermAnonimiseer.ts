@@ -5,6 +5,7 @@ import { controleerDashboardOpbouw, controleerLeadsOpbouw } from "./dashboardOpb
 import { pulsRood } from "./hartslag.ts";
 import { volgendeRun } from "./cronVolgende.ts";
 import type { Dagomzet } from "./dagomzet.ts";
+import type { BezoekersPayload, BezoekPlaats } from "./bezoekers.ts";
 
 export const ADS_BUDGET = 22500;
 export const STATIONS = [
@@ -383,6 +384,16 @@ function schoonDagomzet(d: Ruw): Dagomzet | null {
   return { dag: d.dag, bedrag: n(d.bedrag), aantal: n(d.aantal) };
 }
 
+/** A8 Bezoekerskaart: alleen plaats, provincie en aantal; al het andere valt weg. */
+function schoonBezoekers(b: Ruw): BezoekersPayload | null {
+  if (!b || typeof b.dag !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(b.dag)) return null;
+  const n = (x: unknown) => (typeof x === "number" && Number.isFinite(x) && x > 0 ? Math.floor(x) : 0);
+  const t = (x: unknown) => String(x ?? "").replace(/[^\p{L}\p{N}' .()-]/gu, "").trim().slice(0, 60);
+  const lijst = (l: unknown, max: number): BezoekPlaats[] => (Array.isArray(l) ? l : []).slice(0, max)
+    .map((p: Ruw) => ({ plaats: t(p?.plaats) || "onbekend", provincie: t(p?.provincie) || "onbekend", aantal: n(p?.aantal) })).filter((p) => p.aantal > 0);
+  return { dag: b.dag, totaal: n(b.totaal), plaatsen: lijst(b.plaatsen, 200), nu: lijst(b.nu, 100), bijgewerkt_op: iso(b.bijgewerkt_op) };
+}
+
 export function bouwSchermPayload(r: Ruw, nu = new Date()) {
   const status = (s: unknown) => (s === "bezig" || s === "fout" ? s : "klaar");
   const doel = r?.doel ?? {};
@@ -489,6 +500,7 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
     bing_ai: schoonBingAi(r?.bing_ai),
     // Enige bedrag op het scherm: één dagtotaal plus aantal, nooit per klant.
     dagomzet: schoonDagomzet(r?.dagomzet),
+    bezoekers: schoonBezoekers(r?.bezoekers),
   };
 }
 
