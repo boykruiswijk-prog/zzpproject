@@ -9,7 +9,7 @@ const SOORT_LABEL: Record<OpvolgItem["soort"], string> = { concept: "Afgehaakte 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]!));
 
 export function adminLink(item: Pick<OpvolgItem, "soort" | "id">, basis = "https://zpzaken.nl"): string {
-  return item.soort === "concept" ? `${basis}/admin/afgehaakt?id=${item.id}` : `${basis}/admin/leads/${item.id}`;
+  return item.soort === "concept" ? `${basis}/admin/afgehaakt?record=${item.id}` : `${basis}/admin/leads/${item.id}`;
 }
 
 export function urenTekst(u: number): string {
