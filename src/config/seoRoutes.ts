@@ -407,7 +407,7 @@ export const seoRoutes: SeoRoute[] = [
     title: "Beroepsaansprakelijkheidsverzekering zzp | ZP Zaken",
     description: `Beroepsaansprakelijkheidsverzekering zzp: BAV en AVB in één polis, € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
     h1: "Beroepsaansprakelijkheidsverzekering zzp: wat kost het en hoe regel je het?",
-    intro: `Een beroepsaansprakelijkheidsverzekering verzekert je, volgens de polisvoorwaarden, als een opdrachtgever je aansprakelijk stelt voor schade door een fout in je werk. Bij ZP Zaken kost die vanaf € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting.`,
+    intro: "Een beroepsaansprakelijkheidsverzekering (BAV) is bedoeld voor claims van je opdrachtgever over financiële schade door een fout in je werk. Bij ZP Zaken kost de BAV samen met de AVB € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting, zonder eigen risico. BAV € 5.000.000 en AVB € 2.500.000 per aanspraak in één polis, binnen 24 uur geregeld.",
   },
   {
     path: "/bedrijfsaansprakelijkheidsverzekering",
