@@ -5,7 +5,7 @@ import { Navigate } from "react-router-dom";
 import logo from "@/assets/logo-zp.webp";
 import { supabase } from "@/integrations/supabase/client";
 import type { SchermPayload } from "../../supabase/functions/_shared/schermAnonimiseer";
-import { STATION_LABELS, STATION_IDS, stationToken, periodeTekst, type Puls } from "@/components/scherm/schermModel";
+import { STATION_LABELS, STATION_IDS, stationToken, periodeTekst, workersSamenvatting, type Puls } from "@/components/scherm/schermModel";
 import CountUp from '@/components/scherm/CountUp';
 import { startVersieControle } from "@/lib/versieControle";
 import { PANEEL_DUUR_MS, schermSchaal, useSchermViewport } from "@/components/scherm/schermWeergave";
