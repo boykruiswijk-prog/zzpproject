@@ -1702,6 +1702,13 @@
       "when": 1793804417768,
       "tag": "0242_review_bestaand_ronde_3_4",
       "breakpoints": true
+    },
+    {
+      "idx": 243,
+      "version": "7",
+      "when": 1793860773548,
+      "tag": "0243_artikel_aov_aanbieders_check",
+      "breakpoints": true
     }
   ]
 }
