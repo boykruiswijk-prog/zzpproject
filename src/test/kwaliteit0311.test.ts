@@ -7,7 +7,7 @@ import { bouwZekerKennis } from "@/lib/zeker/bouwKennis";
 import { seoRoutes } from "@/config/seoRoutes";
 import { buildLlmsFullTxt } from "../../scripts/llmsTxt";
 
-const antwoord = "De premie van een AOV hangt af van je beroep, je leeftijd, de hoogte van de uitkering en de wachttijd. ZP Zaken geeft geen advies over de AOV en vergelijkt geen AOV's. Op zpzaken.nl/aov lees je hoe de Movir AOV werkt en bereken je je premie via onze externe adviseur.";
+const antwoord = "De premie van een AOV hangt af van je beroep, je leeftijd, de hoogte van de uitkering en de wachttijd. ZP Zaken geeft geen advies over de AOV en vergelijkt geen AOV's. Op zpzaken.nl/aov lees je hoe de AOV werkt en bereken je je premie via onze externe adviseur.";
 const questions = faqItems.flatMap(c => c.questions);
 
 describe("Kwaliteitscontrole 3 november", () => {
