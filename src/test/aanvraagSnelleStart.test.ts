@@ -55,7 +55,10 @@ describe("conversie aanvraag gestart", () => {
   it("vuurt één keer per concept, ook na herladen", () => {
     t.trackAanvraagGestart("c1", false);
     t.trackAanvraagGestart("c1", false);
-    expect(gtag.mock.calls).toEqual([["event", "aanvraag_gestart", { formulier: "aanvraag", page: "/zzp-verzekering-ict" }]]);
+    expect(gtag.mock.calls).toEqual([
+      ["event", "aanvraag_gestart", { formulier: "aanvraag", page: "/zzp-verzekering-ict" }],
+      ["event", "conversion", { send_to: "AW-18497139684/EIoACNj547AdEOTnj_RE" }],
+    ]);
   });
   it("niet bij test of op /tv en /admin", () => {
     t.trackAanvraagGestart("c2", true);
