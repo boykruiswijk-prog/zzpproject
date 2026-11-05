@@ -8377,6 +8377,13 @@ export type Database = {
         Returns: boolean
       }
       scherm_cron_schema: { Args: never; Returns: Json }
+      scherm_dagomzet_rijen: {
+        Args: never
+        Returns: {
+          pakket: string
+          tarief_type: string
+        }[]
+      }
       scherm_data: { Args: never; Returns: Json }
       scherm_stromen: { Args: never; Returns: Json }
       scherm_versheid: { Args: never; Returns: Json }

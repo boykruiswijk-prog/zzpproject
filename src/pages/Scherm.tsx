@@ -6,6 +6,7 @@ import logo from "@/assets/logo-zp.webp";
 import { supabase } from "@/integrations/supabase/client";
 import type { SchermPayload } from "../../supabase/functions/_shared/schermAnonimiseer";
 import { STATION_LABELS, STATION_IDS, stationToken, periodeTekst, workersSamenvatting, type Puls } from "@/components/scherm/schermModel";
+import { dagomzetWeergave } from "../../supabase/functions/_shared/dagomzet";
 import CountUp from '@/components/scherm/CountUp';
 import { startVersieControle } from "@/lib/versieControle";
 import { PANEEL_DUUR_MS, schermSchaal, useSchermViewport } from "@/components/scherm/schermWeergave";
@@ -315,6 +316,28 @@ function PaneelZichtbaarheid({ d }: { d: SchermPayload }) {
         <Label>Kennisbank: {d.kennisbank.gepubliceerd} artikelen, {d.kennisbank.nieuw_maand} nieuw deze maand</Label>
         {d.kennisbank.laatste.map((t) => <div key={t} className="break-words text-[21.6px] leading-snug text-[hsl(var(--s-tekst))]">{t}</div>)}
       </div>
+    </div>
+  );
+}
+
+const euro = new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+
+/** A8-aanvulling: enige bedrag op het scherm, één dagtotaal. */
+function Dagomzet({ d }: { d: SchermPayload }) {
+  const { bedrag, aantal } = dagomzetWeergave(d.dagomzet);
+  const vorig = useRef(aantal);
+  const [licht, setLicht] = useState(false);
+  useEffect(() => {
+    if (aantal > vorig.current) { setLicht(true); const t = setTimeout(() => setLicht(false), 2400); vorig.current = aantal; return () => clearTimeout(t); }
+    vorig.current = aantal;
+  }, [aantal]);
+  return (
+    <div data-testid="dagomzet" className={`scherm-dagomzet${licht ? " scherm-dagomzet-licht" : ""}`}>
+      <div className="scherm-dagomzet-tekst">
+        <div className="scherm-dagomzet-titel">Dagomzet</div>
+        <div className="scherm-dagomzet-sub">nieuwe jaarpremie uit {nf.format(aantal)} {aantal === 1 ? "aanvraag" : "aanvragen"} vandaag</div>
+      </div>
+      <div className="scherm-dagomzet-bedrag tabular-nums" data-testid="dagomzet-bedrag">{euro.format(bedrag)}</div>
     </div>
   );
 }
@@ -641,6 +664,7 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
           </section>
 
           <aside className="scherm-rapport flex w-[630px] min-w-0 flex-col px-[28px] py-[26px]">
+            {data && <Dagomzet d={data} />}
             <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
               {data ? (
                 <div key={paneel} data-testid="rapportage-paneel" data-paneel={paneel} className="scherm-paneel absolute inset-0 overflow-hidden"><Huidig d={data} /></div>
