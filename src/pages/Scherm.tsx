@@ -260,7 +260,7 @@ function PaneelService({ d }: { d: SchermPayload }) {
           <div className="text-[75.6px] font-bold leading-none tabular-nums text-[hsl(var(--s-tekst))]">{g.uptime_7d_pct === null ? "-" : `${f(g.uptime_7d_pct, 1)}%`}</div>
           <div className="text-[23.76px] text-[hsl(var(--s-dim))]">uptime 7 dagen</div>
         </Ring>
-        <div className="grid w-full grid-cols-2 gap-[18px]">
+        <div className="flex w-full flex-col gap-[12px]">
           <StatusRegel label="Exact-koppeling" ok={g.exact_ok} />
           <StatusRegel label="Facturatie" ok={g.planner_ok} />
           <StatusRegel label={`Geplande taken ${g.cron_ok_24u} / ${g.cron_totaal_24u}`} ok={g.cron_totaal_24u ? g.cron_ok_24u === g.cron_totaal_24u : null} />
