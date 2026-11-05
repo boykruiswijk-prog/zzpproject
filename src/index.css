@@ -392,6 +392,7 @@
 .brein-chip { border-color: hsl(var(--s-rood) / 0.6); }
 .brein-chip strong { color: hsl(var(--s-rood)); }
 .brein-flits { box-shadow: 0 0 24px hsl(var(--s-rood) / .6); }
+.poppetje .st-bol { margin-right: 5px; vertical-align: 1px; }
 .machine-chip .st-bol, .poppetje .st-bol { display: inline-block; width: 11px; height: 11px; flex-shrink: 0; border-radius: 999px; background: hsl(var(--s-groen)); }
 .machine-chip.st-rust .st-bol { background: hsl(var(--s-dim)); }
 .machine-chip.st-werk .st-bol { background: hsl(var(--s-blauw)); box-shadow: 0 0 8px hsl(var(--s-blauw)); }
@@ -412,7 +413,7 @@
 .rf-antenne { fill: hsl(var(--s-dim)); }
 .rf-been { fill: hsl(var(--s-lijn)); }
 .rf-naam { fill: hsl(var(--s-tekst)); font-weight: 800; letter-spacing: .3px; paint-order: stroke; stroke: hsl(var(--s-bg) / .35); stroke-width: 2px; }
-.poppetje-functie { display: flex; align-items: center; justify-content: center; gap: 6px; max-width: 100%; margin-top: 2px; font-size: 14px; line-height: 1.2; color: hsl(var(--s-dim)); overflow-wrap: anywhere; }
+.poppetje-functie { display: block; max-width: 100%; margin-top: 2px; font-size: 14px; line-height: 1.2; color: hsl(var(--s-dim)); overflow-wrap: anywhere; }
 .poppetje em { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; margin-top: 3px; font-style: normal; font-size: 15px; line-height: 1.2; color: hsl(var(--s-tekst)); overflow: hidden; overflow-wrap: anywhere; }
 .poppetje.rb-gepland .st-bol { background: hsl(var(--s-dim)); }
 .poppetje.rb-fout .st-bol { background: hsl(var(--s-rood)); box-shadow: 0 0 8px hsl(var(--s-rood)); }

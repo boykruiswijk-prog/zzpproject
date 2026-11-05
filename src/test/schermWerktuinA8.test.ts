@@ -43,6 +43,6 @@ describe('A8-aanvulling werktuin prominent', () => {
     const w = src.slice(src.indexOf('function PaneelWorkers'), src.indexOf('function PaneelStroom'));
     expect(w).not.toContain('.map((a, i)');
     const css = readFileSync('src/index.css', 'utf8');
-    expect(css).toMatch(/\.poppetje-kop strong \{ font-size: 28px/);
+    expect(css).toMatch(/\.robot-figuur \{ width: 140px; height: 200px/);
   });
 });
