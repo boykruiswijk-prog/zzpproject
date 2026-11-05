@@ -279,9 +279,9 @@ function AdsBlok({ naam, a, op }: { naam: string; a: Record<string, number | str
     <div className="rounded-[10.8px] border border-[hsl(var(--s-lijn))] p-[17.28px]">
       <div className="flex flex-wrap items-baseline justify-between gap-[6px] text-[28.08px] font-semibold text-[hsl(var(--s-tekst))]"><span>{naam}</span>{a && <Bijgewerkt op={op} />}</div>
       {!a ? <Gemeten /> : (
-        <div className="mt-[10.8px] grid grid-cols-4 gap-[15.36px]">
+        <div data-testid="ads-cijfers" className="mt-[10.8px] grid grid-cols-2 gap-x-[28px] gap-y-[10px]">
           {[["Vertoningen", w(a.vertoningen)], ["Klikken", w(a.klikken)], ["Conversies", w(a.conversies)], ["Budget", w(a.budget_pct, "%")]].map(([l, v]) => (
-            <div key={l as string}><Label>{l}</Label><div className="text-[38.88px] font-bold tabular-nums text-[hsl(var(--s-tekst))]">{v ?? <Gemeten />}</div></div>
+            <div key={l as string} className="min-w-0"><Label>{l}</Label><div className="truncate text-[38.88px] font-bold tabular-nums text-[hsl(var(--s-tekst))]">{v ?? <Gemeten />}</div></div>
           ))}
         </div>
       )}
@@ -295,7 +295,6 @@ function PaneelZichtbaarheid({ d }: { d: SchermPayload }) {
     <div className="flex h-full flex-col gap-[21.6px]">
       <Kop>Zichtbaarheid</Kop>
       <AdsBlok naam="Google Ads" a={m.google_ads} op={d.bijgewerkt?.google_ads} />
-      <AdsBlok naam="Microsoft Ads" a={m.microsoft_ads} op={d.bijgewerkt?.microsoft_ads} />
       <div className="grid grid-cols-3 gap-[19.2px]">
         <Stat klein label="Positie Google" waarde={typeof sc?.positie === "number" ? f(sc.positie, 1) : null} />
         <Stat klein label="Klikken Google" waarde={typeof sc?.klikken === "number" ? nf.format(sc.klikken) : null} />
@@ -638,7 +637,6 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
         <main className="flex min-h-0 flex-1">
           <section className="flex w-[1290px] min-w-0 flex-col border-r border-[hsl(var(--s-lijn))]">
             <div className="relative min-h-0 flex-1 overflow-hidden">
-              <div className="scherm-scene-kop"><span>Het agentkantoor</span></div>
               {data && (
                 <Suspense fallback={null}>
                   <div className="scherm-scene scene-zichtbaar" data-testid="agentkantoor">

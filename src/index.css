@@ -381,35 +381,51 @@
 .scherm-dagomzet-licht { border-color: hsl(var(--s-rood)); box-shadow: 0 0 48px hsl(var(--s-rood) / .55); }
 .scherm-dagomzet-licht .scherm-dagomzet-bedrag { color: hsl(var(--s-rood)); }
 
-/* A8-correctie 'Scherm werktuin': poppetjes zijn het hoofdbeeld; compacte labels eronder, kleine afdelingslabels. */
-.poppetje-html { pointer-events: none; }
-.poppetje-label { position: relative; width: 196px; padding: 4px 10px 5px; border-radius: 8px; background: hsl(var(--s-bg) / 0.82); border: 1px solid hsl(var(--s-lijn)); text-align: center; }
-.poppetje-kop { display: flex; align-items: center; justify-content: center; gap: 8px; }
-.poppetje-kop strong { font-size: 28px; line-height: 1.05; font-weight: 800; color: hsl(var(--s-tekst)); white-space: nowrap; }
-.poppetje-label small { display: block; font-size: 15px; line-height: 1.2; color: hsl(var(--s-dim)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.poppetje-label em { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; min-height: 2.3em; font-style: normal; font-size: 15px; text-align: center; line-height: 1.15; color: hsl(var(--s-tekst)); overflow: hidden; }
-.poppetje-label .st-bol, .afdeling-tag .st-bol, .machine-chip .st-bol { width: 13px; height: 13px; flex-shrink: 0; border-radius: 999px; background: hsl(var(--s-groen)); }
-.poppetje-label.rb-gepland .st-bol { background: hsl(var(--s-dim)); }
-.poppetje-label.rb-fout { border-color: hsl(var(--s-rood)); }
-.poppetje-label.rb-fout .st-bol { background: hsl(var(--s-rood)); box-shadow: 0 0 10px hsl(var(--s-rood)); }
-.poppetje-label.rb-bezig { border-color: hsl(var(--s-blauw)); animation: werktuin-puls 2.4s ease-in-out infinite; }
-.poppetje-label.rb-bezig .st-bol { background: hsl(var(--s-blauw)); box-shadow: 0 0 10px hsl(var(--s-blauw)); }
-.poppetje-label .afdeling-tag { position: absolute; left: 50%; bottom: calc(100% + 54px); transform: translateX(-50%); }
-.afdeling-tag { display: flex; align-items: center; gap: 6px; white-space: nowrap; padding: 2px 9px; border-radius: 999px; border: 1px solid hsl(var(--s-rood) / 0.5); background: hsl(var(--s-bg) / 0.7); }
-.afdeling-tag strong { font-size: 16px; color: hsl(var(--s-tekst)); }
-.afdeling-tag b { font-size: 16px; color: hsl(var(--s-groen)); }
-.afdeling-tag.st-rust .st-bol, .machine-chip.st-rust .st-bol { background: hsl(var(--s-dim)); }
-.afdeling-tag.st-werk .st-bol, .machine-chip.st-werk .st-bol { background: hsl(var(--s-blauw)); box-shadow: 0 0 10px hsl(var(--s-blauw)); }
-.afdeling-tag.st-storing .st-bol, .machine-chip.st-storing .st-bol { background: hsl(var(--s-rood)); }
-.brein-tag { display: flex; flex-direction: column; align-items: center; white-space: nowrap; }
-.brein-tag strong { font-size: 24px; color: hsl(var(--s-rood)); }
-.brein-tag span { font-size: 17px; color: hsl(var(--s-dim)); }
-.machine-afdelingen { position: absolute; left: 16px; right: 16px; bottom: 10px; z-index: 25; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; pointer-events: none; }
-.machine-chip { display: grid; grid-template-columns: auto 1fr auto; align-items: center; column-gap: 6px; min-width: 0; padding: 5px 8px; border-radius: 8px; border: 1px solid hsl(var(--s-lijn)); background: hsl(var(--s-bg) / 0.8); }
-.machine-chip strong { font-size: 17px; line-height: 1.1; color: hsl(var(--s-tekst)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.machine-chip small { grid-column: 1 / 3; font-size: 14px; color: hsl(var(--s-dim)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.machine-chip b { grid-column: 3; font-size: 19px; color: hsl(var(--s-groen)); }
-@media (prefers-reduced-motion: reduce) { .poppetje-label.rb-bezig { animation: none; } }
+/* A8-correctie 2 'Teamfoto': grote robotfiguren met naam op het shirt; afdelingen in een smalle strook. */
+.scherm { --s-team-aanvraag: 5 77% 54%; --s-team-content: 268 55% 58%; --s-team-advertenties: 32 95% 55%; --s-team-kwaliteit: 172 60% 42%; --s-team-regie: 205 90% 52%; --s-team-onderhoud: 222 14% 46%; --s-team-markt: 150 55% 40%; }
+.teamfoto { display: flex; flex-direction: column; }
+.machine-afdelingen { display: grid; grid-template-columns: 1.25fr repeat(8, minmax(0, 1fr)); gap: 6px; padding: 8px 12px; border-bottom: 1px solid hsl(var(--s-lijn)); }
+.machine-chip { min-width: 0; padding: 4px 8px; border-radius: 8px; border: 1px solid hsl(var(--s-lijn)); background: hsl(var(--s-surface)); }
+.machine-chip strong { display: block; min-height: 2.4em; font-size: 14px; line-height: 1.2; color: hsl(var(--s-tekst)); overflow-wrap: anywhere; }
+.machine-chip small { display: flex; align-items: center; gap: 5px; font-size: 13px; line-height: 1.3; color: hsl(var(--s-dim)); white-space: nowrap; overflow: hidden; }
+.machine-chip small b { margin-left: auto; font-size: 16px; color: hsl(var(--s-groen)); }
+.brein-chip { border-color: hsl(var(--s-rood) / 0.6); }
+.brein-chip strong { color: hsl(var(--s-rood)); }
+.brein-flits { box-shadow: 0 0 24px hsl(var(--s-rood) / .6); }
+.poppetje .st-bol { margin-right: 5px; vertical-align: 1px; }
+.machine-chip .st-bol, .poppetje .st-bol { display: inline-block; width: 11px; height: 11px; flex-shrink: 0; border-radius: 999px; background: hsl(var(--s-groen)); }
+.machine-chip.st-rust .st-bol { background: hsl(var(--s-dim)); }
+.machine-chip.st-werk .st-bol { background: hsl(var(--s-blauw)); box-shadow: 0 0 8px hsl(var(--s-blauw)); }
+.machine-chip.st-storing .st-bol { background: hsl(var(--s-rood)); }
+.team-rijen { flex: 1; min-height: 0; display: grid; grid-template-rows: 1fr 1fr; padding: 6px 10px 4px; gap: 4px; }
+.team-rij { display: flex; justify-content: center; gap: 10px; min-height: 0; }
+.team-groep { display: flex; flex-direction: column; min-width: 0; border-top: 4px solid var(--shirt); border-radius: 10px; background: hsl(var(--s-tekst) / 0.03); }
+.team-groep-titel { font-size: 16px; font-weight: 700; color: var(--shirt); text-align: center; padding: 3px 0 0; white-space: nowrap; }
+.team-groep-leden { display: flex; flex: 1; min-height: 0; }
+.poppetje { width: 152px; display: flex; flex-direction: column; align-items: center; padding: 0 4px; text-align: center; }
+.robot-figuur { width: 140px; height: 200px; flex-shrink: 0; overflow: visible; }
+.rf-shirt { fill: var(--shirt); }
+.rf-kop { fill: hsl(var(--s-tekst) / 0.92); }
+.rf-vizier { fill: hsl(var(--s-bg)); }
+.rf-oog { fill: hsl(var(--s-blauw)); }
+.rf-mond { stroke: hsl(var(--s-dim)); stroke-linecap: round; }
+.rf-metaal { stroke: hsl(var(--s-dim)); }
+.rf-antenne { fill: hsl(var(--s-dim)); }
+.rf-been { fill: hsl(var(--s-lijn)); }
+.rf-naam { fill: hsl(var(--s-tekst)); font-weight: 800; letter-spacing: .3px; paint-order: stroke; stroke: hsl(var(--s-bg) / .35); stroke-width: 2px; }
+.poppetje-functie { display: block; max-width: 100%; margin-top: 2px; font-size: 14px; line-height: 1.2; color: hsl(var(--s-dim)); overflow-wrap: anywhere; }
+.poppetje em { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; margin-top: 3px; font-style: normal; font-size: 15px; line-height: 1.2; color: hsl(var(--s-tekst)); overflow: hidden; overflow-wrap: anywhere; }
+.poppetje.rb-gepland .st-bol { background: hsl(var(--s-dim)); }
+.poppetje.rb-fout .st-bol { background: hsl(var(--s-rood)); box-shadow: 0 0 8px hsl(var(--s-rood)); }
+.poppetje.rb-fout .rf-oog { fill: hsl(var(--s-rood)); }
+.poppetje.rb-bezig .st-bol { background: hsl(var(--s-blauw)); box-shadow: 0 0 8px hsl(var(--s-blauw)); }
+.poppetje.rb-bezig .robot-figuur { filter: drop-shadow(0 0 14px hsl(var(--s-blauw) / .7)); }
+.poppetje.rb-bezig .rf-arm-r { transform-box: fill-box; transform-origin: 50% 8%; animation: rf-zwaai 1.6s ease-in-out infinite; }
+.poppetje.rb-bezig .rf-oog, .poppetje.rb-bezig .rf-antenne { fill: hsl(var(--s-blauw)); animation: rf-knipper 1.2s ease-in-out infinite; }
+@keyframes rf-zwaai { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-14deg); } }
+@keyframes rf-knipper { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+.teamfoto-stil .poppetje * { animation-play-state: paused !important; }
+@media (prefers-reduced-motion: reduce) { .poppetje * { animation: none !important; } }
 
 /* A8 Bezoekerskaart */
 .bk-provincie { fill: hsl(var(--s-glass) / 0.9); stroke: hsl(var(--s-blauw) / 0.45); stroke-width: 1.4; }
