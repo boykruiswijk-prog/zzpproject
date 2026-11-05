@@ -383,7 +383,7 @@
 
 /* A8-correctie 'Scherm werktuin': poppetjes zijn het hoofdbeeld; compacte labels eronder, kleine afdelingslabels. */
 .poppetje-html { pointer-events: none; }
-.poppetje-label { position: relative; width: 236px; padding: 4px 10px 5px; border-radius: 8px; background: hsl(var(--s-bg) / 0.82); border: 1px solid hsl(var(--s-lijn)); text-align: center; }
+.poppetje-label { position: relative; width: 218px; padding: 4px 10px 5px; border-radius: 8px; background: hsl(var(--s-bg) / 0.82); border: 1px solid hsl(var(--s-lijn)); text-align: center; }
 .poppetje-kop { display: flex; align-items: center; justify-content: center; gap: 8px; }
 .poppetje-kop strong { font-size: 28px; line-height: 1.05; font-weight: 800; color: hsl(var(--s-tekst)); white-space: nowrap; }
 .poppetje-label small { display: block; font-size: 16px; line-height: 1.2; color: hsl(var(--s-dim)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -394,7 +394,7 @@
 .poppetje-label.rb-fout .st-bol { background: hsl(var(--s-rood)); box-shadow: 0 0 10px hsl(var(--s-rood)); }
 .poppetje-label.rb-bezig { border-color: hsl(var(--s-blauw)); animation: werktuin-puls 2.4s ease-in-out infinite; }
 .poppetje-label.rb-bezig .st-bol { background: hsl(var(--s-blauw)); box-shadow: 0 0 10px hsl(var(--s-blauw)); }
-.poppetje-label .afdeling-tag { position: absolute; left: 50%; bottom: calc(100% + 104px); transform: translateX(-50%); }
+.poppetje-label .afdeling-tag { position: absolute; left: 50%; bottom: calc(100% + 66px); transform: translateX(-50%); }
 .afdeling-tag { display: flex; align-items: center; gap: 8px; white-space: nowrap; padding: 3px 10px; border-radius: 999px; border: 1px solid hsl(var(--s-rood) / 0.5); background: hsl(var(--s-bg) / 0.7); }
 .afdeling-tag strong { font-size: 18px; color: hsl(var(--s-tekst)); }
 .afdeling-tag b { font-size: 18px; color: hsl(var(--s-groen)); }

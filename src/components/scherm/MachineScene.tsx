@@ -26,10 +26,10 @@ type Props = { stations: Record<string, StationStand>; totaalVandaag: number; ke
 
 /** A8-correctie: vaste plek per poppetje op de vloer [x, z]; kolommen 4,8 breed, rijen 5,5 diep. Brein in het midden. */
 export const POPPETJE_PLEK: Record<string, [number, number]> = {
-  Echo: [-9.8, -11], Lasso: [-4.9, -11], Turbo: [4.9, -11], Loep: [9.8, -11],
-  Pen: [-9.8, -4.5], Teller: [-4.9, -4.5], Kompas: [4.9, -4.5],
-  Slot: [-9.8, 2], Patch: [-4.9, 2], Coach: [0, 2], Radar: [4.9, 2], Scout: [9.8, 2],
-  Pixel: [-9.8, 8.5], Puls: [-4.9, 8.5], Spoor: [4.9, 8.5], Baken: [9.8, 8.5],
+  Echo: [-9.8, -12.2], Lasso: [-4.9, -12.2], Turbo: [4.9, -12.2], Loep: [9.8, -12.2],
+  Pen: [-9.8, -5.2], Teller: [-4.9, -5.2], Kompas: [4.9, -5.2],
+  Slot: [-9.8, 1.8], Patch: [-4.9, 1.8], Coach: [0, 1.8], Radar: [4.9, 1.8], Scout: [9.8, 1.8],
+  Pixel: [-9.8, 8.8], Puls: [-4.9, 8.8], Spoor: [4.9, 8.8], Baken: [9.8, 8.8],
 };
 /** Afdelingslabel boven de eerste robot van elke groep. */
 export const AFDELING_TAG: Record<string, { titel: string; robot: string; station?: string }> = {
@@ -43,7 +43,7 @@ export const AFDELING_TAG: Record<string, { titel: string; robot: string; statio
 };
 /** Machine-afdelingen zonder AI-robot: klein label met bestaande status. */
 export const MACHINE_AFDELINGEN = ['acceptatie', 'certificaten', 'facturatie', 'exact', 'assistent', 'mail', 'service'] as const;
-const KERN = new THREE.Vector3(0, 0, -8.2);
+const KERN = new THREE.Vector3(0, 0, -9.4);
 const S = 1.35; // poppetje en bureau groter, herkenbaar op 3-4 meter
 
 /** Resultaatregel: privacygefilterd door schermAnonimiseer, hier alleen ingekort op 40 tekens. */
