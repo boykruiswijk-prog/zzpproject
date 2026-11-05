@@ -423,7 +423,6 @@ export function trackAanvraagGestart(conceptId: string, isTest = isTestOmgeving(
     localStorage.setItem(GESTART_KEY, JSON.stringify([...al, conceptId].slice(-20)));
   } catch { /* geen opslag: toch één keer per paginaweergave */ }
   secundaireConversie("aanvraag_gestart", "aanvraag", GOOGLE_ADS_CONVERSIE_AANVRAAG_GESTART, false);
-  if (uetGeladen && heeftMarketingToestemming()) uetq()?.push("event", "aanvraag_gestart", { event_category: "aanvraag" });
 }
 
 /** Interesse pensioen via Evi verstuurd: alleen GA4, bewust geen Ads-label. */
