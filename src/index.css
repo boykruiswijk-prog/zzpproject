@@ -385,7 +385,7 @@
 .scherm { --s-team-aanvraag: 5 77% 54%; --s-team-content: 268 55% 58%; --s-team-advertenties: 32 95% 55%; --s-team-kwaliteit: 172 60% 42%; --s-team-regie: 205 90% 52%; --s-team-onderhoud: 222 14% 46%; --s-team-markt: 150 55% 40%; }
 .teamfoto { display: flex; flex-direction: column; }
 .machine-afdelingen { display: grid; grid-template-columns: 1.25fr repeat(8, minmax(0, 1fr)); gap: 6px; padding: 8px 12px; border-bottom: 1px solid hsl(var(--s-lijn)); }
-.machine-chip { min-width: 0; padding: 4px 8px; border-radius: 8px; border: 1px solid hsl(var(--s-lijn)); background: hsl(var(--s-surface, var(--s-bg))); }
+.machine-chip { min-width: 0; padding: 4px 8px; border-radius: 8px; border: 1px solid hsl(var(--s-lijn)); background: hsl(var(--s-surface)); }
 .machine-chip strong { display: block; font-size: 15px; line-height: 1.2; color: hsl(var(--s-tekst)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .machine-chip small { display: flex; align-items: center; gap: 5px; font-size: 13px; line-height: 1.3; color: hsl(var(--s-dim)); white-space: nowrap; overflow: hidden; }
 .machine-chip small b { margin-left: auto; font-size: 16px; color: hsl(var(--s-groen)); }
