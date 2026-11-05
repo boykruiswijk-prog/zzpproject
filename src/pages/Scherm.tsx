@@ -255,12 +255,12 @@ function PaneelService({ d }: { d: SchermPayload }) {
         <Stat klein label="Mail binnen 5 min" waarde={s.bevestiging_5min_pct === null ? null : `${s.bevestiging_5min_pct}%`} />
         <Stat klein label="Open verzoeken" waarde={nf.format(s.open)} />
       </div>
-      <div className="flex items-center gap-[38.4px]">
+      <div className="flex flex-col items-start gap-[28px]">
         <Ring pct={(g.uptime_7d_pct ?? 0) / 100} kleur="var(--s-groen)">
           <div className="text-[75.6px] font-bold leading-none tabular-nums text-[hsl(var(--s-tekst))]">{g.uptime_7d_pct === null ? "-" : `${f(g.uptime_7d_pct, 1)}%`}</div>
           <div className="text-[23.76px] text-[hsl(var(--s-dim))]">uptime 7 dagen</div>
         </Ring>
-        <div className="flex flex-1 flex-col gap-[23.76px]">
+        <div className="grid w-full grid-cols-2 gap-[18px]">
           <StatusRegel label="Exact-koppeling" ok={g.exact_ok} />
           <StatusRegel label="Facturatie" ok={g.planner_ok} />
           <StatusRegel label={`Geplande taken ${g.cron_ok_24u} / ${g.cron_totaal_24u}`} ok={g.cron_totaal_24u ? g.cron_ok_24u === g.cron_totaal_24u : null} />
