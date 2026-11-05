@@ -4,6 +4,7 @@ import { NETTO_GROEI_VANAF } from "./nettoGroei.ts";
 import { controleerDashboardOpbouw, controleerLeadsOpbouw } from "./dashboardOpbouw.ts";
 import { pulsRood } from "./hartslag.ts";
 import { volgendeRun } from "./cronVolgende.ts";
+import type { Dagomzet } from "./dagomzet.ts";
 
 export const ADS_BUDGET = 22500;
 export const STATIONS = [
@@ -376,6 +377,12 @@ export function schoonNettoGroei(n: Ruw) {
 }
 
 /** Bouwt de publieke payload uit de geaggregeerde RPC-uitvoer; alleen witte-lijstvelden. */
+function schoonDagomzet(d: Ruw): Dagomzet | null {
+  if (!d || typeof d.dag !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(d.dag)) return null;
+  const n = (x: unknown) => (typeof x === "number" && Number.isFinite(x) && x >= 0 ? Math.round(x) : 0);
+  return { dag: d.dag, bedrag: n(d.bedrag), aantal: n(d.aantal) };
+}
+
 export function bouwSchermPayload(r: Ruw, nu = new Date()) {
   const status = (s: unknown) => (s === "bezig" || s === "fout" ? s : "klaar");
   const doel = r?.doel ?? {};
@@ -480,6 +487,8 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
     workers: metVolgendeRuns(metAgentWorkers(schoonWorkers(r?.workers), team), r?.cron_schema, nu),
     marketing: schoonMarketing(r?.marketing),
     bing_ai: schoonBingAi(r?.bing_ai),
+    // Enige bedrag op het scherm: één dagtotaal plus aantal, nooit per klant.
+    dagomzet: schoonDagomzet(r?.dagomzet),
   };
 }
 

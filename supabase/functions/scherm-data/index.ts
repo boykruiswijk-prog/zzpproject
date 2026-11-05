@@ -1,3 +1,4 @@
+import { berekenDagomzet } from "../_shared/dagomzet.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders as basisCors } from "npm:@supabase/supabase-js@2/cors";
 import { bouwSchermPayload, markeerVerouderd } from "../_shared/schermAnonimiseer.ts";
@@ -74,8 +75,10 @@ Deno.serve(async (req) => {
     if (hsFout) console.error("hartslag_status", hsFout.message);
     const { data: cronSchema, error: csFout } = await admin.rpc("scherm_cron_schema");
     if (csFout) console.error("scherm_cron_schema", csFout.message);
+    const { data: omzetRijen, error: omzetFout } = await admin.rpc("scherm_dagomzet_rijen");
+    if (omzetFout) console.error("scherm_dagomzet_rijen", omzetFout.message);
     // Volgorde bewust: werkstand levert de actuele activiteit (met cron-runs en perioden) en wint van scherm_data.
-    const body = JSON.stringify(bouwSchermPayload({ ...(data ?? {}), ...(stromen ?? {}), ...(werk ?? {}), versheid: versheid ?? null, bing_ai: bingAi ?? [], hartslag_status: hartslagStatus ?? [], cron_schema: cronSchema ?? [] }));
+    const body = JSON.stringify(bouwSchermPayload({ ...(data ?? {}), ...(stromen ?? {}), ...(werk ?? {}), versheid: versheid ?? null, bing_ai: bingAi ?? [], hartslag_status: hartslagStatus ?? [], cron_schema: cronSchema ?? [], dagomzet: omzetFout ? null : berekenDagomzet(omzetRijen) }));
     cache = { op: Date.now(), body };
     return json(body, 200, { "Cache-Control": "private, max-age=4" });
   } catch (e) {
