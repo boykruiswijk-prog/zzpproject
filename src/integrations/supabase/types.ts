@@ -6596,6 +6596,36 @@ export type Database = {
         }
         Relationships: []
       }
+      scherm_bezoekers: {
+        Row: {
+          aantal: number
+          bijgewerkt_op: string
+          dag: string
+          id: string
+          plaats: string
+          provincie: string
+          soort: string
+        }
+        Insert: {
+          aantal?: number
+          bijgewerkt_op?: string
+          dag: string
+          id?: string
+          plaats: string
+          provincie: string
+          soort: string
+        }
+        Update: {
+          aantal?: number
+          bijgewerkt_op?: string
+          dag?: string
+          id?: string
+          plaats?: string
+          provincie?: string
+          soort?: string
+        }
+        Relationships: []
+      }
       scherm_koppelverzoeken: {
         Row: {
           aangemaakt_op: string
@@ -8375,6 +8405,10 @@ export type Database = {
       robot_toegang: {
         Args: { _extra_rollen: Database["public"]["Enums"]["app_role"][] }
         Returns: boolean
+      }
+      scherm_bezoekers_vervangen: {
+        Args: { _dag: string; _rijen: Json }
+        Returns: number
       }
       scherm_cron_schema: { Args: never; Returns: Json }
       scherm_dagomzet_rijen: {
