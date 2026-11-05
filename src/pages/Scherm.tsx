@@ -403,8 +403,8 @@ function PaneelWorkers({ d }: { d: SchermPayload }) {
   return (
     <div className="workers-strook" data-testid="workers-samenvatting">
       <span><strong>Alle workers</strong> {s.totaal}: <strong>{s.goed}</strong> goed, <strong>{s.bezig}</strong> bezig, <strong className={s.fout.length ? 'ws-fout' : ''}>{s.fout.length}</strong> fout</span>
-      {s.volgende.length > 0 && <span data-testid="workers-volgende">Straks: {s.volgende.map(v => <span key={v.naam} className="mr-[14px]"><strong>{v.tijd}</strong> {v.naam}</span>)}</span>}
       {s.fout.length > 0 && <span className="ws-fout" data-testid="workers-fout">Fout: {s.fout.join(', ')}</span>}
+      {s.volgende.length > 0 && <span data-testid="workers-volgende">Straks: {s.volgende.map(v => <span key={v.naam} className="mr-[14px]"><strong>{v.tijd}</strong> {v.naam}</span>)}</span>}
     </div>
   );
 }

@@ -29,7 +29,7 @@ type Props = { stations: Record<string, StationStand>; totaalVandaag: number; ke
 /** A8-aanvulling: vaste plek per tegel in het 5x4-rooster [kolom, rij, kolombreedte, rijhoogte]; brein midden onder de 3D-kern. */
 export const WERKTUIN_PLAATS: Record<string, [number, number, number, number]> = {
   intake: [1, 1, 2, 1], acceptatie: [3, 1, 1, 1], certificaten: [4, 1, 1, 1], facturatie: [5, 1, 1, 1],
-  exact: [1, 2, 1, 1], kennisbank: [2, 2, 1, 1], brein: [3, 2, 1, 2], ads: [4, 2, 1, 1], kwaliteit: [5, 2, 1, 1],
+  exact: [1, 2, 1, 1], kennisbank: [2, 2, 1, 2], brein: [3, 2, 1, 2], ads: [4, 2, 1, 2], kwaliteit: [5, 2, 1, 1],
   assistent: [1, 3, 1, 1], mail: [5, 3, 1, 1],
   service: [1, 4, 1, 1], onderhoud: [2, 4, 2, 1], markt: [4, 4, 2, 1],
 };
