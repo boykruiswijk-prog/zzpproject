@@ -8372,6 +8372,10 @@ export type Database = {
           voornaam: string
         }[]
       }
+      robot_toegang: {
+        Args: { _extra_rollen: Database["public"]["Enums"]["app_role"][] }
+        Returns: boolean
+      }
       scherm_cron_schema: { Args: never; Returns: Json }
       scherm_data: { Args: never; Returns: Json }
       scherm_stromen: { Args: never; Returns: Json }

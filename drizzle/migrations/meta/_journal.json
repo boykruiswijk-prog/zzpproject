@@ -1723,6 +1723,13 @@
       "when": 1793876793827,
       "tag": "0245_scherm_cron_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 246,
+      "version": "7",
+      "when": 1793878925617,
+      "tag": "0246_robots_toegang_postgres",
+      "breakpoints": true
     }
   ]
 }
