@@ -1758,6 +1758,27 @@
       "when": 1793882522445,
       "tag": "0250_scherm_bezoekers",
       "breakpoints": true
+    },
+    {
+      "idx": 251,
+      "version": "7",
+      "when": 1793891807060,
+      "tag": "0251_bezoekers_bijwerken",
+      "breakpoints": true
+    },
+    {
+      "idx": 252,
+      "version": "7",
+      "when": 1793891826133,
+      "tag": "0252_bezoekers_naam_hague_fix",
+      "breakpoints": true
+    },
+    {
+      "idx": 253,
+      "version": "7",
+      "when": 1793891860991,
+      "tag": "0253_bezoekers_bijwerken_alias_fix",
+      "breakpoints": true
     }
   ]
 }
