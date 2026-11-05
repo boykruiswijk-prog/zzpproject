@@ -401,14 +401,17 @@ export const trackTerugbelVerzonden = (isTest = isTestOmgeving()) =>
 /** Alleen aanroepen na een geslaagde server-respons. */
 export const trackContactVerzonden = (isTest = isTestOmgeving()) =>
   secundaireConversie("contactformulier_verzonden", "contact", GOOGLE_ADS_CONVERSIE_CONTACT, isTest);
-/** Offerteverzoek: alleen UET-event (geen Google Ads-label ingesteld). */
-export const trackOfferteVerzonden = (isTest = isTestOmgeving()) => uetSecundair("offerte_verzonden", isTest);
+/** Google Ads-actie "Offerte-aanvraag" (7849864547). */
+export const GOOGLE_ADS_CONVERSIE_OFFERTE = "RU6KCOPajZ8dEOTnj_RE";
+/** Offerteverzoek: GA4, Google Ads en UET (een keer). Alleen aanroepen na een geslaagde server-respons. */
+export const trackOfferteVerzonden = (isTest = isTestOmgeving()) =>
+  secundaireConversie("offerte_verzonden", "offerte", GOOGLE_ADS_CONVERSIE_OFFERTE, isTest);
 
 /**
  * Secundaire conversie "aanvraag gestart": eerste keer dat een aanvraagconcept met e-mail of telefoon is opgeslagen.
  * Label van de Google Ads-actie "Aanvraag gestart" hier invullen; leeg = alleen GA4-event, geen Ads-conversie.
  */
-export const GOOGLE_ADS_CONVERSIE_AANVRAAG_GESTART = "";
+export const GOOGLE_ADS_CONVERSIE_AANVRAAG_GESTART = "EIoACNj547AdEOTnj_RE";
 const GESTART_KEY = "zp_aanvraag_gestart";
 
 /** Maximaal één keer per concept-id (ook na herladen). Nooit persoonsgegevens in parameters. */
