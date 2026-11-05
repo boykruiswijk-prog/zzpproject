@@ -39,6 +39,6 @@ describe('A29 robotnamen op /tv', () => {
     const src = readFileSync('src/pages/Scherm.tsx', 'utf8');
     const p = src.slice(src.indexOf('function PaneelAiTeam'), src.indexOf('const workerKleur'));
     expect(p).toContain('a.robotnaam ?');
-    expect(p.indexOf('{a.robotnaam}')).toBeLessThan(p.indexOf('{a.naam}'));
+    expect(p.indexOf('>{a.robotnaam}<')).toBeLessThan(p.indexOf('>{a.naam}<'));
   });
 });
