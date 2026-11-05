@@ -11,6 +11,7 @@ import CountUp from '@/components/scherm/CountUp';
 import { startVersieControle } from "@/lib/versieControle";
 import { PANEEL_DUUR_MS, schermSchaal, useSchermViewport } from "@/components/scherm/schermWeergave";
 import BreakingMoment from '@/components/scherm/BreakingMoment';
+import BezoekersKaart from '@/components/scherm/BezoekersKaart';
 
 const MachineScene = lazy(() => import("@/components/scherm/MachineScene"));
 import { StroomTrechter, StroomProcessen } from '@/components/scherm/StroomScene';
@@ -443,7 +444,11 @@ function PaneelProcessen({ d }: { d: SchermPayload }) {
   </div>;
 }
 
-const PANELEN = [PaneelDoel, PaneelGroei, PaneelNettoGroei, PaneelService, PaneelZichtbaarheid, PaneelStroom, PaneelVandaag, PaneelAiTeam, PaneelProcessen];
+function PaneelBezoekers({ d }: { d: SchermPayload }) {
+  return <BezoekersKaart b={d.bezoekers} />;
+}
+
+const PANELEN = [PaneelDoel, PaneelGroei, PaneelNettoGroei, PaneelService, PaneelZichtbaarheid, PaneelStroom, PaneelVandaag, PaneelAiTeam, PaneelProcessen, PaneelBezoekers];
 // A7-aanvulling (besluit Boy 15-10-2026): PaneelWorkers staat vast links, niet in de carrousel.
 
 function useWakeLock() {
