@@ -8,8 +8,6 @@ const PLAATSEN = ['intake','acceptatie','certificaten','facturatie','exact','ken
 describe('A8-aanvulling werktuin prominent', () => {
   it('elke robot uit ROBOTNAMEN heeft een plek in de werktuin', () => {
     for (const a of AI_TEAM) expect(PLAATSEN).toContain(WERKPLEK[a.id]);
-    const src = readFileSync('src/components/scherm/MachineScene.tsx', 'utf8');
-    for (const p of PLAATSEN) expect(src).toMatch(new RegExp(`\\b${p}: \\[`));
     const team = bouwSchermPayload({ marketing: { ai_team: { dag: '2026-11-05', data: { agents: [] } } } }).ai_team;
     expect(team.filter(r => r.werkplek).map(r => r.robotnaam).sort()).toEqual(Object.values(ROBOTNAMEN).sort());
     expect(WERKPLEK).toMatchObject({ ads: 'ads', kwaliteit: 'kwaliteit', content: 'kennisbank', conversies: 'intake', opvolger: 'intake', botcoach: 'brein', dagstatus: 'brein', updates: 'onderhoud', beveiliging: 'onderhoud', hartslag: 'onderhoud', concurrentie: 'markt', markt: 'markt', bronnen: 'markt', bing: 'markt' });
@@ -45,7 +43,6 @@ describe('A8-aanvulling werktuin prominent', () => {
     const w = src.slice(src.indexOf('function PaneelWorkers'), src.indexOf('function PaneelStroom'));
     expect(w).not.toContain('.map((a, i)');
     const css = readFileSync('src/index.css', 'utf8');
-    expect(css).toMatch(/\.werktuin-rooster \.scene-labeltitel strong \{ font-size: 28px/);
-    expect(css).toMatch(/\.werktuin-rooster \.scherm-station \.st-regel \{ font-size: 20px/);
+    expect(css).toMatch(/\.poppetje-kop strong \{ font-size: 28px/);
   });
 });

@@ -633,7 +633,7 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
         <main className="flex min-h-0 flex-1">
           <section className="flex w-[1290px] min-w-0 flex-col border-r border-[hsl(var(--s-lijn))]">
             <div className="relative min-h-0 flex-1 overflow-hidden">
-              <div className="scherm-scene-kop"><span>Het agentkantoor</span><small>Afdelingen verbonden met het brein</small></div>
+              <div className="scherm-scene-kop"><span>Het agentkantoor</span></div>
               {data && (
                 <Suspense fallback={null}>
                   <div className="scherm-scene scene-zichtbaar" data-testid="agentkantoor">

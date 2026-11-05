@@ -380,3 +380,33 @@
 .scherm-dagomzet-bedrag { font-size: 84px; font-weight: 800; line-height: 1; color: hsl(var(--s-tekst)); white-space: nowrap; }
 .scherm-dagomzet-licht { border-color: hsl(var(--s-rood)); box-shadow: 0 0 48px hsl(var(--s-rood) / .55); }
 .scherm-dagomzet-licht .scherm-dagomzet-bedrag { color: hsl(var(--s-rood)); }
+
+/* A8-correctie 'Scherm werktuin': poppetjes zijn het hoofdbeeld; compacte labels eronder, kleine afdelingslabels. */
+.poppetje-html { pointer-events: none; }
+.poppetje-label { position: relative; width: 196px; padding: 4px 10px 5px; border-radius: 8px; background: hsl(var(--s-bg) / 0.82); border: 1px solid hsl(var(--s-lijn)); text-align: center; }
+.poppetje-kop { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.poppetje-kop strong { font-size: 28px; line-height: 1.05; font-weight: 800; color: hsl(var(--s-tekst)); white-space: nowrap; }
+.poppetje-label small { display: block; font-size: 15px; line-height: 1.2; color: hsl(var(--s-dim)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.poppetje-label em { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; min-height: 2.3em; font-style: normal; font-size: 15px; text-align: center; line-height: 1.15; color: hsl(var(--s-tekst)); overflow: hidden; }
+.poppetje-label .st-bol, .afdeling-tag .st-bol, .machine-chip .st-bol { width: 13px; height: 13px; flex-shrink: 0; border-radius: 999px; background: hsl(var(--s-groen)); }
+.poppetje-label.rb-gepland .st-bol { background: hsl(var(--s-dim)); }
+.poppetje-label.rb-fout { border-color: hsl(var(--s-rood)); }
+.poppetje-label.rb-fout .st-bol { background: hsl(var(--s-rood)); box-shadow: 0 0 10px hsl(var(--s-rood)); }
+.poppetje-label.rb-bezig { border-color: hsl(var(--s-blauw)); animation: werktuin-puls 2.4s ease-in-out infinite; }
+.poppetje-label.rb-bezig .st-bol { background: hsl(var(--s-blauw)); box-shadow: 0 0 10px hsl(var(--s-blauw)); }
+.poppetje-label .afdeling-tag { position: absolute; left: 50%; bottom: calc(100% + 54px); transform: translateX(-50%); }
+.afdeling-tag { display: flex; align-items: center; gap: 6px; white-space: nowrap; padding: 2px 9px; border-radius: 999px; border: 1px solid hsl(var(--s-rood) / 0.5); background: hsl(var(--s-bg) / 0.7); }
+.afdeling-tag strong { font-size: 16px; color: hsl(var(--s-tekst)); }
+.afdeling-tag b { font-size: 16px; color: hsl(var(--s-groen)); }
+.afdeling-tag.st-rust .st-bol, .machine-chip.st-rust .st-bol { background: hsl(var(--s-dim)); }
+.afdeling-tag.st-werk .st-bol, .machine-chip.st-werk .st-bol { background: hsl(var(--s-blauw)); box-shadow: 0 0 10px hsl(var(--s-blauw)); }
+.afdeling-tag.st-storing .st-bol, .machine-chip.st-storing .st-bol { background: hsl(var(--s-rood)); }
+.brein-tag { display: flex; flex-direction: column; align-items: center; white-space: nowrap; }
+.brein-tag strong { font-size: 24px; color: hsl(var(--s-rood)); }
+.brein-tag span { font-size: 17px; color: hsl(var(--s-dim)); }
+.machine-afdelingen { position: absolute; left: 16px; right: 16px; bottom: 10px; z-index: 25; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; pointer-events: none; }
+.machine-chip { display: grid; grid-template-columns: auto 1fr auto; align-items: center; column-gap: 6px; min-width: 0; padding: 5px 8px; border-radius: 8px; border: 1px solid hsl(var(--s-lijn)); background: hsl(var(--s-bg) / 0.8); }
+.machine-chip strong { font-size: 17px; line-height: 1.1; color: hsl(var(--s-tekst)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.machine-chip small { grid-column: 1 / 3; font-size: 14px; color: hsl(var(--s-dim)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.machine-chip b { grid-column: 3; font-size: 19px; color: hsl(var(--s-groen)); }
+@media (prefers-reduced-motion: reduce) { .poppetje-label.rb-bezig { animation: none; } }
