@@ -203,6 +203,10 @@ export const AI_TEAM = [
   { id: 'botcoach', naam: 'Botcoach', taak: 'Daagt elke ochtend alle robots uit', station: 'kwaliteit' },
   { id: 'concurrentie', naam: 'Concurrentiemonitor', taak: 'Scant dagelijks de markt en de concurrentie', station: 'kwaliteit' },
   { id: 'updates', naam: 'Updatebewaker', taak: 'Houdt alle software dagelijks up-to-date', station: 'kwaliteit' },
+  { id: 'opvolger', naam: 'Opvolger', taak: 'Zorgt dat elke aanvraag wordt opgevolgd', station: 'kwaliteit' },
+  { id: 'hartslag', naam: 'Hartslag', taak: 'Controleert elk kwartier de aanvraagstroom', station: 'kwaliteit' },
+  { id: 'bronnen', naam: 'Bronnen', taak: 'Zoekt waar AI-assistenten hun antwoorden halen', station: 'kwaliteit' },
+  { id: 'bing', naam: 'Bing AI-zichtbaarheid', taak: 'Meet dagelijks de vermeldingen in Copilot', station: 'kwaliteit' },
 ] as const;
 export type AiAgentId = typeof AI_TEAM[number]['id'];
 
@@ -210,6 +214,7 @@ export type AiAgentId = typeof AI_TEAM[number]['id'];
 export const ROBOTNAMEN: Record<AiAgentId, string> = {
   ads: 'Turbo', conversies: 'Echo', kwaliteit: 'Loep', content: 'Pen', markt: 'Radar', rapportage: 'Teller',
   beveiliging: 'Slot', scherm: 'Pixel', dagstatus: 'Kompas', botcoach: 'Coach', concurrentie: 'Scout', updates: 'Patch',
+  opvolger: 'Lasso', hartslag: 'Puls', bronnen: 'Spoor', bing: 'Baken',
 };
 /** Gestopte agents (Aanbevelingencontrole per 18 okt): nooit meer op het scherm, ook niet als de feed ze stuurt. */
 export const GESTOPTE_AGENTS = ['aanbevelingen'] as const;
@@ -237,6 +242,7 @@ export const AGENT_VOORVOEGSEL: Record<AiAgentId, string[]> = {
   markt: ['marktagent'], rapportage: ['rapportage-agent', 'weekrapportage'], beveiliging: ['beveiligingsagent'],
   scherm: ['scherm-agent', 'live-scherm'], dagstatus: ['dagstatus'], botcoach: ['botcoach'],
   concurrentie: ['concurrentiemonitor', 'concurrentie-agent'], updates: ['updatebewaker', 'updates-agent'],
+  opvolger: ['opvolger', 'lasso'], hartslag: ['hartslag', 'puls'], bronnen: ['bronnen', 'spoor'], bing: ['bing ai-zichtbaarheid', 'bing ai', 'baken'],
 };
 /** Laatste machine_activiteit-tijd per agent-id uit scherm_versheid().agent_laatst. */
 export function agentLaatst(lijst: unknown): Partial<Record<AiAgentId, string>> {
@@ -253,7 +259,7 @@ export function agentLaatst(lijst: unknown): Partial<Record<AiAgentId, string>> 
 
 type AiRij = { robotnaam: string | null; naam: string; taak: string; resultaat: string | null; laatste_run: string | null; status: 'klaar' | 'fout' | 'gepland' };
 /** AI-team: altijd de vaste lijst (gepland zonder run), aangevuld uit de snapshot; daarna onbekende agents (veiligheidsgrens 24, geen vaste teamgrootte). */
-export function schoonAiTeam(snap: Snap, doelTotaal?: number, recent: Partial<Record<AiAgentId, string>> = {}): AiRij[] {
+export function schoonAiTeam(snap: Snap, doelTotaal?: number, recent: Partial<Record<AiAgentId, string>> = {}, hartslagRood = false): AiRij[] {
   const agents = (snap?.data as Ruw | undefined)?.agents;
   if (!Array.isArray(agents)) return [];
   const rij = (a: Ruw, basis?: { id: AiAgentId; naam: string; taak: string }): AiRij => {
@@ -284,6 +290,7 @@ export function schoonAiTeam(snap: Snap, doelTotaal?: number, recent: Partial<Re
       r.laatste_run = m;
       if (r.status === 'gepland') r.status = 'klaar';
     }
+    if (t.id === 'hartslag' && hartslagRood) r.status = 'fout';
     return r;
   });
   return [...vast, ...overig.map(a => rij(a)).filter(a => a.naam)].slice(0, 24);
@@ -355,7 +362,7 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
   const sv = r?.service ?? {};
   const gz = r?.gezondheid ?? {};
   const recent = agentLaatst(r?.versheid?.agent_laatst);
-  const team = schoonAiTeam(r?.marketing?.ai_team, totaal, recent);
+  const team = schoonAiTeam(r?.marketing?.ai_team, totaal, recent, pulsRood(r?.hartslag_status));
   const snapOp = r?.versheid?.snapshot_op ?? {};
   return {
     gegenereerd_op: nu.toISOString(),
