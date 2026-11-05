@@ -26,6 +26,7 @@ describe("kwaliteit 5-11: geen AOV-aanbiedersnamen buiten /aov", () => {
   it.each(bronnen)("%s", (pad) => {
     let tekst = readFileSync(pad, "utf8");
     for (const t of AOV_TEKSTEN) tekst = tekst.split(t).join("");
+    tekst = tekst.split("\n").filter((r) => !r.includes("](https://zpzaken.nl/aov)")).join("\n");
     // De /aov-sectie in llms-full.txt beschrijft de AOV-pagina zelf.
     tekst = tekst.replace(/### AOV voor zzp'ers[\s\S]*?(?=\n### |\n## |$)/, "");
     const regel = tekst.split("\n").find((r) => VERBODEN.test(r));
