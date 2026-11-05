@@ -3,7 +3,7 @@ import { AI_TEAM, koppelTaak, bouwSchermPayload } from '../../supabase/functions
 
 describe('vaste lijst AI-team', () => {
   it('heeft precies deze 12 ids', () => {
-    expect(AI_TEAM.map(a => a.id)).toEqual(['ads','conversies','kwaliteit','content','markt','rapportage','beveiliging','scherm','dagstatus','aanbevelingen','concurrentie','updates']);
+    expect(AI_TEAM.map(a => a.id)).toEqual(['ads','conversies','kwaliteit','content','markt','rapportage','beveiliging','scherm','dagstatus','botcoach','concurrentie','updates']);
   });
   it('koppelt aanbevelingen en dagstatus vóór de Ads-regel', () => {
     expect(koppelTaak('Aanbevelingencontrole Google Ads (maandag)')).toBe('aanbevelingen');
@@ -16,7 +16,8 @@ describe('vaste lijst AI-team', () => {
     expect(p.ai_team).toHaveLength(12);
     expect(p.ai_team[0].status).toBe('klaar');
     expect(p.ai_team.find(a => a.naam === 'Dagstatus')?.status).toBe('gepland');
-    expect(p.ai_team.find(a => a.naam === 'Aanbevelingencontrole')?.status).toBe('gepland');
+    expect(p.ai_team.find(a => a.naam === 'Aanbevelingencontrole')).toBeUndefined();
+    expect(p.ai_team.find(a => a.naam === 'Botcoach')?.status).toBe('gepland');
     expect(p.workers?.gepland).toHaveLength(11);
   });
 });

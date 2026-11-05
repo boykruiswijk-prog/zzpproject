@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { bouwSchermPayload } from '../../supabase/functions/_shared/schermAnonimiseer';
 
-const ids = ['ads','conversies','kwaliteit','content','markt','rapportage','beveiliging','scherm','dagstatus','aanbevelingen','concurrentie','updates'];
+const ids = ['ads','conversies','kwaliteit','content','markt','rapportage','beveiliging','scherm','dagstatus','botcoach','concurrentie','updates'];
 const voorbeeld = ids.map((id, i) => ({ id, naam: `Agent ${id}`, taak: `taak ${id}`, status: 'klaar', resultaat: `resultaat ${i}`, laatste_run: '2026-11-05T05:00:00Z' }));
 
 describe('AI-team met 12 agents op /tv', () => {
