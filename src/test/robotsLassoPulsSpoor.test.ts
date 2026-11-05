@@ -47,7 +47,7 @@ describe("A31 Puls / Hartslag", () => {
     const ping = src.indexOf("body.ping === true");
     expect(ping).toBeGreaterThan(0);
     expect(ping).toBeLessThan(src.indexOf("bewaarConcept(req"));
-    expect(ping).toBeLessThan(src.indexOf("const supabase = createClient("));
+    expect(ping).toBeLessThan(src.indexOf("createClient(", src.indexOf("Deno.serve(")));
     expect(hartslagFn).toContain("JSON.stringify({ ping: true })");
   });
   it("rood bij twee fouten op rij, niet bij één", () => {

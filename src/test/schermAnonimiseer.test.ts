@@ -80,14 +80,14 @@ describe("scherm-data anonimisering", () => {
     expect(bouwSchermPayload({ marketing: { ai_team: { dag: '2026-10-11', data: {} } } }).ai_team).toEqual([]);
     const agents = Array.from({ length: 12 }, (_, i) => ({ id: String(i), resultaat2: null, naam: `Agent ${i}`, taak: 'x'.repeat(100), laatste_run: i ? '2026-10-11T16:53:51Z' : 'nooit', status: i === 1 ? 'raar' : i === 2 ? 'fout' : 'gepland', resultaat: i === 3 ? 'Mail naar jan@voorbeeld.nl gestuurd' : null }));
     const t = bouwSchermPayload({ marketing: { ai_team: { dag: '2026-10-11', data: { agents } } } }).ai_team;
-    // 12 vaste agents (ids '0'..'11' zijn onbekend) plus 12 onbekende agents.
+    // 16 vaste agents plus onbekende agents, begrensd op 24.
     expect(t).toHaveLength(24);
-    const o = t.slice(12);
+    const o = t.slice(16);
     expect(o[0].laatste_run).toBeNull();
     expect(o[0].status).toBe('gepland');
     expect(o[1].status).toBe('klaar');
     expect(o[1].taak.length).toBe(70);
-    expect(t.slice(0, 12).every(a => a.status === 'gepland' && a.laatste_run === null)).toBe(true);
+    expect(t.slice(0, 16).every(a => a.status === 'gepland' && a.laatste_run === null)).toBe(true);
     expect(JSON.stringify(t)).not.toContain('"id"');
   });
   it('kennisbank contenttellingen: null als ze ontbreken', () => {
