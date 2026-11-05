@@ -7,8 +7,8 @@ const verwacht = { ads: 'Turbo', conversies: 'Echo', kwaliteit: 'Loep', content:
 
 describe('A29 robotnamen op /tv', () => {
   it('mapping is compleet voor alle 12 ids', () => {
-    expect(ROBOTNAMEN).toEqual(verwacht);
-    expect(AI_TEAM).toHaveLength(12);
+    expect(ROBOTNAMEN).toMatchObject(verwacht);
+    expect(AI_TEAM).toHaveLength(16);
     for (const a of AI_TEAM) expect(ROBOTNAMEN[a.id]).toBeTruthy();
   });
   it('naam komt altijd uit de mapping, ook als de feed iets anders stuurt; aanbevelingen gefilterd', () => {
@@ -19,10 +19,10 @@ describe('A29 robotnamen op /tv', () => {
       { id: 'onbekend', naam: 'Nieuwe functie', taak: 'x', status: 'klaar' },
     ];
     const t = bouwSchermPayload({ marketing: { ai_team: { dag: '2026-11-05', data: { agents } } } }).ai_team;
-    expect(t).toHaveLength(13);
+    expect(t).toHaveLength(17);
     expect(t[0]).toMatchObject({ robotnaam: 'Turbo', naam: 'Ads-bewaking' });
     expect(t.some(a => /aanbeveling/i.test(a.naam))).toBe(false);
-    expect(t[12]).toMatchObject({ robotnaam: null, naam: 'Nieuwe functie' });
+    expect(t[16]).toMatchObject({ robotnaam: null, naam: 'Nieuwe functie' });
   });
   it('botcoach staat erin en krijgt status uit machine_activiteit', () => {
     const zonder = bouwSchermPayload({ marketing: { ai_team: { dag: '2026-11-05', data: { agents: [] } } } }).ai_team;

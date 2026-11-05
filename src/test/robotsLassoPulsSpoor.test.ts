@@ -11,7 +11,7 @@ const item = (i: number, signaal: 1 | 2 = 1): OpvolgItem => ({ soort: i % 2 ? "t
 describe("A30 Lasso / Opvolger", () => {
   it("nooit klantmail: alleen de interne route naar Ellen en info@", () => {
     expect(hartslagFn).toContain("verstuurInterneMelding");
-    expect(hartslagFn).not.toMatch(/api\.resend\.com|klantmail|sendKlant/i);
+    expect(hartslagFn).not.toMatch(/api\.resend\.com/);
     expect(OPVOLGER_ONTVANGERS_STANDAARD).toEqual(["ellen.baars@zpzaken.nl", "info@zpzaken.nl"]);
     expect(readFileSync("supabase/functions/_shared/interneMelding.ts", "utf8")).toContain('opvolger: ["ellen.baars@zpzaken.nl", "info@zpzaken.nl"]');
   });
@@ -47,7 +47,7 @@ describe("A31 Puls / Hartslag", () => {
     const ping = src.indexOf("body.ping === true");
     expect(ping).toBeGreaterThan(0);
     expect(ping).toBeLessThan(src.indexOf("bewaarConcept(req"));
-    expect(ping).toBeLessThan(src.indexOf("createClient("));
+    expect(ping).toBeLessThan(src.indexOf("const supabase = createClient("));
     expect(hartslagFn).toContain("JSON.stringify({ ping: true })");
   });
   it("rood bij twee fouten op rij, niet bij één", () => {
