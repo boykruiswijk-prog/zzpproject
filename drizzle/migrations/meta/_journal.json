@@ -1730,6 +1730,13 @@
       "when": 1793878925617,
       "tag": "0246_robots_toegang_postgres",
       "breakpoints": true
+    },
+    {
+      "idx": 247,
+      "version": "7",
+      "when": 1793878998211,
+      "tag": "0247_robots_toegang_postgres_strikt",
+      "breakpoints": true
     }
   ]
 }
