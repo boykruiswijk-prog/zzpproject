@@ -336,12 +336,13 @@
 .scene-labelrooster .scherm-core em { margin-top: 0; }
 
 /* A8-aanvulling 'Scherm werktuin prominent': werktuin als hoofdbeeld, leesbaar op 3-4 meter. */
-.scherm-canvas .werktuin-rooster { inset: 78px 20px 14px; grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: repeat(4, minmax(0, 1fr)); gap: 10px; align-items: stretch; }
+.scherm-canvas .werktuin-rooster { inset: 90px 20px 12px; grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: repeat(4, minmax(0, 1fr)); gap: 10px; align-items: stretch; }
 .scherm-canvas .werktuin-rooster .scherm-station { width: auto; padding: 9px 11px; gap: 4px; justify-content: flex-start; overflow: hidden; background: hsl(var(--s-glass) / 0.78); }
-.werktuin-rooster .scene-labeltitel strong { font-size: 28px; line-height: 1.05; overflow-wrap: normal; word-break: normal; hyphens: auto; }
+.werktuin-rooster .scene-labeltitel strong { font-size: 28px; line-height: 1.05; overflow-wrap: normal; word-break: normal; hyphens: manual; }
 .werktuin-rooster .scene-labeltitel svg { width: 26px; height: 26px; }
 .werktuin-rooster .scene-labeltitel b { font-size: 26px; }
-.werktuin-rooster .scherm-station .st-regel { font-size: 20px; line-height: 1.15; }
+.werktuin-rooster .scherm-station .st-regel { font-size: 20px; line-height: 1.15; white-space: nowrap; overflow: hidden; }
+.werktuin-rooster .scherm-station .st-regel > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .werktuin-rooster .st-bol { width: 12px; height: 12px; flex-shrink: 0; }
 .werktuin-hoek { border-color: hsl(var(--s-rood) / 0.45) !important; }
 .scherm-canvas .werktuin-rooster .werktuin-brein { width: auto; padding: 10px; justify-content: flex-start; background: transparent; border: 1px solid hsl(var(--s-rood) / 0.45); border-radius: 6px; }
@@ -363,6 +364,6 @@
 .werktuin-robot.rb-bezig .st-bol { background: hsl(var(--s-blauw)); box-shadow: 0 0 10px hsl(var(--s-blauw)); }
 @keyframes werktuin-puls { 0%, 100% { box-shadow: 0 0 0 hsl(var(--s-blauw) / 0); } 50% { box-shadow: 0 0 18px hsl(var(--s-blauw) / 0.55); } }
 @media (prefers-reduced-motion: reduce) { .werktuin-robot.rb-bezig { animation: none; } }
-.workers-strook { display: flex; height: 100%; align-items: center; gap: 22px; font-size: 20px; color: hsl(var(--s-dim)); white-space: nowrap; overflow: hidden; }
+.workers-strook { display: flex; height: 100%; align-items: center; gap: 18px; font-size: 18px; color: hsl(var(--s-dim)); white-space: nowrap; overflow: hidden; }
 .workers-strook strong { color: hsl(var(--s-tekst)); }
 .workers-strook .ws-fout { color: hsl(var(--s-rood)); font-weight: 600; }

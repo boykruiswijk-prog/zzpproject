@@ -33,6 +33,17 @@ export const WERKTUIN_PLAATS: Record<string, [number, number, number, number]> =
   assistent: [1, 3, 1, 1], mail: [5, 3, 1, 1],
   service: [1, 4, 1, 1], onderhoud: [2, 4, 2, 1], markt: [4, 4, 2, 1],
 };
+const hm = (iso: string) => new Intl.DateTimeFormat('nl-NL', { timeZone: 'Europe/Amsterdam', hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
+/** Korte status voor de werktuin-tegels (volledige tekst blijft in toestandLabel). */
+export function toestandKort(s: StationStand | undefined): string {
+  const t = s?.laatst_actief_op && Number.isFinite(Date.parse(s.laatst_actief_op)) ? s.laatst_actief_op : null;
+  switch (s?.toestand) {
+    case 'aan_het_werk': return s.lopende_tekst ? `bezig: ${s.lopende_tekst}` : 'aan het werk';
+    case 'stand_by': return t ? `stand-by ${hm(t)}` : 'stand-by';
+    case 'storing': return 'aandacht nodig';
+    default: return t ? `rust sinds ${hm(t)}` : 'rust';
+  }
+}
 const HOEK_LABELS: Record<string, string> = { onderhoud: 'Onderhoud', markt: 'Markt en AI' };
 const plaats = (id: string) => { const [c, r, w, h] = WERKTUIN_PLAATS[id]; return { gridColumn: `${c} / span ${w}`, gridRow: `${r} / span ${h}` }; };
 function RobotChips({ robots, kolommen }: { robots: WerktuinRobot[]; kolommen: number }) {
@@ -222,8 +233,8 @@ export default function MachineScene(props: Props) {
         const klasse = {aan_het_werk:'st-werk',stand_by:'st-standby',rust:'st-rust',storing:'st-storing'}[toestand];
         const robots = (props.robots ?? []).filter(r => r.werkplek === id && r.robotnaam);
         return <div key={id} className={`scherm-station ${klasse}`} data-station={id} data-toestand={toestand} style={plaats(id)}>
-          <div className="scene-labeltitel"><Icon /><strong>{STATION_LABELS[id]}</strong><b>{st?.vandaag ?? 0}</b></div>
-          <small className="st-regel"><span className="st-bol" /><span>{toestandLabel(st)}</span></small>
+          <div className="scene-labeltitel"><strong>{STATION_LABELS[id]}</strong><b>{st?.vandaag ?? 0}</b></div>
+          <small className="st-regel" title={toestandLabel(st)}><span className="st-bol" /><span>{toestandKort(st)}</span></small>
           {event?.station === id && <p className="agent-balloon">{event.tekst}</p>}
           <RobotChips robots={robots} kolommen={WERKTUIN_PLAATS[id][2]} />
         </div>;
