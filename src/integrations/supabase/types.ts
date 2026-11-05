@@ -8415,6 +8415,15 @@ export type Database = {
           statusgroep: string
         }[]
       }
+      tel_aanvraag_cohort_tot: {
+        Args: { _tot: string; _vanaf: string }
+        Returns: {
+          dag: string
+          kvk: string
+          sleutel: string
+          statusgroep: string
+        }[]
+      }
       tel_aanvragen_doel: { Args: { _vanaf?: string }; Returns: number }
       tel_aanvragen_doel_rijen: {
         Args: { _vanaf?: string }
