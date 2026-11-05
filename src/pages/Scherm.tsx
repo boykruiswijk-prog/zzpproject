@@ -352,6 +352,8 @@ function PaneelAiTeam({ d }: { d: SchermPayload }) {
   const kb = d.kennisbank, team = d.ai_team ?? [];
   // Meer agents: compactere regels, zodat alles past op 1920x1080 zonder afkappen.
   const compact = team.length > 10;
+  // Vanaf 13 robots twee kolommen, zodat 16 leesbaar passen op 1920x1080.
+  const tweeKolommen = team.length > 12;
   const kleur = (s: string) => s === 'fout' ? 'var(--s-rood)' : s === 'gepland' ? 'var(--s-dim)' : 'var(--s-groen)';
   return (
     <div className="ai-team-paneel flex h-full min-w-0 flex-col gap-[17.28px] overflow-hidden">
@@ -366,7 +368,7 @@ function PaneelAiTeam({ d }: { d: SchermPayload }) {
         <div className="mt-[6.48px] text-[21.6px] text-[hsl(var(--s-dim))]">sinds 6 oktober, automatisch geschreven en gecontroleerd</div>
       </div>
       {team.length === 0 ? <Gemeten /> : (
-        <div className="flex min-h-0 flex-1 flex-col justify-start gap-[5.4px]" data-testid="ai-team-lijst" data-aantal={team.length}>
+        <div className={tweeKolommen ? "grid min-h-0 flex-1 grid-cols-2 content-start gap-x-[21.6px] gap-y-[5.4px]" : "flex min-h-0 flex-1 flex-col justify-start gap-[5.4px]"} data-testid="ai-team-lijst" data-aantal={team.length}>
           {team.map((a, i) => {
             const t = runTijd(a.laatste_run, d.gegenereerd_op);
             return (
@@ -379,7 +381,7 @@ function PaneelAiTeam({ d }: { d: SchermPayload }) {
                       <span className={`truncate text-[hsl(var(--s-dim))] ${compact ? 'text-[14.04px]' : 'text-[16.2px]'}`}>{a.naam}</span>
                     </span>
                   ) : <span className="max-w-[40%] shrink-0 truncate font-bold text-[hsl(var(--s-tekst))]">{a.naam}</span>}
-                  <span className="min-w-0 truncate text-[hsl(var(--s-dim))]">{a.taak}</span>
+                  {!tweeKolommen && <span className="min-w-0 truncate text-[hsl(var(--s-dim))]">{a.taak}</span>}
                   {t && <span className="ml-auto shrink-0 tabular-nums text-[hsl(var(--s-dim))]">{t}</span>}
                 </div>
                 {a.resultaat && <div className={`truncate pl-[21.6px] ${compact ? 'text-[16.2px]' : 'text-[18.36px]'} text-[hsl(var(--s-tekst))]`}>{a.resultaat}</div>}

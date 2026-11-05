@@ -2,6 +2,7 @@
 // Pure TypeScript zonder Deno- of npm-imports, zodat vitest dit ook test.
 import { NETTO_GROEI_VANAF } from "./nettoGroei.ts";
 import { controleerDashboardOpbouw, controleerLeadsOpbouw } from "./dashboardOpbouw.ts";
+import { pulsRood } from "./hartslag.ts";
 
 export const ADS_BUDGET = 22500;
 export const STATIONS = [
