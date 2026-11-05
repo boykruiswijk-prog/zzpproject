@@ -7,9 +7,9 @@ const GOED = "Architecten hebben geen wettelijke plicht, maar hun beroepsverenig
 
 describe("BAV-plicht-FAQ noemt architecten niet als wettelijk verplicht", () => {
   it.each(pagina)("%s", (pad) => {
-    const regel = readFileSync(pad, "utf8").split("\n").find((r) => /question: "Is een (BAV|beroepsaansprakelijkheidsverzekering) verplicht\?"/.test(r));
-    expect(regel).toBeDefined();
-    expect(/architecten/i.test(regel!) && /wettelijk verplicht/i.test(regel!)).toBe(false);
-    expect(regel).toContain(GOED);
+    const regels = readFileSync(pad, "utf8").split("\n").filter((r) => /question: "Is een (BAV|beroepsaansprakelijkheidsverzekering) verplicht\?"/.test(r));
+    expect(regels.length).toBeGreaterThan(0);
+    for (const r of regels) expect(/architecten/i.test(r) && /wettelijk verplicht/i.test(r)).toBe(false);
+    expect(regels.some((r) => r.includes(GOED))).toBe(true);
   });
 });
