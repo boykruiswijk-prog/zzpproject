@@ -316,6 +316,8 @@ export const legacyRedirects: LegacyRedirect[] = [
   { from: "control/privacy-statement", to: "/creditcontrol" },
   { from: "control/verzekeringen", to: "/creditcontrol" },
   { from: "control/verzekeringen/bav", to: "/creditcontrol" },
+  // Kwaliteitscontrole 6-11-2026 (Loep): oude /control/-paden uit not_found_log.
+  { from: "control/financieel/pensioen-webinar", to: "/pensioen" },
   { from: "cookie-instellingen-1", to: "/cookies" },
   { from: "cyber-bedanktpage", to: "/verzekeringen" },
   { from: "cyber-verzekering-zzp", to: "/verzekeringen" },
@@ -739,6 +741,8 @@ export const legacyRedirects: LegacyRedirect[] = [
   { from: "profile/*", to: "/" },
   { from: "facts/press/*", to: "/kennisbank" },
   { from: "nieuws/*", to: "/kennisbank" },
+  // Kwaliteitscontrole 6-11-2026: vangnet voor overige oude /control/-paden.
+  { from: "control/*", to: "/creditcontrol" },
 ];
 
 /**
@@ -824,7 +828,7 @@ export function taalprefixRedirects(
   const uit: LegacyRedirect[] = [];
   for (const r of lijst) {
     const from = norm(r.from);
-    if (!from || (isVangregel(r) && from !== "home/nieuws/*" && from !== "nieuws/*") || TAALPREFIXES.some((t) => from === t || from.startsWith(`${t}/`))) continue;
+    if (!from || (isVangregel(r) && !["home/nieuws/*", "nieuws/*", "control/*"].includes(from)) || TAALPREFIXES.some((t) => from === t || from.startsWith(`${t}/`))) continue;
     for (const t of TAALPREFIXES) {
       const afgeleid = `${t}/${from}`;
       if (bronnen.has(afgeleid) || gezien.has(afgeleid) || bestaande.has(afgeleid)) continue;
