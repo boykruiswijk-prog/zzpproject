@@ -1841,6 +1841,38 @@ export type Database = {
           },
         ]
       }
+      cyber_ingang_uitzonderingen: {
+        Row: {
+          aangemaakt_op: string
+          besloten_door: string
+          onderneming_id: string
+          reden: string
+          vroegst: string
+        }
+        Insert: {
+          aangemaakt_op?: string
+          besloten_door: string
+          onderneming_id: string
+          reden: string
+          vroegst: string
+        }
+        Update: {
+          aangemaakt_op?: string
+          besloten_door?: string
+          onderneming_id?: string
+          reden?: string
+          vroegst?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cyber_ingang_uitzonderingen_onderneming_id_fkey"
+            columns: ["onderneming_id"]
+            isOneToOne: true
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cyber_toevoeg_verzoeken: {
         Row: {
           aangevraagd_door: string
