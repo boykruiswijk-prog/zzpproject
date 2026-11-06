@@ -1786,6 +1786,13 @@
       "when": 1793964735358,
       "tag": "0254_lidmaatschap_geen_credit",
       "breakpoints": true
+    },
+    {
+      "idx": 255,
+      "version": "7",
+      "when": 1793967979539,
+      "tag": "0255_cyber_ingang_uitzondering",
+      "breakpoints": true
     }
   ]
 }
