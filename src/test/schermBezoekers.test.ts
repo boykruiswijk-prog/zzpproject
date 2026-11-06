@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { readFileSync } from "node:fs";
 import { normaliseerGaRijen, bouwBezoekersPayload, nieuwsteBezoekDag, nuOpSite, NU_OP_SITE_VENSTER_MS, topPlaatsen } from "../../supabase/functions/_shared/bezoekers";
 import { bouwSchermPayload } from "../../supabase/functions/_shared/schermAnonimiseer";
 import { coordinaatVoor, kaartPunten, PROVINCIE_MIDDEN, nieuweBezoekers } from "@/lib/bezoekersKaart";
