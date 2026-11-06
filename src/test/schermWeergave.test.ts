@@ -1,16 +1,20 @@
 // @vitest-environment happy-dom
 import { act, renderHook, cleanup } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { PANEEL_DUUR_MS, schermDpr, schermSchaal, useSchermViewport } from '@/components/scherm/schermWeergave';
+import { PANEEL_DUUR_MS, SCHERM_MARGE, schermDpr, schermSchaal, useSchermViewport } from '@/components/scherm/schermWeergave';
 
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 describe('A24 tv-weergave', () => {
   it('wisselt elke 6000 ms', () => { expect(PANEEL_DUUR_MS).toBe(6000); });
-  it.each([[1920,1080,1], [3840,2160,2], [1366,768,768/1080], [1920,1200,1], [1280,720,2/3], [1216,684,684/1080]])('past %i × %i zonder afknippen', (w,h,s) => {
-    expect(schermSchaal(w,h)).toBeCloseTo(s);
-    expect(1920 * schermSchaal(w,h)).toBeLessThanOrEqual(w);
-    expect(1080 * schermSchaal(w,h)).toBeLessThanOrEqual(h);
+  it.each([[1920,1080], [1920,940], [1600,900], [1366,768], [1280,720], [3840,1880], [3840,2160], [1920,1200], [1216,684]])('past %i × %i volledig met rand, één schaalfactor', (w,h) => {
+    const m = 2 * SCHERM_MARGE;
+    expect(schermSchaal(w,h)).toBeCloseTo(Math.min((w-m)/1920, (h-m)/1080));
+    expect(1920 * schermSchaal(w,h)).toBeLessThanOrEqual(w - m + 1e-9);
+    expect(1080 * schermSchaal(w,h)).toBeLessThanOrEqual(h - m + 1e-9);
+  });
+  it('adresbalk 1920 × 940 schaalt op hoogte, niet op breedte', () => {
+    expect(schermSchaal(1920,940)).toBeCloseTo((940 - 2 * SCHERM_MARGE) / 1080);
   });
   it('begrenst DPR boven 2560 px en behoudt de lage-kwaliteitfallback', () => {
     expect(schermDpr(2560)).toEqual([1,1.5]);

@@ -142,7 +142,7 @@ function Staven({ data }: { data: { maand: string; n: number }[] }) {
       {data.map((d) => (
         <div key={d.maand} className="flex h-full flex-1 flex-col items-center justify-end gap-[5.4px]">
           <span className="text-[23.76px] font-semibold tabular-nums text-[hsl(var(--s-tekst))]">{d.n}</span>
-          <div className="w-full rounded-t-[4.32px] bg-[hsl(var(--s-blauw))]" style={{ height: `${(d.n / max) * 15}vh`, minHeight: "4.32px", transition: "height 1s ease" }} />
+          <div className="w-full rounded-t-[4.32px] bg-[hsl(var(--s-blauw))]" style={{ height: `${(d.n / max) * 162}px`, minHeight: "4.32px", transition: "height 1s ease" }} />
           <span className="text-[23.76px] text-[hsl(var(--s-dim))]">{maanden[Number(d.maand.slice(5, 7)) - 1]}</span>
         </div>
       ))}
@@ -169,21 +169,21 @@ function Stat({ label, waarde, klein = false }: { label: string; waarde: string 
 function PaneelDoel({ d }: { d: SchermPayload }) {
   const g = d.doel;
   return (
-    <div className="flex h-full flex-col gap-[32.4px]">
+    <div className="doel-paneel flex h-full min-h-0 flex-col gap-[16px]">
       <Kop>Doel 200 aanvragen BAV + AVB</Kop>
       <Label>6 oktober tot en met 31 december 2026</Label>
-      <div className="flex items-center gap-[38.4px]">
+      <div className="flex min-h-0 items-center gap-[32px]">
         <Ring pct={g.totaal / 200}>
           <div className="text-[97.2px] font-bold leading-none tabular-nums text-[hsl(var(--s-tekst))]"><CountUp value={g.totaal} /></div>
           <div className="text-[28.08px] text-[hsl(var(--s-dim))]">van 200</div>
         </Ring>
-        <div className="grid flex-1 grid-cols-1 gap-[25.92px]">
+        <div className="grid min-w-0 flex-1 grid-cols-1 gap-[12px]">
           <Stat klein label="Nodig per dag" waarde={f(g.benodigd_per_dag, 1)} />
           <Stat klein label="Prognose 31 december" waarde={nf.format(g.prognose)} />
           <Stat klein label="Tempo laatste 14 dagen" waarde={`${f(g.tempo_14d, 1)} per dag`} />
         </div>
       </div>
-      <div className="mt-auto">
+      <div className="mt-auto shrink-0" data-testid="doel-per-dag">
         <div className="flex flex-wrap justify-between gap-x-[16px] gap-y-[6px]"><Label>Per dag</Label><Label>vandaag {g.vandaag} | week {g.deze_week} | nog {g.resterende_dagen} dagen</Label></div>
         <Sparkline waarden={g.per_dag.map((x) => x.n)} />
       </div>
