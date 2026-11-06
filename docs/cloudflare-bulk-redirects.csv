@@ -540,6 +540,8 @@ zpzaken.nl/control/verzekeringen,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,
 zpzaken.nl/control/verzekeringen/,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/control/verzekeringen/bav,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/control/verzekeringen/bav/,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/control/financieel/pensioen-webinar,https://zpzaken.nl/pensioen,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/control/financieel/pensioen-webinar/,https://zpzaken.nl/pensioen,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/cookie-instellingen-1,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/cookie-instellingen-1/,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/cyber-bedanktpage,https://zpzaken.nl/verzekeringen,301,TRUE,TRUE,FALSE,FALSE
@@ -2825,6 +2827,12 @@ zpzaken.nl/de/control/verzekeringen/bav,https://zpzaken.nl/creditcontrol,301,TRU
 zpzaken.nl/de/control/verzekeringen/bav/,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/fr/control/verzekeringen/bav,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/fr/control/verzekeringen/bav/,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/en/control/financieel/pensioen-webinar,https://zpzaken.nl/pensioen,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/en/control/financieel/pensioen-webinar/,https://zpzaken.nl/pensioen,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/de/control/financieel/pensioen-webinar,https://zpzaken.nl/pensioen,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/de/control/financieel/pensioen-webinar/,https://zpzaken.nl/pensioen,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/fr/control/financieel/pensioen-webinar,https://zpzaken.nl/pensioen,301,TRUE,TRUE,FALSE,FALSE
+zpzaken.nl/fr/control/financieel/pensioen-webinar/,https://zpzaken.nl/pensioen,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/en/cookie-instellingen-1,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/en/cookie-instellingen-1/,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/de/cookie-instellingen-1,https://zpzaken.nl/cookies,301,TRUE,TRUE,FALSE,FALSE
