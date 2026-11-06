@@ -434,3 +434,7 @@
 .bk-boog { fill: none; stroke: hsl(var(--s-rood)); stroke-width: 2.4; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; opacity: .85; filter: drop-shadow(0 0 5px hsl(var(--s-rood))); animation: bk-vuur 2.4s ease-out forwards; }
 @keyframes bk-vuur { 0% { stroke-dashoffset: 1; opacity: 1; } 70% { stroke-dashoffset: 0; opacity: 1; } 100% { stroke-dashoffset: 0; opacity: .35; } }
 @media (prefers-reduced-motion: reduce) { .bk-boog { animation: none; stroke-dashoffset: 0; opacity: .4; } }
+
+/* A8 correctie 6-11: doelpaneel compact, 'Per dag' altijd volledig zichtbaar onder Dagomzet. */
+.doel-paneel .tabular-nums { white-space: nowrap; }
+.doel-paneel .h-\[280\.8px\] { height: 230px; width: 230px; }
