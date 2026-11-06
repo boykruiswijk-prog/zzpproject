@@ -52,6 +52,19 @@ describe("Bezoekerskaart A8", () => {
     expect(nieuweBezoekers(vorig, [{ plaats: "Utrecht", provincie: "Utrecht", aantal: 4 }, { plaats: "Delft", provincie: "Zuid-Holland", aantal: 1 }])).toEqual(["Utrecht"]);
   });
 
+  it("kaart valt terug op de meest recente dag met rijen als vandaag nog leeg is", () => {
+    expect(nieuwsteBezoekDag(["2026-11-05", "2026-11-06"], "2026-11-06")).toBe("2026-11-06");
+    expect(nieuwsteBezoekDag(["2026-11-04", "2026-11-05"], "2026-11-06")).toBe("2026-11-05");
+    expect(nieuwsteBezoekDag([], "2026-11-06")).toBe("2026-11-06");
+    expect(nieuwsteBezoekDag([null, undefined], "2026-11-06")).toBe("2026-11-06");
+  });
+
+  it("kaarttitel noemt de afgelopen 7 dagen en niet 'vandaag'", () => {
+    const bron = readFileSync("src/components/scherm/BezoekersKaart.tsx", "utf8");
+    expect(bron).toContain("Bezoekers afgelopen 7 dagen");
+    expect(bron).not.toMatch(/Bezoekers vandaag/);
+  });
+
   it("'Nu op de site' telt alleen de laatste 5 minuten en zakt daarna", () => {
     const nu = Date.parse("2026-11-05T12:00:00Z");
     const t = ["2026-11-05T11:59:00Z", "2026-11-05T11:56:00Z", "2026-11-05T11:54:59Z"];
