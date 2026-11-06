@@ -295,7 +295,7 @@
 .processen-paneel .stroom-proceslijn small { font-size: 17.28px; }
 
 /* Fixed TV canvas: viewport scaling is applied once by Scherm. */
-.scherm-canvas { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; transform-origin: center; font-size: 17.28px; letter-spacing: 0; }
+.scherm-canvas { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; overflow: hidden; transform-origin: center; font-size: 17.28px; letter-spacing: 0; }
 .scherm-canvas .scherm-station { width: 190px; }
 .scherm-canvas .scherm-core { width: 200px; }
 .scherm-canvas .scherm-station small { white-space: normal; }
