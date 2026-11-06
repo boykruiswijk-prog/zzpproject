@@ -100,6 +100,7 @@ export function ServicePageTemplate({
         compactMobiel={aanvraag === "snel"}
         tekstAfbreken={beroepspagina}
       >
+        {heroExtra}
         {aanvraag === "snel" ? (
           <SnelleStart prijsregel={beroepspagina ? beroepspaginaPrijsregel() : undefined} />
         ) : aanvraag === "direct" ? (
