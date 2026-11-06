@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { normaliseerGaRijen, bouwBezoekersPayload, nuOpSite, NU_OP_SITE_VENSTER_MS, topPlaatsen } from "../../supabase/functions/_shared/bezoekers";
+import { readFileSync } from "node:fs";
+import { normaliseerGaRijen, bouwBezoekersPayload, nieuwsteBezoekDag, nuOpSite, NU_OP_SITE_VENSTER_MS, topPlaatsen } from "../../supabase/functions/_shared/bezoekers";
 import { bouwSchermPayload } from "../../supabase/functions/_shared/schermAnonimiseer";
 import { coordinaatVoor, kaartPunten, PROVINCIE_MIDDEN, nieuweBezoekers } from "@/lib/bezoekersKaart";
 
@@ -50,6 +51,19 @@ describe("Bezoekerskaart A8", () => {
   it("boog vuurt opnieuw alleen bij plaatsen met meer bezoekers", () => {
     const vorig = new Map([["Utrecht", 3], ["Delft", 1]]);
     expect(nieuweBezoekers(vorig, [{ plaats: "Utrecht", provincie: "Utrecht", aantal: 4 }, { plaats: "Delft", provincie: "Zuid-Holland", aantal: 1 }])).toEqual(["Utrecht"]);
+  });
+
+  it("kaart valt terug op de meest recente dag met rijen als vandaag nog leeg is", () => {
+    expect(nieuwsteBezoekDag(["2026-11-05", "2026-11-06"], "2026-11-06")).toBe("2026-11-06");
+    expect(nieuwsteBezoekDag(["2026-11-04", "2026-11-05"], "2026-11-06")).toBe("2026-11-05");
+    expect(nieuwsteBezoekDag([], "2026-11-06")).toBe("2026-11-06");
+    expect(nieuwsteBezoekDag([null, undefined], "2026-11-06")).toBe("2026-11-06");
+  });
+
+  it("kaarttitel noemt de afgelopen 7 dagen en niet 'vandaag'", () => {
+    const bron = readFileSync("src/components/scherm/BezoekersKaart.tsx", "utf8");
+    expect(bron).toContain("Bezoekers afgelopen 7 dagen");
+    expect(bron).not.toMatch(/Bezoekers vandaag/);
   });
 
   it("'Nu op de site' telt alleen de laatste 5 minuten en zakt daarna", () => {

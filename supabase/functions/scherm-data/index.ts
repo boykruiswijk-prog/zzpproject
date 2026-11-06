@@ -1,5 +1,5 @@
 import { berekenDagomzet } from "../_shared/dagomzet.ts";
-import { bouwBezoekersPayload, nuOpSite, NU_OP_SITE_VENSTER_MS } from "../_shared/bezoekers.ts";
+import { bouwBezoekersPayload, nieuwsteBezoekDag, nuOpSite, NU_OP_SITE_VENSTER_MS } from "../_shared/bezoekers.ts";
 import { vandaagNL } from "../_shared/cronOfSupervisor.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders as basisCors } from "npm:@supabase/supabase-js@2/cors";
@@ -80,7 +80,11 @@ Deno.serve(async (req) => {
     const { data: omzetRijen, error: omzetFout } = await admin.rpc("scherm_dagomzet_rijen");
     if (omzetFout) console.error("scherm_dagomzet_rijen", omzetFout.message);
     const vandaag = vandaagNL();
-    const { data: bezoekRijen, error: bezoekFout } = await admin.from("scherm_bezoekers").select("dag, soort, plaats, provincie, aantal, bijgewerkt_op").eq("dag", vandaag).limit(500);
+    // A8-aanvulling per week (6-11): de dagrij is het 7-dagentotaal; zonder rijen voor vandaag (bijv. vroeg in de ochtend) valt de kaart terug op de meest recente dag met rijen.
+    const { data: laatsteDag, error: dagFout } = await admin.from("scherm_bezoekers").select("dag").order("dag", { ascending: false }).limit(1);
+    if (dagFout) console.error("scherm_bezoekers dag", dagFout.message);
+    const bezoekDag = nieuwsteBezoekDag((laatsteDag ?? []).map((r) => r.dag), vandaag);
+    const { data: bezoekRijen, error: bezoekFout } = await admin.from("scherm_bezoekers").select("dag, soort, plaats, provincie, aantal, bijgewerkt_op").eq("dag", bezoekDag).limit(500);
     if (bezoekFout) console.error("scherm_bezoekers", bezoekFout.message);
     // 'Nu op de site': paginabezoeken in de laatste NU_OP_SITE_VENSTER_MS (5 minuten), daarna zakt het getal weer.
     const { data: bezoekTijden, error: tijdFout } = await admin.from("machine_activiteit").select("created_at")
@@ -88,7 +92,7 @@ Deno.serve(async (req) => {
     if (tijdFout) console.error("nu_op_site", tijdFout.message);
     const nuOp = tijdFout ? (werk as { nu_op_site?: number } | null)?.nu_op_site ?? null : nuOpSite((bezoekTijden ?? []).map((r) => r.created_at), Date.now());
     // Volgorde bewust: werkstand levert de actuele activiteit (met cron-runs en perioden) en wint van scherm_data.
-    const body = JSON.stringify(bouwSchermPayload({ ...(data ?? {}), ...(stromen ?? {}), ...(werk ?? {}), nu_op_site: nuOp, versheid: versheid ?? null, bing_ai: bingAi ?? [], hartslag_status: hartslagStatus ?? [], cron_schema: cronSchema ?? [], dagomzet: omzetFout ? null : berekenDagomzet(omzetRijen), bezoekers: bezoekFout ? null : bouwBezoekersPayload(bezoekRijen, vandaag) }));
+    const body = JSON.stringify(bouwSchermPayload({ ...(data ?? {}), ...(stromen ?? {}), ...(werk ?? {}), nu_op_site: nuOp, versheid: versheid ?? null, bing_ai: bingAi ?? [], hartslag_status: hartslagStatus ?? [], cron_schema: cronSchema ?? [], dagomzet: omzetFout ? null : berekenDagomzet(omzetRijen), bezoekers: bezoekFout ? null : bouwBezoekersPayload(bezoekRijen, bezoekDag) }));
     cache = { op: Date.now(), body };
     return json(body, 200, { "Cache-Control": "private, max-age=4" });
   } catch (e) {
