@@ -92,7 +92,7 @@ Deno.serve(async (req) => {
     if (tijdFout) console.error("nu_op_site", tijdFout.message);
     const nuOp = tijdFout ? (werk as { nu_op_site?: number } | null)?.nu_op_site ?? null : nuOpSite((bezoekTijden ?? []).map((r) => r.created_at), Date.now());
     // Volgorde bewust: werkstand levert de actuele activiteit (met cron-runs en perioden) en wint van scherm_data.
-    const body = JSON.stringify(bouwSchermPayload({ ...(data ?? {}), ...(stromen ?? {}), ...(werk ?? {}), nu_op_site: nuOp, versheid: versheid ?? null, bing_ai: bingAi ?? [], hartslag_status: hartslagStatus ?? [], cron_schema: cronSchema ?? [], dagomzet: omzetFout ? null : berekenDagomzet(omzetRijen), bezoekers: bezoekFout ? null : bouwBezoekersPayload(bezoekRijen, vandaag) }));
+    const body = JSON.stringify(bouwSchermPayload({ ...(data ?? {}), ...(stromen ?? {}), ...(werk ?? {}), nu_op_site: nuOp, versheid: versheid ?? null, bing_ai: bingAi ?? [], hartslag_status: hartslagStatus ?? [], cron_schema: cronSchema ?? [], dagomzet: omzetFout ? null : berekenDagomzet(omzetRijen), bezoekers: bezoekFout ? null : bouwBezoekersPayload(bezoekRijen, bezoekDag) }));
     cache = { op: Date.now(), body };
     return json(body, 200, { "Cache-Control": "private, max-age=4" });
   } catch (e) {
