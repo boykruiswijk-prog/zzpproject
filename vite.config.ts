@@ -82,7 +82,7 @@ export function cloudflareBulkCsv(redirectLines: string[], host = "zpzaken.nl"):
   };
   // De subpadregel deelt de bron met de exacte slashvariant. Laat die regel
   // voorgaan bij ontdubbelen, anders verdwijnen alle onderliggende nieuwspaden.
-  const nieuwsPattern = /^(?:(?:\/(?:en|de|fr))?\/(?:home\/)?nieuws|\/(?:en|de|fr)\/(?:portal|mijn-zp))\/\*\s/;
+  const nieuwsPattern = /^(?:(?:\/(?:en|de|fr))?\/(?:(?:home\/)?nieuws|control)|\/(?:en|de|fr)\/(?:portal|mijn-zp))\/\*\s/;
   const orderedLines = [...redirectLines.filter(line => nieuwsPattern.test(line)), ...redirectLines.filter(line => !nieuwsPattern.test(line))];
   for (const raw of orderedLines) {
     const line = raw.replace(/\s+#.*$/, "").trim();
@@ -97,7 +97,7 @@ export function cloudflareBulkCsv(redirectLines: string[], host = "zpzaken.nl"):
     }
     // Deze twee oude namespaces hebben geen huidige routes of exacte prefixregel.
     // Subpadmatching verwijst direct naar het doel, zonder het oude pad mee te nemen.
-    if (from === "/profile/*" || from === "/facts/press/*" || /^(?:\/(?:en|de|fr))?\/(?:home\/)?nieuws\/\*$/.test(from)) {
+    if (from === "/profile/*" || from === "/facts/press/*" || /^(?:\/(?:en|de|fr))?\/(?:(?:home\/)?nieuws|control)\/\*$/.test(from)) {
       const target = /^https?:\/\//.test(to) ? to : `https://${host}${to}`;
       push(`${host}${from.slice(0, -1)}`, target, "TRUE,TRUE,TRUE,FALSE");
       continue;

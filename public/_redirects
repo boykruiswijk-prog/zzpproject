@@ -530,6 +530,8 @@
 /control/verzekeringen/    /creditcontrol    301
 /control/verzekeringen/bav    /creditcontrol    301
 /control/verzekeringen/bav/    /creditcontrol    301
+/control/financieel/pensioen-webinar    /pensioen    301
+/control/financieel/pensioen-webinar/    /pensioen    301
 /cookie-instellingen-1    /cookies    301
 /cookie-instellingen-1/    /cookies    301
 /cyber-bedanktpage    /verzekeringen    301
@@ -2824,6 +2826,12 @@
 /de/control/verzekeringen/bav/    /creditcontrol    301  # taalprefix
 /fr/control/verzekeringen/bav    /creditcontrol    301  # taalprefix
 /fr/control/verzekeringen/bav/    /creditcontrol    301  # taalprefix
+/en/control/financieel/pensioen-webinar    /pensioen    301  # taalprefix
+/en/control/financieel/pensioen-webinar/    /pensioen    301  # taalprefix
+/de/control/financieel/pensioen-webinar    /pensioen    301  # taalprefix
+/de/control/financieel/pensioen-webinar/    /pensioen    301  # taalprefix
+/fr/control/financieel/pensioen-webinar    /pensioen    301  # taalprefix
+/fr/control/financieel/pensioen-webinar/    /pensioen    301  # taalprefix
 /en/cookie-instellingen-1    /cookies    301  # taalprefix
 /en/cookie-instellingen-1/    /cookies    301  # taalprefix
 /de/cookie-instellingen-1    /cookies    301  # taalprefix
@@ -4746,12 +4754,16 @@
 /profile/*    /    301
 /facts/press/*    /kennisbank    301
 /nieuws/*    /kennisbank    301
+/control/*    /creditcontrol    301
 /en/home/nieuws/*    /kennisbank    301  # taalprefix
 /de/home/nieuws/*    /kennisbank    301  # taalprefix
 /fr/home/nieuws/*    /kennisbank    301  # taalprefix
 /en/nieuws/*    /kennisbank    301  # taalprefix
 /de/nieuws/*    /kennisbank    301  # taalprefix
 /fr/nieuws/*    /kennisbank    301  # taalprefix
+/en/control/*    /creditcontrol    301  # taalprefix
+/de/control/*    /creditcontrol    301  # taalprefix
+/fr/control/*    /creditcontrol    301  # taalprefix
 
 # Pad met afsluitende slash → zelfde pad zonder slash (homepage uitgezonderd).
 /:path/    /:path    301!
