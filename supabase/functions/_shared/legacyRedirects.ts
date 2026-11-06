@@ -304,6 +304,8 @@ export const legacyRedirects: { from: string; to: string }[] = [
   { from: "control/privacy-statement", to: "/creditcontrol" },
   { from: "control/verzekeringen", to: "/creditcontrol" },
   { from: "control/verzekeringen/bav", to: "/creditcontrol" },
+  // Kwaliteitscontrole 6-11-2026 (Loep): oude /control/-paden uit not_found_log.
+  { from: "control/financieel/pensioen-webinar", to: "/pensioen" },
   { from: "cookie-instellingen-1", to: "/cookies" },
   { from: "cyber-bedanktpage", to: "/verzekeringen" },
   { from: "cyber-verzekering-zzp", to: "/verzekeringen" },
@@ -727,6 +729,8 @@ export const legacyRedirects: { from: string; to: string }[] = [
   { from: "profile/*", to: "/" },
   { from: "facts/press/*", to: "/kennisbank" },
   { from: "nieuws/*", to: "/kennisbank" },
+  // Kwaliteitscontrole 6-11-2026: vangnet voor overige oude /control/-paden.
+  { from: "control/*", to: "/creditcontrol" },
 ];
 
 export const legacyRedirectMap: Record<string, string> = Object.fromEntries(
