@@ -29,3 +29,4 @@
 - Schermwerktuin (A8-correctie): poppetjes zijn het hoofdbeeld; plek per robotnaam in MachineScene POPPETJE_PLEK, afdelingslabel via AFDELING_TAG, machine-afdelingen als kleine chips; robot-afdeling in WERKPLEK (schermAnonimiseer.ts); workerruns via scherm_cron_schema() + _shared/cronVolgende.ts (UTC). Waarom: één bron voor robots, labels nooit over de poppetjes.
 
 Regels over _shared-modules staan in supabase/functions/_shared/AGENTS.md, over de planner in supabase/functions/factuur-planner/AGENTS.md en over certificaten in supabase/functions/generate-certificate/AGENTS.md.
+- Cyberingang eerder dan morgen alleen via cyber_terugwerkend_vroegst: Ellen bij cyber in de oorspronkelijke aanvraag, of een rij in cyber_ingang_uitzonderingen (per onderneming, reden verplicht, alleen service_role, alleen na besluit Boy). Waarom: standaardgrens blijft, uitzondering herleidbaar.
