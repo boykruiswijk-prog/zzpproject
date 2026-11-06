@@ -8039,6 +8039,7 @@ export type Database = {
         Args: { _geen_sepa?: boolean; _lead_id: string; _user_id: string }
         Returns: Json
       }
+      lidmaatschap_credit_reden: { Args: never; Returns: string }
       log_not_found: {
         Args: { _pad: string; _referrer?: string; _user_agent?: string }
         Returns: undefined
