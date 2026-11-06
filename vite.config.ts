@@ -97,7 +97,7 @@ export function cloudflareBulkCsv(redirectLines: string[], host = "zpzaken.nl"):
     }
     // Deze twee oude namespaces hebben geen huidige routes of exacte prefixregel.
     // Subpadmatching verwijst direct naar het doel, zonder het oude pad mee te nemen.
-    if (from === "/profile/*" || from === "/facts/press/*" || /^(?:\/(?:en|de|fr))?\/(?:home\/)?nieuws\/\*$/.test(from)) {
+    if (from === "/profile/*" || from === "/facts/press/*" || /^(?:\/(?:en|de|fr))?\/(?:(?:home\/)?nieuws|control)\/\*$/.test(from)) {
       const target = /^https?:\/\//.test(to) ? to : `https://${host}${to}`;
       push(`${host}${from.slice(0, -1)}`, target, "TRUE,TRUE,TRUE,FALSE");
       continue;

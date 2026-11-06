@@ -6,12 +6,16 @@ zpzaken.nl/de/mijn-zp/,https://zpzaken.nl/mijn-zp/,301,TRUE,TRUE,TRUE,TRUE
 zpzaken.nl/fr/mijn-zp/,https://zpzaken.nl/mijn-zp/,301,TRUE,TRUE,TRUE,TRUE
 zpzaken.nl/home/nieuws/,https://zpzaken.nl/kennisbank,301,TRUE,TRUE,TRUE,FALSE
 zpzaken.nl/nieuws/,https://zpzaken.nl/kennisbank,301,TRUE,TRUE,TRUE,FALSE
+zpzaken.nl/control/,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,TRUE,FALSE
 zpzaken.nl/en/home/nieuws/,https://zpzaken.nl/kennisbank,301,TRUE,TRUE,TRUE,FALSE
 zpzaken.nl/de/home/nieuws/,https://zpzaken.nl/kennisbank,301,TRUE,TRUE,TRUE,FALSE
 zpzaken.nl/fr/home/nieuws/,https://zpzaken.nl/kennisbank,301,TRUE,TRUE,TRUE,FALSE
 zpzaken.nl/en/nieuws/,https://zpzaken.nl/kennisbank,301,TRUE,TRUE,TRUE,FALSE
 zpzaken.nl/de/nieuws/,https://zpzaken.nl/kennisbank,301,TRUE,TRUE,TRUE,FALSE
 zpzaken.nl/fr/nieuws/,https://zpzaken.nl/kennisbank,301,TRUE,TRUE,TRUE,FALSE
+zpzaken.nl/en/control/,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,TRUE,FALSE
+zpzaken.nl/de/control/,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,TRUE,FALSE
+zpzaken.nl/fr/control/,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,TRUE,FALSE
 zpzaken.nl/wp-content/uploads/2021/05/HRM-Finance-Branche-verklaring.pdf,https://zpzaken.nl/verzekeringen,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/wp-content/uploads/2021/05/HRM-Finance-Branche-verklaring.pdf/,https://zpzaken.nl/verzekeringen,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/wp-content/uploads/2021/05/IT-Brancge-verklaring.pdf,https://zpzaken.nl/verzekeringen,301,TRUE,TRUE,FALSE,FALSE
@@ -513,7 +517,6 @@ zpzaken.nl/category/zelfstandig-professional/page/2/,https://zpzaken.nl/kennisba
 zpzaken.nl/category/zp-golf,https://zpzaken.nl/kennisbank,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/category/zp-golf/,https://zpzaken.nl/kennisbank,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/control,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,FALSE,FALSE
-zpzaken.nl/control/,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/control/advies,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/control/advies/,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/control/algemene-voorwaarden,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,FALSE,FALSE
@@ -2744,11 +2747,8 @@ zpzaken.nl/de/category/zp-golf/,https://zpzaken.nl/kennisbank,301,TRUE,TRUE,FALS
 zpzaken.nl/fr/category/zp-golf,https://zpzaken.nl/kennisbank,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/fr/category/zp-golf/,https://zpzaken.nl/kennisbank,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/en/control,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,FALSE,FALSE
-zpzaken.nl/en/control/,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/de/control,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,FALSE,FALSE
-zpzaken.nl/de/control/,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/fr/control,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,FALSE,FALSE
-zpzaken.nl/fr/control/,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/en/control/advies,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/en/control/advies/,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,FALSE,FALSE
 zpzaken.nl/de/control/advies,https://zpzaken.nl/creditcontrol,301,TRUE,TRUE,FALSE,FALSE
