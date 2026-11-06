@@ -62,6 +62,16 @@ export default function Starters() {
       badge="Voor nieuwe zzp'ers"
       title={<>Starterspakket <span className="text-accent">BAV + AVB</span></>}
       subtitle="Net begonnen als zzp'er? Regel vanaf je eerste opdracht een goede beroeps- en bedrijfsaansprakelijkheidsverzekering in één polis, met een startertarief voor het eerste jaar."
+      heroExtra={
+        <div className="mb-8" data-testid="startertarief-hero">
+          <p className="text-2xl md:text-3xl font-bold text-primary-foreground">
+            € {STARTER.maandprijs} per maand de eerste {STARTER.duurMaanden} maanden
+          </p>
+          <p className="mt-2 text-sm md:text-base text-primary-foreground/80">
+            inclusief kosten en assurantiebelasting, BAV + AVB in één polis, geen eigen risico. Daarna € {STARTER.naMaandprijs} per maand. Voor zzp'ers met een KVK-inschrijving jonger dan {STARTER.duurMaanden} maanden.
+          </p>
+        </div>
+      }
       schema={schema}
       benefits={[
         { icon: Award, title: "De bedenker van BAV + AVB in één polis", description: "ZP Zaken bracht de BAV en AVB als eerste samen in één polis voor zzp'ers en is marktleider." },

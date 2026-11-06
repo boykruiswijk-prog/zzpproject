@@ -42,6 +42,8 @@ interface ServicePageTemplateProps {
   ctaSubtitle: string;
   ctaButton: string;
   children?: ReactNode;
+  /** Optioneel blok in de hero, direct onder de ondertitel en boven de knop(pen). */
+  heroExtra?: ReactNode;
   /** Optioneel blok direct na de hero (snelle start). */
   naHero?: ReactNode;
   /** Productpagina-hero: "direct" = prijsregel + Online aanvragen naar ingebed formulier; "terugbel" = wij regelen het. */
@@ -72,6 +74,7 @@ export function ServicePageTemplate({
   ctaSubtitle,
   ctaButton,
   children,
+  heroExtra,
   naHero,
   aanvraag,
   schema,
@@ -97,6 +100,7 @@ export function ServicePageTemplate({
         compactMobiel={aanvraag === "snel"}
         tekstAfbreken={beroepspagina}
       >
+        {heroExtra}
         {aanvraag === "snel" ? (
           <SnelleStart prijsregel={beroepspagina ? beroepspaginaPrijsregel() : undefined} />
         ) : aanvraag === "direct" ? (
