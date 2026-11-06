@@ -4,6 +4,7 @@ import { isInternalMachine, requireMfa } from "../_shared/teamAuth.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.108.2";
 import { createMailGate } from "../_shared/mail.ts";
 import { COMPANY } from "../_shared/company.ts";
+import { creditZin, soortVanContract, type BeeindigdSoort } from "../_shared/beeindigingTekst.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -40,11 +41,17 @@ Deno.serve(async (req) => {
   if (!to.length) return json({ error: "testrecord: alleen @zpzaken.nl" }, 400);
   const voornaam = ontv[0].voornaam ? `Hoi ${esc(ontv[0].voornaam)},` : "Hoi,";
   const datum = n.details?.einddatum ? nl(String(n.details.einddatum)) : "";
+  // Welke soorten zijn beeindigd: uit de creditregels van de notitie en de contracten met deze einddatum.
+  const soorten: BeeindigdSoort[] = ((n.details?.credits ?? []) as any[]).map((c) => soortVanContract(null, c?.product));
+  if (n.details?.einddatum) {
+    const { data: ks } = await admin.from("klant_contracten").select("type,product").eq("onderneming_id", n.onderneming_id).eq("eind_datum", String(n.details.einddatum));
+    for (const k of (ks ?? []) as any[]) soorten.push(soortVanContract(k.type, k.product));
+  }
   const subject = `Bevestiging beeindiging ${o?.naam ?? ""}`.trim();
   const html = `<!doctype html><html lang="nl"><body style="font-family:Arial,sans-serif;color:#1a1a1a"><div style="max-width:560px;margin:0 auto;padding:24px;font-size:15px;line-height:1.6">
 <p style="font-size:20px;font-weight:bold;color:#E53E2F">ZP Zaken</p><p>${voornaam}</p>
 <p>Hierbij bevestigen we dat je verzekering of lidmaatschap voor ${esc(o?.naam ?? "je onderneming")} is beeindigd per ${datum}.</p>
-<p>Is er na die datum al iets gefactureerd, dan ontvang je daarvoor een creditnota. Klopt er iets niet? Antwoord dan op deze mail.</p>
+<p>${creditZin(soorten)} Klopt er iets niet? Antwoord dan op deze mail.</p>
 <p>Groet,<br>${esc(COMPANY.legalName)}</p></div></body></html>`;
   const gate = createMailGate("crm-beeindiging-bevestiging", req);
   const plan = gate.plan({ to, subject, html });
