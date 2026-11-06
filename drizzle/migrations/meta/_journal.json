@@ -1779,6 +1779,13 @@
       "when": 1793891860991,
       "tag": "0253_bezoekers_bijwerken_alias_fix",
       "breakpoints": true
+    },
+    {
+      "idx": 254,
+      "version": "7",
+      "when": 1793964735358,
+      "tag": "0254_lidmaatschap_geen_credit",
+      "breakpoints": true
     }
   ]
 }
