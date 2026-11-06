@@ -22,7 +22,7 @@ export default function BezoekersKaart({ b }: { b: BezoekersPayload | null }) {
   return (
     <div className="flex h-full min-h-0 flex-col gap-[16px]" data-testid="bezoekerskaart">
       <div className="flex items-baseline justify-between gap-[16px]">
-        <h2 className="text-[38.88px] font-semibold tracking-tight text-[hsl(var(--s-tekst))]">Bezoekers vandaag</h2>
+        <h2 className="text-[38.88px] font-semibold tracking-tight text-[hsl(var(--s-tekst))]">Bezoekers afgelopen 7 dagen</h2>
         <span className="text-[54px] font-bold leading-none tabular-nums text-[hsl(var(--s-tekst))]" data-testid="bezoekers-totaal">{b ? nf.format(b.totaal) : "-"}</span>
       </div>
       {!b && <div className="text-[23.76px] text-[hsl(var(--s-dim))]">Wacht op de koppeling met Google Analytics</div>}

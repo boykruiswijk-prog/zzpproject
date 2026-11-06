@@ -79,6 +79,13 @@ export function bouwBezoekersPayload(rijen: { soort?: unknown; plaats?: unknown;
   return { dag: vandaag, totaal, plaatsen, nu, bijgewerkt_op: op };
 }
 
+/** A8-aanvulling Bezoekerskaart per week (6-11): de dag in de cache is het 7-dagentotaal; zonder rijen voor vandaag valt het scherm terug op de meest recente dag met rijen. */
+export function nieuwsteBezoekDag(dagen: (string | null | undefined)[], vandaag: string): string {
+  let best = "";
+  for (const d of dagen) if (typeof d === "string" && d > best) best = d;
+  return best || vandaag;
+}
+
 /** Top-N voor de lijst: alleen echte Nederlandse plaatsen. */
 export function topPlaatsen(p: BezoekPlaats[], n = 5) {
   return p.filter((x) => x.plaats !== ONBEKEND && x.plaats !== BUITENLAND).slice(0, n);
