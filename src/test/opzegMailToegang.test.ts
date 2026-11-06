@@ -2,6 +2,7 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { readFileSync } from "node:fs";
 import ts from "typescript";
+import { creditZin, soortVanContract } from "../../supabase/functions/_shared/beeindigingTekst";
 import { verstuurKlantmail } from "../../supabase/functions/_shared/klantmailSchakelaar";
 
 const id = "00000000-0000-4000-8000-000000000001";
@@ -29,11 +30,11 @@ function fixture(name: string, status = "geroyeerd") {
   new Function("exports", "createClient", "corsHeaders", "Deno", compile("supabase/functions/_shared/teamAuth.ts"))(
     auth, () => ({ auth: { getUser: async () => ({ data: { user: { id } }, error: null }) } }), { "Access-Control-Allow-Origin": "*" }, runtime);
   let handler: ((req: Request) => Promise<Response>) | undefined;
-  new Function("exports", "Deno", "createClient", "corsHeaders", "isInternalMachine", "requireMfa", "requireSupervisor", "createMailGate", "COMPANY", "klantOntvanger", "verstuurKlantmail", "datumNL", "euro", "fetch",
+  new Function("exports", "Deno", "createClient", "corsHeaders", "isInternalMachine", "requireMfa", "requireSupervisor", "createMailGate", "COMPANY", "klantOntvanger", "verstuurKlantmail", "datumNL", "euro", "fetch", "creditZin", "soortVanContract",
     compile(`supabase/functions/${name}/index.ts`))({}, { ...runtime, serve: (fn: typeof handler) => { handler = fn; } }, () => db,
     { "Access-Control-Allow-Origin": "*" }, auth.isInternalMachine, auth.requireMfa, auth.requireSupervisor,
     () => ({ plan: () => ({ send: true, to: ["test@zpzaken.nl"] }) }), { legalName: "ZP Zaken" },
-    async () => ({ email: "test@zpzaken.nl", voornaam: "Test" }), send, (s: string) => s, String, fetchSpy);
+    async () => ({ email: "test@zpzaken.nl", voornaam: "Test" }), send, (s: string) => s, String, fetchSpy, creditZin, soortVanContract);
   return { handler: async (req: Request) => { if (!handler) throw new Error("Missing handler"); return handler(req); }, writes, send, fetchSpy };
 }
 afterEach(() => vi.unstubAllGlobals());
