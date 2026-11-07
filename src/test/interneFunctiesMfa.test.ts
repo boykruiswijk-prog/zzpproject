@@ -11,6 +11,7 @@ const uitzonderingen: Record<string, string> = {
   "advertentie-beeld": "Empty wake processes only SQL-enqueued ad image jobs; no caller input",
   "nps-antwoord": "Individual NPS token from the customer mail",
   "nps-verzoeken": "Vault cron-secret only",
+  "google-review-controle": "Vault cron-secret only; weekly score fields, no human path",
   "openai-conversions": "Internal machine token only (process-bav-wizard)",
   "afgehaakt-samenvatting": "Vault cron-secret",
   "artikel-foto": "Empty wake processes only SQL-enqueued article photo jobs; no caller input",
