@@ -529,6 +529,16 @@ export const ZEKER_KENNIS = {
       "verzekeringskaart": "/documenten/Verzekeringskaart-beroepsaansprakelijkheid-MCPH-2013B.pdf"
     },
     {
+      "id": "hr",
+      "label": "HR",
+      "verzekeringskaart": "/documenten/Verzekeringskaart-beroepsaansprakelijkheid-MCPH-2013B.pdf"
+    },
+    {
+      "id": "finance",
+      "label": "Finance",
+      "verzekeringskaart": "/documenten/Verzekeringskaart-beroepsaansprakelijkheid-MCPH-2013B.pdf"
+    },
+    {
       "id": "pr-marketing",
       "label": "Reclame- & marketingbureaus",
       "verzekeringskaart": "/documenten/Verzekeringskaart-beroepsaansprakelijkheid-MAPM-08B.pdf"
