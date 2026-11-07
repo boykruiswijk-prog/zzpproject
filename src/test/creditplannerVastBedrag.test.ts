@@ -1,10 +1,25 @@
 // @vitest-environment node
 import { describe, expect, it, vi } from "vitest";
-import { berekenCreditVoorPlanner, berekenOpzegCredit, plannerCreditPayload } from "../../supabase/functions/_shared/creditOpzegging";
+import { berekenCreditVoorPlanner, berekenOpzegCredit, plannerCreditPayload, heeftVastCreditBedrag } from "../../supabase/functions/_shared/creditOpzegging";
+import { readFileSync } from "node:fs";
+import { runInNewContext } from "node:vm";
 
 describe("D-aanvulling Creditplanner 7-11", () => {
   const perioden = [{ periode_start: "2026-10-20", periode_eind: "2027-10-19", bedrag: 600 }];
   const korting = { bedrag: 60, jaarpremie: 600, korting_pct: 10 };
+  it("werkelijke plannerlus overschrijft het goedgekeurde bedrag niet", async () => {
+    const bron = readFileSync("supabase/functions/factuur-planner/index.ts", "utf8");
+    const start = bron.indexOf("for (const c of creditRijen ?? [])");
+    const loop = bron.slice(start, bron.indexOf("const creditOverzicht", start))
+      .replaceAll("(pl ?? []) as any[]", "(pl ?? [])").replaceAll("(m as any)", "m").replaceAll("(k as any)", "k").replaceAll("k as any", "k").replaceAll("(x: any)", "(x)");
+    const rij = { id: "test", bron: "correctie", status: "te_maken", planning_ids: ["test"], bedrag: 60, berekening: korting, einddatum: "2026-10-19" };
+    const update = vi.fn();
+    const query = { select: () => query, in: async () => ({ data: [{ ...perioden[0], btw_code: "0" }] }), update, eq: async () => ({}) };
+    await runInNewContext(`(async () => { ${loop} })()`, { creditRijen: [rij], credits: [], admin: { from: () => query }, berekenCreditVoorPlanner, heeftVastCreditBedrag, berekenOpzegCredit, btwCode: (v: string) => v });
+    expect(rij.bedrag).toBe(60);
+    expect(rij.berekening).toEqual(korting);
+    expect(update).not.toHaveBeenCalled();
+  });
   it("ZPC-0E5D7316: akkoord 60 blijft 60 in concept, niet de volledige jaarpremie 600", () => {
     const herbereken = vi.fn(() => berekenOpzegCredit("2026-10-19", perioden));
     expect(herbereken().bedrag).toBe(600);
