@@ -66,6 +66,7 @@ const AdminServiceAanvraagDetail = lazy(() => import("./pages/admin/ServiceAanvr
 const AdminCRM = lazy(() => import("./pages/admin/CRM"));
 const AdminActiviteiten = lazy(() => import("./pages/admin/Activiteiten"));
 const AdminSocialMediaFeatures = lazy(() => import("./pages/admin/SocialMediaFeatures"));
+const AdminGoogleReviews = lazy(() => import("./pages/admin/GoogleReviews"));
 const AdminIntegraties = lazy(() => import("./pages/admin/Integraties"));
 const AdminExactKoppeling = lazy(() => import("./pages/admin/ExactKoppeling"));
 const AdminInterneMeldingen = lazy(() => import("./pages/admin/InterneMeldingen"));
@@ -274,6 +275,7 @@ export const AppRoutes = () => (
             <Route path="/admin/machtigingen-nakijken" element={<RoleGuard allow={["verzekering"]}><AdminMachtigingenNakijken /></RoleGuard>} />
             <Route path="/admin/service-aanvragen/:id" element={<AdminServiceAanvraagDetail />} />
             <Route path="/admin/social-media" element={<RoleGuard allow={["marketing"]}><AdminSocialMediaFeatures /></RoleGuard>} />
+            <Route path="/admin/google-reviews" element={<RoleGuard allow={["admin", "marketing", "verzekering"]}><AdminGoogleReviews /></RoleGuard>} />
             <Route path="/admin/marketing" element={<RoleGuard allow={["marketing"]}><AdminMarketing /></RoleGuard>} />
             <Route path="/admin/kennisbank" element={<RoleGuard allow={["marketing"]}><AdminKennisbank /></RoleGuard>} />
             <Route path="/admin/kennisbank/actualiteit" element={<RoleGuard allow={["marketing"]}><AdminKennisbankActualiteit /></RoleGuard>} />

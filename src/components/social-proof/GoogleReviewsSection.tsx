@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { googleReviewsData } from "@/data/googleReviews";
 import { SITE_CONFIG } from "@/config/site";
+import { useGoogleReviews } from "@/hooks/useGoogleReviews";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 function Stars({ count = 5, className = "h-4 w-4" }: { count?: number; className?: string }) {
   return (
@@ -30,7 +32,8 @@ interface Props {
 }
 
 export function GoogleReviewsSection({ className = "" }: Props) {
-  const { averageRating, totalReviews, reviews, googleReviewsUrl } = googleReviewsData;
+  const { averageRating, totalReviews, reviews } = useGoogleReviews();
+  const { googleReviewsUrl } = googleReviewsData;
 
   return (
     <section className={`section-padding bg-background ${className}`}>
@@ -41,9 +44,10 @@ export function GoogleReviewsSection({ className = "" }: Props) {
           </p>
           <div className="flex items-center justify-center gap-3 mb-3">
             <h2 className="!mb-0">{averageRating.toFixed(1).replace(".", ",")} sterren op Google</h2>
-            <Stars count={5} className="h-6 w-6" />
+            <Stars count={Math.round(averageRating)} className="h-6 w-6" />
           </div>
           <p className="text-muted-foreground">
+            <span>{totalReviews} Google-reviews. </span>
             <a
               href={googleReviewsUrl}
               target="_blank"
@@ -55,15 +59,16 @@ export function GoogleReviewsSection({ className = "" }: Props) {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <Carousel opts={{ align: "start" }} className="max-w-6xl mx-auto pb-12" aria-label="Google-reviews">
+        <CarouselContent>
           {reviews.map((review, i) => (
-            <motion.div
+            <CarouselItem key={review.name + i} className="md:basis-1/2 lg:basis-1/3"><motion.div
               key={i}
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.08 }}
-              className="bg-card border border-border/60 rounded-2xl p-6 shadow-card flex flex-col"
+              className="bg-card border border-border/60 rounded-lg p-6 shadow-card flex flex-col h-full"
             >
               <Stars count={review.rating} />
               <div className="relative mt-4 flex-1">
@@ -73,7 +78,7 @@ export function GoogleReviewsSection({ className = "" }: Props) {
                 </p>
               </div>
               <div className="mt-6 pt-4 border-t border-border/40 flex items-center justify-between gap-3">
-                <p className="text-sm font-semibold text-foreground">{review.name}</p>
+                <div><p className="text-sm font-semibold text-foreground">{review.name}</p>{review.date && <p className="text-xs text-muted-foreground">{new Date(`${review.date}T12:00:00`).toLocaleDateString('nl-NL')}</p>}</div>
                 <a
                   href={review.sourceUrl}
                   target="_blank"
@@ -84,9 +89,9 @@ export function GoogleReviewsSection({ className = "" }: Props) {
                   <span>via Google</span>
                 </a>
               </div>
-            </motion.div>
+            </motion.div></CarouselItem>
           ))}
-        </div>
+        </CarouselContent><CarouselPrevious aria-label="Vorige review" title="Vorige review" className="!left-auto right-12 !top-auto bottom-0 !translate-y-0"/><CarouselNext aria-label="Volgende review" title="Volgende review" className="!right-0 !top-auto bottom-0 !translate-y-0"/></Carousel>
 
         <div className="text-center mt-10">
           <Button variant="outline" asChild>

@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { vanafPrijsregel } from "@/data/bavPakketten";
 import { SITE_CONFIG } from "@/config/site";
 import { googleReviewsData } from "@/data/googleReviews";
+import { useGoogleReviews } from "@/hooks/useGoogleReviews";
 import { controleerSnelleStart, startAanvraag } from "@/lib/snelleStart";
 import { openTerugbel } from "@/components/shared/TerugbelDialog";
 import { isNlTelefoon } from "../../../supabase/functions/_shared/telefoon";
@@ -15,7 +16,8 @@ export function SnelleStart({ prijsregel }: { prijsregel?: string } = {}) {
   const [email, setEmail] = useState("");
   const [telefoon, setTelefoon] = useState("");
   const [fout, setFout] = useState<string | null>(null);
-  const score = googleReviewsData.averageRating.toFixed(1).replace(".", ",");
+  const { averageRating } = useGoogleReviews();
+  const score = averageRating.toFixed(1).replace(".", ",");
 
   function aanvragen(e: React.FormEvent) {
     e.preventDefault();

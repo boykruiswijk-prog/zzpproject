@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/tooltip";
 import { SITE_CONFIG } from "@/config/site";
 import { googleReviewsData } from "@/data/googleReviews";
+import { useGoogleReviews } from "@/hooks/useGoogleReviews";
 
 interface Props {
   compact?: boolean;
@@ -19,6 +20,7 @@ export function TrustSignalsStrip({
   className = "",
 }: Props) {
   const kifid = kifidNumber || SITE_CONFIG.registrations.kifid || "Aansluitnummer volgt";
+  const { averageRating } = useGoogleReviews();
 
   const items = [
     {
@@ -49,7 +51,7 @@ export function TrustSignalsStrip({
       key: "google",
       icon: Star,
       iconClass: "text-yellow-400 fill-yellow-400",
-      label: `${googleReviewsData.averageRating.toFixed(1).replace(".", ",")} sterren op Google`,
+      label: `${averageRating.toFixed(1).replace(".", ",")} sterren op Google`,
       sublabel: "Onafhankelijke beoordelingen",
       href: googleReviewsData.googleReviewsUrl,
     },

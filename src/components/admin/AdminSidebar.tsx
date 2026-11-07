@@ -43,6 +43,7 @@ const groups: NavGroup[] = [
     { to: "/admin/kennisbank/actualiteit", icon: AlertTriangle, label: "Verouderingscheck", roles: ["supervisor", "marketing"] },
     { to: "/admin/niet-gevonden", icon: SearchX, label: "Niet-gevonden pagina's", roles: ["supervisor", "marketing"] },
     { to: "/admin/social-media", icon: Share2, label: "Social media", roles: ["supervisor", "marketing"] },
+    { to: "/admin/google-reviews", icon: MessageCircle, label: "Google-reviews", roles: ["admin", "supervisor", "verzekering", "marketing"] },
     { to: "/admin/chatgesprekken", icon: MessageCircle, label: "Chatgesprekken", teller: "chat", roles: ["supervisor", "verzekering", "marketing"] },
   ]},
   { label: "Instellingen", icon: Settings, roles: ["admin", "supervisor"], items: [

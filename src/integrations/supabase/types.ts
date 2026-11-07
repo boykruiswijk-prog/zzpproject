@@ -3718,6 +3718,111 @@ export type Database = {
         }
         Relationships: []
       }
+      google_review_scores: {
+        Row: {
+          aantal: number
+          controle_week: string
+          gecontroleerd_op: string
+          rating: number
+        }
+        Insert: {
+          aantal: number
+          controle_week: string
+          gecontroleerd_op?: string
+          rating: number
+        }
+        Update: {
+          aantal?: number
+          controle_week?: string
+          gecontroleerd_op?: string
+          rating?: number
+        }
+        Relationships: []
+      }
+      google_review_week_claims: {
+        Row: {
+          gestart_op: string
+          week: string
+        }
+        Insert: {
+          gestart_op?: string
+          week: string
+        }
+        Update: {
+          gestart_op?: string
+          week?: string
+        }
+        Relationships: []
+      }
+      google_reviews: {
+        Row: {
+          aangemaakt_op: string
+          google_url: string
+          id: string
+          naam: string
+          reden: string
+          review_datum: string | null
+          sterren: number
+          tekst: string
+          verborgen: boolean
+        }
+        Insert: {
+          aangemaakt_op?: string
+          google_url: string
+          id?: string
+          naam: string
+          reden: string
+          review_datum?: string | null
+          sterren: number
+          tekst: string
+          verborgen?: boolean
+        }
+        Update: {
+          aangemaakt_op?: string
+          google_url?: string
+          id?: string
+          naam?: string
+          reden?: string
+          review_datum?: string | null
+          sterren?: number
+          tekst?: string
+          verborgen?: boolean
+        }
+        Relationships: []
+      }
+      google_reviews_audit: {
+        Row: {
+          actie: string
+          gebruiker_id: string | null
+          id: string
+          na: Json | null
+          op: string
+          reden: string
+          review_id: string
+          voor: Json | null
+        }
+        Insert: {
+          actie: string
+          gebruiker_id?: string | null
+          id?: string
+          na?: Json | null
+          op?: string
+          reden: string
+          review_id: string
+          voor?: Json | null
+        }
+        Update: {
+          actie?: string
+          gebruiker_id?: string | null
+          id?: string
+          na?: Json | null
+          op?: string
+          reden?: string
+          review_id?: string
+          voor?: Json | null
+        }
+        Relationships: []
+      }
       hartslag_metingen: {
         Row: {
           gemeten_op: string
@@ -7975,6 +8080,25 @@ export type Database = {
       get_pilot_signup_count: { Args: { pilot: string }; Returns: number }
       get_portal_status: { Args: { _lead_id: string }; Returns: Json }
       get_user_role_label: { Args: { _user_id: string }; Returns: string }
+      google_reviews_bewaren: {
+        Args: {
+          _datum: string
+          _id: string
+          _naam: string
+          _reden: string
+          _sterren: number
+          _tekst: string
+          _url: string
+          _verborgen: boolean
+        }
+        Returns: string
+      }
+      google_reviews_publiek: { Args: never; Returns: Json }
+      google_reviews_score_opslaan: {
+        Args: { _aantal: number; _rating: number; _week: string }
+        Returns: boolean
+      }
+      google_reviews_week_claim: { Args: { _week: string }; Returns: boolean }
       handmatige_lead_dubbelcheck: {
         Args: {
           _email: string

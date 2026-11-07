@@ -7,6 +7,7 @@ export interface GoogleReview {
   rating: number;
   text: string;
   sourceUrl: string;
+  date?: string | null;
 }
 
 export interface GoogleReviewsData {
