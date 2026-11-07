@@ -20,6 +20,7 @@ import { metWerk, werkVan } from "../_shared/machineWerk.ts";
 import { maakExactTempo, postMetSleutel, ExactTijdelijkError, isTijdelijkeStatus, type PostUitkomst } from "../_shared/exactTempo.ts";
 import { eerlijkePlannerVolgorde, PLANNER_WERK_MS, PLANNER_BATCH_MAX, moetVervolgPlannen, vervolgMagStarten, magDagstandMailen, startNlDagIso } from "../_shared/plannerBatch.ts";
 import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
+import { bereidPlannerCredits, heeftPlannerWerk, plannerDroogRapport } from "../_shared/plannerVoorbereiding.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -77,7 +78,8 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
       if (auth instanceof Response) return json({ error: "geen_toegang" }, auth.status);
     }
   }
-  const actie = trigger === "cron" ? "dagrun" : String(body?.actie ?? "proefrun");
+  const droog = body?.dry_run === true || body?.actie === "dryrun";
+  const actie = droog ? "dryrun" : trigger === "cron" ? "dagrun" : String(body?.actie ?? "proefrun");
 
   // Explicit single-contract test mode returns before machine activity, credit handling or Exact reads.
   if (actie === "testcontract_dryrun") {
@@ -97,8 +99,22 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
     return json(data);
   }
 
-  await werkVan(req).start();
   const vandaag = vandaagNL();
+  const { data: fcfg, error: configError } = await admin.from("facturatie_config").select("*").eq("id", 1).maybeSingle();
+  if (configError) return json({ error: configError.message }, 500);
+  const live = actie === "dagrun" && fcfg?.facturatie_actief === true;
+  const liveCredits = actie === "dagrun" && fcfg?.opzeg_credits_actief === true;
+  const startMs = Date.now();
+  const dagStart = startNlDagIso(vandaag);
+  const triggerLabel = trigger === "cron" && isVervolg ? "cron:vervolg" : `${trigger}:${actie}`;
+  let runId: string | null = null;
+  // Atomic database admission precedes calculation, credit changes, Exact and any mail.
+  if (live || liveCredits) {
+    const { data, error } = await admin.rpc("factuur_planner_start", { _trigger: triggerLabel, _kandidaten: 0, _geblokkeerd: 0, _bedrag: 0 });
+    if (error) return json({ error: error.message }, 500);
+    if (!data) return json({ overgeslagen: true, reden: "planner al bezig of daggrens van 5 echte runs bereikt" });
+    runId = data;
+  }
 
   // Pre-flight: uitsluitend GET naar Exact (BTW-codes, dagboeken, betalingscondities, facturen). Schrijft niets.
   if (actie === "preflight_get") {
@@ -230,57 +246,34 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
     return json({ modus: "alleen GET", schrijft_naar_exact: false, gecontroleerd: (rijen ?? []).length, vrijgegeven: vrijgegeven.length, bestaat, niet_gecontroleerd, resterend_fout_429: resterend });
   }
 
-  const van = ["proefrun", "proef_readonly"].includes(actie) ? String(body?.van ?? vandaag) : vandaag;
-  const tot = ["proefrun", "proef_readonly"].includes(actie) ? String(body?.tot ?? van) : vandaag;
+  const van = ["proefrun", "proef_readonly", "dryrun"].includes(actie) ? String(body?.van ?? vandaag) : vandaag;
+  const tot = ["proefrun", "proef_readonly", "dryrun"].includes(actie) ? String(body?.tot ?? van) : vandaag;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(van) || !/^\d{4}-\d{2}-\d{2}$/.test(tot)) return json({ error: "ongeldige datum" }, 400);
 
   const { data: kand, error: kErr } = await admin.rpc("facturatie_kandidaten", { _van: van, _tot: tot });
   if (kErr) return json({ error: kErr.message }, 500);
   const rijen = (kand ?? []) as any[];
   const sam = samenvatting(rijen);
+  if (droog) {
+    const { data: cfg, error } = await admin.from("exact_config").select("gl_account_ids,gl_code_bav,gl_account_id_bav,gl_account_id_bav_code").limit(1).maybeSingle();
+    if (error) return json({ error: error.message }, 500);
+    return json({ ...plannerDroogRapport(rijen, await bereidPlannerCredits(admin, false), cfg, fcfg, vandaag), van, tot });
+  }
   if (actie === "proef_readonly") return json({ modus: "proef", schrijft_naar_exact: false, schrijft_naar_database: false, van, tot, samenvatting: sam, regels: body?.regels === true ? rijen.map((r) => ({ klant_contract_id: r.klant_contract_id, periode_start: r.periode_start, bedrag: r.bedrag, blokkade: r.blokkade })) : undefined });
 
   // Creditnota's bij opzegging: herbeoordelen en bedrag berekenen (alleen database, nooit Exact).
   await admin.rpc("herbeoordeel_opzeg_credits");
-  const { data: creditRijen } = await admin.from("factuur_credit_planning").select("*").order("aangemaakt_op");
-  const credits: any[] = [];
-  for (const c of creditRijen ?? []) {
-    if (c.bron === "oud_systeem" && c.status === "te_maken") {
-      const { data: k } = await admin.from("klant_contracten").select("cyclus,aantal,bedrag_per_periode,begin_datum,factureren_vanaf,gefactureerd_tm,itemcode").eq("id", c.klant_contract_id).single();
-      const ber = berekenCreditVoorPlanner(c, () => berekenOudSysteemCredit(k as any, c.einddatum));
-      if (!heeftVastCreditBedrag(c) && Number(c.bedrag) !== ber.bedrag) {
-        const { error } = await admin.from("factuur_credit_planning").update({ bedrag: ber.bedrag, berekening: ber.berekening }).eq("id", c.id);
-        if (error) throw new Error(error.message);
-      }
-      const { data: m } = await admin.rpc("factuur_mapping_voor", { _itemcode: (k as any)?.itemcode });
-      c.bedrag = ber.bedrag; c.berekening = ber.berekening; c._item = c.exact_item_id; c._gl = c.gl_code; c._btw = btwCode((m as any)?.btw_code);
-    } else if (c.status === "te_maken" && c.planning_ids?.length) {
-      const { data: pl } = await admin.from("factuur_planning").select("periode_start,periode_eind,bedrag,exact_item_id,gl_code,btw_code").in("id", c.planning_ids);
-      const ber = berekenCreditVoorPlanner(c, () => berekenOpzegCredit(c.einddatum, (pl ?? []) as any[]));
-      if (!heeftVastCreditBedrag(c) && Number(c.bedrag) !== ber.bedrag) {
-        const { error } = await admin.from("factuur_credit_planning").update({ bedrag: ber.bedrag, berekening: ber.berekening }).eq("id", c.id);
-        if (error) throw new Error(error.message);
-      }
-      c.bedrag = ber.bedrag; c.berekening = ber.berekening; c._item = c.exact_item_id ?? pl?.[0]?.exact_item_id ?? null; c._gl = c.gl_code ?? pl?.[0]?.gl_code ?? null;
-      // Zelfde BTW-code als de gecrediteerde perioden; verschillende codes → null (blokkeert).
-      const codes = [...new Set((pl ?? []).map((x: any) => btwCode(x.btw_code)))];
-      c._btw = codes.length === 1 ? codes[0] : null;
-    }
-    credits.push(c);
-  }
+  const credits = await bereidPlannerCredits(admin, true);
   const creditOverzicht = credits.map((c) => ({ id: c.id, sleutel: c.creditsleutel, status: c.status, melding: c.melding, bedrag: c.bedrag,
     origineel_factuurnummer: c.origineel_factuurnummer, credit_vanaf: c.credit_vanaf, credit_tm: c.credit_tm, is_test: c.is_test, klant_contract_id: c.klant_contract_id }));
 
-  // Hoofdschakelaar: vers uit de database, in deze run.
-  const { data: fcfg } = await admin.from("facturatie_config").select("*").eq("id", 1).maybeSingle();
-  const live = actie === "dagrun" && fcfg?.facturatie_actief === true;
-  // Creditnota's bij opzegging hebben een eigen schakelaar (Boy: los van facturatie_actief).
-  const liveCredits = actie === "dagrun" && fcfg?.opzeg_credits_actief === true;
-
-  let runId: string | null = null;
-  const startMs = Date.now();
-  const dagStart = startNlDagIso(vandaag);
-  const triggerLabel = trigger === "cron" && isVervolg ? "cron:vervolg" : `${trigger}:${actie}`;
+  const heeftWerk = heeftPlannerWerk(rijen, credits, live, liveCredits, vandaag);
+  if ((live || liveCredits) && !heeftWerk) {
+    await admin.from("factuur_planner_runs").update({ status: "ok", aantal_kandidaten: rijen.length, aantal_geblokkeerd: sam.geblokkeerd.aantal, bedrag: 0, afgerond_op: new Date().toISOString(), bijgewerkt_op: new Date().toISOString(), detail: { leeg: true, mails: 0 } }).eq("id", runId);
+    await admin.rpc("factuur_planner_vervolg", { _actief: false });
+    return json({ modus: "live", run_id: runId, leeg: true, aangemaakt: 0, credits_aangemaakt: 0, verstuurt_mails: false });
+  }
+  await werkVan(req).start();
   let vervolgRunsVandaag = 0;
   if (live || liveCredits) {
     const { count } = await admin.from("factuur_planner_runs").select("id", { count: "exact", head: true })
@@ -306,10 +299,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
   const fouten: string[] = [];
   const runDetail: Record<string, unknown> = {};
   if (live || liveCredits) {
-    const { data, error } = await admin.rpc("factuur_planner_start", { _trigger: triggerLabel, _kandidaten: rijen.length, _geblokkeerd: sam.geblokkeerd.aantal, _bedrag: sam.klaar.bedrag });
-    if (error) return json({ error: error.message }, 500);
-    if (!data) return json({ overgeslagen: true, reden: "planner al bezig" });
-    runId = data;
+    await admin.from("factuur_planner_runs").update({ aantal_kandidaten: rijen.length, aantal_geblokkeerd: sam.geblokkeerd.aantal, bedrag: sam.klaar.bedrag }).eq("id", runId);
     // Arm before work: even an unexpected hard stop has a durable follow-up.
     const { error: vervolgErr } = await admin.rpc("factuur_planner_vervolg", { _actief: true });
     if (vervolgErr) return json({ error: vervolgErr.message, run_id: runId }, 500);
@@ -477,7 +467,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
       }
       await admin.from("factuur_credit_planning").update(upd).eq("id", c.id);
     }
-    for (const c of credits.filter((x) => x.status === "te_maken" && !x.is_test && Number(x.bedrag) > 0)) {
+    for (const c of (liveCredits ? credits : []).filter((x) => x.status === "te_maken" && !x.is_test && Number(x.bedrag) > 0)) {
       if (Date.now() - startMs > RUN_BUDGET_MS - 20_000) break;
       const { data: claim } = await admin.from("factuur_credit_planning").update({ status: "geclaimd" }).eq("id", c.id).eq("status", "te_maken").select("id").maybeSingle();
       if (!claim) continue;
@@ -536,7 +526,8 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
   runDetail.kandidaten = sam.klaar.aantal;
   const creditsRest = liveCredits ? await admin.from("factuur_credit_planning").select("id", { count: "exact", head: true }).eq("status", "te_maken").eq("is_test", false).gt("bedrag", 0) : { count: 0 };
   const resterendWerk = !!restErr || resterend > 0 || Number(creditsRest.count ?? 0) > 0 || runDetail.statuscontrole_uitgesteld === true;
-  const vervolg = moetVervolgPlannen({ aangemaakt, statussenBijgewerkt, creditsAangemaakt, resterendWerk, vervolgRunsVandaag });
+  const { count: echteRunsVandaag } = await admin.from("factuur_planner_runs").select("id", { count: "exact", head: true }).eq("modus", "live").gte("gestart_op", dagStart);
+  const vervolg = Number(echteRunsVandaag ?? 5) < 5 && moetVervolgPlannen({ aangemaakt, statussenBijgewerkt, creditsAangemaakt, resterendWerk, vervolgRunsVandaag });
   Object.assign(runDetail, { statussen_bijgewerkt: statussenBijgewerkt, credits_aangemaakt: creditsAangemaakt, vervolg_gepland: vervolg, vervolgruns_vandaag: vervolgRunsVandaag });
   await voortgang(fouten.length ? "fout" : resterend ? "gedeeltelijk" : "ok");
   // Vervolgtaak alleen na echte voortgang (max 12 per dag, elke 15 min); anders stoppen tot de volgende dagrun.
@@ -545,7 +536,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
   // Roxy: maximaal één dagstand per dag, na de laatste run van de dag.
   const { count: gemaild } = await admin.from("factuur_planner_runs").select("id", { count: "exact", head: true })
     .gte("gestart_op", dagStart).not("detail->mail", "is", null);
-  if (magDagstandMailen(vervolg, Number(gemaild ?? 0) > 0)) {
+  if (heeftWerk && magDagstandMailen(vervolg, Number(gemaild ?? 0) > 0)) {
     const { data: dagRuns } = await admin.from("factuur_planner_runs").select("aantal_aangemaakt").eq("modus", "live").gte("gestart_op", dagStart);
     const dagTotaal = (dagRuns ?? []).reduce((t: number, x: any) => t + Number(x.aantal_aangemaakt ?? 0), 0);
     const { count: openConcepten } = await admin.from("factuur_planning").select("id", { count: "exact", head: true }).eq("status", "concept_aangemaakt").eq("is_test", false);
