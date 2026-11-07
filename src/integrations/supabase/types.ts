@@ -3361,6 +3361,7 @@ export type Database = {
           aangemaakt_op: string
           aanvraag_id: string | null
           bedrag: number | null
+          bedrag_handmatig: boolean
           beoordeeld_door: string | null
           beoordeeld_door_naam: string | null
           beoordeeld_op: string | null
@@ -3395,6 +3396,7 @@ export type Database = {
           aangemaakt_op?: string
           aanvraag_id?: string | null
           bedrag?: number | null
+          bedrag_handmatig?: boolean
           beoordeeld_door?: string | null
           beoordeeld_door_naam?: string | null
           beoordeeld_op?: string | null
@@ -3429,6 +3431,7 @@ export type Database = {
           aangemaakt_op?: string
           aanvraag_id?: string | null
           bedrag?: number | null
+          bedrag_handmatig?: boolean
           beoordeeld_door?: string | null
           beoordeeld_door_naam?: string | null
           beoordeeld_op?: string | null

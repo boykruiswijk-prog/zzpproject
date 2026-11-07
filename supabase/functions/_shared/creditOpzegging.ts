@@ -7,6 +7,22 @@ import { creditBetaalconditie } from "./creditBetaalconditie.ts";
 
 export type GefactureerdePeriode = { periode_start: string; periode_eind: string; bedrag: number };
 
+export type CreditVoorPlanner = { bron?: string | null; bedrag: number | string | null; berekening?: unknown; bedrag_handmatig?: boolean };
+export function heeftVastCreditBedrag(c: CreditVoorPlanner): boolean {
+  return c.bron === "correctie" || c.bedrag_handmatig === true;
+}
+
+/** Besluit Boy 7-11: een vastgelegd bedrag en zijn onderbouwing blijven ongewijzigd. */
+export function berekenCreditVoorPlanner(c: CreditVoorPlanner, herbereken: () => { bedrag: number }): { bedrag: number; berekening: unknown } {
+  if (heeftVastCreditBedrag(c)) {
+    const bedrag = Number(c.bedrag);
+    if (c.bedrag === null || !Number.isFinite(bedrag) || bedrag < 0) throw new Error("vastgelegd creditbedrag ontbreekt of is ongeldig");
+    return { bedrag, berekening: c.berekening };
+  }
+  const berekening = herbereken();
+  return { bedrag: berekening.bedrag, berekening };
+}
+
 function dagErna(iso: string): string {
   return new Date(new Date(`${iso.slice(0, 10)}T00:00:00Z`).getTime() + 86400000).toISOString().slice(0, 10);
 }
