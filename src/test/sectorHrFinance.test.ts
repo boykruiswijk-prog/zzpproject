@@ -52,7 +52,7 @@ describe("register D: HR en Finance als Management consultancy", () => {
       expect(brancheVoorSector(sector)).toBe("Management consultancy");
       const premie = aanvraagPremie(pakket, starter);
       expect(premie.totaal).toBe(totaal);
-      expect(premie).toEqual(aanvraagPremie(pakket, starter));
+      expect(premie.bav).toBe(starter ? (pakket.startsWith("maandelijks") ? 45 : 495) : (pakket.startsWith("maandelijks") ? 55 : 600));
     }
   });
 
