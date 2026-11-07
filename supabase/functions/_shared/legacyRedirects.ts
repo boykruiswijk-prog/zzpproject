@@ -708,6 +708,9 @@ export const legacyRedirects: { from: string; to: string }[] = [
   { from: "factoring", to: "/diensten" },
   // A16 (16 okt 2026): nieuwe paden uit 404-log
   { from: "bedankt-jaarlijks", to: "/verzekeringen" },
+  // Kwaliteitscontrole 7-11: expliciete oude bedanktpaden vóór het vangnet.
+  { from: "bedankt-maandelijks", to: "/verzekeringen" },
+  { from: "bedankt", to: "/verzekeringen" },
   { from: "product/screening-pakket-4", to: "/screening" },
   { from: "post/advies-zzp", to: "/kennisbank" },
   { from: "academy/partners", to: "/partners" },
@@ -731,6 +734,7 @@ export const legacyRedirects: { from: string; to: string }[] = [
   { from: "nieuws/*", to: "/kennisbank" },
   // Kwaliteitscontrole 6-11-2026: vangnet voor overige oude /control/-paden.
   { from: "control/*", to: "/creditcontrol" },
+  { from: "bedankt-*", to: "/verzekeringen" },
 ];
 
 export const legacyRedirectMap: Record<string, string> = Object.fromEntries(
