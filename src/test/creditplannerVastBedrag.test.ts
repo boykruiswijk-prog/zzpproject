@@ -11,7 +11,7 @@ describe("D-aanvulling Creditplanner 7-11", () => {
     const bron = readFileSync("supabase/functions/factuur-planner/index.ts", "utf8");
     const start = bron.indexOf("for (const c of creditRijen ?? [])");
     const loop = bron.slice(start, bron.indexOf("const creditOverzicht", start))
-      .replaceAll("(pl ?? []) as any[]", "(pl ?? [])").replaceAll("(m as any)", "m").replaceAll("(k as any)", "k").replaceAll("k as any", "k").replaceAll("(x: any)", "(x)");
+      .split("(pl ?? []) as any[]").join("(pl ?? [])").split("(m as any)").join("m").split("(k as any)").join("k").split("k as any").join("k").split("(x: any)").join("(x)");
     const rij = { id: "test", bron: "correctie", status: "te_maken", planning_ids: ["test"], bedrag: 60, berekening: korting, einddatum: "2026-10-19" };
     const update = vi.fn();
     const query = { select: () => query, in: async () => ({ data: [{ ...perioden[0], btw_code: "0" }] }), update, eq: async () => ({}) };
