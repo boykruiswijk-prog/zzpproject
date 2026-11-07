@@ -17,9 +17,9 @@ describe('Google-reviews route C',()=>{
  });
  it('maximaal één aanroep per geclaimde week; alleen scorevelden',async()=>{
  let claimed=false;const admin={rpc:vi.fn(async(name:string)=>name==='google_reviews_week_claim'?{data:claimed?false:(claimed=true)}:{data:true})};
- const fetcher=vi.fn(async()=>new Response(JSON.stringify({rating:4.2,userRatingCount:8,reviews:[{text:'nooit opslaan'}]})));
+ const fetcher=vi.fn(async(_url:RequestInfo | URL,_init?:RequestInit)=>new Response(JSON.stringify({rating:4.2,userRatingCount:8,reviews:[{text:'nooit opslaan'}]})));
  await controleerGoogleScore(admin,'test-key',new Date('2026-11-09T07:00:00Z'),fetcher);await controleerGoogleScore(admin,'test-key',new Date('2026-11-09T07:00:00Z'),fetcher);
- expect(fetcher).toHaveBeenCalledTimes(1);expect(fetcher.mock.calls[0][1].headers['X-Goog-FieldMask']).toBe('rating,userRatingCount');expect(admin.rpc).toHaveBeenCalledWith('google_reviews_score_opslaan',{_week:'2026-11-09',_rating:4.2,_aantal:8});
+ expect(fetcher).toHaveBeenCalledTimes(1);expect(fetcher.mock.calls[0]?.[1]?.headers).toEqual({'X-Goog-Api-Key':'test-key','X-Goog-FieldMask':'rating,userRatingCount'});expect(admin.rpc).toHaveBeenCalledWith('google_reviews_score_opslaan',{_week:'2026-11-09',_rating:4.2,_aantal:8});
  });
  it('controleweek is Nederlandse week, ook UTC zondagavond',()=>{expect(controleWeek(new Date('2026-11-08T23:30:00Z'))).toBe('2026-11-09');expect(controleWeek(new Date('2026-07-05T22:30:00Z'))).toBe('2026-07-06');});
 });
