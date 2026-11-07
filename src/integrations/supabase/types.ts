@@ -2273,6 +2273,39 @@ export type Database = {
         }
         Relationships: []
       }
+      eenmalige_besluiten: {
+        Row: {
+          besluitdatum: string
+          bron: string
+          id: string
+          klant: string
+          onderneming_id: string
+          registerpunt: string
+          vastgelegd_op: string
+          wat: string
+        }
+        Insert: {
+          besluitdatum: string
+          bron: string
+          id?: string
+          klant: string
+          onderneming_id: string
+          registerpunt: string
+          vastgelegd_op?: string
+          wat: string
+        }
+        Update: {
+          besluitdatum?: string
+          bron?: string
+          id?: string
+          klant?: string
+          onderneming_id?: string
+          registerpunt?: string
+          vastgelegd_op?: string
+          wat?: string
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
