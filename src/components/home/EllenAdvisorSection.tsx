@@ -27,7 +27,7 @@ export function EllenAdvisorSection() {
               <h2 className="mb-1 text-2xl lg:text-3xl">Ellen Baars</h2>
               <p className="text-accent font-medium mb-5">Senior Adviseur, ZP Zaken</p>
               <p className="text-muted-foreground mb-6 leading-relaxed">
-                "Als je een vraag hebt over verzekeringen bel je geen callcenter. Je belt mij. Ik ken de markt, ik ken de valkuilen en ik weet wat jij als zzp'er nodig hebt. Daarom kiezen zzp'ers voor ZP Zaken."
+                "Als je een vraag hebt over verzekeringen bel je geen callcenter. Je belt mij. Ik ken de markt en de vragen die zzp'ers hebben, en ik leg helder uit hoe onze verzekering werkt. Daarom kiezen zzp'ers voor ZP Zaken."
               </p>
               <ul className="space-y-2 mb-6">
                 {[

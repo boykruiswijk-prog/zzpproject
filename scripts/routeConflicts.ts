@@ -3,7 +3,7 @@
 // Leest de bronbestanden als tekst, zodat dit zonder aliassen werkt.
 import fs from "fs";
 import path from "path";
-import { legacyRedirects } from "../src/config/legacyRedirects";
+import { legacyRedirects, isVangregel } from "../src/config/legacyRedirects";
 
 const norm = (p: string) => p.replace(/^\/+|\/+$/g, "").toLowerCase();
 
@@ -21,11 +21,12 @@ export function bestaandeRoutes(root: string): Set<string> {
 
 export function redirectRouteConflicten(root: string): string[] {
   const routes = bestaandeRoutes(root);
-  const exact = legacyRedirects.map((r) => norm(r.from)).filter((f) => routes.has(f));
+  const exact = legacyRedirects.filter(r => !isVangregel(r)).map((r) => norm(r.from)).filter((f) => routes.has(f));
   // Een vangregel mag geen bestaande route opslokken (bijv. services/* naast /services/...).
   const vang = legacyRedirects
-    .filter((r) => r.from.endsWith("/*"))
-    .map((r) => norm(r.from.slice(0, -2)))
-    .filter((pre) => routes.has(pre) || [...routes].some((x) => x.startsWith(`${pre}/`)));
-  return [...exact, ...vang.map((v) => `${v}/*`)];
+    .filter(isVangregel)
+    .filter(r => [...routes].some(x => x.startsWith(norm(r.from.slice(0, -1)))
+      || (r.from.endsWith("/*") && x === norm(r.from.slice(0, -2)))))
+    .map(r => r.from);
+  return [...exact, ...vang];
 }

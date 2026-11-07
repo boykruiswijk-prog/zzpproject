@@ -6,6 +6,7 @@ import { componentTagger } from "lovable-tagger";
 import {
   legacyRedirects,
   geordendeRedirects,
+  isVangregel,
   resolveRedirectTarget,
   taalprefixRedirects,
   type ArticleRedirectInfo,
@@ -90,6 +91,10 @@ export function cloudflareBulkCsv(redirectLines: string[], host = "zpzaken.nl"):
     const [from, to, status] = line.split(/\s+/);
     if (!from || !to || !status?.startsWith("301")) continue;
     if (from === "/:path/" || from === "/*") continue;
+    // Bulk Redirects ondersteunt geen wildcard midden in een padsegment.
+    // bedankt-* blijft in legacyRedirects en _redirects; concrete oude paden
+    // staan als exacte 301's in deze CSV. Geen onwerkende wildcard exporteren.
+    if (/^\/(?:en\/|de\/|fr\/)?bedankt-\*$/.test(from)) continue;
     // Interne taalvarianten behouden het volledige suffix, ook nieuwe subpaden.
     if (/^\/(en|de|fr)\/(portal|mijn-zp)\/\*$/.test(from)) {
       push(`${host}${from.slice(0, -1)}`, `https://${host}${to.replace(":splat", "")}`, "TRUE,TRUE,TRUE,TRUE");
@@ -152,7 +157,7 @@ function redirectsPlugin(env: Record<string, string>): Plugin {
             : "  # concept → categoriepagina";
         const rule = `/${r.from}    ${to}    301${note}`;
         // Exacte oude paden krijgen beide varianten direct naar hun einddoel.
-        return r.from.endsWith("/*") ? [rule] : [rule, `/${r.from}/    ${to}    301${note}`];
+        return isVangregel(r) ? [rule] : [rule, `/${r.from}/    ${to}    301${note}`];
       });
 
       // Taalprefixen /en, /de, /fr erven de doorverwijzing van het Nederlandse
@@ -160,7 +165,7 @@ function redirectsPlugin(env: Record<string, string>): Plugin {
       const routes = bestaandeRoutes(__dirname);
       const taalRules = taalprefixRedirects(legacyRedirects, routes)
         .filter((r) => r.from !== "tv" && !r.from.startsWith("tv/"))
-        .flatMap((r) => r.from.endsWith("/*")
+        .flatMap((r) => isVangregel(r)
           ? [`/${r.from}    ${r.to}    301  # taalprefix`]
           : [`/${r.from}    ${r.to}    301  # taalprefix`, `/${r.from}/    ${r.to}    301  # taalprefix`]);
 
@@ -179,14 +184,14 @@ function redirectsPlugin(env: Record<string, string>): Plugin {
           ? [`/wp-content/uploads/*    ${storageBase}/wp-content/uploads/:splat    301`]
           : ["# WAARSCHUWING: geen VITE_SUPABASE_URL, media-redirect overgeslagen."]),
         "",
-        ...rules.filter(line => !line.split(/\s+/)[0].endsWith("/*")),
+        ...rules.filter(line => !line.split(/\s+/)[0].endsWith("*")),
         "",
         "# Taalprefixen (/en, /de, /fr) erven de Nederlandse doorverwijzing.",
-        ...taalRules.filter(line => !line.split(/\s+/)[0].endsWith("/*")),
+        ...taalRules.filter(line => !line.split(/\s+/)[0].endsWith("*")),
         "",
         "# Vangregels na alle expliciete regels, ook die met taalprefix.",
-        ...rules.filter(line => line.split(/\s+/)[0].endsWith("/*")),
-        ...taalRules.filter(line => line.split(/\s+/)[0].endsWith("/*")),
+        ...rules.filter(line => line.split(/\s+/)[0].endsWith("*")),
+        ...taalRules.filter(line => line.split(/\s+/)[0].endsWith("*")),
         "",
         "# Pad met afsluitende slash → zelfde pad zonder slash (homepage uitgezonderd).",
         "/:path/    /:path    301!",

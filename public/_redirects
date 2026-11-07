@@ -1320,6 +1320,10 @@
 /factoring/    /diensten    301
 /bedankt-jaarlijks    /verzekeringen    301
 /bedankt-jaarlijks/    /verzekeringen    301
+/bedankt-maandelijks    /verzekeringen    301
+/bedankt-maandelijks/    /verzekeringen    301
+/bedankt    /verzekeringen    301
+/bedankt/    /verzekeringen    301
 /product/screening-pakket-4    /screening    301
 /product/screening-pakket-4/    /screening    301
 /post/advies-zzp    /kennisbank    301
@@ -4668,6 +4672,18 @@
 /de/bedankt-jaarlijks/    /verzekeringen    301  # taalprefix
 /fr/bedankt-jaarlijks    /verzekeringen    301  # taalprefix
 /fr/bedankt-jaarlijks/    /verzekeringen    301  # taalprefix
+/en/bedankt-maandelijks    /verzekeringen    301  # taalprefix
+/en/bedankt-maandelijks/    /verzekeringen    301  # taalprefix
+/de/bedankt-maandelijks    /verzekeringen    301  # taalprefix
+/de/bedankt-maandelijks/    /verzekeringen    301  # taalprefix
+/fr/bedankt-maandelijks    /verzekeringen    301  # taalprefix
+/fr/bedankt-maandelijks/    /verzekeringen    301  # taalprefix
+/en/bedankt    /verzekeringen    301  # taalprefix
+/en/bedankt/    /verzekeringen    301  # taalprefix
+/de/bedankt    /verzekeringen    301  # taalprefix
+/de/bedankt/    /verzekeringen    301  # taalprefix
+/fr/bedankt    /verzekeringen    301  # taalprefix
+/fr/bedankt/    /verzekeringen    301  # taalprefix
 /en/product/screening-pakket-4    /screening    301  # taalprefix
 /en/product/screening-pakket-4/    /screening    301  # taalprefix
 /de/product/screening-pakket-4    /screening    301  # taalprefix
@@ -4755,6 +4771,7 @@
 /facts/press/*    /kennisbank    301
 /nieuws/*    /kennisbank    301
 /control/*    /creditcontrol    301
+/bedankt-*    /verzekeringen    301
 /en/home/nieuws/*    /kennisbank    301  # taalprefix
 /de/home/nieuws/*    /kennisbank    301  # taalprefix
 /fr/home/nieuws/*    /kennisbank    301  # taalprefix
@@ -4764,6 +4781,9 @@
 /en/control/*    /creditcontrol    301  # taalprefix
 /de/control/*    /creditcontrol    301  # taalprefix
 /fr/control/*    /creditcontrol    301  # taalprefix
+/en/bedankt-*    /verzekeringen    301  # taalprefix
+/de/bedankt-*    /verzekeringen    301  # taalprefix
+/fr/bedankt-*    /verzekeringen    301  # taalprefix
 
 # Pad met afsluitende slash → zelfde pad zonder slash (homepage uitgezonderd).
 /:path/    /:path    301!

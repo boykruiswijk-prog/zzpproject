@@ -35,6 +35,7 @@
 - Halve BAV-aanvragen staan in aanvraag_concepten, alleen geschreven via submit-public-form (table "aanvraag_concepten", idempotent op browser-concept-id) en omgezet door process-bav-wizard; nooit bank-/SEPA-velden, na 90 dagen geanonimiseerd (cron), nooit verwijderd. Waarom: opvolging zonder gevoelige gegevens of anon-toegang.
 - BAV-vergelijking in src/data/bavVergelijking.ts (bron-URL + gecontroleerd_op per aanbieder; ZP-rij uit bavPakketten). Waarom: bijwerken zonder paginacode.
 - CSV mirrors _redirects, including slash variants and suffix-preserving internal language redirects; news fallbacks include language prefixes, after all explicit rules in generated output. src/assets use hashed stubs and glob fallback. Why: preserve specific destinations without false 404s.
+- Bulk CSV exports exact thank-you URLs; hyphen-prefix wildcards require a Cloudflare Single Redirect, never a fake CSV row. Why: Bulk supports subpaths, not segment wildcards.
 
 - Submappen hebben eigen AGENTS.md (src/components/admin, crm, supabase/functions); lees die eerst.
 - Scripts never import React (SSR crashes); markdown uses articleMarkdownUrl (safe tel: links). Both llms generators use published articles. Why: current article discovery.

@@ -29,6 +29,7 @@ import { generateArticleImages } from "./articleImages";
 import { absoluteArticleImage, absoluteArticleOgImage, isGeneratedArticleImage, isArticlePhoto } from "../src/lib/articleImage";
 import {
   legacyRedirects,
+  isVangregel,
   verouderdeMedia,
   resolveRedirectTarget,
   categoryPageFor,
@@ -740,7 +741,7 @@ export async function prerender(
     // slug staat op /kennisbank/<slug>, niet op /<slug>; de oude URL heeft dus
     // juist wél een stub nodig.
     if (routePaths.has(routePath)) continue;
-    if (redirect.from.endsWith("/*")) continue; // vangregel: geen stub, client-side vangnet in de app
+    if (isVangregel(redirect)) continue; // vangregel: geen stub, client-side vangnet in de app
     if (verouderdeMedia.has(redirect.from)) continue; // .pdf-pad: geen stub, Cloudflare geeft de 301
     const to = resolveRedirectTarget(redirect, articleIndex);
     const dir = path.join(distDir, redirect.from);

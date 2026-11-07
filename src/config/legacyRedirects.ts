@@ -720,6 +720,9 @@ export const legacyRedirects: LegacyRedirect[] = [
   { from: "factoring", to: "/diensten" },
   // A16 (16 okt 2026): nieuwe paden uit 404-log
   { from: "bedankt-jaarlijks", to: "/verzekeringen" },
+  // Kwaliteitscontrole 7-11: expliciete oude bedanktpaden vóór het vangnet.
+  { from: "bedankt-maandelijks", to: "/verzekeringen" },
+  { from: "bedankt", to: "/verzekeringen" },
   { from: "product/screening-pakket-4", to: "/screening" },
   { from: "post/advies-zzp", to: "/kennisbank" },
   { from: "academy/partners", to: "/partners" },
@@ -743,6 +746,7 @@ export const legacyRedirects: LegacyRedirect[] = [
   { from: "nieuws/*", to: "/kennisbank" },
   // Kwaliteitscontrole 6-11-2026: vangnet voor overige oude /control/-paden.
   { from: "control/*", to: "/creditcontrol" },
+  { from: "bedankt-*", to: "/verzekeringen" },
 ];
 
 /**
@@ -802,8 +806,8 @@ export const verouderdeMedia = new Set(
 );
 
 
-/** Vangregel: bron eindigt op /* en vangt alle onderliggende paden. */
-export const isVangregel = (r: LegacyRedirect) => r.from.endsWith("/*");
+/** Vangregel: /* voor subpaden, bedankt-* voor oude bedanktsuffixen. */
+export const isVangregel = (r: LegacyRedirect) => r.from.endsWith("*");
 
 /** Specifieke regels eerst, vangregels daarna (volgorde binnen elke groep blijft gelijk). */
 export function geordendeRedirects(lijst: LegacyRedirect[] = legacyRedirects): LegacyRedirect[] {
@@ -828,7 +832,7 @@ export function taalprefixRedirects(
   const uit: LegacyRedirect[] = [];
   for (const r of lijst) {
     const from = norm(r.from);
-    if (!from || (isVangregel(r) && !["home/nieuws/*", "nieuws/*", "control/*"].includes(from)) || TAALPREFIXES.some((t) => from === t || from.startsWith(`${t}/`))) continue;
+    if (!from || (isVangregel(r) && !["home/nieuws/*", "nieuws/*", "control/*", "bedankt-*"].includes(from)) || TAALPREFIXES.some((t) => from === t || from.startsWith(`${t}/`))) continue;
     for (const t of TAALPREFIXES) {
       const afgeleid = `${t}/${from}`;
       if (bronnen.has(afgeleid) || gezien.has(afgeleid) || bestaande.has(afgeleid)) continue;
