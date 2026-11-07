@@ -1,8 +1,10 @@
 import { Helmet } from "react-helmet-async";
 import { googleReviewsData } from "@/data/googleReviews";
 import { ORGANIZATION_ID } from "@/lib/schema";
+import { useGoogleReviews } from "@/hooks/useGoogleReviews";
 
 export function SiteSchemaMarkup() {
+  const { averageRating, totalReviews, reviews } = useGoogleReviews();
   // Alle bedrijfsgegevens en het prijsbereik komen uit src/lib/schema.ts (SITE_CONFIG + bavPakketten).
   // De volledige InsuranceAgency-entiteit staat in index.html. Hier alleen een
   // verrijking van diezelfde @id-node, zodat er één entiteit per pagina blijft.
@@ -22,12 +24,12 @@ export function SiteSchemaMarkup() {
     ],
     aggregateRating: {
       "@type": "AggregateRating",
-      ratingValue: googleReviewsData.averageRating.toFixed(1),
-      reviewCount: String(googleReviewsData.totalReviews),
+      ratingValue: averageRating.toFixed(1),
+      reviewCount: String(totalReviews),
       bestRating: "5",
       worstRating: "1",
     },
-    review: googleReviewsData.reviews.map((r) => ({
+    review: reviews.map((r) => ({
       "@type": "Review",
       author: { "@type": "Person", name: r.name },
       reviewRating: { "@type": "Rating", ratingValue: String(r.rating), bestRating: "5" },
