@@ -15,7 +15,8 @@ describe("D-aanvulling Creditplanner 7-11", () => {
     expect(herbereken).not.toHaveBeenCalled();
     const payload = plannerCreditPayload({ exact_account_id: "cfo360", item: "BAV-AVB", btw: "0", bedrag: resultaat.bedrag,
       credit_vanaf: "2026-10-20", credit_tm: "2027-10-19", origineel_factuurnummer: "26700072", creditsleutel: "ZPC-0E5D7316", vandaag: "2026-11-07", bron: "correctie" });
-    expect(payload.SalesInvoiceLines[0].AmountFC).toBe(-60);
+    expect(payload.SalesInvoiceLines[0].UnitPrice).toBe(60);
+    expect(payload.SalesInvoiceLines[0].Quantity).toBe(-1);
   });
   it.each(["planner", "oud_systeem"])("handmatig bedrag 60 blijft vast bij bron %s", (bron) => {
     const herbereken = vi.fn(() => berekenOpzegCredit("2026-10-19", perioden));

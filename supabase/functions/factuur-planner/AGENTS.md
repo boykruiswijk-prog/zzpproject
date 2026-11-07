@@ -1,4 +1,5 @@
 # Afspraken factuur-planner
+- Fixed correction/manual credits use berekenCreditVoorPlanner, preserve stored amount/calculation, and never use reconstructed old-system lines; the SQL guard blocks approved edits. Why: approval must equal the concept amount.
 - Vervolgfacturen lopen uitsluitend via factuur-planner + factuur_planning (uniek per contractregel/periode, sleutel ZPF-xxxxxxxx in Remarks); hoofdschakelaar facturatie_config.facturatie_actief. Waarom: één factuurroute zonder dubbele facturen.
 - Grootboek per regel via getGlAccountIdVoorCode (GET, cache exact_config.gl_account_ids); regelfout blokkeert alleen die regel, onzekere POST stopt de run. Waarom: dagrun blijft lopen.
 - BTW per regel komt uit factuur_artikel_mapping.btw_code (opgeslagen in factuur_planning bij claim; credits nemen dezelfde code over); guard 8004≠0 en 8003=0 blokkeert de regel. Waarom: BTW nooit stil fout.

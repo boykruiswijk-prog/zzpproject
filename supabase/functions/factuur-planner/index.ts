@@ -14,7 +14,7 @@ import { planningsSleutel, planningStatusUitExact } from "../_shared/factuurPeri
 import { getGlAccountIdVoorCode, GlNietGevondenError } from "../_shared/exactGl.ts";
 import { bouwFactuurPayload, glUitCache, btwCode, btwPastBijGrootboek, BtwNietPassendError, controleerBtw } from "../_shared/factuurRegel.ts";
 import { exactRegelBedrag } from "../_shared/factuurTekst.ts";
-import { berekenOpzegCredit, berekenOudSysteemCredit, oudSysteemCreditPayload, plannerCreditPayload } from "../_shared/creditOpzegging.ts";
+import { berekenOpzegCredit, berekenOudSysteemCredit, oudSysteemCreditPayload, plannerCreditPayload, berekenCreditVoorPlanner, heeftVastCreditBedrag } from "../_shared/creditOpzegging.ts";
 import { metExactMelding } from "../_shared/exactBoekingMelding.ts";
 import { metWerk, werkVan } from "../_shared/machineWerk.ts";
 import { maakExactTempo, postMetSleutel, ExactTijdelijkError, isTijdelijkeStatus, type PostUitkomst } from "../_shared/exactTempo.ts";
@@ -247,15 +247,21 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
   for (const c of creditRijen ?? []) {
     if (c.bron === "oud_systeem" && c.status === "te_maken") {
       const { data: k } = await admin.from("klant_contracten").select("cyclus,aantal,bedrag_per_periode,begin_datum,factureren_vanaf,gefactureerd_tm,itemcode").eq("id", c.klant_contract_id).single();
-      const ber = berekenOudSysteemCredit(k as any, c.einddatum);
-      if (Number(c.bedrag) !== ber.bedrag) await admin.from("factuur_credit_planning").update({ bedrag: ber.bedrag, berekening: ber }).eq("id", c.id);
+      const ber = berekenCreditVoorPlanner(c, () => berekenOudSysteemCredit(k as any, c.einddatum));
+      if (!heeftVastCreditBedrag(c) && Number(c.bedrag) !== ber.bedrag) {
+        const { error } = await admin.from("factuur_credit_planning").update({ bedrag: ber.bedrag, berekening: ber.berekening }).eq("id", c.id);
+        if (error) throw new Error(error.message);
+      }
       const { data: m } = await admin.rpc("factuur_mapping_voor", { _itemcode: (k as any)?.itemcode });
-      c.bedrag = ber.bedrag; c.berekening = ber; c._item = c.exact_item_id; c._gl = c.gl_code; c._btw = btwCode((m as any)?.btw_code);
+      c.bedrag = ber.bedrag; c.berekening = ber.berekening; c._item = c.exact_item_id; c._gl = c.gl_code; c._btw = btwCode((m as any)?.btw_code);
     } else if (c.status === "te_maken" && c.planning_ids?.length) {
       const { data: pl } = await admin.from("factuur_planning").select("periode_start,periode_eind,bedrag,exact_item_id,gl_code,btw_code").in("id", c.planning_ids);
-      const ber = berekenOpzegCredit(c.einddatum, (pl ?? []) as any[]);
-      if (Number(c.bedrag) !== ber.bedrag) await admin.from("factuur_credit_planning").update({ bedrag: ber.bedrag, berekening: ber }).eq("id", c.id);
-      c.bedrag = ber.bedrag; c.berekening = ber; c._item = pl?.[0]?.exact_item_id ?? null; c._gl = pl?.[0]?.gl_code ?? null;
+      const ber = berekenCreditVoorPlanner(c, () => berekenOpzegCredit(c.einddatum, (pl ?? []) as any[]));
+      if (!heeftVastCreditBedrag(c) && Number(c.bedrag) !== ber.bedrag) {
+        const { error } = await admin.from("factuur_credit_planning").update({ bedrag: ber.bedrag, berekening: ber.berekening }).eq("id", c.id);
+        if (error) throw new Error(error.message);
+      }
+      c.bedrag = ber.bedrag; c.berekening = ber.berekening; c._item = c.exact_item_id ?? pl?.[0]?.exact_item_id ?? null; c._gl = c.gl_code ?? pl?.[0]?.gl_code ?? null;
       // Zelfde BTW-code als de gecrediteerde perioden; verschillende codes → null (blokkeert).
       const codes = [...new Set((pl ?? []).map((x: any) => btwCode(x.btw_code)))];
       c._btw = codes.length === 1 ? codes[0] : null;
@@ -475,7 +481,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
       if (Date.now() - startMs > RUN_BUDGET_MS - 20_000) break;
       const { data: claim } = await admin.from("factuur_credit_planning").update({ status: "geclaimd" }).eq("id", c.id).eq("status", "te_maken").select("id").maybeSingle();
       if (!claim) continue;
-      const oud = c.bron === "oud_systeem";
+      const oud = c.bron === "oud_systeem" && !heeftVastCreditBedrag(c);
       let gl: string | null = null;
       try {
         if ((await zoekOpSleutel(c.creditsleutel, "Remarks")).length) throw new Error("creditsleutel bestaat al in Exact");
