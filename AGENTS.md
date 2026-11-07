@@ -57,3 +57,4 @@
 - Policies without a lead (policies.onderneming_id) are linked to the onderneming's single confirmed portal account by trigger policies_onderneming_portal_user and at invite; Mijn ZP falls back to RPC mijn_klant_contracten for contracts without a policy. Why: pre-online customers must see their certificate after login.
 - Article-to-landing links: src/data/artikelInterneLinks.ts, rendered by ArtikelDetail, never article content. Why: ships only on publish.
 - Cyber documents share cyberDocumenten.ts with hash-tested static PDFs; public links use cyberPubliek.ts and CyberVoorwaardenTekst, contractual constants stay unchanged. Why: one verified document source.
+- Cyber team requests may have no portal user; customer requests require one. Existing contact lookup and ID-based claims remain authoritative. Why: no fake account or broader customer access.
