@@ -1,0 +1,3 @@
+ALTER TABLE public.cyber_toevoeg_verzoeken ALTER COLUMN user_id DROP NOT NULL;
+ALTER TABLE public.cyber_toevoeg_verzoeken ADD CONSTRAINT cyber_verzoek_klant_account_verplicht CHECK (bron <> 'klant' OR user_id IS NOT NULL);
+COMMENT ON COLUMN public.cyber_toevoeg_verzoeken.user_id IS 'Optioneel portaalaccount voor teamverzoeken; klantverzoeken vereisen een account. Besluit Boy 7-11-2026 register E-aanvulling Digital Native.';

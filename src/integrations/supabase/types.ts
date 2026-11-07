@@ -1907,7 +1907,7 @@ export type Database = {
           onderneming_id: string | null
           policy_id: string
           status: string
-          user_id: string
+          user_id: string | null
           voorwaarden_versie: string
         }
         Insert: {
@@ -1943,7 +1943,7 @@ export type Database = {
           onderneming_id?: string | null
           policy_id: string
           status?: string
-          user_id: string
+          user_id?: string | null
           voorwaarden_versie?: string
         }
         Update: {
@@ -1979,7 +1979,7 @@ export type Database = {
           onderneming_id?: string | null
           policy_id?: string
           status?: string
-          user_id?: string
+          user_id?: string | null
           voorwaarden_versie?: string
         }
         Relationships: [
