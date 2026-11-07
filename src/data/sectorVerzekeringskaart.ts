@@ -19,6 +19,8 @@ export interface Sector {
 export const WIZARD_SECTOREN: Sector[] = [
   { id: "ict", label: "ICT", branche: "ict", fallback: false },
   { id: "management-consultancy", label: "Management consultancy", branche: "management-consultancy", fallback: false },
+  { id: "hr", label: "HR", branche: "management-consultancy", fallback: false },
+  { id: "finance", label: "Finance", branche: "management-consultancy", fallback: false },
   { id: "pr-marketing", label: "Reclame- & marketingbureaus", branche: "pr-marketing", fallback: false },
   { id: "coaches", label: "Coaches", branche: "coaches", fallback: false },
   { id: "zakelijke-dienstverlening", label: "Zakelijke dienstverlening", branche: "zakelijke-dienstverlening", fallback: false },

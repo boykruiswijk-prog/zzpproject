@@ -5,6 +5,8 @@ describe("sector → adminbranche", () => {
   it.each([
     ["ICT", "IT & ICT"],
     ["Management consultancy", "Management consultancy"],
+    ["HR", "Management consultancy"],
+    ["Finance", "Management consultancy"],
     ["Reclame- & marketingbureaus", "PR & Marketing"],
     ["Coaches", "Coaches"],
     ["Zakelijke dienstverlening", "Zakelijke dienstverlening"],

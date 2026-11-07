@@ -10,7 +10,7 @@
 ## Verplaatst uit supabase/functions/AGENTS.md
 - Mijn ZP-facturen: accounts via _shared/klantAccounts.ts, PDF via _shared/exactFactuurPdf.ts (Documents → bijlage). Waarom: XMLDownload werkt niet in deze administratie.
 - BAV-AVB-factuurteksten en YourRef lopen via _shared/factuurTekst.ts; periode vooraan, maximaal 60 tekens.
-- BAV-sector → adminbranche loopt via _shared/sectorBranche.ts; het sectorlabel blijft in extra_data. Waarom: vaste waarden zonder informatieverlies.
+- BAV sectors map to canonical administrative branches via sectorBranche.ts; preserve the selected sector separately and share document branches for equivalent sectors. Why: retain intake labels without changing underwriting, certificates or financial classification.
 - Intakeadres via _shared/adresNormalisatie.ts vóór legBewijsVast. Waarom: overal hetzelfde adres.
 - Telefoonvalidatie/-normalisatie via _shared/telefoon.ts. Waarom: formulier en server hanteren hetzelfde formaat.
 - Monthly lifecycle/preview credits read actual invoiced periods via _shared/lifecycleCredit.ts and planner helper berekenOpzegCredit. Why: no annual-premium math or duplicate refunds.

@@ -12,6 +12,8 @@ export type AdminBranche = (typeof ADMIN_BRANCHES)[number];
 const SECTOR_NAAR_BRANCHE: Record<string, AdminBranche> = {
   ICT: "IT & ICT",
   "Management consultancy": "Management consultancy",
+  HR: "Management consultancy",
+  Finance: "Management consultancy",
   "Reclame- & marketingbureaus": "PR & Marketing",
   Coaches: "Coaches",
   "Zakelijke dienstverlening": "Zakelijke dienstverlening",
