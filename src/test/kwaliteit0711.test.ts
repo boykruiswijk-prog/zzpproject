@@ -4,6 +4,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { geordendeRedirects, legacyRedirects, taalprefixRedirects, zoekLegacyDoel } from "@/config/legacyRedirects";
 import { bestaandeRoutes } from "../../scripts/routeConflicts";
+import { cloudflareBulkCsv } from "../../vite.config";
 
 function bronnen(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
@@ -42,5 +43,16 @@ describe("Kwaliteitscontrole 7 november", () => {
     expect(zoekLegacyDoel("/en/tv")).toBeNull();
     expect(zoekLegacyDoel("/offerte/bedankt")).toBeNull();
     expect(zoekLegacyDoel("/bedankte-klant")).toBeNull();
+  });
+
+  it("bedanktvangregels staan na expliciete regels en vóór de SPA, geen onwerkende Bulk-wildcard", () => {
+    const text = readFileSync("public/_redirects", "utf8");
+    for (const prefix of ["", "en/", "de/", "fr/"]) {
+      const line = `/${prefix}bedankt-*    /verzekeringen    301`;
+      const index = text.indexOf(line);
+      expect(index).toBeGreaterThan(text.indexOf(`/${prefix}bedankt-maandelijks/    /verzekeringen    301`));
+      expect(index).toBeLessThan(text.indexOf("/*    /index.html    200"));
+      expect(cloudflareBulkCsv([line])).toEqual([]);
+    }
   });
 });
