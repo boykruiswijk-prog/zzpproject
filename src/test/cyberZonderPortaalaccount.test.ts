@@ -33,7 +33,7 @@ async function setup() {
     CREATE FUNCTION contract_opzegging(uuid) RETURNS date LANGUAGE sql AS $$SELECT NULL::date$$;
     CREATE FUNCTION bron_rij_voor_lead(uuid) RETURNS bigint LANGUAGE sql AS $$SELECT 1::bigint$$;
     CREATE FUNCTION factuur_periode_eind(date,text) RETURNS date LANGUAGE sql AS $$SELECT ($1+interval '1 year'-interval '1 day')::date$$;
-    CREATE FUNCTION factuur_mapping_voor(text) RETURNS factuur_artikel_mapping LANGUAGE sql AS $$SELECT * FROM factuur_artikel_mapping LIMIT 1$$;
+    CREATE FUNCTION factuur_mapping_voor(text) RETURNS factuur_artikel_mapping LANGUAGE sql AS $$SELECT * FROM public.factuur_artikel_mapping LIMIT 1$$;
     SELECT set_config('test.uid','${actor}',false),set_config('test.role','authenticated',false),set_config('test.team','true',false);
     INSERT INTO auth.users VALUES('${actor}','ellen.baars@zpzaken.nl');
     INSERT INTO ondernemingen VALUES('${company}',false,'00000000-0000-0000-0000-000000000040',NULL);
