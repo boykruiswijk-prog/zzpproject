@@ -110,6 +110,11 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
   let runId: string | null = null;
   // Atomic database admission precedes calculation, credit changes, Exact and any mail.
   if (live || liveCredits) {
+    if (isVervolg) {
+      const { data: vorige } = await admin.from("factuur_planner_runs").select("gestart_op").eq("modus", "live").order("gestart_op", { ascending: false }).limit(1).maybeSingle();
+      const mag = vervolgMagStarten(0, vorige?.gestart_op ? Date.parse(vorige.gestart_op) : null);
+      if (!mag.ok) return json({ overgeslagen: true, reden: mag.reden });
+    }
     const { data, error } = await admin.rpc("factuur_planner_start", { _trigger: triggerLabel, _kandidaten: 0, _geblokkeerd: 0, _bedrag: 0 });
     if (error) return json({ error: error.message }, 500);
     if (!data) return json({ overgeslagen: true, reden: "planner al bezig of daggrens van 5 echte runs bereikt" });
@@ -279,17 +284,6 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
     const { count } = await admin.from("factuur_planner_runs").select("id", { count: "exact", head: true })
       .eq("trigger_type", "cron:vervolg").gte("gestart_op", dagStart);
     vervolgRunsVandaag = Number(count ?? 0);
-    if (isVervolg) {
-      const { data: vorige } = await admin.from("factuur_planner_runs").select("gestart_op").eq("modus", "live")
-        .order("gestart_op", { ascending: false }).limit(1).maybeSingle();
-      const mag = vervolgMagStarten(vervolgRunsVandaag, vorige?.gestart_op ? Date.parse(vorige.gestart_op) : null);
-      if (!mag.ok) {
-        // Daggrens: vervolgtaak stoppen tot de volgende dagrun. Te kort na vorige: taak blijft, volgende tik.
-        if (mag.reden === "daggrens vervolgruns bereikt") await admin.rpc("factuur_planner_vervolg", { _actief: false });
-        return json({ overgeslagen: true, reden: mag.reden });
-      }
-      vervolgRunsVandaag++;
-    }
   }
   let statussenBijgewerkt = 0;
   let creditsAangemaakt = 0;
