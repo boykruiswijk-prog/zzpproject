@@ -72,12 +72,15 @@ it("database admits exactly five, denies sixth and direct bypass, historical/pro
       INSERT INTO factuur_planner_runs(modus,gestart_op,status) VALUES ('live',now()-interval '2 days','ok'),('proef',now(),'ok');
       SET test.role='service_role';`);
     await db.exec(readFileSync("drizzle/migrations/0257_planner_a33_waarborgen.sql", "utf8"));
+    const vervolgSql = readFileSync("drizzle/migrations/0258_planner_a33_vervolg_en_registratie.sql", "utf8");
+    await db.exec(vervolgSql.slice(0, vervolgSql.indexOf("CREATE OR REPLACE FUNCTION public.factuur_planner_vervolg")));
     for (let i = 0; i < 5; i++) {
       expect((await db.query<{ id: string }>("select factuur_planner_start('cron:dagrun',0,0,0) id")).rows[0].id).toBeTruthy();
       await db.exec("update factuur_planner_runs set status='ok'");
     }
     expect((await db.query<{ id: string | null }>("select factuur_planner_start('handmatig:dagrun',0,0,0) id")).rows[0].id).toBeNull();
     await expect(db.exec("insert into factuur_planner_runs(modus,status) values('live','ok')")).rejects.toThrow("maximaal 5");
+    await expect(db.exec("update factuur_planner_runs set modus='proef' where modus='live'")).rejects.toThrow("onveranderbaar");
     expect((await db.query<{ n: number }>("select count(*)::int n from factuur_planner_runs where modus='live' and (gestart_op at time zone 'Europe/Amsterdam')::date=(now() at time zone 'Europe/Amsterdam')::date")).rows[0].n).toBe(5);
     await db.exec("SET test.role='authenticated'");
     await expect(db.query("select factuur_planner_start('manual',0,0,0)")).rejects.toThrow("geen toegang");
