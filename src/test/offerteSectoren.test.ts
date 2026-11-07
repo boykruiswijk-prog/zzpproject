@@ -27,6 +27,8 @@ describe("offerteformulier sectoren", () => {
     expect(lijst).toEqual([
       { value: "ict", label: "ICT" },
       { value: "management-consultancy", label: "Management consultancy" },
+      { value: "hr", label: "HR" },
+      { value: "finance", label: "Finance" },
       { value: "pr-marketing", label: "Reclame- & marketingbureaus" },
       { value: "coaches", label: "Coaches" },
       { value: "zakelijke-dienstverlening", label: "Zakelijke dienstverlening" },
@@ -40,7 +42,7 @@ describe("offerteformulier sectoren", () => {
     for (const s of WIZARD_SECTOREN) {
       const branche = brancheVoorSector(s.label);
       expect(branche, s.label).not.toBeNull();
-      expect(ADMIN_BRANCHES).toContain(branche!);
+      expect(ADMIN_BRANCHES).toContain(branche);
     }
   });
 
@@ -61,7 +63,7 @@ describe("handmatige-acceptatie sectoren", () => {
       expect(isAlleenOfferteSector(s.label)).toBe(false);
       expect(backendIsAlleenOfferte(s.label)).toBe(false);
     }
-    expect(WIZARD_SECTOREN.filter((s) => !s.handmatigeAcceptatie)).toHaveLength(6);
+    expect(WIZARD_SECTOREN.filter((s) => !s.handmatigeAcceptatie)).toHaveLength(8);
   });
 
   it("frontend- en backendlijst zijn gelijk", () => {
