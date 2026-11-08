@@ -19,6 +19,7 @@ beforeAll(async () => {
   const old = readFileSync('drizzle/migrations/0115_machine_meer_echte_activiteit.sql','utf8');
   await db.exec(old.slice(old.indexOf('CREATE OR REPLACE VIEW public.scherm_machine_live'),old.indexOf('CREATE OR REPLACE FUNCTION public.machine_cron_verwerken')));
   await db.exec(readFileSync('drizzle/migrations/0261_scherm_cronruis.sql','utf8'));
+  await db.exec(readFileSync('drizzle/migrations/0262_scherm_puls_heartbeat.sql','utf8'));
   await db.exec(`INSERT INTO cron.job VALUES(371,'process-email-queue','5 seconds'),(90,'wijziging-mailen-vangnet','*/15 * * * *');
     INSERT INTO cron.job_run_details SELECT g,371,'succeeded',now()-g*interval '5 seconds',now()-g*interval '5 seconds' FROM generate_series(1,180) g;
     INSERT INTO machine_activiteit(station,actie,tekst,status,bron) VALUES
@@ -26,6 +27,8 @@ beforeAll(async () => {
       ('kwaliteit','agent_run','Opvolger: 11 open, 0 nieuw gesignaleerd, 0 tweede signaal','klaar','opvolger'),
       ('kwaliteit','agent_run','Opvolger: 11 open, 1 nieuw gesignaleerd, 0 tweede signaal','klaar','opvolger'),
       ('kwaliteit','agent_run','Hartslag: 1 van 9 controles fout','fout','hartslag'),
+      ('kwaliteit','agent_run','Puls: aanvraagstroom in orde','klaar','agent:puls'),
+      ('kwaliteit','agent_stap','Puls (Hartslag): alles in orde','klaar','agent:stap'),
       ('intake','lead_verzekering_aanvraag','Aanvraag binnen','klaar','lead'),
       ('mail','mail_verzonden','Mail verzonden','klaar','email_send_log');
     INSERT INTO cron.job_run_details VALUES(999,90,'succeeded',now(),now()),(1000,371,'failed',now(),now());`);
@@ -56,6 +59,6 @@ describe('A8: echte resultaten, geen cronruis', () => {
     expect((await db.query<{actie:string}>(`SELECT actie FROM scherm_machine_live ORDER BY created_at DESC LIMIT 40`)).rows.some(r=>r.actie==='lead_verzekering_aanvraag')).toBe(true);
     expect((await db.query<{n:number}>(`SELECT count(*)::int n FROM cron.job_run_details`)).rows[0].n).toBe(182);
     expect((await db.query(`SELECT schedule FROM cron.job WHERE jobid=371`)).rows).toEqual([{schedule:'5 seconds'}]);
-    expect((await db.query<{n:number}>(`SELECT count(*)::int n FROM machine_activiteit`)).rows[0].n).toBe(6);
+    expect((await db.query<{n:number}>(`SELECT count(*)::int n FROM machine_activiteit`)).rows[0].n).toBe(8);
   });
 });
