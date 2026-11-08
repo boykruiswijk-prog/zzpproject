@@ -101,7 +101,7 @@ export const ZEKER_KENNIS = {
   "paginas": [
     {
       "path": "/",
-      "title": "BAV & AVB Verzekering ZZP'ers | Vanaf €55/maand",
+      "title": "BAV & AVB verzekering voor zzp'ers in één polis | ZP Zaken",
       "intro": "ZP Zaken biedt persoonlijke service voor zelfstandig professionals, met AFM-vergunning 12050636. De gecombineerde beroeps- en bedrijfsaansprakelijkheidsverzekering vraag je online aan vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting, zonder eigen risico en dagelijks opzegbaar. Vragen? Bel 020 - 457 3077 of mail info@zpzaken.nl."
     },
     {

@@ -352,7 +352,7 @@ export default function CreditControl() {
         <div className="container-wide">
           <AnimatedSection className="text-center mb-12">
             <h2 className="mb-4">
-              Onze unieke <span className="text-accent">structuur</span>
+              Onze <span className="text-accent">structuur</span>
             </h2>
           </AnimatedSection>
 

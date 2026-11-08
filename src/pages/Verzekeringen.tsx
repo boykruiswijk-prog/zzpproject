@@ -30,7 +30,7 @@ export default function Verzekeringen() {
   const { t } = useTranslation();
 
   const insurances = [
-    { id: "bav-avb-combinatiepolis", icon: Shield, title: t("insuranceData.combiTitle"), subtitle: t("insuranceData.combiSubtitle"), description: t("insuranceData.combiDesc"), features: t("insuranceData.combiFeatures", { returnObjects: true }) as string[], forWho: t("insuranceData.combiForWho"), price: t("insuranceData.combiPrice"), canApplyOnline: true, isUnique: true, isMostChosen: true },
+    { id: "bav-avb-combinatiepolis", icon: Shield, title: t("insuranceData.combiTitle"), subtitle: t("insuranceData.combiSubtitle"), description: t("insuranceData.combiDesc"), features: t("insuranceData.combiFeatures", { returnObjects: true }) as string[], forWho: t("insuranceData.combiForWho"), price: t("insuranceData.combiPrice"), canApplyOnline: true, isMostChosen: true },
     { id: "arbeidsongeschiktheid", icon: Heart, title: t("insuranceData.aovTitle"), subtitle: t("insuranceData.aovSubtitle"), description: t("insuranceData.aovDesc"), features: t("insuranceData.aovFeatures", { returnObjects: true }) as string[], forWho: t("insuranceData.aovForWho"), price: t("insuranceData.aovPrice"), canApplyOnline: false },
     { id: "rechtsbijstand", icon: Scale, title: t("insuranceData.rechtsbijstandTitle"), subtitle: t("insuranceData.rechtsbijstandSubtitle"), description: t("insuranceData.rechtsbijstandDesc"), features: t("insuranceData.rechtsbijstandFeatures", { returnObjects: true }) as string[], forWho: t("insuranceData.rechtsbijstandForWho"), price: t("insuranceData.rechtsbijstandPrice"), canApplyOnline: false },
   ];

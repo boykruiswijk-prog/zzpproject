@@ -108,7 +108,7 @@ function CancellationBlock() {
   return (
     <div className="rounded-xl p-5 bg-[#FFF5F5] border border-accent/20">
       <span className="inline-block bg-accent text-accent-foreground text-[10px] font-semibold px-2 py-0.5 rounded-full mb-2">
-        Uniek in Nederland
+        BAV + AVB dagelijks opzegbaar
       </span>
       <p className="text-xs text-muted-foreground mb-3">Opzegtermijn</p>
       <div className="grid grid-cols-2 gap-3">
@@ -273,7 +273,7 @@ export function SavingsCalculator() {
                 label="Kosten per gewerkt uur via ZP Zaken"
                 value={<>€{fmt2(r1.zpHour)}<span className="text-sm font-normal"> /uur</span></>}
                 subtext={<>Ter vergelijking: via jouw platform betaal je €{fmt2(platformRate)} per uur</>}
-                badge="Alleen ZP Zaken rekent dit zo transparant"
+                badge="Inzicht in kosten per gewerkt uur"
               />
               <CancellationBlock />
             </div>

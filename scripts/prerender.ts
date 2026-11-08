@@ -258,6 +258,10 @@ export function buildHtml(
     `<meta property="og:title" content="${esc(opts.title)}" data-rh="true" />`,
   );
   html = html.replace(
+    /<meta name="twitter:title"[^>]*>/,
+    `<meta name="twitter:title" content="${esc(opts.title)}" data-rh="true" />`,
+  );
+  html = html.replace(
     /<meta property="og:description"[^>]*>/,
     `<meta property="og:description" content="${esc(opts.description)}" data-rh="true" />`,
   );
@@ -610,7 +614,7 @@ export async function prerender(
     const body = await ssrBody(route.path);
     let html = buildHtml(template, {
       routePath: route.path,
-      title: route.path === EVI_PAGINA_PAD ? route.title : formatPageTitle(route.title),
+      title: route.path === EVI_PAGINA_PAD || route.path === '/' ? route.title : formatPageTitle(route.title),
       description: route.description,
       ogType: "website",
       image: SITE_CONFIG.ogImage,
@@ -630,7 +634,7 @@ export async function prerender(
         const body = await ssrBody(`/${lang}`);
         let langHtml = buildHtml(template, {
           routePath: `/${lang}`,
-          title: formatPageTitle(route.title),
+          title: route.title,
           description: route.description,
           ogType: "website",
           image: SITE_CONFIG.ogImage,
