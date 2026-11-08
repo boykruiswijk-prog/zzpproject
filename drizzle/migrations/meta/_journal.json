@@ -1835,6 +1835,13 @@
       "when": 1794125548551,
       "tag": "0261_scherm_cronruis",
       "breakpoints": true
+    },
+    {
+      "idx": 262,
+      "version": "7",
+      "when": 1794125858911,
+      "tag": "0262_scherm_puls_heartbeat",
+      "breakpoints": true
     }
   ]
 }
