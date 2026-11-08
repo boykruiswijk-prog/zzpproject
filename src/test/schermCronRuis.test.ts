@@ -29,7 +29,7 @@ beforeAll(async () => {
       ('intake','lead_verzekering_aanvraag','Aanvraag binnen','klaar','lead'),
       ('mail','mail_verzonden','Mail verzonden','klaar','email_send_log');
     INSERT INTO cron.job_run_details VALUES(999,90,'succeeded',now(),now()),(1000,371,'failed',now(),now());`);
-});
+}, 60_000);
 afterAll(() => db.close());
 describe('A8: echte resultaten, geen cronruis', () => {
   it('180 lege vijfsecondenruns leveren nul schermregels, fouten blijven zichtbaar', async () => {
