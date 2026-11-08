@@ -58,3 +58,4 @@
 - Article-to-landing links: src/data/artikelInterneLinks.ts, rendered by ArtikelDetail, never article content. Why: ships only on publish.
 - Cyber documents share cyberDocumenten.ts with hash-tested static PDFs; public links use cyberPubliek.ts and CyberVoorwaardenTekst, contractual constants stay unchanged. Why: one verified document source.
 - Cyber team requests may have no portal user; customer requests require one. Existing contact lookup and ID-based claims remain authoritative. Why: no fake account or broader customer access.
+- Homepage title stays exact in SEOHead and prerender; metadata titles share it. Why: retain register wording.
