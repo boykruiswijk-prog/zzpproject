@@ -610,7 +610,7 @@ export async function prerender(
     const body = await ssrBody(route.path);
     let html = buildHtml(template, {
       routePath: route.path,
-      title: route.path === EVI_PAGINA_PAD ? route.title : formatPageTitle(route.title),
+      title: route.path === EVI_PAGINA_PAD || route.path === '/' ? route.title : formatPageTitle(route.title),
       description: route.description,
       ogType: "website",
       image: SITE_CONFIG.ogImage,

@@ -41,7 +41,7 @@ export const seoRoutes: SeoRoute[] = [
   EVI_SEO,
   {
     path: "/",
-    title: `BAV & AVB Verzekering ZZP'ers | Vanaf €${laagstePakket.prijs}/maand`,
+    title: "BAV & AVB verzekering voor zzp'ers in één polis | ZP Zaken",
     description:
       `Vraag als zzp'er online BAV + AVB in één polis aan, binnen 24 uur geregeld. Geen eigen risico, dagelijks opzegbaar. AFM-vergunning ${SITE_CONFIG.registrations.afm}.`,
     h1: "Verzekeringen voor zzp'ers, direct en onafhankelijk",
@@ -397,7 +397,7 @@ export const seoRoutes: SeoRoute[] = [
     path: "/zzp-verzekering-ict",
     title: "Beroepsaansprakelijkheidsverzekering ICT zzp | ZP Zaken",
     description:
-      "Aansprakelijkheidsverzekering voor ICT-zzp'ers: BAV € 5 mln en AVB € 2,5 mln per aanspraak in één polis, geen eigen risico, binnen 24 uur geregeld.",
+      `Aansprakelijkheidsverzekering voor ICT-zzp'ers: BAV € 5 mln en AVB € 2,5 mln per aanspraak in één polis, € ${LANDING_MAAND} per maand of € ${LANDING_JAAR} per jaar, inclusief kosten en assurantiebelasting. Geen eigen risico, binnen 24 uur geregeld.`,
     h1: "Beroepsaansprakelijkheidsverzekering voor ICT-zzp'ers: BAV en AVB in één polis",
     intro:
       "Als ICT-zzp'er verzeker je met een beroepsaansprakelijkheidsverzekering (BAV) de financiële gevolgen van een fout in je code, configuratie, implementatie of advies, en met een bedrijfsaansprakelijkheidsverzekering (AVB) schade aan personen of spullen. Bij ZP Zaken heb je beide in één polis: BAV € 5 miljoen en AVB € 2,5 miljoen per aanspraak, geen eigen risico, dagelijks opzegbaar en binnen 24 uur geregeld. Wat precies gedekt is, staat in de polisvoorwaarden.",

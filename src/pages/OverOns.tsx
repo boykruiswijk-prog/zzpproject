@@ -40,7 +40,7 @@ const facts = [
 ];
 
 const team = [
-  { name: "Boy Kruiswijk", role: "Oprichter", image: teamMember1, description: "Ruim 13 jaar geleden bedenker van de unieke polis voor zzp'ers in Nederland. Zijn visie: ondernemers goed en zorgeloos verzekerd." },
+  { name: "Boy Kruiswijk", role: "Oprichter", image: teamMember1, description: "Ruim 13 jaar geleden bedenker van de BAV + AVB in één polis voor zzp'ers. Zijn visie: ondernemers goed en zorgeloos verzekerd." },
   { name: "Roxy Taskin", role: "Backoffice", image: teamMember2, description: "Zorgt ervoor dat alles op de achtergrond soepel verloopt. Van administratie tot klantondersteuning." },
   { name: "Ellen Baars", role: "Senior Adviseur", image: teamMember3, description: "Met jarenlange ervaring in verzekeringen helpt zij ondernemers met hun vragen en aanvragen." },
   { name: "Gert-Jan Schellingerhout", role: "CEO Onefellow", image: gertjanPortrait, description: "Gert-Jan is CEO van Onefellow en BusinessFellow Group, waar ZP Zaken deel van uitmaakt. Via Onefellow helpt hij zzp'ers aan nieuwe opdrachten, zodat je na een afgeronde klus niet stil hoeft te staan." },
@@ -91,7 +91,7 @@ export default function OverOns() {
                 Zijn visie: ondernemers goed en zorgeloos verzekerd, met persoonlijk contact en eerlijke informatie. Geen callcenters of verkooppraatjes, wel persoonlijk contact.
               </p>
               <div className="flex flex-wrap gap-2">
-                {["13+ jaar ervaring", "Bedenker unieke BAV+AVB polis", "NEN-gecertificeerd", "AFM geregistreerd"].map((tag) => (
+                {["13+ jaar ervaring", "Bedenker BAV + AVB in één polis", "NEN-gecertificeerd", "AFM geregistreerd"].map((tag) => (
                   <span key={tag} className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 text-foreground px-3 py-1.5 rounded-lg text-sm">
                     <CheckCircle className="h-3.5 w-3.5 text-accent" />{tag}
                   </span>

@@ -15,6 +15,7 @@ const Index = () => {
     <Layout>
       <SEOHead
         title={SEO.title}
+        exactTitle
         description={SEO.description}
       />
       <HeroSection />

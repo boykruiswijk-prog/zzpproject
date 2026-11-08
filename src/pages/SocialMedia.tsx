@@ -23,7 +23,7 @@ const SEO = seoRoute("/social-media");
 
 const trustPoints = [
   { icon: Users, title: "Directe benadering", description: "Geen onnodige tussenpartijen:  je hebt direct persoonlijk contact met ons team." },
-  { icon: Shield, title: "Specialist in aansprakelijkheid", description: "Beroeps- én bedrijfsaansprakelijkheid onder één dak, met onze unieke BAV+AVB combinatiepolis." },
+  { icon: Shield, title: "Specialist in aansprakelijkheid", description: "Beroeps- én bedrijfsaansprakelijkheid onder één dak, met onze BAV + AVB in één polis." },
   { icon: CheckCircle, title: "Transparante werkwijze", description: "Eerlijk, onafhankelijke bemiddeling zonder verborgen kosten. Wij bemiddelen alleen wat je écht nodig hebt." },
   { icon: Star, title: "Persoonlijke begeleiding", description: "Een team dat klaarstaat. Altijd een mens aan de lijn, nooit een callcenter." },
 ];
@@ -46,7 +46,7 @@ const linkedInContent = [
 const faqs = [
   {
     q: "Welke verzekering heeft een zzp'er nodig?",
-    a: "Dat hangt af van je beroep en situatie. De meeste zzp'ers hebben minimaal een beroepsaansprakelijkheidsverzekering (BAV) en bedrijfsaansprakelijkheidsverzekering (AVB) nodig. Wij bieden een unieke combinatiepolis die beide dekt. Plan een vrijblijvend gesprek en we bekijken samen wat bij jou past."
+    a: "Dat hangt af van je beroep en situatie. De meeste zzp'ers hebben minimaal een beroepsaansprakelijkheidsverzekering (BAV) en bedrijfsaansprakelijkheidsverzekering (AVB) nodig. Wij bieden een combinatiepolis die beide dekt. Plan een vrijblijvend gesprek en we bekijken samen wat bij jou past."
   },
   {
     q: "Is een beroepsaansprakelijkheidsverzekering verplicht?",
