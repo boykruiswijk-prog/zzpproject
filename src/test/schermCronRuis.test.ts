@@ -18,7 +18,7 @@ beforeAll(async () => {
     CREATE FUNCTION machine_cron_naam(text) RETURNS text LANGUAGE sql AS $$SELECT 'Mailwachtrij verwerkt'::text$$;`);
   const old = readFileSync('drizzle/migrations/0115_machine_meer_echte_activiteit.sql','utf8');
   await db.exec(old.slice(old.indexOf('CREATE OR REPLACE VIEW public.scherm_machine_live'),old.indexOf('CREATE OR REPLACE FUNCTION public.machine_cron_verwerken')));
-  if (process.env.A8_AFTER === '1') await db.exec(readFileSync('drizzle/migrations/0261_scherm_cronruis.sql','utf8'));
+  await db.exec(readFileSync('drizzle/migrations/0261_scherm_cronruis.sql','utf8'));
   await db.exec(`INSERT INTO cron.job VALUES(371,'process-email-queue','5 seconds'),(90,'wijziging-mailen-vangnet','*/15 * * * *');
     INSERT INTO cron.job_run_details SELECT g,371,'succeeded',now()-g*interval '5 seconds',now()-g*interval '5 seconds' FROM generate_series(1,180) g;
     INSERT INTO machine_activiteit(station,actie,tekst,status,bron) VALUES

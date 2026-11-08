@@ -1,4 +1,5 @@
 # Afspraken _shared
+- Screen routine suppression and sent-mail quarter summaries live in scherm_machine_live before feed limits; keep source logs, jobs and delivery untouched. Why: one projection serves activity, ticker and work-state without starving real events.
 - Interne cyberwaarden staan alleen in cyberIntern.ts (edge functions en admin-modules); build en tests controleren bronimports en publieke chunks. Waarom: nooit interne limieten publiek.
 
 - Exact-tokenrefresh en 401-race-herstel staan in _shared/exactToken.ts. Waarom: één plek voor tokenlogica.
