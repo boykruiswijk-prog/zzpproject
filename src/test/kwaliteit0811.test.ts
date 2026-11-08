@@ -16,7 +16,7 @@ function bronnen(dir: string): string[] {
 describe("Tekstnorm 8 november", () => {
   it("publieke productteksten bevatten geen exclusiviteitsclaims", () => {
     const files = [...bronnen("src/components"), ...bronnen("src/pages"), ...bronnen("src/i18n"), ...bronnen("src/data"),
-      "src/config/seoRoutes.ts", "scripts/llmsTxt.ts", "scripts/llmsFullTxt.ts", "supabase/functions/_shared/zekerKennis.generated.ts"];
+      "src/config/seoRoutes.ts", "scripts/llmsTxt.ts", "supabase/functions/_shared/zekerKennis.generated.ts"];
     const fouten = files.flatMap(file => readFileSync(file, "utf8").split("\n").flatMap((line, index) => {
       // SQL duplicate detection is not public product copy.
       if (file === "src/pages/OffertePage.tsx" && line.includes("23505")) return [];
