@@ -36,6 +36,8 @@ describe("Tekstnorm 8 november", () => {
       const html = buildHtml(template, { routePath: route.path, title: route.path === "/" ? route.title : formatPageTitle(route.title), description: route.description, ogType: "website", schemas: [], fallback: "" });
       const teksten = [...html.matchAll(/<title>(.*?)<\/title>|<meta (?:name|property)="(?:description|og:title|og:description|twitter:title|twitter:description)"[^>]*content="([^"]*)"/g)].map(m => m[1] || m[2]);
       expect(teksten.filter(t => t.includes("€") && !(/per maand/.test(t) && /per jaar/.test(t) && /inclusief kosten en assurantiebelasting/.test(t)))).toEqual([]);
+      const titels = [...html.matchAll(/<title>(.*?)<\/title>|<meta (?:name|property)="(?:og:title|twitter:title)"[^>]*content="([^"]*)"/g)].map(m => m[1] || m[2]);
+      expect(new Set(titels).size).toBe(1);
     }
   });
 
