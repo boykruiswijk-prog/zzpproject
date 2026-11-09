@@ -453,7 +453,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
       policyLead = leadVoorPolis;
     }
     const { data: latereCyber } = await adminClient.from("cyber_toevoeg_verzoeken").select("id").eq("policy_id", policy.id).not("geactiveerd_op", "is", null).limit(1);
-    const heeftNieuweCyber = !!cyberVerzoek || !!latereCyber?.length || policyLead?.cyber_voorwaarden_versie === "2026-10-08";
+    const heeftNieuweCyber = body.zonder_cyber !== true && (!!cyberVerzoek || !!latereCyber?.length || policyLead?.cyber_voorwaarden_versie === "2026-10-08");
 
     // === Load the template background image from storage (private bucket) ===
     const { data: templateData, error: templateError } = await adminClient.storage
