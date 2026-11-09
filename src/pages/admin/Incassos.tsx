@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { formatDateNL } from "@/lib/dateFormat";
 import { useToonTestrecords } from "@/hooks/useToonTestrecords";
+import { MislukteIncassosOverzicht, KlantenZonderBankgegevens } from "@/components/admin/incasso/MislukteIncassos";
 import { BetaaldKnop, IncassoMisluktKnop, RoyementKnop, cyclusInfo, euroNL, STAP_LABEL, type IncassoRij, type IncassoStap } from "@/components/admin/incasso/Incasso";
 
 const STATUS_LABEL: Record<string, string> = { open: "Open", betaald: "Betaald", royement_voorgesteld: "Royement voorgesteld", geroyeerd: "Geroyeerd", vervallen: "Vervallen" };
@@ -57,6 +58,8 @@ export default function Incassos() {
               </div>); })}
           </CardContent>
         </Card>
+        <MislukteIncassosOverzicht />
+        <KlantenZonderBankgegevens />
         <CacheVoorstellen onBevestigd={() => refetch()} />
         <ExactVoorstellen onBevestigd={() => refetch()} />
       </div>
