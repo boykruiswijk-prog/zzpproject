@@ -1,3 +1,4 @@
+import { PdfWeergave } from "./PdfWeergave";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -145,16 +146,20 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds, omzetOpen
     } finally { setBezig(false); }
   };
 
-  const download = async (pad: string) => {
-    const { data } = await supabase.storage.from("certificates").createSignedUrl(pad, 3600);
-    if (data?.signedUrl) window.open(data.signedUrl, "_blank");
-  };
+  const [bekijkPad, setBekijkPad] = useState<string | null>(null);
+  const download = (pad: string) => setBekijkPad(pad);
 
   if (!isSupervisorOrAdmin && policies.length === 0) return null;
   const compleet = form.sector && form.certificate_holder.trim() && form.insured_name.trim() && form.start_date;
 
   return (
     <Card id="klant-certificaat">
+      <Dialog open={!!bekijkPad} onOpenChange={(o) => { if (!o) setBekijkPad(null); }}>
+        <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
+          <DialogHeader><DialogTitle>Certificaat bekijken</DialogTitle></DialogHeader>
+          {bekijkPad && <PdfWeergave bucket="certificates" pad={bekijkPad} titel="Certificaat ter controle" />}
+        </DialogContent>
+      </Dialog>
       <CardHeader><CardTitle className="text-base">Certificaat (PDF)</CardTitle></CardHeader>
       <CardContent className="space-y-3">
         {contractMee && !actief && <ContractMeenemenMelding open={contractMee} onKlaar={() => { refetch(); onOmgezet?.(); }} />}
