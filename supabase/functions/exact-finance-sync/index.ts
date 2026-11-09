@@ -16,7 +16,7 @@ import { ensureValidToken, refreshAccessToken } from "../_shared/exactToken.ts";
 import { cronOfSupervisor, uurNL } from "../_shared/cronOfSupervisor.ts";
 
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-const MAX_CALLS = 400;
+const MAX_CALLS = 500;
 const MAX_PAGINAS = 120;
 
 const datum = (v: any): string | null => {
