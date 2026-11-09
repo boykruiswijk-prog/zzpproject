@@ -65,10 +65,10 @@ export default function Starters() {
       heroExtra={
         <div className="mb-8" data-testid="startertarief-hero">
           <p className="text-2xl md:text-3xl font-bold text-primary-foreground">
-            € {STARTER.maandprijs} per maand de eerste {STARTER.duurMaanden} maanden
+            € {STARTER.maandprijs} per maand of € {STARTER.jaarprijs} per jaar de eerste {STARTER.duurMaanden} maanden
           </p>
           <p className="mt-2 text-sm md:text-base text-primary-foreground/80">
-            inclusief kosten en assurantiebelasting, BAV + AVB in één polis, geen eigen risico. Daarna € {STARTER.naMaandprijs} per maand. Voor zzp'ers met een KVK-inschrijving jonger dan {STARTER.duurMaanden} maanden.
+            inclusief kosten en assurantiebelasting, BAV + AVB in één polis, geen eigen risico. Daarna € {STARTER.naMaandprijs} per maand of € {STARTER.naJaarprijs} per jaar. Voor zzp'ers met een KVK-inschrijving jonger dan {STARTER.duurMaanden} maanden.
           </p>
         </div>
       }
