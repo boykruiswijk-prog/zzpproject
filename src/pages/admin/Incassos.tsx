@@ -36,7 +36,7 @@ export default function Incassos() {
           <Button variant="outline" size="sm" onClick={() => setAlle(!alle)}>{alle ? "Alleen open" : "Alle tonen"}</Button>
         </div>
         <p className="text-sm text-muted-foreground">Herinneringen op dag 0, 14 en 28; op dag 42 alleen een voorstel voor royement. Er wordt nooit automatisch geroyeerd en er gaat niets naar Exact. De herinneringen en de royementsbevestiging gaan per mail naar de klant; Boy heeft de teksten goedgekeurd op 15-10-2026 (zie Klantmails).</p>
-        <Card><CardHeader><CardTitle className="text-base">Mislukte incasso's ({data?.length ?? 0})</CardTitle></CardHeader>
+        <Card><CardHeader><CardTitle className="text-base">Gemelde incassogevallen ({data?.length ?? 0})</CardTitle></CardHeader>
           <CardContent className="space-y-2 text-sm">
             {(data ?? []).length === 0 && <p className="text-muted-foreground">Geen mislukte incasso's.</p>}
             {(data ?? []).map((r) => { const c = cyclusInfo(r); return (
