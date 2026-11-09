@@ -37,7 +37,7 @@ describe("B: alleen cyber", () => {
     expect(cyberNummer(12345)).toBe("ZPCYB12345");
   });
   it("cybercertificaat toont het eigen nummer in plaats van een BAV-verwijzing", () => {
-    const rijen = cyberCertificaatRijen({ cyber_certificaatnummer: "ZPCYB0001" } as any);
+    const rijen = cyberCertificaatRijen({ certificaathouder: "X", verzekeringsnemer: "ZP", cyber_certificaatnummer: "ZPCYB0001", cyber_ingangsdatum: "2026-11-10", cyber_einddatum: null } as any);
     expect(rijen.some((r: any) => r.waarde === "ZPCYB0001")).toBe(true);
     expect(rijen.some((r: any) => String(r.label).includes("BAV"))).toBe(false);
   });
