@@ -66,7 +66,7 @@ export function CyberAanvraag({ verzoek, autoOpen = true }: { verzoek: CyberWerk
   const stap = cyberWerkStap(verzoek);
   const onzeker = ["geclaimd", "mail_onzeker"].includes(verzoek.mail_status) || ["geclaimd", "mail_onzeker"].includes(verzoek.certificaat_mail_status);
   return <>
-    <Button variant="ghost" size="sm" onClick={() => setOpen(true)}><Eye className="h-4 w-4" />Bekijken</Button>
+    <Button variant="outline" size="sm" onClick={() => setOpen(true)}><Eye className="h-4 w-4" />Bekijken</Button>
     <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o && params.get("cyber") === verzoek.id) { const p = new URLSearchParams(params); p.delete("cyber"); setParams(p, { replace: true }); } }}>
       <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
         <DialogHeader><DialogTitle className="flex items-center gap-2"><ShieldPlus className="h-5 w-5" />Cyber toevoegen: {verzoek.klant}</DialogTitle></DialogHeader>
