@@ -6,7 +6,8 @@
 //  - facturen:    salesinvoice/SalesInvoices (Type 8020 factuur, 8021 creditnota; Status 50 verwerkt). Bedrag = AmountDC incl. btw; bedrag_excl_btw = AmountFCExclVat (of AmountDC min VATAmountDC).
 //  - open posten: read/financial/ReceivablesList (momentopname van wat nu open staat; alle pagina's of de run telt niet als volledig).
 //  - betalingen:  cashflow/Receivables (IsFullyPaid, LastPaymentDate, Status, TransactionIsReversal voor terugboekingen).
-// Niet gebruikt: cashflow/DirectDebitMandates (geen betaalinformatie). Storno's levert Exact niet als eigen soort; alleen
+//  - bankgegevens: crm/BankAccounts en cashflow/DirectDebitMandates, alleen ID/Account (nooit IBAN), naar exact_bankgegevens_cache.
+// Storno's levert Exact niet als eigen soort; alleen
 // TransactionIsReversal in cashflow/Receivables geeft een terugboeking aan, als Exact dat veld vult.
 // deno-lint-ignore-file no-explicit-any
 import { createClient } from "npm:@supabase/supabase-js@2";
@@ -15,7 +16,7 @@ import { ensureValidToken, refreshAccessToken } from "../_shared/exactToken.ts";
 import { cronOfSupervisor, uurNL } from "../_shared/cronOfSupervisor.ts";
 
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-const MAX_CALLS = 400;
+const MAX_CALLS = 500;
 const MAX_PAGINAS = 120;
 
 const datum = (v: any): string | null => {
@@ -100,7 +101,7 @@ Deno.serve(async (req) => {
 
   try {
     // 1. Verkoopfacturen
-    const sel = "InvoiceID,InvoiceNumber,InvoiceTo,InvoiceToName,AmountDC,InvoiceDate,DueDate,Type,Status,Description,AmountFCExclVat,VATAmountDC";
+    const sel = "InvoiceID,InvoiceNumber,InvoiceTo,InvoiceToName,AmountDC,InvoiceDate,DueDate,Type,Status,Description,AmountFCExclVat,VATAmountDC,PaymentCondition";
     const f = await haalAlles(`${base}salesinvoice/SalesInvoices?$select=${sel}&$filter=InvoiceDate ge ${filterDatum}`,
       `${base}salesinvoice/SalesInvoices?$filter=InvoiceDate ge ${filterDatum}`);
     endpoints.facturen = { endpoint: f.url, http: f.status, rijen: f.rijen.length, volledig: f.volledig, fout: f.fout };
@@ -142,6 +143,27 @@ Deno.serve(async (req) => {
       is_terugboeking: x.TransactionIsReversal === true, raw: x, opgehaald_op: nu, sync_run_id: runId,
     }));
     await upsert("exact_betalingen_cache", br); aantallen.betalingen = br.length;
+
+    // 4. Bankrekening en machtiging per relatie (besluit Boy 9-11-2026): alleen GET op ID en Account,
+    //    nooit het rekeningnummer zelf ophalen of opslaan.
+    const bank = await haalAlles(`${base}crm/BankAccounts?$select=ID,Account`);
+    const mand = await haalAlles(`${base}cashflow/DirectDebitMandates?$select=ID,Account,CancellationDate`);
+    endpoints.bankrekeningen = { endpoint: bank.url, http: bank.status, rijen: bank.rijen.length, volledig: bank.volledig, fout: bank.fout };
+    endpoints.machtigingen = { endpoint: mand.url, http: mand.status, rijen: mand.rijen.length, volledig: mand.volledig, fout: mand.fout };
+    if (bank.volledig && mand.volledig) {
+      const per = new Map<string, { account_id: string; heeft_rekening: boolean; heeft_machtiging: boolean; opgehaald_op: string; sync_run_id: string }>();
+      const rij = (id: string) => { if (!per.has(id)) per.set(id, { account_id: id, heeft_rekening: false, heeft_machtiging: false, opgehaald_op: nu, sync_run_id: runId }); return per.get(id)!; };
+      for (const x of bank.rijen) if (tekst(x.Account)) rij(tekst(x.Account)!).heeft_rekening = true;
+      for (const x of mand.rijen) if (tekst(x.Account) && !datum(x.CancellationDate)) rij(tekst(x.Account)!).heeft_machtiging = true;
+      // Relaties met een open post maar zonder rekening of machtiging krijgen expliciet false.
+      for (const x of or) if (x.account_id) rij(x.account_id);
+      const rijen = [...per.values()];
+      for (let i = 0; i < rijen.length; i += 500) {
+        const { error } = await admin.from("exact_bankgegevens_cache").upsert(rijen.slice(i, i + 500), { onConflict: "account_id" });
+        if (error) throw new Error(`exact_bankgegevens_cache: ${error.message}`);
+      }
+      aantallen.bankgegevens = rijen.length;
+    }
   } catch (e) {
     fouten.push({ fout: String(e) });
   }

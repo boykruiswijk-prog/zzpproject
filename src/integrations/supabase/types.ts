@@ -1873,6 +1873,44 @@ export type Database = {
           },
         ]
       }
+      cyber_nummers: {
+        Row: {
+          laatste_pdf_op: string | null
+          laatste_pdf_pad: string | null
+          nummer: string
+          onderneming_id: string
+          reden: string
+          toegekend_door: string | null
+          toegekend_op: string
+        }
+        Insert: {
+          laatste_pdf_op?: string | null
+          laatste_pdf_pad?: string | null
+          nummer: string
+          onderneming_id: string
+          reden: string
+          toegekend_door?: string | null
+          toegekend_op?: string
+        }
+        Update: {
+          laatste_pdf_op?: string | null
+          laatste_pdf_pad?: string | null
+          nummer?: string
+          onderneming_id?: string
+          reden?: string
+          toegekend_door?: string | null
+          toegekend_op?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cyber_nummers_onderneming_id_fkey"
+            columns: ["onderneming_id"]
+            isOneToOne: true
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cyber_toevoeg_verzoeken: {
         Row: {
           aangevraagd_door: string
@@ -2607,6 +2645,30 @@ export type Database = {
           code?: string | null
           id?: string
           omschrijving?: string | null
+          opgehaald_op?: string
+          sync_run_id?: string | null
+        }
+        Relationships: []
+      }
+      exact_bankgegevens_cache: {
+        Row: {
+          account_id: string
+          heeft_machtiging: boolean
+          heeft_rekening: boolean
+          opgehaald_op: string
+          sync_run_id: string | null
+        }
+        Insert: {
+          account_id: string
+          heeft_machtiging?: boolean
+          heeft_rekening?: boolean
+          opgehaald_op?: string
+          sync_run_id?: string | null
+        }
+        Update: {
+          account_id?: string
+          heeft_machtiging?: boolean
+          heeft_rekening?: boolean
           opgehaald_op?: string
           sync_run_id?: string | null
         }
@@ -3918,6 +3980,27 @@ export type Database = {
           },
         ]
       }
+      incasso_daglijst_claim: {
+        Row: {
+          aangemaakt_op: string
+          aantal: number
+          dag: string
+          melding_id: string | null
+        }
+        Insert: {
+          aangemaakt_op?: string
+          aantal: number
+          dag: string
+          melding_id?: string | null
+        }
+        Update: {
+          aangemaakt_op?: string
+          aantal?: number
+          dag?: string
+          melding_id?: string | null
+        }
+        Relationships: []
+      }
       incasso_mislukt: {
         Row: {
           bedrag: number | null
@@ -3985,6 +4068,21 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      incasso_signaal_gezien: {
+        Row: {
+          eerst_gezien: string
+          factuurnummer: string
+        }
+        Insert: {
+          eerst_gezien?: string
+          factuurnummer: string
+        }
+        Update: {
+          eerst_gezien?: string
+          factuurnummer?: string
+        }
+        Relationships: []
       }
       indexnow_log: {
         Row: {
@@ -7458,6 +7556,14 @@ export type Database = {
           mails: Json
         }[]
       }
+      alleen_cyber_met_bav_nummer: {
+        Args: never
+        Returns: {
+          bav_nummers: string
+          naam: string
+          onderneming_id: string
+        }[]
+      }
       anonimiseer_aanvraag_concepten: { Args: never; Returns: number }
       aov_aanmelden: {
         Args: {
@@ -7777,6 +7883,18 @@ export type Database = {
           _toelichting: string
         }
         Returns: Json
+      }
+      cyber_nummer_toekennen: {
+        Args: { _onderneming_id: string; _reden: string }
+        Returns: string
+      }
+      cyber_nummer_toekennen_kern: {
+        Args: { _door: string; _onderneming_id: string; _reden: string }
+        Returns: string
+      }
+      cyber_pdf_vastleggen: {
+        Args: { _onderneming_id: string; _pad: string }
+        Returns: undefined
       }
       cyber_term_eind: {
         Args: { _start: string; _vandaag: string }
@@ -8141,11 +8259,13 @@ export type Database = {
       importeer_certificaten_20261001: { Args: never; Returns: Json }
       incasso_betaald: { Args: { _datum?: string; _id: string }; Returns: Json }
       incasso_cyclus_stap: { Args: { _vandaag: string }; Returns: Json }
+      incasso_daglijst_melden: { Args: never; Returns: number }
       incasso_welke_stap: { Args: { _dagen: number }; Returns: string }
       inzicht_tegel: { Args: { _tegel: string }; Returns: Json }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_supervisor_or_admin: { Args: { _user_id: string }; Returns: boolean }
       is_team_member: { Args: { _user_id: string }; Returns: boolean }
+      klant_dekking_actief: { Args: { _onderneming_id: string }; Returns: Json }
       klant_mandaat_overzicht: {
         Args: { _codes?: string[] }
         Returns: {
@@ -8157,6 +8277,13 @@ export type Database = {
           relatiecode: string
           status: string
           vervaldatum: string
+        }[]
+      }
+      klanten_zonder_bankgegevens: {
+        Args: never
+        Returns: {
+          factuurnummer: string
+          klant: string
         }[]
       }
       klantmail_tekst_opslaan: {
@@ -8341,6 +8468,36 @@ export type Database = {
       }
       mijn_persoon_ids: { Args: never; Returns: string[] }
       mijn_review_kaart: { Args: never; Returns: Json }
+      mislukte_incassos_kern: {
+        Args: never
+        Returns: {
+          bedrag: number
+          categorie: string
+          factuurdatum: string
+          factuurnummer: string
+          heeft_machtiging: boolean
+          heeft_rekening: boolean
+          klant: string
+          onderneming_id: string
+          reden: string
+          vervaldatum: string
+        }[]
+      }
+      mislukte_incassos_overzicht: {
+        Args: never
+        Returns: {
+          bedrag: number
+          categorie: string
+          factuurdatum: string
+          factuurnummer: string
+          heeft_machtiging: boolean
+          heeft_rekening: boolean
+          klant: string
+          onderneming_id: string
+          reden: string
+          vervaldatum: string
+        }[]
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string

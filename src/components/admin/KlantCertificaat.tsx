@@ -1,3 +1,6 @@
+import { PdfWeergave } from "./PdfWeergave";
+import { certificaatKeuzes, type CertificaatKeuze } from "@/lib/certificaatKeuze";
+import { controleerAdminMfa } from "@/lib/adminMfaStap";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -61,6 +64,38 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds, omzetOpen
   });
   const { data: contractMee } = useOpenContractMeenemen(actief ? undefined : ond.id);
   const blokkade = contractMee ? null : certificaatBlokkadeReden(contracten, vandaag);
+
+  const { data: dekking, refetch: herlaadDekking } = useQuery({
+    queryKey: ["klant-dekking", ond.id],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("klant_dekking_actief" as any, { _onderneming_id: ond.id });
+      if (error) throw error;
+      return data as unknown as { bav: boolean; cyber: boolean; cyber_nummer: string | null };
+    },
+  });
+  const [keuze, setKeuze] = useState<{ bevestig: boolean } | null>(null);
+  const [zonderCyber, setZonderCyber] = useState(false);
+  const opties = certificaatKeuzes(dekking);
+  const kies = async (k: CertificaatKeuze) => {
+    const b = keuze?.bevestig ?? false; setKeuze(null);
+    if (k === "cyber") { await maakAlleenCyber(); return; }
+    setZonderCyber(k === "bav");
+    if (omzetOpen) setOmzetMelding(true); else await openForm(b);
+  };
+  const maakAlleenCyber = async () => {
+    setBezig(true);
+    try {
+      if (!await controleerAdminMfa()) return;
+      if (!dekking?.cyber_nummer) {
+        const t = await supabase.rpc("cyber_nummer_toekennen" as any, { _onderneming_id: ond.id, _reden: "Nieuw certificaat, alleen cyber" });
+        if (t.error) throw t.error;
+      }
+      const { data, error } = await supabase.functions.invoke("generate-cyber-certificate", { body: { dekking: "cyber", onderneming_id: ond.id } });
+      if (error || data?.error) throw new Error(data?.error ?? error?.message ?? "Cybercertificaat mislukt");
+      toast({ title: "Cybercertificaat gemaakt", description: `Nummer ${data.nummer}. Er is niets gemaild.` });
+      await herlaadDekking(); setBekijkPad(data.pad);
+    } catch (e: any) { toast({ title: "Fout", description: e.message, variant: "destructive" }); } finally { setBezig(false); }
+  };
 
   const openForm = async (bevestigNieuw: boolean) => {
     // Voorkeur: eerder bij de klant gekozen sector, anders branche van een gekoppelde lead.
@@ -129,7 +164,7 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds, omzetOpen
     setBezig(true);
     try {
       const { data, error } = await supabase.functions.invoke("generate-certificate", {
-        body: { onderneming_id: ond.id, policy_data: form, bevestig_nieuw_nummer: bevestigNieuw },
+        body: { onderneming_id: ond.id, policy_data: form, bevestig_nieuw_nummer: bevestigNieuw, zonder_cyber: zonderCyber },
       });
       let fout = data?.error, code = data?.code;
       if (error) {
@@ -145,18 +180,32 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds, omzetOpen
     } finally { setBezig(false); }
   };
 
-  const download = async (pad: string) => {
-    const { data } = await supabase.storage.from("certificates").createSignedUrl(pad, 3600);
-    if (data?.signedUrl) window.open(data.signedUrl, "_blank");
-  };
+  const [bekijkPad, setBekijkPad] = useState<string | null>(null);
+  const download = (pad: string) => setBekijkPad(pad);
 
   if (!isSupervisorOrAdmin && policies.length === 0) return null;
   const compleet = form.sector && form.certificate_holder.trim() && form.insured_name.trim() && form.start_date;
 
   return (
     <Card id="klant-certificaat">
+      <Dialog open={!!bekijkPad} onOpenChange={(o) => { if (!o) setBekijkPad(null); }}>
+        <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
+          <DialogHeader><DialogTitle>Certificaat bekijken</DialogTitle></DialogHeader>
+          {bekijkPad && <PdfWeergave bucket="certificates" pad={bekijkPad} titel="Certificaat ter controle" />}
+        </DialogContent>
+      </Dialog>
       <CardHeader><CardTitle className="text-base">Certificaat (PDF)</CardTitle></CardHeader>
       <CardContent className="space-y-3">
+        {dekking?.cyber_nummer && <p className="text-sm">Cybernummer: <span className="font-medium">{dekking.cyber_nummer}</span>{!dekking.bav && " (alleen cyber; een eerder BAV-nummer blijft alleen in de historie)"}</p>}
+        <Dialog open={!!keuze} onOpenChange={(o) => { if (!o) setKeuze(null); }}>
+          <DialogContent>
+            <DialogHeader><DialogTitle>Nieuw certificaat</DialogTitle><DialogDescription>Kies wat het certificaat moet dekken. Je ziet alleen wat deze klant actief heeft. Er wordt niets gemaild.</DialogDescription></DialogHeader>
+            <div className="flex flex-col gap-2">
+              {opties.length === 0 && <p className="text-sm text-muted-foreground">Geen actieve BAV + AVB of cyber.</p>}
+              {opties.map(o => <Button key={o.waarde} variant="outline" disabled={bezig} onClick={() => kies(o.waarde)}>{o.label}</Button>)}
+            </div>
+          </DialogContent>
+        </Dialog>
         {contractMee && !actief && <ContractMeenemenMelding open={contractMee} onKlaar={() => { refetch(); onOmgezet?.(); }} />}
         {blokkade && (
           <div className="space-y-1 text-sm text-destructive">
@@ -168,7 +217,7 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds, omzetOpen
         )}
         {isSupervisorOrAdmin ? (
           <CertificaatBeheer policies={policies} leadActief={!!actief} isSupervisorOrAdmin={isSupervisorOrAdmin}
-            onChanged={refetch} onDownload={download} onNieuw={(b: boolean) => (omzetOpen ? setOmzetMelding(true) : openForm(b))} />
+            onChanged={refetch} onDownload={download} onNieuw={(b: boolean) => setKeuze({ bevestig: b })} />
         ) : null}
         {omzetOpen && omzetMelding && (
           <OpenOmzettingMelding open={omzetOpen} ond={{ id: ond.id, naam: ond.naam ?? "", kvk: ond.kvk }} onKlaar={() => { setOmzetMelding(false); refetch(); onOmgezet?.(); }}

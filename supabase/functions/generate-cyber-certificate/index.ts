@@ -20,7 +20,32 @@ Deno.serve(async (req) => {
     if (!CYBER_JAARMAXIMUM.trim()) return json({ error: "Cybercertificaat nog niet beschikbaar: jaarbedrag wordt vastgesteld door Boy", code: "jaarmaximum_ontbreekt" }, 409);
     if (!CYBERCERTIFICAAT_LIVE) return json({ error: "Cybercertificaat wacht op laatste goedkeuring", code: "cybercertificaat_niet_live" }, 409);
     const body = await req.json().catch(() => ({}));
-    const policyId = typeof body?.policy_id === "string" && /^[0-9a-f-]{36}$/i.test(body.policy_id) ? body.policy_id : null;
+    const uuid = (v: unknown) => typeof v === "string" && /^[0-9a-f-]{36}$/i.test(v) ? v : null;
+    // Alleen cyber (besluit Boy 9-11-2026): eigen ZPCYB-nummer, geen BAV-polis nodig. Verstuurt niets.
+    const alleenCyberId = body?.dekking === "cyber" ? uuid(body.onderneming_id) : null;
+    if (alleenCyberId) {
+      const { data: d } = await admin.rpc("klant_dekking_actief", { _onderneming_id: alleenCyberId });
+      if (!d?.cyber) return json({ error: "Geen actief cybercontract" }, 409);
+      if (!d?.cyber_nummer) return json({ error: "Ken eerst een cybernummer toe", code: "geen_cybernummer" }, 409);
+      const { data: o } = await admin.from("ondernemingen").select("naam,kvk").eq("id", alleenCyberId).maybeSingle();
+      const { data: c } = await admin.from("klant_contracten").select("cyber_ingangsdatum,cyber_einddatum,begin_datum")
+        .eq("onderneming_id", alleenCyberId).eq("product", "cyber_clear").in("status", ["actief", "loopt_af"]).order("begin_datum", { ascending: false }).limit(1).maybeSingle();
+      const ingangC = c?.cyber_ingangsdatum ?? c?.begin_datum ?? null;
+      if (!o?.naam || !ingangC) return json({ error: "Naam of cyberingangsdatum ontbreekt" }, 409);
+      const { data: tplC } = await admin.storage.from("certificates").download("templates/certificate-template.png");
+      if (!tplC) return json({ error: "Sjabloon niet beschikbaar" }, 500);
+      const { pdfBytes } = await tekenCyberCertificaat(new Uint8Array(await tplC.arrayBuffer()), {
+        certificaathouder: o.naam, kvk: o.kvk ?? null, verzekeringsnemer: o.naam, bav_certificaatnummer: "",
+        cyber_certificaatnummer: d.cyber_nummer, cyber_ingangsdatum: ingangC, cyber_einddatum: c?.cyber_einddatum ?? null,
+        jaarmaximum: CYBER_JAARMAXIMUM, afgiftedatum: new Date().toISOString().slice(0, 10), voor_gezien: CERTIFICAAT_VOOR_GEZIEN,
+      });
+      const padC = `cyber/${d.cyber_nummer}-${Date.now()}.pdf`;
+      const { error: upC } = await admin.storage.from("certificates").upload(padC, new Blob([pdfBytes as BlobPart], { type: "application/pdf" }), { contentType: "application/pdf", upsert: false });
+      if (upC) return json({ error: "Opslaan mislukt" }, 500);
+      await admin.rpc("cyber_pdf_vastleggen", { _onderneming_id: alleenCyberId, _pad: padC });
+      return json({ success: true, pad: padC, nummer: d.cyber_nummer });
+    }
+    const policyId = uuid(body?.policy_id);
     if (!policyId) return json({ error: "policy_id ontbreekt of is ongeldig" }, 400);
 
     const { data: policy } = await admin.from("policies")

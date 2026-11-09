@@ -96,7 +96,7 @@ describe("F9 nieuwe AOV-pagina", () => {
     expect(l).toContain("{!zonderGegevensPopups && <TerugbelDialog />}");
     expect(l).toContain("zonderGegevensPopups = false");
     for (const p of ["index.html", "public/_headers"]) {
-      expect(lees(p).match(/frame-src ([^;]+);/)?.[1]).toBe("https://movir-aov-exon.smartplatforms.io");
+      expect(lees(p).match(/frame-src ([^;]+);/)?.[1]).toBe("blob: https://movir-aov-exon.smartplatforms.io");
     }
   });
 });

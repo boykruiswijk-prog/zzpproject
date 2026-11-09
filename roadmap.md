@@ -199,3 +199,4 @@
 - [x] 4. Aanvraag pas afgerond na certificaat verstuurd of handmatige keuze met reden
 - [x] 5. Ellen-melding incl. vraag Mijn ZP-uitnodiging nieuwe klant
 - [x] Groeiplan T1, T2, T3, T4, T7 (3-11), niet gepubliceerd; open: zorgberoepen-vraag bij Ellen
+- 9-11 A/B/C cyber-PDF-weergave, ZPCYB-reeks, mislukte incasso's: klaar, niet gepubliceerd.

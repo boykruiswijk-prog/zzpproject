@@ -288,6 +288,9 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
       if (!ond) return json({ error: "Klant niet gevonden" }, 404);
       const { data: kc } = await adminClient.from("klant_contracten").select("type,status,eind_datum,begin_datum,product").eq("onderneming_id", ondId);
       if (!actiefKlantContract(kc || [], vandaag)) return json({ error: "Deze klant heeft geen actief verzekeringscontract (opgezegd of afgelopen). Genereren is geblokkeerd.", code: "niet_actief" }, 409);
+      // Alleen cyber krijgt nooit een nieuw BAV + AVB-document (besluit Boy 9-11-2026).
+      if (!(kc || []).some((c: any) => ["bav_avb", "nimble_bav"].includes(c.product) && ["actief", "loopt_af"].includes(c.status)))
+        return json({ error: "Deze klant heeft alleen cyber. Kies Nieuw certificaat, alleen cyber.", code: "alleen_cyber" }, 409);
       const { data: bestaande } = await adminClient.from("policies").select("certificate_number,status").eq("onderneming_id", ondId);
       const besluit = beslisNieuwCertificaat(bestaande || [], body.bevestig_nieuw_nummer === true);
       if (!besluit.toegestaan) return json({ error: `Deze klant heeft al geldig certificaat ${besluit.bestaand}. Gebruik "Aanpassen".`, code: besluit.code, bestaand: besluit.bestaand }, 409);
@@ -453,7 +456,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
       policyLead = leadVoorPolis;
     }
     const { data: latereCyber } = await adminClient.from("cyber_toevoeg_verzoeken").select("id").eq("policy_id", policy.id).not("geactiveerd_op", "is", null).limit(1);
-    const heeftNieuweCyber = !!cyberVerzoek || !!latereCyber?.length || policyLead?.cyber_voorwaarden_versie === "2026-10-08";
+    const heeftNieuweCyber = body.zonder_cyber !== true && (!!cyberVerzoek || !!latereCyber?.length || policyLead?.cyber_voorwaarden_versie === "2026-10-08");
 
     // === Load the template background image from storage (private bucket) ===
     const { data: templateData, error: templateError } = await adminClient.storage

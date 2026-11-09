@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { PdfWeergave } from "./PdfWeergave";
 import { controleerAdminMfa } from "@/lib/adminMfaStap";
 import { cyberBeoordelingFout, cyberFunctieFout } from "@/lib/cyberBeoordeling";
 import { formatDateNL } from "@/lib/dateFormat";
@@ -54,10 +55,7 @@ export function CyberAanvraag({ verzoek, autoOpen = true }: { verzoek: CyberWerk
   }
   async function bekijken() {
     if (!verzoek.certificaat_pad) return;
-    setBezig(true); setFout("");
-    const r = await supabase.storage.from("certificates").createSignedUrl(verzoek.certificaat_pad, 3600);
-    setBezig(false);
-    if (r.error) setFout("Cybercertificaat kon niet worden geopend"); else setPdf(r.data.signedUrl);
+    setPdf(verzoek.certificaat_pad);
   }
   async function controleren() {
     if (!pdf || !verzoek.certificaat_pad || !await controleerAdminMfa()) return;
@@ -68,7 +66,7 @@ export function CyberAanvraag({ verzoek, autoOpen = true }: { verzoek: CyberWerk
   const stap = cyberWerkStap(verzoek);
   const onzeker = ["geclaimd", "mail_onzeker"].includes(verzoek.mail_status) || ["geclaimd", "mail_onzeker"].includes(verzoek.certificaat_mail_status);
   return <>
-    <Button variant="ghost" size="sm" onClick={() => setOpen(true)}><Eye className="h-4 w-4" />Bekijken</Button>
+    <Button variant="outline" size="sm" onClick={() => setOpen(true)}><Eye className="h-4 w-4" />Bekijken</Button>
     <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o && params.get("cyber") === verzoek.id) { const p = new URLSearchParams(params); p.delete("cyber"); setParams(p, { replace: true }); } }}>
       <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
         <DialogHeader><DialogTitle className="flex items-center gap-2"><ShieldPlus className="h-5 w-5" />Cyber toevoegen: {verzoek.klant}</DialogTitle></DialogHeader>
@@ -80,7 +78,7 @@ export function CyberAanvraag({ verzoek, autoOpen = true }: { verzoek: CyberWerk
         {stap === "Polis activeren" && <Button disabled={bezig} onClick={() => actie("activeren")}>Polis activeren</Button>}
         {stap === "Certificaat aanmaken" && <Button disabled={bezig} onClick={() => actie("certificaat")}>Cybercertificaat aanmaken</Button>}
         {verzoek.certificaat_pad && <Button variant="outline" disabled={bezig} onClick={bekijken}><Eye className="h-4 w-4" />Cybercertificaat bekijken</Button>}
-        {pdf && <><iframe title="Cybercertificaat ter controle" src={pdf} className="h-[55vh] w-full border border-border" />{stap === "Certificaat controleren" && <Button disabled={bezig} onClick={controleren}>Certificaat gecontroleerd</Button>}</>}
+        {pdf && <><PdfWeergave bucket="certificates" pad={pdf} titel="Cybercertificaat ter controle" />{stap === "Certificaat controleren" && <Button disabled={bezig} onClick={controleren}>Certificaat gecontroleerd</Button>}</>}
         {stap === "Certificaat versturen" && <Button disabled={bezig || onzeker} onClick={() => actie("versturen")}>Certificaat en bevestiging versturen</Button>}
         {onzeker && <p role="status" className="text-sm">Verzending nog niet bevestigd. Controleer de verzendhistorie; niet opnieuw versturen.</p>}
         {bezig && <Loader2 aria-label="Bezig" className="h-4 w-4 animate-spin" />}
