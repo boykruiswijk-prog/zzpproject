@@ -2650,6 +2650,30 @@ export type Database = {
         }
         Relationships: []
       }
+      exact_bankgegevens_cache: {
+        Row: {
+          account_id: string
+          heeft_machtiging: boolean
+          heeft_rekening: boolean
+          opgehaald_op: string
+          sync_run_id: string | null
+        }
+        Insert: {
+          account_id: string
+          heeft_machtiging?: boolean
+          heeft_rekening?: boolean
+          opgehaald_op?: string
+          sync_run_id?: string | null
+        }
+        Update: {
+          account_id?: string
+          heeft_machtiging?: boolean
+          heeft_rekening?: boolean
+          opgehaald_op?: string
+          sync_run_id?: string | null
+        }
+        Relationships: []
+      }
       exact_betaalconditie_import: {
         Row: {
           conditie_oud: string | null
@@ -3956,6 +3980,27 @@ export type Database = {
           },
         ]
       }
+      incasso_daglijst_claim: {
+        Row: {
+          aangemaakt_op: string
+          aantal: number
+          dag: string
+          melding_id: string | null
+        }
+        Insert: {
+          aangemaakt_op?: string
+          aantal: number
+          dag: string
+          melding_id?: string | null
+        }
+        Update: {
+          aangemaakt_op?: string
+          aantal?: number
+          dag?: string
+          melding_id?: string | null
+        }
+        Relationships: []
+      }
       incasso_mislukt: {
         Row: {
           bedrag: number | null
@@ -4023,6 +4068,21 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      incasso_signaal_gezien: {
+        Row: {
+          eerst_gezien: string
+          factuurnummer: string
+        }
+        Insert: {
+          eerst_gezien?: string
+          factuurnummer: string
+        }
+        Update: {
+          eerst_gezien?: string
+          factuurnummer?: string
+        }
+        Relationships: []
       }
       indexnow_log: {
         Row: {
@@ -8199,6 +8259,7 @@ export type Database = {
       importeer_certificaten_20261001: { Args: never; Returns: Json }
       incasso_betaald: { Args: { _datum?: string; _id: string }; Returns: Json }
       incasso_cyclus_stap: { Args: { _vandaag: string }; Returns: Json }
+      incasso_daglijst_melden: { Args: never; Returns: number }
       incasso_welke_stap: { Args: { _dagen: number }; Returns: string }
       inzicht_tegel: { Args: { _tegel: string }; Returns: Json }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
@@ -8216,6 +8277,13 @@ export type Database = {
           relatiecode: string
           status: string
           vervaldatum: string
+        }[]
+      }
+      klanten_zonder_bankgegevens: {
+        Args: never
+        Returns: {
+          factuurnummer: string
+          klant: string
         }[]
       }
       klantmail_tekst_opslaan: {
@@ -8400,6 +8468,36 @@ export type Database = {
       }
       mijn_persoon_ids: { Args: never; Returns: string[] }
       mijn_review_kaart: { Args: never; Returns: Json }
+      mislukte_incassos_kern: {
+        Args: never
+        Returns: {
+          bedrag: number
+          categorie: string
+          factuurdatum: string
+          factuurnummer: string
+          heeft_machtiging: boolean
+          heeft_rekening: boolean
+          klant: string
+          onderneming_id: string
+          reden: string
+          vervaldatum: string
+        }[]
+      }
+      mislukte_incassos_overzicht: {
+        Args: never
+        Returns: {
+          bedrag: number
+          categorie: string
+          factuurdatum: string
+          factuurnummer: string
+          heeft_machtiging: boolean
+          heeft_rekening: boolean
+          klant: string
+          onderneming_id: string
+          reden: string
+          vervaldatum: string
+        }[]
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string
