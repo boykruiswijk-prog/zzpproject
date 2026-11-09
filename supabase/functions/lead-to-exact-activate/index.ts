@@ -330,6 +330,7 @@ async function createExactInvoice(opts: {
     OrderDate: invoiceDate,
     YourRef: factuurReferentie(lead.certificate_number, lead.exact_relatie_code),
     Description: headerDescription,
+    InvoiceText: FACTUUR_BETAALTEKST,
     SalesInvoiceLines: [line, ...(cyberBedrag && ingang ? [{ ...line, UnitPrice: cyberBedrag,
       Description: `${regelOmschrijving("premie", ingang, isMaandPolis(lead.gekozen_pakket) ? eersteMaandPeriode(ingang).eind : cyberJaarEind(ingang))} Cyber`.slice(0,60),
       Notes: "Cyber, dagelijks opzegbaar.",

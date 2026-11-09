@@ -1,3 +1,4 @@
+import { FACTUUR_BETAALTEKST } from "./factuurTekst.ts";
 // Pure opbouw van een planner-factuur (Type 8020). Lidmaatschappen lopen via artikel BAV-AVB
 // maar krijgen eigen grootboek (uit de mapping) en een omschrijving zonder "BAV-AVB"/"premie".
 // deno-lint-ignore-file no-explicit-any
@@ -77,7 +78,7 @@ export function bouwFactuurPayload(k: any, glId: string | null, sleutel: string,
   if (glId) regel.GLAccount = glId;
   const payload: any = { InvoiceTo: k.exact_account_id, OrderedBy: k.exact_account_id, Journal: "70", PaymentCondition: "IN",
     Type: 8020, Status: 20, InvoiceDate: `${k.periode_start}T00:00:00`, OrderDate: `${k.periode_start}T00:00:00`,
-    Description: factuurKopTekst(k), SalesInvoiceLines: [regel] };
+    Description: factuurKopTekst(k), InvoiceText: FACTUUR_BETAALTEKST, SalesInvoiceLines: [regel] };
   if (sleutelVeld === "YourRef") payload.YourRef = sleutel; else payload.Remarks = sleutel;
   return payload;
 }
