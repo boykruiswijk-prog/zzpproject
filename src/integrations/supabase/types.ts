@@ -1873,6 +1873,44 @@ export type Database = {
           },
         ]
       }
+      cyber_nummers: {
+        Row: {
+          laatste_pdf_op: string | null
+          laatste_pdf_pad: string | null
+          nummer: string
+          onderneming_id: string
+          reden: string
+          toegekend_door: string | null
+          toegekend_op: string
+        }
+        Insert: {
+          laatste_pdf_op?: string | null
+          laatste_pdf_pad?: string | null
+          nummer: string
+          onderneming_id: string
+          reden: string
+          toegekend_door?: string | null
+          toegekend_op?: string
+        }
+        Update: {
+          laatste_pdf_op?: string | null
+          laatste_pdf_pad?: string | null
+          nummer?: string
+          onderneming_id?: string
+          reden?: string
+          toegekend_door?: string | null
+          toegekend_op?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cyber_nummers_onderneming_id_fkey"
+            columns: ["onderneming_id"]
+            isOneToOne: true
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cyber_toevoeg_verzoeken: {
         Row: {
           aangevraagd_door: string
@@ -7458,6 +7496,14 @@ export type Database = {
           mails: Json
         }[]
       }
+      alleen_cyber_met_bav_nummer: {
+        Args: never
+        Returns: {
+          bav_nummers: string
+          naam: string
+          onderneming_id: string
+        }[]
+      }
       anonimiseer_aanvraag_concepten: { Args: never; Returns: number }
       aov_aanmelden: {
         Args: {
@@ -7777,6 +7823,18 @@ export type Database = {
           _toelichting: string
         }
         Returns: Json
+      }
+      cyber_nummer_toekennen: {
+        Args: { _onderneming_id: string; _reden: string }
+        Returns: string
+      }
+      cyber_nummer_toekennen_kern: {
+        Args: { _door: string; _onderneming_id: string; _reden: string }
+        Returns: string
+      }
+      cyber_pdf_vastleggen: {
+        Args: { _onderneming_id: string; _pad: string }
+        Returns: undefined
       }
       cyber_term_eind: {
         Args: { _start: string; _vandaag: string }
@@ -8146,6 +8204,7 @@ export type Database = {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_supervisor_or_admin: { Args: { _user_id: string }; Returns: boolean }
       is_team_member: { Args: { _user_id: string }; Returns: boolean }
+      klant_dekking_actief: { Args: { _onderneming_id: string }; Returns: Json }
       klant_mandaat_overzicht: {
         Args: { _codes?: string[] }
         Returns: {
