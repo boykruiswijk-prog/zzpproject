@@ -47,6 +47,8 @@ export type CyberCertificaatInvoer = {
   kvk?: string | null;
   verzekeringsnemer: string;
   bav_certificaatnummer: string;
+  /** Alleen-cyberklant: eigen ZPCYB-nummer in plaats van de BAV-verwijzing. */
+  cyber_certificaatnummer?: string | null;
   cyber_ingangsdatum: string;
   cyber_einddatum?: string | null;
   afgiftedatum: string; // ISO
@@ -65,7 +67,9 @@ export function cyberCertificaatRijen(i: CyberCertificaatInvoer): CyberRij[] {
   if (i.kvk?.trim()) rijen.push({ label: "KvK:", waarde: i.kvk.trim() });
   rijen.push(
     { label: "Verzekeringsnemer:", waarde: i.verzekeringsnemer },
-    { label: "Bij BAV + AVB-certificaat:", waarde: i.bav_certificaatnummer, vet: true },
+    i.cyber_certificaatnummer
+      ? { label: "Certificaatnummer:", waarde: i.cyber_certificaatnummer, vet: true }
+      : { label: "Bij BAV + AVB-certificaat:", waarde: i.bav_certificaatnummer, vet: true },
     { label: "Soort verzekering:", waarde: CYBER_SOORT },
     { label: "Polisnummer:", waarde: polis },
     { label: "Ingangsdatum:", waarde: korteDatum(i.cyber_ingangsdatum), vet: true },
