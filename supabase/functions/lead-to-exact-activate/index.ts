@@ -15,7 +15,7 @@ import {
 import { mandaatkenmerkVoor } from "../_shared/sepaMachtiging.ts";
 import { autoInvitePortalLead } from "../_shared/portalAccess.ts";
 import { eersteMaandPeriode } from "../_shared/klantContractActivatie.ts";
-import { factuurReferentie, kopOmschrijving, regelNotities, regelOmschrijving } from "../_shared/factuurTekst.ts";
+import { FACTUUR_BETAALTEKST, factuurReferentie, kopOmschrijving, regelNotities, regelOmschrijving } from "../_shared/factuurTekst.ts";
 import { landcodeVoor } from "../_shared/landcode.ts";
 import { maandprijsVoorLead, pakketSpecVoorLead, starterContractVelden, starterStatus } from "../_shared/starterActivatie.ts";
 import { eersteFactuurViaPlanner, eersteFactuurLogTekst } from "../_shared/eersteFactuur.ts";

@@ -7,7 +7,7 @@ const MAX = 60;
 
 /** Vaste tekst op elke verkoopfactuur (besluit Boy 9-11-2026): handmatig overmaken kan altijd.
  *  Exact drukt InvoiceText af op factuur en factuurmail. Nooit op creditnota's (die worden niet betaald). */
-export const FACTUUR_BETAALTEKST = `Liever zelf overmaken? Dat kan altijd naar ${COMPANY.iban} t.n.v. ${COMPANY.legalName ?? COMPANY.name} onder vermelding van het factuurnummer.`;
+export const FACTUUR_BETAALTEKST = `Liever zelf overmaken? Dat kan altijd naar ${COMPANY.iban} t.n.v. ${COMPANY.legalName} onder vermelding van het factuurnummer.`;
 
 export function datumKort(iso: string): string {
   const [jaar = "", maand = "", dag = ""] = iso.slice(0, 10).split("-");
