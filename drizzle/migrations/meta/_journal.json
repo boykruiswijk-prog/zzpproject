@@ -1856,6 +1856,13 @@
       "when": 1794257739759,
       "tag": "0264_mislukte_incassos_overzicht",
       "breakpoints": true
+    },
+    {
+      "idx": 265,
+      "version": "7",
+      "when": 1794292192780,
+      "tag": "0265_artikel_cybervoorwaarden_publicatie_guard",
+      "breakpoints": true
     }
   ]
 }
