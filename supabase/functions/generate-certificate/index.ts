@@ -522,7 +522,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
     const valueX = 195;
     const fontSize = 9;
     const smallFontSize = 7.5;
-    const lineHeight = 12;
+    const lineHeight = heeftNieuweCyber ? 10.5 : 12;
 
     // Format date short: "08-12-2025"
     const formatShortDate = (dateStr: string) => {
