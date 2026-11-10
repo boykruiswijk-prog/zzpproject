@@ -92,7 +92,7 @@ describe("Publieke opzeg- en cyberteksten D1/E", () => {
     expect(wizard).toContain("cyber_ingangsdatum: cyberGekozen ? submission.ingangsdatum : null");
     expect(wizard).toContain("cyber_einddatum: cyberGekozen ? cyberJaarEind(submission.ingangsdatum) : null");
     expect(wizard.slice(wizard.indexOf('type: "bav",'), wizard.indexOf('// ── 4.'))).not.toContain("cyber_einddatum");
-    expect(readFileSync("supabase/functions/generate-certificate/index.ts", "utf8")).toContain("Cyber: dagelijks opzegbaar.");
+    expect(readFileSync("supabase/functions/generate-certificate/index.ts", "utf8")).not.toContain("Cyber: dagelijks opzegbaar.");
     const exact = readFileSync("supabase/functions/lead-to-exact-activate/index.ts", "utf8");
     expect(exact).toContain("Cyber, dagelijks opzegbaar, €27,50 per maand");
     expect(exact).toContain('Notes: "Cyber, dagelijks opzegbaar."');

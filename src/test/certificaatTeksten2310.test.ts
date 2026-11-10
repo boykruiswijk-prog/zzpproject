@@ -23,7 +23,7 @@ describe("certificaat D-aanvulling 23 oktober", () => {
   it("oude renderteksten zijn verwijderd en cyber houdt zijn eigen risico", () => {
     const src = readFileSync("supabase/functions/generate-certificate/index.ts", "utf8");
     expect(src).not.toMatch(/BAV \+ AVB: geen|: "geen"|Waar op het polisblad|op geen enkele|wijze op als financiële dienstverlener/);
-    expect(src).toContain('if (heeftNieuweCyber) eigenRisicoLines.push("Cyber: EUR 500 (fraude EUR 1.000).");');
+    expect(src).toContain('if (heeftNieuweCyber) eigenRisicoLines.push(`Cyber: ${CYBER_EIGEN_RISICO}.`);');
     // The shared-limit note occurs in the BAV AVB amounts section, not the cyber section.
     expect(src.indexOf("const noteText = POLISBLAD_NOTITIE")).toBeLessThan(src.indexOf("// Eigen risico"));
   });

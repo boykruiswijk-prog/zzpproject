@@ -18,6 +18,7 @@ import {
 import { brancheVoorSector } from "../_shared/sectorBranche.ts";
 import { metWerk, werkVan } from "../_shared/machineWerk.ts";
 import { mailCertificaat } from "../_shared/certificaatMail.ts";
+import { CYBER_CERTIFICAAT_OPZEGTEKST, CYBER_CERTIFICAAT_HULP, CYBER_VERZEKERD_BEDRAG, CYBER_EIGEN_RISICO, cyberCertificaatPremie } from "../_shared/cyberCertificaatTeksten.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -455,8 +456,14 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
         .eq("id", policy.lead_id).maybeSingle();
       policyLead = leadVoorPolis;
     }
-    const { data: latereCyber } = await adminClient.from("cyber_toevoeg_verzoeken").select("id").eq("policy_id", policy.id).not("geactiveerd_op", "is", null).limit(1);
+    const { data: latereCyber } = await adminClient.from("cyber_toevoeg_verzoeken").select("id,contract_id").eq("policy_id", policy.id).not("geactiveerd_op", "is", null).order("geactiveerd_op", { ascending: false }).limit(1);
     const heeftNieuweCyber = body.zonder_cyber !== true && (!!cyberVerzoek || !!latereCyber?.length || policyLead?.cyber_voorwaarden_versie === "2026-10-08");
+    let cyberBetaalcyclus: "maand" | "jaar" = policyLead?.gekozen_pakket?.startsWith("jaarlijks") ? "jaar" : "maand";
+    const cyberContractId = cyberVerzoek?.contract_id || latereCyber?.[0]?.contract_id;
+    if (heeftNieuweCyber && cyberContractId) {
+      const { data: cyberContract } = await adminClient.from("klant_contracten").select("cyclus").eq("id", cyberContractId).maybeSingle();
+      if (cyberContract?.cyclus) cyberBetaalcyclus = cyberContract.cyclus === "jaar" ? "jaar" : "maand";
+    }
 
     // === Load the template background image from storage (private bucket) ===
     const { data: templateData, error: templateError } = await adminClient.storage
@@ -515,7 +522,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
     const valueX = 195;
     const fontSize = 9;
     const smallFontSize = 7.5;
-    const lineHeight = 12;
+    const lineHeight = heeftNieuweCyber ? 10.4 : 12;
 
     // Format date short: "08-12-2025"
     const formatShortDate = (dateStr: string) => {
@@ -718,9 +725,20 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
     y -= 20;
     const eigenRisicoLines = wrapText(EIGEN_RISICO_TEKST, helvetica, fontSize, maxValueWidth);
     // De BAV + AVB-uitleg hierboven geldt niet voor de afzonderlijke cyberdekking.
-    if (heeftNieuweCyber) eigenRisicoLines.push("Cyber: EUR 500 (fraude EUR 1.000).");
+    if (heeftNieuweCyber) eigenRisicoLines.push(`Cyber: ${CYBER_EIGEN_RISICO}.`);
     drawRow("Eigen risico:", eigenRisicoLines.join("\n"), y);
     y -= (eigenRisicoLines.length - 1) * lineHeight;
+
+    if (heeftNieuweCyber) {
+      y -= 20;
+      const cyberLines = [
+        cyberCertificaatPremie(cyberBetaalcyclus),
+        CYBER_VERZEKERD_BEDRAG,
+        CYBER_CERTIFICAAT_HULP,
+      ].flatMap(t => wrapText(t, helvetica, fontSize, maxValueWidth));
+      drawRow("Cyber:", cyberLines.join("\n"), y);
+      y -= (cyberLines.length - 1) * lineHeight;
+    }
 
     // Polisvoorwaarden
     y -= 22;
@@ -800,7 +818,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
     // Contractduur
     y -= 20;
     const contractText = heeftNieuweCyber
-      ? "BAV + AVB doorlopend, zonder minimale looptijd, dagelijks opzegbaar. Cyber: dagelijks opzegbaar."
+      ? `BAV + AVB doorlopend, zonder minimale looptijd, dagelijks opzegbaar. Cyber: ${CYBER_CERTIFICAAT_OPZEGTEKST}`
       : "Doorlopend, zonder minimale looptijd, dagelijks opzegbaar.";
     const contractLines = wrapText(contractText, helvetica, fontSize, maxValueWidth);
     page.drawText("Contractduur:", { x: labelX, y, size: fontSize, font: helvetica, color: gray });
