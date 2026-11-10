@@ -3,7 +3,9 @@ import { openTerugbelKlik } from "@/components/shared/TerugbelDialog";
 import { seoRoute } from "@/config/seoRoutes";
 import { SEOHead } from "@/components/SEOHead";
 import { bavPakketten } from "@/data/bavPakketten";
-import { productSchema } from "@/lib/schema";
+import { productSchema, faqSchema } from "@/lib/schema";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { BeroepspaginaTekst } from "@/components/diensten/BeroepspaginaTekst";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { BAVApplicationModule } from "@/components/home/BAVApplicationModule";
 import { useTranslation } from "react-i18next";
@@ -25,6 +27,14 @@ import teamBoyCalling from "@/assets/team-boy-calling.webp";
 import officeFlowers from "@/assets/office-flowers.webp";
 
 const SEO = seoRoute("/verzekeringen");
+
+export const verzekeringenFaqs = [
+  { question: "Is een BAV verplicht voor zzp'ers?", answer: "Voor de meeste zzp'ers niet. Voor advocaten, notarissen, accountants en financieel adviseurs is een BAV wel verplicht, door de wet of door de beroepsorganisatie. Opdrachtgevers en bemiddelaars eisen een BAV vaak in hun contract.", link: "/kennisbank/is-bav-verplicht-zzp", linkLabel: "Lees meer" },
+  { question: "Wat kost een BAV en AVB per maand?", answer: "Bij ZP Zaken € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting, voor de BAV en AVB samen in één polis, zonder eigen risico. Met een KVK-inschrijving jonger dan 12 maanden betaal je met het starterspakket de eerste 12 maanden € 45 per maand of € 495 per jaar, daarna € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting, onder voorbehoud van controle van je KVK-inschrijvingsdatum.", link: "/starters", linkLabel: "starterspakket" },
+  { question: "Wat is het verschil tussen een BAV en een AVB?", answer: "Een BAV is bedoeld voor claims over financiële schade bij je opdrachtgever door een fout in je werk. Een AVB is bedoeld voor schade aan personen of spullen van anderen. Bij ZP Zaken zitten ze samen in één polis: BAV € 5.000.000 en AVB € 2.500.000 per aanspraak.", link: "/kennisbank/verschil-bav-avb-zzp", linkLabel: "Lees meer" },
+  { question: "Wat valt niet onder de BAV + AVB?", answer: "Je eigen schade valt er niet onder, zoals uren die je onbetaald overdoet of omzet die je misloopt. Schade door opzet en boetes die je zelf krijgt vallen er in de regel ook niet onder, net als fouten van voor je ingangsdatum. Wat precies gedekt is, staat in de polisvoorwaarden.", link: "/voorwaarden", linkLabel: "polisvoorwaarden" },
+  { question: "Hoe snel is de BAV + AVB geregeld?", answer: "Je vraagt online aan en kiest zelf de ingangsdatum, vroegst de dag na je aanvraag. Binnen 24 uur is het geregeld en staat je certificaat in je mailbox, dat je naar je opdrachtgever stuurt. ZP Zaken beoordeelt je aanvraag." },
+];
 
 export default function Verzekeringen() {
   const { t } = useTranslation();
@@ -48,6 +58,7 @@ export default function Verzekeringen() {
         {productJsonLd.map((schema, i) => (
           <script key={i} type="application/ld+json">{JSON.stringify(schema)}</script>
         ))}
+        <script type="application/ld+json">{JSON.stringify(faqSchema(verzekeringenFaqs))}</script>
       </SEOHead>
 
       <PageHero
@@ -70,6 +81,28 @@ export default function Verzekeringen() {
       <BAVApplicationModule />
 
       <WaarLetJeOpBav />
+
+      <section className="section-padding bg-background">
+        <div className="container-wide max-w-3xl">
+          <h2 className="mb-6">De BAV + AVB in cijfers</h2>
+          <dl className="divide-y divide-border">
+            {[
+              ["BAV per aanspraak", "€ 5.000.000"],
+              ["AVB per aanspraak", "€ 2.500.000"],
+              ["Eigen risico BAV + AVB", "Geen"],
+              ["Prijs", "€ 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting"],
+              ["Contract", "Geen jaarcontract, dagelijks opzegbaar"],
+              ["Geregeld", "Binnen 24 uur, certificaat per mail"],
+              ["Verzekeraar", "Hiscox"],
+            ].map(([label, waarde]) => (
+              <div key={label} className="grid gap-2 py-4 sm:grid-cols-2">
+                <dt className="font-semibold">{label}</dt><dd className="text-muted-foreground">{waarde}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-6 text-muted-foreground">Wat precies gedekt is, staat in de <LocalizedLink to="/voorwaarden" className="underline underline-offset-4">polisvoorwaarden</LocalizedLink>.</p>
+        </div>
+      </section>
 
       {/* Drie-keuze CTA */}
       <section className="section-padding bg-secondary border-y border-border">
@@ -238,6 +271,23 @@ export default function Verzekeringen() {
           Wat kosten verzekeringen voor zzp'ers in 2026?
         </LocalizedLink>
       </p>
+      <section className="section-padding bg-background">
+        <div className="container-wide max-w-3xl">
+          <h2 className="mb-6">Veelgestelde vragen</h2>
+          <Accordion type="single" collapsible>
+            {verzekeringenFaqs.map((faq, i) => (
+              <AccordionItem key={faq.question} value={`verzekering-faq-${i}`}>
+                <AccordionTrigger className="text-left">{faq.question}</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground">
+                  <div data-faq-answer><BeroepspaginaTekst tekst={faq.answer} links={faq.link && faq.linkLabel !== "Lees meer" ? { [faq.linkLabel]: faq.link } : undefined} /></div>
+                  {faq.link && faq.linkLabel === "Lees meer" && <LocalizedLink to={faq.link} className="mt-3 inline-block underline underline-offset-4">Lees meer</LocalizedLink>}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+          <p className="mt-6 text-sm text-muted-foreground">Bijgewerkt: 10 november 2026</p>
+        </div>
+      </section>
       <LeesMeer voorkeur={["bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "bedrijfsaansprakelijkheidsverzekering-zzp", "wat-kosten-verzekeringen-voor-zzp-ers", "welke-verzekeringen-zzp", "cyberverzekering-zzp"]} />
     </Layout>
   );
