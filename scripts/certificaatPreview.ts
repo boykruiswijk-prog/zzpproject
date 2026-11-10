@@ -29,6 +29,7 @@ export async function renderLokaalCertificaat(heeftNieuweCyber = false, override
   const dependencies = { PDFDocument, PDFString, rgb, StandardFonts, COMPANY, EIGEN_RISICO_TEKST,
     POLISBLAD_NOTITIE, CERTIFICAAT_FOOTER_ALINEAS, CERTIFICAAT_AFM_URL, CERTIFICAAT_VOOR_GEZIEN, templateBytes, policy,
     kvkNummerBron: "12345678", heeftNieuweCyber, policyLead: { gekozen_pakket: overrides.gekozen_pakket || "maandelijks_cyber" },
+    cyberBetaalcyclus: overrides.gekozen_pakket?.startsWith("jaarlijks") ? "jaar" : "maand",
     CYBER_CERTIFICAAT_OPZEGTEKST, CYBER_CERTIFICAAT_HULP, CYBER_VERZEKERD_BEDRAG, CYBER_EIGEN_RISICO, cyberCertificaatPremie };
   const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
   // No network, storage, customer records or mail are present in this isolated block.

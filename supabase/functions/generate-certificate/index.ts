@@ -456,8 +456,14 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
         .eq("id", policy.lead_id).maybeSingle();
       policyLead = leadVoorPolis;
     }
-    const { data: latereCyber } = await adminClient.from("cyber_toevoeg_verzoeken").select("id").eq("policy_id", policy.id).not("geactiveerd_op", "is", null).limit(1);
+    const { data: latereCyber } = await adminClient.from("cyber_toevoeg_verzoeken").select("id,contract_id").eq("policy_id", policy.id).not("geactiveerd_op", "is", null).order("geactiveerd_op", { ascending: false }).limit(1);
     const heeftNieuweCyber = body.zonder_cyber !== true && (!!cyberVerzoek || !!latereCyber?.length || policyLead?.cyber_voorwaarden_versie === "2026-10-08");
+    let cyberBetaalcyclus: "maand" | "jaar" = policyLead?.gekozen_pakket?.startsWith("jaarlijks") ? "jaar" : "maand";
+    const cyberContractId = cyberVerzoek?.contract_id || latereCyber?.[0]?.contract_id;
+    if (heeftNieuweCyber && cyberContractId) {
+      const { data: cyberContract } = await adminClient.from("klant_contracten").select("cyclus").eq("id", cyberContractId).maybeSingle();
+      if (cyberContract?.cyclus) cyberBetaalcyclus = cyberContract.cyclus === "jaar" ? "jaar" : "maand";
+    }
 
     // === Load the template background image from storage (private bucket) ===
     const { data: templateData, error: templateError } = await adminClient.storage
@@ -726,7 +732,7 @@ serve(metWerk({ station: "certificaten", actie: "certificaat", tekst: "Certifica
     if (heeftNieuweCyber) {
       y -= 20;
       const cyberLines = [
-        cyberCertificaatPremie(policyLead?.gekozen_pakket?.startsWith("jaarlijks") ? "jaar" : "maand"),
+        cyberCertificaatPremie(cyberBetaalcyclus),
         CYBER_VERZEKERD_BEDRAG,
         CYBER_CERTIFICAAT_HULP,
       ].flatMap(t => wrapText(t, helvetica, fontSize, maxValueWidth));
