@@ -200,3 +200,5 @@
 - [x] 5. Ellen-melding incl. vraag Mijn ZP-uitnodiging nieuwe klant
 - [x] Groeiplan T1, T2, T3, T4, T7 (3-11), niet gepubliceerd; open: zorgberoepen-vraag bij Ellen
 - 9-11 A/B/C cyber-PDF-weergave, ZPCYB-reeks, mislukte incasso's: klaar, niet gepubliceerd.
+
+- [ ] F8 Contentmachine 10-11: twee landingspagina’s, gedeelde kaarttekst, FAQ/schema-pariteit en datum; volledige tests en automatische controles, één Ellen-melding, niet publiceren.
