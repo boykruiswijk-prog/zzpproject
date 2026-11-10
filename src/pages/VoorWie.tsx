@@ -42,7 +42,7 @@ const audiences = [
     description: "Voor specialisten in human resources, finance en gerelateerde adviestrajecten.",
     examples: "HR-managers, recruiters, financieel adviseurs, controllers, interim CFO's",
     links: [
-      { to: "/zzp-verzekering-hr", label: "ZZP verzekering voor HR-adviseurs" },
+      { to: "/zzp-verzekering-hr", label: "ZZP verzekering voor HR-professionals" },
       { to: "/zzp-verzekering-finance", label: "ZZP verzekering voor finance professionals" },
     ],
   },

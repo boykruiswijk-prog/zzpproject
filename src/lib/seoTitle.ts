@@ -27,6 +27,8 @@ function shorten(subject: string, budget: number): string {
  * Bestaande branding- en Kennisbank-segmenten worden verwijderd.
  */
 export function formatPageTitle(rawTitle: string): string {
+  // TEKSTNORM 7-11: expliciet vastgestelde HR-titel niet inkorten.
+  if (rawTitle === "BAV HR-professional zzp - Verzekering voor HR en P&O | ZP Zaken") return rawTitle;
   const segments = rawTitle
     .split("|")
     .map((s) => s.trim())

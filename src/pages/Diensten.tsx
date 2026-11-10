@@ -35,7 +35,7 @@ const DIENST_LINKS = [
   { href: "/zzp-verzekering-consultant", label: "Verzekering voor consultants" },
   { href: "/zzp-verzekering-interim-manager", label: "Verzekering voor interim managers" },
   { href: "/zzp-verzekering-finance", label: "Verzekering voor finance professionals" },
-  { href: "/zzp-verzekering-hr", label: "Verzekering voor HR-adviseurs" },
+  { href: "/zzp-verzekering-hr", label: "Verzekering voor HR-professionals" },
   { href: "/zzp-verzekering-marketing", label: "Verzekering voor marketeers" },
   { href: "/zzp-verzekering-coach", label: "Verzekering voor coaches en trainers" },
   { href: "/screening", label: "Screening" },

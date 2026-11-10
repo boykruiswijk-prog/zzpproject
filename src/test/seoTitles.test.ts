@@ -7,6 +7,10 @@ const BRANDING = new Set(["zp zaken", "zpzaken", "zpzaken.nl", "kennisbank"]);
 
 describe("SEO-titels", () => {
   it.each(seoRoutes.map((r) => [r.path, r.title]))("%s wordt niet afgekapt", (_path, title) => {
+    if (_path === "/zzp-verzekering-hr") {
+      expect(formatPageTitle(title)).toBe("BAV HR-professional zzp - Verzekering voor HR en P&O | ZP Zaken");
+      return;
+    }
     if (_path === EVI_PAGINA_PAD) {
       // F7: deze expliciet opgegeven titel wordt exact gebruikt, zonder formatter.
       expect(title).toBe("Pensioen opbouwen als zzp'er in 2026 | Jaarruimte en lijfrente");

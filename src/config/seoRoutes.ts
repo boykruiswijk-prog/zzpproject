@@ -461,12 +461,12 @@ export const seoRoutes: SeoRoute[] = [
   },
   {
     path: "/zzp-verzekering-hr",
-    title: "BAV HR-adviseur zzp | Verzekering voor HR en P&O",
+    title: "BAV HR-professional zzp - Verzekering voor HR en P&O | ZP Zaken",
     description:
-      "Beroepsaansprakelijkheidsverzekering voor zzp HR-adviseurs, P&O'ers en recruiters. BAV en AVB in één polis, geen eigen risico, dagelijks opzegbaar.",
-    h1: "ZZP verzekering voor HR-adviseurs",
+      "Beroepsaansprakelijkheidsverzekering voor zzp HR-professionals, P&O'ers en recruiters. BAV en AVB in één polis, geen eigen risico, dagelijks opzegbaar.",
+    h1: "ZZP verzekering voor HR-professionals",
     intro:
-      "Als HR-adviseur, recruiter of loopbaanadviseur werk je met mensen en contracten. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden.",
+      "Als HR-professional, recruiter of loopbaanbegeleider werk je met mensen en contracten. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden.",
   },
   {
     path: "/zzp-verzekering-marketing",
