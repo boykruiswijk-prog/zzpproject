@@ -17,7 +17,7 @@ describe("Waar let je op bij een BAV? (F-aanvulling Waarde zichtbaar)", () => {
     for (const n of ["BavZzp", "Beroepsaansprakelijkheidsverzekering", "ZzpVerzekeringConsultant", "ZzpVerzekeringInterimManager", "ZzpVerzekeringFinance", "ZzpVerzekeringHR", "ZzpVerzekeringMarketing", "ZzpVerzekeringCoach"]) {
       expect(lees(`src/pages/${n}.tsx`), n).toMatch(/<BeroepVerzekeringPagina\s+waarLetJeOp\b/);
     }
-    expect(lees("src/components/diensten/BeroepVerzekeringPagina.tsx")).toContain("naHero={p.waarLetJeOp ? <WaarLetJeOpBav />");
+    expect(lees("src/components/diensten/BeroepVerzekeringPagina.tsx")).toContain("naHero={p.waarLetJeOp ? <><WaarLetJeOpBav />");
     expect(lees("src/pages/ZzpVerzekeringICT.tsx")).toContain("naHero={<WaarLetJeOpBav />}");
     for (const n of ["Verzekeringen", "Starters", "BavZzpVergelijken"]) {
       expect(lees(`src/pages/${n}.tsx`), n).toContain("<WaarLetJeOpBav />");
