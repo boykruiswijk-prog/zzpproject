@@ -316,8 +316,8 @@ export const ZEKER_KENNIS = {
     },
     {
       "path": "/zzp-verzekering-hr",
-      "title": "BAV HR-adviseur zzp | Verzekering voor HR en P&O",
-      "intro": "Als HR-adviseur, recruiter of loopbaanadviseur werk je met mensen en contracten. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden."
+      "title": "BAV HR-professional zzp | Verzekering voor HR en P&O",
+      "intro": "Als HR-professional, recruiter of loopbaanbegeleider werk je met mensen en contracten. Een BAV en AVB in één polis verzekeren je voor aansprakelijkheid, volgens de polisvoorwaarden."
     },
     {
       "path": "/zzp-verzekering-marketing",
