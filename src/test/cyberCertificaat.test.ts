@@ -20,7 +20,7 @@ describe("cybercertificaat E5/E5a", () => {
     expect(w("Ingangsdatum:")).toBe("24-10-2026");
     expect(w("Verzekerd bedrag:")).toBe("EUR 50.000 per schade en per deelnemer (inclusief kosten).\nEUR 5.000.000 per verzekeringsjaar voor alle deelnemers samen.");
     expect(rijen.find((r) => r.label === "Verzekerd bedrag:")?.notitie).toBe("Je neemt deel aan een mantelpolis waarbij het maximaal verzekerde bedrag per jaar wordt gedeeld met alle deelnemers binnen de betreffende mantelpolis.");
-    expect(w("Eigen risico:")).toBe("EUR 500 per schade");
+    expect(w("Eigen risico:")).toBe("EUR 500 per schade, bij cyberfraude EUR 1.000");
     expect(w("Polisvoorwaarden:")).toBe("CyberClear by Hiscox (HCC-2022/01) en de van toepassing zijnde clausules. De voorwaarden zijn op te vragen via 020 - 457 3077.");
     expect(w("Dekkingsgebied:")).toBe("Europa");
     expect(w("Contractduur:")).toBe("24-10-2026 tot en met 23-10-2027. Daarna stilzwijgend verlengd met 12 maanden. Al betaalde premie voor cyber krijg je bij opzeggen niet terug. Cyber is niet pauzeerbaar.");
@@ -53,7 +53,6 @@ describe("cybercertificaat E5/E5a", () => {
   });
   it("BAV-certificaat blijft ongewijzigd", () => {
     const src = readFileSync("supabase/functions/generate-certificate/index.ts", "utf8");
-    expect(src).not.toContain("cyberCertificaat");
-    expect(src).toContain('if (heeftNieuweCyber) eigenRisicoLines.push("Cyber: EUR 500 (fraude EUR 1.000).");');
+    expect(src).toContain('if (heeftNieuweCyber) eigenRisicoLines.push(`Cyber: ${CYBER_EIGEN_RISICO}.`);');
   });
 });

@@ -3,6 +3,7 @@ import ts from "npm:typescript@5.8.3";
 import { PDFDocument, PDFString, rgb, StandardFonts } from "https://esm.sh/pdf-lib@1.17.1";
 import { COMPANY } from "../supabase/functions/_shared/company.ts";
 import { EIGEN_RISICO_TEKST, POLISBLAD_NOTITIE, CERTIFICAAT_FOOTER_ALINEAS, CERTIFICAAT_AFM_URL, CERTIFICAAT_VOOR_GEZIEN } from "../supabase/functions/_shared/certificaatRegels.ts";
+import { CYBER_CERTIFICAAT_OPZEGTEKST, CYBER_CERTIFICAAT_HULP, CYBER_VERZEKERD_BEDRAG, CYBER_EIGEN_RISICO, cyberCertificaatPremie } from "../supabase/functions/_shared/cyberCertificaatTeksten.ts";
 
 export const LANG_CERTIFICAAT = {
   certificate_holder: "Fictieve Internationale Organisatie voor Digitale Transformatie en Bedrijfsvoering B.V.",
@@ -27,7 +28,8 @@ export async function renderLokaalCertificaat(heeftNieuweCyber = false, override
   };
   const dependencies = { PDFDocument, PDFString, rgb, StandardFonts, COMPANY, EIGEN_RISICO_TEKST,
     POLISBLAD_NOTITIE, CERTIFICAAT_FOOTER_ALINEAS, CERTIFICAAT_AFM_URL, CERTIFICAAT_VOOR_GEZIEN, templateBytes, policy,
-    kvkNummerBron: "12345678", heeftNieuweCyber };
+    kvkNummerBron: "12345678", heeftNieuweCyber, policyLead: { gekozen_pakket: overrides.gekozen_pakket || "maandelijks_cyber" },
+    CYBER_CERTIFICAAT_OPZEGTEKST, CYBER_CERTIFICAAT_HULP, CYBER_VERZEKERD_BEDRAG, CYBER_EIGEN_RISICO, cyberCertificaatPremie };
   const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
   // No network, storage, customer records or mail are present in this isolated block.
   return await new AsyncFunction(...Object.keys(dependencies), code)(...Object.values(dependencies));

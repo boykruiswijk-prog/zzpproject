@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] CYBERBLAD vervolg 10-11: gedeelde bedragen/opzegtekst in beide PDF-types, Digital Native hermaak zonder status/mail, Faasen ZPCYB0001 lokaal PDF, tests/suite en één Ellen-adminmelding; echte hermaak vereist MFA.
 - [x] A8 Loep 8-11: schermprojectie 0261/0262 vóór feedlimieten, echte sent-mails ontdubbeld per kwartier; lege cron/Hartslag/Puls/Opvolger weg, fouten behouden; cron371 vijf seconden ongewijzigd. Test eerst 4 rood, daarna suite 2651 groen/1 skipped, automatische build OK; één Ellen-adminmelding 432ed721 actie null teruggelezen/gemaild. Niet gepubliceerd; docs/scherm-cronruis-20261108.md.
 - [ ] A8 visuele eindcontrole en aparte typecheck/productiebuild: aangemelde /scherm-preview blijft bestaand leeg; afzonderlijke controle-uitkomsten niet beschikbaar. Geen beveiliging omzeild of buiten-scope herstel.
 - [x] Loep 8-11: productclaims/talen/metadata en exacte artikelzin gecorrigeerd; controle eerst rood (33 claimregels, 2 metadata), 79 gerichte en volledige suite 2646 groen/1 skipped, automatische build OK; één Ellen-melding 34aaf2d1 actie null teruggelezen/gemaild. Niet gepubliceerd; docs/kwaliteit-0811.md.
