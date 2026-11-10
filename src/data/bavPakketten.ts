@@ -41,7 +41,7 @@ export const bavPakketten = [
   {
     id: "jaarlijks-cyber",
     name: "BAV & AVB Jaarlijks + Cyber",
-    label: "Optimale dekking",
+    label: "Met cyber",
     prijs: 850,
     periode: "jaar" as const,
     prijsLabel: "€ 850 per jaar",

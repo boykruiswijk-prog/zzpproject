@@ -50,6 +50,9 @@ interface Props {
   extra?: ReactNode;
   /** Toon het blok "Waar let je op bij een BAV?" direct na de snelle start. */
   waarLetJeOp?: boolean;
+  /** Opt-in content after the unchanged comparison block. */
+  naWaarLetJeOp?: ReactNode;
+  bijgewerkt?: string;
 }
 
 export function BeroepVerzekeringPagina(p: Props) {
@@ -85,7 +88,7 @@ export function BeroepVerzekeringPagina(p: Props) {
       ctaSubtitle="Vertel ons wat je doet en voor wie. We helpen je graag met je aanvraag."
       ctaButton="Neem persoonlijk contact op"
       aanvraag="snel"
-      naHero={p.waarLetJeOp ? <WaarLetJeOpBav /> : undefined}
+      naHero={p.waarLetJeOp ? <><WaarLetJeOpBav />{p.naWaarLetJeOp}</> : undefined}
     >
       {p.extra}
       <BAVApplicationModule initialSector={p.sector} compactPakketten />
@@ -101,6 +104,7 @@ export function BeroepVerzekeringPagina(p: Props) {
                 </AccordionItem>
               ))}
             </Accordion>
+            {p.bijgewerkt && <p className="mt-6 text-sm text-muted-foreground">Bijgewerkt: {p.bijgewerkt}</p>}
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
               <LocalizedLink
                 to="/bav-zzp-vergelijken"

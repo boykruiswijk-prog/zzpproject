@@ -177,7 +177,7 @@
   "verzekeringenPage": {
     "title": "Verzekeringen voor",
     "titleAccent": "zzp'ers",
-    "subtitle": "ZP Zaken is de bedenker van de BAV + AVB in één polis voor zzp'ers. Bekijk onze verzekeringen voor zzp'ers.",
+    "subtitle": "Bij ZP Zaken heb je de BAV en AVB in één polis: BAV € 5.000.000 en AVB € 2.500.000 per aanspraak, geen eigen risico, € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting. Dagelijks opzegbaar en binnen 24 uur geregeld. ZP Zaken is de bedenker van de BAV + AVB in één polis.",
     "badge": "Bedenker van de BAV + AVB in één polis",
     "ctaAdvies": "Plan een persoonlijk gesprek",
     "suitableFor": "Geschikt voor",
@@ -186,7 +186,7 @@
     "askAdvice": "Plan een gesprek",
     "didYouKnow": "Goed om te weten:",
     "taxDeductible": "De premie voor zakelijke verzekeringen is vaak fiscaal aftrekbaar als zakelijke kosten.",
-    "ctaTitle": "Niet zeker welke verzekering je nodig hebt?",
+    "ctaTitle": "Vragen over de verzekeringen of je aanvraag?",
     "ctaSubtitle": "Plan een vrijblijvend gesprek. We beantwoorden je vragen over de verzekeringen en de aanvraag, zonder verplichtingen.",
     "ctaButton": "Vrijblijvend gesprek"
   },
@@ -573,9 +573,9 @@
   },
   "insuranceData": {
     "combiTitle": "Beroeps- én Bedrijfsaansprakelijkheid",
-    "combiSubtitle": "De combinatiepolis, bedacht door ZP Zaken",
-    "combiDesc": "Bedacht door ZP Zaken: beroeps- en bedrijfsaansprakelijkheid in één polis. Eén polis, één premie, dubbele bescherming.",
-    "combiFeatures": ["Beroepsaansprakelijkheid: dekking voor financiële schade door beroepsfouten", "Bedrijfsaansprakelijkheid: dekking voor letsel- en zaakschade aan derden", "Juridische bijstand bij claims inbegrepen", "Eén polis, één premie: maximaal gemak", "Maatwerk dekkingen per beroepsgroep"],
+    "combiSubtitle": "De combinatiepolis van ZP Zaken",
+    "combiDesc": "Bedacht door ZP Zaken: beroeps- en bedrijfsaansprakelijkheid in één polis. Eén polis, één premie, BAV en AVB samen.",
+    "combiFeatures": ["Beroepsaansprakelijkheid: bedoeld voor financiële schade door een fout in je werk", "Bedrijfsaansprakelijkheid: bedoeld voor letsel- en zaakschade aan anderen", "Juridische bijstand bij claims inbegrepen", "Eén polis, één premie: maximaal gemak", "Maatwerk dekkingen per beroepsgroep"],
     "combiForWho": "ICT'ers, consultants, coaches, trainers, creatieven",
     "combiPrice": "Vanaf € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting",
     "aovTitle": "Arbeidsongeschiktheid",
