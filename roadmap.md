@@ -201,4 +201,5 @@
 - [x] Groeiplan T1, T2, T3, T4, T7 (3-11), niet gepubliceerd; open: zorgberoepen-vraag bij Ellen
 - 9-11 A/B/C cyber-PDF-weergave, ZPCYB-reeks, mislukte incasso's: klaar, niet gepubliceerd.
 
-- [ ] F8 Contentmachine 10-11: twee landingspagina’s, gedeelde kaarttekst, FAQ/schema-pariteit en datum; volledige tests en automatische controles, één Ellen-melding, niet publiceren.
+- [x] F8 Contentmachine 10-11: teksten op twee pagina’s en gedeelde kaart bijgewerkt; FAQ/schema-pariteit 10/5 antwoorden gecontroleerd, geen dubbel FAQPage; 2668 tests geslaagd/1 skipped, automatische build OK, één Ellen-melding a5777ae1 teruggelezen. Niet gepubliceerd.
+- [ ] F8 eindcontrole: bestaande lege preview blokkeert visuele controle; afzonderlijke typecheck/productiebuild niet bevestigd door automatische logs.
