@@ -1,20 +1,10 @@
-Nachtelijke beveiligingsscan 9-11-2026 (alleen rapport, geen wijzigingen, geen plan)
+Nachtelijke scan 10-11-2026, alleen rapport. Er is niets gewijzigd. Deze stap hoeft niet uitgevoerd te worden.
 
-1. Productie-afhankelijkheden (76 pakketten): 0 critical, 1 high, 2 moderate, 0 low
-- zod 3.25.76, high (geheugenuitputting bij te grote collecties), eerste veilige versie 4.6.6, major.
-- react-router-dom 6.30.6 via react-router, moderate (constructor-injectie bij SSR-hydratie), veilig vanaf react-router 7.18.0, major.
-- react-router-dom 6.30.6 via react-router, moderate (open redirect via backslash, omzeiling van CVE-2025-68470), veilig vanaf 7.18.0, major.
-
-2. Nieuw sinds gisteren: geen. Dezelfde 1 high en 2 moderate als gisteren.
-
-3. Edge functions (versies vastgezet in imports, niet in bun.lock):
-- zod 3.23.8 (4 imports), 3.25.76 (2) en zwevend zod@3 (4): zelfde high-advisory als hierboven, veilig pas in 4.6.6 (major).
-- fflate 0.8.2 (esm.sh, 1 import): valt onder dezelfde advisory waarvoor de frontend al op 0.8.3 staat; de ernst is voor Edge niet apart bevestigd.
-- Geen critical gevonden. De overige pakketten (supabase-js, pdf-lib, resend, mammoth 1.11.0, satori en andere) hebben bij deze controle geen bevestigde high-advisory. Die zijn hier niet door de advisorydatabase gehaald, dus dat is niet volledig gecontroleerd.
-
-4. Database-linter: 0 ERROR, 187 WARN, 32 INFO (219 in totaal), precies hetzelfde als gisteren.
-- WARN: 175 SECURITY DEFINER-functies die ingelogde gebruikers kunnen aanroepen, 8 die anon kan aanroepen, 3 functies zonder vast zoekpad, 1 extensie in public.
-- INFO: 32 afgeschermde tabellen zonder policy (bewust dicht).
-- Geen nieuwe bevindingen en geen ERROR.
-
-Er is niets gewijzigd, geïnstalleerd of gemigreerd. Dit bestand is alleen gebruikt om het rapport te tonen, omdat de planmodus dat vereist.
+1. Productie (76 pakketten): 0 critical, 1 high, 2 moderate, 0 low. Gelijk aan 9-11.
+   - zod 3.25.76, high, opgelost in 4.6.6, alleen major
+   - react-router-dom 6.30.6, 2x moderate, opgelost in 7.18.0, alleen major
+2. Verouderd: 7 patch, 37 minor, 37 major. Belangrijke major-versies: react/react-dom 19.3, react-router-dom 7.18.5, vite 8.3.7, typescript 7.0.2, tailwindcss 4.3.5, vitest 5.1.0, zod 4.6.7, pdfjs-dist 6.5.
+3. Serverfuncties: alleen zod 3.x (3.23.8 / 3 / 3.25.76) valt onder dezelfde high-melding. Er zijn geen critical-meldingen gevonden. Dit is geen volledige scan van alle import-versies.
+4. Databaseadviseur: 0 ERROR, 192 WARN (+5), 35 INFO (+3).
+   - Nieuw: 3 tabellen met RLS aan maar zonder policy (INFO, op slot, dus geen datalek)
+   - Nieuw: 5 extra SECURITY DEFINER-functies die ingelogde gebruikers kunnen aanroepen (WARN, verwacht door migraties 0263/0264, met eigen rolcontrole)
