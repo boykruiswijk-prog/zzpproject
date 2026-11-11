@@ -1,0 +1,2 @@
+# Build validation
+- The post-prerender 404 gate reads only path/count/last-seen via the managed read-only CLI, fails closed, accepts generated files or HTTP 200/301, and exempts only the approved rejected photo. Why: frequent missing file paths must not escape validation or expose private logs.
