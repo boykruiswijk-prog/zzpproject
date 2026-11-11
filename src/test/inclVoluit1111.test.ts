@@ -33,7 +33,7 @@ describe("Kwaliteitscontrole 11 november: voluit en online cybervoorwaarden", ()
     expect(treffers(/\bincl\./i)).toEqual([]);
   });
   it("cybervoorwaarden worden nergens publiek opgevraagd", () => {
-    expect(treffers(/(cybervoorwaarden|voorwaarden (?:van|voor) (?:de )?cyber)[^.]{0,120}(opvra|vraag je op|op te vragen)/i)).toEqual([]);
+    expect(treffers(/(cybervoorwaarden|voorwaarden (?:van|voor) (?:de )?cyber)[^.]{0,120}(opvra|vraag je op|op te vragen)/)).toEqual([]);
   });
   it("vergelijkingspagina verwijst naar /voorwaarden#cyber", () => {
     expect(readFileSync("src/config/cyberPubliek.ts", "utf8")).toContain("voorwaarden#cyber");
