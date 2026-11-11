@@ -27,7 +27,7 @@ export async function notFoundFouten(
     if (bewusteFoto404(pad)) continue;
     const doel = redirect(pad);
     const code = await status(doel ?? pad);
-    if (code !== 200 && code !== 301) fouten.push(`${pad}: ${code}${doel ? ` (doel ${doel})` : ""}`);
+    if (Number.isFinite(code) && code !== 200 && code !== 301) fouten.push(`${pad}: ${code}${doel ? ` (doel ${doel})` : ""}`);
   }
   return fouten;
 }
@@ -61,9 +61,9 @@ export async function checkNotFoundLog(dist: string, host: string): Promise<void
       return response.status;
     } catch {
       console.warn(`[404-controle] WAARSCHUWING: live HTTP niet bereikbaar voor ${pad} (netwerkfout of timeout); pad niet bevestigd, build gaat door.`);
-      return 200; // Unavailable, not a confirmed failing HTTP response.
+      return Number.NaN; // Unavailable, not a confirmed HTTP response.
     }
   });
   if (fouten.length) throw new Error(`[404-controle] 3+ treffers, recent binnen 30 dagen, geen 200/301: ${fouten.join(", ")}`);
-  console.log(`[404-controle] ${pads.length} logpaden gecontroleerd; alleen afgekeurde A9-foto uitgezonderd.`);
+  console.log(`[404-controle] ${pads.length} logpaden beoordeeld; onbereikbare paden hierboven als waarschuwing vermeld; alleen afgekeurde A9-foto uitgezonderd.`);
 }
