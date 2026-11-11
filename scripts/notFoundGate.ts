@@ -27,18 +27,25 @@ export async function notFoundFouten(
     if (bewusteFoto404(pad)) continue;
     const doel = redirect(pad);
     const code = await status(doel ?? pad);
-    if (code !== 200 && code !== 301) fouten.push(`${pad}: ${code}${doel ? ` (doel ${doel})` : ""}`);
+    if (Number.isFinite(code) && code !== 200 && code !== 301) fouten.push(`${pad}: ${code}${doel ? ` (doel ${doel})` : ""}`);
   }
   return fouten;
 }
 
 /** Private read-only CLI, no anon grants or credentials in source or public output. */
 export async function checkNotFoundLog(dist: string, host: string): Promise<void> {
-  const result = JSON.parse(execFileSync("lovable", ["supabase", "query", NOT_FOUND_QUERY, "--json"], {
-    encoding: "utf8", timeout: 45_000, maxBuffer: 2 * 1024 * 1024,
-  })) as { rows?: NotFoundRow[] };
-  if (!Array.isArray(result.rows)) throw new Error("[404-controle] Log niet leesbaar; controle niet overgeslagen.");
-  const pads = notFoundKandidaten(result.rows);
+  let rows: NotFoundRow[];
+  try {
+    const result = JSON.parse(execFileSync("lovable", ["supabase", "query", NOT_FOUND_QUERY, "--json"], {
+      encoding: "utf8", timeout: 45_000, maxBuffer: 2 * 1024 * 1024,
+    })) as { rows?: NotFoundRow[] };
+    if (!Array.isArray(result.rows)) throw new Error("Ongeldige logrespons");
+    rows = result.rows;
+  } catch {
+    console.warn("[404-controle] WAARSCHUWING: log niet bereikbaar of leesbaar (CLI ontbreekt, fout of timeout); controle overgeslagen, build gaat door.");
+    return;
+  }
+  const pads = notFoundKandidaten(rows);
   const fouten = await notFoundFouten(pads, async pad => {
     if (!pad.startsWith("/") || pad.startsWith("//")) return 404;
     const clean = pad.split("?")[0].replace(/^\/+/, "");
@@ -47,10 +54,16 @@ export async function checkNotFoundLog(dist: string, host: string): Promise<void
       if (fs.existsSync(file) && fs.statSync(file).isFile()) return 200;
       if (fs.existsSync(path.join(file, "index.html"))) return 200;
     }
-    const response = await fetch(new URL(pad, host), { redirect: "manual", signal: AbortSignal.timeout(15_000) });
-    await response.body?.cancel();
-    return response.status;
+    try {
+      const response = await fetch(new URL(pad, host), { redirect: "manual", signal: AbortSignal.timeout(15_000) });
+      // A read failure after receiving headers must not erase a confirmed HTTP status.
+      await response.body?.cancel().catch(() => {});
+      return response.status;
+    } catch {
+      console.warn(`[404-controle] WAARSCHUWING: live HTTP niet bereikbaar voor ${pad} (netwerkfout of timeout); pad niet bevestigd, build gaat door.`);
+      return Number.NaN; // Unavailable, not a confirmed HTTP response.
+    }
   });
   if (fouten.length) throw new Error(`[404-controle] 3+ treffers, recent binnen 30 dagen, geen 200/301: ${fouten.join(", ")}`);
-  console.log(`[404-controle] ${pads.length} logpaden gecontroleerd; alleen afgekeurde A9-foto uitgezonderd.`);
+  console.log(`[404-controle] ${pads.length} logpaden beoordeeld; onbereikbare paden hierboven als waarschuwing vermeld; alleen afgekeurde A9-foto uitgezonderd.`);
 }
