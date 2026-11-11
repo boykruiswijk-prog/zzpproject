@@ -51,7 +51,11 @@
 /post/cookie-instellingen-1    /cookies    301
 /post/cookie-instellingen-1/    /cookies    301
 /sitemap.aspx    /sitemap.xml    301
+/sitemap.txt    /sitemap.xml    301
 /sitemap.aspx/    /sitemap.xml    301
+/sitemap.txt/    /sitemap.xml    301
+/sitemap.txt    /sitemap.xml    301
+/sitemap.txt/    /sitemap.xml    301
 /src/assets/ellen-baars-avatar.webp    /over-ons    301
 /src/assets/ellen-baars-avatar.webp/    /over-ons    301
 /privacy-statement    /cookies    301
@@ -1361,11 +1365,23 @@
 /fr/post/cookie-instellingen-1    /cookies    301  # taalprefix
 /fr/post/cookie-instellingen-1/    /cookies    301  # taalprefix
 /en/sitemap.aspx    /sitemap.xml    301  # taalprefix
+/en/sitemap.txt    /sitemap.xml    301  # taalprefix
 /en/sitemap.aspx/    /sitemap.xml    301  # taalprefix
+/en/sitemap.txt/    /sitemap.xml    301  # taalprefix
 /de/sitemap.aspx    /sitemap.xml    301  # taalprefix
+/de/sitemap.txt    /sitemap.xml    301  # taalprefix
 /de/sitemap.aspx/    /sitemap.xml    301  # taalprefix
+/de/sitemap.txt/    /sitemap.xml    301  # taalprefix
 /fr/sitemap.aspx    /sitemap.xml    301  # taalprefix
+/fr/sitemap.txt    /sitemap.xml    301  # taalprefix
 /fr/sitemap.aspx/    /sitemap.xml    301  # taalprefix
+/fr/sitemap.txt/    /sitemap.xml    301  # taalprefix
+/en/sitemap.txt    /sitemap.xml    301  # taalprefix
+/en/sitemap.txt/    /sitemap.xml    301  # taalprefix
+/de/sitemap.txt    /sitemap.xml    301  # taalprefix
+/de/sitemap.txt/    /sitemap.xml    301  # taalprefix
+/fr/sitemap.txt    /sitemap.xml    301  # taalprefix
+/fr/sitemap.txt/    /sitemap.xml    301  # taalprefix
 /en/src/assets/ellen-baars-avatar.webp    /over-ons    301  # taalprefix
 /en/src/assets/ellen-baars-avatar.webp/    /over-ons    301  # taalprefix
 /de/src/assets/ellen-baars-avatar.webp    /over-ons    301  # taalprefix
