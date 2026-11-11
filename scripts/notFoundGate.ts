@@ -14,7 +14,7 @@ export function notFoundKandidaten(rows: NotFoundRow[], now = Date.now()): strin
 
 /** Only the explicitly rejected A9 photo is exempt, never all asset/file paths. */
 export function bewusteFoto404(pad: string): boolean {
-  return /^\/(?:en\/|de\/|fr\/)?src\/assets\/team-walking\.webp\/?$/.test(pad);
+  return /^\/(?:en\/|de\/|fr\/)?src\/assets\/team-(?:walking)\.webp\/?$/.test(pad);
 }
 
 export async function notFoundFouten(
