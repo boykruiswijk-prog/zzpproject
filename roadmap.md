@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Loep 11-11: sitemap.txt met slash/taalvarianten naar sitemap.xml, gerichte rode/groene test en ontbrekende 404-buildcontrole herstellen; geen data, mails of publicatie.
 - [x] CYBERBLAD vervolg 10-11: gedeelde bedragen/opzegtekst beide PDF-types, Faasen ZPCYB0001 lokaal PDF; 2684 tests/1 skipped en 10 PDF-tests groen, automatische build OK, één Ellen-adminmelding; niets gepubliceerd/verstuurd. Rapport docs/cyberblad-vervolg-20261110.md.
 - [ ] CYBERBLAD echte Digital Native-hermaak: eigen sessie HTTP403 mfa_required, bestaande PDF/statussen ongewijzigd; wacht op geldige menselijke MFA. Afzonderlijke app-typecheck/productiebuild niet bevestigd.
 - [x] A8 Loep 8-11: schermprojectie 0261/0262 vóór feedlimieten, echte sent-mails ontdubbeld per kwartier; lege cron/Hartslag/Puls/Opvolger weg, fouten behouden; cron371 vijf seconden ongewijzigd. Test eerst 4 rood, daarna suite 2651 groen/1 skipped, automatische build OK; één Ellen-adminmelding 432ed721 actie null teruggelezen/gemaild. Niet gepubliceerd; docs/scherm-cronruis-20261108.md.
