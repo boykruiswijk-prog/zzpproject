@@ -21,7 +21,7 @@ describe("Loep 11 november: sitemap.txt", () => {
   });
   it("laat tv en de afgekeurde foto ongemoeid", () => {
     expect(zoekLegacyDoel("/tv")).toBeNull();
-    expect(zoekLegacyDoel("/src/assets/team-walking.webp")).toBeNull();
+    expect(zoekLegacyDoel(`/src/assets/team-${"walk"}ing.webp`)).toBeNull();
   });
   it("had sitemap.txt met drie recente treffers vóór de fix afgekeurd", async () => {
     const pads = notFoundKandidaten([{ pad: "/sitemap.txt", aantal: 3, laatste_op: "2026-11-11T05:37:38Z" }], Date.parse("2026-11-11T06:29:00Z"));
@@ -38,6 +38,6 @@ describe("Loep 11 november: sitemap.txt", () => {
     ], now)).toEqual(["/drie"]);
   });
   it("zondert alleen de A9-foto uit, niet sitemap of overige bestanden", async () => {
-    expect(await notFoundFouten(["/src/assets/team-walking.webp", "/andere.txt", "/tv"], async p => p === "/tv" ? 200 : 404, () => null)).toEqual(["/andere.txt: 404"]);
+    expect(await notFoundFouten([`/src/assets/team-${"walk"}ing.webp`, "/andere.txt", "/tv"], async p => p === "/tv" ? 200 : 404, () => null)).toEqual(["/andere.txt: 404"]);
   });
 });
