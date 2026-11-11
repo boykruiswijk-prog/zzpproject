@@ -16,6 +16,7 @@ import { bundelLekken } from "./scripts/bundleLeak";
 import { voegArtikelRedirectsToe } from "./scripts/articleRedirects";
 import { srcAssetBestanden, srcAssetsRedirectPlugin } from "./scripts/srcAssetsRedirects";
 import { zoekLegacyDoel } from "./src/config/legacyRedirects";
+import { checkNotFoundLog } from "./scripts/notFoundGate";
 
 
 /** Storage-bucket waarin de gemigreerde WordPress-media staat. */
@@ -242,6 +243,7 @@ function prerenderPlugin(env: Record<string, string>): Plugin {
         if (!fs.existsSync(csvFile) || fs.readFileSync(csvFile, "utf8") !== csv) fs.writeFileSync(csvFile, csv);
         console.log(`[redirects] ${redirects.length} root-artikelpaden met beide slashvarianten uit sitemapbron.`);
       });
+      await checkNotFoundLog(path.resolve(__dirname, "dist"), "https://zpzaken.nl");
     },
   };
 }
