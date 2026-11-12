@@ -211,3 +211,4 @@
 - [x] F8 Contentmachine 10-11: teksten op twee pagina’s en gedeelde kaart bijgewerkt; FAQ/schema-pariteit 10/5 antwoorden gecontroleerd, geen dubbel FAQPage; 2668 tests geslaagd/1 skipped, automatische build OK, één Ellen-melding a5777ae1 teruggelezen. Niet gepubliceerd.
 - [ ] F8 eindcontrole: bestaande lege preview blokkeert visuele controle; afzonderlijke typecheck/productiebuild niet bevestigd door automatische logs.
 [x] Contentmachine F8 vervolg 12-11: /verzekeringen AVB-uitlegzin onder hero, FAQ "Wat is een AVB-verzekering" als tweede en "Welke verzekeringen verplicht" als laatste, datum 12 november; 2697 tests/1 skipped, typecheck en build groen; geen Ellen-melding (doet Pen), niet gepubliceerd.
+- [x] Rechtsvormwijziging 12-11: stappenplan artikel, aanvraagveld vorige onderneming, Koppel aan vorige onderneming
