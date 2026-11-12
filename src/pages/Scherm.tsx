@@ -1,12 +1,12 @@
-import { NETTO_GROEI_LABEL } from "@/lib/nettoGroei";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Navigate } from "react-router-dom";
 import logo from "@/assets/logo-zp.webp";
 import { supabase } from "@/integrations/supabase/client";
 import type { SchermPayload } from "../../supabase/functions/_shared/schermAnonimiseer";
-import { STATION_LABELS, STATION_IDS, stationToken, periodeTekst, workersSamenvatting, type Puls } from "@/components/scherm/schermModel";
-import { dagomzetWeergave } from "../../supabase/functions/_shared/dagomzet";
+import { STATION_IDS, workersSamenvatting, type Puls } from "@/components/scherm/schermModel";
+import { nettoRegel, aiTeamVolgorde } from "@/components/scherm/schermTeksten";
+import { weekomzetWeergave } from "../../supabase/functions/_shared/weekomzet";
 import CountUp from '@/components/scherm/CountUp';
 import { startVersieControle } from "@/lib/versieControle";
 import { PANEEL_DUUR_MS, schermSchaal, useSchermViewport } from "@/components/scherm/schermWeergave";
@@ -28,9 +28,6 @@ function amsterdamTijd(d: Date) {
     hm: new Intl.DateTimeFormat("nl-NL", { timeZone: TZ, hour: "2-digit", minute: "2-digit", hour12: false }).format(d),
   };
 }
-const tijdKort = (iso: string) => {
-  try { return new Intl.DateTimeFormat("nl-NL", { timeZone: TZ, hour: "2-digit", minute: "2-digit" }).format(new Date(iso)); } catch { return ""; }
-};
 
 function Logo({ groot = false }: { groot?: boolean }) {
   return (
@@ -134,25 +131,8 @@ function Sparkline({ waarden }: { waarden: number[] }) {
   );
 }
 
-function Staven({ data }: { data: { maand: string; n: number }[] }) {
-  const max = Math.max(1, ...data.map((d) => d.n));
-  const maanden = ["jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
-  return (
-    <div className="flex h-[259.2px] items-end gap-[11.52px]">
-      {data.map((d) => (
-        <div key={d.maand} className="flex h-full flex-1 flex-col items-center justify-end gap-[5.4px]">
-          <span className="text-[23.76px] font-semibold tabular-nums text-[hsl(var(--s-tekst))]">{d.n}</span>
-          <div className="w-full rounded-t-[4.32px] bg-[hsl(var(--s-blauw))]" style={{ height: `${(d.n / max) * 162}px`, minHeight: "4.32px", transition: "height 1s ease" }} />
-          <span className="text-[23.76px] text-[hsl(var(--s-dim))]">{maanden[Number(d.maand.slice(5, 7)) - 1]}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 const Kop = ({ children }: { children: React.ReactNode }) => <h2 className="text-[38.88px] font-semibold tracking-tight text-[hsl(var(--s-tekst))]">{children}</h2>;
 const Label = ({ children }: { children: React.ReactNode }) => <div className="text-[25.92px] text-[hsl(var(--s-dim))]">{children}</div>;
-const Bijgewerkt = ({ op }: { op: string | null | undefined }) => op ? <span data-bijgewerkt className="text-[18.36px] font-normal text-[hsl(var(--s-dim))]">bijgewerkt om {tijdKort(op)}</span> : null;
 const Gemeten = () => <span className="text-[28.08px] font-normal text-[hsl(var(--s-dim))]">wordt gemeten</span>;
 
 function Stat({ label, waarde, klein = false }: { label: string; waarde: string | null; klein?: boolean }) {
@@ -191,179 +171,128 @@ function PaneelDoel({ d }: { d: SchermPayload }) {
   );
 }
 
+/** Besluit Boy 12-11-2026: klanten = unieke ondernemingen met minstens één factureerbaar contract (scherm_groei). */
 function PaneelGroei({ d }: { d: SchermPayload }) {
-  const k = d.klantbasis;
+  const g = d.groei;
+  if (!g) return <div className="flex h-full flex-col gap-[32.4px]"><Kop>Groei</Kop><Gemeten /></div>;
+  const opbouw: [string, number][] = [["BAV + AVB", g.bav_avb], ["Cyber", g.cyber], ["Lidmaatschappen", g.lidmaatschap], ["Overig", g.overig]];
   return (
-    <div className="flex h-full flex-col gap-[32.4px]">
+    <div className="flex h-full flex-col gap-[32.4px]" data-testid="paneel-groei">
       <Kop>Groei</Kop>
       <div className="grid grid-cols-2 gap-[38.4px]">
-        <Stat label="Actieve klanten" waarde={nf.format(k.actieve_klanten)} />
-        <Stat label="Actieve contracten" waarde={nf.format(k.actieve_contracten)} />
-        <Stat label="Certificaten deze maand" waarde={nf.format(k.certificaten_maand)} />
-        <Stat label="Certificaten deze week" waarde={nf.format(k.certificaten_week)} />
+        <Stat label="Klanten" waarde={nf.format(g.klanten)} />
+        <Stat label="Facturabele contracten" waarde={nf.format(g.contracten)} />
       </div>
-      <div className="mt-auto">
-        <Label>Nieuwe klanten per maand</Label>
-        <Staven data={k.nieuw_per_maand} />
+      <div className="text-[25.92px] leading-snug text-[hsl(var(--s-dim))]">1 klant kan meerdere verzekeringen hebben (bijv. BAV + AVB en cyber)</div>
+      <div className="flex flex-col gap-[10px]" data-testid="groei-opbouw">
+        <Label>Facturabele contracten per soort</Label>
+        {opbouw.filter(([, n]) => n > 0).map(([l, n]) => (
+          <div key={l} className="flex items-baseline justify-between border-b border-[hsl(var(--s-lijn))] pb-[6px] text-[32.4px]">
+            <span>{l}</span><strong className="tabular-nums">{nf.format(n)}</strong>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
 
-/** Netto groei vanaf NETTO_GROEI_VANAF (tel_netto_groei, zelfde bron als het dashboard). Alleen aantallen. */
+/** Netto groei: zelfde bron en klantdefinitie als Groei; begin + nieuw - gestopt = nu. */
 function PaneelNettoGroei({ d }: { d: SchermPayload }) {
-  const n = d.netto_groei;
-  const pct = (v: number | null | undefined) => (v == null ? "-" : `${String(v).replace(".", ",")}%`);
-  const plus = (v: number) => `${v > 0 ? "+" : ""}${nf.format(v)}`;
-  if (!n?.cumulatief) return <div className="flex h-full flex-col gap-[32.4px]"><Kop>Netto groei</Kop><Gemeten /></div>;
-  const rij = (titel: string, b: NonNullable<typeof n.cumulatief> | null) => (
-    <div className="flex flex-col gap-[16.2px]">
-      <Label>{titel}</Label>
-      {b ? <div className="grid grid-cols-2 gap-[38.4px]">
-        <Stat label="Instroom" waarde={nf.format(b.instroom)} />
-        <Stat label="Beeindigingen" waarde={nf.format(b.beeindigingen)} />
-        <Stat label="Netto groei" waarde={plus(b.netto_groei)} />
-        <Stat label="Opzegpercentage" waarde={pct(b.opzegpercentage)} />
-      </div> : <Gemeten />}
+  const g = d.groei;
+  if (!g?.sinds) return <div className="flex h-full flex-col gap-[32.4px]"><Kop>Netto groei</Kop><Gemeten /></div>;
+  const blok = (titel: string, b: NonNullable<typeof g.sinds> | null, beginLabel: string) => b && (
+    <div className="flex flex-col gap-[12px]">
+      <div className="text-[38.88px] font-semibold leading-snug text-[hsl(var(--s-tekst))]">{nettoRegel(titel, b)}</div>
+      <Label>{nf.format(b.begin)} klanten {beginLabel}, nu {nf.format(b.nu)}</Label>
     </div>
   );
   return (
-    <div className="flex h-full flex-col gap-[32.4px]" data-testid="paneel-netto-groei">
+    <div className="flex h-full flex-col gap-[43.2px]" data-testid="paneel-netto-groei">
       <Kop>Netto groei</Kop>
-      {rij("Deze week", n.deze_week)}
-      {rij(NETTO_GROEI_LABEL, n.cumulatief)}
-    </div>
-  );
-}
-
-function StatusRegel({ label, ok }: { label: string; ok: boolean | null }) {
-  const kleur = ok === null ? "var(--s-dim)" : ok ? "var(--s-groen)" : "var(--s-rood)";
-  return (
-    <div className="flex items-center gap-[19.2px] text-[30.24px] text-[hsl(var(--s-tekst))]">
-      <span className="h-[21.6px] w-[21.6px] rounded-full" style={{ background: `hsl(${kleur})`, boxShadow: `0 0 16.2px hsl(${kleur})` }} />
-      <span>{label}</span>
-      <span className="ml-auto text-[hsl(var(--s-dim))]">{ok === null ? "wordt gemeten" : ok ? "in orde" : "aandacht"}</span>
+      {blok("Sinds 1 oktober", g.sinds, "op 30 september")}
+      {blok("Deze week", g.week, "op zondag")}
     </div>
   );
 }
 
 function PaneelService({ d }: { d: SchermPayload }) {
-  const s = d.service, g = d.gezondheid;
+  const s = d.service;
   return (
-    <div className="flex h-full flex-col gap-[32.4px]">
+    <div className="flex h-full flex-col gap-[43.2px]" data-testid="paneel-service">
       <Kop>Service en kwaliteit</Kop>
-      <div className="grid grid-cols-3 gap-[28.8px]">
-        <Stat klein label="Afhandeltijd" waarde={s.afhandeltijd_uur === null ? null : `${f(s.afhandeltijd_uur, 1)} u`} />
-        <Stat klein label="Mail binnen 5 min" waarde={s.bevestiging_5min_pct === null ? null : `${s.bevestiging_5min_pct}%`} />
-        <Stat klein label="Open verzoeken" waarde={nf.format(s.open)} />
-      </div>
-      <div className="flex flex-col items-start gap-[28px]">
-        <Ring pct={(g.uptime_7d_pct ?? 0) / 100} kleur="var(--s-groen)">
-          <div className="text-[75.6px] font-bold leading-none tabular-nums text-[hsl(var(--s-tekst))]">{g.uptime_7d_pct === null ? "-" : `${f(g.uptime_7d_pct, 1)}%`}</div>
-          <div className="text-[23.76px] text-[hsl(var(--s-dim))]">uptime 7 dagen</div>
-        </Ring>
-        <div className="flex w-full flex-col gap-[12px]">
-          <StatusRegel label="Exact-koppeling" ok={g.exact_ok} />
-          <StatusRegel label="Facturatie" ok={g.planner_ok} />
-          <StatusRegel label={`Geplande taken ${g.cron_ok_24u} / ${g.cron_totaal_24u}`} ok={g.cron_totaal_24u ? g.cron_ok_24u === g.cron_totaal_24u : null} />
-          <StatusRegel label={`Fouten laatste 24 uur: ${g.fouten_24u}`} ok={g.fouten_24u === 0} />
-        </div>
-      </div>
+      <Stat label="Afhandeltijd (mediaan)" waarde={s.afhandeltijd_uur === null ? null : `${f(s.afhandeltijd_uur, 1)} u`} />
+      <Stat label="Mail binnen 5 minuten" waarde={s.bevestiging_5min_pct === null ? null : `${s.bevestiging_5min_pct}%`} />
+      <Stat label="Open verzoeken" waarde={nf.format(s.open)} />
     </div>
   );
 }
 
-function AdsBlok({ naam, a, op }: { naam: string; a: Record<string, number | string | null> | null; op?: string | null }) {
-  const w = (v: unknown, suf = "") => (typeof v === "number" ? `${nf.format(v)}${suf}` : null);
-  return (
-    <div className="rounded-[10.8px] border border-[hsl(var(--s-lijn))] p-[17.28px]">
-      <div className="flex flex-wrap items-baseline justify-between gap-[6px] text-[28.08px] font-semibold text-[hsl(var(--s-tekst))]"><span>{naam}</span>{a && <Bijgewerkt op={op} />}</div>
-      {!a ? <Gemeten /> : (
-        <div data-testid="ads-cijfers" className="mt-[10.8px] grid grid-cols-2 gap-x-[28px] gap-y-[10px]">
-          {[["Vertoningen", w(a.vertoningen)], ["Klikken", w(a.klikken)], ["Conversies", w(a.conversies)], ["Budget", w(a.budget_pct, "%")]].map(([l, v]) => (
-            <div key={l as string} className="min-w-0"><Label>{l}</Label><div className="truncate text-[38.88px] font-bold tabular-nums text-[hsl(var(--s-tekst))]">{v ?? <Gemeten />}</div></div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+function Pijl({ deze, vorige }: { deze: number | null; vorige: number | null }) {
+  if (deze === null || vorige === null || deze === vorige) return null;
+  return deze > vorige
+    ? <span aria-label="hoger dan vorige week" style={{ color: "hsl(var(--s-groen))" }}>▲</span>
+    : <span aria-label="lager dan vorige week" style={{ color: "hsl(var(--s-rood))" }}>▼</span>;
 }
 
+/** Besluit Boy 12-11-2026: vier cijfers, deze week tegen vorige week. */
 function PaneelZichtbaarheid({ d }: { d: SchermPayload }) {
-  const m = d.marketing, sc = m.search_console, ai = m.ai_zichtbaarheid;
+  const z = d.zichtbaarheid;
+  const rijen: [string, { deze: number | null; vorige: number | null }, string][] = [
+    ["Google Ads klikken", z.ads_klikken, ""],
+    ["Aanvragen via advertenties", z.advertentie_aanvragen, ""],
+    ["Klikken uit Google (organisch)", z.organisch_klikken, ""],
+    ["AI-zichtbaarheid", z.ai_zichtbaarheid, "%"],
+  ];
+  const w = (v: number | null, suf: string) => (v === null ? "-" : `${f(v, suf ? 1 : 0)}${suf}`);
   return (
-    <div className="flex h-full flex-col gap-[21.6px]">
+    <div className="flex h-full flex-col gap-[32.4px]" data-testid="paneel-zichtbaarheid">
       <Kop>Zichtbaarheid</Kop>
-      <AdsBlok naam="Google Ads" a={m.google_ads} op={d.bijgewerkt?.google_ads} />
-      <div className="grid grid-cols-3 gap-[19.2px]">
-        <Stat klein label="Positie Google" waarde={typeof sc?.positie === "number" ? f(sc.positie, 1) : null} />
-        <Stat klein label="Klikken Google" waarde={typeof sc?.klikken === "number" ? nf.format(sc.klikken) : null} />
-        <Stat klein label="AI-zichtbaarheid" waarde={typeof ai?.score === "number" ? `${f(ai.score)}%` : null} />
-      </div>
-      {d.bing_ai && (
-        <div data-testid="copilot-citaties">
-          <Label>Copilot-citaties{d.bing_ai.periode ? ` (${d.bing_ai.periode})` : ""}</Label>
-          <div className="flex items-baseline gap-[12px] text-[38.88px] font-bold tabular-nums text-[hsl(var(--s-tekst))]">
-            {nf.format(d.bing_ai.citaties)}
-            {d.bing_ai.trend === "omhoog" && <span aria-label="hoger dan vorige meting" style={{ color: "hsl(var(--s-groen))" }}>▲</span>}
-            {d.bing_ai.trend === "omlaag" && <span aria-label="lager dan vorige meting" style={{ color: "hsl(var(--s-rood))" }}>▼</span>}
-            {d.bing_ai.onderwerpen.length > 0 && <span className="text-[18.36px] font-normal">{d.bing_ai.onderwerpen.join(", ")}</span>}
-          </div>
-        </div>
-      )}
-      <div className="flex flex-wrap gap-[16px] text-[18.36px]">{sc && <span>Google: <Bijgewerkt op={d.bijgewerkt?.search_console} /></span>}{ai && <span>AI: <Bijgewerkt op={d.bijgewerkt?.ai_zichtbaarheid} /></span>}</div>
-      <div className="mt-auto">
-        <Label>Kennisbank: {d.kennisbank.gepubliceerd} artikelen, {d.kennisbank.nieuw_maand} nieuw deze maand</Label>
-        {d.kennisbank.laatste.map((t) => <div key={t} className="break-words text-[21.6px] leading-snug text-[hsl(var(--s-tekst))]">{t}</div>)}
-      </div>
+      <ul className="flex flex-col gap-[30px]">
+        {rijen.map(([l, v, suf]) => (
+          <li key={l} className="flex min-w-0 flex-col gap-[4px]" data-zichtbaarheid={l}>
+            <Label>{l}</Label>
+            <div className="flex items-baseline gap-[16px] tabular-nums">
+              <span className="text-[54px] font-bold leading-none text-[hsl(var(--s-tekst))]">{w(v.deze, suf)}</span>
+              <span className="text-[38.88px] font-bold leading-none"><Pijl deze={v.deze} vorige={v.vorige} /></span>
+              <span className="text-[25.92px] text-[hsl(var(--s-dim))]">vorige week {w(v.vorige, suf)}</span>
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
 
 const euro = new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
 
-/** A8-aanvulling: enige bedrag op het scherm, één dagtotaal. */
-function Dagomzet({ d }: { d: SchermPayload }) {
-  const { bedrag, aantal } = dagomzetWeergave(d.dagomzet);
-  const vorig = useRef(aantal);
+/** Besluit Boy 12-11-2026: Weekomzet, enige bedrag op het scherm (vervangt A8 Dagomzet). */
+function Weekomzet({ d }: { d: SchermPayload }) {
+  const w = weekomzetWeergave(d.weekomzet);
+  const vorig = useRef(w.aantal);
   const [licht, setLicht] = useState(false);
   useEffect(() => {
-    if (aantal > vorig.current) { setLicht(true); const t = setTimeout(() => setLicht(false), 2400); vorig.current = aantal; return () => clearTimeout(t); }
-    vorig.current = aantal;
-  }, [aantal]);
+    if (w.aantal > vorig.current) { setLicht(true); const t = setTimeout(() => setLicht(false), 2400); vorig.current = w.aantal; return () => clearTimeout(t); }
+    vorig.current = w.aantal;
+  }, [w.aantal]);
+  const pct = w.verschil_pct;
   return (
-    <div data-testid="dagomzet" className={`scherm-dagomzet${licht ? " scherm-dagomzet-licht" : ""}`}>
+    <div data-testid="weekomzet" className={`scherm-dagomzet${licht ? " scherm-dagomzet-licht" : ""}`}>
       <div className="scherm-dagomzet-tekst">
-        <div className="scherm-dagomzet-titel">Dagomzet</div>
-        <div className="scherm-dagomzet-sub">nieuwe jaarpremie uit {nf.format(aantal)} {aantal === 1 ? "aanvraag" : "aanvragen"} vandaag</div>
+        <div className="scherm-dagomzet-titel">Weekomzet</div>
+        <div className="scherm-dagomzet-sub">nieuwe jaarpremie uit {nf.format(w.aantal)} {w.aantal === 1 ? "aanvraag" : "aanvragen"} sinds maandag</div>
       </div>
-      <div className="scherm-dagomzet-bedrag tabular-nums" data-testid="dagomzet-bedrag">{euro.format(bedrag)}</div>
+      <div className="min-w-0 text-right">
+        <div className="scherm-dagomzet-bedrag tabular-nums" data-testid="weekomzet-bedrag">{euro.format(w.bedrag)}</div>
+        <div className="scherm-weekomzet-vergelijk tabular-nums" data-testid="weekomzet-vergelijk">
+          vorige week {euro.format(w.vorige_bedrag)}{" "}
+          {pct === null ? null : pct > 0 ? <span style={{ color: "hsl(var(--s-groen))" }}>▲ {pct}%</span>
+            : pct < 0 ? <span style={{ color: "hsl(var(--s-rood))" }}>▼ {Math.abs(pct)}%</span> : <span>gelijk</span>}
+        </div>
+      </div>
     </div>
   );
 }
 
-function PaneelVandaag({ d }: { d: SchermPayload }) {
-  const drukste = STATION_IDS.reduce((best, id) => (d.stations[id]?.vandaag ?? 0) > (d.stations[best]?.vandaag ?? 0) ? id : best, STATION_IDS[0]);
-  return <div className="vandaag-paneel flex h-full flex-col gap-[14px]">
-    <Kop>Vandaag</Kop><Stat label="Gebeurtenissen" waarde={nf.format(d.gebeurtenissen_vandaag)} />
-    <div className="vandaag-tijdlijn"><Label>Van 0 tot 24 uur</Label>
-      <svg viewBox="0 0 600 140" aria-label="Gebeurtenissen per minuut vandaag">
-        <line x1="10" x2="590" y1="110" y2="110" />
-        {d.tijdlijn.map((a, i) => <circle key={`${a.station}-${a.minuut}`} cx={10 + a.minuut / 1440 * 580} cy={95 - STATION_IDS.indexOf(a.station) * 7} r={Math.min(7, 2 + Math.sqrt(a.n))} style={{ fill: `hsl(${stationToken(a.station)})` }} />)}
-        {[0, 6, 12, 18, 24].map(h => <text key={h} x={10 + h / 24 * 580} y="135" textAnchor={h === 0 ? 'start' : h === 24 ? 'end' : 'middle'}>{h}</text>)}
-      </svg>
-    </div>
-    <div><Label>Drukste afdeling</Label><div className="text-[43.2px] font-semibold">{d.gebeurtenissen_vandaag ? STATION_LABELS[drukste] : 'Nog geen gebeurtenissen'}</div><span className="text-[28.08px] text-[hsl(var(--s-dim))]">{d.stations[drukste]?.vandaag ?? 0} gebeurtenissen</span></div>
-    <div className="grid min-h-0 grid-cols-2 gap-x-[16px] gap-y-[2px]"><div className="col-span-2"><Label>Werkminuten per afdeling</Label></div>
-      {(() => { const max = Math.max(1, ...STATION_IDS.map(id => d.stations[id]?.duur_vandaag_min ?? 0)); return STATION_IDS.map(id => { const m = d.stations[id]?.duur_vandaag_min ?? 0; return (
-        <div key={id} className="flex min-w-0 items-center gap-[8px] text-[16px] leading-[22px]" data-werkminuten={id}>
-          <span className="h-[10px] w-[10px] shrink-0 rounded-full" style={{ background: `hsl(${stationToken(id)})`, opacity: m ? 1 : 0.35 }} />
-          <span className="min-w-0 flex-1 truncate">{STATION_LABELS[id]}</span>
-          <span className="shrink-0 text-right tabular-nums text-[hsl(var(--s-dim))]">{m} min</span>
-        </div>); }); })()}
-    </div>
-  </div>;
-}
 function runTijd(iso: string | null, nu: string) {
   if (!iso) return null;
   const dag = (t: string) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Amsterdam' }).format(new Date(t));
@@ -371,43 +300,30 @@ function runTijd(iso: string | null, nu: string) {
   return new Intl.DateTimeFormat('nl-NL', { timeZone: 'Europe/Amsterdam', weekday: 'short', day: 'numeric', month: 'short' }).format(new Date(iso)).replace(/\./g, '');
 }
 
+/** Besluit Boy 12-11-2026: per robot één regel (stip, naam, vaste functie, laatste run); fouten bovenaan in rood. */
 function PaneelAiTeam({ d }: { d: SchermPayload }) {
-  const kb = d.kennisbank, team = d.ai_team ?? [];
-  // Meer agents: compactere regels, zodat alles past op 1920x1080 zonder afkappen.
-  const compact = team.length > 10;
-  // Vanaf 13 robots twee kolommen, zodat 16 leesbaar passen op 1920x1080.
-  const tweeKolommen = team.length > 12;
-  const kleur = (s: string) => s === 'fout' ? 'var(--s-rood)' : s === 'gepland' ? 'var(--s-dim)' : s === 'bezig' ? 'var(--s-blauw)' : 'var(--s-groen)';
+  const kb = d.kennisbank;
+  const team = aiTeamVolgorde(d.ai_team ?? []);
+  const kleur = (s: string) => s === 'fout' ? 'var(--s-rood)' : s === 'gepland' ? 'var(--s-dim)' : 'var(--s-groen)';
   return (
     <div className="ai-team-paneel flex h-full min-w-0 flex-col gap-[17.28px] overflow-hidden">
-      <div className="flex items-baseline justify-between"><Kop>Ons AI-team</Kop><Bijgewerkt op={d.bijgewerkt?.ai_team} /></div>
-      <div className="text-[23.76px] text-[hsl(var(--s-dim))]">Aanvragen BAV + AVB sinds 6 okt: <strong className="tabular-nums text-[hsl(var(--s-tekst))]">{d.doel.totaal} van 200</strong></div>
-      <div className="rounded-[10.8px] border border-[hsl(var(--s-rood)/0.6)] bg-[hsl(var(--s-rood)/0.1)] p-[17.28px]">
-        <div className="text-[28.08px] font-semibold text-[hsl(var(--s-tekst))]">Contentmachine</div>
-        <div className="mt-[6.48px] grid grid-cols-2 gap-[19.2px]">
-          <div><div className="text-[64.8px] font-bold leading-none tabular-nums text-[hsl(var(--s-tekst))]">{kb.content_nieuw ?? <Gemeten />}</div><Label>nieuwe artikelen</Label></div>
-          <div><div className="text-[64.8px] font-bold leading-none tabular-nums text-[hsl(var(--s-tekst))]">{kb.content_verbeterd ?? <Gemeten />}</div><Label>artikelen verbeterd</Label></div>
-        </div>
-        <div className="mt-[6.48px] text-[21.6px] text-[hsl(var(--s-dim))]">sinds 6 oktober, automatisch geschreven en gecontroleerd</div>
+      <Kop>Ons AI-team</Kop>
+      <div className="flex items-baseline gap-[24px] rounded-[10.8px] border border-[hsl(var(--s-rood)/0.6)] bg-[hsl(var(--s-rood)/0.1)] px-[17.28px] py-[10px]" data-testid="contentmachine">
+        <span className="text-[25.92px] font-semibold text-[hsl(var(--s-tekst))]">Contentmachine</span>
+        <span className="text-[25.92px] text-[hsl(var(--s-dim))]"><strong className="text-[38.88px] tabular-nums text-[hsl(var(--s-tekst))]">{kb.content_nieuw ?? "-"}</strong> nieuw</span>
+        <span className="text-[25.92px] text-[hsl(var(--s-dim))]"><strong className="text-[38.88px] tabular-nums text-[hsl(var(--s-tekst))]">{kb.content_verbeterd ?? "-"}</strong> verbeterd</span>
       </div>
       {team.length === 0 ? <Gemeten /> : (
-        <div className={tweeKolommen ? "grid min-h-0 flex-1 grid-cols-2 content-start gap-x-[21.6px] gap-y-[5.4px]" : "flex min-h-0 flex-1 flex-col justify-start gap-[5.4px]"} data-testid="ai-team-lijst" data-aantal={team.length}>
+        <div className="flex min-h-0 flex-1 flex-col justify-start gap-[4px]" data-testid="ai-team-lijst" data-aantal={team.length}>
           {team.map((a, i) => {
             const t = runTijd(a.laatste_run, d.gegenereerd_op);
+            const fout = a.status === 'fout';
             return (
-              <div key={`${a.naam}-${i}`} className="min-w-0 leading-tight">
-                <div className={`flex items-center gap-[11.52px] ${compact ? 'text-[18.36px]' : 'text-[20.52px]'}`}>
-                  <span className="h-[15.12px] w-[15.12px] shrink-0 rounded-full" style={{ background: `hsl(${kleur(a.status)})`, boxShadow: `0 0 10.8px hsl(${kleur(a.status)})` }} />
-                  {a.robotnaam ? (
-                    <span className="flex max-w-[40%] shrink-0 flex-col leading-none" data-testid="robotnaam">
-                      <span className={`truncate font-bold text-[hsl(var(--s-tekst))] ${compact ? 'text-[22.68px]' : 'text-[25.92px]'}`}>{a.robotnaam}</span>
-                      <span className={`truncate text-[hsl(var(--s-dim))] ${compact ? 'text-[14.04px]' : 'text-[16.2px]'}`}>{a.naam}</span>
-                    </span>
-                  ) : <span className="max-w-[40%] shrink-0 truncate font-bold text-[hsl(var(--s-tekst))]">{a.naam}</span>}
-                  {!tweeKolommen && <span className="min-w-0 truncate text-[hsl(var(--s-dim))]">{a.taak}</span>}
-                  {t && <span className="ml-auto shrink-0 tabular-nums text-[hsl(var(--s-dim))]">{t}</span>}
-                </div>
-                {a.resultaat && <div className={`truncate pl-[21.6px] ${compact ? 'text-[16.2px]' : 'text-[18.36px]'} text-[hsl(var(--s-tekst))]`}>{a.resultaat}</div>}
+              <div key={`${a.naam}-${i}`} className="flex min-w-0 items-center gap-[12px] text-[21.6px] leading-[28px]" data-testid="ai-team-regel" data-status={a.status}>
+                <span className="h-[15.12px] w-[15.12px] shrink-0 rounded-full" style={{ background: `hsl(${kleur(a.status)})` }} />
+                <span className="w-[96px] shrink-0 truncate font-bold" style={{ color: fout ? 'hsl(var(--s-rood))' : 'hsl(var(--s-tekst))' }} data-testid="robotnaam">{a.robotnaam ?? a.naam}</span>
+                <span className="min-w-0 flex-1 truncate" style={{ color: fout ? 'hsl(var(--s-rood))' : 'hsl(var(--s-dim))' }}>{fout ? a.reden ?? 'laatste run mislukt' : a.functie}</span>
+                <span className="shrink-0 tabular-nums text-[hsl(var(--s-dim))]">{t ?? '-'}</span>
               </div>
             );
           })}
@@ -447,7 +363,8 @@ function PaneelBezoekers({ d }: { d: SchermPayload }) {
   return <BezoekersKaart b={d.bezoekers} />;
 }
 
-const PANELEN = [PaneelDoel, PaneelGroei, PaneelNettoGroei, PaneelService, PaneelZichtbaarheid, PaneelStroom, PaneelVandaag, PaneelAiTeam, PaneelProcessen, PaneelBezoekers];
+// Besluit Boy 12-11-2026: paneel Vandaag vervallen.
+const PANELEN = [PaneelDoel, PaneelGroei, PaneelNettoGroei, PaneelService, PaneelZichtbaarheid, PaneelStroom, PaneelAiTeam, PaneelProcessen, PaneelBezoekers];
 // A7-aanvulling (besluit Boy 15-10-2026): PaneelWorkers staat vast links, niet in de carrousel.
 
 function useWakeLock() {
@@ -624,7 +541,6 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
           </div>
           {data && (
             <div className="ml-auto flex items-center gap-[28.8px] text-[25.92px] text-[hsl(var(--s-dim))] tabular-nums">
-              <span>Vandaag: <strong className="text-[hsl(var(--s-tekst))]">{data.gebeurtenissen_vandaag}</strong> gebeurtenissen</span>
               <span>Nu op de site: {data.nu_op_site === null ? <Gemeten /> : <strong className="text-[hsl(var(--s-tekst))]">{data.nu_op_site}</strong>}</span>
             </div>
           )}
@@ -648,26 +564,10 @@ export default function Scherm({ tv = false }: { tv?: boolean }) {
             <div data-testid="workers-vast" className="h-[60px] shrink-0 overflow-hidden border-t border-[hsl(var(--s-lijn))] px-[24px]">
               {data && <PaneelWorkers d={data} />}
             </div>
-            <div className="h-[84px] shrink-0 overflow-hidden border-t border-[hsl(var(--s-lijn))]">
-              <div className="scherm-ticker flex h-full items-center gap-[57.6px] whitespace-nowrap">
-                {[0, 1].map((k) => (
-                  <div key={k} className="flex shrink-0 items-center gap-[57.6px] pr-[57.6px]" aria-hidden={k === 1}>
-                    {(data?.activiteit ?? []).slice(0, 14).map((a) => (
-                      <span key={`${k}-${a.id}`} className="flex items-center gap-[15.36px] text-[28.08px]">
-                        <span className="h-[15.12px] w-[15.12px] rounded-full" style={{ background: `hsl(var(${a.status === "fout" ? "--s-rood" : a.status === "bezig" ? "--s-blauw" : a.status === "onbekend" ? "--s-dim" : "--s-groen"}))` }} />
-                        <span className="tabular-nums text-[hsl(var(--s-dim))]">{periodeTekst(a) ?? tijdKort(a.tijd)}</span>
-                        <span className="font-semibold text-[hsl(var(--s-rood))]">{STATION_LABELS[a.station] ?? a.station}</span>
-                        <span>{a.tekst}</span>
-                      </span>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
           </section>
 
           <aside className="scherm-rapport flex w-[630px] min-w-0 flex-col px-[28px] py-[26px]">
-            {data && <Dagomzet d={data} />}
+            {data && <Weekomzet d={data} />}
             <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
               {data ? (
                 <div key={paneel} data-testid="rapportage-paneel" data-paneel={paneel} className="scherm-paneel absolute inset-0 overflow-hidden"><Huidig d={data} /></div>

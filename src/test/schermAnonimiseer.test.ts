@@ -22,13 +22,13 @@ describe("scherm-data anonimisering", () => {
       expect(out).not.toContain(verboden);
     }
   });
-  it("A8-aanvulling: het enige bedrag is het dagomzettotaal (dag, bedrag, aantal)", () => {
-    const p = bouwSchermPayload({ ...ruw, dagomzet: { dag: "2026-11-05", bedrag: 1260, aantal: 2, naam: "Piet", regels: [{ pakket: "jaarlijks", bedrag: 600 }] } });
-    expect(p.dagomzet).toEqual({ dag: "2026-11-05", bedrag: 1260, aantal: 2 });
-    const { dagomzet, ...rest } = p as Record<string, unknown>;
-    expect(dagomzet).toBeTruthy();
+  it("Weekomzet (besluit 12-11): het enige bedrag is het weektotaal met vergelijking", () => {
+    const p = bouwSchermPayload({ ...ruw, weekomzet: { week_van: "2026-11-09", bedrag: 1260, aantal: 2, vorige_bedrag: 600, vorige_aantal: 1, verschil_pct: 110, via_advertenties: 1, vorige_via_advertenties: 0, naam: "Piet" } });
+    expect(p.weekomzet).toEqual({ week_van: "2026-11-09", bedrag: 1260, aantal: 2, vorige_bedrag: 600, vorige_aantal: 1, verschil_pct: 110, via_advertenties: 1, vorige_via_advertenties: 0 });
+    const { weekomzet, ...rest } = p as Record<string, unknown>;
+    expect(weekomzet).toBeTruthy();
     for (const verboden of ["€", "99999", "1260"]) expect(JSON.stringify(rest)).not.toContain(verboden);
-    expect(bouwSchermPayload(ruw).dagomzet).toBeNull();
+    expect(bouwSchermPayload(ruw).weekomzet).toBeNull();
   });
   it("maakt ads-budget procentueel en laat kosten per aanvraag weg", () => {
     const m = schoonMarketing(ruw.marketing);

@@ -1884,6 +1884,13 @@
       "when": 1794481806376,
       "tag": "0268_contract_wijzig_ingangsdatum",
       "breakpoints": true
+    },
+    {
+      "idx": 269,
+      "version": "7",
+      "when": 1794483364884,
+      "tag": "0269_scherm_opschonen_1211",
+      "breakpoints": true
     }
   ]
 }

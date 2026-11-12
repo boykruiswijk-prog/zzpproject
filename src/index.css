@@ -382,6 +382,7 @@
 .scherm-dagomzet-titel { font-size: 30px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: hsl(var(--s-tekst)); }
 .scherm-dagomzet-sub { font-size: 20px; line-height: 1.25; color: hsl(var(--s-dim)); max-width: 230px; }
 .scherm-dagomzet-bedrag { font-size: 84px; font-weight: 800; line-height: 1; color: hsl(var(--s-tekst)); white-space: nowrap; }
+.scherm-weekomzet-vergelijk { margin-top: 6px; font-size: 22px; line-height: 1.2; color: hsl(var(--s-dim)); white-space: nowrap; }
 .scherm-dagomzet-licht { border-color: hsl(var(--s-rood)); box-shadow: 0 0 48px hsl(var(--s-rood) / .55); }
 .scherm-dagomzet-licht .scherm-dagomzet-bedrag { color: hsl(var(--s-rood)); }
 

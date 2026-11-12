@@ -4,7 +4,7 @@ import { NETTO_GROEI_VANAF } from "./nettoGroei.ts";
 import { controleerDashboardOpbouw, controleerLeadsOpbouw } from "./dashboardOpbouw.ts";
 import { pulsRood } from "./hartslag.ts";
 import { volgendeRun } from "./cronVolgende.ts";
-import type { Dagomzet } from "./dagomzet.ts";
+import { weekCumulatief, weekStand, type Meetpunt, type Weekomzet } from "./weekomzet.ts";
 import type { BezoekersPayload, BezoekPlaats } from "./bezoekers.ts";
 
 export const ADS_BUDGET = 22500;
@@ -227,6 +227,19 @@ export const WERKPLEK: Record<AiAgentId, string> = {
   beveiliging: 'onderhoud', updates: 'onderhoud', hartslag: 'onderhoud', scherm: 'onderhoud',
   markt: 'markt', concurrentie: 'markt', bronnen: 'markt', bing: 'markt',
 };
+/** Besluit Boy 12-11-2026: vaste korte functie per robot (maximaal 4 woorden) voor het AI-teampaneel. */
+export const ROBOTFUNCTIE: Record<AiAgentId, string> = {
+  ads: 'Bewaakt de advertenties', conversies: 'Meldt conversies terug', kwaliteit: 'Test site en platform', content: 'Schrijft kennisbankartikelen',
+  markt: 'Volgt de markt', rapportage: 'Meet de weekvoortgang', beveiliging: 'Controleert de beveiliging', scherm: 'Ververst dit scherm',
+  dagstatus: 'Maakt het dagoverzicht', botcoach: 'Coacht de robots', concurrentie: 'Scant de concurrentie', updates: 'Houdt software actueel',
+  opvolger: 'Volgt aanvragen op', hartslag: 'Bewaakt de aanvraagstroom', bronnen: 'Zoekt AI-bronnen', bing: 'Meet Copilot-vermeldingen',
+};
+/** Eén korte reden bij een fout: eerste zinsdeel van het resultaat, privacygefilterd. */
+export function korteReden(t: unknown): string {
+  const s = schoonTekst(t, 200).replace(/^[^:]{1,40}:\s*/, '').split(/[.;(]/)[0].trim();
+  if (!s) return 'laatste run mislukt';
+  return s.length > 40 ? `${s.slice(0, 39).trimEnd()}\u2026` : s;
+}
 /** Gestopte agents (Aanbevelingencontrole per 18 okt): nooit meer op het scherm, ook niet als de feed ze stuurt. */
 export const GESTOPTE_AGENTS = ['aanbevelingen'] as const;
 
@@ -275,7 +288,7 @@ export function agentLaatst(lijst: unknown): Partial<Record<AiAgentId, string>> 
   return uit;
 }
 
-type AiRij = { robotnaam: string | null; naam: string; taak: string; resultaat: string | null; laatste_run: string | null; status: 'klaar' | 'fout' | 'gepland' | 'bezig'; werkplek: string | null; nu_tekst: string | null };
+type AiRij = { robotnaam: string | null; naam: string; taak: string; functie: string; reden: string | null; resultaat: string | null; laatste_run: string | null; status: 'klaar' | 'fout' | 'gepland' | 'bezig'; werkplek: string | null; nu_tekst: string | null };
 /** Lopende machine_activiteit (status bezig, binnen WERK_MINUTEN) per agent; tekst door de privacyfilter. */
 export function agentBezig(activiteit: unknown, nu = new Date()): Partial<Record<AiAgentId, string>> {
   const uit: Partial<Record<AiAgentId, string>> = {};
@@ -300,6 +313,8 @@ export function schoonAiTeam(snap: Snap, doelTotaal?: number, recent: Partial<Re
       robotnaam: basis ? ROBOTNAMEN[basis.id] : null,
       naam: basis ? basis.naam : schoonTekst(a.naam, 70),
       taak: basis ? basis.taak : schoonTekst(a.taak, 70),
+      functie: basis ? ROBOTFUNCTIE[basis.id] : schoonTekst(a.taak, 70).split(/\s+/).slice(0, 4).join(' '),
+      reden: a.status === 'fout' ? korteReden(a.resultaat) : null,
       resultaat: resultaat || null,
       laatste_run,
       werkplek: basis ? WERKPLEK[basis.id] : null,
@@ -323,7 +338,7 @@ export function schoonAiTeam(snap: Snap, doelTotaal?: number, recent: Partial<Re
       if (r.status === 'gepland') r.status = 'klaar';
     }
     if (bezig[t.id] && r.status !== 'fout') { r.status = 'bezig'; r.nu_tekst = bezig[t.id]!; }
-    if (t.id === 'hartslag' && hartslagRood) r.status = 'fout';
+    if (t.id === 'hartslag' && hartslagRood) { r.status = 'fout'; r.reden = 'aanvraagstroom vraagt aandacht'; }
     return r;
   });
   return [...vast, ...overig.map(a => rij(a)).filter(a => a.naam)].slice(0, 24);
@@ -377,11 +392,44 @@ export function schoonNettoGroei(n: Ruw) {
     ...(i ? { instroom_opbouw: { via_aanvraag: getal(i.via_aanvraag) ?? 0, voor_6_okt: getal(i.voor_6_okt) ?? 0, afas_overzetting: getal(i.afas_overzetting) ?? 0, nog_in_te_gaan: getal(i.nog_in_te_gaan) ?? 0, overig: getal(i.overig) ?? 0 } } : {}) };
 }
 
-/** Bouwt de publieke payload uit de geaggregeerde RPC-uitvoer; alleen witte-lijstvelden. */
-function schoonDagomzet(d: Ruw): Dagomzet | null {
-  if (!d || typeof d.dag !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(d.dag)) return null;
+/** Weekomzet: alleen totalen, aantallen en een percentage. */
+function schoonWeekomzet(d: Ruw): Weekomzet | null {
+  if (!d || typeof d.week_van !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(d.week_van)) return null;
   const n = (x: unknown) => (typeof x === "number" && Number.isFinite(x) && x >= 0 ? Math.round(x) : 0);
-  return { dag: d.dag, bedrag: n(d.bedrag), aantal: n(d.aantal) };
+  const pct = typeof d.verschil_pct === "number" && Number.isFinite(d.verschil_pct) ? Math.round(d.verschil_pct) : null;
+  return { week_van: d.week_van, bedrag: n(d.bedrag), aantal: n(d.aantal), vorige_bedrag: n(d.vorige_bedrag), vorige_aantal: n(d.vorige_aantal), verschil_pct: pct,
+    via_advertenties: n(d.via_advertenties), vorige_via_advertenties: n(d.vorige_via_advertenties) };
+}
+
+/** Groei (scherm_groei): klanten = unieke ondernemingen met minstens één factureerbaar contract. Alleen aantallen. */
+export function schoonGroei(g: Ruw) {
+  if (!g || typeof g !== "object") return null;
+  const n = (x: unknown) => Math.max(0, getal(x) ?? 0);
+  const blok = (b: Ruw) => b ? { begin: n(b.begin), nieuw: n(b.nieuw), gestopt: n(b.gestopt), nu: n(b.nu), netto: n(b.nieuw) - n(b.gestopt) } : null;
+  const uit = { klanten: n(g.klanten), contracten: n(g.contracten), bav_avb: n(g.bav_avb), cyber: n(g.cyber), lidmaatschap: n(g.lidmaatschap), overig: n(g.overig), sinds: blok(g.sinds), week: blok(g.week) };
+  // Reconciliatie: begin + nieuw - gestopt = nu = klanten in Groei.
+  for (const b of [uit.sinds, uit.week]) if (b && (b.begin + b.nieuw - b.gestopt !== b.nu || b.nu !== uit.klanten)) throw new Error("Netto groei sluit niet aan op Groei");
+  return uit;
+}
+
+/** Zichtbaarheid: vier cijfers, deze week tegen vorige week. */
+export function bouwZichtbaarheid(reeks: unknown, week: Ruw) {
+  const lijst = Array.isArray(reeks) ? reeks : [];
+  const serie = (bron: string, veld: string): Meetpunt[] => lijst.filter((x: Ruw) => x?.bron === bron && typeof x?.dag === "string")
+    .map((x: Ruw) => ({ dag: String(x.dag).slice(0, 10), waarde: getal(x.data?.[veld]) })).filter((p): p is Meetpunt => p.waarde !== null);
+  return {
+    ads_klikken: weekCumulatief(serie("google_ads", "klikken")),
+    advertentie_aanvragen: week ? { deze: Math.max(0, getal(week.via_advertenties) ?? 0), vorige: Math.max(0, getal(week.vorige_via_advertenties) ?? 0) } : { deze: null, vorige: null },
+    organisch_klikken: weekStand(serie("search_console", "klikken")),
+    ai_zichtbaarheid: weekStand(serie("ai_zichtbaarheid", "score")),
+  };
+}
+
+/** Aanvraag-intake in de workers-strook telt alleen echte aanvragen, nooit sitebezoeken. */
+export function metIntakeAanvragen<T extends { op_afroep: Worker[] }>(w: T | null, intake: Ruw): T | null {
+  if (!w || !intake) return w;
+  return { ...w, op_afroep: w.op_afroep.map(x => x.naam === 'Aanvraag-intake'
+    ? { ...x, vandaag: getal(intake.vandaag) ?? 0, week: getal(intake.week) ?? 0, laatste: iso(intake.laatste), status: (intake.laatste ? 'klaar' : 'gepland') as WorkerStatus } : x) };
 }
 
 /** A8 Bezoekerskaart: alleen plaats, provincie en aantal; al het andere valt weg. */
@@ -405,7 +453,7 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
   const tempo = getal(doel.tempo_14d) ?? 0;
   const stations: Record<string, { vandaag: number; skills: number; laatste_status: string | null; toestand: Toestand; laatst_actief_op: string | null; lopende_tekst: string | null; duur_vandaag_min: number; agent_bezig_sinds: string | null }> = {};
   for (const s of STATIONS) {
-    const x = r?.stations?.[s] ?? {};
+    const x = (r?.schoon ? r.schoon.stations?.[s] : r?.stations?.[s]) ?? {};
     const w = r?.werkstand?.[s];
     const tekst = w?.lopende_tekst ? echteTekst(w.lopende_tekst, s) : null;
     stations[s] = { vandaag: getal(x.vandaag) ?? 0, skills: getal(x.skills) ?? 0, laatste_status: x.laatste_status ? status(x.laatste_status) : null,
@@ -444,7 +492,7 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
     tijdlijn: (Array.isArray(r?.tijdlijn) ? r.tijdlijn : []).filter((a: Ruw) => !a.is_test && STATIONS.includes(a.station) && getal(a.minuut) !== null && a.minuut >= 0 && a.minuut < 1440).map((a: Ruw) => ({ station: String(a.station), minuut: Math.floor(a.minuut), n: Math.max(0, getal(a.n) ?? 0) })),
     processen: (Array.isArray(r?.processen) ? r.processen : []).filter((a: Ruw) => !a.is_test && a.actie !== 'cron' && STATIONS.includes(a.station)).map((a: Ruw) => ({ station: String(a.station), actie: ['kvk_check','planner_run','exact_sync','wijziging','lead_verzekering_aanvraag','lead_actief','mail'].includes(a.actie) ? a.actie as string : 'overig', status: status(a.status), n: Math.max(0, getal(a.n) ?? 0) })),
     stations,
-    gebeurtenissen_vandaag: getal(r?.gebeurtenissen_vandaag) ?? 0,
+    gebeurtenissen_vandaag: getal(r?.schoon ? r.schoon.gebeurtenissen_vandaag : r?.gebeurtenissen_vandaag) ?? 0,
     doel: {
       doel: 200,
       totaal,
@@ -466,7 +514,8 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
     },
     service: {
       open: getal(sv.open) ?? 0,
-      afhandeltijd_uur: getal(sv.afhandeltijd_uur),
+      // Mediaan, verzoeken langer dan 14 dagen open niet meegeteld (scherm_schoon).
+      afhandeltijd_uur: getal(r?.schoon ? r.schoon.service_afhandeltijd_uur : sv.afhandeltijd_uur),
       bevestiging_5min_pct: getal(sv.bevestiging_5min_pct),
     },
     gezondheid: {
@@ -495,11 +544,13 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
       te_beoordelen: getal(r.aanvragen_opbouw.te_beoordelen) ?? 0, overig: getal(r.aanvragen_opbouw.overig) ?? 0,
     }, telling_controle: true } : {}),
     ai_team: team,
-    workers: metVolgendeRuns(metAgentWorkers(schoonWorkers(r?.workers), team), r?.cron_schema, nu),
+    workers: metIntakeAanvragen(metVolgendeRuns(metAgentWorkers(schoonWorkers(r?.workers), team), r?.cron_schema, nu), r?.schoon?.intake_aanvragen),
+    groei: schoonGroei(r?.schoon?.scherm_groei),
+    zichtbaarheid: bouwZichtbaarheid(r?.marketing_reeks, r?.weekomzet),
     marketing: schoonMarketing(r?.marketing),
     bing_ai: schoonBingAi(r?.bing_ai),
     // Enige bedrag op het scherm: één dagtotaal plus aantal, nooit per klant.
-    dagomzet: schoonDagomzet(r?.dagomzet),
+    weekomzet: schoonWeekomzet(r?.weekomzet),
     bezoekers: schoonBezoekers(r?.bezoekers),
   };
 }

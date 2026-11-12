@@ -35,10 +35,10 @@ describe('A29 robotnamen op /tv', () => {
     const mensen = /\b(Ellen|Boy|Roxy|Martijn|Baars|Kruiswijk)\b/;
     for (const a of AI_TEAM) expect(`${ROBOTNAMEN[a.id]} ${a.naam} ${a.taak}`).not.toMatch(mensen);
   });
-  it('scherm toont robotnaam groot met functie klein eronder', () => {
+  it('scherm toont robotnaam vóór de vaste functie (besluit 12-11)', () => {
     const src = readFileSync('src/pages/Scherm.tsx', 'utf8');
     const p = src.slice(src.indexOf('function PaneelAiTeam'), src.indexOf('const workerKleur'));
-    expect(p).toContain('a.robotnaam ?');
-    expect(p.indexOf('>{a.robotnaam}<')).toBeLessThan(p.indexOf('>{a.naam}<'));
+    expect(p).toContain('{a.robotnaam ?? a.naam}');
+    expect(p.indexOf('{a.robotnaam ?? a.naam}')).toBeLessThan(p.indexOf('a.functie'));
   });
 });
