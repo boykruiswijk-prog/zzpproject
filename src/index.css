@@ -241,7 +241,7 @@
 .stroom-stappen span { min-height: 47.52px; font-size: min(17.82px, 20.16px); line-height: 1.25; font-weight: 600; overflow-wrap: normal; word-break: normal; hyphens: auto; padding: 0 3.84px; }
 .stroom-stappen b { font-size: 38.88px; color: hsl(var(--s-tekst)); }
 .stroom-stappen b { font-size: min(38.88px, 46.08px); }
-.stroom-stappen small { margin-top: 140.4px; font-size: 17.28px; line-height: 1.4; color: hsl(var(--s-dim)); }
+.stroom-stappen small { margin-top: auto; padding: 2px 8px; border-radius: 6px; background: hsl(var(--s-surface) / .85); position: relative; z-index: 1; font-size: 17.28px; line-height: 1.4; color: hsl(var(--s-dim)); }
 .stroom-processen { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 38.4px; margin-top: auto; }
 .stroom-processen h3 { font-size: 19.44px; margin-bottom: 16.2px; }
 .stroom-proceslijn { display: flex; gap: 7.68px; }
@@ -444,3 +444,4 @@
 /* A8 correctie 6-11: doelpaneel compact, 'Per dag' altijd volledig zichtbaar onder Dagomzet. */
 .doel-paneel .tabular-nums { white-space: nowrap; }
 .doel-paneel .h-\[280\.8px\] { height: 230px; width: 230px; }
+.stroom-nog-niet { font-style: normal; font-size: 15px; color: hsl(var(--s-dim)); margin-top: 4px; }
