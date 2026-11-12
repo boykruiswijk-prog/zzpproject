@@ -54,6 +54,7 @@ export const LEAD_STATUS_COLORS: Record<LeadStatus, string> = {
   opgezegd: "bg-gray-200 text-gray-700",
   afgewezen: "bg-red-100 text-red-800",
   afgerond: "bg-slate-100 text-slate-700",
+  samengevoegd: "bg-slate-100 text-slate-700",
   klant_geworden: "bg-green-100 text-green-800",
   geen_interesse: "bg-gray-100 text-gray-700",
   vraag_beantwoord: "bg-slate-200 text-slate-800",
