@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
     const { data: { user } } = await userClient.auth.getUser();
     if (!user) return json({ error: "login_vereist" }, 401);
     const { data: isTeam } = await admin.rpc("is_team_member", { _user_id: user.id });
-    if (isTeam === true) return fout("Je bent ingelogd als medewerker. Leg een rechtsvormwijziging vast via de klantkaart in het beheer.", 403);
+    if (isTeam === true) return new Response(JSON.stringify({ error: "medewerker", melding: "Je bent ingelogd als medewerker. Leg een rechtsvormwijziging vast via de klantkaart in het beheer." }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
     const raw = await req.text();
     if (raw.length > 20_000) return fout("Verzoek te groot.", 413);

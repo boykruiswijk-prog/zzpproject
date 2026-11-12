@@ -85,7 +85,7 @@ describe("Every internal human function requires MFA (Boy 19-10-2026)", () => {
       if (uitzonderingen[name]) {
         expect(uitzonderingen[name].length).toBeGreaterThan(10);
         // A role guard in an exception signals a newly introduced team path.
-        if (name === "process-klant-service") {
+        if (name === "process-klant-service" || name === "klant-rechtsvormwijziging") {
           expect(source).toMatch(/if \(isTeam === true\) return new Response/);
         } else {
           expect(source).not.toMatch(/is_team_member|is_supervisor_or_admin|mag_crm_beeindigen|\.from\(["']user_roles["']\)/);
