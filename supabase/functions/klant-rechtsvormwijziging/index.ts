@@ -3,7 +3,7 @@
 // verandert geen polis, contract, factuur of Exact en verstuurt geen mail. Machtiging via de bestaande SEPA-bewijsflow.
 import { createClient } from "npm:@supabase/supabase-js@2.108.2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2.108.2/cors";
-import { z } from "npm:zod@4.1.12";
+import { z } from "npm:zod@3.25.76";
 import { isTestInzending } from "../_shared/testMarkering.ts";
 import { normaliseerAdres } from "../_shared/adresNormalisatie.ts";
 import { bouwMachtigingData, incassantIdOntbreekt, legBewijsVast, KLANTMELDING_INCASSANT_ONTBREEKT } from "../_shared/sepaBewijs.ts";
