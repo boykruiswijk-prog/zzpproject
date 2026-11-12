@@ -129,6 +129,7 @@ const PortalInvoices = lazy(() => import("./pages/portal/PortalInvoices"));
 const Scherm = lazy(() => import("./pages/Scherm"));
 const TvCode = lazy(() => import("./pages/Scherm").then((m) => ({ default: m.TvCode })));
 const PortalHeractiveer = lazy(() => import("./pages/portal/PortalHeractiveer"));
+const PortalRechtsvorm = lazy(() => import("./pages/portal/PortalRechtsvorm"));
 
 import { RoleGuard } from "./components/admin/RoleGuard";
 import { PortalAuthProvider } from "@/contexts/PortalAuthContext";
@@ -320,6 +321,7 @@ export const AppRoutes = () => (
             <Route path="/portal/polis" element={<RequirePortalAuth><PortalPolicy /></RequirePortalAuth>} />
             <Route path="/portal/documenten" element={<RequirePortalAuth><PortalDocuments /></RequirePortalAuth>} />
             <Route path="/portal/facturen" element={<RequirePortalAuth><PortalInvoices /></RequirePortalAuth>} />
+            <Route path="/portal/rechtsvorm" element={<RequirePortalAuth><PortalRechtsvorm /></RequirePortalAuth>} />
             <Route path="/portal/heractiveer/:leadId" element={<RequirePortalAuth><PortalHeractiveer /></RequirePortalAuth>} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
