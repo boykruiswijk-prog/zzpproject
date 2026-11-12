@@ -39,3 +39,18 @@ Elk factuurnummer: nog niet toegekend door Exact. Referenties blijven beschikbaa
 | VG Hospitality Services | 55,00 | ZPF-2001007A |
 
 Geen klantmailverzending aangeroepen; bestaande interne planner-/Exact-boekingsmeldingen blijven volgens hun bestaande route werken. Geen prijzen, SEPA of sitepagina's gewijzigd.
+## Vervolg 12-11 (zes regels van de 06:00-run)
+- Alle zes foutmeldingen bevestigd als de InvoiceText-fout (HTTP 400), geen exact_invoice_id.
+- Exact GET per relatie (facturen en boekingen): geen enkele factuur of boeking voor deze zes relaties, dus geen dubbelen.
+- Zes ids naar tijdelijk met log herstel_invoicetext_1211; dryrun precies 6 facturen, 324,50, nul credits.
+- Run 7c2c3d6a-4acf-48cd-9e38-f60b4a530b1f: 6 aangemaakt, nul fouten. Alle 21 concepten via Exact GET teruggelezen: status 20, InvoiceNumber nog leeg.
+- Ebbe Beheer (lidmaatschap) staat in Exact op 59,90 = 49,50 plus 21% btw; verzekeringsregels 0% btw.
+- Geen Ellenmelding: geen nieuwe actie voor haar.
+| Klant | Bedrag EUR | Nieuwe Exact-referentie |
+|---|---:|---|
+| ByGiel | 55,00 | ZPF-6F78AF66 |
+| Ebbe Beheer B.V. | 49,50 | ZPF-A2425D10 |
+| Helena Consulting | 55,00 | ZPF-8AB76467 |
+| Troost R&ME B.V. | 55,00 | ZPF-4A12AF21 |
+| Vafaei Holding B.V. | 55,00 | ZPF-46BD8E67 |
+| Yaron Loman Company | 55,00 | ZPF-C6BB0740 |
