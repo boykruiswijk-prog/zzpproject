@@ -7511,6 +7511,33 @@ export type Database = {
       }
     }
     Functions: {
+      _ts_c: {
+        Args: { _gekregen: string; _naam: string; _verwacht: string }
+        Returns: Json
+      }
+      _ts_contract: {
+        Args: { _begin: string; _ond: string; _product?: string }
+        Returns: string
+      }
+      _ts_fout: { Args: { _sql: string }; Returns: string }
+      _ts_polis: {
+        Args: { _nummer: string; _ond: string; _start: string }
+        Returns: string
+      }
+      _ts_rechtsvorm_aanvraag: {
+        Args: {
+          _eind: string
+          _ingang: string
+          _kvk: string
+          _naam: string
+          _polis: string
+          _rechtsvorm: string
+          _van: string
+        }
+        Returns: string
+      }
+      _ts_sessie: { Args: { _aal?: string; _uid: string }; Returns: undefined }
+      _ts_tel: { Args: never; Returns: Json }
       a19_team: { Args: never; Returns: undefined }
       aanvraag_handmatig_afronden: {
         Args: { _lead_id: string; _reden: string }
@@ -9002,6 +9029,7 @@ export type Database = {
       tel_portaltoegang_open: { Args: never; Returns: number }
       tel_service_open: { Args: { _toon_test?: boolean }; Returns: number }
       telefoon_normaliseer: { Args: { _v: string }; Returns: string }
+      test_scenario: { Args: { p_naam: string }; Returns: Json }
       verberg_review_kaart: { Args: never; Returns: boolean }
       verify_cron_secret: { Args: { p_secret: string }; Returns: boolean }
       verify_dba_certificate: {
