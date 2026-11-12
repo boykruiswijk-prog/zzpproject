@@ -14,6 +14,7 @@ import { formatDateNL } from "@/lib/dateFormat";
 import { STAP_DAG, STAP_LABEL, volgendeStap, type IncassoStap } from "@/lib/incassoCyclus";
 import { plusDagenISO } from "@/lib/prolongatie";
 import { controleerAdminMfa, verwerkMfaFout } from "@/lib/adminMfaStap";
+import { ContactGelegdKnop, BetaaldMetNotitieKnop } from "./OpenPostKnoppen";
 
 const vandaag = () => new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Amsterdam" }).format(new Date());
 export const euroNL = (n: number | null | undefined) => (n == null ? "-" : `€ ${Number(n).toFixed(2).replace(".", ",")}`);
@@ -22,6 +23,8 @@ const dagenTussen = (van: string, tot: string) => Math.round((new Date(`${tot}T0
 export interface IncassoRij {
   id: string; onderneming_id: string; factuurnummer: string; bedrag: number | null; mislukt_op: string; status: string;
   dekking_opgeschort_sinds: string | null; betaald_op: string | null; reden: string | null; bron: string; is_test: boolean;
+  administratie?: string | null; soort?: string | null; bron_toelichting?: string | null; gemeld_door_naam?: string | null;
+  cyclus_actief?: boolean; laatste_contact_op?: string | null; betaald_notitie?: string | null;
 }
 
 export function cyclusInfo(r: Pick<IncassoRij, "mislukt_op" | "status">) {
@@ -137,8 +140,10 @@ export function IncassoKlantBlok({ ondernemingId }: { ondernemingId: string }) {
         <div key={r.id} className="flex flex-wrap items-center gap-2 rounded-md border p-2 text-sm">
           <span className="font-medium">Incasso mislukt: factuur {r.factuurnummer}</span>
           <span>{euroNL(r.bedrag)} · {formatDateNL(r.mislukt_op)} · dag {c.dag}</span>
-          {c.volgende && <span className="text-muted-foreground">volgende: {c.volgende.label} op {formatDateNL(c.volgende.datum)}</span>}
-          <span className="ml-auto flex gap-2"><BetaaldKnop id={r.id} onKlaar={() => refetch()} />{r.status === "royement_voorgesteld" && <RoyementKnop id={r.id} onKlaar={() => refetch()} />}</span>
+          {r.cyclus_actief !== false && c.volgende && <span className="text-muted-foreground">volgende: {c.volgende.label} op {formatDateNL(c.volgende.datum)}</span>}
+          {r.cyclus_actief === false && <span className="text-muted-foreground">geen herinneringsmails</span>}
+          <span className="text-muted-foreground">laatste contact: {r.laatste_contact_op ? formatDateNL(r.laatste_contact_op) : "nog niet"}</span>
+          <span className="ml-auto flex gap-2"><ContactGelegdKnop id={r.id} onKlaar={() => refetch()} /><BetaaldMetNotitieKnop id={r.id} onKlaar={() => refetch()} />{r.status === "royement_voorgesteld" && <RoyementKnop id={r.id} onKlaar={() => refetch()} />}</span>
         </div>); })}
     </div>
   );

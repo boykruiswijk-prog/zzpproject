@@ -64,3 +64,6 @@ en het i-icoon bij Aantal medewerkers.
 
 ## DBA-score (besluit Boy 12-11-2026)
 `src/test/dbaScore.test.ts`: dubbele polisregel, leeg veld, oude KvK, polis zonder BAV/AVB, ZPDBA1193 = 60, certificeerweigering en formuliervinkjes. Pure logica, geen database.
+
+## Openstaande betalingen (besluit Boy 12-11-2026 14:05)
+`incasso_cyclus_uit` (post zonder cyclus krijgt geen herinnering of opschorting), `incasso_contact_betaald` (Gebeld/gemaild zet CRM-notitie en datum; betaald zonder notitie geweigerd), `review_betaalachterstand` (open post blokkeert reviewmail).

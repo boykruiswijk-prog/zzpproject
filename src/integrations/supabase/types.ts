@@ -4069,60 +4069,87 @@ export type Database = {
       }
       incasso_mislukt: {
         Row: {
+          administratie: string | null
           bedrag: number | null
+          betaald_door: string | null
+          betaald_notitie: string | null
           betaald_op: string | null
           bron: string
+          bron_toelichting: string | null
           created_at: string
+          cyclus_actief: boolean
           dekking_opgeschort_sinds: string | null
+          exact_post_id: string | null
           factuur_planning_id: string | null
           factuurnummer: string
           gemeld_door: string | null
+          gemeld_door_naam: string | null
           geroyeerd_op: string | null
           id: string
           is_test: boolean
           klant_contract_id: string | null
+          laatste_contact_op: string | null
           lead_id: string | null
           mislukt_op: string
           onderneming_id: string
           reden: string | null
+          soort: string | null
           status: string
         }
         Insert: {
+          administratie?: string | null
           bedrag?: number | null
+          betaald_door?: string | null
+          betaald_notitie?: string | null
           betaald_op?: string | null
           bron?: string
+          bron_toelichting?: string | null
           created_at?: string
+          cyclus_actief?: boolean
           dekking_opgeschort_sinds?: string | null
+          exact_post_id?: string | null
           factuur_planning_id?: string | null
           factuurnummer: string
           gemeld_door?: string | null
+          gemeld_door_naam?: string | null
           geroyeerd_op?: string | null
           id?: string
           is_test?: boolean
           klant_contract_id?: string | null
+          laatste_contact_op?: string | null
           lead_id?: string | null
           mislukt_op: string
           onderneming_id: string
           reden?: string | null
+          soort?: string | null
           status?: string
         }
         Update: {
+          administratie?: string | null
           bedrag?: number | null
+          betaald_door?: string | null
+          betaald_notitie?: string | null
           betaald_op?: string | null
           bron?: string
+          bron_toelichting?: string | null
           created_at?: string
+          cyclus_actief?: boolean
           dekking_opgeschort_sinds?: string | null
+          exact_post_id?: string | null
           factuur_planning_id?: string | null
           factuurnummer?: string
           gemeld_door?: string | null
+          gemeld_door_naam?: string | null
           geroyeerd_op?: string | null
           id?: string
           is_test?: boolean
           klant_contract_id?: string | null
+          laatste_contact_op?: string | null
           lead_id?: string | null
           mislukt_op?: string
           onderneming_id?: string
           reden?: string | null
+          soort?: string | null
           status?: string
         }
         Relationships: [
@@ -7578,6 +7605,7 @@ export type Database = {
       }
       _ts_exact_adres: { Args: { p_naam: string }; Returns: Json }
       _ts_fout: { Args: { _sql: string }; Returns: string }
+      _ts_incasso: { Args: { p_naam: string }; Returns: Json }
       _ts_polis: {
         Args: { _nummer: string; _ond: string; _start: string }
         Returns: string
@@ -8449,8 +8477,17 @@ export type Database = {
       importeer_afas_20261001: { Args: never; Returns: Json }
       importeer_certificaten_20261001: { Args: never; Returns: Json }
       incasso_betaald: { Args: { _datum?: string; _id: string }; Returns: Json }
+      incasso_contact_gelegd: {
+        Args: { _id: string; _notitie?: string; _wijze: string }
+        Returns: Json
+      }
       incasso_cyclus_stap: { Args: { _vandaag: string }; Returns: Json }
       incasso_daglijst_melden: { Args: never; Returns: number }
+      incasso_handmatig_betaald: {
+        Args: { _datum?: string; _id: string; _notitie: string }
+        Returns: Json
+      }
+      incasso_open_posten_sync: { Args: never; Returns: Json }
       incasso_welke_stap: { Args: { _dagen: number }; Returns: string }
       inzicht_tegel: { Args: { _tegel: string }; Returns: Json }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
@@ -8769,6 +8806,14 @@ export type Database = {
           _van: string
         }
         Returns: Json
+      }
+      onderneming_betaalachterstand: {
+        Args: { _onderneming_id: string }
+        Returns: boolean
+      }
+      onderneming_bij_exact_account: {
+        Args: { _account_id: string; _code: string }
+        Returns: string
       }
       onderneming_hoofdkaart: { Args: { _id: string }; Returns: string }
       onderneming_is_partner: { Args: { _ond: string }; Returns: string }

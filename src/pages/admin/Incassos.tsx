@@ -11,7 +11,8 @@ import { useToast } from "@/hooks/use-toast";
 import { formatDateNL } from "@/lib/dateFormat";
 import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 import { MislukteIncassosOverzicht, KlantenZonderBankgegevens } from "@/components/admin/incasso/MislukteIncassos";
-import { BetaaldKnop, IncassoMisluktKnop, RoyementKnop, cyclusInfo, euroNL, STAP_LABEL, type IncassoRij, type IncassoStap } from "@/components/admin/incasso/Incasso";
+import { ContactGelegdKnop, BetaaldMetNotitieKnop } from "@/components/admin/incasso/OpenPostKnoppen";
+import { IncassoMisluktKnop, RoyementKnop, cyclusInfo, euroNL, STAP_LABEL, type IncassoRij, type IncassoStap } from "@/components/admin/incasso/Incasso";
 
 const STATUS_LABEL: Record<string, string> = { open: "Open", betaald: "Betaald", royement_voorgesteld: "Royement voorgesteld", geroyeerd: "Geroyeerd", vervallen: "Vervallen" };
 const MAIL_LABEL: Record<string, string> = { niet_verzonden_schakelaar_uit: "niet verzonden (mail staat uit)", verzonden: "verzonden", geen_mail: "geen mail", niet_verzonden_test: "testklant" };
@@ -47,11 +48,22 @@ export default function Incassos() {
                   <Badge variant={r.status === "open" ? "secondary" : "outline"}>{STATUS_LABEL[r.status] ?? r.status}</Badge>
                   {r.dekking_opgeschort_sinds && ["open", "royement_voorgesteld"].includes(r.status) && <Badge variant="destructive">Dekking opgeschort sinds {formatDateNL(r.dekking_opgeschort_sinds)} (incasso)</Badge>}
                   <span className="ml-auto flex gap-2">
-                    {["open", "royement_voorgesteld"].includes(r.status) && <BetaaldKnop id={r.id} onKlaar={() => refetch()} />}
+                    {["open", "royement_voorgesteld"].includes(r.status) && <ContactGelegdKnop id={r.id} onKlaar={() => refetch()} />}
+                    {["open", "royement_voorgesteld"].includes(r.status) && <BetaaldMetNotitieKnop id={r.id} onKlaar={() => refetch()} />}
                     {r.status === "royement_voorgesteld" && <RoyementKnop id={r.id} onKlaar={() => refetch()} />}
                   </span>
                 </div>
-                {r.status === "open" && <p className="text-muted-foreground">Dag {c.dag} in de cyclus{c.volgende ? ` · volgende stap: ${c.volgende.label} op ${formatDateNL(c.volgende.datum)}` : ""}</p>}
+                <p className="text-xs text-muted-foreground">
+                  {r.administratie === "afas" ? "AFAS (blijft open tot handmatig betaald)" : r.administratie === "exact" ? "Exact (sluit vanzelf als de post niet meer openstaat)" : null}
+                  {r.soort ? ` · ${r.soort}` : ""}
+                  {r.reden ? ` · ${r.reden}` : ""}
+                  {r.bron_toelichting ? ` · bron: ${r.bron_toelichting}` : ""}
+                  {r.gemeld_door_naam ? ` · gemeld door ${r.gemeld_door_naam}` : ""}
+                  {` · laatste contact: ${r.laatste_contact_op ? formatDateNL(r.laatste_contact_op) : "nog niet"}`}
+                  {r.betaald_notitie ? ` · betaald: ${r.betaald_notitie}` : ""}
+                </p>
+                {r.status === "open" && r.cyclus_actief === false && <p className="text-muted-foreground">Herinneringsmails, opschorting en royementvoorstel staan voor deze post uit.</p>}
+                {r.status === "open" && r.cyclus_actief !== false && <p className="text-muted-foreground">Dag {c.dag} in de cyclus{c.volgende ? ` · volgende stap: ${c.volgende.label} op ${formatDateNL(c.volgende.datum)}` : ""}</p>}
                 {(r.incasso_cyclus_log ?? []).length > 0 && <ul className="text-xs text-muted-foreground">
                   {(r.incasso_cyclus_log ?? []).sort((a, b) => a.uitgevoerd_op.localeCompare(b.uitgevoerd_op)).map((l) => <li key={l.stap}>{STAP_LABEL[l.stap]} op {formatDateNL(l.uitgevoerd_op)}: {MAIL_LABEL[l.mail_status ?? ""] ?? l.mail_status ?? "bezig"}</li>)}
                 </ul>}
