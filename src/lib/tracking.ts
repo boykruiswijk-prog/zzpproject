@@ -356,7 +356,8 @@ export const trackPurchase = (
       currency: "EUR",
       items: [{ item_id: pakketId, item_name: pakketNaam, price: value, quantity: 1 }],
     });
-    if (adsSendTo(GOOGLE_ADS_CONVERSIE.split("/")[1] ?? "") === GOOGLE_ADS_CONVERSIE) trackGa("conversion", {
+    // Testaanvragen tellen nooit als Google Ads-conversie (besluit Boy 12-11 12:16).
+    if (!isTest && adsSendTo(GOOGLE_ADS_CONVERSIE.split("/")[1] ?? "") === GOOGLE_ADS_CONVERSIE) trackGa("conversion", {
       send_to: GOOGLE_ADS_CONVERSIE,
       value,
       currency: "EUR",
