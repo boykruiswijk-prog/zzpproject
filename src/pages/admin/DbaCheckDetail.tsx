@@ -829,6 +829,7 @@ export default function DbaCheckDetail() {
                                   await supabase.from("dba_checks").update({
                                     rewritten_description: editedDescription,
                                   } as any).eq("id", id!);
+                                  if (check.status !== "uploaded") await analyzeDba.mutateAsync({ checkId: id!, action: "herbereken" });
                                   queryClient.invalidateQueries({ queryKey: ["dba-check", id] });
                                   setEditingDescription(false);
                                   toast({ title: "Projectomschrijving opgeslagen!" });
