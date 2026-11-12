@@ -40,3 +40,26 @@ export function controleerHandmatigeAcceptatie(
   if (b.handmatige_acceptatie_bevestigd === true) return { ok: true, gemarkeerd: true };
   return { ok: false, status: 409, error: MELDING_BEVESTIGING_VEREIST };
 }
+
+// Maatwerk-melding (besluit Boy 12-11-2026 12:03): bouw, techniek of zorg. Zelfde sectoren als handmatige acceptatie.
+const MAATWERK_TEKST: Record<string, string> = { zorg: "de zorg", bouw: "de bouw of techniek" };
+
+/** Vlag voor extra_data, door de server afgeleid uit de gekozen sector(en); nooit vertrouwd van de browser. */
+export function maatwerkVlag(...sectoren: unknown[]): { maatwerk_check: true; maatwerk_sectoren: string[] } | null {
+  const ids = new Set<string>();
+  for (const s of sectoren) {
+    if (typeof s !== "string") continue;
+    const hit = HANDMATIGE_ACCEPTATIE_SECTOREN.find((x) => x.id === s.trim() || x.label === s.trim());
+    if (hit) ids.add(hit.label);
+  }
+  return ids.size ? { maatwerk_check: true, maatwerk_sectoren: [...ids] } : null;
+}
+
+/** Eén zin voor de klantbevestiging, alleen als de vlag aan staat. */
+export function maatwerkMailZin(extraData: unknown): string | null {
+  const e = (extraData && typeof extraData === "object" ? extraData : {}) as Record<string, unknown>;
+  if (e.maatwerk_check !== true || !Array.isArray(e.maatwerk_sectoren)) return null;
+  const teksten = e.maatwerk_sectoren.map((l) => HANDMATIGE_ACCEPTATIE_SECTOREN.find((x) => x.label === l)?.id).filter((id): id is string => !!id).map((id) => MAATWERK_TEKST[id]);
+  if (!teksten.length) return null;
+  return `Omdat je actief bent in ${teksten.join(" en ")} nemen wij binnenkort contact met je op over je dekking.`;
+}

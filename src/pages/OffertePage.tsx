@@ -36,6 +36,8 @@ import { useFormGuard, submitPublicForm, PublicFormError } from "@/lib/antiSpam"
 import { maakFormulier } from "../../supabase/functions/_shared/leadVelden";
 
 import { HoneypotField } from "@/components/shared/HoneypotField";
+import { moetMaatwerkTonen } from "@/lib/maatwerk";
+import { MaatwerkMelding } from "@/components/MaatwerkMelding";
 import { WIZARD_SECTOREN, isHandmatigeAcceptatieSector } from "@/data/sectorVerzekeringskaart";
 import { brancheVoorSector } from "@/data/sectorBranche";
 import { vroegsteIngangsdatum, ingangsdatumFout } from "@/lib/ingangsdatum";
@@ -87,6 +89,7 @@ export default function OffertePage() {
   const [searchParams] = useSearchParams();
   const qp = (k: string, max = 120) => (searchParams.get(k) ?? "").trim().slice(0, max);
   const qpSector = qp("sector");
+  const [maatwerkOpen, setMaatwerkOpen] = useState(false);
   const [form, setForm] = useState({
     voornaam: qp("voornaam"),
     achternaam: qp("achternaam"),
@@ -437,7 +440,7 @@ export default function OffertePage() {
                 <Label htmlFor="branche">Branche<Required /></Label>
                 <Select
                   value={form.branche}
-                  onValueChange={(v) => update("branche", v)}
+                  onValueChange={(v) => { if (moetMaatwerkTonen(form.branche, v)) setMaatwerkOpen(true); update("branche", v); }}
                 >
                   <SelectTrigger id="branche" aria-invalid={!!errors.branche}>
                     <SelectValue placeholder="Kies een branche" />
@@ -448,6 +451,7 @@ export default function OffertePage() {
                     ))}
                   </SelectContent>
                 </Select>
+                <MaatwerkMelding open={maatwerkOpen} onSluit={() => setMaatwerkOpen(false)} />
                 <FieldError message={errors.branche} />
                 {vereistHandmatig(form.branche) && (
                   <p className="text-xs text-muted-foreground mt-2">
