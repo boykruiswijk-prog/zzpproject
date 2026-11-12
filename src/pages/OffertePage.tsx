@@ -41,6 +41,7 @@ import { MaatwerkMelding } from "@/components/MaatwerkMelding";
 import { WIZARD_SECTOREN, isHandmatigeAcceptatieSector } from "@/data/sectorVerzekeringskaart";
 import { brancheVoorSector } from "@/data/sectorBranche";
 import { vroegsteIngangsdatum, ingangsdatumFout } from "@/lib/ingangsdatum";
+import { MedewerkersUitleg } from "@/components/shared/MedewerkersUitleg";
 import { WerkzaamhedenVeld } from "@/components/shared/WerkzaamhedenVeld";
 import { werkzaamhedenFout } from "../../supabase/functions/_shared/werkzaamheden";
 
@@ -490,7 +491,7 @@ export default function OffertePage() {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="aantal_medewerkers">Aantal medewerkers</Label>
+                  <Label htmlFor="aantal_medewerkers">Aantal medewerkers</Label><MedewerkersUitleg />
                   <Select
                     value={form.aantal_medewerkers}
                     onValueChange={(v) => update("aantal_medewerkers", v)}
