@@ -59,4 +59,3 @@
 - Cyber documents share cyberDocumenten.ts with hash-tested static PDFs; public links use cyberPubliek.ts and CyberVoorwaardenTekst, contractual constants stay unchanged. Why: one verified document source.
 - Cyber team requests may have no portal user; customer requests require one. Existing contact lookup and ID-based claims remain authoritative. Why: no fake account or broader customer access.
 - Homepage title stays exact in SEOHead and prerender; metadata titles share it. Why: retain register wording.
-- Every fix gets a rollback scenario (SQL test_scenario or src/test/scenarios1211.test.ts); see docs/scenariotests.md. Why: test without leaving data.
