@@ -70,7 +70,7 @@ describe("goedkeuring hergebruikt bestaande omzetting en facturatie", () => {
   });
   it("admin toont geen rekeningnummers", () => expect(lees("src/components/admin/crm/RechtsvormBeoordeling.tsx")).not.toMatch(/\biban\b/i));
   it("Mijn ZP toont de erkenning", () => {
-    expect(ERKENNING_TEKST).toBe("Wij erkennen je bv als voortzetter van je eenmanszaak. Werk dat je eerder via je eenmanszaak deed, valt zo onder je nieuwe verzekering en er ontstaat geen gat in je dekking.");
+    expect(ERKENNING_TEKST).toBe("Wij erkennen je bv als voortzetter van je eenmanszaak. Werk dat je eerder via je eenmanszaak deed, valt zo onder je nieuwe verzekering. Kies de datums zo dat er geen periode zonder dekking ontstaat.");
     expect(lees("src/pages/portal/PortalRechtsvorm.tsx")).toContain("{ERKENNING_TEKST}");
   });
 });
