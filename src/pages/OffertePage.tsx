@@ -89,6 +89,7 @@ export default function OffertePage() {
   const [searchParams] = useSearchParams();
   const qp = (k: string, max = 120) => (searchParams.get(k) ?? "").trim().slice(0, max);
   const qpSector = qp("sector");
+  const [maatwerkOpen, setMaatwerkOpen] = useState(false);
   const [form, setForm] = useState({
     voornaam: qp("voornaam"),
     achternaam: qp("achternaam"),
@@ -450,6 +451,7 @@ export default function OffertePage() {
                     ))}
                   </SelectContent>
                 </Select>
+                <MaatwerkMelding open={maatwerkOpen} onSluit={() => setMaatwerkOpen(false)} />
                 <FieldError message={errors.branche} />
                 {vereistHandmatig(form.branche) && (
                   <p className="text-xs text-muted-foreground mt-2">
