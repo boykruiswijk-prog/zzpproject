@@ -26,8 +26,8 @@ const PAUZE_REDENEN = [
   { value: "andere_reden", label: "Andere reden" },
 ];
 
-// Centrale lijst (besluit Boy 12-11): beheer-variant, alleen de keuzelijst.
-const OPZEG_REDENEN = OPZEG_REDENEN_BEHEER.map((r) => ({ value: r.code, label: r.label }));
+// Mijn ZP toont uitsluitend redenen die een klant zelf mag kiezen.
+const OPZEG_REDENEN = OPZEG_REDENEN_PORTAAL.map((r) => ({ value: r.code, label: r.label }));
 
 export function PolicyLifecycleActions() {
   const { data: lead, isLoading, isError } = usePortalLead();
