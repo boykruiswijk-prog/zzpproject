@@ -62,3 +62,6 @@ verify_jwt = false
 verify_jwt = false
   [functions.exact-stamdata-bijwerken]
     verify_jwt = false
+
+  [functions.exact-adres-sync]
+    verify_jwt = false
