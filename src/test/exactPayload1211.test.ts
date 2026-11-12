@@ -30,7 +30,7 @@ describe("InvoiceText besluit 12 november", () => {
     const walk = (dir: string): string[] => readdirSync(dir, { withFileTypes: true }).flatMap((f) => f.isDirectory() ? walk(`${dir}/${f.name}`) : f.name.endsWith(".ts") ? [`${dir}/${f.name}`] : []);
     const senders = walk("supabase/functions").filter((path) => {
       const s = readFileSync(path, "utf8");
-      return /salesinvoice\/SalesInvoices/.test(s) && /method:\s*"POST"/.test(s);
+      return /(?:fetch\(`[^`]*salesinvoice\/SalesInvoices`[\s\S]{0,100}?method:\s*"POST"|exact\("salesinvoice\/SalesInvoices",\s*\{\s*method:\s*"POST")/.test(s);
     });
     expect(senders.sort()).toEqual(["exact-diagnose-itemgroups", "factuur-planner", "lead-to-exact-activate", "polis-lifecycle"].map((f) => `supabase/functions/${f}/index.ts`));
     for (const path of senders) {

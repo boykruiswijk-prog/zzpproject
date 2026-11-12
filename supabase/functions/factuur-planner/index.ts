@@ -148,7 +148,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
     });
     if (deel === "facturen") {
       const van = String(body?.vanaf ?? "2026-10-01");
-      return json({ facturen: await get(`salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,InvoiceDate,InvoiceTo,InvoiceToName,Journal,PaymentCondition,Type,Status,Description,AmountFC,VATAmountFC&$filter=${encodeURIComponent(`InvoiceDate ge datetime'${van}'`)}`) });
+      return json({ facturen: await get(`salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,InvoiceDate,InvoiceTo,InvoiceToName,Journal,PaymentCondition,Type,Status,Description,YourRef,Remarks,AmountFC,VATAmountFC&$filter=${encodeURIComponent(`InvoiceDate ge datetime'${van}'`)}`) });
     }
     if (deel === "regels") {
       const ids = (Array.isArray(body?.invoice_ids) ? body.invoice_ids : []).filter((x: string) => /^[0-9a-f-]{36}$/.test(x)).slice(0, 40);
