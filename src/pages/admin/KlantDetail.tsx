@@ -2,7 +2,6 @@ import { klantPlaats } from "@/lib/klantPlaats";
 import { ONDERNEMING_KOLOMMEN } from "@/lib/veiligeKolommen";
 import { useEffect, useState } from "react";
 import { LeadKlantHistorie } from "@/components/admin/LeadKlantHistorie";
-import { Helmet } from "react-helmet-async";
 import { Link, useParams } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
@@ -81,8 +80,7 @@ export default function KlantDetail() {
   const { data: omzetOpen } = useOpenOmzetting(id, herlaad);
   return (
     <AdminLayout>
-      <Helmet><title>{ond?.naam ?? "Klant"} | ZP Zaken beheer</title></Helmet>
-      <div className="space-y-6 min-w-0">
+            <div className="space-y-6 min-w-0">
         <Link to="/admin/klanten" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"><ArrowLeft className="h-4 w-4" /> Klanten & contracten</Link>
         {laden ? <div className="flex justify-center p-12"><Loader2 className="h-6 w-6 animate-spin" /></div> : !ond ? <p>Klant niet gevonden.</p> : (
           <>

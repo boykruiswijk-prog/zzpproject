@@ -1,4 +1,3 @@
-import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,8 +27,7 @@ export default function MachtigingenNakijken() {
   const { data, isLoading, error } = useMachtigingenNakijken();
   return (
     <AdminLayout>
-      <Helmet><title>Machtigingen nakijken | ZP Zaken beheer</title></Helmet>
-      <div className="space-y-6">
+            <div className="space-y-6">
         <div><h1 className="text-2xl font-bold">Machtigingen nakijken</h1>
           <p className="text-sm text-muted-foreground">Klanten met een lopend contract waarvan de incassomachtiging aandacht nodig heeft. Geen haast; dit telt niet mee in de rode getallen.</p></div>
         {isLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : error || !data ? <p className="text-destructive">Overzicht kon niet worden geladen.</p> : (

@@ -1,6 +1,5 @@
 import { formatDateTimeNL } from "@/lib/dateFormat";
 import { useEffect, useMemo, useState } from "react";
-import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { ToonTestrecordsSchakelaar } from "@/components/admin/ToonTestrecordsSchakelaar";
@@ -54,8 +53,7 @@ export default function Chatgesprekken() {
 
   return (
     <AdminLayout>
-      <Helmet><title>Chatgesprekken | Beheer</title></Helmet>
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_420px]">
+            <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_420px]">
         <Card className="min-w-0">
           <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
             <CardTitle>Chatgesprekken met Zeker</CardTitle>

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Helmet } from "react-helmet-async";
 import { Link, useParams } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
@@ -37,8 +36,7 @@ export default function PersoonDetail() {
 
   return (
     <AdminLayout>
-      <Helmet><title>{naam} | ZP Zaken beheer</title></Helmet>
-      <div className="min-w-0 space-y-6">
+            <div className="min-w-0 space-y-6">
         <Link to="/admin/crm" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"><ArrowLeft className="h-4 w-4" /> CRM</Link>
         {laden ? <div className="flex justify-center p-12"><Loader2 className="h-6 w-6 animate-spin" /></div> : !persoon ? <p>Persoon niet gevonden.</p> : (
           <>

@@ -1,7 +1,6 @@
 import { KvkBatch } from "@/components/admin/KvkGegevens";
 import { CERT_VELDEN, actueelCertificaat, groepeerPerOnderneming, type KlantCertificaat } from "@/lib/klantCertificaten";
 import { useEffect, useMemo, useState } from "react";
-import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { ToonTestrecordsSchakelaar } from "@/components/admin/ToonTestrecordsSchakelaar";
@@ -155,8 +154,7 @@ export default function KlantenContracten() {
 
   return (
     <AdminLayout>
-      <Helmet><title>Klanten & contracten | ZP Zaken beheer</title></Helmet>
-      <div className="space-y-6 min-w-0">
+            <div className="space-y-6 min-w-0">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="flex min-w-0 items-center gap-2 break-words text-xl font-bold sm:text-2xl"><Building2 className="h-6 w-6 shrink-0" /> Klanten & contracten</h1>
           <ToonTestrecordsSchakelaar />

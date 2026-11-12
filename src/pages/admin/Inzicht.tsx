@@ -132,7 +132,7 @@ export default function Inzicht() {
 
   return (
     <AdminLayout>
-      <Helmet><title>{def?.titel ?? "Inzicht"} | Inzicht | ZP Zaken</title><meta name="robots" content="noindex" /></Helmet>
+      <Helmet><meta name="robots" content="noindex" /></Helmet>
       <div className="space-y-6">
         <Link to="/admin" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="h-4 w-4" /> Dashboard</Link>
         {!def ? <p>Deze teller bestaat niet.</p> : !mag ? <p>Je hebt geen toegang tot deze teller.</p> : isError ? <p role="alert" className="text-destructive">Kon niet laden: {(error as Error).message}</p> : isLoading || !data ? <Loader2 className="h-6 w-6 animate-spin" /> : <>

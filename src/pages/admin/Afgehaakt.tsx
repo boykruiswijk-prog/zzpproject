@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { LeadKlantKoppeling } from "@/components/admin/LeadKlantKoppeling";
-import { Helmet } from "react-helmet-async";
 import { Link, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { AdminLayout } from "@/components/admin/AdminLayout";
@@ -121,8 +120,7 @@ export default function Afgehaakt() {
 
   return (
     <AdminLayout>
-      <Helmet><title>Afgehaakte aanvragen | Beheer</title></Helmet>
-      <Card>
+            <Card>
         <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <CardTitle>Afgehaakte aanvragen</CardTitle>
           <Button variant="outline" size="sm" onClick={() => setToonOpgevolgd((v) => !v)}>
