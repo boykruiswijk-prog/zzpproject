@@ -130,3 +130,42 @@ export function plannerCreditPayload(c: {
     Type: 8021, Status: 20, InvoiceDate: nu, OrderDate: nu, YourRef: c.origineel_factuurnummer, Remarks: c.creditsleutel,
     Description: `Creditnota bij factuur ${c.origineel_factuurnummer}`.slice(0, 60), SalesInvoiceLines: [regel] };
 }
+
+/** Besluit Boy 12-11-2026 11:45: credits waarvan de oorspronkelijke factuur in AFAS staat (oud systeem, of correctie zonder origineel factuurnummer) worden een losse creditnota op de bestaande Exact-relatie. */
+export type CreditRoute = { route: "oud" | "los" | "factuur" } | { route: "ontbreekt"; ontbreekt: string[] };
+export function kiesCreditRoute(c: { bron?: string | null; exact_account_id?: string | null; _item?: string | null; origineel_factuurnummer?: string | null; bedrag_handmatig?: boolean; bedrag?: unknown }): CreditRoute {
+  const afas = !c.origineel_factuurnummer && (c.bron === "oud_systeem" || c.bron === "correctie");
+  const ontbreekt: string[] = [];
+  if (!c.exact_account_id) ontbreekt.push("Exact-relatie");
+  if (!c._item) ontbreekt.push("artikel");
+  if (!afas && !c.origineel_factuurnummer) ontbreekt.push("oorspronkelijk factuurnummer");
+  if (ontbreekt.length) return { route: "ontbreekt", ontbreekt };
+  if (c.bron === "oud_systeem" && !heeftVastCreditBedrag(c as CreditVoorPlanner)) return { route: "oud" };
+  return { route: afas ? "los" : "factuur" };
+}
+
+/** Losse creditnota (concept, Type 8021) zonder oorspronkelijke Exact-factuur: één regel, periode in de omschrijving, creditsleutel als referentie. */
+export function losseCreditPayload(c: {
+  exact_account_id: string; item: string; btw: string; gl?: string | null; bedrag: number; credit_vanaf: string; credit_tm: string;
+  creditsleutel: string; vandaag: string;
+}) {
+  const periode = `${nl(c.credit_vanaf)} t/m ${nl(c.credit_tm)}`;
+  const regel: Record<string, unknown> = { Item: c.item, ...exactRegelBedrag(8021, Number(c.bedrag)), VATCode: c.btw,
+    Description: `Credit ${periode}`.slice(0, 60), StartTime: `${c.credit_vanaf}T00:00:00`, EndTime: `${c.credit_tm}T00:00:00` };
+  if (c.gl) regel.GLAccount = c.gl;
+  const nu = `${c.vandaag}T00:00:00`;
+  return { InvoiceTo: c.exact_account_id, OrderedBy: c.exact_account_id, Journal: "70", PaymentCondition: creditBetaalconditie(),
+    Type: 8021, Status: 20, InvoiceDate: nu, OrderDate: nu, YourRef: c.creditsleutel,
+    Remarks: `${c.creditsleutel} periode ${periode} (oorspronkelijk gefactureerd in AFAS)`,
+    Description: `Creditnota periode ${periode}`.slice(0, 60), SalesInvoiceLines: [regel] };
+}
+
+export function ontbrekendCreditMelding(c: { creditsleutel: string; credit_vanaf?: string | null; credit_tm?: string | null }, ontbreekt: string[]) {
+  const periode = c.credit_vanaf && c.credit_tm ? ` voor de periode ${nl(c.credit_vanaf)} t/m ${nl(c.credit_tm)}` : "";
+  return {
+    titel: `Creditnota ${c.creditsleutel} kan niet automatisch`,
+    omschrijving: `De factuurplanner kan creditnota ${c.creditsleutel}${periode} niet in Exact maken, omdat ${ontbreekt.join(" en ")} ontbreekt. De credit staat in de admin op geblokkeerd en is niet afgehandeld.`,
+    onderdeel: "admin",
+    wat_moet_ellen_doen: `Vul ${ontbreekt.join(" en ")} aan bij dit contract, of laat de creditnota handmatig maken in Exact.`,
+  };
+}
