@@ -1870,6 +1870,13 @@
       "when": 1794479469673,
       "tag": "0266_onderneming_koppelingen",
       "breakpoints": true
+    },
+    {
+      "idx": 267,
+      "version": "7",
+      "when": 1794480433158,
+      "tag": "0267_rechtsvormwijziging_zelfservice",
+      "breakpoints": true
     }
   ]
 }

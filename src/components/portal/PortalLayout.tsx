@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { usePortalAuth } from "@/contexts/PortalAuthContext";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, FileText, FolderOpen, Receipt, LogOut, Menu } from "lucide-react";
+import { LayoutDashboard, FileText, FolderOpen, Receipt, LogOut, Menu, Building2 } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -15,6 +15,7 @@ const navItems = [
   { to: "/portal/polis", label: "Polis", icon: FileText },
   { to: "/portal/documenten", label: "Documenten", icon: FolderOpen },
   { to: "/portal/facturen", label: "Facturen", icon: Receipt },
+  { to: "/portal/rechtsvorm", label: "Rechtsvorm wijzigen", icon: Building2 },
 ];
 
 export function PortalLayout({ children }: { children: ReactNode }) {

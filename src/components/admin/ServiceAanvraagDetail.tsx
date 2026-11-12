@@ -15,7 +15,7 @@ const KOPPELING_LABEL: Record<string, string> = { zeker: "Automatisch zeker", vo
 
 export type ServiceAanvraag = {
   id: string;
-  type: "certificaat" | "pauzeren" | "documenten" | "opzeggen" | "portaltoegang" | "factuur_opvragen";
+  type: "certificaat" | "pauzeren" | "documenten" | "opzeggen" | "portaltoegang" | "factuur_opvragen" | "rechtsvormwijziging";
   voornaam: string;
   achternaam: string;
   email: string;

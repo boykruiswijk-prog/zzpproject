@@ -8515,6 +8515,18 @@ export type Database = {
         }[]
       }
       mijn_persoon_ids: { Args: never; Returns: string[] }
+      mijn_rechtsvormwijzigingen: {
+        Args: never
+        Returns: {
+          aangemaakt: string
+          einddatum: string
+          id: string
+          ingangsdatum: string
+          nieuwe_naam: string
+          polisnummer: string
+          status: string
+        }[]
+      }
       mijn_review_kaart: { Args: never; Returns: Json }
       mislukte_incassos_kern: {
         Args: never
@@ -8789,6 +8801,14 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      rechtsvormwijziging_afronden: {
+        Args: { _aanvraag: string }
+        Returns: undefined
+      }
+      rechtsvormwijziging_goedkeuren: {
+        Args: { _aanvraag: string }
+        Returns: Json
       }
       review_crm_notitie: {
         Args: {

@@ -21,6 +21,7 @@ const uitzonderingen: Record<string, string> = {
   "exact-oauth-callback": "Single-use OAuth state issued by MFA-protected exact-oauth-start",
   "get-customer-invoices": "Customer JWT with account ownership",
   "get-invoice-pdf": "Customer JWT with invoice ownership",
+  "klant-rechtsvormwijziging": "Customer JWT with policy ownership; team users explicitly rejected",
   "kvk-api-status": "Public boolean availability only",
   "kvk-uittreksel-upload": "Public guarded application upload with file and concept validation",
   "login-guard": "Pre-login brute-force protection",
@@ -84,7 +85,7 @@ describe("Every internal human function requires MFA (Boy 19-10-2026)", () => {
       if (uitzonderingen[name]) {
         expect(uitzonderingen[name].length).toBeGreaterThan(10);
         // A role guard in an exception signals a newly introduced team path.
-        if (name === "process-klant-service") {
+        if (name === "process-klant-service" || name === "klant-rechtsvormwijziging") {
           expect(source).toMatch(/if \(isTeam === true\) return new Response/);
         } else {
           expect(source).not.toMatch(/is_team_member|is_supervisor_or_admin|mag_crm_beeindigen|\.from\(["']user_roles["']\)/);
