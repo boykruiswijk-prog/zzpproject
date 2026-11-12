@@ -56,3 +56,8 @@ en het i-icoon bij Aantal medewerkers.
 - `certificaat_polis_via_lead`: polis met alleen een lead krijgt bij aanmaken de onderneming; het dialoog vindt het bestaande nummer en "nieuw nummer" wordt geweigerd.
 - `certificaat_ingangsdatum`: ingangsdatum wijzigen bij een polis zonder onderneming_id: zelfde nummer, nieuwe datum, één geldige polis.
 - `certificaat_nieuwe_klant`: echt nieuwe klant krijgt geen bekend nummer en mag een nieuw nummer krijgen.
+
+## Exact-adres (12-11)
+- `exact_adres_test_nooit`: testonderneming komt nooit in de Exact-wachtrij.
+- `exact_adres_wachtrij`: alleen een adreswijziging maakt precies één open rij; een fout-rij gaat bij een nieuwe wijziging terug naar wacht.
+- Vitest `src/test/exactAdres1211.test.ts`: allowlist, alleen adresvelden, terugleescontrole, fout geeft melding.
