@@ -648,26 +648,6 @@ Antwoord ALLEEN met een JSON tool call.`;
         }
       }
 
-      // Extra penalties: expired polis, expired KVK, missing BAV coverage
-      let extraPenalties = 0;
-      if (insurancePolicyExpired) extraPenalties++;
-      const hasBavMissing = missingFields.some((f: string) => f.toLowerCase().includes("bav") && f.toLowerCase().includes("ontbreekt"));
-      if (hasBavMissing) extraPenalties++;
-      
-      // Check KVK expiry if kvk_check_result already available from a previous check_kvk run
-      const kvkCheckResult = check.kvk_check_result as any;
-      if (kvkCheckResult?.kvk_extract_expired === true) {
-        extraPenalties++;
-        if (!missingFields.some((f: string) => f.toLowerCase().includes("kvk") && f.toLowerCase().includes("verouderd"))) {
-          missingFields.push(`KVK-uittreksel is ouder dan 3 maanden (datum: ${kvkCheckResult.kvk_extract_date})`);
-        }
-      }
-
-      const totalIssues = unfilledFieldCount + missingChecklistCount + extraPenalties;
-      const deterministicScore = Math.max(0, 100 - totalIssues * 10);
-      
-      console.log(`Score calculation: ${unfilledFieldCount} unfilled fields + ${missingChecklistCount} missing checklist + ${extraPenalties} extra = ${totalIssues} issues → score ${deterministicScore}`);
-
       // Filter field_results: only keep known fields, remove hallucinated ones like "Geheimhouding"
       const blockedFieldNames = [
         "geheimhouding", "aansprakelijkheid", "intellectueel eigendom", "vervanging",
@@ -680,17 +660,23 @@ Antwoord ALLEEN met een JSON tool call.`;
         return !blockedFieldNames.some(b => name.includes(b));
       });
 
-      await supabase.from("dba_checks").update({
-        field_results: filteredFieldResults,
-        missing_fields: missingFields,
-        document_checklist: finalChecklistItems,
+      // Eén scoreregel (computeScore): formulier + checklist uit de vakjes + KVK- en polistoets.
+      const formDatum = (analysis.insurance_policy_date && analysis.insurance_policy_date !== "null" && analysis.insurance_policy_date !== "undefined") ? analysis.insurance_policy_date : null;
+      const vorigeSug = Array.isArray(check.suggestions) ? check.suggestions[0] ?? {} : {};
+      const naAnalyse = {
+        ...check,
+        ...extractedColumns,
+        // Zonder formulier- of opgeslagen checklist (bv. PDF) valt de AI-lijst terug; bron wordt vastgelegd.
+        document_checklist: platteChecklist(check.document_checklist).length > 0 ? check.document_checklist : finalChecklistItems,
         suggestions: [{
-          score: deterministicScore,
-          aandachtspunten: missingFields,
-          insurance_policy_date: (analysis.insurance_policy_date && analysis.insurance_policy_date !== "null" && analysis.insurance_policy_date !== "undefined") ? analysis.insurance_policy_date : null,
-          insurance_policy_expired: insurancePolicyExpired,
+          ...(vorigeSug.polis_check_result ? { polis_check_result: vorigeSug.polis_check_result } : {}),
+          insurance_policy_date: vorigeSug.polis_check_result ? vorigeSug.insurance_policy_date ?? null : formDatum,
+          insurance_policy_expired: vorigeSug.polis_check_result ? vorigeSug.insurance_policy_expired ?? null : insurancePolicyExpired,
           insurance_missing: insuranceMissing || false,
         }],
+      };
+      const uitkomst = await scoreOpslaan(supabase, naAnalyse, {
+        field_results: filteredFieldResults,
         status: "analyzed",
         // Reset certificate fields so a new certificate can be generated
         certificate_number: null,
@@ -699,7 +685,8 @@ Antwoord ALLEEN met een JSON tool call.`;
         certified_at: null,
         certified_by: null,
         ...extractedColumns,
-      }).eq("id", check_id);
+      });
+      console.log(`Score ${uitkomst.score}: ${uitkomst.aandachtspunten.length} aandachtspunten`);
 
       return new Response(JSON.stringify({ success: true, analysis }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
