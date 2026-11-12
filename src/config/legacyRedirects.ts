@@ -702,6 +702,10 @@ export const legacyRedirects: LegacyRedirect[] = [
   { from: "zoekresultaten", to: "/kennisbank" },
   { from: "checkout", to: "/verzekeringen" },
   { from: "winkelwagen", to: "/verzekeringen" },
+  // Loep 12-11-2026: ontbrekende oude webshopadressen; bestaande regels behouden.
+  { from: "afrekenen", to: "/verzekeringen" },
+  { from: "winkelmand", to: "/verzekeringen" },
+  { from: "cart", to: "/verzekeringen" },
   { from: "services/bancair-sparen", to: "/diensten" },
   { from: "services/bav/aanmelden", to: "/verzekeringen#combinatiepolis" },
   { from: "services/aov", to: "/aov" },
