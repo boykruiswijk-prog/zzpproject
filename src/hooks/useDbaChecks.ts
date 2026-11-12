@@ -156,7 +156,7 @@ export function useCreateDbaCheck() {
 export function useAnalyzeDba() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ checkId, action }: { checkId: string; action: "analyze" | "rewrite" | "certify" | "check_kvk" | "check_polis" }) => {
+    mutationFn: async ({ checkId, action }: { checkId: string; action: "analyze" | "rewrite" | "certify" | "check_kvk" | "check_polis" | "herbereken" }) => {
       const { data: { session } } = await supabase.auth.getSession();
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-dba`,

@@ -45,6 +45,7 @@ export default function DbaCheckDetail() {
   const [savingDescription, setSavingDescription] = useState(false);
   const [dossierChecklist, setDossierChecklist] = useState<Array<{ document_name: string; status: string; manually_overridden?: boolean }>>([]);
   const [savingDossier, setSavingDossier] = useState(false);
+  const [scoreFout, setScoreFout] = useState<string | null>(null);
 
   // Sync dossier checklist from check data
   useEffect(() => {
@@ -71,16 +72,33 @@ export default function DbaCheckDetail() {
     setDossierChecklist(updated);
     setSavingDossier(true);
     try {
-      await supabase.from("dba_checks").update({
+      const { error: dossierError } = await supabase.from("dba_checks").update({
         document_checklist: updated,
       } as any).eq("id", id);
+      if (dossierError) throw dossierError;
+      // Handmatige wijziging: score en aandachtspunten via computeScore op de server.
+      await analyzeDba.mutateAsync({ checkId: id, action: "herbereken" });
       queryClient.invalidateQueries({ queryKey: ["dba-check", id] });
     } catch (err: any) {
       toast({ title: "Fout bij opslaan", description: err.message, variant: "destructive" });
     } finally {
       setSavingDossier(false);
     }
-  }, [id, dossierChecklist, queryClient, toast]);
+  }, [id, dossierChecklist, queryClient, toast, analyzeDba]);
+
+  const handleHerbereken = async () => {
+    if (!id) return;
+    setActiveAction("herbereken");
+    try {
+      const r = await analyzeDba.mutateAsync({ checkId: id, action: "herbereken" });
+      setScoreFout(null);
+      toast({ title: "Score herberekend", description: `${r.score}% met ${r.aandachtspunten.length} aandachtspunten` });
+    } catch (e: any) {
+      toast({ title: "Herberekenen mislukt", description: e.message, variant: "destructive" });
+    } finally {
+      setActiveAction(null);
+    }
+  };
 
   const handleAnalyze = async () => {
     if (!id) return;
@@ -228,12 +246,22 @@ export default function DbaCheckDetail() {
     if (!id) return;
     setActiveAction("certify");
     try {
+      const { _verwachte_score: verwacht, ...opslaan } = updatedValues;
       // First save the edited values to the DB
       const { error: updateError } = await supabase
         .from("dba_checks")
-        .update(updatedValues as any)
+        .update(opslaan as any)
         .eq("id", id);
       if (updateError) throw updateError;
+
+      // Score en lijst via computeScore op de server; wijkt die af van de voorvertoning, dan niet certificeren.
+      const her = await analyzeDba.mutateAsync({ checkId: id, action: "herbereken" });
+      if (typeof verwacht === "number" && her.score !== verwacht) {
+        const melding = `De berekende score is ${her.score}% (voorvertoning ${verwacht}%). Er is geen certificaat afgegeven; open de voorvertoning opnieuw en controleer de aandachtspunten.`;
+        setScoreFout(melding);
+        toast({ title: "Niet gecertificeerd", description: melding, variant: "destructive" });
+        return;
+      }
 
       // Then generate the certificate
       const result = await analyzeDba.mutateAsync({ checkId: id, action: "certify" });
@@ -241,6 +269,7 @@ export default function DbaCheckDetail() {
       setCertPreviewOpen(false);
       queryClient.invalidateQueries({ queryKey: ["dba-check", id] });
     } catch (error: any) {
+      setScoreFout(error.message);
       toast({ title: "Fout bij certificering", description: error.message, variant: "destructive" });
     } finally {
       setActiveAction(null);
