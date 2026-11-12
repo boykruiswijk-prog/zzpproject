@@ -70,3 +70,9 @@ en het i-icoon bij Aantal medewerkers.
 
 ## Bestaande klant bij dubbele aanvraag (spoed 12-11)
 `bestaande_klant_dubbele_aanvraag`: hetzelfde KvK met lopend BAV+AVB-contract en geldige polis wordt herkend; de aanvraag krijgt status `samengevoegd`, blijft zonder `geactiveerd_op`, wordt gekoppeld en krijgt CRM-notitie plus audit. Er komen geen tweede contracten, certificaten, mails of uitnodigingen bij. Herhalen is idempotent en alles wordt teruggedraaid.
+
+## Opzegredenen gelijktrekken (12-11)
+- `opzegreden_portaal_beeindiging_zp`: portaal-opzegging met `beeindiging_zp` wordt geweigerd (ook met vervalste bron), `pensioen` mag.
+- `opzegreden_portaal_anders_leeg`: `anders` zonder of met te korte toelichting wordt geweigerd.
+- `opzegreden_beheer_beeindiging_zp`: beheer (crm_beeindig) met `beeindiging_zp` lukt en slaat code en label op.
+- Vitest `src/test/opzegRedenen.test.ts`: volgorde, portaal- en beheerlijst, oude waarden leesbaar.
