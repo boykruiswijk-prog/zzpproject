@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Loep 12-11: uitsluitend ontbrekende webshop-301's naar /verzekeringen met taal/slashvarianten, serverkopie en uitvoer gelijk; gerichte tests en automatische typecheck/build controleren. Niet publiceren, geen data/mails.
 - [x] Loep 11-11: acht sitemap.txt-301-regels, serverkopie gelijk, nieuwe alleen-lezen 404-gate na prerender; eerst rood, 516 tests groen, automatische build OK; geen data/mails/publicatie. Rapport docs/kwaliteit-1111.md.
 - [ ] Loep 11-11: afzonderlijke productiebuild/typecheck niet bevestigd door automatische logs; echte log-gate zonder dist signaleert twee bestaande live asset-404's, productie-stubs nog niet opnieuw bevestigd. Cloudflare-CSV toepassen voor live HTTP301 wacht op Boy.
 - [x] CYBERBLAD vervolg 10-11: gedeelde bedragen/opzegtekst beide PDF-types, Faasen ZPCYB0001 lokaal PDF; 2684 tests/1 skipped en 10 PDF-tests groen, automatische build OK, één Ellen-adminmelding; niets gepubliceerd/verstuurd. Rapport docs/cyberblad-vervolg-20261110.md.
