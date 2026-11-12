@@ -603,6 +603,11 @@ Deno.serve(metExactMelding("polis-lifecycle", async (req) => {
           return json({ error: "al_opgezegd", current: lead.status }, 409);
         }
         if (!reden) return json({ error: "reden_verplicht" }, 400);
+        // Klanten mogen interne verwerkingsredenen nooit kiezen, ook niet met een zelfgemaakte aanroep.
+        // De rol komt uitsluitend uit user_roles hierboven; dit gebeurt vóór elke Exact-actie of mail.
+        if (rol === "klant" && ["beeindiging_zp", "eerdere_opzegging"].includes(reden)) {
+          return json({ error: "reden_niet_toegestaan", melding: "Deze opzegreden kan alleen het team kiezen." }, 403);
+        }
         // Zelfde regel als het formulier: bij "andere reden" 3-500 tekens, altijd max 500. Vóór elke Exact-actie.
         { const fout = valideerToelichting(reden, toelichting); if (fout) return json({ error: "toelichting_verplicht", melding: fout }, 400); }
         const wasGepauzeerd = lead.status === "gepauzeerd";

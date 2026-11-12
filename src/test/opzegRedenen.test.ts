@@ -30,13 +30,23 @@ describe("opzegredenen gelijktrekken (12-11)", () => {
   });
 });
 
-describe("oudere polispagina-opzegknop (besluit 12-11)", () => {
-  it("gebruikt de beheerlijst: 8 redenen plus eerdere_opzegging, zonder wanbetaling", async () => {
-    const { OPZEG_REDENEN_BEHEER } = await import("@/lib/opzegRedenen");
-    const codes = OPZEG_REDENEN_BEHEER.map((r) => r.code);
-    expect(codes).toHaveLength(9);
-    expect(codes).toContain("beeindiging_zp");
-    expect(codes).toContain("eerdere_opzegging");
-    expect(codes).not.toContain("wanbetaling");
+describe("polispagina in Mijn ZP (correctie 12-11)", () => {
+  it("gebruikt de portaallijst en nooit de beheerlijst", () => {
+    const bron = readFileSync("src/components/portal/PolicyLifecycleActions.tsx", "utf8");
+    expect(bron).toContain('import { OPZEG_REDENEN_PORTAAL } from "@/lib/opzegRedenen"');
+    expect(bron).toContain("OPZEG_REDENEN_PORTAAL.map");
+    expect(bron).not.toContain("OPZEG_REDENEN_BEHEER");
+    expect(OPZEG_REDENEN_PORTAAL.map((r) => r.code)).not.toContain("beeindiging_zp");
+    expect(OPZEG_REDENEN_PORTAAL.map((r) => r.code)).not.toContain("eerdere_opzegging");
+  });
+
+  it("polis-lifecycle weigert beide interne redenen vóór financiële verwerking", () => {
+    const bron = readFileSync("supabase/functions/polis-lifecycle/index.ts", "utf8");
+    const blokkade = bron.indexOf('["beeindiging_zp", "eerdere_opzegging"].includes(reden)');
+    const validatie = bron.indexOf("valideerToelichting(reden, toelichting)");
+    const exact = bron.indexOf("const res = await postSalesInvoice", bron.indexOf('case "opzeggen"'));
+    expect(blokkade).toBeGreaterThan(-1);
+    expect(blokkade).toBeLessThan(validatie);
+    expect(validatie).toBeLessThan(exact);
   });
 });
