@@ -30,10 +30,12 @@ const SEO = seoRoute("/verzekeringen");
 
 export const verzekeringenFaqs = [
   { question: "Is een BAV verplicht voor zzp'ers?", answer: "Voor de meeste zzp'ers niet. Voor advocaten, notarissen, accountants en financieel adviseurs is een BAV wel verplicht, door de wet of door de beroepsorganisatie. Opdrachtgevers en bemiddelaars eisen een BAV vaak in hun contract.", link: "/kennisbank/is-bav-verplicht-zzp", linkLabel: "Lees meer" },
+  { question: "Wat is een AVB-verzekering voor zzp'ers?", answer: "Een AVB, voluit aansprakelijkheidsverzekering voor bedrijven, is bedoeld voor schade aan personen of spullen van anderen die je tijdens je werk veroorzaakt, zoals een laptop van je opdrachtgever die valt of een bezoeker die struikelt over je kabel. Bij ZP Zaken zit de AVB samen met de BAV in één polis: AVB € 2.500.000 en BAV € 5.000.000 per aanspraak, geen eigen risico op de BAV + AVB, € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting. Wat precies gedekt is, staat in de polisvoorwaarden.", link: "/voorwaarden", linkLabel: "polisvoorwaarden" },
   { question: "Wat kost een BAV en AVB per maand?", answer: "Bij ZP Zaken € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting, voor de BAV en AVB samen in één polis, zonder eigen risico. Met een KVK-inschrijving jonger dan 12 maanden betaal je met het starterspakket de eerste 12 maanden € 45 per maand of € 495 per jaar, daarna € 55 per maand of € 600 per jaar, inclusief kosten en assurantiebelasting, onder voorbehoud van controle van je KVK-inschrijvingsdatum.", link: "/starters", linkLabel: "starterspakket" },
   { question: "Wat is het verschil tussen een BAV en een AVB?", answer: "Een BAV is bedoeld voor claims over financiële schade bij je opdrachtgever door een fout in je werk. Een AVB is bedoeld voor schade aan personen of spullen van anderen. Bij ZP Zaken zitten ze samen in één polis: BAV € 5.000.000 en AVB € 2.500.000 per aanspraak.", link: "/kennisbank/verschil-bav-avb-zzp", linkLabel: "Lees meer" },
   { question: "Wat valt niet onder de BAV + AVB?", answer: "Je eigen schade valt er niet onder, zoals uren die je onbetaald overdoet of omzet die je misloopt. Schade door opzet en boetes die je zelf krijgt vallen er in de regel ook niet onder, net als fouten van voor je ingangsdatum. Wat precies gedekt is, staat in de polisvoorwaarden.", link: "/voorwaarden", linkLabel: "polisvoorwaarden" },
   { question: "Hoe snel is de BAV + AVB geregeld?", answer: "Je vraagt online aan en kiest zelf de ingangsdatum, vroegst de dag na je aanvraag. Binnen 24 uur is het geregeld en staat je certificaat in je mailbox, dat je naar je opdrachtgever stuurt. ZP Zaken beoordeelt je aanvraag." },
+  { question: "Welke verzekeringen zijn verplicht voor zzp'ers?", answer: "Voor de meeste zzp'ers is een BAV of AVB niet wettelijk verplicht. Voor advocaten, notarissen, accountants en financieel adviseurs is een BAV wel verplicht, door de wet of de beroepsorganisatie. Opdrachtgevers eisen een BAV en AVB vaak in hun contract. Lees meer in Is een beroepsaansprakelijkheidsverzekering verplicht?", link: "/kennisbank/is-bav-verplicht-zzp", linkLabel: "Is een beroepsaansprakelijkheidsverzekering verplicht?" },
 ];
 
 export default function Verzekeringen() {
@@ -76,6 +78,14 @@ export default function Verzekeringen() {
           </Button>
         </div>
       </PageHero>
+
+      <section className="bg-background pt-8">
+        <div className="container-wide max-w-3xl">
+          <p className="text-muted-foreground">
+            Een bedrijfsaansprakelijkheidsverzekering (AVB) is bedoeld voor schade aan personen of spullen van anderen die je tijdens je werk veroorzaakt. Een beroepsaansprakelijkheidsverzekering (BAV) is bedoeld voor financiële schade door een fout in je werk. Bij ZP Zaken heb je ze samen in één polis. <LocalizedLink to="/kennisbank/bedrijfsaansprakelijkheidsverzekering-zzp" className="font-medium text-accent underline underline-offset-4">Meer over de AVB</LocalizedLink>
+          </p>
+        </div>
+      </section>
 
       {/* BAV Wizard */}
       <BAVApplicationModule />
@@ -285,7 +295,7 @@ export default function Verzekeringen() {
               </AccordionItem>
             ))}
           </Accordion>
-          <p className="mt-6 text-sm text-muted-foreground">Bijgewerkt: 10 november 2026</p>
+          <p className="mt-6 text-sm text-muted-foreground">Bijgewerkt: 12 november 2026</p>
         </div>
       </section>
       <LeesMeer voorkeur={["bav-afsluiten-als-zzper-dit-is-waarom-en-hoe-je-het-regelt", "bedrijfsaansprakelijkheidsverzekering-zzp", "wat-kosten-verzekeringen-voor-zzp-ers", "welke-verzekeringen-zzp", "cyberverzekering-zzp"]} />

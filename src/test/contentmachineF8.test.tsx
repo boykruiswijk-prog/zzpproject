@@ -31,7 +31,7 @@ function faqSchemas(value: unknown): Record<string, unknown>[] {
 }
 
 describe("F8: dezelfde FAQ-bron zichtbaar en in structured data", () => {
-  for (const [Page, count] of [[Beroepsaansprakelijkheidsverzekering, 10], [Verzekeringen, 5]] as const) {
+  for (const [Page, count] of [[Beroepsaansprakelijkheidsverzekering, 10], [Verzekeringen, 7]] as const) {
     it(`${Page.name}: één FAQPage met ${count} identieke antwoorden`, () => {
       const { container, getByRole } = render(<Page />);
       const schemas = [...container.querySelectorAll('script[type="application/ld+json"]')].flatMap(s => faqSchemas(JSON.parse(s.textContent ?? "null")));
