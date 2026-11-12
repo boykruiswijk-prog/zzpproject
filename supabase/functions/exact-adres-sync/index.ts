@@ -7,7 +7,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { ensureValidToken, refreshAccessToken } from "../_shared/exactToken.ts";
 import { metExactMelding } from "../_shared/exactBoekingMelding.ts";
-import { requireSupervisor } from "../_shared/teamAuth.ts";
+import { isInternalMachine, requireSupervisor } from "../_shared/teamAuth.ts";
 import { beveiligdAdres, verwerkAdres, type Exact } from "../_shared/exactAdres.ts";
 
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -21,7 +21,9 @@ Deno.serve(metExactMelding("exact-adres-sync", async (req) => {
   const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   let uid: string | null = null;
   const cron = req.headers.get("x-cron-secret") ?? "";
-  if (cron) {
+  if (isInternalMachine(req)) {
+    // interne machineaanroep (x-internal-secret)
+  } else if (cron) {
     const { data: ok } = await sb.rpc("verify_cron_secret", { p_secret: cron });
     if (ok !== true) return json({ error: "unauthorized" }, 401);
   } else {
