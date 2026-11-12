@@ -1288,6 +1288,12 @@
 /checkout/    /verzekeringen    301
 /winkelwagen    /verzekeringen    301
 /winkelwagen/    /verzekeringen    301
+/afrekenen    /verzekeringen    301
+/afrekenen/    /verzekeringen    301
+/winkelmand    /verzekeringen    301
+/winkelmand/    /verzekeringen    301
+/cart    /verzekeringen    301
+/cart/    /verzekeringen    301
 /services/bancair-sparen    /diensten    301
 /services/bancair-sparen/    /diensten    301
 /services/bav/aanmelden    /verzekeringen#combinatiepolis    301
@@ -4586,6 +4592,24 @@
 /de/winkelwagen/    /verzekeringen    301  # taalprefix
 /fr/winkelwagen    /verzekeringen    301  # taalprefix
 /fr/winkelwagen/    /verzekeringen    301  # taalprefix
+/en/afrekenen    /verzekeringen    301  # taalprefix
+/en/afrekenen/    /verzekeringen    301  # taalprefix
+/de/afrekenen    /verzekeringen    301  # taalprefix
+/de/afrekenen/    /verzekeringen    301  # taalprefix
+/fr/afrekenen    /verzekeringen    301  # taalprefix
+/fr/afrekenen/    /verzekeringen    301  # taalprefix
+/en/winkelmand    /verzekeringen    301  # taalprefix
+/en/winkelmand/    /verzekeringen    301  # taalprefix
+/de/winkelmand    /verzekeringen    301  # taalprefix
+/de/winkelmand/    /verzekeringen    301  # taalprefix
+/fr/winkelmand    /verzekeringen    301  # taalprefix
+/fr/winkelmand/    /verzekeringen    301  # taalprefix
+/en/cart    /verzekeringen    301  # taalprefix
+/en/cart/    /verzekeringen    301  # taalprefix
+/de/cart    /verzekeringen    301  # taalprefix
+/de/cart/    /verzekeringen    301  # taalprefix
+/fr/cart    /verzekeringen    301  # taalprefix
+/fr/cart/    /verzekeringen    301  # taalprefix
 /en/services/bancair-sparen    /diensten    301  # taalprefix
 /en/services/bancair-sparen/    /diensten    301  # taalprefix
 /de/services/bancair-sparen    /diensten    301  # taalprefix
