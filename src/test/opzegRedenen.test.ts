@@ -29,3 +29,14 @@ describe("opzegredenen gelijktrekken (12-11)", () => {
     expect(readFileSync("supabase/functions/_shared/opzegRedenen.ts", "utf8")).toBe(readFileSync("src/lib/opzegRedenen.ts", "utf8"));
   });
 });
+
+describe("oudere polispagina-opzegknop (besluit 12-11)", () => {
+  it("gebruikt de beheerlijst: 8 redenen plus eerdere_opzegging, zonder wanbetaling", async () => {
+    const { OPZEG_REDENEN_BEHEER } = await import("@/lib/opzegRedenen");
+    const codes = OPZEG_REDENEN_BEHEER.map((r) => r.code);
+    expect(codes).toHaveLength(9);
+    expect(codes).toContain("beeindiging_zp");
+    expect(codes).toContain("eerdere_opzegging");
+    expect(codes).not.toContain("wanbetaling");
+  });
+});
