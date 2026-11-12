@@ -26,12 +26,9 @@ import {
   vandaagNL,
 } from "@/lib/opzegValidatie";
 
-export const OPZEG_REDENEN = [
-  "Wijzigen entiteit (bijvoorbeeld omzetting naar BV)",
-  "(Tijdelijke) loondienst",
-  "Stoppen met zelfstandig ondernemen",
-  "Anders",
-];
+import { OPZEG_REDENEN_PORTAAL, isAndersCode, opzegRedenLabel } from "@/lib/opzegRedenen";
+
+export const OPZEG_REDENEN = OPZEG_REDENEN_PORTAAL;
 
 export function valideerRedenStap(d: Record<string, any>): Record<string, string> {
   const e: Record<string, string> = {};
@@ -115,26 +112,26 @@ export default function OpzeggenWizard() {
           render: ({ details, setDetails, errors }) => (
             <fieldset className="space-y-3" aria-describedby={errors.reden ? "fout-reden" : undefined}>
               <legend className="sr-only">Kies een reden</legend>
-              {OPZEG_REDENEN.map((r) => (
+              {OPZEG_REDENEN.map(({ code, label }) => (
                 <label
-                  key={r}
+                  key={code}
                   className="flex items-start gap-2 p-3 rounded border border-border hover:bg-secondary/50 cursor-pointer has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring"
                 >
                   <input
                     type="radio"
                     name="reden"
-                    value={r}
-                    checked={details.reden === r}
-                    onChange={() => setDetails({ ...details, reden: r })}
+                    value={code}
+                    checked={details.reden === code}
+                    onChange={() => setDetails({ ...details, reden: code, reden_label: label })}
                     className="mt-1 accent-[hsl(var(--accent))]"
                   />
-                  <span className="text-sm">{r}</span>
+                  <span className="text-sm">{label}</span>
                 </label>
               ))}
               <Fout id="fout-reden" tekst={errors.reden} />
-              {details.reden === "Anders" && (
+              {isAndersCode(details.reden) && (
                 <div className="space-y-1">
-                  <Label htmlFor="toelichting">Toelichting *</Label>
+                  <Label htmlFor="toelichting">Namelijk *</Label>
                   <Textarea
                     id="toelichting"
                     maxLength={OPZEG_TOELICHTING_MAX}
@@ -194,8 +191,8 @@ export default function OpzeggenWizard() {
                 <div><span className="font-medium">Telefoon:</span> {formData.telefoon}</div>
                 <div><span className="font-medium">Polisnummer:</span> {formData.polisnummer}</div>
                 {details.bedrijfsnaam?.trim() && <div><span className="font-medium">Bedrijfsnaam:</span> {details.bedrijfsnaam}</div>}
-                <div><span className="font-medium">Reden:</span> {details.reden}</div>
-                {details.reden === "Anders" && details.toelichting && (
+                <div><span className="font-medium">Reden:</span> {opzegRedenLabel(details.reden)}</div>
+                {isAndersCode(details.reden) && details.toelichting && (
                   <div><span className="font-medium">Toelichting:</span> {details.toelichting}</div>
                 )}
                 <div><span className="font-medium">Opzegdatum:</span> {formatDateNL(details.opzegdatum)}</div>
