@@ -1863,6 +1863,13 @@
       "when": 1794292192780,
       "tag": "0265_artikel_cybervoorwaarden_publicatie_guard",
       "breakpoints": true
+    },
+    {
+      "idx": 266,
+      "version": "7",
+      "when": 1794479469673,
+      "tag": "0266_onderneming_koppelingen",
+      "breakpoints": true
     }
   ]
 }
