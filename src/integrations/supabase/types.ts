@@ -8898,6 +8898,15 @@ export type Database = {
         Args: { _aanvraag: string }
         Returns: undefined
       }
+      rechtsvormwijziging_datums_aanpassen: {
+        Args: {
+          _aanvraag: string
+          _einddatum: string
+          _ingangsdatum: string
+          _reden: string
+        }
+        Returns: Json
+      }
       rechtsvormwijziging_goedkeuren: {
         Args: { _aanvraag: string }
         Returns: Json
