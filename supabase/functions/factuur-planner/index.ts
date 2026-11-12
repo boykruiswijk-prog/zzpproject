@@ -15,7 +15,7 @@ import { planningsSleutel, planningStatusUitExact } from "../_shared/factuurPeri
 import { getGlAccountIdVoorCode, GlNietGevondenError } from "../_shared/exactGl.ts";
 import { bouwFactuurPayload, glUitCache, btwCode, btwPastBijGrootboek, BtwNietPassendError, controleerBtw } from "../_shared/factuurRegel.ts";
 import { exactRegelBedrag } from "../_shared/factuurTekst.ts";
-import { berekenOpzegCredit, berekenOudSysteemCredit, oudSysteemCreditPayload, plannerCreditPayload, berekenCreditVoorPlanner, heeftVastCreditBedrag } from "../_shared/creditOpzegging.ts";
+import { berekenOpzegCredit, berekenOudSysteemCredit, oudSysteemCreditPayload, plannerCreditPayload, berekenCreditVoorPlanner, heeftVastCreditBedrag, kiesCreditRoute, losseCreditPayload, ontbrekendCreditMelding } from "../_shared/creditOpzegging.ts";
 import { metExactMelding } from "../_shared/exactBoekingMelding.ts";
 import { metWerk, werkVan } from "../_shared/machineWerk.ts";
 import { maakExactTempo, postMetSleutel, ExactTijdelijkError, isTijdelijkeStatus, type PostUitkomst } from "../_shared/exactTempo.ts";
@@ -467,11 +467,20 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
       if (Date.now() - startMs > RUN_BUDGET_MS - 20_000) break;
       const { data: claim } = await admin.from("factuur_credit_planning").update({ status: "geclaimd" }).eq("id", c.id).eq("status", "te_maken").select("id").maybeSingle();
       if (!claim) continue;
-      const oud = c.bron === "oud_systeem" && !heeftVastCreditBedrag(c);
+      const keuze = kiesCreditRoute(c);
+      if (keuze.route === "ontbreekt") {
+        // Nooit stil handmatig afhandelen: blokkeren en één melding aan Ellen per creditsleutel.
+        const msg = `creditnota mist ${keuze.ontbreekt.join(", ")}`;
+        await admin.from("factuur_credit_planning").update({ status: "geblokkeerd", melding: msg }).eq("id", c.id).eq("status", "geclaimd");
+        const m = ontbrekendCreditMelding(c, keuze.ontbreekt);
+        const { count } = await admin.from("wijzigingsmeldingen").select("id", { count: "exact", head: true }).eq("titel", m.titel);
+        if (!count) await admin.from("wijzigingsmeldingen").insert(m);
+        fouten.push(`credit geblokkeerd: ${msg}`); continue;
+      }
+      const oud = keuze.route === "oud";
       let gl: string | null = null;
       try {
         if ((await zoekOpSleutel(c.creditsleutel, "Remarks")).length) throw new Error("creditsleutel bestaat al in Exact");
-        if (!c.exact_account_id || !c._item || (!oud && !c.origineel_factuurnummer)) throw new Error("creditnota mist account, artikel of factuurnummer");
         if (!c._btw) throw new BtwNietPassendError();
         controleerBtw(c._gl, c._btw);
         gl = c._gl ? await glVoor(String(c._gl)) : null;
@@ -500,7 +509,8 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
           await admin.from("sensitive_audit_log").insert({ target_table: "klant_contracten", target_id: c.klant_contract_id, actie: "creditnota_concept_aangemaakt", veld: "factuur_credit_planning", nieuwe_waarde: c.creditsleutel, details: { credit_id: c.id, bedrag: c.bedrag, bron: "oud_systeem", invoice_id: d.InvoiceID } });
           continue;
         }
-        const payload: any = plannerCreditPayload({ exact_account_id: c.exact_account_id, item: c._item, btw: c._btw, gl, bedrag: Number(c.bedrag),
+        const payload: any = keuze.route === "los" ? losseCreditPayload({ exact_account_id: c.exact_account_id, item: c._item, btw: c._btw, gl, bedrag: Number(c.bedrag),
+          credit_vanaf: c.credit_vanaf, credit_tm: c.credit_tm, creditsleutel: c.creditsleutel, vandaag }) : plannerCreditPayload({ exact_account_id: c.exact_account_id, item: c._item, btw: c._btw, gl, bedrag: Number(c.bedrag),
           credit_vanaf: c.credit_vanaf, credit_tm: c.credit_tm, origineel_factuurnummer: c.origineel_factuurnummer, creditsleutel: c.creditsleutel, vandaag, bron: c.bron });
         const r = await exact("salesinvoice/SalesInvoices", { method: "POST", body: JSON.stringify(payload) });
         if (!r.ok) {
@@ -511,7 +521,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
         const d = (await r.json())?.d ?? {};
         await admin.from("factuur_credit_planning").update({ status: "concept_aangemaakt", concept_op: new Date().toISOString(), exact_invoice_id: d.InvoiceID ?? null, exact_status: 20 }).eq("id", c.id);
         creditsAangemaakt++;
-        await admin.from("sensitive_audit_log").insert({ target_table: "klant_contracten", target_id: c.klant_contract_id, actie: "creditnota_concept_aangemaakt", veld: "factuur_credit_planning", nieuwe_waarde: c.creditsleutel, details: { credit_id: c.id, bedrag: c.bedrag, origineel: c.origineel_factuurnummer, invoice_id: d.InvoiceID } });
+        await admin.from("sensitive_audit_log").insert({ target_table: "klant_contracten", target_id: c.klant_contract_id, actie: "creditnota_concept_aangemaakt", veld: "factuur_credit_planning", nieuwe_waarde: c.creditsleutel, details: { credit_id: c.id, bedrag: c.bedrag, origineel: c.origineel_factuurnummer, route: keuze.route, invoice_id: d.InvoiceID } });
       } catch (e) { fouten.push(String(e).slice(0, 200)); break; } // onzekere POST: stoppen, rij blijft "geclaimd"
     }
   } catch (e) { fouten.push(String(e).slice(0, 200)); }
