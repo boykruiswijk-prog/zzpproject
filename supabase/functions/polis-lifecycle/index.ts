@@ -305,7 +305,8 @@ Deno.serve(metExactMelding("polis-lifecycle", async (req) => {
   // Alle lifecycle-mails lopen via deze helper: versturen + regel in lead_notification_log.
   const lcMail = (actie: LifecycleActie, doel: Doelgroep, to: string, subject: string, html: string) =>
     verstuurLifecycleMail({
-      send: (t, su, h) => sendMail(gate, t, su, h),
+      // Testleads (is_test) krijgen nooit een klantmail (besluit Boy 12-11 12:16).
+      send: (t, su, h) => (lead.is_test === true && doel === "klant") ? Promise.resolve({ ok: false, error: "testlead_geen_klantmail", to: t }) : sendMail(gate, t, su, h),
       insertLog: (row) => supabase.from("lead_notification_log").insert(row),
     }, { actie, doel, leadId: lead_id, to, subject, html });
   const teamMail = (actie: LifecycleActie, subject: string, html: string) =>
