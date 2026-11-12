@@ -24,6 +24,7 @@ import { controleerAdminMfa, verwerkMfaFout } from "@/lib/adminMfaStap";
 import { standaardLaatsteDekkingsdag } from "@/lib/creditVoorstel";
 import { CreditVoorbeeld } from "./CreditVoorbeeld";
 import { OmzettenNaarBv } from "./OmzettenNaarBv";
+import { ContractStandLabels, IngangsdatumKnop, useIngangsdatumInfo } from "./IngangsdatumWijzigen";
 
 export const DEKKING_LABEL = "Laatste dag van de dekking";
 export const DEKKING_HULP = "De creditnota loopt vanaf de dag erna";
@@ -87,19 +88,22 @@ export function LopendeProducten({ ondernemingId, ondernemingNaam, leadIds = [],
       <CardContent className="space-y-2 text-sm">
         {laden ? <Loader2 className="h-4 w-4 animate-spin" /> : contracten.length + polissen.length === 0 ? <p className="text-muted-foreground">Geen contracten of polissen.</p> : (
           <>
-            {contracten.map((c) => {
+            {contracten.map((c) => (
+              <ContractRegel key={c.id} c={c} herlaad={herlaad}>{(info) => {
               const es = contractEindStatus(c);
               return (
-              <div key={c.id} className="flex flex-wrap items-center gap-2 rounded border border-border p-2">
+              <div className="flex flex-wrap items-center gap-2 rounded border border-border p-2">
                 <span className="font-medium">{PRODUCT_LABEL[c.product as Product] ?? c.product}</span>
                 <BavNummer keuze={kiesBavNummer(bavRijen, { contractId: c.id })} />
-                <span className="text-xs text-muted-foreground">regel {c.bron_rij} · {c.cyclus} · gefactureerd t/m {formatDateNL(c.gefactureerd_tm)}</span>
+                <span className="text-xs text-muted-foreground">regel {c.bron_rij} · {c.cyclus}</span>
+                <ContractStandLabels contract={c} info={info} />
+                {mag && es.soort === "lopend" && c.status === "actief" && <IngangsdatumKnop contract={c} info={info} onKlaar={() => { setHerlaad((x) => x + 1); onGewijzigd?.(); }} />}
                 {es.soort === "beeindigd" ? <Badge variant="outline">Beeindigd{es.datum ? ` per ${formatDateNL(es.datum)}` : ""}</Badge>
                   : es.soort === "loopt_af" ? <Badge variant="secondary">Opgezegd per {formatDateNL(es.datum)}</Badge>
                   : <Badge variant="secondary">actief</Badge>}
                 {mag && es.soort === "lopend" && c.status === "actief" && <Button size="sm" variant="destructive" className="ml-auto" onClick={() => setDialoog({ c: [c.id], p: [] })}>Beeindigen</Button>}
                 {!readOnly && isSupervisorOrAdmin && es.soort !== "lopend" && c.eind_datum && <Button size="sm" variant="outline" className="ml-auto" onClick={() => setWijzig(c)}>Einddatum wijzigen</Button>}
-              </div>); })}
+              </div>); }}</ContractRegel>))}
             {polissen.map((p) => (
               <div key={p.id} className="flex flex-wrap items-center gap-2 rounded border border-border p-2">
                 <span className="font-medium">Polis</span>
@@ -248,4 +252,9 @@ function EinddatumDialoog({ contract, onSluit, onKlaar }: { contract: any; onSlu
       </DialogContent>
     </Dialog>
   );
+}
+
+function ContractRegel({ c, herlaad, children }: { c: any; herlaad: number; children: (info: ReturnType<typeof useIngangsdatumInfo>) => JSX.Element }) {
+  const info = useIngangsdatumInfo(c.id, herlaad);
+  return children(info);
 }
