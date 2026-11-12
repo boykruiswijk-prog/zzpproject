@@ -1,4 +1,4 @@
-import { berekenDagomzet } from "../_shared/dagomzet.ts";
+import { berekenWeekomzet } from "../_shared/weekomzet.ts";
 import { bouwBezoekersPayload, nieuwsteBezoekDag, nuOpSite, NU_OP_SITE_VENSTER_MS } from "../_shared/bezoekers.ts";
 import { vandaagNL } from "../_shared/cronOfSupervisor.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
@@ -77,8 +77,15 @@ Deno.serve(async (req) => {
     if (hsFout) console.error("hartslag_status", hsFout.message);
     const { data: cronSchema, error: csFout } = await admin.rpc("scherm_cron_schema");
     if (csFout) console.error("scherm_cron_schema", csFout.message);
-    const { data: omzetRijen, error: omzetFout } = await admin.rpc("scherm_dagomzet_rijen");
-    if (omzetFout) console.error("scherm_dagomzet_rijen", omzetFout.message);
+    // Besluit Boy 12-11-2026: Weekomzet vervangt Dagomzet; scherm_schoon levert de echte-gebeurtenis-standen, groei en mediaan.
+    const { data: omzetRijen, error: omzetFout } = await admin.rpc("scherm_weekomzet_rijen");
+    if (omzetFout) console.error("scherm_weekomzet_rijen", omzetFout.message);
+    const { data: schoon, error: schoonFout } = await admin.rpc("scherm_schoon");
+    if (schoonFout) throw new Error(`scherm_schoon: ${schoonFout.message}`);
+    const sinds21 = new Date(Date.now() - 21 * 86_400_000).toISOString().slice(0, 10);
+    const { data: reeks, error: reeksFout } = await admin.from("marketing_snapshot").select("bron, dag, data")
+      .in("bron", ["google_ads", "search_console", "ai_zichtbaarheid"]).gte("dag", sinds21).order("dag", { ascending: false }).limit(200);
+    if (reeksFout) console.error("marketing_snapshot reeks", reeksFout.message);
     const vandaag = vandaagNL();
     // A8-aanvulling per week (6-11): de dagrij is het 7-dagentotaal; zonder rijen voor vandaag (bijv. vroeg in de ochtend) valt de kaart terug op de meest recente dag met rijen.
     const { data: laatsteDag, error: dagFout } = await admin.from("scherm_bezoekers").select("dag").order("dag", { ascending: false }).limit(1);
@@ -92,7 +99,7 @@ Deno.serve(async (req) => {
     if (tijdFout) console.error("nu_op_site", tijdFout.message);
     const nuOp = tijdFout ? (werk as { nu_op_site?: number } | null)?.nu_op_site ?? null : nuOpSite((bezoekTijden ?? []).map((r) => r.created_at), Date.now());
     // Volgorde bewust: werkstand levert de actuele activiteit (met cron-runs en perioden) en wint van scherm_data.
-    const body = JSON.stringify(bouwSchermPayload({ ...(data ?? {}), ...(stromen ?? {}), ...(werk ?? {}), nu_op_site: nuOp, versheid: versheid ?? null, bing_ai: bingAi ?? [], hartslag_status: hartslagStatus ?? [], cron_schema: cronSchema ?? [], dagomzet: omzetFout ? null : berekenDagomzet(omzetRijen), bezoekers: bezoekFout ? null : bouwBezoekersPayload(bezoekRijen, bezoekDag) }));
+    const body = JSON.stringify(bouwSchermPayload({ ...(data ?? {}), ...(stromen ?? {}), ...(werk ?? {}), nu_op_site: nuOp, versheid: versheid ?? null, bing_ai: bingAi ?? [], hartslag_status: hartslagStatus ?? [], cron_schema: cronSchema ?? [], schoon: schoon ?? null, marketing_reeks: reeksFout ? [] : reeks ?? [], weekomzet: omzetFout ? null : berekenWeekomzet(omzetRijen), bezoekers: bezoekFout ? null : bouwBezoekersPayload(bezoekRijen, bezoekDag) }));
     cache = { op: Date.now(), body };
     return json(body, 200, { "Cache-Control": "private, max-age=4" });
   } catch (e) {
