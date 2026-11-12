@@ -47,11 +47,10 @@ describe("B: alleen cyber", () => {
 });
 
 describe("C: incasso", () => {
-  it("elke factuur draagt het rekeningnummer van ZP Zaken", () => {
+  it("rekeningnummer komt via Exact-layout, niet via de payload", () => {
     expect(FACTUUR_BETAALTEKST).toContain("NL25 ABNA 0477 3302 23");
     const p = bouwFactuurPayload({ exact_item_id: "i", aantal: 1, bedrag_per_periode: 55, btw_code: "0", gl_code: "8003", periode_start: "2026-12-01", periode_eind: "2026-12-31", exact_account_id: "a" }, null, "ZPF-1", "Remarks");
-    expect(p.InvoiceText).toBe(FACTUUR_BETAALTEKST);
-    expect(lees("supabase/functions/lead-to-exact-activate/index.ts")).toContain("InvoiceText: FACTUUR_BETAALTEKST");
+    expect(p).not.toHaveProperty("InvoiceText");
   });
   it("creditnota's krijgen geen betaaltekst", () => {
     expect(lees("supabase/functions/_shared/creditOpzegging.ts")).not.toContain("FACTUUR_BETAALTEKST");

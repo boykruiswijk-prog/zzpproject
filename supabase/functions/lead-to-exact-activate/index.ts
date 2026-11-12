@@ -15,7 +15,8 @@ import {
 import { mandaatkenmerkVoor } from "../_shared/sepaMachtiging.ts";
 import { autoInvitePortalLead } from "../_shared/portalAccess.ts";
 import { eersteMaandPeriode } from "../_shared/klantContractActivatie.ts";
-import { FACTUUR_BETAALTEKST, factuurReferentie, kopOmschrijving, regelNotities, regelOmschrijving } from "../_shared/factuurTekst.ts";
+import { factuurReferentie, kopOmschrijving, regelNotities, regelOmschrijving } from "../_shared/factuurTekst.ts";
+import { controleerExactFactuurPayload } from "../_shared/exactFactuurVelden.ts";
 import { landcodeVoor } from "../_shared/landcode.ts";
 import { maandprijsVoorLead, pakketSpecVoorLead, starterContractVelden, starterStatus } from "../_shared/starterActivatie.ts";
 import { eersteFactuurViaPlanner, eersteFactuurLogTekst } from "../_shared/eersteFactuur.ts";
@@ -330,7 +331,6 @@ async function createExactInvoice(opts: {
     OrderDate: invoiceDate,
     YourRef: factuurReferentie(lead.certificate_number, lead.exact_relatie_code),
     Description: headerDescription,
-    InvoiceText: FACTUUR_BETAALTEKST,
     SalesInvoiceLines: [line, ...(cyberBedrag && ingang ? [{ ...line, UnitPrice: cyberBedrag,
       Description: `${regelOmschrijving("premie", ingang, isMaandPolis(lead.gekozen_pakket) ? eersteMaandPeriode(ingang).eind : cyberJaarEind(ingang))} Cyber`.slice(0,60),
       Notes: "Cyber, dagelijks opzegbaar.",
@@ -338,6 +338,7 @@ async function createExactInvoice(opts: {
     }] : [])],
   };
 
+  controleerExactFactuurPayload(payload);
   const res = await fetch(`${baseUrl}/api/v1/${div}/salesinvoice/SalesInvoices`, {
     method: "POST",
     headers,

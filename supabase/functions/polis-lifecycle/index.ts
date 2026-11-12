@@ -1,5 +1,6 @@
 import { requireMfa } from "../_shared/teamAuth.ts";
 import { creditBetaalconditie } from "../_shared/creditBetaalconditie.ts";
+import { controleerExactFactuurPayload } from "../_shared/exactFactuurVelden.ts";
 import { nieuweCyber, basisPakket, CYBER_LOOPTIJD } from "../_shared/cyber.ts";
 import { starterStatus } from "../_shared/starterActivatie.ts";
 // Polis-lifecycle: pauzeren / hervatten / opzeggen / heractiveren
@@ -185,6 +186,7 @@ async function postSalesInvoice(opts: {
     Description: kopOmschrijving(description),
     SalesInvoiceLines: [line],
   };
+  controleerExactFactuurPayload(payload);
   const r = await fetch(`${baseUrl}/api/v1/${div}/salesinvoice/SalesInvoices`, {
     method: "POST", headers, body: JSON.stringify(payload),
   });

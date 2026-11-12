@@ -4,6 +4,7 @@
 // Geen mails naar klanten; maximaal één alarmmail per dag naar het team.
 // deno-lint-ignore-file no-explicit-any
 import { werkContractStandBij } from "../_shared/contractStand.ts";
+import { controleerExactFactuurPayload } from "../_shared/exactFactuurVelden.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { ensureValidToken, refreshAccessToken } from "../_shared/exactToken.ts";
 import { requireSupervisor } from "../_shared/teamAuth.ts";
@@ -326,6 +327,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
       const method = (init.method ?? "GET").toUpperCase();
       if (method !== "GET" && method !== "POST") throw new Error("methode niet toegestaan");
       if (method === "POST") {
+        controleerExactFactuurPayload(JSON.parse(String(init.body)));
         const { data: v } = await admin.from("facturatie_config").select("facturatie_actief,opzeg_credits_actief").eq("id", 1).single();
         const isCredit = String(init.body ?? "").includes('"Type":8021');
         if (isCredit ? v?.opzeg_credits_actief !== true : v?.facturatie_actief !== true) throw new Error("schakelaar uit: POST geweigerd");
