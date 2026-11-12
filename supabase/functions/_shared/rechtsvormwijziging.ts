@@ -6,7 +6,8 @@ export const RECHTSVORMEN = ["Eenmanszaak", "BV"] as const;
 export type Rechtsvorm = (typeof RECHTSVORMEN)[number];
 
 export const ERKENNING_TEKST =
-  "Wij erkennen je bv als voortzetter van je eenmanszaak. Werk dat je eerder via je eenmanszaak deed, valt zo onder je nieuwe verzekering en er ontstaat geen gat in je dekking.";
+  "Wij erkennen je bv als voortzetter van je eenmanszaak. Werk dat je eerder via je eenmanszaak deed, valt zo onder je nieuwe verzekering. Kies de datums zo dat er geen periode zonder dekking ontstaat.";
+// Besluit Boy 12-11-2026 12:43: zin over gat in dekking vervangen.
 
 // Besluit Boy 12-11-2026 12:11: einddatum oud en ingangsdatum nieuw hoeven niet aan te sluiten en mogen overlappen.
 // Gat geeft een waarschuwing, overlap een informatieve melding; geen van beide blokkeert.

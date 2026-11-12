@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDateNL } from "@/lib/dateFormat";
@@ -17,6 +19,24 @@ export function RechtsvormBeoordeling({ aanvraag, onKlaar }: { aanvraag: Aanvraa
   const [bezig, setBezig] = useState(false);
   const datumFout = datumsFout(d.einddatum, d.ingangsdatum, "2000-01-01");
   const goedgekeurd = !!d.goedgekeurd;
+  // Besluit Boy 12-11-2026 12:43: datums aanpassen voor goedkeuring, zelfde validatie, reden verplicht, auditregel (RPC).
+  const [aanpassen, setAanpassen] = useState(false);
+  const [eind, setEind] = useState<string>(d.einddatum ?? "");
+  const [ingang, setIngang] = useState<string>(d.ingangsdatum ?? "");
+  const [reden, setReden] = useState("");
+  const nieuwFout = aanpassen ? (datumsFout(eind, ingang, new Date(), d.polis_start ?? null)
+    ?? (reden.trim().length < 3 || reden.trim().length > 500 ? "Vul een reden in (3 tot 500 tekens)." : null)
+    ?? (eind === d.einddatum && ingang === d.ingangsdatum ? "De datums zijn niet gewijzigd." : null)) : null;
+  const nieuwMelding = aanpassen ? datumsMelding(eind, ingang) : null;
+
+  async function datumsOpslaan() {
+    setBezig(true);
+    const { error } = await (supabase.rpc as any)("rechtsvormwijziging_datums_aanpassen", { _aanvraag: aanvraag.id, _einddatum: eind, _ingangsdatum: ingang, _reden: reden.trim() });
+    setBezig(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Datums aangepast en vastgelegd. Er is niets gemaild.");
+    setAanpassen(false); setReden(""); onKlaar();
+  }
 
   async function polisOmzetten(naar: string): Promise<boolean> {
     if (!d.polis_id) return true;
@@ -55,6 +75,28 @@ export function RechtsvormBeoordeling({ aanvraag, onKlaar }: { aanvraag: Aanvraa
       <p>Einddatum oud {d.einddatum ? formatDateNL(d.einddatum) : "-"}, laatste dekkingsdag {d.einddatum ? formatDateNL(laatsteDagOud(d.einddatum)) : "-"}; ingangsdatum nieuw {d.ingangsdatum ? formatDateNL(d.ingangsdatum) : "-"}.</p>
       {datumFout && <p className="text-destructive">{datumFout}</p>}
       {(() => { const m = datumsMelding(d.einddatum, d.ingangsdatum); return m && <p className={m.soort === "gat" ? "rounded border border-oranje/50 bg-oranje/10 p-2" : "text-muted-foreground"} data-testid="datum-melding">{m.tekst}</p>; })()}
+      {Array.isArray(d.datums_aangepast) && d.datums_aangepast.length > 0 && (
+        <p className="text-muted-foreground" data-testid="datums-historie">Datums aangepast door het team: {d.datums_aangepast.map((h: any) => `van ${h.oud?.einddatum ? formatDateNL(h.oud.einddatum) : "-"} / ${h.oud?.ingangsdatum ? formatDateNL(h.oud.ingangsdatum) : "-"} naar ${formatDateNL(h.nieuw.einddatum)} / ${formatDateNL(h.nieuw.ingangsdatum)} (${h.reden})`).join("; ")}.</p>
+      )}
+      {!goedgekeurd && aanvraag.status !== "afgerond" && (isSupervisorOrAdmin || isVerzekering) && (
+        aanpassen ? (
+          <div className="space-y-2 rounded border bg-background p-3" data-testid="datums-aanpassen">
+            <div className="grid gap-2 sm:grid-cols-2">
+              <label className="space-y-1"><span>Einddatum oud</span><Input type="date" value={eind} onChange={(e) => setEind(e.target.value)} /></label>
+              <label className="space-y-1"><span>Ingangsdatum nieuw</span><Input type="date" value={ingang} onChange={(e) => setIngang(e.target.value)} /></label>
+            </div>
+            <label className="block space-y-1"><span>Reden (verplicht)</span><Textarea value={reden} maxLength={500} onChange={(e) => setReden(e.target.value)} /></label>
+            {nieuwFout && <p className="text-destructive">{nieuwFout}</p>}
+            {nieuwMelding && <p className={nieuwMelding.soort === "gat" ? "rounded border border-oranje/50 bg-oranje/10 p-2" : "text-muted-foreground"}>{nieuwMelding.tekst}</p>}
+            <div className="flex gap-2">
+              <Button size="sm" onClick={datumsOpslaan} disabled={bezig || !!nieuwFout}>Datums opslaan</Button>
+              <Button size="sm" variant="outline" onClick={() => { setAanpassen(false); setEind(d.einddatum ?? ""); setIngang(d.ingangsdatum ?? ""); setReden(""); }}>Annuleren</Button>
+            </div>
+          </div>
+        ) : (
+          <Button size="sm" variant="outline" onClick={() => setAanpassen(true)}>Datums aanpassen</Button>
+        )
+      )}
       <p>Nieuwe incassomachtiging: {d.nieuwe_rekening ? `ja, kenmerk ${d.mandaatkenmerk}` : "nee, rekening blijft gelijk"}.</p>
       <p className="text-muted-foreground">Voorgestelde koppeling: {oud.id ? <Link className="text-primary underline" to={`/admin/klanten/${oud.id}`}>{oud.naam}</Link> : "onbekend"} wordt de vorige onderneming. Bij goedkeuren: oude contracten stoppen precies op de opgegeven einddatum (bestaande creditregels; geen automatische credit voor een overlap), het BAV + AVB-contract en de polis gaan mee naar de nieuwe onderneming (geen dubbele factuur), ondernemingen worden gekoppeld. Er wordt niets gemaild en niets naar Exact gestuurd.</p>
       {aanvraag.status !== "afgerond" && (isSupervisorOrAdmin || isVerzekering) && (
