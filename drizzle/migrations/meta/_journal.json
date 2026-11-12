@@ -1891,6 +1891,13 @@
       "when": 1794483364884,
       "tag": "0269_scherm_opschonen_1211",
       "breakpoints": true
+    },
+    {
+      "idx": 270,
+      "version": "7",
+      "when": 1794484520539,
+      "tag": "0270_notitie_reacties_1211",
+      "breakpoints": true
     }
   ]
 }
