@@ -1954,6 +1954,13 @@
       "when": 1794488209838,
       "tag": "0278_exact_adres_scenarios_1211",
       "breakpoints": true
+    },
+    {
+      "idx": 279,
+      "version": "7",
+      "when": 1794488559906,
+      "tag": "0279_scherm_stroom_klant_1211",
+      "breakpoints": true
     }
   ]
 }
