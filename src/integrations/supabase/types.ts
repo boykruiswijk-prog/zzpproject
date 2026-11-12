@@ -1611,6 +1611,7 @@ export type Database = {
           intrek_reden: string | null
           is_test: boolean
           onderneming_id: string | null
+          parent_id: string | null
           persoon_id: string | null
           soort: string
           tekst: string
@@ -1626,6 +1627,7 @@ export type Database = {
           intrek_reden?: string | null
           is_test?: boolean
           onderneming_id?: string | null
+          parent_id?: string | null
           persoon_id?: string | null
           soort?: string
           tekst: string
@@ -1641,6 +1643,7 @@ export type Database = {
           intrek_reden?: string | null
           is_test?: boolean
           onderneming_id?: string | null
+          parent_id?: string | null
           persoon_id?: string | null
           soort?: string
           tekst?: string
@@ -1651,6 +1654,13 @@ export type Database = {
             columns: ["onderneming_id"]
             isOneToOne: false
             referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_notities_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "crm_notities"
             referencedColumns: ["id"]
           },
           {
@@ -5074,7 +5084,11 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          ingetrokken_door: string | null
+          ingetrokken_op: string | null
+          intrek_reden: string | null
           lead_id: string
+          parent_id: string | null
           type: Database["public"]["Enums"]["note_type"]
           user_id: string
         }
@@ -5082,7 +5096,11 @@ export type Database = {
           content: string
           created_at?: string
           id?: string
+          ingetrokken_door?: string | null
+          ingetrokken_op?: string | null
+          intrek_reden?: string | null
           lead_id: string
+          parent_id?: string | null
           type?: Database["public"]["Enums"]["note_type"]
           user_id: string
         }
@@ -5090,7 +5108,11 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          ingetrokken_door?: string | null
+          ingetrokken_op?: string | null
+          intrek_reden?: string | null
           lead_id?: string
+          parent_id?: string | null
           type?: Database["public"]["Enums"]["note_type"]
           user_id?: string
         }
@@ -5107,6 +5129,13 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_notes_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "lead_notes"
             referencedColumns: ["id"]
           },
         ]
@@ -7920,6 +7949,10 @@ export type Database = {
         }
         Returns: Json
       }
+      crm_reactie_toevoegen: {
+        Args: { _parent_id: string; _tekst: string }
+        Returns: string
+      }
       crm_taak_afronden: { Args: { _id: string }; Returns: boolean }
       cyber_aanvraag_document_klaar: {
         Args: { _id: string; _lease: string; _pad: string }
@@ -8417,6 +8450,10 @@ export type Database = {
       lead_klant_ontkoppelen: {
         Args: { _bron_id: string; _bron_tabel: string; _notitie: string }
         Returns: undefined
+      }
+      lead_notitie_intrekken: {
+        Args: { _id: string; _reden: string }
+        Returns: boolean
       }
       lead_vlag_geparkeerd: {
         Args: { _datum: string; _vandaag: string; _vlag: string }
