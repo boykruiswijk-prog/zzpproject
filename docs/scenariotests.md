@@ -75,4 +75,5 @@ en het i-icoon bij Aantal medewerkers.
 - `opzegreden_portaal_beeindiging_zp`: portaal-opzegging met `beeindiging_zp` wordt geweigerd (ook met vervalste bron), `pensioen` mag.
 - `opzegreden_portaal_anders_leeg`: `anders` zonder of met te korte toelichting wordt geweigerd.
 - `opzegreden_beheer_beeindiging_zp`: beheer (crm_beeindig) met `beeindiging_zp` lukt en slaat code en label op.
-- Vitest `src/test/opzegRedenen.test.ts`: volgorde, portaal- en beheerlijst, oude waarden leesbaar.
+- `polis_lifecycle_klant_beeindiging_zp`: de lead-update zoals polis-lifecycle die uitvoert wordt voor een klant geweigerd bij `beeindiging_zp` en `eerdere_opzegging`; `anders` zonder toelichting wordt geweigerd en beheer mag de interne reden wel opslaan.
+- Vitest `src/test/opzegRedenen.test.ts`: volgorde, portaal- en beheerlijst, oude waarden leesbaar, Mijn ZP gebruikt de portaallijst en de serverblokkade staat vóór Exact.

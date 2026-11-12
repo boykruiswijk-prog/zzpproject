@@ -17,7 +17,7 @@ import { usePolicyLifecycle, usePortalLead, usePauzePreview } from "@/hooks/useP
 import { formatDateLongNL } from "@/lib/dateFormat";
 import { SITE_CONFIG } from "@/config/site";
 import { OPZEG_TOELICHTING_MAX, valideerToelichting, isAndersReden } from "@/lib/opzegValidatie";
-import { OPZEG_REDENEN_BEHEER } from "@/lib/opzegRedenen";
+import { OPZEG_REDENEN_PORTAAL } from "@/lib/opzegRedenen";
 
 const PAUZE_REDENEN = [
   { value: "geen_opdrachten", label: "Even geen opdrachten" },
