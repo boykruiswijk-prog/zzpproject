@@ -236,7 +236,7 @@ export const ROBOTFUNCTIE: Record<AiAgentId, string> = {
 };
 /** Eén korte reden bij een fout: eerste zinsdeel van het resultaat, privacygefilterd. */
 export function korteReden(t: unknown): string {
-  const s = schoonTekst(t, 200).split(/[.;:,(]/)[0].trim();
+  const s = schoonTekst(t, 200).replace(/^[^:]{1,40}:\s*/, '').split(/[.;(]/)[0].trim();
   if (!s) return 'laatste run mislukt';
   return s.length > 40 ? `${s.slice(0, 39).trimEnd()}\u2026` : s;
 }

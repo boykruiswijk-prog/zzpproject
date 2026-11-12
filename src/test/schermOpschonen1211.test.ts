@@ -123,7 +123,7 @@ describe("AI-team rustig", () => {
   it("vaste functie van maximaal 4 woorden, fouten bovenaan met korte reden", () => {
     for (const f of Object.values(ROBOTFUNCTIE)) expect(f.split(" ").length).toBeLessThanOrEqual(4);
     expect(aiTeamVolgorde([{ status: "klaar", n: 1 }, { status: "fout", n: 2 }]).map((a) => a.n)).toEqual([2, 1]);
-    expect(korteReden("Rapportage-agent: zoekcijfers niet bereikbaar")).toBe("Rapportage-agent");
+    expect(korteReden("Rapportage-agent: zoekcijfers niet bereikbaar")).toBe("zoekcijfers niet bereikbaar");
     expect(korteReden("")).toBe("laatste run mislukt");
   });
 });
