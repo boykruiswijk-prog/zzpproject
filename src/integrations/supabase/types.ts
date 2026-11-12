@@ -7515,6 +7515,7 @@ export type Database = {
         Args: { _gekregen: string; _naam: string; _verwacht: string }
         Returns: Json
       }
+      _ts_certificaat: { Args: { p_naam: string }; Returns: Json }
       _ts_contract: {
         Args: { _begin: string; _ond: string; _product?: string }
         Returns: string
@@ -7807,6 +7808,10 @@ export type Database = {
       }
       bepaal_opzegging_koppeling: { Args: { _id: string }; Returns: Json }
       bepaal_service_koppeling: { Args: { _id: string }; Returns: Json }
+      bestaand_geldig_bav_nummer: {
+        Args: { _lead: string; _ond: string }
+        Returns: string
+      }
       bevestig_artikel_mapping: {
         Args: { _bevestigd: boolean; _id: string }
         Returns: boolean
@@ -8719,6 +8724,7 @@ export type Database = {
         }
         Returns: string
       }
+      onderneming_lead_ids: { Args: { _ond: string }; Returns: string[] }
       onderneming_samenvoegen: {
         Args: { _naar: string; _reden?: string; _van: string }
         Returns: Json
@@ -8791,6 +8797,7 @@ export type Database = {
         }
         Returns: Json
       }
+      policy_onderneming_afleiden: { Args: { _lead: string }; Returns: string }
       polis_omzetten: {
         Args: {
           _ingangsdatum: string

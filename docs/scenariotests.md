@@ -51,3 +51,8 @@ en het i-icoon bij Aantal medewerkers.
 1. Voeg een tak toe in `test_scenario` (nieuwe migratie met CREATE OR REPLACE) en zet de naam in de lijst voor `alle`,
    of voeg een `describe("<naam>")` toe in `src/test/scenarios1211.test.ts` als de logica in TypeScript staat.
 2. Draai `select public.test_scenario('alle')` en de vitest-run; beide moeten slagen en `nul_rijen_achtergebleven` moet true zijn.
+
+## Certificaatnummer (spoed 12-11-2026)
+- `certificaat_polis_via_lead`: polis met alleen een lead krijgt bij aanmaken de onderneming; het dialoog vindt het bestaande nummer en "nieuw nummer" wordt geweigerd.
+- `certificaat_ingangsdatum`: ingangsdatum wijzigen bij een polis zonder onderneming_id: zelfde nummer, nieuwe datum, één geldige polis.
+- `certificaat_nieuwe_klant`: echt nieuwe klant krijgt geen bekend nummer en mag een nieuw nummer krijgen.
