@@ -396,6 +396,7 @@
 .machine-chip small b { margin-left: auto; font-size: 16px; color: hsl(var(--s-groen)); }
 .brein-chip { border-color: hsl(var(--s-rood) / 0.6); }
 .brein-chip strong { color: hsl(var(--s-rood)); }
+.brein-chip small { flex-wrap: wrap; white-space: normal; overflow: visible; column-gap: 4px; row-gap: 0; }
 .brein-flits { box-shadow: 0 0 24px hsl(var(--s-rood) / .6); }
 .poppetje .st-bol { margin-right: 5px; vertical-align: 1px; }
 .machine-chip .st-bol, .poppetje .st-bol { display: inline-block; width: 11px; height: 11px; flex-shrink: 0; border-radius: 999px; background: hsl(var(--s-groen)); }
