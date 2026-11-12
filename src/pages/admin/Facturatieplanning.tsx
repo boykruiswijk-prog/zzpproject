@@ -1,7 +1,6 @@
 import { useToonTestrecords } from "@/hooks/useToonTestrecords";
 import { IncassoMisluktKnop } from "@/components/admin/incasso/Incasso";
 import { useEffect, useMemo, useState } from "react";
-import { Helmet } from "react-helmet-async";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -133,8 +132,7 @@ export default function Facturatieplanning() {
 
   return (
     <AdminLayout>
-      <Helmet><title>Facturatieplanning | ZP Zaken beheer</title></Helmet>
-      <div className="space-y-6 min-w-0">
+            <div className="space-y-6 min-w-0">
         <h1 className="break-words text-xl font-bold sm:text-2xl">Facturatieplanning</h1>
 
         <Card>

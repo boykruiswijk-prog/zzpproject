@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Helmet } from "react-helmet-async";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -62,8 +61,7 @@ export default function AovDoorverwijzingen() {
   };
   const error = aanmeldingen.error || kliks.error;
   const isLoading = aanmeldingen.isLoading || kliks.isLoading;
-  return <AdminLayout><Helmet><title>AOV-aanmeldingen | Beheer</title></Helmet>
-    <div className="flex flex-wrap items-center justify-between gap-4 mb-6"><h1 className="text-2xl font-bold">AOV-aanmeldingen</h1>
+  return <AdminLayout>    <div className="flex flex-wrap items-center justify-between gap-4 mb-6"><h1 className="text-2xl font-bold">AOV-aanmeldingen</h1>
       <div className="flex gap-2"><Button variant="outline" size="icon" aria-label="Vernieuwen" title="Vernieuwen" onClick={() => { void aanmeldingen.refetch(); void kliks.refetch(); }}><RefreshCw className="h-4 w-4" /></Button><Button variant="outline" onClick={exporteer} disabled={isLoading || !!error || !data.length}><Download className="h-4 w-4 mr-2" />CSV</Button></div></div>
     <p className="text-sm text-muted-foreground mb-6">Er gaan geen automatische mails uit. Geef aanmeldingen handmatig door met "Kopieer voor Tjepkema".</p>
     {error ? <p role="alert" className="text-destructive">Het overzicht kon niet worden geladen. Log opnieuw in met je tweestapscode en probeer opnieuw.</p> : isLoading ? <p>Laden...</p> : <>

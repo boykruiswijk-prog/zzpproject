@@ -2,9 +2,9 @@ import { klantPlaats } from "@/lib/klantPlaats";
 import { ONDERNEMING_KOLOMMEN } from "@/lib/veiligeKolommen";
 import { useEffect, useState } from "react";
 import { LeadKlantHistorie } from "@/components/admin/LeadKlantHistorie";
-import { Helmet } from "react-helmet-async";
 import { Link, useParams } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
+import { useAdminDetailTitel } from "@/lib/adminTitels";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,11 +44,15 @@ export default function KlantDetail() {
   const persoonNaam = (p: any) => [p.voornaam, p.achternaam].filter(Boolean).join(" ") || p.email_weergave || "contactpersoon";
 
   useEffect(() => {
+    // Nooit gegevens van een vorige klant tonen: leegmaken bij een ander id en late antwoorden negeren.
+    let actief = true;
+    if (ond && ond.id !== id) { setOnd(null); setContracten([]); setPersonen([]); setMandaat(null); setLeadMatch([]); }
     (async () => {
       setLaden(true);
       const { data: o } = await supabase.from("ondernemingen").select(ONDERNEMING_KOLOMMEN).eq("id", id!).maybeSingle();
       // Samengevoegde dubbele kaart: direct door naar de kaart waar alles nu staat.
       if ((o as any)?.samengevoegd_naar) { window.location.replace(`/admin/klanten/${(o as any).samengevoegd_naar}`); return; }
+      if (!actief) return;
       setOnd(o);
       if (o) {
         const [k, po, m, l] = await Promise.all([
@@ -57,6 +61,7 @@ export default function KlantDetail() {
           o.exact_relatie_code ? (supabase.rpc as any)("klant_mandaat_overzicht", { _codes: [o.exact_relatie_code] }).maybeSingle() : Promise.resolve({ data: null }),
           o.exact_relatie_code ? supabase.from("leads").select("id,voornaam,achternaam,status,adres_plaats").eq("exact_relatie_code", o.exact_relatie_code) : Promise.resolve({ data: [] }),
         ]);
+        if (!actief) return;
         setContracten(k.data ?? []);
         const ps = ((po.data ?? []) as any[]).map((x) => x.personen).filter(Boolean);
         setPersonen(ps);
@@ -68,23 +73,27 @@ export default function KlantDetail() {
           const ids = (kop ?? []).map((x) => x.bron_id);
           if (ids.length) viaPersoon = (await supabase.from("leads").select("id,voornaam,achternaam,status,adres_plaats").in("id", ids)).data ?? [];
         }
+        if (!actief) return;
         const alle = new Map<string, any>();
         for (const x of [...viaPersoon, ...((l.data as any[]) ?? [])]) alle.set(x.id, x);
         setLeadMatch(Array.from(alle.values()));
       }
-      setLaden(false);
+      if (actief) setLaden(false);
     })();
+    return () => { actief = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, herlaad]);
+  const juisteKlant = !!ond && ond.id === id;
+  useAdminDetailTitel(ond?.naam, id, ond?.id);
 
   const { data: bavRijen } = useBavRijen(id ? [id] : []);
   const bavKeuze = kiesBavNummer(bavRijen ?? []);
   const { data: omzetOpen } = useOpenOmzetting(id, herlaad);
   return (
     <AdminLayout>
-      <Helmet><title>{ond?.naam ?? "Klant"} | ZP Zaken beheer</title></Helmet>
-      <div className="space-y-6 min-w-0">
+            <div className="space-y-6 min-w-0">
         <Link to="/admin/klanten" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"><ArrowLeft className="h-4 w-4" /> Klanten & contracten</Link>
-        {laden ? <div className="flex justify-center p-12"><Loader2 className="h-6 w-6 animate-spin" /></div> : !ond ? <p>Klant niet gevonden.</p> : (
+        {laden || (ond && !juisteKlant) ? <div className="flex justify-center p-12"><Loader2 className="h-6 w-6 animate-spin" /></div> : !ond ? <p>Klant niet gevonden.</p> : (
           <>
             <OpvolgerBanner opvolger={opvolger} />
             <RechtsvoorgangerBanner ondernemingId={ond.id} herlaad={herlaad} />

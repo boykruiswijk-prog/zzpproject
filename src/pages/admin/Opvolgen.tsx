@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
@@ -45,8 +44,7 @@ export default function AdminOpvolgen() {
 
   return (
     <AdminLayout>
-      <Helmet><title>Opvolgen | Admin</title></Helmet>
-      <Card>
+            <Card>
         <CardHeader><CardTitle>Opvolgen ({rijen.length})</CardTitle></CardHeader>
         <CardContent>
           <p className="mb-4 text-sm text-muted-foreground">Alles wat langer dan 2 uur open staat, oudste bovenaan. Lasso stuurt per item maximaal twee signalen: na 2 uur en na 24 uur.</p>

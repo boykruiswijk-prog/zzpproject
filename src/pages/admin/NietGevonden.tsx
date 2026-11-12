@@ -1,6 +1,5 @@
 import { formatDateTimeNL } from "@/lib/dateFormat";
 import { useEffect, useMemo, useState } from "react";
-import { Helmet } from "react-helmet-async";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -64,10 +63,7 @@ export default function NietGevonden() {
 
   return (
     <AdminLayout>
-      <Helmet>
-        <title>Niet-gevonden pagina's | Beheer</title>
-      </Helmet>
-      <Card>
+            <Card>
         <CardHeader className="flex flex-row items-center justify-between gap-4">
           <CardTitle>Niet-gevonden pagina's</CardTitle>
           <Button variant="outline" size="sm" onClick={() => setToonAfgehandeld((v) => !v)}>

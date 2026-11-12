@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useParams } from "react-router-dom";
+import { useAdminDetailTitel } from "@/lib/adminTitels";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Legend } from "recharts";
@@ -100,6 +101,7 @@ const LIJST_ELDERS: Record<string, [string, string]> = {
 export default function Inzicht() {
   const { tegel = "" } = useParams();
   const def = TEGELS[tegel];
+  useAdminDetailTitel(def?.titel, tegel, def ? tegel : null);
   const { isSupervisorOrAdmin, isAal2 } = useAuth();
   const mag = !!def && isAal2 && (!def.alleenSupervisor || isSupervisorOrAdmin);
   const [periode, setPeriode] = useState<Periode>("sinds6okt");
@@ -132,7 +134,7 @@ export default function Inzicht() {
 
   return (
     <AdminLayout>
-      <Helmet><title>{def?.titel ?? "Inzicht"} | Inzicht | ZP Zaken</title><meta name="robots" content="noindex" /></Helmet>
+      <Helmet><meta name="robots" content="noindex" /></Helmet>
       <div className="space-y-6">
         <Link to="/admin" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="h-4 w-4" /> Dashboard</Link>
         {!def ? <p>Deze teller bestaat niet.</p> : !mag ? <p>Je hebt geen toegang tot deze teller.</p> : isError ? <p role="alert" className="text-destructive">Kon niet laden: {(error as Error).message}</p> : isLoading || !data ? <Loader2 className="h-6 w-6 animate-spin" /> : <>

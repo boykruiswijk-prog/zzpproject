@@ -33,6 +33,7 @@ import { LeadLifecyclePanel } from "@/components/admin/LeadLifecyclePanel";
 import { LeadOnboardingStepper, derivePhase } from "@/components/admin/LeadOnboardingStepper";
 import { LeadDoorlooptijd } from "@/components/admin/LeadDoorlooptijd";
 import { useLead, useUpdateLead, useDeleteLead } from "@/hooks/useLeads";
+import { useAdminDetailTitel } from "@/lib/adminTitels";
 import { useAuth } from "@/contexts/AuthContext";
 import { PortalInviteButton } from "@/components/admin/PortalInviteButton";
 import { formatDateNL, formatDateLongNL, formatDateTimeLongNL } from "@/lib/dateFormat";
@@ -76,7 +77,13 @@ export default function AdminLeadDetail() {
   const navigate = useNavigate();
   const { isAdmin, isSupervisorOrAdmin, isTeamMember, isVerzekering, magCertificaten } = useAuth();
   const { toast } = useToast();
-  const { data: lead, isLoading } = useLead(id);
+  const { data: leadData, isLoading: ladenLead } = useLead(id);
+  // Alleen tonen als de geladen lead bij het id uit de URL hoort (nooit een vorige lead uit de cache).
+  const verkeerdeLead = !!leadData && leadData.id !== id;
+  const lead = verkeerdeLead ? undefined : leadData;
+  const isLoading = ladenLead || verkeerdeLead;
+  const leadNaam = lead ? ([lead.voornaam, lead.achternaam].filter(Boolean).join(" ") || lead.bedrijfsnaam || "") : "";
+  useAdminDetailTitel(leadNaam, id, lead?.id);
   const updateLead = useUpdateLead();
   const deleteLead = useDeleteLead();
   const [isGenerating, setIsGenerating] = useState(false);

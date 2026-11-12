@@ -1,4 +1,5 @@
 import { AdminAalGuard } from "@/components/admin/AdminAalGuard";
+import { AdminTitelBeheer } from "@/lib/adminTitels";
 import { categorieVoorPad, meldSiteBezoek } from "./lib/siteBezoek";
 import { lazy, Suspense, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
@@ -357,6 +358,7 @@ const App = () => (
   <AppProviders client={queryClient}>
     <BrowserRouter>
       <GaRouteGuard />
+      <AdminTitelBeheer />
       <ScrollToTop />
       <AppRoutes />
     </BrowserRouter>

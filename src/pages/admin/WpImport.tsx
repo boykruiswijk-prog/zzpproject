@@ -87,7 +87,6 @@ export default function WpImport() {
     <AdminLayout>
       <Helmet>
         <meta name="robots" content="noindex, nofollow" />
-        <title>WordPress-import | ZP Zaken admin</title>
       </Helmet>
       <div className="space-y-6">
         <div>
