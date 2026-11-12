@@ -8,25 +8,38 @@ export type Rechtsvorm = (typeof RECHTSVORMEN)[number];
 export const ERKENNING_TEKST =
   "Wij erkennen je bv als voortzetter van je eenmanszaak. Werk dat je eerder via je eenmanszaak deed, valt zo onder je nieuwe verzekering en er ontstaat geen gat in je dekking.";
 
-export const MELDING_GAT = "Tussen de einddatum en de ingangsdatum zit een gat. Laat de nieuwe onderneming ingaan op de dag na de einddatum.";
-export const MELDING_OVERLAP = "De ingangsdatum ligt voor de einddatum. Dan ben je twee keer verzekerd. Laat de nieuwe onderneming ingaan op de dag na de einddatum.";
+// Besluit Boy 12-11-2026 12:11: einddatum oud en ingangsdatum nieuw hoeven niet aan te sluiten en mogen overlappen.
+// Gat geeft een waarschuwing, overlap een informatieve melding; geen van beide blokkeert.
+export const MELDING_GAT = "Let op: tussen deze datums ben je niet verzekerd";
+export const MELDING_OVERLAP = "In deze periode heb je dubbele dekking: je betaalt voor beide ondernemingen.";
+export const MELDING_EIND_VOOR_INGANG = "De einddatum van je oude onderneming ligt voor de oorspronkelijke ingangsdatum van je polis.";
+
+export const OVERGANG_TEKST =
+  "Je dekking gaat over naar je nieuwe onderneming. Loopt er nog een opdracht via je eenmanszaak (of andersom), dan kan het nodig zijn om een aantal weken of maanden beide verzekeringen naast elkaar te houden. Leidend is je overeenkomst met je opdrachtgever: met welke onderneming heb je die overeenkomst gesloten? Die bepaalt tot wanneer de oude dekking moet lopen en vanaf wanneer de nieuwe begint.";
 
 const DATUM = /^\d{4}-\d{2}-\d{2}$/;
 
-/** Einddatum oud en ingangsdatum nieuw moeten aansluiten: ingang = eind + 1 dag, of gelijk. */
-export function datumsFout(einddatum: string, ingangsdatum: string, nu: Date | string = new Date()): string | null {
+/** Blokkerende datumfouten: einddatum en ingangsdatum verplicht, ingang vroegst morgen (D4), einde niet voor oorspronkelijke ingang. */
+export function datumsFout(einddatum: string, ingangsdatum: string, nu: Date | string = new Date(), oorspronkelijkeIngang?: string | null): string | null {
   if (!DATUM.test(einddatum ?? "")) return "Vul de einddatum van je huidige onderneming in.";
   if (!DATUM.test(ingangsdatum ?? "")) return "Vul de ingangsdatum van je nieuwe onderneming in.";
   const vroeg = ingangsdatumFout(ingangsdatum, nu);
   if (vroeg) return vroeg;
-  if (ingangsdatum > plusDagen(einddatum, 1)) return MELDING_GAT;
-  if (ingangsdatum < einddatum) return MELDING_OVERLAP;
+  if (oorspronkelijkeIngang && DATUM.test(oorspronkelijkeIngang.slice(0, 10)) && einddatum < oorspronkelijkeIngang.slice(0, 10)) return MELDING_EIND_VOOR_INGANG;
   return null;
 }
 
-/** Laatste dekkingsdag van de oude onderneming: altijd de dag voor de ingangsdatum (geen dubbele dekking of factuur). */
-export function laatsteDagOud(ingangsdatum: string): string {
-  return plusDagen(ingangsdatum, -1);
+/** Niet-blokkerende melding: gat (waarschuwing) of overlap (informatie). */
+export function datumsMelding(einddatum: string, ingangsdatum: string): { soort: "gat" | "overlap"; tekst: string } | null {
+  if (!DATUM.test(einddatum ?? "") || !DATUM.test(ingangsdatum ?? "")) return null;
+  if (plusDagen(einddatum, 1) < ingangsdatum) return { soort: "gat", tekst: MELDING_GAT };
+  if (ingangsdatum <= einddatum) return { soort: "overlap", tekst: MELDING_OVERLAP };
+  return null;
+}
+
+/** Laatste dekkingsdag van de oude onderneming: precies de opgegeven einddatum. */
+export function laatsteDagOud(einddatum: string): string {
+  return einddatum;
 }
 
 export function richting(oud: string | null | undefined, nieuw: string): "eenmanszaak_naar_bv" | "bv_naar_eenmanszaak" | "overig" {

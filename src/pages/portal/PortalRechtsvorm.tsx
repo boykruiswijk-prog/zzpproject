@@ -12,7 +12,7 @@ import { usePortalPolicies } from "@/hooks/usePortalData";
 import { SepaMachtigingBlok, bouwFrontendMachtiging } from "@/components/shared/SepaMachtigingBlok";
 import { isValidIban, mandaatkenmerkVoor, redenBav } from "@/lib/sepaMachtiging";
 import { formatDateNL } from "@/lib/dateFormat";
-import { ERKENNING_TEKST, RECHTSVORMEN, datumsFout, machtigingFout, nieuweOndernemingFout } from "../../../supabase/functions/_shared/rechtsvormwijziging";
+import { ERKENNING_TEKST, OVERGANG_TEKST, RECHTSVORMEN, datumsFout, datumsMelding, machtigingFout, nieuweOndernemingFout } from "../../../supabase/functions/_shared/rechtsvormwijziging";
 
 const leeg = { naam: "", kvk: "", rechtsvorm: "BV", straat: "", huisnummer: "", postcode: "", plaats: "", land: "Nederland" };
 const STATUS: Record<string, string> = { nieuw: "Ontvangen, wij beoordelen je verzoek", in_behandeling: "Goedgekeurd, wordt verwerkt", afgerond: "Verwerkt", gearchiveerd: "Gesloten" };
@@ -59,7 +59,7 @@ export default function PortalRechtsvorm() {
       <div className="max-w-2xl mx-auto space-y-6">
         <div>
           <h1 className="text-3xl font-bold mb-2">Mijn onderneming wijzigt van rechtsvorm</h1>
-          <p className="text-muted-foreground">Bijvoorbeeld van eenmanszaak naar bv, of andersom. Je oude onderneming stopt op de einddatum en je nieuwe onderneming gaat de dag erna in. Wij koppelen beide ondernemingen, zodat je gegevens en historie bij elkaar blijven.</p>
+          <p className="text-muted-foreground">Bijvoorbeeld van eenmanszaak naar bv, of andersom. Je oude onderneming stopt op de einddatum die je opgeeft en je nieuwe onderneming gaat in op de ingangsdatum die je kiest. Wij koppelen beide ondernemingen, zodat je gegevens en historie bij elkaar blijven.</p>
           <p className="mt-2 rounded-md border border-primary/30 bg-primary/5 p-3 text-sm" data-testid="erkenning">{ERKENNING_TEKST}</p>
         </div>
 
@@ -89,7 +89,8 @@ export default function PortalRechtsvorm() {
               <div><Label htmlFor="rv-eind">Einddatum oude onderneming</Label><Input id="rv-eind" type="date" value={eind} onChange={(e) => setEind(e.target.value)} /></div>
               <div><Label htmlFor="rv-ingang">Ingangsdatum nieuwe onderneming</Label><Input id="rv-ingang" type="date" value={ingang} onChange={(e) => setIngang(e.target.value)} /></div>
             </div>
-            <p className="text-xs text-muted-foreground">De ingangsdatum is de dag na de einddatum, zodat er geen gat en geen overlap is.</p>
+            <p className="text-xs text-muted-foreground" data-testid="overgang">{OVERGANG_TEKST}</p>
+            {(() => { const m = datumsMelding(eind, ingang); return m && <p role="status" data-testid="datum-melding" className={m.soort === "gat" ? "rounded-md border border-oranje/50 bg-oranje/10 p-2" : "rounded-md bg-muted p-2"}>{m.tekst}</p>; })()}
             <div className="space-y-3"><p className="font-medium">Nieuwe onderneming</p>
               <div><Label htmlFor="rv-naam">Bedrijfsnaam</Label><Input id="rv-naam" value={nieuw.naam} maxLength={200} onChange={(e) => zet("naam", e.target.value)} /></div>
               <div className="grid gap-3 sm:grid-cols-2">

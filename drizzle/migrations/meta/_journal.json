@@ -1898,6 +1898,13 @@
       "when": 1794484520539,
       "tag": "0270_notitie_reacties_1211",
       "breakpoints": true
+    },
+    {
+      "idx": 271,
+      "version": "7",
+      "when": 1794484873263,
+      "tag": "0271_rechtsvorm_overlap_toegestaan",
+      "breakpoints": true
     }
   ]
 }

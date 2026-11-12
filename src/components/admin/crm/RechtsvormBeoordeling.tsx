@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDateNL } from "@/lib/dateFormat";
 import { useAuth } from "@/contexts/AuthContext";
-import { datumsFout, laatsteDagOud } from "../../../../supabase/functions/_shared/rechtsvormwijziging";
+import { datumsFout, datumsMelding, laatsteDagOud } from "../../../../supabase/functions/_shared/rechtsvormwijziging";
 
 type Aanvraag = { id: string; status: string; details: any };
 
@@ -52,10 +52,11 @@ export function RechtsvormBeoordeling({ aanvraag, onKlaar }: { aanvraag: Aanvraa
       <p className="font-semibold">Rechtsvormwijziging via Mijn ZP</p>
       <p>Van <strong>{oud.naam ?? "onbekend"}</strong> ({oud.rechtsvorm ?? "rechtsvorm onbekend"}, KvK {oud.kvk ?? "-"}) naar <strong>{n.naam}</strong> ({n.rechtsvorm}, KvK {n.kvk}).</p>
       <p>Adres nieuw: {n.straat} {n.huisnummer}, {n.postcode} {n.plaats}, {n.land}</p>
-      <p>Einddatum oud {d.einddatum ? formatDateNL(d.einddatum) : "-"}, laatste dekkingsdag {d.ingangsdatum ? formatDateNL(laatsteDagOud(d.ingangsdatum)) : "-"}; ingangsdatum nieuw {d.ingangsdatum ? formatDateNL(d.ingangsdatum) : "-"}.</p>
+      <p>Einddatum oud {d.einddatum ? formatDateNL(d.einddatum) : "-"}, laatste dekkingsdag {d.einddatum ? formatDateNL(laatsteDagOud(d.einddatum)) : "-"}; ingangsdatum nieuw {d.ingangsdatum ? formatDateNL(d.ingangsdatum) : "-"}.</p>
       {datumFout && <p className="text-destructive">{datumFout}</p>}
+      {(() => { const m = datumsMelding(d.einddatum, d.ingangsdatum); return m && <p className={m.soort === "gat" ? "rounded border border-oranje/50 bg-oranje/10 p-2" : "text-muted-foreground"} data-testid="datum-melding">{m.tekst}</p>; })()}
       <p>Nieuwe incassomachtiging: {d.nieuwe_rekening ? `ja, kenmerk ${d.mandaatkenmerk}` : "nee, rekening blijft gelijk"}.</p>
-      <p className="text-muted-foreground">Voorgestelde koppeling: {oud.id ? <Link className="text-primary underline" to={`/admin/klanten/${oud.id}`}>{oud.naam}</Link> : "onbekend"} wordt de vorige onderneming. Bij goedkeuren: oude contracten stoppen op de dag voor de ingangsdatum (bestaande creditregels), het BAV + AVB-contract en de polis gaan mee naar de nieuwe onderneming (geen dubbele factuur), ondernemingen worden gekoppeld. Er wordt niets gemaild en niets naar Exact gestuurd.</p>
+      <p className="text-muted-foreground">Voorgestelde koppeling: {oud.id ? <Link className="text-primary underline" to={`/admin/klanten/${oud.id}`}>{oud.naam}</Link> : "onbekend"} wordt de vorige onderneming. Bij goedkeuren: oude contracten stoppen precies op de opgegeven einddatum (bestaande creditregels; geen automatische credit voor een overlap), het BAV + AVB-contract en de polis gaan mee naar de nieuwe onderneming (geen dubbele factuur), ondernemingen worden gekoppeld. Er wordt niets gemaild en niets naar Exact gestuurd.</p>
       {aanvraag.status !== "afgerond" && (isSupervisorOrAdmin || isVerzekering) && (
         <Button size="sm" onClick={goedkeuren} disabled={bezig || !!datumFout}>{bezig && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{goedgekeurd ? "Polis omzetten en afronden" : "Data gecontroleerd, goedkeuren"}</Button>
       )}

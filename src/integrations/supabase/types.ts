@@ -7937,6 +7937,7 @@ export type Database = {
       crm_ondernemingswijziging: {
         Args: {
           _beeindigen?: boolean
+          _einddatum?: string
           _ingangsdatum: string
           _kvk: string
           _naam: string
