@@ -8,7 +8,7 @@ import { isTestInzending } from "../_shared/testMarkering.ts";
 import { normaliseerAdres } from "../_shared/adresNormalisatie.ts";
 import { bouwMachtigingData, incassantIdOntbreekt, legBewijsVast, KLANTMELDING_INCASSANT_ONTBREEKT } from "../_shared/sepaBewijs.ts";
 import { isUuid, isValidIban, redenBav } from "../_shared/sepaMachtiging.ts";
-import { datumsFout, laatsteDagOud, machtigingFout, nieuweOndernemingFout, richting } from "../_shared/rechtsvormwijziging.ts";
+import { datumsFout, datumsMelding, laatsteDagOud, machtigingFout, nieuweOndernemingFout, richting } from "../_shared/rechtsvormwijziging.ts";
 
 const URL_ = Deno.env.get("SUPABASE_URL")!;
 const admin = createClient(URL_, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
     if (!p.success) return fout("Controleer de ingevulde gegevens.");
     const b = p.data;
 
-    const { data: polis } = await admin.from("policies").select("id,certificate_number,status,onderneming_id,lead_id,user_id").eq("id", b.polis_id).maybeSingle();
+    const { data: polis } = await admin.from("policies").select("id,certificate_number,status,onderneming_id,lead_id,user_id,start_date").eq("id", b.polis_id).maybeSingle();
     if (!polis || polis.user_id !== user.id || polis.status !== "geldig") return fout("Deze polis hoort niet bij je account of is niet meer actief.", 403);
     const { data: lead } = polis.lead_id ? await admin.from("leads").select("voornaam,achternaam,email,telefoon,gekoppeld_onderneming_id").eq("id", polis.lead_id).maybeSingle() : { data: null };
     const vanId = polis.onderneming_id ?? lead?.gekoppeld_onderneming_id ?? null;
@@ -56,7 +56,7 @@ Deno.serve(async (req) => {
     if (!van) return fout("We kunnen je huidige onderneming niet vinden. Bel ons, dan regelen we het samen.");
 
     const nieuw = { ...normaliseerAdres(b.nieuw), naam: b.nieuw.naam, kvk: b.nieuw.kvk.replace(/\D/g, ""), rechtsvorm: b.nieuw.rechtsvorm, land: b.nieuw.land || "Nederland" };
-    const f = datumsFout(b.einddatum, b.ingangsdatum) ?? nieuweOndernemingFout(nieuw, van.kvk)
+    const f = datumsFout(b.einddatum, b.ingangsdatum, new Date(), polis.start_date) ?? nieuweOndernemingFout(nieuw, van.kvk)
       ?? machtigingFout({ nieuweRekening: b.nieuwe_rekening, ibanGeldig: isValidIban(b.iban), rekeninghouder: b.rekeninghouder, akkoord: b.sepa_akkoord });
     if (f) return fout(f);
 
@@ -81,7 +81,7 @@ Deno.serve(async (req) => {
       polisnummer: polis.certificate_number ?? "-", user_id: user.id, geverifieerd: true, onderneming_id: van.id,
       is_test: isTestInzending(email),
       details: {
-        polis_id: polis.id, einddatum: b.einddatum, ingangsdatum: b.ingangsdatum, laatste_dekkingsdag_oud: laatsteDagOud(b.ingangsdatum),
+        polis_id: polis.id, einddatum: b.einddatum, ingangsdatum: b.ingangsdatum, laatste_dekkingsdag_oud: laatsteDagOud(b.einddatum), datum_melding: datumsMelding(b.einddatum, b.ingangsdatum)?.soort ?? null,
         huidige_onderneming: { id: van.id, naam: van.naam, kvk: van.kvk, rechtsvorm: van.rechtsvorm },
         richting: richting(van.rechtsvorm, nieuw.rechtsvorm), nieuw,
         nieuwe_rekening: b.nieuwe_rekening, mandaatkenmerk: bewijs?.mandaatkenmerk ?? null, sepa_bewijs_id: bewijs?.id ?? null,
