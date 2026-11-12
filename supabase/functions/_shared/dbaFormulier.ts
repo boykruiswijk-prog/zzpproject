@@ -52,7 +52,8 @@ export function leesDbaChecklistUitXml(xml: string): DbaChecklistItem[] | null {
   for (let i = start + 1; i < ps.length; i++) {
     const tekst = ontsnap(ps[i].delen.map((d) => ("t" in d ? d.t : "")).join("")).replace(/\s+/g, " ").trim();
     if (tekst) {
-      const sleutel = dbaDocSleutel(tekst);
+      // Lange tekst (opsommingen, toelichting) is nooit een documentrij.
+      const sleutel = tekst.length <= 70 && !/^[•\-*]/.test(tekst) ? dbaDocSleutel(tekst) : null;
       if (sleutel) {
         rij = { naam: tekst, vakken: [] };
         rijen.push(rij);
