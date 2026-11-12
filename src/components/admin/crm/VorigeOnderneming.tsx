@@ -13,7 +13,7 @@ import { formatDateNL } from "@/lib/dateFormat";
 import { koppelRedenFout, vorigeOndernemingUitFormulier } from "@/lib/vorigeOnderneming";
 import { useMagBeeindigen } from "./LopendeProducten";
 
-// Alleen naam, rechtsvorm en KvK: nooit rekeningnummers in deze koppeling.
+// Alleen naam, rechtsvorm en KvK: nooit bankgegevens in deze koppeling.
 type Ond = { id: string; naam: string; rechtsvorm: string | null; kvk: string | null };
 const KOLOMMEN = "id,naam,rechtsvorm,kvk";
 
