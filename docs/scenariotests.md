@@ -61,3 +61,6 @@ en het i-icoon bij Aantal medewerkers.
 - `exact_adres_test_nooit`: testonderneming komt nooit in de Exact-wachtrij.
 - `exact_adres_wachtrij`: alleen een adreswijziging maakt precies één open rij; een fout-rij gaat bij een nieuwe wijziging terug naar wacht.
 - Vitest `src/test/exactAdres1211.test.ts`: allowlist, alleen adresvelden, terugleescontrole, fout geeft melding.
+
+## DBA-score (besluit Boy 12-11-2026)
+`src/test/dbaScore.test.ts`: dubbele polisregel, leeg veld, oude KvK, polis zonder BAV/AVB, ZPDBA1193 = 60, certificeerweigering en formuliervinkjes. Pure logica, geen database.
