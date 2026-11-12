@@ -34,8 +34,8 @@ export const LEAD_STATUS_TITELS: Partial<Record<LeadStatus, string>> = {
 /** A23-aanvulling 3: uitkomsten bij het afsluiten van een lead. "afgerond" is niet meer kiesbaar, bestaande records blijven. */
 export const LEAD_UITKOMSTEN = ["klant_geworden", "geen_interesse", "vraag_beantwoord"] as const;
 export type LeadUitkomst = (typeof LEAD_UITKOMSTEN)[number];
-/** Afgesloten leadstatussen: afgerond (oud) plus de drie uitkomsten. */
-export const AFGESLOTEN_LEAD_STATUSSEN: LeadStatus[] = ["afgerond", ...LEAD_UITKOMSTEN];
+/** Afgesloten leadstatussen: afgerond (oud), samengevoegd en de drie uitkomsten. */
+export const AFGESLOTEN_LEAD_STATUSSEN: LeadStatus[] = ["afgerond", "samengevoegd", ...LEAD_UITKOMSTEN];
 export const isUitkomst = (s: string): s is LeadUitkomst => (LEAD_UITKOMSTEN as readonly string[]).includes(s);
 
 export function statusTitel(raw: string | null | undefined): string | undefined {

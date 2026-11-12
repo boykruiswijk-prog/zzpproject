@@ -394,7 +394,7 @@ export default function AdminLeadDetail() {
                 <p className="text-muted-foreground">Voor jou is hier niets meer te doen. Zodra de factuur in Exact is verwerkt, staat hier het factuurnummer.</p>
               </CardContent></Card>
             ))}
-            {lead.type === "verzekering_aanvraag" && (() => {
+            {lead.type === "verzekering_aanvraag" && lead.status !== "samengevoegd" && (() => {
               const phase = derivePhase(lead);
               return <LeadActivationPanel lead={lead} magActiveren={isTeamMember} fase={phase} />;
             })()}
