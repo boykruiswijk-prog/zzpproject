@@ -39,6 +39,8 @@ import { useFormGuard } from "@/lib/antiSpam";
 import { maakFormulier } from "../../../supabase/functions/_shared/leadVelden";
 
 import { HoneypotField } from "@/components/shared/HoneypotField";
+import { moetMaatwerkTonen } from "@/lib/maatwerk";
+import { MaatwerkMelding } from "@/components/MaatwerkMelding";
 import { WIZARD_SECTOREN, verzekeringskaartVoorSector, isHandmatigeAcceptatieSector } from "@/data/sectorVerzekeringskaart";
 import { LocalizedLink } from "@/components/LocalizedLink";
 import { usePdokAdres } from "@/hooks/usePdokAdres";
@@ -98,6 +100,7 @@ function FieldError({ message }: { message?: string }) {
 }
 
 export function BAVApplicationModule({ initialSector = "", compactPakketten = false }: { initialSector?: string; compactPakketten?: boolean } = {}) {
+  const [maatwerkOpen, setMaatwerkOpen] = useState(false);
    const { t } = useTranslation();
    const { toast } = useToast();
    const [currentStep, setCurrentStep] = useState(1);
@@ -934,7 +937,7 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
                           id="sector"
                           name="sector"
                           value={formData.sector}
-                          onChange={(e) => { const v = e.target.value; setFormData(prev => ({ ...prev, sector: v })); if (errors.sector) setErrors(prev => { const n = { ...prev }; delete n.sector; return n; }); }}
+                          onChange={(e) => { const v = e.target.value; if (moetMaatwerkTonen(formData.sector, v)) setMaatwerkOpen(true); setFormData(prev => ({ ...prev, sector: v })); if (errors.sector) setErrors(prev => { const n = { ...prev }; delete n.sector; return n; }); }}
                           className={cn("flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm", errors.sector && "border-destructive")}
                         >
                           <option value="">Kies je sector</option>

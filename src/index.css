@@ -37,6 +37,8 @@
     --destructive-foreground: 0 0% 98%;
     --warning: 45 93% 47%;
     --warning-foreground: 26 83% 14%;
+    --oranje: 25 95% 53%;
+    --oranje-foreground: 0 0% 100%;
     --border: 220 13% 91%;
     --input: 220 13% 91%;
     --ring: 220 40% 20%;
@@ -77,6 +79,8 @@
     --destructive-foreground: 0 0% 98%;
     --warning: 45 93% 47%;
     --warning-foreground: 48 96% 89%;
+    --oranje: 25 90% 50%;
+    --oranje-foreground: 0 0% 100%;
     --border: 220 13% 22%;
     --input: 220 13% 22%;
     --ring: 220 40% 50%;

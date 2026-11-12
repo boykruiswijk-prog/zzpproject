@@ -1,3 +1,4 @@
+import { MaatwerkLabel } from "@/components/MaatwerkMelding";
 import { eviLeadLabel } from "@/lib/interneBron";
 import { LeadKlantKoppeling } from "@/components/admin/LeadKlantKoppeling";
 import { KvkLeadAfwijkingen } from "@/components/admin/KvkLeadAfwijkingen";
@@ -231,6 +232,7 @@ export default function AdminLeadDetail() {
             )}
           </div>
         )}
+        <MaatwerkLabel extraData={(lead as any)?.extra_data} />
         <VlagBalk lead={lead as any} magWijzigen={isSupervisorOrAdmin || isVerzekering} />
         {eviLeadLabel(lead.extra_data) && <Badge variant="outline">{eviLeadLabel(lead.extra_data)}</Badge>}
         {/* Header */}

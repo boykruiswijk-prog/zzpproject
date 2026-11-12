@@ -1,3 +1,4 @@
+import { MaatwerkLabel } from "@/components/MaatwerkMelding";
 import { leadOnderwerp } from "../../../supabase/functions/_shared/leadVelden";
 import { CyberAanvraag, useCyberAanvragen, cyberWerkStap } from "./CyberAanvraag";
 import { eviLeadLabel } from "@/lib/interneBron";
@@ -230,7 +231,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
                 {bavVoor(lead.id) && <BavNummer keuze={bavVoor(lead.id)} />}
               </div>
               {magVlag && <VlagKnop lead={lead as any} />}
-              {eviLeadLabel(lead.extra_data) && <Badge variant="outline">{eviLeadLabel(lead.extra_data)}</Badge>}
+              <MaatwerkLabel extraData={lead.extra_data} />{eviLeadLabel(lead.extra_data) && <Badge variant="outline">{eviLeadLabel(lead.extra_data)}</Badge>}
               <Badge variant="outline">{lead.type === "verzekering_aanvraag" ? "Verzekering" : lead.type === "handmatig" ? "Handmatig" : lead.type === "offerte-aanvraag" ? "Offerte" : "Contact"}</Badge>
             </div>
             <div className="space-y-1 text-sm">
@@ -306,7 +307,7 @@ export function LeadTable({ soort }: { soort?: "aanvragen" | "leads" } = {}) {
                     )}
                   </TableCell>
                   <TableCell>
-                    {eviLeadLabel(lead.extra_data) && <Badge variant="outline">{eviLeadLabel(lead.extra_data)}</Badge>}
+                    <MaatwerkLabel extraData={lead.extra_data} />{eviLeadLabel(lead.extra_data) && <Badge variant="outline">{eviLeadLabel(lead.extra_data)}</Badge>}
                     {lead.type === "offerte-aanvraag" ? (
                       <Badge className="bg-purple-100 text-purple-800 border-purple-300" variant="outline">Offerte</Badge>
                     ) : lead.type === "verzekering_aanvraag" ? (
