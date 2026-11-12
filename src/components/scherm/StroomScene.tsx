@@ -6,8 +6,8 @@ const REIZEN = [['gestart', 'Start aanvraag'], ['verstuurd', 'Aanvraag verstuurd
 /** De klantreis als trechter met golf; past in de smalle carrousel rechts. */
 export function StroomTrechter({ data }: { data: SchermPayload }) {
   const s = data.stroom;
-  const stappen = [...(s.sessies !== null ? [{ label: 'Bezoeker op de site', n: s.sessies }] : []), ...REIZEN.map(([sleutel, label]) => ({ sleutel, label, n: s[sleutel] }))];
-  const key = (st: { sleutel?: string }) => st.sleutel;
+  const stappen = [...(s.sessies !== null ? [{ sleutel: 'sessies', label: 'Bezoeker op de site', n: s.sessies }] : []), ...REIZEN.map(([sleutel, label]) => ({ sleutel, label, n: s[sleutel] }))];
+  const key = (st: { sleutel: string }) => st.sleutel;
   const max = Math.max(1, ...stappen.map(x => x.n ?? 0));
   // Kolommiddens in procenten van de breedte, zodat golf en labels gelijk lopen.
   const x = (i: number) => (i + 0.5) * 1000 / stappen.length;
