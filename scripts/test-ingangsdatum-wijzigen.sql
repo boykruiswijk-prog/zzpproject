@@ -32,7 +32,7 @@ BEGIN
 
   -- blokkade: factuur_planning-regel
   INSERT INTO public.factuur_planning (klant_contract_id, periode_start, periode_eind, aantal, bedrag_per_periode, bedrag, exact_account_id, exact_item_id, planningssleutel, status, is_test)
-    VALUES (k, d1, d1 + 30, 1, 55, 55, 'test', 'test', 'ZPF-TEST9901', 'verwerkt', true);
+    VALUES (k, d1, d1 + 30, 1, 55, 55, 'test', 'test', 'ZPF-7E579901', 'verwerkt', true);
   BEGIN PERFORM public.contract_wijzig_ingangsdatum(k, d1 - 1, 'klant wil eerder starten'); uit := uit || 'FAIL planning; '; EXCEPTION WHEN others THEN uit := uit || 'ok planning[' || SQLERRM || ']; '; END;
 
   -- blokkade: beëindigd contract
