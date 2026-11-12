@@ -5,8 +5,8 @@ import { COMPANY } from "./company.ts";
 
 const MAX = 60;
 
-/** Vaste tekst op elke verkoopfactuur (besluit Boy 9-11-2026): handmatig overmaken kan altijd.
- *  Exact drukt InvoiceText af op factuur en factuurmail. Nooit op creditnota's (die worden niet betaald). */
+/** Bewaarde betaaltekst. Sinds besluit Boy 12-11-2026 uitsluitend via de Exact-factuurlayout,
+ *  nooit als veld in een SalesInvoice-payload. */
 export const FACTUUR_BETAALTEKST = `Liever zelf overmaken? Dat kan altijd naar ${COMPANY.registrations.iban} t.n.v. ${COMPANY.legalName} onder vermelding van het factuurnummer.`;
 
 export function datumKort(iso: string): string {

@@ -1,6 +1,7 @@
 // Diagnose-helper voor Exact: metadata, ItemGroups en gecontroleerde invalid-account probes.
 // Geen business-fix; probes gebruiken een niet-bestaande relatie zodat geen factuur wordt aangemaakt.
 import { exactRegelBedrag } from "../_shared/factuurTekst.ts";
+import { controleerExactFactuurPayload } from "../_shared/exactFactuurVelden.ts";
 import { getBavGlAccountId } from "../_shared/exactGl.ts";
 import { ensureValidToken } from "../_shared/exactToken.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -141,6 +142,7 @@ Deno.serve(metExactMelding("exact-diagnose-itemgroups", async (req) => {
         if (target === "header") payload[field] = value;
         else line[field] = value;
       }
+      controleerExactFactuurPayload(payload);
       const r = await fetch(`${baseUrl}/api/v1/${division}/salesinvoice/SalesInvoices`, {
         method: "POST", headers: writeHeaders, body: JSON.stringify(payload),
       });

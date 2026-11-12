@@ -4,6 +4,7 @@
 // Geen mails naar klanten; maximaal één alarmmail per dag naar het team.
 // deno-lint-ignore-file no-explicit-any
 import { werkContractStandBij } from "../_shared/contractStand.ts";
+import { controleerExactFactuurPayload } from "../_shared/exactFactuurVelden.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { ensureValidToken, refreshAccessToken } from "../_shared/exactToken.ts";
 import { requireSupervisor } from "../_shared/teamAuth.ts";
@@ -147,7 +148,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
     });
     if (deel === "facturen") {
       const van = String(body?.vanaf ?? "2026-10-01");
-      return json({ facturen: await get(`salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,InvoiceDate,InvoiceTo,InvoiceToName,Journal,PaymentCondition,Type,Status,Description,AmountFC,VATAmountFC&$filter=${encodeURIComponent(`InvoiceDate ge datetime'${van}'`)}`) });
+      return json({ facturen: await get(`salesinvoice/SalesInvoices?$select=InvoiceID,InvoiceNumber,InvoiceDate,InvoiceTo,InvoiceToName,Journal,PaymentCondition,Type,Status,Description,YourRef,Remarks,AmountFC,VATAmountFC&$filter=${encodeURIComponent(`InvoiceDate ge datetime'${van}'`)}`) });
     }
     if (deel === "regels") {
       const ids = (Array.isArray(body?.invoice_ids) ? body.invoice_ids : []).filter((x: string) => /^[0-9a-f-]{36}$/.test(x)).slice(0, 40);
@@ -326,6 +327,7 @@ Deno.serve(metWerk({ station: "facturatie", actie: "planner_run", tekst: "Factuu
       const method = (init.method ?? "GET").toUpperCase();
       if (method !== "GET" && method !== "POST") throw new Error("methode niet toegestaan");
       if (method === "POST") {
+        controleerExactFactuurPayload(JSON.parse(String(init.body)));
         const { data: v } = await admin.from("facturatie_config").select("facturatie_actief,opzeg_credits_actief").eq("id", 1).single();
         const isCredit = String(init.body ?? "").includes('"Type":8021');
         if (isCredit ? v?.opzeg_credits_actief !== true : v?.facturatie_actief !== true) throw new Error("schakelaar uit: POST geweigerd");
