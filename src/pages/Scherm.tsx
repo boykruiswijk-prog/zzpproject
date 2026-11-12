@@ -308,12 +308,10 @@ function PaneelAiTeam({ d }: { d: SchermPayload }) {
   return (
     <div className="ai-team-paneel flex h-full min-w-0 flex-col gap-[17.28px] overflow-hidden">
       <Kop>Ons AI-team</Kop>
-      <div className="rounded-[10.8px] border border-[hsl(var(--s-rood)/0.6)] bg-[hsl(var(--s-rood)/0.1)] p-[17.28px]">
-        <div className="text-[28.08px] font-semibold text-[hsl(var(--s-tekst))]">Contentmachine</div>
-        <div className="mt-[6.48px] grid grid-cols-2 gap-[19.2px]">
-          <div><div className="text-[64.8px] font-bold leading-none tabular-nums text-[hsl(var(--s-tekst))]">{kb.content_nieuw ?? <Gemeten />}</div><Label>nieuwe artikelen</Label></div>
-          <div><div className="text-[64.8px] font-bold leading-none tabular-nums text-[hsl(var(--s-tekst))]">{kb.content_verbeterd ?? <Gemeten />}</div><Label>artikelen verbeterd</Label></div>
-        </div>
+      <div className="flex items-baseline gap-[24px] rounded-[10.8px] border border-[hsl(var(--s-rood)/0.6)] bg-[hsl(var(--s-rood)/0.1)] px-[17.28px] py-[10px]" data-testid="contentmachine">
+        <span className="text-[25.92px] font-semibold text-[hsl(var(--s-tekst))]">Contentmachine</span>
+        <span className="text-[25.92px] text-[hsl(var(--s-dim))]"><strong className="text-[38.88px] tabular-nums text-[hsl(var(--s-tekst))]">{kb.content_nieuw ?? "-"}</strong> nieuw</span>
+        <span className="text-[25.92px] text-[hsl(var(--s-dim))]"><strong className="text-[38.88px] tabular-nums text-[hsl(var(--s-tekst))]">{kb.content_verbeterd ?? "-"}</strong> verbeterd</span>
       </div>
       {team.length === 0 ? <Gemeten /> : (
         <div className="flex min-h-0 flex-1 flex-col justify-start gap-[4px]" data-testid="ai-team-lijst" data-aantal={team.length}>
@@ -321,7 +319,7 @@ function PaneelAiTeam({ d }: { d: SchermPayload }) {
             const t = runTijd(a.laatste_run, d.gegenereerd_op);
             const fout = a.status === 'fout';
             return (
-              <div key={`${a.naam}-${i}`} className="flex min-w-0 items-center gap-[12px] text-[21.6px] leading-[30px]" data-testid="ai-team-regel" data-status={a.status}>
+              <div key={`${a.naam}-${i}`} className="flex min-w-0 items-center gap-[12px] text-[21.6px] leading-[28px]" data-testid="ai-team-regel" data-status={a.status}>
                 <span className="h-[15.12px] w-[15.12px] shrink-0 rounded-full" style={{ background: `hsl(${kleur(a.status)})` }} />
                 <span className="w-[96px] shrink-0 truncate font-bold" style={{ color: fout ? 'hsl(var(--s-rood))' : 'hsl(var(--s-tekst))' }} data-testid="robotnaam">{a.robotnaam ?? a.naam}</span>
                 <span className="min-w-0 flex-1 truncate" style={{ color: fout ? 'hsl(var(--s-rood))' : 'hsl(var(--s-dim))' }}>{fout ? a.reden ?? 'laatste run mislukt' : a.functie}</span>
