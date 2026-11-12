@@ -45,9 +45,11 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds, omzetOpen
   const [form, setForm] = useState({ certificate_holder: "", insured_name: "", kvk: "", start_date: "", sector: "", package_type: "" });
 
   const { data: policies = [], refetch } = useQuery({
-    queryKey: ["klant-policies", ond.id],
+    // Ook polissen die alleen aan een lead van deze klant hangen (spoed 12-11); sleutel ververst na een gewijzigde ingangsdatum.
+    queryKey: ["klant-policies", ond.id, leadIds.join(","), contracten.map((c: any) => `${c.id}:${c.begin_datum}`).join(",")],
     queryFn: async () => {
-      const { data, error } = await supabase.from("policies").select("*").eq("onderneming_id", ond.id).order("created_at", { ascending: false });
+      const filter = leadIds.length ? `onderneming_id.eq.${ond.id},lead_id.in.(${leadIds.join(",")})` : `onderneming_id.eq.${ond.id}`;
+      const { data, error } = await supabase.from("policies").select("*").or(filter).order("created_at", { ascending: false });
       if (error) throw error;
       return data || [];
     },
@@ -140,10 +142,15 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds, omzetOpen
     setGeenNummer(false);
     setOpen(true);
     // Zelfde nummerkeuze als de server (trigger generate_certificate_number).
-    const { data: vs } = await supabase.rpc("certificaatnummer_voorstel" as any, { _onderneming_id: ond.id, _lead_id: null });
+    const { data: vs } = await supabase.rpc("certificaatnummer_voorstel" as any, { _onderneming_id: ond.id, _lead_id: leadIds.length === 1 ? leadIds[0] : null });
     const v = vs as any;
-    setVoorstel(v ?? { nummer: null, bron: "geen" });
-    if (!v?.nummer && !bevestigNieuw) setGeenNummer(true);
+    // Bestaat er via onderneming, lead of KvK al een geldige polis, dan nooit een nieuw nummer aanbieden.
+    const geldig = policies.find((p: any) => p.status === "geldig" && /^ZPBAV\d+$/i.test(p.certificate_number ?? ""));
+    const bestaand = v?.nummer ? v : geldig ? { nummer: geldig.certificate_number, bron: "eerdere_policy", staat_al_op_policy: true }
+      : v?.bestaand_geldig ? { nummer: v.bestaand_geldig, bron: "eerdere_policy", staat_al_op_policy: true } : null;
+    setVoorstel(bestaand ?? v ?? { nummer: null, bron: "geen" });
+    if (bestaand) setBevestig(false);
+    else if (!bevestigNieuw) setGeenNummer(true);
   };
 
   const bronTekst = (v: any) => {
