@@ -65,3 +65,9 @@ describe("scenario-runner", () => {
     expect(sql).toContain("GRANT EXECUTE ON FUNCTION public.test_scenario(text) TO service_role");
   });
 });
+describe("testaanvraag_geen_ads_conversie", () => {
+  it("Google Ads-conversie alleen voor echte aanvragen", () =>
+    expect(readFileSync("src/lib/tracking.ts", "utf8")).toContain('if (!isTest && adsSendTo(GOOGLE_ADS_CONVERSIE.split("/")[1] ?? "") === GOOGLE_ADS_CONVERSIE)'));
+  it("polis-lifecycle stuurt testleads geen klantmail", () =>
+    expect(readFileSync("supabase/functions/polis-lifecycle/index.ts", "utf8")).toContain('lead.is_test === true && doel === "klant"'));
+});
