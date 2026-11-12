@@ -28,9 +28,6 @@ function amsterdamTijd(d: Date) {
     hm: new Intl.DateTimeFormat("nl-NL", { timeZone: TZ, hour: "2-digit", minute: "2-digit", hour12: false }).format(d),
   };
 }
-const tijdKort = (iso: string) => {
-  try { return new Intl.DateTimeFormat("nl-NL", { timeZone: TZ, hour: "2-digit", minute: "2-digit" }).format(new Date(iso)); } catch { return ""; }
-};
 
 function Logo({ groot = false }: { groot?: boolean }) {
   return (
@@ -134,25 +131,8 @@ function Sparkline({ waarden }: { waarden: number[] }) {
   );
 }
 
-function Staven({ data }: { data: { maand: string; n: number }[] }) {
-  const max = Math.max(1, ...data.map((d) => d.n));
-  const maanden = ["jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
-  return (
-    <div className="flex h-[259.2px] items-end gap-[11.52px]">
-      {data.map((d) => (
-        <div key={d.maand} className="flex h-full flex-1 flex-col items-center justify-end gap-[5.4px]">
-          <span className="text-[23.76px] font-semibold tabular-nums text-[hsl(var(--s-tekst))]">{d.n}</span>
-          <div className="w-full rounded-t-[4.32px] bg-[hsl(var(--s-blauw))]" style={{ height: `${(d.n / max) * 162}px`, minHeight: "4.32px", transition: "height 1s ease" }} />
-          <span className="text-[23.76px] text-[hsl(var(--s-dim))]">{maanden[Number(d.maand.slice(5, 7)) - 1]}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 const Kop = ({ children }: { children: React.ReactNode }) => <h2 className="text-[38.88px] font-semibold tracking-tight text-[hsl(var(--s-tekst))]">{children}</h2>;
 const Label = ({ children }: { children: React.ReactNode }) => <div className="text-[25.92px] text-[hsl(var(--s-dim))]">{children}</div>;
-const Bijgewerkt = ({ op }: { op: string | null | undefined }) => op ? <span data-bijgewerkt className="text-[18.36px] font-normal text-[hsl(var(--s-dim))]">bijgewerkt om {tijdKort(op)}</span> : null;
 const Gemeten = () => <span className="text-[28.08px] font-normal text-[hsl(var(--s-dim))]">wordt gemeten</span>;
 
 function Stat({ label, waarde, klein = false }: { label: string; waarde: string | null; klein?: boolean }) {
