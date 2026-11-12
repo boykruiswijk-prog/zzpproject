@@ -140,7 +140,9 @@ export function IncassoKlantBlok({ ondernemingId }: { ondernemingId: string }) {
         <div key={r.id} className="flex flex-wrap items-center gap-2 rounded-md border p-2 text-sm">
           <span className="font-medium">Incasso mislukt: factuur {r.factuurnummer}</span>
           <span>{euroNL(r.bedrag)} · {formatDateNL(r.mislukt_op)} · dag {c.dag}</span>
-          {c.volgende && <span className="text-muted-foreground">volgende: {c.volgende.label} op {formatDateNL(c.volgende.datum)}</span>}
+          {r.cyclus_actief !== false && c.volgende && <span className="text-muted-foreground">volgende: {c.volgende.label} op {formatDateNL(c.volgende.datum)}</span>}
+          {r.cyclus_actief === false && <span className="text-muted-foreground">geen herinneringsmails</span>}
+          <span className="text-muted-foreground">laatste contact: {r.laatste_contact_op ? formatDateNL(r.laatste_contact_op) : "nog niet"}</span>
           <span className="ml-auto flex gap-2"><ContactGelegdKnop id={r.id} onKlaar={() => refetch()} /><BetaaldMetNotitieKnop id={r.id} onKlaar={() => refetch()} />{r.status === "royement_voorgesteld" && <RoyementKnop id={r.id} onKlaar={() => refetch()} />}</span>
         </div>); })}
     </div>
