@@ -7616,6 +7616,7 @@ export type Database = {
         Args: { _nummer: string; _ond: string; _start: string }
         Returns: string
       }
+      _ts_polis_lifecycle_opzeg: { Args: never; Returns: Json }
       _ts_rechtsvorm_aanvraag: {
         Args: {
           _eind: string

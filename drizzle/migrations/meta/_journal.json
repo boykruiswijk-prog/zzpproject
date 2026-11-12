@@ -1996,6 +1996,13 @@
       "when": 1794508813953,
       "tag": "0284_opzegredenen_gelijktrekken_1211",
       "breakpoints": true
+    },
+    {
+      "idx": 285,
+      "version": "7",
+      "when": 1794514352956,
+      "tag": "0285_polis_lifecycle_opzegreden_klant_blokkade_1211",
+      "breakpoints": true
     }
   ]
 }
