@@ -17,3 +17,8 @@ export function moetMaatwerkTonen(vorige: string | null | undefined, nieuwe: str
 export function heeftMaatwerkVlag(extraData: unknown): boolean {
   return !!extraData && typeof extraData === "object" && (extraData as Record<string, unknown>).maatwerk_check === true;
 }
+
+/** Vooraf ingevulde sector (link of beroepspagina): popup één keer tonen zodra het sectorveld in beeld komt (besluit Boy 12-11). */
+export function moetMaatwerkTonenBijVoorinvullen(voorinvulSector: string | null | undefined, huidigeSector: string | null | undefined, alGetoond: boolean): boolean {
+  return !alGetoond && !!voorinvulSector && voorinvulSector === huidigeSector && isMaatwerkSector(voorinvulSector);
+}

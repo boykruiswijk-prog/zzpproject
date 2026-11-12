@@ -71,3 +71,14 @@ describe("testaanvraag_geen_ads_conversie", () => {
   it("polis-lifecycle stuurt testleads geen klantmail", () =>
     expect(readFileSync("supabase/functions/polis-lifecycle/index.ts", "utf8")).toContain('lead.is_test === true && doel === "klant"'));
 });
+import { moetMaatwerkTonenBijVoorinvullen } from "@/lib/maatwerk";
+describe("maatwerk_voorinvullen", () => {
+  it("vooraf ingevulde zorg/bouw toont popup één keer", () => {
+    expect(moetMaatwerkTonenBijVoorinvullen("zorg", "zorg", false)).toBe(true);
+    expect(moetMaatwerkTonenBijVoorinvullen("bouw", "bouw", false)).toBe(true);
+    expect(moetMaatwerkTonenBijVoorinvullen("zorg", "zorg", true)).toBe(false);
+    expect(moetMaatwerkTonenBijVoorinvullen("ict", "ict", false)).toBe(false);
+    expect(moetMaatwerkTonenBijVoorinvullen("zorg", "ict", false)).toBe(false);
+    expect(moetMaatwerkTonenBijVoorinvullen("", "", false)).toBe(false);
+  });
+});

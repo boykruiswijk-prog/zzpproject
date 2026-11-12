@@ -41,7 +41,7 @@
 - Scripts never import React (SSR crashes); markdown uses articleMarkdownUrl (safe tel: links). Both llms generators use published articles. Why: current article discovery.
 - Public combined cyber coverage/help uses cyberPubliek.CYBER_DEKKING_EN_HULP; shared contractual constants stay unchanged. Why: consistent punctuation without altering consent, mail or certificate text.
 
-- Elke zichtbare website/admin-wijziging krijgt bij publiceren precies één rij in public.wijzigingsmeldingen in gewone taal voor Ellen; trigger wijzigingsmelding_mailen plus cron-vangnet mailen via wijziging-mailen. Waarom: Ellen weet wat er veranderd is.
+- Agents never insert public.wijzigingsmeldingen while building; the report proposes titel/omschrijving/onderdeel/wat_moet_ellen_doen and Boy inserts it after publishing and live check (trigger wijzigingsmelding_mailen mails Ellen). Why: no notices about unpublished features.
 
 <!-- LOVABLE:BEGIN -->
 - Live scenes/effects are lazy; demo events stay in browser memory. Journey/timeline aggregates use service-only scherm_stromen via scherm-data. Why: site performance and visitor privacy.

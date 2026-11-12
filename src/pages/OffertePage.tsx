@@ -36,7 +36,7 @@ import { useFormGuard, submitPublicForm, PublicFormError } from "@/lib/antiSpam"
 import { maakFormulier } from "../../supabase/functions/_shared/leadVelden";
 
 import { HoneypotField } from "@/components/shared/HoneypotField";
-import { moetMaatwerkTonen } from "@/lib/maatwerk";
+import { moetMaatwerkTonen, moetMaatwerkTonenBijVoorinvullen } from "@/lib/maatwerk";
 import { MaatwerkMelding } from "@/components/MaatwerkMelding";
 import { WIZARD_SECTOREN, isHandmatigeAcceptatieSector } from "@/data/sectorVerzekeringskaart";
 import { brancheVoorSector } from "@/data/sectorBranche";
@@ -90,7 +90,8 @@ export default function OffertePage() {
   const [searchParams] = useSearchParams();
   const qp = (k: string, max = 120) => (searchParams.get(k) ?? "").trim().slice(0, max);
   const qpSector = qp("sector");
-  const [maatwerkOpen, setMaatwerkOpen] = useState(false);
+  // Sector via link vooraf ingevuld met bouw/techniek of zorg: popup één keer bij openen (besluit Boy 12-11).
+  const [maatwerkOpen, setMaatwerkOpen] = useState(() => moetMaatwerkTonenBijVoorinvullen(qpSector, qpSector, false) && WIZARD_SECTOREN.some((s) => s.id === qpSector));
   const [form, setForm] = useState({
     voornaam: qp("voornaam"),
     achternaam: qp("achternaam"),

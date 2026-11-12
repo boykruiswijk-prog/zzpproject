@@ -40,7 +40,7 @@ import { useFormGuard } from "@/lib/antiSpam";
 import { maakFormulier } from "../../../supabase/functions/_shared/leadVelden";
 
 import { HoneypotField } from "@/components/shared/HoneypotField";
-import { moetMaatwerkTonen } from "@/lib/maatwerk";
+import { moetMaatwerkTonen, moetMaatwerkTonenBijVoorinvullen } from "@/lib/maatwerk";
 import { MaatwerkMelding } from "@/components/MaatwerkMelding";
 import { WIZARD_SECTOREN, verzekeringskaartVoorSector, isHandmatigeAcceptatieSector } from "@/data/sectorVerzekeringskaart";
 import { LocalizedLink } from "@/components/LocalizedLink";
@@ -297,6 +297,14 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
   // mogelijk om e-mailadressen en KvK-nummers af te tasten. De dubbelcheck
   // gebeurt nu server-side bij het versturen van de aanvraag.
   const wizardRef = useRef<HTMLDivElement>(null);
+  // Vooraf ingevulde maatwerksector: popup één keer zodra stap 2 (sector) in beeld komt.
+  const maatwerkVoorinvulGetoond = useRef(false);
+  useEffect(() => {
+    if (currentStep === 2 && moetMaatwerkTonenBijVoorinvullen(initialSector, formData.sector, maatwerkVoorinvulGetoond.current)) {
+      maatwerkVoorinvulGetoond.current = true;
+      setMaatwerkOpen(true);
+    }
+  }, [currentStep, initialSector, formData.sector]);
   useEffect(() => {
     const bron = (routerLocatie.state as { aanvraagVanLead?: { bron: string; id: string } } | null)?.aanvraagVanLead;
     if (!bron) return;
