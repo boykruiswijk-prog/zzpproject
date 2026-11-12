@@ -7611,6 +7611,7 @@ export type Database = {
       _ts_exact_adres: { Args: { p_naam: string }; Returns: Json }
       _ts_fout: { Args: { _sql: string }; Returns: string }
       _ts_incasso: { Args: { p_naam: string }; Returns: Json }
+      _ts_opzegreden: { Args: { _naam: string }; Returns: Json }
       _ts_polis: {
         Args: { _nummer: string; _ond: string; _start: string }
         Returns: string
