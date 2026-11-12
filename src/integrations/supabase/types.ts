@@ -2636,6 +2636,62 @@ export type Database = {
         }
         Relationships: []
       }
+      exact_adres_sync: {
+        Row: {
+          bijgewerkt_op: string
+          bron: string
+          created_at: string
+          exact_account_id: string
+          exact_nieuw: Json | null
+          exact_oud: Json | null
+          id: string
+          laatste_melding: string | null
+          melding_id: string | null
+          onderneming_id: string
+          pogingen: number
+          status: string
+          verwerkt_op: string | null
+        }
+        Insert: {
+          bijgewerkt_op?: string
+          bron?: string
+          created_at?: string
+          exact_account_id: string
+          exact_nieuw?: Json | null
+          exact_oud?: Json | null
+          id?: string
+          laatste_melding?: string | null
+          melding_id?: string | null
+          onderneming_id: string
+          pogingen?: number
+          status?: string
+          verwerkt_op?: string | null
+        }
+        Update: {
+          bijgewerkt_op?: string
+          bron?: string
+          created_at?: string
+          exact_account_id?: string
+          exact_nieuw?: Json | null
+          exact_oud?: Json | null
+          id?: string
+          laatste_melding?: string | null
+          melding_id?: string | null
+          onderneming_id?: string
+          pogingen?: number
+          status?: string
+          verwerkt_op?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exact_adres_sync_onderneming_id_fkey"
+            columns: ["onderneming_id"]
+            isOneToOne: false
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       exact_artikelen_spiegel: {
         Row: {
           code: string | null
