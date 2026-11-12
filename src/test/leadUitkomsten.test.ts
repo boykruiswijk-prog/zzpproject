@@ -61,10 +61,10 @@ describe("A23-aanvulling 3: leaduitkomsten", () => {
     for (const u of LEAD_UITKOMSTEN) expect(k).not.toContain(u);
   });
   it("tellers: afgerond blijft overal meetellen, uitkomsten tellen als afgesloten", () => {
-    expect(AFGESLOTEN_LEAD_STATUSSEN).toEqual(["afgerond", "klant_geworden", "geen_interesse", "vraag_beantwoord"]);
+    expect(AFGESLOTEN_LEAD_STATUSSEN).toEqual(["afgerond", "samengevoegd", "klant_geworden", "geen_interesse", "vraag_beantwoord"]);
     expect(fnSql).toContain("''afgerond'',''klant_geworden'',''geen_interesse'',''vraag_beantwoord''");
     expect(fnSql).not.toMatch(/UPDATE public\.leads SET status = 'afgerond'/);
-    expect(readFileSync("src/hooks/useLeads.ts", "utf8")).toContain("(afgerond,klant_geworden,geen_interesse,vraag_beantwoord)");
+    expect(readFileSync("src/hooks/useLeads.ts", "utf8")).toContain("(afgerond,klant_geworden,geen_interesse,vraag_beantwoord,samengevoegd)");
   });
   it("geen wijziging aan activatie: Polis actief is geen uitkomst", () => {
     expect(LEAD_UITKOMSTEN as readonly string[]).not.toContain("actief");

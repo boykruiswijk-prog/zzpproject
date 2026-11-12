@@ -29,6 +29,7 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { LeadNotes } from "@/components/admin/LeadNotes";
 import { ReviewVerzoekRegel } from "@/components/admin/ReviewVerzoekRegel";
 import { LeadActivationPanel } from "@/components/admin/LeadActivationPanel";
+import { BestaandeKlantAanvraag } from "@/components/admin/BestaandeKlantAanvraag";
 import { LeadLifecyclePanel } from "@/components/admin/LeadLifecyclePanel";
 import { LeadOnboardingStepper, derivePhase } from "@/components/admin/LeadOnboardingStepper";
 import { LeadDoorlooptijd } from "@/components/admin/LeadDoorlooptijd";
@@ -276,8 +277,9 @@ export default function AdminLeadDetail() {
         </div>
 
         <AfrondDialoog key={afrondUitkomst ?? "kies"} lead={lead as any} uitkomst={afrondUitkomst} open={afrondOpen} onOpenChange={setAfrondOpen} />
+        {lead.type === "verzekering_aanvraag" && <BestaandeKlantAanvraag lead={lead} />}
         {/* Onboarding-stepper bovenaan */}
-        {lead.type === "verzekering_aanvraag" && (
+        {lead.type === "verzekering_aanvraag" && lead.status !== "samengevoegd" && (
           <LeadOnboardingStepper lead={lead} />
         )}
 
@@ -392,7 +394,7 @@ export default function AdminLeadDetail() {
                 <p className="text-muted-foreground">Voor jou is hier niets meer te doen. Zodra de factuur in Exact is verwerkt, staat hier het factuurnummer.</p>
               </CardContent></Card>
             ))}
-            {lead.type === "verzekering_aanvraag" && (() => {
+            {lead.type === "verzekering_aanvraag" && lead.status !== "samengevoegd" && (() => {
               const phase = derivePhase(lead);
               return <LeadActivationPanel lead={lead} magActiveren={isTeamMember} fase={phase} />;
             })()}

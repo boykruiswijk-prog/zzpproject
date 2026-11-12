@@ -7594,6 +7594,11 @@ export type Database = {
       }
     }
     Functions: {
+      _bestaande_klant_bij_aanvraag: {
+        Args: { _lead_id: string }
+        Returns: Json
+      }
+      _ts_bestaande_klant: { Args: never; Returns: Json }
       _ts_c: {
         Args: { _gekregen: string; _naam: string; _verwacht: string }
         Returns: Json
@@ -7625,6 +7630,10 @@ export type Database = {
       _ts_sessie: { Args: { _aal?: string; _uid: string }; Returns: undefined }
       _ts_tel: { Args: never; Returns: Json }
       a19_team: { Args: never; Returns: undefined }
+      aanvraag_bestaande_klant_afsluiten: {
+        Args: { _lead_id: string }
+        Returns: Json
+      }
       aanvraag_handmatig_afronden: {
         Args: { _lead_id: string; _reden: string }
         Returns: Json
@@ -7896,6 +7905,10 @@ export type Database = {
       bestaand_geldig_bav_nummer: {
         Args: { _lead: string; _ond: string }
         Returns: string
+      }
+      bestaande_klant_bij_aanvraag: {
+        Args: { _lead_id: string }
+        Returns: Json
       }
       bevestig_artikel_mapping: {
         Args: { _bevestigd: boolean; _id: string }
@@ -9273,6 +9286,7 @@ export type Database = {
         | "klant_geworden"
         | "geen_interesse"
         | "vraag_beantwoord"
+        | "samengevoegd"
       lead_type:
         | "contact"
         | "verzekering_aanvraag"
@@ -9437,6 +9451,7 @@ export const Constants = {
         "klant_geworden",
         "geen_interesse",
         "vraag_beantwoord",
+        "samengevoegd",
       ],
       lead_type: [
         "contact",

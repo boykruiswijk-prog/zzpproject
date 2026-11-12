@@ -15,6 +15,7 @@ export const LEAD_STATUS_LABELS: Record<LeadStatus, string> = {
   opgezegd: "Opgezegd",
   afgewezen: "Afgewezen",
   afgerond: "Afgerond (uitkomst onbekend)",
+  samengevoegd: "Bestaande klant (samengevoegd)",
   klant_geworden: "Klant geworden",
   geen_interesse: "Geen interesse",
   vraag_beantwoord: "Vraag beantwoord",
@@ -24,6 +25,7 @@ export const LEAD_STATUS_LABELS: Record<LeadStatus, string> = {
 export const LEAD_STATUS_TITELS: Partial<Record<LeadStatus, string>> = {
   actief: "De aanvraag is geactiveerd en de polis loopt",
   afgerond: "De actie is volledig afgehandeld; dit zegt niets over een polis",
+  samengevoegd: "Dubbele aanvraag afgesloten bij een bestaande klant met lopend contract en geldige polis",
   klant_geworden: "Lead is klant geworden; bij een verzekeringsaanvraag loopt dit via activeren (Polis actief)",
   geen_interesse: "Lead heeft afgezien of reageert niet meer",
   vraag_beantwoord: "Contactvraag zonder verkoopkans, vraag is beantwoord",
@@ -32,8 +34,8 @@ export const LEAD_STATUS_TITELS: Partial<Record<LeadStatus, string>> = {
 /** A23-aanvulling 3: uitkomsten bij het afsluiten van een lead. "afgerond" is niet meer kiesbaar, bestaande records blijven. */
 export const LEAD_UITKOMSTEN = ["klant_geworden", "geen_interesse", "vraag_beantwoord"] as const;
 export type LeadUitkomst = (typeof LEAD_UITKOMSTEN)[number];
-/** Afgesloten leadstatussen: afgerond (oud) plus de drie uitkomsten. */
-export const AFGESLOTEN_LEAD_STATUSSEN: LeadStatus[] = ["afgerond", ...LEAD_UITKOMSTEN];
+/** Afgesloten leadstatussen: afgerond (oud), samengevoegd en de drie uitkomsten. */
+export const AFGESLOTEN_LEAD_STATUSSEN: LeadStatus[] = ["afgerond", "samengevoegd", ...LEAD_UITKOMSTEN];
 export const isUitkomst = (s: string): s is LeadUitkomst => (LEAD_UITKOMSTEN as readonly string[]).includes(s);
 
 export function statusTitel(raw: string | null | undefined): string | undefined {
@@ -52,6 +54,7 @@ export const LEAD_STATUS_COLORS: Record<LeadStatus, string> = {
   opgezegd: "bg-gray-200 text-gray-700",
   afgewezen: "bg-red-100 text-red-800",
   afgerond: "bg-slate-100 text-slate-700",
+  samengevoegd: "bg-slate-100 text-slate-700",
   klant_geworden: "bg-green-100 text-green-800",
   geen_interesse: "bg-gray-100 text-gray-700",
   vraag_beantwoord: "bg-slate-200 text-slate-800",

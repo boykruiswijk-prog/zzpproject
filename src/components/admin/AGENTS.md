@@ -1,5 +1,6 @@
 # Beheer-UI
 - Lead status menus use shared type-specific options; historical current statuses are visible but disabled. Status edits preserve linkage and converted_at; closed rows are opt-in or shown under Alle, never lead work items. Why: closing a question must not unlink a customer or change policy state.
+- Dubbele verzekeringsaanvraag bij hetzelfde KvK met lopend BAV+AVB-contract en geldige polis alleen via RPC aanvraag_bestaande_klant_afsluiten: status samengevoegd, geactiveerd_op ongewijzigd, bestaande klantkoppeling behouden of aanmaken, CRM-notitie en audit; lead-to-exact-activate blokkeert activate/retry vóór Exact. Waarom: nooit een dubbel contract, certificaat, factuur of klantmail.
 
 - Aantallen (klanten, contracten, service open, aanvragen doel) alleen via SQL tel_* functies, gedeeld door dashboard_tellers, mijn_acties_vandaag, scherm_data en scherm_stromen; nooit getallen uit marketing_snapshot-tekst. Waarom: dashboard en tv tonen altijd hetzelfde.
 - Admin onder lg: Sheet-menu en kaartlijsten; desktop vaste zijbalk. Waarom: één navigatie.

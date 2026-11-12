@@ -67,3 +67,6 @@ en het i-icoon bij Aantal medewerkers.
 
 ## Openstaande betalingen (besluit Boy 12-11-2026 14:05)
 `incasso_cyclus_uit` (post zonder cyclus krijgt geen herinnering of opschorting), `incasso_contact_betaald` (Gebeld/gemaild zet CRM-notitie en datum; betaald zonder notitie geweigerd), `review_betaalachterstand` (open post blokkeert reviewmail).
+
+## Bestaande klant bij dubbele aanvraag (spoed 12-11)
+`bestaande_klant_dubbele_aanvraag`: hetzelfde KvK met lopend BAV+AVB-contract en geldige polis wordt herkend; de aanvraag krijgt status `samengevoegd`, blijft zonder `geactiveerd_op`, wordt gekoppeld en krijgt CRM-notitie plus audit. Er komen geen tweede contracten, certificaten, mails of uitnodigingen bij. Herhalen is idempotent en alles wordt teruggedraaid.
