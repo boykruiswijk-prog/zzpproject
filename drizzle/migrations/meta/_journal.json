@@ -1968,6 +1968,13 @@
       "when": 1794490488686,
       "tag": "0280_openstaande_betalingen_1211",
       "breakpoints": true
+    },
+    {
+      "idx": 281,
+      "version": "7",
+      "when": 1794490553085,
+      "tag": "0281_openstaande_betalingen_regels_1211",
+      "breakpoints": true
     }
   ]
 }
