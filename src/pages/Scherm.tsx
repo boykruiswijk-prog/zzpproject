@@ -218,11 +218,12 @@ function PaneelNettoGroei({ d }: { d: SchermPayload }) {
 function PaneelService({ d }: { d: SchermPayload }) {
   const s = d.service;
   return (
-    <div className="flex h-full flex-col gap-[43.2px]" data-testid="paneel-service">
+    <div className="flex h-full flex-col gap-[28px]" data-testid="paneel-service">
       <Kop>Service en kwaliteit</Kop>
-      <Stat label="Afhandeltijd (mediaan)" waarde={s.afhandeltijd_uur === null ? null : `${f(s.afhandeltijd_uur, 1)} u`} />
-      <Stat label="Mail binnen 5 minuten" waarde={s.bevestiging_5min_pct === null ? null : `${s.bevestiging_5min_pct}%`} />
-      <Stat label="Open verzoeken" waarde={nf.format(s.open)} />
+      <Stat klein label="Aanvraag tot polis (mediaan)" waarde={s.aanvraag_tot_polis_uur === null ? null : `${f(s.aanvraag_tot_polis_uur, 1)} u`} />
+      <Stat klein label="Serviceverzoek afgehandeld (mediaan)" waarde={s.afhandeltijd_uur === null ? null : `${f(s.afhandeltijd_uur, 1)} u`} />
+      <Stat klein label="Mail binnen 5 minuten" waarde={s.bevestiging_5min_pct === null ? null : `${s.bevestiging_5min_pct}%`} />
+      <Stat klein label="Open verzoeken" waarde={nf.format(s.open)} />
     </div>
   );
 }
@@ -278,7 +279,7 @@ function Weekomzet({ d }: { d: SchermPayload }) {
   return (
     <div data-testid="weekomzet" className={`scherm-dagomzet${licht ? " scherm-dagomzet-licht" : ""}`}>
       <div className="scherm-dagomzet-tekst">
-        <div className="scherm-dagomzet-titel">Weekomzet</div>
+        <div className="scherm-dagomzet-titel">Weekomzet nieuwe contracten</div>
         <div className="scherm-dagomzet-sub">nieuwe jaarpremie uit {nf.format(w.aantal)} {w.aantal === 1 ? "aanvraag" : "aanvragen"} sinds maandag</div>
       </div>
       <div className="min-w-0 text-right">

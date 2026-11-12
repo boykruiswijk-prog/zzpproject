@@ -488,6 +488,8 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
       gestart: getal(r?.stroom?.gestart), verstuurd: getal(r?.stroom?.verstuurd),
       kvk: getal(r?.stroom?.kvk), actief: getal(r?.stroom?.actief),
       certificaat: getal(r?.stroom?.certificaat), klant: getal(r?.stroom?.klant),
+      // Besluit Boy 12-11-2026 13:53: niet-gestarte polissen apart, geen uitval.
+      nog_niet_gestart: getal(r?.stroom?.nog_niet_gestart),
     },
     tijdlijn: (Array.isArray(r?.tijdlijn) ? r.tijdlijn : []).filter((a: Ruw) => !a.is_test && STATIONS.includes(a.station) && getal(a.minuut) !== null && a.minuut >= 0 && a.minuut < 1440).map((a: Ruw) => ({ station: String(a.station), minuut: Math.floor(a.minuut), n: Math.max(0, getal(a.n) ?? 0) })),
     processen: (Array.isArray(r?.processen) ? r.processen : []).filter((a: Ruw) => !a.is_test && a.actie !== 'cron' && STATIONS.includes(a.station)).map((a: Ruw) => ({ station: String(a.station), actie: ['kvk_check','planner_run','exact_sync','wijziging','lead_verzekering_aanvraag','lead_actief','mail'].includes(a.actie) ? a.actie as string : 'overig', status: status(a.status), n: Math.max(0, getal(a.n) ?? 0) })),
@@ -517,6 +519,8 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
       // Mediaan, verzoeken langer dan 14 dagen open niet meegeteld (scherm_schoon).
       afhandeltijd_uur: getal(r?.schoon ? r.schoon.service_afhandeltijd_uur : sv.afhandeltijd_uur),
       bevestiging_5min_pct: getal(sv.bevestiging_5min_pct),
+      // Besluit Boy 12-11-2026 13:53: mediaan aanvraag tot polis actief, laatste 30 dagen.
+      aanvraag_tot_polis_uur: getal(r?.stroom?.aanvraag_tot_polis_uur),
     },
     gezondheid: {
       cron_ok_24u: getal(gz.cron_ok_24u) ?? 0,

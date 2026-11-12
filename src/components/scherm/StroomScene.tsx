@@ -6,7 +6,8 @@ const REIZEN = [['gestart', 'Start aanvraag'], ['verstuurd', 'Aanvraag verstuurd
 /** De klantreis als trechter met golf; past in de smalle carrousel rechts. */
 export function StroomTrechter({ data }: { data: SchermPayload }) {
   const s = data.stroom;
-  const stappen = [...(s.sessies !== null ? [{ label: 'Bezoeker op de site', n: s.sessies }] : []), ...REIZEN.map(([key, label]) => ({ label, n: s[key] }))];
+  const stappen = [...(s.sessies !== null ? [{ sleutel: 'sessies', label: 'Bezoeker op de site', n: s.sessies }] : []), ...REIZEN.map(([sleutel, label]) => ({ sleutel, label, n: s[sleutel] }))];
+  const key = (st: { sleutel: string }) => st.sleutel;
   const max = Math.max(1, ...stappen.map(x => x.n ?? 0));
   // Kolommiddens in procenten van de breedte, zodat golf en labels gelijk lopen.
   const x = (i: number) => (i + 0.5) * 1000 / stappen.length;
@@ -26,7 +27,8 @@ export function StroomTrechter({ data }: { data: SchermPayload }) {
       <div className="stroom-stappen" style={{ gridTemplateColumns: `repeat(${stappen.length}, minmax(0, 1fr))` }}>
         {stappen.map((step, i) => <div key={step.label}>
           <span>{step.label}</span><b>{step.n === null ? '-' : <CountUp value={step.n} />}</b>
-          <small>{i === 0 ? 'start' : step.n !== null && (stappen[i - 1]?.n ?? 0) > 0 ? `${Math.round(step.n / Number(stappen[i - 1].n) * 100)}% van vorige` : 'wordt gemeten'}</small>
+          {key(step) === 'klant' && (s.nog_niet_gestart ?? 0) > 0 && <em className="stroom-nog-niet" data-testid="nog-niet-gestart">{s.nog_niet_gestart} nog niet gestart</em>}
+          <small>{i === 0 ? 'start' : step.n !== null && (stappen[i - 1]?.n ?? 0) > 0 ? <><strong>{Math.round(step.n / Number(stappen[i - 1].n) * 100)}%</strong><br />van vorige</> : 'wordt gemeten'}</small>
         </div>)}
       </div>
     </div>
