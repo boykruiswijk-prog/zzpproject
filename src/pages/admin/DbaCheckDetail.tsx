@@ -971,6 +971,25 @@ export default function DbaCheckDetail() {
               </Card>
             )}
 
+            {/* Certificeren geweigerd: score en lijst kloppen niet */}
+            {scoreFout && (
+              <Card className="border-destructive/40 bg-destructive/5">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-destructive text-base">
+                    <AlertTriangle className="h-5 w-5" />
+                    Score en aandachtspunten komen niet overeen
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-sm">{scoreFout}</p>
+                  <Button size="sm" variant="outline" onClick={handleHerbereken} disabled={activeAction !== null}>
+                    {activeAction === "herbereken" ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+                    Score herberekenen
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Score too low warning */}
             {(check.status === "analyzed" || check.status === "certified") && score !== undefined && score < 75 && (
               <Card className="border-orange-200 bg-orange-50">
