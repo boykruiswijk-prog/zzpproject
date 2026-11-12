@@ -3,7 +3,15 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { WIZARD_SECTOREN } from "@/data/sectorVerzekeringskaart";
 import { MAATWERK_TEKST, heeftMaatwerkVlag, maatwerkMailZin, maatwerkVlag, moetMaatwerkTonen } from "@/lib/maatwerk";
-import { renderCustomerHtml, renderCustomerText } from "../../supabase/functions/send-lead-notification/index";
+import ts from "typescript";
+import { z } from "zod";
+import { HANDMATIGE_ONTVANGST } from "../../supabase/functions/_shared/aanvraagBeoordeling";
+
+// Echte mailrenderers zonder verzending (zelfde aanpak als aanvraagMailDroog.test.ts).
+const code = readFileSync("supabase/functions/send-lead-notification/index.ts", "utf8").replace(/^import .*;\n/gm, "");
+const output: any = {};
+new Function("exports", "createClient", "Resend", "z", "Deno", "HANDMATIGE_ONTVANGST", "klantVeiligeTekst", ts.transpileModule(code, { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText)(output, () => ({}), class { emails = { send: () => { throw new Error("geen mail"); } }; }, z, { env: { get: () => "" }, serve: () => {} }, HANDMATIGE_ONTVANGST, (s: unknown) => String(s));
+const { renderCustomerHtml, renderCustomerText } = output;
 
 describe("maatwerk-melding (besluit Boy 12-11-2026 12:03)", () => {
   it("popup bij zorg en bouw & techniek, niet bij andere sectoren", () => {
