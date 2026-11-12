@@ -8874,8 +8874,31 @@ export type Database = {
         }[]
       }
       scherm_data: { Args: never; Returns: Json }
+      scherm_echte_gebeurtenis: {
+        Args: { _actie: string; _status: string; _tekst: string }
+        Returns: boolean
+      }
+      scherm_factureerbaar_op: {
+        Args: { _d: string }
+        Returns: {
+          contract_id: string
+          onderneming_id: string
+          product: string
+        }[]
+      }
+      scherm_groei: { Args: never; Returns: Json }
+      scherm_schoon: { Args: never; Returns: Json }
       scherm_stromen: { Args: never; Returns: Json }
       scherm_versheid: { Args: never; Returns: Json }
+      scherm_weekomzet_rijen: {
+        Args: never
+        Returns: {
+          kanaal: string
+          moment: string
+          pakket: string
+          tarief_type: string
+        }[]
+      }
       scherm_werkstand: { Args: never; Returns: Json }
       service_aanvraag_afronden: { Args: { _id: string }; Returns: Json }
       service_aanvraag_koppelen: {
