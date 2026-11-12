@@ -1877,6 +1877,13 @@
       "when": 1794480433158,
       "tag": "0267_rechtsvormwijziging_zelfservice",
       "breakpoints": true
+    },
+    {
+      "idx": 268,
+      "version": "7",
+      "when": 1794481806376,
+      "tag": "0268_contract_wijzig_ingangsdatum",
+      "breakpoints": true
     }
   ]
 }

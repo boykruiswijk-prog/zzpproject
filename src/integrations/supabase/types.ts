@@ -7810,6 +7810,18 @@ export type Database = {
         }
         Returns: number
       }
+      contract_ingangsdatum_blokkade: {
+        Args: {
+          p_contract_id: string
+          p_nieuwe_datum?: string
+          p_reden?: string
+        }
+        Returns: string
+      }
+      contract_ingangsdatum_info: {
+        Args: { p_contract_id: string }
+        Returns: Json
+      }
       contract_korting_voorbeeld: {
         Args: { _contract_id: string; _pct: number; _vanaf: string }
         Returns: Json
@@ -7825,6 +7837,14 @@ export type Database = {
         Returns: Json
       }
       contract_opzegging: { Args: { _contract_id: string }; Returns: string }
+      contract_polissen_bij_ingang: {
+        Args: { p_contract_id: string }
+        Returns: string[]
+      }
+      contract_wijzig_ingangsdatum: {
+        Args: { p_contract_id: string; p_nieuwe_datum: string; p_reden: string }
+        Returns: Json
+      }
       controleer_aanvraag_opbouw: {
         Args: { _a: Json; _doel: number }
         Returns: boolean
