@@ -4,6 +4,7 @@ import { Resend } from "npm:resend@4.0.0";
 import { z } from "npm:zod@3.23.8";
 import { maybeFormatDate } from "../_shared/dateFormat.ts";
 import { createMailGate } from "../_shared/mail.ts";
+import { portaalRedenCode, opzegRedenLabel } from "../_shared/opzegRedenen.ts";
 import { valideerOpzegdatum, valideerToelichting } from "../_shared/opzegValidatie.ts";
 import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
