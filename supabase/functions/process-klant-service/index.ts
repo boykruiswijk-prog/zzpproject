@@ -4,6 +4,7 @@ import { Resend } from "npm:resend@4.0.0";
 import { z } from "npm:zod@3.23.8";
 import { maybeFormatDate } from "../_shared/dateFormat.ts";
 import { createMailGate } from "../_shared/mail.ts";
+import { portaalRedenCode, opzegRedenLabel } from "../_shared/opzegRedenen.ts";
 import { valideerOpzegdatum, valideerToelichting } from "../_shared/opzegValidatie.ts";
 import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
 import { guardPublicSubmission } from "../_shared/antiSpam.ts";
@@ -106,6 +107,16 @@ Deno.serve(async (req) => {
     // Server-side dezelfde regels als het formulier: reden verplicht, toelichting bij "Anders", datum vandaag of later.
     if (v.type === "opzeggen") {
       const d = v.details ?? {};
+      // Eén lijst (opzegRedenen.ts): alleen portaalcodes; beeindiging_zp is alleen voor het team.
+      const code = portaalRedenCode(d.reden);
+      if (d.reden && !code) {
+        return new Response(JSON.stringify({ error: "validation", melding: "Kies een reden uit de lijst." }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (code) { d.reden = code; d.reden_label = opzegRedenLabel(code); }
+      d.bron = "mijn_zp";
+      v.details = d;
       const fout = (!d.reden ? "Kies een reden." : null)
         ?? valideerToelichting(d.reden, d.toelichting)
         ?? valideerOpzegdatum(d.opzegdatum)

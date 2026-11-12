@@ -24,7 +24,8 @@ describe("opzegvalidatie", () => {
     expect(valideerToelichting("andere_reden", "")).toMatch(/minimaal/);
   });
   it("alle andere redenen gaan door zonder toelichting; geen reden geeft fout", () => {
-    for (const r of OPZEG_REDENEN.filter((x) => x !== "Anders")) expect(valideerRedenStap({ reden: r })).toEqual({});
+    for (const r of OPZEG_REDENEN.filter((x) => x.code !== "anders")) expect(valideerRedenStap({ reden: r.code })).toEqual({});
+    expect(valideerRedenStap({ reden: "anders" }).toelichting).toMatch(/minimaal 3/);
     expect(valideerRedenStap({}).reden).toBe("Kies een reden.");
   });
   it("vandaagNL volgt Nederlandse tijd", () => {

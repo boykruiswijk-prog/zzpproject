@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { opzegRedenTekst } from "@/lib/opzegRedenen";
 import { DekkingOpgeschortBadge } from "@/components/admin/incasso/Incasso";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -103,7 +104,7 @@ export function ServiceAanvraagDetail({ aanvraag, onSaveNotes, onMarkAfgerond, o
           {veld("Polisnummer / BAV-nummer", aanvraag.polisnummer)}
           {veld("Debiteurnummer (Exact-relatiecode)", debiteurnummerVan(aanvraag))}
           {opzeg && veld("Opzegdatum", d.opzegdatum ? formatDateNL(d.opzegdatum) : null)}
-          {opzeg && veld("Reden", d.reden)}
+          {opzeg && veld("Reden", opzegRedenTekst(d))}
           {veld("Opmerkingen", d.toelichting ?? d.opmerkingen)}
           {veld("Ontvangen op", formatDateNL(aanvraag.created_at))}
           {opzeg && veld("Koppeling", KOPPELING_LABEL[aanvraag.koppeling_status ?? "niet_gekoppeld"] ?? aanvraag.koppeling_status)}

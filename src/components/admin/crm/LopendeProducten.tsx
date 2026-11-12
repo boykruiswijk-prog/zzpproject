@@ -18,6 +18,7 @@ import { PRODUCT_LABEL, type Product } from "@/lib/klantContracten";
 import { uploadBijlagen } from "@/lib/crmBijlagen";
 import { BijlageKiezer } from "./BijlageKiezer";
 import { BavNummer } from "./BavNummer";
+import { OPZEG_REDENEN_BEHEER, opzegRedenLabel } from "@/lib/opzegRedenen";
 import { OPZEG_GEEN_CREDIT_TEKST, opzegZonderCredit } from "@/lib/opzegBeleid";
 import { contractEindStatus, kiesBavNummer, useBavRijen } from "@/lib/bavNummer";
 import { controleerAdminMfa, verwerkMfaFout } from "@/lib/adminMfaStap";
@@ -29,14 +30,8 @@ import { ContractStandLabels, IngangsdatumKnop, useIngangsdatumInfo } from "./In
 export const DEKKING_LABEL = "Laatste dag van de dekking";
 export const DEKKING_HULP = "De creditnota loopt vanaf de dag erna";
 
-export const STOP_REDENEN: Record<string, string> = {
-  opzegging_klant: "Opzegging klant",
-  eerdere_opzegging: "Eerdere opzegging niet verwerkt",
-  ondernemingswijziging: "Ondernemingswijziging",
-  wanbetaling: "Wanbetaling",
-  stoppen_onderneming: "Overlijden of stoppen onderneming",
-  overig: "Overig",
-};
+/** Beheerlijst opzegredenen uit src/lib/opzegRedenen.ts; oude codes blijven via opzegRedenLabel leesbaar. */
+export const STOP_REDENEN: Record<string, string> = Object.fromEntries(OPZEG_REDENEN_BEHEER.map((r) => [r.code, r.label]));
 
 const vandaag = () => new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Amsterdam" });
 
@@ -134,14 +129,14 @@ function BeeindigDialoog({ ondernemingId, ondernemingNaam, persoonId, contracten
   const [p, setP] = useState<Set<string>>(new Set(start.p));
   const eersteContract = contracten.find((x) => start.c.includes(x.id));
   const [datum, setDatum] = useState(eersteContract ? standaardLaatsteDekkingsdag(eersteContract, vandaag()) : vandaag());
-  const [reden, setReden] = useState("opzegging_klant");
+  const [reden, setReden] = useState("");
   const [toelichting, setToelichting] = useState("");
   const [bestanden, setBestanden] = useState<File[]>([]);
   const [mail, setMail] = useState(false);
   const [stap, setStap] = useState<"invoer" | "bevestig">("invoer");
   const [bezig, setBezig] = useState(false);
   const wissel = (s: Set<string>, set: (x: Set<string>) => void, id: string) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); set(n); };
-  const geldig = c.size + p.size > 0 && datum && toelichting.trim().length >= 3;
+  const geldig = c.size + p.size > 0 && datum && !!reden && toelichting.trim().length >= 3;
 
   async function uitvoeren() {
     if (!(await controleerAdminMfa())) {
@@ -188,9 +183,9 @@ function BeeindigDialoog({ ondernemingId, ondernemingNaam, persoonId, contracten
             <div className="space-y-1"><Label htmlFor="laatste-dekkingsdag">{DEKKING_LABEL}</Label><Input id="laatste-dekkingsdag" type="date" value={datum} onChange={(e) => setDatum(e.target.value)} /><p className="text-xs text-muted-foreground">{DEKKING_HULP}. Standaard de dag vóór de verlengdatum; mag in het verleden liggen, bijvoorbeeld bij een eerdere telefonische opzegging.</p>
               {contracten.filter((x) => c.has(x.id)).map((x) => <CreditVoorbeeld key={x.id} contract={x} datum={datum} />)}</div>
             <div><Label>Reden</Label>
-              <Select value={reden} onValueChange={setReden}><SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>{Object.entries(STOP_REDENEN).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent></Select></div>
-            <div><Label>Toelichting (verplicht)</Label><Textarea value={toelichting} onChange={(e) => setToelichting(e.target.value)} rows={3} /></div>
+              <Select value={reden} onValueChange={setReden}><SelectTrigger><SelectValue placeholder="Kies een reden" /></SelectTrigger>
+                <SelectContent>{OPZEG_REDENEN_BEHEER.map((r) => <SelectItem key={r.code} value={r.code}>{r.label}</SelectItem>)}</SelectContent></Select></div>
+            <div><Label>{reden === "anders" ? "Namelijk (verplicht)" : "Toelichting (verplicht)"}</Label><Textarea value={toelichting} onChange={(e) => setToelichting(e.target.value)} rows={3} /></div>
             <BijlageKiezer bestanden={bestanden} onChange={setBestanden} />
             <label className="flex items-center gap-2"><Checkbox checked={mail} onCheckedChange={(v) => setMail(v === true)} />Stuur bevestiging van beeindiging naar de klant</label>
           </div>
@@ -201,7 +196,7 @@ function BeeindigDialoog({ ondernemingId, ondernemingNaam, persoonId, contracten
               {contracten.filter((x) => c.has(x.id)).map((x) => <li key={x.id}>Contract regel {x.bron_rij} ({PRODUCT_LABEL[x.product as Product] ?? x.product}) eindigt per {formatDateNL(datum)}</li>)}
               {polissen.filter((x) => p.has(x.id)).map((x) => <li key={x.id}>Polis {x.certificate_number ?? "zonder nummer"} wordt ingetrokken</li>)}
             </ul>
-            <p>Reden: {STOP_REDENEN[reden]}</p>
+            <p>Reden: {opzegRedenLabel(reden)}</p>
             <p className="whitespace-pre-wrap">Toelichting: {toelichting}</p>
             {bestanden.length > 0 && <p>Bijlagen: {bestanden.length}</p>}
             {contracten.filter((x) => c.has(x.id)).every((x: any) => opzegZonderCredit(x))

@@ -17,7 +17,7 @@ export function plusDagen(iso: string, dagen: number): string {
 }
 
 export function isAndersReden(reden: unknown): boolean {
-  return reden === "Anders" || reden === "andere_reden";
+  return reden === "Anders" || reden === "andere_reden" || reden === "anders";
 }
 
 export function valideerToelichting(reden: unknown, toelichting: unknown): string | null {

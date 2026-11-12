@@ -1989,6 +1989,13 @@
       "when": 1794494361711,
       "tag": "0283_bestaande_klant_scenario_naamfix_1211",
       "breakpoints": true
+    },
+    {
+      "idx": 284,
+      "version": "7",
+      "when": 1794508813953,
+      "tag": "0284_opzegredenen_gelijktrekken_1211",
+      "breakpoints": true
     }
   ]
 }
