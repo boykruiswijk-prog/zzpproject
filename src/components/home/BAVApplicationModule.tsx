@@ -1,4 +1,5 @@
 import { isValidIban as isValidSepaIban } from "@/lib/sepaMachtiging";
+import { MedewerkersUitleg } from "@/components/shared/MedewerkersUitleg";
 import { SITE_CONFIG } from "@/config/site";
 import { CyberVragen } from "@/components/verzekeringen/CyberVragen";
 import { CyberAfwijzing } from "@/components/verzekeringen/CyberAfwijzing";
@@ -956,7 +957,7 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
                         <FieldError message={errors.functie} />
                       </div>
                       <div>
-                        <Label htmlFor="aantalMedewerkers">{t("home.bavEmployees")} *</Label>
+                        <Label htmlFor="aantalMedewerkers">{t("home.bavEmployees")} *</Label><MedewerkersUitleg />
                         <Input
                           id="aantalMedewerkers"
                           name="aantalMedewerkers"
