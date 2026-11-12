@@ -1,4 +1,7 @@
-import { requireMfa } from "../_shared/teamAuth.ts";
+import { requireMfa, isInternalMachine } from "../_shared/teamAuth.ts";
+import { computeScore, dbaScoreInvoer, dbaScoreControle, type DbaChecklistItem } from "../_shared/dbaScore.ts";
+import { leesDbaChecklistUitXml, voegHandmatigSamen } from "../_shared/dbaFormulier.ts";
+import { unzipSync, strFromU8 } from "npm:fflate@0.8.3";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { PDFDocument, rgb, StandardFonts } from "https://esm.sh/pdf-lib@1.17.1";
@@ -8,11 +11,99 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// deno-lint-ignore no-explicit-any
+function platteChecklist(raw: any): DbaChecklistItem[] {
+  if (Array.isArray(raw)) {
+    return raw.map((item: any) => {
+      let cur = item;
+      while (cur && cur.status && typeof cur.status === "object" && cur.status.document_name !== undefined) cur = cur.status;
+      return { document_name: cur?.document_name || "", status: typeof cur?.status === "string" ? cur.status : "niet_aanwezig", manually_overridden: Boolean(item?.manually_overridden) };
+    });
+  }
+  if (raw && typeof raw === "object") {
+    return Object.entries(raw).map(([n, st]) => ({ document_name: n, status: typeof st === "string" ? st : "niet_aanwezig", manually_overridden: false }));
+  }
+  return [];
+}
+
+/** Checklist uit de vakjes van het originele Word-formulier, met handmatige wijzigingen; anders de opgeslagen lijst. */
+// deno-lint-ignore no-explicit-any
+async function formulierChecklist(supabase: any, check: any): Promise<{ items: DbaChecklistItem[]; bron: "formulier" | "opgeslagen" | "geen" }> {
+  const pad = check.uploaded_file_url as string | null;
+  if (pad && /\.docx$/i.test(pad)) {
+    try {
+      const { data } = await supabase.storage.from("dba-documents").download(pad);
+      if (data) {
+        const files = unzipSync(new Uint8Array(await data.arrayBuffer()));
+        const xml = files["word/document.xml"];
+        const gelezen = xml ? leesDbaChecklistUitXml(strFromU8(xml)) : null;
+        if (gelezen && gelezen.length > 0) return { items: voegHandmatigSamen(gelezen, check.document_checklist), bron: "formulier" };
+      }
+    } catch (e) {
+      console.error("Formulier niet leesbaar:", e instanceof Error ? e.message : e);
+    }
+  }
+  const opgeslagen = platteChecklist(check.document_checklist);
+  return { items: opgeslagen, bron: opgeslagen.length > 0 ? "opgeslagen" : "geen" };
+}
+
+// deno-lint-ignore no-explicit-any
+async function scoreOpslaan(supabase: any, check: any, extra: Record<string, unknown> = {}) {
+  const { items, bron } = await formulierChecklist(supabase, check);
+  const uitkomst = computeScore(dbaScoreInvoer(check, items, new Date()));
+  const sug = Array.isArray(check.suggestions) ? check.suggestions[0] ?? {} : {};
+  const nieuw = { ...sug, score: uitkomst.score, aandachtspunten: uitkomst.aandachtspunten, rode_vlaggen: uitkomst.rode_vlaggen, checklist_bron: bron };
+  delete (nieuw as Record<string, unknown>)._original_ai_score;
+  const { error } = await supabase.from("dba_checks").update({
+    ...extra,
+    suggestions: [nieuw],
+    missing_fields: uitkomst.aandachtspunten,
+    ...(items.length > 0 ? { document_checklist: items } : {}),
+  }).eq("id", check.id);
+  if (error) throw new Error(error.message);
+  return uitkomst;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const body = await req.json().catch(() => ({}));
     const authHeader = req.headers.get("Authorization");
+    if (body?.action === "droge_lijst") {
+      // Alleen-lezen rapport (besluit Boy 12-11): niets herberekenen of opslaan.
+      if (!isInternalMachine(req)) {
+        return new Response(JSON.stringify({ error: "Geen toegang" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+      const offset = Number(body.offset) || 0;
+      const limit = Math.min(Number(body.limit) || 40, 60);
+      const { data: rijen, error } = await db.from("dba_checks").select("*").order("created_at").range(offset, offset + limit - 1);
+      if (error) throw new Error(error.message);
+      const uit = [];
+      for (const c of rijen || []) {
+        const { items, bron } = await formulierChecklist(db, c);
+        const peil = c.certified_at ? new Date(c.certified_at) : new Date();
+        const vers = computeScore(dbaScoreInvoer(c, items, peil));
+        const nu = computeScore(dbaScoreInvoer(c, items, new Date()));
+        const huidig = Array.isArray(c.suggestions) ? c.suggestions[0]?.score ?? null : null;
+        const opgeslagen = platteChecklist(c.document_checklist);
+        const afwijkingChecklist = bron === "formulier"
+          ? items.filter((it) => !it.manually_overridden).filter((it) => {
+              const o = opgeslagen.find((x) => x.document_name.toLowerCase().slice(0, 12) === it.document_name.toLowerCase().slice(0, 12));
+              return !o || o.status !== it.status;
+            }).map((it) => `${it.document_name}: formulier ${it.status}`)
+          : [];
+        uit.push({
+          id: c.id, certificaat: c.certificate_number, klant: c.client_name, eindopdrachtgever: c.eindopdrachtgever,
+          is_test: c.is_test, gecertificeerd: Boolean(c.certificate_number), certified_at: c.certified_at,
+          huidig, nieuw: vers.score, verschil: huidig === null ? null : vers.score - huidig, nieuw_vandaag: nu.score,
+          punten: vers.aandachtspunten, rode_vlaggen: vers.rode_vlaggen, checklist_bron: bron, checklist: items,
+          opgeslagen_lijst: c.missing_fields, afwijking_checklist: afwijkingChecklist,
+        });
+      }
+      return new Response(JSON.stringify({ rijen: uit }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const lovableKey = Deno.env.get("LOVABLE_API_KEY")!;
@@ -37,7 +128,7 @@ serve(async (req) => {
       });
     }
 
-    const { check_id, action } = await req.json();
+    const { check_id, action } = body;
 
     // Fetch the check
     const { data: check, error: checkError } = await supabase
@@ -557,26 +648,6 @@ Antwoord ALLEEN met een JSON tool call.`;
         }
       }
 
-      // Extra penalties: expired polis, expired KVK, missing BAV coverage
-      let extraPenalties = 0;
-      if (insurancePolicyExpired) extraPenalties++;
-      const hasBavMissing = missingFields.some((f: string) => f.toLowerCase().includes("bav") && f.toLowerCase().includes("ontbreekt"));
-      if (hasBavMissing) extraPenalties++;
-      
-      // Check KVK expiry if kvk_check_result already available from a previous check_kvk run
-      const kvkCheckResult = check.kvk_check_result as any;
-      if (kvkCheckResult?.kvk_extract_expired === true) {
-        extraPenalties++;
-        if (!missingFields.some((f: string) => f.toLowerCase().includes("kvk") && f.toLowerCase().includes("verouderd"))) {
-          missingFields.push(`KVK-uittreksel is ouder dan 3 maanden (datum: ${kvkCheckResult.kvk_extract_date})`);
-        }
-      }
-
-      const totalIssues = unfilledFieldCount + missingChecklistCount + extraPenalties;
-      const deterministicScore = Math.max(0, 100 - totalIssues * 10);
-      
-      console.log(`Score calculation: ${unfilledFieldCount} unfilled fields + ${missingChecklistCount} missing checklist + ${extraPenalties} extra = ${totalIssues} issues → score ${deterministicScore}`);
-
       // Filter field_results: only keep known fields, remove hallucinated ones like "Geheimhouding"
       const blockedFieldNames = [
         "geheimhouding", "aansprakelijkheid", "intellectueel eigendom", "vervanging",
@@ -589,17 +660,23 @@ Antwoord ALLEEN met een JSON tool call.`;
         return !blockedFieldNames.some(b => name.includes(b));
       });
 
-      await supabase.from("dba_checks").update({
-        field_results: filteredFieldResults,
-        missing_fields: missingFields,
-        document_checklist: finalChecklistItems,
+      // Eén scoreregel (computeScore): formulier + checklist uit de vakjes + KVK- en polistoets.
+      const formDatum = (analysis.insurance_policy_date && analysis.insurance_policy_date !== "null" && analysis.insurance_policy_date !== "undefined") ? analysis.insurance_policy_date : null;
+      const vorigeSug = Array.isArray(check.suggestions) ? check.suggestions[0] ?? {} : {};
+      const naAnalyse = {
+        ...check,
+        ...extractedColumns,
+        // Zonder formulier- of opgeslagen checklist (bv. PDF) valt de AI-lijst terug; bron wordt vastgelegd.
+        document_checklist: platteChecklist(check.document_checklist).length > 0 ? check.document_checklist : finalChecklistItems,
         suggestions: [{
-          score: deterministicScore,
-          aandachtspunten: missingFields,
-          insurance_policy_date: (analysis.insurance_policy_date && analysis.insurance_policy_date !== "null" && analysis.insurance_policy_date !== "undefined") ? analysis.insurance_policy_date : null,
-          insurance_policy_expired: insurancePolicyExpired,
+          ...(vorigeSug.polis_check_result ? { polis_check_result: vorigeSug.polis_check_result } : {}),
+          insurance_policy_date: vorigeSug.polis_check_result ? vorigeSug.insurance_policy_date ?? null : formDatum,
+          insurance_policy_expired: vorigeSug.polis_check_result ? vorigeSug.insurance_policy_expired ?? null : insurancePolicyExpired,
           insurance_missing: insuranceMissing || false,
         }],
+      };
+      const uitkomst = await scoreOpslaan(supabase, naAnalyse, {
+        field_results: filteredFieldResults,
         status: "analyzed",
         // Reset certificate fields so a new certificate can be generated
         certificate_number: null,
@@ -608,7 +685,8 @@ Antwoord ALLEEN met een JSON tool call.`;
         certified_at: null,
         certified_by: null,
         ...extractedColumns,
-      }).eq("id", check_id);
+      });
+      console.log(`Score ${uitkomst.score}: ${uitkomst.aandachtspunten.length} aandachtspunten`);
 
       return new Response(JSON.stringify({ success: true, analysis }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -758,27 +836,8 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
         kvkResult.kvk_extract_expired = null; // could not determine
       }
 
-      // Update KVK check result and recalculate score if KVK is expired
-      const currentSuggestionsKvk = check.suggestions as any[] || [];
-      const kvkSuggestion = currentSuggestionsKvk[0] || {};
-      let kvkMissingFields = ((check.missing_fields as string[]) || []).filter(
-        (f: string) => !(f.toLowerCase().includes("kvk") && f.toLowerCase().includes("verouderd"))
-      );
-      
-      if (kvkResult.kvk_extract_expired === true) {
-        kvkMissingFields.push(`KVK-uittreksel is ouder dan 3 maanden (datum: ${kvkResult.kvk_extract_date})`);
-      }
-      
-      // Recalculate score deterministically
-      kvkSuggestion.score = Math.max(0, 100 - kvkMissingFields.length * 10);
-      kvkSuggestion.aandachtspunten = kvkMissingFields;
-      delete kvkSuggestion._original_ai_score;
-
-      await supabase.from("dba_checks").update({
-        kvk_check_result: kvkResult,
-        suggestions: [kvkSuggestion],
-        missing_fields: kvkMissingFields,
-      }).eq("id", check_id);
+      // Score opnieuw via computeScore; KVK past niet bij werk is een rode vlag buiten de score.
+      await scoreOpslaan(supabase, { ...check, kvk_check_result: kvkResult }, { kvk_check_result: kvkResult });
 
       return new Response(JSON.stringify({ success: true, kvk_check_result: kvkResult }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -890,43 +949,32 @@ BELANGRIJK:
       updatedSuggestion.insurance_missing = false;
       updatedSuggestion.polis_check_result = polisResult;
 
-      // Update missing_fields: remove old polis-related issues and add new if needed
-      let updatedMissingFields = ((check.missing_fields as string[]) || []).filter(
-        (f: string) => !f.toLowerCase().includes("polis") || (!f.toLowerCase().includes("datum") && !f.toLowerCase().includes("aangeleverd") && !f.toLowerCase().includes("ouder") && !f.toLowerCase().includes("bav") && !f.toLowerCase().includes("avb") && !f.toLowerCase().includes("dekking"))
-      );
-      if (polisExpired === true) {
-        updatedMissingFields.push(`Polis beroeps-/bedrijfsaansprakelijkheid is ouder dan 1 jaar (datum: ${polisResult.polis_date})`);
-      } else if (polisExpired === null) {
-        updatedMissingFields.push("Datum polis beroeps- en bedrijfsaansprakelijkheid kon niet worden vastgesteld");
-      }
-
-      // Check BAV + AVB coverage
-      const hasBav = polisResult.has_bav === true;
-      const hasAvb = polisResult.has_avb === true;
-      if (!hasBav && !hasAvb) {
-        updatedMissingFields.push("Polis dekt geen beroepsaansprakelijkheid (BAV) noch bedrijfsaansprakelijkheid (AVB)");
-      } else if (!hasBav) {
-        updatedMissingFields.push("Polis dekt alleen bedrijfsaansprakelijkheid (AVB) — beroepsaansprakelijkheid (BAV) ontbreekt");
-      } else if (!hasAvb) {
-        updatedMissingFields.push("Polis dekt alleen beroepsaansprakelijkheid (BAV) — bedrijfsaansprakelijkheid (AVB) ontbreekt");
-      }
-
-      // Recalculate score deterministically: 100 - (number of issues * 10)
-      updatedSuggestion.score = Math.max(0, 100 - updatedMissingFields.length * 10);
-      // Remove legacy _original_ai_score if present
-      delete updatedSuggestion._original_ai_score;
-      updatedSuggestion.aandachtspunten = updatedMissingFields;
-
-      await supabase.from("dba_checks").update({
-        suggestions: [updatedSuggestion],
-        missing_fields: updatedMissingFields,
-      }).eq("id", check_id);
+      // Gelezen polis gaat voor het polisvinkje; score via computeScore.
+      await scoreOpslaan(supabase, { ...check, suggestions: [updatedSuggestion] });
 
       return new Response(JSON.stringify({ success: true, polis_check_result: polisResult }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
 
+    } else if (action === "herbereken") {
+      // Na een handmatige wijziging: alleen de score en de lijst opnieuw opbouwen, geen AI.
+      const uitkomst = await scoreOpslaan(supabase, check);
+      return new Response(JSON.stringify({ success: true, score: uitkomst.score, aandachtspunten: uitkomst.aandachtspunten }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+
     } else if (action === "certify") {
+      // Weigeren als opgeslagen score en lijst niet overeenkomen met elkaar of met de berekening.
+      {
+        const { items } = await formulierChecklist(supabase, check);
+        const vers = computeScore(dbaScoreInvoer(check, items, new Date()));
+        const controle = dbaScoreControle(check.suggestions?.[0]?.score, check.missing_fields, vers);
+        if (!controle.ok) {
+          return new Response(JSON.stringify({ error: controle.melding, code: "score_klopt_niet", berekend: vers }), {
+            status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
       // Generate ZP Approved certificate PDF
       const verificationToken = crypto.randomUUID();
       const { data: seqData, error: seqError } = await supabase.rpc("nextval_text", { seq_name: "dba_cert_seq" });

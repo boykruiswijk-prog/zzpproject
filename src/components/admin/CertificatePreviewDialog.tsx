@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Loader2, Award, Save, AlertTriangle, CheckCircle2, XCircle, Plus, Trash2, Pencil } from "lucide-react";
 import type { DbaCheck } from "@/hooks/useDbaChecks";
+import { computeScore, dbaScoreInvoer } from "@/lib/dbaScore";
 
 interface CertificateField {
   key: string;
@@ -43,8 +44,6 @@ interface Props {
 
 export function CertificatePreviewDialog({ open, onOpenChange, check, onSaveAndCertify, isLoading }: Props) {
   const [values, setValues] = useState<Record<string, any>>({});
-  const [complianceScore, setComplianceScore] = useState<number>(0);
-  const [missingFields, setMissingFields] = useState<string[]>([]);
   const [kvkMatch, setKvkMatch] = useState(false);
   const [kvkExplanation, setKvkExplanation] = useState("");
   const [kvkSuggestions, setKvkSuggestions] = useState<string[]>([]);
@@ -93,12 +92,6 @@ export function CertificatePreviewDialog({ open, onOpenChange, check, onSaveAndC
       }
       setValues(initial);
 
-      // Initialize compliance score
-      setComplianceScore(check.suggestions?.[0]?.score ?? 0);
-
-      // Initialize missing fields (aandachtspunten)
-      setMissingFields(check.missing_fields?.length ? [...check.missing_fields] : []);
-
       // Initialize KVK check
       if (check.kvk_check_result) {
         setKvkMatch(check.kvk_check_result.match ?? false);
@@ -135,6 +128,20 @@ export function CertificatePreviewDialog({ open, onOpenChange, check, onSaveAndC
     }
   }, [open, check]);
 
+  // Score en aandachtspunten volgen altijd uit computeScore (besluit Boy 12-11); niet met de hand te wijzigen.
+  const voorbeeld = computeScore(dbaScoreInvoer(
+    {
+      ...check,
+      ...Object.fromEntries(CERTIFICATE_FIELDS.filter((f) => f.key !== "opdrachtomschrijving").map((f) => [f.dbColumn, values[f.key]])),
+      rewritten_description: values.opdrachtomschrijving,
+      kvk_check_result: check.kvk_check_result ? { ...check.kvk_check_result, match: kvkMatch } : check.kvk_check_result,
+    },
+    documentChecklist,
+    new Date(),
+  ));
+  const complianceScore = voorbeeld.score;
+  const missingFields = voorbeeld.aandachtspunten;
+
   const handleChange = (key: string, value: any) => {
     setValues((prev) => ({ ...prev, [key]: value }));
   };
@@ -155,12 +162,8 @@ export function CertificatePreviewDialog({ open, onOpenChange, check, onSaveAndC
       }
     }
 
-    // Save compliance score into suggestions JSONB
-    const existingSuggestions = check.suggestions?.[0] || {};
-    dbValues["suggestions"] = [{ ...existingSuggestions, score: complianceScore }];
-
-    // Save missing fields (aandachtspunten)
-    dbValues["missing_fields"] = missingFields.filter(f => f.trim() !== "");
+    // Score en lijst worden na opslaan op de server herberekend (actie herbereken); certificeren controleert ze.
+    dbValues["_verwachte_score"] = complianceScore;
 
     // Save KVK check result
     if (check.kvk_check_result || kvkExplanation || kvkSuggestions.length > 0) {
@@ -263,16 +266,8 @@ export function CertificatePreviewDialog({ open, onOpenChange, check, onSaveAndC
         <div className="space-y-3">
           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Compliance Score</h3>
           <div className="flex items-center gap-4">
-            <Input
-              type="number"
-              min={0}
-              max={100}
-              value={complianceScore}
-              onChange={(e) => setComplianceScore(Math.min(100, Math.max(0, parseInt(e.target.value) || 0)))}
-              className="w-24"
-              disabled={isLoading}
-            />
-            <span className="text-sm text-muted-foreground">/ 100</span>
+            <span className="text-2xl font-bold w-16">{complianceScore}%</span>
+            
             <div className="flex-1 h-3 rounded-full bg-muted overflow-hidden">
               <div
                 className="h-full rounded-full transition-all"
@@ -440,40 +435,23 @@ export function CertificatePreviewDialog({ open, onOpenChange, check, onSaveAndC
           {missingFields.length === 0 && (
             <p className="text-sm text-muted-foreground italic">Geen aandachtspunten.</p>
           )}
-          <div className="space-y-2">
+          <p className="text-xs text-muted-foreground">
+            Berekend uit de velden, de checklist en de KVK- en poliscontrole. Elk punt kost 10 procentpunt. Pas een veld of vinkje aan om een punt op te lossen.
+          </p>
+          <ul className="space-y-1">
             {missingFields.map((field, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <span className="text-muted-foreground text-sm flex-shrink-0">•</span>
-                <Input
-                  value={field}
-                  onChange={(e) => {
-                    const updated = [...missingFields];
-                    updated[i] = e.target.value;
-                    setMissingFields(updated);
-                  }}
-                  className="h-8 text-sm"
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  onClick={() => setMissingFields(missingFields.filter((_, j) => j !== i))}
-                  className="text-muted-foreground hover:text-destructive flex-shrink-0"
-                  disabled={isLoading}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
+              <li key={i} className="flex items-start gap-2 text-sm">
+                <span className="text-muted-foreground flex-shrink-0">•</span>
+                <span>{field}</span>
+              </li>
             ))}
-          </div>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => setMissingFields([...missingFields, ""])}
-            disabled={isLoading}
-          >
-            <Plus className="h-3 w-3 mr-1" /> Aandachtspunt toevoegen
-          </Button>
+          </ul>
+          {voorbeeld.rode_vlaggen.length > 0 && (
+            <div className="flex items-center gap-2 text-sm text-destructive">
+              <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+              Rode vlag (telt niet mee in de score): {voorbeeld.rode_vlaggen.join("; ")}
+            </div>
+          )}
         </div>
 
         <Separator className="my-4" />
