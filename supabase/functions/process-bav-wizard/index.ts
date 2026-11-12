@@ -23,7 +23,7 @@ import {
 import { isUuid, isValidIban, redenBav } from "../_shared/sepaMachtiging.ts";
 import { brancheVoorSector } from "../_shared/sectorBranche.ts";
 import { STARTER, STARTER_VOORBEHOUD_TEKST, isStarter, starterTot } from "../_shared/starterTarief.ts";
-import { HANDMATIGE_ACCEPTATIE_REDEN, teamWaarschuwingHandmatig, vereistHandmatigeAcceptatie } from "../_shared/sectorRegels.ts";
+import { HANDMATIGE_ACCEPTATIE_REDEN, teamWaarschuwingHandmatig, vereistHandmatigeAcceptatie, maatwerkVlag } from "../_shared/sectorRegels.ts";
 
 
 import { CYBER_VERSIE, CYBER_AKKOORD, CYBER_DEKKING, CYBER_HULP, CYBER_POLISVOORWAARDEN, CYBER_LOOPTIJD, CYBER_AFGEWEZEN, beoordeelCyber, basisPakket, isCyberPakket, aanvraagPremie, cyberJaarEind, formatPremieBedrag } from "../_shared/cyber.ts";
@@ -351,6 +351,7 @@ Deno.serve(metWerk({ station: "intake", actie: "aanvraag_verwerking", tekst: "Aa
           pagina: saneerPagina(submission.pagina_url),
           ...(saneerInterneBron(submission.interne_bron) ? { interne_bron: saneerInterneBron(submission.interne_bron) } : {}),
           sector: submission.sector,
+          ...(maatwerkVlag(submission.sector) ?? {}),
           ...(saneerAttributie(submission.attributie) ? { attributie: saneerAttributie(submission.attributie) } : {}),
           ...(handmatigeAcceptatie
             ? { handmatige_acceptatie: { reden: HANDMATIGE_ACCEPTATIE_REDEN, sector: submission.sector } }

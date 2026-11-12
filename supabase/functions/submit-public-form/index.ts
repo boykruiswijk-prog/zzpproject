@@ -1,5 +1,6 @@
 import { saneerInterneBron } from "../_shared/interneBron.ts";
 import { schoneVeldnamen, isInternTestEmail } from "../_shared/nabellen.ts";
+import { maatwerkVlag } from "../_shared/sectorRegels.ts";
 import { isTestInvoer } from "../_shared/testInvoer.ts";
 // Enige schrijfroute voor publieke formulieren (leads, pilots, nieuwsbrief, suggesties).
 // Beschermd met honeypot, invultijd-check en IP-throttle. De browser mag deze
@@ -261,6 +262,8 @@ Deno.serve(async (req) => {
       delete extraUit.attributie;
       const attributie = saneerAttributie(body?.attributie);
       if (attributie) extraUit.attributie = attributie;
+      delete extraUit.maatwerk_check; delete extraUit.maatwerk_sectoren;
+      if (payload.type === "offerte-aanvraag" || payload.type === "verzekering_aanvraag") Object.assign(extraUit, maatwerkVlag(extraUit.sector, extraUit.branche) ?? {});
       payload.extra_data = extraUit;
       // Inzendingen vanuit preview/testomgeving zijn altijd testrecords (zelfde regel als chat Zeker).
       payload.is_test = isTestInzending(email);
