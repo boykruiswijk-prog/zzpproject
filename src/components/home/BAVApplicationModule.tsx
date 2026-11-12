@@ -944,6 +944,7 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
                           {WIZARD_SECTOREN.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
                         </select>
                         <FieldError message={errors.sector} />
+                        <MaatwerkMelding open={maatwerkOpen} onSluit={() => setMaatwerkOpen(false)} />
                       </div>
                       <div>
                         <Label htmlFor="beroep">{t("home.bavProfession")} *</Label>
