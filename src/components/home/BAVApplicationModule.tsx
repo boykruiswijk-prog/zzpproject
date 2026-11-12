@@ -49,6 +49,7 @@ import { SNELLE_START_EVENT, type SnelleStartGegevens } from "@/lib/snelleStart"
 import { IbanVertrouwen } from "@/components/home/IbanVertrouwen";
 import { interneBronUitZoek } from "@/lib/interneBron";
 import { WerkzaamhedenVeld } from "@/components/shared/WerkzaamhedenVeld";
+import { LABEL_VORIGE_KVK, LABEL_VORIGE_NAAM, VORIGE_VRAAG, vorigeOndernemingFouten, vorigeOndernemingVelden } from "@/lib/vorigeOnderneming";
 import { werkzaamhedenFout } from "../../../supabase/functions/_shared/werkzaamheden";
 import { HANDMATIGE_ONTVANGST } from "../../../supabase/functions/_shared/aanvraagBeoordeling";
 import { aanvraagVoorinvulling, type LeadVoorinvulling } from "@/lib/handmatigeLead";
@@ -156,7 +157,9 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
     iban: "",
     adresStraat: "", adresHuisnummer: "", adresPostcode: "", adresPlaats: "", adresLand: "Nederland",
     rekeninghouder: "",
+    vorigeNaam: "", vorigeKvk: "",
   });
+  const [vorigeAan, setVorigeAan] = useState(false);
   // PDOK-suggestie: vult straat/plaats zichtbaar in; klant kan daarna vrij wijzigen.
   const pdokAdres = usePdokAdres(formData.adresPostcode, formData.adresHuisnummer, formData.adresLand);
   useEffect(() => {
@@ -230,6 +233,9 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
       else if (!isValidKvk(formData.kvkNummer)) newErrors.kvkNummer = KVK_EIGEN_NUMMER_MELDING;
       if (uittrekselVerplicht(!!startDate && isStarter(formData.kvkStartdatum || null, startDate), kvkApiOp) && !uittrekselId) newErrors.kvkUittreksel = UITTREKSEL_VERPLICHT;
       if (formData.kvkStartdatum && (!/^\d{4}-\d{2}-\d{2}$/.test(formData.kvkStartdatum) || formData.kvkStartdatum > new Date().toISOString().slice(0, 10) || formData.kvkStartdatum < "1900-01-01")) newErrors.kvkStartdatum = "Vul een geldige startdatum in die niet in de toekomst ligt";
+      const vf = vorigeOndernemingFouten({ aan: vorigeAan, naam: formData.vorigeNaam, kvk: formData.vorigeKvk });
+      if (vf.naam) newErrors.vorigeNaam = vf.naam;
+      if (vf.kvk) newErrors.vorigeKvk = vf.kvk;
       if (!verzekeringskaartVoorSector(formData.sector)) newErrors.sector = "Kies je sector";
       if (!formData.beroep.trim()) newErrors.beroep = t("bavApp.valProfession");
       const lengteFout = werkzaamhedenFout(formData.beroep);
@@ -464,6 +470,7 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
            formulier: maakFormulier([
              ["Pakket", selectedBavPakket.name], ["Betaalwijze", betaalwijze], ["Ingangsdatum", startDate],
              ["Bedrijfsnaam", formData.bedrijfsnaam], ["KvK-nummer", formData.kvkNummer], ["Startdatum KVK-inschrijving", formData.kvkStartdatum],
+             ...vorigeOndernemingVelden({ aan: vorigeAan, naam: formData.vorigeNaam, kvk: formData.vorigeKvk }),
              ["Sector", verzekeringskaartVoorSector(formData.sector)?.sector.label ?? formData.sector], ["Beroep", formData.beroep],
              ["Functie", formData.functie], ["Aantal medewerkers", formData.aantalMedewerkers],
              ["Voornaam", formData.voornaam], ["Achternaam", formData.achternaam], ["E-mail", formData.email], ["Telefoon", normaliseerNlTelefoon(formData.telefoon)],
@@ -523,11 +530,12 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
         const conversiePremie = aanvraagPremie(selectedBavPakket.id, starterVanToepassing);
         trackPurchase(returnedLeadId, selectedBavPakket.id, selectedBavPakket.name, conversiePremie.maand ? conversiePremie.totaal * 12 : conversiePremie.totaal, { email: formData.email }, data.is_test === true);
        setIsSubmitted(true);
+        setVorigeAan(false);
         setFormData({
           bedrijfsnaam: "", kvkNummer: "", kvkStartdatum: "", sector: "", beroep: "", functie: "", aantalMedewerkers: "",
           voornaam: "", achternaam: "", email: "", telefoon: "", opdrachtgever: "", bemiddelaarNaam: "",
           iban: "", adresStraat: "", adresHuisnummer: "", adresPostcode: "", adresPlaats: "", adresLand: "Nederland",
-          rekeninghouder: "",
+          rekeninghouder: "", vorigeNaam: "", vorigeKvk: "",
         });
         setStartDate("");
         setViaBemiddelaar(null);
@@ -889,6 +897,27 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
                       {uittrekselVerplicht(starterVanToepassing, kvkApiOp) && (
                         <KvkUittrekselVeld conceptId={zorgConceptId} hp={guard.honeypot} uittrekselId={uittrekselId} onChange={setUittrekselId} fout={errors.kvkUittreksel} />
                       )}
+                      <div className="rounded-lg border border-border p-4 text-sm space-y-3" data-testid="vorige-onderneming">
+                        <label className="flex items-start gap-2 cursor-pointer">
+                          <input type="checkbox" className="mt-1" checked={vorigeAan} onChange={(e) => setVorigeAan(e.target.checked)} />
+                          <span>{VORIGE_VRAAG} (optioneel)</span>
+                        </label>
+                        {vorigeAan && (
+                          <div className="grid gap-3 sm:grid-cols-2">
+                            <div>
+                              <Label htmlFor="vorigeNaam">{LABEL_VORIGE_NAAM} *</Label>
+                              <Input id="vorigeNaam" name="vorigeNaam" value={formData.vorigeNaam} onChange={handleInputChange} maxLength={200} className={cn(errors.vorigeNaam && "border-destructive")} />
+                              <FieldError message={errors.vorigeNaam} />
+                            </div>
+                            <div>
+                              <Label htmlFor="vorigeKvk">{LABEL_VORIGE_KVK} *</Label>
+                              <Input id="vorigeKvk" name="vorigeKvk" inputMode="numeric" autoComplete="off" value={formData.vorigeKvk} onChange={handleInputChange} maxLength={12} className={cn(errors.vorigeKvk && "border-destructive")} />
+                              <FieldError message={errors.vorigeKvk} />
+                            </div>
+                            <p className="sm:col-span-2 text-xs text-muted-foreground">Wij koppelen je oude en nieuwe onderneming, zodat je gegevens en historie bij ons bij elkaar blijven. Zeg de BAV + AVB van je oude onderneming zelf op. Heb je een nieuwe zakelijke rekening, dan geef je hieronder in deze aanvraag een nieuwe incassomachtiging af.</p>
+                          </div>
+                        )}
+                      </div>
                       {starterVanToepassing && (
                         <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 text-sm" data-testid="starterblok">
                           <p className="font-semibold mb-1">Startertarief van toepassing</p>

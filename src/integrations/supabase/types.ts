@@ -5891,6 +5891,54 @@ export type Database = {
           },
         ]
       }
+      onderneming_koppelingen: {
+        Row: {
+          id: string
+          is_test: boolean
+          lead_id: string | null
+          nieuwe_onderneming_id: string
+          reden: string
+          vastgelegd_door: string
+          vastgelegd_op: string
+          vorige_onderneming_id: string
+        }
+        Insert: {
+          id?: string
+          is_test?: boolean
+          lead_id?: string | null
+          nieuwe_onderneming_id: string
+          reden: string
+          vastgelegd_door: string
+          vastgelegd_op?: string
+          vorige_onderneming_id: string
+        }
+        Update: {
+          id?: string
+          is_test?: boolean
+          lead_id?: string | null
+          nieuwe_onderneming_id?: string
+          reden?: string
+          vastgelegd_door?: string
+          vastgelegd_op?: string
+          vorige_onderneming_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onderneming_koppelingen_nieuwe_onderneming_id_fkey"
+            columns: ["nieuwe_onderneming_id"]
+            isOneToOne: false
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "onderneming_koppelingen_vorige_onderneming_id_fkey"
+            columns: ["vorige_onderneming_id"]
+            isOneToOne: false
+            referencedRelation: "ondernemingen"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       onderneming_opvolging: {
         Row: {
           bav_nummer: string | null
@@ -8565,6 +8613,15 @@ export type Database = {
       }
       onderneming_hoofdkaart: { Args: { _id: string }; Returns: string }
       onderneming_is_partner: { Args: { _ond: string }; Returns: string }
+      onderneming_koppel_vorige: {
+        Args: {
+          _lead_id?: string
+          _nieuw: string
+          _reden: string
+          _vorig: string
+        }
+        Returns: string
+      }
       onderneming_samenvoegen: {
         Args: { _naar: string; _reden?: string; _van: string }
         Returns: Json
