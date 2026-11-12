@@ -79,8 +79,9 @@ export default function AdminLeadDetail() {
   const { toast } = useToast();
   const { data: leadData, isLoading: ladenLead } = useLead(id);
   // Alleen tonen als de geladen lead bij het id uit de URL hoort (nooit een vorige lead uit de cache).
-  const lead = leadData && leadData.id === id ? leadData : leadData === null ? null : undefined;
-  const isLoading = ladenLead || lead === undefined;
+  const verkeerdeLead = !!leadData && leadData.id !== id;
+  const lead = verkeerdeLead ? undefined : leadData;
+  const isLoading = ladenLead || verkeerdeLead;
   const leadNaam = lead ? ([lead.voornaam, lead.achternaam].filter(Boolean).join(" ") || lead.bedrijfsnaam || "") : "";
   useAdminDetailTitel(leadNaam, id, lead?.id);
   const updateLead = useUpdateLead();

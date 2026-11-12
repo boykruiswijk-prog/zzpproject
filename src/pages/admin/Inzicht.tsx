@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useParams } from "react-router-dom";
+import { useAdminDetailTitel } from "@/lib/adminTitels";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Legend } from "recharts";
@@ -100,6 +101,7 @@ const LIJST_ELDERS: Record<string, [string, string]> = {
 export default function Inzicht() {
   const { tegel = "" } = useParams();
   const def = TEGELS[tegel];
+  useAdminDetailTitel(def?.titel, tegel, def ? tegel : null);
   const { isSupervisorOrAdmin, isAal2 } = useAuth();
   const mag = !!def && isAal2 && (!def.alleenSupervisor || isSupervisorOrAdmin);
   const [periode, setPeriode] = useState<Periode>("sinds6okt");
