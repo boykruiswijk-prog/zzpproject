@@ -241,7 +241,7 @@
 .stroom-stappen span { min-height: 47.52px; font-size: min(17.82px, 20.16px); line-height: 1.25; font-weight: 600; overflow-wrap: normal; word-break: normal; hyphens: auto; padding: 0 3.84px; }
 .stroom-stappen b { font-size: 38.88px; color: hsl(var(--s-tekst)); }
 .stroom-stappen b { font-size: min(38.88px, 46.08px); }
-.stroom-stappen small { margin-top: auto; padding: 2px 8px; border-radius: 6px; background: hsl(var(--s-surface) / .85); position: relative; z-index: 1; font-size: 17.28px; line-height: 1.4; color: hsl(var(--s-dim)); }
+.stroom-stappen small { margin-top: auto; margin-bottom: 16px; white-space: nowrap; padding: 2px 8px; border-radius: 6px; background: hsl(var(--s-surface) / .85); position: relative; z-index: 1; font-size: 17.28px; line-height: 1.4; color: hsl(var(--s-dim)); }
 .stroom-processen { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 38.4px; margin-top: auto; }
 .stroom-processen h3 { font-size: 19.44px; margin-bottom: 16.2px; }
 .stroom-proceslijn { display: flex; gap: 7.68px; }
@@ -379,7 +379,7 @@
 /* A8-aanvulling Dagomzet: enige bedragweergave op het scherm */
 .scherm-dagomzet { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 16px; padding: 12px 22px; border-radius: 16px; border: 2px solid hsl(var(--s-lijn)); transition: box-shadow .6s, border-color .6s; }
 .scherm-dagomzet-tekst { min-width: 0; }
-.scherm-dagomzet-titel { font-size: 30px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: hsl(var(--s-tekst)); }
+.scherm-dagomzet-titel { font-size: 26px; line-height: 1.15; font-weight: 700; letter-spacing: .01em; color: hsl(var(--s-tekst)); }
 .scherm-dagomzet-sub { font-size: 20px; line-height: 1.25; color: hsl(var(--s-dim)); max-width: 230px; }
 .scherm-dagomzet-bedrag { font-size: 84px; font-weight: 800; line-height: 1; color: hsl(var(--s-tekst)); white-space: nowrap; }
 .scherm-weekomzet-vergelijk { margin-top: 6px; font-size: 22px; line-height: 1.2; color: hsl(var(--s-dim)); white-space: nowrap; }
@@ -445,3 +445,4 @@
 .doel-paneel .tabular-nums { white-space: nowrap; }
 .doel-paneel .h-\[280\.8px\] { height: 230px; width: 230px; }
 .stroom-nog-niet { font-style: normal; font-size: 15px; color: hsl(var(--s-dim)); margin-top: 4px; }
+.stroom-stappen small strong { font-size: 20px; color: hsl(var(--s-tekst)); }

@@ -28,7 +28,7 @@ export function StroomTrechter({ data }: { data: SchermPayload }) {
         {stappen.map((step, i) => <div key={step.label}>
           <span>{step.label}</span><b>{step.n === null ? '-' : <CountUp value={step.n} />}</b>
           {key(step) === 'klant' && (s.nog_niet_gestart ?? 0) > 0 && <em className="stroom-nog-niet" data-testid="nog-niet-gestart">{s.nog_niet_gestart} nog niet gestart</em>}
-          <small>{i === 0 ? 'start' : step.n !== null && (stappen[i - 1]?.n ?? 0) > 0 ? `${Math.round(step.n / Number(stappen[i - 1].n) * 100)}% van vorige` : 'wordt gemeten'}</small>
+          <small>{i === 0 ? 'start' : step.n !== null && (stappen[i - 1]?.n ?? 0) > 0 ? <><strong>{Math.round(step.n / Number(stappen[i - 1].n) * 100)}%</strong><br />van vorige</> : 'wordt gemeten'}</small>
         </div>)}
       </div>
     </div>
