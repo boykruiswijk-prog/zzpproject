@@ -1,4 +1,4 @@
-import { requireMfa, isInternalMachine } from "../_shared/teamAuth.ts";
+import { requireMfa } from "../_shared/teamAuth.ts";
 import { computeScore, dbaScoreInvoer, dbaScoreControle, type DbaChecklistItem } from "../_shared/dbaScore.ts";
 import { leesDbaChecklistUitXml, voegHandmatigSamen } from "../_shared/dbaFormulier.ts";
 import { unzipSync, strFromU8 } from "npm:fflate@0.8.3";
@@ -70,40 +70,6 @@ serve(async (req) => {
   try {
     const body = await req.json().catch(() => ({}));
     const authHeader = req.headers.get("Authorization");
-    if (body?.action === "droge_lijst") {
-      // Alleen-lezen rapport (besluit Boy 12-11): niets herberekenen of opslaan.
-      if (!isInternalMachine(req)) {
-        return new Response(JSON.stringify({ error: "Geen toegang" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      }
-      const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-      const offset = Number(body.offset) || 0;
-      const limit = Math.min(Number(body.limit) || 40, 60);
-      const { data: rijen, error } = await db.from("dba_checks").select("*").order("created_at").range(offset, offset + limit - 1);
-      if (error) throw new Error(error.message);
-      const uit = [];
-      for (const c of rijen || []) {
-        const { items, bron } = await formulierChecklist(db, c);
-        const peil = c.certified_at ? new Date(c.certified_at) : new Date();
-        const vers = computeScore(dbaScoreInvoer(c, items, peil));
-        const nu = computeScore(dbaScoreInvoer(c, items, new Date()));
-        const huidig = Array.isArray(c.suggestions) ? c.suggestions[0]?.score ?? null : null;
-        const opgeslagen = platteChecklist(c.document_checklist);
-        const afwijkingChecklist = bron === "formulier"
-          ? items.filter((it) => !it.manually_overridden).filter((it) => {
-              const o = opgeslagen.find((x) => x.document_name.toLowerCase().slice(0, 12) === it.document_name.toLowerCase().slice(0, 12));
-              return !o || o.status !== it.status;
-            }).map((it) => `${it.document_name}: formulier ${it.status}`)
-          : [];
-        uit.push({
-          id: c.id, certificaat: c.certificate_number, klant: c.client_name, eindopdrachtgever: c.eindopdrachtgever,
-          is_test: c.is_test, gecertificeerd: Boolean(c.certificate_number), certified_at: c.certified_at,
-          huidig, nieuw: vers.score, verschil: huidig === null ? null : vers.score - huidig, nieuw_vandaag: nu.score,
-          punten: vers.aandachtspunten, rode_vlaggen: vers.rode_vlaggen, checklist_bron: bron, checklist: items,
-          opgeslagen_lijst: c.missing_fields, afwijking_checklist: afwijkingChecklist,
-        });
-      }
-      return new Response(JSON.stringify({ rijen: uit }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
-    }
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const lovableKey = Deno.env.get("LOVABLE_API_KEY")!;
