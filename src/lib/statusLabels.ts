@@ -25,6 +25,7 @@ export const LEAD_STATUS_LABELS: Record<LeadStatus, string> = {
 export const LEAD_STATUS_TITELS: Partial<Record<LeadStatus, string>> = {
   actief: "De aanvraag is geactiveerd en de polis loopt",
   afgerond: "De actie is volledig afgehandeld; dit zegt niets over een polis",
+  samengevoegd: "Dubbele aanvraag afgesloten bij een bestaande klant met lopend contract en geldige polis",
   klant_geworden: "Lead is klant geworden; bij een verzekeringsaanvraag loopt dit via activeren (Polis actief)",
   geen_interesse: "Lead heeft afgezien of reageert niet meer",
   vraag_beantwoord: "Contactvraag zonder verkoopkans, vraag is beantwoord",

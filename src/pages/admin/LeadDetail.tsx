@@ -277,8 +277,9 @@ export default function AdminLeadDetail() {
         </div>
 
         <AfrondDialoog key={afrondUitkomst ?? "kies"} lead={lead as any} uitkomst={afrondUitkomst} open={afrondOpen} onOpenChange={setAfrondOpen} />
+        {lead.type === "verzekering_aanvraag" && <BestaandeKlantAanvraag lead={lead} />}
         {/* Onboarding-stepper bovenaan */}
-        {lead.type === "verzekering_aanvraag" && (
+        {lead.type === "verzekering_aanvraag" && lead.status !== "samengevoegd" && (
           <LeadOnboardingStepper lead={lead} />
         )}
 
