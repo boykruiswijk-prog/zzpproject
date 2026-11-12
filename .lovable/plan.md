@@ -1,8 +1,4 @@
-# Updatebewaker 11-11: alleen rapport
+# Updatebewaker 12-11-2026: alleen rapport
 
-Er hoeft niets gebouwd te worden. Het rapport staat in de chat. Er is niets gewijzigd: geen code, geen migraties, geen pakketten, niets gepubliceerd.
-
-Mogelijke vervolgstappen, alleen na een expliciete opdracht:
-- zod 3 naar 4 (grote versiestap, hoog risico): eerst inventariseren waar het gebruikt wordt.
-- react-router 6 naar 7 (grote versiestap, middelmatig risico).
-- Patch- en minorupdates in de wekelijkse onderhoudsronde.
+Geen wijzigingen voorgesteld. Ongewijzigd t.o.v. 11-11: productie 0 critical, 1 high (zod 3.25.76), 2 moderate (react-router 6.30.6); database 0 ERROR, 192 WARN, 35 INFO.
+Eventuele vervolgstap (zod 4 of React Router 7, beide major) alleen na expliciete opdracht.
