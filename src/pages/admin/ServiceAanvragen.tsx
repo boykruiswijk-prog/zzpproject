@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ConciergeBell, KeyRound, RotateCw, UserX } from "lucide-react";
 import { ServiceAanvraagOog } from "@/components/admin/ServiceAanvraagOog";
 import { formatDateNL } from "@/lib/dateFormat";
+import { RechtsvormBeoordeling } from "@/components/admin/crm/RechtsvormBeoordeling";
 import {
   ServiceAanvraagDetail,
   ServiceAanvraagDetailHeader,
@@ -24,7 +25,7 @@ import {
 
 type Aanvraag = {
   id: string;
-  type: "certificaat" | "pauzeren" | "documenten" | "opzeggen" | "portaltoegang" | "factuur_opvragen";
+  type: "certificaat" | "pauzeren" | "documenten" | "opzeggen" | "portaltoegang" | "factuur_opvragen" | "rechtsvormwijziging";
   voornaam: string;
   achternaam: string;
   email: string;
@@ -53,6 +54,7 @@ const TYPE_COLOR: Record<string, string> = {
   opzeggen: "bg-red-100 text-red-800",
   portaltoegang: "bg-blue-100 text-blue-800",
   factuur_opvragen: "bg-slate-100 text-slate-800",
+  rechtsvormwijziging: "bg-primary/10 text-primary",
 };
 
 const TYPE_LABEL: Record<string, string> = {
@@ -62,6 +64,7 @@ const TYPE_LABEL: Record<string, string> = {
   opzeggen: "Opzeggen",
   portaltoegang: "Portaltoegang",
   factuur_opvragen: "Factuur opvragen",
+  rechtsvormwijziging: "Rechtsvormwijziging (te beoordelen)",
 };
 
 const STATUS_COLOR: Record<string, string> = {
@@ -191,6 +194,7 @@ export default function ServiceAanvragen({ modus = "service" }: { modus?: Modus 
               <SelectItem value="pauzeren">Pauzeren</SelectItem>
               <SelectItem value="documenten">Documenten</SelectItem>
               <SelectItem value="factuur_opvragen">Factuur opvragen</SelectItem>
+              <SelectItem value="rechtsvormwijziging">Rechtsvormwijziging</SelectItem>
             </SelectContent>
           </Select>}
           <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -272,6 +276,7 @@ export default function ServiceAanvragen({ modus = "service" }: { modus?: Modus 
                   <ServiceAanvraagDetailHeader aanvraag={selected} />
                 </DialogTitle>
               </DialogHeader>
+              {selected.type === "rechtsvormwijziging" && <RechtsvormBeoordeling aanvraag={selected as any} onKlaar={() => { setSelected(null); load(); }} />}
               <ServiceAanvraagDetail
                 aanvraag={selected}
                 onSaveNotes={saveNotes}
