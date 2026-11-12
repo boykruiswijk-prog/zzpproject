@@ -22,6 +22,7 @@ import { CrmTijdlijn } from "@/components/admin/crm/CrmTijdlijn";
 import { IbanInzien } from "@/components/admin/IbanInzien";
 import { KlantKaart } from "@/components/admin/crm/KlantKaart";
 import { LopendeProducten } from "@/components/admin/crm/LopendeProducten";
+import { KoppelingenBlok } from "@/components/admin/crm/VorigeOnderneming";
 import { ExactRelatieLabel, OndernemingswijzigingKnop, OpvolgerBanner, VoorgangerHistorie, useOpvolging } from "@/components/admin/crm/Opvolging";
 
 import { RechtsvoorgangerBanner } from "@/components/admin/crm/Omzetting";
@@ -94,6 +95,7 @@ export default function KlantDetail() {
               {ond.afwijkingen?.length > 0 && <div className="mt-2 flex flex-wrap gap-2">{ond.afwijkingen.map((a: string) => <Badge key={a} variant="outline" className="border-amber-500 text-amber-700">{a}</Badge>)}</div>}
               <div className="mt-2"><ExactRelatieLabel ond={ond} heeftVoorganger={voorgangers.length > 0} /></div>
             </div><OndernemingswijzigingKnop ond={ond} onKlaar={() => setHerlaad((x) => x + 1)} /></div>
+            <KoppelingenBlok ond={ond} />
             {omzetOpen && (isSupervisorOrAdmin || isVerzekering) && <OpenOmzettingMelding open={omzetOpen} ond={ond} onKlaar={() => setHerlaad((x) => x + 1)} />}
             <VlagBalk lead={ond} doel="klant" magWijzigen={isSupervisorOrAdmin || isVerzekering} onGewijzigd={() => setHerlaad((h) => h + 1)} />
             <KlantKaart ondernemingen={[ond]} personen={personen} leadIds={leadMatch.map((l) => l.id)} herlaadSleutel={herlaad} onGewijzigd={() => setHerlaad((h) => h + 1)} />

@@ -11,6 +11,7 @@ import { StartertariefControle } from "@/components/admin/StartertariefControle"
 import { VlagBalk } from "@/components/admin/LeadVlag";
 import { LeadBavNummer } from "@/components/admin/crm/LeadBavNummer";
 import { OmzettingKaart, OmzettingLabel } from "@/components/admin/crm/Omzetting";
+import { KoppelSuggestie } from "@/components/admin/crm/VorigeOnderneming";
 import { AanvraagStappen } from "@/components/admin/AanvraagStappen";
 import { teamWaarschuwingHandmatig } from "../../../supabase/functions/_shared/sectorRegels";
 import { useState } from "react";
@@ -277,6 +278,7 @@ export default function AdminLeadDetail() {
         <div className="grid min-w-0 gap-6 lg:grid-cols-3">
           {/* Lead info */}
           <div className="min-w-0 space-y-6 lg:col-span-2">
+            <KoppelSuggestie lead={lead as any} />
             <OmzettingKaart leadId={lead.id} magBeslissen={isSupervisorOrAdmin || isVerzekering} />
             {lead.type === "verzekering_aanvraag" && <AanvraagStappen leadId={lead.id} magAfronden={isSupervisorOrAdmin || isVerzekering} />}
             <StartertariefControle lead={lead as any} magBeoordelen={isSupervisorOrAdmin || isVerzekering} />
