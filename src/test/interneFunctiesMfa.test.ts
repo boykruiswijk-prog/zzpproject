@@ -21,6 +21,7 @@ const uitzonderingen: Record<string, string> = {
   "exact-oauth-callback": "Single-use OAuth state issued by MFA-protected exact-oauth-start",
   "get-customer-invoices": "Customer JWT with account ownership",
   "get-invoice-pdf": "Customer JWT with invoice ownership",
+  "klant-rechtsvormwijziging": "Customer JWT with policy ownership; team users explicitly rejected",
   "kvk-api-status": "Public boolean availability only",
   "kvk-uittreksel-upload": "Public guarded application upload with file and concept validation",
   "login-guard": "Pre-login brute-force protection",
