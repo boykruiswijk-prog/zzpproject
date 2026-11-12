@@ -1,0 +1,2 @@
+# Afspraken exact-adres-sync
+- Adreswijzigingen van ondernemingen met Exact-relatie: trigger zz_exact_adres_wachtrij zet een rij in exact_adres_sync; exact-adres-sync (uurlijkse cron alleen bij open rijen) doet GET, PUT met uitsluitend AddressLine1/Postcode/City/Country (allowlist _shared/exactAdres.ts) en teruglezen; fout blijft open met één wijzigingsmelding, twijfel nooit automatisch. Waarom: Exact-adres volgt ons adres zonder andere velden te raken.

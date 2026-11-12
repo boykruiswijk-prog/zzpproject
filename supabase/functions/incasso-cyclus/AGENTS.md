@@ -1,0 +1,2 @@
+# Afspraken incasso-cyclus
+- D9 incasso: gevallen in incasso_mislukt via RPC meld_incasso_mislukt (beltaak, nooit dubbel); cyclus via incasso_cyclus_stap + incasso-cyclus (cron 06:30/07:30 UTC, draait alleen om 08 uur NL), stappen uniek in incasso_cyclus_log; opschorting afgeleid via dekking_opgeschort; dag 42 alleen voorstel, royeren alleen via bevestig_royement. incasso-detectie-exact doet alleen GET en schrijft niets. Waarom: geen automatisch royement en niets in Exact.

@@ -1,0 +1,2 @@
+# Afspraken hartslag
+- Hartslag (A31) en Lasso-opvolgronde (A30) draaien samen in hartslag (één cron per kwartier): metingen in hartslag_metingen (14 dagen), rood via hartslag_status(); opvolgsignalen max twee per item in opvolg_signalen via opvolger_ronde(), één gebundelde interne mail (soort opvolger), nooit klantmail; formulierroute alleen via {ping:true}. Waarom: één geplande taak, geen lead/mail-effecten.
