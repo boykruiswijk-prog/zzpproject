@@ -52,6 +52,7 @@ import { SNELLE_START_EVENT, type SnelleStartGegevens } from "@/lib/snelleStart"
 import { IbanVertrouwen } from "@/components/home/IbanVertrouwen";
 import { interneBronUitZoek } from "@/lib/interneBron";
 import { WerkzaamhedenVeld } from "@/components/shared/WerkzaamhedenVeld";
+import { OVERGANG_TEKST } from "@/lib/vorigeOnderneming";
 import { LABEL_VORIGE_KVK, LABEL_VORIGE_NAAM, VORIGE_VRAAG, vorigeOndernemingFouten, vorigeOndernemingVelden } from "@/lib/vorigeOnderneming";
 import { werkzaamhedenFout } from "../../../supabase/functions/_shared/werkzaamheden";
 import { HANDMATIGE_ONTVANGST } from "../../../supabase/functions/_shared/aanvraagBeoordeling";
@@ -918,6 +919,7 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
                               <Input id="vorigeKvk" name="vorigeKvk" inputMode="numeric" autoComplete="off" value={formData.vorigeKvk} onChange={handleInputChange} maxLength={12} className={cn(errors.vorigeKvk && "border-destructive")} />
                               <FieldError message={errors.vorigeKvk} />
                             </div>
+                            <p className="sm:col-span-2 text-xs text-muted-foreground">{OVERGANG_TEKST}</p>
                             <p className="sm:col-span-2 text-xs text-muted-foreground">Wij koppelen je oude en nieuwe onderneming, zodat je gegevens en historie bij ons bij elkaar blijven. Zeg de BAV + AVB van je oude onderneming zelf op. Heb je een nieuwe zakelijke rekening, dan geef je hieronder in deze aanvraag een nieuwe incassomachtiging af.</p>
                           </div>
                         )}

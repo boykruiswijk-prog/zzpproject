@@ -5,6 +5,8 @@ export const VORIGE_VRAAG = "Ik had eerder een verzekering bij ZP Zaken via een 
 export const LABEL_VORIGE_NAAM = "Naam vorige onderneming";
 export const LABEL_VORIGE_KVK = "KvK-nummer vorige onderneming";
 
+export { OVERGANG_TEKST } from "../../supabase/functions/_shared/rechtsvormwijziging";
+
 const kvkSchoon = (s: string) => s.replace(/\D/g, "");
 
 /** Validatie van het optionele veld; alleen als de klant het aanvinkt. */
