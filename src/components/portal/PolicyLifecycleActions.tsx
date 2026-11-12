@@ -16,7 +16,8 @@ import { useToast } from "@/hooks/use-toast";
 import { usePolicyLifecycle, usePortalLead, usePauzePreview } from "@/hooks/usePolicyLifecycle";
 import { formatDateLongNL } from "@/lib/dateFormat";
 import { SITE_CONFIG } from "@/config/site";
-import { OPZEG_TOELICHTING_MAX, valideerToelichting } from "@/lib/opzegValidatie";
+import { OPZEG_TOELICHTING_MAX, valideerToelichting, isAndersReden } from "@/lib/opzegValidatie";
+import { OPZEG_REDENEN_BEHEER } from "@/lib/opzegRedenen";
 
 const PAUZE_REDENEN = [
   { value: "geen_opdrachten", label: "Even geen opdrachten" },
@@ -25,12 +26,8 @@ const PAUZE_REDENEN = [
   { value: "andere_reden", label: "Andere reden" },
 ];
 
-const OPZEG_REDENEN = [
-  { value: "stoppen_zzp", label: "Ik stop met ondernemen" },
-  { value: "andere_verzekeraar", label: "Overstap naar andere verzekeraar" },
-  { value: "te_duur", label: "Te duur" },
-  { value: "andere_reden", label: "Andere reden" },
-];
+// Centrale lijst (besluit Boy 12-11): beheer-variant, alleen de keuzelijst.
+const OPZEG_REDENEN = OPZEG_REDENEN_BEHEER.map((r) => ({ value: r.code, label: r.label }));
 
 export function PolicyLifecycleActions() {
   const { data: lead, isLoading, isError } = usePortalLead();
@@ -55,7 +52,7 @@ export function PolicyLifecycleActions() {
   const opzegPreview = usePauzePreview(lead?.id, "opzeg", opzegOpen && opzegVanuitActief);
 
   const pauzeToelichtingRequired = pauzeReden === "andere_reden";
-  const opzegToelichtingRequired = opzegReden === "andere_reden";
+  const opzegToelichtingRequired = isAndersReden(opzegReden);
   const pauzeBlocked =
     !pauzeReden || (pauzeToelichtingRequired && !pauzeToelichting.trim()) || !pauzeAkkoord;
   const opzegToelichtingFout = opzegReden ? valideerToelichting(opzegReden, opzegToelichting) : null;
