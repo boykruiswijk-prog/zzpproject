@@ -15,6 +15,7 @@ export const LEAD_STATUS_LABELS: Record<LeadStatus, string> = {
   opgezegd: "Opgezegd",
   afgewezen: "Afgewezen",
   afgerond: "Afgerond (uitkomst onbekend)",
+  samengevoegd: "Bestaande klant (samengevoegd)",
   klant_geworden: "Klant geworden",
   geen_interesse: "Geen interesse",
   vraag_beantwoord: "Vraag beantwoord",

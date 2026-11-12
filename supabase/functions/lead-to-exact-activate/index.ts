@@ -426,6 +426,22 @@ Deno.serve(metExactMelding("lead-to-exact-activate", async (req) => {
   const { data: lead, error: leadErr } = await supabase
     .from("leads").select("*").eq("id", leadId).maybeSingle();
   if (leadErr || !lead) return json({ success: false, error: "lead_not_found" }, 404);
+
+  // Bestaande klant met lopend contract en geldige polis nooit opnieuw activeren of factureren.
+  // Deze controle staat vóór alle Exact-mutaties; de admin gebruikt de afzonderlijke afsluitroute.
+  if (["activate", "retry_invoice", "retry_mandate"].includes(action)) {
+    const { data: bestaande, error: bestaandeError } = await supabase.rpc("_bestaande_klant_bij_aanvraag", { _lead_id: leadId });
+    if (bestaandeError) return json({ success: false, error: "bestaande_klant_controle_mislukt", detail: bestaandeError.message }, 500);
+    if (bestaande) {
+      return json({
+        success: false,
+        error: `Bestaande klant: contract en polis lopen al (${bestaande.polisnummer}). Gebruik de knop Afsluiten als bestaande klant.`,
+        code: "bestaande_klant",
+        bestaande_klant: bestaande,
+      }, 409);
+    }
+  }
+
   const handmatig = handmatigeAanvraag(lead);
   const acceptatieKeuze = beoordelingKeuze(lead.extra_data);
   const geenSepaNodig = handmatig && acceptatieKeuze.akkoord && acceptatieKeuze.geenSepa;
