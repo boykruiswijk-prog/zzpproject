@@ -836,27 +836,8 @@ Dit is belangrijk voor Wet DBA compliance: als een zzp'er werkzaamheden verricht
         kvkResult.kvk_extract_expired = null; // could not determine
       }
 
-      // Update KVK check result and recalculate score if KVK is expired
-      const currentSuggestionsKvk = check.suggestions as any[] || [];
-      const kvkSuggestion = currentSuggestionsKvk[0] || {};
-      let kvkMissingFields = ((check.missing_fields as string[]) || []).filter(
-        (f: string) => !(f.toLowerCase().includes("kvk") && f.toLowerCase().includes("verouderd"))
-      );
-      
-      if (kvkResult.kvk_extract_expired === true) {
-        kvkMissingFields.push(`KVK-uittreksel is ouder dan 3 maanden (datum: ${kvkResult.kvk_extract_date})`);
-      }
-      
-      // Recalculate score deterministically
-      kvkSuggestion.score = Math.max(0, 100 - kvkMissingFields.length * 10);
-      kvkSuggestion.aandachtspunten = kvkMissingFields;
-      delete kvkSuggestion._original_ai_score;
-
-      await supabase.from("dba_checks").update({
-        kvk_check_result: kvkResult,
-        suggestions: [kvkSuggestion],
-        missing_fields: kvkMissingFields,
-      }).eq("id", check_id);
+      // Score opnieuw via computeScore; KVK past niet bij werk is een rode vlag buiten de score.
+      await scoreOpslaan(supabase, { ...check, kvk_check_result: kvkResult }, { kvk_check_result: kvkResult });
 
       return new Response(JSON.stringify({ success: true, kvk_check_result: kvkResult }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -968,43 +949,32 @@ BELANGRIJK:
       updatedSuggestion.insurance_missing = false;
       updatedSuggestion.polis_check_result = polisResult;
 
-      // Update missing_fields: remove old polis-related issues and add new if needed
-      let updatedMissingFields = ((check.missing_fields as string[]) || []).filter(
-        (f: string) => !f.toLowerCase().includes("polis") || (!f.toLowerCase().includes("datum") && !f.toLowerCase().includes("aangeleverd") && !f.toLowerCase().includes("ouder") && !f.toLowerCase().includes("bav") && !f.toLowerCase().includes("avb") && !f.toLowerCase().includes("dekking"))
-      );
-      if (polisExpired === true) {
-        updatedMissingFields.push(`Polis beroeps-/bedrijfsaansprakelijkheid is ouder dan 1 jaar (datum: ${polisResult.polis_date})`);
-      } else if (polisExpired === null) {
-        updatedMissingFields.push("Datum polis beroeps- en bedrijfsaansprakelijkheid kon niet worden vastgesteld");
-      }
-
-      // Check BAV + AVB coverage
-      const hasBav = polisResult.has_bav === true;
-      const hasAvb = polisResult.has_avb === true;
-      if (!hasBav && !hasAvb) {
-        updatedMissingFields.push("Polis dekt geen beroepsaansprakelijkheid (BAV) noch bedrijfsaansprakelijkheid (AVB)");
-      } else if (!hasBav) {
-        updatedMissingFields.push("Polis dekt alleen bedrijfsaansprakelijkheid (AVB) — beroepsaansprakelijkheid (BAV) ontbreekt");
-      } else if (!hasAvb) {
-        updatedMissingFields.push("Polis dekt alleen beroepsaansprakelijkheid (BAV) — bedrijfsaansprakelijkheid (AVB) ontbreekt");
-      }
-
-      // Recalculate score deterministically: 100 - (number of issues * 10)
-      updatedSuggestion.score = Math.max(0, 100 - updatedMissingFields.length * 10);
-      // Remove legacy _original_ai_score if present
-      delete updatedSuggestion._original_ai_score;
-      updatedSuggestion.aandachtspunten = updatedMissingFields;
-
-      await supabase.from("dba_checks").update({
-        suggestions: [updatedSuggestion],
-        missing_fields: updatedMissingFields,
-      }).eq("id", check_id);
+      // Gelezen polis gaat voor het polisvinkje; score via computeScore.
+      await scoreOpslaan(supabase, { ...check, suggestions: [updatedSuggestion] });
 
       return new Response(JSON.stringify({ success: true, polis_check_result: polisResult }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
 
+    } else if (action === "herbereken") {
+      // Na een handmatige wijziging: alleen de score en de lijst opnieuw opbouwen, geen AI.
+      const uitkomst = await scoreOpslaan(supabase, check);
+      return new Response(JSON.stringify({ success: true, score: uitkomst.score, aandachtspunten: uitkomst.aandachtspunten }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+
     } else if (action === "certify") {
+      // Weigeren als opgeslagen score en lijst niet overeenkomen met elkaar of met de berekening.
+      {
+        const { items } = await formulierChecklist(supabase, check);
+        const vers = computeScore(dbaScoreInvoer(check, items, new Date()));
+        const controle = dbaScoreControle(check.suggestions?.[0]?.score, check.missing_fields, vers);
+        if (!controle.ok) {
+          return new Response(JSON.stringify({ error: controle.melding, code: "score_klopt_niet", berekend: vers }), {
+            status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
       // Generate ZP Approved certificate PDF
       const verificationToken = crypto.randomUUID();
       const { data: seqData, error: seqError } = await supabase.rpc("nextval_text", { seq_name: "dba_cert_seq" });
