@@ -5,7 +5,6 @@ import { controleerDashboardOpbouw, controleerLeadsOpbouw } from "./dashboardOpb
 import { pulsRood } from "./hartslag.ts";
 import { volgendeRun } from "./cronVolgende.ts";
 import { weekCumulatief, weekStand, type Meetpunt, type Weekomzet } from "./weekomzet.ts";
-import { isEchteGebeurtenis } from "./schermEcht.ts";
 import type { BezoekersPayload, BezoekPlaats } from "./bezoekers.ts";
 
 export const ADS_BUDGET = 22500;
@@ -478,7 +477,7 @@ export function bouwSchermPayload(r: Ruw, nu = new Date()) {
       google_ads: iso(snapOp.google_ads), microsoft_ads: iso(snapOp.microsoft_ads),
       search_console: iso(snapOp.search_console), ai_zichtbaarheid: iso(snapOp.ai_zichtbaarheid), ai_team: iso(snapOp.ai_team),
     },
-    activiteit: groepeerBezoeken((Array.isArray(r?.activiteit) ? r.activiteit : []).filter((a: Ruw) => !a.is_test && isEchteGebeurtenis(a.actie, a.tekst, a.status)).slice(0, 120).map((a: Ruw) => {
+    activiteit: groepeerBezoeken((Array.isArray(r?.activiteit) ? r.activiteit : []).filter((a: Ruw) => !a.is_test).slice(0, 120).map((a: Ruw) => {
       const p = perioden.get(String(a.id ?? ''));
       return { ...schermActiviteit(a), gestart_op: iso(p?.gestart_op), afgerond_op: iso(p?.afgerond_op), agent: p?.agent === true };
     })).slice(0, 40),
