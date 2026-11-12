@@ -258,7 +258,7 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds, omzetOpen
           {vervangt && (!voorstel || !voorstel.nummer || voorstel.nummer === vervangt) && (
             <p className="text-sm font-medium">Vervangt ingetrokken certificaat {vervangt} (zelfde BAV-nummer). Er wordt niets gemaild.</p>
           )}
-          {voorstel?.nummer && !bevestig && (
+          {voorstel?.nummer && (
             <p className="text-sm">Certificaatnummer: <strong>{voorstel.nummer}</strong> ({bronTekst(voorstel)})
               {voorstel.staat_al_op_policy && <span className="block text-destructive">Dit nummer staat al op een certificaat van deze klant. Gebruik "Aanpassen".</span>}
             </p>
@@ -271,7 +271,7 @@ export function KlantCertificaat({ ond, contracten, personen, leadIds, omzetOpen
             {geenNummer ? (
               <Button variant="destructive" disabled={!compleet || bezig} onClick={() => genereer(true)}>Ja, nieuw nummer uitgeven</Button>
             ) : (
-              <Button disabled={!compleet || bezig} onClick={() => genereer(bevestig)}>{bezig && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}Genereren</Button>
+              <Button disabled={!compleet || bezig || !!voorstel?.staat_al_op_policy} onClick={() => genereer(bevestig)}>{bezig && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}Genereren</Button>
             )}
           </DialogFooter>
         </DialogContent>
