@@ -530,11 +530,12 @@ export function BAVApplicationModule({ initialSector = "", compactPakketten = fa
         const conversiePremie = aanvraagPremie(selectedBavPakket.id, starterVanToepassing);
         trackPurchase(returnedLeadId, selectedBavPakket.id, selectedBavPakket.name, conversiePremie.maand ? conversiePremie.totaal * 12 : conversiePremie.totaal, { email: formData.email }, data.is_test === true);
        setIsSubmitted(true);
+        setVorigeAan(false);
         setFormData({
           bedrijfsnaam: "", kvkNummer: "", kvkStartdatum: "", sector: "", beroep: "", functie: "", aantalMedewerkers: "",
           voornaam: "", achternaam: "", email: "", telefoon: "", opdrachtgever: "", bemiddelaarNaam: "",
           iban: "", adresStraat: "", adresHuisnummer: "", adresPostcode: "", adresPlaats: "", adresLand: "Nederland",
-          rekeninghouder: "",
+          rekeninghouder: "", vorigeNaam: "", vorigeKvk: "",
         });
         setStartDate("");
         setViaBemiddelaar(null);

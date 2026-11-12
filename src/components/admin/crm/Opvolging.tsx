@@ -94,7 +94,8 @@ export function OndernemingswijzigingKnop({ ond, onKlaar }: { ond: Ond; onKlaar?
   const [bestanden, setBestanden] = useState<File[]>([]);
   const [bezig, setBezig] = useState(false);
   const [geldigePolis, setGeldigePolis] = useState<{ id: string; certificate_number: string | null } | null>(null);
-  const [polisMee, setPolisMee] = useState(true);
+  // Besluit 12-11-2026: standaardroute is opzeggen + nieuwe aanvraag + koppelen; omzetten alleen bewust aanvinken.
+  const [polisMee, setPolisMee] = useState(false);
   const meenemen = polisMeenemenMogelijk(soort, geldigePolis) && polisMee;
 
   useEffect(() => {
