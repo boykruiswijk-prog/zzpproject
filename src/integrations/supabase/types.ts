@@ -7631,6 +7631,7 @@ export type Database = {
       }
       _ts_sessie: { Args: { _aal?: string; _uid: string }; Returns: undefined }
       _ts_tel: { Args: never; Returns: Json }
+      _ts_telling_admin_tv: { Args: never; Returns: Json }
       a19_team: { Args: never; Returns: undefined }
       aanvraag_bestaande_klant_afsluiten: {
         Args: { _lead_id: string }
