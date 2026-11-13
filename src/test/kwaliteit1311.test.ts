@@ -44,3 +44,15 @@ describe("Kwaliteitscontrole 13 november: oude /academy/-paden", () => {
     expect(zoekLegacyDoel("/en/tv")).toBeNull();
   });
 });
+
+describe("Kwaliteitscontrole 13 november: geen adviseur in beroepsnamen in artikelen", () => {
+  const sql = readFileSync("drizzle/migrations/0286_artikel_beroepsnaam_adviseur_blokkade_1311.sql", "utf8");
+  const regel = new RegExp(sql.match(/~\* '\((hr-adviseur\|loopbaanadviseur)\)'/)![1], "i");
+  it("trigger weigert HR-adviseur en loopbaanadviseur alleen bij gepubliceerd, financieel adviseurs blijft toegestaan", () => {
+    expect(sql).toContain("COALESCE(NEW.is_published, false)");
+    expect(regel.test("Voor HR-Adviseurs en P&O'ers")).toBe(true);
+    expect(regel.test("Een loopbaanadviseur helpt")).toBe(true);
+    expect(regel.test("Voor financieel adviseurs is BAV verplicht.")).toBe(false);
+    expect(regel.test("Dat geldt voor HR-professionals, P&O'ers")).toBe(false);
+  });
+});
