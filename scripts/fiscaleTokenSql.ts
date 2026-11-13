@@ -35,3 +35,12 @@ if (import.meta.main) {
   console.log(fiscaleTokenSqlArray());
   console.log(`ARRAY[${afgeleid.map((t) => `'${t}'`).join(",")}]::text[]`);
 }
+
+/** Compacte vorm per sleutel: "sleutel:E|-:jaar,jaar" (E = euro-bedrag). */
+export function fiscaleTokenCompact(): string[] {
+  return [...fiscaleCijferSleutels].sort().map((s) => {
+    const c = fiscaleCijfers[s] as { eenheid: string; belastingjaar: number; historie?: Record<number, number>; aangekondigd?: Record<number, number> };
+    const jaren = [...new Set([c.belastingjaar, ...Object.keys(c.historie ?? {}).map(Number), ...Object.keys(c.aangekondigd ?? {}).map(Number)])].sort();
+    return `${s}:${c.eenheid === "euro" ? "E" : "-"}:${jaren.join(",")}`;
+  });
+}
