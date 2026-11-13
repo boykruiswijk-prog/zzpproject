@@ -9,6 +9,8 @@
  *   {{fiscaal:<sleutel>:volledig}} label, waarde en jaar
  *   {{fiscaal:<sleutel>:bron}}     markdown-link naar de officiele bron
  *   {{fiscaal:<sleutel>:2025}}     waarde van een specifiek jaar
+ *   {{fiscaal:<sleutel>:euro}}     alleen de waarde als lopende tekst ("1.200 euro")
+ *   {{fiscaal:<sleutel>:2027_euro}} waarde van een jaar als lopende tekst, zonder jaartal
  *
  * Onbekende sleutels of varianten blijven letterlijk staan; zo valt een
  * typefout op in de verouderingscheck en wordt niets stil verkeerd getoond.
@@ -44,6 +46,11 @@ function afgeleideWaarden(): Record<string, number> {
   };
 }
 
+/** Bedrag als lopende tekst, bijvoorbeeld "1.200 euro". */
+function euroTekst(waarde: number): string {
+  return `${waarde.toLocaleString("nl-NL", { maximumFractionDigits: 2 })} euro`;
+}
+
 export function resolveFiscaalToken(sleutel: string, variant?: string): string | null {
   const afgeleid = afgeleideWaarden()[sleutel];
   if (afgeleid !== undefined) {
@@ -61,6 +68,8 @@ export function resolveFiscaalToken(sleutel: string, variant?: string): string |
   switch (variant) {
     case "waarde":
       return waardeTekst;
+    case "euro":
+      return cijfer.eenheid === "euro" ? euroTekst(cijfer.waarde) : null;
     case "jaar":
       return String(cijfer.belastingjaar);
     case "label":
@@ -70,6 +79,11 @@ export function resolveFiscaalToken(sleutel: string, variant?: string): string |
     case "bron":
       return `[${cijfer.bron.naam}](${cijfer.bron.url})`;
     default: {
+      const tekstJaar = /^(\d{4})_euro$/.exec(variant);
+      if (tekstJaar) {
+        const w = getFiscaleWaardeVoorJaar(sleutel, Number(tekstJaar[1]));
+        return w && w.eenheid === "euro" ? euroTekst(w.waarde) : null;
+      }
       const jaar = Number(variant);
       if (!Number.isInteger(jaar)) return null;
       const historisch = getFiscaleWaardeVoorJaar(sleutel, jaar);
