@@ -9155,6 +9155,15 @@ export type Database = {
         Returns: Json
       }
       tel_klanten: { Args: { _toon_test?: boolean }; Returns: number }
+      tel_klanten_set: { Args: { _toon_test?: boolean }; Returns: string[] }
+      tel_klanten_set_op: {
+        Args: { _op: string; _toon_test?: boolean }
+        Returns: string[]
+      }
+      tel_klanten_stand: {
+        Args: { _toon_test?: boolean; _vanaf: string }
+        Returns: Json
+      }
       tel_netto_groei: {
         Args: { _toon_test?: boolean; _vanaf?: string }
         Returns: Json
