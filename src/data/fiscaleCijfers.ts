@@ -60,6 +60,8 @@ export interface FiscaalCijfer {
   historie?: Record<number, number>;
   /** Officieel aangekondigde, nog niet geldende waarden. */
   aangekondigd?: Record<number, number>;
+  /** Officiele bron van de aangekondigde waarden, als die afwijkt van `bron`. */
+  aangekondigdBron?: FiscaleBron;
 }
 
 /** Het belastingjaar waarop de actuele cijfers betrekking hebben. */
@@ -90,6 +92,12 @@ const BRON_BELASTINGDIENST_KILOMETERVERGOEDING: FiscaleBron = {
   naam:
     "Belastingdienst — nieuwsbericht 25 juni 2026 over de verhoging van de onbelaste kilometervergoeding, en tabel 13 van 'Tarieven, bedragen en percentages loonheffingen vanaf 1 januari 2026' (vierde uitgave)",
   url: "https://www.belastingdienst.nl/wps/wcm/connect/nl/loonheffingen/",
+};
+
+const BRON_WETSVOORSTEL_BELASTINGPLAN_2027: FiscaleBron = {
+  naam:
+    "Wetsvoorstel Belastingplan 2027: artikel I, onderdeel G wijzigt art. 3.76 lid 3 Wet IB 2001 (startersaftrek van 2123 naar 10 euro); artikel II, onderdeel C laat lid 3 vervallen per 1 januari 2028",
+  url: "https://www.rijksoverheid.nl/site/binaries/site-content/collections/documents/2026/09/15/wetsvoorstel-belastingplan-2027/wetsvoorstel-belastingplan-2027.pdf",
 };
 
 const BRON_FISIN_2026: FiscaleBron = {
@@ -186,7 +194,12 @@ export const fiscaleCijfers = {
     label: "Startersaftrek",
     toelichting:
       "Extra aftrek boven op de zelfstandigenaftrek, maximaal drie keer in de eerste vijf jaar.",
+    voorbehoud: [
+      "Het bedrag voor 2027 is aangekondigd in het wetsvoorstel Belastingplan 2027 en geldt pas na aanneming door de Eerste Kamer; per 1 januari 2028 vervalt de startersaftrek.",
+    ],
     bron: BRON_BELASTINGDIENST_ONDERNEMERSAFTREK,
+    aangekondigd: { 2027: 10 },
+    aangekondigdBron: BRON_WETSVOORSTEL_BELASTINGPLAN_2027,
   },
   mkbWinstvrijstelling: {
     belastingjaar: 2026,
