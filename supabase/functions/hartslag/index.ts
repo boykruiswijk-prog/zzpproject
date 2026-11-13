@@ -3,7 +3,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { cronOfSupervisor } from "../_shared/cronOfSupervisor.ts";
-import { HARTSLAG_PAGINAS, beoordeelPagina, beoordeelMail, beoordeelExact, type Meting } from "../_shared/hartslag.ts";
+import { HARTSLAG_PAGINAS, beoordeelPagina, beoordeelMail, beoordeelExact, meetSchermData, type Meting } from "../_shared/hartslag.ts";
 import { bouwOpvolgMail, OPVOLGER_SOORT, type OpvolgItem } from "../_shared/opvolger.ts";
 import { verstuurInterneMelding } from "../_shared/interneMelding.ts";
 

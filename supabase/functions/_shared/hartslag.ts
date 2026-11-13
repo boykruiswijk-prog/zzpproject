@@ -50,3 +50,44 @@ export function teVerwijderen(gemeten_op: string, nu = new Date()): boolean {
 export function pulsRood(status: unknown): boolean {
   return Array.isArray(status) && status.some((s) => s && typeof s === "object" && (s as { rood?: unknown }).rood === true);
 }
+
+export const SCHERM_TIMEOUT_MS = 20_000;
+const SCHERM_HERHAAL_WACHT_MS = 250;
+
+function schermFoutSoort(fout: unknown): "time-out" | "netwerkfout" {
+  const naam = typeof fout === "object" && fout !== null && "name" in fout ? String(fout.name) : "";
+  return naam === "AbortError" ? "time-out" : "netwerkfout";
+}
+
+/** Eén herhaling alleen bij een time-out/netwerkfout; een HTTP-fout blijft direct zichtbaar. */
+export async function meetSchermData(
+  url: string,
+  headers: Record<string, string>,
+  ophaal: typeof fetch = fetch,
+  timeoutMs = SCHERM_TIMEOUT_MS,
+  wacht: (ms: number) => Promise<void> = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+): Promise<Meting> {
+  const gestart = Date.now();
+  let eersteFout = "";
+  for (const poging of [1, 2] as const) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const reactie = await ophaal(url, { headers, signal: controller.signal });
+      await reactie.text();
+      const duur = Date.now() - gestart;
+      if (reactie.status === 200) {
+        return { onderdeel: "scherm-data", ok: true, reden: poging === 1 ? `200 (${duur} ms)` : `200 na herhaling (${duur} ms; eerste poging ${eersteFout})` };
+      }
+      return { onderdeel: "scherm-data", ok: false, reden: `status ${reactie.status}${poging === 2 ? " na herhaling" : ""} (${duur} ms)` };
+    } catch (fout) {
+      const soort = schermFoutSoort(fout);
+      if (poging === 2) return { onderdeel: "scherm-data", ok: false, reden: `${soort} na 2 pogingen (${Date.now() - gestart} ms)` };
+      eersteFout = soort;
+      await wacht(SCHERM_HERHAAL_WACHT_MS);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  return { onderdeel: "scherm-data", ok: false, reden: "netwerkfout" };
+}
