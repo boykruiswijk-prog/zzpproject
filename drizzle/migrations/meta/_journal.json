@@ -2003,6 +2003,13 @@
       "when": 1794514352956,
       "tag": "0285_polis_lifecycle_opzegreden_klant_blokkade_1211",
       "breakpoints": true
+    },
+    {
+      "idx": 286,
+      "version": "7",
+      "when": 1794551779668,
+      "tag": "0286_artikel_beroepsnaam_adviseur_blokkade_1311",
+      "breakpoints": true
     }
   ]
 }
