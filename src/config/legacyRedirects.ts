@@ -751,6 +751,8 @@ export const legacyRedirects: LegacyRedirect[] = [
   { from: "nieuws/*", to: "/kennisbank" },
   // Kwaliteitscontrole 6-11-2026: vangnet voor overige oude /control/-paden.
   { from: "control/*", to: "/creditcontrol" },
+  // Kwaliteitscontrole 13-11-2026: vangnet voor overige oude /academy/-paden.
+  { from: "academy/*", to: "/over-ons" },
   { from: "bedankt-*", to: "/verzekeringen" },
 ];
 
@@ -837,7 +839,7 @@ export function taalprefixRedirects(
   const uit: LegacyRedirect[] = [];
   for (const r of lijst) {
     const from = norm(r.from);
-    if (!from || (isVangregel(r) && !["home/nieuws/*", "nieuws/*", "control/*", "bedankt-*"].includes(from)) || TAALPREFIXES.some((t) => from === t || from.startsWith(`${t}/`))) continue;
+    if (!from || (isVangregel(r) && !["home/nieuws/*", "nieuws/*", "control/*", "academy/*", "bedankt-*"].includes(from)) || TAALPREFIXES.some((t) => from === t || from.startsWith(`${t}/`))) continue;
     for (const t of TAALPREFIXES) {
       const afgeleid = `${t}/${from}`;
       if (bronnen.has(afgeleid) || gezien.has(afgeleid) || bestaande.has(afgeleid)) continue;

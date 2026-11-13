@@ -73,6 +73,7 @@ describe("Kwaliteitscontrole 23-10-2026", () => {
       "en/home/nieuws/*", "de/home/nieuws/*", "fr/home/nieuws/*",
       "en/nieuws/*", "de/nieuws/*", "fr/nieuws/*",
       "en/control/*", "de/control/*", "fr/control/*",
+      "en/academy/*", "de/academy/*", "fr/academy/*",
       "en/bedankt-*", "de/bedankt-*", "fr/bedankt-*",
     ]);
     // /tv krijgt nooit een doorverwijzing.

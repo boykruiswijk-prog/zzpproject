@@ -739,6 +739,8 @@ export const legacyRedirects: { from: string; to: string }[] = [
   { from: "nieuws/*", to: "/kennisbank" },
   // Kwaliteitscontrole 6-11-2026: vangnet voor overige oude /control/-paden.
   { from: "control/*", to: "/creditcontrol" },
+  // Kwaliteitscontrole 13-11-2026: vangnet voor overige oude /academy/-paden.
+  { from: "academy/*", to: "/over-ons" },
   { from: "bedankt-*", to: "/verzekeringen" },
 ];
 
