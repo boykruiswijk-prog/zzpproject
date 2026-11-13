@@ -6,6 +6,7 @@ import { maatwerkVlag, heeftMaatwerkVlag, MAATWERK_LABEL } from "@/lib/maatwerk"
 import { kiesCreditRoute, ontbrekendCreditMelding } from "../../supabase/functions/_shared/creditOpzegging";
 import { factuurLabel } from "@/lib/ingangsdatumWijzigen";
 import { datumsFout, datumsMelding } from "../../supabase/functions/_shared/rechtsvormwijziging";
+import { meetSchermData, SCHERM_TIMEOUT_MS } from "../../supabase/functions/_shared/hartslag";
 
 const NU = "2026-11-12T10:00:00Z";
 
@@ -80,5 +81,56 @@ describe("maatwerk_voorinvullen", () => {
     expect(moetMaatwerkTonenBijVoorinvullen("ict", "ict", false)).toBe(false);
     expect(moetMaatwerkTonenBijVoorinvullen("zorg", "ict", false)).toBe(false);
     expect(moetMaatwerkTonenBijVoorinvullen("", "", false)).toBe(false);
+  });
+});
+
+const abortFout = () => {
+  const fout = new Error("afgebroken");
+  fout.name = "AbortError";
+  return fout;
+};
+
+describe("hartslag_scherm_herhaling", () => {
+  it("een tijdelijke netwerkfout krijgt precies één herhaling", async () => {
+    let pogingen = 0;
+    const ophaal = (async () => {
+      pogingen += 1;
+      if (pogingen === 1) throw new TypeError("tijdelijke netwerkfout");
+      return new Response("ok", { status: 200 });
+    }) as typeof fetch;
+    const meting = await meetSchermData("https://voorbeeld.invalid", {}, ophaal, 20_000, async () => {});
+    expect(pogingen).toBe(2);
+    expect(meting).toMatchObject({ onderdeel: "scherm-data", ok: true });
+    expect(meting.reden).toMatch(/^200 na herhaling \(\d+ ms; eerste poging netwerkfout\)$/);
+  });
+
+  it("een HTTP 503 is echte uitval en wordt niet opnieuw opgehaald", async () => {
+    let pogingen = 0;
+    const ophaal = (async () => {
+      pogingen += 1;
+      return new Response("tijdelijk_niet_beschikbaar", { status: 503 });
+    }) as typeof fetch;
+    const meting = await meetSchermData("https://voorbeeld.invalid", {}, ophaal);
+    expect(pogingen).toBe(1);
+    expect(meting.ok).toBe(false);
+    expect(meting.reden).toMatch(/^status 503 \(\d+ ms\)$/);
+  });
+
+  it("twee time-outs blijven fout met een concrete reden", async () => {
+    let pogingen = 0;
+    const ophaal = ((_url: string, init?: RequestInit) => {
+      pogingen += 1;
+      return new Promise<Response>((_resolve, reject) => {
+        init?.signal?.addEventListener("abort", () => reject(abortFout()), { once: true });
+      });
+    }) as typeof fetch;
+    const meting = await meetSchermData("https://voorbeeld.invalid", {}, ophaal, 5, async () => {});
+    expect(pogingen).toBe(2);
+    expect(meting.ok).toBe(false);
+    expect(meting.reden).toMatch(/^time-out na 2 pogingen \(\d+ ms\)$/);
+  });
+
+  it("de productiegrens is 20 seconden in plaats van 10", () => {
+    expect(SCHERM_TIMEOUT_MS).toBe(20_000);
   });
 });
