@@ -30,7 +30,7 @@ export function fiscaleTokenSqlArray(): string {
   return `ARRAY[${vast.map((t) => `'${t}'`).join(",")}]::text[]`;
 }
 
-if (import.meta.main) {
+if ((import.meta as { main?: boolean }).main) {
   const { afgeleid } = oplosbareFiscaleTokens();
   console.log(fiscaleTokenSqlArray());
   console.log(`ARRAY[${afgeleid.map((t) => `'${t}'`).join(",")}]::text[]`);
