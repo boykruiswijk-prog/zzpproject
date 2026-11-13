@@ -6,6 +6,7 @@ import { maatwerkVlag, heeftMaatwerkVlag, MAATWERK_LABEL } from "@/lib/maatwerk"
 import { kiesCreditRoute, ontbrekendCreditMelding } from "../../supabase/functions/_shared/creditOpzegging";
 import { factuurLabel } from "@/lib/ingangsdatumWijzigen";
 import { datumsFout, datumsMelding } from "../../supabase/functions/_shared/rechtsvormwijziging";
+import { meetSchermData, SCHERM_TIMEOUT_MS } from "../../supabase/functions/_shared/hartslag";
 
 const NU = "2026-11-12T10:00:00Z";
 
