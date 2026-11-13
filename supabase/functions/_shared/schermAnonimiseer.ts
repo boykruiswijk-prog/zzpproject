@@ -388,7 +388,9 @@ export function schoonNettoGroei(n: Ruw) {
   if (!n) return null;
   const weken = Array.isArray(n.weken) ? n.weken : [];
   const i = n.instroom_opbouw;
-  return { vanaf: NETTO_GROEI_VANAF, cumulatief: blok(n.cumulatief), deze_week: blok(weken[weken.length - 1]),
+  return { vanaf: NETTO_GROEI_VANAF, cumulatief: blok(n.cumulatief),
+    // Besluit 13-11: deze week in klanten (tel_klanten_stand), zelfde definitie als de admin.
+    deze_week: n.klanten_week ? blok({ instroom: n.klanten_week.instroom, beeindigingen: n.klanten_week.uitstroom, netto_groei: n.klanten_week.netto, opzegpercentage: null }) : blok(weken[weken.length - 1]),
     ...(i ? { instroom_opbouw: { via_aanvraag: getal(i.via_aanvraag) ?? 0, voor_6_okt: getal(i.voor_6_okt) ?? 0, afas_overzetting: getal(i.afas_overzetting) ?? 0, nog_in_te_gaan: getal(i.nog_in_te_gaan) ?? 0, overig: getal(i.overig) ?? 0 } } : {}) };
 }
 
@@ -401,7 +403,7 @@ function schoonWeekomzet(d: Ruw): Weekomzet | null {
     via_advertenties: n(d.via_advertenties), vorige_via_advertenties: n(d.vorige_via_advertenties) };
 }
 
-/** Groei (scherm_groei): klanten = unieke ondernemingen met minstens één factureerbaar contract. Alleen aantallen. */
+/** Groei (scherm_groei): exact de admin-telling (tel_klanten, tel_contracten). Alleen aantallen. */
 export function schoonGroei(g: Ruw) {
   if (!g || typeof g !== "object") return null;
   const n = (x: unknown) => Math.max(0, getal(x) ?? 0);
