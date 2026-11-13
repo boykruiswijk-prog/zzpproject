@@ -171,7 +171,7 @@ function PaneelDoel({ d }: { d: SchermPayload }) {
   );
 }
 
-/** Besluit Boy 12-11-2026: klanten = unieke ondernemingen met minstens één factureerbaar contract (scherm_groei). */
+/** Besluit Boy 13-11-2026 (A6): scherm_groei volgt exact de admin-telling (tel_klanten, tel_contracten, tel_klanten_stand). */
 function PaneelGroei({ d }: { d: SchermPayload }) {
   const g = d.groei;
   if (!g) return <div className="flex h-full flex-col gap-[32.4px]"><Kop>Groei</Kop><Gemeten /></div>;

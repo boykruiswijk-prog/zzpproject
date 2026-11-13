@@ -7631,6 +7631,7 @@ export type Database = {
       }
       _ts_sessie: { Args: { _aal?: string; _uid: string }; Returns: undefined }
       _ts_tel: { Args: never; Returns: Json }
+      _ts_telling_admin_tv: { Args: never; Returns: Json }
       a19_team: { Args: never; Returns: undefined }
       aanvraag_bestaande_klant_afsluiten: {
         Args: { _lead_id: string }
@@ -9155,6 +9156,15 @@ export type Database = {
         Returns: Json
       }
       tel_klanten: { Args: { _toon_test?: boolean }; Returns: number }
+      tel_klanten_set: { Args: { _toon_test?: boolean }; Returns: string[] }
+      tel_klanten_set_op: {
+        Args: { _op: string; _toon_test?: boolean }
+        Returns: string[]
+      }
+      tel_klanten_stand: {
+        Args: { _toon_test?: boolean; _vanaf: string }
+        Returns: Json
+      }
       tel_netto_groei: {
         Args: { _toon_test?: boolean; _vanaf?: string }
         Returns: Json

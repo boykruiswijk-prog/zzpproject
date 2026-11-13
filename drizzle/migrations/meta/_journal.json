@@ -2010,6 +2010,20 @@
       "when": 1794551779668,
       "tag": "0286_artikel_beroepsnaam_adviseur_blokkade_1311",
       "breakpoints": true
+    },
+    {
+      "idx": 287,
+      "version": "7",
+      "when": 1794602973074,
+      "tag": "0287_een_telling_admin_tv_1311",
+      "breakpoints": true
+    },
+    {
+      "idx": 288,
+      "version": "7",
+      "when": 1794603015126,
+      "tag": "0288_scenario_telling_admin_tv_1311",
+      "breakpoints": true
     }
   ]
 }
