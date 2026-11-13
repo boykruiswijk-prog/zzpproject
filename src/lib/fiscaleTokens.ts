@@ -24,7 +24,12 @@ import {
 import { berekenNulgrens } from "../data/nulgrensBerekening";
 
 /** Matcht {{fiscaal:sleutel}} en {{fiscaal:sleutel:variant}}. */
-export const FISCAAL_TOKEN_REGEX = /\{\{\s*fiscaal:([a-zA-Z0-9_]+)(?::([a-zA-Z0-9_]+))?\s*\}\}/g;
+export const FISCAAL_TOKEN_REGEX = /\{\{\s*fiscaal:([a-zA-Z0-9_\\]+)(?::([a-zA-Z0-9_\\]+))?\s*\}\}/g;
+
+/** Markdown-editors escapen soms de underscore ("2027\_euro"); token-onderdelen zonder backslash. */
+function zonderEscape(deel?: string): string | undefined {
+  return deel === undefined ? undefined : deel.replace(/\\/g, "");
+}
 
 /**
  * AFGELEIDE TOKENS — uitkomsten die volledig uit fiscaleCijfers.ts volgen.
@@ -97,7 +102,7 @@ export function resolveFiscaalToken(sleutel: string, variant?: string): string |
 export function resolveFiscaleTokens(text: string | null | undefined): string {
   if (!text) return "";
   return text.replace(FISCAAL_TOKEN_REGEX, (match, sleutel: string, variant?: string) => {
-    const resolved = resolveFiscaalToken(sleutel, variant);
+    const resolved = resolveFiscaalToken(zonderEscape(sleutel)!, zonderEscape(variant));
     return resolved ?? match;
   });
 }
@@ -109,8 +114,8 @@ export function vindFiscaleTokens(
   if (!text) return [];
   const found: Array<{ token: string; sleutel: string; variant?: string; oplosbaar: boolean }> = [];
   for (const m of text.matchAll(FISCAAL_TOKEN_REGEX)) {
-    const sleutel = m[1];
-    const variant = m[2];
+    const sleutel = zonderEscape(m[1])!;
+    const variant = zonderEscape(m[2]);
     found.push({
       token: m[0],
       sleutel,
