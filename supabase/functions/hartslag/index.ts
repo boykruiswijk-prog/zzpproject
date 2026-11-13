@@ -43,12 +43,11 @@ Deno.serve(async (req) => {
   const { data: sync, error: syncFout } = await admin.from("exact_sync_log").select("status, created_at").gte("created_at", tweeUur).limit(1000);
   metingen.push(syncFout ? { onderdeel: "exact-koppeling", ok: false, reden: "log niet leesbaar" } : beoordeelExact(sync ?? []));
 
-  try {
-    const token = Deno.env.get("SCHERM_TOKEN") ?? "";
-    const r = await metTimeout(`${url}/functions/v1/scherm-data`, { headers: { "x-scherm-token": token, apikey: Deno.env.get("SUPABASE_ANON_KEY") ?? "" } });
-    await r.text();
-    metingen.push(r.status === 200 ? { onderdeel: "scherm-data", ok: true, reden: "200" } : { onderdeel: "scherm-data", ok: false, reden: `status ${r.status}` });
-  } catch { metingen.push({ onderdeel: "scherm-data", ok: false, reden: "niet bereikbaar" }); }
+  const token = Deno.env.get("SCHERM_TOKEN") ?? "";
+  metingen.push(await meetSchermData(`${url}/functions/v1/scherm-data`, {
+    "x-scherm-token": token,
+    apikey: Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+  }));
 
   await admin.from("hartslag_metingen").insert(metingen.map((m) => ({ onderdeel: m.onderdeel, ok: m.ok, reden: m.reden.slice(0, 120) })));
   await admin.rpc("hartslag_opruimen");

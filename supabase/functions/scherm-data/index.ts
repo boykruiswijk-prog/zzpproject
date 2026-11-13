@@ -118,9 +118,11 @@ Deno.serve(async (req) => {
     // Volgorde bewust: werkstand levert de actuele activiteit (met cron-runs en perioden) en wint van scherm_data.
     const body = JSON.stringify(bouwSchermPayload({ ...(data ?? {}), ...(stromen ?? {}), ...(werk ?? {}), nu_op_site: nuOp, versheid: versheid ?? null, bing_ai: bingAi ?? [], hartslag_status: hartslagStatus ?? [], cron_schema: cronSchema ?? [], schoon: schoon ?? null, marketing_reeks: reeksFout ? [] : reeks ?? [], weekomzet: omzetFout ? null : berekenWeekomzet(omzetRijen), bezoekers: bezoekFout ? null : bouwBezoekersPayload(bezoekRijen, bezoekDag) }));
     cache = { op: Date.now(), body };
+    const duurMs = Date.now() - dataGestart;
+    if (duurMs >= 8_000) console.warn("scherm-data langzaam", JSON.stringify({ duur_ms: duurMs }));
     return json(body, 200, { "Cache-Control": "private, max-age=4" });
   } catch (e) {
-    console.error("scherm-data", e instanceof Error ? e.message : "onbekend");
+    console.error("scherm-data", JSON.stringify({ reden: e instanceof Error ? e.message : "onbekend", duur_ms: Date.now() - dataGestart }));
     if (cache) return json(markeerVerouderd(cache.body, cache.op), 200, { "X-Cache": "stale" });
     return json(JSON.stringify({ error: "tijdelijk_niet_beschikbaar" }), 503);
   }

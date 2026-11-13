@@ -77,3 +77,6 @@ en het i-icoon bij Aantal medewerkers.
 - `opzegreden_beheer_beeindiging_zp`: beheer (crm_beeindig) met `beeindiging_zp` lukt en slaat code en label op.
 - `polis_lifecycle_klant_beeindiging_zp`: de lead-update zoals polis-lifecycle die uitvoert wordt voor een klant geweigerd bij `beeindiging_zp` en `eerdere_opzegging`; `anders` zonder toelichting wordt geweigerd en beheer mag de interne reden wel opslaan.
 - Vitest `src/test/opzegRedenen.test.ts`: volgorde, portaal- en beheerlijst, oude waarden leesbaar, Mijn ZP gebruikt de portaallijst en de serverblokkade staat vóór Exact.
+
+## Hartslag scherm-data (13-11)
+- `hartslag_scherm_herhaling` in `src/test/scenarios1211.test.ts`: één tijdelijke netwerkfout of time-out krijgt precies één herhaling met een grens van 20 seconden; twee time-outs blijven fout; HTTP 503 wordt niet herhaald en blijft echte uitval. De meting bevat voortaan de totale duur en of een herhaling nodig was.
