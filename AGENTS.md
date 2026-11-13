@@ -52,6 +52,7 @@
 - BeroepspaginaTekst links policy-condition mentions without changing FAQ strings; beroepspagina price display is opt-in by canonical path, leaving other services and form pricing untouched. Why: consistent landing-page copy with matching JSON-LD and no application changes.
 - Bundle leak checks exempt only explicit public AVB coverage wording, including amount-before-AVB; unlabeled and cyber amounts remain blocked. Why: valid coverage copy must deploy.
 - PageHero text wrapping is opt-in for occupational landing pages; other pages retain their existing sizing. Why: long coverage headings must remain readable without changing shared page layouts.
+- Published articles must resolve every fiscal token: trigger artikel_fiscaal_token_check uses the list from scripts/fiscaleTokenSql.ts (parity-tested); the resolver strips markdown-escaped underscores. Why: raw tokens never go live.
 - Trigger artikel_hiscox_acceptatie_check plus hiscoxAcceptatie.test.ts reject text attributing acceptance to Hiscox. Why: automation cannot publish it.
 - A20 afhaakmail: alleen via afhaak_herinnering_kandidaten/_claim, geclaimd nooit opnieuw; enhanced conversions alleen browser-SHA-256 e-mail. Waarom: geen dubbele mail of leesbare data.
 - Policies without a lead (policies.onderneming_id) are linked to the onderneming's single confirmed portal account by trigger policies_onderneming_portal_user and at invite; Mijn ZP falls back to RPC mijn_klant_contracten for contracts without a policy. Why: pre-online customers must see their certificate after login.
