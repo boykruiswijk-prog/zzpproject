@@ -2024,6 +2024,13 @@
       "when": 1794603015126,
       "tag": "0288_scenario_telling_admin_tv_1311",
       "breakpoints": true
+    },
+    {
+      "idx": 289,
+      "version": "7",
+      "when": 1794605573763,
+      "tag": "0289_artikel_fiscaal_token_check_1311",
+      "breakpoints": true
     }
   ]
 }

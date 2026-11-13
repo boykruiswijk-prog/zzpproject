@@ -8414,6 +8414,7 @@ export type Database = {
           openstaand: number
         }[]
       }
+      fiscaal_token_onopgelost: { Args: { _tekst: string }; Returns: string }
       get_artikelbeeld_melding: { Args: never; Returns: string }
       get_exact_config_status: { Args: never; Returns: Json }
       get_exact_koppeling_fout: { Args: never; Returns: string }
