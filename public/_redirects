@@ -4803,6 +4803,7 @@
 /facts/press/*    /kennisbank    301
 /nieuws/*    /kennisbank    301
 /control/*    /creditcontrol    301
+/academy/*    /over-ons    301
 /bedankt-*    /verzekeringen    301
 /en/home/nieuws/*    /kennisbank    301  # taalprefix
 /de/home/nieuws/*    /kennisbank    301  # taalprefix
@@ -4813,6 +4814,9 @@
 /en/control/*    /creditcontrol    301  # taalprefix
 /de/control/*    /creditcontrol    301  # taalprefix
 /fr/control/*    /creditcontrol    301  # taalprefix
+/en/academy/*    /over-ons    301  # taalprefix
+/de/academy/*    /over-ons    301  # taalprefix
+/fr/academy/*    /over-ons    301  # taalprefix
 /en/bedankt-*    /verzekeringen    301  # taalprefix
 /de/bedankt-*    /verzekeringen    301  # taalprefix
 /fr/bedankt-*    /verzekeringen    301  # taalprefix
