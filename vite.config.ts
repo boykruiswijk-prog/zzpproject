@@ -108,8 +108,9 @@ export function cloudflareBulkCsv(redirectLines: string[], host = "zpzaken.nl"):
       push(`${host}${from.slice(0, -1)}`, target, "TRUE,TRUE,TRUE,FALSE");
       continue;
     }
-    // Overige vangregels: behoud het bestaande client-side vangnet.
-    if (from.endsWith("/*") && from !== "/wp-content/uploads/*") continue;
+    // Overige vangregels, inclusief bestandsnaam-wildcards zoals /*sitemap*.xml:
+    // Cloudflare Bulk ondersteunt die niet; behoud het client-side vangnet.
+    if (from.includes("*") && from !== "/wp-content/uploads/*") continue;
     if (from === "/wp-content/uploads/*") {
       const doel = to.replace(/:splat$/, "");
       push(`${host}/wp-content/uploads/`, doel, "TRUE,TRUE,TRUE,TRUE");
@@ -185,14 +186,14 @@ function redirectsPlugin(env: Record<string, string>): Plugin {
           ? [`/wp-content/uploads/*    ${storageBase}/wp-content/uploads/:splat    301`]
           : ["# WAARSCHUWING: geen VITE_SUPABASE_URL, media-redirect overgeslagen."]),
         "",
-        ...rules.filter(line => !line.split(/\s+/)[0].endsWith("*")),
+        ...rules.filter(line => !line.split(/\s+/)[0].includes("*")),
         "",
         "# Taalprefixen (/en, /de, /fr) erven de Nederlandse doorverwijzing.",
-        ...taalRules.filter(line => !line.split(/\s+/)[0].endsWith("*")),
+        ...taalRules.filter(line => !line.split(/\s+/)[0].includes("*")),
         "",
         "# Vangregels na alle expliciete regels, ook die met taalprefix.",
-        ...rules.filter(line => line.split(/\s+/)[0].endsWith("*")),
-        ...taalRules.filter(line => line.split(/\s+/)[0].endsWith("*")),
+        ...rules.filter(line => line.split(/\s+/)[0].includes("*")),
+        ...taalRules.filter(line => line.split(/\s+/)[0].includes("*")),
         "",
         "# Pad met afsluitende slash → zelfde pad zonder slash (homepage uitgezonderd).",
         "/:path/    /:path    301!",

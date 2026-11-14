@@ -813,8 +813,14 @@ export const verouderdeMedia = new Set(
 );
 
 
-/** Vangregel: /* voor subpaden, bedankt-* voor oude bedanktsuffixen. */
-export const isVangregel = (r: LegacyRedirect) => r.from.endsWith("*");
+/** Root-sitemaps uit oude WordPress-plugins; de echte /sitemap.xml blijft vrij. */
+export const SITEMAP_XML_VANGREGEL = "*sitemap*.xml";
+export const isSitemapXmlVangregel = (r: LegacyRedirect) => r.from === SITEMAP_XML_VANGREGEL;
+const isRootSitemapXml = (pad: string) =>
+  pad !== "sitemap.xml" && !pad.includes("/") && pad.includes("sitemap") && pad.endsWith(".xml");
+
+/** Vangregel: een ster voor subpaden, oude suffixen of oude sitemap-bestanden. */
+export const isVangregel = (r: LegacyRedirect) => r.from.includes("*");
 
 /** Specifieke regels eerst, vangregels daarna (volgorde binnen elke groep blijft gelijk). */
 export function geordendeRedirects(lijst: LegacyRedirect[] = legacyRedirects): LegacyRedirect[] {
@@ -839,7 +845,7 @@ export function taalprefixRedirects(
   const uit: LegacyRedirect[] = [];
   for (const r of lijst) {
     const from = norm(r.from);
-    if (!from || (isVangregel(r) && !["home/nieuws/*", "nieuws/*", "control/*", "academy/*", "bedankt-*"].includes(from)) || TAALPREFIXES.some((t) => from === t || from.startsWith(`${t}/`))) continue;
+    if (!from || (isVangregel(r) && !["home/nieuws/*", "nieuws/*", "control/*", "academy/*", "bedankt-*", SITEMAP_XML_VANGREGEL].includes(from)) || TAALPREFIXES.some((t) => from === t || from.startsWith(`${t}/`))) continue;
     for (const t of TAALPREFIXES) {
       const afgeleid = `${t}/${from}`;
       if (bronnen.has(afgeleid) || gezien.has(afgeleid) || bestaande.has(afgeleid)) continue;
@@ -866,7 +872,9 @@ export function zoekLegacyDoel(pad: string, lijst: LegacyRedirect[] = legacyRedi
   if (!p) return null;
   const exact = lijst.find((r) => !isVangregel(r) && r.from.toLowerCase() === p);
   if (exact) return exact.to;
-  const vang = lijst.find((r) => isVangregel(r) && p.startsWith(r.from.slice(0, -1).toLowerCase()));
+  const sitemapVang = lijst.find(isSitemapXmlVangregel);
+  if (sitemapVang && isRootSitemapXml(p)) return sitemapVang.to;
+  const vang = lijst.find((r) => isVangregel(r) && !isSitemapXmlVangregel(r) && p.startsWith(r.from.slice(0, -1).toLowerCase()));
   if (vang) return vang.to.replace(":splat", pad.replace(/^\/+|\/+$/g, "").slice(vang.from.length - 1));
   // Taalprefix: /en, /de of /fr + een Nederlands bronpad krijgt dezelfde bestemming.
   const taal = TAALPREFIXES.find((t) => p.startsWith(`${t}/`));
