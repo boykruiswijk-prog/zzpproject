@@ -444,12 +444,12 @@ export const ZEKER_KENNIS = {
     {
       "categorie": "Mijn verzekering beheren",
       "vraag": "Kan ik mijn KvK-nummer wijzigen?",
-      "antwoord": "Nee. Je BAV en AVB zijn afgegeven op je onderneming met het KvK-nummer uit je aanvraag. Het risico en de polis horen bij dat KvK-nummer. Krijg je een nieuw KvK-nummer, bijvoorbeeld omdat je van eenmanszaak naar bv gaat of een nieuwe onderneming start? Dan vraag je een nieuwe verzekering aan voor je nieuwe onderneming. Je huidige verzekering is dagelijks opzegbaar: we stoppen je oude polis per de dag voordat de nieuwe ingaat, zodat je doorlopend verzekerd bent en niet dubbel betaalt. Je adres, e-mailadres of telefoonnummer wijzigen kan wel gewoon door contact met ons op te nemen."
+      "antwoord": "Nee. Je BAV en AVB zijn afgegeven op je onderneming met het KvK-nummer uit je aanvraag. Het risico en de polis horen bij dat KvK-nummer. Krijg je een nieuw KvK-nummer, bijvoorbeeld omdat je van eenmanszaak naar bv gaat of een nieuwe onderneming start? Dan vraag je een nieuwe verzekering aan voor je nieuwe onderneming en zeg je de verzekering van je oude onderneming op per de datum waarop je werk daar stopt. Die datums hoeven niet op elkaar aan te sluiten en mogen een tijd overlappen; leidend is met welke onderneming je de overeenkomst met je opdrachtgever hebt. Je adres, e-mailadres of telefoonnummer wijzigen kan wel gewoon door contact met ons op te nemen."
     },
     {
       "categorie": "Mijn verzekering beheren",
       "vraag": "Ik ga van eenmanszaak naar bv. Wat moet ik doen?",
-      "antwoord": "Een bv krijgt een eigen KvK-nummer en is daarmee een nieuwe onderneming. Vraag voor je bv een nieuwe BAV en AVB aan en geef de startdatum van je bv op. Wij zorgen dat je oude polis stopt op de dag voordat de nieuwe ingaat. Zo zit er geen gat in je dekking en betaal je niet dubbel."
+      "antwoord": "Een bv krijgt een eigen KvK-nummer en is daarmee een nieuwe onderneming. Je kunt de omzetting zelf aanvragen in Mijn ZP: je geeft een einddatum op voor je eenmanszaak en een ingangsdatum voor je bv. Vraag je de nieuwe BAV + AVB via het aanvraagformulier aan, vermeld dan je oude onderneming. Loopt er nog een opdracht via je eenmanszaak, dan kan een paar weken of maanden dubbele dekking nodig zijn; leidend is met welke onderneming je de overeenkomst met je opdrachtgever hebt. Krijg je een nieuwe zakelijke rekening, dan geef je een nieuwe incassomachtiging af. Het stappenplan lees je op zpzaken.nl/kennisbank/eenmanszaak-naar-bv-verzekering."
     },
     {
       "categorie": "Onze verzekering",

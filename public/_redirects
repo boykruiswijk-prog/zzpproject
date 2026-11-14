@@ -4797,6 +4797,7 @@
 /de/mijn-zp/*    /mijn-zp/:splat    301
 /fr/mijn-zp/*    /mijn-zp/:splat    301
 /home/nieuws/*    /kennisbank    301
+/*sitemap*.xml    /sitemap.xml    301
 /radio/*    /kennisbank    301
 /services/*    /diensten    301
 /profile/*    /    301
@@ -4808,6 +4809,9 @@
 /en/home/nieuws/*    /kennisbank    301  # taalprefix
 /de/home/nieuws/*    /kennisbank    301  # taalprefix
 /fr/home/nieuws/*    /kennisbank    301  # taalprefix
+/en/*sitemap*.xml    /sitemap.xml    301  # taalprefix
+/de/*sitemap*.xml    /sitemap.xml    301  # taalprefix
+/fr/*sitemap*.xml    /sitemap.xml    301  # taalprefix
 /en/nieuws/*    /kennisbank    301  # taalprefix
 /de/nieuws/*    /kennisbank    301  # taalprefix
 /fr/nieuws/*    /kennisbank    301  # taalprefix
