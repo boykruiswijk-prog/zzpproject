@@ -89,9 +89,15 @@ describe("A29-aanvulling: 16 robots op het scherm", () => {
     expect(t.find((a) => a.robotnaam === "Lasso")?.status).toBe("klaar");
     expect(t.find((a) => a.robotnaam === "Puls")?.status).toBe("fout");
   });
-  it("twee kolommen vanaf 13 robots", () => {
+  it("besluit 12-11: één rustige regel per robot met functie, run en fouten bovenaan", () => {
     const src = readFileSync("src/pages/Scherm.tsx", "utf8");
-    expect(src).toContain("const tweeKolommen = team.length > 12;");
-    expect(src).toContain("grid-cols-2");
+    const paneel = src.slice(src.indexOf("function PaneelAiTeam"), src.indexOf("const workerKleur"));
+    expect(paneel).toContain("aiTeamVolgorde(d.ai_team ?? [])");
+    expect(paneel).toContain('data-testid="ai-team-lijst"');
+    expect(paneel).toContain("flex-col justify-start");
+    expect(paneel).not.toMatch(/tweeKolommen|grid-cols-2/);
+    expect(paneel.match(/data-testid="ai-team-regel"/g)).toHaveLength(1);
+    expect(paneel).toContain("team.map((a, i)");
+    for (const veld of ["a.robotnaam", "a.functie", "a.reden", "a.laatste_run", "var(--s-rood)"]) expect(paneel).toContain(veld);
   });
 });
