@@ -44,8 +44,16 @@ describe("netto groei (alleen aantallen)", () => {
     expect(r).not.toMatch(/^\/tv\b/m);
     const scherm = readFileSync("src/pages/Scherm.tsx", "utf8");
     expect(scherm).toMatch(/const PANELEN = \[[^\]]*PaneelNettoGroei/);
-    const paneel = scherm.slice(scherm.indexOf("function PaneelNettoGroei"), scherm.indexOf("function StatusRegel"));
+    const paneel = scherm.slice(scherm.indexOf("function PaneelNettoGroei"), scherm.indexOf("function PaneelService"));
+    expect(paneel).toContain('data-testid="paneel-netto-groei"');
     expect(paneel).not.toMatch(/euro|€|naam/i);
+    const weekomzet = scherm.slice(scherm.indexOf("function Weekomzet"), scherm.indexOf("function runTijd"));
+    expect(weekomzet).toContain("euro.format(w.bedrag)");
+    expect(weekomzet).toContain("euro.format(w.vorige_bedrag)");
+    const buitenWeekomzet = scherm.replace(weekomzet, "");
+    expect(buitenWeekomzet).not.toMatch(/euro\.format|€|currency:\s*["'](?!EUR)[A-Z]+["']/);
+    const p = bouwSchermPayload({ groei: { klanten: 2, contracten: 3, naam: "Geheim BV", bedrag: 999 }, weekomzet: { bedrag: 123, naam: "Geheim BV", klant: "Klant X" } });
+    expect(JSON.stringify([p.groei, p.netto_groei, p.weekomzet])).not.toMatch(/Geheim BV|Klant X|"naam"|"klant"/);
   });
 });
 
@@ -58,11 +66,19 @@ describe("A7-aanvulling 2: netto groei vanaf 1 okt", () => {
     expect(m).toMatch(/GRANT EXECUTE ON FUNCTION public\.tel_netto_groei\(date,boolean\) TO authenticated, service_role/);
     expect(m).not.toMatch(/DELETE|TRUNCATE|DROP/);
   });
-  it("label en startdatum komen uit een gedeelde constante", async () => {
+  it("startdatum blijft 1 oktober en schermgroei volgt de admin-klanttelling (besluit 13-11 A6)", async () => {
     const c = await import("../lib/nettoGroei");
     expect(c.NETTO_GROEI_VANAF).toBe("2026-10-01");
     expect(c.NETTO_GROEI_LABEL).toBe("Sinds 1 okt (start platform)");
-    expect(readFileSync("src/pages/Scherm.tsx", "utf8")).toContain("rij(NETTO_GROEI_LABEL");
+    const scherm = readFileSync("src/pages/Scherm.tsx", "utf8");
+    const paneel = scherm.slice(scherm.indexOf("function PaneelNettoGroei"), scherm.indexOf("function PaneelService"));
+    expect(paneel).toContain("const g = d.groei;");
+    expect(paneel).toContain('blok("Sinds 1 oktober", g.sinds');
+    expect(paneel).toContain('blok("Deze week", g.week');
+    const telling = readFileSync("drizzle/migrations/0287_een_telling_admin_tv_1311.sql", "utf8");
+    expect(telling).toContain("ks jsonb := public.tel_klanten_stand(date '2026-10-01', false)");
+    expect(telling).toContain("'klanten', public.tel_klanten(false), 'contracten', public.tel_contracten(false)");
+    expect(telling).toContain("public.tel_klanten_stand(_vanaf, _toon_test)");
     expect(readFileSync("src/components/admin/DashboardStats.tsx", "utf8")).toContain("NETTO_GROEI_LABEL");
     expect(bouwSchermPayload({ netto_groei: { cumulatief: { instroom: 1 } } }).netto_groei?.vanaf).toBe("2026-10-01");
     expect(readFileSync("src/pages/Scherm.tsx", "utf8")).not.toContain("Sinds 6 okt");

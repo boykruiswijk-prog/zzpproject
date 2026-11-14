@@ -2031,6 +2031,13 @@
       "when": 1794605573763,
       "tag": "0289_artikel_fiscaal_token_check_1311",
       "breakpoints": true
+    },
+    {
+      "idx": 290,
+      "version": "7",
+      "when": 1794637778621,
+      "tag": "0290_artikel_slotregel_f1_1411",
+      "breakpoints": true
     }
   ]
 }
