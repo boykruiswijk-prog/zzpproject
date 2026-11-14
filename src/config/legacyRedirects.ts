@@ -743,6 +743,8 @@ export const legacyRedirects: LegacyRedirect[] = [
   { from: "sitemap-index.xml", to: "/sitemap.xml" },
   { from: "news_sitemap.xml", to: "/sitemap.xml" },
   { from: "news-sitemap.xml", to: "/sitemap.xml" },
+  // Loep 14-11-2026: overige root-sitemaps; /sitemap.xml zelf blijft statisch.
+  { from: "*sitemap*.xml", to: "/sitemap.xml" },
   { from: "beroeps-en-bedrijfs-aansprakelijkheidsverzekering-zzp-avb-bav/%23pakket", to: "/verzekeringen" },
   { from: "radio/*", to: "/kennisbank" },
   { from: "services/*", to: "/diensten" },
