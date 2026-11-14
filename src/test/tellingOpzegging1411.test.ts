@@ -7,9 +7,10 @@ const sql = readFileSync("drizzle/migrations/0291_klanttelling_verstreken_opzegg
 function functie(naam: string): string {
   const start = sql.indexOf(`CREATE OR REPLACE FUNCTION public.${naam}(`);
   expect(start).toBeGreaterThanOrEqual(0);
-  const einde = sql.indexOf("\n$$;", start);
-  expect(einde).toBeGreaterThan(start);
-  return sql.slice(start, einde);
+  const rest = sql.slice(start);
+  const einde = /\n(?:END )?\$\$;/.exec(rest);
+  expect(einde).not.toBeNull();
+  return rest.slice(0, einde!.index);
 }
 
 describe("A6: verstreken opzegging en stilzwijgende verlenging", () => {
